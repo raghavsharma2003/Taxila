@@ -39,6 +39,36 @@ export const ARC_R = [50, 50, 84, 24, 24];
  *  on the shared ray there is a gap and they never read as one curve (judging round 2). The tap model stays ARC_R: a tap is
  *  taken by sector and band, and each drawn arc lies inside its own arc's band (|DRAW_R − ARC_R| ≤ 8 ≪ BAND) */
 export const DRAW_R = [42, 58, 84, 24, 24];
+/** gate 1, ruling 2 (2026-11-15): the wide arc (drawn and tapped alike) runs WIDE_ROOM board px inside the figure's shortest
+ *  ray, at most ARC_R[WIDE]: it never ends on a point (at 84 it ran into A, with BA 85, and close to P). find serves a figure
+ *  only when that leaves the wide arc WIDE_MIN or more out, clear of the arcs at the vertex (58 drawn: a gap of 12) */
+export const WIDE_ROOM = 16, WIDE_MIN = 70;
+export function wideR(p: NameParamsLike): number {
+  return Math.min(ARC_R[WIDE], Math.min(p.ln1 ?? 0, p.ln2 ?? 0, p.ln3 ?? 0) - WIDE_ROOM);
+}
+/** arc k's radius in the tap model (ARC_R, the wide one by the figure) */
+export function arcR(p: NameParamsLike, k: number): number { return k === WIDE ? wideR(p) : ARC_R[k]; }
+/** arc k's drawn radius (DRAW_R, the wide one by the figure, as tapped) */
+export function drawR(p: NameParamsLike, k: number): number { return k === WIDE ? wideR(p) : DRAW_R[k]; }
+/** find (gate 1, ruling 1): the band (board px) left above or below the figure's room box for the "≠" row at 360 (the phone's
+ *  canvas adds about 27 board px on each side of the board, the row with its padding is about 31 high) */
+export const ROW_GAP = 8;
+/** the figure's room box in board y (low, high): its points (and dots), its letters each with one letter height round them
+ *  (as the row keeps clear of them), and every arc as drawn */
+export function rowExtent(p: NameParamsLike): [number, number] {
+  const P = points(p), LP = labelPoints(p), ys: number[] = [];
+  for (const q of P) ys.push(q[1] - 8, q[1] + 8);
+  for (const q of LP) ys.push(q[1] - LETTER_ROOM, q[1] + LETTER_ROOM);
+  corners(p).forEach((c, k) => {
+    const v = P[c.v], ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]), r = drawR(p, k);
+    let d = norm(hb - ha); if (d > 180) d -= 360;
+    for (let i = 0; i <= 12; i++) { const y = v[1] + r * Math.sin(R(ha + (d * i) / 12)); ys.push(y - 4, y + 4); }
+  });
+  return [Math.min(...ys), Math.max(...ys)];
+}
+/** a letter's half height and one letter height of room round it, board px */
+const LETTER_ROOM = 27;
+export function rowRoom(p: NameParamsLike): boolean { const [lo, hi] = rowExtent(p); return NBH - hi >= ROW_GAP || lo >= ROW_GAP; }
 /** the letters that look alike at 360 px: never served in one figure */
 export const LOOKALIKE = ["OQ"];
 
@@ -229,20 +259,20 @@ export function handles(p: NameParamsLike): [number, number][] {
   return corners(p).map((c, k) => {
     const v = P[c.v], ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]);
     let d = norm(hb - ha); if (d > 180) d -= 360;
-    const mid = ha + d / 2, r = ARC_R[k];
+    const mid = ha + d / 2, r = arcR(p, k);
     return [v[0] + r * Math.cos(R(mid)), v[1] + r * Math.sin(R(mid))];
   });
 }
 
 /** find: a tap within BAND board px of an arc is a tap on that arc (the nearest arc wins, so no two arcs share a point) */
 export const BAND = 44;
-/** the distance from (x, y) to corner k's arc (radius ARC_R[k] about its vertex, between its two arms) */
+/** the distance from (x, y) to corner k's arc (radius arcR(p, k) about its vertex, between its two arms) */
 export function arcDist(p: NameParamsLike, k: number, x: number, y: number): number { return arcGeo(p)[k](x, y); }
 /** each arc's distance function (the figure's geometry worked out once) */
 function arcGeo(p: NameParamsLike): ((x: number, y: number) => number)[] {
   const P = points(p);
   return corners(p).map((c, k) => {
-    const v = P[c.v], r = ARC_R[k];
+    const v = P[c.v], r = arcR(p, k);
     const ha = headingOf(P[c.a][0] - v[0], P[c.a][1] - v[1]), hb = headingOf(P[c.b][0] - v[0], P[c.b][1] - v[1]);
     let d = norm(hb - ha); if (d > 180) d -= 360;
     const e1: [number, number] = [v[0] + r * Math.cos(R(ha)), v[1] + r * Math.sin(R(ha))], e2: [number, number] = [v[0] + r * Math.cos(R(ha + d)), v[1] + r * Math.sin(R(ha + d))];
@@ -297,7 +327,7 @@ function arcTarget(p: NameParamsLike, min: number): (k: number) => { x: number; 
     let d = norm(hb - ha); if (d > 180) d -= 360;
     // centres on a 7 px grid around the arc, nearest the arc's middle first; a disc passes when its centre, 8 points half way
     // out and 24 on its rim are all on this arc
-    const r0 = ARC_R[k], hm = ha + d / 2, mx = v[0] + r0 * Math.cos(R(hm)), my = v[1] + r0 * Math.sin(R(hm)), ext = r0 + BAND;
+    const r0 = arcR(p, k), hm = ha + d / 2, mx = v[0] + r0 * Math.cos(R(hm)), my = v[1] + r0 * Math.sin(R(hm)), ext = r0 + BAND;
     const cands: [number, number, number][] = [];
     // (only the grid points in the box round the arc's band are looked at: a point farther than BAND / 2 from the arc is never
     // a centre, so the centres, and their order, are those of the whole grid; the picker's speed bar)
@@ -466,10 +496,34 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     if (pick.length < 4) continue;
     const ask = findAsk ?? Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
     // the figure centred on the board
-    const ends = [[0, 0], ...hs.map((h, i) => [ls[i] * Math.cos(R(h)), ls[i] * Math.sin(R(h))])];
-    const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
-    const vx = Math.round(NBW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2), vy = Math.round(NBH / 2 - (Math.min(...ys) + Math.max(...ys)) / 2);
-    const params: NameParamsLike = { goal, start: 0, tol: 3, scale: fade === 1 ? "10" : fade === 2 ? "30" : "landmarks", lets: pick.join(""), vx, vy, h1: hs[0], h2: hs[1], h3: hs[2], ln1: ls[0], ln2: ls[1], ln3: ls[2], tri, ask, ord };
+    const place = (L: number[]): NameParamsLike => {
+      const ends = [[0, 0], ...hs.map((h, i) => [L[i] * Math.cos(R(h)), L[i] * Math.sin(R(h))])];
+      const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
+      const vx = Math.round(NBW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2), vy = Math.round(NBH / 2 - (Math.min(...ys) + Math.max(...ys)) / 2);
+      return { goal, start: 0, tol: 3, scale: fade === 1 ? "10" : fade === 2 ? "30" : "landmarks", lets: pick.join(""), vx, vy, h1: hs[0], h2: hs[1], h3: hs[2], ln1: L[0], ln2: L[1], ln3: L[2], tri, ask, ord };
+    };
+    let params = place(ls);
+    // find (gate 1, ruling 1): the "≠" row needs a band ROW_GAP deep above or below the whole figure, arcs and letters
+    // included. A figure that leaves neither is moved up or down (the smaller move that keeps its points on the board); one
+    // too tall for that is drawn smaller (its rays shortened alike, so its angles stay), at most twice, down to 0.8
+    if (goal === "find") {
+      let ok = false;
+      for (let g = 0; g < 3 && !ok; g++) {
+        const [lo, hi] = rowExtent(params), up = ROW_GAP - (NBH - hi), dn = ROW_GAP - lo;
+        if (up <= 0 || dn <= 0) { ok = true; break; }
+        const ys = points(params).map((q) => q[1]), y0 = Math.min(...ys), y1 = Math.max(...ys);
+        const move = [-Math.ceil(up), Math.ceil(dn)].sort((m1, m2) => Math.abs(m1) - Math.abs(m2)).find((m) => y0 + m >= 26 && y1 + m <= NBH - 26);
+        if (move !== undefined) { params = { ...params, vy: (params.vy ?? 0) + move }; ok = true; break; }
+        if (g === 2) break;
+        const over = Math.min(26 - (y0 - Math.ceil(up)), y1 + Math.ceil(dn) - (NBH - 26)), k = 1 - (over + 2) / Math.max(1, y1 - y0);
+        if (k < 0.8) break;
+        const L = [params.ln1 ?? 0, params.ln2 ?? 0, params.ln3 ?? 0].map((l) => Math.round(l * k));
+        // (still three lengths a child sees differ)
+        if (L.some((l, i) => L.some((m, j) => j > i && Math.abs(l - m) < 12))) break;
+        params = place(L);
+      }
+      if (!ok || !rowRoom(params)) continue;
+    }
     const sig = `name:${goal}:${base}:${g1}:${g2}:${cX}:${tri}:${ask}${goal === "find" ? `:${ord}` : ""}`;
     if (seen.has(sig)) continue;
     // fits, with room for the letters; every two points (and, for find, every two arc handles) a touch apart
@@ -477,6 +531,8 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     if (!P.every(([x, y]) => x >= 26 && x <= NBW - 26 && y >= 26 && y <= NBH - 26)) continue;
     const apart = (Q: [number, number][], d: number) => Q.every((a, i) => Q.every((b, j) => j <= i || Math.hypot(a[0] - b[0], a[1] - b[1]) >= d));
     if (!apart(P, 2 * HIT + 4)) continue;
+    // find: the wide arc, WIDE_ROOM inside the shortest ray, stays clear of the arcs at the vertex (gate 1, ruling 2)
+    if (goal === "find" && wideR(params) < WIDE_MIN) continue;
     if (corners(params).some((c) => (sizeOf(params, nameOf(c)) ?? 0) < 20)) continue;
     if (!anglesApart(params)) continue;
     if (!noCrossing(params)) continue;
