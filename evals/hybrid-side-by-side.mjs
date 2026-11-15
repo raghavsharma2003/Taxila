@@ -258,6 +258,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
+    // (D, main on director21: the row records the reading the turn acted on — planTurn's, after its own rules — and the raw one beside it)
+    { const eff = p.cls ?? null; const row = rows.at(-1); if (eff && row?.who === "child") { const rq = eff.request?.src === "card_unsaid" ? null : eff.request?.type; const r1 = eff.outcome + (rq ? ` · ${rq}` : "") + (eff.asideReply ? " · aside" : ""); if (r1 !== row.read) { row.readRaw = row.read; row.read = r1; } } }
     let next = { ...p.r.state, mode: "text" };
     let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
     // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected

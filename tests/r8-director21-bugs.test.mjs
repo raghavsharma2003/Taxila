@@ -35,3 +35,8 @@ test("a name keeps its capital after 'kyunki' (c5-t02: 'kyunki farhan ka bar')",
   assert.equal(joinable("Farhan ka bar 7 hisson mein kata hai", { lower: true }), "Farhan ka bar 7 hisson mein kata hai");
   assert.equal(joinable("Dono patti barabar lambi hain", { lower: true }), "dono patti barabar lambi hain");
 });
+
+test("D: the child's answer to her return or AI-line question has its own column — director21's graded readings are flagged", () => {
+  const rows = rowsOf("readerAsideColumn");
+  for (const r of ["offtopic-c4-ch05-t01 8", "offtopic-c4-ch05-t01 20", "offtopic-c5-ch02-t02 24"]) assert.ok(rows.includes(r), `${r} in ${rows.join(", ")}`);
+});

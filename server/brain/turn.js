@@ -1691,15 +1691,27 @@ export async function planTurn(base, cls, c) {
   // expected — a picture, a repeat, try-first, Hindi — is served as that request, still never graded against the unsaid card; the
   // acknowledgement is said only to a reply about the aside)
   if (cls && (cardUnsaidNow(state) || state.asideReplyDue) && !cls.flags?.distress && !cls.flags?.wantsToStop && cls.source !== "chip") {
-    const own = cls.request?.type && responseShape(cls.request.type, "aside_reply") === "serve_request" ? cls.request
-      : cls.request?.type && !["uptake", "answer_q"].includes(cls.request.type) ? cls.request : null;
+    // (D, main on director21: "Dhoni", "bowling karna" in answer to her return or AI-line question were read as a repeat — a repeat is
+    // one only when the child's words ask for it)
+    const asksRepeat = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|again)(?![\p{L}])/iu.test(String(c.childText ?? ""));
+    const rq0 = cls.request?.type === "repeat" && !asksRepeat ? null : cls.request;
+    const own = rq0?.type && responseShape(rq0.type, "aside_reply") === "serve_request" ? rq0
+      : rq0?.type && !["uptake", "answer_q"].includes(rq0.type) ? rq0 : null;
+    if (!rq0 && cls.request) cls = { ...cls, request: undefined };
     // (dc-r8-director20 harness: "batting", "bowling karna" in answer to her aside question were read as a wrong answer to the card
     // she had held back unsaid, so never as about the aside — a grade against a card not said is no reading of the reply; a number
     // still is, a card answer remembered)
-    const about = !own && !/\d/.test(String(c.childText ?? "")) && !cls.flags?.dontKnow && (cardUnsaidNow(state) || !["correct", "incorrect", "partial", "misconception"].includes(cls.outcome));
+    // (D, main on director21: 13 replies to her return or AI-line question — "batting", "sixer", "catch pakadna" — were graded as answers to
+    // the card, and c6 steady 115 jumped back on one: her question's answer has its own column, never an answer, unless it has a number)
+    const about = !own && !/\d/.test(String(c.childText ?? "")) && !cls.flags?.dontKnow && (cardUnsaidNow(state) || !!state.asideReplyDue || !["correct", "incorrect", "partial", "misconception"].includes(cls.outcome));
     if (cardUnsaidNow(state)) cls = { ...cls, outcome: "no_evidence", confidence: 1, request: own ?? { type: "repeat", src: "card_unsaid" }, cardUnsaid: true, ...(about ? { asideReply: true } : {}) };
-    else if (about) cls = { ...cls, asideReply: true };
+    else if (about) cls = { ...cls, outcome: "no_evidence", confidence: 1, asideReply: true };
   }
+  // (D, main on director21: a give-up after a key — no card on the table — was read as a misconception; with no card live a give-up is a
+  // give-up, never graded)
+  if (cls && !state.activeItemId && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome) && !/\d/.test(String(c.childText ?? ""))
+    && /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu.test(String(c.childText ?? "")))
+    cls = { ...cls, outcome: "no_evidence", confidence: 1, flags: { ...(cls.flags ?? {}), dontKnow: true } };
   const affectNow = moduleOnly ? state.affect
     : nextAffect(state.affect, { read: cls?.flags ?? {}, outcome: cls?.outcome, itemId: state.activeItemId, answer: c.answer });
   const discount = gamingDiscount(affectNow);
@@ -1840,7 +1852,7 @@ export async function planTurn(base, cls, c) {
   const incident = r?.move?.tier === "check" || r?.move?.setAside ? null
     : incidentOf(cls) ?? (r?.move?.escalated ? { source: "classifier", family: r.state?.safeguard?.kind ?? "model" } : null);
   if (incident) writes.push(incidentStmt(child.id, lesson.id, childSeq, incident));
-  return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, learner: { before: live, after } };
+  return { evidence, events, writes, skillChanges, incident, r, instructions, skipped, cls, learner: { before: live, after } };
 }
 
 /**

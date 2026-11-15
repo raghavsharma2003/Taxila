@@ -42,7 +42,8 @@ describe("r7-brain-v69.test.mjs", () => {
   // N2: the bridge belongs to the next card's unit — after a give-up it switches at the bridge's first spoken part
   describe("N2: a bridge after a give-up switches to the next skill's first unit where the bridge begins", () => {
     // (v6.10: c4 stuck's live walk now stays in skill 1 until the child leaves — its give-up-then-bridge is steady's, row 74)
-    for (const [persona, topic, n] of [["steady", "c4", 74], ["stuck", "c5-t02", 52], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
+    // (main on director21, O6 and D: stuck c5-t02's live walk now stays in skill 1 until the child leaves — no bridge to switch at)
+    for (const [persona, topic, n] of [["steady", "c4", 74], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
       // (the walk is live: the give-up-then-bridge turn is the one nearest the director17 row)
       // (v6.10: a give-up now ends on a check-in, and the live walk can reach its bridge elsewhere — the nearest bridge in the lesson)
       const turns = await walk(persona, topic, 200);

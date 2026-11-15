@@ -612,6 +612,16 @@ export const ORDER_LAWS = {
   uiWords(L, r) {
     return /(?<![\p{L}])buttons?(?![\p{L}])/iu.test(String(r.text ?? "")) ? "the buttons named aloud" : null;
   },
+  /** D (main on director21, 24 rows; c6 steady 115 jumped back on one): the child's reply to her return question or to her AI-line question
+   *  has its own column — never read as an answer, a repeat or a misconception. Read on the child row after such a turn of hers. */
+  readerAsideColumn(L, r, i, ctx) {
+    const p = ctx.prevT;
+    if (!p) return null;
+    const asked = (returnOf(p, ctx) || AI_LINE.test(String(p.text ?? ""))) && /[?？]\s*$/.test(norm(p.text)) && !cardIn(p);
+    if (!asked) return null;
+    const rd = String(ctx.prevRead ?? "");
+    return /^(?:correct|incorrect|partial|misconception)\b|·\s*repeat/.test(rd) ? `her question's answer read as "${rd}" ("${ctx.prevChild}")` : null;
+  },
   /** C1 (main on director21: "the same why said three turns running"): no authored sentence of six words or more is said in two turns
    *  of hers running — except the card the child is asked again. */
   repeatedAuthored(L, r, i, ctx) {
@@ -634,7 +644,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
