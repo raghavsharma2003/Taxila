@@ -796,7 +796,7 @@ function currentBeatRef(s, kit) {
 // v4 W6 (director6: 0 of 6 cricket / Virat asides parked): an aside about a world of theirs (an interest, a sport, a star) is
 // kept on the Later list in script mode, so it is promised now and returned to before the wrap
 const ASIDE_WORDS = /\b(cricket|virat|kohli|dhoni|rohit|football|messi|ronaldo|ipl|match|sixer|six|game|games|cartoon|movie|film|song|gaana|dance|kabaddi|chess|badminton|cycle|dog|kutta|billi|cat)\b/i;
-function asideTopic(text, interests = []) {
+export function asideTopic(text, interests = []) {
   const t = String(text ?? "");
   const own = (interests ?? []).find((i) => i && new RegExp(`\\b${String(i).replace(/[^\p{L}\s]/gu, "")}`, "iu").test(t));
   if (own) return String(own);
@@ -1482,9 +1482,9 @@ function afterWhy(s, input, item) {
 /** v6.5 K2: "let's go on" said to a probe or a break offer (never an answer). */
 // v6.10 T2: the child says they already answered ("woh maine bata diya", "woh wala ho gaya")
 const ALREADY_SAID = /(?<![\p{L}])(?:(?:maine|main|mai)\s+(?:toh\s+)?(?:bata|bol|de|likh|kar)\s*(?:diya|di|chuka|chuki|dia)|(?:woh|wo|yeh|ye)\s+(?:wala\s+|waala\s+)?(?:toh\s+)?(?:ho|kar)\s+(?:gaya|liya|diya)|(?:i\s+)?already\s+(?:told|answered|said|did))(?![\p{L}])/iu;
-const GO_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|move\s+on|go\s+on|agla\s+(?:sawaal|wala))(?![\p{L}])/iu;
+export const GO_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|move\s+on|go\s+on|agla\s+(?:sawaal|wala))(?![\p{L}])/iu;
 const YES_REPLY = /^(?:haan|han|ha|haa|ji|ji haan|yes|yeah|ok|okay|theek hai|thik hai|samajh gaya|samajh gayi|samajh aa gaya|hmm+|achha|acha)[\s,.!]*$/i;
-const STOP_WORD = /\b(?:ruk|ruko|rukna|band|stop|bas\s+karo|khatam|thak|break|baad\s+mein|chhutti)\b/i;
+export const STOP_WORD = /\b(?:ruk|ruko|rukna|band|stop|bas\s+karo|khatam|thak|break|baad\s+mein|chhutti)\b/i;
 const MOVE_ON = /(?<![\p{L}])(?:aage\s+(?:chalo|badho|badhein|chalte\s+hain)|next|(?:woh|wo|yeh)?\s*(?:wala\s+)?ho\s+gaya|bata\s+(?:diya|chuki|chuka)|move\s+on|go\s+on|let'?s\s+go)(?![\p{L}])/iu;
 function afterMiss(s, input, item) {
   // round 7 S3: misses per card (the card stays live until two misses plus help)
@@ -2374,6 +2374,15 @@ function authoredEnd(kit) {
   return sc && !sc.recordedRun ? sc : null;
 }
 const endLine = (x) => (/[.!?\u0964]$/.test(String(x).trim()) ? String(x).trim() : `${String(x).trim()}.`);
+/** dc-r8-director22 R: the reader's reading of a line while the script's teach-back is open — correct when it is the key or a form
+ *  Learning accepts, incorrect when it states a number or fraction that is not, else no reading (a non-answer); null when no script
+ *  teach-back is open. */
+export function teachbackReading(s, kit, text) {
+  if (s?.phase !== "teachback" || !s.teachbackScript || s.teachbackKeyed) return null;
+  const tb = authoredEnd(kit)?.teachback;
+  if (!tb?.key) return null;
+  return teachbackHit(tb, text) ? "correct" : /\d/.test(String(text ?? "")) ? "incorrect" : "no_evidence";
+}
 /** Her teach-back answer against the authored key and its accepted forms (a key, never a model's grade). */
 function teachbackHit(tb, text) {
   const norm = (x) => ` ${String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim()} `;
@@ -2385,16 +2394,24 @@ function teachback(s, input) {
   const { cls, kit } = input;
   const tb = s.teachbackScript ? authoredEnd(kit)?.teachback : null;
   if (tb) {
-    // (2.4: a right answer — the key or a form Learning accepts — goes to the wrap; anything else gets the key and its why once, then the wrap)
+    // (dc-r8-director22 T3: the verdict is a turn of its own — her reply to it, whatever it is, gets the wrap)
+    // (026: the wrap is said over the teach-back's answer board and holds it)
+    if (s.teachbackKeyed) { s.teachbackKeyed = undefined; return { ...toWrap(s, { kit }), ...(tb.answerBoard ? { holdBoard: true } : {}) }; }
+    // (2.4: a right answer — the key or a form Learning accepts — is told so; anything else gets the key and its why, once)
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
-    // (main's 026: the key turn — after a miss, or a right answer's close — shows the teach-back's answerBoard, else a cleared board)
-    if (teachbackHit(tb, input.text)) { s.teachbackPassed = true; return { ...toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct" }; }
+    const hit = teachbackHit(tb, input.text);
+    if (hit) s.teachbackPassed = true;
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
-    const keyLine = `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
-    // (the key and its why, then the wrap: over the teach-back's answerBoard, else a cleared board — never its question board, 026)
-    return toWrap(s, { kit, keyFirst: { line: keyLine, board: tb.answerBoard ?? null } });
+    const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
+    s.teachbackKeyed = true;
+    // (main's 026, director22 T1: the key turn shows the teach-back's answerBoard from its first word, else a cleared board — never
+    // its question board; the wrap that follows holds it)
+    const board = tb.answerBoard ?? null;
+    return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }),
+      ...(hit ? { endVerdict: "correct" } : {}),
+      ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
   }
   s.teachbackTries += 1;
   if (cls?.outcome === "correct") { s.teachbackPassed = true; return toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }); }
@@ -2999,6 +3016,9 @@ export function cellAddressOf(prev, input) {
 }
 export function step(prev, input) {
   const out = stepCells(prev, input);
+  // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
+  // ones that return a copy of the last state before step0's own clearing)
+  if (input?.event === "turn" && out?.state && out.state.asideReplyDue) out.state.asideReplyDue = undefined;
   // (O1/O2, director21 dry steering c5-t02 34→36: a return held point e3 back while its card was held for a split; the held half came
   // through heldTurn, which never read bodyUnsaid — the point was dropped. Every path says what a return held, first)
   const lm0 = out?.state?.lastMove;
@@ -3702,7 +3722,7 @@ function step0(prev, input) {
   if (p.clear) move.clear = p.clear;
   // (O5, main on director21 c6 steady 114–120, c4 128–132, c5-t01 140–144, c5-t02 138–142: the teach-back and the wrap were said over
   // the last unit's board — a turn with no unit clears it; Studio's clearBoard runs in brain/turn.js on move.clear)
-  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind) && !move.scriptBeat?.board) move.clear = "board";
+  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind) && !move.scriptBeat?.board && !p.holdBoard) move.clear = "board";
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;
