@@ -47,3 +47,11 @@ test("(5) and the scripts' read: an operator with a word on either side, one ope
   assert.equal(hl("kinaara / seema"), "kinaara ya seema");
   assert.equal(en("edge / boundary"), "edge or boundary");
 });
+
+// (Learning, main 21:56: "RS 7 m" was read "seven rupees m" — RS is a line segment there)
+test("a segment name before a length is said letter by letter, never rupees; Rs alone before an amount is money", () => {
+  assert.equal(hl("PQ 8 m, QR 5 m, RS 7 m"), "P Q eight metre, Q R five metre, R S seven metre");
+  assert.equal(hl("RS 7 m"), "R S seven metre");
+  assert.equal(hl("Rs 50 ka pen"), "Fifty rupees ka pen");
+  assert.equal(hl("RS 20 ka pen"), "Twenty rupees ka pen");
+});

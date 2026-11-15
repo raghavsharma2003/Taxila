@@ -478,6 +478,15 @@ function render(text, cell) {
     const tok = t[i];
 
     // ₹ amounts (and Rs / INR): ₹12.50, ₹1,250, ₹2 lakh, ₹5/kg, ₹45/-
+    // (Learning, main 21:56: "PQ 8 m, QR 6 m, RS 7 m" — RS is a line segment, never rupees. "Rs"/"RS" is money only standing alone before
+    // an amount, with no other segment name (two capitals and a number) in the line and no length unit after the amount; a segment is
+    // said letter by letter)
+    const segName = tok.k === "word" && /^[A-Z]{2}$/.test(tok.s) && (() => {
+      const j = skip(i + 1); if (t[j]?.k !== "num") return false;
+      const u = t[skip(j + 1)];
+      return (u?.k === "word" && ["mm", "cm", "m", "km"].includes(u.s)) || /(?<![A-Za-z])(?!RS\b|Rs\b)[A-Z]{2}\s+\d/.test(text);
+    })();
+    if (segName) { emitWords(tok.s.split("").map((ch) => W.letters?.[ch] ?? ch).join(" "), false); operand = true; i++; continue; }
     if (tok.s === "₹" || (tok.k === "word" && LX.RUPEE_PREFIXES.has(tok.s))) {
       let j = i + 1;
       if (tok.k === "word" && t[j]?.s === ".") j++;
