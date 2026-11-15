@@ -9,7 +9,6 @@
 import type { KaalAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
-import { ease } from "../../core/juice.ts";
 import { withAlpha } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -42,7 +41,8 @@ export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   let w = 300, h = 440, x0 = 24, x1 = 276, ry = 250, cardH = 100, pxPer = 30, widest = 40, labelStride = 1;
   let drag: { x: number } | null = null;
   let shown: number | null = null;                 // the boat's drawn position (river x), springing to the mark
-  let miss: { k: number; y: number; truth: number; at: number } | null = null;
+  let miss: { k: number; y: number; truth: number; at: number; n: number } | null = null;
+  const missesOn: number[] = [];                  // misses on each stone so far (the play-out says less after the first)
   let landAt = -1, solvedAt = -1;
   const st = () => ctl.state;
   const cur = () => H.currentStone(p, st());
@@ -96,7 +96,7 @@ export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       }
       if (m.kind === "misconception_consequence" || m.kind === "near_miss" || (m.kind === "law_refused" && m.facts.why === "landed_off")) {
         const k = cur(), y = st().marks[k];
-        if (k < n && y !== null && y !== undefined) miss = { k, y, truth: p.stones[k].year, at: now };
+        if (k < n && y !== null && y !== undefined) { missesOn[k] = (missesOn[k] ?? 0) + 1; miss = { k, y, truth: p.stones[k].year, at: now, n: missesOn[k] }; }
         api.fx.shake(2); setTimeout(() => api.sfx("look"), 200);
       }
     }
@@ -207,28 +207,18 @@ export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (s.done && solvedAt >= 0) P.tick(c, clamp(X + 30, 16, w - 16), ry + RH / 2 + 2, 16, clamp((api.t - solvedAt - 0.2) / 0.3, 0, 1));
     });
   }
+  // laws audit 2026-11-15 (kaal/order): while a try remains the play-out says what her drop did, never where the stone
+  // belongs. After her first miss on a stone, a direction only (earlier or later than her mark); from the second, her mark
+  // and nothing else (the tally number line's rule). No distance, no true place, no true band, no true year.
   function truth(c: CanvasRenderingContext2D): void {
-    if (!missShown() || !miss) return;
-    const P = api.P, t = api.t, k = clamp((t - miss.at) / 0.7, 0, 1), bx = toPx(H.xOf(miss.y)), stn = p.stones[miss.k];
-    if (century) {
-      const cb = H.bandLo(H.centuryOf(miss.truth)), xa = toPx(cb), xb = toPx(cb + 100);
-      P.stroke(c, [[xa, ry - RH / 2 - 4], [xb, ry - RH / 2 - 4], [xb, ry + RH / 2 + 4], [xa, ry + RH / 2 + 4]], { role: "look", width: 2.5, dash: [5, 4], closed: true });
-      const g = Math.abs(Math.round((H.bandLo(H.centuryOf(miss.y)) - cb) / 100));
-      if (k >= 1) P.chip(c, g === 1 ? W("kaal.gapC1") : W("kaal.gapC", { g }), clamp((xa + xb) / 2, 80, w - 80), ry - RH / 2 - 26, { size: 14, role: "look" });
-      if (k < 1) api.invalidate();
-      return;
-    }
-    const tx = toPx(H.xOf(miss.truth)), fx = lerp(bx, tx, ease.out(k)), fy = ry - Math.sin(Math.PI * k) * 26;
-    // the stone floats from the boat to its true place
-    P.body(c, fx - 9, fy - 9, 18, 18, { role: "q1", r: 9, state: "look" });
-    if (k >= 1) {
-      const gy = ry - RH / 2 - 50, g = H.yearsApart(miss.y, miss.truth);
-      P.stroke(c, [[tx, ry], [tx, gy + 8]], { role: "look", width: 2 });
-      P.stroke(c, [[bx, gy - 7], [bx, gy + 7]], { role: "look", width: 2 }); P.stroke(c, [[tx, gy - 7], [tx, gy + 7]], { role: "look", width: 2 });
-      P.stroke(c, [[bx, gy], [tx, gy]], { role: "look", width: 2, dash: [5, 4] });
-      P.chip(c, g === 1 ? W("kaal.gap1") : W("kaal.gap", { g }), clamp((bx + tx) / 2, 80, w - 80), gy - 18, { size: 14, role: "look" });
-      P.chip(c, H.stoneYear(stn, lang), clamp(tx, 52, w - 52), ry + RH / 2 + 66, { size: 14, role: "look", font: "mono" });
-    } else api.invalidate();
+    if (!missShown() || !miss || miss.n > 1) return;
+    const P = api.P, k = clamp((api.t - miss.at) / 0.4, 0, 1), bx = toPx(H.xOf(miss.y));
+    const later = H.xOf(miss.y) < H.xOf(miss.truth), gy = ry - RH / 2 - 50;
+    if (k < 1) { api.invalidate(); return; }
+    const tip = clamp(bx + (later ? 46 : -46), 20, w - 20);
+    P.stroke(c, [[bx, gy], [tip, gy]], { role: "look", width: 2.5 });
+    P.stroke(c, [[tip + (later ? -8 : 8), gy - 6], [tip, gy], [tip + (later ? -8 : 8), gy + 6]], { role: "look", width: 2.5 });
+    P.chip(c, W(later ? "kaal.later" : "kaal.earlier"), clamp(bx, 80, w - 80), gy - 22, { size: 14, role: "look" });
   }
   function boat(c: CanvasRenderingContext2D, X: number, Y: number, docked: boolean): void {
     const P = api.P;

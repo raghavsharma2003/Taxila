@@ -3,8 +3,12 @@
 // shows what the law has already answered.
 //   tally (sort, mode)  the pile's top slip waits above the rows. Tap a row to take the slip into it as an upright stroke, or
 //                       the row's ⟋ button to take it in as a stroke across the four before it. Mode: tap a size's label to
-//                       put the stock crate on it. On "count" each row is read (a stroke across closes a bundle of five) into
-//                       the count column, then the total row is added against the slips the survey had
+//                       put the stock crate on it. Sort: she types each row's total into its cell (tap the cell, then the
+//                       pad: the typed total of stambh/tally's read, src/play/core/typedtotal.ts); on "count" each cell
+//                       gets a tick when its row is right, the dashed box when her number is not the row's, and nothing
+//                       else: no row's count is printed before the solve (laws ruling 2026-11-15: counting the tally is the
+//                       skill); the solved screen adds the total row. Mode: on "count" each row is read (a stroke across
+//                       closes a bundle of five) into the count column, then the total row is added against the survey
 //   tally (missing)     the children asked stand above; every row but the lost one stands tallied; stroke the lost row
 //   stack (even)        towers of blocks; tap a tower to lift its top block, then another to drop it there. On "level" the
 //                       law checks every tower stands at one height
@@ -13,15 +17,16 @@
 //   line (middle)       value cards as written; tap a card, then another, to swap them; tap under a card or a gap to set
 //                       the peg. On "fold" the line folds from both ends, pair by pair, to its middle
 // After a missed run only magnifiers mark what is not as it should be (a row, the pile, the crate, a tower, a gap, a card).
-import type { AankdeAct, Moment } from "../../../../shared/play.ts";
+import type { Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
+import { drawTotalCell, totalPad } from "../../core/typedtotal.ts";
 import {
   aboveOf, bundled, CAP, countsOf, gapsOf, inOrder, lineValues, meanOf, medianOf, middleSlot, modeRow, numText, readRow, slotValue,
-  type AankdeParams, type AankdeState,
+  type AankdeAct, type AankdeParams, type AankdeState,
 } from "./aankde.logic.ts";
 
 const SWEEP = 1.6;   // s a run takes on screen (cosmetic: the law has already answered)
@@ -35,6 +40,8 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
   const tally = p.goal === "sort" || p.goal === "missing" || p.goal === "mode";
+  // sort: she types each row's total (the game never counts a row for her before the solve)
+  const typed = p.goal === "sort";
   const stack = p.goal === "even" || p.goal === "pour";
   const K = p.cats.length, N = p.h.length;
   const catText = (r: number) => (p.goal === "mode" ? W("aankde.size", { n: p.cats[r] }) : W(`aankde.cat.${p.cats[r]}`));
@@ -49,7 +56,10 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   // line
   let cw = 56, cgap = 12, cardY = 70, cardH = 64, lineX0 = 12, pegY = 150;
   let sel = -1;           // even: the tower whose top block is lifted · middle: the card picked up
-  let runAt = -1;
+  let cell = -1;          // sort: the total cell the pad writes
+  // when the run started on the stage clock (null: no run on screen). Reduced motion stamps it a sweep back, so the run
+  // shows played at once; a null, not a negative, marks "none", as the stage clock starts at 0
+  let runAt: number | null = null;
 
   function layout(bw: number, bh0: number): void {
     w = bw; h = bh0;
@@ -86,35 +96,38 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as AankdeAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.reduced ? api.t - SWEEP : api.t; api.sfx("slide"); }
     else if (last.kind === "mark") api.sfx(last.across ? "land" : "tick");
     else if (last.kind === "move" || last.kind === "crown") api.sfx("drop");
     else if (last.kind === "swap" || last.kind === "peg" || last.kind === "line") api.sfx("land");
     else api.sfx("tap");
-    if (!st().ended) runAt = -1;
+    // sort: the pile has run out, so the first empty total cell is picked for the pad
+    if (typed && last.kind === "mark" && !refused && st().put.length >= p.slips.length && (cell < 0 || st().totals[cell] !== null)) cell = Math.max(0, st().totals.findIndex((t) => t === null));
+    if (!st().ended) runAt = null;
     void ms;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt === null ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
   const shownEnd = () => st().ended && runK() >= 1;
-  let announced = -1;
+  let announced: number | null = null;
   function update(): void {
-    if (runAt >= 0 && runK() < 1) api.invalidate();
-    if (runAt >= 0 && runK() >= 1 && announced !== runAt) {
+    if (runAt !== null && runK() < 1) api.invalidate();
+    if (runAt !== null && runK() >= 1 && announced !== runAt) {
       announced = runAt;
       if (st().done) { api.sfx("good"); api.fx.burst(w / 2, h / 2, { n: 18, color: api.P.color("good"), speed: 110, life: 0.7, size: 3, kind: "spark" }); }
       else api.sfx("look");
       api.invalidate(); deps.changed();
     }
   }
-  const busy = () => runAt >= 0 && runK() < 1;
+  const busy = () => runAt !== null && runK() < 1;
 
   function pointer(kind: PointerKind, x: number, y: number): void {
     const s = st();
     if (s.done || kind !== "down") return;
     const id = api.hit(x, y);
     if (!id) return;
-    if (id.startsWith("row-")) act({ kind: "mark", row: Number(id.slice(4)), across: false });
+    if (id.startsWith("tot-")) { cell = Number(id.slice(4)); api.sfx("select"); }
+    else if (id.startsWith("row-")) act({ kind: "mark", row: Number(id.slice(4)), across: false });
     else if (id.startsWith("x-")) act({ kind: "mark", row: Number(id.slice(2)), across: true });
     else if (id.startsWith("lab-")) act({ kind: "crown", row: Number(id.slice(4)) });
     else if (id.startsWith("tw-")) {
@@ -150,7 +163,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     return x;
   }
   function drawTally(c: CanvasRenderingContext2D): void {
-    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt >= 0 && s.ended, lost = K - 1;
+    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt !== null && s.ended, lost = K - 1;
     // the pile / the children asked
     if (p.goal === "missing") {
       const bw = Math.min(colW, 420);
@@ -204,17 +217,26 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         P.stroke(c, [[gx + 6, cy + 9], [gx + gateW - 8, cy - 9]], { role: "you", width: 3 });
         api.target(`x-${r}`, gx - 2, y + 3, gateW + 4, rowH - 6);
       }
-      // the count column: each row read on the run
-      if (ran && k * (K + 1) >= r + 0.5) P.textFit(c, String(read[r]), colX + colW - cntW / 2 - 4, cy, cntW - 4, rowH - 12, { size: 22, role: wrong ? "look" : "ink", weight: 800, font: "mono" });
-      if (wrong) P.magnifier(c, colX + colW - 10, y + 10, 11);
+      // sort: the total cell she types into (her number; at the run a tick for a right row, the dashed box for a number
+      // that is not the row's: never the row's count)
+      if (typed) {
+        const v = s.totals[r], ok = v === counts![r] && marks.length === counts![r] && bundled(marks);
+        drawTotalCell(api, c, colX + colW - cntW / 2 - 4, cy, cntW - 4, clamp(rowH - 16, 34, 52), { id: `tot-${r}`, value: v, open: !s.done, picked: !s.done && r === cell, size: 22,
+          check: end ? { ok, wrong: v !== counts![r], pale: s.done && s.runs > 1, k: 1 } : null });
+      }
+      // mode: the count column, each row read on the run
+      else if (ran && k * (K + 1) >= r + 0.5) P.textFit(c, String(read[r]), colX + colW - cntW / 2 - 4, cy, cntW - 4, rowH - 12, { size: 22, role: wrong ? "look" : "ink", weight: 800, font: "mono" });
+      if (wrong && !typed) P.magnifier(c, colX + colW - 10, y + 10, 11);
+      else if (wrong) P.magnifier(c, markX + markW - 6, y + 10, 11);
     }
     // the total row
     const sumRead = read.reduce((a, b) => a + b, 0);
-    P.body(c, colX, totY, colW, 44, { role: "panel", r: 10, state: end && !s.done && sumRead !== p.total ? "look" : "idle" });
+    // (sort: what the rows add to is shown on the solved screen only; on a miss the pile shows the slips left)
+    P.body(c, colX, totY, colW, 44, { role: "panel", r: 10, state: end && !s.done && sumRead !== p.total && !typed ? "look" : "idle" });
     P.textFit(c, W("aankde.total"), colX + 4 + labW / 2, totY + 22, labW - 8, 40, { size: 18, role: "ink2", weight: 800 });
     const want = p.total;
     P.textFit(c, W("aankde.of", { n: want }), markX + markW / 2, totY + 22, markW + gateW, 40, { size: 18, role: "ink2", weight: 700 });
-    if (ran && k >= 0.85) {
+    if (ran && k >= 0.85 && (!typed || s.done)) {
       const t = sumRead;
       P.textFit(c, String(t), colX + colW - cntW / 2 - 4, totY + 22, cntW - 4, 40, { size: 22, role: t === want ? "ink" : "look", weight: 800, font: "mono" });
       if (end && s.done) P.tick(c, colX + colW - cntW - 14, totY + 22, 18, 1);
@@ -237,7 +259,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.stroke(c, [[axisX, baseY], [axisX, lvY(R)]], { role: "ink2", width: 1.5 });
   }
   function drawEven(c: CanvasRenderingContext2D): void {
-    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt >= 0 && s.ended;
+    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt !== null && s.ended;
     P.textFit(c, W(`aankde.ctx.${p.ctx}`), w / 2, 16, colW - 16, 28, { size: 18, role: "ink2", weight: 700 });
     drawAxis(c);
     for (let i = 0; i < N; i++) {
@@ -257,7 +279,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
   }
   function drawPour(c: CanvasRenderingContext2D): void {
-    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt >= 0 && s.ended, L = s.line;
+    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt !== null && s.ended, L = s.line;
     P.textFit(c, W(`aankde.ctx.${p.ctx}`), w / 2, 16, colW - 16, 28, { size: 18, role: "ink2", weight: 700 });
     if (L >= 0 && p.face === 1 && !ran) {
       P.textFit(c, `${W("aankde.above", { n: aboveOf(p.h, L) })}   ${W("aankde.gaps", { n: gapsOf(p.h, L) })}`, w / 2, 40, colW - 16, 24, { size: 17, role: "ink", weight: 700 });
@@ -295,7 +317,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   // ───────────── line ─────────────
   const cardX = (i: number) => lineX0 + i * (cw + cgap);
   function drawMiddle(c: CanvasRenderingContext2D): void {
-    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt >= 0 && s.ended;
+    const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt !== null && s.ended;
     P.textFit(c, W(`aankde.ctx.${p.ctx}`), w / 2, 22, colW - 16, 30, { size: 18, role: "ink2", weight: 700 });
     const vals = lineValues(p, s.order), sorted = inOrder(vals), up = vals[N - 1] >= vals[0];
     // the fold: pairs from both ends dim, one pair per beat, until the middle is left
@@ -342,6 +364,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     const s = st();
     if (s.ended && !s.done && runK() >= 1) return W("aankde.again");
+    if (typed && !s.done && s.put.length >= p.slips.length && s.totals.some((t) => t === null)) return W("aankde.goal.totals");
     return W(`aankde.goal.${p.goal}`, { n: p.total, cat: p.cats.length ? catText(K - 1) : "" });
   }
   // no readout of a count, the mean, the median or the mode: the rows, the towers and the line ARE them
@@ -351,6 +374,9 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const out: ControlSpec[] = [];
     let ready = !s.ended;
     if (p.goal === "sort" || p.goal === "mode") ready = ready && s.put.length > 0;
+    if (typed) ready = ready && s.totals.every((t) => t !== null);
+    // sort: the pad writes the picked total cell
+    if (typed && cell >= 0) out.push(...totalPad(s.totals[cell], (n) => act({ kind: "total", row: cell, n })));
     if (p.goal === "mode") ready = ready && s.crown >= 0;
     if (p.goal === "missing") ready = ready && s.rows[K - 1].length > 0;
     if (p.goal === "even") ready = ready && s.h.some((x, i) => x !== p.h[i]);

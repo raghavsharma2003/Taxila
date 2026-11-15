@@ -274,8 +274,9 @@ export const makeKoshtakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const tEnd = top[top.length - 1], bEnd = bot[bot.length - 1];
       P.circle(c, X(tEnd), y - 10, 6, { role: "q2", fill: true });
       P.circle(c, X(bEnd), y + 10, 6, { role: "q4", fill: true });
-      P.text(c, String(tEnd), X(tEnd), y - 44, { size: 18, role: "ink", weight: 800, font: "mono", maxW: 60 });
-      if (bEnd !== tEnd) P.text(c, String(bEnd), X(bEnd), y + 44, { size: 18, role: "ink", weight: 800, font: "mono", maxW: 60 });
+      // laws ruling 2026-11-15 (koshtak/tray open, the "34"): while a try remains the two routes are seen to end apart, with
+      // no number at either end (the bracketed row's end is the value her opened row must reach); it is printed when solved
+      if (s.done) P.text(c, String(tEnd), X(tEnd), y - 44, { size: 18, role: "ink", weight: 800, font: "mono", maxW: 60 });
       if (s.done) P.tick(c, X(tEnd) + 28, y - 30, 22, 1);
       else P.magnifier(c, X(bEnd) + 20, y + 26, 13);
     }

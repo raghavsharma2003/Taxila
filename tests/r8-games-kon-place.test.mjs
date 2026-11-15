@@ -644,7 +644,7 @@ test("gate 1, ruling 2: measure's wrong-scale arm stops inside the inner number 
 
 /** a 2D context that records each path's arcs and whether it was filled or stroked */
 function arcCtx() {
-  const out = [];
+  const out = [], texts = [];
   let arcs = [];
   const t = { font: "10px x", fillStyle: "", strokeStyle: "", globalAlpha: 1, lineWidth: 1, textAlign: "center", textBaseline: "middle", lineCap: "", lineJoin: "", globalCompositeOperation: "source-over", shadowBlur: 0, shadowColor: "", lineDashOffset: 0, filter: "none", imageSmoothingEnabled: true };
   const ctx = new Proxy(t, {
@@ -652,6 +652,7 @@ function arcCtx() {
       if (k in o) return o[k];
       if (k === "beginPath") return () => { arcs = []; };
       if (k === "arc") return (x, y, r) => { arcs.push({ x, y, r }); };
+      if (k === "fillText") return (s) => { texts.push({ s: String(s), font: o.font }); };
       if (k === "fill" || k === "stroke") return () => { for (const a of arcs) out.push({ ...a, op: k }); };
       if (k === "measureText") return (s) => ({ width: [...String(s)].length * Number(/(\d+)px/.exec(o.font)?.[1] ?? 16) * 0.56, actualBoundingBoxAscent: 8, actualBoundingBoxDescent: 2 });
       if (k === "getLineDash") return () => [];
@@ -661,7 +662,7 @@ function arcCtx() {
     },
     set(o, k, v) { o[k] = v; return true; },
   });
-  return { ctx, out };
+  return { ctx, out, texts };
 }
 
 test("gate 1, ruling 3 and the rim dot: draw's miss chip carries no number; the dot is a hollow ring (every generated level, 360 and 1366)", async () => {
@@ -683,6 +684,13 @@ test("gate 1, ruling 3 and the rim dot: draw's miss chip carries no number; the 
         chips++;
         // the chip names the corner (∠O, ∠A) and nothing else; no text on the board but the scale's own numbers holds a digit
         if (!m.api.P.audit.marks.some((x) => x.kind === "chip")) faults.push(`${tag} ${level.levelId}: no miss chip`);
+        // gate 1, by the main loop's look: the chip's letter is set in the face the point letters use (in the mono face O
+        // read like a zero)
+        const T = arcCtx();
+        m.view.draw(T.ctx);
+        const face = (f) => f.replace(/^\s*\d+\s+[\d.]+px\s+/, ""), named = T.texts.filter((x) => /^∠[OA]$/.test(x.s)), lets = T.texts.filter((x) => /^[OA]$/.test(x.s));
+        if (!named.length || !lets.length) faults.push(`${tag} ${level.levelId}: no ∠ chip or no letter drawn`);
+        for (const x of named) if (!lets.every((l) => face(l.font) === face(x.font))) faults.push(`${tag} ${level.levelId}: "${x.s}" in ${face(x.font)}, the letters in ${face(lets[0]?.font ?? "")}`);
         for (const t of m.api.P.audit.texts) if (!t.halo && /\d/.test(t.s)) faults.push(`${tag} ${level.levelId}: "${t.s}" on the board after a miss`);
       }
       // the rim dot, before she joins: a ring (stroked, never filled), so the tick under it shows through

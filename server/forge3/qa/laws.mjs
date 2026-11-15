@@ -47,7 +47,8 @@ function fakeCtx() {
 export const ALLOWED = {
   "darpan/mirror": [{ law: 1, re: /\(stroke\)/, why: "after the fold test each line she drew is green when it folds true, look when it does not" }],
   "darpan/turn": [{ law: 1, re: /\(circle\)/, why: "each turn she tried is marked green when it maps the shape onto itself, look when not" }],
-  "galti-pakdo/kaapi": [{ law: 1, re: /\(stroke\)/, why: "the balance needle on the line she checked: green when that line balances, look when it tips" }],
+  "galti-pakdo/kaapi": [{ law: 1, re: /\(stroke\)/, why: "the balance needle on the line she checked: green when that line balances, look when it tips" },
+    { law: 2, re: /the key "line \d+"/, why: "the \"line N\" tag names the line she herself checked on the balance (state.on is set only by her check of that line, or 0 after a fix); laws ruling 2026-11-15, asserted over the generator in tests/r7-games-galti-pakdo.test.mjs" }],
   "kram/machine": [{ law: 1, re: /\(text/, why: "each output her rule made: green where it matches the machine, look where not" }],
   "nishana/compare": [{ law: 1, re: /\(stroke\)/, why: "a flag she placed on its mark is green, one off it is ink" }],
   "nishana/place": [{ law: 1, re: /\(stroke\)/, why: "a flag she placed on its mark is green, one off it is ink" }],

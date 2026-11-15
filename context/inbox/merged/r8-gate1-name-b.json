@@ -1,0 +1,19 @@
+{
+  "source": "C2 Games, final gate-1 fixes for kon/name and the kon/place chip face (branch claude/r8-gate1-name-b; ruling docs/design/round8/games-judging/RULINGS-2026-11-15.md, 'kon/name at the play gate' 1-4 and 'Gate 1, by the main loop's look'): docs/design/round8/games-judging/kon-name/PACKET.md ('Gate 1, final fixes (2026-11-15)'); src/play/families/kon/kon.name.ts, kon.name.view.ts, kon.place.view.ts; tests/r8-games-kon-name-view.test.mjs, tests/r8-games-kon-layout.test.mjs, tests/r8-games-kon-place.test.mjs",
+  "nodes": [
+    {
+      "id": "dc-r8-kon-name-row-outside-figure",
+      "kind": "decision",
+      "status": "proposed",
+      "at": "2026-11-15",
+      "title": "kon/name: every drawn arc is declared to the layout audit and kept clear by every chip; find's '≠' row is placed wholly above or below the figure's whole box (lines, arcs, points, letters with one letter height), at its side only on a wide screen; find serves only figures that leave that band at 360 (ROW_GAP 8 board px beyond the board, moved up or down, else rays shortened alike to at least 0.8). The wide arc runs WIDE_ROOM 16 inside the shortest ray (at most 84), drawn and tapped alike; find needs it at 70 or more. Say's play-out arc for an undrawn angle is one solid stroke; its dashed rays sit on the side away from the lit sector. Reverse if: the served find pool gets too narrow (a measured shortcut over 1 in 5 from figure shape), then let the row sit in a stacked column beside the figure at 360 instead of refusing figures."
+    },
+    {
+      "id": "ms-r8-kon-name-gate1b-picker",
+      "kind": "measurement",
+      "status": "proposed",
+      "at": "2026-11-15",
+      "title": "kon/name after the final gate-1 fixes: picker CPU over 90 requests (seeds 700-714 x 3, both goals) p95 26.2 ms, max 59.8 (first rep cold; bar 50 on p95); find generator 1200 requests (seeds 1-400, fades 1-3): 5 made no level (0.4 %; the test bar is 1 %)."
+    }
+  ]
+}

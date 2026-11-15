@@ -165,6 +165,26 @@ export function wrongAnswer({ card, ask }, kit, rng) {
   return { text: nearMiss(card?.key ?? ask?.key ?? "", rng), from: null };
 }
 
+/** dc-r8-director22 R: what the child means by a line, in the walk's column words — the truth `readerAgrees` checks the reader
+ *  against. right / miss (a wrong answer, the mix-up is the classifier's to name) / give_up / clarify / yes / ack / done / reason /
+ *  hindi / picture / try_first / repeat / aside / aside_reply / stop. */
+export function intentOf({ kind, event, text }) {
+  const t = String(text ?? "").toLowerCase();
+  if (kind === "leave") return "stop";
+  if (kind === "right") return "right";
+  if (kind === "wrong") return "miss";
+  if (kind === "reason") return "reason";
+  const ev = { clarifyPoint: "clarify", clarifyWorked: "clarify", clarifyAgain: "clarify", returned: "aside_reply", picture: "picture", hindi: "hindi",
+    selftry: "try_first", cricket: "aside", whichq: "repeat", repeat: "repeat" }[event];
+  if (ev) return ev;
+  if (/samajh nahi aaya/.test(t)) return "clarify";
+  if (/^(?:pata nahi|mujhe nahi pata)/.test(t)) return "give_up";
+  if (LINES.done.includes(text)) return "done";
+  if (LINES.which.includes(text)) return "repeat";
+  if (/^(?:haan|mujhe lagta hai haan)/.test(t)) return "yes";
+  return "ack";
+}
+
 export function createReactiveChild({ persona = "steady", seed = 1, kit = null, name = "Riya", clarify2 = false, toEnd = false } = {}) {
   if (!PROFILE[persona]) throw new Error(`reactive child: unknown persona ${persona}`);
   const P = PROFILE[persona], rng = rngOf(seed, persona), girl = isGirlName(name);
@@ -206,7 +226,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
   const answered = new Set();                     // H1.2: cards answered right are not answered again
   let liveLeave = null;                           // v6.6: the last keyed card she posed, still open across a turn with no card id
   const log = [];
-  const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; log.push(o); return o; };
+  const say = (out) => { const o = { ...out, text: gendered(out.text, girl) }; o.intent = intentOf({ ...o, text: out.text }); log.push(o); return o; };
   return {
     persona, seed, name, girl, schedule: new Map(at), pending, log,
     reply(input = {}) {
@@ -248,6 +268,12 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
           if (ev === "clarifyPoint" || ev === "clarifyWorked") clarifyAgain = true;
           return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
         }
+      }
+      // (dc-r8-director22 harness: the steady child answers the teach-back — right in half the topics, by the topic's hash, a near miss in
+      // the rest — so both of its paths run; the other children give a reason, as before)
+      if (input.teachback?.key != null && persona === "steady") {
+        const h = [...String(kit?.topicId ?? "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+        return h % 2 === 1 ? say({ text: rightForms(input.teachback.key, input.teachback.accept ?? [])[0], kind: "right" }) : say({ text: nearMiss(input.teachback.key, rng), kind: "wrong" });
       }
       // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again).
       // H1.2: a card merely LABELLED probe that poses a keyed question is a card: a reason only when her line asks how/why,

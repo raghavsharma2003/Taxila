@@ -222,7 +222,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   }
   /** measure: where her reading's chip sits (the protractor is not there): under it when it sits high, over it when low */
   const readChipAt = (q: Pose): Pt => S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
-  type Chip = { s: string; at: Pt; size: number; role?: string };
+  type Chip = { s: string; at: Pt; size: number; role?: string; font?: "ui" | "mono" };
   function draw(c: CanvasRenderingContext2D): void {
     frame = { lines: [], boxes: [], nums: [], drawn: 0, opts: null };
     if (goal === "size") return drawSize(c);
@@ -276,9 +276,10 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // draw, after a miss: the angle her arm makes, named by its corner only, where the protractor is not; no number (gate 1,
     // night ruling 3: her arm lies across the placed protractor and she reads it herself)
     if (goal === "draw" && run && !S0.done && P0.mark !== null && P0.joined && api.t - truthAt > 0.4) {
-      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"}`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup });
+      // (in the face the board's point letters use: in the mono face O read like a zero; gate 1, by the main loop's look)
+      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"}`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup, font: "ui" });
     }
-    for (const ch of chips) { const z = P.chipSize(c, ch.s, { size: ch.size }); frame.boxes.push({ x: ch.at[0] - z.w / 2, y: ch.at[1] - z.h / 2, w: z.w, h: z.h }); }
+    for (const ch of chips) { const z = P.chipSize(c, ch.s, { size: ch.size, font: ch.font }); frame.boxes.push({ x: ch.at[0] - z.w / 2, y: ch.at[1] - z.h / 2, w: z.w, h: z.h }); }
     // the letters on top of everything, so they stay readable where the protractor lies: the arm letters well past the arm
     // ends, O away from the angle's opening (the asked angle's, in draw too); each clear of every line and number (letter())
     const th = p.theta ?? 0, a2 = norm(p.start + (p.mirror ? -1 : 1) * th);
@@ -287,7 +288,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (hs.length === 2) { const [bc, bn] = dir(hs[1]); letter(c, "B", [V[0] + ARM * bc, V[1] + ARM * bn], hs[1], 24); }
     letter(c, "O", V, bis + 180, 24);
     if (bAt) letter(c, "B", bAt.at, bAt.h, 14);
-    for (const ch of chips) P.chip(c, ch.s, ch.at[0], ch.at[1], { size: ch.size, ...(ch.role ? { role: ch.role as never } : {}) });
+    for (const ch of chips) P.chip(c, ch.s, ch.at[0], ch.at[1], { size: ch.size, font: ch.font, ...(ch.role ? { role: ch.role as never } : {}) });
     if (run && S0.done) drawEndTick(c, q, V);
   }
   /** the law's play-out after a decision, its lines (its beats all land before RUN_END) */
