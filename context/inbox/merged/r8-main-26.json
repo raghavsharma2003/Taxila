@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "fd-weekly-usage-limit-stopped-everything-2026-11-11",
+   "kind": "finding",
+   "at": "2026-11-15",
+   "title": "On 2026-11-11 at about 21:20 UTC the account's weekly usage limit was reached and every session and agent stopped mid-turn; nothing ran until the owner said to continue on 2026-11-15 (the limit had reset on 13 Nov 19:00 UTC). That day ran five build streams, a Design stream, 20 game-judge verdicts and a four-judge lesson run. Nothing was lost (int/r6 clean and pushed, production healthy, every stream's last push intact), but three and a half days were. From 15 Nov: at most three streams active, sub-agents one at a time and only where needed, one full gate per push, judges only for a run a decision waits on."
+  },
+  {
+   "id": "ms-live-lesson-walk-tx-a-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-15",
+   "title": "Live lesson walk under ?tx=a at 360 x 740: the real lesson screen from the built dist served by server/serve.mjs, /api answered by a scripted Director (no model calls), nine moments captured before the helper agent stopped on the usage limit; n = 1 lesson, theme A only. data-tx=a and data-board-theme=paper present at every moment; no sideways scroll; no monospace text inside the lesson. Faults: the question card's computed family in a Hinglish lesson is Mukta, Noto Sans Devanagari, sans-serif at 600 and its Latin letters fall to the system sans (Design's shots, from an English fixture, show Literata); the debrief keeps 'YOU SAID' in spaced capitals, a clipped tile for the teacher's mark and a fixed Finish bar over the goodbye choices. Not reached: a game inside a lesson, theme B, laptop width. Files: docs/design/round8/phase2/livewalk/."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-design-direction-a",
+   "rel": "measured_by",
+   "dst": "ms-live-lesson-walk-tx-a-2026-11-11"
+  }
+ ]
+}
