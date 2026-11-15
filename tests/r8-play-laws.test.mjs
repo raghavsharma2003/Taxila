@@ -16,8 +16,6 @@ const KNOWN = {
   // the science families' after-a-miss line states the idea outright (authored lines in data/play/engine-words.json)
   "aakash/chakkar": [2], "aakash/grahan": [2], "aakash/ritu": [2], "badlaav/aag": [2], "bhaap/hawa": [2], "chhaano/sukha": [2],
   "jaanch/neela": [2], "rang/milao": [2], "rang/pehchaan": [2], "yantra/roshni": [2],
-  // the run prints each row's count (the key of the next "Kul") after a miss
-  "aankde/tally": [2],
   // kon: none left (round 8 kon round 2: ends' light is green only when solved and ray-two-ends is a chance pick; place/draw's
   // join-wrong-end is a chance pick; measure is typed)
 };
