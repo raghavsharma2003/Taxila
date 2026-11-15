@@ -337,7 +337,9 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             // nor does a letter stand against a number (the resting protractor's 80 beside O read as "80O")
             const box = (t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, h: t.px * INK_H });
             for (const l of probe.letters) for (const n of probe.nums) { const g = roomBetween(box(l), box(n)); if (g < SCALE_GAP - 0.01) faults.push(`${size.tag} ${level.levelId} ${name}: letter "${l.s}" and number "${n.s}" ${g.toFixed(2)} px apart`); }
-            for (const t of probe.nums) if (Math.abs(t.w - monoMeasure(t.s, t.px)) > 0.6) faults.push(`${size.tag} ${level.levelId} ${name}: "${t.s}" measured ${t.w.toFixed(2)} px, the headless model ${monoMeasure(t.s, t.px).toFixed(2)}`);
+            // a renderer without subpixel positioning rounds each advance to a whole px (CI: Geist Mono's 8.4 px at 14 px drawn
+            // as 8, verified loaded): the model holds to half a px a figure; the gaps above are proved on the measured widths
+            for (const t of probe.nums) if (Math.abs(t.w - monoMeasure(t.s, t.px)) > 0.5 * t.s.length + 0.1) faults.push(`${size.tag} ${level.levelId} ${name}: "${t.s}" measured ${t.w.toFixed(2)} px, the headless model ${monoMeasure(t.s, t.px).toFixed(2)}`);
             // the world box is the one the headless check lays the numbers out in
             const want = WORLD[size.tag][level.params.goal];
             if (Math.abs(want.w - probe.canvas.w) > 0.5 || Math.abs(want.h - probe.canvas.h) > 0.5) faults.push(`${size.tag} ${level.levelId} ${name}: world box ${probe.canvas.w}x${probe.canvas.h}, WORLD says ${want.w}x${want.h}`);
