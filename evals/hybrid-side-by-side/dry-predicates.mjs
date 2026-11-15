@@ -677,6 +677,14 @@ export const ORDER_LAWS = {
 };
 Object.assign(PREDICATES, ORDER_LAWS);
 
+/** Main on director22 (10 of the run's 13 contradictions; the dry run showed all 10 and no predicate counted them): a picture
+ *  request draws a view (the seam's `held.picture.view`), and she never tells the child a picture cannot be made. Gated. */
+PREDICATES.pictureDrawn = (L, r) => {
+  const p = r.held?.picture;
+  if (p && !p.view) return "a picture was asked for and no view was drawn";
+  return /tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi/i.test(String(r.text ?? "")) ? "she says a picture cannot be made" : null;
+};
+
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard"].includes(k))]);
 
