@@ -569,5 +569,8 @@ function grade(level: PlayLevel<ChhaanoParams>, acts: PlayActEnvelope<ChhaanoAct
 
 export const chhaanoLogic: FamilyLogic<ChhaanoParams, ChhaanoState, ChhaanoAct> = {
   family: "chhaano", modes: CHHAANO_MODES, malRules: CHHAANO_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["namak:clear-pure", "namak:salt-gone", "farak:heavy-far", "farak:same-size", "kram:heavy-far", "kram:one-method", "kram:same-size"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

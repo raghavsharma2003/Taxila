@@ -91,3 +91,12 @@
   .pa.kx[data-tx][data-tx][data-tx] .pa-rail-item.is-active svg { color: var(--tx-tutor); }
   .pa.kx[data-tx][data-tx][data-tx] .pa-top { background: transparent; border-bottom: 0; }
 }
+
+/* the schedule picker (src/ui-v3/scheduler.css) inside the corner: its own tokens point at the theme, labels in sentence
+   case in the UI face at the type floor (the walk, 2026-11-11: 118 mono uppercase day and month labels on Controls) */
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] .sch {
+  --sch-surface: var(--tx-surface); --sch-surface-2: var(--tx-surface-2); --sch-paper: var(--tx-bg); --sch-line: var(--tx-line);
+  --sch-ink: var(--tx-ink); --sch-ink-2: var(--tx-ink-2); --sch-ink-3: var(--tx-ink-3); --sch-focus: var(--tx-tutor);
+  --sch-mono: var(--tx-font-ui); --sch-sans: var(--tx-font-ui); --sch-r: var(--tx-r-1);
+}
+:is(.pa, .pa-gate).kx[data-tx][data-tx][data-tx] :is(.sch-label, .sch-date small, .sch-pod) { font-family: var(--tx-font-ui); font-size: var(--tx-t-1); letter-spacing: 0; text-transform: none; }

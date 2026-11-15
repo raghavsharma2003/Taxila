@@ -20,6 +20,7 @@ import { lookAttr } from "./look.ts";
 import type { TapSource } from "../../avatar/tap.ts";
 import { txTheme } from "../r8/tx.ts";
 import "../r8/kx.css";
+import { Presence } from "../r8/Presence.tsx";
 
 export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
@@ -136,6 +137,14 @@ export interface CommsProps {
 
 export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style, meters }: CommsProps) {
   const speaking = floor === "speaking" || floor === "showing";
+  // round 8 (?tx=): her presence (a circle, her name, "AI teacher" always printed), never the face picture
+  if (txTheme()) return (
+    <figure className={`kx-comms kx-comms--tx${showName ? "" : " kx-comms--noname"}${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
+      <Presence name={teacherName} floor={floor} size="hero" />
+      {/* showName={false}: the caller prints her name and "AI teacher" beside the circle, so the circle's own pair is read once */}
+      {!showName && <figcaption className="kx-sr">{`${teacherName}, ${kt("aiTeacher")}`}</figcaption>}
+    </figure>
+  );
   return (
     <figure className={`kx-comms kx-cut${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
       <div className="kx-comms-lit" aria-hidden="true" />

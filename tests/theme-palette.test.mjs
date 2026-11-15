@@ -49,7 +49,7 @@ test("no colour literal outside src/theme/palette.ts in the board and engine pat
 
 test("night is today's look: the board palettes equal the tables they replaced", async () => {
   const { paletteFor } = await import("../src/modules/whiteboard/palette.ts");
-  const chalk = { ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32, ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" }, role: { focus: "#A9B4FF", slot: "#7FE0B0", answer: "#7FE0B0", mixup: "#FFB54A", muted: "#9DB3A6" } };
+  const chalk = { ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32, ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" }, role: { focus: "#8F9BFF", slot: "#4FE0A2", answer: "#4FE0A2", mixup: "#FFB54A", muted: "#8F9CAE" } };   // (patch 009: round 8 night roles, on purpose)
   // (night's paper ground changed ON PURPOSE on 2026-11-11, main's ruling: soft #8A7F70 → #6F675B, answer #1C7348 → #0B736A,
   // mix-up #A84B22 → #8A5A00; everything else is the table it replaced)
   const paper = { ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26, ink: { chalk: "#2B2620", ink: "#2B2620", accent: "#1F5FBF", mark: "#C8641A", good: "#2E7D4F", soft: "#6F675B" }, role: { focus: "#3B47B0", slot: "#0B736A", answer: "#0B736A", mixup: "#8A5A00", muted: "#6F675B" } };

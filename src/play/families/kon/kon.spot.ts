@@ -37,3 +37,7 @@ export function around(o: Pt, radii: number[], from = 0, n = 16): Pt[] {
   for (const r of radii) for (let k = 0; k < n; k++) { const a = from + ((k % 2 ? 1 : -1) * Math.ceil(k / 2) * 2 * Math.PI) / n; out.push([o[0] + r * Math.cos(a), o[1] + r * Math.sin(a)]); }
   return out;
 }
+
+/** Law 1 (dc-r8-game-modes-three-laws) by role name (answer, focus, mix-up): the painter's own map, so kon follows Design's
+ *  tokens when they land; kon views never name a colour or a painter role for these three directly */
+export { LAW_ROLES as ROLE } from "../../core/styles.ts";

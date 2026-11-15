@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-why-probe-pilot",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "Why-questions return as authored probes, as a pilot on the four live lessons only (about 3 per script): on a card a child could guess (yes/no, two-way compare, pick one of three) that targets a misconception, asked only after a right answer, at most once per skill per lesson. Field card.whyProbe = prompt (at most 8 words, names no number or option), reasons with authored cues in both languages (at least one sound reason), and an after line that judges nothing. The child's reason is matched against the cues by code, never a model; the child is never told; 'right, reason matched misconception X' is its own, weaker kind of evidence. Learning authors after the staged round; Brain builds the contract after director21 is judged; first measured in the run after. Proposal: docs/design/round7/learning/WHY-PROBES-PROPOSAL-2026-11-11.md. Reverse if: more than 60% of reasons read unknown on the first paid matrix, judges hear the probe as doubt in more than 1 lesson in 4, or a probe gives away a later card's answer (that probe is removed)."
+  },
+  {
+   "id": "fd-long-messages-and-publishes-restart-the-worker",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Worker restarts 11 and 12 of this session (2026-11-11, about 19:00 and 19:08 UTC) followed a long send_message that waited on an approval prompt and an Artifact publish. The first killed integration 51's local gate at test:all; the second cut release 26 after the web step (resumed: 2 steps run, 7 resumed past). CI on claude/r8-main-candidate gave integration 51 its verdict, and scripts/release.mjs resumed cleanly, so neither cost more than minutes. Rule kept: short messages, briefs in the repo, CI as the second gate, and nothing that prompts while a release is in flight."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-why-probe-pilot",
+   "rel": "supersedes",
+   "dst": "dc-r8-no-probe-without-authored-question"
+  }
+ ]
+}

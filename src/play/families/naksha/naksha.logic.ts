@@ -718,5 +718,8 @@ function grade(level: PlayLevel<NakshaParams>, acts: PlayActEnvelope<NakshaAct>[
 
 export const nakshaLogic: FamilyLogic<NakshaParams, NakshaState, NakshaAct> = {
   family: "naksha", modes: ["locate", "route", "scale", "shape"], malRules: NAKSHA_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["steps:order-swap", "turns:own-left-right"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

@@ -8,6 +8,11 @@
 // between the rays to the outer two (solid when it is one of the figure's five angles, dashed when not).
 // Mal-rule vertex-name: the vertex is not put in the middle (say: the right three letters with the vertex first or last; find:
 // the angle at the name's first or last letter is taken). The child sees a different corner light up than the one she meant.
+// Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so its first-letter pick is graded at chance
+// weight as chanceMis (the central law-3 rule: find is a oneDecision goal), never on her record from one tap; only say (a
+// three-letter name she builds) names vertex-name from one act. Figures: the
+// two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
+// crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
 // (reading across the screen would pass it); a find level whose answer is the widest arc is never served. The letters are
 // drawn at random, so the vertex is not always "O".
@@ -26,6 +31,12 @@ export const LETTERS = "ABCDEOPQRS";
 export const HIT = 32;
 /** each angle's arc (and its handle) radius: the two at the vertex between neighbouring rays, the wide one, the two corners */
 export const ARC_R = [50, 50, 84, 24, 24];
+/** where each arc is DRAWN (board px): the two at the vertex between neighbouring rays at different radii, so where they meet
+ *  on the shared ray there is a gap and they never read as one curve (judging round 2). The tap model stays ARC_R: a tap is
+ *  taken by sector and band, and each drawn arc lies inside its own arc's band (|DRAW_R − ARC_R| ≤ 8 ≪ BAND) */
+export const DRAW_R = [42, 58, 84, 24, 24];
+/** the letters that look alike at 360 px: never served in one figure */
+export const LOOKALIKE = ["OQ"];
 
 export interface NameFields {
   /** four letters: the vertex, then the ends of rays 1, 2, 3 */
@@ -123,10 +134,16 @@ function commitSay(p: NameParamsLike, s: NameState, mal: Record<string, string>)
 }
 function commitFind(p: NameParamsLike, s: NameState, mal: Record<string, string>): NameStep {
   const k = s.picked as number, want = p.ask ?? 0, c = corners(p)[k], w = asked(p);
-  const f: Facts = { name: spell(p, nameOf(w, p.ord ?? 0)), picked: spell(p, nameOf(c)), vertex_ok: yn(c.v === w.v), arms_ok: yn(new Set([c.a, c.b, w.a, w.b]).size === 2) };
+  // (find reports the name and her arc only: whether her vertex was right is the mix-up's content, and one tap tells the
+  // lesson nothing about it; evening ruling kon/name 3)
+  const f: Facts = { name: spell(p, nameOf(w, p.ord ?? 0)), picked: spell(p, nameOf(c)) };
   if (k === want) return { nm: s, commit: { kind: "solved", done: true, facts: f } };
-  if ("vertex-name" in mal && k === vertexNamePick(p)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, shown: "figure" } } };
-  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle" } } };
+  // one tap among five (law 3): the first-letter pick plays out its signature, and the grade (find is a oneDecision goal)
+  // keeps it at chance weight as chanceMis, never on her record from one tap; the server names it on a repeat on a level
+  // with other letters (server/play/levels.js nameOnRepeat, kon surfaceOf). Until then nothing about it reaches the
+  // lesson: no sign in the facts, no seam, no trail entry (server/play/routes.js, grade.js)
+  if ("vertex-name" in mal && k === vertexNamePick(p)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, shown: "her_arc" } } };
+  return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_arc" } } };
 }
 
 export function solveName(p: NameParamsLike): NameAct[] {
@@ -140,19 +157,57 @@ export function malName(p: NameParamsLike, mal: string): NameAct[] | null {
   // the right three letters, the vertex first
   return [c.v, c.a, c.b].map((i): NameAct => ({ kind: "letter", at: i })).concat([{ kind: "commit" }]);
 }
-/** reading the lit angle's letters across the screen (left to right, or top to bottom) / taking the widest arc */
+/** where each point's letter is drawn (board px): 18 out from the point, away from the vertex (the vertex's opposite its
+ *  rays); the view draws them here */
+export const LABEL_OUT = 18;
+export function labelPoints(p: NameParamsLike): [number, number][] {
+  const P = points(p), V = P[0];
+  return P.map((q, i) => {
+    let ux: number, uy: number;
+    if (i === 0) { ux = 0; uy = 0; for (const j of [1, 2, 3]) { const L = Math.hypot(P[j][0] - V[0], P[j][1] - V[1]) || 1; ux -= (P[j][0] - V[0]) / L; uy -= (P[j][1] - V[1]) / L; } }
+    else { ux = q[0] - V[0]; uy = q[1] - V[1]; }
+    const L = Math.hypot(ux, uy) || 1;
+    return [q[0] + (LABEL_OUT * ux) / L, q[1] + (LABEL_OUT * uy) / L];
+  });
+}
+/** one letter's height and width on the board (18 px letters, 1 board px ≥ 1 CSS px on a phone), with a little slack: two
+ *  letters this close in y read as one row, this close in x as one column (evening ruling kon/name 1) */
+export const LETTER_H = 22, LETTER_W = 16;
+/** the points in reading order: rows (letters within LETTER_H in y; chained) top to bottom or bottom to top, each row left
+ *  to right or right to left; or columns (within LETTER_W in x) left to right or right to left, each top to bottom or bottom
+ *  to top. Eight orders */
+function readingOrders(Q: [number, number][]): number[][] {
+  const groups = (axis: 0 | 1, tol: number): number[][] => {
+    const idx = Q.map((_, i) => i).sort((i, j) => Q[i][axis] - Q[j][axis]), out: number[][] = [];
+    for (const i of idx) { const g = out[out.length - 1]; if (g && Q[i][axis] - Q[g[g.length - 1]][axis] <= tol) g.push(i); else out.push([i]); }
+    return out;
+  };
+  const orders: number[][] = [];
+  // rows: y up on the board, so the top row has the largest y
+  const rows = groups(1, LETTER_H).reverse(), cols = groups(0, LETTER_W);
+  for (const outer of [rows, [...rows].reverse()]) for (const dir of [1, -1]) orders.push(outer.flatMap((g) => [...g].sort((i, j) => dir * (Q[i][0] - Q[j][0]))));
+  for (const outer of [cols, [...cols].reverse()]) for (const dir of [1, -1]) orders.push(outer.flatMap((g) => [...g].sort((i, j) => dir * (Q[j][1] - Q[i][1]))));
+  return orders;
+}
+/** the asked angle's three letters read off the screen by rows or by columns, either way, with the vertex in the middle
+ *  (by the points or by where their letters are drawn), or null */
+export function readsAcross(p: NameParamsLike): number[] | null {
+  const c = asked(p), three = new Set([c.a, c.v, c.b]);
+  for (const Q of [points(p), labelPoints(p)]) for (const o of readingOrders(Q)) {
+    const t = o.filter((i) => three.has(i));
+    if (t[1] === c.v) return t;
+  }
+  return null;
+}
+/** reading the asked angle's letters across the screen by rows or columns (both goals) / taking the widest arc (find) */
 export function shortcutName(p: NameParamsLike): NameAct[] | null {
-  const P = points(p);
+  const across = readsAcross(p);
   if (p.goal === "find") {
+    if (across) return [{ kind: "arc", at: p.ask ?? 0 }];
     const sizes = corners(p).map((c) => sizeOf(p, nameOf(c)) ?? 0), widest = sizes.indexOf(Math.max(...sizes));
     return widest === (p.ask ?? 0) ? [{ kind: "arc", at: widest }] : null;
   }
-  const c = asked(p), three = [c.a, c.v, c.b];
-  for (const axis of [0, 1]) {
-    const order = [...three].sort((i, j) => (axis === 0 ? P[i][0] - P[j][0] : P[j][1] - P[i][1]));
-    if (order[1] === c.v) return [...order.map((i): NameAct => ({ kind: "letter", at: i })), { kind: "commit" }];
-  }
-  return null;
+  return across ? [...across.map((i): NameAct => ({ kind: "letter", at: i })), { kind: "commit" }] : null;
 }
 
 /** where each angle's arc handle sits: on its bisector, nearer the vertex for the three at V's adjacent pairs */
@@ -243,9 +298,10 @@ export function nameFacts(p: NameParamsLike, s: NameState | undefined, base: Fac
   if (s?.said) f.said = spell(p, s.said);
   else if (s?.taps.length) f.taps = spell(p, s.taps);
   if (s?.picked !== null && s?.picked !== undefined) f.picked = spell(p, nameOf(corners(p)[s.picked]));
-  // the evidence: whether the vertex is in the middle, and the outer letters on its two arms (her latest decision)
+  // the evidence: whether the vertex is in the middle, and the outer letters on its two arms (her latest decision); say
+  // only (a built name): a find tap is one pick among five and reports her arc alone (evening ruling kon/name 3)
   const ev = nameEvidence(p, s);
-  if (ev.name !== null) { f.vertex_ok = ev.vertexOk ? "yes" : "no"; f.arms_ok = ev.armsOk ? "yes" : "no"; }
+  if (ev.name !== null && p.goal === "say") { f.vertex_ok = ev.vertexOk ? "yes" : "no"; f.arms_ok = ev.armsOk ? "yes" : "no"; }
   return f;
 }
 export function nameEvidence(p: NameParamsLike, s: NameState | undefined): { name: string | null; vertexOk: boolean | null; armsOk: boolean | null } {
@@ -277,17 +333,50 @@ export function validateName<P extends NameParamsLike>(q: Partial<P>): P | null 
   return out;
 }
 
-export function generateName(goal: NameGoal, rnd: () => number, fade: number): { params: NameParamsLike; sig: string }[] {
+/** does segment a-b cross segment c-d away from their end points? */
+function crosses(a: [number, number], b: [number, number], c: [number, number], d: [number, number]): boolean {
+  const o = (p: [number, number], q: [number, number], r: [number, number]) => (q[0] - p[0]) * (r[1] - p[1]) - (q[1] - p[1]) * (r[0] - p[0]);
+  const d1 = o(c, d, a), d2 = o(c, d, b), d3 = o(a, b, c), d4 = o(a, b, d), e = 1e-6;
+  return ((d1 > e && d2 < -e) || (d1 < -e && d2 > e)) && ((d3 > e && d4 < -e) || (d3 < -e && d4 > e));
+}
+/** the figure's joined pair crosses none of its rays (a crossing would make a corner the figure does not name) */
+export function noCrossing(p: NameParamsLike): boolean {
+  const P = points(p), [i, j] = TRI_PAIRS[p.tri ?? 0];
+  return [1, 2, 3].every((r) => r === i || r === j || !crosses(P[i], P[j], P[0], P[r]));
+}
+/** say: the angle a vertex-first name (the mix-up) denotes, when it is not one of the figure's: its size (its dashed arc must
+ *  be long enough to see at 360) */
+export function sayMalSize(p: NameParamsLike): number | null {
+  const c = asked(p), t = [c.v, c.a, c.b];
+  return denotes(p, t) >= 0 ? null : sizeOf(p, t);
+}
+/** the radius of the dashed play-out arc of an angle of `deg` degrees: ≥ 30 board px and long enough to run ≥ 24 board px
+ *  (≥ 20 CSS px at 360, where 1 board px ≥ 1 CSS px) */
+export const dashR = (deg: number) => Math.min(72, Math.max(30, 24 / ((Math.max(deg, 1) * Math.PI) / 180)));
+/** the first level a child meets at fade 1 has vertex O (as the book first does); every later one does not, so "O in the
+ *  middle" cannot pass the fade */
+export function generateName(goal: NameGoal, rnd: () => number, fade: number, first = true): { params: NameParamsLike; sig: string }[] {
   const out: { params: NameParamsLike; sig: string }[] = [], seen = new Set<string>();
-  for (let k = 0; k < 160 && out.length < 20; k++) {
+  // (find: more figures are tried, since reading the asked name's letters by rows or columns refuses most of them; the
+  // touch-disc search, the costly check, runs last)
+  const tries = goal === "find" ? 1000 : 200;
+  for (let k = 0; k < tries && out.length < 20; k++) {
     const base = 5 * Math.floor(rnd() * 72), g1 = 50 + 5 * Math.floor(rnd() * 7), g2 = 50 + 5 * Math.floor(rnd() * 7);
     const hs = [base, norm(base + g1), norm(base + g1 + g2)];
     const ls = [0, 1, 2].map(() => 105 + 5 * Math.floor(rnd() * 5));
-    // the letters: four of LETTERS at random (fade 1 keeps the vertex "O", as the book first does)
-    const pool = [...LETTERS].filter((ch) => fade > 1 || ch !== "O");
-    const pick: string[] = fade === 1 ? ["O"] : [];
-    while (pick.length < 4) { const ch = pool[Math.floor(rnd() * pool.length)]; if (!pick.includes(ch)) pick.push(ch); }
-    const tri = Math.floor(rnd() * 3), ask = Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
+    // the letters: four of LETTERS at random, never two that look alike (O and Q); fade 1: the vertex is "O" in her first
+    // level only, never after (any other point may be O then)
+    const oFirst = fade === 1 && first, pick: string[] = oFirst ? ["O"] : [];
+    const notO = fade === 1 && !first;
+    for (let g = 0; pick.length < 4 && g < 64; g++) {
+      const ch = LETTERS[Math.floor(rnd() * LETTERS.length)];
+      if (pick.includes(ch) || (notO && pick.length === 0 && ch === "O")) continue;
+      if (LOOKALIKE.some((pair) => pair.includes(ch) && pick.some((x) => x !== ch && pair.includes(x)))) continue;
+      pick.push(ch);
+    }
+    if (pick.length < 4) continue;
+    // the joined pair: two NEIGHBOURING ray ends (1-2 or 2-3); joining 1-3 would cross ray 2
+    const tri = Math.floor(rnd() * 2), ask = Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
     // the figure centred on the board
     const ends = [[0, 0], ...hs.map((h, i) => [ls[i] * Math.cos(R(h)), ls[i] * Math.sin(R(h))])];
     const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
@@ -301,7 +390,10 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number): {
     const apart = (Q: [number, number][], d: number) => Q.every((a, i) => Q.every((b, j) => j <= i || Math.hypot(a[0] - b[0], a[1] - b[1]) >= d));
     if (!apart(P, 2 * HIT + 4)) continue;
     if (corners(params).some((c) => (sizeOf(params, nameOf(c)) ?? 0) < 20)) continue;
+    if (!noCrossing(params)) continue;
     if (shortcutName(params)) continue;
+    // say: the vertex-first name's dashed angle (when it is not one of the five) is ≥ 20°, so its arc can be seen
+    if (goal === "say") { const m = sayMalSize(params); if (m !== null && m < 20) continue; }
     // find: only names whose first- or last-letter reading is one of the figure's angles (the belief shows somewhere real)
     if (goal === "find" && vertexNamePick(params) < 0) continue;
     // find: every arc has a touch square of its own (≥ 48 board px, wholly in its own tap band)

@@ -114,7 +114,7 @@ for (const goal of ["pakdo", "sudhaaro"]) for (const kind of ["sahi", "lucky", "
         const mc = m.ms.filter((x) => x.kind === "misconception_consequence");
         assert.equal(mc.length, 1, `${c.signature} ${mal}`); assert.equal(mc[0].misconceptionId, mal);
         const mg = L.grade(level, env(acts));
-        assert.equal(mg.evidence[0].outcome, "incorrect"); assert.equal(mg.evidence[0].misconceptionId, `k-${mal}`);
+        assert.equal(mg.evidence[0].outcome, "incorrect"); assert.equal((mg.evidence[0].misconceptionId ?? mg.evidence[0].chanceMis), `k-${mal}`);
       }
     }
     const want = { sahi: [], lucky: ["right-answer"], neat: ["neat-correct", "check-later"] }[kind];
@@ -226,14 +226,15 @@ for (const e of GP()) for (const fade of [1, 2, 3]) {
       assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, e.goal === "pakdo" ? CHANCE_WEIGHT : GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && L.malActs(level, m));
-        assert.equal(gradeActs(level, env(L.malActs(level, mal)), { final: true }).grade.evidence[0].weight, GAME_WEIGHT, "a miss keeps the game weight");
+        // round 8 law 3: a mix-up from the one pick of pakdo is at chance weight (unnamed); sudhaaro's keep the game weight
+        assert.equal(gradeActs(level, env(L.malActs(level, mal)), { final: true }).grade.evidence[0].weight, e.goal === "pakdo" ? CHANCE_WEIGHT : GAME_WEIGHT, "a miss keeps the game weight");
       }
       const forged = gradeActs(level, [{ seq: 1, t: 0, act: { kind: "sab", solved: true, correct: true, verdict: "solved" } }], { final: true });
       assert.notEqual(forged.grade.verdict, "solved");
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && L.malActs(level, m));
         const mg = gradeActs(level, env(L.malActs(level, mal)), { final: true });
-        assert.equal(mg.grade.evidence[0].misconceptionId, kitId);
+        assert.equal((mg.grade.evidence[0].misconceptionId ?? mg.grade.evidence[0].chanceMis), kitId);
       }
       assert.ok(hiddenOf(level).length > 0, "hidden values");
     }

@@ -337,7 +337,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const { mid } = laneBox(c, i), x0 = 66, x1 = w - 26;
       const X = (v: number) => x0 + ((v - 36) / 3) * (x1 - x0);
       // after the run: the healthy children's band (the kit's 36.8 to 37.2, about 37 °C) on every thermometer
-      if (runAt >= 0 && s.ended) P.body(c, X(36.8), mid - 22, X(37.2) - X(36.8), 18, { role: "good", r: 3, fill: 0.35 * runK() });
+      if (runAt >= 0 && s.ended) P.body(c, X(36.8), mid - 22, X(37.2) - X(36.8), 18, { role: "q2", r: 3, fill: 0.35 * runK() });   // round 8 law 1: a reference band, never the "right" green
       hThermo(c, x0, x1, mid - 4, 36, 39, t / 10, { labels: fp.look === 1 ? [36, 37, 38, 39] : [36, 38], minor: 0.1, major: fp.look === 1 ? 0.5 : 1, k: 1 });
       const b = s.place[i];
       if (end && !s.done && b >= 0 && b !== (isFever(t) ? 1 : 0)) P.magnifier(c, X(t / 10), mid - 26, 16);

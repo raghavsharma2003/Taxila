@@ -746,5 +746,8 @@ function grade(level: PlayLevel<NaapParams>, acts: PlayActEnvelope<FeetaAct>[]):
 
 export const naapLogic: FamilyLogic<NaapParams, NaapState, FeetaAct> = {
   family: "feeta", modes: NAAP_MODES, malRules: NAAP_MAL,
+  // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
+  // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
+  chancePicks: ["fever:exact-37", "jobs:clinical-hot", "feel:touch-trust"],
   validate, init, apply, goalMet, generate, solve, shortcut, malActs: naapMalActs, grade, facts, board,
 };

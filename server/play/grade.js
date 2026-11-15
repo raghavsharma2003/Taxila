@@ -15,6 +15,16 @@ export function minActsOf(level, logic = logicFor(level.family, level.mode)) {
 }
 
 /**
+ * Round 8 law 3: is this mal-rule, on this level, a pick among a few (graded at chance weight as chanceMis, never named
+ * from one act)? The same test gradeLevel makes (src/play/core/replay.ts): the goal is oneDecision or a chancePick, or the
+ * pair `goal:mal` is a chancePick.
+ */
+export function chancePick(level, mis, logic = logicFor(level?.family, level?.mode)) {
+  const g = level?.goal;
+  return !!g && (!!logic?.oneDecision?.includes(g) || !!logic?.chancePicks?.includes(g) || (!!mis && !!logic?.chancePicks?.includes(`${g}:${mis}`)));
+}
+
+/**
  * → { grade, moments, solved, facts, trail } for the acts so far (final = the level is being closed). Round 8 P3: when the
  * level ends (a grade), `trail` is the server's report of how it went (server/play/trail.js), built AFTER the grade from
  * the same replay; nothing that grades reads it.
@@ -28,7 +38,8 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
   const r = replayAll(logic, v, acts);
   const solved = logic.goalMet(v, r.state);
   const grade = solved || final ? logic.grade(v, acts) : null;
-  const trail = grade ? buildTrail(v, acts, r, { grade, minActs: minActsOf(v, logic) }) : null;
+  // (a mix-up from one pick is not in the trail the lesson reads: it surfaces only when it repeats, routes.js)
+  const trail = grade ? buildTrail(v, acts, r, { grade, minActs: minActsOf(v, logic), isPick: (rule) => chancePick(v, rule, logic) }) : null;
   return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)), trail };
 }
 
@@ -39,7 +50,7 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
 export function lessonEvidence(grade, level) {
   if (!grade?.evidence?.length) return [];
   return grade.evidence.map((e) => ({
-    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}),
+    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}), ...(e.chanceMis ? { chanceMis: e.chanceMis } : {}),
     ...(e.discriminates ? { discriminates: e.discriminates } : {}), source: "game", itemId: `play:${level.levelId}`, probe: "P10", hintsUsed: 0, weight: e.weight,
   }));
 }

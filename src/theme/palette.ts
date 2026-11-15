@@ -75,8 +75,10 @@ const NIGHT_STUDIO: StudioColours = {
 const NIGHT_CHALK: BoardPaletteValues = {
   ground: "#1F3B30", edge: "#8C6B4A", fillAlpha: 0.32,
   ink: { chalk: "#F5F2E8", ink: "#F5F2E8", accent: "#F2C66D", mark: "#F4A261", good: "#9ED8A6", soft: "#BFD3C6" },
-  // (design r8's night direction, on the chalk ground: focus her blue-violet, answer green, mix-up amber — never red)
-  role: { focus: "#A9B4FF", slot: "#7FE0B0", answer: "#7FE0B0", mixup: "#FFB54A", muted: "#9DB3A6" },
+  // (round 8 night roles, Design's theme B token values via patch 009, main 2026-11-11: focus #8F9BFF, answer / slot
+  // #4FE0A2, mix-up #FFB54A, muted #8F9CAE; the Desk's bridge already paints its board with these. Was #A9B4FF / #7FE0B0 /
+  // #9DB3A6, a reading of the phase 1 prototype. Chalk boards' role marks change; ground, edge and inks do not)
+  role: { focus: "#8F9BFF", slot: "#4FE0A2", answer: "#4FE0A2", mixup: "#FFB54A", muted: "#8F9CAE" },
 };
 const NIGHT_PAPER: BoardPaletteValues = {
   ground: "#FFFBF2", edge: "#D9CDB8", fillAlpha: 0.26,

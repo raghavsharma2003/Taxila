@@ -12,7 +12,7 @@
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: . Cells left as holes with no fallback: 0.
 
-**Not applicable:** 363 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 369 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
 ## Missing fields, all scripts
 
@@ -45,7 +45,7 @@
 | c5-maths-ch13-t02 | staged | 63 | 1935 | 0 |  | 0 |
 | c6-maths-ch02-t01 | staged | 61 | 1854 | 0 |  | 0 |
 | c6-maths-ch02-t02 | staged | 61 | 1854 | 0 |  | 0 |
-| c6-maths-ch02-t03 | staged | 60 | 1818 | 0 |  | 0 |
+| c6-maths-ch02-t03 | staged | 63 | 1917 | 0 |  | 0 |
 | c6-maths-ch02-t04 | staged | 64 | 1944 | 0 |  | 0 |
 | c6-maths-ch05-t01 | staged | 65 | 1980 | 0 |  | 0 |
 | c6-maths-ch07-t01 | staged | 60 | 1827 | 0 |  | 0 |

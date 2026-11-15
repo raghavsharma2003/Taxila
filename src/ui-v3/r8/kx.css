@@ -100,3 +100,21 @@
 .kx[data-tx][data-tx][data-tx] .kx-slot b { font: 700 var(--tx-t-2)/1.2 var(--tx-font-ui); }
 .kx[data-tx][data-tx][data-tx] .kx-slot span { font: 600 var(--tx-t-1)/1.2 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-3); }
 .kx[data-tx][data-tx][data-tx] .kx-tile { border-radius: var(--tx-r-2); }
+
+/* the child's other screens (step i, from the walk): Hello, Me, Ask, Teacher */
+.kx[data-tx][data-tx][data-tx] .kx-eyebrow::before { content: none; }
+.kx[data-tx][data-tx][data-tx] .kx-eyebrow { font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.kx[data-tx][data-tx][data-tx] .kx-bar .kx-ib { clip-path: none; border-radius: var(--tx-r-1); border: 1.5px solid var(--tx-line); background: var(--tx-surface); }
+.kx[data-tx][data-tx][data-tx] .kx-switch { clip-path: none; border-radius: var(--tx-r-3); border: 1.5px solid var(--tx-line-2); background: var(--tx-surface-2); }
+.kx[data-tx][data-tx][data-tx] .kx-switch-knob { border-radius: 50%; background: var(--tx-ink-3); }
+.kx[data-tx][data-tx][data-tx] .kx-switch[aria-checked="true"] { border-color: var(--tx-tutor); background: var(--tx-tutor-soft); }
+.kx[data-tx][data-tx][data-tx] .kx-switch[aria-checked="true"] .kx-switch-knob { background: var(--tx-tutor); }
+.kx[data-tx][data-tx][data-tx] .kx-switch-word { font: 700 var(--tx-t-1)/1 var(--tx-font-ui); letter-spacing: 0; text-transform: none; }
+.kx[data-tx][data-tx][data-tx] .kx-ai { font: 600 var(--tx-t-1)/1 var(--tx-font-ui); border: 0; border-radius: var(--tx-r-3); background: var(--tx-tutor-soft); color: var(--tx-tutor); }
+/* her presence where the face picture was (Comms): no frame, ticks or rim */
+.kx[data-tx][data-tx][data-tx] .kx-comms--tx { clip-path: none; border: 0; background: transparent; box-shadow: none; display: grid; place-items: center; min-height: 200px; margin: 0; }
+.kx[data-tx][data-tx][data-tx] .kx-comms--tx::before, .kx[data-tx][data-tx][data-tx] .kx-comms--tx::after { content: none; }
+/* Hello: the terminal "boot" list is decoration (aria-hidden); the new look has none */
+.kx[data-tx][data-tx][data-tx] .kx-boot { display: none; }
+.kx[data-tx][data-tx][data-tx] .kx-comms--noname .tx-presence-meta { display: none; }
+.kx[data-tx][data-tx][data-tx] .kx-comms--tx { min-height: 160px; }

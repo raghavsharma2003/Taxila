@@ -4,7 +4,7 @@
 // and the bank on disk is what the builder makes (`build-arena --check`).
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { offered, parseNum, numericDecoys, challengeOf, build, head, MIN_CHALLENGES } from "../server/play/tools/build-arena.mjs";
 
 const texts = (p) => offered(p)?.map((o) => o.text) ?? null;
@@ -100,4 +100,48 @@ test("arena bank: every challenge on disk has exactly one key option; topics are
   for (const t of Object.values(index.topics)) assert.equal(t.eligible, t.challenges >= MIN_CHALLENGES);
   const disk = JSON.parse(readFileSync(new URL("../data/arena/index.json", import.meta.url), "utf8"));
   assert.deepEqual(disk.counts, index.counts, "data/arena is stale: run node server/play/tools/build-arena.mjs");
+});
+
+// main 2026-11-11 (c6-maths-ch07-t05 s3): a mixed number with the unit its word problem gives ("1 1/2 m") is a numeric key,
+// and the key and its decoys share ONE shape: every option a proper mixed number, the same unit, the fraction part in lowest
+// terms when the key's is. An option without the unit the others carry, an improper "1 7/2" or an unreduced "1 2/4" beside
+// "1 1/4" is the odd one out, and a child can pick by form alone.
+test("arena bank: a mixed number with a unit is a numeric key; its decoys are proper, in lowest terms, with the same unit", () => {
+  for (const [k, unit] of [["1 1/2 m", "m"], ["2 3/4 litre", "litre"], ["7 1/2 km", "km"], ["3 2/3", ""]]) {
+    const key = parseNum(k);
+    assert.equal(key?.kind, "mixed", k);
+    assert.equal(key.unit, unit, `${k}: unit`);
+    const d = numericDecoys(key, [key.value], `t-${k}`);
+    assert.equal(d.length, 3, `${k}: ${d}`);
+    for (const x of d) {
+      const m = /^(\d+) (\d+)\/(\d+)(?: (.+))?$/.exec(x);
+      assert.ok(m, `${k}: decoy ${x} is a mixed number`);
+      const [w, n, dd] = [+m[1], +m[2], +m[3]];
+      assert.ok(w >= 1 && n >= 1 && n < dd, `${k}: decoy ${x} is proper`);
+      const g = (a, b) => (b ? g(b, a % b) : a);
+      if (g(key.n, key.d) === 1) assert.equal(g(n, dd), 1, `${k}: decoy ${x} in lowest terms`);
+      assert.equal(m[4] ?? "", unit, `${k}: decoy ${x} keeps the unit`);
+      assert.notEqual(parseNum(x).value, key.value, `${k}: decoy ${x} is wrong by value`);
+    }
+  }
+  const c = challengeOf({ id: "x-i10", skillId: "x-s3", kind: "practice", prompt_en: "A ribbon is 3 1/4 m long. You cut off 1 3/4 m. How much is left?", answer: "1 1/2 m", verified: { agrees: true } }, { topicId: "x" });
+  assert.ok(c.ok, JSON.stringify(c));
+  assert.equal(c.ok.keyText, "1 1/2 m");
+});
+
+test("arena bank: on disk, every numeric challenge's options share one shape and one unit (no odd one out)", () => {
+  const bad = [];
+  for (const f of readdirSync(new URL("../data/arena/", import.meta.url)).filter((x) => /^c\d/.test(x))) {
+    const bank = JSON.parse(readFileSync(new URL(`../data/arena/${f}`, import.meta.url), "utf8"));
+    JSON.stringify(bank, (k, v) => {
+      if (v && v.form === "numeric" && Array.isArray(v.options)) {
+        const t = v.options.map((o) => o.text);
+        const mixed = t.filter((x) => /^\d+ \d+\/\d+/.test(x)).length;
+        if (mixed && mixed !== t.length) bad.push(`${v.id}: ${t.join(" ; ")}`);
+        if (new Set(t.map((x) => x.replace(/^[-−₹\d\s/.,]+/, ""))).size > 1) bad.push(`unit ${v.id}: ${t.join(" ; ")}`);
+      }
+      return v;
+    });
+  }
+  assert.deepEqual(bad, []);
 });

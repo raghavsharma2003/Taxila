@@ -145,7 +145,7 @@ describe("r4-khand nazariya: levels are proven", () => {
         for (const kitId of level.proof.discriminates) {
           const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId);
           const mg = logic.grade(level, env(logic.malActs(level, mal)));
-          assert.equal(mg.evidence[0]?.misconceptionId, kitId, `${level.levelId} ${mal}`);
+          assert.equal((mg.evidence[0]?.misconceptionId ?? mg.evidence[0]?.chanceMis), kitId, `${level.levelId} ${mal}`);
           assert.equal(mg.evidence[0]?.outcome, "incorrect");
         }
       }

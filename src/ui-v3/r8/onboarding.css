@@ -95,3 +95,11 @@
   .onb-volt.kx[data-tx][data-tx] .onb-sheet { border-radius: var(--tx-r-2); border: 1px solid var(--tx-line); background: var(--tx-surface); box-shadow: var(--tx-shadow-2); }
   .onb-volt.kx[data-tx][data-tx] .onb-title { font-size: var(--tx-t-7); }
 }
+
+/* the schedule picker (src/ui-v3/scheduler.css) in set-up: the same as in the parent corner (parent.css) */
+.onb-volt.kx[data-tx][data-tx] .sch {
+  --sch-surface: var(--tx-surface); --sch-surface-2: var(--tx-surface-2); --sch-paper: var(--tx-bg); --sch-line: var(--tx-line);
+  --sch-ink: var(--tx-ink); --sch-ink-2: var(--tx-ink-2); --sch-ink-3: var(--tx-ink-3); --sch-focus: var(--tx-tutor);
+  --sch-mono: var(--tx-font-ui); --sch-sans: var(--tx-font-ui); --sch-r: var(--tx-r-1);
+}
+.onb-volt.kx[data-tx][data-tx] :is(.sch-label, .sch-date small, .sch-pod) { font-family: var(--tx-font-ui); font-size: var(--tx-t-1); letter-spacing: 0; text-transform: none; }

@@ -5,8 +5,8 @@
 //   - goal met ⇔ an independent oracle (the tally written as text, read with a regular expression, never the law's
 //     helpers), over ≥ 2000 random acts per goal; the law never throws;
 //   - tally-four lands on its own misconception with its own signature (read: 4 × bundles + singles, gap = bundles;
-//     keep "counted": every total short by exactly its row's bundles, crosses drawn or not; keep "five": no line across
-//     anywhere with the totals right) and no other wrong answer is named tally-four: no one-bundle slip, and over random
+//     keep "counted": lines across drawn and every total short by exactly its row's bundles; keep "five": no line across
+//     anywhere, whatever the totals: judges round 2, ruling 4) and no other wrong answer is named tally-four: no one-bundle slip, and over random
 //     acts a check is named ⇔ the signature written from the kit's signs; on every generated level the mix-up's answer
 //     differs from every one-bundle slip (skipped, counted twice, one single off) and no read row is bundles only;
 //   - keep it again ("again") once the scene has passed; undo brings the old tally back;
@@ -46,13 +46,16 @@ const text = (marks) => marks.map((m) => (m ? "/" : "|")).join("");
 const isTallyOf = (t, k) => /^(\|\|\|\|\/)*\|{0,4}$/.test(t) && t.length === k;
 const oracle = (level, s) => level.params.counts.every((c, r) => s.totals[r] === c && (level.params.goal === "read" || isTallyOf(text(s.marks[r]), c)));
 /** tally-four's signature, written here from the kit's signs (not from the law): read, the total is 4 per bundle plus
- *  the singles; keep, one stroke per thing in every row and EITHER every total is the row's count less its bundles
- *  (crosses drawn or not) OR there is no "/" anywhere and every total is the count (five as five standing lines) */
+ *  the singles; keep, one stroke per thing in every row and EITHER there is no "/" anywhere, whatever the totals (five as
+ *  five standing lines; judges round 2, ruling 4) OR a "/" is drawn and every total is the row's count less its bundles */
 const signature = (level, s) => {
   const { counts, goal } = level.params, short = counts.map((c) => c - Math.floor(c / 5));
   if (goal === "read") return s.totals[0] === short[0];
   if (!counts.every((c, r) => s.marks[r].length === c)) return false;
-  return counts.every((c, r) => s.totals[r] === short[r]) || (counts.every((c, r) => s.totals[r] === c) && !s.marks.some((m) => text(m).includes("/")));
+  const crossed = s.marks.some((m) => text(m).includes("/"));
+  // evening ruling 1: "five" only on a level of at least three groups of five
+  if (!crossed) return counts.reduce((a, c) => a + Math.floor(c / 5), 0) >= 3;
+  return counts.every((c, r) => s.totals[r] === short[r]);
 };
 
 for (const goal of ["keep", "read"]) {
@@ -113,8 +116,11 @@ test("stambh/tally: tally-four's signature is the belief, and no other wrong ans
     const mc = r.ms.find((m) => m.kind === "misconception_consequence");
     assert.equal(mc.facts.sign, "counted"); assert.equal(mc.facts.bundles, B); assert.equal(mc.facts.gap, B);
     assert.equal(r.s.sign, "counted"); assert.equal(L.facts(level, r.s).sign, "counted");
-    // the same totals with no line across drawn (crosses or not) → named, "counted"
-    assert.equal(named(tallyFourActs(p, "plain"))?.facts.sign, "counted");
+    // the same totals with no line across drawn → named "five" (ruling 4: no line across anywhere is the second sign,
+    // whatever the totals); so is a tally with no line across and any other totals
+    assert.equal(named(tallyFourActs(p, "plain"))?.facts.sign, "five");
+    const odd = tallyFourActs(p, "five").map((a) => (a.kind === "total" ? { ...a, n: a.n + 3 } : a));
+    assert.equal(named(odd)?.facts.sign, "five", "no line across, totals off by 3: still five");
     // the kit's second sign: five written as five standing lines, the totals right → named, "five"
     const five = run(level, tallyFourActs(p, "five")), m5 = five.ms.find((m) => m.kind === "misconception_consequence");
     assert.equal(m5?.facts.sign, "five"); assert.equal(m5.facts.crossesMissing, B); assert.equal(m5.facts.bundles, 0); assert.equal(m5.facts.gap, B);
@@ -135,25 +141,61 @@ test("stambh/tally: tally-four's signature is the belief, and no other wrong ans
   }
 });
 
-test("stambh/tally: on EVERY generated level (both goals) the mix-up's answer differs from every one-bundle slip", () => {
-  // computed here, independently of the law: the mix-up reads each bundle as 4; a slip skips one bundle, counts one twice,
-  // or is one single line off, in one row
+/**
+ * Every way a child reaches a row's number without the mix-up (the packet's list, evening ruling 5), written here from the
+ * packet, not from the law's TALLY_SLIPS: a row of n = 5b + s (b bundles, s loose lines).
+ *   slips (one thing by accident): a loose line missed / counted twice, a bundle skipped / counted twice, a bundle's line
+ *         across missed (that bundle as 4) / counted again (as 6);
+ *   readings (a whole way of reading the tally): loose lines dropped, loose lines doubled, the line across as a sixth line,
+ *         the lines across alone, each group as one, each bundle as ten, the loose lines alone.
+ */
+const SLIPS = {
+  "loose line missed": (b, s) => (s ? 5 * b + s - 1 : null), "loose line twice": (b, s) => (s ? 5 * b + s + 1 : null),
+  "bundle skipped": (b, s) => (b ? 5 * b + s - 5 : null), "bundle twice": (b, s) => (b ? 5 * b + s + 5 : null),
+  "a bundle as 4": (b, s) => (b ? 5 * b + s - 1 : null), "a bundle as 6": (b, s) => (b ? 5 * b + s + 1 : null),
+};
+const READINGS = {
+  "loose lines dropped": (b, s) => (s ? 5 * b : null), "loose lines doubled": (b, s) => (s ? 5 * b + 2 * s : null),
+  "line across as a sixth": (b, s) => (b ? 6 * b + s : null), "lines across alone": (b) => (b ? b : null),
+  "each group as one": (b, s) => (b ? b + s : null), "each bundle as ten": (b, s) => (b ? 10 * b + s : null), "loose lines alone": (b, s) => (b ? s : null),
+};
+const bs = (c) => [Math.floor(c / 5), c % 5];
+/** every number one slip or one reading away from a row of c */
+const oneStep = (c) => [...Object.entries(SLIPS), ...Object.entries(READINGS)].map(([k, f]) => [k, f(...bs(c))]).filter(([, v]) => v !== null && v !== c);
+test("stambh/tally: on EVERY generated level (both goals) the mix-up's answer is no slip's and no other reading's (the packet's list)", () => {
   const bundleFour = (c) => 4 * Math.floor(c / 5) + (c % 5);
   let n = 0;
   for (const goal of ["keep", "read"]) for (const level of levels(goal, [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) {
-    const counts = level.params.counts, mal = counts.map(bundleFour);
-    if (goal === "read") assert.ok(counts[0] % 5 !== 0, `${level.levelId}: a read row of bundles only`);
-    for (let r = 0; r < counts.length; r++) for (const d of [-5, 5, -1, 1]) {
-      const slip = counts.map((c, k) => (k === r ? c + d : c));
-      assert.notDeepEqual(mal, slip, `${level.levelId}: tally-four ${mal} = a slip of ${d} on row ${r}`);
+    const counts = level.params.counts, mal = counts.map(bundleFour), id = level.levelId;
+    // the level law, as the packet states it
+    for (const c of counts) if (c >= 5) assert.notEqual(c % 5, Math.floor(c / 5), `${id}: a row with as many loose lines as bundles (${c})`);
+    if (goal === "read") {
+      const [b, s] = bs(counts[0]);
+      assert.ok(b >= 3 && b !== 5 && s >= 1, `${id}: read ${counts[0]} (${b} bundles, ${s} loose)`);
+      // the mix-up's number is no single slip's or reading's
+      for (const [k, v] of oneStep(counts[0])) assert.notEqual(v, mal[0], `${id}: tally-four ${mal[0]} = ${k}`);
+    } else {
+      assert.ok(counts.filter((c) => c >= 5).length >= 2, `${id}: bundles in at least two rows`);
+      assert.ok(counts.reduce((a, c) => a + Math.floor(c / 5), 0) >= 3, `${id}: at least three groups of five`);
+      // one slip or reading in one row, the rest right; one reading in every row: never the mix-up's totals
+      for (let r = 0; r < counts.length; r++) for (const [k, v] of oneStep(counts[r])) assert.notDeepEqual(counts.map((c, j) => (j === r ? v : c)), mal, `${id}: tally-four = ${k} in row ${r}`);
+      for (const [k, f] of Object.entries(READINGS)) assert.notDeepEqual(counts.map((c) => f(...bs(c)) ?? c), mal, `${id}: tally-four = ${k} in every row`);
+      // and at most one slip or reading per row never reaches it: some row's mix-up number is two or more steps away
+      assert.ok(counts.some((c, r) => mal[r] !== c && !oneStep(c).some(([, v]) => v === mal[r])), `${id}: every row one step from the mix-up`);
     }
     assert.notDeepEqual(mal, counts);
     n++;
   }
   assert.ok(n >= 150, `${n} levels`);
-  // and the law refuses givens where they collide (served nowhere): 25 (5 × 4 = 4 × 5), 30, 7 (one bundle: 6 = 7 − 1)
+  // the law refuses givens where they collide (served nowhere): 12 and 18 (as many loose lines as bundles: 12 read as 10
+  // either way), 25 and 27 (five bundles: a bundle skipped), 30 (bundles only), 7 and 11 (one or two bundles)
   const read = levels("read", [3])[0];
-  for (const c of [25, 30, 7, 27]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
+  for (const c of [12, 18, 24, 25, 27, 30, 7, 11, 13]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
+  // keep: bundles in one row only; a row of 12 (2 + 2); rows of one bundle only (each one line short: one slip a row)
+  const keep = levels("keep", [3]).find((lv) => lv.params.cats.length === 3);
+  const kv = (counts) => L.validate({ ...keep, params: { ...keep.params, cats: keep.params.cats.slice(0, counts.length), counts, seq: counts.flatMap((c, r) => Array(c).fill(r)) } });
+  for (const counts of [[13, 4], [12, 5], [7, 8], [5, 3, 9], [5, 7, 9]]) assert.equal(kv(counts), null, String(counts));
+  assert.ok(kv([10, 5]) && kv([5, 13, 2]), "a row of two bundles beside a row of one is served");
 });
 
 test("stambh/tally: the law's rules (every stroke legal; groups by five at the check; the scene first; the totals; undo)", () => {
@@ -263,13 +305,15 @@ for (const goal of ["keep", "read"]) {
 }
 
 test("stambh/tally: ten bundles (and four) fit a 360 px row; the flow never leaves its box", () => {
+  // the height the lines take: one line, the box; two or more, the strokes and the pitch between them
+  const span = (f) => (f.lines > 1 ? f.sh + f.lineH * (f.lines - 1) : f.lineH);
   // the read row at the 360 phone's play box (324 px world, 16 px margins) and the keep row's tally box at 360
   for (const [width, height] of [[292, 96], [168, 40], [140, 52], [700, 220]]) {
     for (const n of [1, 5, 9, 23, 50, 54]) for (const grouped of [false, true]) {
       const marks = tallyOf(n), f = tallyFlow(marks, width, height, grouped);
       assert.equal(f.stand.length + f.across.length, n);
       assert.ok(f.right <= width + 0.01, `${n} at ${width}: right ${f.right}`);
-      assert.ok(f.lines * f.lineH <= height + 0.01, `${n} at ${width}x${height}: ${f.lines} lines of ${f.lineH}`);
+      assert.ok(span(f) <= height + 0.01, `${n} at ${width}x${height}: ${f.lines} lines of ${f.lineH}`);
       for (const a of f.across) assert.ok(a.x0 >= 0 && a.x1 <= width);
     }
   }
@@ -285,10 +329,22 @@ test("stambh/tally: ten bundles (and four) fit a 360 px row; the flow never leav
   }
   for (const height of [96, 140, 220]) {
     const marks = tallyOf(READ_MAX), f = tallyFlow(marks, 292, height, false, 56);
-    assert.ok(f.right <= 292.01 && f.lines * f.lineH <= height + 0.01);
+    assert.ok(f.right <= 292.01 && span(f) <= height + 0.01);
     for (const g of groupsOf(marks)) {
       const lines = new Set([...f.stand, ...f.across.map((a) => ({ i: a.i, line: a.line }))].filter((q) => q.i >= g.from && q.i < g.from + g.len).map((q) => q.line));
       assert.equal(lines.size, 1, `read ${READ_MAX} at 292x${height}: a group split across lines`);
+    }
+  }
+  // evening ruling 4: on two lines or more, half a stroke's height between the lines, and no loose line under a bundle
+  for (const n of [21, 34, 41, 47, READ_MAX]) for (const height of [61, 96, 140, 220]) for (const width of [292, 260]) for (const band of [0, 21]) {
+    const marks = tallyOf(n), f = tallyFlow(marks, width, height, false, 56, band);
+    if (f.lines < 2) continue;
+    assert.ok(span(f) <= height + 0.01 && f.lineH - f.sh >= band - 0.01, `read ${n}: the band between lines`);
+    assert.ok(f.lineH - f.sh >= f.sh / 2 - 0.01, `read ${n} at ${width}x${height}: gap ${(f.lineH - f.sh).toFixed(1)} under half of ${f.sh.toFixed(1)}`);
+    const looseFrom = n - (n % 5), xs = (line) => [...f.stand.filter((q) => q.line === line && q.i < looseFrom).map((q) => q.x), ...f.across.filter((a) => a.line === line).flatMap((a) => [a.x0, a.x1])];
+    for (const q of f.stand.filter((q) => q.i >= looseFrom)) for (let l = 0; l < q.line; l++) {
+      const above = xs(l);
+      if (above.length) assert.ok(q.x > Math.max(...above) + f.sp * 0.5, `read ${n} at ${width}x${height}: a loose line at ${q.x.toFixed(0)} under a bundle on line ${l}`);
     }
   }
   // five standing lines without a cross, as she drew them, still fit
@@ -377,3 +433,92 @@ for (const e of TE()) for (const fade of [1, 2, 3]) {
     assert.ok(seen.size >= 2, `${seen.size} distinct levels over 4 children`);
   });
 }
+
+// ───────────────────────────── round 2 rulings on the real view (headless; server/forge3/qa/laws.mjs mounts it) ─────────────────────────────
+test("stambh/tally view (round 2): the five state points only at Phir se rakho, Jaancho waits, no tick on wrong marks; a row's tick needs marks AND total", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const { word } = await import("../src/play/engines/words.ts");
+  for (const level of levels("keep", [1, 7, 42])) {
+    const p = level.params;
+    // the five state: no line across anywhere, every total right
+    const m = await _mount(level);
+    for (const a of tallyFourActs(p, "five")) m.ctl.dispatch(a);
+    let f = m.look();
+    const ticks = (x) => x.uses.filter((u) => u.op === "tick").length;
+    // (look draws five frames) a tick only on the rows under five, whose marks and totals are both right
+    assert.equal(ticks(f), 5 * p.counts.filter((c) => c < 5).length, `${level.levelId}: no tick on a row whose marks are wrong`);
+    assert.equal(f.last.goal, word("hinglish", "stambh.goal.again"), "the line points only at keeping the tally again");
+    let ctl = m.view.controls();
+    assert.ok(ctl.find((c) => c.id === "done").disabled, "Jaancho waits until something changes");
+    assert.ok(ctl.find((c) => c.id === "again").you, "Phir se rakho is her move");
+    assert.ok(!ctl.find((c) => c.id === "done").you);
+    assert.ok(!f.uses.some((u) => u.role === "good" && u.op !== "tick"), "no green but ticks");
+    // a change wakes Jaancho: a total edited
+    m.ctl.dispatch({ kind: "total", row: 0, n: p.counts[0] + 1 });
+    ctl = m.view.controls();
+    assert.ok(!ctl.find((c) => c.id === "done").disabled, "Jaancho is back once something changed");
+    // the counted state: the rows under five (no bundle) are right, marks and total: ticked; the rest dashed, no tick
+    const k = await _mount(level);
+    for (const a of L.malActs(level, "tally-four")) k.ctl.dispatch(a);
+    f = k.look();
+    assert.equal(ticks(f) > 0, p.counts.some((c) => c < 5), "a right row is ticked");
+    assert.equal(f.last.goal, word("hinglish", "stambh.goal.totals"), "marks right, totals off: change a total");
+    assert.ok(f.uses.filter((u) => u.op === "body:selected").every((u) => u.role === "focus"), "selection is the focus colour");
+    // evening ruling 2: the count plays over each bundle and fades; nothing stays over the tally while a try remains
+    assert.ok(f.uses.some((u) => u.op === "text" && u.role === "look" && u.s === "5"), "the count reaches 5 over a bundle while it plays");
+    const later = k.look();
+    assert.deepEqual(later.uses.filter((u) => u.op === "text" && u.role === "look"), [], "no digit stays over the tally");
+  }
+});
+
+test("stambh/tally view (round 2): read's miss counts over each bundle on the tally; the line has no unit ticks, no place, no hops", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  for (const level of levels("read", [1, 7, 42])) {
+    const n = level.params.counts[0], b = Math.floor(n / 5);
+    const m = await _mount(level);
+    for (const a of L.malActs(level, "tally-four")) m.ctl.dispatch(a);
+    const f = m.look(), last = m.look();
+    const strokes = (x, role) => x.uses.filter((u) => u.op === "stroke" && u.role === role).length / 5;   // look() draws five frames
+    // the count over each bundle: its digits in the mix-up colour, a 5 over each bundle while it plays (look's frames at
+    // 0.05, 0.45, 1.55, 3.95 and 9.95 s), then it fades: nothing stays over the tally (evening ruling 2)
+    const fives = f.uses.filter((u) => u.op === "text" && u.role === "look" && u.s === "5").length;
+    assert.ok(fives >= b, `${level.levelId}: a 5 over each of the ${b} bundles while it plays (${fives})`);
+    const after = last.uses.filter((u) => u.op === "text" && u.role === "look").map((u) => u.s);
+    assert.deepEqual([...new Set(after)], [String(4 * b + (n % 5))], `${level.levelId}: after the play-out only her own number (on the line) is in the mix-up colour (${after})`);
+    // a later miss: her dot on the line and nothing else, no arrow (evening ruling 3: the arrow after the first miss only)
+    assert.equal(strokes(last, "ink2"), 3, "the first miss: the line and the arrow's two strokes");
+    m.ctl.dispatch({ kind: "total", row: 0, n: n - 2 }); m.ctl.dispatch({ kind: "check" });
+    const later = m.look();
+    assert.equal(later.uses.filter((u) => u.op === "circle" && u.role === "look").length, 5, "her dot after a later miss (one a frame)");
+    assert.equal(strokes(later, "ink2"), 1, "the line only: no arrow after a later miss");
+    // the line: one stroke for the line, one for 0, two for the arrow (ink2 / ink3); every ink stroke is the tally's own
+    assert.ok(strokes(last, "ink3") <= 1, "no unit ticks");
+    assert.ok(strokes(last, "ink2") <= 3, `no hops (${strokes(last, "ink2")})`);
+    assert.equal(strokes(last, "ink"), n, "no place drawn for the answer: every ink stroke is a tally stroke");
+    assert.ok(!f.texts.includes(String(n)), "the answer is never written");
+  }
+});
+
+test("stambh/tally view (round 2): a kind has one colour in both goals; a digit into a full box replaces it; one thing in the strip", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const roleOfKind = (uses) => uses.filter((u) => u.op === "color" && /^q\d$/.test(u.role)).map((u) => u.role);
+  // read a kada tally and keep a bangles scene: Kada is q2 in both (its place in the scene)
+  const read = levels("read", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).find((lv) => lv.params.cats[0] === "kada");
+  assert.ok(read, "a kada read level");
+  const r = (await _mount(read)).look();
+  assert.deepEqual([...new Set(roleOfKind(r.uses))], ["q2"], "read: Kada drawn in q2");
+  // keep: each row's kind in its scene colour (a two-row scene starting at Kada tells the scene colour from the row number)
+  const keep = levels("keep", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).find((lv) => lv.params.ctx === "bangles" && lv.params.cats[0] === "kada");
+  assert.ok(keep, "a bangles keep level starting at Kada");
+  const want = keep.params.cats.map((c) => ["q1", "q2", "q3"][TALLY_CONTEXTS.bangles.indexOf(c)]);
+  assert.deepEqual([...new Set(roleOfKind((await _mount(keep)).look().uses))].sort(), [...new Set(want)].sort(), "keep: each kind in its scene colour");
+  // a digit into a full box starts it again
+  const m = await _mount(read);
+  m.ctl.dispatch({ kind: "total", row: 0, n: 23 });
+  const k7 = m.view.controls().find((c) => c.id === "k7");
+  assert.ok(k7 && !k7.disabled, "the keys stay on when the box is full");
+  k7.onPress();
+  assert.equal(m.ctl.state.totals[0], 7, "a digit typed into a full box replaces it");
+  m.view.controls().find((c) => c.id === "k3").onPress();
+  assert.equal(m.ctl.state.totals[0], 73);
+});

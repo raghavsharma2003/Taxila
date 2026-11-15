@@ -78,7 +78,7 @@ for (const e of NEW()) {
         assert.notEqual(mg.verdict, "solved", `${mal} never solves`);
         const mis = mg.moments.filter((m) => m.kind === "misconception_consequence").map((m) => m.misconceptionId);
         assert.deepEqual([...new Set(mis)], [mal], `${level.levelId} ${mal}`);
-        assert.equal(mg.evidence[0]?.misconceptionId, kit);
+        assert.equal((mg.evidence[0]?.misconceptionId ?? mg.evidence[0]?.chanceMis), kit);
         seen.add(mal);
       }
       const hidden = hiddenOf(v);
