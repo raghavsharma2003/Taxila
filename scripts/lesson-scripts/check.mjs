@@ -981,6 +981,7 @@ export async function checkTopic(topicId) {
   const s = scriptOf(topicId), kit = kitTopic(topicId);
   if ((s.version ?? 1) >= 2) Object.defineProperty(s, "__interests", { value: await interestWords(), enumerable: false });
   const S = structureErrors(s, kit);
+  if (isV24(s)) S.push(...chapterSynonymErrors(topicId, allTopics().filter((t) => t !== topicId).map((t) => ({ topicId: t, s: scriptOf(t) })).concat([{ topicId, s }])));
   const W = kit ? await boardErrors(s, kit) : { errors: [], w6: [] };
   if (kit) W.errors.push(...await allBoardsResolve(s, kit));
   const V = kit ? await runtimeErrors(s, kit) : [];
@@ -1449,18 +1450,52 @@ export function SYNONYM_SETS() { return [
   { idea: "a group of things", words: ["dheri", "dheriyan", "dheriyon", "group", "groups", "samooh", "samoohon"] },
   { idea: "one piece of a cut whole", words: ["tukda", "tukde", "tukdon", "hissa", "hisse", "hisson"] },
 ]; }
-export function synonymErrors(s) {
-  const e = [];
+/** The spoken-Hindi counts of each synonym set's words in one script ({ [setIdx]: { word: n } }), the `terms` glossary and the
+ *  joints left out. */
+export function synonymUse(s) {
   const { joints, terms, ...rest } = s;
   const hi = []; const walk = (x, k) => { if (typeof x === "string") { if (k === "hi") hi.push(x); } else if (Array.isArray(x)) x.forEach((y) => walk(y, k)); else if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) walk(v, kk === "hi" ? "hi" : k === "hi" ? "hi" : kk); };
   walk(rest, null); const t = hi.join(" \n ").toLowerCase();
-  for (const set of SYNONYM_SETS()) {
-    const used = {};
-    for (const w of set.words) { const n = (t.match(new RegExp(`(?<![\\p{L}])${w}(?![\\p{L}])`, "gu")) ?? []).length; if (n) used[w] = n; }
-    // (forms of one word: a group counts as one; two roots in one script is the fault)
-    const roots = new Set(Object.keys(used).map((w) => set.words.indexOf(w)).map((i) => set.words[i].replace(/(on|ein|iyan|iyon|e|s|a|i)$/, "").slice(0, 4)));
+  return SYNONYM_SETS().map((set) => { const used = {}; for (const w of set.words) { const n = (t.match(new RegExp(`(?<![\\p{L}])${w}(?![\\p{L}])`, "gu")) ?? []).length; if (n) used[w] = n; } return used; });
+}
+// (forms of one word count as one: "tukda/tukde/tukdon" is one root)
+function rootOf(w) { return w.replace(/(on|ein|iyan|iyon|e|s|a|i)$/, "").slice(0, 4); }
+export function synonymErrors(s) {
+  const e = [];
+  SYNONYM_SETS().forEach((set, i) => {
+    const used = synonymUse(s)[i];
+    const roots = new Set(Object.keys(used).map(rootOf));
     if (roots.size > 1) e.push(`one word per idea (${set.idea}): this script says ${Object.entries(used).map(([w, n]) => `"${w}" ×${n}`).join(", ")}; say one (director21 row 12)`);
-  }
+  });
+  return e;
+}
+/** main, 2026-11-15: a chapter shares one word per idea, because a child takes all its lessons (c5-t01 said "tukde" and c5-t02
+ *  "hisse" for an equal part of a whole). Across the scripts of one chapter (same class and chapter in the topicId), each synonym
+ *  set's chapter word is the root used most; a script using another root for that idea is refused. `scripts` is [{ topicId, s }]. */
+export function chapterSynonymErrors(topicId, scripts) {
+  const ch = (t) => t.split("-").slice(0, 3).join("-");
+  const mine = scripts.filter((x) => ch(x.topicId) === ch(topicId));
+  if (mine.length < 2) return [];
+  const e = [];
+  // (twin pairs count too: "line" in one lesson and "rekha" in the next is two words for one thing to the child)
+  const sets = [...SYNONYM_SETS(), ...TWINS.map((p) => ({ idea: `${p.en[0]} / ${p.hi[0]}`, words: [...p.en, ...p.hi], twin: p }))];
+  const useOf = (sc, set, i) => {
+    if (!set.twin) return synonymUse(sc)[i];
+    const { joints, terms, ...rest } = sc;
+    const hi = []; const walk = (x, k) => { if (typeof x === "string") { if (k === "hi") hi.push(x); } else if (Array.isArray(x)) x.forEach((y) => walk(y, k)); else if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) walk(v, kk === "hi" ? "hi" : k === "hi" ? "hi" : kk); };
+    walk(rest, null); const t = hi.join(" \n ").toLowerCase(); const u = {};
+    for (const side of ["en", "hi"]) { const n = set.twin[side].reduce((a, w) => a + (t.match(new RegExp(`(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "gu")) ?? []).length, 0); if (n) u[set.twin[side][0]] = n; }
+    return u;
+  };
+  const rootFor = (set, w) => (set.twin ? w : rootOf(w));
+  sets.forEach((set, i) => {
+    const tally = {}, byScript = {};
+    for (const { topicId: t, s } of mine) { const u = useOf(s, set, i); byScript[t] = new Set(Object.keys(u).map((w) => rootFor(set, w))); for (const [w, n] of Object.entries(u)) tally[rootFor(set, w)] = (tally[rootFor(set, w)] ?? 0) + n; }
+    const top = Object.entries(tally).sort((a, b) => b[1] - a[1])[0]?.[0];
+    if (!top) return;
+    const other = [...(byScript[topicId] ?? [])].filter((r) => r !== top);
+    if (other.length) e.push(`one word per idea in chapter ${ch(topicId)} (${set.idea}): this script says ${other.map((r) => set.words.find((w) => rootFor(set, w) === r)).join(", ")} where the chapter's lessons say ${set.words.find((w) => rootFor(set, w) === top)} (main 2026-11-15)`);
+  });
   return e;
 }
 /** v2.4 (director21 E1, C1, S2): the ending, second wordings and question-only re-asks are authored. */

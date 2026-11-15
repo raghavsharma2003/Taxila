@@ -73,6 +73,7 @@ and `to-voice` (two 001, no 002). Always cite a patch by its full file name.
 | 018-harness-page-up-kind.patch | applied | 6/6 | `evals/hybrid-side-by-side.mjs` |  |
 | 023-play-facts-row-trail.patch | **pending** (2026-11-10) | 0/2 | `server/brain/turn.js` | From Games (claude/r8-play-follow): keep the whole verified play facts row (200 -> 240 chars); the level_end row now leads with the trail summary and the because kinds. |
 | 024-play-why-voice.md | written ask | — | — | From Games: have the teacher say the play why-line (`taxila:play-say`) when the floor is free; play shows it, has no voice. |
+| 025-hindi-words-keep-script-terms.md | written ask | — | `server/brain/say.js`, `server/director/state.js` | From Studio: the Hindi-words swap keeps the script's own term forms (`termsOf`): c6 "triangle" was becoming "tribhuj". |
 
 ## to-learning
 

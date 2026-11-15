@@ -459,3 +459,19 @@ catch, wicket, bowling, batting, goal, penalty.
 
 Read: every new or changed line read by a second reader who did not write it (517 entries: 467 pass, 50 failed and fixed, 0 wrong
 keys), the fix round read again by a third. check.mjs reads ok on all four; the dry matrix (16 lessons) reads 0 on every predicate.
+
+## Chapter words (main, 2026-11-15): one word per idea across a chapter's lessons
+
+A child takes both c5 ch02 lessons, so they now share one word per idea: the word the chapter's lessons used most. check.mjs
+`chapterSynonymErrors` reads a chapter's scripts together (the synonym sets and the twin pairs) and refuses a script using another word.
+
+| idea | chapter word (uses before) | changed in |
+|---|---|---|
+| an equal part of a whole | hissa (318 vs tukda 27) | c5-t01: 13 lines, "tukda/tukde/tukdon" → "hissa/hisse/hisson" (en "piece" → "part") |
+| the number line | line / number line (79 vs rekha 38) | c5-t02: "rekha" → "line", "sankhya rekha" → "number line" |
+| a mark on the line | mark (100 vs nishaan 14) | c5-t02 |
+| one gap along the line | gap (321 vs kadam 43) | c5-t02: "kadam" → "gap", and lines that walked a gap now cross it ("gap paar karna") |
+| fraction | fraction (19 vs bhinn) | c5-t02: "bhinn" → "fraction" |
+
+No key, board or card order changed. 104 changed strings read by a reader who did not write them: 90 pass; the 14 that still
+walked a gap ("kitne gap chalna hai") were rewritten as crossing it and pass check.mjs. The `terms` glossaries are unchanged.

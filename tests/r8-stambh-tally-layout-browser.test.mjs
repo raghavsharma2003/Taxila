@@ -69,6 +69,12 @@ describe("stambh/tally layout: no overlap or cut-off at 360 x 640 and 1366 x 768
     await page.waitForTimeout(300);
     await page.clock.runFor(600);
     await page.waitForFunction(() => !!window.__play?.dispatch, null, { timeout: 10_000 });
+    // the art's faces are on the page before anything is measured: a label laid out in a wider fallback is ellipsised on
+    // one runner and not another (PR #130, 2026-11-11). The stage repaints itself when a face arrives (stage.ts, loadingdone).
+    const faces = await page.evaluate(() => Promise.all(['"Atkinson Hyperlegible Next"', '"Bricolage Grotesque"', '"Geist Mono"']
+      .flatMap((f) => [400, 700].map((w) => document.fonts.load(`${w} 16px ${f}`).then((l) => l.length, () => 0)))).then(async (n) => { await document.fonts.ready; return n; }));
+    assert.ok(faces.every((k) => k > 0), `the art's faces load (${faces})`);
+    await page.clock.runFor(100);
     for (const s of steps) {
       if (s.tap) {
         await page.clock.runFor(700);
