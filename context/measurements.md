@@ -6772,3 +6772,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-integration-54-gate` (2026-11-15): Integration 54 (f611fd900): tsc, vite, prompt budget pass; test:all 729 suites, 7270 tests, 7256 pass, 0 fail, 13 skipped, 1 todo, wall 752 s on 4 cores; leak check clean
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-8d1952d` (2026-11-15): Released 8d1952d with scripts/release.mjs: web taxila-web--s8d1952d-a9gh (was taxila-web--s4b9cc50-obcd), worker + canary/nightly jobs on taxila-worker:8d1952d (was 4b9cc50); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8d1952d --rollback.
