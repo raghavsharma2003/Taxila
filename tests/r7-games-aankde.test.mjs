@@ -55,7 +55,7 @@ const add = (xs) => { let t = 0; for (const x of xs) t += x; return t; };
 const median = (xs) => { const s = xs.slice().sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
 /** the checker's own copy of the set-up, fed every act the law accepted (undo pops its own stack) */
 function checker(p) {
-  const st = { rows: p.cats.map(() => []), put: [], crown: -1, h: p.h.slice(), line: -1, order: p.h.map((_, i) => i), peg: -1 }, stack = [];
+  const st = { rows: p.cats.map(() => []), put: [], totals: p.cats.map(() => null), crown: -1, h: p.h.slice(), line: -1, order: p.h.map((_, i) => i), peg: -1 }, stack = [];
   if (p.goal === "missing") p.given.forEach((g, r) => { for (let i = 1; i <= g; i++) st.rows[r].push(i % 5 === 0); });
   const snap = () => JSON.parse(JSON.stringify(st));
   return {
@@ -65,6 +65,7 @@ function checker(p) {
       if (a.kind === "undo") { if (stack.length) Object.assign(st, stack.pop()); return; }
       stack.push(snap());
       if (a.kind === "mark") { st.rows[a.row].push(a.across === true); if (p.goal !== "missing") st.put.push(a.row); }
+      if (a.kind === "total") st.totals[a.row] = a.n ?? null;
       if (a.kind === "crown") st.crown = st.crown === a.row ? -1 : a.row;
       if (a.kind === "move") { st.h[a.from] -= 1; st.h[a.to] += 1; }
       if (a.kind === "line") st.line = a.at;
@@ -80,7 +81,8 @@ function verdict(p, st) {
     if (st.put.length !== p.slips.length || st.put.some((r, i) => r !== p.slips[i])) return false;
     const f = freq(p.slips, k);
     if (!st.rows.every((row, r) => proper(row) && says(row) === f[r])) return false;
-    if (p.goal === "sort") return true;
+    // sort: she typed each row's total, and each is what the row's slips number (laws ruling 2026-11-15)
+    if (p.goal === "sort") return st.totals.every((t, r) => t === f[r]);
     const best = Math.max(...f);
     return st.crown >= 0 && f[st.crown] === best;
   }
@@ -204,6 +206,11 @@ test("aankde: the law's rules (a slip per stroke; strokes only in the lost row; 
   ap(sort, { kind: "undo" }); assert.deepEqual(s.put, []);
   for (let i = 0; i < S.slips.length; i++) ap(sort, { kind: "mark", row: 0, across: false });
   assert.equal(ap(sort, { kind: "mark", row: 0, across: false }), "pile_empty");
+  // sort: every row's total typed before the count (her count, never the game's)
+  assert.equal(ap(sort, { kind: "run" }), "fill_first");
+  for (const [a, code] of [[{ kind: "total", row: -1, n: 3 }, "bad_row"], [{ kind: "total", row: 0, n: 100 }, "bad_number"], [{ kind: "total", row: 0, n: 2.5 }, "bad_number"]]) assert.equal(ap(sort, a), code);
+  S.cats.forEach((_, r) => ap(sort, { kind: "total", row: r, n: r ? 0 : S.slips.length }));
+  assert.deepEqual(s.totals, S.cats.map((_, r) => (r ? 0 : S.slips.length)));
   ap(sort, { kind: "run" }); assert.ok(s.ended && !s.done);
   assert.equal(ap(sort, { kind: "run" }), "change_first");
   ap(sort, { kind: "undo" }); assert.ok(!s.ended, "a change starts a fresh run");
@@ -311,11 +318,15 @@ for (const [mode, goal, grammar] of CASES) {
             : r < 0.58 ? { kind: "line", at: Math.floor(x * 17) - 1 }
             : r < 0.68 ? { kind: "swap", i: Math.floor(x * n), j: Math.floor(rnd() * n) }
             : r < 0.75 ? { kind: "peg", at: Math.floor(x * 2 * n) - 1 }
+            : r < 0.8 && !pursue ? { kind: "total", row: Math.floor(x * n), n: Math.floor(rnd() * 16) }
             : r < 0.9 ? { kind: "run", ...(rnd() < 0.3 ? { solved: true } : {}) } : { kind: "undo" };
           const before = s;
           const out = L.apply(level, s, a, i + 1);
           acts++;
           if (!out.refused || out.refused === "missed") chk.feed(a);
+          // (pursuing: an undo takes back the solver's last act, so it is made again; sort's typed totals made the solve too
+          // long to survive undos by luck)
+          if (pursue && a.kind === "undo" && before.depth > 0 && k > 0) k--;
           if (a.kind === "run" && out.state.ended && !before.ended) {
             judged++;
             assert.equal(out.state.done, verdict(p, chk.st), `${level.levelId}: law and checker disagree (${JSON.stringify(chk.st)})`);

@@ -28784,6 +28784,82 @@
    "at": "2026-11-15",
    "title": "Released 0d00f29 with scripts/release.mjs: web taxila-web--s0d00f29-r78k (was taxila-web--s8d1952d-a9gh), worker + canary/nightly jobs on taxila-worker:0d00f29 (was 8d1952d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0d00f29 --rollback.",
    "source": "inbox/release-0d00f29.json"
+  },
+  {
+   "id": "dc-r8-kon-name-sizes-first",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "kon/name figures are built from their five angle sizes: every two at least 10° apart on a 5° grid (gate 1 asks 8°), the two joined rays given the lengths that make the triangle's corners (VX : VY = sin cY : sin cX, at least 12 units apart), the third ray its own length; anglesApart checks the figure as drawn, so find's '≠' row is true read as 'another angle' or as 'not equal'. Reverse if: a figure family is needed whose sizes cannot be 8° apart (then replace '≠' with a mark that claims no size).",
+   "source": "inbox/r8-gate1-name.json"
+  },
+  {
+   "id": "dc-r8-kon-name-find-key-per-request",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "kon/name find draws its key arc (and its joined pair) once per request, evenly over the five arcs, and every figure the picker sees has that key: the key is each arc 1 time in 5 as served (the picker's scoring cannot tilt it), the wide arc included, the vertex angle outside the triangle as often as the one inside. The wide-arc key is exempt from the read-across refusal (it is over 90°, and any angle over 90° has its vertex between its arms' ends by rows or columns), so reading across wins exactly on those levels, 1 in 5. A key whose first-letter reading is not drawn (wide, outside) has no mal acts. Reverse if: judges hold reading across on wide-arc levels as a shortcut (then serve the wide arc as a key only with a non-text layout, or drop it and weight the first tap at 1 in 4).",
+   "source": "inbox/r8-gate1-name.json"
+  },
+  {
+   "id": "ms-r8-kon-name-gate1-key-spread",
+   "kind": "measurement",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "kon/name find after gate 1, 600 picker requests (fades 1-3, seeds 20000-20599): keys by arc 138/119/119/110/114; a first tap by 'a corner arc' wins 0.187, 'an arc inside the triangle' 0.197, 'the widest' 0.198, 'the smallest angle' 0.213, 'one of the three smallest' 0.267 (the size floor: vertex keys are kept under 65° so reading across never finds them). Picker CPU over 60 requests (seeds 700-729): p50 2.9 ms, p95 15.6 ms, max 22.7 (bar 50; before gate 1 the same blocks measured p95 15-21).",
+   "source": "inbox/r8-gate1-name.json"
+  },
+  {
+   "id": "ms-release-2de94c3",
+   "kind": "measurement",
+   "at": "2026-11-15",
+   "title": "Released 2de94c3 with scripts/release.mjs: web taxila-web--s2de94c3-bslc (was taxila-web--s0d00f29-r78k), worker + canary/nightly jobs on taxila-worker:2de94c3 (was 0d00f29); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2de94c3 --rollback.",
+   "source": "inbox/release-2de94c3.json"
+  },
+  {
+   "id": "fd-second-play-changes-colours-p412",
+   "kind": "finding",
+   "at": "2026-11-15",
+   "title": "Playing the Studio v2 engines a second time in one process draws 23 of 160 runs (all p412) with different colours; the colour-trace test therefore fails after any engine-playing test file (leak check, seed 20261115, integration 60; bisected to studio-v2-layout.test.mjs, reproduced with traceAll twice). Open whether it is first-play state by design or a carry-over between a child's games. docs/patches/to-studio/011",
+   "source": "inbox/r8-main-30.json"
+  },
+  {
+   "id": "dc-r8-kon-name-gate1-pass",
+   "kind": "decision",
+   "at": "2026-11-15",
+   "title": "kon/name passes the play gate: two fresh judges failed it on one screen (the ≠ row over two arcs at 360) and passed all else; after the four fixes the main loop looked at the retaken shots and passed it. Shown with naming off, as kon/place and stambh/tally are. Reverse if a child or judge shows the play-out misleading with naming off",
+   "source": "inbox/r8-main-30.json"
+  },
+  {
+   "id": "dc-r8-aankde-sort-typed-totals",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "aankde/tally sort: she types each row's total with stambh/tally's typed total (cell and pad, src/play/core/typedtotal.ts, one implementation for both families); 'Gino' waits for every total; solved only when the tally is right AND every total is the row's count, a wrong total is a miss; a run prints no row count while a try remains (a tick on a right row, the dashed box on a total that is not the row's), the counts and the survey's total show on the solved screen. The solver and both mal-rules type totals (tally-five: the strokes counted one by one, right; total-mismatch: her rows as they read). Reverse if: judges hold that the sort goal's skill is bundling only (then the run may read the rows again, and law 2 lists aankde/tally in KNOWN).",
+   "source": "inbox/r8-aankde-typed.json"
+  },
+  {
+   "id": "dc-r8-kon-name-row-outside-figure",
+   "kind": "decision",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "kon/name: every drawn arc is declared to the layout audit and kept clear by every chip; find's '≠' row is placed wholly above or below the figure's whole box (lines, arcs, points, letters with one letter height), at its side only on a wide screen; find serves only figures that leave that band at 360 (ROW_GAP 8 board px beyond the board, moved up or down, else rays shortened alike to at least 0.8). The wide arc runs WIDE_ROOM 16 inside the shortest ray (at most 84), drawn and tapped alike; find needs it at 70 or more. Say's play-out arc for an undrawn angle is one solid stroke; its dashed rays sit on the side away from the lit sector. Reverse if: the served find pool gets too narrow (a measured shortcut over 1 in 5 from figure shape), then let the row sit in a stacked column beside the figure at 360 instead of refusing figures.",
+   "source": "inbox/r8-gate1-name-b.json"
+  },
+  {
+   "id": "ms-r8-kon-name-gate1b-picker",
+   "kind": "measurement",
+   "status": "proposed",
+   "at": "2026-11-15",
+   "title": "kon/name after the final gate-1 fixes: picker CPU over 90 requests (seeds 700-714 x 3, both goals) p95 26.2 ms, max 59.8 (first rep cold; bar 50 on p95); find generator 1200 requests (seeds 1-400, fades 1-3): 5 made no level (0.4 %; the test bar is 1 %).",
+   "source": "inbox/r8-gate1-name-b.json"
+  },
+  {
+   "id": "ms-release-dc63a6f",
+   "kind": "measurement",
+   "at": "2026-11-15",
+   "title": "Released dc63a6f with scripts/release.mjs: web taxila-web--sdc63a6f-7nvq (was taxila-web--s2de94c3-bslc), worker + canary/nightly jobs on taxila-worker:dc63a6f (was 2de94c3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs dc63a6f --rollback.",
+   "source": "inbox/release-dc63a6f.json"
   }
  ],
  "edges": [
@@ -46016,6 +46092,11 @@
    "src": "fd-clause-4-number-met-remedy-not-applied",
    "rel": "constrains",
    "dst": "dc-r8-director22"
+  },
+  {
+   "src": "dc-r8-kon-name-gate1-pass",
+   "rel": "part_of",
+   "dst": "dc-r8-game-gate-play-then-evidence"
   }
  ]
 }

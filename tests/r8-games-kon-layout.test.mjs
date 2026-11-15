@@ -23,6 +23,9 @@ import { konLogic } from "../src/play/families/kon/kon.logic.ts";
 import { BW, BH, PR, PD, ARM, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs, arms, farEnd, norm } from "../src/play/families/kon/kon.place.ts";
 import { SCALE_GAP, INK_H, LETTER_PX, monoMeasure, scaleLabels, scaleOmit, scaleOmitFor, protractorLines, letterSpot, numberBox } from "../src/play/families/kon/kon.scale.ts";
 
+/** kon/name's world boxes (CSS px; tests/r8-games-kon-name-view.test.mjs lays the view out in these, headless) */
+const NAME_WORLD = { "360x640": { say: { w: 360, h: 399 }, find: { w: 360, h: 399 } }, "1366x768": { say: { w: 1005, h: 768 }, find: { w: 1005, h: 768 } } };
+
 const browsersDir = process.env.PLAYWRIGHT_BROWSERS_PATH || "/opt/pw-browsers";
 const haveChromium = existsSync(browsersDir) && readdirSync(browsersDir).some((d) => d.startsWith("chromium"));
 const SKIP = process.env.FORGE3_BROWSER === "0" ? "FORGE3_BROWSER=0" : !haveChromium ? "no Chromium" : false;
@@ -329,6 +332,7 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             return {
               nums: a.texts.filter((t) => /^\d{1,3}$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px, halo: !!t.halo, seq: t.seq })),
               letters: a.texts.filter((t) => /^[A-Z]$/.test(t.s)).map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px, seq: t.seq })),
+              all: a.texts.map((t) => ({ s: t.s, x: t.x, y: t.y, w: t.w, px: t.px })),
               uses: a.uses,
               canvas: { w: c.width, h: c.height },
               texts: a.texts.map((t) => ({ s: t.s, w: t.w, h: t.px * 1.2, x0: t.align === "left" ? t.x : t.align === "right" ? t.x - t.w : t.x - t.w / 2, y0: t.y - t.px * 0.6 })),
@@ -388,6 +392,35 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
               if (!probe.marks.some((m) => m.kind === "chip")) faults.push(`${size.tag} ${level.levelId} ${name}: her number's chip missing`);
             }
             drawn.push({ name, box: probe.box, prot: probe.marks.filter((m) => m.kind === "protractor").map((m) => `${m.w.toFixed(1)}x${m.h.toFixed(1)}`).join(" ") });
+          }
+          // kon/name gate 1 (night rulings 3 and 4): the name chip and find's "≠" row keep one letter height clear of every
+          // letter (a chip's or the "≠"'s box and a letter's box at least the letter's size apart; say's play-out chip, which
+          // names the corner it sits at, is the one chip not held to it); a dashed ray beside a solid line it lies on is
+          // ≥ 8 px from it; and the world box is the one the headless check (tests/r8-games-kon-name-view.test.mjs) uses
+          if (level.mode === "name") {
+            const want = NAME_WORLD[size.tag][level.params.goal];
+            if (Math.abs(want.w - probe.canvas.w) > 0.5 || Math.abs(want.h - probe.canvas.h) > 0.5) faults.push(`${size.tag} ${level.levelId} ${name}: world box ${probe.canvas.w}x${probe.canvas.h}, NAME_WORLD says ${want.w}x${want.h}`);
+            const lb = (t) => ({ x: t.x, y: t.y, w: t.w, h: t.px * 1.2 }), gap = (a, b) => Math.max(Math.abs(a.x - b.x) - (a.w + b.w) / 2, Math.abs(a.y - b.y) - (a.h + b.h) / 2);
+            const playOut = level.params.goal === "say" && /^(mal|late)-/.test(name);
+            const held = [...(playOut ? [] : probe.marks.filter((m) => m.kind === "chip").map((m) => ({ s: "chip", x: m.x + m.w / 2, y: m.y + m.h / 2, w: m.w, h: m.h }))),
+              ...probe.all.filter((t) => t.s === "≠").map((t) => ({ s: "≠", ...lb(t) }))];
+            for (const k of held) for (const l of probe.letters) { const g = gap(k, lb(l)); if (g < l.px - 0.01) faults.push(`${size.tag} ${level.levelId} ${name}: ${k.s} ${g.toFixed(1)} px from letter ${l.s} (one letter height is ${l.px})`); }
+            // gate 1, ruling 1 (2026-11-15): every arc is declared ("arc" chords; screenFaults keeps every chip off them), and
+            // at 360 find's "≠" row lies wholly above or below the figure's whole box, arcs and letters included
+            if (level.params.goal === "find" && !probe.segs.some((g) => g.kind === "arc")) faults.push(`${size.tag} ${level.levelId} ${name}: no arcs declared`);
+            if (size.tag === "360x640" && level.params.goal === "find") {
+              const fig = probe.segs.filter((g) => g.kind === "arm" || g.kind === "arc"), L = probe.letters;
+              const fy0 = Math.min(...fig.flatMap((g) => [g.y0, g.y1]), ...L.map((l) => l.y - l.px * 0.6)), fy1 = Math.max(...fig.flatMap((g) => [g.y0, g.y1]), ...L.map((l) => l.y + l.px * 0.6));
+              const row = [...probe.all.filter((t) => t.s === "≠").map((t) => ({ y0: t.y - t.px * 0.6, y1: t.y + t.px * 0.6 })), ...(probe.all.some((t) => t.s === "≠") ? probe.marks.filter((m) => m.kind === "chip").map((m) => ({ y0: m.y, y1: m.y + m.h })) : [])];
+              for (const r of row) if (!(r.y1 <= fy0 + 0.5 || r.y0 >= fy1 - 0.5)) faults.push(`${size.tag} ${level.levelId} ${name}: the "≠" row inside the figure (${r.y0.toFixed(0)}-${r.y1.toFixed(0)} in ${fy0.toFixed(0)}-${fy1.toFixed(0)})`);
+            }
+            const arms = probe.segs.filter((g) => g.kind === "arm");
+            for (const r of probe.segs.filter((g) => g.kind === "ray")) for (const a of arms) {
+              const u = [r.x1 - r.x0, r.y1 - r.y0], v = [a.x1 - a.x0, a.y1 - a.y0], lu = Math.hypot(...u), lv = Math.hypot(...v);
+              if (lu < 1 || lv < 1 || Math.abs(u[0] * v[1] - u[1] * v[0]) / (lu * lv) > Math.sin(Math.PI / 90)) continue;
+              const d = Math.abs(((r.x0 + r.x1) / 2 - a.x0) * v[1] - ((r.y0 + r.y1) / 2 - a.y0) * v[0]) / lv;
+              if (d <= 20 && d < 8) faults.push(`${size.tag} ${level.levelId} ${name}: a dashed ray ${d.toFixed(1)} px from its line`);
+            }
           }
           if (process.env.KON_SHOTS) { mkdirSync(process.env.KON_SHOTS, { recursive: true }); await page.screenshot({ path: join(process.env.KON_SHOTS, `${level.mode}-${level.goal}-${size.tag}-${level.levelId.replace(/[^a-z0-9]/gi, "_")}-${name}.png`) }); }
         }

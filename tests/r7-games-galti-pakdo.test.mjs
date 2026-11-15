@@ -293,3 +293,33 @@ test("galti-pakdo: every word the view shows exists in all three languages; vaky
   assert.doesNotMatch(logic, /Math\.random|Date\.now|performance\.now|setTimeout|setInterval/);
   assert.doesNotMatch(view.replace(/\/\/.*$/gm, ""), /Math\.random|Date\.now|performance\.now|setTimeout|setInterval|#[0-9a-fA-F]{3,8}\b|rgba?\(/);
 });
+
+// Laws audit open list, ruling of 2026-11-15 (galti-pakdo/kaapi, the "line 2" label): the view's "line N" tag is drawn for
+// state.on, the line on the balance. It is allowed only because state.on is always a line SHE checked (or the question, 0,
+// after a fix): never a line the game weighed for her, so it can never sit on the first wrong line unless she checked it.
+// Asserted over every served kaapi level, through random act sequences (checks, flags, picks, undos, a fix's re-weigh).
+test("kaapi: the line on the balance is always one she checked herself (laws ruling 2026-11-15, the \"line N\" tag)", () => {
+  let levels = 0, states = 0;
+  for (const e of coverage().entries.filter((x) => x.family === "galti-pakdo" && x.mode === "kaapi")) for (const fade of [1, 2, 3]) for (const child of ["c1", "c2", "c3"]) {
+    const level = currentLevel({ childId: child, key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade, lang: "hinglish", mis: {}, n: 0, seed: seedOf(child, entryKey(e), fade), recent: [], hist: null }, e);
+    if (!level) continue;
+    levels++;
+    const v = galtiLogic.validate(level), n = v.params.pages?.[0]?.lines?.length ?? 6;
+    let rnd = (levels * 7919) % 2147483647 || 1;
+    const next = () => (rnd = (rnd * 48271) % 2147483647);
+    for (let run = 0; run < 12; run++) {
+      let s = galtiLogic.init(v);
+      const checked = new Set([0]);
+      for (let i = 0; i < 14; i++) {
+        const k = next() % 5, line = next() % (n + 1);
+        const act = k <= 1 ? { kind: "check", line } : k === 2 ? { kind: "flag", line } : k === 3 ? { kind: "pick", which: next() % 4 } : { kind: "undo" };
+        const r = galtiLogic.apply(v, s, act, i + 1);
+        if (act.kind === "check" && !r.refused) checked.add(line);
+        s = r.state;
+        states++;
+        if (s.on > 0) assert.ok(checked.has(s.on), `${level.levelId}: line ${s.on} on the balance, never checked by her (acts so far)`);
+      }
+    }
+  }
+  assert.ok(levels >= 6 && states > 1000, `${levels} levels, ${states} states`);
+});

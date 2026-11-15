@@ -334,11 +334,13 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const load = loadOf(s.bag), need = (m: number) => countOf(p.seq, m);
     let m = p.shown;
     if (ran) { const target = p.shown + Math.round(k * (p.n - p.shown)); while (m < target && need(m + 1) <= load) m++; }
-    const short = ran && k >= 1 && load < need(p.n), left = ran ? load - need(m) : load;
+    const short = ran && k >= 1 && load < need(p.n);
     P.body(c, mid.x, mid.y, mid.w, mid.h, { role: "panel", r: 12, state: end && !s.done ? "look" : "idle" });
     const pic = { x: mid.x + 8, y: mid.y + 30, w: mid.w - 16, h: mid.h - 40 };
     P.textFit(c, goal === "count" ? `${m} ${W("kram.beats")}` : p.seq === "lines" ? `${m + 1} ${W("kram.points")}` : `${W("kram.stage")} ${m}`, mid.x + mid.w * 0.3, mid.y + 15, mid.w * 0.55, 22, { size: 16, role: "ink", weight: 800 });
-    P.textFit(c, `${W("kram.bag")} ${ran ? Math.max(0, left) : load}`, mid.x + mid.w * 0.78, mid.y + 15, mid.w * 0.4, 22, { size: 16, role: "ink2", weight: 700, font: "mono" });
+    // laws ruling 2026-11-15 (kram/grow far, the "28"): the bag shows her own count, before and after the run. What is left
+    // after the build is her count less the far stage's, so after a "double" miss it was the far stage's own count (the key)
+    P.textFit(c, `${W("kram.bag")} ${load}`, mid.x + mid.w * 0.78, mid.y + 15, mid.w * 0.4, 22, { size: 16, role: "ink2", weight: 700, font: "mono" });
     if (goal === "count") {
       // the far shelf: one tiny block per rhythm laid so far
       const n = need(m), per = Math.max(1, Math.ceil(Math.sqrt(n * (pic.w / pic.h)))), sz = Math.min(14, pic.w / per - 2, pic.h / Math.ceil(n / per) - 2);

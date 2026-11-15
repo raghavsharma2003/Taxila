@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, dashR, sayMalSize, noCrossing, generateName } from "../src/play/families/kon/kon.name.ts";
+import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -69,7 +69,9 @@ for (const goal of ["say", "find"]) {
       // evening ruling kon/name 1 (both goals): reading the asked angle's letters off the screen like text (by rows, letters
       // within a letter's height one row; or by columns, within a letter's width one column; either way round) never puts
       // the vertex in the middle, by the points or by where the letters are drawn
-      for (const Q of [points(p), labelPoints(p)]) for (const o of readings([want.a, want.v, want.b], Q)) assert.notEqual(o[1], want.v, `${level.levelId}: read across as ${o.map((i) => p.lets[i]).join("")}`);
+      // (night ruling kon/name 2: find's wide arc is a key too, and the one key exempt: it is over 90°, and the vertex of any
+      // angle over 90° lies between its arms' ends by rows or by columns; reading across finds the key there, 1 level in 5)
+      if (!(goal === "find" && p.ask === WIDE)) for (const Q of [points(p), labelPoints(p)]) for (const o of readings([want.a, want.v, want.b], Q)) assert.notEqual(o[1], want.v, `${level.levelId}: read across as ${o.map((i) => p.lets[i]).join("")}`);
       if (goal === "say") {
         const t = sol.slice(0, 3).map((a) => a.at);
         assert.ok(names(t, { v: want.v, set: new Set([want.a, want.b]) }), "the checker: the solver's name names the lit angle");
@@ -78,9 +80,7 @@ for (const goal of ["say", "find"]) {
       } else {
         const k = sol[0].at;
         assert.equal(k, p.ask);
-        // the widest arc is never the answer
-        const P = points(p), sizes = corners(p).map((c) => ang(P, c.a, c.v, c.b));
-        assert.notEqual(sizes.indexOf(Math.max(...sizes)), p.ask);
+        // (the widest arc may be the answer: night ruling kon/name 2 spreads the keys over all five)
       }
       assert.equal(konLogic.grade(level, env(sol)).evidence[0].weight, goal === "find" ? CHANCE_WEIGHT : GAME_WEIGHT);
       const m = konLogic.malActs(level, "vertex-name");
@@ -237,7 +237,10 @@ test("kon/name: every coverage entry serves a level as the play server would, wi
       const lv = currentLevel(s, entry);
       assert.ok(lv, `${entry.goal} served nothing`);
       assert.equal(lv.params.goal, entry.goal);
-      assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
+      // (find: a key whose first-letter reading is not drawn, the wide arc or the angle at the vertex outside the triangle,
+      // shows no mix-up; night ruling kon/name 2 serves those keys too)
+      if (konLogic.malActs(lv, "vertex-name")) assert.ok(lv.proof.discriminates.includes("c6-maths-ch02-t02-m-vertex-name"));
+      else assert.equal(lv.params.goal, "find", "every say level shows vertex-name");
     }
   }
 });
@@ -266,7 +269,7 @@ test("judging round 2: the figure (arcs at the vertex at different radii, no lin
     if (goal === "find") corners(p).forEach((c, k) => {
       const v = P[c.v], ha = Math.atan2(P[c.a][1] - v[1], P[c.a][0] - v[0]), hb = Math.atan2(P[c.b][1] - v[1], P[c.b][0] - v[0]);
       let d = hb - ha; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-      for (let f = 0.08; f <= 0.92; f += 0.04) { const a = ha + d * f; assert.equal(arcHit(p, v[0] + DRAW_R[k] * Math.cos(a), v[1] + DRAW_R[k] * Math.sin(a)), k, `${level.levelId}: drawn arc ${k} at ${f.toFixed(2)}`); }
+      for (let f = 0.08; f <= 0.92; f += 0.04) { const a = ha + d * f; assert.equal(arcHit(p, v[0] + drawR(p, k) * Math.cos(a), v[1] + drawR(p, k) * Math.sin(a)), k, `${level.levelId}: drawn arc ${k} at ${f.toFixed(2)}`); }
     });
     if (goal === "say") { const m = sayMalSize(p); if (m !== null) { dashedSay++; assert.ok(m >= 20, `${level.levelId}: dashed ${m}°`); assert.ok((dashR(m) * m * Math.PI) / 180 >= 23.9, `${level.levelId}: dashed arc too short`); } }
     n++;
@@ -313,17 +316,24 @@ test("evening ruling kon/name 3: after one find tap nothing about vertex-name re
     const st = res();
     await routes["POST /api/play/start"]({}, st, { childId: CHILD, skillId: "c6-maths-ch02-t02-s1", goal: "find", lessonId: LES });
     assert.equal(st.statusCode, 200);
-    let lv = st.body.level;
+    let lv = st.body.level, sid0 = st.body.sessionId;
     assert.equal(lv.params.goal, "find");
+    // (night ruling kon/name 2: a key whose first-letter reading is not drawn is served too; the next such level is taken)
+    for (let k = 0; k < 12 && !konLogic.malActs(lv, "vertex-name"); k++) {
+      const nx = res();
+      await routes["POST /api/play/next"]({}, nx, { sessionId: sid0, door: "garam" });
+      assert.equal(nx.statusCode, 200);
+      lv = nx.body.level; sid0 = nx.body.sessionId;
+    }
     const tap = konLogic.malActs(lv, "vertex-name");
     assert.ok(tap, "a level whose first-letter reading is drawn");
     // the tap itself (mid-level post): no seam row reaches the lesson
     const mid = res();
-    await routes["POST /api/play/act"]({}, mid, { sessionId: st.body.sessionId, levelId: lv.levelId, acts: env(tap) });
+    await routes["POST /api/play/act"]({}, mid, { sessionId: sid0, levelId: lv.levelId, acts: env(tap) });
     assert.equal(mid.statusCode, 200); assert.equal(mid.body.seamToken, undefined, "no seam from one tap");
     // the level closed on that tap: the evidence rows, the trail and the level_end row say nothing about it
     const end = res();
-    await routes["POST /api/play/act"]({}, end, { sessionId: st.body.sessionId, levelId: lv.levelId, acts: env(tap), final: true });
+    await routes["POST /api/play/act"]({}, end, { sessionId: sid0, levelId: lv.levelId, acts: env(tap), final: true });
     const ev = verifyEvidence(end.body.evidenceToken, { childId: CHILD, lessonId: LES });
     assert.ok(ev && ev.rows.length);
     for (const r of ev.rows) { assert.equal(r.misconceptionId, undefined); assert.equal(r.chanceMis, undefined, "no chanceMis in the lesson's rows"); }
@@ -334,12 +344,13 @@ test("evening ruling kon/name 3: after one find tap nothing about vertex-name re
     assert.doesNotMatch(playFactsRow(end.body.grade.facts), about);
     // the repeat: the next level (other letters) and the same first-letter tap: named, in the rows and the trail
     let sid = end.body.sessionId;
+    const first = lv;
     for (let k = 0; k < 6; k++) {
       const nx = res();
       await routes["POST /api/play/next"]({}, nx, { sessionId: sid, door: "garam" });
       assert.equal(nx.statusCode, 200);
       lv = nx.body.level; sid = nx.body.sessionId;
-      if (lv.params.goal === "find" && konLogic.malActs(lv, "vertex-name") && lv.params.lets !== st.body.level.params.lets) break;
+      if (lv.params.goal === "find" && konLogic.malActs(lv, "vertex-name") && lv.params.lets !== first.params.lets) break;
     }
     const again = res();
     await routes["POST /api/play/act"]({}, again, { sessionId: sid, levelId: lv.levelId, acts: env(konLogic.malActs(lv, "vertex-name")), final: true });
@@ -365,4 +376,78 @@ test("law 3 (central): a find first-letter pick is named only when it repeats on
   const s = { chance: [{ mis: "k-vn", surface: surfaceOf(a) }] };
   assert.equal(nameOnRepeat(rows(b), s, b)[0].misconceptionId, "k-vn", "other letters: named");
   assert.equal(nameOnRepeat(rows(same), s, same)[0].misconceptionId, undefined, "the same letters: not named");
+});
+
+test("night ruling kon/name 1: no two angles of a figure are within 8° of each other in size, and its three rays differ in length (every generated level, both goals; the checker's own geometry)", () => {
+  let n = 0;
+  for (const goal of ["say", "find"]) for (const level of levels(goal, [1, 2, 3], [1, 7, 42, 99, 123, 2026])) {
+    const p = level.params, P = points(p);
+    // the five angles the figure draws, from its segments alone (drawnAngles), sized by plain geometry
+    const sizes = drawnAngles(p).map((d) => { const [a, b] = [...d.set]; return ang(P, a, d.v, b); });
+    assert.equal(sizes.length, 5);
+    for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) assert.ok(Math.abs(sizes[i] - sizes[j]) >= 8, `${level.levelId}: angles ${sizes[i].toFixed(1)}° and ${sizes[j].toFixed(1)}°`);
+    // the joined pair's triangle is not isosceles: its two rays from the vertex differ (and the third ray is its own length)
+    const L = [1, 2, 3].map((i) => Math.hypot(P[i][0] - P[0][0], P[i][1] - P[0][1]));
+    for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) assert.ok(Math.abs(L[i] - L[j]) >= 10, `${level.levelId}: rays ${L[i].toFixed(0)} and ${L[j].toFixed(0)}`);
+    // so find's "≠" row is true either way: her arc's angle is a different size from the asked one
+    if (goal === "find") for (let k = 0; k < 5; k++) if (k !== p.ask) {
+      const c = corners(p)[k], w = corners(p)[p.ask];
+      assert.ok(Math.abs(ang(P, c.a, c.v, c.b) - ang(P, w.a, w.v, w.b)) >= 8);
+    }
+    n++;
+  }
+  assert.ok(n >= 150, `${n} levels`);
+});
+
+test("night ruling kon/name 2: find keys are spread evenly over all five arcs (the wide one included), over the generator and as served; no rule that ignores the name beats 1 in 5", () => {
+  // the generator, over many seeds, fades and first / later levels: the key arc per request (every candidate a request
+  // offers has the same key, so the picker cannot tilt it)
+  const by = [0, 0, 0, 0, 0], role = { inside: 0, outside: 0, wide: 0, corner: 0 };
+  let reqs = 0, empty = 0;
+  for (let seed = 1; seed <= 400; seed++) for (const fade of [1, 2, 3]) {
+    let r = seed * 2654435761 % 4294967296 + fade;
+    const rnd = () => ((r = (r * 1103515245 + 12345) >>> 0) / 2 ** 32);
+    const out = generateName("find", rnd, fade, seed % 2 === 0);
+    reqs++;
+    if (!out.length) { empty++; continue; }
+    assert.equal(new Set(out.map((o) => o.params.ask)).size, 1, "one key arc per request");
+    assert.equal(new Set(out.map((o) => o.params.tri)).size, 1, "one joined pair per request");
+    const p = out[0].params, [x, y] = TRI_PAIRS[p.tri];
+    by[p.ask]++;
+    role[p.ask === WIDE ? "wide" : p.ask >= 3 ? "corner" : corners(p)[p.ask].a === x && corners(p)[p.ask].b === y ? "inside" : "outside"]++;
+  }
+  const n = reqs - empty;
+  assert.ok(empty <= reqs * 0.01, `${empty} of ${reqs} requests made no level`);
+  // each arc 1 time in 5 (within 3 points of 20 % over 1200 requests: about 2.7 standard deviations)
+  for (let k = 0; k < 5; k++) assert.ok(Math.abs(by[k] / n - 0.2) <= 0.03, `arc ${k}: ${by[k]} of ${n} (${by.join(", ")})`);
+  // by role: the angle at the vertex inside the triangle, the one outside it, the wide one, each 1 in 5; the corners 2 in 5
+  for (const k of ["inside", "outside", "wide"]) assert.ok(Math.abs(role[k] / n - 0.2) <= 0.03, `${k}: ${JSON.stringify(role)}`);
+  assert.ok(Math.abs(role.corner / n - 0.4) <= 0.04, JSON.stringify(role));
+
+  // as served (the picker on each request): the same spread, and a first tap by any rule that does not read the name wins
+  // about 1 time in 5: a corner (the two small arcs), an arc inside the triangle, the widest (each picked at random within
+  // its set: the chance of a win is the share of the set that is the key). By size rank the floor is higher: an asked angle
+  // at the vertex is under 65° (so reading across never finds it) and the wide one is always the largest, so no key but a
+  // corner over 75° can be the second largest; "the smallest angle" then wins about 1 in 4 at best (4/15 with the second
+  // largest never the key). Measured here and stated in the judges' packet
+  const served = [0, 0, 0, 0, 0], rule = { smallest: 0, widest: 0, small3: 0, inside: 0, corner: 0 };
+  let m = 0;
+  for (let k = 0; k < 300; k++) {
+    const lv = pickLevels(konLogic, req("find", 9000 + k, 1 + (k % 3)))?.garam;
+    assert.ok(lv, `request ${k} served nothing`);
+    const p = lv.params, P = points(p), C = corners(p), sz = C.map((c) => ang(P, c.a, c.v, c.b)), order = sz.map((_, i) => i).sort((a, b) => sz[a] - sz[b]);
+    const [x, y] = TRI_PAIRS[p.tri], ins = C.map((c, i) => i >= 3 || (c.a === x && c.b === y));
+    served[p.ask]++; m++;
+    rule.smallest += order[0] === p.ask ? 1 : 0;
+    rule.widest += order[4] === p.ask ? 1 : 0;
+    rule.small3 += order.slice(0, 3).includes(p.ask) ? 1 / 3 : 0;
+    rule.inside += ins[p.ask] ? 1 / ins.filter(Boolean).length : 0;
+    rule.corner += p.ask >= 3 ? 1 / 2 : 0;
+  }
+  for (let k = 0; k < 5; k++) assert.ok(Math.abs(served[k] / m - 0.2) <= 0.05, `served arc ${k}: ${served.join(", ")}`);
+  if (process.env.DBG) console.log(JSON.stringify(Object.fromEntries(Object.entries(rule).map(([k, v]) => [k, +(v / m).toFixed(3)]))), served.join(","));
+  for (const k of ["corner", "inside", "widest"]) assert.ok(rule[k] / m <= 0.24, `"${k}" wins ${(rule[k] / m).toFixed(3)} of first taps`);
+  for (const k of ["smallest", "small3"]) assert.ok(rule[k] / m <= 0.3, `"${k}" wins ${(rule[k] / m).toFixed(3)} of first taps`);
+  // and the first tap is weighted at chance (1 in 5 among five arcs; find is a one-decision goal)
+  assert.ok(konLogic.oneDecision.includes("find"));
 });

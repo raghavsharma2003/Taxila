@@ -6781,3 +6781,19 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-director22` (2026-11-15): director22: 16 lessons on integration 57 (3ef74ffdd), 1,721 calls, about $1.23; four Opus judges by hand. Contradictions 5, 5, 2, 1 (c4, c5-t01, c5-t02, c6) and unsaid boards 0, 0, 2, 0; 0 misgrades in 274 verdicts; listening 3, 3, 3, 3.5; register 3 in all four; promises 3.5, 4, 3.5, 3.5. Live predicate check read orderParts 2 and 0 elsewhere. Picture requests that drew a view: 6 of 16 (director21: 16 of 16)
 - `ms-release-0d00f29` (2026-11-15): Released 0d00f29 with scripts/release.mjs: web taxila-web--s0d00f29-r78k (was taxila-web--s8d1952d-a9gh), worker + canary/nightly jobs on taxila-worker:0d00f29 (was 8d1952d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0d00f29 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-name-gate1-key-spread` (2026-11-15): kon/name find after gate 1, 600 picker requests (fades 1-3, seeds 20000-20599): keys by arc 138/119/119/110/114; a first tap by 'a corner arc' wins 0.187, 'an arc inside the triangle' 0.197, 'the widest' 0.198, 'the smallest angle' 0.213, 'one of the three smallest' 0.267 (the size floor: vertex keys are kept under 65° so reading across never finds them). Picker CPU over 60 requests (seeds 700-729): p50 2.9 ms, p95 15.6 ms, max 22.7 (bar 50; before gate 1 the same blocks measured p95 15-21).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-2de94c3` (2026-11-15): Released 2de94c3 with scripts/release.mjs: web taxila-web--s2de94c3-bslc (was taxila-web--s0d00f29-r78k), worker + canary/nightly jobs on taxila-worker:2de94c3 (was 0d00f29); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2de94c3 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-name-gate1b-picker` (2026-11-15): kon/name after the final gate-1 fixes: picker CPU over 90 requests (seeds 700-714 x 3, both goals) p95 26.2 ms, max 59.8 (first rep cold; bar 50 on p95); find generator 1200 requests (seeds 1-400, fades 1-3): 5 made no level (0.4 %; the test bar is 1 %).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-dc63a6f` (2026-11-15): Released dc63a6f with scripts/release.mjs: web taxila-web--sdc63a6f-7nvq (was taxila-web--s2de94c3-bslc), worker + canary/nightly jobs on taxila-worker:dc63a6f (was 2de94c3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs dc63a6f --rollback.
