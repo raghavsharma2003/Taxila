@@ -77,11 +77,12 @@
   --tx-scheme: light;
 }
 
-/* The :has() branch sits in :where(). A production minifier wraps a selector list that holds :has() in :is() (so an
+/* The :has() branch sits in :root:where(:has(...)). A production minifier wraps a selector list that holds :has() in :is() (so an
    engine without :has() keeps the rest), and :is() takes its strongest argument's weight: (0,4,0) here, which beat the
    light surface below on every B set-up and parent screen in the built app (found by the round 8 walk, 2026-11-11).
-   :where() weighs nothing, so the block stays (0,1,0) both ways (tests/r8-tx-tokens.test.mjs). */
-[data-tx="b"], :where(:root:has(.kx[data-tx="b"]:not([data-tx-surface]))) {
+   :root:where() weighs :root's (0,1,0) both ways: enough to beat A's :root block on html (it comes later, so the page
+   behind a B screen takes B's ground) and never more (tests/r8-tx-tokens.test.mjs). */
+[data-tx="b"], :root:where(:has(.kx[data-tx="b"]:not([data-tx-surface]))) {
   /* the dark kept and calmed: one blue-grey family, no pure black */
   --tx-bg: #0F1218;
   --tx-surface: #171B24;
@@ -123,7 +124,10 @@
 }
 
 /* B's parent screens are light (direction B's README): a subtree marked data-tx-surface="light" */
-[data-tx="b"] [data-tx-surface="light"], [data-tx="b"][data-tx-surface="light"] {
+/* (the :root:where(:has()) branch gives the page itself, html and body, the same ground as a B light surface on it, so
+   no band of A's paper shows at the edges or on overscroll; main 2026-11-11, release 26. It weighs :root's (0,1,0), the
+   same as A's :root block above, and comes later, so it wins on html; a minifier's :is() wrap cannot raise it.) */
+[data-tx="b"] [data-tx-surface="light"], [data-tx="b"][data-tx-surface="light"], :root:where(:has([data-tx="b"][data-tx-surface="light"])) {
   --tx-bg: #F6F6F2;
   --tx-surface: #FFFFFF;
   --tx-surface-2: #ECECE6;

@@ -6748,3 +6748,19 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-4b9cc50` (2026-11-11): Released 4b9cc50 with scripts/release.mjs: web taxila-web--s4b9cc50-obcd (was taxila-web--s4f33e5d-dhc7), worker + canary/nightly jobs on taxila-worker:4b9cc50 (was 4f33e5d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 4b9cc50 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-place-judging-2-2026-11-11` (2026-11-11): kon/place round 2 (claude/r7-games 6746c7d47, 54 screens, two fresh Opus judges at high effort): PASS and FAIL, so not shown. n = 2 verdicts. All round-1 rulings and the three hold fixes found done; 0 wrong facts. The blocking fault (one judge): on the centre-on-arm play-out in measure, her correct number is painted in the mix-up colour and a dashed arm from her misplaced centre confirms it. Both judges: the letter O missing or struck through by the protractor's edge; inner scale numbers dropped alone at 360; lines through numbers she must read; placement honest but fiddly under a finger. Reports: docs/design/round8/games-judging/kon-place/judges/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-director21-2026-11-11` (2026-11-11): director21: 16 lessons (4 pilot topics x steady, stuck, offtopic, steering), Director only, reactive rule-based child, int/r6 1697dcc54 (integration 52), 1,733 model calls, about $1.27; four Opus judges at high effort, one per topic, hand counts. Result: c5-t01 passes the scale gate on every line (first time); c4, c5-t02 and c6 fail (c6 passed in director20). Words against the board 1 / 0 / 1 / 3 (c4, c5-t01, c5-t02, c6); unsaid boards 2 / 0 / 1 / 0; misgrades 0; false keys 0; verdicts 74/74, 67/67, 75/75, 71/71. Axes d20 to d21: listening 3 to 3, 3 to 3.5, 3 to 3, 3.5 to 3; register 3.5 to 3, 3 to 3.5, 3.5 to 3, 3.5 to 3; promises 3.5 to 4, 2.5 to 4, 3 to 3.5, 3.5 to 3.5; class level 4 in all four. 13 of 13 parks returned. Aside replies: 24, of which 3 odd (all re-renders), 15 flat, 6 natural. Second clarifies: 8, all merely repeat. Question-only re-asks short of their givens: 15 of 70. backTo used 0 times in 33 returns to an earlier card. The run's own predicate check read 0 on every gated predicate. Judgement: docs/design/round7/judgements/director21-2026-11-11.md; results: evals/hybrid-side-by-side/results/2026-11-11-director21/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-name-picker-cpu-r3` (2026-11-11): kon/name picker CPU after the read-like-text refusal (tests/_cpu-ms.mjs cpuNow, pickLevels x 60 requests, say + find, fades 1-3, seeds 700-729, this container): p50 15.3 ms, p95 19.0 ms, max 19.3 ms; bar 50 ms (round 2: p95 16-20 ms). With 1600 find tries it was p95 36 ms, so 1000 was kept.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-game-modes-judging-4-2026-11-11` (2026-11-11): Fourth judging of the three game modes (claude/r7-games e26cc539d; 111 screens; two fresh Opus judges at high effort per mode): stambh/tally round 4 FAIL and FAIL; kon/name round 3 FAIL and FAIL; kon/place round 3 PASS and FAIL. n = 6 verdicts (20 across the day). Every ruling from the round before found done on the screens in all three; 0 wrong keys or scales; laws 1 and 2 pass in all three. Four of the five failing verdicts block on what the game records, not on what the child sees: tally, two slips together or a neighbouring pad key reach the mix-up's number (49 typed as 40); kon/name, the key sits on a small corner arc two times in three; kon/place, sign=join-wrong-end reaches the teacher from one press of one of two buttons. One blocks on the screen: kon/name's row says two angles are unequal that are equal in size (isosceles figure). Reports: docs/design/round8/games-judging/<mode>/judges/.

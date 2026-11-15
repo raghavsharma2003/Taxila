@@ -406,3 +406,24 @@ Brain listed is now said in other words. Keys, boards and the order of cards are
 check.mjs now has (h) sharedSentenceErrors: no two units share a whole sentence of three words or more, and a simpler never repeats a
 sentence of what it simplifies (a card's short question tag, five words or fewer, may close many cards). It reads 0 on all four
 pilots. The dry matrix (16 lessons) reads 0 on every predicate, the pending twinsData included.
+
+## Round for integration 51 (19:05 UTC): one term per idea, twinsData 0
+
+Main's 19:02 note: Brain's pending twinsData read 8 on integration 51, now that the steady lesson runs to its end and code no longer
+swaps words. Ruling: one term per idea per script, and pizza says "tukda" like the cake. Each script now uses the word it already used
+most. Keys, boards and card order are unchanged.
+
+| pilot | was | now | why this word |
+|---|---|---|---|
+| c4 | s3 pizza card, its simpler, why and mustSay: "slice" ("6 barabar slice", "har slice", "bada slice", "4 slice wale") | "tukda" / "tukde" / "tukdon" ("6 barabar tukdon mein", "har tukda", "bada tukda", "4 tukdon wale") | the script says tukda/tukde 122 times; main's ruling |
+| c5-t02 | s3 pizza then-card: "7 barabar slice mein … ek slice gayab" | "7 barabar tukdon mein … ek tukda gayab" | the script says tukda/tukde 124 times |
+| c5-t02 | s1 c3 card: "pehle nishaan par question mark hai. Woh question mark wala nishaan …" ("mark" beside "nishaan") | "pehle nishaan par koi number nahi likha. Woh pehla nishaan …" | the script says "nishaan" |
+| c5-t01 | s2 ribbon point, simpler, card, why and simpler: "nishaan" / "nishaanon" (11) | "mark" / "marks" | the script says "mark(s)" 57 times |
+| c5-t01 | greetSimpler: "Aaj hum bhinn ko …" | "Aaj hum fractions ko …" | the script says "fraction(s)" 19 times |
+| c6 | s1 e2 point: "upar 6, side mein 4, neeche 6, phir 4" | "upar 6, bagal ki bhuja 4, neeche 6, phir 4" | the script says bhuja/bhujayein 70 times |
+
+The `terms` glossary entries (bhinn, samooh, varg, aayat, tribhuj, kshetrafal) are kept. They are the NCERT word given once beside the
+script's own word, and they are never spoken inside a turn.
+
+Dry matrix (16 lessons) on int/r6 4b9cc504e plus these: evals/hybrid-side-by-side/check-run.mjs reads 0 on every predicate, twinsData
+and the other pending predicates included. check.mjs reads ok on all four pilots.
