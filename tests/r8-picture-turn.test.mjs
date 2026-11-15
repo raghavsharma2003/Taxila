@@ -247,7 +247,12 @@ test("director20: the picture-line predicate — a line with a blank or stating 
 test("main 21:08 (director20 c5-t01 offtopic 28): a picture line states no value a card still to come in the skill asks for — nor a later 1/b by its count of parts", async () => {
   const ST = await import("../server/stagecraft/script-terms.js");
   const ask = (beatId) => ({ kit: { topicId: "c5-maths-ch02-t01" }, intent: { skillId: "c5-maths-ch02-t01-s1", scriptBeat: { beatId } } });
-  assert.deepEqual(ST.laterKeys(ask("e2")), ["1/10", "1/4 km", "1/3"], "the cards after e2, in walk order (e3, worked, c1–c3)");
+  // Integration 54: this pinned the live script's keys (["1/10", "1/4 km", "1/3"]) and broke when Learning's director22
+  // pilot changed the checks (1/11, "the 1st mark"). The law is the walk order, not the values: what is still to come
+  // after e2 is not empty and holds everything still to come after a later card.
+  const afterE2 = ST.laterKeys(ask("e2")), afterC1 = ST.laterKeys(ask("c1"));
+  assert.ok(afterE2.length >= 2 && afterC1.length < afterE2.length, "the cards after e2, in walk order (e3, worked, c1–c3)");
+  assert.ok(afterC1.every((k) => afterE2.includes(k)), "what follows a later card also follows an earlier one");
   assert.deepEqual(ST.laterKeys(ask("c3")), [], "nothing after the last check");
   assert.ok(ST.laterKeys(ask("rem:x")).includes("8"), "an unknown beat counts every card in the skill");
   assert.deepEqual(ST.laterKeys({ kit: { topicId: "no-such-topic" }, intent: { skillId: "x" } }), []);
