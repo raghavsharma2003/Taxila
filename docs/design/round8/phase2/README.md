@@ -232,3 +232,15 @@ The hero showed a "1/2 × 1/2 = 1/4" board under her line "1/2 barabar 2/4". The
 - **Retaken captures.** The landing captures (`public/site/tx/`) and `*-lesson-board-*` were retaken on the build that has Studio's patch 008, so the card head is folded in and the board fills its card.
 
 **The owner's page:** `OWNER-BEFORE-AFTER.md`, with six side-by-side pairs in `owner/`.
+
+## Hinglish lessons and the debrief (main's live walk, 2026-11-15)
+
+- **Faces in a Hindi or Hinglish lesson.**
+  - **The fault:** Hinglish text carries `lang="hi-Latn"`, which `:lang(hi)` matches. The global `:lang(hi)` rules then set Mukta on the question card, the hint and the debrief, and the Latin letters fell to the system sans.
+  - **The fix:** under the theme, two mixed stacks in `tx-tokens.css`, `--tx-font-ui-mix` and `--tx-font-display-mix`. Each puts the theme's face first, so Latin letters keep it, and a Devanagari face behind it, so only Devanagari glyphs use that face.
+  - **The test:** `tests/r8-font-match-browser.test.mjs` covers a Hinglish lesson in A and B (question, hint, debrief, a Devanagari run). It fails on the old CSS: the Latin question resolved to the system's Liberation Sans.
+- **The debrief.**
+  - Her mark is the presence circle with no clipped tile.
+  - "You said" is a sentence-case label.
+  - The cards are rounded.
+  - Finish sits at the end of the page in the flow, no longer laid over the goodbye choices.

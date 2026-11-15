@@ -259,3 +259,44 @@ for (const theme of ["a", "b"]) {
     } finally { await page.close(); }
   });
 }
+
+// Main 2026-11-15 (the live walk): in a Hinglish lesson (this KID's language_pref; her text carries lang="hi-Latn", which
+// :lang(hi) matches) the question card was in Mukta and its Latin letters in the system sans. Under the theme the question,
+// a hint and the debrief keep the r8 faces for Latin letters; only Devanagari glyphs fall to a Devanagari face.
+for (const theme of ["a", "b"]) {
+  test(`round 8 theme ${theme}, a Hinglish lesson: the question, the hint and the debrief keep the r8 faces; Devanagari only for Devanagari`, { skip: SKIP, timeout: 120_000 }, async () => {
+    const script = { v: 1, scriptId: "font-r8-hi", line: { lessonId: "L-font" }, anchor: "line_audio_start", board: { w: 800, h: 500, ground: "chalk" }, mode: "fresh", durationMs: 400,
+      ops: [{ id: "t1", op: "text", at: [400, 250], text: "Aadha", size: "m", startMs: 0, endMs: 200 }] };
+    const { page, used } = await lesson({ kind: "whiteboard", stage: { w: 800, h: 500 }, script }, ".kx-lesson[data-tx]", `&tx=${theme}`);
+    try {
+      await page.evaluate(async () => {
+        const root = document.querySelector(".kx-lesson[data-tx]");
+        const host = document.createElement("div"); host.style.cssText = "position:absolute;left:0;top:0;opacity:0;pointer-events:none;white-space:nowrap";
+        // the real markup's classes (QuestionCard.tsx, Debrief.tsx), in the lesson's language as the Desk sets it
+        host.innerHTML = `<div class="ks-rail"><p class="dk-ask" lang="hi-Latn" id="hi-ask">Ek half mein kitne quarters hote hain?</p>
+          <p class="dk-ask" lang="hi" id="hi-ask-deva">आधा</p>
+          <p class="dk-line dk-line--hint" lang="hi-Latn" id="hi-hint">Board par shaded hisse gino.</p></div>
+          <div class="kx-debrief"><p class="kx-db-ask" data-speech="" lang="hi-Latn" id="hi-db">Kaunsa bada hai: 1/2 ya 1/4?</p>
+          <p class="kx-db-her" data-speech="" lang="hi-Latn" id="hi-her">Bahut achha. Milte hain agli baar.</p></div>`;
+        root.appendChild(host);
+        await document.fonts.ready;
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+      });
+      const display = theme === "a" ? ["Literata"] : ["Bricolage", "Atkinson Hyperlegible Next"];
+      const ui = ["Atkinson Hyperlegible Next"];
+      const bad = [];
+      for (const [sel, fams] of [["#hi-ask", display], ["#hi-hint", ui], ["#hi-db", ui], ["#hi-her", ui]]) {
+        let f = await used(sel);
+        for (let i = 0; i < 15 && !f?.length; i++) { await page.waitForTimeout(200); f = await used(sel); }
+        if (!(f?.length > 0 && f.every((x) => x.isCustomFont && fams.some((n) => x.familyName.startsWith(n))))) bad.push(`${sel}: ${show(f)}`);
+      }
+      // a Devanagari run is drawn in a self-hosted Devanagari face (Mukta, or Atkinson's Devanagari)
+      const d = await used("#hi-ask-deva");
+      if (!(d?.length > 0 && d.every((x) => x.isCustomFont && /^(Mukta|Atkinson)/.test(x.familyName)))) bad.push(`#hi-ask-deva: ${show(d)}`);
+      // and the computed family of the Latin question never starts with the Devanagari face
+      const fam = await page.evaluate(() => getComputedStyle(document.getElementById("hi-ask")).fontFamily);
+      if (/^"?Mukta/.test(fam)) bad.push(`#hi-ask family ${fam}`);
+      assert.deepEqual(bad, []);
+    } finally { await page.close(); }
+  });
+}

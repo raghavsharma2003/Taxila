@@ -66,7 +66,6 @@
 .kx-lesson[data-tx] .ks-talk .dk-caption { justify-content: flex-start; text-align: left; }
 .kx-lesson[data-tx] .ks-talk .dk-caption-line { font: 400 var(--tx-t-3)/1.35 var(--tx-font-ui); color: var(--tx-ink-2); -webkit-line-clamp: 2; }
 .kx-lesson[data-tx] .dk:is([data-floor="speaking"], [data-floor="showing"]) .ks-talk .dk-caption-line { color: var(--tx-ink); }
-.kx-lesson[data-tx] .ks-talk .dk-caption-line:lang(hi) { font-family: var(--tx-font-deva); }
 
 /* the question card: the second strongest thing, in the display face */
 .kx-lesson[data-tx] .ks-rail { margin-top: var(--tx-s-2); border: 0; border-radius: var(--tx-r-2); background: var(--tx-surface); box-shadow: var(--tx-shadow-1); outline: 1px solid var(--tx-line); outline-offset: -1px; overflow: hidden; }
@@ -76,7 +75,6 @@
 .kx-lesson[data-tx][data-tx][data-tx][data-tx] .dk[data-skin="kaksha"] [data-zone="card"] > .dk-card { box-shadow: none; background: transparent; border: 0; border-radius: 0; padding: var(--tx-s-2) var(--tx-s-2) var(--tx-s-2) var(--tx-s-4); }
 .kx-lesson[data-tx] .ks-rail .dk-ask { font-family: var(--tx-font-display); font-weight: var(--tx-display-weight); font-size: var(--tx-t-4); line-height: 1.25; letter-spacing: -.01em; color: var(--tx-ink); }
 .kx-lesson[data-tx] .ks[data-kind="wide"] .ks-rail .dk-ask { font-size: var(--tx-t-5); }
-.kx-lesson[data-tx] .ks-rail .dk-ask:lang(hi) { font-family: var(--tx-font-deva); }
 .kx-lesson[data-tx] .ks-rail .dk-hear { border-radius: var(--tx-r-1); background: transparent; border-color: transparent; color: var(--tx-ink-2); }
 /* her turn: the card lifts (a stronger shadow and edge). The dock under it carries the one "your move" colour on the screen */
 .kx-lesson[data-tx] .dk:is([data-floor="your_turn"], [data-floor="listening"]) .ks-rail { outline: 1.5px solid var(--tx-line-2); box-shadow: var(--tx-shadow-2); }
@@ -128,4 +126,21 @@
 .kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-piece { visibility: hidden; }
 .kx-lesson[data-tx] .ks-slot:has(.st-empty) .ks-standby { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; padding: var(--tx-s-6); text-align: center; }
 .kx-lesson[data-tx] .ks-standby-line { margin: 0; font: var(--tx-display-weight) var(--tx-t-5)/1.35 var(--tx-font-display); color: var(--tx-ink); text-wrap: balance; }
-.kx-lesson[data-tx] .ks-standby-line:lang(hi) { font-family: var(--tx-font-deva); }
+
+/* A Hindi or Hinglish lesson (main 2026-11-15, from the live walk). Hinglish carries lang="hi-Latn", which :lang(hi)
+   matches, and the global :lang(hi) rules (fonts.css, desk.css, desk.kaksha.css) set Mukta on every such element: the
+   question card, the hint and the debrief lost the theme's faces in most lessons. Under the theme every :lang(hi) element
+   takes the theme's face with Mukta behind it (Latin letters keep the face, Devanagari falls through); the question, the
+   standby line and everything inside them take the display face the same way. */
+.kx-lesson[data-tx][data-tx][data-tx] :lang(hi) { font-family: var(--tx-font-ui-mix); }
+.kx-lesson[data-tx][data-tx][data-tx][data-tx] :is(.ks-rail .dk-ask, .ks-rail .dk-ask *, .ks-standby-line):lang(hi) { font-family: var(--tx-font-display-mix); }
+
+/* The debrief (the live walk's end screen) */
+/* her mark: the presence circle, no clipped tile around it */
+.kx-lesson[data-tx][data-tx][data-tx] .kx-db-face { clip-path: none; width: auto; height: auto; min-height: 0; background: transparent; border: 0; }
+.kx-lesson[data-tx][data-tx][data-tx] .kx-db-face .tx-presence-face { width: 64px; height: 64px; font-size: var(--tx-t-6); }
+/* "You said": a plain label, sentence case */
+.kx-lesson[data-tx][data-tx][data-tx] .kx-db-key { font: 600 var(--tx-t-1)/1.3 var(--tx-font-ui); letter-spacing: 0; text-transform: none; color: var(--tx-ink-2); }
+.kx-lesson[data-tx][data-tx][data-tx] .kx-db-card { clip-path: none; border-radius: var(--tx-r-2); }
+/* Finish closes the page in the flow: never laid over the goodbye choices */
+.kx-lesson[data-tx][data-tx][data-tx] .kx-db-finish { position: static; box-shadow: var(--tx-shadow-1); margin-top: var(--tx-s-5); }
