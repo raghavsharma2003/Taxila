@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readByAsked } from "../server/brain/turn.js";
-import { intentOf } from "../evals/child-sim/reactive.mjs";
+import { intentOf, nearMiss } from "../evals/child-sim/reactive.mjs";
 import { PREDICATES, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
 const kitWith = (answer) => ({ topicId: "t", items: [{ id: "i1", answer, kind: "practice" }] });
@@ -43,4 +43,12 @@ test("readerAgrees is gated, and flags a misread on a row", () => {
   const flag = PREDICATES.readerAgrees("L", { who: "teacher", text: "Yeh jawab sahi nahi hai." }, 1, { prevIntent: "yes", prevRead: "incorrect", prevFlags: [], prevChild: "haan, samajh aaya" });
   assert.match(flag, /meant yes/);
   assert.equal(PREDICATES.readerAgrees("L", { who: "teacher", text: "Achha." }, 1, { prevIntent: "yes", prevRead: "no_evidence", prevFlags: [], prevChild: "haan" }), null);
+});
+
+// (main's 028: c6's gate-cost card, key "₹380" — the test child's miss was "pata nahi, shayad wahi", read as a give-up; a miss is a value)
+test("the test child's miss on a currency key is a near value, not a hedge", () => {
+  const m = nearMiss("₹380", () => 0.7);
+  assert.match(m, /^₹\d+$/);
+  assert.notEqual(m, "₹380");
+  assert.match(nearMiss("Rs 50", () => 0.2), /^Rs \d+$/);
 });

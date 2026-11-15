@@ -140,8 +140,9 @@ export function nearMiss(key, rng) {
   const k = String(key).trim();
   const frac = /^(\d+)\s*\/\s*(\d+)$/.exec(k);
   if (frac) return frac[1] !== frac[2] ? `${frac[2]}/${frac[1]}` : `${frac[1]}/${+frac[2] + 1}`;
-  const num = /^(\d+(?:\.\d+)?)(.*)$/.exec(k);
-  if (num) { const n = Number(num[1]); const d = rng() < 0.5 ? 1 : (n >= 10 ? Math.max(2, Math.round(n / 10)) : 2); return `${n + (rng() < 0.5 ? -d : d)}${num[2]}`.trim(); }
+  // (main's 028: a key with a currency before it — "₹380" — is a value too; its miss is a near value, never the hedge "pata nahi, shayad wahi")
+  const num = /^((?:₹|rs\.?\s*|rupees?\s+)?)(\d+(?:\.\d+)?)(.*)$/i.exec(k);
+  if (num) { const n = Number(num[2]); const d = rng() < 0.5 ? 1 : (n >= 10 ? Math.max(2, Math.round(n / 10)) : 2); return `${num[1]}${n + (rng() < 0.5 ? -d : d)}${num[3]}`.trim(); }
   const opposite = { yes: "no", no: "yes", haan: "nahi", nahi: "haan", bigger: "smaller", smaller: "bigger", bada: "chhota", chhota: "bada" };
   return opposite[k.toLowerCase()] ?? "pata nahi, shayad wahi";
 }
