@@ -109,14 +109,17 @@ export const PREDICATES = {
     if (!GIVE_UP_ANY.test(ctx.prevChild)) return null;
     const card = ctx.prevT?.check?.itemId;
     if (!card || ctx.prevT?.check?.gave) return null;
-    const spent = (ctx.prevT.check.misses ?? 0) >= 1 || (ctx.cardTurns[card] ?? 0) >= 2;
+    // (O6, main on director21: a card said twice — re-said for a clarify or a picture — has had no miss; only a miss spends its help)
+    const spent = (ctx.prevT.check.misses ?? 0) >= 1;
     if (!spent || r.check?.gave || KEY_SAID.test(r.text)) return null;
     return `a give-up with the help spent (${(ctx.prevT.check.misses ?? 0)} miss, said ${ctx.cardTurns[card] ?? 0}×), answered without the key`;
   },
   /** A clarify at a check-in (after a point, a key or a remediation) answered with the card alone. */
   clarifyCard(L, r, i, ctx) {
     if (!CLARIFY.test(ctx.prevChild) || !ctx.prevT) return null;
-    const atCheckin = CHECKIN.test(norm(ctx.prevT.text)) || (KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) || (!cardIn(ctx.prevT) && /rem:|then:/.test(String(ctx.prevT.beat ?? "")));
+    // (C1: after a key the clarify gets its whyAlt once, else the walk goes on — a card may follow)
+    if (KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) return null;
+    const atCheckin = CHECKIN.test(norm(ctx.prevT.text)) || (!cardIn(ctx.prevT) && /rem:|then:/.test(String(ctx.prevT.beat ?? "")));
     // (main on director19: re-saying and then posing the card in the same turn is still answering the clarify with the card — the turn
     // re-says, ends on its check-in, and the card waits)
     // (dc-r8-second-clarify-shows-not-rewords: the key and its why said twice after the first — a third ask may move on)
@@ -283,10 +286,9 @@ export const PREDICATES = {
       if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
-    if (KEY_SAID.test(p.text)) {
-      if (cardIn(r)) return "a give-up after a key answered with a card";
-      return CHECKIN.test(norm(r.text)) ? null : "a give-up after a key not answered with its why and the check-in";
-    }
+    // (C1, main on director21: after a key a give-up gets the why's second wording once, else the walk goes on — never the same why
+    // again; repeatedAuthored holds the repeat)
+    if (KEY_SAID.test(p.text)) return null;
     const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
     return simpler && cardIn(r) ? null : `a give-up at a check-in answered with ${simpler ? "no card" : cardIn(r) ? "the card and no simpler" : "neither the simpler nor the card"}`;
   },
@@ -541,7 +543,9 @@ export const ORDER_LAWS = {
     const T = ` ${key(r.text)} `;
     const hit = remSentences(ctx).find((x) => T.includes(` ${x.k} `));
     // (the remediation is the live part when her turn before said any of it: its simpler on a clarify of it is the cell's)
-    const prevHad = hit && ctx.prevT && remAll(ctx).some((x) => x.targets === hit.targets && ` ${key(ctx.prevT.text)} `.includes(` ${x.k} `));
+    const prevHad = hit && ctx.prevT && (remAll(ctx).some((x) => x.targets === hit.targets && ` ${key(ctx.prevT.text)} `.includes(` ${x.k} `))
+      // (a remediation and its then-card are one unit — main on director21: its say over its own then-card's board is allowed)
+      || [...(ctx.prevT.pageParts ?? []), ...(r.pageParts ?? [])].some((p) => beatOfPart(p) === `then:${hit.targets}`));
     const out = hit && !ctx.prevCls?.startsWith("misconception") && !prevHad ? `a remediation (${hit.targets}) said after "${ctx.prevRead}", not its misconception` : null;
     if (out) return out;
     if (hit && !prevHad) {
@@ -555,6 +559,8 @@ export const ORDER_LAWS = {
   orderStays(L, r, i, ctx) {
     const rq = /·\s*(visual|language|repeat|another|clarify|confused|which)/.exec(ctx.prevRead ?? "")?.[1] ?? (SAYS_CLARIFY_C.test(ctx.prevChild ?? "") ? "clarify" : null);
     if (!rq || !ctx.prevT) return null;
+    // (C1: a clarify after a key, the answer said plainly, may go on — picture, Hindi and repeat stay)
+    if (["another", "clarify", "confused"].includes(rq) && KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
@@ -579,6 +585,17 @@ export const ORDER_LAWS = {
     const n = (ctx.o.misses[c] = (ctx.o.misses[c] ?? 0) + 1);
     return n === 1 && KEY_SAID.test(String(r.text ?? "")) ? `the key on the first miss ("${ctx.prevChild}")` : null;
   },
+  /** C1 (main on director21: "the same why said three turns running"): no authored sentence of six words or more is said in two turns
+   *  of hers running — except the card the child is asked again. */
+  repeatedAuthored(L, r, i, ctx) {
+    if (!ctx.prevT) return null;
+    const prev = ` ${key(ctx.prevT.text)} `, cardK = r.card ? ` ${key(r.card)} ` : "";
+    const strs = (ctx.o.allStr ??= (() => { const out = new Set(); const walk = (o) => { if (typeof o === "string") { for (const x of sentencesOf(o)) out.add(key(x)); return; }
+      if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) if (!["id", "key", "accept", "targets", "board", "answerBoard", "params", "template", "ladder", "notes"].includes(k)) walk(v); };
+      walk(ctx.script ?? {}); return [...out].filter((k) => k.split(" ").length >= 6 && !/\{/.test(k)); })());
+    const hit = strs.find((k) => ` ${key(r.text)} `.includes(` ${k} `) && prev.includes(` ${k} `) && !cardK.includes(` ${k} `));
+    return hit ? `said in two turns running: "${hit.slice(0, 60)}"` : null;
+  },
   /** O7: her answer to the child's question about her comes first in its turn (the AI line before any teaching). */
   orderAnswerFirst(L, r) {
     const t = String(r.text ?? ""), at = t.search(AI_LINE);
@@ -590,7 +607,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

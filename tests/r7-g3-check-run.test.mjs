@@ -9,7 +9,10 @@ const RUN = new URL("./fixtures/eval-results/director20", import.meta.url).pathn
 
 test("G3: giveUpNoKey flags director20's fault-5 rows (c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30)", () => {
   const flags = checkRun(RUN).filter((x) => x.predicate === "giveUpNoKey").map((x) => `${x.lesson} ${x.row}`);
-  for (const row of ["stuck-c4-ch05-t01 12", "stuck-c5-ch02-t01 12", "steering-c5-ch02-t02 30"]) assert.ok(flags.includes(row), `${row} in ${flags.join(", ")}`);
+  // (main's ruling on director21, O6: a give-up's help is spent by a miss, never by the card being said twice — c4 stuck 12 and c5-t01
+  // stuck 12 had no miss and are no fault now; c5-t02 steering 30 had one)
+  for (const row of ["steering-c5-ch02-t02 30"]) assert.ok(flags.includes(row), `${row} in ${flags.join(", ")}`);
+  assert.ok(!flags.includes("stuck-c4-ch05-t01 12") && !flags.includes("stuck-c5-ch02-t01 12"));
   // ("hindi mein batao na" is a request, not a give-up)
   assert.ok(!flags.includes("stuck-c5-ch02-t02 8") && !flags.includes("stuck-c6-ch06-t01 8"));
 });
@@ -58,7 +61,9 @@ test("P1: a return is a turn of its own, after a park; a close may lead it", asy
 // (c4 stuck 46, c5-t01 stuck 6, c5-t02 stuck 66) and a Hindi request answered with the same card and a promise (c4 stuck 10, c6 stuck 8)
 test("L1, L4: the listening predicates flag director20's rows", () => {
   const flags = checkRun(RUN).map((x) => `${x.lesson} ${x.row} ${x.predicate}`);
-  for (const f of ["stuck-c4-ch05-t01 46 giveUpCheckin", "stuck-c5-ch02-t01 6 giveUpCheckin", "stuck-c5-ch02-t02 66 giveUpCheckin", "stuck-c4-ch05-t01 10 hindiCard", "stuck-c6-ch06-t01 8 hindiCard"])
+  // (C1, main on director21: after a key a give-up may go on — c4 stuck 46 moved on after its key, and the same why again is the fault
+  // repeatedAuthored holds)
+  for (const f of ["stuck-c5-ch02-t01 6 giveUpCheckin", "stuck-c5-ch02-t02 66 giveUpCheckin", "stuck-c4-ch05-t01 10 hindiCard", "stuck-c6-ch06-t01 8 hindiCard"])
     assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /giveUpCheckin|hindiCard/.test(x)).join(", ")}`);
 });
 

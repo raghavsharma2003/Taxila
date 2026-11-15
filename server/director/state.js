@@ -1505,7 +1505,11 @@ function afterMiss(s, input, item) {
   // v6.6 K3 (main, director14 c4 stuck 46, c6 steering 38, c5-t01 stuck 68: a second miss got only "<answer> sahi nahi hai" and the
   // card again): a second miss — a wrong answer or a "pata nahi" after an earlier one on this card — is never a bare re-pose: with no
   // helper line left unsaid on the card, it gives its key and why
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && isScriptCard(item) && ["wrong", "stuck"].includes(verdict(input.cls))
+  // (O6, main on director21 c4 steady 62, offtopic 62, c5-t01 offtopic 30, c5-t02 steering 32: the first wrong answer got the key because
+  // a clarify's simpler counted as help spent — the first miss on a card never gets the key; it gets the card's help, said again if
+  // all of it was heard on a request)
+  const priorMiss = (s.misses?.[item.id] ?? 0) >= (verdict(input.cls) === "wrong" ? 2 : 1) || (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1;
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && isScriptCard(item) && ["wrong", "stuck"].includes(verdict(input.cls)) && priorMiss
     // (v6.8 B1‴, main on director16 c6 steering 10: a follow-up card's misconception was already remedied — with its simpler spent on a
     // Hindi request, the first miss gives the key)
     && ((s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 || (!helpLeft(s, input.kit, item, { any: true }) && input.cls?.outcome !== "misconception") || (!!item.scriptThen && !helpLeft(s, input.kit, item))
@@ -2862,14 +2866,28 @@ const GIVE_UP_WORDS = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?ba
 function giveUpSpent(s, input, item) {
   if (!scriptOn() || scriptFor(input.kit)?.script?.recordedRun || !item || !isScriptCard(item) || !GIVE_UP_WORDS.test(String(input.text ?? ""))) return false;
   if (!["stuck", "unknown", "off"].includes(verdict(input.cls)) && input.cls?.outcome !== "no_evidence") return false;
-  return (s.misses?.[item.id] ?? 0) >= 1 || (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1 || (s.cardSaidN?.[item.id] ?? 0) >= 2;
+  // (O6, main on director21 c5-t02 offtopic 26, c4 stuck 28: a fresh give-up got the key because the card had been SAID twice — a card
+  // re-said for a clarify or a picture is no miss; only a miss spends its help)
+  return (s.misses?.[item.id] ?? 0) >= 1 || (s.cardHelp?.id === item.id ? s.cardHelp.misses ?? 0 : 0) >= 1;
 }
 /** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
 const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+const ONE_TURN = ["whyAltSaid", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+/** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
+function whyAltOf(prev, kit) {
+  const id = prev?.lastMove?.itemId ?? prev?.activeItemId ?? null;
+  const item = id ? findItem(prev, kit, id) : null;
+  if (!item?.skillId) return null;
+  const sk = skillScriptOf(kit, item.skillId);
+  const card = item.scriptAsk ? (item.scriptAsk.beatId === "worked" ? sk?.workedExample?.yourStep : sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.ask)
+    : item.scriptCheck ? sk?.checks?.find((c) => c.id === item.scriptCheck.checkId) : item.scriptThen ? sk?.remediation?.find((r) => r.targets === item.scriptThen.targets)?.then : null;
+  const w = card?.whyAlt;
+  const t = w ? saidIn(w, prev?.ctx?.lang ?? "hinglish") : null;
+  return t && String(t).trim() ? { text: String(t).trim().replace(/[.!?\u0964]+$/, ""), board: w.board ?? null } : null;
+}
 /** C1 step 3: a compiled cell's lines for this turn — { cell, lines, show } in the lesson language, or null (no script, no cell, a hole).
  *  The walk reads what to say from the cell; the walk's own code says when. */
 function cellLines(prev, input, column) {
@@ -2928,6 +2946,15 @@ export function cellAddressOf(prev, input) {
 }
 export function step(prev, input) {
   const out = stepCells(prev, input);
+  // (O1/O2, director21 dry steering c5-t02 34→36: a return held point e3 back while its card was held for a split; the held half came
+  // through heldTurn, which never read bodyUnsaid — the point was dropped. Every path says what a return held, first)
+  const lm0 = out?.state?.lastMove;
+  if (prev?.bodyUnsaid?.length && lm0 && !lm0.heldSaid && !["safeguard", "wrap", "break"].includes(lm0.kind) && input?.event === "turn") {
+    const held = prev.bodyUnsaid.map(String);
+    const add = { sayFirst: [...held, ...(lm0.sayFirst ?? [])], heldSaid: held, ...(prev.lastMove?.scriptBeat?.board ? { heldBeat: { ...prev.lastMove.scriptBeat } } : {}) };
+    out.state.lastMove = { ...lm0, ...add };
+    if (out.move) out.move = { ...out.move, ...add };
+  }
   // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
   const cell = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
   if (cell && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, cell }; if (out.move) out.move = { ...out.move, cell }; }
@@ -3013,8 +3040,11 @@ function stepCells(prev, input) {
     const clar = out.move?.request === "clarify" || input.cls?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? ""));
     if (clar) {
       const n = prev?.clarifyRun?.key === partKey ? prev.clarifyRun.n + 1 : 1;
-      out.state.clarifyRun = { key: partOf(out.state, out.state.lastMove), n };
-      if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, clarifyN: n };
+      // (C1: a clarify answered by moving on to another part leaves that part fresh — its first clarify is a first, never a second)
+      const nowKey = partOf(out.state, out.state.lastMove);
+      const moved = !!partKey && !!nowKey && nowKey !== partKey;
+      out.state.clarifyRun = { key: nowKey, n: moved ? 0 : n };
+      if (out.state.lastMove) out.state.lastMove = { ...out.state.lastMove, clarifyN: moved ? undefined : n };
     } else out.state.clarifyRun = undefined;
   }
   // (v6.11 G2, main on director19: "Phir se dekho:" on cards never asked — a card is posed when the turn that goes out carries it,
@@ -3346,7 +3376,11 @@ function step0(prev, input) {
     const beatOf = (bid) => { const b = sk?.explain?.find((x) => x.id === bid); return b?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: `explain:${bid}`, kind: "explain", board: b.board } : null; };
     const own = remSimpler ? { text: remSimpler, beat: remOf(remJust) } : meta?.simpler ? { text: meta.simpler, beat: null } : { text: beatSimpler ?? null, beat: beatSimpler ? beatOf(item.scriptAsk.beatId) : null };
     const help = s.cardHelp?.id === item.id ? s.cardHelp : { id: item.id, said: [], misses: 0 };
-    help.misses += 1;
+    // (O6, main on director21 c5-t01 offtopic 22→30: a give-up at the remediation's check-in — its then-card held, not yet asked — was
+    // counted as a miss on that card, and the card's first answer got the key: a miss counts on a card once it has been asked)
+    // (and a clarify is no miss: only a wrong answer, or a give-up on the card she asked, counts — O6)
+    const gaveUp = GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""));
+    if (verdict(input.cls) === "wrong" || (gaveUp && prev?.lastUi?.ask?.itemId === item.id && prev?.cardUnsaid !== item.id)) help.misses += 1;
     // v6.5 K2 (main, director13): a remediation already said in the lesson is never said again on another card; and "pata nahi" (no
     // wrong answer) gets the card's own simpler, else its beat's point — never a remediation (c4 stuck 10, 16)
     // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
@@ -3970,12 +4004,17 @@ function heldTurn(prev, input) {
   // the check-in; it does not move on. Once: a second clarify gets the held half. (Its simpler wording is Learning's to author; until
   // then the authored why is said again.)
   // (dc-r8-second-clarify-shows-not-rewords: asked a second time, the same line again and the check-in — a third ask gets the held half)
-  if (!h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && (!prev.lastMove?.smaller || !prev.lastMove?.keyTwice) && !prev.lastMove?.secondClarify && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
+  // (C1, main on director21 c4 steering 54–58, c6 steering 16–20, stuck c4 42–46: the same why said three turns running. After a key, a
+  // give-up or a clarify gets the why's second wording — the card's whyAlt — once; with none written, or once it is said, the walk goes
+  // on: no authored sentence is said in two turns running)
+  const whyAlt = !h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && !prev.lastMove?.whyAltSaid ? whyAltOf(prev, input.kit) : null;
+  if (whyAlt && !prev.lastMove?.secondClarify && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
     && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closeBeat", "closedBeat", "splitClose", "gaveCheck", "keyTwice"]);
-    const again = { ...prevMove, smaller: true, gaveCheck: true, ...(prev.lastMove?.smaller ? { keyTwice: true } : {}) };
+    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closeBeat", "closedBeat", "splitClose", "gaveCheck"]);
+    const again = { ...prevMove, gave: { ...prevMove.gave, why: whyAlt.text }, smaller: true, gaveCheck: true, whyAltSaid: true,
+      ...(whyAlt.board && prevMove.closeBeat ? { closeBeat: { ...prevMove.closeBeat, board: whyAlt.board } } : {}) };
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

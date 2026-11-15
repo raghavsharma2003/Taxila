@@ -53,8 +53,12 @@ export function rule(kind, column, help) {
       if (kind === "worked_step") return help === "fresh" ? { say: ["simpler"], then: "checkin", help: "heard", fallback: "resay_show" } : help === "heard" ? second : { say: [], then: "next", help: "keep", thirdClarify: true };
       if (kind === "remediation") return help === "fresh" ? { say: ["simpler"], then: "card", help: "heard" } : help === "heard" ? { ...second, then: "card" } : { say: [], then: "card", help: "keep", thirdClarify: true };
       if (kind === "bridge") return help === "fresh" ? { say: ["simpler"], then: "next", help: "keep", fallback: "next" } : { say: [], then: "next", help: "keep" };
-      // a card: its simpler once; heard or spent, the key and its why (T1.5)
-      return help === "fresh" ? { say: ["simpler", "prompt"], reask: "question", then: "end", help: "heard" } : { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" };
+      // a card (C1 and O6, main on director21: a clarify spends no help, and a second clarify is shown another way): its simpler once;
+      // asked again, the point it comes from (an explain card's; the card's own question for the rest) on its board — Learning's pointAlt
+      // when written — and the check-in, the card still live; a third time, the key and its why, said plainly, and the walk goes on
+      if (help === "fresh") return { say: ["simpler", "prompt"], reask: "question", then: "end", help: "heard" };
+      if (help === "heard") return { say: [kind === "card" ? "@point.point" : "prompt"], alt: kind === "card" ? "@point.pointAlt" : null, show: kind === "card" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
+      return { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" };
     }
     // the joint, then the live part in Hindi (never an "ab se" promise: the joint is the script's)
     // (dc-r8-director20 L4: on a card, its own ask.simpler else its point's simpler, in Hindi, then the card's question; the switch joint only
