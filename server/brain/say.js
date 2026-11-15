@@ -750,8 +750,9 @@ export const GAVE_FORMS = {
 function tryFirstLead(kit, lang, state, guard = null) {
   const inv = freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state);
   const jf = jointsAt(kit, "afterTryFirst", lang, state);
-  if (jf && guard) (guard.jointsUsed ??= []).push("afterTryFirst");
-  return jf ? [inv.replace(/\s*[—–-]\s*$/, "."), freshOf(jf, state)] : [inv];
+  const j = jf ? freshOf(jf, state) : null;
+  if (j && guard) { (guard.jointsUsed ??= []).push("afterTryFirst"); guard.afterTryFirst = j; }
+  return j ? [inv.replace(/\s*[—–-]\s*$/, "."), j] : [inv];
 }
 /** v6.6 F1′ (main, director14: try-first got "Phir se dekho"): asked to try first, an invitation, then the card. */
 export const TRY_FIRST = { hinglish: ["Haan, pehle tum try karo —", "Theek hai, khud karke dekho —", "Bilkul, pehle tumhari koshish —"], english: ["Sure, you try first —", "Okay, have a go yourself —", "Go ahead, your try first —"] };
@@ -1215,6 +1216,25 @@ export async function textReply(args) {
   if (g.lineParts) { g.lineParts = alignParts(g.lineParts, reply); if (g.parts) g.parts = { ...g.parts, list: g.lineParts }; }
   return { ...out, reply, guard: g };
 }
+/** T4 (dc-r8-director22): one sentence about what this child did in the lesson, written by the reply model and checked by code — at
+ *  most 18 words, every number in it one the lesson's rows say, no praise of the child's traits, one sentence. null when it fails. */
+export const TRAIT_PRAISE = /(?<![\p{L}])(?:smart|clever|intelligent|genius|brilliant|talented|gifted|hoshiyaar|hoshiyar|samajhdaar|tez|bright|natural|born)(?![\p{L}])/iu;
+export function childSentenceOk(t, rowsText) {
+  const x = String(t ?? "").replace(/\s+/g, " ").trim().replace(/^["'“]|["'”]$/g, "");
+  if (!x || x.split(" ").length > 18 || TRAIT_PRAISE.test(x) || /\?/.test(x)) return null;
+  if ((x.match(/[.!।]\s+\S/g) ?? []).length) return null;
+  const said = String(rowsText ?? "");
+  if ((x.match(/\d+(?:\/\d+)?/g) ?? []).some((n) => !said.includes(n))) return null;
+  return /[.!।]$/.test(x) ? x : `${x}.`;
+}
+async function childSentence(state, L) {
+  const rows = (state.recent ?? []).slice(-40).map((t) => `${t.who === "teacher" ? "T" : "C"}: ${String(t.text ?? "").slice(0, 160)}`).join("\n");
+  const sys = L === "english"
+    ? "From the lesson rows, name ONE thing this child did (a card they answered, a step they worked out, a mix-up they fixed). One sentence, at most 18 words, about what they did, never what they are. Only cards and numbers that appear in the rows."
+    : "Lesson rows se, is bachche ne jo EK kaam kiya uska naam lo (ek sawaal jo hal kiya, ek step, ek galti jo theek ki). Hinglish mein ek vaakya, 18 shabdon tak, usne kya kiya — woh kaisa hai, nahi. Sirf woh sawaal aur numbers jo rows mein hain.";
+  const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: sys }, { role: "user", content: rows }], { maxTokens: 60, effort: "none", timeoutMs: 5000 });
+  return childSentenceOk(r?.text, rows);
+}
 async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
@@ -1229,15 +1249,28 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   }
   // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
   // as written, after the close of her last answer; no model call)
-  if (state.lastMove?.authoredEnd && state.lastMove?.rendered?.length) {
+  if (state.lastMove?.authoredEnd && (state.lastMove?.rendered?.length || state.lastMove.authoredEnd === "teachbackKey")) {
     const L = lang === "english" ? "english" : "hinglish";
     const d = (x) => { const t = String(x ?? "").replace(/\s+/g, " ").trim(); return t ? (/[.!?\u0964]$/.test(t) ? t : `${t}.`) : null; };
     const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
-    const v = state.lastMove.endVerdict ?? (state.lastMove.authoredEnd === "teachback" ? verdict : null);
+    const end = state.lastMove.authoredEnd;
+    const v = state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
     const close = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${state.lastMove.endVerdict ? "" : why(state.lastGraded?.why)}`)
       : v === "not_yet" ? notRightLead(String(childText ?? "").trim(), L, state) : null;
-    const lp = cleanParts([{ part: "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...state.lastMove.rendered.map((x) => ({ part: "body", text: d(spokenMarks(x, L)) }))]);
-    return { reply: joinParts(lp), guard: { authoredEnd: state.lastMove.authoredEnd, lineParts: lp, parts: { list: lp } } };
+    const lines = (state.lastMove.rendered ?? []).map((x) => d(spokenMarks(x, L)));
+    // (dc-r8-director22 T3: the teach-back's verdict is a turn of its own — the verdict, the key and its why on a miss, then a check-in)
+    if (end === "teachbackKey") {
+      // (the verdict and the key are the answer board's unit — a body part, drawn from the first word, T1)
+      const lp = cleanParts([{ part: "body", text: [close, ...lines].filter(Boolean).join(" ") }, { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
+      return { reply: joinParts(lp), guard: { authoredEnd: end, lineParts: lp, parts: { list: lp } } };
+    }
+    // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
+    // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
+    let mine = null;
+    if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L).catch(() => null);
+    const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
+    const lp = cleanParts([{ part: "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...body.map((x) => ({ part: "body", text: x }))]);
+    return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (v6.10, Learning D13: speech her ear could not read — the script's authored askAgain line, then the card as it was posed)
   if (state.lastMove?.request === "unheard" && jointOf(kit, "askAgain", lang)) {

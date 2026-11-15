@@ -85,7 +85,9 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
     // teachback and one recast card, one with a view), line 62 → 63 with one view fewer (c5-t01's reversed s1 rem0 then-card asks
     // how many marks, so it draws no view and no line), measured 21 → 22 (c6's teachback wire, with a view))
-    "fraction-bars@1": "20/24", "fraction-line@1": "45/63", "measured@1": "21/22", "shape@1": "1/6" }, JSON.stringify(got));
+    // (main on director22: a view is no longer withheld because neither caption is clean — it is drawn with a line that names
+    // nothing in it; bars 20 → 21)
+    "fraction-bars@1": "21/24", "fraction-line@1": "45/63", "measured@1": "21/22", "shape@1": "1/6" }, JSON.stringify(got));
   void none;
 });
 
@@ -276,4 +278,23 @@ test("main 21:08 (director20 c6 stuck 18, steering 14): a picture line says the 
   assert.equal(ST.inScriptTerms("ek tribhuj", []), "ek tribhuj", "no terms: unchanged");
   // a term the script says both ways equally, or never, is left alone
   assert.deepEqual(ST.ownTerms({ terms: [{ hi: "rekha", en: "line" }], skills: [{ explain: [{ say: { hi: "ek rekha, ek line" } }] }] }), []);
+});
+
+test("main on director22: a view whose captions cannot be said clean is still drawn, with a line that names nothing in it", () => {
+  // (director22: with the later-keys rule 10 of 12 picture requests in the three fraction pilots drew no view, and she said a
+  // picture could not be made. The run's rows: 6 of 16 picture turns had a view; director21 had 16 of 16.)
+  for (const l of BF.QUIET_PICTURE_LINES) {
+    assert.ok(!/\d/.test(l) && !/[.?!]$/.test(l), `"${l}": no number, and a fragment the say layer closes`);
+    assert.ok(!BF.lineHasBlank(l) && !BF.lineStatesKey(l, ["1/4", "8", "No"]), `"${l}": clean against any key`);
+  }
+  assert.equal(BF.cleanPictureLine(["8 barabar hisse", "aath hisse"], ["8"]), null, "the pure predicate still says: neither shape is clean");
+  let quiet = 0, viewed = 0;
+  for (const T of PILOTS) for (const b of boardsOf(T)) {
+    const pt = BF.pictureTurn(askOf(b), {});
+    if (!pt?.view) continue;
+    viewed++;
+    assert.ok(pt.line, `${b.T}${b.path}: a drawn view always has a line`);
+    if (BF.QUIET_PICTURE_LINES.includes(pt.line)) quiet++;
+  }
+  assert.ok(viewed > 100 && quiet >= 1, `views ${viewed}, of which with the quiet line ${quiet}`);
 });

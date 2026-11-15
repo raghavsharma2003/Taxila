@@ -29,6 +29,7 @@ import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisp
 import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
+import { jointsSaid } from "../server/brain/turn.js";
 import { newLearnerState } from "../server/comprehension/fuse.js";
 import { DEPLOY } from "../server/azure.js";
 import { teacherDeployment } from "../server/agent/flags.js";
@@ -214,6 +215,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
   for (let i = 0; i < MAX; i++) {
     let text = lines?.[i];
     let leaving = false;
+    let childIntent = null;
     if (child) {
       const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
       const card = live ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
@@ -236,22 +238,26 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
+        // (dc-r8-director22 harness: the script's teach-back question is on the table — its key, for the steady child)
+        ...(s.lastMove?.kind === "teachback" && s.lastMove?.authoredEnd === "teachback" && scriptFor(kit)?.script?.teachback?.key != null
+          ? { teachback: { key: String(scriptFor(kit).script.teachback.key), accept: scriptFor(kit).script.teachback.accept ?? [] } } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
         // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
         // (toEnd: the script is spent once its last skill was reached and its walk is over)
         ...(lastSkill && (s.introduced ?? []).includes(lastSkill) && !s.walk ? { scriptDone: true } : {}),
-        ...(lastT?.returnSaid || (/Main AI teacher hoon|Main AI hoon|I'm an AI|No favourites for me/i.test(String(lastT?.text ?? "")) && /[?？]\s*$/.test(String(lastT?.text ?? ""))) ? { returned: true } : {}) });
+        // (dc-r8-director22 harness: only when her turn ENDED on that question — an AI line followed by a step's check-in asked the step)
+        ...(lastT?.returnSaid || lastT?.aiAsked ? { returned: true } : {}) });
       let out = child.reply(childIn(i));
       // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
       const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
       if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
-      text = out.text; leaving = out.kind === "leave";
+      text = out.text; leaving = out.kind === "leave"; childIntent = out.intent ?? null;
     }
     if (text == null) break;
     const now = (i + 1) * 20_000;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
-    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
+    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), ...(childIntent ? { intent: childIntent } : {}), ...(Object.entries(c.flags ?? {}).some(([k, v]) => v === true && ["offTopic", "wantsToStop", "dontKnow"].includes(k)) ? { readFlags: ["offTopic", "wantsToStop", "dontKnow"].filter((k) => c.flags[k] === true) } : {}), classifyMs, classifyPath: c.path ?? null });
     lastClassify = { ms: classifyMs, path: c.path ?? null };
     const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
     const knowsBefore = (s.knowsApplied ?? []).length;
@@ -259,7 +265,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
     // (D, main on director21: the row records the reading the turn acted on — planTurn's, after its own rules — and the raw one beside it)
-    { const eff = p.cls ?? null; const row = rows.at(-1); if (eff && row?.who === "child") { const rq = eff.request?.src === "card_unsaid" ? null : eff.request?.type; const r1 = eff.outcome + (rq ? ` · ${rq}` : "") + (eff.asideReply ? " · aside" : ""); if (r1 !== row.read) { row.readRaw = row.read; row.read = r1; } } }
+    { const eff = p.cls ?? null; const row = rows.at(-1); if (eff && row?.who === "child") { const rq = eff.request?.src === "card_unsaid" ? null : eff.request?.type; const r1 = eff.outcome + (rq ? ` · ${rq}` : "") + (eff.asideReply ? " · aside" : ""); if (r1 !== row.read) { row.readRaw = row.read; row.read = r1; } const fl = ["offTopic", "wantsToStop", "dontKnow"].filter((k) => eff.flags?.[k] === true); if (fl.length) row.readFlags = fl; else delete row.readFlags; } }
     let next = { ...p.r.state, mode: "text" };
     let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
     // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected
@@ -343,8 +349,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
       if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.backTo && next) next = { ...next, backToN: (next.backToN ?? 0) + 1 };
-      if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of t.guard.jointsUsed) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
-      if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
+      if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(t.guard, t.reply)) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
+      // (dc-r8-director22 R, as brain/turn.js: only when her turn ended on that question — a turn that posed a card asked the card)
+      if (t.guard?.asideEnd && !ui?.ask) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
       // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)
       if (next && !next.returnAsked && t.guard?.asideEnd && t.guard?.honestNow && next.lastMove?.tasteAsked?.topic) next = { ...next, returnAsked: { topic: next.lastMove.tasteAsked.topic } };
@@ -539,7 +546,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (O5: a turn whose move clears the board — the teach-back, the wrap — records the board taken down, and nothing is held up after it)
     if (!heldRec && lane === "director" && reply && next.lastMove?.clear === "board") { heldRec = { unit: null, changed: true, kept: false, drawn: "cleared", pages: [], intent: { unit: null, noUnit: true }, layout: { split: false } }; next = { ...next, heldUp: undefined }; }
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
       // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)

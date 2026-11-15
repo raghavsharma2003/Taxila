@@ -600,3 +600,13 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-tests-pin-live-script-values-third-time` (2026-11-15): Third time a test pinned a live lesson script's values and broke at integration when Learning edited the script (r8-picture-turn test 8 on 11 Nov; laterKeys on 15 Nov, integration 54). A test over a script asserts the law (order, shape), or pins a dated row inline; it never pins the live file's values
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-picture-view-withheld-by-caption-rule` (2026-11-15): The later-keys caption rule (Studio bba2a2add, merged by main in integration 54, live in release 27) withheld a picture's whole view when neither caption was clean: 10 of 12 picture requests in the three fraction pilots drew nothing and she said a picture could not be made. Fixed in integration 58: the view is always drawn, with a line that names nothing
+- `fd-dry-run-showed-it-no-predicate-counted` (2026-11-15): The free dry run before director22 showed all 10 picture rows with no view; 41 predicates read 0 over them because none counted views. A paid run and four judges found what one count would have. Gated predicate pictureDrawn added (10 on director22's rows, 0 on the fix)
+- `fd-clause-4-number-met-remedy-not-applied` (2026-11-15): director22 clause 4 (register below 3.5 in two topics: the model writes the joins) met its number in 4 of 4 topics; three of four judges, asked for the cause by the clause itself, said placement by the walk and that a model join would not fix it. Main did not apply the remedy and recorded the departure; J2's reverse-if applies it without deferral if register stays low with joints placed right
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-second-play-changes-colours-p412` (2026-11-15): Playing the Studio v2 engines a second time in one process draws 23 of 160 runs (all p412) with different colours; the colour-trace test therefore fails after any engine-playing test file (leak check, seed 20261115, integration 60; bisected to studio-v2-layout.test.mjs, reproduced with traceAll twice). Open whether it is first-play state by design or a carry-over between a child's games. docs/patches/to-studio/011

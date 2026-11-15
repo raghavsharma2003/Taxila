@@ -9,6 +9,7 @@ import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { lessonFlags, PREDICATES, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
+import { countsOf, diffCounts, BASELINE } from "../evals/hybrid-side-by-side/counts.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const TOPICS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
@@ -31,5 +32,12 @@ test("G2: the dry matrix (16 lessons) reads 0 on every predicate", { timeout: 24
     }
     assert.ok(Object.keys(PREDICATES).length >= 12);
     assert.deepEqual(flags, []);
+    // dc-r8-counts-table-diff (G4, main on director22): the counts of what a child sees and hears in these 16 lessons equal the
+    // baseline. A change that moves one (integration 54 took picture views from 16 to 6 and nothing counted it) fails here until
+    // the baseline is rewritten in the same commit, so the moved numbers are in that commit's diff and named in its message:
+    //   node evals/hybrid-side-by-side.mjs --matrix --director-only --reactive --topics <the four pilots> --dry --out <dir>
+    //   node evals/hybrid-side-by-side/counts.mjs <dir> --write
+    const moved = diffCounts(JSON.parse(readFileSync(BASELINE, "utf8")), countsOf(out));
+    assert.deepEqual(moved, [], `counts moved against evals/hybrid-side-by-side/counts-baseline.json (${moved.length}): if every one is intended, rewrite the baseline in this commit and name them in its message`);
   } finally { rmSync(out, { recursive: true, force: true }); }
 });
