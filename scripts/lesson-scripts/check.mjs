@@ -1449,6 +1449,10 @@ export function SYNONYM_SETS() { return [
   { idea: "a step along a line", words: ["gap", "gaps", "kadam", "kadmon", "hop", "hops", "chhalaang", "chhalaangein"] },
   { idea: "a group of things", words: ["dheri", "dheriyan", "dheriyon", "group", "groups", "samooh", "samoohon"] },
   { idea: "one piece of a cut whole", words: ["tukda", "tukde", "tukdon", "hissa", "hisse", "hisson"] },
+  // director22 clause 8: c6 said aadha raasta, aadha kinaara, aadha chakkar and aadha parimap for one thing; c4 and c5-t02 said
+  // "bar" beside "patti" for the drawn strip
+  { idea: "half the way round", words: ["aadha raasta", "aadhe raaste", "aadha kinaara", "aadhe kinaare", "aadha chakkar", "aadhe chakkar", "aadha parimap", "aadhe parimap", "aadha perimeter", "aadhe perimeter"] },
+  { idea: "a drawn strip", words: ["bar", "bars", "patti", "pattiyan", "pattiyon"] },
 ]; }
 /** The spoken-Hindi counts of each synonym set's words in one script ({ [setIdx]: { word: n } }), the `terms` glossary and the
  *  joints left out. */
@@ -1459,7 +1463,8 @@ export function synonymUse(s) {
   return SYNONYM_SETS().map((set) => { const used = {}; for (const w of set.words) { const n = (t.match(new RegExp(`(?<![\\p{L}])${w}(?![\\p{L}])`, "gu")) ?? []).length; if (n) used[w] = n; } return used; });
 }
 // (forms of one word count as one: "tukda/tukde/tukdon" is one root)
-function rootOf(w) { return w.replace(/(on|ein|iyan|iyon|e|s|a|i)$/, "").slice(0, 4); }
+// (a two-word name is told apart by its second word: "aadha raasta" and "aadhe raaste" are one name, "aadha kinaara" another)
+function rootOf(w) { if (w.includes(" ")) return rootOf(w.split(" ").slice(1).join(" ")); return w.replace(/(on|ein|iyan|iyon|yan|yon|e|s|a|i)$/, "").slice(0, 4); }
 export function synonymErrors(s) {
   const e = [];
   SYNONYM_SETS().forEach((set, i) => {
@@ -1508,6 +1513,25 @@ export function d22Errors(s) {
   const tb = s.teachback;
   if (!tb) e.push("teachback: { prompt, key, accept[], why, board? } (director21 E1)");
   else {
+    // director22 T2: three lead-in forms, one said before the teach-back: one sentence that says a last question is coming and
+    // names nothing in it (no value, no question, no praise)
+    if (!Array.isArray(tb.leadIn) || tb.leadIn.length !== 3) e.push("teachback.leadIn: three forms [{ hi, en }] (director22 T2)");
+    else {
+      const seen = new Set();
+      tb.leadIn.forEach((f, i) => {
+        e.push(...two(f, `teachback.leadIn[${i}]`));
+        for (const l of ["hi", "en"]) {
+          const x = String(f?.[l] ?? ""), at = `teachback.leadIn[${i}]${l === "en" ? " (en)" : ""}`;
+          if (!x) continue;
+          if (sentencesOf(x).length !== 1) e.push(`${at}: one sentence`);
+          if (/[?？]/.test(x)) e.push(`${at}: asks nothing (the teach-back is the question)`);
+          if (/\d/.test(x)) e.push(`${at}: names no value`);
+          if (x.split(/\s+/).length > 14) e.push(`${at}: at most 14 words`);
+          if (/\b(shabaash|bahut badhiya|great|well done|good job|excellent|bahut achha)\b/i.test(x)) e.push(`${at}: praises nothing`);
+          if (l === "hi") { const k = keyOf(x); if (seen.has(k)) e.push(`${at}: the same as another form`); seen.add(k); }
+        }
+      });
+    }
     e.push(...two(tb.prompt, "teachback.prompt"), ...two(tb.why, "teachback.why"));
     if (tb.key == null || String(tb.key).trim() === "") e.push("teachback.key: missing");
     if (!Array.isArray(tb.accept)) e.push("teachback.accept: a list");
@@ -1557,6 +1581,21 @@ export function d22Errors(s) {
   };
   for (const k of s.skills ?? []) {
     const S = k.skillId;
+    // director22 T5: each skill says in one sentence what it covered; the wrap says those of the skills the lesson reached
+    if (!k.covered) e.push(`${S}.covered: one sentence on what this skill covered (director22 T5)`);
+    else {
+      e.push(...two(k.covered, `${S}.covered`));
+      for (const l of ["hi", "en"]) {
+        const c = String(k.covered?.[l] ?? ""), at = `${S}.covered${l === "en" ? " (en)" : ""}`;
+        if (!c) continue;
+        if (sentencesOf(c).length !== 1) e.push(`${at}: one sentence (got ${sentencesOf(c).length})`);
+        if (/[?？]/.test(c)) e.push(`${at}: asks nothing`);
+        if (/\b(tum|tumne|tumhe|tumhara|tumhari|tumhare|aapne|you|your)\b/i.test(c)) e.push(`${at}: says what the lesson covered, never what the child did`);
+        if (/\b(shabaash|bahut badhiya|great job|well done|good job|excellent)\b/i.test(c)) e.push(`${at}: praises nothing`);
+      }
+    }
+    // director22 clause 8: a remediation said again shows it another way (offtopic 62 repeated row 60 word for word)
+    (k.remediation ?? []).forEach((r, i) => { if (r.say) e.push(...alt(r.say, r.sayAlt, `${S}/remediation[${i}].sayAlt`)); });
     for (const b of k.explain ?? []) { e.push(...alt(b.point, b.pointAlt, `${S}/${b.id}.pointAlt`)); if (b.ask) e.push(...card(b.ask, `${S}/${b.id}.ask`)); }
     const we = k.workedExample;
     if (we) { e.push(...alt(we.problem, we.problemAlt, `${S}/workedExample.problemAlt`)); if (we.yourStep) e.push(...card(we.yourStep, `${S}/workedExample.yourStep`)); }
