@@ -582,12 +582,32 @@ export const ORDER_LAWS = {
   },
   /** O5: a turn with no unit (the teach-back, the wrap, the goodbye, the break) says nothing about a figure, and no board of another unit
    *  is up while it does. */
-  orderNoUnit(L, r) {
+  /** Main's 026: no turn says a teach-back's key while the teach-back's question board is up — the key turn shows its answerBoard,
+   *  or a cleared board when the script has none. */
+  teachbackKeyBoard(L, r, i, ctx) {
+    const tb = ctx.script?.teachback;
+    const key = tb?.key != null ? String(tb.key).trim() : "";
+    // (the key is said on the turn after her answer — the wrap; the teach-back's own question may name the key among its options)
+    if (!key || String(r.move ?? "") !== "wrap") return null;
+    const esc = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    if (!new RegExp(`(?<![\\p{L}\\p{N}/])${esc}(?![\\p{L}\\p{N}/])`, "iu").test(String(r.text ?? ""))) return null;
+    return r.held?.unit === "end:teachback" ? `the teach-back's key ("${key}") said over its question board` : null;
+  },
+  orderNoUnit(L, r, i, ctx) {
     const noUnit = !!r.held?.intent?.noUnit || (r.beat == null && /^(?:teachback|wrap|break)$/.test(String(r.move ?? "")));
     if (!noUnit) return null;
     // (the break's offer to go on leaves the lesson's board where it was; its words still name no figure)
     const up = String(r.move) !== "break" && (r.boardUp === true || (!!r.held?.unit && r.held?.drawn === "kept" && r.held?.kept));
-    const fig = FIGURE.exec(String(r.text ?? ""))?.[0];
+    // (main's 026: a wrap that says the teach-back's key with no answerBoard clears the board; the key and its authored why name the
+    // teach-back's figure — that sentence is checked by teachbackKeyBoard, the rest of the wrap here)
+    const tk = ctx?.script?.teachback?.key != null ? String(ctx.script.teachback.key).trim() : "";
+    // (and the script's own wrap — what was covered, the goodbye — names the lesson's ideas, not a figure on the board: it is checked
+    // only for pointing at one — "dekho", "look", "board")
+    const w = ctx?.script?.wrap;
+    const authored = String(r.move) === "wrap" && w ? [w.covered?.hi, w.covered?.en, w.goodbye?.hi, w.goodbye?.en].filter(Boolean).flatMap((x) => sentencesOf(x)).map((x) => low(x)) : [];
+    const said = String(r.move) === "wrap" ? sentencesOf(String(r.text ?? "")).filter((x) => !(tk && x.includes(tk)))
+      .filter((x) => !authored.includes(low(x)) || /(?<![\p{L}])(?:dekho|look|board)(?![\p{L}])/iu.test(x)).join(" ") : String(r.text ?? "");
+    const fig = FIGURE.exec(said)?.[0];
     return up || fig ? `${r.move} turn${up ? ` over ${r.held?.unit ?? "another unit"}'s board` : ""}${fig ? ` names a figure ("${fig}")` : ""}` : null;
   },
   /** O6: the first miss on a card — a wrong answer or a give-up — never gets the key (a clarify spends no help). */
@@ -658,7 +678,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

@@ -2388,12 +2388,13 @@ function teachback(s, input) {
     // (2.4: a right answer — the key or a form Learning accepts — goes to the wrap; anything else gets the key and its why once, then the wrap)
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
-    if (teachbackHit(tb, input.text)) { s.teachbackPassed = true; return { ...toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }), endVerdict: "correct" }; }
+    // (main's 026: the key turn — after a miss, or a right answer's close — shows the teach-back's answerBoard, else a cleared board)
+    if (teachbackHit(tb, input.text)) { s.teachbackPassed = true; return { ...toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct" }; }
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
     const keyLine = `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
-    // (the key and its why are the teach-back card's close, said over its own board; then the wrap)
-    return toWrap(s, { kit, keyFirst: { line: keyLine, board: tb.board ?? null } });
+    // (the key and its why, then the wrap: over the teach-back's answerBoard, else a cleared board — never its question board, 026)
+    return toWrap(s, { kit, keyFirst: { line: keyLine, board: tb.answerBoard ?? null } });
   }
   s.teachbackTries += 1;
   if (cls?.outcome === "correct") { s.teachbackPassed = true; return toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }); }
@@ -2433,7 +2434,7 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null }) {
     const lines = [covered, bye].filter((x) => x && String(x).trim()).map(endLine);
     return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { ...(stopping ? { stopping: true } : {}), rendered: lines, authoredEnd: "wrap",
       ...(keyFirst?.line ? { endKey: keyFirst.line } : {}),
-      ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: keyFirst.board } } : {}) });
+      ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board: keyFirst.board, mode: "fresh" } } : {}) });
   }
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }

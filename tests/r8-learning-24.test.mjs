@@ -28,3 +28,15 @@ test("phraseReplies[i] answers returns[i]: the return her line asked picks the r
   assert.notEqual(asideReplyLine({ said: "aapko kaun pasand hai?", topic: "cricket", asked }).form, "phrase");
   assert.ok(asideReplyForms().phrase.length > 0);
 });
+
+// (main's 026: the key turn shows the teach-back's answerBoard — a unit of its own — never its question board; with none, cleared)
+test("026: a wrap that says the teach-back's key holds its answerBoard; a plain wrap draws nothing new", async () => {
+  const { heldOf } = await import("../server/brain/propose.js");
+  const board = { template: "fraction-parts@1", params: { parts: 9, shade: 4 } };
+  const up = { unit: "end:teachback", board: { template: "fraction-parts@1", params: { parts: 9, shade: 4, hideResult: true } } };
+  const h = heldOf({ move: { kind: "wrap", scriptBeat: { skillId: "end", beatId: "teachback:answer", kind: "teachback", board } }, kit: null, up });
+  assert.equal(h?.unit, "end:teachback:answer");
+  assert.deepEqual(h?.board, board);
+  const plain = heldOf({ move: { kind: "wrap" }, kit: null, up });
+  assert.equal(plain?.unit, "end:teachback");
+});

@@ -540,7 +540,9 @@ const HELD_CLOSE = new Set(["close", "closed"]);
 export function heldOf({ move, list = null, line = "", kit, up = null, graded = false }) {
   // (v6.9 N1, main on director17: a stop or goodbye menu, a break, a wrap, a check-in has no unit part — the board up stays, nothing
   // new is drawn, the walk's next unit is not shown)
-  const noUnitMove = ["break", "wrap", "safeguard"].includes(move?.kind) || !!move?.checkin || ["stop", "goodbye", "break", "end"].includes(move?.request);
+  // (main's 026: the wrap that says a teach-back's key holds its answerBoard — a unit of its own, end:teachback:answer)
+  const answerWrap = move?.kind === "wrap" && move?.scriptBeat?.beatId === "teachback:answer" && !!move.scriptBeat.board;
+  const noUnitMove = (["break", "wrap", "safeguard"].includes(move?.kind) && !answerWrap) || !!move?.checkin || ["stop", "goodbye", "break", "end"].includes(move?.request);
   if (noUnitMove) { const h = up?.board ? { board: up.board, unit: up.unit } : null; if (h && STRICT_PAGES()) heldPredicates(h, [], String(line ?? ""), { up, noUnit: true }); return h; }
   const cardB = move?.cardBeat?.beatId ? move.cardBeat : move?.scriptBeat;
   // (v6.9 N2: the bridge is the next card's unit — bridge + the next skill's first card — never a unit of its own)
