@@ -427,3 +427,35 @@ script's own word, and they are never spoken inside a turn.
 
 Dry matrix (16 lessons) on int/r6 4b9cc504e plus these: evals/hybrid-side-by-side/check-run.mjs reads 0 on every predicate, twinsData
 and the other pending predicates included. check.mjs reads ok on all four pilots.
+
+## director22 round (2026-11-11 to 11-15): the ending, second wordings, seams and re-asks are authored (dc-r8-director21)
+
+What the judges will hear that is new. The scripts stay `"version": 2.3` (the runtime walks up to 2.3); the new fields are extra keys
+Brain reads by presence, and check.mjs runs every v2.4 rule on a script with a `teachback`.
+
+| field | c4 | c5-t01 | c5-t02 | c6 |
+|---|---|---|---|---|
+| `teachback` (one question on new numbers, its own board) | 9 pieces, 4 coloured → 4/9 | sevenths on 0 to 2, 9 gaps → 9/7 | 7 taken of 10 vs of 12 → 7/12 smaller | a 27 cm × 9 cm wire rectangle → 72 cm |
+| `wrap` (two sentences on what was covered + goodbye) | 1 | 1 | 1 | 1 |
+| `pointAlt` | 10 | 9 | 11 | 9 |
+| `whyAlt` | 26 | 30 | 30 | 26 |
+| `problemAlt` | 3 | 3 | 3 | 3 |
+| `reask` | 16 | 13 | 18 | 20 |
+| seam joints (`afterAside`, `beforeRemediation`, `afterTryFirst`, `afterAiLine`) | 4 × 3 | 4 × 3 | 4 × 3 | 4 × 3 |
+
+Data faults the director21 judges named, fixed in each pilot: a friend's verb ("{friend} kehta" → "{friend} ka kehna hai" or a
+direct question); bridges that recapped ("Ab tak…", "So far…") now say only what comes next; c4 s2's hook things ("dibbe", "tum
+dono") are used again or gone; one word per idea (c4: "tukda" a cut piece, "bhaag" how much of the whole, "group" for "dheri";
+c5-t01: "gap" for every part of the line, "tukde" only for a named object; c5-t02: "hissa" for a piece, "kami" for how far short of a
+whole; c6: "hissa" only); question frames the judges listed as repeated, recast so the child does a different thing; c6's spoken
+corners are P–T, matching its boards.
+
+Cards whose key changed (each re-solved): c4 s1 c2 (eaten → left, 4/5), c4 s1 rem1 then (which number goes below, 4); c5-t01 s1 c3
+(which mark is 1/9, the 1st), s1 rem0 then (first mark at 1/12 m, how many marks, 11); c5-t02 s2 c0 (Pinky and her brother, 3 more
+parts), s2 c2 (which is smaller, 3/4). No other key, board or card order changed.
+
+Aside replies (data/lesson-aside-replies.json): `phraseReplies` added beside `replies`; sport matches gain sixer, chhakka, chauka,
+catch, wicket, bowling, batting, goal, penalty.
+
+Read: every new or changed line read by a second reader who did not write it (517 entries: 467 pass, 50 failed and fixed, 0 wrong
+keys), the fix round read again by a third. check.mjs reads ok on all four; the dry matrix (16 lessons) reads 0 on every predicate.

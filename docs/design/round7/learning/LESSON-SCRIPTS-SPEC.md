@@ -98,3 +98,35 @@ they speak over; the beat's `convey` must point at something visible on that boa
    ("ray XY ke kitne endpoints?" asked for KL, then for GH, is one question).
 14. A rule is stated with its limit, or only for cases inside it: "clockwise goes to bigger numbers" breaks at 12, and
    "a multiple is never smaller than its number" breaks at 0. Do not delete a rule the point needs. Give its limit.
+
+## v2.4 (director21 → director22, dc-r8-director21): the ending, second wordings, seams and re-asks are authored
+
+All spoken text is `{ hi, en }`. check.mjs `d22Errors` requires these from `"version": 2.4`; the pilots carry them first, the staged 30
+after.
+
+- **`teachback`** (top level, E1): `{ prompt, key, accept[], why, board? }`. One question that uses the lesson's main idea once more,
+  on new numbers (never a card's or a ladder item's), answerable from the prompt and its own board (or none). It ends on its question;
+  at most three sentences. A non-answer gets the key and the why, once.
+- **`wrap`** (top level, E1): `{ covered, goodbye }`. `covered` is exactly two sentences on what the lesson covered: the ideas, never
+  what the child did ("tumne", "you"), never praise. `goodbye` is one sentence, no question. The model writes none of the ending.
+- **Second wordings** (C1), each `{ hi, en, board? }`: `pointAlt` on every explain beat, `whyAlt` on every card that has a why,
+  `problemAlt` on every worked example. A second wording shows the idea another way (another picture, a smaller number, an everyday
+  thing, the reverse direction). It shares no sentence of three or more words with the first wording and is not the first shortened
+  (at most 80% of its words from the first). With its own `board`, it speaks every number on that board. It never states a later
+  card's key. Cells: first clarify → the simpler; second → the second wording; third → the answer plainly, the part marked for return.
+- **Seam joints** (J1), in `joints`, three forms each, one sentence, asking, judging and promising nothing, no slot: `afterAside`
+  (after her reply to an aside), `beforeRemediation` (after a miss verdict), `afterTryFirst` (after "pehle tum try karo"),
+  `afterAiLine` (after the AI line). Each reads well before any part of the lesson.
+- **`reask`** (S2) on a card whose last sentence cannot be answered from the board and that sentence alone (it points back with
+  woh/yeh/it/that, or is five words or fewer, after earlier sentences): one self-contained question that names its givens. It is the
+  re-ask after help; after the second miss the whole card is said.
+
+Data rules from director21 (row 12), for every v2.3+ script: `friendVerbErrors` ({friend} with a gendered verb → {friendM}/{friendF},
+or "{friend} ka kehna hai"; "ne kaha" agrees with its object and is fine); `bridgeTrueErrors` (a bridge says what comes next, never a
+recap); `hookReuseErrors` (a hook's things come back in its skill); `allBoardsResolve` (every board and answerBoard, a remediation's own
+board included). From v2.4: `synonymErrors`, one word per idea across the synonym sets (a step along a line; a group of things; one
+piece of a cut whole), the `terms` glossary excepted.
+
+Aside replies (R3, data/lesson-aside-replies.json): each kind's `phraseReplies[i]` answers `returns[i]` with one `{phrase}` slot,
+up to three of the child's own words, said back about the child; Brain turns first person into second and drops a final
+postposition. `replies` ({word}) stays until Brain reads `phraseReplies`.

@@ -1,5 +1,5 @@
 {
-  "about": "Learning-owned (dc-r8-director20 R1): what Asha says around a child's aside, by kind of aside. returns: one question on {aside} the child can answer in a few words (what they like, what happened). replies: her answer to the child's reply, one slot {word} (a word of the child's, as said), never a fact, a taste of hers, a promise or a question. plain: the same with no slot, for when no word of the child's fits. Brain picks the kind from the aside's words (match), else 'other'. Validated by scripts/lesson-scripts/check.mjs asideReplyErrors.",
+  "about": "Learning-owned (dc-r8-director20 R1): what Asha says around a child's aside, by kind of aside. returns: one question on {aside} the child can answer in a few words (what they like, what happened). replies: her answer to the child's reply, one slot {word} (a word of the child's, as said), never a fact, a taste of hers, a promise or a question. plain: the same with no slot, for when no word of the child's fits. Brain picks the kind from the aside's words (match), else 'other'. Validated by scripts/lesson-scripts/check.mjs asideReplyErrors. phraseReplies (director21 R3): her answer to the child's reply to returns[i], with one slot {phrase} (up to three of the child's words, said back about the child).",
   "kinds": {
     "sport": {
       "match": [
@@ -18,7 +18,16 @@
         "volleyball",
         "basketball",
         "chess",
-        "shatranj"
+        "shatranj",
+        "sixer",
+        "chhakka",
+        "chauka",
+        "catch",
+        "wicket",
+        "bowling",
+        "batting",
+        "goal",
+        "penalty"
       ],
       "returns": [
         {
@@ -56,6 +65,20 @@
         {
           "hi": "Achha, samajh gayi.",
           "en": "Okay, got it."
+        }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, toh tumhe {phrase} sabse achha lagta hai.",
+          "en": "Oh, so you like {phrase} best."
+        },
+        {
+          "hi": "Achha, pichhli baar {phrase}.",
+          "en": "Oh, last time {phrase}."
+        },
+        {
+          "hi": "Achha, toh tumhara favourite hai {phrase}.",
+          "en": "Oh, so your favourite is {phrase}."
         }
       ]
     },
@@ -112,6 +135,20 @@
         {
           "hi": "Hmm, achha.",
           "en": "Hmm, okay."
+        }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, tumhe {phrase} sabse achha lagta hai.",
+          "en": "Oh, you like {phrase} best."
+        },
+        {
+          "hi": "Achha, pichhli baar {phrase}.",
+          "en": "Oh, last time {phrase}."
+        },
+        {
+          "hi": "Achha, tumhare liye sabse mazedaar hai {phrase}.",
+          "en": "Oh, for you the most fun part is {phrase}."
         }
       ]
     },
@@ -175,6 +212,20 @@
           "hi": "Hmm, samajh gayi.",
           "en": "Hmm, I see."
         }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, tumhe {phrase} sabse achha lagta hai.",
+          "en": "Oh, you like {phrase} best."
+        },
+        {
+          "hi": "Achha, tum yeh {phrase} ke saath khaate ho.",
+          "en": "Oh, you eat it with {phrase}."
+        },
+        {
+          "hi": "Achha, tumhe iske saath {phrase} bhi pasand hai.",
+          "en": "Oh, you like {phrase} with it too."
+        }
       ]
     },
     "people": {
@@ -236,6 +287,20 @@
           "hi": "Hmm, theek hai.",
           "en": "Hmm, alright."
         }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, tumhe unke saath {phrase} achha lagta hai.",
+          "en": "Oh, you like {phrase} with them."
+        },
+        {
+          "hi": "Achha, pichhli baar tumne unke saath {phrase}.",
+          "en": "Oh, last time you {phrase} with them."
+        },
+        {
+          "hi": "Achha, tumhe unki yeh baat achhi lagti hai: {phrase}.",
+          "en": "Oh, you like this about them: {phrase}."
+        }
       ]
     },
     "game": {
@@ -295,6 +360,20 @@
           "hi": "Oh, achha.",
           "en": "Oh, okay."
         }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, toh tumhe {phrase} sabse achha lagta hai.",
+          "en": "Oh, so you like {phrase} best."
+        },
+        {
+          "hi": "Achha, pichhli baar {phrase}.",
+          "en": "Oh, last time {phrase}."
+        },
+        {
+          "hi": "Achha, toh usmein yeh karna hota hai: {phrase}.",
+          "en": "Oh, so in it you have to {phrase}."
+        }
       ]
     },
     "other": {
@@ -335,6 +414,20 @@
         {
           "hi": "Hmm, achha, theek hai.",
           "en": "Hmm, okay, alright."
+        }
+      ],
+      "phraseReplies": [
+        {
+          "hi": "Achha, toh sabse achhi baat hai: {phrase}.",
+          "en": "Oh, so the best thing is {phrase}."
+        },
+        {
+          "hi": "Achha, toh aisa hua: {phrase}.",
+          "en": "Oh, so that's what happened: {phrase}."
+        },
+        {
+          "hi": "Achha, tumhe {phrase} yaad hai.",
+          "en": "Oh, you remember {phrase}."
         }
       ]
     }
@@ -411,6 +504,7 @@
     "A sad aside or reply (sad.match, by sad.rule) gets a sad reply and no return question.",
     "If the child asks her back ('aapko kaun pasand hai?'), she states no taste of her own: a plain form, then the lesson.",
     "Kind selection: a kind is chosen only when one of its match words is in the aside; when none matches, the kind is 'other' (it has no match list on purpose), never the first kind in the file.",
-    "She claims no feeling of her own (no 'mujhe … laga', 'bura laga', 'khushi hui'): she is an AI and says so."
+    "She claims no feeling of her own (no 'mujhe … laga', 'bura laga', 'khushi hui'): she is an AI and says so.",
+    "{phrase} (director21 R3, `phraseReplies`): the child's own answer to her return question, up to three words, said back as something about the child. phraseReplies[i] answers returns[i]. Brain turns first person into second ('mera' → 'tumhara', 'humari team' → 'tumhari team', 'maine' → 'tumne'), drops a postposition at its end ('mummy ke saath' → 'mummy'), and never fills it with haan, nahi, pata nahi, kuch nahi, sab, or a question back to her. If the answer has no such phrase, she says a plain form. The form states no fact of the world, no taste of hers and no promise. `replies` ({word}) stays until Brain reads phraseReplies."
   ]
 }
