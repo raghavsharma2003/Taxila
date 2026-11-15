@@ -750,8 +750,9 @@ export const GAVE_FORMS = {
 function tryFirstLead(kit, lang, state, guard = null) {
   const inv = freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state);
   const jf = jointsAt(kit, "afterTryFirst", lang, state);
-  if (jf && guard) (guard.jointsUsed ??= []).push("afterTryFirst");
-  return jf ? [inv.replace(/\s*[—–-]\s*$/, "."), freshOf(jf, state)] : [inv];
+  const j = jf ? freshOf(jf, state) : null;
+  if (j && guard) { (guard.jointsUsed ??= []).push("afterTryFirst"); guard.afterTryFirst = j; }
+  return j ? [inv.replace(/\s*[—–-]\s*$/, "."), j] : [inv];
 }
 /** v6.6 F1′ (main, director14: try-first got "Phir se dekho"): asked to try first, an invitation, then the card. */
 export const TRY_FIRST = { hinglish: ["Haan, pehle tum try karo —", "Theek hai, khud karke dekho —", "Bilkul, pehle tumhari koshish —"], english: ["Sure, you try first —", "Okay, have a go yourself —", "Go ahead, your try first —"] };

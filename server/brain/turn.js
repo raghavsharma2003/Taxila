@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn, cardUnsaidNow } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow, asideTopic } from "../director/state.js";
 import { responseShape } from "../director/requestTable.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
@@ -25,7 +25,7 @@ import { newLearnerState, fuseEvidence, beliefFor, noteOutcome, auditRow, weaveE
 import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt } from "../comprehension/store.js";
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
-import { scanSafety, floorViolations, helpLeadOf } from "../director/safety.js";
+import { scanSafety, floorViolations, helpLeadOf, wantsToStop } from "../director/safety.js";
 import { step, evidenceFrom, upcomingItem, scriptWhyOf } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
@@ -971,9 +971,11 @@ export async function lessonTurn(req, body, hooks = {}) {
     // (J1: backTo's forms rotate by how many times a card has come back)
     if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
     // (2.4 J1: each seam joint kind rotates by how many times it has been said)
-    if (guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of guard.jointsUsed) jn[k] = (jn[k] ?? 0) + 1; next.jointN = jn; }
+    // (a joint counts only when its words are in what she said — one a later guard dropped did not use its form)
+    if (guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(guard, teacherReply)) jn[k] = (jn[k] ?? 0) + 1; next.jointN = jn; }
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
-    if (guard?.asideEnd) next.asideReplyDue = true;
+    // (dc-r8-director22 R: only when her turn ended on that question — a turn that went on to pose a card asked the card)
+    if (guard?.asideEnd && !r.ui?.ask) next.asideReplyDue = true;
     // (v6.11 J2: that question was an aside's return: the reply answers it — state.js reads it as the aside's own reply)
     if (next) next.returnAsked = guard?.asideEnd && guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined;
     // (P1, dc-r8-director20: after the "Main AI teacher hoon …" line her question to them is answered on the next turn, as a return's is)
@@ -1688,6 +1690,9 @@ export async function planTurn(base, cls, c) {
   // a bare "3" was a wrong answer in code and a hint on a card the child cannot see). Distress, a request the bytes read, a
   // chip or an engine's machine answer are never touched.
   if (cls) cls = asPlayAct(cls, { state, childText: c.childText, chipId: c.chipId, moduleOnly, gameAct: null });
+  // dc-r8-director22 R: what a child's line can be is decided by what she last asked — readByAsked, below; the rules above and the
+  // aside reply, give-up and teach-back rules that follow live there.
+  if (cls) cls = readByAsked(state, cls, String(c.childText ?? ""), kit);
   // v6.8 A4: the reply to her aside question is never graded against the card she did not say: it is re-posed, after code's ack
   // (v6.9 T1/A5, main on director17 c4 offtopic 26 drew nothing, c4 stuck 38, c6 offtopic 38: a request where an aside reply was
   // expected — a picture, a repeat, try-first, Hindi — is served as that request, still never graded against the unsaid card; the
@@ -2123,4 +2128,37 @@ export function withReplyFiltered(cls, body, fast = null) {
 export function incidentOf(cls) {
   return cls?.flags?.distress
     ? { source: cls.source === "predicate" ? "predicate" : cls.source === "content_filter" ? "content_filter" : "classifier", family: cls.flags.distressKind } : null;
+}
+
+/**
+ * dc-r8-director22 R: what a child's line can be is decided by what she last asked. One place for the reader's readings that depend
+ * on her last turn (the aside-question and give-up rules beside it in planTurn keep their own comments):
+ * - a stop said in code's words ("bye", "aaj ke liye itna hi") is a stop whether or not the model flagged it;
+ * - a yes or an acknowledgement alone ("haan", "haan, samajh aaya", "achha") is a yes, never an answer graded against a card whose key
+ *   is not itself yes or no;
+ * - while her teach-back is open, a line is its answer or a non-answer: no request is read from it but a stop.
+ */
+const YES_ONLY = /^(?:(?:haan|han|ha|haanji|ji|ji\s+haan|achha|acha|accha|theek(?:\s+hai)?|thik(?:\s+hai)?|ok|okay|hmm+|samajh\s+(?:aaya|aa\s+gaya|gaya|gayi)|got\s+it|yes|yeah|mujhe\s+lagta\s+hai\s+haan)[\s,.!]*)+$/iu;
+const YES_NO_KEY = /^(?:haan|nahi|nahin|yes|no|sahi|galat|true|false)\b/i;
+export function readByAsked(state, cls, text, kit = null) {
+  if (!cls || cls.source === "chip" || cls.flags?.distress) return cls;
+  const t = text.trim();
+  if (!cls.flags?.wantsToStop && wantsToStop(t) && !/\d/.test(t)) cls = { ...cls, flags: { ...(cls.flags ?? {}), wantsToStop: true } };
+  if (cls.flags?.wantsToStop) return cls;
+  const item = state?.activeItemId && kit ? findItem(state, kit, state.activeItemId) : null;
+  if (["correct", "incorrect", "partial", "misconception"].includes(cls.outcome) && YES_ONLY.test(t) && !(item && YES_NO_KEY.test(String(item.answer ?? "").trim())))
+    cls = { ...cls, outcome: "no_evidence", confidence: 1, yes: true };
+  // (an aside said where no question of hers is open — "kal maine cricket khela" after a key's check-in — is an aside, never a plain "achha")
+  if (cls.outcome === "no_evidence" && !cls.request && !cls.asideReply && !/\d/.test(t) && !YES_ONLY.test(t)) {
+    const topic = asideTopic(t, state?.ctx?.interests ?? []);
+    if (topic) cls = { ...cls, request: { type: "uptake", src: "aside_words", topic } };
+  }
+  if (state?.phase === "teachback" && cls.request && !["stop", "goodbye", "end", "break"].includes(cls.request.type)) { const { request: _r, ...rest } = cls; cls = rest; }
+  return cls;
+}
+
+/** The joint kinds a turn's line actually says: those of guard.jointsUsed whose words (guard[kind]) are in the line. */
+export function jointsSaid(guard, reply) {
+  const line = String(reply ?? "").toLowerCase();
+  return (guard?.jointsUsed ?? []).filter((k) => typeof guard[k] !== "string" || line.includes(String(guard[k]).toLowerCase().replace(/[.!?]+$/, "")));
 }

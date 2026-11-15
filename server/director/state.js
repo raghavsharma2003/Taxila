@@ -796,7 +796,7 @@ function currentBeatRef(s, kit) {
 // v4 W6 (director6: 0 of 6 cricket / Virat asides parked): an aside about a world of theirs (an interest, a sport, a star) is
 // kept on the Later list in script mode, so it is promised now and returned to before the wrap
 const ASIDE_WORDS = /\b(cricket|virat|kohli|dhoni|rohit|football|messi|ronaldo|ipl|match|sixer|six|game|games|cartoon|movie|film|song|gaana|dance|kabaddi|chess|badminton|cycle|dog|kutta|billi|cat)\b/i;
-function asideTopic(text, interests = []) {
+export function asideTopic(text, interests = []) {
   const t = String(text ?? "");
   const own = (interests ?? []).find((i) => i && new RegExp(`\\b${String(i).replace(/[^\p{L}\s]/gu, "")}`, "iu").test(t));
   if (own) return String(own);
@@ -2999,6 +2999,9 @@ export function cellAddressOf(prev, input) {
 }
 export function step(prev, input) {
   const out = stepCells(prev, input);
+  // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
+  // ones that return a copy of the last state before step0's own clearing)
+  if (input?.event === "turn" && out?.state && out.state.asideReplyDue) out.state.asideReplyDue = undefined;
   // (O1/O2, director21 dry steering c5-t02 34→36: a return held point e3 back while its card was held for a split; the held half came
   // through heldTurn, which never read bodyUnsaid — the point was dropped. Every path says what a return held, first)
   const lm0 = out?.state?.lastMove;
