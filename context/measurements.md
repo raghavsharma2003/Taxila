@@ -6789,3 +6789,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-2de94c3` (2026-11-15): Released 2de94c3 with scripts/release.mjs: web taxila-web--s2de94c3-bslc (was taxila-web--s0d00f29-r78k), worker + canary/nightly jobs on taxila-worker:2de94c3 (was 0d00f29); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2de94c3 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-kon-name-gate1b-picker` (2026-11-15): kon/name after the final gate-1 fixes: picker CPU over 90 requests (seeds 700-714 x 3, both goals) p95 26.2 ms, max 59.8 (first rep cold; bar 50 on p95); find generator 1200 requests (seeds 1-400, fades 1-3): 5 made no level (0.4 %; the test bar is 1 %).
