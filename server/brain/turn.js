@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn, cardUnsaidNow, teachbackReading } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow, teachbackReading, GO_ON, STOP_WORD } from "../director/state.js";
 import { responseShape } from "../director/requestTable.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
@@ -2139,14 +2139,17 @@ export function incidentOf(cls) {
  * - while her teach-back is open, a line is its answer or a non-answer: no request is read from it but a stop.
  */
 const YES_ONLY = /^(?:(?:haan|han|ha|haanji|ji|ji\s+haan|achha|acha|accha|theek(?:\s+hai)?|thik(?:\s+hai)?|ok|okay|hmm+|samajh\s+(?:aaya|aa\s+gaya|gaya|gayi)|got\s+it|yes|yeah|mujhe\s+lagta\s+hai\s+haan)[\s,.!]*)+$/iu;
+const ACK_WORD = /(?<![\p{L}])(?:samajh|theek|thik|achha|acha|accha|ok|okay|got\s+it|hmm+)(?![\p{L}])/iu;
 const YES_NO_KEY = /^(?:haan|nahi|nahin|yes|no|sahi|galat|true|false)\b/i;
 export function readByAsked(state, cls, text, kit = null) {
   if (!cls || cls.source === "chip" || cls.flags?.distress) return cls;
   const t = text.trim();
-  if (!cls.flags?.wantsToStop && wantsToStop(t) && !/\d/.test(t)) cls = { ...cls, flags: { ...(cls.flags ?? {}), wantsToStop: true } };
+  // (but "go on" with no stop word in it is never a stop — the walk's own rule, state.js GO_ON)
+  if (!cls.flags?.wantsToStop && wantsToStop(t) && !/\d/.test(t) && !(GO_ON.test(t) && !STOP_WORD.test(t))) cls = { ...cls, flags: { ...(cls.flags ?? {}), wantsToStop: true } };
   if (cls.flags?.wantsToStop) return cls;
   const item = state?.activeItemId && kit ? findItem(state, kit, state.activeItemId) : null;
-  if (["correct", "incorrect", "partial", "misconception"].includes(cls.outcome) && YES_ONLY.test(t) && !(item && YES_NO_KEY.test(String(item.answer ?? "").trim())))
+  // (a bare "haan" / "yes" to a card is still an answer: only a line that says it understood or agrees — "samajh aaya", "theek hai" — is the yes)
+  if (["correct", "incorrect", "partial", "misconception"].includes(cls.outcome) && YES_ONLY.test(t) && ACK_WORD.test(t) && !(item && YES_NO_KEY.test(String(item.answer ?? "").trim())))
     cls = { ...cls, outcome: "no_evidence", confidence: 1, yes: true };
   // (the teach-back's own answer: read against its key here, the same reading the walk acts on)
   const tbRead = teachbackReading(state, kit, t);
