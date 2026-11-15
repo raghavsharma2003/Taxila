@@ -66,6 +66,16 @@ const MAX_SCENE = 30;
 /** the largest cases the generator serves (the layout test and the packet's largest screens use them): a read row of
  *  READ_MAX strokes; a keep scene of KEEP_SCENE_MAX things across three rows, one row at KEEP_ROW_MAX */
 export const READ_MAX = 49, KEEP_ROW_MAX = 14, KEEP_SCENE_MAX = 28;
+/** read: the rows the generator serves at each fade (three to nine bundles, never five; the last fade up to READ_MAX) */
+export const READ_RANGE: Record<1 | 2 | 3, [number, number]> = { 1: [16, 19], 2: [16, 34], 3: [21, READ_MAX] };
+/**
+ * read: the end of the number line under a miss (gate 1, night ruling 1, 2026-11-11). One scale for the whole level, set
+ * from the level's fade alone: twice the largest row that fade serves, up to the next ten (40, 70, 100). Never from her
+ * number or the key, so a bigger number never stands left of a smaller one; a number past the end stands at the end.
+ */
+export const numberLineEnd = (p: Pick<TallyParams, "labels">): number => Math.ceil((2 * READ_RANGE[p.labels][1]) / 10) * 10;
+/** where a number stands on that line, as a share of it (0 at 0, 1 at the end; past the end, 1) */
+export const numberLineAt = (p: Pick<TallyParams, "labels">, v: number): number => Math.min(1, Math.max(0, v / numberLineEnd(p)));
 
 /**
  * The ways a child reaches a row's number WITHOUT the mix-up (evening ruling 5, 2026-11-11: worked out from the law and
@@ -417,7 +427,7 @@ function generate(req: GenRequest): Candidate<TallyParams>[] {
   // the sizes by fade: read 16-19 / 16-34 / 21-49 (three to nine bundles, never five); keep a scene of 15-18 / 17-23 /
   // 20-28 things. Served only where the law tells tally-four from every slip and reading (tellsApart): read with at least
   // three bundles and a loose line; keep with bundles in at least two rows; no row with as many loose lines as bundles
-  const RANGE = { 1: [16, 19], 2: [16, 34], 3: [21, READ_MAX] }[labels] as [number, number];
+  const RANGE = READ_RANGE[labels];
   const SCENE = { 1: [15, 18], 2: [17, 23], 3: [20, KEEP_SCENE_MAX] }[labels] as [number, number];
   for (let k = 0; k < 400 && out.length < 16; k++) {
     const ctx = ctxIds[Math.floor(rnd() * ctxIds.length)], all = TALLY_CONTEXTS[ctx];

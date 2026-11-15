@@ -3,7 +3,7 @@
 // verdict is never read: a model never grades, and neither does the device.
 import { logicFor } from "../../src/play/families/index.ts";
 import { replayAll } from "../../src/play/core/replay.ts";
-import { sanitizeActs, playFactsRow } from "../../shared/play.ts";
+import { sanitizeActs, playFactsRow, namingOn, NAMING_FACT_KEYS, GAME_WEIGHT } from "../../shared/play.ts";
 import { buildTrail } from "./trail.js";
 
 export const MAX_ACTS = 400;
@@ -41,6 +41,25 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
   // (a mix-up from one pick is not in the trail the lesson reads: it surfaces only when it repeats, routes.js)
   const trail = grade ? buildTrail(v, acts, r, { grade, minActs: minActsOf(v, logic), isPick: (rule) => chancePick(v, rule, logic) }) : null;
   return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)), trail };
+}
+
+/**
+ * dc-r8-game-gate-play-then-evidence: what leaves the play server for a mode with naming OFF (shared/play.ts NAMING_OFF).
+ * The grade keeps right or wrong, first try (clean) and the checks; every name of a mix-up goes: misconceptionId,
+ * chanceMis and discriminates on the evidence rows (a pick's miss then weighs as any miss, GAME_WEIGHT), the mal-rules in
+ * the trail, and the mix-up keys in the facts (and so in the facts row and the seam). The moments are left as they are:
+ * they drive only her own play-out and line on the device. Pure; a mode with naming on is returned unchanged.
+ */
+export function withNaming(level, g) {
+  if (!g || namingOn(level?.family, level?.mode)) return g;
+  const facts = (f) => (f && typeof f === "object" ? Object.fromEntries(Object.entries(f).filter(([k]) => !NAMING_FACT_KEYS.includes(k))) : f);
+  const row = (e) => {
+    const { misconceptionId: m, chanceMis: c, discriminates: _d, ...rest } = e;
+    return (m || c) && e.outcome !== "correct" ? { ...rest, weight: GAME_WEIGHT } : rest;
+  };
+  const grade = g.grade ? { ...g.grade, evidence: (g.grade.evidence ?? []).map(row), facts: facts(g.grade.facts) } : g.grade;
+  const f = facts(g.facts);
+  return { ...g, grade, facts: f, factsRow: playFactsRow(f), trail: g.trail ? { ...g.trail, mal: [] } : g.trail };
 }
 
 /**

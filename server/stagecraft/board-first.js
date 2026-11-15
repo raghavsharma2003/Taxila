@@ -1103,6 +1103,10 @@ function heldViewCall(ask, variant = 0) {
  * never "kept": the split is drawn (the held panel still when it was already the page up). null: no held board to draw.
  * @param {object} ask the whiteboard ask (intent.held)  @param {{ keepRef?: string|null, keepPage?: object|null }} [o]
  */
+/** Her picture line when neither caption shape of a view can be said clean (it would state the open card's key, a later card's
+ *  key, or have a blank): it points at the view and names no number, part or figure in it. Two shapes, picked by `variant`. */
+// (a caption is a fragment with no closing mark: the say layer closes it)
+export const QUIET_PICTURE_LINES = Object.freeze(["Yeh lo, isi cheez ki ek aur tasveer, ise dhyan se dekho", "Isi ko ek aur tarah se bana kar dekhte hain"]);
 export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 } = {}) {
   try {
     const h = ask?.intent?.held;
@@ -1126,8 +1130,11 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     // other caption shape, and with neither clean there is no view at all)
     // (main 21:08, director20 c5-t01 offtopic 28: nor a value a card still to come in the skill asks for — "12 barabar hisson"
     // gave a later 1/12 away; c6 stuck 18: and it says the script's own terms, "triangle" where the script says triangle)
-    const line0 = cleanPictureLine([v.line, v.lineOf(variant + 1)], pictureKeys(ask), { later: laterKeys(ask) });
-    if (line0 == null) return none;
+    // (main on director22, 10 of the run's 13 contradictions: with the later-keys rule a fraction lesson's captions were almost
+    // never clean, so the VIEW was withheld and she said "Is par doosri tasveer nahi ban paa rahi" — 10 of 12 picture requests
+    // in c4, c5-t01 and c5-t02 drew nothing. A caption is words; the view is the answer to the request. When no caption can be
+    // said clean, the view is still drawn and her line names nothing in it.)
+    const line0 = cleanPictureLine([v.line, v.lineOf(variant + 1)], pictureKeys(ask), { later: laterKeys(ask) }) ?? QUIET_PICTURE_LINES[Math.abs(variant) % QUIET_PICTURE_LINES.length];
     const line = inScriptTerms(line0, termsOf(ask));
     return { board, view: { call: v.call, view: v.view, script: right, facts: ax.script.facts ?? null, template: v.call.template }, line, script,
       layout: { split: true, panels: [{ side: "left", role: "held", template: board.template, unit: h.unit ?? null }, { side: "right", role: "view", template: v.call.template, view: v.view }] } };

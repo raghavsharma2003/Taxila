@@ -24,11 +24,11 @@ import { requireChild } from "../auth.js";
 import { signSession, verifySession } from "./session.js";
 import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, entryOfBody, nameOnRepeat, nextBody, play3dOff } from "./levels.js";
 import { recentFromPrev, startSession } from "./start.js";
-import { chancePick, gradeActs, lessonEvidence } from "./grade.js";
+import { chancePick, gradeActs, lessonEvidence, withNaming } from "./grade.js";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
 import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
-import { playFactsRow } from "../../shared/play.ts";
+import { playFactsRow, namingOn } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
 import { record as traceRecord } from "../trace/writer.js";
@@ -81,6 +81,8 @@ function seamOf(grade, level, moments, impasse) {
   // round 8 law 3: a mix-up from one pick among a few reaches the lesson as an ordinary miss does: no seam at all (evening
   // ruling kon/name 3: nothing about it reaches the teacher's view until it repeats)
   if (mis && chancePick(level, mis.misconceptionId)) return null;
+  // dc-r8-game-gate-play-then-evidence: a mode with naming off sends no misconception seam (her miss shows at level end)
+  if (mis && !namingOn(level.family, level.mode)) return null;
   if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: level.mal[mis.misconceptionId] ?? "" } };
   if (moments.some((m) => m.kind === "prediction_violated")) return { kind: "prediction", facts: moments.find((m) => m.kind === "prediction_violated").facts };
   return null;
@@ -129,7 +131,8 @@ export const routes = {
     if (!entry) throw bad("stale_session");
     const level = currentLevel(s, entry, child?.first_name);
     if (!level || level.levelId !== b.levelId) return send(res, 409, { error: "level_mismatch" });
-    const g = gradeActs(level, b.acts ?? [], { final: !!b.final });
+    // a mode on gate 1 alone names no mix-up: everything below (rows, trail, seam, facts, the next level's focus) reads this
+    const g = withNaming(level, gradeActs(level, b.acts ?? [], { final: !!b.final }));
     if (!g) throw bad("bad_level");
     // only the moments of the newest act decide her line (the client posts after every act)
     const lastSeq = Math.max(0, ...g.moments.map((m) => m.seq));

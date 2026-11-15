@@ -19,7 +19,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX } from "../src/play/families/stambh/tally.logic.ts";
+import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, READ_RANGE, numberLineEnd, numberLineAt } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
@@ -521,4 +521,120 @@ test("stambh/tally view (round 2): a kind has one colour in both goals; a digit 
   assert.equal(m.ctl.state.totals[0], 7, "a digit typed into a full box replaces it");
   m.view.controls().find((c) => c.id === "k3").onPress();
   assert.equal(m.ctl.state.totals[0], 73);
+});
+
+// ───────────────────────────── gate 1 (night rulings, 2026-11-11) ─────────────────────────────
+/** every read level the generator serves over many seeds and all three fades, and the largest (READ_MAX) */
+const allRead = () => {
+  const out = levels("read", Array.from({ length: 40 }, (_, i) => i * 13 + 1));
+  const big = out.find((lv) => lv.params.labels === 3);
+  out.push(L.validate({ ...big, levelId: `${big.levelId}-largest`, params: { ...big.params, counts: [READ_MAX] } }));
+  return out;
+};
+/** her chip on the number line after a check of `hers`: its x (the chip is the lowest text of her number) */
+const chipX = (m, hers) => {
+  m.ctl.dispatch({ kind: "total", row: 0, n: hers }); m.ctl.dispatch({ kind: "check" });
+  m.api.t += 3; m.frame();
+  const t = m.api.P.audit.texts.filter((x) => x.s === String(hers)).sort((a, b) => b.y - a.y)[0];
+  assert.ok(t, `her ${hers} on the line`);
+  return t.x;
+};
+
+test("stambh/tally gate 1, ruling 1: the number line has one scale for the whole level, from the level's fade alone (a bigger number never moves left)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  // the scale: from the fade only, and every row that fade serves sits in the line's first half
+  for (const f of [1, 2, 3]) {
+    const end = numberLineEnd({ labels: f });
+    assert.ok(end % 10 === 0 && end >= 2 * READ_RANGE[f][1], `fade ${f}: end ${end}`);
+  }
+  const levelsRead = allRead(), byFade = new Map();
+  assert.ok(levelsRead.length >= 30, `${levelsRead.length} read levels`);
+  const tries = [0, 3, 9, 12, 13, 14, 15, 20, 27, 34, 40, 41, 48, 55, 70, 85, 99];
+  for (const level of levelsRead) {
+    const p = level.params;
+    assert.equal(numberLineEnd(p), numberLineEnd({ labels: p.labels }), "the end is the fade's");
+    // in the view: her chip after each check, over a rising run of numbers, never stands left of the one before; inside
+    // the line it moves right with every unit
+    // (the key itself solves the level: it is left out)
+    const m = await _mount(level), vs = tries.filter((v) => v !== p.counts[0]);
+    const xs = [];
+    for (const v of vs) xs.push(chipX(m, v));
+    for (let i = 1; i < xs.length; i++) {
+      assert.ok(xs[i] >= xs[i - 1] - 0.01, `${level.levelId}: ${vs[i]} at ${xs[i].toFixed(1)} left of ${vs[i - 1]} at ${xs[i - 1].toFixed(1)}`);
+      if (numberLineAt(p, vs[i]) < 1) assert.ok(xs[i] > xs[i - 1], `${level.levelId}: ${vs[i]} not right of ${vs[i - 1]}`);
+    }
+    // one scale per fade: the same number stands at the same place whatever the level's key
+    const k = `${p.labels}`, at13 = vs.includes(13) ? xs[vs.indexOf(13)] : null;
+    if (at13 === null) continue;
+    if (!byFade.has(k)) byFade.set(k, { at13, keys: new Set() });
+    assert.ok(Math.abs(byFade.get(k).at13 - at13) < 0.01, `${level.levelId}: 13 at ${at13} on this level, ${byFade.get(k).at13} on another of fade ${k}`);
+    byFade.get(k).keys.add(p.counts[0]);
+  }
+  assert.equal(byFade.size, 3);
+  for (const [f, v] of byFade) assert.ok(v.keys.size >= 2, `fade ${f}: levels with different keys compared (${[...v.keys]})`);
+});
+
+/** a 2D context that records each stroked path's points, width and colour (the tally's strokes), for the geometry checks */
+function recCtx() {
+  const paths = [];
+  let cur = [];
+  const t = { font: "10px x", fillStyle: "", strokeStyle: "", globalAlpha: 1, lineWidth: 1, textAlign: "center", textBaseline: "middle", lineCap: "", lineJoin: "", globalCompositeOperation: "source-over", shadowBlur: 0, shadowColor: "", lineDashOffset: 0, filter: "none", imageSmoothingEnabled: true };
+  const ctx = new Proxy(t, {
+    get(o, k) {
+      if (k in o) return o[k];
+      if (k === "beginPath") return () => { cur = []; };
+      if (k === "moveTo" || k === "lineTo") return (x, y) => { cur.push([x, y]); };
+      if (k === "stroke") return () => { if (cur.length >= 2) paths.push({ pts: cur.slice(), width: o.lineWidth, color: o.strokeStyle }); };
+      if (k === "measureText") return (s) => ({ width: [...String(s)].length * Number(/(\d+)px/.exec(o.font)?.[1] ?? 16) * 0.56, actualBoundingBoxAscent: 8, actualBoundingBoxDescent: 2 });
+      if (k === "getLineDash") return () => [];
+      if (k === "isPointInPath" || k === "isPointInStroke") return () => false;
+      if (k === "getTransform") return () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 });
+      return () => ({ addColorStop() {} });
+    },
+    set(o, k, v) { o[k] = v; return true; },
+  });
+  return { ctx, paths };
+}
+
+test("stambh/tally gate 1, ruling 2: in read, the count's digits over a second line stand clear of the first line's strokes (every level, the largest, phone and desktop)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  let twoLine = 0;
+  // world boxes from the 360 x 640 phone (short: the pad takes the bottom) to the 1366 x 768 desktop
+  for (const [W, H] of [[328, 330], [328, 400], [328, 470], [360, 520], [1000, 560]]) for (const level of allRead()) {
+    const m = await _mount(level, { W, H });
+    for (const a of L.malActs(level, "tally-four")) m.ctl.dispatch(a);
+    // the count runs from 0.25 s: look while each digit is up and once every group is counted (before the fade)
+    const t0 = m.api.t;
+    for (const age of [0.3, 0.8, 1.3, 1.8, 2.3]) {
+      m.api.t = t0 + age;
+      const audit = m.api.P.audit;
+      audit.texts.length = 0;
+      const { ctx, paths } = recCtx();
+      m.view.draw(ctx);
+      // the tally's strokes, in ink (the number line is ink2, the thing's picture its kind's hue, the tip the mix-up's)
+      const inkCol = m.api.P.color("ink");
+      const strokes = paths.filter((q) => q.color === inkCol && q.pts.length === 2);
+      const ys = [...new Set(strokes.map((q) => Math.round((q.pts[0][1] + q.pts[1][1]) / 2)))].sort((a, b) => a - b);
+      const lines = ys.filter((y, i) => i === 0 || y - ys[i - 1] > 6);
+      const digits = audit.texts.filter((x) => /^[1-5]$/.test(x.s) && x.px <= 20);
+      if (lines.length < 2 || !digits.length) continue;
+      twoLine++;
+      for (const d of digits) {
+        const top = d.y - d.px / 2, bot = d.y + d.px / 2, l = d.x - d.w / 2, r = d.x + d.w / 2;
+        let nearestOwn = Infinity, nearestOther = Infinity;
+        for (const q of strokes) {
+          const qy0 = Math.min(q.pts[0][1], q.pts[1][1]) - q.width / 2, qy1 = Math.max(q.pts[0][1], q.pts[1][1]) + q.width / 2;
+          const qx0 = Math.min(q.pts[0][0], q.pts[1][0]) - q.width / 2, qx1 = Math.max(q.pts[0][0], q.pts[1][0]) + q.width / 2;
+          // the digit's own line lies below it; a line above is another's
+          if (qy0 > d.y) { nearestOwn = Math.min(nearestOwn, qy0 - bot); continue; }
+          nearestOther = Math.min(nearestOther, top - qy1);
+          // no stroke of the line above enters the digit's box (its own half-width and 2 px more)
+          if (qx1 > l && qx0 < r) assert.ok(qy1 + 2 <= top, `${level.levelId} at ${W}x${H}: "${d.s}" (${l.toFixed(0)}-${r.toFixed(0)}, ${top.toFixed(0)}-${bot.toFixed(0)}) on a stroke of the line above (${qx0.toFixed(0)}-${qx1.toFixed(0)}, ${qy0.toFixed(0)}-${qy1.toFixed(0)})`);
+        }
+        // and the digit stands nearer its own line than the one above
+        if (Number.isFinite(nearestOther)) assert.ok(nearestOther > nearestOwn, `${level.levelId} at ${W}x${H}: "${d.s}" ${nearestOther.toFixed(1)} px under the line above, ${nearestOwn.toFixed(1)} px over its own`);
+      }
+    }
+  }
+  assert.ok(twoLine > 0, "some read tally on two lines was checked");
 });

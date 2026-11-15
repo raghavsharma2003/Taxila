@@ -520,3 +520,183 @@ test("judging round 3 (rulings 5, 6): four one-pixel position nudges beside the 
   const src = readFileSync(new URL("../src/play/families/kon/kon.place.view.ts", import.meta.url), "utf8");
   for (const [id, dx, dy] of [["move-left", -1, 0], ["move-up", 0, 1], ["move-down", 0, -1], ["move-right", 1, 0]]) assert.match(src, new RegExp(`nudge\\("${id}", "kon\\.aria\\.\\w+", "[←↑↓→]", ${dx}, ${dy}\\)`), id);
 });
+
+// ───────────────────────────── gate 1 (RULINGS-2026-11-11-night, kon/place) ─────────────────────────────
+// The real view, headless (server/forge3/qa/laws.mjs mounts it on a recording context), in the world boxes the browser
+// measures for measure and draw (tests/r8-games-kon-layout.test.mjs WORLD), on every generated level of the goal.
+const GATE_WORLD = [{ tag: "360x640", W: 360, H: 287 }, { tag: "1366x768", W: 1005, H: 768 }];
+const GATE_SEEDS = [1, 7, 42, 99, 123, 2026];
+const boardOf = (W, H) => { const s = Math.min(W / BW, H / BH); return { s, ox: (W - BW * s) / 2, oy: (H - BH * s) / 2 }; };
+const at = (q) => [{ kind: "move", x: q.x, y: q.y }, { kind: "spin", deg: q.rot }, { kind: "lock" }];
+/** the scale numbers the view drew this frame (the only texts on a halo), each with its figures' box */
+const drawnNumbers = (m) => m.api.P.audit.texts.filter((t) => t.halo && /^\d{1,3}$/.test(t.s)).map((t) => ({ s: t.s, x: t.x - t.w / 2, y: t.y - (t.px * 0.74) / 2, w: t.w, h: t.px * 0.74 }));
+/** the frame once the play-out has run (its beats land before 1.4 s) */
+const settled = (m) => { m.api.t += 3; return m.frame(); };
+/** how many numbers the view lays out for a pose before the board's edge takes any (the headless 0.56 em the mount measures) */
+async function laidOut(p, q, W, H) {
+  const { scaleLabels, scaleOmitFor } = await import("../src/play/families/kon/kon.scale.ts");
+  const R = PR * boardOf(W, H).s, every = PRINT_EVERY[p.scale], measure = (t, px) => t.length * px * 0.56;
+  return scaleLabels({ rot: q.rot, R, rad0: PR, every, fs: 14, measure, omit: scaleOmitFor([{ R, rad0: PR }], every, 14, measure, q.rot)[0] }).length;
+}
+const distToBox = (p, b) => Math.hypot(Math.max(b.x - p[0], 0, p[0] - b.x - b.w), Math.max(b.y - p[1], 0, p[1] - b.y - b.h));
+
+test("gate 1, ruling 1: a scale number not wholly on the board is not drawn (every generated level, every pose, 360 and 1366)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const { centreOnArmPose } = await import("../src/play/families/kon/kon.place.ts");
+  const faults = [];
+  let dropped = 0, screens = 0;
+  for (const goal of ["measure", "draw"]) for (const level of levels(goal, [1, 2, 3], GATE_SEEDS)) {
+    const p = level.params;
+    for (const { tag, W, H } of GATE_WORLD) {
+      for (const [k, q] of Object.entries({ rest: null, placed: goodPose(p), "vertex-off": vertexOffPose(p), "centre-on-arm": centreOnArmPose(p) })) {
+        const m = await _mount(level, { W, H, young: false });
+        if (q) for (const a of at(q)) m.ctl.dispatch(a);
+        m.frame();
+        screens++;
+        const N = drawnNumbers(m);
+        for (const n of N) if (n.x < 0 || n.y < 0 || n.x + n.w > W || n.y + n.h > H) faults.push(`${tag} ${level.levelId} ${k}: "${n.s}" cut by the board's edge`);
+        // what the edge took, it took by ticks: never one scale alone (judging round 3, ruling 3)
+        const count = new Map();
+        for (const n of N) count.set(n.s, (count.get(n.s) ?? 0) + 1);
+        for (const [v, c] of count) if (v !== "90" && c !== (count.get(String(180 - Number(v))) ?? 0)) faults.push(`${tag} ${level.levelId} ${k}: "${v}" on one scale alone`);
+        if (N.length < (await laidOut(p, m.ctl.state.pl.pose, W, H))) dropped++;
+      }
+    }
+  }
+  assert.ok(screens >= 400, `${screens} screens`);
+  assert.ok(dropped > 0, "some centre-on-arm placement runs off the board (the ruling's case)");
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+});
+
+test("gate 1 (minor): the resting protractor is wholly on the board, its numbers all drawn (every generated level, 360 and 1366)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const { protractorLines } = await import("../src/play/families/kon/kon.scale.ts");
+  const { initPlace } = await import("../src/play/families/kon/kon.place.ts");
+  const faults = [];
+  let n = 0;
+  for (const goal of ["measure", "draw"]) for (const level of levels(goal, [1, 2, 3], GATE_SEEDS)) {
+    const p = level.params, q = initPlace(p).pose;
+    for (const { tag, W, H } of GATE_WORLD) {
+      const { s, ox, oy } = boardOf(W, H), S = (x, y) => [ox + x * s, oy + (BH - y) * s];
+      const board = { x: ox, y: oy, w: BW * s, h: BH * s };
+      // every line of the protractor (rim, strip, base, ticks) at least 4 px inside the board (its stroke and more)
+      const [cx, cy] = S(q.x, q.y);
+      for (const L of protractorLines(cx, cy, PR * s, PD * s, q.rot, PR)) for (const [x, y] of [L.a, L.b]) {
+        const room = Math.min(x - board.x, board.x + board.w - x, y - board.y, board.y + board.h - y);
+        if (room < 4) { faults.push(`${tag} ${level.levelId}: the resting protractor's ${L.kind} ${room.toFixed(1)} px from the board's edge`); break; }
+      }
+      // its numbers: every one drawn, and inside the board
+      const m = await _mount(level, { W, H, young: false });
+      m.frame();
+      n++;
+      const N = drawnNumbers(m);
+      const want = await laidOut(p, q, W, H);
+      if (N.length !== want) faults.push(`${tag} ${level.levelId}: ${N.length} of its ${want} numbers drawn at rest`);
+      for (const b of N) if (b.x < board.x || b.y < board.y || b.x + b.w > board.x + board.w || b.y + b.h > board.y + board.h) faults.push(`${tag} ${level.levelId}: the resting "${b.s}" off the board`);
+    }
+  }
+  assert.ok(n >= 200, `${n}`);
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+});
+
+test("gate 1, ruling 2: measure's wrong-scale arm stops inside the inner number ring; after two placed misses no arm (every generated level, 360 and 1366)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const faults = [];
+  let n = 0;
+  for (const level of levels("measure", [1, 2, 3], GATE_SEEDS)) {
+    const acts = konLogic.malActs(level, "wrong-scale"), p = level.params;
+    if (!acts) continue;
+    for (const { tag, W, H } of GATE_WORLD) {
+      const { s, ox, oy } = boardOf(W, H), g = goodPose(p), C = [ox + g.x * s, oy + (BH - g.y) * s];
+      const m = await _mount(level, { W, H, young: false });
+      for (const a of acts) m.ctl.dispatch(a);
+      settled(m);
+      n++;
+      assert.equal(m.ctl.state.pl.placedMisses, 1);
+      // her arm: an arm drawn from the protractor's centre after OA and OB (the first two arms, also from O here)
+      const armsFrom = () => m.api.P.audit.segs.filter((x) => x.kind === "arm").slice(2).filter((x) => Math.hypot(x.x0 - C[0], x.y0 - C[1]) < 1);
+      const hers = armsFrom();
+      if (hers.length !== 1) { faults.push(`${tag} ${level.levelId}: ${hers.length} arms from her centre after the first miss`); continue; }
+      const end = [hers[0].x1, hers[0].y1], N = drawnNumbers(m);
+      // its end stands nearer the centre than every number's box it points at (within 12° of its heading: inside the inner
+      // ring there), and no number lies on it
+      const reach = Math.hypot(end[0] - C[0], end[1] - C[1]), heading = Math.atan2(C[1] - end[1], end[0] - C[0]);
+      for (const b of N) {
+        const bearing = Math.atan2(C[1] - (b.y + b.h / 2), b.x + b.w / 2 - C[0]), off = Math.abs(((bearing - heading + 3 * Math.PI) % (2 * Math.PI)) - Math.PI);
+        if (off < (12 * Math.PI) / 180 && distToBox(C, b) <= reach) faults.push(`${tag} ${level.levelId}: her arm (${reach.toFixed(0)} px) reaches the ring of "${b.s}" (${distToBox(C, b).toFixed(0)} px)`);
+        for (let t = 0; t <= 1; t += 0.02) if (distToBox([C[0] + (end[0] - C[0]) * t, C[1] + (end[1] - C[1]) * t], b) < 2) { faults.push(`${tag} ${level.levelId}: her arm on "${b.s}"`); break; }
+      }
+      // a second miss on the placed protractor (a number off both scales): her chip stays, her arm is no longer drawn
+      const other = (180 - p.theta + 17) % 180;
+      m.ctl.dispatch({ kind: "read", n: Math.abs(other - p.theta) > 6 ? other : (other + 20) % 180 });
+      settled(m);
+      assert.equal(m.ctl.state.pl.placedMisses, 2);
+      if (armsFrom().length) faults.push(`${tag} ${level.levelId}: her arm still drawn after two placed misses`);
+      if (!m.api.P.audit.marks.some((x) => x.kind === "chip")) faults.push(`${tag} ${level.levelId}: her chip gone after the second miss`);
+      // undo brings the first miss's screen back (the count is the law's state)
+      m.ctl.dispatch({ kind: "undo" });
+      assert.equal(m.ctl.state.pl.placedMisses, 1);
+    }
+  }
+  assert.ok(n >= 20, `${n} wrong-scale screens`);
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+});
+
+/** a 2D context that records each path's arcs and whether it was filled or stroked */
+function arcCtx() {
+  const out = [];
+  let arcs = [];
+  const t = { font: "10px x", fillStyle: "", strokeStyle: "", globalAlpha: 1, lineWidth: 1, textAlign: "center", textBaseline: "middle", lineCap: "", lineJoin: "", globalCompositeOperation: "source-over", shadowBlur: 0, shadowColor: "", lineDashOffset: 0, filter: "none", imageSmoothingEnabled: true };
+  const ctx = new Proxy(t, {
+    get(o, k) {
+      if (k in o) return o[k];
+      if (k === "beginPath") return () => { arcs = []; };
+      if (k === "arc") return (x, y, r) => { arcs.push({ x, y, r }); };
+      if (k === "fill" || k === "stroke") return () => { for (const a of arcs) out.push({ ...a, op: k }); };
+      if (k === "measureText") return (s) => ({ width: [...String(s)].length * Number(/(\d+)px/.exec(o.font)?.[1] ?? 16) * 0.56, actualBoundingBoxAscent: 8, actualBoundingBoxDescent: 2 });
+      if (k === "getLineDash") return () => [];
+      if (k === "isPointInPath" || k === "isPointInStroke") return () => false;
+      if (k === "getTransform") return () => ({ a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 });
+      return () => ({ addColorStop() {} });
+    },
+    set(o, k, v) { o[k] = v; return true; },
+  });
+  return { ctx, out };
+}
+
+test("gate 1, ruling 3 and the rim dot: draw's miss chip carries no number; the dot is a hollow ring (every generated level, 360 and 1366)", async () => {
+  const { _mount } = await import("../server/forge3/qa/laws.mjs");
+  const { rimPoint } = await import("../src/play/families/kon/kon.place.ts");
+  const faults = [];
+  let chips = 0, dots = 0;
+  for (const level0 of levels("draw", [1, 2, 3], GATE_SEEDS)) {
+    const level = { ...level0, mal: { ...level0.mal, "centre-on-arm": "k-coa" } }, p = level.params, g = goodPose(p);
+    // every miss the view plays out: each mal-rule, and a mark off both scales joined to O
+    const misses = [...["wrong-scale", "vertex-off", "centre-on-arm", "join-wrong-end"].map((x) => konLogic.malActs(level, x)).filter(Boolean),
+      [...at(g), { kind: "mark", r: (markFor(p, g, p.theta) + 23) % 180 }, { kind: "join", end: "v" }]];
+    for (const { tag, W, H } of GATE_WORLD) {
+      for (const acts of misses) {
+        const m = await _mount(level, { W, H, young: false });
+        for (const a of acts) m.ctl.dispatch(a);
+        if (m.ctl.state.done) continue;
+        settled(m);
+        chips++;
+        // the chip names the corner (∠O, ∠A) and nothing else; no text on the board but the scale's own numbers holds a digit
+        if (!m.api.P.audit.marks.some((x) => x.kind === "chip")) faults.push(`${tag} ${level.levelId}: no miss chip`);
+        for (const t of m.api.P.audit.texts) if (!t.halo && /\d/.test(t.s)) faults.push(`${tag} ${level.levelId}: "${t.s}" on the board after a miss`);
+      }
+      // the rim dot, before she joins: a ring (stroked, never filled), so the tick under it shows through
+      const m = await _mount(level, { W, H, young: false });
+      for (const a of [...at(g), { kind: "mark", r: markFor(p, g, p.theta) }]) m.ctl.dispatch(a);
+      const { s, ox, oy } = boardOf(W, H), D = rimPoint(g, markFor(p, g, p.theta)), X = ox + D[0] * s, Y = oy + (BH - D[1]) * s;
+      const { ctx, out } = arcCtx();
+      m.view.draw(ctx);
+      const here = out.filter((a) => Math.hypot(a.x - X, a.y - Y) < 0.5 && Math.abs(a.r - 6) < 0.01);
+      dots++;
+      if (!here.some((a) => a.op === "stroke")) faults.push(`${tag} ${level.levelId}: no ring at the dot`);
+      if (here.some((a) => a.op === "fill")) faults.push(`${tag} ${level.levelId}: the dot is filled`);
+    }
+  }
+  assert.ok(chips >= 100 && dots >= 40, `${chips} miss screens, ${dots} dots`);
+  assert.deepEqual(faults.slice(0, 30), [], `${faults.length} faults`);
+});

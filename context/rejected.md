@@ -3032,3 +3032,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-tally-one-bundle-slips-only` (2026-11-11): Tried (round 8, rounds 1-3): telling tally-four apart only from one-bundle slips (a bundle skipped or twice, one line off). Broke (evening judging, both judges): 2 bundles + 2 lines = 12; the mix-up gives 10, and so does counting the bundles right and dropping the loose lines, a reading the list did not have. Replaced by dc-r8-tally-slip-law (every slip and reading listed from the law, each asserted on every level).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-joints-added-by-each-code-path` (2026-11-15): Authored seam joints added by each code path of the walk (dc-r8-director21 J1): in director22 backTo was said about 15 times with nothing to return to and was missing on about 20 real returns; joints were stacked, doubled, and put between a point and its own card; one form in every lesson. Replaced by one seam pass over the assembled turn (J2)
