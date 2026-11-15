@@ -31,6 +31,9 @@ function wrongActs(level, logic) {
   // kon/place size (one pick among P, Q, the same): any other pick. Since the judge round, size claims no mal-rule (tool-size was
   // dropped from this goal), so a level whose key is "the same" has no mal acts and needs a plain wrong pick here
   if (level.goal === "size") { const right = logic.solve(level).find((a) => a.kind === "pick")?.which; return [{ kind: "pick", which: ["a", "b", "same"].find((w) => w !== right) }]; }
+  // kon/name find (gate 1, night ruling 2): a key whose first-letter reading is not drawn (the wide arc, the angle at the
+  // vertex outside the triangle) has no mal acts; any other arc is the wrong pick
+  if (level.goal === "find" && level.mode === "name") return [{ kind: "arc", at: (p.ask + 1) % 5 }];
   return null;
 }
 
@@ -72,6 +75,21 @@ for (const fam of FAMS) {
     assert.ok(other >= 6, `${fam}: ${other} other levels`);
   });
 }
+
+test("chance weight kon/name find (gate 1, night ruling 2): one tap among five arcs, and as served the key is each arc about 1 time in 5 (the wide one included), so a lucky first tap lands 1 time in 5 whatever arc a child favours", () => {
+  const e = coverage().entries.find((x) => x.family === "kon" && x.mode === "name" && x.goal === "find");
+  const by = [0, 0, 0, 0, 0];
+  let n = 0;
+  for (const fade of [1, 2, 3]) for (let c = 0; c < 60; c++) {
+    const level = currentLevel(sessionOf(e, `cw-${c}`, fade), e);
+    by[level.params.ask]++; n++;
+    const g = gradeActs(level, env(LOGIC["kon/name"].solve(level)), { final: true });
+    assert.equal(lessonEvidence(g.grade, level)[0].weight, CHANCE_WEIGHT);
+  }
+  for (let k = 0; k < 5; k++) assert.ok(Math.abs(by[k] / n - 0.2) <= 0.07, `arc ${k}: ${by.join(", ")} of ${n}`);
+  // the best a child can do by always tapping one arc (by its place among the five) is about 1 in 5
+  assert.ok(Math.max(...by) / n <= 0.27, by.join(", "));
+});
 
 test("chance weight into the learner model: a CHANCE_WEIGHT row folds as controllerEasy (temper 0.25), a GAME_WEIGHT row does not (0.5)", () => {
   const key = randomBytes(32), opts = { key }, now = Date.now();
