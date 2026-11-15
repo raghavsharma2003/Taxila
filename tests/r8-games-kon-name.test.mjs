@@ -10,7 +10,7 @@ import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
 import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, dashR, sayMalSize, noCrossing, generateName } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
-import { CHANCE_WEIGHT, GAME_WEIGHT } from "../shared/play.ts";
+import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
 import coverage from "../data/play/coverage.json" with { type: "json" };
 import WORDS from "../data/play/engine-words.json" with { type: "json" };
@@ -344,8 +344,15 @@ test("evening ruling kon/name 3: after one find tap nothing about vertex-name re
     const again = res();
     await routes["POST /api/play/act"]({}, again, { sessionId: sid, levelId: lv.levelId, acts: env(konLogic.malActs(lv, "vertex-name")), final: true });
     const ev2 = verifyEvidence(again.body.evidenceToken, { childId: CHILD, lessonId: LES });
-    assert.equal(ev2.rows[0].misconceptionId, KIT, "named on the repeat");
-    assert.deepEqual(ev2.trail.mal, [{ rule: "vertex-name", mis: KIT }], "and in the trail");
+    // dc-r8-game-gate-play-then-evidence: kon/name runs with naming off until gate 2, so even the repeat names nothing
+    // (when it leaves NAMING_OFF this is named on the repeat, in the rows and the trail)
+    if (namingOn("kon", "name")) {
+      assert.equal(ev2.rows[0].misconceptionId, KIT, "named on the repeat");
+      assert.deepEqual(ev2.trail.mal, [{ rule: "vertex-name", mis: KIT }], "and in the trail");
+    } else {
+      assert.equal(ev2.rows[0].misconceptionId, undefined, "naming off: not named even on the repeat");
+      assert.deepEqual(ev2.trail.mal, [], "nor in the trail");
+    }
   } finally { Object.assign(playDeps, saved); }
 });
 

@@ -121,6 +121,18 @@ export const GAME_WEIGHT = 0.5;
 export const CHANCE_WEIGHT = 0.25;
 export type GameWeight = typeof GAME_WEIGHT | typeof CHANCE_WEIGHT;
 
+/**
+ * Naming (dc-r8-game-gate-play-then-evidence, main's night rulings 2026-11-11): a mode shown to children on gate 1 (play)
+ * alone runs with naming OFF. It records right or wrong, first try or not, and the number of checks; it names no mix-up
+ * to the learner model or the teacher (no misconceptionId, chanceMis or discriminates on its rows, no mal-rule in its
+ * trail, no misconception seam, no mix-up key in its facts row). The play-out the child sees is untouched. A mode leaves
+ * this set when its evidence rule is proved (gate 2); no screen changes when it does.
+ */
+export const NAMING_OFF: ReadonlySet<string> = new Set(["stambh/tally", "kon/place", "kon/name"]);
+export const namingOn = (family: string, mode: string): boolean => !NAMING_OFF.has(`${family}/${mode}`);
+/** the facts keys that carry a mix-up (what she did that matches one), dropped when naming is off */
+export const NAMING_FACT_KEYS: readonly string[] = ["mal", "sign", "misconception", "shown", "crossesMissing", "vertex_ok", "arms_ok"];
+
 // ───────────────────────────── levels ─────────────────────────────
 
 /** What the generator proved about a level before it could be served (P-O1/O3). */
