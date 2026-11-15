@@ -6768,3 +6768,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-live-lesson-walk-tx-a-2026-11-11` (2026-11-15): Live lesson walk under ?tx=a at 360 x 740: the real lesson screen from the built dist served by server/serve.mjs, /api answered by a scripted Director (no model calls), nine moments captured before the helper agent stopped on the usage limit; n = 1 lesson, theme A only. data-tx=a and data-board-theme=paper present at every moment; no sideways scroll; no monospace text inside the lesson. Faults: the question card's computed family in a Hinglish lesson is Mukta, Noto Sans Devanagari, sans-serif at 600 and its Latin letters fall to the system sans (Design's shots, from an English fixture, show Literata); the debrief keeps 'YOU SAID' in spaced capitals, a clipped tile for the teacher's mark and a fixed Finish bar over the goodbye choices. Not reached: a game inside a lesson, theme B, laptop width. Files: docs/design/round8/phase2/livewalk/.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-integration-54-gate` (2026-11-15): Integration 54 (f611fd900): tsc, vite, prompt budget pass; test:all 729 suites, 7270 tests, 7256 pass, 0 fail, 13 skipped, 1 todo, wall 752 s on 4 cores; leak check clean

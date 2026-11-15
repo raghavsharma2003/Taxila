@@ -596,3 +596,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-weekly-usage-limit-stopped-everything-2026-11-11` (2026-11-15): On 2026-11-11 at about 21:20 UTC the account's weekly usage limit was reached and every session and agent stopped mid-turn; nothing ran until the owner said to continue on 2026-11-15 (the limit had reset on 13 Nov 19:00 UTC). That day ran five build streams, a Design stream, 20 game-judge verdicts and a four-judge lesson run. Nothing was lost (int/r6 clean and pushed, production healthy, every stream's last push intact), but three and a half days were. From 15 Nov: at most three streams active, sub-agents one at a time and only where needed, one full gate per push, judges only for a run a decision waits on.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-tests-pin-live-script-values-third-time` (2026-11-15): Third time a test pinned a live lesson script's values and broke at integration when Learning edited the script (r8-picture-turn test 8 on 11 Nov; laterKeys on 15 Nov, integration 54). A test over a script asserts the law (order, shape), or pins a dated row inline; it never pins the live file's values
