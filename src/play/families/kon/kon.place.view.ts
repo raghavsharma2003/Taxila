@@ -10,8 +10,9 @@
 //   vertex-off / centre-on-arm (named)  the placement only: a ring on O and a dashed join to her centre (measure: her
 //                number's chip stays neutral, no arm is drawn from her misplaced centre; draw: her own arm from O and the
 //                angle it makes)
-//   wrong-scale  the arm her number means on the scale whose 0 is on the arm, far from OB
-//   join-wrong-end  the arm from A, and the angle it makes at A, with its number
+//   wrong-scale  the arm her number means on the scale whose 0 is on the arm, far from OB (stopping inside the inner number
+//                ring; from her second placed miss, none: gate 1)
+//   join-wrong-end  the arm from A, and the angle it makes at A (its chip names the corner, no number: gate 1)
 //   size (a miss) her own pick, in the mix-up colour (never the readings: they would settle the next pick)
 // Judging round 2 (dc-r8-game-modes-three-laws): measure's reading is TYPED on a number pad (no tap prints a value: the game
 // never reads the scale for her); draw's miss shows only her arm and the angle it makes (never the asked arm), and the dot
@@ -23,6 +24,10 @@
 // every pose; a scale number slides along its tick, or both numbers at a tick go, never one scale alone (kon.scale.ts); the
 // scale numbers are drawn last, over the arms and her lines, on a ground halo; four one-pixel position nudges (← ↑ ↓ →)
 // beside the turn arrows; "kinare par"; size's end line says what she found.
+// Gate 1 (RULINGS-2026-11-11-night, kon/place): a scale number not wholly on the board is not drawn (with the other number
+// at its tick); measure: her number's arm stops inside the inner number ring (a wrong-scale arm met the outer scale at the
+// key), and from her second miss on a placed protractor it is not drawn at all; draw: the miss chip names the corner only
+// (she reads her arm on the placed protractor herself); the rim dot is a hollow ring (the tick shows through).
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
@@ -31,7 +36,7 @@ import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
 import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeAnswer, sizeFigs, type Pose } from "./kon.place.ts";
 import { ROLE, around, freeSpot, type Avoid, type Box } from "./kon.spot.ts";
-import { INK_H, LETTER_PX, letterSpot, numberBox, protractorLines, scaleLabels, scaleOmitFor, type Measure, type ScaleLabel } from "./kon.scale.ts";
+import { INK_H, LETTER_PX, innerReach, letterSpot, numberBox, onBoard, protractorLines, scaleLabels, scaleOmitFor, type Measure, type ScaleLabel, type ScaleOpts } from "./kon.scale.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.4;
@@ -125,8 +130,8 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   // ── drawing
   /** this frame's lines and boxes the letters keep clear of, beyond the audit's (the arcs, the join to the centre, the
    *  dots, the ring, the chips about to be drawn), and the scale numbers laid out but drawn last (over every line) */
-  type Frame = { lines: [Pt, Pt][]; boxes: Box[]; nums: ScaleLabel[]; drawn: number };
-  let frame: Frame = { lines: [], boxes: [], nums: [], drawn: 0 };
+  type Frame = { lines: [Pt, Pt][]; boxes: Box[]; nums: ScaleLabel[]; drawn: number; /** the movable protractor's lettering (measure, draw) */ opts: ScaleOpts | null };
+  let frame: Frame = { lines: [], boxes: [], nums: [], drawn: 0, opts: null };
   const dotBox = (o: Pt, r: number): Box => ({ x: o[0] - r, y: o[1] - r, w: 2 * r, h: 2 * r });
   function arcAt(c: CanvasRenderingContext2D, o: Pt, r: number, a0: number, a1: number, role: string, width = 2.5, dash?: number[]): void {
     // the smaller turn from heading a0 to a1, about board point o, radius r (screen px)
@@ -185,7 +190,10 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const meas: Measure = (t, px) => { c.save(); c.font = `700 ${px}px ${api.art.font.mono}`; const w = c.measureText(t).width; c.restore(); return w; };
     const radii = goal === "size" ? sizeFigs(p).map((f) => ({ R: f.rad * s, rad0: f.rad })) : [{ R, rad0 }];
     const omits = scaleOmitFor(radii, every, fs(), meas, q.rot), k = Math.max(0, radii.findIndex((r) => r.rad0 === rad0));
-    frame.nums.push(...scaleLabels({ rot: q.rot, R, rad0, every, fs: fs(), measure: meas, omit: omits[k] }, cx, cy));
+    const opts: ScaleOpts = { rot: q.rot, R, rad0, every, fs: fs(), measure: meas, omit: omits[k] };
+    if (goal !== "size") frame.opts = opts;
+    // a number not wholly on the board is not drawn, nor the other number at its tick (gate 1, night ruling 1)
+    frame.nums.push(...onBoard(scaleLabels(opts, cx, cy), { x: 0, y: 0, w: api.w, h: api.h }));
     // the drawn size of the protractor, for the layout check (its size never changes while she reads)
     P.note("protractor", cx - R, cy - R, 2 * R, R + depth);
     if (o.knob) {
@@ -216,7 +224,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const readChipAt = (q: Pose): Pt => S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
   type Chip = { s: string; at: Pt; size: number; role?: string };
   function draw(c: CanvasRenderingContext2D): void {
-    frame = { lines: [], boxes: [], nums: [], drawn: 0 };
+    frame = { lines: [], boxes: [], nums: [], drawn: 0, opts: null };
     if (goal === "size") return drawSize(c);
     const P = api.P, S0 = st(), P0 = ps(), q = pose(), V: Pt = [p.vx ?? 0, p.vy ?? 0], hs = arms(p);
     const run = truthAt >= 0 && S0.commits > 0;
@@ -246,7 +254,8 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
         // the finished arm carries its letter B
         if (S0.done) { const [bc, bn] = dir(h); bAt = { at: [from[0] + len * bc, from[1] + len * bn], h }; }
       }
-      P.circle(c, ...S(...D), 6, { role, fill: true });
+      // a hollow ring: the tick under it shows through (gate 1, night rulings)
+      P.circle(c, ...S(...D), 6, { role, width: 2.5 });
       frame.boxes.push(dotBox(S(...D), 6));
     }
     // the play-out's lines (the ring and join, her number's arm, the arcs)
@@ -264,9 +273,10 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const role = typed ? ROLE.focus : S0.done ? ROLE.answer : placement(p, P0.pose).ok ? ROLE.mixup : undefined;
       if (n) chips.push({ s: `${n}°`, at: readChipAt(q), size: 16, role });
     }
-    // draw, after a miss: the angle her arm makes, named by its corner, where the protractor is not
+    // draw, after a miss: the angle her arm makes, named by its corner only, where the protractor is not; no number (gate 1,
+    // night ruling 3: her arm lies across the placed protractor and she reads it herself)
     if (goal === "draw" && run && !S0.done && P0.mark !== null && P0.joined && api.t - truthAt > 0.4) {
-      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"} ${Math.round(madeAngle(p, q, P0.mark, P0.joined))}°`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup });
+      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"}`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup });
     }
     for (const ch of chips) { const z = P.chipSize(c, ch.s, { size: ch.size }); frame.boxes.push({ x: ch.at[0] - z.w / 2, y: ch.at[1] - z.h / 2, w: z.w, h: z.h }); }
     // the letters on top of everything, so they stay readable where the protractor lies: the arm letters well past the arm
@@ -301,10 +311,14 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       // beside OB and told her a right number was right
       const pl = placement(p, q);
       if (!pl.ok) return;
-      // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's centre
+      // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's centre, stopping
+      // inside the inner number ring (gate 1, night ruling 2: a wrong-scale arm ran on to the outer scale's key). From her
+      // second miss on a placed protractor no arm at all (it had become a too-high, too-low guide); her number's chip stays
+      if ((P0.placedMisses ?? 0) >= 2) return;
       const r = pl.zeroOnArm ? P0.read : 180 - P0.read, h = norm(q.rot + r);
-      line(c, ray([q.x, q.y], h, ARM * k), { role: ROLE.mixup, width: 3, dash: [7, 5] });
-      if (k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, ROLE.mixup, 3, [5, 4]);
+      const reach = frame.opts ? innerReach(frame.opts, h) / s : ARM;
+      line(c, ray([q.x, q.y], h, reach * k), { role: ROLE.mixup, width: 3, dash: [7, 5] });
+      if (k >= 1) arcAt(c, [q.x, q.y], Math.max(8, Math.min(PR * 0.42, reach - 4)) * s, hs[1 - pl.arm], h, ROLE.mixup, 3, [5, 4]);
       return;
     }
     // draw: the angle she made, at the end she joined; never the asked arm (law 2: no line to trace); its number is a chip

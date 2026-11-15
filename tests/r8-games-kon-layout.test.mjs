@@ -334,9 +334,10 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             };
           });
           screens++;
-          // (centre-on-arm: her protractor centred on A runs past the board's edge, so its own scale numbers there are cut, and its 0 sits by O under the ring: her
-          // placement, not the layout; every other fault still counts)
-          for (const f of screenFaults(probe)) if (!(name === "mal-centre-on-arm" && /^(cut|ring×text) "\d+"$/.test(f))) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
+          // (centre-on-arm: her protractor centred on A runs past the board's edge, and its 0 sits by O under the ring: her
+          // placement, not the layout; every other fault still counts. Gate 1, night ruling 1: a number the board's edge
+          // would cut is not drawn, so no "cut" number is excused here any more)
+          for (const f of screenFaults(probe)) if (!(name === "mal-centre-on-arm" && /^ring×text "\d+"$/.test(f))) faults.push(`${size.tag} ${level.levelId} ${name}: ${f}`);
           // the vertex-off ring is a consequence of a committed decision: never on the first screen or before the decision
           if ((name === "first" || name === "mid") && probe.marks.some((m) => m.kind === "ring")) faults.push(`${size.tag} ${level.levelId} ${name}: centre ring before a decision`);
           // the board does not move when the game is solved (the controls keep their rows)
