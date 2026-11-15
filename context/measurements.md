@@ -6793,3 +6793,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-kon-name-gate1b-picker` (2026-11-15): kon/name after the final gate-1 fixes: picker CPU over 90 requests (seeds 700-714 x 3, both goals) p95 26.2 ms, max 59.8 (first rep cold; bar 50 on p95); find generator 1200 requests (seeds 1-400, fades 1-3): 5 made no level (0.4 %; the test bar is 1 %).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-dc63a6f` (2026-11-15): Released dc63a6f with scripts/release.mjs: web taxila-web--sdc63a6f-7nvq (was taxila-web--s2de94c3-bslc), worker + canary/nightly jobs on taxila-worker:dc63a6f (was 2de94c3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs dc63a6f --rollback.
