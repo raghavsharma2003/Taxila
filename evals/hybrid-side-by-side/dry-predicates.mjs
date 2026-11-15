@@ -585,6 +585,33 @@ export const ORDER_LAWS = {
     const n = (ctx.o.misses[c] = (ctx.o.misses[c] ?? 0) + 1);
     return n === 1 && KEY_SAID.test(String(r.text ?? "")) ? `the key on the first miss ("${ctx.prevChild}")` : null;
   },
+  /** R2 (main on director21 c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on a later turn): a reply of Learning's
+   *  library — a word, plain or sad form — is said once; the same reply sentence in any of her next six turns is a re-render. */
+  asideReplyOnce(L, r, i, ctx) {
+    // (a form may be two sentences, "Hmm, {word}. Samajh gayi.": each is found whole in the turn, its slot filled; a re-render picks the
+    // next form in rotation, so the fault is a reply on a turn that does not follow her question — a return's or the AI line's)
+    const F = (ctx.o.replyF ??= (() => { const f = asideReplyForms(); return f.word.map((re) => new RegExp(re.source.replace(/^\^/, "").replace(/\$$/, ""), "iu")); })());
+    const hit = F.map((re) => norm(r.text).match(re)?.[0]).find(Boolean);
+    if (!hit || !ctx.prevT) return null;
+    const asked = returnOf(ctx.prevT, ctx) || AI_LINE.test(String(ctx.prevT.text ?? "")) || /[?？]\s*$/.test(norm(ctx.prevT.text)) && !cardIn(ctx.prevT) && /·\s*uptake/.test(ctx.prevRead ?? "");
+    return asked ? null : `her aside reply on a turn after no question of hers about it: "${hit.slice(0, 60)}"`;
+  },
+  /** J1 (main on director21: backTo fired 0 times in 33 returns to an earlier card): a card asked before, not on her last turn, comes
+   *  back with the script's backTo joint — never bare, never code's "Phir se dekho:". */
+  backToJoint(L, r, i, ctx) {
+    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40)) || low(ctx.prevT.text).includes(low(r.card).slice(0, 40))) return null;
+    // (the card re-asked by its question alone, S1: what comes before is the turn but its last sentence)
+    const at = norm(r.text).toLowerCase().lastIndexOf(low(r.card).slice(0, 30));
+    const before = (at >= 0 ? norm(r.text).slice(0, at) : sentencesOf(r.text).slice(0, -1).join(" ")).trim();
+    const heads = ctx.jointHeads?.backTo ?? [];
+    if (!heads.some(Boolean) || heads.some((h) => h && low(before).includes(h))) return null;
+    return !before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)
+      ? `a card back from earlier ${before ? `with "${before}"` : "bare"}, no backTo` : null;
+  },
+  /** Main on director21 (c4 steering 66, c5-t02 offtopic 72): the screen's controls are never named aloud ("Buttons: aage badhein"). */
+  uiWords(L, r) {
+    return /(?<![\p{L}])buttons?(?![\p{L}])/iu.test(String(r.text ?? "")) ? "the buttons named aloud" : null;
+  },
   /** C1 (main on director21: "the same why said three turns running"): no authored sentence of six words or more is said in two turns
    *  of hers running — except the card the child is asked again. */
   repeatedAuthored(L, r, i, ctx) {
@@ -607,7 +634,7 @@ export const ORDER_LAWS = {
 Object.assign(PREDICATES, ORDER_LAWS);
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

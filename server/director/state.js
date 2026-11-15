@@ -1951,7 +1951,8 @@ function requestMove(s, input, item, req, labels) {
       if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
       // (O4, main on director21: Hindi asked at a key's check-in moved on to the next beat's simpler — it stays on the card just closed:
       // that card's compiled hindi cell, its simpler, on its board, and the check-in; the next part waits)
-      if (!item && scriptOn() && s.lastMove?.gave && s.lastMove?.closeBeat?.board && !scriptFor(kit)?.script?.recordedRun) {
+      // (only after a turn that closed and taught nothing new: a close that went on into a worked step leaves that step the live part)
+      if (!item && scriptOn() && s.lastMove?.gave && s.lastMove?.closeBeat?.board && !s.lastMove.rendered?.length && !s.lastMove.point && !scriptFor(kit)?.script?.recordedRun) {
         const cl = cellLines(s, input, "hindi");
         const line = cl?.lines?.[0] ?? null;
         if (line) return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language", simpler: line, smaller: true, scriptBeat: { ...s.lastMove.closeBeat }, stayCheckin: true });
@@ -3396,8 +3397,11 @@ function step0(prev, input) {
     // with no new rung, the card's own simpler is said again — never the bare re-pose)
     // (v6.10 T2: a line heard on a language or clarify request is not spent — the miss may still use it, after any line not heard)
     const heard = new Set(help.heard ?? []);
-    const sm = rungs.find((x) => !help.said.includes(normLine(x.text)) && !heard.has(normLine(x.text))) ?? rungs.find((x) => !help.said.includes(normLine(x.text)))
-      ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation") ?? null : null);
+    const lastHer = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-1).map((t) => normLine(t.text ?? "")).join(" ");
+    const notLast = (x) => !lastHer.includes(normLine(x.text).slice(0, 60));
+    const sm = rungs.find((x) => !help.said.includes(normLine(x.text)) && !heard.has(normLine(x.text))) ?? rungs.find((x) => !help.said.includes(normLine(x.text)) && notLast(x))
+      // (C1, main on director21: never the line her last turn said — with every rung heard, a first miss gets the verdict and the card)
+      ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation" && !(s.recent ?? []).filter((t) => t.who === "teacher").slice(-1).some((t) => normLine(t.text ?? "").includes(normLine(x.text).slice(0, 60)))) ?? null : null);
     if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
       if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
     s.cardHelp = help;

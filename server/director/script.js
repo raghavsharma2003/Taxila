@@ -1,7 +1,7 @@
 // round 7 (dc-r7-teaching-scripts, T-schema): a topic's lesson script (shared/contracts.ts TopicScript, Learning's
 // LESSON-SCRIPTS-SPEC.md shape) checked in code against its kit before the Director may walk it. A skill whose script fails is
 // never walked (the lesson keeps the kit path for it). PURE.
-import { readFileSync as readScriptFile } from "fs";
+import { readFileSync as readScriptFile, readdirSync } from "fs";
 import { belowLevel, rateAsFraction, looksEnglish } from "../brain/say.js";
 import { INTERESTS } from "../persona/signals.js";
 export { rateAsFraction };
@@ -458,8 +458,27 @@ export function scriptWorkedStepSmaller(st, lang = "hinglish") {
 /** An authored clause made ready to join into a sentence: its end stop gone, its first letter lowered when asked (never "I"). */
 export function joinable(x, { lower = false } = {}) {
   let t = String(x ?? "").replace(/\s+/g, " ").trim().replace(/[.!।;,]+$/, "");
-  if (lower && /^[A-Z][a-z]/.test(t) && !/^I\b/.test(t)) t = t.charAt(0).toLowerCase() + t.slice(1);
+  // (main on director21 c5-t02: "kyunki farhan ka bar", "zoya" — a name keeps its capital after "kyunki")
+  if (lower && /^[A-Z][a-z]/.test(t) && !/^I\b/.test(t) && !properNames().has(t.split(/[\s,;:]/)[0])) t = t.charAt(0).toLowerCase() + t.slice(1);
   return t;
+}
+let PROPER = null;
+/** The names the scripts use (a word written with a capital mid-sentence twice or more: Sana, Rahul, Delhi, Tuesday; the friend names). */
+export function properNames() {
+  if (PROPER) return PROPER;
+  PROPER = new Set(["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara", "Diya", "Aman", "Bittu", "Riya"]);
+  const count = {};
+  for (const dir of ["../../data/lesson-scripts/", "../../data/lesson-scripts-staged/"]) {
+    let names = [];
+    try { names = readdirSync(new URL(dir, import.meta.url)).filter((f) => f.endsWith(".json")); } catch { continue; }
+    for (const f of names) {
+      let t = "";
+      try { t = readScriptFile(new URL(dir + f, import.meta.url), "utf8"); } catch { continue; }
+      for (const m of t.matchAll(/[a-z,;:] ([A-Z][a-z]{2,})\b/g)) count[m[1]] = (count[m[1]] ?? 0) + 1;
+    }
+  }
+  for (const [w, n] of Object.entries(count)) if (n >= 2 && !["Hindi", "English", "Indian"].includes(w) || /^(?:Hindi|English)$/.test(w)) PROPER.add(w);
+  return PROPER;
 }
 /** v2 (R1): did her line say the beat's must-say terms (each, in the lesson language's form or the other)? */
 export function saidMust(line, mustSay = [], lang = "hinglish") {

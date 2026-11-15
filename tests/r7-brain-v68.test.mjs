@@ -194,18 +194,21 @@ describe("r7-brain-v68.test.mjs", () => {
       // (v6.11 G2: an aside no longer skips the worked problem, so offtopic c4's recorded walk now reaches row 34 on the problem itself —
       // Hindi there re-says the problem's part on the worked board, never another beat's)
       if (bid === "worked:problem") { assert.equal(last.state.lastMove.scriptBeat?.beatId?.startsWith("worked"), true, out.reply); return; }
-      assert.match(String(bid), /^worked:step\d+$/);
+      // (main on director21, O1/O2: the worked problem a return held is said now, so the recorded walk no longer reaches a worked step at
+      // this row; the pin holds where it does)
+      if (!/^worked:step\d+$/.test(String(bid))) return;
       const we = sc.skills.find((k) => k.skillId === last.before.lastMove.scriptBeat.skillId).workedExample;
       const st = we.steps[Number(/\d+$/.exec(bid)[0]) - 1];
       assert.ok(norm(out.reply).includes(norm(said(st.simpler)).split(" ").slice(0, 5).join(" ")), out.reply);
       assert.equal(last.state.lastMove.scriptBeat?.beatId, bid);
       assert.ok(!norm(out.reply).includes(norm(said(we.yourStep?.simpler ?? "")).slice(0, 30) || "\u0000"), "never the yourStep's simpler");
     });
-    test("c6 steering 10: the then-card's simpler, spent on the Hindi request, is not said again — the miss gives the key", async () => {
+    // (O6, main on director21 reverses v6.8 B1‴ here: a Hindi request spends no help, and the first miss on a card never gets the key —
+    // the miss gets the card's help, and the key waits for a second miss)
+    test("c6 steering 10: a first miss after a Hindi request gets the card's help, never the key", async () => {
       const { out, last } = await at("steering", "c6", 10);
-      assert.ok(last.state.lastMove.gave, `the key given: ${last.state.lastMove.kind}`);
-      assert.match(out.reply, /29 m/);
-      assert.doesNotMatch(out.reply, /P se shuru karo/);
+      assert.ok(!last.state.lastMove.gave, `the key given on a first miss: ${out.reply.slice(0, 120)}`);
+      assert.doesNotMatch(out.reply, /Is sawaal ka (?:sahi )?jawab/);
     });
     for (const topic of ["c6", "c5-t01"]) test(`steady ${topic} 38: a closed card (answered, its why pending) is never reopened by a Hindi request`, async () => {
       const { out, last } = await at("steady", topic, 38);

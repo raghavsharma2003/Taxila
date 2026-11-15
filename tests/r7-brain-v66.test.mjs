@@ -126,6 +126,9 @@ describe("r7-brain-v66.test.mjs", () => {
         // (v6.9 T1, main's request table on director17: with nothing of the live part left unsaid, the key and its why)
         // (the key in its code frame — in Hindi words, so "line" is "rekha")
         if (lm.gave?.answer) { if (!/jawab/i.test(out.reply)) bad.push(`${tag}: the key not said`); continue; }
+        // (O4, main on director21: Hindi asked at a key's check-in stays on the card just closed — its compiled hindi cell's line, on its
+        // board, and the check-in; the next part waits)
+        if (lm.stayCheckin) { if (!lm.simpler || !norm(out.reply).includes(norm(lm.simpler).split(" ").slice(0, 4).join(" "))) bad.push(`${tag}: the closed card's line not said`); continue; }
         // (v6.8 B1‴, main on director16 c6 steady 38: a card answered right, its why pending, is never reopened — the walk goes on to
         // the next card, posed in their language with no simpler before it)
         if (last.before.pendingWhy && last.before.pendingWhy === last.before.activeItemId) {

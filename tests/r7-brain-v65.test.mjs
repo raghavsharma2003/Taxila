@@ -220,7 +220,9 @@ describe("r7-brain-v65.test.mjs", () => {
     return { out, last, state, plans };
   };
   test("K2 predicate: a then-card's second miss gives its key and why (c6 stuck 52, c5-t01 stuck 44)", async () => {
-    for (const [persona, topic, n] of [["stuck", "c6", 52], ["stuck", "c5-t01", 44]]) {
+    // (O6, main on director21: c5-t01 stuck 44's earlier "miss" was a give-up while the then-card was held, not asked — no miss now, so
+    // this answer is the card's first miss and gets its help, never its key)
+    for (const [persona, topic, n] of [["stuck", "c6", 52]]) {
       const { out, last, plans } = await atLive(persona, topic, n);
       // (v6.9 T1.6, main on director17: a miss after its simpler is spent gives the key at once — the then-card can close before this
       // row; then its key was given where it closed)
@@ -242,7 +244,8 @@ describe("r7-brain-v65.test.mjs", () => {
     assert.doesNotMatch(out.reply, /Bache hue tukde neeche kabhi nahi aate/, out.reply);
   });
   test("K2 predicate: a simpler on a live card re-poses it in the same turn, never 'Ab isi par ek sawaal' and a wait (c4 steady 8, offtopic 26, steering 30)", async () => {
-    for (const [persona, n] of [["steady", 8], ["offtopic", 26], ["steering", 30]]) {
+    // (steering 30 is a give-up on a card already missed once: dc-r8-director20 G3 and O6 give it its key and why)
+    for (const [persona, n] of [["steady", 8], ["offtopic", 26]]) {
       const { out, last } = await atLive(persona, "c4", n);
       assert.ok(!last.state.lastMove?.splitTeach && last.p.r.ui?.ask, `${persona} c4 row ${n}: split`);
       assert.doesNotMatch(out.reply, /Ab (?:isi|is) par ek (?:chhota )?sawaal/, out.reply);

@@ -111,7 +111,8 @@ const jointStart = (state, kind) => { const k = [...String(kind)].reduce((h, c) 
   return Number.isFinite(state?.seed) ? (Math.imul((state.seed >>> 0) ^ k, 2654435761) >>> 0) % 997 : 0; };
 export const jointCount = (state, kind) => jointStart(state, kind) + (kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
   : kind === "asideReturn" ? Math.max(0, (state?.later ?? []).filter((e) => e.servedAt != null).length - 1)
-  : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1) : 0);
+  : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1)
+  : kind === "backTo" ? (state?.backToN ?? 0) : 0);
 export const rotated = (xs, n) => (Array.isArray(xs) && xs.length ? [...xs.slice(n % xs.length), ...xs.slice(0, n % xs.length)] : xs);
 export const jointsAt = (kit, kind, lang, state, slots = {}) => rotated(jointOf(kit, kind, lang, slots), jointCount(state, kind));
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
@@ -699,11 +700,14 @@ export function picLine(line, lang = "hinglish") {
   t = t.charAt(0).toUpperCase() + t.slice(1);
   return t && !/[.!]$/.test(t) ? `${t}.` : t;
 }
+const rightWord = (a) => /(?<![\p{L}])(?:sahi|galat|theek)(?![\p{L}])/iu.test(String(a ?? ""));
 /** v6.6 F1′: the give-up's forms (the card's key and its why), fresh like every code frame. */
 export const GAVE_FORMS = {
   hinglish: { next: [(a, w) => `Is sawaal ka jawab ${a} tha${w}.`, (a, w) => `Iska jawab ${a} tha${w}.`, (a, w) => `Yahan sahi jawab ${a} tha${w}.`],
     now: [(a, w) => `Is sawaal ka jawab ${a} hai${w}.`, (a, w) => `Iska jawab ${a} hai${w}.`, (a, w) => `Yahan sahi jawab ${a} hai${w}.`],
-    yesNo: [(a, w) => `Is sawaal ka sahi jawab: ${a}${w}.`, (a, w) => `Iska sahi jawab: ${a}${w}.`, (a, w) => `Yahan sahi jawab: ${a}${w}.`] },
+    // (main on director21 c5-t01 steady: "Is sawaal ka sahi jawab: sahi nahi" — a key that is itself a verdict word takes the frame
+    // without "sahi")
+    yesNo: [(a, w) => `Is sawaal ka ${rightWord(a) ? "" : "sahi "}jawab: ${a}${w}.`, (a, w) => `Iska ${rightWord(a) ? "" : "sahi "}jawab: ${a}${w}.`, (a, w) => `Yahan ${rightWord(a) ? "" : "sahi "}jawab: ${a}${w}.`] },
   english: { next: [(a, w) => `This question's answer was ${a}${w}.`, (a, w) => `The answer here was ${a}${w}.`, (a, w) => `Here the answer was ${a}${w}.`],
     now: [(a, w) => `This question's answer is ${a}${w}.`, (a, w) => `The answer here is ${a}${w}.`, (a, w) => `Here the answer is ${a}${w}.`],
     yesNo: [(a, w) => `This question's right answer: ${a}${w}.`, (a, w) => `The right answer here: ${a}${w}.`, (a, w) => `Here the right answer is ${a}${w}.`] },
@@ -2509,7 +2513,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const numsIn = (t) => (String(t ?? "").match(/\d+(?:[./]\d+)?/g) ?? []).join(" ");
     const sameAnswer = (a, b) => !!a && !!b && (a === b || (!!numsIn(a) && numsIn(b).split(" ").includes(numsIn(a))));
     const closedS = closedA && !sameAnswer(closedA, gaveA) && !sameAnswer(closedA, wdA) ? (lang === "english" ? (yesNo(closedA) ? `And the earlier question's right answer: ${closedA}${closedW}.` : `And the earlier question's answer was ${closedA}${closedW}.`)
-      : yesNo(closedA) ? `Aur pehle wale sawaal ka sahi jawab: ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
+      : yesNo(closedA) ? `Aur pehle wale sawaal ka ${rightWord(closedA) ? "" : "sahi "}jawab: ${closedA}${closedW}.` : `Aur pehle wale sawaal ka jawab ${closedA} tha${closedW}.`) : null;
     if (closedS || closedA) ss = ss.filter((x) => !/^aur pehle wale sawaal|^and the earlier question/i.test(x));
     // (v6.10 R7, main on director18: "Toh poora jawab" after a miss read as if they had it — after a miss the close is said as the answer,
     // never "the full answer")
@@ -2575,6 +2579,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
     }
+    // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
+    // back with the script's backTo joint; a card asked again at once keeps code's frame)
+    else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && posedBefore && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
     else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = [freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = "selftry"; }
@@ -2687,7 +2694,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
-      if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
+      if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
+        const back = !(herPrev && prevHas(card)) && posedBefore ? jointsAt(kit, "backTo", lang, state) : null;
+        body = [freshOf(back ?? FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; if (back) guard.backTo = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
@@ -2985,6 +2994,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (guard.twinsOne) reply = (head + " " + tail).replace(/\s+/g, " ").trim(); }
   // v6.6 P4: the parts follow every edit above, word by word; the page plan reads them (guard.parts.list)
   if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; }
+  // (main on director21 c4 steering 66, c5-t02 offtopic 72: "Buttons: aage badhein …" said aloud — the screen's controls are never named;
+  // the choices are said as choices)
+  { const r0 = reply.replace(/(?<![\p{L}])(?:buttons?|button\s+(?:dabao|dabaiye))(?:\s+(?:mein|me)\s+se)?(?:\s+(?:chun|chuno|choose)(?:\s+lo)?)?\s*[:—-]\s*/giu, "").replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, c) => a + c.toUpperCase());
+    if (r0 !== reply) { reply = r0; guard.buttonsDropped = true; if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; } } }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
   if (final.length) guard.final = final;

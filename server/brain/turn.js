@@ -968,6 +968,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
     // (P1: a return is a turn of its own — the authored parts it held are said first on the next turn, state.js step0's sayFirst)
     if (guard?.bodyHeld?.length && next) next.bodyUnsaid = guard.bodyHeld;
+    // (J1: backTo's forms rotate by how many times a card has come back)
+    if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
     if (guard?.asideEnd) next.asideReplyDue = true;
     // (v6.11 J2: that question was an aside's return: the reply answers it — state.js reads it as the aside's own reply)
