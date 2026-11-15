@@ -405,6 +405,15 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
             const held = [...(playOut ? [] : probe.marks.filter((m) => m.kind === "chip").map((m) => ({ s: "chip", x: m.x + m.w / 2, y: m.y + m.h / 2, w: m.w, h: m.h }))),
               ...probe.all.filter((t) => t.s === "≠").map((t) => ({ s: "≠", ...lb(t) }))];
             for (const k of held) for (const l of probe.letters) { const g = gap(k, lb(l)); if (g < l.px - 0.01) faults.push(`${size.tag} ${level.levelId} ${name}: ${k.s} ${g.toFixed(1)} px from letter ${l.s} (one letter height is ${l.px})`); }
+            // gate 1, ruling 1 (2026-11-15): every arc is declared ("arc" chords; screenFaults keeps every chip off them), and
+            // at 360 find's "≠" row lies wholly above or below the figure's whole box, arcs and letters included
+            if (level.params.goal === "find" && !probe.segs.some((g) => g.kind === "arc")) faults.push(`${size.tag} ${level.levelId} ${name}: no arcs declared`);
+            if (size.tag === "360x640" && level.params.goal === "find") {
+              const fig = probe.segs.filter((g) => g.kind === "arm" || g.kind === "arc"), L = probe.letters;
+              const fy0 = Math.min(...fig.flatMap((g) => [g.y0, g.y1]), ...L.map((l) => l.y - l.px * 0.6)), fy1 = Math.max(...fig.flatMap((g) => [g.y0, g.y1]), ...L.map((l) => l.y + l.px * 0.6));
+              const row = [...probe.all.filter((t) => t.s === "≠").map((t) => ({ y0: t.y - t.px * 0.6, y1: t.y + t.px * 0.6 })), ...(probe.all.some((t) => t.s === "≠") ? probe.marks.filter((m) => m.kind === "chip").map((m) => ({ y0: m.y, y1: m.y + m.h })) : [])];
+              for (const r of row) if (!(r.y1 <= fy0 + 0.5 || r.y0 >= fy1 - 0.5)) faults.push(`${size.tag} ${level.levelId} ${name}: the "≠" row inside the figure (${r.y0.toFixed(0)}-${r.y1.toFixed(0)} in ${fy0.toFixed(0)}-${fy1.toFixed(0)})`);
+            }
             const arms = probe.segs.filter((g) => g.kind === "arm");
             for (const r of probe.segs.filter((g) => g.kind === "ray")) for (const a of arms) {
               const u = [r.x1 - r.x0, r.y1 - r.y0], v = [a.x1 - a.x0, a.y1 - a.y0], lu = Math.hypot(...u), lv = Math.hypot(...v);
