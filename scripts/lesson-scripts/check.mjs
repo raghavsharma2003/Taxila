@@ -467,7 +467,8 @@ export function unitFigureErrors(s) {
  * whole by the "?"-drop). A card's prompt and the worked problem (its question) may ask. */
 export function rhetoricalQuestionErrors(s) {
   const e = [];
-  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
+  // (director21 S2/E1: a card's reask and the teach-back's prompt are questions; a problemAlt may pose its problem as one)
+  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask|reask|problemAlt)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
   const walk = (x, path) => {
     if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
     if (!x || typeof x !== "object" || x.template) return;
@@ -598,6 +599,13 @@ export function whyVerbErrors(s) {
  *   shared with Brain's dry-matrix predicate). */
 // (director20 S1: backTo, coming back to an earlier card: one sentence, no slot, no question)
 export const JOINT_KINDS = ["asidePark", "asideReturn", "hindiSwitch", "askAgain", "backTo"];
+// (director21 J1, v2.4: four seams, three forms each, one sentence that asks nothing and names nothing: after her aside reply and
+// before the lesson; after a miss verdict and before a remediation; after "try it first" and before the card; after the AI line
+// and before the lesson)
+export const SEAM_KINDS = ["afterAside", "beforeRemediation", "afterTryFirst", "afterAiLine"];
+// (the v2.4 fields switch on with "version": 2.4, or with a teachback on a v2.3 script while the runtime walks versions up to 2.3)
+function isV24(s) { return (s?.version ?? 1) >= 2.4 || !!s?.teachback; }
+const jointKindsOf = (s) => (isV24(s) ? [...JOINT_KINDS, ...SEAM_KINDS] : JOINT_KINDS);
 export const JOINT_MAX_WORDS = 16;
 export const TWINS = JSON.parse(readFileSync(new URL("../../data/lesson-twins.json", import.meta.url), "utf8")).twins;
 const wordRe = (w) => new RegExp(`(?<![\\p{L}])${w.replace(/\s+/g, "\\s+")}(?![\\p{L}])`, "iu");
@@ -628,7 +636,7 @@ export function jointErrors(s) {
   const norm = (t) => String(t ?? "").toLowerCase().replace(/\{[a-z]+\}/g, "{}").replace(/[^\p{L}\p{N}{} ]+/gu, " ").replace(/\s+/g, " ").trim();
   const TOPICS = /\b(cricket|football|kabaddi|ipl|cartoon|cartoons|movie|movies|film|game|games|video game|mobile|phone|gaana|gaane|song|dance|doraemon|chhota bheem|pokemon|youtube)\b/i;
   const twins = twinsUsedBy(s);
-  for (const kind of JOINT_KINDS) {
+  for (const kind of jointKindsOf(s)) {
     const forms = j[kind];
     if (!Array.isArray(forms) || forms.length < 3) { e.push(`joints.${kind}: at least 3 forms (got ${Array.isArray(forms) ? forms.length : 0})`); continue; }
     for (const lang of ["hi", "en"]) {
@@ -665,6 +673,11 @@ export function jointErrors(s) {
           if (/\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
         }
         if (kind === "backTo" && (sents.length !== 1 || /[?？]/.test(t))) e.push(`${at}: one sentence that brings her back to the earlier card, asking nothing`);
+        if (SEAM_KINDS.includes(kind)) {
+          if (sents.length !== 1 || /[?？]/.test(t)) e.push(`${at}: a seam is one sentence that asks nothing (J1)`);
+          // (a seam joins two authored parts; it states no fact, verdict or promise of its own)
+          if (/\b(sahi|galat|right|wrong|correct|zaroor|promise|baad mein|later)\b/i.test(t)) e.push(`${at}: a seam judges nothing and promises nothing ("${t.match(/\b(sahi|galat|right|wrong|correct|zaroor|promise|baad mein|later)\b/i)[0]}")`);
+        }
         if (kind === "askAgain") {
           if (/[?？]/.test(t)) e.push(`${at}: never a question (a yes/no card would take it as the card)`);
           if (/sunai|suna nahi|sun nahi|saaf nahi|chhoot|hear|heard|missed|clearly|awaaz/i.test(t)) e.push(`${at}: never claims she did not hear (the child may have spoken clearly)`);
@@ -673,7 +686,7 @@ export function jointErrors(s) {
       });
     }
   }
-  for (const k of Object.keys(j)) if (!JOINT_KINDS.includes(k)) e.push(`joints.${k}: not a joint kind (${JOINT_KINDS.join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -880,7 +893,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...voiceTextErrors(s));
   return e;
 }
 
@@ -969,6 +982,7 @@ export async function checkTopic(topicId) {
   if ((s.version ?? 1) >= 2) Object.defineProperty(s, "__interests", { value: await interestWords(), enumerable: false });
   const S = structureErrors(s, kit);
   const W = kit ? await boardErrors(s, kit) : { errors: [], w6: [] };
+  if (kit) W.errors.push(...await allBoardsResolve(s, kit));
   const V = kit ? await runtimeErrors(s, kit) : [];
   return { topicId, ok: !S.length && !W.errors.length && !V.length, structure: S, boards: W.errors, timingOnly: W.w6, runtime: V };
 }
@@ -1052,6 +1066,14 @@ export function asideReplyErrors(d) {
     if (k === "people" || k === "other") (v.returns ?? []).forEach((f, i) => { if (/\b(khela|kheli|khele|khelte|khaya|khayi|khaye|khaate|dekha|dekhi|padha|banaya|played|ate|watched|eaten)\b/i.test(`${f?.hi} ${f?.en}`)) e.push(`kinds.${k}.returns[${i}]: assumes an activity (played, ate, watched) the kind does not guarantee`); });
     (v.replies ?? []).forEach((f, i) => form(`kinds.${k}.replies[${i}]`, f, { slot: "{word}", question: false }));
     (v.plain ?? []).forEach((f, i) => form(`kinds.${k}.plain[${i}]`, f, { slot: null, question: false }));
+    // (director21 R3: phraseReplies[i] answers returns[i]; one {phrase}, said back about the child; no fact, no taste of hers)
+    if (v.phraseReplies) {
+      if (v.phraseReplies.length !== (v.returns ?? []).length) e.push(`kinds.${k}.phraseReplies: one per return (${(v.returns ?? []).length})`);
+      v.phraseReplies.forEach((f, i) => {
+        form(`kinds.${k}.phraseReplies[${i}]`, f, { slot: "{phrase}", question: false });
+        if (/\b(mujhe|mera|meri|mere|main|I|my|me)\b/.test(`${f?.hi} ${f?.en}`)) e.push(`kinds.${k}.phraseReplies[${i}]: says nothing of hers (a taste, a fact about her)`);
+      });
+    }
   }
   if ((d?.sad?.replies ?? []).length !== 3) e.push("sad.replies: 3 forms");
   (d?.sad?.replies ?? []).forEach((f, i) => form(`sad.replies[${i}]`, f, { slot: null, question: false }));
@@ -1360,6 +1382,193 @@ export function sharedSentenceErrors(s) {
       e.push(`${u.where}${u.lang === "en" ? " (en)" : ""}: ${kind} with ${prev.where}: "${sent.slice(0, 70)}" (say it in other words)`);
     }
   }
+  return e;
+}
+
+/** director21 (dc-r8-director21) data rules. friendVerb, bridgeTrue and hookReuse hold for every v2.3+ script; E1 (teachback,
+ *  wrap), C1 (second wordings), S2 (reask) and one-word-per-idea are required from v2.4. */
+function FRIEND_M_RE() { return /\b(kehta|bolta|karta|leta|deta|jaata|jata|aata|khaata|khata|sochta|likhta|ginta|banata|rakhta|chalta|daudta|padhta|gaya|liya|diya|likha|kaha|bola|socha|gina|banaya|rakha|chala|daud[aā]|padha|hua|tha)\b/i; }
+function FRIEND_F_RE() { return /\b(kehti|bolti|karti|leti|deti|jaati|jati|aati|khaati|khati|sochti|likhti|ginti|banati|rakhti|chalti|daudti|padhti|gayi|gai|li|di|likhi|kahi|boli|sochi|ginti|banayi|rakhi|chali|daudi|padhi|hui|thi)\b/i; }
+export function friendVerbErrors(s) {
+  const e = [];
+  const walk = (x, p, k) => {
+    if (typeof x === "string") {
+      if (k !== "hi") return;
+      for (const m of x.matchAll(/\{(friend|friendM|friendF)\}((?:\s+\S+){1,7})/g)) {
+        // (the verb that agrees is the first gendered verb after the name, before the next sentence)
+        const tail = m[2].split(/[.?!:;]/)[0];
+        const masc = tail.match(FRIEND_M_RE()), fem = tail.match(FRIEND_F_RE());
+        // (with "ne" the verb agrees with the object, not the speaker: "Zoya ne kaha" is right for anyone)
+        if (/^\s*(ka\s+kehna|ne)\b/i.test(m[2])) continue;
+        if (m[1] === "friend" && (masc || fem)) e.push(`${p}: {friend} with the verb "${(masc ?? fem)[0]}": the name may be a girl's or a boy's; use {friendM}/{friendF}, or "{friend} ka kehna hai" (director21 row 12)`);
+        else if (m[1] === "friendF" && masc && !fem) e.push(`${p}: {friendF} with the masculine verb "${masc[0]}"`);
+        else if (m[1] === "friendM" && fem && !masc) e.push(`${p}: {friendM} with the feminine verb "${fem[0]}"`);
+      }
+      return;
+    }
+    if (Array.isArray(x)) x.forEach((y, i) => walk(y, `${p}[${i}]`, k));
+    else if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) if (kk !== "joints") walk(v, p ? `${p}.${kk}` : kk, kk === "hi" ? "hi" : k);
+  };
+  walk(s, "", null);
+  return e;
+}
+/** A bridge says what comes next; it is never a recap of what was done ("Ab tak ek roti ke barabar hisse kiye", "sirf ek hop
+ *  chale", "Neeche ka number same tha"): a lesson can reach it by a path that did none of it. */
+export function bridgeTrueErrors(s) {
+  const e = [];
+  const PAST = { hi: /\b(ab tak|abhi tak|ab talak|humne|hum ne|tumne|tum ne)\b|\b\w+(e|i|a)\s+(the|thi|tha)\b|\b(chale|kiye|kiya|dekha|dekhe|seekha|seekhe|nikala|nikale)\b/i,
+    en: /\bso far\b|\bwe (have |'ve )?(did|done|saw|seen|learned|learnt|went|stopped|found)\b|\byou (did|have done|found)\b|\buntil now\b/i };
+  for (const k of s.skills ?? []) for (const lang of ["hi", "en"]) {
+    for (const [f, v] of [["bridgeToNext", k.bridgeToNext?.[lang]], ["bridgeToNext.simpler", k.bridgeToNext?.simpler?.[lang]]]) {
+      const t = String(v ?? ""); const m = t.match(PAST[lang]);
+      if (m) e.push(`${k.skillId}/${f}${lang === "en" ? " (en)" : ""}: a bridge says what comes next, never what was done ("${m[0]}"): it must be true on every path (director21 row 12)`);
+    }
+  }
+  return e;
+}
+/** A hook's things are said again in its skill (c4 s2's "dibbe" never came back). */
+function HOOK_STOP() { return new Set("socho dekho jaise kabhi tumne tumhare tumhari humare aaj kuch bahut sabse jab tab phir aur lekin isliye kyunki wala wali wale kitna kitni kitne ek do teen char paanch hota hoti hote hain hai tha thi the karte karti karta liye mein par se ko ki ka ke bhi toh yeh woh agar".split(" ")); }
+export function hookReuseErrors(s) {
+  const e = [];
+  const said = (x) => (x && typeof x === "object" ? String(x.hi ?? "") : String(x ?? "")).toLowerCase();
+  for (const k of s.skills ?? []) {
+    const { hook, ...rest } = k;
+    const later = JSON.stringify(rest).toLowerCase();
+    for (const [i, sl] of (hook?.interestSlots ?? []).entries()) {
+      const words = said(sl.use).replace(/\{[a-z]+\}/g, " ").match(/\p{L}{4,}/gu) ?? [];
+      const things = words.filter((w) => !HOOK_STOP().has(w));
+      if (things.length && !things.some((w) => new RegExp(`(?<![\\p{L}])${w.slice(0, Math.max(4, w.length - 1))}`, "u").test(later))) e.push(`${k.skillId}/hook.slot${i}: none of the hook's things (${things.slice(0, 4).join(", ")}) is said again in the skill: use them or cut the hook (director21 row 12)`);
+    }
+  }
+  return e;
+}
+/** One word per idea (director21 row 12: the twins check missed gaps/hisse, hisse/kadam, dheri/group, hisse/tukda): within one
+ *  script's spoken Hindi, words of one set name one thing; a script uses one of them. */
+export function SYNONYM_SETS() { return [
+  { idea: "a step along a line", words: ["gap", "gaps", "kadam", "kadmon", "hop", "hops", "chhalaang", "chhalaangein"] },
+  { idea: "a group of things", words: ["dheri", "dheriyan", "dheriyon", "group", "groups", "samooh", "samoohon"] },
+  { idea: "one piece of a cut whole", words: ["tukda", "tukde", "tukdon", "hissa", "hisse", "hisson"] },
+]; }
+export function synonymErrors(s) {
+  const e = [];
+  const { joints, terms, ...rest } = s;
+  const hi = []; const walk = (x, k) => { if (typeof x === "string") { if (k === "hi") hi.push(x); } else if (Array.isArray(x)) x.forEach((y) => walk(y, k)); else if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) walk(v, kk === "hi" ? "hi" : k === "hi" ? "hi" : kk); };
+  walk(rest, null); const t = hi.join(" \n ").toLowerCase();
+  for (const set of SYNONYM_SETS()) {
+    const used = {};
+    for (const w of set.words) { const n = (t.match(new RegExp(`(?<![\\p{L}])${w}(?![\\p{L}])`, "gu")) ?? []).length; if (n) used[w] = n; }
+    // (forms of one word: a group counts as one; two roots in one script is the fault)
+    const roots = new Set(Object.keys(used).map((w) => set.words.indexOf(w)).map((i) => set.words[i].replace(/(on|ein|iyan|iyon|e|s|a|i)$/, "").slice(0, 4)));
+    if (roots.size > 1) e.push(`one word per idea (${set.idea}): this script says ${Object.entries(used).map(([w, n]) => `"${w}" ×${n}`).join(", ")}; say one (director21 row 12)`);
+  }
+  return e;
+}
+/** v2.4 (director21 E1, C1, S2): the ending, second wordings and question-only re-asks are authored. */
+export function d22Errors(s) {
+  if (!isV24(s)) return [];
+  const e = [];
+  const two = (x, at) => { const r = []; for (const l of ["hi", "en"]) if (!String(x?.[l] ?? "").trim()) r.push(`${at}${l === "en" ? " (en)" : ""}: empty`); return r; };
+  const keyOf = (x) => String(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  // E1
+  const tb = s.teachback;
+  if (!tb) e.push("teachback: { prompt, key, accept[], why, board? } (director21 E1)");
+  else {
+    e.push(...two(tb.prompt, "teachback.prompt"), ...two(tb.why, "teachback.why"));
+    if (tb.key == null || String(tb.key).trim() === "") e.push("teachback.key: missing");
+    if (!Array.isArray(tb.accept)) e.push("teachback.accept: a list");
+    if (!/[?？]\s*$/.test(String(tb.prompt?.hi ?? ""))) e.push("teachback.prompt: ends on its question");
+    if (sentencesOf(tb.prompt?.hi).length > 3) e.push("teachback.prompt: at most three sentences");
+  }
+  const w = s.wrap;
+  if (!w) e.push("wrap: { covered, goodbye } (director21 E1)");
+  else {
+    e.push(...two(w.covered, "wrap.covered"), ...two(w.goodbye, "wrap.goodbye"));
+    for (const l of ["hi", "en"]) {
+      const c = String(w.covered?.[l] ?? ""), g = String(w.goodbye?.[l] ?? ""), at = l === "en" ? " (en)" : "";
+      if (sentencesOf(c).length !== 2) e.push(`wrap.covered${at}: exactly two sentences on what the lesson covered (got ${sentencesOf(c).length})`);
+      if (/[?？]/.test(c + g)) e.push(`wrap${at}: asks nothing`);
+      if (/\b(tum|tumne|tumhe|tumhara|tumhari|tumhare|aapne|you|your)\b/i.test(c)) e.push(`wrap.covered${at}: says what the lesson covered, never what the child did ("${c.match(/\b(tum|tumne|tumhe|tumhara|tumhari|tumhare|aapne|you|your)\b/i)[0]}")`);
+      if (/\b(shabaash|bahut badhiya|great job|well done|good job|excellent)\b/i.test(c + g)) e.push(`wrap${at}: praises nothing (the child's work is not known to an authored line)`);
+      if (sentencesOf(g).length !== 1) e.push(`wrap.goodbye${at}: one sentence`);
+    }
+  }
+  // C1: a second wording shows it another way: no sentence of the first, and not the first shortened
+  const alt = (first, second, at) => {
+    if (!second) return [`${at}: missing (director21 C1: a second wording that shows it another way)`];
+    const r = [...two(second, at)];
+    for (const l of ["hi", "en"]) {
+      const a = String(first?.[l] ?? ""), b = String(second?.[l] ?? ""); if (!a || !b) continue;
+      const as = new Set(sentencesOf(a).map(keyOf).filter((x) => x.split(" ").length >= 3));
+      const hit = sentencesOf(b).map(keyOf).find((x) => as.has(x));
+      if (hit) r.push(`${at}${l === "en" ? " (en)" : ""}: repeats a sentence of the first wording ("${hit.slice(0, 50)}")`);
+      const aw = new Set(keyOf(a).split(" ")), bw = keyOf(b).split(" ").filter((x) => x.length > 2);
+      if (bw.length && bw.filter((x) => aw.has(x)).length / bw.length > 0.8) r.push(`${at}${l === "en" ? " (en)" : ""}: the first wording shortened (${Math.round(100 * bw.filter((x) => aw.has(x)).length / bw.length)}% of its words are the first's): show it another way`);
+    }
+    return r;
+  };
+  // S2: a card whose last sentence cannot stand alone carries a reask
+  const BACK = /\b(woh|wo|yeh|ye|uska|uski|uske|iska|iski|iske|unka|inka|use|ise|it|that|this|they|he|she|them|its)\b/i;
+  const card = (c, at) => {
+    const r = [];
+    if (c?.why) r.push(...alt(c.why, c.whyAlt, `${at}.whyAlt`));
+    const ss = sentencesOf(c?.prompt?.hi), last = ss.at(-1) ?? "";
+    const needs = ss.length > 1 && (BACK.test(last) || last.split(/\s+/).length <= 5);
+    if (c?.reask) {
+      r.push(...two(c.reask, `${at}.reask`));
+      for (const l of ["hi", "en"]) { const t = String(c.reask[l] ?? ""); if (t && (sentencesOf(t).length !== 1 || !/[?？]\s*$/.test(t))) r.push(`${at}.reask${l === "en" ? " (en)" : ""}: one question, alone`);
+        if (t && l === "hi" && BACK.test(t) && !/\d/.test(t)) r.push(`${at}.reask: points back ("${t.match(BACK)[0]}") without its givens: a reask stands alone`); }
+    } else if (needs) r.push(`${at}: its last sentence "${last.slice(0, 50)}" cannot be asked alone: give it a reask (director21 S2)`);
+    return r;
+  };
+  for (const k of s.skills ?? []) {
+    const S = k.skillId;
+    for (const b of k.explain ?? []) { e.push(...alt(b.point, b.pointAlt, `${S}/${b.id}.pointAlt`)); if (b.ask) e.push(...card(b.ask, `${S}/${b.id}.ask`)); }
+    const we = k.workedExample;
+    if (we) { e.push(...alt(we.problem, we.problemAlt, `${S}/workedExample.problemAlt`)); if (we.yourStep) e.push(...card(we.yourStep, `${S}/workedExample.yourStep`)); }
+    for (const c of k.checks ?? []) e.push(...card(c, `${S}/${c.id}`));
+    (k.remediation ?? []).forEach((r, i) => { if (r.then) e.push(...card(r.then, `${S}/remediation[${i}].then`)); });
+  }
+  return [...e, ...synonymErrors(s)];
+}
+/** Every board and answerBoard in a script resolves (a remediation's own board is held under its then-card's when its say does
+ *  not speak it, so the unit gate never resolves it: c5-ch13-t02's 1 × 20 shade-grid went past cols 10 unseen). */
+export async function allBoardsResolve(s, kit) {
+  const { resolveBoardRef } = await import("../../server/forge/explainer/board-ref.js");
+  const e = [];
+  const walk = (x, p) => {
+    if (Array.isArray(x)) return x.forEach((y, i) => walk(y, `${p}[${i}]`));
+    if (!x || typeof x !== "object") return;
+    for (const [k, v] of Object.entries(x)) {
+      if ((k === "board" || k === "answerBoard") && v && typeof v === "object" && v.template) { const r = resolveBoardRef(v, { kit }); if (!r.ok) e.push(`${p}.${k}: ${v.template} ${r.why}`); }
+      else walk(v, p ? `${p}.${k}` : k);
+    }
+  };
+  walk(s, "");
+  return e;
+}
+
+/** Brain's renderer pass (bda4da9e) left three things only the text can fix: a bare "m" as a unit ("cm lenge ya m?", "har m mein
+ *  100 cm"), a plural on a number or fraction ("100s", "1/5s"), and a glossary symbol in brackets ("greater than (>)"). A line
+ *  named m ("line l aur m") is a name, not a unit. */
+export function voiceTextErrors(s) {
+  const e = [];
+  const lineM = /\bline\s+m\b|\bl\s+aur\s+m\b|\bl and m\b/i.test(JSON.stringify(s));
+  const walk = (x, p, k) => {
+    if (typeof x === "string") {
+      if (k !== "hi" && k !== "en") return;
+      const at = `${p}${k === "en" ? " (en)" : ""}`;
+      if (!lineM && (/\b(cm|km|mm|metre|meter|centimetre|kilometre)s?\b/i.test(x) || /(?<![\p{L}\d.'’])m\s+mein\b|\bin\s+m\b(?![\p{L}])/iu.test(x)))
+        for (const m of x.matchAll(/(?<![\p{L}\d.'’])m(?![\p{L}])/gu)) if (!/[\d½¼¾]\s*$/.test(x.slice(0, m.index))) { e.push(`${at}: a bare "m" as a unit is read as a letter; say "metre" ("${x.slice(Math.max(0, m.index - 20), m.index + 15)}")`); break; }
+      const ns = x.match(/\d(?:\/\d+)?s\b/);
+      if (ns) e.push(`${at}: "${ns[0]}" (a plural on a number or fraction) is mis-said; say it in words ("hundreds", "fifths")`);
+      const br = x.match(/\(\s*(?:&gt;|&lt;|>|<|°|1\/n|=|×|÷)\s*\)/);
+      if (br) e.push(`${at}: a glossary symbol in brackets "${br[0]}" is read aloud; say the word only`);
+      return;
+    }
+    if (Array.isArray(x)) return x.forEach((y, i) => walk(y, `${p}[${i}]`, k));
+    if (x && typeof x === "object") for (const [kk, v] of Object.entries(x)) { if (kk === "board" || kk === "answerBoard") continue; walk(v, p ? `${p}.${kk}` : kk, kk); }
+  };
+  walk(s, "", null);
   return e;
 }
 

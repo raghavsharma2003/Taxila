@@ -104,13 +104,10 @@
       "en": "On this number line there are 9 equal gaps from 0 to 1, each gap 1/9. 2/9 means 2 gaps on from 0, and 7/9 means 7 gaps on from 0. The 7/9 mark is quite close to 1, and the 2/9 mark is close to 0."
      },
      "ask": {
-      "prompt": { "hi": "Isi 9 gap wali line par 4/9 aur 8/9 socho. Kaunsa nishaan 1 ke zyada paas hoga, aur isliye kaunsa bada hai: 4/9 ya 8/9?", "en": "On this same line of 9 gaps, think of 4/9 and 8/9. Which mark will be closer to 1, and so which is bigger: 4/9 or 8/9?" },
-      "key": "8/9",
-      "accept": [
-       "8 by 9",
-       "eight ninths"
-      ],
-      "why": { "hi": "dono mein gap ek hi size ke hain, aur 8 gap wala nishaan 1 ke zyada paas hai, isliye 8/9 bada", "en": "the gaps are the same size in both, and the 8-gap mark is closer to 1, so 8/9 is bigger" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 9, "from": 0, "to": 1, "marks": [{"num": 4, "label": "4/9"}, {"num": 8, "label": "8/9"}]} }
+      "prompt": { "hi": "Isi 9 gap wali line par 2/9 aur 7/9 ke nishaanon ke beech kitne gap hain?", "en": "On this same line of 9 gaps, how many gaps lie between the 2/9 and 7/9 marks?" },
+      "key": "5",
+      "accept": ["paanch", "five", "5 gap", "paanch gap", "5/9"],
+      "why": { "hi": "7/9 tak 7 gap aur 2/9 tak 2 gap, toh beech mein 7 − 2 = 5 gap, har gap 1/9", "en": "7/9 is 7 gaps and 2/9 is 2 gaps, so 7 − 2 = 5 gaps lie between, each gap 1/9" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 9, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/9"}, {"num": 7, "label": "7/9"}]} }
      },
      "simpler": { "hi": "Line 9 barabar gap mein hai, har gap 1/9. 2/9 matlab 0 se 2 gap, 7/9 matlab 7 gap, isliye 7/9 aage hai.", "en": "The line has 9 equal gaps, each gap 1/9. 2/9 is 2 gaps from 0 and 7/9 is 7 gaps, so 7/9 is further along." }
     },
@@ -150,12 +147,12 @@
       "en": "On this line there are 10 equal gaps from 0 to 1. 2/10 means just 2 small gaps, the 2nd mark after 0. If the same 0 to 1 were shared into only 5 parts, each part would equal 2 small gaps. So 2/5 = 4/10, the 4th mark after 0. Both have 2 parts, but the 2/5 mark is further along."
      },
      "ask": {
-      "prompt": { "hi": "Isi line par 4/5 aur 4/10 socho. Kaunsa nishaan 0 se zyada door hoga, aur isliye bada: 4/5 ya 4/10?", "en": "On this same line think of 4/5 and 4/10. Which mark will be further from 0, and so bigger: 4/5 or 4/10?" },
-      "key": "4/5",
-      "accept": ["4 by 5", "four fifths", "8/10"],
-      "targets": "c6-maths-ch07-t04-m-bigger-den-bigger",
-      "wrongIfMis": "4/10",
-      "why": { "hi": "4/5 = 8/10, aur 8 chhote gap 4 chhote gap se aage hain", "en": "4/5 = 8/10, and 8 small gaps reach further than 4 small gaps" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 4, "label": "4/10"}, {"num": 8, "label": "8/10 = 4/5"}]} }
+      "prompt": { "hi": "Isi line par 4/5 kaunse nishaan par aayega, 0 ke baad?", "en": "On this same line, on which mark after 0 does 4/5 land?" },
+      "key": "8",
+      "accept": ["8th", "aathva", "eighth", "8/10", "aathve nishaan par"],
+      
+      "wrongIfMis": "4",
+      "why": { "hi": "har 1/5 = 2 chhote gap, toh 4/5 = 8/10, yaani 0 ke baad 8 gap", "en": "each 1/5 is 2 small gaps, so 4/5 = 8/10, that is 8 gaps after 0" }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 8, "label": "8/10 = 4/5"}]} }
      },
      "simpler": { "hi": "Line 10 chhote gap mein hai. 0 se 1 ko sirf 5 hisson mein baanto, toh har hissa 2 chhote gap ka, isliye 2/5 = 4/10.", "en": "The line has 10 small gaps. Share 0 to 1 into just 5 parts and each part is 2 small gaps, so 2/5 = 4/10." }
     }
@@ -493,10 +490,7 @@
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "5/6 aur 4/5 ko compare karo. Dono mein 1 tak ek hissa bacha hai. Kaunsa bada hai, ya dono barabar hain?",
-     "en": "Compare 5/6 and 4/5. Both have one part left to reach 1. Which is bigger, or are they equal?"
-    }, "simpler": { "hi": "Humein 5/6 aur 4/5 ko compare karna hai. Dono mein 1 tak ek hissa bacha hai.", "en": "We need to compare 5/6 and 4/5. Both have one part left to reach 1." },
+    "problem": { "hi": "5/6 aur 4/5 ko compare karo. Dono mein 1 tak ek hissa bacha hai. Kaunsa bada hai, ya dono barabar hain?", "en": "Compare 5/6 and 4/5. Each is one part short of 1. Which is bigger, or are they equal?" }, "simpler": { "hi": "5/6 aur 4/5 mein se bada kaunsa, yeh dekhna hai; dono 1 se bas ek tukda peeche hain.", "en": "We must see which of 5/6 and 4/5 is bigger; both are just one piece short of 1." },
     "givens": [
      {
       "hi": "pehli bhinn 5/6 hai",
@@ -653,7 +647,7 @@
       "hi": "7/10 = 14/20 aur 3/4 = 15/20, aur 15 hisse 14 se zyada hain",
       "en": "7/10 = 14/20 and 3/4 = 15/20, and 15 parts are more than 14"
      },
-     "simpler": { "hi": "7/10 aur 3/4 dono ko ek hi neeche wale number par badlo. Phir upar ke numbers milao.", "en": "Change 7/10 and 3/4 to the same bottom number. Then compare the top numbers." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 7, "label": "7/10"}, {"parts": 4, "shade": 3, "label": "3/4"}]} }
+     "simpler": { "hi": "7/10 aur 3/4 ko ek common neeche wale number par le aao. Tab bada upar wala number badi bhinn batata hai.", "en": "Bring 7/10 and 3/4 to one common bottom number. Then the bigger top number shows the bigger fraction." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 7, "label": "7/10"}, {"parts": 4, "shade": 3, "label": "3/4"}]} }
     }
    ],
    "ladder": [
@@ -688,7 +682,7 @@
       "wrongIfMis": "Isha",
       "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}, {"parts": 12}]} },
       "why": { "hi": "3/4 = 9/12, aur 9/12 7/12 se zyada hai, toh Rahul", "en": "3/4 = 9/12, and 9/12 is more than 7/12, so Rahul" },
-      "simpler": { "hi": "3/4 ke upar aur neeche ko teen se guna karo, taaki neeche 7/12 jaisa ho jaaye. Phir upar ke numbers milao.", "en": "Multiply the top and bottom of 3/4 by three, so its bottom matches 7/12. Then compare the top numbers." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "shade": 3, "title": "3/4"}, {"parts": 12, "shade": 7, "title": "7/12"}]} }
+      "simpler": { "hi": "3/4 ke upar aur neeche ko teen se guna karo, taaki neeche 7/12 jaisa ho jaaye. Ab dono ke upar wale number dekho.", "en": "Multiply the top and bottom of 3/4 by three, so its bottom matches 7/12. Now look at the two top numbers." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "shade": 3, "title": "3/4"}, {"parts": 12, "shade": 7, "title": "7/12"}]} }
      }
     },
     {
@@ -764,10 +758,7 @@
        ]
       }
      },
-     "point": {
-      "hi": "Is line par 0 se 1 tak 10 barabar gap hain. 10 ka aadha 5 hai, isliye beech ka nishaan 5/10 hai, yaani 1/2. 3/10 mein 3, 5 se kam hai, toh 3/10 ka nishaan 1/2 se pehle hai.",
-      "en": "On this line there are 10 equal gaps from 0 to 1. Half of 10 is 5, so the middle mark is 5/10, that is 1/2. In 3/10, 3 is less than 5, so the 3/10 mark is before 1/2."
-     },
+     "point": { "hi": "Yeh line bhi 0 se 1 tak 10 barabar gap mein bati hai. 10 ka aadha 5 hai, isliye beech ka nishaan 5/10 hai, yaani 1/2. 3/10 mein 3, 5 se kam hai, toh 3/10 ka nishaan 1/2 se pehle hai.", "en": "This line too is split into 10 equal gaps from 0 to 1. Half of 10 is 5, so the middle mark is 5/10, that is 1/2. In 3/10, 3 is less than 5, so the 3/10 mark is before 1/2." },
      "ask": {
       "prompt": {
        "hi": "Isi line par 4/10 kahan aata hai: 1/2 se pehle ya 1/2 ke baad?",
@@ -788,7 +779,7 @@
        "en": "half of 10 is 5, and 4 is less than 5"
       }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 4, "label": "4/10"}, {"num": 5, "label": "5/10 = 1/2"}]} }
      },
-     "simpler": { "hi": "10 ka aadha 5 hai, toh beech ka nishaan 5/10, yaani 1/2. 3/10 mein 3, 5 se chhota hai, isliye woh beech tak nahi pahunchta.", "en": "Half of 10 is 5, so the middle mark is 5/10, that is 1/2. In 3/10, 3 is smaller than 5, so it does not reach the middle." }
+     "simpler": { "hi": "Beech ka nishaan 5/10 hai, kyunki 5, 10 ka aadha hai. 3/10 mein 3, 5 se chhota hai, isliye woh beech tak nahi pahunchta.", "en": "The middle mark is 5/10, because 5 is half of 10. In 3/10, 3 is smaller than 5, so it does not reach the middle." }
     },
     {
      "id": "e2",
@@ -939,7 +930,7 @@
     "problem": {
      "hi": "Do ek jaisi paani ki bottle hain. Anil ki bottle 5/12 bhari hai aur Bina ki 7/13. 1/2 ko benchmark lekar, bina common denominator ke, batao kiski bottle mein zyada paani hai.",
      "en": "There are two same-size water bottles. Anil's bottle is 5/12 full and Bina's is 7/13 full. Using 1/2 as a benchmark, with no common denominator, tell whose bottle has more water."
-    }, "simpler": { "hi": "Anil ki bottle 5/12 bhari hai aur Bina ki 7/13. 1/2 se milakar dekhna hai ki kiski bottle mein zyada paani hai.", "en": "Anil's bottle is 5/12 full and Bina's is 7/13 full. Using 1/2, we need to see whose bottle has more water." },
+    }, "simpler": { "hi": "Bottles: Anil ki 5/12 bhari, Bina ki 7/13 bhari. 1/2 se milakar dekhna hai ki kiski bottle mein zyada paani hai.", "en": "Anil's is 5/12 full, Bina's 7/13. Using 1/2, we need to see whose bottle has more water." },
     "givens": [
      {
       "hi": "Anil ki bottle 5/12 bhari hai",
@@ -1116,28 +1107,14 @@
      "simpler": { "hi": "Neeche ke number ka aadha hi 1/2 ka nishaan hai.", "en": "Half of the bottom number is the 1/2 mark." },
      
      "then": {
-      "prompt": { "hi": "8 barabar gap wali line par 0 se 3 gap chalo, yaani 3/8 tak. Kya tum 1/2 tak pahunch gaye?", "en": "On a line of 8 equal gaps, walk 3 gaps from 0, that is to 3/8. Have you reached 1/2?" },
-      "key": "nahi",
-      "accept": ["no", "nahin", "abhi nahi", "not yet", "pehle", "before"],
+      "prompt": { "hi": "4 barabar gap wali line par 1/2 ka nishaan 0 ke baad kaunsa nishaan hoga?", "en": "On a line of 4 equal gaps, which mark after 0 is the 1/2 mark?" },
+      "key": "2",
+      "accept": ["doosra", "2nd", "second", "2/4", "doosre nishaan par"],
       "targets": "c6-maths-ch07-t04-m-half-by-numerator",
-      "wrongIfMis": "haan",
-      "board": {
-       "template": "fraction-line@1",
-       "params": {
-        "den": 8,
-        "from": 0,
-        "to": 1,
-        "target": [
-         3,
-         8
-        ]
-       }
-      },
-      "why": {
-       "hi": "8 ka aadha 4 hai, aur 3, 4 se kam hai",
-       "en": "half of 8 is 4, and 3 is less than 4"
-      },
-      "simpler": { "hi": "8 ka aadha nikalo, wahi beech ka nishaan hai. Phir dekho 3 gap chalkar tum us nishaan tak pahunche ya nahi.", "en": "Find half of 8; that is the middle mark. Then see whether 3 gaps take you to that mark or not." }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/8"}, {"num": 4, "label": "4/8 = 1/2"}]} }
+      "wrongIfMis": "1",
+      "board": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1} },
+      "why": { "hi": "4 ka aadha 2 hai, toh 1/2 = 2/4, 0 ke baad 2 gap; 1 gap wala nishaan sirf 1/4 hai", "en": "half of 4 is 2, so 1/2 = 2/4, 2 gaps after 0; the 1-gap mark is only 1/4" },
+      "simpler": { "hi": "1/2 matlab line ka theek beech. 4 gap mein se beech tak kitne gap hain, woh gino.", "en": "1/2 means the exact middle of the line. Count how many of the 4 gaps reach the middle." }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 4, "from": 0, "to": 1, "marks": [{"num": 2, "label": "2/4 = 1/2"}]} }
      }
     },
     {
@@ -1147,16 +1124,14 @@
      "simpler": { "hi": "Upar wale ko neeche ke aadhe se milao.", "en": "Compare the top with half of the bottom." },
      
      "then": {
-      "prompt": { "hi": "Rahul ne deewar ka 4/9 rang kiya, Isha ne usi deewar ka 3/5. 1/2 se milakar batao: zyada kisne, Rahul ya Isha?", "en": "Rahul painted 4/9 of a wall, Isha painted 3/5 of the same wall; using 1/2, tell who painted more: Rahul or Isha?" },
-      "key": "Isha",
-      "accept": [
-       "Isha ne"
-      ],
+      "prompt": { "hi": "Rahul ne 7/15 deewar rangi, Isha ne 3/5. Rahul kehta hai usne zyada rangi, kyunki 7 bada hai 3 se. Kya woh sahi hai?", "en": "Rahul painted 7/15 of a wall, Isha 3/5. Rahul says he painted more, because 7 is bigger than 3. Is he right?" },
+      "key": "nahi",
+      "accept": ["no", "nahin", "galat", "nahi, Isha ne zyada rangi", "no, Isha painted more"],
       "targets": "c6-maths-ch07-t04-m-only-num-den",
-      "wrongIfMis": "Rahul",
-      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": ""}, {"parts": 5, "shade": 0, "label": ""}]} },
-      "why": { "hi": "3/5 mein 3, 5 ke aadhe 2.5 se zyada hai, par 4/9 mein 4, 9 ke aadhe 4.5 se kam", "en": "in 3/5, 3 is more than 2.5, half of 5, but in 4/9, 4 is less than 4.5, half of 9" },
-      "simpler": { "hi": "Har bhinn ke neeche wale number ka aadha nikalo. Dekho upar wala number us aadhe se bada hai ya chhota.", "en": "For each fraction, find half of the bottom number. See whether the top number is bigger or smaller than that half." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 4, "label": "4/9"}, {"parts": 5, "shade": 3, "label": "3/5"}]} }
+      "wrongIfMis": "haan",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Rahul", "items": ["7/15"]}, "right": {"title": "Isha", "items": ["3/5"]}} },
+      "why": { "hi": "Isha ke 3/5 mein 3, 5 ke aadhe 2.5 se zyada; Rahul ke 7/15 mein 7, 15 ke aadhe 7.5 se kam", "en": "Isha's 3/5: 3 is more than 2.5, half of 5; Rahul's 7/15: 7 is less than 7.5, half of 15" },
+      "simpler": { "hi": "Pehle dono bhinn ke neeche wale numbers ka aadha nikalo. Phir har upar wale number ko apne aadhe se milao.", "en": "First find half of each fraction's bottom number. Then compare each top number with its own half." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Rahul", "items": ["7/15"]}, "right": {"title": "Isha", "items": ["3/5"]}} }
      }
     }
    ],

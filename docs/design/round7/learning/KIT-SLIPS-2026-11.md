@@ -26,3 +26,44 @@ Changed items were re-solved blind by a fresh agent that saw only the item (c4 i
 
 Rate so far: 15 entries (14 slips, 1 ladder gap) over the 20 staged topics read and the 4 pilots' kits. That covers kit text that a script quotes or
 the checker compares against. No kit answer key has been wrong.
+
+## Staged round 6 (2026-11-11 evening): batch 6 read, second-read fixes
+
+| # | topic (kit) | item | slip | fix | found by |
+|---|---|---|---|---|---|
+| 17 | c6-maths-ch07-t05 (c6-maths.json) | i09 | tagged s3 (mixed fractions) but 1/2 L + 1/4 L = 3/4 L, a sum below 1 that repeats i03; s3 had no mixed-fraction practice item | now 2 1/3 m + 1 1/2 m = 3 5/6 m (accept 23/6) | batch 6 reader |
+| 18 | c6-maths-ch07-t05 (c6-maths.json) | rl-h1 | prompt_en wrote "₹11/15 … ₹4/15 … ₹2/15" for fractions of a balance (reads as fractions of a rupee); the Hindi had no ₹ | ₹ removed from prompt_en | batch 6 reader |
+| 19 | c6-maths-ch02-t01 (c6-maths.json) | i09 | four villages → 6 roads is the s3 explain ask's own case; the ladder needs three rungs and the skill has no other practice item | now nine villages → 36 roads (8 + 7 + … + 1), a count taught nowhere in the script | batch 4 second reader / fixer |
+| 20 | c7-maths-ch03-t01 (c7-maths.json) | rl-h2 | prompt_hi had a macron, "chaurā" | "chauda" | batch 6 reader |
+
+Re-solved blind by a fresh agent that saw only the two changed questions: 2 1/3 + 1 1/2 → 3 5/6 m; nine villages → C(9, 2) = 36. Both
+agree. Pins: tests/cert-item-hash passes (no certified sample cites these items); data/arena rebuilt with build-arena (the new i09's
+mixed-number key leaves it out of the arena, and its old challenges go).
+
+Open (proposed by fixers, not made; each needs a new item that repeats no card's frame or key):
+- c4-maths-ch03-t01 i07 ("7 + 9: odd or even?") is s3's only odd + odd practice item.
+- c5-maths-ch03-t01 i11 shares check c2's "start at 12, turn anticlockwise, which number?" frame; the skill's only spare item repeats e1.
+- c5-maths-ch05-t01 i10 is the same pick-cm/m/km frame as the worked example; the skill has three items.
+- c4-maths-ch01-t02 s2 and c4-maths-ch09-t01 s2 have no spare practice item that does not repeat an explain ask.
+
+Rate so far: 19 entries (18 slips, 1 ladder gap) over the 30 staged topics and the 4 pilots' kits. No kit answer key has been wrong.
+| 21 | c6-maths-ch02-t01 (c6-maths.json) | rl-h3 | five players → 10 segments: the s3 explain ask's own numbers and answer; the ladder (i08, i09, rl-h3) has no spare item | now ten players → 45 segments | round 7–8 readers |
+
+Re-solved blind: C(10, 2) = 45, agrees. Arena and play coverage rebuilt.
+
+## Staged rounds 8–9 (2026-11-11 night): ladder items given away by the lesson
+
+| # | topic (kit) | item | slip | fix | found by |
+|---|---|---|---|---|---|
+| 22 | c5-maths-ch02-t03 (c5-maths.json) | i01 | half = 2 quarters, stated in s1's points and worked example before the ladder | 1/5 = 3/15 | fourth reader (x2) |
+| 23 | c5-maths-ch02-t03 (c5-maths.json) | i05 | 1/2 folded to 2/4, worked in s1's points | 1/7 folded to 2/14 | fourth reader (x2) |
+| 24 | c5-maths-ch02-t03 (c5-maths.json) | i09 | 4/8 vs 1/2, stated in s1 e3's point | 3/18 vs 1/6 (No, same) | fourth reader (x2) |
+| 25 | c5-maths-ch02-t03 (c5-maths.json) | i12 | 1/2 lines up with 2/4 and 4/8: s1 e3's point word for word | 2/5 lines up with 6/15 | fourth reader (x2) |
+| 26 | c5-maths-ch02-t03 (c5-maths.json) | i11 | 3/4 cup with a 1/8 spoon → 6: s1 e3's own numbers | 5/6 cup with a 1/12 spoon → 10 | fourth reader (x2) |
+| 27 | c6-maths-ch02-t04 (c6-maths.json) | rl-h3 | 8:00 → obtuse (120°): same frame and answer as i09 (4 o'clock) in the same ladder | 11:00 → acute (30°) | fourth reader (x2) |
+
+All six re-solved blind by a fresh agent that saw only the questions: 3/15; 2/14; No (3/18 = 1/6); 6/15; 10; acute, 30°. All agree.
+The replacement fractions were checked against the script: none of 3/15, 1/7, 2/14, 3/18, 6/15, 10/12 is spoken in c5-ch02-t03. c5's kit
+does not round-trip through a JSON re-serialise, so each item was replaced in place, span by span. Arena and play coverage rebuilt;
+cert-item-hash passes.
+Rate so far: 27 entries over the 30 staged topics and the 4 pilots' kits. No kit answer key has been wrong.

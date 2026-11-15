@@ -25,7 +25,8 @@ test("a why after code's frame keeps its words in Hindi mode; her own words arou
 
 test("a slotted script string is authored with its slot filled; a line with no authored text is turned whole", () => {
   const spans = authoredSpans({ lastMove: {} }, null, kit);
-  const card = "Zoya kehta hai 3/4 do number hain, 3 aur 4.";
+  // (Learning director22: the friend line now reads "{friend} ka kehna hai ki …", so the verb agrees with any name)
+  const card = "Zoya ka kehna hai ki 3/4 do number hain, 3 aur 4.";
   assert.equal(spans(card).length, 1);
   assert.deepEqual(spans("Yeh line dekho, ab."), []);
   assert.equal(outsideAuthored("Yeh line dekho.", [], (x) => inHindiWords(x)), "Yeh rekha dekho.");

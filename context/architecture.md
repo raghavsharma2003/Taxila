@@ -592,3 +592,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-game-judging-does-not-converge-on-evidence` (2026-11-11): In five judgings of three game modes in one day (20 verdicts, 2 passes), every round fixed what the last round found and a fresh judge then found one more way an ordinary slip could be recorded as the mix-up (5 bundles; loose lines equal to bundles; two slips together; a neighbouring pad key; a small-arc bias; a two-button pick). The child-facing faults did converge (none blocking in two of three modes by the fourth judging). Holding a game from children until no judge can find an evidence hole keeps practice from children for a fault that does not touch the child who plays.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-weekly-usage-limit-stopped-everything-2026-11-11` (2026-11-15): On 2026-11-11 at about 21:20 UTC the account's weekly usage limit was reached and every session and agent stopped mid-turn; nothing ran until the owner said to continue on 2026-11-15 (the limit had reset on 13 Nov 19:00 UTC). That day ran five build streams, a Design stream, 20 game-judge verdicts and a four-judge lesson run. Nothing was lost (int/r6 clean and pushed, production healthy, every stream's last push intact), but three and a half days were. From 15 Nov: at most three streams active, sub-agents one at a time and only where needed, one full gate per push, judges only for a run a decision waits on.
