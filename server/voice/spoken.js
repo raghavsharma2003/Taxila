@@ -219,6 +219,9 @@ const isVarTok = (t) => t?.k === "word" && /^[a-zA-Z]$/.test(t.s);
 const supDigits = (s) => s.split("").map((c) => LX.SUPERSCRIPT[c]).join("");
 const ORD_SUFFIX = new Set(["st", "nd", "rd", "th"]);
 const HI_ATTACH = /^(वाँ|वां|वें|वीं|वी|वा|वे)/;
+/** Unit abbreviations said in words with no number before them ("kitne cm"); one-letter ones (m, g, l, s, h) are words too often. */
+const BARE_UNITS = new Set(["mm", "cm", "km", "kg", "mg", "ml", "mL", "kmph"]);
+const BARE_UNIT_RE = /(?<![\p{L}\p{M}])(?:mm|cm|km|kg|mg|ml|mL|kmph)(?![\p{L}\p{M}])/u;
 
 function render(text, cell) {
   const { W, band } = cell;
@@ -344,8 +347,10 @@ function render(text, cell) {
     // mixed number: 2 1/3 (not a date), 2½
     if (isInt(raw) && t[i + 1]?.k === "sp" && t[i + 2]?.k === "num" && t[i + 3]?.s === "/" && t[i + 4]?.k === "num"
       && isInt(t[i + 2].s) && isInt(t[i + 4].s) && +t[i + 2].s < +t[i + 4].s && +t[i + 4].s > 0 && t[i + 5]?.s !== "/") {
-      emitWords(mixedWords(raw, +t[i + 2].s, +t[i + 4].s));
-      return i + 5;
+      // (Learning's readers, main 20:22: the unit after a fraction or mixed number is said too — "2 1/2 m" → "… metres")
+      const [mw, mn] = suffixes(mixedWords(raw, +t[i + 2].s, +t[i + 4].s), "2", i + 5);
+      emitWords(mw);
+      return mn;
     }
     if (isInt(raw) && t[i + 1]?.k === "ch" && LX.VULGAR[t[i + 1].s]) {
       const [n, d] = LX.VULGAR[t[i + 1].s];
@@ -373,8 +378,10 @@ function render(text, cell) {
     }
     // fraction: 3/4, 22/7 (a/b/c is a date: left alone below)
     if (isInt(raw) && t[i + 1]?.s === "/" && t[i + 2]?.k === "num" && isInt(t[i + 2].s) && +t[i + 2].s > 0 && t[i + 3]?.s !== "/" && t[i - 1]?.s !== "/") {
-      emitWords(fracWords(+raw, +t[i + 2].s));
-      return i + 3;
+      // ("1/2 m" was "one upon two m": a proper fraction takes the unit's singular, an improper one its plural)
+      const [fw, fn] = suffixes(fracWords(+raw, +t[i + 2].s), +raw < +t[i + 2].s ? "1" : "2", i + 3);
+      emitWords(fw);
+      return fn;
     }
     // clock time h:mm (two-digit minutes, no ratio cue before it), else ratio a:b(:c)
     if (isInt(raw) && t[i + 1]?.s === ":" && t[i + 2]?.k === "num" && isInt(t[i + 2].s)) {
@@ -413,6 +420,14 @@ function render(text, cell) {
         emitWords(year(+raw));
         return i + 1;
       }
+    }
+    // (Learning's readers, main 20:22: the Hinglish distributive "2-2 ki jodi", "5-5 laddoo", "1000-1000 pencil" — one number twice,
+    // an unspaced hyphen, a word after — is "do-do" / "two-two", "two each" in English; never a range "two to two")
+    if (t[i + 1]?.s === "-" && t[i + 2]?.k === "num" && t[i + 2].s === raw && t[i + 3]?.k === "sp" && t[i + 4]?.k === "word" && ALPHA.test(t[i + 4].s[0])) {
+      const nw = numWords(raw, W);
+      const [dw, dn] = suffixes(cell.mode === "english" ? nw : `${nw}-${nw}`, raw, i + 3);
+      emitWords(cell.mode === "english" ? (dw === nw ? `${nw} each` : `${dw} each`) : dw);
+      return dn;
     }
     // range: 3-5, 10–15 (an unspaced hyphen in a maths sentence is a minus, handled by the operator walk)
     {
@@ -505,6 +520,8 @@ function render(text, cell) {
       }
     }
 
+    // (a signed "+7" — "down a column, +7" — says its plus)
+    if (tok.s === "+" && !operand && t[i + 1]?.k === "num") { emitWords(W.ops.plus); i++; continue; }
     // unary minus: −7, -3 °C (a hyphen glued to a word on its left is a compound, not a sign)
     if ((tok.s === "−" || tok.s === "-") && !operand && (t[i + 1]?.k === "num" || (tok.s === "−" && isVarTok(t[i + 1])))
       && !(tok.s === "-" && t[i - 1] && t[i - 1].k !== "sp" && t[i - 1].k !== "ch")) {
@@ -567,10 +584,39 @@ function render(text, cell) {
       continue;
     }
 
+    // (Learning's readers, main 20:22: a unit abbreviation with no number before it — "kitne cm", "how many km" — is said in words)
+    if (tok.k === "word" && BARE_UNITS.has(tok.s) && !(t[i - 1] && LETTER.test(t[i - 1].s.at(-1))) && !(t[i + 1] && LETTER.test(t[i + 1].s[0]))) {
+      emitWords(unitName(tok.s, cell.mode === "english"), false);
+      operand = false;
+      i++;
+      continue;
+    }
+    // (Learning's readers, main 20:22: "0.2 rupaye = 20 paise", "Angle XYZ = 50°", "5 tukde × 6 cm" — "=", "×" and "÷" after a word
+    // are spoken as after a number)
+    // (and the 34 scripts read through it: "4 × side", "lambai + chaudai", "whole − part" — a written operator with a word on either side
+    // of it is spoken too; the ASCII hyphen stays a hyphen between words)
+    const WORDY = ["=", "×", "÷", "+", "−"].includes(tok.s);
+    const leftT = t[i - 1]?.k === "sp" ? t[i - 2] : t[i - 1];
+    const rightT = t[skip(i + 1)];
+    // (after a word, "+" and "−" are spoken only between two words — "even + even"; a helpline said in words keeps its "+ 2" as the
+    // safety pins have it)
+    const afterWord = WORDY && !operand && leftT?.k === "word" && ALPHA.test(leftT.s[0])
+      && (["=", "×", "÷"].includes(tok.s) || (rightT?.k === "word" && ALPHA.test(rightT.s[0])));
+    // ("÷ 4 poore bracket par lagta hai": an operator that opens the line, a number after it, is said as one)
+    const opensLine = WORDY && !operand && !leftT && rightIsOperand(i + 1);
+    if (afterWord || opensLine) operand = true;
+    const wordRight = WORDY && operand && (rightT?.s === "(" || (rightT?.k === "word" && ALPHA.test(rightT.s[0])));
+    // ("kinaara / seema", "edge / boundary": a spaced slash between two words is "or")
+    if (tok.s === "/" && t[i - 1]?.k === "sp" && t[i + 1]?.k === "sp" && t[i - 2]?.k === "word" && t[i + 2]?.k === "word" && ALPHA.test(t[i - 2].s[0]) && ALPHA.test(t[i + 2].s[0])) {
+      emitWords(cell.words === "hi" ? "या" : cell.mode === "english" ? "or" : "ya", false);
+      operand = false;
+      i++;
+      continue;
+    }
     // binary operators between operands; "x" as times between two numbers
     const opName = OPS[tok.s] ?? ((tok.s === "x" || tok.s === "X") && t[i - 1]?.k === "sp" && t[i + 1]?.k === "sp" && t[i - 2]?.k === "num" && t[i + 2]?.k === "num" ? "times" : null);
     // audit V-17: "5 + 3 = ?" says "equals" (the question is the operand)
-    if (opName && operand && (rightIsOperand(i + 1) || (tok.s === "=" && t[skip(i + 1)]?.s === "?")) && !(tok.s === "-" && t[i - 1]?.k !== "sp" && !mathy)) {
+    if (opName && operand && (rightIsOperand(i + 1) || wordRight || (tok.s === "=" && t[skip(i + 1)]?.s === "?")) && !(tok.s === "-" && t[i - 1]?.k !== "sp" && !mathy)) {
       const tpl = W.ops[opName];
       if (tpl.includes("{r}")) {
         const r = simpleRight(i + 1);
@@ -600,7 +646,7 @@ function render(text, cell) {
  */
 export function toSpoken(text, opts = {}) {
   const s = String(text ?? "");
-  if (!NOTATION.test(s)) return s;
+  if (!NOTATION.test(s) && !BARE_UNIT_RE.test(s) && !/\p{L} [/+] \p{L}/u.test(s)) return s;
   const cell = cellFor(opts);
   const { W } = cell;
   let x = s.replace(/[०-९]/g, (d) => String(d.charCodeAt(0) - 0x966));
