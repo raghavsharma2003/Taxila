@@ -364,7 +364,9 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const bx = lerp(x0, x1, (j + 0.5) / 4), top = y + 30, len = gy - top;
       P.stroke(c, [[bx - Math.tan(tilt) * len * 0.6, top], [bx, gy]], { role: "q4", width: 2 });
     }
-    P.textFit(c, W(`aakash.fall.${fall}`), x + pw / 2, y + ph - 13, pw - 10, 22, { size: 14, role: "ink2", weight: 700 });
+    // the fall's name (straight / slanting) states the idea: it is drawn on the solved screen only; while a try remains the
+    // squares the light covers show it (laws ruling 2026-11-15)
+    if (s.done) P.textFit(c, W(`aakash.fall.${fall}`), x + pw / 2, y + ph - 13, pw - 10, 22, { size: 14, role: "ink2", weight: 700 });
     // dhoop: the ice block on the patch (melted once its item is done)
     if (goal === "dhoop") {
       const card = dhoopRow(p).card, mine = card.map((hh, j) => (hh === half ? j : -1)).filter((j) => j >= 0);
@@ -437,7 +439,7 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const smx = sex + sRm * Math.cos(ma), smy = ly - hgt * hs;
     P.fillPath(c, (q) => q.arc(smx, smy, 6, 0, TAU), eclLunar ? "rust" : "white", { outline: "ink2", width: 1.2 });
     if (s.w.k === NEW_AT && !moving) P.stroke(c, [[smx + 6, smy], [sex - 9, smy]], { role: on ? "ink" : "ink3", width: on ? 3 : 1.5, dash: on ? undefined : [3, 3] });
-    if (s.why === "off_line") P.textFit(c, W(hgt > 0 ? "aakash.above" : "aakash.below"), smx - 76, smy, 120, 20, { size: 14, role: "look", weight: 800 });
+    // (no "above / below the line" label after a miss: the Moon drawn off the line shows it; laws ruling 2026-11-15)
   }
   /** the Moon as seen from the Earth: its place k round the Earth decides how much of its lit half faces us */
   function phase(c: CanvasRenderingContext2D, x: number, y: number, r: number, k: number, ecl: boolean): void {

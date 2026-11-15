@@ -9,7 +9,8 @@
 //      selected body and every canvas "you" in focus; uses of "you" are reported, not failed).
 //   2. After a miss the screen never holds the key while a try remains: no text drawn after the miss holds a value the
 //      family keeps hidden (server/play/react.js hiddenOf: what a line may not say before she produces it) unless that
-//      value was on screen before she acted (a given) or is her own value.
+//      value was on screen before she acted (a given) or is her own value. In the science families (IDEA_WORDS, laws ruling
+//      2026-11-15) a text new after the miss never holds a word of the idea the goal's solved line states.
 //   3. A mix-up is named only by an act a guess rarely produces: on a goal decided by one pick among a few
 //      (FamilyLogic.oneDecision, chancePicks) the grade never keeps the misconception (gradeLevel reports it at chance
 //      weight as `chanceMis`). Reported for review (not failed): a mal-rule fired by a single input act on a goal not so
@@ -59,6 +60,69 @@ export const ALLOWED = {
   "kaal/order": [{ law: 1, re: /\(stroke, chip, text/, why: "a stone she landed right flies its year in green; a miss is drawn in look" }, { law: 2, re: /the key "\d+"/, why: "each stone's year is its own task line when it comes up (a given of that step); the key is where it lies" }],
   "stambh/tally": [{ law: 2, re: /the key "\d+"/, why: "the count over each group runs 1..5 (a row's count can be one of those digits) and then fades: nothing stays over the tally while a try remains (evening ruling 2, 2026-11-11; tests/r8-games-stambh-tally asserts the faded screen)" }],
 };
+/**
+ * Law 2 for the science families (laws ruling 2026-11-15, RULINGS-2026-11-15.md row 1): while a try remains, the screen and
+ * the line say what her act did, never what is true; what is true is said once, on the solved screen. Per (family/mode) and
+ * goal: the words of the idea that goal's solved line states (whole words or phrases, the three languages the view can
+ * show). Any text drawn after a miss while a try remains that was not on the first screen (a given) and holds one fails
+ * law 2. tests/r8-laws-idea-words.test.mjs holds that each solved line states its idea (it moved, it did not vanish).
+ */
+export const IDEA_WORDS = {
+  "aakash/chakkar": {
+    din: ["ghoomti", "ghoomta", "ghumaya", "earth spins", "earth turns", "earth turned", "spins and carries", "west to east", "pashchim se poorab", "घूमती", "घुमाया", "पश्चिम से पूरब"],
+    saal: ["ek chakkar", "poora chakkar", "sooraj ka chakkar", "saal ki chaal", "a spin", "one spin", "once round", "year's movement", "एक चक्कर", "पूरा चक्कर", "साल की चाल"],
+  },
+  "aakash/ritu": {
+    jhuk: ["dhuri", "jhuka", "jhuki", "axis", "leaning", "tilted", "same way", "ek hi taraf", "seedhi", "tirchhi", "straight", "slants", "धुरी", "झुका", "झुकी", "एक ही ओर", "सीधी", "तिरछी"],
+    dhoop: ["seedhi", "tirchhi", "straight", "slant", "slanting", "slants", "spread", "spreads", "faili", "सीधी", "तिरछी", "फैली"],
+  },
+  "aakash/grahan": {
+    chaaya: ["ek line", "seedhi line", "in line", "straight line", "lined up", "line mein", "एक रेखा", "सीधी रेखा", "रेखा में"],
+    kab: ["ek line", "seedhi line", "in line", "straight line", "lined up", "line mein", "upar ya neeche", "above or below", "एक रेखा", "सीधी रेखा", "रेखा में"],
+  },
+  "badlaav/aag": {
+    trikon: ["oxygen", "hawa rokta", "keeps the air out", "sends air", "hawa bhejta", "not heat", "garmi nahi", "ऑक्सीजन", "हवा रोकता", "हवा भेजता", "गर्मी नहीं"],
+    raakh: ["nasht nahi", "not destroyed", "nothing was destroyed", "gas ban", "as gases", "hawa mein gaya", "went into the air", "नष्ट नहीं", "गैस बन", "हवा में गया"],
+    jang: ["nayi cheez", "new substance", "paani chahiye", "paani aur hawa", "needs water", "water and air", "oxygen", "नई चीज़", "पानी चाहिए", "पानी और हवा", "ऑक्सीजन"],
+  },
+  "bhaap/hawa": {
+    naav: ["samundar se zameen", "zameen se samundar", "from the sea", "from the land", "sea to the land", "land to the sea", "समुद्र से ज़मीन", "ज़मीन से समुद्र"],
+    kamra: ["hawa upar", "hawa neeche", "rises", "rose", "sinks", "sank", "stays down", "uthti", "uthi", "baithti", "baithi", "हवा ऊपर", "हवा नीचे", "उठती", "उठी", "बैठती", "बैठी"],
+  },
+  "chhaano/sukha": Object.fromEntries(["farak", "kram"].map((g) => [g,
+    ["bhaar", "bhaari", "halka", "halki", "weight", "heavy", "heavier", "size", "paas hi", "fell near", "भार", "भारी", "हल्का", "हल्की", "साइज़", "पास ही"]])),
+  "jaanch/neela": { iodine: ["starch dikhata", "iodine shows starch", "cheeni nahi", "not sugar", "does not show sugar", "starch only", "only starch", "स्टार्च दिखाता", "चीनी नहीं"] },
+  "rang/pehchaan": {
+    litmus: ["laal karta", "neela karta", "turns blue litmus red", "turns red litmus blue", "लाल करता", "नीला करता"],
+    desi: ["base par", "on a base", "haldi laal", "gudhal hara", "basic tha", "was basic", "क्षार पर", "हल्दी लाल", "क्षारीय था"],
+  },
+  "rang/milao": {
+    boond: ["khatam kiya", "cancelled", "zyada base", "extra base", "too much", "patla", "diluted", "dilutes", "ख़त्म किया", "ज़्यादा क्षार", "पतला"],
+    ilaaj: ["khatam kiya", "cancelled", "neutralisation", "ख़त्म किया", "उदासीनीकरण"],
+  },
+  "yantra/roshni": {
+    parda: ["roshni jaane", "roshni jaaye", "roshni jaati", "light pass", "light passes", "lets", "transparent", "translucent", "opaque", "रोशनी जाने", "रोशनी जाए", "रोशनी जाती"],
+    roshan: ["roshni pade", "roshni padi", "roshni nahi padi", "light falls", "falls on", "sunlight", "dhoop", "रोशनी पड़े", "रोशनी पड़ी", "रोशनी नहीं पड़ी", "धूप"],
+    dhak: ["apni roshni", "own light", "light of its own", "luminous", "अपनी रोशनी"],
+  },
+};
+/** the idea words of a level's (family/mode, goal) */
+export function ideaWordsOf(level) {
+  const goal = level?.goal ?? level?.params?.goal;
+  return IDEA_WORDS[`${level?.family}/${level?.mode}`]?.[goal] ?? [];
+}
+const NOT_WORD = "[^\\p{L}\\p{M}\\p{N}]";
+const ideaRe = new Map();
+/** the first idea word a text holds as a whole word or phrase (case and Unicode form ignored), or null */
+export function ideaIn(text, words) {
+  const t = String(text ?? "").normalize("NFC");
+  for (const w of words) {
+    let re = ideaRe.get(w);
+    if (!re) { re = new RegExp(`(?:^|${NOT_WORD})${w.normalize("NFC").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:$|${NOT_WORD})`, "iu"); ideaRe.set(w, re); }
+    if (re.test(t)) return w;
+  }
+  return null;
+}
 const GREEN_BAD = new Set(["text", "chip", "circle", "stroke", "body", "color"]);
 /** her own values: every number and string field of every act she made */
 function ownValues(acts) {
@@ -159,6 +223,7 @@ export async function lawsFor(level, opts = {}) {
   if (!logic) return { breaks: [{ law: 0, state: "mount", what: "no logic" }], review, checked: 0 };
   let hidden = [];
   try { hidden = (M.hiddenOf(level) ?? []).filter((v) => v !== null && v !== undefined && v !== ""); } catch { hidden = []; }
+  const ideas = ideaWordsOf(level);
   const chanceFor = (mal) => !!level.goal && (!!logic.oneDecision?.includes(level.goal) || !!logic.chancePicks?.includes(level.goal) || !!logic.chancePicks?.includes(`${level.goal}:${mal}`));
   let checked = 0;
   // ── the first screen: nothing is green before she acts
@@ -204,6 +269,12 @@ export async function lawsFor(level, opts = {}) {
     for (const v of hidden) {
       if (holds(given, v) || mine.has(String(v).toLowerCase()) || holds(rightParts, v)) continue;
       if (holds(s.texts, v)) { breaks.push({ law: 2, state: `mal:${mal}`, what: `the key "${v}" is on screen after a miss` }); break; }
+    }
+    // law 2, the science families: a miss line says what her act did, never the idea (that is the solved line's)
+    if (ideas.length) for (const t of s.texts) {
+      if (given.includes(t)) continue;
+      const w = ideaIn(t, ideas);
+      if (w) { breaks.push({ law: 2, state: `mal:${mal}`, what: `a miss line states the idea ("${w}"): ${JSON.stringify(t).slice(0, 90)}` }); break; }
     }
     // law 3: a mix-up the grade names was made by an act a guess rarely produces (never one pick among five or fewer)
     const g = logic.grade(level, m.ctl.acts);
@@ -261,7 +332,7 @@ export async function decisiveActs(level, opts = {}) {
  * the level the Director's focus on each mapped misconception serves), and the law result of each level.
  * → [{ key, goal, topicId, levelId, breaks, review, checked, youOps }]
  */
-export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } = {}) {
+export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1, lang = "hinglish" } = {}) {
   const { coverage } = await import("../../play/levels.js");
   const { coverageLevels } = await import("./cert-levels.mjs");
   const seen = new Map(), out = [];
@@ -272,7 +343,7 @@ export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } =
     if ((seen.get(gk) ?? 0) >= perGoal) continue;
     seen.set(gk, (seen.get(gk) ?? 0) + 1);
     for (const level of await coverageLevels(e, seeds, { focus: true })) {
-      const r = await lawsFor(level, { young: e.classLevel <= 5 });
+      const r = await lawsFor(level, { young: e.classLevel <= 5, lang });
       out.push({ key, goal: level.goal ?? e.goal, topicId: e.topicId, levelId: level.levelId, ...r });
     }
   }
@@ -281,7 +352,7 @@ export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } =
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const argv = process.argv.slice(2), arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
-  const rows = await lawsOverCoverage({ only: arg("only", null), seeds: Number(arg("seeds", 2)), perGoal: Number(arg("per-goal", 1)) });
+  const rows = await lawsOverCoverage({ only: arg("only", null), seeds: Number(arg("seeds", 2)), perGoal: Number(arg("per-goal", 1)), lang: arg("lang", "hinglish") });
   if (argv.includes("--json")) console.log(JSON.stringify(rows, null, 1));
   else for (const r of rows) console.log(`${r.key} ${r.goal} ${r.levelId}: ${r.breaks.length ? r.breaks.map((b) => `L${b.law} ${b.state} ${b.what}`).join(" | ") : "ok"}${r.review.length ? ` · review: ${r.review.map((b) => `${b.state} ${b.what}`).join(" | ")}` : ""}${r.youOps.length ? ` · you→focus: ${r.youOps.join(",")}` : ""}`);
   process.exit(0);

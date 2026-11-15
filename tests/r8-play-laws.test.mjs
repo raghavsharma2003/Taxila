@@ -13,9 +13,8 @@ const L = await import("../server/forge3/qa/laws.mjs");
 
 /** Breaks still open, by (family/mode) → laws, each listed in LAWS-AUDIT.md (kon: the kon stream's; the rest: main's). */
 const KNOWN = {
-  // the science families' after-a-miss line states the idea outright (authored lines in data/play/engine-words.json)
-  "aakash/chakkar": [2], "aakash/grahan": [2], "aakash/ritu": [2], "badlaav/aag": [2], "bhaap/hawa": [2], "chhaano/sukha": [2],
-  "jaanch/neela": [2], "rang/milao": [2], "rang/pehchaan": [2], "yantra/roshni": [2],
+  // the science families: none left (laws ruling 2026-11-15: each miss line says what her act did; the idea is the solved
+  // line's; laws.mjs IDEA_WORDS fails a miss line that states it; tests/r8-laws-idea-words.test.mjs)
   // kon: none left (round 8 kon round 2: ends' light is green only when solved and ray-two-ends is a chance pick; place/draw's
   // join-wrong-end is a chance pick; measure is typed)
 };

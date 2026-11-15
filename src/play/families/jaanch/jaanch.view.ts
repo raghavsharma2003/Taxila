@@ -237,28 +237,13 @@ export const makeJaanchView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const dw = g.cw * 0.66, bw = Math.min(70, g.cw * 0.22), bh = Math.min(118, sh - 70);
       dish(c, id, g.x0 + 6, sy + 46, dw, sh - 74, s.w.drops, !!s.why && s.why !== "few_drops" && s.why !== "enough");
       pips(c, g.x0 + 6 + dw / 2, sy + sh - 14, DROPMAX, s.w.drops, FEW);
-      if (s.why === "not_sugar") tree(c, g.x0 + dw, sy + 40, g.cw - dw - 4, sh - 50);
-      else bottle(c, g.x0 + g.cw - bw - 12, sy + sh - bh - 12, bw, bh);
+      // (no carbohydrate tree after a miss: it stated the idea, which the solved line says once; laws ruling 2026-11-15)
+      bottle(c, g.x0 + g.cw - bw - 12, sy + sh - bh - 12, bw, bh);
     }
     const y1 = g.bottom - ctlH, n2 = (g.cw - g.gap) / 2;
     button(c, "tool-drop", g.x0, y1, g.cw, g.btnH, W("jaanch.tool.drop"), { role: "q2", on: fresh() && last.kind === "drop" });
     (["yes", "no"] as const).forEach((v, i) => button(c, `mark-starch:${v}`, g.x0 + i * (n2 + g.gap), y1 + g.btnH + g.gap, n2, g.btnH, W(`jaanch.mark.starch.${v}`), { role: "q1", look: !!s.why && s.m === `starch:${v}` && !s.done, size: 14 }));
   }
-  /** the kit's carbohydrate family tree: starch and sugar two branches, iodine pointing only at starch */
-  function tree(c: Ctx, x: number, y: number, tw: number, th: number): void {
-    const P = api.P, cx = x + tw / 2, top = y + 12, mid = y + th * 0.52, lx = x + tw * 0.27, rx = x + tw * 0.73;
-    P.textFit(c, W("jaanch.tree.carb"), cx, top, tw - 4, 20, { size: 12, role: "ink", weight: 800 });
-    P.stroke(c, [[cx, top + 10], [lx, mid - 14]], { role: "ink2", width: 2 }); P.stroke(c, [[cx, top + 10], [rx, mid - 14]], { role: "ink2", width: 2 });
-    P.textFit(c, W("jaanch.tree.starch"), lx, mid, tw * 0.5 - 4, 32, { size: 12, role: "ink", weight: 800 });
-    P.textFit(c, W("jaanch.tree.sugar"), rx, mid, tw * 0.5 - 4, 32, { size: 12, role: "ink", weight: 800 });
-    ellipse(c, lx, mid + 26, 9, 9, "starch", { outline: "ink2" }); ellipse(c, rx, mid + 26, 9, 9, "nostarch", { outline: "ink2" });
-    // iodine points only at starch
-    const ay = Math.min(y + th - 10, mid + 58);
-    P.stroke(c, [[cx, ay], [lx + 8, mid + 38]], { role: "look", width: 2.4 }); P.stroke(c, [[lx + 8, mid + 38], [lx + 18, mid + 40], [lx + 12, mid + 48]], { role: "look", width: 2.4 });
-    ellipse(c, cx + 8, ay, 7, 5, "nostarch", { outline: "ink2" });
-    P.textFit(c, W("jaanch.tree.iodine"), cx + 8 + tw * 0.22, ay, tw * 0.44, 18, { size: 12, role: "ink2", weight: 700 });
-  }
-
   // ── kaagaz ──
   function drawKaagaz(c: Ctx, g: G): void {
     const P = api.P, s = st(), id = foodAt(p, s.w);
