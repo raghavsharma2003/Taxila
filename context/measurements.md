@@ -6776,3 +6776,8 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-8d1952d` (2026-11-15): Released 8d1952d with scripts/release.mjs: web taxila-web--s8d1952d-a9gh (was taxila-web--s4b9cc50-obcd), worker + canary/nightly jobs on taxila-worker:8d1952d (was 4b9cc50); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 8d1952d --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-director22` (2026-11-15): director22: 16 lessons on integration 57 (3ef74ffdd), 1,721 calls, about $1.23; four Opus judges by hand. Contradictions 5, 5, 2, 1 (c4, c5-t01, c5-t02, c6) and unsaid boards 0, 0, 2, 0; 0 misgrades in 274 verdicts; listening 3, 3, 3, 3.5; register 3 in all four; promises 3.5, 4, 3.5, 3.5. Live predicate check read orderParts 2 and 0 elsewhere. Picture requests that drew a view: 6 of 16 (director21: 16 of 16)
+- `ms-release-0d00f29` (2026-11-15): Released 0d00f29 with scripts/release.mjs: web taxila-web--s0d00f29-r78k (was taxila-web--s8d1952d-a9gh), worker + canary/nightly jobs on taxila-worker:0d00f29 (was 8d1952d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0d00f29 --rollback.
