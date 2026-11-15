@@ -75,7 +75,7 @@ export const makeFeetaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as FeetaAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "mark") api.sfx("tick");
     else if (last.kind === "put") api.sfx("land");
     else api.sfx("tap");
@@ -84,7 +84,7 @@ export const makeFeetaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     api.invalidate(); deps.changed();
   }
   /** 0..1 of the run on screen; 1 once it has played (the law answered when the act landed) */
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {
