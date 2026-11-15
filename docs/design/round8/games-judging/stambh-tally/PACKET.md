@@ -104,7 +104,7 @@ The child who draws five standing lines *and* counts each group as 4 also has no
   - **What the screen shows.**
     - **On the tally**, as in `keep`: over each bundle the count runs 1, 2, 3, 4 on the standing lines and lands 5 on the line across, holds, and fades.
     - **Her box** gets a dashed amber outline.
-    - **Below, a plain line from 0** carries her number, an amber dot with an amber "13" label, and, after this first miss only, an arrow pointing the way to go.
+    - **Below, a plain line from 0** carries her number, an amber dot with an amber "13" label, and, after this first miss only, an arrow pointing the way to go. The line has **one scale for the whole level**, set from the level's fade alone: it runs from 0 to twice the largest row that fade serves, up to the next ten (fade 1: 0–40, fade 2: 0–70, fade 3: 0–100). It never depends on her number or the key, so a bigger number always stands further right (her 14 to the right of her 13); a number past the end stands at the end.
     - The line has no unit ticks, no place for the answer and no hops, so the answer cannot be counted off it.
 - **A later check** (`read-retry-360x640`): she types 14, still off. The count runs over each bundle again and fades, and her box is dashed. On the line there is **her dot and nothing else: no arrow** after a later miss. Unlimited tries with an arrow would be a higher-or-lower search for the key.
 - **Solved after a retry** (`read-end-retry-360x640`): the tick is pale, not full green, and the line reads "Tumne 16 likha · jaanch: 2". The evidence records the first check as incorrect and `first_try` = 0.
@@ -118,7 +118,7 @@ The child who draws five standing lines *and* counts each group as 4 also has no
 - **Why the mix-up may be named from one check.** Every form is a constructed act, not a pick among a few: a typed number (any of 0–99), or a whole tally kept with no line across. The level law also makes the mix-up's numbers at least two slips away in read and three in keep (above).
 - **Sizes.**
   - In `keep`, a row holds up to 14 strokes (two bundles and four), and on a 360 px phone it lies on **one line** in both phases.
-  - In `read`, a row holds up to 49 (nine bundles and four). At 360 the largest read row takes two lines: four bundles on the first, and five bundles then the four loose lines on the second. The loose lines stand beyond the end of the first line, so **no loose line is under a bundle**. Between the two lines of strokes there is at least half a stroke's height, and room for the count's digits over the second line (`read-largest-360x640`, `read-largest-mal-360x640`). No group is split across lines.
+  - In `read`, a row holds up to 49 (nine bundles and four). At 360 the largest read row takes two lines: four bundles on the first, and five bundles then the four loose lines on the second. The loose lines stand beyond the end of the first line, so **no loose line is under a bundle**. Between the two lines of strokes there is at least half a stroke's height and at least 26 px, so the count's digits over the second line (16 px, standing 3–19 px over their own strokes) stay clear of the first line's strokes, nearer their own bundles than the ones above (`read-largest-360x640`, `read-largest-mal-360x640`). No group is split across lines.
   - The tally layout keeps a row on one line whenever its strokes stay at least 8 px apart and 22 px tall.
   - Fade 1, the easiest, has 16–19 in `read` (three bundles and a few lines) and a scene of 15–18 things across 2 rows in `keep`. Fade 3 has 21–49, and 20–28 things across 3 rows.
   - The largest cases are shot at 360 with the pad open: `keep-largest-360x640` (Car 14, Bus 9, Auto 5; 28 things) and `read-largest-360x640` (49). The browser layout test covers both at both sizes.
@@ -183,6 +183,15 @@ At 360×640 only (9):
 | `read-largest-mal` | 49 read as 40: the count over each bundle on both lines, clear of the line above |
 
 The 360×640 shots are at 2× pixel density. The 1366×768 shots were scaled to 1× for size; colours are unchanged (RGB, no palette).
+
+## Gate 1 fixes (night rulings)
+
+Rulings: `docs/design/round8/games-judging/RULINGS-2026-11-11-night.md`, "stambh/tally: passes gate 1 after two fixes". Branch `claude/r8-gate1-place-tally`. Only the screens these change were retaken (360 × 640 at 2× pixel density; 1366 × 768 taken at 2× and scaled to 1×; RGB, no palette reduction), on the same level as before (Moti 16, fade 1; the largest case Moti 49). The gate-2 items (no slip list, `keep` from one level, `read`'s two-level rule) are not in this commit.
+
+| Ruling | Change | Shots | Test |
+|---|---|---|---|
+| 1. One scale for the whole level (a bigger number never moves left) | The number line's end comes from the level's fade alone (`numberLineEnd`: twice the largest row the fade serves, to the next ten: 40, 70, 100), never from her number or the key; a number past the end stands at the end. Before, the end was 1.6 × her number, so her 14 stood left of her 13. | `read-mal-*`, `read-mal-after-360x640`, `read-retry-360x640` (13 at a third of the line, then 14 just right of it), `read-largest-mal-360x640` | `tests/r8-games-stambh-tally.test.mjs` "gate 1, ruling 1": the real view on every generated read level (40 seeds, fades 1–3, and the largest): over a rising run of 17 numbers (0 … 99) her chip never stands left of the one before and moves right with every unit inside the line; the same number stands at the same place on levels of one fade with different keys |
+| 2. read's largest case: the second line's count digits clear of the first line's strokes | On two lines or more the count's digits keep the floor size (16 px) and read keeps 26 px between the lines (was 21), so a digit over the second line stands 3–19 px over its own strokes and further from the first line's strokes than from its own. | `read-largest-360x640`, `read-largest-mal-360x640` | `tests/r8-games-stambh-tally.test.mjs` "gate 1, ruling 2": every generated read level and the largest, in five world boxes from the 360 phone's to the desktop's, at five moments of the count: no stroke of the line above enters a digit's box (with its half-width and 2 px), and each digit is nearer its own line than the one above |
 
 ## Changes after judging round 1
 
