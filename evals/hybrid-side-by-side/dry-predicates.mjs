@@ -6,7 +6,7 @@
 // A lesson is { topicId, persona, rows } (the harness's director rows), with the topic's lesson script (`script`, for its joints).
 
 import { readFileSync } from "node:fs";
-import { asideReplyForms } from "../../server/brain/asideReplies.js";
+import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -175,6 +175,14 @@ export const PREDICATES = {
       for (let n = 1; n <= Math.min(ss.length, 2) && !used; n++) {
         const head = ss.slice(0, n).join(" "), m = head.match(re);
         if (m && new RegExp(`(?<![\\p{L}])${m[1].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}])`, "iu").test(ctx.prevChild)) used = head;
+      }
+      if (used) break;
+    }
+    // (a {phrase} form: the slot is the child's own answer, in her voice — Brain's phraseOf)
+    if (!used) for (const re of F.phrase ?? []) {
+      for (let n = 1; n <= Math.min(ss.length, 2) && !used; n++) {
+        const head = ss.slice(0, n).join(" "), m = head.match(re);
+        if (m && low(m[1]) === low(phraseOf(ctx.prevChild) ?? "\u0000")) used = head;
       }
       if (used) break;
     }
@@ -595,7 +603,7 @@ export const ORDER_LAWS = {
   asideReplyOnce(L, r, i, ctx) {
     // (a form may be two sentences, "Hmm, {word}. Samajh gayi.": each is found whole in the turn, its slot filled; a re-render picks the
     // next form in rotation, so the fault is a reply on a turn that does not follow her question — a return's or the AI line's)
-    const F = (ctx.o.replyF ??= (() => { const f = asideReplyForms(); return f.word.map((re) => new RegExp(re.source.replace(/^\^/, "").replace(/\$$/, ""), "iu")); })());
+    const F = (ctx.o.replyF ??= (() => { const f = asideReplyForms(); return [...f.word, ...(f.phrase ?? [])].map((re) => new RegExp(re.source.replace(/^\^/, "").replace(/\$$/, ""), "iu")); })());
     const hit = F.map((re) => norm(r.text).match(re)?.[0]).find(Boolean);
     if (!hit || !ctx.prevT) return null;
     const asked = returnOf(ctx.prevT, ctx) || AI_LINE.test(String(ctx.prevT.text ?? "")) || /[?？]\s*$/.test(norm(ctx.prevT.text)) && !cardIn(ctx.prevT) && /·\s*uptake/.test(ctx.prevRead ?? "");

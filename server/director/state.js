@@ -40,7 +40,7 @@ import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
 import { compiledFor } from "./compile.js";
-import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS } from "./script.js";
+import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -1745,7 +1745,7 @@ function unclear(s, input, item, v) {
 function helpMove(s, input, item, help) {
   const kit = input.kit;
   if (s.phase === "teachback") {
-    if (help === "skip") return toWrap(s, {});
+    if (help === "skip") return toWrap(s, { kit: input.kit });
     return plan("teachback", join(SH.SLOWER, SH.teachback({ protege: scriptIdOf(input.kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
   }
   // dc-r7-script-walk-v2 R3: "another way / an example / slower" during a v2 walk is answered on its OWN current beat (its board
@@ -1845,7 +1845,7 @@ function resume(s, input, item, prefix) {
   if (s.phase === "teach") return teach(s, input, prefix);
   if (s.phase === "practice") return poseNext(s, input, prefix);
   if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: scriptIdOf(input.kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
-  return toWrap(s, {});
+  return toWrap(s, { kit: input.kit });
 }
 
 /** The skill the lesson is on now (for a teaching move with no item on the table). */
@@ -2305,7 +2305,7 @@ function p5RequestMove(s, input, item, req, labels) {
     }
     case "stop": {
       // a stop or a leaving read by the UNDERSTAND note alone: ONE check-in (OWNER-RESET #7); a second within two turns ends it
-      if (s.stopAsked != null && s.turn - s.stopAsked <= 2) return toWrap(s, { stopping: true });
+      if (s.stopAsked != null && s.turn - s.stopAsked <= 2) return toWrap(s, { stopping: true, kit: input.kit });
       s.stopAsked = s.turn;
       return plan("break", SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], request: "stop", checkin: "stop" });
     }
@@ -2354,21 +2354,57 @@ function enterTeachback(s, prefix, kit) {
   s.phase = "teachback"; s.teachbackAsked = true; s.activeItemId = undefined; s.hintLevel = 0;
   // The lesson's teach-back IS shape C01 (announced protégé teach-back): its answer is a probe turn in the budget.
   s.pendingProbe = { skillId: s.introduced[0] ?? null, shapeId: "C01", facet: "U", mandatory: true, reason: "lesson_teachback", testWeight: testWeight(shapeById("C01")), family: "A", cls: "probe.teachback", longForm: true };
+  // (2.4: a script's own teach-back — Learning writes the question, its key and why, and its board; the model writes none of it.
+  // An authored board goes as a normal board ref, drawn fresh; with none, the board is cleared)
+  const tb = authoredEnd(kit)?.teachback;
+  if (tb?.prompt) {
+    const q = saidIn(tb.prompt, s.ctx.lang ?? "hinglish");
+    if (q && String(q).trim()) {
+      s.teachbackScript = true;
+      return plan("teachback", join(prefix, SH.teachback({ protege: null })), { probe: "P1", format: "F7", rendered: [endLine(q)], authoredEnd: "teachback",
+        ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
+    }
+  }
   return plan("teachback", join(prefix, SH.teachback({ protege: kit && scriptIdOf(kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
+}
+/** 2.4: the script whose ending (teachback, wrap) is authored — null for a recorded run, no script, or scripts off. */
+function authoredEnd(kit) {
+  if (!kit || !scriptOn() || !scriptIdOf(kit)) return null;
+  const sc = scriptFor(kit)?.script;
+  return sc && !sc.recordedRun ? sc : null;
+}
+const endLine = (x) => (/[.!?\u0964]$/.test(String(x).trim()) ? String(x).trim() : `${String(x).trim()}.`);
+/** Her teach-back answer against the authored key and its accepted forms (a key, never a model's grade). */
+function teachbackHit(tb, text) {
+  const norm = (x) => ` ${String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim()} `;
+  const said = norm(text);
+  return [tb.key, ...(tb.accept ?? [])].filter((k) => k != null && String(k).trim()).some((k) => said.includes(norm(k)));
 }
 
 function teachback(s, input) {
   const { cls, kit } = input;
+  const tb = s.teachbackScript ? authoredEnd(kit)?.teachback : null;
+  if (tb) {
+    // (2.4: a right answer — the key or a form Learning accepts — goes to the wrap; anything else gets the key and its why once, then the wrap)
+    s.teachbackTries += 1;
+    const lang = s.ctx.lang ?? "hinglish";
+    if (teachbackHit(tb, input.text)) { s.teachbackPassed = true; return { ...toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }), endVerdict: "correct" }; }
+    const why = tb.why ? saidIn(tb.why, lang) : null;
+    const en = lang === "english";
+    const keyLine = `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
+    // (the key and its why are the teach-back card's close, said over its own board; then the wrap)
+    return toWrap(s, { kit, keyFirst: { line: keyLine, board: tb.board ?? null } });
+  }
   s.teachbackTries += 1;
-  if (cls?.outcome === "correct") { s.teachbackPassed = true; return toWrap(s, { prefix: SH.CONFIRM.teachbackPass }); }
-  if (s.teachbackTries >= LIMITS.teachbackTries) return toWrap(s, {});
+  if (cls?.outcome === "correct") { s.teachbackPassed = true; return toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }); }
+  if (s.teachbackTries >= LIMITS.teachbackTries) return toWrap(s, { kit });
   const m = cls?.outcome === "misconception" ? kit.misconceptions.find((x) => x.id === cls.misconceptionId) : null;
   if (m) s.flagged[m.id] = (s.flagged[m.id] ?? 0) + 1;
   const missing = m ? `whether "${m.belief}" is true` : cls?.missing?.[0] ?? "the main idea, in simple words";
   return plan("teachback", SH.teachbackFollowup({ protege: scriptIdOf(kit) ? null : s.ctx.protege, missing }), { probe: "P1", format: "F7" });
 }
 
-function toWrap(s, { prefix, stopping = false }) {
+function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
   // round 4: a wrap the lesson reaches by itself (time, the plan) keeps the promise to come back to what they shared or asked;
   // never on a child's stop or goodbye (letting them go is quick: NEVER MANIPULATE)
@@ -2389,6 +2425,16 @@ function toWrap(s, { prefix, stopping = false }) {
   s.wrapAfter = undefined;
   s.stopAsked = undefined; s.sidebar = undefined;
   s.phase = "done"; s.activeItemId = undefined; s.pendingWhy = undefined; s.hintLevel = 0;
+  // (2.4: the script's wrap — what was covered, in two sentences, and the goodbye — is said as written; on her stop, the goodbye alone)
+  const w = authoredEnd(kit)?.wrap;
+  const lang = s.ctx.lang ?? "hinglish";
+  const covered = w?.covered && !stopping ? saidIn(w.covered, lang) : null, bye = w?.goodbye ? saidIn(w.goodbye, lang) : null;
+  if (bye && String(bye).trim()) {
+    const lines = [covered, bye].filter((x) => x && String(x).trim()).map(endLine);
+    return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { ...(stopping ? { stopping: true } : {}), rendered: lines, authoredEnd: "wrap",
+      ...(keyFirst?.line ? { endKey: keyFirst.line } : {}),
+      ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: keyFirst.board } } : {}) });
+  }
   return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), stopping ? { stopping: true } : {});
 }
 
@@ -2458,7 +2504,7 @@ function decide(s, input, item) {
     // answer of okay: the check-in stays (care, no lesson) once; a second one in a row, like a second silence, escalates
     const heavy = !!flags.distress && flags.distressKind === "self_harm" && flags.idiom === "lesson_hyperbole" && !fineWords;
     // the stop chip always ends it at once
-    if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    if (!flags.distress && chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true, kit: input.kit }); }
     // speech the ear could not read (D5 unheard, census 4B): her mishearing is never the child's answer — it neither releases
     // the check-in nor uses up its one silence. She says she could not make it out and asks again, with the carry-on and stop
     // chips on the move (a tap is the child's own answer: a child she cannot hear is never left with voice as the only way
@@ -2560,7 +2606,7 @@ function decide(s, input, item) {
       s.stopAsked = s.turn;
       return plan("safeguard", SH.relCheckIn(), { whiteboard: HELPLINES, chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
     }
-    if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true }); }
+    if (flags.wantsToStop || chipId === "safe:stop") { s.safeguard = null; return toWrap(s, { stopping: true, kit: input.kit }); }
     // 14.4.3 (main safety review; sim lab 6da8f599 p08 r3 #12-14, p19 r3 #8: "aunty ne call kar diya", "maine aunty ko bata
     // diya" still got both helplines and "are you safe?" every turn): once help is IN PLACE (fine.js helpInPlace: a trusted
     // grown-up told, calling or with them, a helpline called; nothing low, heavy, new or vetoed) the episode is HELPED. It
@@ -2608,9 +2654,9 @@ function decide(s, input, item) {
     s.safeguard.asked = true;
     return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
   }
-  if (s.phase === "done") return toWrap(s, { stopping: true });
+  if (s.phase === "done") return toWrap(s, { stopping: true, kit: input.kit });
   // round 7 (Learning patch 006): the Conductor's lesson slot ends at its window (≤ bedtime − 60): never past hardStopAt
-  if (pastBrief(s, "hardStopAt")) return toWrap(s, {});
+  if (pastBrief(s, "hardStopAt")) return toWrap(s, { kit: input.kit });
   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
   // diagnostic next (fusion rule 2: a detector triggers a verifying probe, it never decides alone).
   if (cls?.voiced) {
@@ -2626,11 +2672,11 @@ function decide(s, input, item) {
   // "bye", "mummy bula rahi hai" — or that second stop, decided in server/relational/policy.js). A relational CHECK_IN
   // (I-7: a goodbye right after distress) is the same one check-in, never a hold. NEVER MANIPULATE holds: one check-in,
   // never a second, no guilt, and the stop chip ends it at once. Pause → End and the parent's controls never reach here.
-  if (chipId === "stop:end") return toWrap(s, { stopping: true });
+  if (chipId === "stop:end") return toWrap(s, { stopping: true, kit: input.kit });
   // round 3 fix (experience B8): "Start <topic>" from a switch offer: this lesson closes warmly, the client starts that one
   if (typeof chipId === "string" && chipId.startsWith("switch:")) {
     const t = getTopic(chipId.slice("switch:".length));
-    if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
+    if (t && t.classLevel === Number(s.ctx?.classLevel ?? t.classLevel)) { s.switchTo = t.id; const w = toWrap(s, { stopping: true, kit: input.kit }); return { ...w, shape: SH.switchGo({ title: t.title }), switchTo: t.id }; }
   }
   // census 14.5 (F1, 6c45a7ea t12): a topic ask the classifier ALSO read as a stop ("kuch aur padhte hain") is the topic
   // ask: it is acted on in 2a, never met with the stop check-in (a goodbye or "I am leaving" still ends here)
@@ -2648,8 +2694,8 @@ function decide(s, input, item) {
     // ends it. TAXILA_R7_BYE_CHECKIN=off: a goodbye ends at once, as before.
     // (never inside or after a safeguarding episode: there a goodbye is let go at once, the frozen safety behaviour)
     const goodbyeNow = (!byeCheckInOn() || !!s.safeguard || s.safeguardedAt != null || (s.checkReleased != null && s.turn - s.checkReleased <= 3) || !!prevSafe) && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye");
-    if (!checkIn && (goodbyeNow || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true });
-    if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true });      // the check-in was given: let them go
+    if (!checkIn && (goodbyeNow || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true, kit: input.kit });
+    if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true, kit: input.kit });      // the check-in was given: let them go
     s.stopAsked = s.turn;
     return plan("break", checkIn ? SH.relCheckIn() : SH.stopCheck(), { chips: [{ id: "stop:continue", label: labels.go }, { id: "break:rest", label: labels.rest }, { id: "stop:end", label: labels.stop }], checkin: checkIn ? "rel" : "stop" });
   }
@@ -2753,13 +2799,13 @@ function decide(s, input, item) {
     return plan("break", SH.takeBreak(), { chips: [{ id: "break:easier", label: labels.easier }, { id: "break:rest", label: labels.rest }, { id: "break:continue", label: labels.go }] });
   }
   // round 7 T3: a wrap held for a parked promise goes on now (or returns the next open one)
-  if (s.wrapAfter) { const w = s.wrapAfter; s.wrapAfter = undefined; return toWrap(s, { prefix: w.prefix ?? undefined }); }
+  if (s.wrapAfter) { const w = s.wrapAfter; s.wrapAfter = undefined; return toWrap(s, { prefix: w.prefix ?? undefined, kit: input.kit }); }
   switch (s.phase) {
     case "warmup": return warmup(s, input, item);
     case "teach": return ackHold(s, input) ?? bluffCheck(s, input) ?? teach(s, input);
     case "practice": return practice(s, input, item);
     case "teachback": return teachback(s, input);
-    default: return toWrap(s, {});
+    default: return toWrap(s, { kit: input.kit });
   }
 }
 
@@ -3293,6 +3339,9 @@ function step0(prev, input) {
   if (p.stuck) move.stuck = true;
   // round 7 S2: the worked part rendered in code (worked.js); brain/say.js speaks these lines after one framing sentence
   if (p.rendered?.length) move.rendered = [...p.rendered];
+  if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
+  if (p.endVerdict) move.endVerdict = p.endVerdict;
+  if (p.endKey) move.endKey = p.endKey;
   // round 7 S3: the answer of a card let go after two misses plus help, said in code (brain/say.js)
   if (p.gave?.answer) move.gave = { ...p.gave };
   // v6.3 T1′ (main, director11 c5-t02 steady T17: "Toh poora jawab: Sana …" after the why-probe was answered): a worked close is
@@ -3652,7 +3701,7 @@ function step0(prev, input) {
   if (p.clear) move.clear = p.clear;
   // (O5, main on director21 c6 steady 114–120, c4 128–132, c5-t01 140–144, c5-t02 138–142: the teach-back and the wrap were said over
   // the last unit's board — a turn with no unit clears it; Studio's clearBoard runs in brain/turn.js on move.clear)
-  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind)) move.clear = "board";
+  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind) && !move.scriptBeat?.board) move.clear = "board";
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;

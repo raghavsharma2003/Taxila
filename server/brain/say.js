@@ -1227,6 +1227,18 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const lp = cleanParts([{ part: "aside", text: r0 }]);
     return { reply: r0, guard: { askAgain: true, lineParts: lp, parts: { list: lp } } };
   }
+  // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
+  // as written, after the close of her last answer; no model call)
+  if (state.lastMove?.authoredEnd && state.lastMove?.rendered?.length) {
+    const L = lang === "english" ? "english" : "hinglish";
+    const d = (x) => { const t = String(x ?? "").replace(/\s+/g, " ").trim(); return t ? (/[.!?\u0964]$/.test(t) ? t : `${t}.`) : null; };
+    const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
+    const v = state.lastMove.endVerdict ?? (state.lastMove.authoredEnd === "teachback" ? verdict : null);
+    const close = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${state.lastMove.endVerdict ? "" : why(state.lastGraded?.why)}`)
+      : v === "not_yet" ? notRightLead(String(childText ?? "").trim(), L, state) : null;
+    const lp = cleanParts([{ part: "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...state.lastMove.rendered.map((x) => ({ part: "body", text: d(spokenMarks(x, L)) }))]);
+    return { reply: joinParts(lp), guard: { authoredEnd: state.lastMove.authoredEnd, lineParts: lp, parts: { list: lp } } };
+  }
   // (v6.10, Learning D13: speech her ear could not read — the script's authored askAgain line, then the card as it was posed)
   if (state.lastMove?.request === "unheard" && jointOf(kit, "askAgain", lang)) {
     const a = freshOf(jointsAt(kit, "askAgain", lang, state), state), c = ui?.ask?.text ? String(ui.ask.text).trim() : "";
@@ -2218,7 +2230,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (dc-r8-director20 R1: the reply is Learning's, chosen by the aside's kind — one {word} of theirs from the word picker, a plain
       // form when none fits or they asked her back, the sad set when it is sad; her draft's sentences about the aside go)
       const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
-      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic) });
+      const asked = [...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
+      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked });
       j2Line = pick.line ?? null;
       guard.j2 = { said: rr0.said, line: j2Line, form: pick.form };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
