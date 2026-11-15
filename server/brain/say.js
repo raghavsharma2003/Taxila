@@ -3022,7 +3022,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; }
   // (main on director21 c4 steering 66, c5-t02 offtopic 72: "Buttons: aage badhein …" said aloud — the screen's controls are never named;
   // the choices are said as choices)
-  { const r0 = reply.replace(/(?<![\p{L}])(?:buttons?|button\s+(?:dabao|dabaiye))(?:\s+(?:mein|me)\s+se)?(?:\s+(?:chun|chuno|choose)(?:\s+lo)?)?\s*[:—-]\s*/giu, "").replace(/(^|[.!?]\s+)(\p{Ll})/gu, (m, a, c) => a + c.toUpperCase());
+  { const r0 = reply.replace(/(^|[.!?]\s+)?(?<![\p{L}])(?:buttons?|button\s+(?:dabao|dabaiye))(?:\s+(?:mein|me)\s+se)?(?:\s+(?:chun|chuno|choose)(?:\s+lo)?)?\s*[:—-]\s*(\p{L})?/giu,
+      (m, lead, c) => `${lead ?? ""}${c ? (lead != null ? c.toUpperCase() : c) : ""}`);
     if (r0 !== reply) { reply = r0; guard.buttonsDropped = true; if (guard.lineParts) { guard.lineParts = alignParts(guard.lineParts, reply); if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts }; } } }
   // The final words, checked once more (debug and the evals read it): what reached the child.
   const final = problems(reply).filter((p) => p !== "long" || words(reply) > max);
