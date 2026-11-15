@@ -82,7 +82,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     "fraction-parts@1": "11/11", "wholes@1": "17/17", "shade-grid@1": "1/3", "equal-groups@1": "7/9", "compare@1": "1/3",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
-    "fraction-bars@1": "19/22", "fraction-line@1": "46/62", "measured@1": "20/21", "shape@1": "1/6" }, JSON.stringify(got));
+    // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
+    // teachback and one recast card, one with a view), line 62 → 63 with one view fewer (c5-t01's reversed s1 rem0 then-card asks
+    // how many marks, so it draws no view and no line), measured 21 → 22 (c6's teachback wire, with a view))
+    "fraction-bars@1": "20/24", "fraction-line@1": "45/63", "measured@1": "21/22", "shape@1": "1/6" }, JSON.stringify(got));
   void none;
 });
 

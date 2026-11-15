@@ -105,7 +105,7 @@
     "problem": {
      "hi": "30 cm lamba ek ganna 5 barabar tukdon mein toda gaya. Ek tukda poore ganne ka kaunsa fraction hai, aur woh kitna lamba hai?",
      "en": "A sugarcane 30 cm long is broken into 5 equal pieces. What fraction of the whole sugarcane is one piece, and how long is it?"
-    }, "simpler": { "hi": "30 cm lamba ek ganna 5 barabar tukdon mein toda gaya. Ek tukde ka fraction aur uski lambai chahiye.", "en": "A 30 cm sugarcane is broken into 5 equal pieces. We need the fraction for one piece and its length." },
+    }, "simpler": { "hi": "Ganna 30 cm ka hai aur uske 5 barabar tukde hain. Ek tukde ka fraction aur uski lambai chahiye.", "en": "The sugarcane is 30 cm, cut into 5 equal pieces. We need one piece's fraction and its length." },
     "givens": [
      { "hi": "poora ganna 30 cm ka hai", "en": "the whole sugarcane is 30 cm" },
      { "hi": "ganne ke 5 barabar tukde hain", "en": "the sugarcane is in 5 equal pieces" }
@@ -116,7 +116,7 @@
       "do": { "hi": "Dekho poora ganna kitne barabar tukdon mein bata hai", "en": "See how many equal pieces the whole sugarcane is in" },
       "result": "ek tukda = ganne ka 1/5",
       "why": { "hi": "ganna 5 barabar tukdon mein bata hai aur yeh unmein se ek hai", "en": "the sugarcane is in 5 equal pieces and this is one of them" },
-      "simpler": { "hi": "Ganna 5 barabar tukdon mein hai. Ek tukda unmein se ek hai, yaani ganne ka 1/5.", "en": "The sugarcane is in 5 equal pieces. One piece is one of those, so it is 1/5 of the sugarcane." }
+      "simpler": { "hi": "Ganna 5 barabar tukdon mein hai. Ek tukda unmein se ek hai, yaani ganne ka 1/5.", "en": "There are 5 equal pieces of sugarcane. One piece is one of those, so it is 1/5 of the sugarcane." }
      },
      {
       "do": { "hi": "Ek tukde ki lambai ke liye poori lambai ko 5 se bhaag do", "en": "For one piece's length, divide the whole length by 5" },
@@ -132,10 +132,7 @@
      "simpler": { "hi": "5 ko kis number se guna karein ki 30 aaye, woh number dhoondo.", "en": "Find the number that, times 5, makes 30." }, "why": { "hi": "30 ÷ 5 = 6, toh 5 barabar tukdon mein har tukda 6 cm ka hai", "en": "30 ÷ 5 = 6, so each of the 5 equal pieces is 6 cm" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 1, "whole": "bar"} }
     },
     "answer": { "hi": "ek tukda poore ganne ka 1/5 hai aur 6 cm lamba hai", "en": "one piece is 1/5 of the whole sugarcane and is 6 cm long" },
-    "why": {
-     "hi": "1/5 ka matlab hai 5 barabar hisson mein se ek, aur 5 tukde × 6 cm = 30 cm, yaani poora ganna",
-     "en": "1/5 means one of 5 equal parts, and 5 pieces × 6 cm = 30 cm, the whole sugarcane"
-    },
+    "why": { "hi": "1/5 matlab 5 barabar hisson mein se ek; 6 cm ke 5 tukde: 5 × 6 = 30 cm, yaani poora ganna", "en": "1/5 is one of 5 equal parts; 5 pieces of 6 cm make 5 × 6 = 30 cm, the whole sugarcane" },
     "board": { "template": "fraction-parts@1", "params": { "parts": 5, "shade": 1, "whole": "bar" } }
    },
    "checks": [
@@ -171,21 +168,21 @@
      "simpler": { "hi": "Poori lambai ko 3 se bhaag do. Sirf theek utni lambai wala tukda 1/3 hai.", "en": "Divide the whole length by 3. Only a piece of exactly that length is 1/3." },
      
      "then": {
-      "prompt": { "hi": "24 cm ki ribbon ke 3 tukde 8 cm, 8 cm aur 8 cm ke hain. Kya har tukda poori ribbon ka 1/3 hai?", "en": "A 24 cm ribbon is in 3 pieces of 8 cm, 8 cm and 8 cm. Is each piece 1/3 of the whole ribbon?" },
-      "key": "yes",
-      "accept": ["haan", "ha", "yes", "haan, har tukda 1/3 hai"],
+      "prompt": { "hi": "24 cm ki ribbon ke 3 tukde 10 cm, 8 cm aur 6 cm ke hain. Kya har tukda poori ribbon ka 1/3 hai?", "en": "A 24 cm ribbon is in 3 pieces of 10 cm, 8 cm and 6 cm. Is each piece 1/3 of the whole ribbon?" },
+      "key": "no",
+      "accept": ["nahi", "na", "no", "nahi, sirf 8 cm wala"],
       "targets": "c6-maths-ch07-t01-m-unequal-parts",
-      "wrongIfMis": "no",
-      "board": { "template": "compare@1", "params": {"left": {"title": "Ribbon", "items": ["24 cm"]}, "right": {"title": "Tukde", "items": ["8 cm, 8 cm, 8 cm"]}} },
-      "why": { "hi": "24 ÷ 3 = 8 cm, aur teeno tukde 8 cm ke hain, toh haan, har tukda 1/3 hai", "en": "24 ÷ 3 = 8 cm, and all three pieces are 8 cm, so yes, each is 1/3" },
-      "simpler": { "hi": "24 cm ko 3 se bhaag do, yaani 24 ÷ 3. Phir dekho har tukda theek utna lamba hai ya nahi.", "en": "Divide 24 cm by 3, that is 24 ÷ 3. Then see whether each piece is exactly that long." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ribbon", "items": ["24 cm"]}, "right": {"title": "Tukde", "items": ["8 cm, 8 cm, 8 cm"]}} }
+      "wrongIfMis": "yes",
+      "board": { "template": "compare@1", "params": {"left": {"title": "Ribbon", "items": ["24 cm"]}, "right": {"title": "Tukde", "items": ["10 cm, 8 cm, 6 cm"]}} },
+      "why": { "hi": "24 ÷ 3 = 8 cm; tukde 10, 8 aur 6 cm mein sirf 8 cm wala 1/3 hai", "en": "24 ÷ 3 = 8 cm; of the 10, 8 and 6 cm pieces only the 8 cm one is 1/3" },
+      "simpler": { "hi": "Pehle nikalo ki 24 cm ka 1/3 kitna hai. Phir har tukde ko usse milao.", "en": "First work out 1/3 of 24 cm. Then match each piece against it." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ribbon", "items": ["24 cm"]}, "right": {"title": "Tukde", "items": ["10 cm, 8 cm, 6 cm"]}} }
      }
     },
     {
      "targets": "c6-maths-ch07-t01-m-whole-dependence",
      "move": "two strips of different lengths, each folded in half, the small half laid on the big half → 'half' depends on the whole it is half of; same name, different length",
-     "say": { "hi": "1/3 ka matlab hai apne poore ke 3 barabar hisson mein se ek. Lambi ribbon ka 1/3 lamba hota hai, chhoti ribbon ka 1/3 chhota. Naam ek hi hai, par poora alag, toh lambai bhi alag.", "en": "1/3 means one of 3 equal parts of its own whole. A long ribbon has a long 1/3, a short ribbon a short 1/3. The name is the same, but the whole is different, so the length is different too." },
-     "simpler": { "hi": "Har ribbon ka apna hissa alag se nikalo. Phir dono lambaiyon ki tulna karo.", "en": "Find each ribbon's own part separately. Then compare the two lengths." },
+     "say": { "hi": "1/3 hamesha apne poore ka hissa hota hai. Lambi ribbon ka 1/3 lamba hota hai, chhoti ribbon ka 1/3 chhota. Naam ek hi hai, par poora alag, toh lambai bhi alag.", "en": "1/3 is always a part of its own whole. A long ribbon has a long 1/3, a short ribbon a short 1/3. The name is the same, but the whole is different, so the length is different too." },
+     "simpler": { "hi": "Har ribbon ka apna hissa alag se nikalo, aur unki lambai milao.", "en": "Work out each ribbon's own part separately, and match their lengths." },
      
      "then": {
       "prompt": { "hi": "Ribbon A 36 cm ki hai, B 60 cm ki. A ka 1/3 aur B ka 1/5 kaato. Kya dono kate tukde ek jitne lambe hain?", "en": "Ribbon A is 36 cm, B is 60 cm. Cut 1/3 of A and 1/5 of B. Are the two cut pieces the same length?" },
@@ -195,7 +192,7 @@
       "wrongIfMis": "no",
       "board": { "template": "compare@1", "params": {"left": {"title": "Ribbon A", "items": ["36 cm", "1/3"]}, "right": {"title": "Ribbon B", "items": ["60 cm", "1/5"]}} },
       "why": { "hi": "A: 36 ÷ 3 = 12 cm, B: 60 ÷ 5 = 12 cm; naam alag, poore alag, par dono 12 cm", "en": "A: 36 ÷ 3 = 12 cm, B: 60 ÷ 5 = 12 cm; different names, different wholes, both 12 cm" },
-      "simpler": { "hi": "36 cm ka 1/3 aur 60 cm ka 1/5 alag-alag nikalo. Phir dono lambaiyon ki tulna karo.", "en": "Find 1/3 of 36 cm and 1/5 of 60 cm separately. Then compare the two lengths." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ribbon A", "items": ["36 cm", "1/3"]}, "right": {"title": "Ribbon B", "items": ["60 cm", "1/5"]}} }
+      "simpler": { "hi": "36 cm ka 1/3 aur 60 cm ka 1/5 alag-alag nikalo. Dekho dono ek jitne lambe hain ya nahi.", "en": "Find 1/3 of 36 cm and 1/5 of 60 cm separately. See whether the two are just as long." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ribbon A", "items": ["36 cm", "1/3"]}, "right": {"title": "Ribbon B", "items": ["60 cm", "1/5"]}} }
      }
     }
    ],
@@ -284,7 +281,7 @@
       "do": { "hi": "Bar ek hi size ki hain, toh har bar ke barabar hisson ki ginti dekho", "en": "The bars are the same size, so look at the number of equal parts in each" },
       "result": "teeno bar ek hi size ki; har bar ke tukde 6, 3 aur 8",
       "why": { "hi": "ek hi poore ke jitne kam barabar hisse hon, har hissa utna bada hota hai", "en": "the fewer equal parts the same whole has, the bigger each part is" },
-      "simpler": { "hi": "Teeno bar ek hi size ki hain. Ab gino, har bar mein kitne barabar tukde hain: 6, 3 aur 8.", "en": "All three bars are the same size. Now count the equal pieces in each bar: 6, 3 and 8." }
+      "simpler": { "hi": "Bars ka size ek jaisa hai. Ab gino, har bar mein kitne barabar tukde hain: 6, 3 aur 8.", "en": "The bars are all one size. Now count the equal pieces in each bar: 6, 3 and 8." }
      },
      {
       "do": { "hi": "Sabse bada hissa chuno", "en": "Pick the biggest share" },
@@ -308,17 +305,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Ek roti 4 doston mein barabar baanti gayi, aur utni hi badi doosri roti 7 doston mein. Kisko zyada roti mili: 4 mein se ek dost ko ya 7 mein se ek dost ko?",
-      "en": "One roti is shared equally by 4 friends, and another roti of the same size by 7 friends. Who gets more roti: one of the 4 friends or one of the 7 friends?"
-     },
-     "key": "one of the 4",
-     "accept": ["4 mein se ek", "4 mein se ek dost", "4 wala dost", "4 doston wala", "1/4", "one of the 4 friends"],
+     "prompt": { "hi": "Ek cake ko barabar hisson mein kaatna hai, aur har hissa 1/5 cake se chhota chahiye. 4 hisse karoge ya 6?", "en": "A cake is to be cut into equal parts, and each part must be smaller than 1/5 of the cake. Will you make 4 parts or 6?" },
+     "key": "6",
+     "accept": ["6 hisse", "six", "chhah", "6 parts"],
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
-     "wrongIfMis": "one of the 7",
-     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4}, {"parts": 7}]} },
-     "why": { "hi": "ek jaisi roti 4 mein bate toh 1/4, 7 mein bate toh 1/7; 1/4 wala hissa bada hota hai", "en": "the same roti shared by 4 gives 1/4, which is bigger than the 1/7 from sharing by 7" },
-     "simpler": { "hi": "Ek roti 4 barabar hisson mein kati, doosri 7 barabar hisson mein. Kam hisse matlab bade hisse.", "en": "One roti is cut into 4 equal parts, the other into 7 equal parts. Fewer parts make bigger parts." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "shade": 1, "title": "1/4"}, {"parts": 7, "shade": 1, "title": "1/7"}]} }
+     "wrongIfMis": "4",
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 5, "shade": 1, "title": "1/5"}]} },
+     "why": { "hi": "6 hisse: har hissa 1/6, jo 1/5 se chhota; 4 hisse: 1/4, jo 1/5 se bada", "en": "6 parts give 1/6 each, smaller than 1/5; 4 parts give 1/4, bigger than 1/5" },
+     "simpler": { "hi": "Pehle cake ke 4 barabar hisson mein se ek hissa lo aur uski 1/5 se tulna karo. Phir doosre option ko bhi aise hi parkho.", "en": "First take one of 4 equal parts of the cake and compare it with 1/5. Then test the other option the same way." }, "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 5, "shade": 1, "title": "1/5"}]} }
     },
     {
      "id": "c2",
@@ -333,14 +327,14 @@
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Ek hi train route par Rahul ne route ka 1/5 safar kiya aur Sana ne 1/8. Kisne kam doori tay ki: Rahul ne ya Sana ne?", "en": "On the same train route, Rahul travelled 1/5 of the route and Sana 1/8. Who covered less distance: Rahul or Sana?" },
-     "key": "Sana",
-     "accept": ["Sana ne", "Sana ne kam"],
+     "prompt": { "hi": "1/5 aur 1/8 ke beech kaunsa chinh lagega: bada (>) ya chhota (<)?", "en": "Which sign goes between 1/5 and 1/8: greater than (>) or less than (<)?" },
+     "key": ">",
+     "accept": ["bada", "greater than", "bada wala nishaan", "1/5 > 1/8", "1/5 bada hai"],
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
-     "wrongIfMis": "Rahul",
-     "board": { "template": "compare@1", "params": {"left": {"title": "Rahul", "items": ["route ka 1/5"]}, "right": {"title": "Sana", "items": ["route ka 1/8"]}} },
-     "why": { "hi": "ek hi route mein 8 hisson wala hissa 5 hisson wale se chhota, isliye Sana ka 1/8 Rahul ke 1/5 se kam", "en": "on one route a part from 8 parts is shorter than one from 5, so Sana's 1/8 is less than Rahul's 1/5" },
-     "simpler": { "hi": "Route ek hi hai: 1/5 matlab paanch barabar hisson mein se ek, 1/8 matlab aath mein se ek. Zyada hisse karne par har hissa chhota hota hai.", "en": "It is the same route: 1/5 is one of five equal parts, 1/8 is one of eight. More parts make each part smaller." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Rahul", "items": ["route ka 1/5"]}, "right": {"title": "Sana", "items": ["route ka 1/8"]}, "mark": {"side": "right"}} }
+     "wrongIfMis": "<",
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]} },
+     "why": { "hi": "ek hi poore mein 5 hisson wala hissa 8 hisson wale se bada, toh 1/5 > 1/8", "en": "in one whole a part from 5 parts is bigger than one from 8, so 1/5 > 1/8" },
+     "simpler": { "hi": "Dono ek hi poore ke hisse hain. Jahan poora kam hisson mein bata ho, wahan har hissa bada hota hai.", "en": "Both are parts of one whole. Where the whole is split into fewer parts, each part is bigger." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 1, "label": "1/5"}, {"parts": 8, "shade": 1, "label": "1/8"}]} }
     }
    ],
    "ladder": [
@@ -418,12 +412,12 @@
      "board": { "template": "fraction-parts@1", "params": {"parts": 8, "shade": 0, "whole": "roti"} },
      "point": { "hi": "3 roti aur 4 bachche: roti kam, bachche zyada, toh har ek ko 3/4, 1 se kam. 5 laddoo aur 2 bachche: laddoo zyada, toh har ek ko 5/2, 1 se zyada. Dono mein upar cheezein, neeche baantne wale. Yeh roti 8 barabar hisson mein bati hai.", "en": "3 rotis and 4 children: fewer rotis, more children, so each gets 3/4, less than 1. 5 laddoos and 2 children: more laddoos, so each gets 5/2, more than 1. In both, things on top, sharers below. This roti is in 8 equal parts." },
      "ask": {
-      "prompt": { "hi": "Ab 3 aisi roti 8 bachchon mein barabar baanto. Har bachche ko kitni roti milegi?", "en": "Now share 3 rotis like this equally among 8 children. How much roti does each child get?" },
-      "key": "3/8",
-      "accept": ["3/8 roti", "teen bata aath", "3 by 8"],
+      "prompt": { "hi": "Ab wahi 3 roti 8 bachchon mein barabar baanto. Ab har bachche ka hissa pehle wale 3/4 se bada hoga ya chhota?", "en": "Now share the same 3 rotis equally among 8 children. Will each child's share now be bigger or smaller than the 3/4 before?" },
+      "key": "chhota",
+      "accept": ["chhota hoga", "3/4 se chhota", "smaller", "3/8", "3/8, chhota"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "8/3",
-      "why": { "hi": "har roti ke 8 hisse karke har bachche ko har roti se 1/8 milta hai, aur 3 roti se 3/8", "en": "with 8 parts in each roti each child gets 1/8 from each roti, and from 3 rotis 3/8" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 8, "shade": 3, "whole": "roti"} }
+      "wrongIfMis": "bada",
+      "why": { "hi": "ab har bachche ko 3/8 roti: 3 tukde wahi, par 1/8 ka tukda 1/4 se chhota, toh 3/8 < 3/4", "en": "now each child gets 3/8: still 3 pieces, but a 1/8 piece is smaller than a 1/4 piece, so 3/8 < 3/4" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 8, "shade": 3, "whole": "roti"} }
      },
      "simpler": { "hi": "Upar woh cheezein jo baanti ja rahi hain, neeche baantne wale. 3 roti aur 4 bachche toh 3/4, 5 laddoo aur 2 bachche toh 5/2.", "en": "The things being shared go on top, the sharers below. 3 rotis and 4 children give 3/4; 5 laddoos and 2 children give 5/2." }
     },
@@ -432,16 +426,16 @@
      "convey": "fractions measure lengths: 1 m ribbon in 2 equal parts → one part = 1/2 m; 1 m = 100 cm → 100 ÷ 2 = 50 cm; the child does the 5-part row",
      "mustSay": [
       { "hi": "1 metre", "en": "1 metre" },
-      { "hi": "1/2 metre", "en": "1/2 metre" },
+      { "hi": "aadha metre", "en": "half a metre" },
       { "hi": "100 cm", "en": "100 cm" }
      ],
      "board": { "template": "fraction-line@1", "params": {"dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 2]]} },
-     "point": { "hi": "Yeh 1 metre ki ribbon hai, 0 se 1 tak. Upar woh 2 barabar hisson mein bati hai, neeche 5 mein. Upar ka ek hissa 1/2 metre hai. 1 metre = 100 cm, toh 1/2 metre = 100 ÷ 2 = 50 cm.", "en": "This is a 1 metre ribbon, from 0 to 1. Above it is in 2 equal parts, below in 5. One part above is 1/2 metre. 1 metre has 100 cm, so 1/2 metre = 100 ÷ 2 = 50 cm." },
+     "point": { "hi": "Yeh 1 metre ki ribbon hai, 0 se 1 tak. Upar woh 2 barabar hisson mein bati hai, neeche 5 mein. Upar ka ek hissa aadha metre hai. 1 metre mein 100 cm hote hain, toh aadha metre 100 ÷ 2, yaani 50 cm hai.", "en": "This is a 1 metre ribbon, from 0 to 1. Above it is in 2 equal parts, below in 5. One part above is half a metre. A metre has 100 cm, so half a metre is 100 ÷ 2, that is 50 cm." },
      "ask": {
-      "prompt": { "hi": "Neeche wahi 1 metre 5 barabar hisson mein bata hai. Ek hissa kitne cm ka hai?", "en": "Below, the same 1 metre is in 5 equal parts. How many cm is one part?" },
-      "key": "20 cm",
-      "accept": ["20", "20 centimetre", "20 centimetres"],
-      "why": { "hi": "1 metre = 100 cm, aur 1/5 metre = 100 ÷ 5 = 20 cm", "en": "1 metre = 100 cm, and 1/5 metre = 100 ÷ 5 = 20 cm" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 5]]} }
+      "prompt": { "hi": "Neeche wahi 1 metre 5 barabar hisson mein bata hai. Aise 2 hisse milakar kitne cm honge?", "en": "Below, the same 1 metre is in 5 equal parts. How many cm do 2 such parts make together?" },
+      "key": "40 cm",
+      "accept": ["40", "40 centimetre", "40 centimetres", "2/5 metre"],
+      "why": { "hi": "metre ka paanchva hissa 100 ÷ 5 = 20 cm hai, toh 2 hisse 2 × 20 = 40 cm hain", "en": "a fifth of a metre is 100 ÷ 5 = 20 cm, so 2 parts are 2 × 20 = 40 cm" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 5], "from": 0, "to": 1, "marks": [[2, 5]]} }, "wrongIfMis": "20 cm"
      },
      "simpler": { "hi": "1 metre mein 100 cm hote hain. 2 barabar hisse kiye, toh har hissa 100 ÷ 2 = 50 cm.", "en": "1 metre has 100 cm. In 2 equal parts, each part is 100 ÷ 2 = 50 cm." }
     }
@@ -494,14 +488,14 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "3 chikki 5 doston mein barabar baanti gayi. Har dost ko kitni chikki mili?", "en": "3 chikkis are shared equally among 5 friends. How much chikki does each friend get?" },
-     "key": "3/5",
-     "accept": ["3/5 chikki", "teen bata paanch", "3 by 5"],
+     "prompt": { "hi": "Kuch chikki 5 doston mein barabar baanti gayi aur har dost ko 3/5 chikki mili. Kul kitni chikki thi?", "en": "Some chikkis were shared equally among 5 friends, and each friend got 3/5 of a chikki. How many chikkis were there?" },
+     "key": "3",
+     "accept": ["3 chikki", "teen", "three", "teen chikki"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
-     "wrongIfMis": "5/3",
+     "wrongIfMis": "5",
      "board": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 0, "whole": "bar"} },
-     "why": { "hi": "har chikki se har dost ko 1/5 milta hai, aur 3 chikki se 1/5 + 1/5 + 1/5 = 3/5", "en": "each friend gets 1/5 from each chikki, and from 3 chikkis 1/5 + 1/5 + 1/5 = 3/5" },
-     "simpler": { "hi": "Har chikki ke 5 barabar hisse karo. Har dost ko har chikki se ek hissa milta hai, ab uske hisse jodo.", "en": "Make 5 equal parts of each chikki. Each friend gets one part from every chikki; now add up that friend's parts." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 3, "whole": "bar"} }
+     "why": { "hi": "har chikki se har dost ko 1/5, toh 3/5 matlab 3 chikkiyon se ek-ek hissa: kul 3 chikki", "en": "each friend got 1/5 of every chikki, so 3/5 is one part from each of 3 chikkis: 3 in all" },
+     "simpler": { "hi": "Har chikki 5 doston mein bati, toh har dost ko har chikki se ek hissa mila. Ab socho, 3/5 jitne hisse kitni chikkiyon se aaye honge.", "en": "Each chikki was shared among 5 friends, so each friend got one part from every chikki. Now think how many chikkis the parts of 3/5 came from." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 3, "whole": "bar"} }
     },
     {
      "id": "c2",
@@ -534,18 +528,18 @@
     {
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "move": "bar model: each roti drawn as a bar in 5 equal parts, one part per child in every bar → each child 1/5 from each roti → 1/5 + 1/5 = 2/5; fewer rotis than children → share below 1 whole → 5/2 is impossible",
-     "say": { "hi": "Har roti ke utne barabar hisse karo jitne bachche hain, aur har bachche ko har roti se ek hissa do. Phir gino ek bachche ko kitne hisse mile. Roti upar, bachche neeche.", "en": "Cut every roti into as many equal parts as there are children, and give each child one part from every roti. Then count how many parts one child got. Rotis on top, children below." },
-     "simpler": { "hi": "Har bachche ko har roti se ek hissa. Roti upar, bachche neeche.", "en": "Each child gets one part from every roti. Rotis on top, children below." },
+     "say": { "hi": "Har roti ke utne barabar hisse karo jitne bachche hain, aur har bachche ko har roti se ek hissa do. Phir gino ek bachche ko kitne hisse mile.", "en": "Cut every roti into as many equal parts as there are children, and give each child one part from every roti. Then count how many parts one child got." },
+     "simpler": { "hi": "Har bachche ko har roti se ek tukda milta hai. Phir ek bachche ke tukde gino.", "en": "Every child gets a piece from every roti. Then count one child's pieces." },
      
      "then": {
-      "prompt": { "hi": "4 roti 7 bachchon mein barabar baanti gayi. Kya har bachche ko ek poori roti se kam milegi ya zyada?", "en": "4 rotis are shared equally among 7 children. Does each child get less or more than one whole roti?" },
-      "key": "less",
-      "accept": ["kam", "less than one", "1 se kam", "ek roti se kam", "4/7"],
+      "prompt": { "hi": "4 roti 7 bachchon mein barabar baanti gayi. Har bachche ke hisse ki bhinn mein upar kaunsa number aayega: 7 ya 4?", "en": "4 rotis are shared equally among 7 children. In the fraction for each child's share, which number goes on top: 7 or 4?" },
+      "key": "4",
+      "accept": ["4 upar", "chaar", "four", "4/7"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "more",
+      "wrongIfMis": "7",
       "board": { "template": "fraction-parts@1", "params": {"parts": 7, "shade": 0, "whole": "roti"} },
-      "why": { "hi": "har bachche ko har roti se 1/7 milta hai, aur 4 roti se 4/7; 4/7 ek poori roti se kam hai", "en": "each child gets 1/7 from each roti, so 4/7 from 4 rotis, and 4/7 is less than one whole roti" },
-      "simpler": { "hi": "Har roti ke 7 barabar hisse karo, aur har bachche ko har roti se ek hissa do. Phir ek bachche ke hisse poori roti ke 7 hisson se milao.", "en": "Make 7 equal parts of each roti, and give each child one part from every roti. Then compare one child's parts with all 7 parts of a roti." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 7, "shade": 4, "whole": "roti"} }
+      "why": { "hi": "har roti se 1/7, toh 4 roti se 4/7: upar roti ki ginti 4, neeche bachche 7", "en": "1/7 from each roti, so 4/7 from 4 rotis: the 4 rotis on top, the 7 children below" },
+      "simpler": { "hi": "Har roti ke 7 hisse hain, aur har bachche ko har roti se ek hissa milta hai. Ab gino, roti kitni hain.", "en": "Each roti has 7 parts, and every child gets one part from every roti. Now count how many rotis there are." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 7, "shade": 4, "whole": "roti"} }
      }
     }
    ],
