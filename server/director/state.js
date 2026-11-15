@@ -2374,6 +2374,15 @@ function authoredEnd(kit) {
   return sc && !sc.recordedRun ? sc : null;
 }
 const endLine = (x) => (/[.!?\u0964]$/.test(String(x).trim()) ? String(x).trim() : `${String(x).trim()}.`);
+/** dc-r8-director22 R: the reader's reading of a line while the script's teach-back is open — correct when it is the key or a form
+ *  Learning accepts, incorrect when it states a number or fraction that is not, else no reading (a non-answer); null when no script
+ *  teach-back is open. */
+export function teachbackReading(s, kit, text) {
+  if (s?.phase !== "teachback" || !s.teachbackScript || s.teachbackKeyed) return null;
+  const tb = authoredEnd(kit)?.teachback;
+  if (!tb?.key) return null;
+  return teachbackHit(tb, text) ? "correct" : /\d/.test(String(text ?? "")) ? "incorrect" : "no_evidence";
+}
 /** Her teach-back answer against the authored key and its accepted forms (a key, never a model's grade). */
 function teachbackHit(tb, text) {
   const norm = (x) => ` ${String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim()} `;
@@ -2385,16 +2394,24 @@ function teachback(s, input) {
   const { cls, kit } = input;
   const tb = s.teachbackScript ? authoredEnd(kit)?.teachback : null;
   if (tb) {
-    // (2.4: a right answer — the key or a form Learning accepts — goes to the wrap; anything else gets the key and its why once, then the wrap)
+    // (dc-r8-director22 T3: the verdict is a turn of its own — her reply to it, whatever it is, gets the wrap)
+    // (026: the wrap is said over the teach-back's answer board and holds it)
+    if (s.teachbackKeyed) { s.teachbackKeyed = undefined; return { ...toWrap(s, { kit }), ...(tb.answerBoard ? { holdBoard: true } : {}) }; }
+    // (2.4: a right answer — the key or a form Learning accepts — is told so; anything else gets the key and its why, once)
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
-    // (main's 026: the key turn — after a miss, or a right answer's close — shows the teach-back's answerBoard, else a cleared board)
-    if (teachbackHit(tb, input.text)) { s.teachbackPassed = true; return { ...toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct" }; }
+    const hit = teachbackHit(tb, input.text);
+    if (hit) s.teachbackPassed = true;
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
-    const keyLine = `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
-    // (the key and its why, then the wrap: over the teach-back's answerBoard, else a cleared board — never its question board, 026)
-    return toWrap(s, { kit, keyFirst: { line: keyLine, board: tb.answerBoard ?? null } });
+    const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
+    s.teachbackKeyed = true;
+    // (main's 026, director22 T1: the key turn shows the teach-back's answerBoard from its first word, else a cleared board — never
+    // its question board; the wrap that follows holds it)
+    const board = tb.answerBoard ?? null;
+    return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }),
+      ...(hit ? { endVerdict: "correct" } : {}),
+      ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
   }
   s.teachbackTries += 1;
   if (cls?.outcome === "correct") { s.teachbackPassed = true; return toWrap(s, { prefix: SH.CONFIRM.teachbackPass, kit }); }
@@ -3705,7 +3722,7 @@ function step0(prev, input) {
   if (p.clear) move.clear = p.clear;
   // (O5, main on director21 c6 steady 114–120, c4 128–132, c5-t01 140–144, c5-t02 138–142: the teach-back and the wrap were said over
   // the last unit's board — a turn with no unit clears it; Studio's clearBoard runs in brain/turn.js on move.clear)
-  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind) && !move.scriptBeat?.board) move.clear = "board";
+  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind) && !move.scriptBeat?.board && !p.holdBoard) move.clear = "board";
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;

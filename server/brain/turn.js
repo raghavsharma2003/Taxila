@@ -5,7 +5,7 @@
 // The HTTP route (server/routes/lesson.js) stays a thin adapter; lessonTurn(req, body) is the exported turn handler,
 // the seam W2-G's /api/lesson/turn-audio calls. Auth, dedupe/replay, the late-turn and outbox semantics are unchanged.
 import { alignParts } from "./lineParts.js";
-import { requeueMissedReturn, cardUnsaidNow, asideTopic } from "../director/state.js";
+import { requeueMissedReturn, cardUnsaidNow, asideTopic, teachbackReading } from "../director/state.js";
 import { responseShape } from "../director/requestTable.js";
 import { q, one, guardStmt, GUARD_FAILED } from "../db.js";
 import { need, bad, forbidden, notFound, unauthorized, HttpError } from "../http.js";
@@ -2153,6 +2153,9 @@ export function readByAsked(state, cls, text, kit = null) {
     const topic = asideTopic(t, state?.ctx?.interests ?? []);
     if (topic) cls = { ...cls, request: { type: "uptake", src: "aside_words", topic } };
   }
+  // (the teach-back's own answer: read against its key here, the same reading the walk acts on)
+  const tbRead = teachbackReading(state, kit, t);
+  if (tbRead) cls = { ...cls, outcome: tbRead, confidence: 1 };
   if (state?.phase === "teachback" && cls.request && !["stop", "goodbye", "end", "break"].includes(cls.request.type)) { const { request: _r, ...rest } = cls; cls = rest; }
   return cls;
 }

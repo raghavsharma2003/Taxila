@@ -238,6 +238,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
+        // (dc-r8-director22 harness: the script's teach-back question is on the table — its key, for the steady child)
+        ...(s.lastMove?.kind === "teachback" && s.lastMove?.authoredEnd === "teachback" && scriptFor(kit)?.script?.teachback?.key != null
+          ? { teachback: { key: String(scriptFor(kit).script.teachback.key), accept: scriptFor(kit).script.teachback.accept ?? [] } } : {}),
         // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
         // (P1: and her question after the "Main AI teacher hoon …" line is answered the same way, about their thing)
         // (toEnd: the script is spent once its last skill was reached and its walk is over)

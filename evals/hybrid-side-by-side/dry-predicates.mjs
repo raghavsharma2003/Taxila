@@ -11,6 +11,7 @@ import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
+const key3 = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const key = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const words = (t) => norm(t).split(" ").filter(Boolean).length;
 // (S1: a card re-asked by its question alone — its last sentence — is said too)
@@ -614,17 +615,27 @@ export const ORDER_LAWS = {
   teachbackKeyBoard(L, r, i, ctx) {
     const tb = ctx.script?.teachback;
     const key = tb?.key != null ? String(tb.key).trim() : "";
-    // (the key is said on the turn after her answer — the wrap; the teach-back's own question may name the key among its options)
-    if (!key || String(r.move ?? "") !== "wrap") return null;
+    if (!key) return null;
+    // (the turn that asks the teach-back may name the key among its options: the check starts on the turn after it)
+    const q = [tb.prompt?.hi, tb.prompt?.en].filter(Boolean).map((x) => key3(x));
+    if (!ctx.o.tbAsked) { if (q.some((x) => x && key3(r.text).includes(x.slice(0, 40)))) ctx.o.tbAsked = true; return null; }
     const esc = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     if (!new RegExp(`(?<![\\p{L}\\p{N}/])${esc}(?![\\p{L}\\p{N}/])`, "iu").test(String(r.text ?? ""))) return null;
-    return r.held?.unit === "end:teachback" ? `the teach-back's key ("${key}") said over its question board` : null;
+    // (director22 T1: read from the pages drawn — the answer board from the first page, or the board cleared)
+    // (the page up at the character where the key is said: it must be the answer board's — a switch to it after the key is the fault)
+    const H = r.held ?? {};
+    const at = String(r.text ?? "").search(new RegExp(`(?<![\\p{L}\\p{N}/])${esc}(?![\\p{L}\\p{N}/])`, "iu"));
+    const pages = H.pages ?? [];
+    const pageAt = pages.filter((x) => (x.from ?? 0) <= at).length;
+    const ok = H.drawn === "cleared" || (pages.length <= 1 ? /teachback:answer$/.test(String(H.unit ?? "")) : pageAt === pages.length);
+    return ok ? null : `the teach-back's key ("${key}") said on page ${pageAt} of ${pages.length || 1}, before its answer board (${H.unit ?? "no unit"})`;
   },
   orderNoUnit(L, r, i, ctx) {
     const noUnit = !!r.held?.intent?.noUnit || (r.beat == null && /^(?:teachback|wrap|break)$/.test(String(r.move ?? "")));
     if (!noUnit) return null;
     // (the break's offer to go on leaves the lesson's board where it was; its words still name no figure)
-    const up = String(r.move) !== "break" && (r.boardUp === true || (!!r.held?.unit && r.held?.drawn === "kept" && r.held?.kept));
+    // (main's 026: the wrap after a teach-back's key is said over its answer board and holds it)
+    const up = String(r.move) !== "break" && r.held?.unit !== "end:teachback:answer" && (r.boardUp === true || (!!r.held?.unit && r.held?.drawn === "kept" && r.held?.kept));
     // (main's 026: a wrap that says the teach-back's key with no answerBoard clears the board; the key and its authored why name the
     // teach-back's figure — that sentence is checked by teachbackKeyBoard, the rest of the wrap here)
     const tk = ctx?.script?.teachback?.key != null ? String(ctx.script.teachback.key).trim() : "";

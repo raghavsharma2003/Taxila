@@ -269,6 +269,12 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
           return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
         }
       }
+      // (dc-r8-director22 harness: the steady child answers the teach-back — right in half the topics, by the topic's hash, a near miss in
+      // the rest — so both of its paths run; the other children give a reason, as before)
+      if (input.teachback?.key != null && persona === "steady") {
+        const h = [...String(kit?.topicId ?? "")].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7);
+        return h % 2 === 1 ? say({ text: rightForms(input.teachback.key, input.teachback.accept ?? [])[0], kind: "right" }) : say({ text: nearMiss(input.teachback.key, rng), kind: "wrong" });
+      }
       // H1.1: an unkeyed probe gets a reason, even while a card is still on the table (never the card answer again).
       // H1.2: a card merely LABELLED probe that poses a keyed question is a card: a reason only when her line asks how/why,
       // or when the harness says probe and no keyed question is on the table.
