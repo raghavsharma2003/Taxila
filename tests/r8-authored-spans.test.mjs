@@ -30,3 +30,13 @@ test("a slotted script string is authored with its slot filled; a line with no a
   assert.deepEqual(spans("Yeh line dekho, ab."), []);
   assert.equal(outsideAuthored("Yeh line dekho.", [], (x) => inHindiWords(x)), "Yeh rekha dekho.");
 });
+
+// Studio's patch 025 (director20 c6): the Hindi-words pass keeps the script's own word for a term — "triangle" where c6 says "triangle" —
+// and still turns every other English word ("length" becomes "lambai")
+test("the script's own term forms are kept in Hindi mode; other words are still turned", async () => {
+  const { scriptOwnTerms } = await import("../server/brain/say.js");
+  const k6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const keep = scriptOwnTerms(k6);
+  assert.ok(keep.includes("triangle") && keep.includes("rectangle") && !keep.includes("tribhuj"), keep.join(","));
+  assert.equal(inHindiWords("Is triangle ki 3 bhujayein, aur length dekho", { keep }), "Is triangle ki 3 bhujayein, aur lambai dekho");
+});

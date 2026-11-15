@@ -309,6 +309,29 @@ function scriptStrings(script) {
   SCRIPT_STRINGS.set(script, r);
   return r;
 }
+const OWN_TERMS = new WeakMap();
+/** Studio's patch 025: for each of the script's `terms`, the form its Hinglish lines use more often (its hi or its en, each alternative of
+ *  "a / b"); a term never said, or said both ways as often, is left out. Cached per script. */
+export function scriptOwnTerms(kit) {
+  const script = kit ? scriptFor(kit)?.script ?? null : null;
+  if (!script || !Array.isArray(script.terms)) return [];
+  if (OWN_TERMS.has(script)) return OWN_TERMS.get(script);
+  const his = [];
+  const walk = (o, k) => { if (typeof o === "string") { if (k === "hi") his.push(o.toLowerCase()); return; } if (Array.isArray(o)) return o.forEach((x) => walk(x, k)); if (o && typeof o === "object") for (const [kk, v] of Object.entries(o)) if (kk !== "terms") walk(v, kk); };
+  walk(script, null);
+  const text = ` ${his.join(" \n ")} `;
+  const count = (w) => (text.match(new RegExp(`(?<![\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}])`, "giu")) ?? []).length;
+  const out = [];
+  for (const t of script.terms) {
+    const forms = (x) => String(x ?? "").split("/").map((y) => y.replace(/\(.*?\)/g, "").trim().toLowerCase()).filter(Boolean);
+    const hi = forms(t?.hi), en = forms(t?.en);
+    const nh = hi.reduce((a, w) => a + count(w), 0), ne = en.reduce((a, w) => a + count(w), 0);
+    if (nh === ne) continue;
+    out.push(...(nh > ne ? hi : en));
+  }
+  OWN_TERMS.set(script, out);
+  return out;
+}
 /** A word pass over a line that leaves every authored span byte for byte: `fn` runs on each stretch between them. */
 export function outsideAuthored(text, spans, fn) {
   const t = String(text ?? ""); let at = 0; let out = "";
@@ -2807,7 +2830,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6 R4: Hindi asked for: her spoken words in Hindi from here on (the card and the beat's must-say words stay)
     const hindiOn = state.ctx?.lang === "hindi" && !!state.ctx?.langPinned;
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
-    const hw0 = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepW, card }) : x);
+    // (Studio's patch 025, director20 c6: "Is triangle ki …" turned into "tribhuj" where the script says "triangle" — the script's own word for
+    // a term is never swapped, Studio's picture line included)
+    const keepAll = [...keepW, ...scriptOwnTerms(kit)];
+    const hw0 = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepAll, card }) : x);
     // (main on integration 51: no word pass over authored text — the page parts and the card's copy are kept as the spoken line is)
     const spansNow = hindiOn ? authoredSpans(state, card, kit) : null;
     const hw = (x) => (hindiOn && x ? outsideAuthored(x, spansNow(x), hw0) : x);
