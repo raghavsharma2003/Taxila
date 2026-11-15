@@ -34,6 +34,8 @@ test("every cell says only authored fields (script paths) and carries its addres
 test("dc-r8-second-clarify-shows-not-rewords: a second clarify shows the board and re-says; a third is clarify/spent; alts[0] optional", () => {
   const s = structuredClone(live[0]);
   const sk = s.skills[0], b = sk.explain[0];
+  // (2.4: Learning's pointAlt is the second ask's line when written — tested below; first, a point with none)
+  const pa = b.pointAlt; delete b.pointAlt;
   const second = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard;
   assert.deepEqual(second.say, ["skills[0].explain[0].point"]);
   assert.equal(second.show, "skills[0].explain[0].board");
@@ -48,6 +50,8 @@ test("dc-r8-second-clarify-shows-not-rewords: a second clarify shows the board a
   b.alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
   assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].alts[0]"]);
   assert.ok(!compileScript(live[0]).missing.some((m) => /alts\[0\]/.test(m.path)), "alts[0] is never a hole");
+  // (and a written pointAlt goes before alts[0])
+  if (pa) { b.pointAlt = pa; assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].pointAlt"]); }
 });
 
 test("no hole is silent: every missing field's cells compile to a named fallback, and the field is still listed", () => {

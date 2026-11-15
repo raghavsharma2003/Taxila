@@ -50,7 +50,7 @@ export function rule(kind, column, help) {
       const self = kind === "checkin" ? "@point.point" : textOf(kind);
       // (2.4, main on director21 C1: Learning's second wordings — a point's pointAlt, the worked problem's problemAlt — are the second ask's
       // line when written; alts[0] stays for any part that has one)
-      const altOf = kind === "checkin" ? "@point.pointAlt" : kind === "point" ? "pointAlt" : kind === "worked_step" ? "problemAlt" : "alts[0]";
+      const altOf = kind === "checkin" ? ["@point.pointAlt", "@point.alts[0]"] : kind === "point" ? ["pointAlt", "alts[0]"] : kind === "worked_step" ? ["problemAlt", "alts[0]"] : "alts[0]";
       const second = { say: [self], alt: altOf, show: kind === "checkin" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
       if (kind === "point" || kind === "checkin") return help === "fresh" ? { say: [kind === "point" ? "simpler" : "@point.simpler"], then: "checkin", help: "heard" } : help === "heard" ? second : { say: [], then: "card", help: "keep", thirdClarify: true };
       if (kind === "worked_step") return help === "fresh" ? { say: ["simpler"], then: "checkin", help: "heard", fallback: "resay_show" } : help === "heard" ? second : { say: [], then: "next", help: "keep", thirdClarify: true };
@@ -257,8 +257,9 @@ export function compileScript(script, plan = null) {
         const resolve = (r) => {
           const miss = [], say = [];
           // (alts[0] is optional: a script that has one says it in place of the same line again)
-          const alt = r.alt ? field(p, r.alt) : null;
-          const sayFields = alt && hasText(alt.v, r.lang) ? [r.alt] : r.say ?? [];
+          // (an alt may name several fields, the first written one said: Learning's pointAlt/problemAlt, else alts[0])
+          const altF = (Array.isArray(r.alt) ? r.alt : r.alt ? [r.alt] : []).find((f) => { const a = field(p, f); return a && hasText(a.v, r.lang); }) ?? null;
+          const sayFields = altF ? [altF] : r.say ?? [];
           for (const f of sayFields) {
             const x = field(p, f);
             const ok = x.v === "joint" || (f === "key" ? x.v != null && String(x.v).trim() !== "" : hasText(x.v, r.lang));
