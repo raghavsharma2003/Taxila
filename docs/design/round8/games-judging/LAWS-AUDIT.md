@@ -46,7 +46,6 @@ Family tests that asserted `misconceptionId` from those picks now accept `chance
 | `jaanch/neela` iodine | 2 | "Bhoora hi raha: iodine starch dikhata hai, cheeni nahi." | Same. |
 | `rang` milao, pehchaan | 2 | "Ab hara: zyada base se yeh basic ho gaya." / desi "hara". | Same. |
 | `yantra/roshni` dhak, parda | 2 | "Abhi bhi roshni: Chaand ki apni roshni nahi hoti", "saaf nahi". | Same. |
-| `aankde/tally` sort | 2, and "never does the skill" | After a miss the run prints each row's count ("1", "8", "11"), the totals of the next try. The child tallies and the game counts for her. | Needs a decision: is counting the tally part of the skill (then she types the totals, as in stambh/tally), or only bundling? |
 | 3D engines (`yantra` kit and scene palette, `khand` scene) | 1 | The selected mirror's turn ring and the khand selection use `art.you` lime. | Outside the 2D painter. The engine palettes need the focus hex. |
 
 ### Resolved under the rulings of 2026-11-15 (`RULINGS-2026-11-15.md`)
@@ -58,8 +57,9 @@ Family tests that asserted `misconceptionId` from those picks now accept `chance
 | `koshtak/tray` open | The two routes are seen to end apart with no number at either end; the end value is printed when solved. | `laws.mjs` law 2 over every served level (row left `KNOWN`) |
 | `kram/grow` far | The "28" was the bag's remainder (her count less the far stage's), so after "double" it was the key. The bag now shows her own count before and after the run. | `laws.mjs` law 2 over every served level (row left `KNOWN`) |
 | `feeta/thermo` fever | The healthy band is drawn on the solved screen only; the task line gives the normal range as numbers (36.8 to 37.2 °C). | `tests/r8-games-naap-fever-band.test.mjs`, every served fever level |
+| `aankde/tally` sort | Counting the tally is the skill: she types each row's total into its cell with stambh/tally's typed total (`src/play/core/typedtotal.ts`, now shared: the cell and its pad), and "Gino" waits until every total is typed. Solved only when the tally is right AND every typed total is the row's count; a wrong total is a miss. A run prints no count while a try remains: each cell gets a tick (row right) or the dashed box (her number not the row's), the total row stays "of N". The counts and the survey's total appear on the solved screen. The law's solver and mal-rules type the totals (tally-five: the strokes counted one by one; total-mismatch: her rows as they read). | `tests/r8-games-aankde-typed.test.mjs`, every served sort level; `laws.mjs` law 2 over every served level (row left `KNOWN`) |
 
-After the fixes, 91 of the 107 modes the coverage serves show no break; 16 still do (the rows above and two kon modes).
+After the fixes, 92 of the 107 modes the coverage serves show no break; 15 still do (the rows above and two kon modes; aankde/tally left the list with the typed totals).
 
 ## kon (the kon stream fixes these; not edited here)
 
@@ -94,7 +94,7 @@ Each item is green on a part she got right, drawn beside her wrong parts in the 
 | Family | Modes: result |
 |---|---|
 | aakash | chakkar L2, grahan L2, ritu L2; F3 (7 picks) |
-| aankde | line -, stack -, tally L2 |
+| aankde | line -, stack -, tally F2 (typed totals, ruling 2026-11-15) |
 | arena | pick - |
 | badlaav | aag L2, palat -; F3 (3 picks) |
 | bhaap | avastha -, bhaapan -, chakra -, hawa L2; F3 (5 picks) |

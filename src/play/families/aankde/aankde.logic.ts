@@ -4,8 +4,11 @@
 //   tally/sort     a pile of survey slips (a fruit stall's sales, the vehicles at the gate, favourite sports). The child takes
 //                  the top slip into a row as ONE stroke: upright, or across the four before it. On "count" the table reads
 //                  every row as a reader does (a stroke across closes a bundle that reads five, whatever it holds; loose
-//                  uprights one each) and adds the total row against the slips the survey had. Solved: the pile empty,
-//                  every slip in its own row, every row bundled (every fifth stroke across, no other)
+//                  uprights one each). She types each row's total into its cell (the typed total of stambh/tally's read,
+//                  src/play/core/typedtotal.ts): counting the tally is the skill, so the game never counts a row for her
+//                  before the solve (laws ruling 2026-11-15). Solved: the pile empty, every slip in its own row, every row
+//                  bundled (every fifth stroke across, no other) AND every typed total the row's count; a wrong total is
+//                  a miss
 //   tally/missing  N children chose one each; the tallies of every row but one stand; that row's slips were lost. The
 //                  child strokes the lost row; on "count" the rows are read and the total row must make N (and the lost
 //                  row must be bundled)
@@ -23,16 +26,21 @@
 // Mal-rules (each a deterministic set-up; a level serves one only where it differs from the answer):
 //   tally-five      sort / mode: every slip in its row but the fifth stroke drawn upright (no bundle closed);
 //                   missing: each crossed bundle of the standing rows read as four (the lost row stroked too long)
-//   total-mismatch  sort: "count" pressed with slips still on the pile (the total never checked against the survey)
+//   total-mismatch  sort: "count" pressed with slips still on the pile (the total never checked against the survey), each
+//                   row's total typed as her strokes read
 //   mean-size       mode: the crate on the size nearest the mean size (the mean used where only a real size will do)
 //   zero-dropped    even: the empty tower left out, the others levelled among themselves (no kit names it; never claimed)
 //   middle-value    pour: the line at the data value nearest the mean (the mean taken as one of the data values)
 //   outlier         pour: the line where the towers stand without the one far taller (the extreme value ignored)
 //   unordered       middle: no card moved, the peg in the middle of the line as written
 //   one-card        middle: an even count, the line in order, the peg on one of the two middle cards (no kit names it)
-import type { AankdeAct, Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
+import type { AankdeAct as AankdeAct0, Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
+
+/** the family's acts, and sort's typed total: the number written in row `row`'s total cell (null clears it; the same act
+ *  stambh/tally writes its totals with) */
+export type AankdeAct = AankdeAct0 | { kind: "total"; row: number; n: number | null };
 
 export type AankdeMode = "tally" | "stack" | "line";
 export type AankdeGoal = "sort" | "missing" | "mode" | "even" | "pour" | "middle";
@@ -57,6 +65,8 @@ export interface AankdeParams {
 export interface AankdeState extends Undoable<AankdeState> {
   /** tally: each row's strokes in order (true = across) */
   rows: boolean[][];
+  /** sort: what she typed in each row's total cell (null: empty); else [] */
+  totals: (number | null)[];
   /** sort / mode: the row each slip taken went to, in pile order */
   put: number[];
   /** mode: the row the stock crate is on (−1 none) */
@@ -142,8 +152,8 @@ export const numText = (v: number) => (Number.isInteger(v) ? String(v) : String(
 
 // ───────────────────────────── the set-up and its judgement ─────────────────────────────
 /** what the child commits before the run */
-export interface Setup { rows?: boolean[][]; put?: number[]; crown?: number; h?: number[]; line?: number; order?: number[]; peg?: number }
-const setupOf = (s: AankdeState): Setup => ({ rows: s.rows, put: s.put, crown: s.crown, h: s.h, line: s.line, order: s.order, peg: s.peg });
+export interface Setup { rows?: boolean[][]; put?: number[]; totals?: (number | null)[]; crown?: number; h?: number[]; line?: number; order?: number[]; peg?: number }
+const setupOf = (s: AankdeState): Setup => ({ rows: s.rows, put: s.put, totals: s.totals, crown: s.crown, h: s.h, line: s.line, order: s.order, peg: s.peg });
 const lostRow = (p: AankdeParams) => p.cats.length - 1;
 /** sort / mode: every slip in its own row, the rows' strokes one per slip, every row bundled */
 function tallyRight(p: AankdeParams, su: Setup): boolean {
@@ -152,12 +162,14 @@ function tallyRight(p: AankdeParams, su: Setup): boolean {
   const c = countsOf(p);
   return rows.every((m, r) => m.length === c[r] && bundled(m));
 }
+/** sort: every typed total is its row's count */
+const totalsRight = (p: AankdeParams, su: Setup) => countsOf(p).every((c, r) => su.totals?.[r] === c);
 /** missing: what the total row adds to (each row read) */
 export const totalRead = (p: AankdeParams, rows: readonly (readonly boolean[])[]) => sum(rows.map(readRow));
 /** THE judgement of a run */
 export function judge(p: AankdeParams, su: Setup): boolean {
   switch (p.goal) {
-    case "sort": return tallyRight(p, su);
+    case "sort": return tallyRight(p, su) && totalsRight(p, su);
     case "mode": return tallyRight(p, su) && su.crown === modeRow(p);
     case "missing": { const rows = su.rows ?? []; return !!rows[lostRow(p)] && bundled(rows[lostRow(p)]) && totalRead(p, rows) === p.total; }
     case "even": { const h = su.h ?? []; return h.length === p.h.length && h.every((x) => x === h[0]); }
@@ -203,8 +215,9 @@ function rawMal(p: AankdeParams, mal: string): Setup | null {
     case "tally-five":
       if (p.goal === "missing") { const m = lostIf(p, 4); return m >= 1 && m <= MAX_MARKS ? { rows: [...givenRows(p), tallyOf(m)] } : null; }
       if (Math.max(...countsOf(p)) < 5) return null;
-      return { put: [...p.slips], rows: rowsFor(p, p.slips.length, () => false), crown: p.goal === "mode" ? modeRow(p) : -1 };
-    case "total-mismatch": return { put: p.slips.slice(0, -1), rows: rowsFor(p, p.slips.length - 1, (i) => i % 5 === 4) };
+      // (sort: each row's strokes counted one by one, the totals typed right: the bundles are what she leaves out)
+      return { put: [...p.slips], rows: rowsFor(p, p.slips.length, () => false), crown: p.goal === "mode" ? modeRow(p) : -1, ...(p.goal === "sort" ? { totals: countsOf(p) } : {}) };
+    case "total-mismatch": { const rows = rowsFor(p, p.slips.length - 1, (i) => i % 5 === 4); return { put: p.slips.slice(0, -1), rows, totals: rows.map(readRow) }; }
     case "mean-size": { const r = meanRow(p); return r >= 0 ? { put: [...p.slips], rows: rowsFor(p, p.slips.length, (i) => i % 5 === 4), crown: r } : null; }
     case "zero-dropped": {
       const z = p.h.filter((x) => x === 0).length, left = p.h.length - z;
@@ -348,7 +361,7 @@ function validate(level: PlayLevel<unknown>): PlayLevel<AankdeParams> | null {
 export function init(level: PlayLevel<AankdeParams>): AankdeState {
   const p = level.params;
   const rows: boolean[][] = p.goal === "missing" ? [...givenRows(p), []] : p.cats.map(() => []);
-  return { rows, put: [], crown: -1, h: [...p.h], line: -1, order: identity(p.h.length), peg: -1, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
+  return { rows, put: [], totals: p.goal === "sort" ? p.cats.map(() => null) : [], crown: -1, h: [...p.h], line: -1, order: identity(p.h.length), peg: -1, ended: false, runs: 0, done: false, acts: 0, prev: null, depth: 0 };
 }
 
 function apply(level: PlayLevel<AankdeParams>, s: AankdeState, act: AankdeAct, seq: number): { state: AankdeState; moments: Moment[]; refused?: string } {
@@ -370,6 +383,14 @@ function apply(level: PlayLevel<AankdeParams>, s: AankdeState, act: AankdeAct, s
       if (s.rows[r].length >= MAX_MARKS) return no("row_full");
       const rows = s.rows.map((m, i) => (i === r ? [...m, act.across === true] : m));
       return change({ rows, put: p.goal === "missing" ? s.put : [...s.put, r] });
+    }
+    case "total": {
+      // sort: her count of a row, typed into its cell (0..99; a cleared cell travels as n absent, as stambh/tally's does)
+      if (p.goal !== "sort") return no("no_total");
+      const r = Number(act.row), n = act.n ?? null;
+      if (!isInt(r) || r < 0 || r >= p.cats.length) return no("bad_row");
+      if (n !== null && (!isInt(n) || n < 0 || n > 99)) return no("bad_number");
+      return change({ totals: s.totals.map((t, i) => (i === r ? n : t)) });
     }
     case "crown": {
       if (p.goal !== "mode") return no("no_crate");
@@ -410,6 +431,7 @@ function apply(level: PlayLevel<AankdeParams>, s: AankdeState, act: AankdeAct, s
     case "run": {
       if (s.ended) return no("change_first");
       if ((p.goal === "sort" || p.goal === "mode") && !s.put.length) return no("mark_first");
+      if (p.goal === "sort" && s.totals.some((t) => t === null)) return no("fill_first");
       if (p.goal === "missing" && !s.rows[lostRow(p)].length) return no("mark_first");
       if (p.goal === "mode" && s.crown < 0) return no("crate_first");
       if (p.goal === "even" && s.h.every((x, i) => x === p.h[i])) return no("move_first");
@@ -419,6 +441,7 @@ function apply(level: PlayLevel<AankdeParams>, s: AankdeState, act: AankdeAct, s
       const end = bump({ ...s, ended: true, runs, done: ok });
       const f: Facts = { goal: p.goal, run: runs };
       if (tally) f.total = totalRead(p, s.rows);
+      if (p.goal === "sort") f.answer = s.totals.join(",");
       if (p.goal === "pour") { f.above = aboveOf(p.h, s.line); f.gaps = gapsOf(p.h, s.line); }
       if (ok) { out.push(mom("solved", seq, f)); return { state: end, moments: out }; }
       for (const mal of Object.keys(level.mal)) {
@@ -430,13 +453,14 @@ function apply(level: PlayLevel<AankdeParams>, s: AankdeState, act: AankdeAct, s
   }
   return no("unknown_act");
 }
-/** one thing from the answer: one slip in the wrong row or one row unbundled; the lost row one off; one block off level;
+/** one thing from the answer: one slip in the wrong row, one row unbundled or one typed total wrong; the lost row one off; one block off level;
  *  the line one block off; the peg one slot off on a line in order */
 function nearOf(p: AankdeParams, s: AankdeState): boolean {
   if (p.goal === "sort" || p.goal === "mode") {
     if (s.put.length !== p.slips.length) return false;
     const wrong = s.put.filter((r, k) => r !== p.slips[k]).length, unb = s.rows.filter((m) => !bundled(m)).length;
-    return wrong + unb === 1 || (p.goal === "mode" && wrong + unb === 0);
+    const typo = p.goal === "sort" ? countsOf(p).filter((c, r) => s.totals[r] !== c).length : 0;
+    return wrong + unb + typo === 1 || (p.goal === "mode" && wrong + unb === 0);
   }
   if (p.goal === "missing") return Math.abs(totalRead(p, s.rows) - p.total) === 1;
   if (p.goal === "even") { const M = meanOf(p.h); return sum(s.h.map((x) => Math.abs(x - M))) === 2; }
@@ -447,7 +471,8 @@ const goalMet = (_l: PlayLevel<AankdeParams>, s: AankdeState) => s.done;
 
 /** the set-up that solves the level */
 function solveSetup(p: AankdeParams): Setup {
-  if (p.goal === "sort" || p.goal === "mode") return { put: [...p.slips], rows: rowsFor(p, p.slips.length, (i) => i % 5 === 4), crown: p.goal === "mode" ? modeRow(p) : -1 };
+  if (p.goal === "sort") return { put: [...p.slips], rows: rowsFor(p, p.slips.length, (i) => i % 5 === 4), totals: countsOf(p) };
+  if (p.goal === "mode") return { put: [...p.slips], rows: rowsFor(p, p.slips.length, (i) => i % 5 === 4), crown: modeRow(p) };
   if (p.goal === "missing") return { rows: [...givenRows(p), tallyOf(lostCount(p))] };
   if (p.goal === "even") return { h: p.h.map(() => meanOf(p.h)) };
   if (p.goal === "pour") return { line: meanOf(p.h) };
@@ -478,6 +503,8 @@ export function setupActs(p: AankdeParams, su: Setup): AankdeAct[] {
   if (p.goal === "sort" || p.goal === "mode") {
     const seen = p.cats.map(() => 0);
     for (const r of su.put ?? []) { const m = su.rows?.[r]?.[seen[r]] ?? false; seen[r]++; acts.push({ kind: "mark", row: r, across: m }); }
+    // sort: then each row's total typed (as given; else as her strokes read)
+    if (p.goal === "sort") p.cats.forEach((_, r) => acts.push({ kind: "total", row: r, n: su.totals?.[r] ?? readRow(su.rows?.[r] ?? []) }));
     if (p.goal === "mode" && (su.crown ?? -1) >= 0) acts.push({ kind: "crown", row: su.crown! });
   }
   if (p.goal === "missing") for (const m of su.rows?.[lostRow(p)] ?? []) acts.push({ kind: "mark", row: lostRow(p), across: m });
@@ -500,7 +527,9 @@ function solve(level: PlayLevel<AankdeParams>): AankdeAct[] | null {
 export function shortcutActs(p: AankdeParams): AankdeAct[][] {
   const n = p.slips.length, k = p.cats.length, bund = (rs: number[]) => {
     const seen = p.cats.map(() => 0);
-    return rs.map((r) => ({ kind: "mark", row: r, across: seen[r]++ % 5 === 4 }) as AankdeAct);
+    const marks = rs.map((r) => ({ kind: "mark", row: r, across: seen[r]++ % 5 === 4 }) as AankdeAct);
+    // sort: each row's total typed as its strokes read
+    return p.goal === "sort" ? [...marks, ...seen.map((c, r) => ({ kind: "total", row: r, n: c }) as AankdeAct)] : marks;
   };
   if (p.goal === "sort" || p.goal === "mode") {
     const lists = [Array.from({ length: n }, () => 0), Array.from({ length: n }, (_, i) => i % k)].map((rs) => [...bund(rs), { kind: "run" } as AankdeAct]);
@@ -627,6 +656,7 @@ function generate(req: GenRequest): Candidate<AankdeParams>[] {
 function facts(level: PlayLevel<AankdeParams>, s: AankdeState): Facts {
   const p = level.params, f: Facts = { goal: p.goal };
   if (p.goal === "sort" || p.goal === "mode") { f.slips = p.slips.length; f.taken = s.put.length; }
+  if (p.goal === "sort" && s.runs) f.answer = s.totals.map((t) => (t === null ? "-" : String(t))).join(",");
   if (p.goal === "missing") { f.asked = p.total; f.strokes = s.rows[lostRow(p)]?.length ?? 0; }
   if (p.goal === "mode" && s.crown >= 0) f.crate = p.cats[s.crown];
   if (p.goal === "even" || p.goal === "pour") f.towers = p.h.join(",");
@@ -641,7 +671,7 @@ function board(level: PlayLevel<AankdeParams>, s: AankdeState) {
   const p = level.params, lines: string[] = [];
   if (p.goal === "sort" || p.goal === "mode" || p.goal === "missing") {
     if (p.goal === "missing") lines.push(`asked: ${p.total}`); else lines.push(`pile: ${p.slips.length - s.put.length} left of ${p.slips.length}`);
-    p.cats.forEach((c, r) => lines.push(`${c}: ${tallyText(s.rows[r])}${s.crown === r ? " (crate)" : ""}`));
+    p.cats.forEach((c, r) => lines.push(`${c}: ${tallyText(s.rows[r])}${p.goal === "sort" ? ` = ${s.totals[r] ?? "?"}` : ""}${s.crown === r ? " (crate)" : ""}`));
   }
   if (p.goal === "even") lines.push(`towers: ${s.h.join(" ")}`);
   if (p.goal === "pour") lines.push(`towers: ${p.h.join(" ")}`, `line: ${s.line < 0 ? "–" : s.line}`);

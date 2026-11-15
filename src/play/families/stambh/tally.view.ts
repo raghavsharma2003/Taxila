@@ -25,6 +25,7 @@ import type { Role } from "../../core/styles.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
+import { drawTotalCell, totalPad } from "../../core/typedtotal.ts";
 import { groupsOf, numberLineAt, tallyFlow, TALLY_CONTEXTS, type TallyParams, type TallyState } from "./tally.logic.ts";
 
 /**
@@ -221,24 +222,15 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.text(c, String(k), cx, ly(line) - f.sh / 2 - digit * COUNT_LIFT, { size: digit, role: "look", font: "mono", weight: 700 });
     }
   }
-  /** a total cell: her number (or empty); picked = the pad writes here; marksOk = the row's marks are right */
+  /** a total cell: her number (or empty); picked = the pad writes here; marksOk = the row's marks are right (the typed
+   *  total, src/play/core/typedtotal.ts) */
   function drawCell(c: CanvasRenderingContext2D, r: number, cx: number, cy: number, cw: number, ch: number, open: boolean, checked: boolean, marksOk = true): void {
-    const P = api.P, s = st(), v = s.totals[r];
-    api.target(`tot-${r}`, cx - cw / 2, cy - ch / 2, cw, ch);
-    const picked = open && !s.done && !checked && r === sel;
-    P.body(c, cx - cw / 2, cy - ch / 2, cw, ch, { role: "panel", r: 10, state: open ? "idle" : "dim" });
-    if (picked) P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "you", width: 3, closed: true });
-    if (v !== null) P.text(c, String(v), cx, cy + 1, { size: keep ? 22 : 30, role: "ink", font: "mono", weight: 700 });
-    if (checked) {
-      // a tick says the row is right, its marks AND its total (a right total over wrong marks gets no tick: its strokes
-      // play out on the row itself); a solve after a retry ends with pale ticks, a first-try solve with full ones (the
-      // end screen tells the two apart truthfully, no words); a total that is not the row's count gets the dashed box
-      const ok = v === p.counts[r] && marksOk;
-      const k = clamp((api.t - checkedAt) / 0.4, 0, 1);
-      if (ok && s.done && s.checks > 1) { c.save(); c.globalAlpha *= 0.42; P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k); c.restore(); }
-      else if (ok) P.tick(c, cx + cw / 2 - 2, cy - ch / 2 - 2, 18, k);
-      else if (v !== p.counts[r]) P.stroke(c, [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]], { role: "look", width: 2.5, dash: [5, 4], closed: true });
-    }
+    const s = st(), v = s.totals[r];
+    // a tick says the row is right, its marks AND its total (a right total over wrong marks gets no tick: its strokes
+    // play out on the row itself); a solve after a retry ends with pale ticks, a first-try solve with full ones (the
+    // end screen tells the two apart truthfully, no words); a total that is not the row's count gets the dashed box
+    drawTotalCell(api, c, cx, cy, cw, ch, { id: `tot-${r}`, value: v, open, picked: open && !s.done && !checked && r === sel, size: keep ? 22 : 30,
+      check: checked ? { ok: v === p.counts[r] && marksOk, wrong: v !== p.counts[r], pale: s.done && s.checks > 1, k: clamp((api.t - checkedAt) / 0.4, 0, 1) } : null });
   }
 
   function drawKeep(c: CanvasRenderingContext2D): void {
@@ -347,14 +339,8 @@ export const makeTallyView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [];
     const writing = !keep || sceneOver();
-    if (writing && sel >= 0) {
-      const cur = s.totals[sel], txt = cur === null ? "" : String(cur);
-      // a digit typed into a full box (two digits, or a lone 0) starts it again: the keys never look off while the line
-      // asks her to change a total (round 2, ruling 5)
-      const full = txt.length >= 2 || txt === "0";
-      for (const d of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) out.push({ id: `k${d}`, label: d, kind: "pad", group: "pad", onPress: () => act({ kind: "total", row: sel, n: Number(full ? d : txt + d) }) });
-      out.push({ id: "kdel", label: "⌫", aria: "delete", kind: "pad", group: "pad", disabled: !txt, onPress: () => act({ kind: "total", row: sel, n: txt.length > 1 ? Number(txt.slice(0, -1)) : null }) });
-    }
+    // the pad (a digit typed into a full box starts it again: round 2, ruling 5)
+    if (writing && sel >= 0) out.push(...totalPad(s.totals[sel], (n) => act({ kind: "total", row: sel, n })));
     // Jaancho waits after a check until something changes (a second check of the same tally tells her nothing new)
     const ready = writing && s.totals.every((t) => t !== null) && !showCheck();
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: s.acts === 0, onPress: () => act({ kind: "undo" }) });

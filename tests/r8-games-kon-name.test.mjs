@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
+import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -269,7 +269,7 @@ test("judging round 2: the figure (arcs at the vertex at different radii, no lin
     if (goal === "find") corners(p).forEach((c, k) => {
       const v = P[c.v], ha = Math.atan2(P[c.a][1] - v[1], P[c.a][0] - v[0]), hb = Math.atan2(P[c.b][1] - v[1], P[c.b][0] - v[0]);
       let d = hb - ha; while (d > Math.PI) d -= 2 * Math.PI; while (d < -Math.PI) d += 2 * Math.PI;
-      for (let f = 0.08; f <= 0.92; f += 0.04) { const a = ha + d * f; assert.equal(arcHit(p, v[0] + DRAW_R[k] * Math.cos(a), v[1] + DRAW_R[k] * Math.sin(a)), k, `${level.levelId}: drawn arc ${k} at ${f.toFixed(2)}`); }
+      for (let f = 0.08; f <= 0.92; f += 0.04) { const a = ha + d * f; assert.equal(arcHit(p, v[0] + drawR(p, k) * Math.cos(a), v[1] + drawR(p, k) * Math.sin(a)), k, `${level.levelId}: drawn arc ${k} at ${f.toFixed(2)}`); }
     });
     if (goal === "say") { const m = sayMalSize(p); if (m !== null) { dashedSay++; assert.ok(m >= 20, `${level.levelId}: dashed ${m}°`); assert.ok((dashR(m) * m * Math.PI) / 180 >= 23.9, `${level.levelId}: dashed arc too short`); } }
     n++;
