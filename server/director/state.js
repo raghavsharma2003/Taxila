@@ -3641,6 +3641,9 @@ function step0(prev, input) {
   if (input.cls?.asideReply && s.returnAnswer) move.returnReply = s.returnAnswer;
   // r12 RCA failure 4: the board the child asked to clear (brain/turn.js retires the Studio board and unmounts a rung)
   if (p.clear) move.clear = p.clear;
+  // (O5, main on director21 c6 steady 114–120, c4 128–132, c5-t01 140–144, c5-t02 138–142: the teach-back and the wrap were said over
+  // the last unit's board — a turn with no unit clears it; Studio's clearBoard runs in brain/turn.js on move.clear)
+  if (scriptOn() && scriptIdOf(input.kit) && ["teachback", "wrap"].includes(move.kind)) move.clear = "board";
   // round 2 safety floor: a stop check-in ("stop") or the relational goodbye check-in ("rel") — brain/say.js guards its
   // words as an offer to stop, never as a teaching turn that "goes on" (adversarial B2)
   if (p.checkin) move.checkin = p.checkin;

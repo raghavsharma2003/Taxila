@@ -781,6 +781,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     seamSafe("studio.clearBoard", () => (typeof studioSeam.clearBoard === "function" ? studioSeam.clearBoard(lesson.id) : null), null);
     if (next.module?.id) { const id = next.module.id; r = { ...r, moduleCommands: [...r.moduleCommands.filter((c) => c.moduleId !== id), { op: "unmount", moduleId: id }] }; next.module = null; }
     next.wbBeat = undefined;
+    // (O5: nothing held up after a cleared board — the teach-back and the wrap clear it)
+    next.heldUp = undefined;
   }
   // round 5 (QA D11: "negative numbers kya hote hain?" answered while the board still showed the fraction area model): a turn
   // that answers the child's OWN other question, a detour or another topic, and asks for no new board, takes the old board

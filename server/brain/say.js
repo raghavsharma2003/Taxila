@@ -2754,7 +2754,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // P1 (dc-r8-director20: c4 offtopic 30, c5-t02 steady 50 — a return said with the next point or a worked step): a return is a turn
     // of its own. The close of the card just answered stays; the lesson's authored parts wait, and the walk says them first next turn
     // (guard.bodyHeld → the state's bodyUnsaid → that move's sayFirst)
-    if (asideQ && !honestLine && guard.returnLine && asideP.includes(guard.returnLine)) {
+    // (O7, main on director21 c5-t02 offtopic 22, steady 46, c6 steady 42, c4 stuck 42: the AI line came after four sentences of teaching —
+    // her answer to the child's question comes first: the teaching it would follow waits for the next turn, as a return's does)
+    if (asideQ && ((honestLine && asideP.includes(honestLine)) || (!honestLine && guard.returnLine && asideP.includes(guard.returnLine)))) {
       const isA = authoredSentence(state, card, kit);
       const bridgeK0 = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const held = [...first.filter((x) => x === bridgeK0), ...body].filter((x) => sentences(x).some((y) => isA(y)));
