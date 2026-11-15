@@ -71,11 +71,46 @@ export function replyWordOf(cands = [], said = "") {
 }
 
 const ASKS_HER = /(?:aapko|aap|tumhe|tum)\b.*\b(?:pasand|favourite|favorite|kaun)|do you like|your favou?rite|what about you|aur aap/i;
-/** Her reply to the child's answer about their aside: { line, form: "word" | "plain" | "sad" }. The sad set when the aside or the
+// (director21 R3, Learning's phraseReplies: {phrase} is the child's own answer to her return question, up to three words, said back as
+// something about the child — first person turned to second, a postposition at its end dropped; never a bare yes/no, a don't-know,
+// "sab", or a question back to her)
+const FILLER_HEAD = /^(?:(?:hmm+|umm*|achha|acha|accha|haan|han|ha|toh|to|woh|wo|vo|mujhe|mere\s+ko|mujhko|sabse\s+(?:achha|accha|acha|zyada)|mera\s+favou?rite|favou?rite)\s+)+/iu;
+const FILLER_TAIL = /(?:\s+(?:lagta|lagti|lage|laga|lagi|hai|hain|tha|thi|the|pasand|hota|hoti|wala|wali|wale|sabse|achha|accha|acha|zyada|bahut))+$/iu;
+const POSTPOSITION = /\s+(?:ke\s+saath|ke\s+sath|ke\s+baare\s+mein|mein|me|se|par|pe|ko|ka|ki|ke|tak)$/iu;
+const PERSON = [[/(?<![\p{L}])mera(?![\p{L}])/giu, "tumhara"], [/(?<![\p{L}])meri(?![\p{L}])/giu, "tumhari"], [/(?<![\p{L}])mere(?![\p{L}])/giu, "tumhare"],
+  [/(?<![\p{L}])(?:humara|hamara)(?![\p{L}])/giu, "tumhara"], [/(?<![\p{L}])(?:humari|hamari)(?![\p{L}])/giu, "tumhari"], [/(?<![\p{L}])(?:humare|hamare)(?![\p{L}])/giu, "tumhare"],
+  [/(?<![\p{L}])maine(?![\p{L}])/giu, "tumne"], [/(?<![\p{L}])(?:my)(?![\p{L}])/giu, "your"], [/(?<![\p{L}])(?:our)(?![\p{L}])/giu, "your"]];
+const NEVER_PHRASE = /^(?:haan|han|ha|nahi|nahin|na|pata\s+nahi|kuch\s+nahi|kuch\s+bhi\s+nahi|sab|sab\s+kuch|yes|no|nothing|everything|i\s+don'?t\s+know|ok|okay|theek|thik)$/iu;
+/** The child's answer as a {phrase} (≤ 3 words, in her voice), or null. */
+export function phraseOf(said = "") {
+  const raw = String(said ?? "");
+  if (/\?/.test(raw) || ASKS_HER.test(raw)) return null;
+  // (her words keep their case — a name stays a name — save a capital the transcript put on the first word)
+  let t = raw.replace(/[^\p{L}\p{N}' ]+/gu, " ").replace(/\s+/g, " ").trim().replace(/^(\p{Lu})(\p{Ll}*)(?=\s|$)/u, (m, a, b) => (FILLER_HEAD.test(`${m} `) || PERSON.some(([re]) => { re.lastIndex = 0; return re.test(m); }) ? (a + b).toLowerCase() : m));
+  for (let i = 0; i < 3; i++) t = t.replace(FILLER_HEAD, "").replace(FILLER_TAIL, "").replace(POSTPOSITION, "").trim();
+  for (const [re, to] of PERSON) t = t.replace(re, to);
+  if (!t || NEVER_PHRASE.test(t)) return null;
+  const w = t.split(" ");
+  if (w.length > 3 || w.every((x) => NOT_A_WORD.test(x))) return null;
+  return t;
+}
+/** Which of the kind's return questions her line asked (its index), or -1. */
+function returnIndexOf(k, topic, asked, lang) {
+  const norm = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N} ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const a = norm(asked);
+  if (!a) return -1;
+  return (k?.returns ?? []).findIndex((f) => { const q = norm(fill(formOf(f, lang), { aside: topic })); return q && a.includes(q); });
+}
+
+/** Her reply to the child's answer about their aside: { line, form: "phrase" | "word" | "plain" | "sad" }. The sad set when the aside or the
  *  answer is sad; a plain form when they ask her back (rule 4) or no word of theirs fits; else a form with their word. */
-export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0, words = [] } = {}) {
+export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "" } = {}) {
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
+  // (phraseReplies[i] answers returns[i]: the return her line asked, the child's own phrase back)
+  const i = k?.phraseReplies?.length ? returnIndexOf(k, topic, asked, lang) : -1;
+  const phrase = i >= 0 && k.phraseReplies[i] ? phraseOf(said) : null;
+  if (phrase) return { line: cap(fill(formOf(k.phraseReplies[i], lang), { phrase })), form: "phrase" };
   const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
   if (word) { const f = pickN(k?.replies, n); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
   const p = pickN(k?.plain, n);
@@ -93,6 +128,8 @@ export function asideReplyForms() {
   const re = (f) => new RegExp(`^${esc(f).replace(/\\\{word\\\}|\{word\}/g, "(.{1,40}?)")}$`, "iu");
   return {
     word: all.flatMap((k) => (k.replies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map(re),
+    // (a {phrase} form is checked as a {word} form: one slot of the child's own words)
+    phrase: all.flatMap((k) => (k.phraseReplies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map((f) => re(f.replace(/\{phrase\}/g, "{word}"))),
     plain: all.flatMap((k) => (k.plain ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean),
     sad: (DATA.sad?.replies ?? []).flatMap((f) => [f.hi, f.en]).filter(Boolean),
   };

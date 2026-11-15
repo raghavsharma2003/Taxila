@@ -258,6 +258,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
       answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
     live = { state: p.learner.after, maxSeq: live.maxSeq };
+    // (D, main on director21: the row records the reading the turn acted on — planTurn's, after its own rules — and the raw one beside it)
+    { const eff = p.cls ?? null; const row = rows.at(-1); if (eff && row?.who === "child") { const rq = eff.request?.src === "card_unsaid" ? null : eff.request?.type; const r1 = eff.outcome + (rq ? ` · ${rq}` : "") + (eff.asideReply ? " · aside" : ""); if (r1 !== row.read) { row.readRaw = row.read; row.read = r1; } } }
     let next = { ...p.r.state, mode: "text" };
     let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
     // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected
@@ -340,6 +342,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
       // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
       if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
+      if (t.guard?.backTo && next) next = { ...next, backToN: (next.backToN ?? 0) + 1 };
+      if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of t.guard.jointsUsed) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
       // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)
@@ -532,6 +536,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
     // (v6.10 harness, main on director18 steering 50: a break or stop menu had no held record — a turn with no unit part keeps the board
     // up, and its record says so)
+    // (O5: a turn whose move clears the board — the teach-back, the wrap — records the board taken down, and nothing is held up after it)
+    if (!heldRec && lane === "director" && reply && next.lastMove?.clear === "board") { heldRec = { unit: null, changed: true, kept: false, drawn: "cleared", pages: [], intent: { unit: null, noUnit: true }, layout: { split: false } }; next = { ...next, heldUp: undefined }; }
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),

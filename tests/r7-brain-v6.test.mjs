@@ -368,8 +368,10 @@ describe("R5: a turn too long for one is split, never cut", () => {
     assert.equal(split.move.splitClose, true);
     const r = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: { ...cls("no_evidence"), request: { type: "visual", kind: "picture", whole: true } }, text: "picture dikhao", now: 9e6 });
     assert.equal(r.move.request, "visual", JSON.stringify(r.move).slice(0, 200));
-    assert.equal(r.state.splitHold, undefined);
-    assert.equal(r.state.activeItemId, split.state.splitHold.activeItemId, "the card is live again");
+    // (O4, main on director21 c4 stuck 18, offtopic 26: a picture at a key's check-in stays on the card just closed — the held half stays
+    // held for the next turn, and the picture is the closed card's board)
+    assert.ok(r.state.splitHold, "the held half still waits");
+    assert.notEqual(r.state.activeItemId, split.state.splitHold.activeItemId, "the next card is not made live by the picture");
   });
 
   test("a stop said over the closing half lets the held half go", () => {
