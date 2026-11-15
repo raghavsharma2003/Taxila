@@ -2880,7 +2880,10 @@ const ONE_TURN = ["whyAltSaid", "returnReply", "returned", "tasteAsked", "sadAsi
 /** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
 function whyAltOf(prev, kit) {
   const id = prev?.lastMove?.itemId ?? prev?.activeItemId ?? null;
-  const item = id ? findItem(prev, kit, id) : null;
+  // (a right answer's close carries no item: the card it closed is its closeBeat — {skillId, beatId, kind})
+  const cb = prev?.lastMove?.closeBeat;
+  const item = id ? findItem(prev, kit, id) : cb?.skillId && cb.beatId ? (cb.kind === "check" && String(cb.beatId).startsWith("then:") ? { skillId: cb.skillId, scriptThen: { targets: String(cb.beatId).slice(5) } }
+    : cb.kind === "check" ? { skillId: cb.skillId, scriptCheck: { checkId: cb.beatId } } : { skillId: cb.skillId, scriptAsk: { beatId: cb.beatId } }) : null;
   if (!item?.skillId) return null;
   const sk = skillScriptOf(kit, item.skillId);
   const card = item.scriptAsk ? (item.scriptAsk.beatId === "worked" ? sk?.workedExample?.yourStep : sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.ask)
@@ -2900,7 +2903,9 @@ function cellLines(prev, input, column) {
   const at = (path) => { let v = script; for (const seg of String(path).split(".")) { const m = /^(\w+)(?:\[(\d+)\])?$/.exec(seg); if (!m || v == null) return undefined; v = v[m[1]]; if (m[2] != null) v = Array.isArray(v) ? v[+m[2]] : undefined; } return v; };
   const lang = cell.lang === "hi" ? "hinglish" : prev?.ctx?.lang ?? "hinglish";
   const lines = (cell.say ?? []).map((p) => at(p)).map((v) => (v == null ? null : saidIn(v, lang))).filter((x) => x && String(x).trim()).map((x) => String(x).trim());
-  return { cell, addr, lines, show: cell.show ? at(cell.show) ?? null : null };
+  // (a second wording may carry its own board — {hi, en, board} — shown in place of the part's)
+  const altBoard = (cell.say ?? []).map((p) => (/Alt$/.test(p) ? at(p)?.board : null)).find((b) => b && typeof b === "object") ?? null;
+  return { cell, addr, lines, show: altBoard ?? (cell.show ? at(cell.show) ?? null : null) };
 }
 const carried = (lm, keep = []) => Object.fromEntries(Object.entries(lm ?? {}).filter(([k]) => keep.includes(k) || !ONE_TURN.includes(k)));
 /**
@@ -4014,14 +4019,17 @@ function heldTurn(prev, input) {
   // (C1, main on director21 c4 steering 54–58, c6 steering 16–20, stuck c4 42–46: the same why said three turns running. After a key, a
   // give-up or a clarify gets the why's second wording — the card's whyAlt — once; with none written, or once it is said, the walk goes
   // on: no authored sentence is said in two turns running)
-  const whyAlt = !h.teach && prev.lastMove?.gave?.answer && prev.lastMove?.splitClose && !prev.lastMove?.whyAltSaid ? whyAltOf(prev, input.kit) : null;
+  // (a right answer's close — its why said, move.closed — is a key said too: c4 steady 100→102 moved on after "samajh nahi aaya")
+  const whyAlt = !h.teach && (prev.lastMove?.gave?.answer || prev.lastMove?.closed?.answer || (prev.lastMove?.closeBeat && prev.lastMove?.gaveCheck)) && prev.lastMove?.splitClose && !prev.lastMove?.whyAltSaid ? whyAltOf(prev, input.kit) : null;
   if (whyAlt && !prev.lastMove?.secondClarify && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
     && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
     const s = structuredClone(prev);
     s.turn += 1;
-    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closeBeat", "closedBeat", "splitClose", "gaveCheck"]);
-    const again = { ...prevMove, gave: { ...prevMove.gave, why: whyAlt.text }, smaller: true, gaveCheck: true, whyAltSaid: true,
+    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closed", "closeBeat", "closedBeat", "splitClose", "gaveCheck"]);
+    const again = { ...prevMove, ...(prevMove.gave ? { gave: { ...prevMove.gave, why: whyAlt.text } } : prevMove.closed ? { closed: { ...prevMove.closed, why: whyAlt.text } } : { kind: "reteach", simpler: whyAlt.text.charAt(0).toUpperCase() + whyAlt.text.slice(1), stayCheckin: true, scriptBeat: { ...prevMove.closeBeat } }), smaller: true, gaveCheck: true, whyAltSaid: true,
       ...(whyAlt.board && prevMove.closeBeat ? { closeBeat: { ...prevMove.closeBeat, board: whyAlt.board } } : {}) };
+    // (a right answer's close: the second wording is said as the card's simpler, with the check-in — no verdict frame again)
+    if (!prevMove.gave && !prevMove.closed) { delete again.gaveCheck; delete again.splitClose; delete again.closeBeat; if (whyAlt.board) again.scriptBeat = { ...again.scriptBeat, board: whyAlt.board }; }
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

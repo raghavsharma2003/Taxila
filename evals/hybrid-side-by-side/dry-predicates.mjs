@@ -87,13 +87,16 @@ export const PREDICATES = {
     return ctx.saidCards.has(low(r.card).slice(0, 40)) ? null : "a re-pose frame on the card's first posing";
   },
   /** A turn that asks the child a question and poses a card. */
-  askAndCard(L, r) {
+  askAndCard(L, r, i, ctx) {
     if (!cardIn(r)) return null;
+    // (2.4 S2: a card's reask is its own question, said alone with its givens named — no second question)
+    const reasks = (ctx.o.reasks ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.reask) for (const v of [o.reask.hi, o.reask.en, o.reask]) if (typeof v === "string") out.push(key(v.replace(/\{\w+\}/g, ""))); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
     // (a return asks the child about their aside — "… thoda aur batao" — whether or not it ends in "?")
     if (r.returnSaid) return "an aside return and a card in one turn";
     const card = low(r.card);
     const unframed = (x) => low(x).replace(/^[^:—]{0,40}(?::|—)\s*/, "");
-    const qs = sentencesOf(r.text).filter((x) => /[?？]\s*$/.test(x) && !card.includes(low(x).slice(0, 25)) && !card.includes(unframed(x).slice(0, 25)) && !CHECKIN.test(x));
+    const isReask = (x) => reasks.some((k) => k.length > 10 && (key(x).includes(k.slice(-30)) || k.includes(key(x).slice(-30))));
+    const qs = sentencesOf(r.text).filter((x) => /[?？]\s*$/.test(x) && !card.includes(low(x).slice(0, 25)) && !card.includes(unframed(x).slice(0, 25)) && !CHECKIN.test(x) && !isReask(x));
     return qs.length ? `asks "${qs[0].slice(0, 60)}" and poses a card` : null;
   },
   /** A turn holding a key, a new point and a new card. */
@@ -564,6 +567,8 @@ export const ORDER_LAWS = {
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
+    // (a turn that teaches nothing — the break offer — is asked about the unit it held)
+    if (!asked.size && ctx.prevT.held?.unit) asked.add(unitOf(String(ctx.prevT.held.unit).split(":").pop()));
     const moved = (r.pageParts ?? []).find((p) => p.part !== "close" && p.part !== "bridge" && beatOfPart(p) && !asked.has(unitOf(beatOfPart(p))));
     return moved ? `a ${rq} request moved from ${[...asked].join("/") || "?"} to ${unitOf(beatOfPart(moved))}` : null;
   },
@@ -637,7 +642,8 @@ export const ORDER_LAWS = {
   orderAnswerFirst(L, r) {
     const t = String(r.text ?? ""), at = t.search(AI_LINE);
     if (at <= 0) return null;
-    const before = sentencesOf(t.slice(0, at)).length;
+    // (complete sentences only: "Meri apni pasand nahi hoti, main AI hoon." is one sentence, its AI words in it)
+    const before = sentencesOf(t.slice(0, at)).filter((x) => /[.!?।]$/.test(x)).length;
     return before ? `the AI line after ${before} sentence${before > 1 ? "s" : ""} of hers` : null;
   },
 };

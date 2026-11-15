@@ -318,7 +318,7 @@ export function validateTopicScript(sc, kit) {
  *  with its validator rules, before any script carries it (tests/r7-brain-live-scripts.test.mjs fails otherwise). */
 /** The most words a card's authored why may have: it is said whole after "kyunki" in its close (state.js scriptWhyOf). */
 export const WHY_MAX_WORDS = 22;
-export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2, 2.3]);
+export const SCRIPT_VERSIONS = Object.freeze([1, 2, 2.1, 2.2, 2.3, 2.4]); // (2.4, main on director21: teachback, wrap, pointAlt/whyAlt/problemAlt, four seam joints, reask — read by presence)
 /** The script versions the Director walks: SCRIPT_VERSIONS (the validator's accepted versions), never a second list. */
 export const WALK_VERSIONS = new Set(SCRIPT_VERSIONS);
 export const scriptOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT ?? ""));

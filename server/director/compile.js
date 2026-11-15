@@ -48,7 +48,10 @@ export function rule(kind, column, help) {
       // left — on a card, its key and why; on a point or its check-in, the card; on a worked step, the next step; on a remediation,
       // its then-card; on a bridge, the next unit.)
       const self = kind === "checkin" ? "@point.point" : textOf(kind);
-      const second = { say: [self], alt: kind === "checkin" ? "@point.alts[0]" : "alts[0]", show: kind === "checkin" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
+      // (2.4, main on director21 C1: Learning's second wordings — a point's pointAlt, the worked problem's problemAlt — are the second ask's
+      // line when written; alts[0] stays for any part that has one)
+      const altOf = kind === "checkin" ? "@point.pointAlt" : kind === "point" ? "pointAlt" : kind === "worked_step" ? "problemAlt" : "alts[0]";
+      const second = { say: [self], alt: altOf, show: kind === "checkin" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
       if (kind === "point" || kind === "checkin") return help === "fresh" ? { say: [kind === "point" ? "simpler" : "@point.simpler"], then: "checkin", help: "heard" } : help === "heard" ? second : { say: [], then: "card", help: "keep", thirdClarify: true };
       if (kind === "worked_step") return help === "fresh" ? { say: ["simpler"], then: "checkin", help: "heard", fallback: "resay_show" } : help === "heard" ? second : { say: [], then: "next", help: "keep", thirdClarify: true };
       if (kind === "remediation") return help === "fresh" ? { say: ["simpler"], then: "card", help: "heard" } : help === "heard" ? { ...second, then: "card" } : { say: [], then: "card", help: "keep", thirdClarify: true };
@@ -219,7 +222,7 @@ export function compileScript(script, plan = null) {
     if (f === "@greetSimpler") return { path: "greetSimpler", v: at(script, "greetSimpler") };
     // (the hook's line: the plan's slot, else the first — Loop's ask D)
     if (f === "@slot.use") { const i = Number.isInteger(hookSlotOf(p)) ? hookSlotOf(p) : 0; return { path: `${p.path}.interestSlots[${i}].use`, v: at(script, `${p.path}.interestSlots[${i}].use`) }; }
-    if (p.text && (f === "do" || f === "simpler" || f === "alts[0]")) return { path: `${p.path}.${f === "do" ? p.text : f}`, v: at(script, `${p.path}.${f === "do" ? p.text : f}`) };
+    if (p.text && (f === "do" || f === "simpler" || f === "alts[0]" || f === "problemAlt")) return { path: `${p.path}.${f === "do" ? p.text : f}`, v: at(script, `${p.path}.${f === "do" ? p.text : f}`) };
     const own = { path: `${p.path}.${f}`, v: at(script, `${p.path}.${f}`) };
     if (own.v != null) return own;
     // (as the walk does today: an explain card's help and board are its point's (liveBeatSimpler); a worked step's board is the worked

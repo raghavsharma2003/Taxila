@@ -970,6 +970,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.bodyHeld?.length && next) next.bodyUnsaid = guard.bodyHeld;
     // (J1: backTo's forms rotate by how many times a card has come back)
     if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
+    // (2.4 J1: each seam joint kind rotates by how many times it has been said)
+    if (guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of guard.jointsUsed) jn[k] = (jn[k] ?? 0) + 1; next.jointN = jn; }
     // (v6.9 A5: her turn ended on an aside question — the next reply is read as about it, or as what it asks)
     if (guard?.asideEnd) next.asideReplyDue = true;
     // (v6.11 J2: that question was an aside's return: the reply answers it — state.js reads it as the aside's own reply)

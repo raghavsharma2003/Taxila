@@ -343,6 +343,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
       if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.backTo && next) next = { ...next, backToN: (next.backToN ?? 0) + 1 };
+      if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of t.guard.jointsUsed) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
       if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
       if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
       // (P1, as brain/turn.js: the AI line's question to them is answered on the next turn, as a return's is)

@@ -20,6 +20,7 @@ import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
 import { saidMust, joinable, scriptFor, jointOf } from "../director/script.js";
+import { fillFriend } from "../director/friend.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
@@ -112,7 +113,7 @@ const jointStart = (state, kind) => { const k = [...String(kind)].reduce((h, c) 
 export const jointCount = (state, kind) => jointStart(state, kind) + (kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
   : kind === "asideReturn" ? Math.max(0, (state?.later ?? []).filter((e) => e.servedAt != null).length - 1)
   : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1)
-  : kind === "backTo" ? (state?.backToN ?? 0) : 0);
+  : kind === "backTo" ? (state?.backToN ?? 0) : (state?.jointN?.[kind] ?? 0));
 export const rotated = (xs, n) => (Array.isArray(xs) && xs.length ? [...xs.slice(n % xs.length), ...xs.slice(0, n % xs.length)] : xs);
 export const jointsAt = (kit, kind, lang, state, slots = {}) => rotated(jointOf(kit, kind, lang, slots), jointCount(state, kind));
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
@@ -308,6 +309,15 @@ function scriptStrings(script) {
   const r = { plain: [...new Set(all.filter((x) => !/\{\w+\}/.test(x)))], slotted: [...new Set(all.filter((x) => /\{\w+\}/.test(x)))] };
   SCRIPT_STRINGS.set(script, r);
   return r;
+}
+/** The script's own card object behind a kit item (an explain ask, a check, a remediation's then-card, the worked example's own step), or null. */
+export function rawCardOf(kit, item) {
+  const sk = item?.skillId ? (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === item.skillId) : null;
+  if (!sk) return null;
+  if (item.scriptAsk) return item.scriptAsk.beatId === "worked" ? sk.workedExample?.yourStep ?? null : sk.explain?.find((b) => b.id === item.scriptAsk.beatId)?.ask ?? null;
+  if (item.scriptCheck) return sk.checks?.find((c) => c.id === item.scriptCheck.checkId) ?? null;
+  if (item.scriptThen) return sk.remediation?.find((r) => r.targets === item.scriptThen.targets)?.then ?? null;
+  return null;
 }
 const OWN_TERMS = new WeakMap();
 /** Studio's patch 025: for each of the script's `terms`, the form its Hinglish lines use more often (its hi or its en, each alternative of
@@ -735,6 +745,14 @@ export const GAVE_FORMS = {
     now: [(a, w) => `This question's answer is ${a}${w}.`, (a, w) => `The answer here is ${a}${w}.`, (a, w) => `Here the answer is ${a}${w}.`],
     yesNo: [(a, w) => `This question's right answer: ${a}${w}.`, (a, w) => `The right answer here: ${a}${w}.`, (a, w) => `Here the right answer is ${a}${w}.`] },
 };
+/** 2.4 J1 (main on director21: "Haan, pehle tum try karo —" and a card, no join): the invitation, then Learning's afterTryFirst joint when the
+ *  script has one ("Yeh raha sawaal."), the dash becoming a full stop; else the invitation alone. */
+function tryFirstLead(kit, lang, state, guard = null) {
+  const inv = freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state);
+  const jf = jointsAt(kit, "afterTryFirst", lang, state);
+  if (jf && guard) (guard.jointsUsed ??= []).push("afterTryFirst");
+  return jf ? [inv.replace(/\s*[—–-]\s*$/, "."), freshOf(jf, state)] : [inv];
+}
 /** v6.6 F1′ (main, director14: try-first got "Phir se dekho"): asked to try first, an invitation, then the card. */
 export const TRY_FIRST = { hinglish: ["Haan, pehle tum try karo —", "Theek hai, khud karke dekho —", "Bilkul, pehle tumhari koshish —"], english: ["Sure, you try first —", "Okay, have a go yourself —", "Go ahead, your try first —"] };
 // (v6.11 G2: English words and their Hindi twins — Learning will own this list; director19's four first)
@@ -2488,6 +2506,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // scripted worked or remediation turn carries no number; the code lines carry them, in order
       const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
+      // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
+      if (state.lastMove?.scriptBeat?.kind === "remediation" && lead && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
     } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
       // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
       // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
@@ -2597,7 +2617,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (A6: one neutral joint unless the turn already opens on one; the body — the unit's next part — is never replaced)
       // (v6.11 J2: after their answer to her return, her one sentence on it when it holds, else the neutral joint)
       // (it is the aside's reply — the one sentence of hers a scripted turn keeps, V1 — so it rides with the aside, before the teaching)
-      if (j2Line) { aside.unshift(j2Line); guard.returnReplyLine = j2Line; }
+      if (j2Line) { aside.unshift(j2Line); guard.returnReplyLine = j2Line;
+        // (2.4 J1, main on director21: the aside reply set against a card with no join — Learning's afterAside joint, or afterAiLine when her
+        // last turn was the AI line, between her reply and the lesson)
+        const kindJ = /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) ? "afterAiLine" : "afterAside";
+        const jf = (body.length || card) ? jointsAt(kit, kindJ, lang, state) : null;
+        if (jf) { const a = freshOf(jf, state); body = [a, ...body]; codeLines.push(a); guard[kindJ] = a; (guard.jointsUsed ??= []).push(kindJ); } }
       else if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
       if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
@@ -2605,9 +2630,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
     else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && posedBefore && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
-    else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = [freshOf((state.lastMove?.request === "selftry" ? TRY_FIRST : FRAMES.again)[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = true; }
+    else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
-    else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = [freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(body[0]); guard.reposeFrame = "selftry"; }
+    else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
     // with no card asks no question of hers — only code's own check-in may ask
     // (the worked example's own authored question is code's, not hers: a code-rendered turn keeps it)
@@ -2776,9 +2801,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (help: an authored simpler or hint, or a wrong answer's verdict — never a frame, a non-answer's re-pose or a picture turn, whose
       // card keeps its own page, v6.5 P3)
       const helped = (!!state.lastMove?.simpler || (graded && verdict === "not_yet")) && !guard.altOnly && !NON_ANSWER.has(String(state.lastMove?.request ?? "")) && state.lastMove?.request !== "visual";
-      const askMark = item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
-      const q = askMark ? norm(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "") : cardSs.at(-1);
-      if (cardSs.length >= 2 && q && helped && last2.some((t) => t.includes(norm(card).toLowerCase()))) {
+      // (2.4 S2, main on director21: Learning's reask — the question alone with its givens named — where the last sentence cannot stand
+      // alone; after the second miss the whole card is said)
+      const askMark = rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
+      // (a reask's {friend} slot is filled as the card's is — state.js friendly)
+      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : cardSs.at(-1);
+      const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2;
+      if (cardSs.length >= 2 && q && helped && !missedTwice && last2.some((t) => t.includes(norm(card).toLowerCase()))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
       }
