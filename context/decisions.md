@@ -10018,3 +10018,8 @@ Round 8 C2 phone seam: a level that what is known about her moved INSIDE the fir
 
 ## Merged inbox entries (write-up from the entry text)
 - `dc-r8-laws-audit-open-list` (2026-11-15): The laws audit's open list is ruled by one rule: while a try remains the screen and the line say what her act did, never what is true (idea lines move to the solved screen; no number she must work out, or one the key follows from, is printed). aankde/tally: she types the totals. kaal/order: direction after the first miss only, no distance. Reverse if a cut miss line leaves her with nothing to act on in two families or more
+
+
+## Merged inbox entries (write-up from the entry text)
+- `dc-r8-tally-number-line-scale` (2026-11-15): stambh/tally read: the number line under a miss has one scale per level, from the fade alone: 0 to twice the largest row the fade serves, up to the next ten (40, 70, 100); never from her number or the key; a number past the end stands at the end. Reverse if: children read the line as a ruler to count the key off (then drop the line and keep the first-miss arrow only).
+- `dc-r8-kon-place-miss-playout-gate1` (2026-11-15): kon/place gate 1: a scale number not wholly on the board is not drawn (with its tick's other number); measure's miss arm stops inside the inner number ring and is not drawn from her second placed miss (the law counts placedMisses); draw's miss chip names the corner only (∠O / ∠A, no number); the rim dot is a hollow ring; the loose protractor rests at PD + 8 with every point 6 board px inside the board. Reverse if: children cannot tell from the chip alone which angle they made (then the arc only, never a printed size).
