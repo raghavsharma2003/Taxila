@@ -7,8 +7,9 @@
 //   size            ∠P and ∠Q, each with a protractor already on it, one big, one small: ∠P, ∠Q or "Barabar".
 // No snapping to the vertex or an arm (a snap would be the placement), no live reading of the angle (the reading is the
 // skill), no timer. After a decision the law plays out what the protractor showed AS PLACED:
-//   vertex-off   the arm the misplaced protractor measures, drawn from ITS centre: it starts off the corner and runs beside
-//                OB (a ring joins the centre to O)
+//   vertex-off / centre-on-arm (named)  the placement only: a ring on O and a dashed join to her centre (measure: her
+//                number's chip stays neutral, no arm is drawn from her misplaced centre; draw: her own arm from O and the
+//                angle it makes)
 //   wrong-scale  the arm her number means on the scale whose 0 is on the arm, far from OB
 //   join-wrong-end  the arm from A, and the angle it makes at A, with its number
 //   size (a miss) her own pick, in the mix-up colour (never the readings: they would settle the next pick)
@@ -17,15 +18,20 @@
 // nudges by 1° (↺ ↻); green means right and only right (her selection takes the focus colour, her wrong value the mix-up
 // colour); the line under the board says what to do after "Rakh do"; the end line counts the checks, and a solve after a
 // miss ends with a pale tick; the join buttons' order varies by level.
+// Judging round 3 (RULINGS-2026-11-11-evening, kon/place): her number is graded only on a placed protractor (an off
+// placement plays out the placement only, her chip neutral); the letter O stands clear of every line of the protractor in
+// every pose; a scale number slides along its tick, or both numbers at a tick go, never one scale alone (kon.scale.ts); the
+// scale numbers are drawn last, over the arms and her lines, on a ground halo; four one-pixel position nudges (← ↑ ↓ →)
+// beside the turn arrows; "kinare par"; size's end line says what she found.
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeFigs, type Pose } from "./kon.place.ts";
-import { ROLE, around, clearAt, freeSpot } from "./kon.spot.ts";
-import { INK_H, SCALE_GAP, longTick, scaleLabels, scaleOmit, type Measure } from "./kon.scale.ts";
+import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeAnswer, sizeFigs, type Pose } from "./kon.place.ts";
+import { ROLE, around, freeSpot, type Avoid, type Box } from "./kon.spot.ts";
+import { INK_H, LETTER_PX, letterSpot, numberBox, protractorLines, scaleLabels, scaleOmitFor, type Measure, type ScaleLabel } from "./kon.scale.ts";
 
 type Pt = [number, number];
 const RUN_END = 1.4;
@@ -117,26 +123,38 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const busy = () => drag !== null || (truthAt >= 0 && api.t - truthAt < RUN_END);
 
   // ── drawing
+  /** this frame's lines and boxes the letters keep clear of, beyond the audit's (the arcs, the join to the centre, the
+   *  dots, the ring, the chips about to be drawn), and the scale numbers laid out but drawn last (over every line) */
+  type Frame = { lines: [Pt, Pt][]; boxes: Box[]; nums: ScaleLabel[]; drawn: number };
+  let frame: Frame = { lines: [], boxes: [], nums: [], drawn: 0 };
+  const dotBox = (o: Pt, r: number): Box => ({ x: o[0] - r, y: o[1] - r, w: 2 * r, h: 2 * r });
   function arcAt(c: CanvasRenderingContext2D, o: Pt, r: number, a0: number, a1: number, role: string, width = 2.5, dash?: number[]): void {
     // the smaller turn from heading a0 to a1, about board point o, radius r (screen px)
     let d = norm(a1 - a0); if (d > 180) d -= 360;
     const [x, y] = S(...o);
     c.save(); c.beginPath(); c.strokeStyle = api.P.color(role as never); c.lineWidth = width; if (dash) c.setLineDash(dash);
     c.arc(x, y, r, -rad(a0), -rad(a0 + d), d > 0); c.stroke(); c.restore();
+    // its chords, for the letters
+    const n = Math.max(2, Math.ceil(Math.abs(d) / 10)), at = (t: number): Pt => [x + r * Math.cos(rad(a0 + (d * t) / n)), y - r * Math.sin(rad(a0 + (d * t) / n))];
+    for (let i = 0; i < n; i++) frame.lines.push([at(i), at(i + 1)]);
   }
   const ray = (o: Pt, h: number, len: number): Pt[] => { const [c, n] = dir(h); return [S(...o), S(o[0] + c * len, o[1] + n * len)]; };
-  /** a letter just beyond a point, away from the vertex; never within SCALE_GAP px of a scale number drawn so far (the hold
-   *  of 2026-11-11: the resting protractor's top 80 beside O read as "80O" at 360). Where its own spot is that close, it
-   *  takes the nearest clear spot round the point (clear of the arms too), a little further out if it must */
+  /** A letter just beyond a point, away from the vertex (judging round 3, ruling 2): never on a line of the protractor (the
+   *  bottom edge struck through O on the placed screens), nor on an arm or her line, an arc, a dot or the ring, and SCALE_GAP
+   *  px clear of every scale number and chip (the hold: "80O"). It keeps to its own side of the point and steps further out
+   *  before it swings round (kon.scale.ts letterSpot) */
   function letter(c: CanvasRenderingContext2D, t: string, at: Pt, away: number, off = 14): void {
-    const P = api.P, [dx, dy] = dir(away), def = S(at[0] + dx * off, at[1] + dy * off), o = S(...at), bounds = { x: 0, y: 0, w: api.w, h: api.h };
-    const nums = P.audit.texts.filter((x) => /^\d{1,3}$/.test(x.s)).map((x) => ({ x: x.x - x.w / 2, y: x.y - (x.px * INK_H) / 2, w: x.w, h: x.px * INK_H }));
-    let spot = def;
-    if (!clearAt(def, 12, 12, { boxes: nums }, bounds, SCALE_GAP)) {
-      const segs = P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]);
-      spot = freeSpot(around(o, [off * s, (off + 8) * s, (off + 16) * s], Math.atan2(def[1] - o[1], def[0] - o[0]), 24), 12, 12, { segs, boxes: nums }, bounds, SCALE_GAP) ?? def;
-    }
-    P.text(c, t, spot[0], spot[1], { size: 16, weight: 700, role: "ink2" });
+    const P = api.P, o = S(...at);
+    c.save(); c.font = `700 ${Math.max(LETTER_PX, P.minText)}px ${api.art.font.ui}`; const w = c.measureText(t).width; c.restore();
+    const h = Math.max(LETTER_PX, P.minText) * INK_H;
+    const avoid: Avoid = {
+      segs: [...P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]), ...frame.lines],
+      boxes: [...frame.nums.map(numberBox), ...frame.boxes],
+    };
+    const [dx, dy] = dir(away), def = S(at[0] + dx * off, at[1] + dy * off);
+    const spot = letterSpot(o, -rad(away), [off, off + 8, off + 16, off + 26, off + 38].map((r) => r * s), w, h, avoid, { x: 2, y: 2, w: api.w - 4, h: api.h - 4 }) ?? def;
+    P.text(c, t, spot[0], spot[1], { size: LETTER_PX, weight: 700, role: "ink2" });
+    frame.boxes.push({ x: spot[0] - w / 2, y: spot[1] - h / 2, w, h });
   }
   function protractor(c: CanvasRenderingContext2D, q: Pose, rad0 = PR, o: { knob?: boolean; locked?: boolean } = {}): void {
     const P = api.P, [cx, cy] = S(q.x, q.y), R = rad0 * s, [nx, ny] = dir(q.rot - 90), [bx, by] = dir(q.rot);
@@ -149,35 +167,44 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     c.fillStyle = P.color("panel"); c.globalAlpha = 0.42; c.fill();
     c.globalAlpha = 1; c.strokeStyle = P.color(o.locked ? "ink2" : "ink3"); c.lineWidth = o.locked ? 2.5 : 1.8; c.stroke();
     c.restore();
-    // the base line through the centre, and the centre point
-    P.stroke(c, [[cx - bx * R, cy + by * R], [cx + bx * R, cy - by * R]], { role: "ink3", width: 1.5 });
-    P.circle(c, cx, cy, 3.5, { role: "ink", fill: true });
-    P.stroke(c, [[cx, cy], [cx - nx * 9, cy + ny * 9]], { role: "ink", width: 1.5 });
-    // ticks every 5°, longer every 10°
-    for (let a = 0; a <= 180; a += 5) {
-      const [tc, tn] = dir(q.rot + a), len = a % 10 === 0 ? longTick(rad0) : longTick(rad0) / 2;
-      P.stroke(c, [[cx + tc * R, cy - tn * R], [cx + tc * (R - len), cy - tn * (R - len)]], { role: "ink3", width: a % 30 === 0 ? 1.8 : 1 });
+    // the base line through the centre, the ticks (every 5°, longer every 10°) and the centre mark, from kon.scale.ts's lines;
+    // every line of the protractor is declared ("prot") for the letters and the layout check
+    for (const L of protractorLines(cx, cy, R, depth, q.rot, rad0)) {
+      if (L.kind === "base") P.stroke(c, [L.a, L.b], { role: "ink3", width: 1.5 });
+      else if (L.kind === "tick") P.stroke(c, [L.a, L.b], { role: "ink3", width: (L.deg ?? 0) % 30 === 0 ? 1.8 : 1 });
+      else if (L.kind === "mark") P.stroke(c, [L.a, L.b], { role: "ink", width: 1.5 });
+      P.noteSeg("prot", L.a, L.b);
     }
+    P.circle(c, cx, cy, 3.5, { role: "ink", fill: true });
+    frame.boxes.push(dotBox([cx, cy], 3.5));
     // both scales numbered (outer from this end, inner from the other), where kon.scale.ts puts them: no two numbers closer
-    // than SCALE_GAP px at this size and turn (the hold of 2026-11-11: the inner "80100" at 360); size: the big and the small
-    // protractor print the same numbers
+    // than SCALE_GAP px at this size and turn (a clashing number slides along its tick; only where none can, both numbers at
+    // that tick go, never one scale alone: judging round 3, ruling 3); size: the big and the small protractor print the same
+    // numbers. They are drawn last, over the arms and her lines, on a ground halo (ruling 4): numbers()
     const every = goal === "size" ? SIZE_PRINT_EVERY[p.scale] : PRINT_EVERY[p.scale];
     const meas: Measure = (t, px) => { c.save(); c.font = `700 ${px}px ${api.art.font.mono}`; const w = c.measureText(t).width; c.restore(); return w; };
     const radii = goal === "size" ? sizeFigs(p).map((f) => ({ R: f.rad * s, rad0: f.rad })) : [{ R, rad0 }];
-    const omit = scaleOmit(radii, every, fs(), meas, q.rot);
-    for (const L of scaleLabels({ rot: q.rot, R, rad0, every, fs: fs(), measure: meas, omit }, cx, cy)) {
-      P.text(c, L.s, L.x, L.y, { size: fs(), weight: L.ring === "outer" ? 700 : 600, font: "mono", role: L.ring === "outer" ? "ink2" : "ink3" });
-    }
+    const omits = scaleOmitFor(radii, every, fs(), meas, q.rot), k = Math.max(0, radii.findIndex((r) => r.rad0 === rad0));
+    frame.nums.push(...scaleLabels({ rot: q.rot, R, rad0, every, fs: fs(), measure: meas, omit: omits[k] }, cx, cy));
     // the drawn size of the protractor, for the layout check (its size never changes while she reads)
     P.note("protractor", cx - R, cy - R, 2 * R, R + depth);
     if (o.knob) {
       // the turning handle on the body: a ring the arms show through
       const [kx, ky] = S(...knobAt(q));
       P.circle(c, kx, ky, 16, { role: ROLE.focus, width: 3 });
+      frame.boxes.push(dotBox([kx, ky], 17));
       // two turning arrows on the handle
       c.save(); c.strokeStyle = P.color(ROLE.focus); c.lineWidth = 2.5; c.beginPath(); c.arc(kx, ky, 8, 0.3, 2.5); c.stroke(); c.beginPath(); c.arc(kx, ky, 8, 3.4, 5.6); c.stroke(); c.restore();
       api.target("turn", kx - knobR(), ky - knobR(), knobR() * 2, knobR() * 2);
     }
+  }
+  /** the scale numbers laid out so far, drawn over every line on a ground halo (judging round 3, ruling 4: OB ran through
+   *  the inner 160 and the outer 20 she must read) */
+  function numbers(c: CanvasRenderingContext2D): void {
+    for (const L of frame.nums.slice(frame.drawn)) {
+      api.P.text(c, L.s, L.x, L.y, { size: fs(), weight: L.ring === "outer" ? 700 : 600, font: "mono", role: L.ring === "outer" ? "ink2" : "ink3", halo: true });
+    }
+    frame.drawn = frame.nums.length;
   }
 
   /** an arm or ray, drawn and declared to the layout audit (chips must not sit across it) */
@@ -187,21 +214,18 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   }
   /** measure: where her reading's chip sits (the protractor is not there): under it when it sits high, over it when low */
   const readChipAt = (q: Pose): Pt => S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
+  type Chip = { s: string; at: Pt; size: number; role?: string };
   function draw(c: CanvasRenderingContext2D): void {
+    frame = { lines: [], boxes: [], nums: [], drawn: 0 };
     if (goal === "size") return drawSize(c);
     const P = api.P, S0 = st(), P0 = ps(), q = pose(), V: Pt = [p.vx ?? 0, p.vy ?? 0], hs = arms(p);
+    const run = truthAt >= 0 && S0.commits > 0;
     // the angle: OA (and OB)
     for (const h of hs) line(c, ray(V, h, ARM), { role: "ink", width: 3.5 });
     P.circle(c, ...S(...V), 4.5, { role: "ink", fill: true });
-    const bis = hs.length === 2 ? hs[0] + (norm(hs[1] - hs[0]) > 180 ? (norm(hs[1] - hs[0]) - 360) / 2 : norm(hs[1] - hs[0]) / 2) : hs[0] + 90;
-    const oAway = bis + 180;
-    // the protractor
+    frame.boxes.push(dotBox(S(...V), 4.5));
+    // the protractor (its numbers come last)
     protractor(c, q, PR, { knob: !P0.locked && !S0.done, locked: P0.locked });
-    // the letters on top of the see-through protractor, so they stay readable where it lies: the arm letters well past the
-    // arm ends, O past the vertex; each clear of the protractor's numbers (letter())
-    letter(c, "A", farEnd(p), hs[0], 24);
-    if (hs.length === 2) { const [bc, bn] = dir(hs[1]); letter(c, "B", [V[0] + ARM * bc, V[1] + ARM * bn], hs[1], 24); }
-    letter(c, "O", V, oAway, 24);
     if (!P0.locked) {
       // its body is the drag target (the bounding box of the half-disc)
       const [cx, cy] = S(q.x, q.y), R = PR * s;
@@ -210,74 +234,100 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const [cx, cy] = S(q.x, q.y), R = (PR + 32) * s;
       api.target("scale", cx - R, cy - R, R * 2, R * 2);
     }
-    // measure: the number she is typing (focus colour), or the one she gave: green once right, the mix-up colour after a miss
-    if (goal === "measure" && P0.locked) {
-      const run = truthAt >= 0 && S0.commits > 0 && !typed;
-      const n = typed ? typed : P0.read !== null && (run || S0.done) ? String(P0.read) : "";
-      if (n) P.chip(c, `${n}°`, ...readChipAt(q), { size: 16, role: typed ? ROLE.focus : S0.done ? ROLE.answer : ROLE.mixup });
-    }
     // draw: the dot, and the arm she joined (focus colour; green when right, the mix-up colour while a miss plays out)
+    let bAt: { at: Pt; h: number } | null = null;
     if (goal === "draw" && P0.mark !== null && P0.locked) {
-      const D = rimPoint(q, P0.mark), run = truthAt >= 0 && S0.commits > 0;
+      const D = rimPoint(q, P0.mark);
       const role = S0.done ? ROLE.answer : run && P0.joined ? ROLE.mixup : ROLE.focus;
       if (P0.joined && (run || S0.done)) {
         const from: Pt = P0.joined === "v" ? V : farEnd(p), h = (Math.atan2(D[1] - from[1], D[0] - from[0]) * 180) / Math.PI;
         const len = Math.max(ARM, Math.hypot(D[0] - from[0], D[1] - from[1]) + 30);
         line(c, ray(from, h, len), { role, width: 3.5 });
         // the finished arm carries its letter B
-        if (S0.done) { const [bc, bn] = dir(h); letter(c, "B", [from[0] + len * bc, from[1] + len * bn], h, 14); }
+        if (S0.done) { const [bc, bn] = dir(h); bAt = { at: [from[0] + len * bc, from[1] + len * bn], h }; }
       }
       P.circle(c, ...S(...D), 6, { role, fill: true });
+      frame.boxes.push(dotBox(S(...D), 6));
     }
-    if (truthAt >= 0 && S0.commits > 0) drawRun(c, q, V, hs);
+    // the play-out's lines (the ring and join, her number's arm, the arcs)
+    if (run) drawRunLines(c, q, V, hs);
+    // the numbers over every line, on their halo
+    numbers(c);
+    // the chips this frame (laid out first: the letters keep clear of them)
+    const chips: Chip[] = [];
+    // measure: the number she is typing (focus colour), or the one she gave: green once right; after a miss the mix-up
+    // colour only on a placed protractor (judging round 3, ruling 1: her number is graded only on a placed protractor, so
+    // on an off placement her chip stays neutral, whatever the number)
+    if (goal === "measure" && P0.locked) {
+      const shown = run && !typed;
+      const n = typed ? typed : P0.read !== null && (shown || S0.done) ? String(P0.read) : "";
+      const role = typed ? ROLE.focus : S0.done ? ROLE.answer : placement(p, P0.pose).ok ? ROLE.mixup : undefined;
+      if (n) chips.push({ s: `${n}°`, at: readChipAt(q), size: 16, role });
+    }
+    // draw, after a miss: the angle her arm makes, named by its corner, where the protractor is not
+    if (goal === "draw" && run && !S0.done && P0.mark !== null && P0.joined && api.t - truthAt > 0.4) {
+      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"} ${Math.round(madeAngle(p, q, P0.mark, P0.joined))}°`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup });
+    }
+    for (const ch of chips) { const z = P.chipSize(c, ch.s, { size: ch.size }); frame.boxes.push({ x: ch.at[0] - z.w / 2, y: ch.at[1] - z.h / 2, w: z.w, h: z.h }); }
+    // the letters on top of everything, so they stay readable where the protractor lies: the arm letters well past the arm
+    // ends, O away from the angle's opening (the asked angle's, in draw too); each clear of every line and number (letter())
+    const th = p.theta ?? 0, a2 = norm(p.start + (p.mirror ? -1 : 1) * th);
+    const bis = p.start + (norm(a2 - p.start) > 180 ? (norm(a2 - p.start) - 360) / 2 : norm(a2 - p.start) / 2);
+    letter(c, "A", farEnd(p), hs[0], 24);
+    if (hs.length === 2) { const [bc, bn] = dir(hs[1]); letter(c, "B", [V[0] + ARM * bc, V[1] + ARM * bn], hs[1], 24); }
+    letter(c, "O", V, bis + 180, 24);
+    if (bAt) letter(c, "B", bAt.at, bAt.h, 14);
+    for (const ch of chips) P.chip(c, ch.s, ch.at[0], ch.at[1], { size: ch.size, ...(ch.role ? { role: ch.role as never } : {}) });
+    if (run && S0.done) drawEndTick(c, q, V);
   }
-  /** the law's play-out after a decision (its beats all land before RUN_END) */
-  function drawRun(c: CanvasRenderingContext2D, q: Pose, V: Pt, hs: number[]): void {
+  /** the law's play-out after a decision, its lines (its beats all land before RUN_END) */
+  function drawRunLines(c: CanvasRenderingContext2D, q: Pose, V: Pt, hs: number[]): void {
     const P = api.P, S0 = st(), P0 = ps(), k = clamp((api.t - truthAt) / 0.5, 0, 1);
-    const pl = placement(p, q);
-    if (S0.done) {
-      const kt = clamp((api.t - truthAt - 0.3) / 0.3, 0, 1);
-      if (goal === "measure" && P0.read !== null) {
-        // the tick sits with her answer: beside her reading's chip
-        const [hx, hy] = readChipAt(q), w = P.chipSize(c, `${P0.read}°`, { size: 16 }).w;
-        endTick(c, hx + w / 2 + 18, hy, kt);
-        return;
-      }
-      // draw: beside the end of the arm she drew, clear of its letter B and of every line
-      const D = P0.mark !== null ? rimPoint(q, P0.mark) : V, h = Math.atan2(D[1] - V[1], D[0] - V[0]);
-      const len = Math.max(ARM, Math.hypot(D[0] - V[0], D[1] - V[1]) + 30), end = S(V[0] + len * Math.cos(h), V[1] + len * Math.sin(h));
-      const at = freeSpot(around(end, [26, 36, 48], -h + Math.PI / 2), 22, 18, avoidHere(), { x: 2, y: 2, w: api.w - 4, h: api.h - 4 }) ?? [end[0] + 24, end[1]];
-      endTick(c, at[0], at[1], kt);
-      return;
-    }
-    // vertex-off (her committed placement is the bottom edge on O, and only then): a ring on O and a dashed join to the
-    // centre. Any other off placement shows only what her number or arm means on the protractor as it sits (below).
+    if (S0.done) return;
+    // vertex-off (her committed placement is the bottom edge on O), or centre-on-arm where the level names it: a ring on O
+    // and a dashed join to the centre. Any other off placement shows nothing of where the centre belongs.
     if (centreRingShown(p, st(), true, level.mal)) {
       const [ox2, oy2] = S(...V), rr = 7 * k + 1;
       P.circle(c, ox2, oy2, rr, { role: ROLE.mixup, width: 2 });
       P.note("ring", ox2 - rr, oy2 - rr, 2 * rr, 2 * rr);
+      frame.boxes.push(dotBox([ox2, oy2], 9));
       P.stroke(c, [S(...V), S(q.x, q.y)], { role: ROLE.mixup, width: 2, dash: [4, 3] });
+      frame.lines.push([S(...V), S(q.x, q.y)]);
     }
     if (goal === "measure") {
       if (P0.read === null || typed) return;
-      // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's OWN centre. Placed
-      // off (vertex-off), it starts off the corner and runs beside OB, never on it
+      // judging round 3 (ruling 1): her number is graded only on a placed protractor. Placed off, the play-out shows the
+      // placement only (the ring and the join above, where the level names it): no arm from her misplaced centre, which ran
+      // beside OB and told her a right number was right
+      const pl = placement(p, q);
+      if (!pl.ok) return;
+      // her number, on the scale whose 0 is on the placed arm: the arm it means, from the protractor's centre
       const r = pl.zeroOnArm ? P0.read : 180 - P0.read, h = norm(q.rot + r);
       line(c, ray([q.x, q.y], h, ARM * k), { role: ROLE.mixup, width: 3, dash: [7, 5] });
-      if (pl.ok && k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, ROLE.mixup, 3, [5, 4]);
+      if (k >= 1) arcAt(c, [q.x, q.y], PR * 0.42 * s, hs[1 - pl.arm], h, ROLE.mixup, 3, [5, 4]);
       return;
     }
-    // draw: the angle she made, at the end she joined, with its number; never the asked arm (law 2: no line to trace)
+    // draw: the angle she made, at the end she joined; never the asked arm (law 2: no line to trace); its number is a chip
     if (P0.mark === null || !P0.joined) return;
     const at: Pt = P0.joined === "v" ? V : farEnd(p), D = rimPoint(q, P0.mark), hD = norm((Math.atan2(D[1] - at[1], D[0] - at[0]) * 180) / Math.PI);
     const base = P0.joined === "v" ? hs[0] : norm(hs[0] + 180), made = madeAngle(p, q, P0.mark, P0.joined);
     // (a narrow angle gets a wider arc, so it runs at least 24 board px: the ∠A arc of a join to A is often 20°)
     arcAt(c, at, Math.min(72, Math.max(30, 24 / ((Math.max(made, 1) * Math.PI) / 180))) * s, base, hD, ROLE.mixup, 3);
-    if (api.t - truthAt > 0.4) {
-      // the angle it makes, named by its corner, where the protractor is not (under it when it sits high, over it when low)
-      const [hx, hy] = S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16);
-      P.chip(c, `∠${P0.joined === "v" ? "O" : "A"} ${Math.round(made)}°`, hx, hy, { size: 15, role: ROLE.mixup });
+  }
+  /** the end tick of a solve, with her answer */
+  function drawEndTick(c: CanvasRenderingContext2D, q: Pose, V: Pt): void {
+    const P = api.P, P0 = ps(), kt = clamp((api.t - truthAt - 0.3) / 0.3, 0, 1);
+    if (goal === "measure" && P0.read !== null) {
+      // the tick sits with her answer: beside her reading's chip
+      const [hx, hy] = readChipAt(q), w = P.chipSize(c, `${P0.read}°`, { size: 16 }).w;
+      endTick(c, hx + w / 2 + 18, hy, kt);
+      return;
     }
+    // draw: beside the end of the arm she drew, clear of its letter B and of every line
+    const D = P0.mark !== null ? rimPoint(q, P0.mark) : V, h = Math.atan2(D[1] - V[1], D[0] - V[0]);
+    const len = Math.max(ARM, Math.hypot(D[0] - V[0], D[1] - V[1]) + 30), end = S(V[0] + len * Math.cos(h), V[1] + len * Math.sin(h));
+    const at = freeSpot(around(end, [26, 36, 48], -h + Math.PI / 2), 22, 18, avoidHere(), { x: 2, y: 2, w: api.w - 4, h: api.h - 4 }) ?? [end[0] + 24, end[1]];
+    endTick(c, at[0], at[1], kt);
   }
   /** the end tick: full on a first-try solve, pale after a miss (the end screen tells the two apart, without words) */
   function endTick(c: CanvasRenderingContext2D, x: number, y: number, k: number): void {
@@ -288,7 +338,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   function avoidHere() {
     const A = api.P.audit;
     return {
-      segs: A.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]),
+      segs: A.segs.filter((g) => g.kind !== "prot").map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]),
       boxes: [...A.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 })), ...A.marks.filter((m) => m.kind !== "dot" && m.kind !== "protractor")],
     };
   }
@@ -298,12 +348,16 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // the play-out after a miss: her own pick in the mix-up colour (never the readings: a pick remains)
     const missed = run && !S0.done && k > 0, pick = ps().pick;
     const labels: Pt[] = [];
-    figs.forEach((f, i) => {
+    // both figures' arms first, so every scale number lies over them (judging round 3, ruling 4)
+    for (const f of figs) {
       const a0 = f.mirror ? 180 : 0, a1 = norm(a0 + (f.mirror ? -1 : 1) * f.th), len = f.rad + 20;   // (+30 ran off the board top at 1366)
       for (const h of [a0, a1]) line(c, ray(f.v, h, len), { role: "ink", width: 3.5 });
       P.circle(c, ...S(...f.v), 4.5, { role: "ink", fill: true });
+    }
+    figs.forEach((f, i) => {
       // always upright: a mirrored angle opens from the left arm, so its reading is on the inner scale (0 on the left)
       protractor(c, { x: f.v[0], y: f.v[1], rot: 0 }, f.rad, { locked: true });
+      numbers(c);
       // the angle's name below its vertex, outside the strip
       const [X, Y] = S(f.v[0], f.v[1] - PD * (f.rad / PR) - 12);
       labels.push([X, Y]);
@@ -313,7 +367,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // "Barabar" (the same): between the two figures, as a statement of both
     const between = (): Pt => {
       const top = S(BW / 2, figs[1].v[1] + figs[1].rad + 16)[1], [lx, ly] = labels[0], y = (top + ly) / 2;
-      const segs = api.P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]);
+      const segs = api.P.audit.segs.filter((g) => g.kind !== "prot").map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]);
       const boxes = api.P.audit.texts.map((t) => ({ x: t.x - t.w / 2, y: t.y - t.px * 0.6, w: t.w, h: t.px * 1.2 }));
       const w = api.P.chipSize(c, "∠P = ∠Q", { size: 15 }).w + 44;
       const cands: Pt[] = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5].map((j) => [lx + j * 26 * s, y]);
@@ -336,7 +390,9 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (S0.done) {
       if (goal === "measure") return word(lang, "kon.end.read", { n: `${P0.read}°`, k: S0.commits });
       if (goal === "draw") return word(lang, "kon.end.draw", { a: `${p.theta}°`, k: S0.commits });
-      return word(lang, "kon.end.checks", { k: S0.commits });
+      // size (judging round 3, ruling 6): what she found, then the checks
+      const key = sizeAnswer(p);
+      return key === "same" ? word(lang, "kon.end.size.same", { k: S0.commits }) : word(lang, "kon.end.size.more", { n: key === "a" ? "∠P" : "∠Q", k: S0.commits });
     }
     // after "Rakh do" the line says what to do next (never which scale, never where the dot goes)
     if (goal === "measure") return word(lang, P0.locked ? "kon.goal.measure.read" : "kon.goal.measure");
@@ -360,10 +416,15 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
         { id: "pick-b", label: "∠Q", kind: "choice", group: "pick", onPress: () => act({ kind: "pick", which: "b" }) },
       ];
     }
-    const rot = P0.pose.rot;
+    const { x, y, rot } = P0.pose;
+    // judging round 3 (ruling 5): four one-pixel position nudges beside the turn arrows (one board px; the law's own move
+    // act, so no snap, no reading, no cue beyond the protractor moving)
+    const nudge = (id: string, key: "kon.aria.left" | "kon.aria.right" | "kon.aria.up" | "kon.aria.down", label: string, dx: number, dy: number): ControlSpec => ({ id, label, aria: word(lang, key), kind: "pad", group: "nudge",
+      disabled: x + dx < 0 || x + dx > BW || y + dy < 0 || y + dy > BH, onPress: () => act({ kind: "move", x: x + dx, y: y + dy }) });
     if (!P0.locked) return [
       { id: "nudge-left", label: "↺", aria: word(lang, "kon.aria.acw"), kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot + 1) }) },
       { id: "nudge-right", label: "↻", aria: word(lang, "kon.aria.cw"), kind: "pad", group: "nudge", onPress: () => act({ kind: "spin", deg: norm(rot - 1) }) },
+      nudge("move-left", "kon.aria.left", "←", -1, 0), nudge("move-up", "kon.aria.up", "↑", 0, 1), nudge("move-down", "kon.aria.down", "↓", 0, -1), nudge("move-right", "kon.aria.right", "→", 1, 0),
       undo,
       { id: "lock", label: word(lang, "kon.lock"), kind: "primary", group: "go", you: true, onPress: () => act({ kind: "lock" }) },
     ];
