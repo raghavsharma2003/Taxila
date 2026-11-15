@@ -145,7 +145,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as GunaAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "crate" || last.kind === "deal") api.sfx("land");
     else if (last.kind === "cut" || last.kind === "round" || last.kind === "open") api.sfx("tick");
     else api.sfx("tap");
@@ -154,7 +154,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (story) layout(w, h);
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {

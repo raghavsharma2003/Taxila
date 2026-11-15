@@ -19,12 +19,14 @@ const KNOWN = {
   // join-wrong-end is a chance pick; measure is typed)
 };
 
-describe("r8 play laws: every served level of every family", () => {
+// Every language the view can show (laws ruling 2026-11-15, late evening 2: "a law that holds in one language only is not
+// held"): the same seeds and levels in each, KNOWN empty in each.
+for (const lang of ["hinglish", "en", "hi"]) describe(`r8 play laws: every served level of every family (${lang})`, () => {
   it("no law break outside the listed ones; stambh/tally keeps all three", async () => {
-    const rows = await L.lawsOverCoverage({ seeds: 2, perGoal: 1 });
+    const rows = await L.lawsOverCoverage({ seeds: 2, perGoal: 1, lang });
     assert.ok(rows.length > 150, `levels checked: ${rows.length}`);
     const extra = [];
-    for (const r of rows) for (const b of r.breaks) if (!(KNOWN[r.key] ?? []).includes(b.law)) extra.push(`${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
+    for (const r of rows) for (const b of r.breaks) if (!(KNOWN[r.key] ?? []).includes(b.law)) extra.push(`${lang} ${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
     assert.deepEqual(extra, []);
     const tally = rows.filter((r) => r.key === "stambh/tally");
     assert.ok(tally.length >= 2, "tally levels checked");

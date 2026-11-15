@@ -75,9 +75,17 @@ Family tests that asserted `misconceptionId` from those picks now accept `chance
 | `yantra/roshni` (roshan) | "Chaand andhera hi raha: us par dhoop nahi padi" → "Chaand andhera hi raha"; "Koi roshni nahi: aankh kitna bhi dekhe, kuch nahi dikhta" → "Aankh ko kuch nahi dikha"; "{thing} par roshni nahi padi: aankh use nahi dekh paati" → "{thing} nahi dikha"; "Nahi dikha: {mat} roshni nahi jaane deta" → "Nahi dikha: beech mein {mat} hai"; "{mat} se thodi roshni ab bhi aati hai: aankh dekh leti" → "Aankh ko {mat} ke paar roshni dikhi"; "{thing} par roshni padi, to dikha: card mein nahi hai" → "{thing} dikha: card mein nahi hai" | "Aankh ko theek wahi dikhta hai jo card mein hai" → "Jis par roshni pade, wahi dikhe: Chaand bhi Sooraj ki roshni se." |
 | `yantra/roshni` (dhak) | "Abhi bhi roshni: Chaand ki apni roshni nahi hoti" / "... steel ki plate apni roshni nahi deti" / "... {thing} apni roshni deta hai" → "Abhi bhi roshni" | "Andhera: koi roshni nahi deta, aankh ko kuch nahi dikhta" → "Andhera: apni roshni wale sab dhake; Chaand ki apni roshni nahi." |
 
-Seen in passing (not these rows, not fixed here): in `en`, three other science modes still show a hidden value after a miss (`badlaav/palat` ghol "still there", `jaanch/daag` "stays", `jaanch/thali` "more than one"); `tests/r8-play-laws.test.mjs` runs in hinglish, where they do not appear.
+**Resolved (late-evening ruling 2, 2026-11-15): the en-only breaks.** `tests/r8-play-laws.test.mjs` now runs the law checks in hinglish, `en` and `hi` (the same seeds and levels in each, `KNOWN` empty in each). The `en` run showed three science modes holding a hidden value after a miss; each line now says what her act did, without the key's word, the same in all three languages (`data/play/engine-words.json`):
 
-With these, `KNOWN` in `tests/r8-play-laws.test.mjs` is empty: no served level of any family breaks a law in the hinglish run.
+| Family / mode (goal), mal | Old miss line → new miss line (hinglish / en / hi) |
+|---|---|
+| `badlaav/palat` (ghol), gone: `badlaav.why.still_there` | "Wahin hai: taraazu utna hi dikhata hai jitna pehle." → "Tumne Gayab kaha: taraazu phir dekho, hilaane se pehle aur baad." / "Still there: the scale reads the same as before stirring." → "You said Gone: read the scale again, before and after stirring." / "वहीं है: तराज़ू उतना ही दिखाता है जितना पहले।" → "तुमने ग़ायब कहा: तराज़ू फिर देखो, हिलाने से पहले और बाद।" |
+| `jaanch/daag` (kaagaz), wet-fat: `jaanch.why.wet_patch` | "Abhi geela hai: Ruko, dekho daag rehta hai ya nahi." → "Tumne geele mein hi bata diya: Ruko dabao, phir dekho." / "Still wet: Wait, and see if the patch stays." → "You said it while it was still wet: tap Wait, then look again." / "अभी गीला है: रुको, देखो दाग़ रहता है या नहीं।" → "तुमने गीले में ही बता दिया: रुको दबाओ, फिर देखो।" |
+| `jaanch/thali` (dono), one-only: `jaanch.why.test_other` | "Ek khaane mein kai cheezein ho sakti hain: doosri bhi jaancho." → "Tumne is khaane ki ek hi jaanch ki: doosri jaanch bhi karo." / "One food can hold more than one: run the other test too." → "You ran one test on this food: run the other test too." / "एक खाने में कई चीज़ें हो सकती हैं: दूसरी जाँच भी करो।" → "तुमने इस खाने की एक ही जाँच की: दूसरी जाँच भी करो।" |
+
+The `hi` run found no break, but the word keys of these families (`HIDDEN` in badlaav, jaanch, rang, aakash, yantra/roshni) are listed in hinglish and English only, so its law-2 key check sees numbers and `IDEA_WORDS` there, not those word keys; the three lines above were changed in `hi` to match. No checker change.
+
+With these, `KNOWN` in `tests/r8-play-laws.test.mjs` is empty in every language: no served level of any family breaks a law in the hinglish, en or hi run.
 
 ## kon (the kon stream fixes these; not edited here)
 
