@@ -295,8 +295,11 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
         if (read?.kind === "read") plays.splice(2, 0, ["typed", sol.slice(0, -1), String(read.n).split("").map((d) => `k${d}`)]);
         const drawn = [];   // the protractor's drawn size and the world box, screen by screen
         for (const [name, acts, keys = []] of plays) {
+          // the last screen's hooks are cleared first: waiting on window.__play alone could find the previous stage and send
+          // this screen's acts to it (CI 2026-11-15: a play-out chip missing on a board that never got its acts)
+          await page.evaluate(() => { window.__play = undefined; });
           await page.evaluate((j) => window.__forge3.show(j), { play: { level, art: "kagaz", lang: "hinglish", classLevel: 6, debug: true }, tray: { w: size.w, h: size.h }, id: `${level.levelId}-${name}` });
-          await page.waitForFunction(() => !!window.__play?.dispatch && !!document.querySelector("canvas.pl-canvas"));
+          await page.waitForFunction((id) => !!window.__play?.dispatch && window.__play.level?.levelId === id && !!document.querySelector("canvas.pl-canvas"), level.levelId);
           // the scale numbers are laid out in Geist Mono (0.6 em): once the play chunk (and its @font-face) is on the page, the
           // face loads before the boards are measured, or the check says why not (CI 2026-11-11 measured 8 px a figure at 14 px)
           if (mono === null) {
@@ -306,11 +309,16 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
           }
           for (const a of acts) await page.evaluate((x) => window.__play.dispatch(x), a);
           for (const k of keys) await page.evaluate((id) => window.__play.press(id), k);
+          const took = await page.evaluate(() => window.__play.acts().length);
+          if (took < acts.length) faults.push(`${size.tag} ${level.levelId} ${name}: ${took} of ${acts.length} acts reached the board`);
           await page.waitForTimeout(acts.length ? 1700 : 300);
           // and then until the board has settled (two audits 250 ms apart alike): a loaded runner can still be drawing a
           // play-out after the fixed wait (gate 2026-11-15: a vertex-off chip not yet drawn at the probe)
           await page.evaluate(() => { window.__settleK = null; });
           await page.waitForFunction(() => { const a = window.__play?.audit; if (!a) return false; const k = JSON.stringify([a.marks?.length, a.texts?.length, a.segs?.length, a.uses?.length]); const same = window.__settleK === k; window.__settleK = k; return same; }, null, { polling: 250, timeout: 8000 }).catch(() => {});
+          // the audit is rebuilt only on a drawn frame, and a partial repaint records only the regions it redraws (CI
+          // 2026-11-15: a centre-on-arm chip missing from the audit, not from the board): a full frame before the probe
+          await page.evaluate(() => new Promise((r) => { window.__play.invalidate(); requestAnimationFrame(() => requestAnimationFrame(() => r(null))); }));
           const probe = await page.evaluate(() => {
             const c = document.querySelector("canvas.pl-canvas").getBoundingClientRect(), a = window.__play.audit;
             return {
