@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
+import { chapterSynonymErrors, voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
 
 const T = (hi, en = "x") => ({ hi, en });
 
@@ -102,4 +102,21 @@ test("voice text only the script can fix (main 21:20, after Brain's renderer pas
   for (const ok of ["Rassi 5 m lambi hai, yaani 500 cm.", "Har metre mein 100 cm hote hain.", "1/2 m aur 50 cm barabar hain.", "Kaunsa chinh lagega: bada ya chhota?"]) assert.deepEqual(voiceTextErrors(s(ok)), [], ok);
   const line = { skills: [{ explain: [{ point: { hi: "Line l ke 6 cm upar P hai; P se line m kheencho.", en: "x" } }] }] };
   assert.deepEqual(voiceTextErrors(line), [], "a line named m is a name");
+});
+
+test("main 2026-11-15: a chapter shares one word per idea; the chapter word is the one its lessons use most", () => {
+  const sc = (...his) => ({ skills: [{ explain: his.map((hi) => ({ point: { hi, en: "x" } })) }] });
+  const a = { topicId: "c5-maths-ch02-t01", s: sc("Roti ke 4 barabar tukde.", "Ek tukda 1/4.") };
+  const b = { topicId: "c5-maths-ch02-t02", s: sc("Patti ke 4 barabar hisse.", "Ek hissa 1/4.", "Har hissa barabar.", "Do hisse 2/4.") };
+  const other = { topicId: "c6-maths-ch06-t01", s: sc("Ek tukda.") };
+  assert.ok(chapterSynonymErrors(a.topicId, [a, b, other]).some((x) => /chapter c5-maths-ch02 \(one piece of a cut whole\): this script says tukda/.test(x)));
+  assert.deepEqual(chapterSynonymErrors(b.topicId, [a, b, other]), [], "the majority word passes");
+  assert.deepEqual(chapterSynonymErrors(other.topicId, [a, b, other]), [], "another chapter is not counted");
+  const t1 = { topicId: "c5-maths-ch02-t01", s: sc("Line par 4 gaps.", "Line ka pehla mark.") };
+  const t2 = { topicId: "c5-maths-ch02-t02", s: sc("Rekha dekho.") };
+  assert.ok(chapterSynonymErrors(t2.topicId, [t1, t2]).some((x) => /\(line \/ rekha\): this script says rekha/.test(x)), "twin pairs too");
+  for (const t of ["c5-maths-ch02-t01", "c5-maths-ch02-t02"]) {
+    const all = ["c5-maths-ch02-t01", "c5-maths-ch02-t02"].map((id) => ({ topicId: id, s: JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${id}.json`, import.meta.url), "utf8")) }));
+    assert.deepEqual(chapterSynonymErrors(t, all), [], `the live ${t}`);
+  }
 });
