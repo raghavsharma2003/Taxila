@@ -6785,3 +6785,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-kon-name-gate1-key-spread` (2026-11-15): kon/name find after gate 1, 600 picker requests (fades 1-3, seeds 20000-20599): keys by arc 138/119/119/110/114; a first tap by 'a corner arc' wins 0.187, 'an arc inside the triangle' 0.197, 'the widest' 0.198, 'the smallest angle' 0.213, 'one of the three smallest' 0.267 (the size floor: vertex keys are kept under 65° so reading across never finds them). Picker CPU over 60 requests (seeds 700-729): p50 2.9 ms, p95 15.6 ms, max 22.7 (bar 50; before gate 1 the same blocks measured p95 15-21).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-2de94c3` (2026-11-15): Released 2de94c3 with scripts/release.mjs: web taxila-web--s2de94c3-bslc (was taxila-web--s0d00f29-r78k), worker + canary/nightly jobs on taxila-worker:2de94c3 (was 0d00f29); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2de94c3 --rollback.
