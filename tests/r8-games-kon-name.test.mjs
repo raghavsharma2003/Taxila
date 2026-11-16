@@ -356,11 +356,12 @@ test("evening ruling kon/name 3: after one find tap nothing about vertex-name re
     const again = res();
     await routes["POST /api/play/act"]({}, again, { sessionId: sid, levelId: lv.levelId, acts: env(konLogic.malActs(lv, "vertex-name")), final: true });
     const ev2 = verifyEvidence(again.body.evidenceToken, { childId: CHILD, lessonId: LES });
-    // dc-r8-game-gate-play-then-evidence: kon/name runs with naming off until gate 2, so even the repeat names nothing
-    // (when it leaves NAMING_OFF this is named on the repeat, in the rows and the trail)
+    // dc-r8-game-gate-play-then-evidence: kon/name runs with naming off until gate 2, so even the repeat names nothing.
+    // With naming on, a second sighting names nothing either (gate 2 per session: the third, within the session's first
+    // four levels; tests/r8-games-kon-name-gate2.test.mjs plays that rule)
     if (namingOn("kon", "name")) {
-      assert.equal(ev2.rows[0].misconceptionId, KIT, "named on the repeat");
-      assert.deepEqual(ev2.trail.mal, [{ rule: "vertex-name", mis: KIT }], "and in the trail");
+      assert.equal(ev2.rows[0].misconceptionId, undefined, "a second sighting names nothing (three are needed)");
+      assert.deepEqual(ev2.trail.mal, [], "nor is it in the trail");
     } else {
       assert.equal(ev2.rows[0].misconceptionId, undefined, "naming off: not named even on the repeat");
       assert.deepEqual(ev2.trail.mal, [], "nor in the trail");
@@ -368,15 +369,17 @@ test("evening ruling kon/name 3: after one find tap nothing about vertex-name re
   } finally { Object.assign(playDeps, saved); }
 });
 
-test("law 3 (central): a find first-letter pick is named only when it repeats on a level with other letters", async () => {
-  const { nameOnRepeat, surfaceOf } = await import("../server/play/levels.js");
+test("law 3 (central): a find first-letter pick is named only when it repeats on levels with other letters (gate 2 per session: the third)", async () => {
+  const { nameOnRepeat, surfaceOf, surfacesDiffer } = await import("../server/play/levels.js");
   const ls = levels("find").filter((l) => konLogic.malActs(l, "vertex-name"));
-  const a = ls[0], b = ls.find((l) => l.params.lets !== a.params.lets), same = { ...a, params: { ...a.params, ask: a.params.ask } };
-  assert.ok(b);
+  const apart = (x, y) => surfacesDiffer(surfaceOf(x), surfaceOf(y));
+  const a = ls[0], b = ls.find((l) => apart(l, a)), c = ls.find((l) => apart(l, a) && apart(l, b)), same = { ...a, params: { ...a.params, ask: a.params.ask } };
+  assert.ok(b && c);
   const rows = (l) => konLogic.grade(l, env(konLogic.malActs(l, "vertex-name")), { final: true }).evidence;
-  const s = { chance: [{ mis: "k-vn", surface: surfaceOf(a) }] };
-  assert.equal(nameOnRepeat(rows(b), s, b)[0].misconceptionId, "k-vn", "other letters: named");
-  assert.equal(nameOnRepeat(rows(same), s, same)[0].misconceptionId, undefined, "the same letters: not named");
+  const s1 = { chance: [{ mis: "k-vn", surface: surfaceOf(a) }] }, s2 = { chance: [...s1.chance, { mis: "k-vn", surface: surfaceOf(b) }] };
+  assert.equal(nameOnRepeat(rows(b), s1, b)[0].misconceptionId, undefined, "the second: not named");
+  assert.equal(nameOnRepeat(rows(c), s2, c)[0].misconceptionId, "k-vn", "the third, other figures and letters: named");
+  assert.equal(nameOnRepeat(rows(same), s2, same)[0].misconceptionId, undefined, "the same letters: not named");
 });
 
 test("night ruling kon/name 1: no two angles of a figure are within 8° of each other in size, and its three rays differ in length (every generated level, both goals; the checker's own geometry)", () => {
