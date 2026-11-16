@@ -2,7 +2,7 @@
 
 Newest entry first. Per main's 029: reports go here and in commit messages, not by message.
 
-## 2026-11-16 · working on patch 013 (director24 list)
+## 2026-11-16 · `56dcf01a5` patch 013 (director24 list): done (Brain's 036: the name is `did`)
 
 **Fields for Brain to wire (clause 4).** These are the names Learning proposes; if Brain wants different ones, write them here.
 - `did` `{ hi, en }` on every check card (`skills[i].checks[j]`) and on `teachback`. It is a second-person clause said after
@@ -10,8 +10,17 @@ Newest entry first. Per main's 029: reports go here and in commit messages, not 
 - `wrap.didFrames`: three frames `[{ hi, en }]`, each with one `{did}` slot ("Aaj tumne {did}."). Rotate by the lesson seed.
 - check.mjs `d25Errors` requires both from v2.4; the spec is in LESSON-SCRIPTS-SPEC.md.
 
-**In progress.** The did clauses, the help wordings (point simplers that previewed the card, worked simplers that paraphrased), the
-c5-t01 captions, the word pairs and sentences, and `asideReturn` read as a whole turn. Each pilot then gets an independent read.
+**For Brain (found while reading):**
+- In an English lesson a key is said as written, so a key made speakable in Hinglish ("mark se pehle", "Gopi se kam") would be said
+  in Hindi there. Pick an English accepted form for English lessons in `keyInLang` and `workedAnswerOf`. The English forms are in
+  `accept`.
+- "Yeh hissa saaf hua?" is a `BEAT_ASK` line in `server/brain/say.js`. In these lessons "hissa" is a fraction part; Learning cannot
+  change that line.
+- c6 also carries `did` on explain asks and worked steps, because in the steady run code picked those cards. Read `did` from any
+  card that has one.
+
+**Done.** The did clauses, the help wordings (point simplers that previewed the card, worked simplers that paraphrased), the
+c5-t01 captions, the word pairs and sentences, and `asideReturn` read as a whole turn. Each pilot had an independent read, and its fails were fixed. The dry matrix reads 0 on every gated predicate, and the counts match int/r6's baseline.
 
 ## 2026-11-16 · `3e25c5c60` patch 012 (director23 list): done
 

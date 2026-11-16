@@ -893,7 +893,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...voiceTextErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s));
   return e;
 }
 
@@ -1655,6 +1655,36 @@ export function d24Errors(s) {
       }
     });
   }
+  return e;
+}
+/** director24 (dc-r8-director24, clause 4): code picks the hardest card the child got right at the first try and says what was
+ *  authored for it. `did` { hi, en } on every check card and on the teach-back: a short second-person clause that follows "Aaj
+ *  tumne" ("1/3 ke neeche do 1/6 ke tukde gine"): no question, no praise, one clause of at most 12 words, not starting with
+ *  "Aaj tumne" or "tumne" itself. `wrap.didFrames`: three frames, each one sentence with one {did} slot. */
+export function d25Errors(s) {
+  if (!isV24(s)) return [];
+  const e = [];
+  const did = (c, at) => {
+    if (!c?.did) { e.push(`${at}.did: what doing this card was, a clause after "Aaj tumne" (director24 clause 4)`); return; }
+    for (const l of ["hi", "en"]) {
+      const t = String(c.did[l] ?? "").trim(), a = `${at}.did${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${a}: empty`); continue; }
+      if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
+      if (/[.!]\s*\S/.test(t) || sentencesOf(t).length > 1) e.push(`${a}: one clause`);
+      if (t.split(/\s+/).length > 12) e.push(`${a}: at most 12 words`);
+      if (/^(aaj\s+)?tumne\b|^(today\s+)?you\b/i.test(t)) e.push(`${a}: the clause only; "Aaj tumne" / "Today you" is the frame's`);
+      if (/\b(shabaash|bahut badhiya|achha kiya|great|well done|good job|excellent|perfect)\b/i.test(t)) e.push(`${a}: praises nothing`);
+    }
+  };
+  (s.skills ?? []).forEach((k, i) => (k.checks ?? []).forEach((c, j) => did(c, `skills[${i}].checks[${j}]`)));
+  if (s.teachback) did(s.teachback, "teachback");
+  const f = s.wrap?.didFrames;
+  if (!Array.isArray(f) || f.length !== 3) e.push("wrap.didFrames: three frames [{ hi, en }], each one sentence with one {did} slot");
+  else f.forEach((x, i) => { for (const l of ["hi", "en"]) { const t = String(x?.[l] ?? ""), a = `wrap.didFrames[${i}]${l === "en" ? " (en)" : ""}`;
+    if ((t.match(/\{did\}/g) ?? []).length !== 1) e.push(`${a}: one {did} slot`);
+    if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
+    if (sentencesOf(t.replace("{did}", "x")).length !== 1) e.push(`${a}: one sentence`);
+    if (/\b(shabaash|bahut badhiya|great|well done|good job|excellent)\b/i.test(t)) e.push(`${a}: praises nothing`); } });
   return e;
 }
 /** Every board and answerBoard in a script resolves (a remediation's own board is held under its then-card's when its say does
