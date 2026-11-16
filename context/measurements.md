@@ -6842,3 +6842,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-35599fe` (2026-11-16): Released 35599fe with scripts/release.mjs: web taxila-web--s35599fe-75j3 (was taxila-web--sa50d690-1tpz), worker + canary/nightly jobs on taxila-worker:35599fe (was a50d690); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 35599fe --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-director23` (2026-11-16): director23: 16 lessons (4 pilots x 4 rule-based children), Director only, on integration 69 (35599fed8); 1,598 calls, about $1.13; four Opus judges by hand. No topic passes. Contradictions 1, 0, 2, 1 (c4, c5-t01, c5-t02, c6; director22: 5, 5, 2, 1); unsaid boards 0; 0 misgrades in 294 verdicts; 0 false keys. Axes: listening 3.5, 3, 3, 3.5; register 3 x4; promises 3.5, 4, 3.5, 3.5; screen and speech 3.5, 4, 3.5, 4. Joint faults by hand 9, 10, 12, 18 (missing 35, misplaced 7, stacked 7). Lines recorded as the wrong kind 7, 6, 8, 5. Pictures 16 of 16 drawn; the line that names nothing on 9 of 16, all 9 unexplained. Untrue script sentences 0; giveaways 1, 2, 1, 0. Live predicates (48): readerAgrees 1, orderNoUnit 1, rest of the gated 0.

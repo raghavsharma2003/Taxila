@@ -29000,6 +29000,41 @@
    "at": "2026-11-16",
    "title": "Released 35599fe with scripts/release.mjs: web taxila-web--s35599fe-75j3 (was taxila-web--sa50d690-1tpz), worker + canary/nightly jobs on taxila-worker:35599fe (was a50d690); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 35599fe --rollback.",
    "source": "inbox/release-35599fe.json"
+  },
+  {
+   "id": "dc-r8-director23",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "After director23: one seam pass places every joint from a table keyed by the two neighbouring kinds and writes the turn's seams on the row, and the seam predicates read only that list (S); the reader's column is what the walk acted on and readerAgrees loses its equivalence table (R2); Learning authors a caption for each board's picture view and a picture turn asks by the question alone (C); the wrap's sentence about the child is in the second person (T2); no help repeats a sentence from her last two turns (H2). Reverse: with the seam pass in, more than 2 joint faults in a topic or register below 3.5 in two topics, and the reply model writes the joins from the seams list. Judgement: docs/design/round7/judgements/director23-2026-11-16.md.",
+   "source": "inbox/r8-main-33.json"
+  },
+  {
+   "id": "ms-r8-director23",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "director23: 16 lessons (4 pilots x 4 rule-based children), Director only, on integration 69 (35599fed8); 1,598 calls, about $1.13; four Opus judges by hand. No topic passes. Contradictions 1, 0, 2, 1 (c4, c5-t01, c5-t02, c6; director22: 5, 5, 2, 1); unsaid boards 0; 0 misgrades in 294 verdicts; 0 false keys. Axes: listening 3.5, 3, 3, 3.5; register 3 x4; promises 3.5, 4, 3.5, 3.5; screen and speech 3.5, 4, 3.5, 4. Joint faults by hand 9, 10, 12, 18 (missing 35, misplaced 7, stacked 7). Lines recorded as the wrong kind 7, 6, 8, 5. Pictures 16 of 16 drawn; the line that names nothing on 9 of 16, all 9 unexplained. Untrue script sentences 0; giveaways 1, 2, 1, 0. Live predicates (48): readerAgrees 1, orderNoUnit 1, rest of the gated 0.",
+   "source": "inbox/r8-main-33.json"
+  },
+  {
+   "id": "fd-distress-read-fires-on-listed-answer",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "A child's wrong answer that the card's own table lists ('no place', on a card that says some people think 1/9 has no place on the line) set off the safety turn in 2 of 2 director23 lessons (c5-t01 steady 49, stuck 83) and got a hint in director22. Cause: classifyRead sends a line already matched by code, alone and without lesson context, to the model's words-only distress read (needsModelDistressRead, distressCheck in server/director/classify.js); the read varies run to run. Frozen safety code: found through a lesson run, not changed, not measured; put to the owner with a recommendation (skip the read when the line is exactly a listed answer).",
+   "source": "inbox/r8-main-33.json"
+  },
+  {
+   "id": "fd-predicates-reread-text-and-miss-what-judges-count",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "Third run in which gated predicates read 0 on rows the judges fail: readerAgrees (an equivalence table passed 24 wrong records), backToJoint (counts only a return that opens a turn; 35 missing joints), cardWholeAgain (3 rows), hindiNewWords (c4 rows). Each re-derives structure from the spoken text or from a lenient table. The seam pass and the reader now write what they decided on the row (seams, column) and the predicates read that record.",
+   "source": "inbox/r8-main-33.json"
+  },
+  {
+   "id": "rj-r8-joints-as-rules",
+   "kind": "rejection",
+   "at": "2026-11-16",
+   "title": "J2 built as rules inside the existing code paths (accepted on a condition in to-brain 030 instead of the single seam pass dc-r8-director22 ruled): it removed every backTo said with nothing to go back to (9 to 0) and left 49 joint faults in 16 lessons (9 to 18 a topic), because a rule fires only where its code path runs: a return inside a turn, an aside reply into the lesson and an AI line into the lesson had no path. Register stayed 3 in all four topics. Replaced by the seam pass (dc-r8-director23 S).",
+   "source": "inbox/r8-main-33.json"
   }
  ],
  "edges": [
@@ -46307,6 +46342,36 @@
    "src": "fd-repeat-rules-name-habits",
    "rel": "constrains",
    "dst": "dc-r8-gate2-habit-children"
+  },
+  {
+   "src": "dc-r8-director23",
+   "rel": "supersedes",
+   "dst": "dc-r8-director22"
+  },
+  {
+   "src": "dc-r8-director23",
+   "rel": "measured_by",
+   "dst": "ms-r8-director23"
+  },
+  {
+   "src": "fd-distress-read-fires-on-listed-answer",
+   "rel": "caused_by",
+   "dst": "ms-r8-director23"
+  },
+  {
+   "src": "fd-predicates-reread-text-and-miss-what-judges-count",
+   "rel": "constrains",
+   "dst": "dc-r8-director23"
+  },
+  {
+   "src": "rj-r8-joints-as-rules",
+   "rel": "constrains",
+   "dst": "dc-r8-director23"
+  },
+  {
+   "src": "rj-r8-joints-as-rules",
+   "rel": "measured_by",
+   "dst": "ms-r8-director23"
   }
  ]
 }
