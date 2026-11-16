@@ -672,14 +672,40 @@ export const ORDER_LAWS = {
   /** J1 (main on director21: backTo fired 0 times in 33 returns to an earlier card): a card asked before, not on her last turn, comes
    *  back with the script's backTo joint — never bare, never code's "Phir se dekho:". */
   backToJoint(L, r, i, ctx) {
-    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40)) || low(ctx.prevT.text).includes(low(r.card).slice(0, 40))) return null;
-    // (the card re-asked by its question alone, S1: what comes before is the turn but its last sentence)
+    // (dc-r8-director22 J2, both directions: backTo is said when, and only when, a card said before comes back after another unit — the unit
+    // her last turn ended on (held.unit) is not the one this turn's card is held on)
+    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40))) return null;
+    const heads = ctx.jointHeads?.backTo ?? [];
+    if (!heads.some(Boolean)) return null;
     const at = norm(r.text).toLowerCase().lastIndexOf(low(r.card).slice(0, 30));
     const before = (at >= 0 ? norm(r.text).slice(0, at) : sentencesOf(r.text).slice(0, -1).join(" ")).trim();
-    const heads = ctx.jointHeads?.backTo ?? [];
-    if (!heads.some(Boolean) || heads.some((h) => h && low(before).includes(h))) return null;
-    return !before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)
-      ? `a card back from earlier ${before ? `with "${before}"` : "bare"}, no backTo` : null;
+    const said = heads.some((h) => h && low(before).includes(h));
+    const prevU = ctx.prevT.held?.unit ?? null, curU = r.held?.unit ?? null;
+    const inPrev = low(ctx.prevT.text).includes(low(r.card).slice(0, 40));
+    const returned = !!prevU && !!curU && prevU !== curU && !inPrev;
+    if (said && !returned) return `backTo with no return (last turn on ${prevU ?? "no unit"}, card on ${curU ?? "?"})`;
+    if (!said && returned && (!before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)))
+      return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
+    return null;
+  },
+  /** dc-r8-director22 H: a Hindi request gets words she did not say in her last two turns — the part's second wording or an unspent
+   *  simpler; every teaching sentence of the turn (four words or more, the card aside) said already is the fault. */
+  hindiNewWords(L, r, i, ctx) {
+    if (!/·\s*language/.test(ctx.prevRead ?? "")) return null;
+    const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
+    const card = key(r.card ?? "");
+    const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x));
+    return ss.length && ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
+  },
+  /** dc-r8-director22 J2: a miss verdict and its remediation always have their joint — a remediation said on the turn after a wrong
+   *  answer carries one of the script's beforeRemediation forms. */
+  missRemediationJoint(L, r, i, ctx) {
+    if (!["incorrect", "partial", "misconception"].includes(ctx.prevCls)) return null;
+    if (!(r.pageParts ?? []).some((p) => p.part === "body" && /^rem:/.test(String(p.beat ?? "")))) return null;
+    const forms = (ctx.script?.joints?.beforeRemediation ?? []).flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean);
+    if (!forms.length) return null;
+    const t = key(r.text);
+    return forms.some((f) => t.includes(key(f).replace(/^achha /, "").slice(0, 18))) ? null : `a remediation after a miss with no joint: "${String(r.text).slice(0, 60)}"`;
   },
   /** Main on director21 (c4 steering 66, c5-t02 offtopic 72): the screen's controls are never named aloud ("Buttons: aage badhein"). */
   uiWords(L, r) {
@@ -726,7 +752,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -746,6 +772,7 @@ export function lessonFlags({ rows, script }) {
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
+    (ctx.o.teacherTexts ??= []).push(r.text ?? "");
     ctx.prevPrevT = ctx.prevT;
     ctx.prevT = r;
   });
