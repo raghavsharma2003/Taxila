@@ -10,6 +10,7 @@ import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { applySeams, seamStart, lessonKeyOf } from "./seams.js";
+import { altCall } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -1249,9 +1250,15 @@ function seamsOf(out, { state, kit, ui = null }) {
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }
+/** The kind of a second view ("parts", "line", "round", "wholes", "unrolled", "example" …): a call's or a hint's `view`; a bars call with
+ *  none is "parts". null when it cannot be told. */
+export const viewKindOf = (v) => (!v || v === "held" ? null : typeof v === "string" ? (v === "bars" ? "parts" : v) : v.view === "bars" ? "parts" : v.view ?? (v.template || v.bars || v.labels ? "parts" : null));
 /** dc-r8-director23 C: the authored caption of the board a picture request redraws — the `viewCaption` of the script object whose `board`
- *  is the board up (the held unit's), in the lesson language. null when none is authored. */
-export function viewCaptionOf(kit, state, lang = "hinglish") {
+ *  is the board up (the held unit's), in the lesson language. null when none is authored.
+ *  (main, integration 72: a caption is written against ONE view, the one the board's own second view draws. `drawn` is the kind of the
+ *  view this turn draws; when it is known and is another kind — a bar card's number line where the caption describes its circle —
+ *  the caption is not said: "Is gol ko…" over a number line is words against the board. Code's line, then the quiet line, stand in.) */
+export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = {}) {
   const sc = scriptFor(kit)?.script;
   if (!sc) return null;
   const want = [state?.heldUp?.board, state?.lastMove?.cardBeat?.board, state?.lastMove?.scriptBeat?.board].filter(Boolean).map((b) => JSON.stringify(b));
@@ -1260,7 +1267,11 @@ export function viewCaptionOf(kit, state, lang = "hinglish") {
   const walk = (o) => {
     if (hit || !o || typeof o !== "object") return;
     if (Array.isArray(o)) return o.forEach(walk);
-    if (o.board && o.viewCaption && want.includes(JSON.stringify(o.board))) { hit = o.viewCaption; return; }
+    if (o.board && o.viewCaption && want.includes(JSON.stringify(o.board))) {
+      const own = drawn ? viewKindOf(altCall(o.board)) : null;
+      if (drawn && own && own !== drawn) return;
+      hit = o.viewCaption; return;
+    }
     for (const v of Object.values(o)) walk(v);
   };
   walk(sc);
@@ -2619,7 +2630,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"], round: ["gol", "a circle"] };
     // (dc-r8-director23 C: Learning's authored caption for the view of the board the picture redraws — `viewCaption` beside that board in
     // the script — is said in place of code's line when a view is drawn; code's line, then the quiet line, stay as the fallbacks)
-    const authoredCap = visualAsk && (heldPic ? !!state.lastMove.altLine : !!alt) ? viewCaptionOf(kit, state, lang) : null;
+    const authoredCap = visualAsk && (heldPic ? !!state.lastMove.altLine : !!alt) ? viewCaptionOf(kit, state, lang, { drawn: viewKindOf(alt) }) : null;
     if (authoredCap) guard.viewCaption = true;
     const asked = !visualAsk ? null
       : authoredCap ? authoredCap
