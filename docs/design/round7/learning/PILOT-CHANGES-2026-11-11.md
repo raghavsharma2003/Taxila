@@ -541,3 +541,38 @@ The main loop read the last round's changes (the c5-t02 and c5-t01 round 3, the 
   - The code's own picture lines still say "sankhya rekha", "nishaan" and "tukde".
   - The c4 s3 e1 board still shows the 4-part strip.
   - The c5-t01 card about 1/9 is unchanged, per main.
+
+## director24 list (patch 013, 2026-11-16)
+
+- **`did`.** Every check card and teach-back carries a second-person clause said after "Aaj tumne", with no grade and no answer
+  number where the doing matters more. c6 also carries one on its explain asks and worked steps, which code may pick.
+  `wrap.didFrames` holds three frames per pilot. check.mjs `d25Errors` requires both.
+- **Help wordings.**
+  - Point simplers that previewed their card now help with the point (c4 6, c5-t02 10, c6 8).
+  - Worked-example simplers take a different route instead of a paraphrase (c4 6, c5-t01 8, c5-t02 all, c6 all).
+- **Captions.** c5-t01 s3 says the whole numbers as digits, and the s1 e2 ask caption is true of its board.
+- **Words.**
+  - "upar/neeche wala number" for a fraction's numbers. "pehli/doosri patti" or "upar/neeche wali patti" for strips. "line ke
+    upar/neeche" for a two-denominator line's gaps, in c5-t02 too (which said "ek taraf / doosri taraf").
+  - c5-t02's dor is "dor", and c4 s2 says "group" (not "plate").
+- **Keys said after "sahi jawab:"** now read as said:
+  - c4: "1/4 se kam", "Sonu ka tukda", "Farhan ka tukda kam";
+  - c5-t02: seven keys;
+  - c5-t01: "1/4 kilometre" and the other two kilometre keys;
+  - c6: three worked answers.
+  
+  Each old form stays in `accept`.
+- **`asideReturn`.** Every form reads as the whole of her turn.
+- **Sentences.** c5-t02's s3 `covered`; c5-t01's "Ab upar wala number…" and "wahi poora 11…"; c6's kyari answer.
+- **Reads.** An independent reader read every change. Its fails were fixed, with a reader's wording wherever check.mjs allowed:
+
+  | Pilot | Pass |
+  |---|---|
+  | c4 | 29/37 |
+  | c5-t01 | 68/71 |
+  | c5-t02 | 58/65 |
+  | c6 | 50/54 |
+
+- **For Brain.**
+  - In an English lesson a key is said as written, so the Hinglish key forms need `keyInLang` in `workedAnswerOf`.
+  - "Yeh hissa saaf hua?" is `BEAT_ASK`.

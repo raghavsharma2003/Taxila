@@ -146,6 +146,13 @@ From director23 (dc-r8-director23 C and T2), required by `d24Errors`:
 - **`wrap.ack`**: three forms `[{ hi, en }]`, one sentence of at most 8 words. The wrap opens with one when the child said something
   after the closing key's check-in. It neither grades nor praises.
 
+From director24 (dc-r8-director24 clause 4), required by `d25Errors`:
+- **`did`** `{ hi, en }` on every check card and on the teach-back. It is a short second-person clause that follows "Aaj tumne"
+  ("1/3 ke neeche do 1/6 ke tukde gine"): what doing the card was, not a grade, and without the answer's number where the doing
+  matters more. It is one clause of at most 12 words, with no question and no praise. Code picks the hardest card the child got
+  right at the first try and says its `did` in one of the `wrap.didFrames`.
+- **`wrap.didFrames`**: three frames `[{ hi, en }]`, each one sentence with exactly one `{did}` slot.
+
 Aside replies (R3, data/lesson-aside-replies.json): each kind's `phraseReplies[i]` answers `returns[i]` with one `{phrase}` slot,
 up to three of the child's own words, said back about the child; Brain turns first person into second and drops a final
 postposition. `replies` ({word}) stays until Brain reads `phraseReplies`.

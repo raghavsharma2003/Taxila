@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { d24Errors, chapterSynonymErrors, voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
+import { d25Errors, d24Errors, chapterSynonymErrors, voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
 
 const T = (hi, en = "x") => ({ hi, en });
 
@@ -157,4 +157,18 @@ test("director23 C and T2: a caption for every board's picture view, naming no k
   x = s(); x.skills[0].checks[0].viewCaption.hi = "Kitne gap hain?"; assert.ok(d24Errors(x).some((m) => /asks nothing/.test(m)));
   x = s(); x.wrap.ack = x.wrap.ack.slice(0, 2); assert.ok(d24Errors(x).some((m) => /wrap\.ack: three forms/.test(m)));
   x = s(); x.wrap.ack[0].hi = "Bilkul sahi, shabaash!"; assert.ok(d24Errors(x).some((m) => /grades and praises nothing/.test(m)));
+});
+
+test("director24 clause 4: a 'did' clause on every check card and the teach-back, and three {did} frames", () => {
+  const T3 = (hi, en) => ({ hi, en });
+  const s = () => ({ version: 2.4, teachback: { did: T3("dono patti milakar chhota hissa dhoondha", "compared the two strips and found the smaller part") },
+    wrap: { didFrames: [T3("Aaj tumne {did}.", "Today you {did}."), T3("Aaj tumne {did}, yeh yaad rakhna.", "Today you {did}; remember that."), T3("Yaad hai, tumne {did}.", "Remember, you {did}.")] },
+    skills: [{ checks: [{ id: "c1", did: T3("1/3 ke neeche do 1/6 ke tukde gine", "counted two 1/6 pieces under 1/3") }] }] });
+  assert.deepEqual(d25Errors(s()), [], JSON.stringify(d25Errors(s())));
+  let x = s(); delete x.skills[0].checks[0].did; assert.ok(d25Errors(x).some((m) => /checks\[0\]\.did: what doing this card was/.test(m)));
+  x = s(); x.skills[0].checks[0].did.hi = "Aaj tumne tukde gine"; assert.ok(d25Errors(x).some((m) => /the clause only/.test(m)));
+  x = s(); x.skills[0].checks[0].did.hi = "bahut badhiya se tukde gine"; assert.ok(d25Errors(x).some((m) => /praises nothing/.test(m)));
+  x = s(); x.skills[0].checks[0].did.hi = "tukde gine. Phir milaye"; assert.ok(d25Errors(x).some((m) => /one clause/.test(m)));
+  x = s(); x.wrap.didFrames[1].hi = "Aaj tumne bahut kuch kiya."; assert.ok(d25Errors(x).some((m) => /one \{did\} slot/.test(m)));
+  x = s(); delete x.teachback.did; assert.ok(d25Errors(x).some((m) => /^teachback\.did/.test(m)));
 });
