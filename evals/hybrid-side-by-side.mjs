@@ -473,8 +473,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
           // (main on director23, c4 steady 32, 68, 74, 102, 128: the close of the card just answered was checked against the next unit's
           // board — the board up while a close is said is the closed card's (heldOf's close), so a close page is checked against that one)
-          const closeHere = i === 0 && (tGuard?.parts?.list ?? []).find((q) => String(q.text ?? "").trim())?.part === "close" && !!next?.lastMove?.closeBeat?.board
-            && JSON.stringify(next.lastMove.closeBeat.board) !== JSON.stringify(pt.boardRef);
+          const closeHere = i === 0 && parts.length > 1 && (tGuard?.parts?.list ?? []).find((q) => String(q.text ?? "").trim())?.part === "close";
           const n = scr && !closeHere ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
           // v6 checker (a): a value the board shows as "?" that this part states
           const wh = scr && !closeHere ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
@@ -491,8 +490,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     if (segs?.length && screen?.drawn === "take" && screen.template) segs[0] = { ...segs[0], template: screen.template };
     // (v6.3: the row's screen says what her final line draws: page 0's board, and every page when the turn is paged)
     if (screen?.kind === "whiteboard" && drawn?.length) screen = { ...screen, preselected: screen.boardRef ?? null, boardRef: drawn[0].board, ...(drawn.length > 1 ? { pages: drawn } : {}) };
-    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
-      + (screen?.kind === "whiteboard" && withheldStated(reply, screen).length ? 1 : 0) : 0;
+    // (main on director24, c6 steady 80: a verdict over its own answer board is no contradiction — the close's words are checked against
+    // the closed card's board, which is up while it is said; the rest of the line against the turn's board)
+    const closeTxt = next.lastMove?.closeBeat ? (tGuard?.parts?.list ?? []).filter((q) => q.part === "close").map((q) => String(q.text ?? "")).join(" ").trim() : "";
+    const restTxt = closeTxt ? String(reply).replace(closeTxt, " ").replace(/\s+/g, " ").trim() : reply;
+    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(restTxt, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
+      + (screen?.kind === "whiteboard" && withheldStated(restTxt, screen).length ? 1 : 0) : 0;
     // v6 checker (main on director8: the code saw 1, 0, 0 of 10, 4, 45): (b) a picture asked for, described as something the board
     // does not draw; (c) a close's why borrowed from a point or a remediation; (d) a verdict with content said over a board
     // other than the answered card's

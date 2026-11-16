@@ -132,7 +132,17 @@ export function falseAnswerNumbers(text, { keys = new Set(), given = "" } = {}) 
     if (!/(?:\bjawab\b|\banswer\b|\bisliye\b|\btoh\b[^.!?]*\b(?:hoga|hogi|hai|hain)\b|=|\byaani\b|\bso\b[^.!?]*\bis\b)/i.test(s)) continue;
     // (a working shown from its own numbers, "8 + 3 = 11", is arithmetic, not a stated key)
     const shown = new Set([...s.matchAll(/(\d+)\s*([+\-×x*])\s*(\d+)\s*=\s*(\d+)/g)].filter((m) => { const [a, op, b, c] = [Number(m[1]), m[2], Number(m[3]), Number(m[4])]; return (op === "+" && a + b === c) || (op === "-" && a - b === c) || ("×x*".includes(op) && a * b === c); }).map((m) => m[4]));
-    for (const x of s.match(/\d+\/\d+|\d+(?:\.\d+)?/g) ?? []) if (!ok.has(x) && !shown.has(x)) out.push(x);
+    // (main on director24, c5-t01 steady 92, c4 stuck 26: "8/8 = 1" names a whole, and "1/1 ka matlab hota poori roti" explains a
+    // term — neither states an answer)
+    const explained = new Set([...s.matchAll(/(\d+\/\d+|\d+)\s+(?:ka|ki|ke)\s+matlab/giu)].map((m) => m[1]));
+    for (const x of s.match(/\d+\/\d+|\d+(?:\.\d+)?/g) ?? []) {
+      const whole = /^(\d+)\/(\d+)$/.exec(x);
+      if (whole && whole[1] === whole[2]) continue;
+      // (in a sentence that names a whole, 0 and 1 are the line's ends)
+      if (/^[01]$/.test(x) && /(?<![\d/])(\d+)\/\1(?![\d/])/.test(s)) continue;
+      if (explained.has(x)) continue;
+      if (!ok.has(x) && !shown.has(x)) out.push(x);
+    }
   }
   return [...new Set(out)];
 }
