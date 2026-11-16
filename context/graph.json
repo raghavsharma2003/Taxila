@@ -29084,6 +29084,83 @@
    "at": "2026-11-16",
    "title": "tests/r8-picks-default.test.mjs over every coverage entry x fades 1-3 x 2 seeds x (no focus and each mapped mix-up as focus), every generated candidate: 16,970 levels, 10,960 (level, declared pick) checks, 86 pairs (8 overridden by a proved chanceRepeat). On every level k equals the default for its read p (or the family spec), and the per-day figure on that p is under 1 in 10; per pair, the worst mix of four levels from the pair's p values (an unread level at 1/2), under the most-sightings rule, is at most 0.0625 (p 1/2, k 4); 1/3 at k 4 gives 0.0123; the 3-or-4 pairs 0.0508. Not measured: the exact option lists of the families read from their acts (most read 2 or 3 options, so k 4; a true pick among four or more would get 3), a real sitting.",
    "source": "inbox/r8-picks-default.json"
+  },
+  {
+   "id": "ms-release-3bf359a",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Released 3bf359a with scripts/release.mjs: web taxila-web--s3bf359a-s374 (was taxila-web--s35599fe-75j3), worker + canary/nightly jobs on taxila-worker:3bf359a (was 35599fe); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 3bf359a --rollback.",
+   "source": "inbox/release-3bf359a.json"
+  },
+  {
+   "id": "dc-r8-gate2-habits",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Gate 2 H1, H3, H4 built (dc-r8-gate2-habit-children; branch claude/r8-gate2-habits, from claude/r7-games 3731cca54); the habit battery passes on stambh/tally, kon/place and kon/name. H1, two sightings are two different acts: FamilyLogic.sightingOf gives what she did at a pick's sighting as a value (gradeLevel puts it on the chanceMis row as chanceAct, afterLevelBody remembers it, nameOnRepeat counts only sightings whose act differs from every earlier one and strips chanceAct from every row it returns). tally read: the number she typed; kon/place measure: the surface is the key on both scales (theta and 180 - theta one key; another tilt is not another level) and the value the number she typed; draw wrong-scale: the rim mark; vertex-off and centre-on-arm: the protractor centre's offset from the vertex ON THE BOARD, offsets within tolPx (a finger's drop) one act (main's open question 1: the board, not the protractor's frame, where the holder repeats one value and is never named); join-wrong-end: no value (two buttons; its spec already needs both orders). H3: kon/name say's order act is a sighting only when her next name, after the play-out, again puts the vertex at an end (kon.logic.ts confirmSay); unconfirmed, the row keeps its outcome and weight and loses chanceMis; nothing shown changes and the level does not ask again (after a miss it already waits for her next name). H4: tally keep's 'five' (no line across anywhere) is a pick (FamilyLogic.chanceAt, read by gradeLevel and the server's chancePick for trail, seam and trace), named on a second keep level with other counts and other totals (chanceRepeat keep:tally-four two sightings); 'counted' still names from one level. shared/play.ts HABIT_RULES (on) is a test seam: the battery's legacy run turns it off inside one synchronous run so each negative control keeps showing the old failures. NAMING_OFF unchanged; no served level or drawing changed (no re-cert). Reverse if: a judge finds a habit child the battery lacks that is named more than 1 in 10 (add her; two modes: the ruling's reverse-if), or the board-frame tolerance proves wrong with real touch data (drops of one child spread wider than tolPx, or the holder's arms on a day's levels lie closer than 27 degrees so she is never named).",
+   "source": "inbox/r8-gate2-habits.json"
+  },
+  {
+   "id": "ms-r8-gate2-habits-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "The habit battery after H1, H3, H4 (naming forced on inside the battery; worst child who does not hold the mix-up, worst fade, before -> after). Gate sweep (2 sessions a cell, 6 random, 1 per constant over two pL): tally read 0.172 (what I typed last time) -> 0; keep 0 -> 0; measure 0.938 (the same drop 20 px up; 0.974 for a new child, the same drop with a 4 px wobble) -> 0.016 (one random slip a level); draw 0.891 (drop 20 up; wobble 0.911) -> 0.026 (the right dot, either button, join); say 1.000 (the same swap, the missed tap added last, reading across) -> 0; find 0 -> 0. Full sweep (HABIT_FULL=1: 10 a cell, 30 random, 4 per constant over every pL; 102 s, 77 s, 79 s): tally read 0.234 -> 0.013 (bundles only, a bundle skipped, fade 2); measure 0.967 (wobble) -> 0.006; draw 0.920 (wobble) -> 0.021; say 1.000 -> 0; find 0.005 -> 0.005. Holders named (full sweep): tally read four 0.80, half her levels 0.32; keep counted, five, plain 1.00 (five and plain from the second keep level, never the first: under the old rules the first, in every session); measure other scale, smaller number, outer scale 1.00; vertex-off 0.46 measure, 0.43 draw (were 1.00: on the board two of her levels are two acts only with arms more than about 27 degrees apart, so fade 1 seldom names her); draw outer 0.99, always A 0.45; larger number, inner scale 0 / 0.003 (served levels never tell them); say vertex first and last 1.00, any order 0.23 (was 0.58; at two sightings instead of three it would be 0.57 with every non-holder under 0.011, gate sweep); find first letter 0.50, last letter 0. Not measured: real children, sessions longer than four levels, a day of several sessions.",
+   "source": "inbox/r8-gate2-habits.json"
+  },
+  {
+   "id": "ms-release-e19c8da",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Released e19c8da with scripts/release.mjs: web taxila-web--se19c8da-xtk0 (was taxila-web--s3bf359a-s374), worker + canary/nightly jobs on taxila-worker:e19c8da (was 3bf359a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e19c8da --rollback.",
+   "source": "inbox/release-e19c8da.json"
+  },
+  {
+   "id": "dc-r8-gate2-discrim-built",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "dc-r8-gate2-discriminating-level built (branch claude/r8-gate2-discrim; NAMING_OFF unchanged; before a miss only the served levels change). Answer 4: kon/place measure and draw served no acute angle (centred, its vertex sat too near the side for the protractor); a figure that does not fit centred is moved across, and from a session's fourth level (body n >= 3), while it lacks an acute angle or one opening anticlockwise, the level supplies it (kon.place.ts placeNeeds; GenRequest.n). Answer 1: vertex-off's sighting value carries the level's base direction (the protractor's base line as the solver lays it, baseDir) and the offset in the protractor's frame; a second sighting counts only when the base directions differ by >= 45 degrees (DISCRIMINATING_TURN), the frame offset is the same within VO_BAND and the board offset differs (shared/play.ts discriminatingPair); after a first sighting nextBody copies the bases into the next body (levels.js basesOf; GenRequest.bases) and the generator steers to a level >= 45 degrees away (fade 1 may tilt to 50 for it); none within four levels: not named that day. An angle opening the other way has the same base direction, so the tilt, not answer 4's mix, gives the 45 degrees. Answer 2: kon/name say serves a level where every reading across the screen puts the vertex in the middle (kon.name.ts readsAcrossAll; no longer a shortcut; its solve faint; its vertex-first play-out clear of the lit sector, sayPlayoutClear), searched for directly once vertex-name is the focus (the angle inside the triangle >= 100 degrees facing a diagonal); say:vertex-name is named only with a sighting on such a level among them (firmSighting; chanceRepeat needFirm) and then on the second, each confirmed by H3. Answer 3: the battery asserts the worst door sequence pooled over fades as well as the worst fade, and lists any cell >= 0.5 of a child with no randomness. HABIT_RULES off (the negative control) also turns off the say steer and needFirm. Reverse if: a judge finds a battery child acting as vertex-off on two levels >= 45 degrees apart with one frame offset, or a reader across who does not solve a readsAcrossAll level; or real touch data show a held placement drifting more than VO_BAND in the protractor's frame between levels (then the frame tolerance widens).",
+   "source": "inbox/r8-gate2-discrim.json"
+  },
+  {
+   "id": "ms-r8-gate2-discrim-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "The habit battery after dc-r8-gate2-discriminating-level, full sweep (HABIT_FULL=1: 10 sessions a cell, 30 random, 4 per constant over every pL; kon/place 8.0 min, kon/name 2.7, tally 2.8). Worst child who does not hold the mix-up, worst fade before (after H1/H3/H4) -> after, and worst door sequence after: measure 0.006 -> 0.005, door 0.011; draw 0.021 -> 0.075 (last time's right dot, wrong-scale, fade 3), door 0.050; say 0 -> 0.007, door 0.008; find 0.005 -> 0.005, door 0.008; tally read 0.013 -> 0.013, door 0.008; keep 0. Cells >= 0.5 for children with no randomness: none. Holders: vertex-off 0.92 measure, 0.93 draw (were 0.46, 0.43); say any order 0.58 (was 0.23), vertex first and last 1.00; find first letter 0.50; larger number 0.06 and inner scale 0 (now served the levels that tell them; the wrong-scale steer goes to clockwise levels). Served levels changed (gate-sweep sessions): kon/place about 2 levels in 3 (careful 518/768 measure, 464/768 draw); kon/name say only after a first sighting (holder 505/768). Re-cert: kon/place 4480 and kon/name 4484 samples, all passing at every size. Not measured: real children, the browser layout suite on the new acute and tilted place levels.",
+   "source": "inbox/r8-gate2-discrim.json"
+  },
+  {
+   "id": "fd-caption-said-over-another-view",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "On the merged tree of integration 72 an authored picture caption was said whatever second view was drawn: a bar card whose view was a number line got the caption written for its circle. Brain's wiring found the caption by its board; Learning writes each caption against the one view the board's own second view draws. Each stream's gate passed alone (Brain had no captions, Learning no wiring); an older test (r7-brain-v6-altview) caught it on the merged tree. Fixed by main: viewCaptionOf takes the kind of the view drawn and says no caption over another kind.",
+   "source": "inbox/r8-main-35.json"
+  },
+  {
+   "id": "fd-browser-suites-run-only-in-main",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "The browser suites run only in the main loop's local gate: stream environments have no browser and CI does not run them. Integration 71's gate failed on the tally layout browser suite (a state assertion stale after gate 2 H4; the screen was unchanged), and the kon layout suite does not render the new acute and tilted levels. A push to int/r6 now needs the local full run as well as CI.",
+   "source": "inbox/r8-main-35.json"
+  },
+  {
+   "id": "fd-test-left-seam-db-stub",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "tests/r4-games-core-patch03.test.mjs set the Studio seam's database stub (a database that answers with no rows) and never put it back; in a shared process stagecraft's phone-play test then found no play piece. An old latent leak that the day's seed (20261116) put in one process. Found by bisecting the failing leak process (177 files); fixed by restoring the seam's deps.",
+   "source": "inbox/r8-main-35.json"
+  },
+  {
+   "id": "ms-r8-integration-72-gate",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Integration 72 (0c9378866: Brain cb21c01b R2, T2, captions wired, H2, boards, K2, part of A2; Learning 3e25c5c60 captions and the director23 list; Games 493262853 discriminating levels and the level mix): CI green, local test:all 7,392 pass, 0 fail (754 suites), leak check clean. Dry matrix 0 on every gated predicate, pending repeatedAuthored 8; 16 picture requests, 16 views, 1 quiet picture line (c4 offtopic row 26), 28 cards said again within two turns, 67 turns over 60 words. Released as release 39.",
+   "source": "inbox/r8-main-35.json"
+  },
+  {
+   "id": "ms-release-0c93788",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Released 0c93788 with scripts/release.mjs: web taxila-web--s0c93788-w9wg (was taxila-web--se19c8da-xtk0), worker + canary/nightly jobs on taxila-worker:0c93788 (was e19c8da); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0c93788 --rollback.",
+   "source": "inbox/release-0c93788.json"
   }
  ],
  "edges": [
@@ -46461,6 +46538,56 @@
    "src": "dc-r8-picks-default",
    "rel": "measured_by",
    "dst": "ms-r8-picks-default-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-habits",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-habit-children"
+  },
+  {
+   "src": "dc-r8-gate2-habits",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-habits-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-habits",
+   "rel": "part_of",
+   "dst": "dc-r8-habit-battery"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-discriminating-level"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-discrim-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-habits"
+  },
+  {
+   "src": "fd-caption-said-over-another-view",
+   "rel": "constrains",
+   "dst": "dc-r8-director23"
+  },
+  {
+   "src": "fd-caption-said-over-another-view",
+   "rel": "measured_by",
+   "dst": "ms-r8-integration-72-gate"
+  },
+  {
+   "src": "fd-browser-suites-run-only-in-main",
+   "rel": "measured_by",
+   "dst": "ms-r8-integration-72-gate"
+  },
+  {
+   "src": "fd-test-left-seam-db-stub",
+   "rel": "measured_by",
+   "dst": "ms-r8-integration-72-gate"
   }
  ]
 }

@@ -1,8 +1,89 @@
 # Brain status
 
-**Ready for director23: `b953f533`** (main's 030 and 031 in; the dry matrix reads 0 on every gated predicate).
-
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
+
+## 2026-11-16 · `cb21c01b` (dc-r8-director23 T2, C, H2, boards, K2, A2 in part)
+
+**Done (gated: test:all 7298 pass; the only failures are the two worktree-only browser suites):**
+- T2:
+  - A miss on the closing question gets a miss verdict before the key.
+  - The sentence about the child is said to her in the second person, about the hardest thing she got right. Code picks it: the
+    closing question if right, else the card right after the most misses. A third-person sentence is not said.
+  - The wrap opens with Learning's `wrap.ack` when the child spoke after the closing key's check-in.
+- C: the picture turn says Learning's `viewCaption` when authored, then the card's question alone. `quietPictureLines` reads 9 until
+  the captions are authored.
+- H2: a help turn whose lines are all in her last two turns says the first help not there (the cell's lines, the card's simpler, the
+  point's simpler, `pointAlt`). With none left and a card following, the card alone. New gated `helpRepeats`: 0.
+- Boards: a remediation on its own turn is drawn on its own board (c4 steady 98).
+- K2: after a wrong answer to a yes-or-no card, one sentence that states the fact.
+- A2, in part: the child's answer to her AI-line question gets a reply in the child's words (c4 offtopic 20).
+- Counts: cardsSaid 280 → 272, cardsSaidAgainWithin2 36 → 28, boardChanged 313 → 314, boardKept 318 → 317, quietPictureLines (new) 9.
+
+**Not yet, and why:**
+- A2's AI question on a worked step (c6 stuck 38, steering 30). Keeping the question makes the next turn say the held step and the next
+  step together, with no check-in between. It needs the walk to hold the step itself, a state change I'll make next.
+- A2's reply to a repeated aside (c6 offtopic 24, 32). The word picker chose "maara" ("Achha, maara!"). It needs a better word pick or
+  Learning's forms, so it stays on the neutral line for now.
+
+**Doing next:** the harness fixes (item 8, in the working tree): `cardWholeAgain` on one-sentence cards with a shorter question, `hindiNewWords`
+on a switch-and-card-only turn (with the walk now saying new words there), no false key from a question's givens, and no contradiction
+counted for a close checked against the next unit's board. Then the A2 step hold.
+
+**Questions for main:** none new.
+
+## 2026-11-16 · `d93431e1` (dc-r8-director23 R2, the reader's record)
+
+**Done (gated: test:all 7295 pass; the only failures are the two worktree-only browser suites):**
+- The row's column is what the walk acted on this turn: no stale cell from a move built on the last one. A park or an aside acknowledged
+  is `aside`, a break or stop is `stop`, her reply's answer is `aside_reply`.
+- Her reply after a return or AI-line question goes on from where the lesson stood: an earlier-posed card's point is not said again
+  (c5-t01 stuck 40, c5-t02 stuck 40). The second half of a split turn no longer carries the reply turn's acknowledgement (c4 offtopic 46).
+- A line after the closing key's check-in is never graded.
+- `readerAgrees` has no equivalence table: it matches by name, and the only other pairs are listed with a reason each. It reads 0.
+  New gated `columnOfRead` reads 11 on director23's live rows and 0 on the dry matrix.
+- Counts: columns.repeat 21 → 8, misconception 117 → 106, give_up 51 → 65, aside 8 → 24, aside_reply (new) 18, stop (new) 11.
+
+**Doing next:** T2, pictures (C) and H2 are in the working tree; then boards, K2/A2, harness.
+
+**For Learning (C):** I've named the caption field `viewCaption`, `{hi, en}`, placed beside any `board` a picture request can redraw
+(an explain beat, a card, a worked step, a remediation). Brain finds it by its board and says it before the card's question. The counts
+table now has `quietPictureLines`; it reads 9 until captions are authored. The wrap's acknowledgement, when the child spoke after the
+closing key's check-in, is read from `wrap.ack` (a list of `{hi, en}` forms).
+
+**Questions for main:** are `viewCaption` and `wrap.ack` the names you want to give Learning?
+
+## 2026-11-16 · `748e700b` (dc-r8-director23 S, the seam pass)
+
+**Done (gated: test:all 7292 pass; the only failures are the two worktree-only browser suites):**
+- `server/brain/seams.js`: one pass over the finished turn's parts. It strips every joint an earlier pass left, labels the parts and
+  places at most one joint a seam from `SEAM_TABLE`, keyed by the two kinds:
+  - aside reply or AI line into the lesson;
+  - miss verdict into remediation;
+  - a return to an earlier card, after a then-card's verdict in the same turn or opening a turn;
+  - try-first into the card.
+
+  None between a point and its own card or a verdict and its own why. A filler that opens two neighbouring parts, or follows a
+  fillers-only acknowledgement, is said once. Rows carry `seams`.
+- Every other joint site in say.js is deleted.
+- Forms rotate from a seed of the lesson key plus the count said; the verdict openers and the why's opener rotate from the same seed.
+  The eval gave every lesson one session id (that was the judges' "one form in every lesson"), so each eval lesson now has its own
+  `ctx.lessonKey`; a live lesson keys on its session id.
+- The seam predicates read `seams` only: `backToJoint` and `missRemediationJoint` are rewritten, and the new `seamJoints` is gated. All read 0.
+- Counts: joints.backTo 9 → 31 (the in-turn returns), afterAside 9 → 6, afterAiLine 9 → 10, turnsOver60Words 74 → 70.
+
+**Doing next:** R2 (in the working tree, gating next), then T2, pictures, H2, boards, K2/A2, harness.
+
+**R2 finding, as asked:** the 11 "misconception" rows wrote no misconception to the learner record. All 11 child lines were read
+`no_evidence`, and evidence is written from the reading (`cls.outcome`, state.js), never from the row's column. The column was stale: a
+move built from the last one (K's second wording) kept that turn's cell. So these were not misgrades; the fix is in R2.
+
+**Questions for main:** none.
+
+## 2026-11-16 · 033 read (dc-r8-director23)
+
+Working in 033's order: S (the seam pass) first, then R2, T2, pictures, H2, boards, K2/A2, harness. I'll put "ready for director24"
+here with the sha when the seam predicates read 0 from `seams`, `readerAgrees` reads 0 with no equivalences, and the quiet picture
+lines read 0. The safety read in classify.js is left alone, as is the test child's "no place".
 
 ## 2026-11-16 · `b953f533` (main's 030 and 031)
 

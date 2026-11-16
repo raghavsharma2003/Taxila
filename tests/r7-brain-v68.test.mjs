@@ -339,7 +339,8 @@ describe("r7-brain-v68.test.mjs", () => {
               // (the held predicates above already hold every spoken part to its unit; here: no card on screen that is not said)
               const text = out.reply.replace(/\s+/g, " ").trim();
               // (v6.10 T2: an ask-again turn keeps the card said on the turn before it, and says only its one line)
-              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain ? null : pl.p.r.ui?.ask?.text ?? null }, null); // (as turn.js: A4 drops ui.ask)
+              // (dc-r8-director23 C: a picture turn asks the card's question alone — the harness's cardQ row mark, as on a W turn)
+              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain ? null : pl.p.r.ui?.ask?.text ?? null, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
               if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
             } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
           }

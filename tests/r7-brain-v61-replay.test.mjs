@@ -53,7 +53,8 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
     // (R7: the right answer's reason is the card's authored why, said by code)
     // (v6.6 V1: the verdict is code's frame, never her words, with the authored why)
-    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab), kyunki sadak 8 barabar hisson mein hai/, out.reply);
+    // (dc-r8-director23 S: on a replayed lesson the why's opener rotates from its seed)
+    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab)(?:, kyunki|\. Dekho,|:) sadak 8 barabar hisson mein hai/, out.reply);
     const a21 = intentAt(L, last, kit, out.reply, out.guard?.parts);
     // the dropping side (Brain): a 3-word tail ("Ab agla hissa.") was its own page back on the answered card's board; Studio could
     // not draw that page in its time (W6.timing), the paged turn failed and the revealed verdict page never reached the screen
@@ -113,7 +114,8 @@ describe("r7-brain-v61-replay.test.mjs", () => {
     assert.equal(last.p.r.move.kind, "reteach", "the run's own move");
     replyDeps.chat = async () => ({ text: "Nahi, yeh jawab nahi hai." });
     const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
-    assert.match(out.reply, /^Nahi, yeh jawab nahi hai\. /, out.reply);
+    // (dc-r8-director23 S: the not-right opener rotates from the lesson's seed)
+    assert.match(out.reply, /^(?:Nahi, yeh jawab nahi hai|Yeh jawab sahi nahi hai|Abhi yeh sahi nahi hai|Nahi, yeh theek nahi hai)\. /, out.reply);
     const L = lessonOf(kit, "d10t9");
     const a = intentAt(L, last, kit, out.reply, out.guard?.parts);
     // (the run paged it as e1's board for the 5-word verdict, then the remediation's, then the then-card's: the first page failed)

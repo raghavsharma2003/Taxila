@@ -111,14 +111,17 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
   let i = k?.phraseReplies?.length ? returnIndexOf(k, topic, asked, lang) : -1;
   // (dc-r8-director22 A: her question after the "Main AI teacher hoon" line is no return of the kind — its reply is the phrase form of the
   // same shape: a favourite asked gets the favourite form, a liking asked the "achha lagta" form)
-  if (i < 0 && k?.phraseReplies?.length) {
+  let kp = k;
+  if (i < 0) {
     const q = String(asked ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
-    const forms = k.phraseReplies.map((f) => formOf(f, lang).toLowerCase());
     const want = /favou?rite|kaun\s+pasand/i.test(q) ? /favou?rite/ : /achha\s+(?:kya\s+)?lagta|like\s+(?:most|about|best)|pasand/i.test(q) ? /achha\s+lagta|like/ : null;
-    if (want) i = forms.findIndex((f) => want.test(f));
+    // (dc-r8-director23 A2, c4 offtopic 20: "Dhoni" to "Tumhara favourite kaun hai?" after a question about Virat — an aside of no kind —
+    // got the plain line; the favourite and liking forms name nothing of a kind, so another kind's form of that shape is used)
+    const pool = [k, ...Object.values(KINDS).filter((x) => x !== k)].filter((x) => x?.phraseReplies?.length);
+    for (const x of want ? pool : []) { const j = x.phraseReplies.findIndex((f) => want.test(formOf(f, lang).toLowerCase())); if (j >= 0) { kp = x; i = j; break; } }
   }
-  const phrase = i >= 0 && k.phraseReplies[i] ? phraseOf(said) : null;
-  if (phrase) return { line: cap(fill(formOf(k.phraseReplies[i], lang), { phrase })), form: "phrase" };
+  const phrase = i >= 0 && kp?.phraseReplies?.[i] ? phraseOf(said) : null;
+  if (phrase) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };
   const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
   if (word) { const f = pickN(k?.replies, n); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
   const p = pickN(k?.plain, n);
