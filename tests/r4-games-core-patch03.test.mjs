@@ -21,7 +21,11 @@ test("patch 03: the practice move's skill first, then earlier plan skills in pla
 
 test("patch 03: declining the practice-beat game ('not_this') brings the library practice piece back", async () => {
   _reset();
+  // (the stub is put back at the end: left in place it gave every later suite in the same process a database that answers
+  // with no rows, and stagecraft's phone-play test then found no play piece — leak check, seed 20261116)
+  const savedDeps = { ..._setDeps({}) };
   _setDeps({ q: async () => ({ rows: [] }) });
+  try {
   studioSeam.prefetch({ lessonId: "L-dec", purpose: "practice", child: { id: "c1", class_level: 5 } });
   const L = _lesson("L-dec");
   assert.ok(L);
@@ -33,5 +37,5 @@ test("patch 03: declining the practice-beat game ('not_this') brings the library
   assert.equal(L.pieces.get(lib.intentId), lib);
   assert.equal(lib.retired, false);
   assert.ok(L.excluded.has("play:nishana/place"));
-  _reset();
+  } finally { _setDeps(savedDeps); _reset(); }
 });
