@@ -2,6 +2,24 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+## 2026-11-16, gate 2 H2: the habit battery, the negative control (branch `claude/r8-habit-battery`, from `cbd958e59` + `origin/int/r6`)
+
+**Done (no naming rule changed; `NAMING_OFF` untouched; nothing a child sees changes):** H2 of `RULINGS-2026-11-16-gate2.md`.
+- **The tool** `tests/_habit-children.mjs`: whole sessions through the real path as served (`currentLevel` → her acts → `gradeActs` → `nameOnRepeat(lessonEvidence)` → `afterLevelBody` → `nextBody`), naming forced on inside the tool only (the grade skips `withNaming`). Cells: every fade × pL (none, 0.3, 0.6, 0.9) × all 8 door sequences, the session's four levels. After a miss she does the solve. The children are the ruling's list for each goal; the holders are listed with why (the kit's own signs). For each child and mix-up it returns the share of sessions named, over all sessions, at the worst fade, and in the worst cell.
+- **Tests:** `tests/r8-habit-battery-{stambh-tally,kon-place,kon-name}.test.mjs`. The "every non-holder child under 1 in 10 at every fade" assertion is `todo` where it fails today: tally read, place measure and draw, name say. tally keep and name find pass and are asserted. Separate tests always run and assert that the known failures show, that holders are reported, and that the generator memo changes no served session. Gate sweep: 11–18 s a file. `HABIT_FULL=1`: about 1–3 min a file. `HABIT_PRINT=<file>` writes the table.
+- **Reproduced:** tally "16 every time" (1.0 in single cells, 0.13 at fade 1) and "what I typed last time" (0.17). kon/place: a key served twice. About 65% of measure sessions repeat a key within four levels, and every naming of a constant number or a fixed pad slip was a second sighting on the same key. "75 every level" is 0.5 at fade 2. kon/name: the same swap 1.0, the missed tap added last 1.0, reading across 1.0.
+- **Full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for random children, 4 for each constant over every pL; 1.6 min, 55 s and 1.2 min):** the same verdicts. tally: "what I typed last time" 0.23, "16 every time" 0.19, both at fade 1. measure: "first key one row low" 0.22 at fade 2 (the judge's 0.19). The gate sweep shows only 0.06 for it, so it shows there only in single cells. Constants 48–62 and 68–77 are named. say: one random slip 0.15, constant taps 021 0.29.
+- **Not reproduced as the judge had it:** The judge's tally 0.95 at fade 2 came from a model that typed n−1 as the miss, so the picker was not steered. Through the real path the figure is lower, but it is still over the line. keep's "| only" is named 1.0, but it is the kit's second sign, so it is listed as a holder.
+- **New:** the same drop every level, the finger 16–32 board px up or up-right of the vertex, is named vertex-off 0.94 (measure) and 0.89 (draw). Nearly every served level opens clockwise, so that offset is where vertex-off's band lies. One random slip a level in say (swaps and missed taps among the slips): 0.15. Constant taps 012/210 in say: 0.5.
+
+**Next:** H1, H3, H4, H5, H7 and the per-day count, each turning its todo into an assertion; then "gate 2 battery passes: <mode>".
+
+**Questions for main:**
+1. **A fixed drop (kon/place).** A finger always 20 px above the vertex is named vertex-off in nearly every session. Is she a holder (on these levels it is the bottom edge on the vertex) or a slip habit H1 must stop? For a placement, what is "a different value" under H1: the offset on the board, or the offset in the protractor's own frame? In the protractor's frame, the true holder would also repeat one value and never be named.
+2. **Reading across (say).** The generator never serves a say level where reading across puts the vertex in the middle, so this child gives the mix-up's name on every level. No rule that reads only her acts can tell her from vertex-first. Only H3 (the same level, after the play-out) can. Is H3 the route?
+3. **The statistic.** The tests assert on the worst fade, pooled over pL, doors and seeds (64 sessions, 192 for a random child). A single cell holds 1–6 sessions, which is too few for a random child, so the worst cell is reported but not asserted. Is that the reading of "at every fade and door" you want?
+4. **Holders the served levels never test.** Measure and draw serve almost only obtuse angles that open clockwise, so "always the larger number" and "always the inner scale" are never named. find's last-letter reader is never named either: the law names only the first-letter pick. Are both acceptable?
+
 ## 2026-11-16, a computed default for every family's picks; the day is still the session (branch `claude/r8-picks-default`, from `8bbabd1d6`)
 
 **Done (`NAMING_OFF` untouched; nothing the child sees changed, so no re-cert):** main's ruling 2 of "the per-session reading".

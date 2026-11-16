@@ -13,6 +13,24 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 A bundle is four standing lines with one line across them, and it is worth 5. A row's count is 5 × bundles + loose lines. The child makes every mark herself, and every stroke is legal: a cross after fewer than four lines is allowed. If such a cross were refused, a child could learn the rule by trying "╱" and falling back to "|" when it bounced. When the child presses Check, the game regroups each row by fives, and only then plays out what each group is worth.
 
+## Gate 2 battery (H2, 2026-11-16: the negative control, before any rule changes)
+
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-stambh-tally.test.mjs`. The table below shows, for each child and mix-up, the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported. Fails today in `read` (todo in the test): "what I typed last time" and "16 every time" are named at fade 1, through rows 19 and 20 (and 20 is a firm sighting). `keep` passes. Its only named one-button habit ("|" only, totals right) is the kit's second sign, so it is listed as holding the mix-up.
+
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
+|---|---|---|---|---|---|---|
+| read | what I typed last time (my first answer) |  | tally-four | 0.057 (n 192) | 0.172 (fade 1) | 1.000 (f1 pL- ggt, n 2) |
+| read | the mix-up: each bundle read as four | **holds** | tally-four | 0.833 (n 192) | 0.922 (fade 2) | 1.000 (f1 pL- tgg, n 2) |
+| read | the mix-up on half her levels (random) | **holds** | tally-four | 0.340 (n 576) | 0.411 (fade 2) | 1.000 (f2 pL- ggg, n 6) |
+| read | constant answer (100 values; worst: constant 16) | | tally-four | 0.042 (n 48) | 0.125 (fade 1) | 1.000 (f1 pL- ggt, n 1) |
+| read | constant values named ≥ 1 in 10 at some fade | | tally-four | 16 | | |
+| keep | the mix-up: bundles drawn, each counted as four | **holds** | tally-four | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| keep | only the first button, the standing line (five as five standing lines), totals right | **holds** | tally-four | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| keep | five standing lines, each group read as four | **holds** | tally-four | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| keep | constant answer (100 values; worst: constant 0 (every total)) | | tally-four | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+
+sweep: {"full":false,"seeds":2,"randomSeeds":6,"constSeeds":1,"constPls":[null,0.3]}; 16573 ms
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`): "stop listing slips. `keep` may name from one level (its two totals together need three slips). `read` names tally-four only when the mix-up's number is typed on two levels whose bundles and loose lines both differ." **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): what must be rare is a child named a mix-up she does not hold over one sitting, so the 1 in 10 is the chance over a whole session, not per pair. The pair rule was over that line (5 in 32 over three levels); read now names on three levels, or on two when one of them is *firm*, within the session's first four levels (below, "Read: per session").

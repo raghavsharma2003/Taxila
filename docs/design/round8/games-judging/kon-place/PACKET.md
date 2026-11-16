@@ -21,6 +21,56 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 (*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
 
+## Gate 2 battery (H2, 2026-11-16: the negative control, before any rule changes)
+
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-place.test.mjs`. The table below shows, for each child and mix-up, the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported. Fails today in `measure` and `draw` (todo in the test). A constant number, or the same pad slip, is named on a key served twice: about 65% of measure sessions repeat a key within four levels. The same drop every level (the finger 16–32 px up or up-right of the vertex) lands in vertex-off's band on nearly every served level, all of which open clockwise. "Always the larger number" and "always the inner scale" hold the mix-up, but are never named: the served levels never tell them apart from right.
+
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
+|---|---|---|---|---|---|---|
+| measure | placed right, any number (0-180) (random) |  | wrong-scale | 0.002 (n 576) | 0.005 (fade 1) | 0.167 (f1 pL- tgt, n 6) |
+| measure | one random slip a level (typing, a tick, a drop) (random) |  | vertex-off | 0.010 (n 576) | 0.016 (fade 1) | 0.167 (f1 pL- tgt, n 6) |
+| measure | same typing slip every level: key 1 down |  | wrong-scale | 0.026 (n 192) | 0.063 (fade 2) | 0.500 (f1 pL0.9 tgg, n 2) |
+| measure | same every level: drop 16 up (reads what it shows) |  | vertex-off | 0.406 (n 192) | 0.875 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | same every level: drop 20 up (reads what it shows) |  | vertex-off | 0.552 (n 192) | 0.938 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | same every level: drop 24 up (reads what it shows) |  | vertex-off | 0.552 (n 192) | 0.938 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | same every level: drop 28 up (reads what it shows) |  | vertex-off | 0.552 (n 192) | 0.938 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | same every level: drop 32 up (reads what it shows) |  | vertex-off | 0.375 (n 192) | 0.875 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | same every level: drop 16 up-right (reads what it shows) |  | vertex-off | 0.635 (n 192) | 0.906 (fade 3) | 1.000 (f1 pL0.9 ttg, n 2) |
+| measure | same every level: drop 20 up-right (reads what it shows) |  | vertex-off | 0.698 (n 192) | 0.906 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| measure | same every level: drop 24 up-right (reads what it shows) |  | vertex-off | 0.698 (n 192) | 0.906 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| measure | same every level: drop 28 up-right (reads what it shows) |  | vertex-off | 0.635 (n 192) | 0.906 (fade 3) | 1.000 (f1 pL0.9 ttg, n 2) |
+| measure | same every level: drop 32 up-right (reads what it shows) |  | vertex-off | 0.563 (n 192) | 0.813 (fade 3) | 1.000 (f1 pL0.9 tgt, n 2) |
+| measure | the smaller of the two printed numbers | **holds** | wrong-scale | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | the larger of the two printed numbers | **holds** | wrong-scale | 0 (n 192) | 0 (fade 1) | 0 (f1 pL- ggg, n 2) |
+| measure | always the outer scale | **holds** | wrong-scale | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | always the inner scale | **holds** | wrong-scale | 0 (n 192) | 0 (fade 1) | 0 (f1 pL- ggg, n 2) |
+| measure | the mix-up: the other scale's number | **holds** | wrong-scale | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | the mix-up: the bottom edge on the vertex, reads what it shows | **holds** | vertex-off | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| measure | constant answer (181 values; worst: constant 58) | | wrong-scale | 0.333 (n 48) | 0.750 (fade 3) | 1.000 (f2 pL0.3 gtg, n 1) |
+| measure | constant values named ≥ 1 in 10 at some fade | | wrong-scale | 33, 34, 35, 36, 37, 43, 44, 45, 46, 47, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 73, 74, 75, 76, 77 | | |
+| measure | constant answer (181 values; worst: constant 0) | | vertex-off | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+| draw | placed right, the right dot, either button (random) |  | join-wrong-end | 0.023 (n 576) | 0.026 (fade 1) | 0.167 (f1 pL- ggg, n 6) |
+| draw | same every level: drop 16 up |  | vertex-off | 0.521 (n 192) | 0.859 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | same every level: drop 20 up |  | vertex-off | 0.750 (n 192) | 0.891 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | same every level: drop 24 up |  | vertex-off | 0.750 (n 192) | 0.891 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | same every level: drop 28 up |  | vertex-off | 0.750 (n 192) | 0.891 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | same every level: drop 32 up |  | vertex-off | 0.521 (n 192) | 0.859 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | same every level: drop 16 up-right |  | vertex-off | 0.516 (n 192) | 0.766 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| draw | same every level: drop 20 up-right |  | vertex-off | 0.516 (n 192) | 0.766 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| draw | same every level: drop 24 up-right |  | vertex-off | 0.516 (n 192) | 0.766 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| draw | same every level: drop 28 up-right |  | vertex-off | 0.516 (n 192) | 0.766 (fade 2) | 1.000 (f1 pL0.9 tgg, n 2) |
+| draw | same every level: drop 32 up-right |  | vertex-off | 0.391 (n 192) | 0.625 (fade 3) | 1.000 (f1 pL0.9 tgg, n 2) |
+| draw | always the outer scale (dot where it reads the size) | **holds** | wrong-scale | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | always the inner scale | **holds** | wrong-scale | 0 (n 192) | 0 (fade 1) | 0 (f1 pL- ggg, n 2) |
+| draw | the mix-up: the other scale's mark | **holds** | wrong-scale | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | the mix-up: always 'A se jodo' | **holds** | join-wrong-end | 0.484 (n 192) | 0.672 (fade 2) | 1.000 (f1 pL- gtt, n 2) |
+| draw | the mix-up: the bottom edge on the vertex | **holds** | vertex-off | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
+| draw | constant answer (181 values; worst: constant dot 0) | | wrong-scale | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+| draw | constant answer (181 values; worst: constant dot 0) | | vertex-off | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+| draw | constant answer (181 values; worst: constant dot 0) | | join-wrong-end | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+
+sweep: {"full":false,"seeds":2,"randomSeeds":6,"constSeeds":1,"constPls":[null,0.3]}; 9457 ms
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`), kon/place: "nothing reaches the teacher from one join press (the packet says the sign does; make the code and the packet agree with law 3), and give the tolerance that names vertex-off". **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named from one level, vertex-off (1 in 3.1), wrong-scale in `measure` (1 in 2.9) and in `draw` (1 in 9.4) were over it over four levels; every kon/place mix-up is now named on a repeat ("Per session", below). Computed in the same test ("gate 2, per session"); the rule on branch `claude/r8-gate2-session`.
