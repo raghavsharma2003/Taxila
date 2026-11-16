@@ -2,26 +2,44 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
-## 2026-11-16 · `SHA` (036 items 1 and 3: T3 and the c4 steady 96 fixture)
+## 2026-11-16 · `fae6adbd` (T3, c4 steady 96), `9717b18e` and `6b43c214` (M), `92a68d50` (H3 give-up)
 
 **Done:**
-- T3: the wrap's sentence about her is code's (`didSentence`, server/brain/say.js). It picks:
+- **T3** (036 item 1): the wrap's sentence about her is code's (`didSentence`, server/brain/say.js). It picks:
   - the last skill she reached;
-  - in that skill, the latest check card she answered right at the first try (by `rightLog`, misses 0);
-  - that card's `did` (`{hi, en}`), put in one of `wrap.didFrames` rotated by the lesson seed.
-  If there's no such card, there's no sentence. If a script has frames but no `did` on the card, it falls back to the skill before.
-  The model's `childSentence` is no longer called on the wrap.
-  - Tested with a c4 script given `did` and `didFrames` (tests/r8-director24-did.test.mjs).
-  - No script on int/r6 carries `did` yet, so the dry matrix wrap is unchanged and the counts did not move.
-- 036 item 3: tests/fixtures/c4-steady-96.json holds the director24 c4 steady line at 95 ("nahi, chhota hoga") and the live row 96.
-  - tests/r8-director24-part96.test.mjs rebuilds the state from the run's script copy, walked by `step()` to the s3 e1 card.
-  - Her line then goes through `planTurn` and `textReply`.
-  - `partOnce` flags the live row. Today's turn says the verdict, its why and e2's point, then holds the card; her "haan" gets the card. `partOnce` reads 0 on both turns.
-- Dry matrix: 0 on every gated predicate.
+  - in it, the latest check card she answered right at the first try (`rightLog`, misses 0);
+  - that card's `did` (`{hi, en}`), in one of `wrap.didFrames` rotated by the lesson seed.
+  A card with no `did` is skipped. No such card: no sentence. The model's `childSentence` is no longer called on the wrap.
+  No script on int/r6 carries `did` yet, so the dry wrap is unchanged.
+- **c4 steady 96** (036 item 3): tests/fixtures/c4-steady-96.json holds the director24 child line at 95 ("nahi, chhota hoga") and
+  the live row 96.
+  - tests/r8-director24-part96.test.mjs rebuilds the state from the run's script copy and plays her line through `planTurn` and `textReply`.
+  - `partOnce` flags the live row. It reads 0 on today's turn (verdict, why, e2's point; the card held) and on the next one (the card).
+- **M** (035 item 3), in the turn's own reply call:
+  - The one-call reply's last note asks for one `JOIN <kind>: <words>` line for each joint the turn may need and for the verdict's opener.
+  - Code takes those lines off the draft before any guard reads it, on the streamed path too.
+  - The seam pass checks each line (`joinProblem`): one sentence, at most 12 words, no digit, no fraction word, no question, no screen
+    word, no term of a card she has not answered, none of her last four turns. A verdict opener must also say its verdict.
+  - On a failure, or with no line written, the authored form or code's frame is said.
+  - Each seam records `by: model|authored`, plus `fellBack` with the reason. The verdict's seam carries `opener`.
+  - Gated `joinChecked` rereads every model join and opener. New counts rows: `joinsWritten`/`joinsFellBack`, `openersWritten`/`openersFellBack`.
+  - The dry stub writes no JOIN lines, so every joint and opener falls back and no dry line changed.
+  - Not done: the why's opener. A why is joined to its verdict by "kyunki"/"because" inside one sentence, so there is no opener for
+    the model to write and for code to check. Say if you want one anyway.
+- **H3, give-up on a card** (c5-t01 stuck 6, c4 steering 32): a give-up on a live card says the card's own `ask.simpler`, the give_up
+  cell's first line, before the card. Before, it said the beat's simpler, a hint for the point. Dry: c5-t01 stuck 6 changed as asked,
+  and the Hindi request at 8 now says the beat's wording, which is new to her.
+- Dry matrix after each step: 0 on every gated predicate. Counts: only the new rows moved.
 
-**Next:** M (the model writes the joins), then the rest of H3, then the rest of A3, then the harness flags.
+**Next:** the rest of H3, a second request for help on the same part getting the worked answer with the board. It waits on the Hindi
+question below because it changes the same pinned rows. Then the rest of A3 (repeated asides, the AI line's re-ask), then the harness flags.
 
-**Question for main:** the Hindi H3 question in the entry below is still open.
+**Not ready for director25 yet:** H3's second-request rule is open. M can only be read in a live run; the dry stub writes no joins.
+
+**Questions for main:**
+- The Hindi H3 question in the entry below is still open, and it decides the second-request rule too. A second request getting the
+  worked answer breaks the same pinned rows: v68 c4 stuck 8, v610 alreadySaidKey stuck c5-t01 60, v64 K1 steering c4.
+  May I retire them?
 
 ## 2026-11-16 · `979fe7fb` (item 8, harness) and `1700767c` (H3)
 
