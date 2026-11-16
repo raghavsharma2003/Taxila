@@ -790,6 +790,27 @@ PREDICATES.helpRepeats = (L, r, i, ctx) => {
   const hit = ss.map(key).find((x) => x.split(" ").length >= 5 && x !== q && !(card && card.includes(x)) && !CHECKIN.test(x) && last2.includes(x));
   return hit ? `help says her last two turns' sentence again: "${hit.slice(0, 60)}"` : null;
 };
+/** dc-r8-director24 P: a part is said once — an explain point said again on a turn the child asked nothing of (no request, no miss, no
+ *  give-up: c5-t02 steering 38, the e3 point said again after a reply), and a card's first posing with its point never said (c4 steady
+ *  96). Gated. */
+PREDICATES.partOnce = (L, r, i, ctx) => {
+  const pts = (ctx.o.points ??= (() => { const out = []; for (const sk of ctx.script?.skills ?? []) for (const b of sk.explain ?? []) {
+    const first = (x) => key(sentencesOf(x ?? "")[0] ?? "");
+    out.push({ id: `${sk.skillId}:${b.id}`, pt: [b.point?.hi, b.point?.en].filter(Boolean).map(first).filter((k) => k.split(" ").length >= 4),
+      card: [b.ask?.prompt?.hi, b.ask?.prompt?.en].filter(Boolean).map((x) => key(x).slice(0, 40)) }); } return out; })());
+  const T = key(r.text ?? ""), said = (ctx.o.ptSaid ??= new Set()), seen = (ctx.o.cardSeen ??= new Set());
+  const asked = /·/.test(String(ctx.prevRead ?? "")) || /^(?:incorrect|partial|misconception)/.test(String(ctx.prevRead ?? "")) || GIVE_UP_ANY.test(ctx.prevChild ?? "") || CLARIFY.test(ctx.prevChild ?? "");
+  let why = null;
+  for (const p of pts) {
+    const has = p.pt.some((k) => k && T.includes(k));
+    if (has && said.has(p.id) && !asked && !why) why = `the ${p.id.split(":").pop()} point said again with nothing asked`;
+    const posed = r.card && p.card.some((c) => c && key(r.card).startsWith(c.slice(0, 30)));
+    if (posed && !has && !said.has(p.id) && !seen.has(p.id) && !why) why = `the ${p.id.split(":").pop()} card posed with its point never said`;
+    if (posed) seen.add(p.id);
+    if (has) said.add(p.id);
+  }
+  return why;
+};
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;

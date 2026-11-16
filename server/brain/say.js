@@ -1241,6 +1241,9 @@ function seamsOf(out, { state, kit, ui = null }) {
     remediation: state?.lastMove?.scriptBeat?.kind === "remediation",
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
+    greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")), authoredEnd: !!out.guard?.authoredEnd,
+    hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english];
+      return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
   };

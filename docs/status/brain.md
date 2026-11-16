@@ -2,8 +2,11 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
-**Ready for director24: `cf60489e`, once Learning's `3e25c5c60` is merged with it (integration 72).** On Learning's scripts the dry matrix
-reads 0 on every gated predicate and `quietPictureLines` reads 0 of 16. On int/r6's current scripts, which have no captions yet, it reads 9.
+## 2026-11-16 · 035 read (dc-r8-director24)
+
+Working in 035's order: the seams record, P, M, L, H3, T3, K3/A3, then the harness. I'll write "ready for director25" here with the sha
+when the predicates for P, M, L and H3 read 0 on the dry matrix, turns over 60 words that hold a point and a card read 0, and Learning's
+`did` clauses are in. For T3 I propose the field `did` (`{hi, en}`) on each card. The safety read stays as it is.
 
 ## 2026-11-16 · `cf60489e` (main's 034)
 

@@ -3080,6 +3080,10 @@ export function step(prev, input) {
     out.state.lastMove = { ...lm0, ...add };
     if (out.move) out.move = { ...out.move, ...add };
   }
+  // (dc-r8-director24 P, c5-t02 steering 38: a held part said once is said — the second half of a split turn returns early with the held
+  // parts still on the state, and the turn after said them again)
+  if (input?.event === "turn" && prev?.bodyUnsaid?.length && out?.state?.lastMove?.heldSaid?.length && out.state.bodyUnsaid === prev.bodyUnsaid) out.state.bodyUnsaid = undefined;
+  if (input?.event === "turn" && prev?.bodyUnsaid?.length && out?.state?.bodyUnsaid && JSON.stringify(out.state.bodyUnsaid) === JSON.stringify(prev.bodyUnsaid) && (out.state.lastMove?.heldSaid?.length || out.state.lastMove?.sayFirst?.some((x) => prev.bodyUnsaid.map(String).includes(String(x))))) out.state.bodyUnsaid = undefined;
   // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
   // (dc-r8-director23 R2: the column is what the walk read on THIS turn — a move built from the last one (K's second wording) never keeps
   // that turn's cell; a column with no part the walk is on is still recorded, with no part)
