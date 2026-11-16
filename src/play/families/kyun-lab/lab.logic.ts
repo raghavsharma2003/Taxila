@@ -165,6 +165,8 @@ function shortcut(level: PlayLevel<LabParams>): LabAct[] | null {
   }
   return null;
 }
+/** the three predictions the lab offers (apply accepts exactly these) */
+const PREDICTIONS = ["A", "B", "same"] as const;
 function malActs(level: PlayLevel<LabParams>, mal: string): LabAct[] | null {
   const p = level.params, lab = labOf(p);
   if (!lab) return null;
@@ -269,6 +271,11 @@ export const labLogic: FamilyLogic<LabParams, LabState, LabAct> = {
   // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
   // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
   chancePicks: ["predict"],
+  // gate 2, the default (rulings 2026-11-16): the prediction is one of three (A, B, the same), after the same set-up acts
+  pickOptions: (level: PlayLevel<LabParams>, mal: string) => {
+    const acts = level.params.goal === "predict" ? malActs(level, mal) : null;
+    return acts ? PREDICTIONS.map((choice): LabAct[] => [...acts.slice(0, -1), { kind: "predict", choice }]) : null;
+  },
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const labHelpers = { diffsOf, winner, predictOf, outcomeOf };

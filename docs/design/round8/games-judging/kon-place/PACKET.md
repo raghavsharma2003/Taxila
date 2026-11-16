@@ -49,6 +49,8 @@ Branch `claude/r8-gate2-place`. Every number below is computed by `tests/r8-game
 
 **How many levels a session serves.** None is set by how a session serves levels: `/api/play/next` serves another whenever it is asked, and each act signs the session token afresh. So the figure needs a bound, and the server sets one: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4`, `server/play/levels.js`, from the session body's level count, which only the server sets). Later levels still grade right or wrong and play out; they name no pick. The same cap holds for `stambh/tally` and `kon/name`.
 
+**The gap: the day, not the session** (`RULINGS-2026-11-15.md`, "the per-session reading" 3): the ruling's unit is the child's day (per child, per mode, per day; IST, `server/learner/kt/ledger.js` `dayOf`), but the four levels and the sightings are still counted per session, since no play table holds them (an unnamed sighting lives only in the signed session token), so three sessions in a day are three counts until a per-day play table lands (a migration; the status file says what it takes).
+
 **The chance on one level, p** (for a child who does not hold the mix-up): the worst of a blind act, one ordinary slip and a drop that misses, over every generated level; for wrong-scale in `measure` also over every reading the law names at (a placement within the tolerance shows a few degrees off the key: 1 in 10 at worst there, which is over the keys' own 1 in 14). Each level is independent, so over n = 4 levels:
 - named from one level: 1 − (1 − p)⁴;
 - named on a second level: P(two or more of four) = 1 − (1 − p)⁴ − 4p(1 − p)³;

@@ -686,6 +686,12 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  spec is named only on the session's first NAMING_LEVELS levels (server/play/levels.js): its session figure (law 3, read
    *  per session) is proved over that many */
   chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number; firm?: number }>>;
+  /** gate 2, the default for every other pick (rulings 2026-11-16, "the per-session reading" 2): the options a blind child
+   *  picks among where this mal-rule's pick is made on this level, one act sequence per option (the same lead-in and the
+   *  same acts after). The server replays each through grade; the share that shows the mix-up is the pick's blind chance p,
+   *  and p sets the sightings it needs (server/play/levels.js namingSpec). Absent: the server reads the options from the
+   *  family's own acts (solve and every mal-rule's: a floor on the options). null: no such pick on this level */
+  pickOptions?(level: PlayLevel<P>, malRule: string): A[][] | null;
   /** gate 2: is a sighting of this mal-rule on this level firm, i.e. one that no single ordinary slip makes (stambh/tally
    *  read: a row where no slip, read any way, lands on the mix-up's number)? */
   firmSighting?(level: PlayLevel<P>, malRule: string): boolean;

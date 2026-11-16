@@ -58,6 +58,8 @@ A child who reads the lit angle's three letters across the screen (by rows or by
 
 **How many levels a session serves.** Nothing in how a session serves levels bounds the count: `/api/play/next` serves another whenever it is asked, and every act signs the session token afresh. The server sets the bound: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4`, `server/play/levels.js`, from the session body's level count, which only the server sets). Later levels still grade right or wrong and play out, and name nothing. The same cap holds for `stambh/tally` and `kon/place`.
 
+**The gap: the day, not the session** (`RULINGS-2026-11-15.md`, "the per-session reading" 3): the ruling's unit is the child's day (per child, per mode, per day; IST, `server/learner/kt/ledger.js` `dayOf`), but the four levels and the sightings are still counted per session, since no play table holds them (an unnamed sighting lives only in the signed session token), so three sessions in a day are three counts until a per-day play table lands (a migration; the status file says what it takes).
+
 **The chance on one level, p**, for a child who does not hold the mix-up: `say` 1/6 (three different letters at random, the worse blind model; a letter slip never makes it); `find` 1/5 (a blind tap; the worst blind rule is 0.180 and the worst slip off the key 0.181, both under it); a session of `say` and `find` levels together: the worse, 1/5. Each level is independent; over n = 4 levels, named on the k-th sighting = P(k or more of 4). The surfaces (figures and letters that must differ) are left out, so these are upper bounds.
 
 | vertex-name, per session (n = 4) | p | On the second sighting (before) | On the third (now) | Law 3's line |

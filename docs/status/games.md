@@ -2,6 +2,22 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+## 2026-11-16, a computed default for every family's picks; the day is still the session (branch `claude/r8-picks-default`, from `8bbabd1d6`)
+
+**Done (`NAMING_OFF` untouched; nothing the child sees changed, so no re-cert):** main's ruling 2 of "the per-session reading".
+- **The rule** (`server/play/levels.js`): a pick whose blind chance on a level is p is named on the k-th sighting, k the smallest (at least 2) with P(k or more of 4) < 1/10 (`defaultSightings`; 4 for 1/2 and 1/3, 3 for 1/4 to 1/7, 2 from 1/8 down, never above about 0.56). Every pick (oneDecision goals, chancePicks) now goes through it (`namingSpec`); `chanceRepeat` (stambh/tally, kon/place, kon/name) overrides. Every pick is named only on the session's first four levels. Each remembered sighting carries its level's k, and the server asks for the most any sighted level calls for.
+- **p, from the level:** `blindChance` replays each of the pick's options through the family's own grade and takes the share that shows the mix-up. The options are the family's list where it gives one (new optional `FamilyLogic.pickOptions`: strips' three buttons, the lab's three predictions); otherwise they are read from the family's acts for that level (where `malActs` first parts from the solve: the mix-up's act, what the solve and every other mal-rule do there, the act with the solve's value). That read is a floor on the options, so k is never below the true default. A pick that cannot be read is taken at 1/2.
+- **What changed: 78 (family/mode, goal:mal-rule) pairs, all from 2 sightings:** 75 now need 4, and 3 need 3 or 4 depending on the level (`chhaano/geela` namak clear-pure and salt-gone, `parkar/drop` alt median: 3 options on some levels, 4 on others). The 8 proved pairs keep their own k. Per pair, the worst day (four levels mixed from the pair's p values) is at most 1 in 16.
+- **Asserted centrally** in `tests/r8-picks-default.test.mjs`: 16,970 generated levels (every coverage entry × fades 1–3 × 2 seeds × each focus), 10,960 (level, pick) checks. `tests/r8-play-laws.test.mjs`'s law-3 case now expects four sightings.
+- **The day (ruling 3): not done, a gap.** The play ledger cannot give it in one query. No table holds a level count per child per mode, and an unnamed sighting is stored only in the signed session token (its row leaves without `chanceMis`). `kt_evidence` holds only folded home rows (`home:<child>:<day>`), with no mode and no picks. Each of the three packets now says this in one line. **What it would take:** one migration (a number from main), e.g. `play_day (child_id, day, family_mode, levels int, chance jsonb, primary key (child_id, day, family_mode))`, where day is IST (`kt/ledger.js dayOf`, the codebase's day). `/api/play/act` would upsert it at each level end, and `/start` and `/next` would read it into the body's `n` and `chance` with one keyed select, through `playDeps.q`. A failed read would fall back to the session, so the tests still pass with an empty `DATABASE_URL`.
+
+**Next:** the judges' verdicts on the three tables; then the laws-audit list.
+
+**Questions for main:**
+1. **1/7.** Your ruling says "2 only from one in seven down", but the rule itself gives 3 at 1/7: two or more of four is 241/2401 = 0.1004, just over the line. 2 starts at 1/8 (0.079). I followed the rule. Is that right?
+2. **Exact option lists.** Most families read 2 or 3 options from their own acts, so they need 4 sightings. A pick that is truly among four or more (`galti-pakdo` lines, `nazariya/tri` apex cells, `naksha` steps, the tool strips) would need only 3 (or 2) once its family gives `pickOptions`. Should I add those family by family, or leave the floor (rarer naming, never over the line)?
+3. **The day table.** Do you want the migration above now (allot a number), or keep the session until real sittings exist?
+
 ## 2026-11-16, gate 2 read per session: stambh/tally, kon/place, kon/name (on `claude/r7-games`: `6fc3d0cee` tally, `87c7bbe3d` place, `2817ad776` name, plus this entry; Hindi key words `09f7c8369` before them)
 
 **Done (naming is still off, `NAMING_OFF` untouched):** law 3's line read per session, as ruled (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16").
