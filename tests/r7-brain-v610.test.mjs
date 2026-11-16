@@ -61,7 +61,10 @@ describe("r7-brain-v610.test.mjs", () => {
     // (stuck c5-t02 50 retired, dc-r8-director20 G3: from row 30 the walk gives a spent card's key on the give-up, so the recorded child
     // lines answer other cards by row 50 — a replay is a pin, not proof)
     resumeDropped: [["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
-    alreadySaidKey: [["offtopic", "c5-t01", 24], ["steady", "c5-t01", 50], ["stuck", "c5-t01", 60]],
+    // (stuck c5-t01 60 retired, dc-r8-director24 H3 under main's 037 item 4: a second request on the e1 card now gets the worked answer,
+    // so the walk closes e1 early and by row 58 asks a card she answered wrong at 56. Her recorded "woh wala ho gaya" no longer claims an
+    // answer she gave, and the key is the right turn. The recorded row's claim was true: her 57 answered the 58 card.)
+    alreadySaidKey: [["offtopic", "c5-t01", 24], ["steady", "c5-t01", 50]],
     tryFirstNoCard: [["offtopic", "c5-t01", 38]],
     kuchPoochna: [["stuck", "c5-t02", 54]],
     asideAck: [["offtopic", "c5-t02", 10], ["offtopic", "c6", 10]],
@@ -93,7 +96,9 @@ describe("r7-brain-v610.test.mjs", () => {
       for (const t of Object.keys(T)) for (const p of ["steady", "stuck", "offtopic", "steering"]) {
         const ts = await walk(p, t, 200, { run: RUN });
         ts.forEach((x, i) => { for (const k of ["asideAck", "kuchPoochna", "hindiPromise", "openers", "wording", "alreadySaidKey", "parkNoCard"]) {
-          const r = T2[k](liveRow(x), x.pl.child, i > 0 ? liveRow(ts[i - 1]) : null); if (r) bad.push(`${p} ${t} ${x.n} ${k}: ${x.out.reply.slice(0, 90)}`); } });
+          const r = T2[k](liveRow(x), x.pl.child, i > 0 ? liveRow(ts[i - 1]) : null);
+          // (stuck c5-t01 60 alreadySaidKey: retired above — her claim answers no card of this walk)
+          if (r && !(k === "alreadySaidKey" && p === "stuck" && t === "c5-t01" && x.n === 60)) bad.push(`${p} ${t} ${x.n} ${k}: ${x.out.reply.slice(0, 90)}`); } });
       }
       assert.deepEqual(bad, []);
     });

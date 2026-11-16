@@ -191,6 +191,7 @@ const GAVE_LINE = {
 // (v6.4 L1: every variant says the switch in words; "Hindi mein? Zaroor." read as the bare "Zaroor." main flagged)
 // (v6.10 T2, main on director18 c5-t02 steady 38: "Haan, ab se Hindi mein bolti hoon" promised a change the authored Hinglish could not
 // keep — the forms say what this turn does, never a promise for every turn after)
+const HINDI_SAME = "Achha, isi ko Hindi ke shabdon mein phir se kehti hoon.";
 const LANG_ACK = { hindi: ["Theek hai, Hindi mein.", "Achha, Hindi mein dekhte hain.", "Haan, Hindi mein suno."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
 // v6.3 R2 (main, director11: "cricket: iski baat …" is the raw template, said lower-case): the topic leads a whole sentence
 const capT = (t) => { const x = String(t ?? "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
@@ -1264,7 +1265,7 @@ function seamsOf(out, { state, kit, ui = null }) {
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
     greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")), authoredEnd: !!out.guard?.authoredEnd,
-    hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english];
+    hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
@@ -3182,8 +3183,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const ss0 = sentences(reply).map(norm).filter(Boolean);
       const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
       while (ss0.length > 1 && filler(ss0[0])) ss0.shift();
-      const named = /\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(ss0[0] ?? "");
-      const ack = named ? [] : [freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
+      const named0 = /\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(ss0[0] ?? "");
+      // (dc-r8-director24 H3, main's 037 item 3: nothing unsaid left — the same part again in Hindi words; her switch line says so plainly
+      // and promises nothing else)
+      const same = !!state.lastMove?.hindiSame && lang !== "english";
+      if (same && named0) ss0.shift();
+      const named = !same && named0;
+      const ack = named ? [] : [same ? HINDI_SAME : freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
       const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
       if (r2 !== reply) { reply = r2; guard.langAck = true; }
     }
