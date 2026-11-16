@@ -20,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { serveHarness, openJudge, launchLocal } from "./qa/render.js";
 import { PLAY_VIEWPORTS } from "./qa/viewports.js";
 import { QA_VERSION, judgePiece } from "./qa/checks.js";
-import { lawsFor } from "./qa/laws.mjs";
+import { CHECK_WAITS_OPEN, lawsFor } from "./qa/laws.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const PLAY_CERT_FILE = path.join(here, "certs", "play.json");
@@ -129,7 +129,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   };
   const lawCache = new Map();
   const lawsOf = async (level, young) => {
-    if (!lawCache.has(level.levelId)) lawCache.set(level.levelId, await lawsFor(level, { young }));
+    if (!lawCache.has(level.levelId)) {
+      const r = await lawsFor(level, { young });
+      // law 4 is skipped for a mode still in CHECK_WAITS_OPEN (main's ruling 005: the list is the record, and only shrinks)
+      const open = !!CHECK_WAITS_OPEN[`${level.family}/${level.mode}`];
+      lawCache.set(level.levelId, open ? { ...r, breaks: r.breaks.filter((b) => b.law !== 4) } : r);
+    }
     return lawCache.get(level.levelId);
   };
   for (const entry of entries) {

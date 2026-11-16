@@ -109,7 +109,26 @@ describe("r8 play laws: law 3 in the grade and on the server", () => {
   });
 });
 
+/**
+ * Law 4's open list only shrinks (main's ruling 005, 2026-11-16): CHECK_WAITS_OPEN (the modes the play cert skips law 4 for)
+ * is a subset of this pinned list, and a mode taken off it is taken off here too, so it cannot come back.
+ */
+const CHECK_WAITS_MAX = [
+  "todo-jodo/strips", "nishana/place", "kyun-lab/dhruv", "kon/place", "rang/milao", "todo-jodo/atoms", "nazariya/floor", "nazariya/powers",
+  "taraazu/equality", "aakash/chakkar", "aakash/ritu", "badlaav/aag", "badlaav/palat", "bhaap/chakra", "bhaap/hawa", "chhaano/geela",
+  "chhaano/sukha", "jaanch/daag", "jaanch/neela", "rang/pehchaan",
+];
+
 describe("r8 play laws: law 4, the check waits after a miss (dc-r8-gate2-shadow S4)", () => {
+  it("the open list only shrinks: CHECK_WAITS_OPEN is within the pinned list", () => {
+    const grown = Object.keys(L.CHECK_WAITS_OPEN).filter((k) => !CHECK_WAITS_MAX.includes(k));
+    assert.deepEqual(grown, [], "a mode added to CHECK_WAITS_OPEN: law 4's open list only shrinks");
+  });
+  it("the play cert skips law 4 for an open mode only", async () => {
+    const src = (await import("node:fs")).readFileSync(new URL("../server/forge3/play-cert.js", import.meta.url), "utf8");
+    assert.match(src, /CHECK_WAITS_OPEN\[`\$\{level\.family\}\/\$\{level\.mode\}`\]/);
+    assert.match(src, /b\.law !== 4/);
+  });
   it("the check button of stambh/bars, kon/zone and nazariya/tri is off after a miss, and not her move", async () => {
     const { coverage } = await import("../server/play/levels.js");
     const { coverageLevels } = await import("../server/forge3/qa/cert-levels.mjs");
