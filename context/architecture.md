@@ -637,3 +637,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-imagined-children-never-close` (2026-11-16): Two readings of gate 2 had the same shape: a proof over children we listed, and a judge who listed more (first habits, then acts shared with the mix-up on some level and behaviours after a miss). Each repair held and each reading found the next list, because every child in the proof is one someone imagined. A line set against imagined children cannot close; what a child does after a miss has to be measured on real sittings.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-register-is-turn-assembly-not-joints` (2026-11-16): With the seam pass in (joint faults 49 to 14, missing 35 to 4) register stayed 3 in three of four topics, and four judges independently named the same cause: a verdict, its why, the next point and its card in one turn of 60 to 80 words; the aside's return glued onto a verdict; one fixed form per lesson for the Hindi switch, park and try-first; help that re-says an earlier turn; a wrap with no word to the child. Joints were the largest countable fault, not the cause of the score.
+- `fd-two-turn-window-met-by-letter` (2026-11-16): The rule 'no help says a sentence from her last two turns' (H2) was met by its letter and failed in 15 help turns across four topics: help said again what she had said three or more turns earlier, or a simpler that paraphrases the line just said. A window over recent turns is the wrong measure for repetition in a lesson; the memory has to be the lesson.

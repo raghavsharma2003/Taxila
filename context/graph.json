@@ -29210,6 +29210,34 @@
    "at": "2026-11-16",
    "title": "Released 1d2807e with scripts/release.mjs: web taxila-web--s1d2807e-8wxj (was taxila-web--s0c93788-w9wg), worker + canary/nightly jobs on taxila-worker:1d2807e (was 0c93788); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 1d2807e --rollback.",
    "source": "inbox/release-1d2807e.json"
+  },
+  {
+   "id": "dc-r8-director24",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "After director24: the reply model writes the joins and the verdict and why openers from the seams record, authored parts word for word, each join checked by code (12 words, no digit or later card's term, no question, not said in her last four turns) with the table's form as fallback (M, clause 1 applied as written); a turn over 60 words breaks at a check-in and the aside's return is its own turn (L); help never says a sentence said anywhere in the lesson and a second request goes to the worked answer (H3, clause 6); the sentence about the child is a code-picked fact in an authored form from Learning's did clauses (T3, clause 4); a part is said exactly once (P). Reverse M: a join that contradicts, gives away or is untrue on more than 1 turn, or more than 1 in 5 falling back; then, if register is still below 3.5 in two topics, the verdict and why are model-written too. Judgement: docs/design/round7/judgements/director24-2026-11-16.md.",
+   "source": "inbox/r8-main-37.json"
+  },
+  {
+   "id": "ms-r8-director24",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "director24: 16 lessons (4 pilots x 4 rule-based children), Director only, on integration 73 (1d2807e26); 1,582 calls, about $1.12; four Opus judges by hand. c6 passes the whole scale gate; c4 and c5-t01 fail on register only; c5-t02 on register and 1 contradiction. Contradictions 0, 0, 1, 0 (director23: 1, 0, 2, 1); unsaid boards 0; 0 misgrades in 287 verdicts; 0 false keys. Axes: listening 3.5 x4 (c5-t01 3 with the safety turn counted); register 3, 3, 3, 3.5; promises 3.5, 4, 4, 3.5; screen and speech 4, 4, 3.5, 4.5. Joint faults by hand 3, 4, 2, 5 (49 in director23; missing 35 to 4). Wrong reader records 0, 2, 0, 0. Captions 16 of 16 said, all true, none gives away. Help turns with nothing new 5, 2, 4, 4. Sentence about the child absent in 2 of 4. 69 of 671 turns over 60 words. Untrue or giveaway script sentences 0. Live predicates (51): orderParts 1, readerAgrees 2, uiWords 1.",
+   "source": "inbox/r8-main-37.json"
+  },
+  {
+   "id": "fd-register-is-turn-assembly-not-joints",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "With the seam pass in (joint faults 49 to 14, missing 35 to 4) register stayed 3 in three of four topics, and four judges independently named the same cause: a verdict, its why, the next point and its card in one turn of 60 to 80 words; the aside's return glued onto a verdict; one fixed form per lesson for the Hindi switch, park and try-first; help that re-says an earlier turn; a wrap with no word to the child. Joints were the largest countable fault, not the cause of the score.",
+   "source": "inbox/r8-main-37.json"
+  },
+  {
+   "id": "fd-two-turn-window-met-by-letter",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "The rule 'no help says a sentence from her last two turns' (H2) was met by its letter and failed in 15 help turns across four topics: help said again what she had said three or more turns earlier, or a simpler that paraphrases the line just said. A window over recent turns is the wrong measure for repetition in a lesson; the memory has to be the lesson.",
+   "source": "inbox/r8-main-37.json"
   }
  ],
  "edges": [
@@ -46677,6 +46705,31 @@
    "src": "dc-r8-gate2-discriminating-level",
    "rel": "part_of",
    "dst": "dc-r8-gate2-shadow"
+  },
+  {
+   "src": "dc-r8-director24",
+   "rel": "supersedes",
+   "dst": "dc-r8-director23"
+  },
+  {
+   "src": "dc-r8-director24",
+   "rel": "measured_by",
+   "dst": "ms-r8-director24"
+  },
+  {
+   "src": "fd-register-is-turn-assembly-not-joints",
+   "rel": "constrains",
+   "dst": "dc-r8-director24"
+  },
+  {
+   "src": "fd-register-is-turn-assembly-not-joints",
+   "rel": "measured_by",
+   "dst": "ms-r8-director24"
+  },
+  {
+   "src": "fd-two-turn-window-met-by-letter",
+   "rel": "constrains",
+   "dst": "dc-r8-director24"
   }
  ]
 }
