@@ -29,7 +29,7 @@ import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.
 import { focusMal } from "../../core/pick.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { NAME_MAL, generateName, readsAcrossAll, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, placeNeeds, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { PLACE_MAL, placeNeeds, placeSteer, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -337,7 +337,10 @@ function generate(req: GenRequest): Candidate<KonParams>[] {
     // to a level whose base direction differs by 45° or more (placeNeeds). Each is tried on the candidates as generated first,
     // then by generating again for it (a steered fade-1 level may tilt); with none, the level is as it was
     const vo = req.misMap?.["vertex-off"];
-    const needs = goal === "size" ? [] : placeNeeds({ n: req.n, recent: req.recent, bases: (req.bases ?? []).filter((b) => vo && b.mis === vo).map((b) => b.base), turn: DISCRIMINATING_TURN });
+    // (note 004, answer 1: after a sighting of wrong-scale, a level opening the same way as its latest, with another key)
+    const ws = req.misMap?.["wrong-scale"], wsSeen = (req.steers ?? []).filter((x) => ws && x.mis === ws && typeof x.cw === "boolean" && Number.isFinite(x.key));
+    const scale = HABIT_RULES.on && wsSeen.length ? { cw: wsSeen[wsSeen.length - 1].cw as boolean, keys: wsSeen.map((x) => x.key as number), ...(typeof wsSeen[wsSeen.length - 1].acute === "boolean" ? { acute: wsSeen[wsSeen.length - 1].acute as boolean } : {}) } : null;
+    const needs = goal === "size" ? [] : placeNeeds({ n: req.n, recent: req.recent, bases: (req.bases ?? []).filter((b) => vo && b.mis === vo).map((b) => b.base), scale, turn: DISCRIMINATING_TURN });
     let got: typeof base | null = null;
     for (const nd of needs) {
       const kept = base.filter((c) => nd.ok(c.params));
@@ -530,6 +533,8 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   // gate 2, H1 (dc-r8-gate2-habit-children): what she did at a place pick, as a value (placeSighting): a second sighting
   // counts only when it differs from every earlier one
   sightingOf: (l: PlayLevel<KonParams>, rule: string, s: KonState) => (isPlaceGoal(l.params.goal) ? placeSighting(l.params, s?.pl, rule) : null),
+  // gate 2 (note 004, answer 1): a wrong-scale sighting keeps the side its level opens to and its key (placeSteer)
+  steerOf: (l: PlayLevel<KonParams>, rule: string) => (HABIT_RULES.on && rule === "wrong-scale" && (l.params.goal === "measure" || l.params.goal === "draw") ? placeSteer(l.params) : null),
   // gate 2 (kon/name): the first fade-1 level with O at the vertex, and a find level where the mix-up's reading meets no other
   // arc, solve at chance weight and discriminate nothing (nameFaint)
   faintSolve: (l: PlayLevel<KonParams>) => isNameGoal(l.params.goal) && nameFaint(l.params, l.fade),

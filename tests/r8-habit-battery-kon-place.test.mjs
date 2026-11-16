@@ -25,6 +25,9 @@ import { baseDir } from "../src/play/families/kon/kon.place.ts";
 const S = sweep();
 let RES = null, OLD = null, over = [];
 const kit = (goal, rule) => RES.goals[goal].kits[rule];
+// answer 4's level mix: from this level (0-based) a session that has not met an acute angle or one opening anticlockwise
+// is served one (kon.place.ts placeNeeds)
+const MIX_FROM = 3;
 // the negative control's children, run under the rules from before H1
 const OLD_KIDS = new Set(["const:75", "typing:key 1 down", "drop:drop 20 up", "drop:drop 24 up", "blind"]);
 before(async () => {
@@ -109,6 +112,36 @@ test("answer 1 (dc-r8-gate2-discriminating-level): after a first sighting of ver
   });
   assert.ok(steps >= 300 && apart / steps >= 0.95, `steered ${apart} of ${steps}`);
   for (const g of ["measure", "draw"]) assert.equal(rowOf(RES, g, "fixed-vo").all[kit(g, "vertex-off")], 0, `${g}: the fixed finger`);
+});
+
+test("note 004, answer 1: after a sighting of wrong-scale the next level opens the same way with another key (draw: the mix-up's dot is not the right dot just played)", (t) => {
+  let steps = 0, same = 0, dot = 0, draws = 0, mixed = 0;
+  const key = (p) => (p.goal === "measure" ? Math.min(p.theta, 180 - p.theta) : p.theta);
+  const right = (p) => (p.mirror ? 180 - p.theta : p.theta);
+  withGenMemo(() => {
+    for (const goal of ["measure", "draw"]) {
+      const entry = coverage().entries.find((e) => e.family === "kon" && e.mode === "place" && e.goal === goal), WS = entry.misMap["wrong-scale"];
+      for (const cid of ["inner", "outer", "other", ...(goal === "measure" ? ["larger", "smaller"] : ["last-key"])]) {
+        const child = childrenFor("kon/place", goal).find((c) => c.id === cid);
+        for (const fade of FADES) for (const pL of PLS) for (const doors of DOOR_SEQS) for (let k = 0; k < S.seeds; k++) {
+          const { trace } = runSession({ entry, cell: { goal, fade, pL, doors }, child, sIdx: k });
+          trace.forEach((x, i) => {
+            if (x.pick !== WS || i >= trace.length - 1) return;
+            const a = trace[i].params, b = trace[i + 1].params, seen = trace.slice(0, i + 1).filter((y) => y.pick === WS).map((y) => key(y.params));
+            if (goal === "draw") { draws++; if (Math.abs(180 - right(b) - right(a)) > 2) dot++; }
+            // (the level mix of answer 4 comes first: a level that must supply an angle opening anticlockwise is not steered
+            // to the clockwise side)
+            if (a.mirror && !trace.slice(0, i + 1).some((y) => !y.params.mirror) && i + 1 >= MIX_FROM) { mixed++; return; }
+            steps++;
+            if (!!a.mirror === !!b.mirror && !seen.includes(key(b))) same++;
+          });
+        }
+      }
+    }
+  });
+  t.diagnostic(`the same side with another key: ${same} of ${steps} (${mixed} more under the level mix); draw's dot: ${dot} of ${draws}`);
+  assert.ok(steps >= 300 && same / steps >= 0.95, `the same side with another key ${same} of ${steps} (${mixed} more under the level mix)`);
+  assert.equal(dot, draws, `draw: the mix-up's dot differs from the right dot just played (${dot} of ${draws})`);
 });
 
 test("negative control: under the rules from before H1 the judge's failure shows (measure: a habit tied to the key is named on the same key served twice)", () => {

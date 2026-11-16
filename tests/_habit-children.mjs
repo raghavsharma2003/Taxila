@@ -22,7 +22,7 @@
 // The rules the battery proves (dc-r8-gate2-habit-children H1, H3, H4) are on in the product; `legacy` (runBattery,
 // withRules) runs the same children under the rules from before them (shared/play.ts HABIT_RULES off inside one synchronous
 // run), so each mode's negative control keeps showing the failures those rules fix.
-import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, basesOf, NAMING_LEVELS } from "../server/play/levels.js";
+import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, basesOf, steersOf, NAMING_LEVELS } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { logicFor } from "../src/play/families/index.ts";
 import { mulberry32, hash32 } from "../src/play/core/rng.ts";
@@ -65,7 +65,8 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
 // currentLevel and nextBody are pure in the body; the session's chance memory and the reaction history are carried through
 // them untouched (nextBody spreads the body) and read by nothing that picks, so they are left out of the memo key. One part
 // of the chance memory does pick (dc-r8-gate2-discriminating-level): nextBody copies the placement sightings' base
-// directions into the next body (basesOf), so the next body's memo key carries them.
+// directions into the next body (basesOf), and (note 004, answer 1) what of each sighting's level steers the next
+// (steersOf: kon/place wrong-scale's side and key), so the next body's memo key carries both.
 const LEVEL_MEMO = new Map(), NEXT_MEMO = new Map();
 // (the rules in force are in every key: the steer of dc-r8-gate2-discriminating-level is one of the rules `legacy` turns off)
 const keyOf = (s, e) => { const { chance: _c, hist: _h, ...rest } = s; return `${HABIT_RULES.on ? 1 : 0}|${entryKey(e)}#${JSON.stringify(rest)}`; };
@@ -75,9 +76,10 @@ function levelOf(s, e) {
   return LEVEL_MEMO.get(k);
 }
 function nextOf(s, e, door) {
-  const bases = basesOf(s.chance);
-  const k = `${door}|${keyOf(s, e)}|${JSON.stringify(bases)}`;
-  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance: bases.map(({ mis, base }) => ({ mis, act: { base } })), hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
+  const bases = basesOf(s.chance), steers = steersOf(s.chance);
+  const k = `${door}|${keyOf(s, e)}|${JSON.stringify(bases)}|${JSON.stringify(steers)}`;
+  const chance = [...bases.map(({ mis, base }) => ({ mis, act: { base } })), ...steers.map(({ mis, ...steer }) => ({ mis, steer }))];
+  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance, hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
   const b = { ...NEXT_MEMO.get(k), hist: s.hist ?? null };
   if (s.chance !== undefined) b.chance = s.chance;
   return b;
@@ -93,7 +95,7 @@ function gradeOf(lv, acts, final) {
  * The generator's candidates, memoised while the battery runs. The picker (pickLevels) calls the family's generate and then
  * scores what it returns, never changing it; generate reads, of the request, only the fields kept in the key here (stambh
  * tally reads neither recent, mis, pL, focus, harder nor n; kon reads recent (kon/name's "first name level" flag, kon/place's
- * level mix), n, bases (kon/place) and focus (kon/name's steer), never mis, pL or harder). The picker still scores every
+ * level mix), n, bases and steers (kon/place) and focus (kon/name's steer), never mis, pL or harder). The picker still scores every
  * candidate afresh for every body. The method is put back when the battery ends; the test "the memo changes nothing"
  * compares served sessions with and without it.
  */
@@ -107,9 +109,10 @@ export function withGenMemo(fn) {
     const orig = lg.generate;
     lg.generate = (req) => {
       const { recent, mis: _m, pL: _p, focus, harder: _h, n, ...rest } = req;
-      // (of recent, kon reads only whether a name level was played and whether an acute or an anticlockwise place level was)
+      // (of recent, kon reads only whether a name level was played and whether an acute or an anticlockwise place level was,
+      // and, with a steer of wrong-scale (note 004), the level just played: draw's dot differs from its right dot)
       const placed = (recent ?? []).map(placeSigOf).filter(Boolean);
-      const k = f === "kon" ? `${HABIT_RULES.on ? 1 : 0}|${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}|${placed.some(isAcute)}|${placed.some(opensAnticlockwise)}|${n ?? ""}|${focus ?? ""}` : `${f}|${JSON.stringify(rest)}`;
+      const k = f === "kon" ? `${HABIT_RULES.on ? 1 : 0}|${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}|${placed.some(isAcute)}|${placed.some(opensAnticlockwise)}|${n ?? ""}|${focus ?? ""}|${rest.steers ? (recent ?? []).slice(-1)[0] ?? "" : ""}` : `${f}|${JSON.stringify(rest)}`;
       if (!GEN_MEMO.has(k)) GEN_MEMO.set(k, orig(req));
       return GEN_MEMO.get(k);
     };

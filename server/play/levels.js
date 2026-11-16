@@ -112,6 +112,8 @@ export function genRequest(s, entry) {
     // keeps them, so the level a body points at never changes after its own acts)
     ...(Number.isInteger(s.n) ? { n: s.n } : {}),
     ...(Array.isArray(s.bases) && s.bases.length ? { bases: s.bases } : {}),
+    // gate 2 (note 004, answer 1): what of each sighting's level steers the next (kon/place wrong-scale: the side it opens to)
+    ...(Array.isArray(s.steers) && s.steers.length ? { steers: s.steers } : {}),
   };
 }
 /**
@@ -120,6 +122,13 @@ export function genRequest(s, entry) {
  */
 export function basesOf(chance) {
   return (Array.isArray(chance) ? chance : []).filter((x) => x?.act && typeof x.act === "object" && Number.isFinite(x.act.base)).map((x) => ({ mis: x.mis, base: x.act.base }));
+}
+/**
+ * Gate 2 (note 004, answer 1): what of each sighting's level steers the next ({ mis, ...steer } for each sighting in a
+ * session's chance memory that kept one: FamilyLogic.steerOf), oldest first. Pure.
+ */
+export function steersOf(chance) {
+  return (Array.isArray(chance) ? chance : []).filter((x) => x?.steer && typeof x.steer === "object").map((x) => ({ ...x.steer, mis: x.mis }));
 }
 /** → { garam, teekha, ms, considered, served } or null. */
 export function levelsFor(s, entry) {
@@ -165,6 +174,8 @@ export function nextBody(s, entry, door) {
   // gate 2 (answer 1): the placement sightings so far steer the next level (genRequest's bases), fixed with the level
   const bases = n < NAMING_LEVELS ? basesOf(s.chance) : [];
   if (bases.length) body.bases = bases; else delete body.bases;
+  const steers = n < NAMING_LEVELS ? steersOf(s.chance) : [];
+  if (steers.length) body.steers = steers; else delete body.steers;
   if (lift > 0) body.lift = lift; else delete body.lift;
   if (to !== entry) body.switched = { from: s.key, n };
   delete body.nextFocus; delete body.nextLift; delete body.nextBecause; delete body.nextKey; delete body.nextSwitch;
@@ -238,7 +249,9 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
     const firm = firmOf(level, pick);
     // the computed default's k on this level rides with the sighting (a family spec needs none: namingSpec)
     const k = defaultK(level, pick);
-    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level), ...(firm ? { firm: true } : {}), ...(k !== null ? { k: Number.isFinite(k) ? k : 0 } : {}), ...(pickRow.chanceAct !== undefined ? { act: pickRow.chanceAct } : {}) }].slice(-CHANCE_MEMORY);
+    // gate 2 (note 004, answer 1): what of this level steers the next (the family's steerOf)
+    const steer = steerOfLevel(level, pick);
+    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level), ...(firm ? { firm: true } : {}), ...(k !== null ? { k: Number.isFinite(k) ? k : 0 } : {}), ...(pickRow.chanceAct !== undefined ? { act: pickRow.chanceAct } : {}), ...(steer ? { steer } : {}) }].slice(-CHANCE_MEMORY);
     if (!seen) s2.nextFocus = pick;
   }
   const step = adaptAfter({ grade, level, s, beliefOf });
@@ -412,6 +425,11 @@ export function namingSpec(level, kit, prior = []) {
   if (own) return own;
   const ks = [defaultK(level, kit), ...prior.filter((x) => x?.mis === kit).map((x) => (x?.k === 0 ? Infinity : x?.k))].filter((k) => k === Infinity || (Number.isInteger(k) && k >= 2));
   return { sightings: Math.max(...ks), byDefault: true };
+}
+/** gate 2 (note 004, answer 1): what of this level a sighting of the pick keeps to steer the next (FamilyLogic.steerOf) */
+function steerOfLevel(level, kit) {
+  const rule = ruleOf(level, kit);
+  try { const v = rule ? logicFor(level.family, level.mode)?.steerOf?.(level, rule) : null; return v && typeof v === "object" ? v : null; } catch { return null; }
 }
 /** gate 2: is this level's sighting of the pick firm (no single ordinary slip makes it: FamilyLogic.firmSighting)? */
 function firmOf(level, kit) {

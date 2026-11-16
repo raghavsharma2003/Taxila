@@ -544,6 +544,18 @@ export const basesApart = (a: number, b: number, turn = 45) => diff(a, b) >= tur
 /** answer 4: the kinds of angle a session of measure or draw must have met by its fourth level */
 export const isAcute = (p: { theta?: number }) => (p.theta ?? 0) < 90;
 export const opensAnticlockwise = (p: { mirror?: boolean }) => !p.mirror;
+/**
+ * Note 004, answer 1 (2026-11-16): what of a level a wrong-scale sighting keeps to steer the next level: the side the angle
+ * opens to (`cw`: clockwise, the level's mirror) and its key (`key`: measure's on both scales, as measureSurface; draw's
+ * asked size). A child who always reads one scale is right on one side and wrong on the other ("always the inner scale" is
+ * wrong exactly where the angle opens anticlockwise, "always the outer scale" where it opens clockwise), so the evidence is
+ * a second miss on the same side with another key.
+ */
+export const scaleKey = (p: { goal: string; theta?: number }): number => (p.goal === "measure" ? Math.min(p.theta ?? 0, 180 - (p.theta ?? 0)) : p.theta ?? 0);
+/** draw: the rim mark of the right dot, and of the mix-up's (the other scale's), on the solver's placement */
+export const rightDot = (p: { theta?: number; mirror?: boolean }): number => (p.mirror ? 180 - (p.theta ?? 0) : p.theta ?? 0);
+export const otherDot = (p: { theta?: number; mirror?: boolean }): number => 180 - rightDot(p);
+export const placeSteer = (p: PlaceParamsLike): { cw: boolean; key: number; acute: boolean } => ({ cw: !!p.mirror, key: scaleKey(p), acute: isAcute(p) });
 /** a served level's signature (generatePlace's sig) read back: θ, OA's heading, mirror; null for any other */
 export function placeSigOf(sig: string): { goal: string; theta: number; start: number; mirror: boolean } | null {
   const m = /^place:(measure|draw):(\d+):(\d+)(m?)$/.exec(String(sig));
@@ -559,20 +571,39 @@ export function placeSigOf(sig: string): { goal: string; theta: number; start: n
  *                       direction differs by `turn` or more from every one of them (else from at least one), so the bottom
  *                       edge on the vertex sits elsewhere on the board while it sits the same in the protractor's frame.
  *                       Within the session's first NAMING_LEVELS levels only.
+ *   the side (note 004, answer 1) after a sighting of wrong-scale (`scale`: the side its latest level opens to, its kind,
+ *                       acute or not, and the keys of every such level), a level opening the same way with a key none of
+ *                       them had, of the same kind first; strictest first with the steer above, then alone, then the list
+ *                       without it. draw (note 004, item 4): while it is on, the mix-up's dot is never the right dot of the
+ *                       level just played. Within the first NAMING_LEVELS levels only.
  */
-export function placeNeeds(o: { n?: number; recent?: string[]; bases?: number[]; levels?: number; turn?: number }): { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] {
+export function placeNeeds(o: { n?: number; recent?: string[]; bases?: number[]; scale?: { cw: boolean; keys: number[]; acute?: boolean } | null; levels?: number; turn?: number }): { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] {
   const levels = o.levels ?? 4, n = Number(o.n) || 0, turn = o.turn ?? 45;
   const served = (o.recent ?? []).map(placeSigOf).filter((x): x is NonNullable<ReturnType<typeof placeSigOf>> => !!x);
   const needAcute = n >= levels - 1 && !served.some(isAcute), needAcw = n >= levels - 1 && !served.some(opensAnticlockwise);
   const mix = (p: PlaceParamsLike) => (!needAcute || isAcute(p)) && (!needAcw || opensAnticlockwise(p));
   const bases = n < levels ? (o.bases ?? []).filter((b) => Number.isFinite(b)) : [];
-  const out: { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] = [];
-  if (bases.length) {
-    out.push({ id: "mix+steer-every", ok: (p) => mix(p) && bases.every((b) => basesApart(baseDir(p), b, turn)), steer: true });
-    if (bases.length > 1) out.push({ id: "mix+steer-one", ok: (p) => mix(p) && bases.some((b) => basesApart(baseDir(p), b, turn)), steer: true });
-  }
-  if (needAcute || needAcw) out.push({ id: "mix", ok: mix, steer: false });
-  return out;
+  const sc = n < levels && o.scale ? o.scale : null;
+  // draw (note 004, item 4: the dot differs): on the steered level the mix-up's dot is not the level just played's right dot,
+  // so a child who dots last time's right dot does not act as the mix-up there
+  const last = placeSigOf(String((o.recent ?? []).slice(-1)[0] ?? ""));
+  // (kept in every need while the steer is on, the level mix's too)
+  const dotDiffers = (p: PlaceParamsLike) => !sc || p.goal !== "draw" || !last || last.goal !== "draw" || Math.abs(otherDot(p) - rightDot(last)) > READ_TOL;
+  const side = (p: PlaceParamsLike) => !sc || (!!p.mirror === sc.cw && !sc.keys.includes(scaleKey(p)));
+  // (the same kind of angle first: "always the larger number" is wrong exactly on an acute angle, "always the smaller" on an
+  // obtuse one, so a level of the same side and kind tells every one-scale or one-number reader from the slip)
+  const kind = (p: PlaceParamsLike) => !sc || typeof sc.acute !== "boolean" || isAcute(p) === sc.acute;
+  const list = (level: 0 | 1 | 2) => {
+    const out: { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] = [], tag = ["", "+side", "+side+kind"][level];
+    const m = (p: PlaceParamsLike) => mix(p) && dotDiffers(p) && (level < 1 || side(p)) && (level < 2 || kind(p));
+    if (bases.length) {
+      out.push({ id: `mix+steer-every${tag}`, ok: (p) => m(p) && bases.every((b) => basesApart(baseDir(p), b, turn)), steer: true });
+      if (bases.length > 1) out.push({ id: `mix+steer-one${tag}`, ok: (p) => m(p) && bases.some((b) => basesApart(baseDir(p), b, turn)), steer: true });
+    }
+    if (needAcute || needAcw || sc) out.push({ id: `mix${tag}`, ok: m, steer: false });
+    return out;
+  };
+  return sc ? [...list(2), ...list(1), ...list(0)] : list(0);
 }
 
 /**
