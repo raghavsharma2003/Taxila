@@ -6,6 +6,9 @@ gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0
 gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 
+
+**Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
+
 ## 2026-11-16, exact pickOptions and the habit battery: galti-pakdo and nazariya/tri (branch `claude/r8-pick-options`, from `44f997d83`)
 
 **Done (code `902e6da9a`; `NAMING_OFF` untouched, both modes keep naming and their batteries pass; nothing a child sees changes; no served level changed, because 64,800 served bodies hash the same before and after, `proof.discriminates` included, so no re-cert).** This is answer 2 under "a computed default" of `RULINGS-2026-11-16-gate2-answers.md`. Packets: `docs/design/round8/games-judging/galti-pakdo/BATTERY.md` and `nazariya-tri/BATTERY.md`.
