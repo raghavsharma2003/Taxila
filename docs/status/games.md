@@ -9,6 +9,13 @@ gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fai
 
 **Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
 
+
+## 2026-11-16, after S4 and S1 (`7868f983b`, gate exit 0: 7434 pass, 0 fail; PR #140)
+
+**The laws-audit list (the item after S4 and S1 in the second reading's order): nothing open but law 4's 20.** `LAWS-AUDIT.md` "Still breaking" is empty, every kon row is closed, and `KNOWN` in `tests/r8-play-laws.test.mjs` is empty in hinglish, en and hi. The only open rows are law 4's `CHECK_WAITS_OPEN` (20 family/modes: a pick, a typed number, an experiment), which wait on your ruling (Questions 1 and 2 of the S4/S1 entry below).
+
+**Next, unless you rule otherwise:** nothing on the order is unblocked. On your ruling for law 4's three kinds I fix the 20 and re-certify. Still parked: the 18 no-game topics note (after judging), the kit re-pin (waits on Learning), the font guard (deferred by you).
+
 ## 2026-11-16, gate 2 S4 and S1 (`dc-r8-gate2-shadow`): law 4 over every family; naming in shadow (branch `claude/r8-gate2-shadow`, from `f8f1423e7`)
 
 **Done:**
