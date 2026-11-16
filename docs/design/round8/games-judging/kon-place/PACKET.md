@@ -21,7 +21,23 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 (*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
 
-## Gate 2 battery (2026-11-16: H1 built; the battery passes)
+## Gate 2 battery (2026-11-16: H1 built; the discriminating level built; the battery passes)
+
+**Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`, main's answers 1 and 4).**
+- **Answer 4, the level mix.** No acute angle was ever served: centred across the board, an acute angle's vertex sits too near the side for the protractor's half-disc, so the generator refused every one. A figure that does not fit centred is now moved across, nearest the middle first. From a session's fourth level, while it has not met an acute angle or one opening anticlockwise, the level is one that supplies what is missing (`placeNeeds`). Every served session in the battery's test meets both by its fourth level (asserted). Served levels changed: in the gate sweep's sessions, about two levels in three differ (careful child: 518 of 768 measure, 464 of 768 draw); distinct levels per goal rose (measure 35 to 49, draw 42 to 53 for the careful child). Re-certified: every sample passes at every size.
+- **Answer 1, vertex-off on a discriminating level.** Her sighting carries the level's base direction (the protractor's base line as the solver lays it, `baseDir`) and her offset in the protractor's frame. A second sighting counts only when the two base directions differ by 45° or more, the frame offset is the same (within `VO_BAND`), and so the board offset differs (`discriminatingPair`). After a first sighting the session is steered to a level 45° or more away (fade 1 may tilt for it); in the battery the next level after a holder's first sighting is that far away in every session (asserted at 95% or more). If none can be served within the four levels, vertex-off is not named that day. Note: an angle opening the other way has the same base direction (its OA points the other way, the protractor lies the same), so answer 4's mix does not by itself give question 1 its differing directions; the tilt does.
+- **New child:** the finger held on the board where the bottom edge sat on her first level, every level. Named 0 in both goals.
+- **Other mix-ups.** wrong-scale and join-wrong-end: no child who does not hold them acts as them on served levels (worst 0.075, "last time's right dot", draw fade 3), so they keep H1's reading. centre-on-arm is not mapped by the coverage, so it is never named here.
+
+| goal | worst non-holder, worst fade: H1 → now | worst door sequence (now) |
+|---|---|---|
+| measure | 0.006 → 0.005 (placed right, any number, wrong-scale, fade 2) | 0.011 (the same child, ggt) |
+| draw | 0.021 → 0.075 (last time's right dot, wrong-scale, fade 3) | 0.050 (the right dot, either button, join-wrong-end, ggg) |
+
+**Holders, named (full sweep, now).** vertex-off **0.92 measure, 0.93 draw** (were 0.46 and 0.43 after H1). Other scale 1.00 (both goals); smaller number 0.92; outer scale 0.96 measure, 0.98 draw; always 'A se jodo' 0.60. **"Always the larger number": 0.06. "Always the inner scale": 0 in both goals.** Answer 4 now serves the levels that tell them (an acute angle; one opening anticlockwise), one each by the fourth level, but they need two sightings with different keys, and the picker's steer toward wrong-scale goes to levels that open clockwise (the only ones whose solve is evidence on the scale), where the inner reading is right. Reported, not failed.
+
+**Answer 3, the statistic (all three modes).** The battery now also asserts the worst door sequence, pooled over fades, pL and seeds, under 1 in 10, so one door cannot hide inside a fade. A child with no randomness in her acts (a constant, the same slip, reading across) is reported by her worst cell, and every such cell named in half her sessions or more is listed below the table with the share of her sessions such cells hold. In the full sweep there are none, in any of the three modes. The table below is the full sweep (`HABIT_FULL=1`) after `dc-r8-gate2-discriminating-level`, with the worst door sequence as a column. It replaces the table after H1/H3/H4; the text after this block is that pass, kept as written.
+
 
 `tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-place.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
 
@@ -59,32 +75,37 @@ The negative control still runs every time: the same children under the rules fr
 - Always 'A se jodo': 0.45 (unchanged).
 - "Always the larger number" and "always the inner scale" are still never told apart by the served levels: 0 and 0.003.
 
-| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
-|---|---|---|---|---|---|---|
-| measure | placed right, any number (0-180) (random) |  | wrong-scale | 0.004 (n 2880) | 0.006 (fade 1) | 0.033 (f1 pL- tgt, n 30) |
-| measure | one random slip a level (typing, a tick, a drop) (random) |  | vertex-off | 0.004 (n 2880) | 0.005 (fade 1) | 0.067 (f1 pL- tgt, n 30) |
-| measure | the smaller of the two printed numbers | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| measure | the larger of the two printed numbers | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
-| measure | always the outer scale | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| measure | always the inner scale | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
-| measure | the mix-up: the other scale's number | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| measure | the mix-up: the bottom edge on the vertex, reads what it shows | **holds** | vertex-off | 0.455 (n 960) | 0.556 (fade 3) | 1.000 (f3 pL- ggg, n 10) |
-| measure | constant answer (181 values; worst: constant 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| measure | constant answer (181 values; worst: constant 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| draw | placed right, any dot, either button (random) |  | wrong-scale | 0.001 (n 2880) | 0.002 (fade 2) | 0.033 (f2 pL- ggt, n 30) |
-| draw | placed right, the right dot, either button (random) |  | join-wrong-end | 0.019 (n 2880) | 0.021 (fade 2) | 0.133 (f2 pL- gtg, n 30) |
-| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | vertex-off | 0.001 (n 2880) | 0.002 (fade 3) | 0.033 (f1 pL0.6 tgg, n 30) |
-| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | join-wrong-end | 0.001 (n 2880) | 0.003 (fade 1) | 0.033 (f1 pL- ttg, n 30) |
-| draw | always the outer scale (dot where it reads the size) | **holds** | wrong-scale | 0.993 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| draw | always the inner scale | **holds** | wrong-scale | 0.003 (n 960) | 0.009 (fade 2) | 0.100 (f2 pL- ggg, n 10) |
-| draw | the mix-up: the other scale's mark | **holds** | wrong-scale | 0.999 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| draw | the mix-up: always 'A se jodo' | **holds** | join-wrong-end | 0.446 (n 960) | 0.531 (fade 2) | 0.900 (f2 pL- gtg, n 10) |
-| draw | the mix-up: the bottom edge on the vertex | **holds** | vertex-off | 0.427 (n 960) | 0.572 (fade 2) | 0.800 (f1 pL0.9 ttg, n 10) |
-| draw | constant answer (181 values; worst: constant dot 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| draw | constant answer (181 values; worst: constant dot 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| draw | constant answer (181 values; worst: constant dot 0) | | join-wrong-end | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst door sequence | worst cell |
+|---|---|---|---|---|---|---|---|
+| measure | placed right, any number (0-180) (random) |  | wrong-scale | 0.004 (n 2880) | 0.005 (fade 2) | 0.011 (ggt, n 360) | 0.067 (f2 pL0.6 ggt, n 30) |
+| measure | one random slip a level (typing, a tick, a drop) (random) |  | vertex-off | 0.003 (n 2880) | 0.003 (fade 1) | 0.008 (gtt, n 360) | 0.100 (f2 pL0.3 gtt, n 30) |
+| measure | the smaller of the two printed numbers | **holds** | wrong-scale | 0.915 (n 960) | 0.978 (fade 1) | 0.967 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| measure | the larger of the two printed numbers | **holds** | wrong-scale | 0.063 (n 960) | 0.125 (fade 2) | 0.108 (ggg, n 120) | 0.400 (f2 pL0.3 tgg, n 10) |
+| measure | always the outer scale | **holds** | wrong-scale | 0.963 (n 960) | 0.988 (fade 1) | 0.983 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| measure | always the inner scale | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (ggg, n 120) | 0 (f1 pL- ggg, n 10) |
+| measure | the mix-up: the other scale's number | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| measure | the mix-up: the bottom edge on the vertex, reads what it shows | **holds** | vertex-off | 0.924 (n 960) | 0.953 (fade 1) | 0.950 (ggt, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| measure | constant answer (181 values; worst: constant 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant 0) | 0 (f1 pL- ggg, n 4) |
+| measure | constant answer (181 values; worst: constant 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant 0) | 0 (f1 pL- ggg, n 4) |
+| draw | placed right, any dot, either button (random) |  | wrong-scale | 0.001 (n 2880) | 0.003 (fade 3) | 0.006 (gtt, n 360) | 0.067 (f3 pL0.6 gtt, n 30) |
+| draw | placed right, the right dot, either button (random) |  | join-wrong-end | 0.033 (n 2880) | 0.035 (fade 3) | 0.050 (ggg, n 360) | 0.133 (f2 pL- gtg, n 30) |
+| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | vertex-off | 0.003 (n 2880) | 0.004 (fade 1) | 0.008 (tgg, n 360) | 0.033 (f1 pL- tgg, n 30) |
+| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | join-wrong-end | 0.002 (n 2880) | 0.003 (fade 2) | 0.006 (gtt, n 360) | 0.033 (f1 pL0.6 ggt, n 30) |
+| draw | last time's right dot |  | wrong-scale | 0.025 (n 960) | 0.075 (fade 3) | 0.025 (ggg, n 120) | 0.100 (f3 pL- ggg, n 10) |
+| draw | always the outer scale (dot where it reads the size) | **holds** | wrong-scale | 0.983 (n 960) | 0.994 (fade 2) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| draw | always the inner scale | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (ggg, n 120) | 0 (f1 pL- ggg, n 10) |
+| draw | the mix-up: the other scale's mark | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| draw | the mix-up: always 'A se jodo' | **holds** | join-wrong-end | 0.600 (n 960) | 0.681 (fade 2) | 0.800 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| draw | the mix-up: the bottom edge on the vertex | **holds** | vertex-off | 0.932 (n 960) | 0.969 (fade 2) | 0.942 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| draw | constant answer (181 values; worst: constant dot 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant dot 0) | 0 (f1 pL- ggg, n 4) |
+| draw | constant answer (181 values; worst: constant dot 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant dot 0) | 0 (f1 pL- ggg, n 4) |
+| draw | constant answer (181 values; worst: constant dot 0) | | join-wrong-end | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant dot 0) | 0 (f1 pL- ggg, n 4) |
 
-sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 77724 ms
+Children with no randomness in their acts whose worst cell is named 0.5 or more (answer 3), with the share of her sessions such cells hold:
+
+none.
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 329113 ms
 
 ## Gate 2: evidence
 

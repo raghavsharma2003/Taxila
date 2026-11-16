@@ -22,13 +22,13 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
+import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, baseDir, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
 import { env } from "../src/play/core/pick.ts";
 import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, repeatSpec, surfaceOf, surfacesDiffer, CHANCE_MEMORY, NAMING_LEVELS } from "../server/play/levels.js";
 import { atLeast, fromOne, oneIn } from "./_session-figure.mjs";
 import { gradeActs, lessonEvidence, chancePick, withNaming } from "../server/play/grade.js";
 import { signSession, verifySession } from "../server/play/session.js";
-import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn, playFactsRow } from "../shared/play.ts";
+import { CHANCE_WEIGHT, DISCRIMINATING_TURN, GAME_WEIGHT, namingOn, playFactsRow } from "../shared/play.ts";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const LAW3 = 0.1;
@@ -419,16 +419,25 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
   // with another asked size names it; the same size again does not; past the session's fourth level nothing does. Gate 2,
   // H1: the second must also be another act, her centre more than a finger's drop (tolPx) from where it sat on the board, so
   // the two levels' first arms lie far enough apart (the bottom edge on O sits PD along each arm's normal); another size on
-  // an arm a few degrees off is the same act, and names nothing
+  // an arm a few degrees off is the same act, and names nothing. dc-r8-gate2-discriminating-level (answer 1): and the two
+  // levels' base directions (the protractor's base line as placed) differ by 45° or more, her offset the same in the
+  // protractor's frame: 35° apart is no longer enough
   const voOf = (lv) => gradeActs(lv, env(konLogic.malActs(lv, "vertex-off")), { final: true });
-  const armApart = (a, b) => { const d = Math.abs(((a.params.start - b.params.start) % 360 + 540) % 360 - 180); return Math.min(d, 180 - d); };
+  const baseApart = (a, b) => Math.abs(((baseDir(a.params) - baseDir(b.params)) % 360 + 540) % 360 - 180);
   const v1 = four[0];
-  const v2 = served.find((l) => l.params.theta !== v1.params.theta && armApart(l, v1) >= 35);
-  const near = served.find((l) => l.params.theta !== v1.params.theta && armApart(l, v1) <= 5 && l.params.mirror === v1.params.mirror);
-  assert.ok(v2 && near, "served levels: another size on an arm far apart, and one on an arm close by");
+  const v2 = served.find((l) => l.params.theta !== v1.params.theta && baseApart(l, v1) >= DISCRIMINATING_TURN);
+  const mid = served.find((l) => l.params.theta !== v1.params.theta && baseApart(l, v1) >= 30 && baseApart(l, v1) < DISCRIMINATING_TURN);
+  const near = served.find((l) => l.params.theta !== v1.params.theta && baseApart(l, v1) <= 5 && l.params.mirror === v1.params.mirror);
+  assert.ok(v2 && near && mid, "served levels: another size whose base lies 45° or more away, one 30-44° away, and one close by");
   {
     const sv0 = { ...afterLevelBody(sessionOf(entry), { grade: voOf(v1).grade, level: v1 }), n: 1 };
     assert.equal(nameOnRepeat(lessonEvidence(voOf(near).grade, near), sv0, near)[0].misconceptionId, undefined, "H1: another size, the same drop on the board: not named");
+    assert.equal(nameOnRepeat(lessonEvidence(voOf(mid).grade, mid), sv0, mid)[0].misconceptionId, undefined, "answer 1: base directions under 45° apart: not named");
+    // the fixed finger: the board offset of the bottom edge on v1, held on the board on v2 (another place in v2's frame):
+    // not vertex-off there at all, or not the same act in the protractor's frame; never named
+    const q1 = vertexOffPose(v1.params), off = [q1.x - v1.params.vx, q1.y - v1.params.vy], g2 = goodPose(v2.params);
+    const fixed = [{ kind: "move", x: v2.params.vx + off[0], y: v2.params.vy + off[1] }, { kind: "spin", deg: g2.rot }, { kind: "lock" }, ...konLogic.malActs(v2, "vertex-off").slice(3)];
+    assert.equal(nameOnRepeat(lessonEvidence(gradeActs(v2, env(fixed), { final: true }).grade, v2), sv0, v2)[0].misconceptionId, undefined, "answer 1: one board offset on two discriminating levels: not named");
   }
   const g1 = voOf(v1), r1 = nameOnRepeat(lessonEvidence(g1.grade, v1), sessionOf(entry), v1);
   assert.equal(r1[0].misconceptionId, undefined, "one vertex-off names nothing"); assert.equal(g1.grade.evidence[0].chanceMis, entry.misMap["vertex-off"]);

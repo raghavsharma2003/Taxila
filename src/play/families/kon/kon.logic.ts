@@ -24,11 +24,12 @@
 // (measure, draw, size); the law lives in kon.place.ts and every function below hands a place goal there first too.
 // r8: name (c6-maths-ch02-t02): three lettered rays from a vertex, two ends joined; say (tap three letters for the lit angle)
 // and find (tap the arc a shown name denotes); the law lives in kon.name.ts, handed over first like place.
-import { HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type KonAct, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
+import { DISCRIMINATING_TURN, HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type KonAct, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { focusMal } from "../../core/pick.ts";
 import { mulberry32 } from "../../core/rng.ts";
-import { NAME_MAL, generateName, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { NAME_MAL, generateName, readsAcrossAll, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
+import { PLACE_MAL, placeNeeds, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -319,8 +320,37 @@ function generate(req: GenRequest): Candidate<KonParams>[] {
       proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
   // name: her first level of the mode (no name signature played yet) is the only one whose vertex may be O at fade 1
-  if (isNameGoal(goal)) return generateName(goal, rnd, req.fade, !(req.recent ?? []).some((r) => r.startsWith("name:"))).map(({ params, sig }) => mk(params as KonParams, sig));
-  if (isPlaceGoal(goal)) return generatePlace(goal, g, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
+  if (isNameGoal(goal)) {
+    const first = !(req.recent ?? []).some((r) => r.startsWith("name:"));
+    const base = generateName(goal, rnd, req.fade, first);
+    // gate 2 (answer 2 of 2026-11-16, dc-r8-gate2-discriminating-level): once vertex-name is suspected (the session's focus:
+    // a first sighting, confirmed on its level), say serves a discriminating level (readsAcrossAll), from the candidates as
+    // generated, else by generating again for one (more tries); with none, the level is as it was
+    if (goal !== "say" || focusMal(req) !== "vertex-name" || !HABIT_RULES.on) return base.map(({ params, sig }) => mk(params as KonParams, sig));
+    let got = base.filter((c) => readsAcrossAll(c.params));
+    if (!got.length) got = generateName(goal, mulberry32(req.seed), req.fade, first, { need: readsAcrossAll, disc: true, tries: 800 });
+    return (got.length ? got : base).map(({ params, sig }) => mk(params as KonParams, sig));
+  }
+  if (isPlaceGoal(goal)) {
+    const base = generatePlace(goal, g, rnd, req.fade);
+    // gate 2 (answers 4 and 1 of 2026-11-16): the level mix by the fourth level, and the steer after a sighting of vertex-off
+    // to a level whose base direction differs by 45° or more (placeNeeds). Each is tried on the candidates as generated first,
+    // then by generating again for it (a steered fade-1 level may tilt); with none, the level is as it was
+    const vo = req.misMap?.["vertex-off"];
+    const needs = goal === "size" ? [] : placeNeeds({ n: req.n, recent: req.recent, bases: (req.bases ?? []).filter((b) => vo && b.mis === vo).map((b) => b.base), turn: DISCRIMINATING_TURN });
+    let got: typeof base | null = null;
+    for (const nd of needs) {
+      const kept = base.filter((c) => nd.ok(c.params));
+      if (kept.length) { got = kept; break; }
+      // (on up to four streams of the level's seed: a steered level is a fifth of the tilts at most, and one stream can miss it)
+      for (const x of [0, 0x5bd1e995, 0x27d4eb2f, 0x165667b1]) {
+        const more = generatePlace(goal, g, mulberry32((req.seed ^ x) >>> 0), req.fade, { need: nd.ok, wide: nd.steer });
+        if (more.length) { got = more; break; }
+      }
+      if (got) break;
+    }
+    return (got ?? base).map(({ params, sig }) => mk(params as KonParams, sig));
+  }
   if (isLineGoal(goal)) return generateLine(goal, g, rnd, req.fade).map(({ params, sig }) => mk(params as KonParams, sig));
   if (goal === "turn") {
     for (const start of [0, 90, 180, 270]) for (const q of g.q ?? [1, 2, 3]) for (const dir of ["cw", "acw"] as const)
@@ -450,6 +480,22 @@ function confirmSay(g: PlayGrade): PlayGrade {
   return { ...g, evidence: [rest, ...g.evidence.slice(1)] };
 }
 
+/** the chance picks' repeat specs (konLogic.chanceRepeat), by the rules from before dc-r8-gate2-discriminating-level */
+const KON_REPEAT_LEGACY = { "draw:join-wrong-end": { sightings: 4, apart: [0], cover: 1 },
+  "measure:vertex-off": { sightings: 2 }, "draw:vertex-off": { sightings: 2, apart: [0] },
+  "measure:centre-on-arm": { sightings: 2 }, "draw:centre-on-arm": { sightings: 2, apart: [0] },
+  "measure:wrong-scale": { sightings: 2 }, "draw:wrong-scale": { sightings: 2, apart: [0] },
+  // gate 2 per session (kon/name): a say name is 1 in 6 blind and a find tap 1 in 5, so a second sighting within four
+  // levels is 1 in 7.6 (say) and 1 in 5.5 (find) a session: over. vertex-name is named on the third, on three levels
+  // whose figures and letters differ two by two (say and find count together): at worst 1 in 37 a session
+  "say:vertex-name": { sightings: 3 }, "find:vertex-name": { sightings: 3 } } as const;
+/**
+ * dc-r8-gate2-discriminating-level (main's answer 2, 2026-11-16): a say sighting counts toward naming only with one on a
+ * discriminating level among them (readsAcrossAll: every reading across the screen gives the right name there, so a vertex
+ * at an end is the mix-up's alone: firmSighting), and then two are enough: the first sighting and the one on the
+ * discriminating level the session is steered to, each confirmed on its own level by her name after the play-out (H3).
+ */
+const KON_REPEAT = { ...KON_REPEAT_LEGACY, "say:vertex-name": { sightings: 3, firm: 2, needFirm: true } } as const;
 export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   family: "kon", modes: ["turn", "set", "zone", "pair", "close", "lines", "cross", "ends", "place", "name"], malRules: KON_MAL,
   // zone/kind: one turn into a wide zone wins (a lucky tap 10 to 26 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
@@ -472,14 +518,10 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   // them ((1/2)^4 = 1 in 16; a habit of pressing one place never makes it under both orders). Per session (2026-11-16):
   // every spec here is named only on the session's first four levels (NAMING_LEVELS), so the join's four are all four.
   // vertex-off, centre-on-arm and wrong-scale: two levels that differ (draw: two asked sizes), at worst 1 in 19 a session
-  chanceRepeat: { "draw:join-wrong-end": { sightings: 4, apart: [0], cover: 1 },
-    "measure:vertex-off": { sightings: 2 }, "draw:vertex-off": { sightings: 2, apart: [0] },
-    "measure:centre-on-arm": { sightings: 2 }, "draw:centre-on-arm": { sightings: 2, apart: [0] },
-    "measure:wrong-scale": { sightings: 2 }, "draw:wrong-scale": { sightings: 2, apart: [0] },
-    // gate 2 per session (kon/name): a say name is 1 in 6 blind and a find tap 1 in 5, so a second sighting within four
-    // levels is 1 in 7.6 (say) and 1 in 5.5 (find) a session: over. vertex-name is named on the third, on three levels
-    // whose figures and letters differ two by two (say and find count together): at worst 1 in 37 a session
-    "say:vertex-name": { sightings: 3 }, "find:vertex-name": { sightings: 3 } },
+  // (KON_REPEAT; say's by the rules in force: KON_REPEAT_LEGACY with HABIT_RULES off)
+  get chanceRepeat() { return HABIT_RULES.on ? KON_REPEAT : KON_REPEAT_LEGACY; },
+  // dc-r8-gate2-discriminating-level (answer 2): a say sighting on a discriminating level is firm (readsAcrossAll)
+  firmSighting: (l: PlayLevel<KonParams>, rule: string) => HABIT_RULES.on && rule === "vertex-name" && l.params.goal === "say" && readsAcrossAll(l.params),
   // name: two parts (the figure, the letters: nameSurface), so a second sighting counts on another figure with other letters;
   // place/draw: two parts (the asked size, the join order: drawSurface); place/measure (gate 2, H1): its key on both scales
   // (measureSurface: another tilt of the same key is not another level); the rest: the level's params

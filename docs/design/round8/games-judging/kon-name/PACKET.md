@@ -16,7 +16,24 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 | say | — | vertex-name (the right three letters, the vertex first or last) |
 | find | — | vertex-name (a first- or last-letter arc) |
 
-## Gate 2 battery (2026-11-16: H3 built; the battery passes)
+## Gate 2 battery (2026-11-16: H3 built; the discriminating level built; the battery passes)
+
+**Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`, main's answer 2).**
+- **The discriminating say level.** A say level on which every reading of the lit angle's letters across the screen (by rows or columns, either way, by the points or by where the letters are drawn: all sixteen) puts the vertex in the middle (`readsAcrossAll`). There a child who reads across gives the right name and a vertex-first holder still does not. It is served (no longer refused as a shortcut), its solve is faint (chance weight, no discriminates), and its vertex-first play-out keeps its dashed rays out of the lit sector (`sayPlayoutClear`, gate 1 ruling 3).
+- **Such a figure can be laid out:** the angle at the vertex inside the triangle, 100° or more, facing a diagonal. Among ordinary say candidates they are rare (about 1 in 400 once the play-out rule is applied), so after a first sighting (vertex-name the session's focus) the generator searches for one directly; it finds one for about 97% of requests, and in the battery the next say level after a holder's first sighting is a discriminating one in 90% or more (asserted).
+- **The rule.** `say:vertex-name` is named only with a sighting on a discriminating level among them (`firmSighting`, `needFirm`), and then on the second, each sighting confirmed on its own level by her name after the play-out (H3). Blind, at worst every level discriminating: 1 in 223 a session. find is unchanged (the third).
+- **Served levels changed** only after a first sighting: in the gate sweep the careful child's and the slip child's say sessions are unchanged; the vertex-first holder's change (505 of 768 levels). Re-certified (the level served under the vertex-name focus is now a discriminating one): every sample passes at every size.
+- Every reader across solves every discriminating level (asserted) and is named 0.
+
+| goal | worst non-holder, worst fade: H3 → now | worst door sequence (now) |
+|---|---|---|
+| say | 0 → 0.007 (blind, three different letters, fade 2) | 0.008 (the same, ttg) |
+| find | 0.005 → 0.005 (blind tap, fade 2) | 0.008 (the same, gtg) |
+
+**Holders, named (full sweep, now).** Vertex first 1.00, vertex last 1.00, **any order 0.58** (was 0.23), find first letter 0.50, find last letter 0.
+
+**Answer 3, the statistic (all three modes).** The battery now also asserts the worst door sequence, pooled over fades, pL and seeds, under 1 in 10, so one door cannot hide inside a fade. A child with no randomness in her acts (a constant, the same slip, reading across) is reported by her worst cell, and every such cell named in half her sessions or more is listed below the table with the share of her sessions such cells hold. In the full sweep there are none, in any of the three modes. The table below is the full sweep (`HABIT_FULL=1`) after `dc-r8-gate2-discriminating-level`, with the worst door sequence as a column. It replaces the table after H1/H3/H4; the text after this block is that pass, kept as written.
+
 
 `tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-name.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
 
@@ -43,18 +60,23 @@ The negative control still runs every time: the same children under the rules fr
 - find, first letter: 0.50.
 - find, last letter: 0. The law names only the first-letter pick.
 
-| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
-|---|---|---|---|---|---|---|
-| say | the mix-up: the vertex first | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| say | the mix-up: the vertex last | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| say | the mix-up: any order of the three letters (random) | **holds** | vertex-name | 0.226 (n 2880) | 0.233 (fade 1) | 0.400 (f1 pL- ttg, n 30) |
-| say | constant answer (64 values; worst: constant taps 000) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| find | blind tap (random) |  | vertex-name | 0.005 (n 2880) | 0.005 (fade 2) | 0.033 (f1 pL0.3 ttg, n 30) |
-| find | the mix-up: the angle at the name's first letter | **holds** | vertex-name | 0.500 (n 960) | 0.500 (fade 1) | 0.500 (f1 pL- ggg, n 10) |
-| find | the mix-up: the angle at the name's last letter | **holds** | vertex-name | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
-| find | constant answer (5 values; worst: constant arc 0) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst door sequence | worst cell |
+|---|---|---|---|---|---|---|---|
+| say | blind: three different letters (and again after a miss) (random) |  | vertex-name | 0.004 (n 2880) | 0.007 (fade 2) | 0.008 (ttg, n 360) | 0.067 (f2 pL0.3 ttg, n 30) |
+| say | the mix-up: the vertex first | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: the vertex last | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: any order of the three letters (random) | **holds** | vertex-name | 0.583 (n 2880) | 0.607 (fade 2) | 0.625 (ggg, n 360) | 0.800 (f2 pL0.9 gtt, n 30) |
+| say | constant answer (64 values; worst: constant taps 000) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant taps 000) | 0 (f1 pL- ggg, n 4) |
+| find | blind tap (random) |  | vertex-name | 0.005 (n 2880) | 0.005 (fade 2) | 0.008 (gtg, n 360) | 0.033 (f1 pL0.3 ttg, n 30) |
+| find | the mix-up: the angle at the name's first letter | **holds** | vertex-name | 0.500 (n 960) | 0.500 (fade 1) | 0.500 (ggg, n 120) | 0.500 (f1 pL- ggg, n 10) |
+| find | the mix-up: the angle at the name's last letter | **holds** | vertex-name | 0 (n 960) | 0 (fade 1) | 0 (ggg, n 120) | 0 (f1 pL- ggg, n 10) |
+| find | constant answer (5 values; worst: constant arc 0) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant arc 0) | 0 (f1 pL- ggg, n 4) |
 
-sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 79161 ms
+Children with no randomness in their acts whose worst cell is named 0.5 or more (answer 3), with the share of her sessions such cells hold:
+
+none.
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 101638 ms
 
 ## Gate 2: evidence
 

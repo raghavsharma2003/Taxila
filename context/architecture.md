@@ -618,3 +618,12 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-repeat-rules-name-habits` (2026-11-16): A rule that names a mix-up on a repeat is exactly what a habit triggers (the same number, slip or order on every level), and 'the two levels differ' stops only habits that depend on the level. The three gate 2 proofs modelled a blind guess and a single slip on independent levels and were never run on served sessions; the judges found each hole by running the real server path
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-distress-read-fires-on-listed-answer` (2026-11-16): A child's wrong answer that the card's own table lists ('no place', on a card that says some people think 1/9 has no place on the line) set off the safety turn in 2 of 2 director23 lessons (c5-t01 steady 49, stuck 83) and got a hint in director22. Cause: classifyRead sends a line already matched by code, alone and without lesson context, to the model's words-only distress read (needsModelDistressRead, distressCheck in server/director/classify.js); the read varies run to run. Frozen safety code: found through a lesson run, not changed, not measured; put to the owner with a recommendation (skip the read when the line is exactly a listed answer).
+- `fd-predicates-reread-text-and-miss-what-judges-count` (2026-11-16): Third run in which gated predicates read 0 on rows the judges fail: readerAgrees (an equivalence table passed 24 wrong records), backToJoint (counts only a return that opens a turn; 35 missing joints), cardWholeAgain (3 rows), hindiNewWords (c4 rows). Each re-derives structure from the spoken text or from a lenient table. The seam pass and the reader now write what they decided on the row (seams, column) and the predicates read that record.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-habit-and-mixup-same-act-on-served-levels` (2026-11-16): On the levels served today a habit and a mix-up can be the same act on every level (a finger that lands above the vertex and the edge-on-vertex belief; reading letters across and vertex-first), because the generator serves almost only obtuse angles opening clockwise and no say level where reading across puts the vertex in the middle. 'Two different acts' cannot separate them; only a level on which they predict different acts can.

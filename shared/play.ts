@@ -142,14 +142,36 @@ export const HABIT_RULES: { on: boolean } = { on: true };
 /**
  * Gate 2 (H1): what she did, as a value, at a pick's sighting (FamilyLogic.sightingOf): a key (a typed number, her totals,
  * a rim mark), or a placement's offset from the vertex on the board with the distance within which two are one act.
+ * A placement may also carry (dc-r8-gate2-discriminating-level) the level's base direction `base` (degrees) and her offset in
+ * the protractor's own frame `pf`, two such offsets within `ptol` being the same.
  */
-export type SightingValue = string | { xy: [number, number]; tol: number };
+export type SightingValue = string | { xy: [number, number]; tol: number; base?: number; pf?: [number, number]; ptol?: number };
 /** two sightings' values are one act: the same key, or offsets on the board within either one's tolerance. Pure. */
 export function sameSighting(a: SightingValue | null | undefined, b: SightingValue | null | undefined): boolean {
   if (a === null || a === undefined || b === null || b === undefined) return false;
   if (typeof a === "string" || typeof b === "string") return a === b;
   if (!Array.isArray(a.xy) || !Array.isArray(b.xy)) return false;
   return Math.hypot(a.xy[0] - b.xy[0], a.xy[1] - b.xy[1]) <= Math.max(Number(a.tol) || 0, Number(b.tol) || 0);
+}
+/** gate 2 (answer 1): two placement levels tell a held placement from a fixed finger only when their base directions differ
+ *  by this much or more (degrees) */
+export const DISCRIMINATING_TURN = 45;
+/**
+ * Gate 2, dc-r8-gate2-discriminating-level (answer 1): may these two sightings count as two? A placement that carries its
+ * level's base direction and its offset in the protractor's frame counts with another only when the two levels' base
+ * directions differ by DISCRIMINATING_TURN or more, her offset is the same in the protractor's frame (within `ptol`), and so
+ * differs on the board (not sameSighting): the bottom edge on the vertex is held in the protractor's frame, a finger that
+ * drops the same way is held on the board. Every other pair of values (keys; placements without a base) counts when it is
+ * not one act, as H1 has it. Pure.
+ */
+export function discriminatingPair(a: SightingValue | null | undefined, b: SightingValue | null | undefined): boolean {
+  if (a === null || a === undefined || b === null || b === undefined) return true;
+  if (typeof a === "string" || typeof b === "string") return a !== b;
+  if (sameSighting(a, b)) return false;
+  if (!Number.isFinite(a.base) || !Number.isFinite(b.base) || !Array.isArray(a.pf) || !Array.isArray(b.pf)) return true;
+  const d = Math.abs((((a.base as number) - (b.base as number)) % 360 + 540) % 360 - 180);
+  const ptol = Math.min(Number(a.ptol) || 0, Number(b.ptol) || 0);
+  return d >= DISCRIMINATING_TURN && Math.hypot(a.pf[0] - b.pf[0], a.pf[1] - b.pf[1]) <= ptol;
 }
 
 // ───────────────────────────── levels ─────────────────────────────
@@ -659,6 +681,11 @@ export interface GenRequest {
   pL?: number;
   /** the kit misconception the lesson just saw (`misconception_seen`): the picker prefers a level that discriminates it */
   focus?: string;
+  /** the level's place in its session (0-based: the session body's n), when the server knows it */
+  n?: number;
+  /** gate 2 (dc-r8-gate2-discriminating-level): the base directions of the levels on which this session saw a placement
+   *  pick (SightingValue.base), by kit misconception: a family steers the next level to one that tells it apart */
+  bases?: { mis: string; base: number }[];
 }
 /** A generated level before the picker scores it. `difficulty` 0..1 is the family's own estimate (size, steps, form). */
 export interface Candidate<P = unknown> { level: PlayLevel<P>; signature: string; difficulty: number }
@@ -704,10 +731,11 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   surfaceOf?(level: PlayLevel<P>): string | readonly string[];
   /** gate 2: a chance pick (key `goal:mal-rule`) is named only on `sightings` levels (default 2): `apart`, the surface parts
    *  that must differ between every two of them (default: every part); `cover`, a part that must not be the same on all of
-   *  them (kon/place draw's join order); `firm`, the sightings enough when one of them is firm (firmSighting). A pick with a
-   *  spec is named only on the session's first NAMING_LEVELS levels (server/play/levels.js): its session figure (law 3, read
-   *  per session) is proved over that many */
-  chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number; firm?: number }>>;
+   *  them (kon/place draw's join order); `firm`, the sightings enough when one of them is firm (firmSighting); `needFirm`
+   *  (dc-r8-gate2-discriminating-level), never named without a firm one among them (kon/name say: a sighting on a level
+   *  that tells the mix-up from every habit). A pick with a spec is named only on the session's first NAMING_LEVELS levels
+   *  (server/play/levels.js): its session figure (law 3, read per session) is proved over that many */
+  chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number; firm?: number; needFirm?: boolean }>>;
   /** gate 2, the default for every other pick (rulings 2026-11-16, "the per-session reading" 2): the options a blind child
    *  picks among where this mal-rule's pick is made on this level, one act sequence per option (the same lead-in and the
    *  same acts after). The server replays each through grade; the share that shows the mix-up is the pick's blind chance p,

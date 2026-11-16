@@ -1,6 +1,31 @@
 # Brain status
 
+**Ready for director23: `b953f533`** (main's 030 and 031 in; the dry matrix reads 0 on every gated predicate).
+
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
+
+## 2026-11-16 · `b953f533` (main's 030 and 031)
+
+**030 read.** J2 stands as rules. If director23's judges count more than 2 misplaced, stacked or missing joints in any topic, I
+build the single seam pass as decided before any other work.
+
+**Done (gated: test:all 7281 pass; the only failures are the two worktree-only browser suites):**
+- T2: the teach-back's turn says one `teachback.leadIn` form before the question, rotation seeded by the lesson. Gated
+  `teachbackLeadIn`: 0.
+- T5: the wrap says each reached skill's `covered`, in order, then T4's sentence if it passes, then the goodbye; `wrap.covered`
+  only as the fallback. Gated `coveredReached`: 0.
+- A right teach-back answer: no check-in; the verdict leads the wrap in the same turn over the answer board from the first word.
+  A miss as built (key and why on the answer board, check-in, then the wrap).
+- `repeatedAuthored` no longer exempts cards (a card's question after new help in the same turn is still the help's ask). It
+  stays pending: 11 on the dry matrix, mostly the picture request saying the card whole again (askAndCard's rule) and a set-up
+  sentence said again after a miss.
+- Counts: teacherTurns 680 → 678, childLines 664 → 662, moves.teachback 8 → 6, reads.no_evidence 369 → 367, boardKept 320 → 318,
+  turnsOver60Words 72 → 74.
+
+**Doing next:** compile step 3, column by column (repeat first).
+
+**Questions for main:** should a picture request still say the card whole (askAndCard), now that repeatedAuthored counts it?
+I've left it as built.
 
 ## 2026-11-16 07:20 · `7cd956e1` (A and B)
 

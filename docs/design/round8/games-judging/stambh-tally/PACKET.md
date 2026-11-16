@@ -13,7 +13,12 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 A bundle is four standing lines with one line across them, and it is worth 5. A row's count is 5 × bundles + loose lines. The child makes every mark herself, and every stroke is legal: a cross after fewer than four lines is allowed. If such a cross were refused, a child could learn the rule by trying "╱" and falling back to "|" when it bounced. When the child presses Check, the game regroups each row by fives, and only then plays out what each group is worth.
 
-## Gate 2 battery (2026-11-16: H1 and H4 built; the battery passes)
+## Gate 2 battery (2026-11-16: H1 and H4 built; answer 3's statistic; the battery passes)
+
+**Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`).** No rule or level of this mode changed: the discriminating levels of main's answers 1, 2 and 4 are kon/place's and kon/name's. Every child already acts differently from the mix-up on the levels where she is counted (H1: two numbers that differ; H4: two keep levels with other totals), so no tally child acts as the mix-up on a served level. Worst non-holder (full sweep): read 0.013 at the worst fade (bundles only with a bundle skipped, fade 2), 0.008 at the worst door sequence (tgg); keep 0 and 0. Holders as before: read 0.80 (half her levels 0.32), keep 1.00 each.
+
+**Answer 3, the statistic (all three modes).** The battery now also asserts the worst door sequence, pooled over fades, pL and seeds, under 1 in 10, so one door cannot hide inside a fade. A child with no randomness in her acts (a constant, the same slip, reading across) is reported by her worst cell, and every such cell named in half her sessions or more is listed below the table with the share of her sessions such cells hold. In the full sweep there are none, in any of the three modes. The table below is the full sweep (`HABIT_FULL=1`) after `dc-r8-gate2-discriminating-level`, with the worst door sequence as a column. It replaces the table after H1/H3/H4; the text after this block is that pass, kept as written.
+
 
 `tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-stambh-tally.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
 
@@ -38,18 +43,22 @@ The negative control still runs every time: the same children under the rules fr
 - keep, five: 1.00, from the second keep level.
 - keep, five and each group read as four: 1.00, from the second keep level.
 
-| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
-|---|---|---|---|---|---|---|
-| read | same every level: bundles only, a bundle skipped |  | tally-four | 0.004 (n 960) | 0.013 (fade 2) | 0.100 (f2 pL0.9 tgg, n 10) |
-| read | the mix-up: each bundle read as four | **holds** | tally-four | 0.797 (n 960) | 0.931 (fade 2) | 1.000 (f1 pL- tgg, n 10) |
-| read | the mix-up on half her levels (random) | **holds** | tally-four | 0.324 (n 2880) | 0.402 (fade 2) | 0.667 (f2 pL0.3 ggt, n 30) |
-| read | constant answer (100 values; worst: constant 0) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
-| keep | the mix-up: bundles drawn, each counted as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| keep | only the first button, the standing line (five as five standing lines), totals right | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| keep | five standing lines, each group read as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
-| keep | constant answer (100 values; worst: constant 0 (every total)) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst door sequence | worst cell |
+|---|---|---|---|---|---|---|---|
+| read | same every level: bundles only, a bundle skipped |  | tally-four | 0.004 (n 960) | 0.013 (fade 2) | 0.008 (tgg, n 120) | 0.100 (f2 pL0.9 tgg, n 10) |
+| read | the mix-up: each bundle read as four | **holds** | tally-four | 0.797 (n 960) | 0.931 (fade 2) | 0.917 (ttg, n 120) | 1.000 (f1 pL- tgg, n 10) |
+| read | the mix-up on half her levels (random) | **holds** | tally-four | 0.324 (n 2880) | 0.402 (fade 2) | 0.383 (gtt, n 360) | 0.667 (f2 pL0.3 ggt, n 30) |
+| read | constant answer (100 values; worst: constant 0) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant 0) | 0 (f1 pL- ggg, n 4) |
+| keep | the mix-up: bundles drawn, each counted as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| keep | only the first button, the standing line (five as five standing lines), totals right | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| keep | five standing lines, each group read as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (ggg, n 120) | 1.000 (f1 pL- ggg, n 10) |
+| keep | constant answer (100 values; worst: constant 0 (every total)) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (ggg, n 48) (constant 0 (every total)) | 0 (f1 pL- ggg, n 4) |
 
-sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 106833 ms
+Children with no randomness in their acts whose worst cell is named 0.5 or more (answer 3), with the share of her sessions such cells hold:
+
+none.
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 149471 ms
 
 ## Gate 2: evidence
 
