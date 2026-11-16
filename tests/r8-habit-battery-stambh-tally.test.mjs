@@ -18,7 +18,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, reportedRows, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
 import { READ_HABITS } from "../src/play/families/stambh/tally.logic.ts";
@@ -88,6 +88,16 @@ test("negative control: under the rules from before H1 the judge's failure shows
   for (const c of ["const:16", "last-first"]) assert.ok(rowOf(RES, "read", c).worstFade[KIT].share < LINE, `${c} under H1`);
   // and the child the tables model is under the line, old rules and new: the blind guesser
   for (const R of [OLD, RES]) assert.ok(rowOf(R, "read", "blind").worstFade[KIT].share < LINE);
+});
+
+test("dc-r8-gate2-shadow S3: the second-reading judge's children are in the battery (\"a bundle skipped\" with a pad slip, a finger offset on every key, slips under six ways, two ways in turn, last numbers give or take); the judge's counted child is not named; any marked reported is printed (REPORTED FIGURES, not assertions)", (t) => {
+  const ids = new Set(RES.goals.read.rows.map((r) => r.child));
+  for (const id of ["skip+typing:right/key 2 right", "skip+typing:bundles only/key 2 left", "finger:right/left", "slip-way:bundles only", "slip-two", "blind-after-miss:right", "alt:right|bundles only", "last-key3", "last-first-4", "shown-after-miss"]) assert.ok(ids.has(id), id);
+  assert.equal(RES.goals.read.rows.filter((r) => r.child.startsWith("alt:")).length, 30);
+  // the judge's counted child (bundles only, a bundle skipped: rows 25, 31, 37, 43, 49): never named now (0.013 before)
+  assert.equal(rowOf(RES, "read", "way:bundles only/a bundle skipped").worstFade[KIT].share, 0);
+  assert.equal(rowOf(RES, "read", "way:bundles only/a bundle skipped").worstDoor[KIT].share, 0);
+  for (const x of reportedRows(RES)) t.diagnostic(`reported: ${x.goal} · ${x.label} (${x.rule}): named ${x.all.toFixed(3)}, worst fade ${x.worstFade.share.toFixed(3)} (fade ${x.worstFade.at}), worst door sequence ${x.worstDoor.share.toFixed(3)} (${x.worstDoor.at}); ${x.why}`);
 });
 
 test("read: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {

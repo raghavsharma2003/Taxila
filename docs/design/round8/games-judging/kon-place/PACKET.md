@@ -21,6 +21,36 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 (*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
 
+## Gate 2, S3 (2026-11-16, `dc-r8-gate2-shadow`: the "blocks" fix and the judges' children; branch `claude/r8-gate2-s3`)
+
+**The fix (nothing a child sees changes; no served level changes).** In draw, a wrong-scale sighting does not count where the other scale's mark on this level is within 2° of the level just played's right mark (`drawSightingCounts`, `COPY_NEAR = 2`; the server reads it through `FamilyLogic.sightingCounts`, so the sighting is neither remembered nor counted and steers nothing). The judge's counted pair ("last time's right dot", level 2 θ = 120 opening clockwise after a right dot of 120) is the case. The sentence under "Other mix-ups" below is corrected.
+
+**The judge's children (gate2b judge, C), now in the battery.** Full sweep (`HABIT_FULL=1`), worst fade / worst door sequence, the mix-up each is named:
+
+| child | judge (before) | now |
+|---|---|---|
+| draw: last time's right dot (wrong-scale) | 0.075 f3 (0.025) | 0 / 0 |
+| the finger lands 18–26 px inside the angle along the bisector (vertex-off) | measure 0.075 f3 (0.050) | **reported** (below) |
+| a fixed drop 16–28 px in 8 directions, ±8 px wobble (32 per goal) | 0.024 | measure 0.018 / 0.025; draw 0.023 / 0.033 |
+| a drop of 30 px on every level (8 directions) | 0.031 / 0.037 | 0 / 0 |
+| drags from where it rested, stops 16–28 px short of O | 0 | 0 / 0 |
+| a random slip until her first miss, then anything | 0.001 | measure 0.005 / 0.008; draw 0.001 / 0.003 |
+| careful with two slips a session | 0 | 0.001 / 0.006 |
+| last level's whole solve; last level's turn; last level's other-scale number | 0 | 0 / 0 |
+| draw: last level's size; the button in last time's place; the two buttons in turn | 0 | 0 / 0 |
+
+Not added (the judge found each at 0, and each needs the drawn letters' or the pad's screen positions, which the battery does not model): centre on the letter O; the printed number lowest on screen; last dot's screen direction; the letter nearer the dot.
+
+**Children the battery cannot bring under the line: listed, not asserted** (`reported` in `tests/_habit-children.mjs`; the test prints them; shadow goes on anyway):
+
+| child | goal | named (all) | worst fade | worst door | why |
+|---|---|---|---|---|---|
+| the finger lands 18 px inside the angle, along its bisector | draw | 0.037 | 0.109 (fade 2) | 0.067 | on a wide angle the bisector is close to the perpendicular from O on which the bottom edge on the vertex puts the centre, in the protractor's frame: vertex-off's discriminating pair cannot tell her from the mix-up (the judge's fault 2) |
+| … 20, 22, 24, 26 px | draw | 0.037–0.046 | 0.109–0.128 (fade 2) | 0.067 | as above |
+| … 18–26 px | measure | 0.003–0.009 | 0.009–0.028 | 0.025–0.050 | under in the full sweep; the gate sweep's two seeds put her door figure at 0.125 |
+
+**Worst asserted non-holder, full sweep:** measure 0.018 by fade (±8 px wobble, drop 16 up, vertex-off), 0.025 by door; draw 0.036 by fade (the right dot, either button, join-wrong-end), 0.050 by door. Holders: measure all 1.000 but vertex-off 0.909; draw outer 1.000, inner **0.965** (was 1.000: some of her sightings are on copied marks now), other 1.000, vertex-off 0.961, always A 0.620.
+
 ## Gate 2 battery (2026-11-16: H1 built; the discriminating level built; the battery passes)
 
 **Third pass (2026-11-16, main's note 004, branch `claude/r8-steer-dir`).**

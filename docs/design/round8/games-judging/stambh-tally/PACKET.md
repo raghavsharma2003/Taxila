@@ -13,6 +13,36 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 A bundle is four standing lines with one line across them, and it is worth 5. A row's count is 5 × bundles + loose lines. The child makes every mark herself, and every stroke is legal: a cross after fewer than four lines is allowed. If such a cross were refused, a child could learn the rule by trying "╱" and falling back to "|" when it bounced. When the child presses Check, the game regroups each row by fives, and only then plays out what each group is worth.
 
+## Gate 2, S3 (2026-11-16, `dc-r8-gate2-shadow`: the "blocks" fix and the judges' children; branch `claude/r8-gate2-s3`)
+
+**The fix (nothing a child sees changes; no served level changes).** read: a row counts as a sighting only where no reading habit of the battery types the mix-up's number on it (`discriminatingRead`, computed from `READ_HABITS`: the eight ways of reading with every counting slip, but the right reading with none; the battery asserts that its own "same every level" readers are exactly these, number for number on every row). On any other row the sighting is neither remembered nor counted (`FamilyLogic.sightingCounts`). Rows that no longer count: 16, 17, 19 (all of fade 1), 21, 23, 25 to 29, 31, 37, 43, 49; every firm row still counts. The sentence below that said no such level exists is corrected.
+
+**A battery fault found on the way.** The seven "same every level" ways of reading with no counting slip typed nothing (`none: (f) => f` returned the function). Fixed; each is 0.
+
+**The judge's children (gate2b judge, C), now in the battery.** Full sweep (`HABIT_FULL=1`, 169 s), worst fade / worst door sequence:
+
+| child | judge (before) | now |
+|---|---|---|
+| bundles only, a bundle skipped (rows 25, 31, 37, 43, 49) | 0.013 (fade 2) / 0.008 | 0 / 0 |
+| "a bundle skipped" with every pad slip, under the right reading and under bundles only (42) | 0.253 / 0.119 (two of them) | 0 / 0, but one **reported** (below) |
+| a finger offset on every key, 8 directions, right reading and bundles only (16) | 0.025 | 0 / 0 |
+| one random slip a level under each of six ways of reading | 0.001 | 0 / 0 |
+| two random slips in a session; blind on the level after a miss (six ways) | 0 / 0.001 | 0 / 0 |
+| two ways of reading in turn (30 ordered pairs) | 0 | 0 / 0 |
+| last level's right number ±1, 3, 4, 5; her own last number ±1, 4, 5; after a miss, the solve shown | 0.003 | 0 / 0 |
+
+Not added: "3 per bundle + 4" (the judge did not count her: no teacher would recognise the habit) and keep's 302 linear-total habits (only the standing-line counters were named, and they are the holders' acts).
+
+**Children the battery cannot bring under the line: listed, not asserted:**
+
+| child | named (all) | worst fade | worst door | why |
+|---|---|---|---|---|
+| bundles only, a bundle skipped, the second key one to the right | 0.050 | 0.119 (fade 2) | 0.158 (ttt) | two habits at once; the pad's edge (0 has no key to its right) puts her number on the mix-up's on rows no reading habit reaches, so `discriminatingRead` does not see her (her worst cell, f1 pL- ttt, is 10 of 10) |
+
+**Worst asserted non-holder, full sweep:** read 0 and 0; keep 0 and 0.
+
+**What it costs: the read holder.** "Each bundle read as four" is named in **0.182** of her sessions (full; gate 0.234), worst fade 0.328 (fade 3); before S3 0.797. Fade 1 serves only rows that no longer count, and the picker's band seldom serves the weak rows that do. The half-holder: 0.081 (was 0.324). Keep's three holders: 1.000 each, unchanged. The battery's positive control for the read holder is now a reported figure (it asserts only that she is still named, ≥ 0.1). A question to main: steer read to a row that counts after a first sighting.
+
 ## Gate 2 battery (2026-11-16: H1 and H4 built; answer 3's statistic; the battery passes)
 
 **Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`).** No rule or level of this mode changed: the discriminating levels of main's answers 1, 2 and 4 are kon/place's and kon/name's. Every child already acts differently from the mix-up on the levels where she is counted (H1: two numbers that differ; H4: two keep levels with other totals), so no tally child acts as the mix-up on a served level. **Corrected (2026-11-16, `dc-r8-gate2-shadow` S3): that sentence was false.** On rows 25, 31, 37, 43 and 49, "bundles only, a bundle skipped" types 4 × bundles, exactly the mix-up's number, and those sightings were counted (the second-reading judge's counted pair: 31→25, 43→35, 49→40). The discriminating level for numbers is now built: a read row counts as a sighting only where no reading habit of the battery (every way of reading with every counting slip: `tally.logic.ts` `READ_HABITS`, which the battery checks against its own children) types the mix-up's number there (`discriminatingRead`; elsewhere the sighting is neither remembered nor counted). Worst non-holder (full sweep): read 0.013 at the worst fade (bundles only with a bundle skipped, fade 2), 0.008 at the worst door sequence (tgg); keep 0 and 0. Holders as before: read 0.80 (half her levels 0.32), keep 1.00 each.
