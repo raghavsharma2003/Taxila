@@ -27,6 +27,8 @@ export const SEAM_TABLE = [
   ["missVerdict", "remediation", "beforeRemediation"],
   // (a return to an earlier card: after a then-card's verdict in the same turn, or opening a turn after another unit)
   ["verdict", "returnCard", "backTo"], ["missVerdict", "returnCard", "backTo"], ["closed", "returnCard", "backTo"], ["bridge", "returnCard", "backTo"], ["start", "returnCard", "backTo"],
+  // (the Hindi switch opens the turn it is asked on — said by the language pass, recorded here)
+  ["start", "hindiSwitch", "hindiSwitch"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
 ];
@@ -63,16 +65,23 @@ function jointMatchers(kit, lang, kinds = SEAM_JOINTS) {
 }
 
 /** The kind of one assembled part, for the table. */
+// (dc-r8-director23 record, main's 035 item 1: a miss verdict is recorded only where a miss word is said; a check-in is no aside; the
+// hook's greet-simpler is no verdict; the closing key turn's verdict is no point; the Hindi switch is in the record)
+const MISS_WORD = /(?<![\p{L}])(?:nahi|nahin|galat|not\s+(?:quite|yet|it|this)|that's\s+not)(?![\p{L}])/iu;
+const VERDICT_HEAD = /^(?:nahi,|nahin,|yeh jawab|abhi yeh|haan, sahi|haan, bilkul|bilkul sahi|bilkul theek|sahi jawab|not quite|not yet|yes, that|exactly right|that's right|(?:\S+\s){1,3}(?:sahi\s)?nahi(?:\s+hai)?[,.]|(?:\S+\s){1,3}sahi nahi)/iu;
+const CHECKIN_Q = /(?:theek hai|saaf hua|saaf hai|samajh aaya|samjhe|clear|make sense|got it)\s*[?？]\s*$/iu;
 function kindOf(p, i, list, info) {
   const t = norm(p.text);
+  if (info.greet && (p.part === "close" || p.part === "closed")) return "hook";
   switch (p.part) {
-    case "close": return info.miss && i === list.findIndex((q) => q.part === "close") ? "missVerdict" : "verdict";
+    case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
     case "bridge": return "bridge";
     case "aside":
       if (sentencesOf(t).some((x) => info.carriers?.find((m) => m.re.test(low(x)))?.kind === "asidePark")) return "park";
       if ((info.returnLine && low(t).includes(low(info.returnLine).slice(0, 30))) || sentencesOf(t).some((x) => info.carriers?.find((m) => m.re.test(low(x)))?.kind === "asideReturn")) return "return";
       if (AI_LINE.test(t)) return /[?？]\s*$/.test(t) ? "aiQuestion" : "aiLine";
+      if (CHECKIN_Q.test(t) && sentencesOf(t).length === 1) return "checkin";
       if (info.tryFirst && low(t).startsWith(low(info.tryFirst).slice(0, 20))) return "tryFirst";
       // (her reply to the child's aside, or to the child's answer to her return; any other aside part — a check-in, a split close's
       // question — is no reply)
@@ -82,6 +91,8 @@ function kindOf(p, i, list, info) {
     case "card": return info.returnCard ? "returnCard" : "card";
     default:
       if (info.tryFirst && low(t).startsWith(low(info.tryFirst).slice(0, 20))) return "tryFirst";
+      if (info.authoredEnd && i === 0 && VERDICT_HEAD.test(t)) return MISS_WORD.test(sentencesOf(t)[0] ?? "") ? "missVerdict" : "verdict";
+      if (CHECKIN_Q.test(t) && sentencesOf(t).length === 1) return "checkin";
       return info.remediation ? "remediation" : "point";
   }
 }
@@ -132,6 +143,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
       const s = seams.find((x) => x.form && x.joint === out[i].joint); if (s) s.form = out[i].text;
     }
   }
+  // (the Hindi switch, said at the turn's start, is in the record: its own seam, the joint it is)
+  if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch });
   return { list: out.map(({ joint, ...p }) => p), seams, jointsUsed: used, said };
 }
 
