@@ -218,7 +218,9 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
   const pick = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId)?.chanceMis ?? null;
   if (pick) {
-    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level) }].slice(-CHANCE_MEMORY);
+    // gate 2: a sighting no single ordinary slip could have made is kept as firm (the family's firmSighting)
+    const firm = firmOf(level, pick);
+    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level), ...(firm ? { firm: true } : {}) }].slice(-CHANCE_MEMORY);
     if (!seen) s2.nextFocus = pick;
   }
   const step = adaptAfter({ grade, level, s, beliefOf });
@@ -257,26 +259,59 @@ export function surfacesDiffer(a, b) {
 }
 /** the picks a session remembers (gate 2: kon/place's join needs three before the fourth) */
 export const CHANCE_MEMORY = 6;
+/**
+ * Gate 2, the per-session reading of law 3 (RULINGS-2026-11-15, "To Games, 2026-11-16"): what must be rare is a child named
+ * a mix-up she does not hold over one sitting. A session has no end of its own (/api/play/next can always be asked again,
+ * and every act signs the token afresh), so the session figure needs a count of levels: a pick whose family gives it a
+ * gate-2 spec (FamilyLogic.chanceRepeat) is named only on the session's first NAMING_LEVELS levels (its body's n, 0-based,
+ * set by the server). Every spec's session figure is proved over this many levels (the gate-2 tests); later levels of the
+ * session still grade right or wrong, and name no such pick.
+ */
+export const NAMING_LEVELS = 4;
 const differOn = (a, b, apart) => (!apart ? surfacesDiffer(a, b)
   : Array.isArray(a) && Array.isArray(b) && a.length === b.length && apart.every((i) => typeof a[i] === "string" && a[i] !== b[i]));
+/** a sighting as remembered: its surface (a key or parts) and whether it is firm; a bare surface is not firm */
+const sighting = (x) => (x && typeof x === "object" && !Array.isArray(x) && "surface" in x ? { surface: x.surface, firm: !!x.firm } : { surface: x, firm: false });
 /**
- * Gate 2: are the sightings enough to name a pick's mix-up? `prior` are the surfaces it was seen on before, `here` this
- * level's. With no spec (or the family's chanceRepeat has none for this pick): one prior on a surface that differs (the
- * shared law-3 rule, as before). With a spec: `sightings` levels in all (this one included) whose surfaces differ two by
- * two on the `apart` parts (every part when absent), and, with `cover`, not all the same on that part. Pure.
+ * Gate 2: are the sightings enough to name a pick's mix-up? `prior` are the sightings before (surfaces, or { surface, firm }),
+ * `here` this level's. With no spec (or the family's chanceRepeat has none for this pick): one prior on a surface that
+ * differs (the shared law-3 rule, as before). With a spec: `sightings` levels in all (this one included) whose surfaces
+ * differ two by two on the `apart` parts (every part when absent), and, with `cover`, not all the same on that part; with
+ * `firm`, that many are enough when one of them is firm (a sighting no single ordinary slip makes: the family's
+ * firmSighting). Pure.
  */
 export function repeatMet(prior, here, spec = null) {
   const need = Math.max(2, Number(spec?.sightings) || 2), apart = spec?.apart ?? null, cover = spec?.cover;
+  const needFirm = Math.max(2, Math.min(need, Number(spec?.firm) || need));
+  const all = prior.map(sighting), h = sighting(here);
   const part = (x) => (Array.isArray(x) ? x[cover] : x);
+  const enough = (chosen) => {
+    const set = [...chosen, h];
+    if (set.length < (set.some((x) => x.firm) ? needFirm : need)) return false;
+    return cover === undefined || new Set(set.map((x) => part(x.surface))).size > 1;
+  };
   const pick = (from, chosen) => {
-    if (chosen.length === need - 1) return cover === undefined || new Set([...chosen, here].map(part)).size > 1;
-    for (let i = from; i < prior.length; i++) {
-      const c = prior[i];
-      if ([...chosen, here].every((x) => differOn(x, c, apart)) && pick(i + 1, [...chosen, c])) return true;
+    if (enough(chosen)) return true;
+    if (chosen.length >= need - 1) return false;
+    for (let i = from; i < all.length; i++) {
+      const c = all[i];
+      if ([...chosen, h].every((x) => differOn(x.surface, c.surface, apart)) && pick(i + 1, [...chosen, c])) return true;
     }
     return false;
   };
   return pick(0, []);
+}
+/** the family's mal-rule id for a kit misconception on this level */
+const ruleOf = (level, kit) => Object.keys(level?.mal ?? {}).find((k) => level.mal[k] === kit) ?? null;
+/** gate 2: the family's spec for a pick (chanceRepeat, by goal and mal-rule), or null */
+export function repeatSpec(level, kit) {
+  const rule = ruleOf(level, kit);
+  try { return rule ? logicFor(level.family, level.mode)?.chanceRepeat?.[`${level.goal}:${rule}`] ?? null : null; } catch { return null; }
+}
+/** gate 2: is this level's sighting of the pick firm (no single ordinary slip makes it: FamilyLogic.firmSighting)? */
+function firmOf(level, kit) {
+  const rule = ruleOf(level, kit);
+  try { return !!rule && !!logicFor(level.family, level.mode)?.firmSighting?.(level, rule); } catch { return false; }
 }
 /**
  * Round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up from one pick among a few is not kept from that pick
@@ -289,13 +324,16 @@ export function nameOnRepeat(rows, s, level) {
   // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening
   // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows
   const unnamed = (r) => { const { chanceMis: _c, ...rest } = r; return rest; };
-  // gate 2: a pick whose pair is still over 1 in 10 needs more sightings (the family's chanceRepeat, by goal and mal-rule)
-  const specOf = (kit) => {
-    const rule = Object.keys(level?.mal ?? {}).find((k) => level.mal[k] === kit);
-    try { return rule ? logicFor(level.family, level.mode)?.chanceRepeat?.[`${level.goal}:${rule}`] ?? null : null; } catch { return null; }
+  // gate 2: a pick whose pair is still over 1 in 10 needs more sightings (the family's chanceRepeat, by goal and mal-rule),
+  // and is named only on the session's first NAMING_LEVELS levels (the count its session figure is proved over)
+  const late = !((Number(s?.n) || 0) < NAMING_LEVELS);
+  const named = (kit) => {
+    const spec = repeatSpec(level, kit);
+    if (spec && late) return false;
+    return repeatMet(prior.filter((p) => p?.mis === kit), { surface: here, firm: firmOf(level, kit) }, spec);
   };
   return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? r
-    : repeatMet(prior.filter((p) => p?.mis === r.chanceMis).map((p) => p.surface), here, specOf(r.chanceMis)) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
+    : named(r.chanceMis) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });

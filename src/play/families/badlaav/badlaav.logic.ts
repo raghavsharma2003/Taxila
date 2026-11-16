@@ -704,12 +704,12 @@ function generate(req: GenRequest): Candidate<BadlaavParams>[] {
 // ───────────────────────────── hidden, facts, board, grade ─────────────────────────────
 /** the words that would give the idea away are never said first (the teacher's line waits for the child's act) */
 const HIDDEN: Record<BadlaavGoal, string[]> = {
-  nishaan: ["new substance", "nayi cheez", "chemical", "physical", "only its state"],
-  ulta: ["cannot be reversed", "wapas nahi", "still paper", "new substance", "nayi cheez"],
-  ghol: ["dissolves", "ghulta", "needs heat", "still there", "still has mass"],
-  trikon: ["oxygen", "cuts off", "more air", "zyada hawa"],
-  raakh: ["carbon dioxide", "water vapour", "into the air", "not destroyed"],
-  jang: ["needs water", "oxygen and water", "paani chahiye", "not dirt"],
+  nishaan: ["new substance", "nayi cheez", "chemical", "physical", "only its state", "नई चीज़", "नई चीज", "नया पदार्थ", "रासायनिक", "भौतिक"],
+  ulta: ["cannot be reversed", "wapas nahi", "still paper", "new substance", "nayi cheez", "वापस नहीं", "नई चीज़", "नई चीज", "नया पदार्थ"],
+  ghol: ["dissolves", "ghulta", "needs heat", "still there", "still has mass", "घुलता", "घुलती", "गर्मी चाहिए"],
+  trikon: ["oxygen", "cuts off", "more air", "zyada hawa", "ऑक्सीजन", "ज़्यादा हवा", "ज्यादा हवा"],
+  raakh: ["carbon dioxide", "water vapour", "into the air", "not destroyed", "कार्बन डाइऑक्साइड", "जलवाष्प", "भाप", "हवा में", "नष्ट नहीं"],
+  jang: ["needs water", "oxygen and water", "paani chahiye", "not dirt", "पानी चाहिए", "ऑक्सीजन और पानी", "पानी और ऑक्सीजन"],
 };
 export function badlaavHidden(level: PlayLevel<unknown>): string[] {
   try { const v = validate(level); return v ? [...HIDDEN[v.params.goal]] : []; } catch { return []; }

@@ -15,9 +15,9 @@ A bundle is four standing lines with one line across them, and it is worth 5. A 
 
 ## Gate 2: evidence
 
-Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`): "stop listing slips. `keep` may name from one level (its two totals together need three slips). `read` names tally-four only when the mix-up's number is typed on two levels whose bundles and loose lines both differ." **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself.
+Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`): "stop listing slips. `keep` may name from one level (its two totals together need three slips). `read` names tally-four only when the mix-up's number is typed on two levels whose bundles and loose lines both differ." **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): what must be rare is a child named a mix-up she does not hold over one sitting, so the 1 in 10 is the chance over a whole session, not per pair. The pair rule was over that line (5 in 32 over three levels); read now names on three levels, or on two when one of them is *firm*, within the session's first four levels (below, "Read: per session").
 
-Branch `claude/r8-gate2-tally`. Every number below is computed by `tests/r8-games-stambh-tally.test.mjs` ("gate 2, keep", "gate 2, read") from the tally, the pad and the ways of reading a tally, not from the game's code, and asserted on every generated level (12 seeds × 3 fades: 269 keep levels) and every read row the level law serves.
+Branch `claude/r8-gate2-tally`; the per-session rule on `claude/r8-gate2-session`. Every number below is computed by `tests/r8-games-stambh-tally.test.mjs` ("gate 2, keep", "gate 2, read", "gate 2, read per session") from the tally, the pad and the ways of reading a tally, not from the game's code, and asserted on every generated level (12 seeds × 3 fades: 269 keep levels) and every read row the level law serves.
 
 **What counts as what.** A row has b bundles and s loose lines, n = 5b + s things. The mix-up's number is M = 4b + s = n − b.
 - **A way of reading** is how she reads a whole tally, the same on every level and every row: the right way (5b + s), or one of seven others: the loose lines dropped (5b), the loose lines doubled (5b + 2s), the line across as a sixth line (6b + s), the lines across alone (b), each group as one (b + s), each bundle as ten (10b + s), the loose lines alone (s). Because a way of reading repeats, no repeat can tell it from the mix-up, so the level law refuses the only row where a way of reading gives M by itself: the loose lines dropped when s = b (6, 12, 18, 24).
@@ -45,67 +45,85 @@ The level law serves keep only with bundles in at least two rows and one row of 
 | "five" (no line across anywhere): the slips | one per missing line across: at least 3 (every level has three groups of five) | — |
 | A blind guess, "five" (each stroke one of the two buttons at random) | at most (1/2)^15 = 1 in 32,768 (the smallest scene is 15 things) | under 1 in 10 |
 | One slip in EVERY row, the worst way of reading | at most 1 in 16 (7 + 11, 5 + 13, 5 + 11 with the loose lines dropped: 1 in 4 per row); 0 when read right (the two-bundle row is never one slip away) | under 1 in 10 |
+| **Per session** (accepted as proved, 2026-11-16; keep is not capped) | one ordinary slip: 0 on every level, so 0 over any session; a blind guess: 1 − (1 − 1/10,000)^n over n levels, under 1 in 10 up to 1,053 keep levels | under 1 in 10 |
 
 So keep names tally-four from its first check, as before (`sign=counted` or `sign=five`).
 
-### Read: named only on two levels
+### Read: named on three levels, or two with a firm one (per session)
 
-One read level is one typed number. The table gives, for every row the level law serves (16 to 49; 18 and 24 refused), the chance that one slip lands on the mix-up's number.
+One read level is one typed number. The table gives, for every row the level law serves (16 to 49; 18 and 24 refused), the chance that one slip lands on the mix-up's number. A row where no slip, read any of the eight ways, lands on it is **firm** (the last column): only a blind guess gives the mix-up's number there, 1 in 100. Every other row is **weak**.
 
-| n | Bundles + loose | M | One slip, read right | Worst way of reading | One slip, worst way |
-|---|---|---|---|---|---|
-| 16 | 3 + 1 | 13 | 0 | line across as a sixth | 1 in 6 |
-| 17 | 3 + 2 | 14 | 0 | loose lines dropped | 1 in 4 |
-| 19 | 3 + 4 | 16 | 0 | loose lines dropped | 1 in 4 |
-| 20 | 4 + 0 | 16 | 0 | none lands | 0 |
-| 21 | 4 + 1 | 17 | 0 | loose lines doubled | 1 in 6 |
-| 22 | 4 + 2 | 18 | 0 | none lands | 0 |
-| 23 | 4 + 3 | 19 | 0 | loose lines dropped | 1 in 4 |
-| 25 | 5 + 0 | 20 | 1 in 4 | right | 1 in 4 |
-| 26 | 5 + 1 | 21 | 1 in 6 | right | 1 in 6 |
-| 27 | 5 + 2 | 22 | 1 in 6 | right | 1 in 6 |
-| 28 | 5 + 3 | 23 | 1 in 6 | right | 1 in 6 |
-| 29 | 5 + 4 | 24 | 1 in 6 | loose lines dropped | 1 in 4 |
-| 30 | 6 + 0 | 24 | 0 | none lands | 0 |
-| 31 | 6 + 1 | 25 | 0 | loose lines dropped | 1 in 4 |
-| 32 | 6 + 2 | 26 | 0 | each bundle as ten | 1 in 9 |
-| 33 | 6 + 3 | 27 | 0 | none lands | 0 |
-| 34 | 6 + 4 | 28 | 0 | loose lines doubled | 1 in 13 |
-| 35 | 7 + 0 | 28 | 0 | none lands | 0 |
-| 36 | 7 + 1 | 29 | 0 | none lands | 0 |
-| 37 | 7 + 2 | 30 | 0 | loose lines dropped | 1 in 4 |
-| 38 | 7 + 3 | 31 | 1 in 13 | loose lines doubled | 1 in 10 |
-| 39 | 7 + 4 | 32 | 1 in 13 | right | 1 in 13 |
-| 40 | 8 + 0 | 32 | 0 | none lands | 0 |
-| 41 | 8 + 1 | 33 | 0 | none lands | 0 |
-| 42 | 8 + 2 | 34 | 0 | loose lines doubled | 1 in 10 |
-| 43 | 8 + 3 | 35 | 0 | loose lines dropped | 1 in 4 |
-| 44 | 8 + 4 | 36 | 0 | none lands | 0 |
-| 45 | 9 + 0 | 36 | 0 | none lands | 0 |
-| 46 | 9 + 1 | 37 | 0 | loose lines doubled | 1 in 10 |
-| 47 | 9 + 2 | 38 | 0 | none lands | 0 |
-| 48 | 9 + 3 | 39 | 0 | each bundle as ten | 1 in 13 |
-| 49 | 9 + 4 | 40 | 1 in 12 (9 → 0 on the pad) | loose lines dropped | 1 in 4 |
+| n | Bundles + loose | M | One slip, read right | Worst way of reading | One slip, worst way | Kind, per session |
+|---|---|---|---|---|---|---|
+| 16 | 3 + 1 | 13 | 0 | line across as a sixth | 1 in 6 | weak: three needed |
+| 17 | 3 + 2 | 14 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 19 | 3 + 4 | 16 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 20 | 4 + 0 | 16 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 21 | 4 + 1 | 17 | 0 | loose lines doubled | 1 in 6 | weak: three needed |
+| 22 | 4 + 2 | 18 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 23 | 4 + 3 | 19 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 25 | 5 + 0 | 20 | 1 in 4 | right | 1 in 4 | weak: three needed |
+| 26 | 5 + 1 | 21 | 1 in 6 | right | 1 in 6 | weak: three needed |
+| 27 | 5 + 2 | 22 | 1 in 6 | right | 1 in 6 | weak: three needed |
+| 28 | 5 + 3 | 23 | 1 in 6 | right | 1 in 6 | weak: three needed |
+| 29 | 5 + 4 | 24 | 1 in 6 | loose lines dropped | 1 in 4 | weak: three needed |
+| 30 | 6 + 0 | 24 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 31 | 6 + 1 | 25 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 32 | 6 + 2 | 26 | 0 | each bundle as ten | 1 in 9 | weak: three needed |
+| 33 | 6 + 3 | 27 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 34 | 6 + 4 | 28 | 0 | loose lines doubled | 1 in 13 | weak: three needed |
+| 35 | 7 + 0 | 28 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 36 | 7 + 1 | 29 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 37 | 7 + 2 | 30 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 38 | 7 + 3 | 31 | 1 in 13 | loose lines doubled | 1 in 10 | weak: three needed |
+| 39 | 7 + 4 | 32 | 1 in 13 | right | 1 in 13 | weak: three needed |
+| 40 | 8 + 0 | 32 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 41 | 8 + 1 | 33 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 42 | 8 + 2 | 34 | 0 | loose lines doubled | 1 in 10 | weak: three needed |
+| 43 | 8 + 3 | 35 | 0 | loose lines dropped | 1 in 4 | weak: three needed |
+| 44 | 8 + 4 | 36 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 45 | 9 + 0 | 36 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 46 | 9 + 1 | 37 | 0 | loose lines doubled | 1 in 10 | weak: three needed |
+| 47 | 9 + 2 | 38 | 0 | none lands | 0 | **firm**: a pair with it names |
+| 48 | 9 + 3 | 39 | 0 | each bundle as ten | 1 in 13 | weak: three needed |
+| 49 | 9 + 4 | 40 | 1 in 12 (9 → 0 on the pad) | loose lines dropped | 1 in 4 | weak: three needed |
 
-Many rows are over 1 in 10 alone (1 in 4 at worst), so **one read level names nothing**: its typed number is a pick at chance weight. The two-level rule: the mix-up's number typed on a first level, and again on a second level whose bundles **and** loose lines both differ. Two slips are independent, so the chance is the product. Over every pair of servable rows whose bundles and loose lines both differ (350 pairs), the same way of reading on both:
+Many rows are over 1 in 10 alone (1 in 4 at worst), so **one read level names nothing**: its typed number is a pick at chance weight. The pair figures below were the evidence for the old two-level rule; read per session they are not enough ("Read: per session", after them). Two slips are independent, so the chance is the product. Over every pair of servable rows whose bundles and loose lines both differ (350 pairs), the same way of reading on both:
 
-| Read, two levels | Chance | Law 3's line |
+| Read, two levels (per pair: the old rule) | Chance | Law 3's line, per pair |
 |---|---|---|
 | The worst pair: 17 (3 + 2) then 23 (4 + 3), the loose lines dropped | 1/4 × 1/4 = **1 in 16** | under 1 in 10 |
 | How 17 gets 1 in 4: dropping the loose lines reads 15; the counting slips open read that way are a bundle skipped (10), a bundle counted twice (20), a stroke of a bundle missed (14 = M) or counted again (16): 1 of 4. Typing 15: 25, 75, 85, 14 (= M), 16, 10, 51, 1, 5: 1 of 9. The larger is 1 in 4. 23 the same way: 20 read; 15, 25, 19 (= M), 21: 1 in 4 | | |
 | The judges' cases: 49 then 37 (the loose lines dropped), 49 then 27 (read right: 9 → 0 on the pad, then a bundle skipped) | 1/4 × 1/4 = 1 in 16; 1/12 × 1/6 = 1 in 72 | under 1 in 10 |
 | A blind guess on both | 1/100 × 1/100 = 1 in 10,000 | under 1 in 10 |
 
-Why both must differ (the ruling): a level with the same bundles or the same loose lines repeats half of the tally, so a slip tied to that half can repeat with it, and the two slips are no longer independent. Every pair in the table changes both. The server keeps read's surface as two parts, its bundles and its loose lines (`tallySurface`), and counts a second sighting only when every part differs (`server/play/levels.js`, `surfacesDiffer`). It remembers the last four picks in the session.
+Why both must differ (the ruling): a level with the same bundles or the same loose lines repeats half of the tally, so a slip tied to that half can repeat with it, and the two slips are no longer independent. Every pair in the table changes both. The server keeps read's surface as two parts, its bundles and its loose lines (`tallySurface`), and counts a sighting only when every part differs from every other sighting's (`server/play/levels.js`, `surfacesDiffer`, `repeatMet`). It remembers the last six picks in the session (`CHANCE_MEMORY`), more than the four levels a session names from.
+
+#### Read: per session
+
+**How many read levels a session serves.** A session has no end of its own: `/api/play/next` serves another level whenever it is asked, and every act signs the session token afresh, so nothing in how a session serves levels bounds the count. The bound is therefore set: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4` in `server/play/levels.js`, read from the session body's level count `n`, which only the server sets). Later levels of the session still grade right or wrong and still play out; they name no pick. Every figure below is over n = 4 read levels (a session that serves another game first has fewer).
+
+**The rule** (`tallyLogic.chanceRepeat` `read:tally-four`: three sightings, or two when one is firm; `firmSighting`): tally-four is named when the mix-up's number has been typed on **three** read levels whose bundles and loose lines differ two by two, or on **two** such levels when **one of them is a firm row**. Of main's two ways this is (b), "two one-slip levels need a third". (a), "a one-slip level counts only beside one that is not", is also under the line (1 in 114 at worst), but it names strictly less: it never names a child whose levels were all weak rows (every fade-1 row is weak), while (b) names everything (a) names and three weak sightings too. Firm rows: 20, 22, 30, 33, 35, 36, 40, 41, 44, 45, 47 (fades 2 and 3); the law's own test (`oneSlipFromMixup`) is checked against this table on every servable row.
+
+**The arithmetic.** Each of the 4 levels lands on the mix-up's number independently, a weak row with chance w, a firm row with chance f; every split of the four into firm and weak rows is tried and the worst is printed. Surfaces are left out (the parts that must differ), so these are upper bounds for any order of rows.
+
+| Read, per session (n = 4 levels) | The worst split | Chance | Law 3's line |
+|---|---|---|---|
+| The child who slips on every level (the worst way of reading, the worst rows: w = 1/4; a firm row only by a blind guess, f = 1/100) | four weak rows, three or four of them land: 4 × (1/4)³ × (3/4) + (1/4)⁴ = 12/256 + 1/256 | **13 in 256 = 1 in 19.7** | under 1 in 10 |
+| (the same child, one firm row among the four) | 1/100 × (1 − (3/4)³) + 99/100 × (1/4)³ | 1 in 47 | under |
+| The blind guesser (every row 1 in 100) | three firm rows and one weak: two or more land, one of them firm | **1 in 1,689** | under 1 in 10 |
+| *Before:* the pair rule over three levels (main's figure) | two or more of three land: 3 × (1/4)² × (3/4) + (1/4)³ | 5 in 32 = 1 in 6.4 | **over** |
+| *Before:* the pair rule over four levels (and it grew without end: there was no cap) | 1 − (3/4)⁴ − 4 × (1/4) × (3/4)³ | 67 in 256 = 1 in 3.8 | **over** |
+| Why the cap is four: this rule over five levels | three or more of five weak land: 106 in 1,024 | 1 in 9.7 | over |
 
 **What changed in the level law.** The slip list (`TALLY_SLIPS`, `slipsTo`, `MIN_SLIPS`) is gone. Kept: no row with as many loose lines as bundles (a way of reading, not an accident: 6, 12, 18, 24); keep's bundles in two rows with a row of two (the three slips above). Dropped from read, because the chance table covers them: three bundles or more (the fades still serve 16 and up), never five bundles, at least one loose line. **Read now serves 20, 25–30, 35, 40 and 45 too** (fades 2 and 3; fade 1 is still 16, 17, 19). No view code changed (the new rows are drawn as every row is); the play cert was run again for `stambh/tally` (16 samples, every size passing), and the layout tests ran on every generated level, these included.
 
 **What changes when main switches naming on** (removes `stambh/tally` from `NAMING_OFF` in `shared/play.ts`; no screen changes):
 - keep: a first check with either sign reaches the teacher as tally-four from that level (`mal=tally-four`, `sign=counted|five`, the evidence row named at the game weight).
-- read: a first check on the mix-up's number reaches the lesson as an ordinary miss: no mix-up in the evidence row, the facts row, the seam or the trail. The session remembers it (`chance`, with the level's two parts). When she types the mix-up's number again on a level whose bundles and loose lines both differ, that level's evidence row is named tally-four at the game weight (`named: "repeat"`) and the trail carries it.
-- Until then (naming off) neither goal names anything, and nothing is remembered. Tested both ways: "gate 2, the server's repeat rule with naming on".
+- read: a first check on the mix-up's number reaches the lesson as an ordinary miss: no mix-up in the evidence row, the facts row, the seam or the trail. The session remembers it (`chance`, with the level's two parts, and `firm` on a firm row). When, within the session's first four levels, she has typed it on three levels whose bundles and loose lines differ two by two, or on two such levels one of them firm, that level's evidence row is named tally-four at the game weight (`named: "repeat"`) and the trail carries it.
+- Until then (naming off) neither goal names anything, and nothing is remembered. Tested both ways: "gate 2, the server's repeat rule with naming on" (two weak sightings name nothing, a third names it, a firm one names on the second, a level past the session's fourth names nothing).
 
-**For main, not decided here:** the 1 in 16 is per pair, as ruled. A session that serves k read levels has k(k − 1)/2 pairs. For a child who slips on every one of them, at the worst rows and in the worst way, the chance that some two land grows with k: three levels (17, 23, 29, the loose lines dropped, 1 in 4 each) give 5 in 32. Whether the 1 in 10 line is per pair or per session is main's to rule.
+**Ruled 2026-11-16: per session.** The 1 in 16 above is per pair; three levels at the worst rows gave 5 in 32 that some two land. The rule above replaces the pair rule: 13 in 256 per session at worst, over the four levels a session names from.
 
 ## Before gate 2: the slip list (replaced by "Gate 2: evidence" above; kept as the round 4 record)
 
@@ -209,7 +227,7 @@ The child who draws five standing lines *and* counts each group as 4 also has no
   - In `keep`, no: a row passes only when its marks are bundled, so typing numbers can't make a row of plain standing lines right.
   - In `read`, she may check again after a miss, as in every Taxila game. Only a correct *first* check counts as first-try evidence. The mix-up is recorded only from her *first* check. No check's screen shows the answer. The play-out shows what each bundle is worth and then fades. Only the first miss shows which way her number is off.
 - **What the teacher receives.** The game reports to the lesson `bundles`, the mix-up if named, and in `keep` which sign it was (`sign=five` when no line across was drawn anywhere; `sign=counted` when lines across were drawn and each row holding bundles is short by exactly its own bundles). It also reports `crossesMissing` (keep) and her `answer`. The game never speaks.
-- **When the mix-up is named** (gate 2, above): `keep` from one check (three slips or more; a blind guess far under 1 in 10); `read` only on a second level whose bundles and loose lines both differ (one level alone can be one slip away, 1 in 4 at worst). Today both run with naming off.
+- **When the mix-up is named** (gate 2, above): `keep` from one check (three slips or more; a blind guess far under 1 in 10); `read` on three levels whose bundles and loose lines differ two by two, or two when one is a firm row, within the session's first four levels (one level alone can be one slip away, 1 in 4 at worst; per session at worst 13 in 256). Today both run with naming off.
 - **Sizes.**
   - In `keep`, a row holds up to 14 strokes (two bundles and four), and on a 360 px phone it lies on **one line** in both phases.
   - In `read`, a row holds up to 49 (nine bundles and four). At 360 the largest read row takes two lines: four bundles on the first, and five bundles then the four loose lines on the second. The loose lines stand beyond the end of the first line, so **no loose line is under a bundle**. Between the two lines of strokes there is at least half a stroke's height and at least 26 px, so the count's digits over the second line (16 px, standing 3–19 px over their own strokes) stay clear of the first line's strokes, nearer their own bundles than the ones above (`read-largest-360x640`, `read-largest-mal-360x640`). No group is split across lines.

@@ -2,6 +2,23 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+## 2026-11-16, gate 2 read per session: stambh/tally, kon/place, kon/name (on `claude/r7-games`: `6fc3d0cee` tally, `87c7bbe3d` place, `2817ad776` name, plus this entry; Hindi key words `09f7c8369` before them)
+
+**Done (naming is still off, `NAMING_OFF` untouched):** law 3's line read per session, as ruled (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16").
+- **The number of levels.** Nothing in how a session serves levels bounds it (`/api/play/next` always serves; each act re-signs the token), so the server sets it: `NAMING_LEVELS = 4` (`server/play/levels.js`). A pick with a gate-2 spec (`chanceRepeat`) is named only on the session's first four levels (the body's `n`); later levels grade right or wrong and name no such pick. Every figure below is over those four, computed exactly (`tests/_session-figure.mjs`; surfaces left out, so upper bounds).
+- **stambh/tally read:** main's way (b). Three sightings whose bundles and loose lines differ two by two, or two when one is a **firm** row, where no single slip, read any way, gives the mix-up's number (`firmSighting`, `oneSlipFromMixup`; rows 20, 22, 30, 33, 35, 36, 40, 41, 44, 45, 47, checked against the proof's own slip table). One-slip child: 67/256 → **13/256 (1 in 19.7)**. Blind guesser: 1 in 1,689. (a) would be 1 in 114, but it never names a child whose rows were all weak, and every fade-1 row is weak. keep is unchanged.
+- **kon/place:** named from one level, 1 − (1 − p)⁴ was over for vertex-off (1 in 3.1: a drop that misses), wrong-scale in measure (1 in 2.9: a typing slip at a reading the law names at, 1 in 10) and in draw (1 in 9.4: a blind dot). All four mix-ups are now picks (chance weight, `chanceMis`): vertex-off, centre-on-arm and wrong-scale are named on a second level that differs (draw: another asked size), join-wrong-end on its fourth. Now: vertex-off 1 in 21.9, centre-on-arm 1 in 499, wrong-scale 1 in 19.1 (measure) and 1 in 227 (draw), join 1 in 16. centre-on-arm was under from one level (1 in 13.9), but the cap holds only picks, and at six levels it passes 1 in 10, so it is a pick too. The moments and the play-out are unchanged; `placed=off` still reaches the teacher.
+- **kon/name:** on the second occurrence, say was 1 in 7.6 and find 1 in 5.5 (still over at three levels). Now named on the **third**: say 1 in 61.7, find and both together 1 in 36.8.
+- Packets: each "Gate 2: evidence" has the per-session column, the n and the arithmetic, and the lines that said otherwise are corrected. No rendering changed and no served level changed, so no re-cert.
+
+**Next:** the judge on the three tables; then the laws-audit list.
+
+**Questions for main:**
+1. `NAMING_LEVELS = 4` is the bound I set; nothing measured says how many levels a sitting holds. Four keeps join-wrong-end at its existing four (four of four) and lets tally use (b). At five, (b) is 1 in 9.7 (over) and the join would need five of five. Accept four?
+2. The cap applies only to picks with a gate-2 spec (these three modes). Other families' picks (the shared "one prior on another surface" rule, e.g. `kon/ends`, `aakash`, `chhaano`) are not yet read per session. Many are one pick among two to five (1 in 2 to 1 in 5 a level), and a second sighting over four levels is then over the line. Do them family by family, or put a default spec (three sightings) on every pick now?
+3. The figure is per session; a child can start a new session (`/api/play/start`) and the count starts again. Is per session the unit you want, or per child per day?
+4. join-wrong-end is now named only when all four of a session's first four levels are draw levels with it. In practice that is rare. The drawn ruler line (a constructed act, gate 1 again) remains the way to make it nameable.
+
 ## 2026-11-16, gate 2 for kon/name: say and find each name on the second occurrence, faint solves, Wapas (branch `claude/r8-gate2-name`, from `db0ac72d1`)
 
 **Done (this push; naming is still off, `NAMING_OFF` untouched):** the evidence rule for kon/name, worked out and asserted over every generated level (621 say, 1,280 find) in the new `tests/r8-games-kon-name-gate2.test.mjs`. The packet's "Gate 2: evidence" holds the tables and answers the five "kept for gate 2" items.

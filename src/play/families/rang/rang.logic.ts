@@ -494,10 +494,10 @@ function generate(req: GenRequest): Candidate<RangParams>[] {
 // ───────────────────────────── hidden, facts, board, grade ─────────────────────────────
 /** the words that would give the idea away are never said first (the teacher's line waits for the child's act) */
 const HIDDEN: Record<RangGoal, string[]> = {
-  litmus: ["turns red", "turns blue", "laal ho", "neela ho", "change neither"],
-  desi: ["turns red", "green", "hara", "dark pink", "haldi pehle"],
-  boond: ["green", "hara", "too much", "zyada base", "dilute"],
-  ilaaj: ["baking soda", "antacid", "milk of magnesia", "chuna", "lime"],
+  litmus: ["turns red", "turns blue", "laal ho", "neela ho", "change neither", "लाल हो", "नीला हो"],
+  desi: ["turns red", "green", "hara", "dark pink", "haldi pehle", "हरा", "हरी", "गहरा गुलाबी", "हल्दी पहले"],
+  boond: ["green", "hara", "too much", "zyada base", "dilute", "हरा", "हरी", "ज़्यादा क्षार", "ज्यादा क्षार", "पतला"],
+  ilaaj: ["baking soda", "antacid", "milk of magnesia", "chuna", "lime", "बेकिंग सोडा", "एंटासिड", "मिल्क ऑफ़ मैग्नीशिया", "चूना"],
 };
 export function rangHidden(level: PlayLevel<unknown>): string[] {
   try { const v = validate(level); return v ? [...HIDDEN[v.params.goal]] : []; } catch { return []; }

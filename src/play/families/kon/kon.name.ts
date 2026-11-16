@@ -11,8 +11,9 @@
 // Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so its first-letter pick is graded at chance
 // weight as chanceMis (the central law-3 rule: find is a oneDecision goal), never on her record from one tap. Gate 2 (night
 // rulings 2026-11-11, rulings 2026-11-15): say's name is a pick too (three random taps give a vertex-first or vertex-last
-// name 1 time in 6), so it names vertex-name only on its second occurrence, on a level with another figure and other
-// letters (nameSurface); a faint solve (nameFaint) enters at chance weight and discriminates nothing. Figures: the
+// name 1 time in 6), so it names vertex-name only on a repeat, on levels with other figures and other letters (gate 2 per
+// session, 2026-11-16: the third occurrence within the session's first four levels; konLogic.chanceRepeat; nameSurface);
+// a faint solve (nameFaint) enters at chance weight and discriminates nothing. Figures: the
 // two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
 // crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
@@ -191,8 +192,8 @@ function commitFind(p: NameParamsLike, s: NameState, mal: Record<string, string>
   const f: Facts = { name: spell(p, nameOf(w, p.ord ?? 0)), picked: spell(p, nameOf(c)) };
   if (k === want) return { nm: s, commit: { kind: "solved", done: true, facts: f } };
   // one tap among five (law 3): the first-letter pick plays out its signature, and the grade (find is a oneDecision goal)
-  // keeps it at chance weight as chanceMis, never on her record from one tap; the server names it on a repeat on a level
-  // with other letters (server/play/levels.js nameOnRepeat, kon surfaceOf). Until then nothing about it reaches the
+  // keeps it at chance weight as chanceMis, never on her record from one tap; the server names it on a repeat (the third, gate
+  // 2 per session) on levels with other letters (server/play/levels.js nameOnRepeat, kon surfaceOf). Until then nothing about it reaches the
   // lesson: no sign in the facts, no seam, no trail entry (server/play/routes.js, grade.js)
   if ("vertex-name" in mal && k === vertexNamePick(p)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, shown: "her_arc" } } };
   return { nm: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_arc" } } };

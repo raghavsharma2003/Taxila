@@ -536,12 +536,12 @@ function generate(req: GenRequest): Candidate<AakashParams>[] {
 // ───────────────────────────── hidden, facts, board, grade ─────────────────────────────
 /** the words that would give the idea away are never said first (the teacher's line waits for the child's act) */
 const HIDDEN: Record<AakashGoal, string[]> = {
-  din: ["the earth turns", "earth spins", "prithvi ghoomti", "west to east", "pashchim se poorab"],
-  saal: ["one spin", "ek chakkar", "go round", "once round", "poora chakkar"],
-  jhuk: ["tilted towards", "jhuka hua", "same way", "closest", "paas"],
-  dhoop: ["straight", "seedhi", "slant", "tirchhi", "spread"],
-  chaaya: ["in line", "ek line", "between", "beech mein"],
-  kab: ["in line", "ek line", "above", "below", "upar", "neeche"],
+  din: ["the earth turns", "earth spins", "prithvi ghoomti", "west to east", "pashchim se poorab", "पृथ्वी घूमती", "पश्चिम से पूर्व", "पश्चिम से पूरब"],
+  saal: ["one spin", "ek chakkar", "go round", "once round", "poora chakkar", "एक चक्कर", "पूरा चक्कर"],
+  jhuk: ["tilted towards", "jhuka hua", "same way", "closest", "paas", "झुका हुआ", "झुकी हुई", "एक ही ओर", "एक ही तरफ़"],
+  dhoop: ["straight", "seedhi", "slant", "tirchhi", "spread", "सीधी", "तिरछी", "फैली"],
+  chaaya: ["in line", "ek line", "between", "beech mein", "एक रेखा", "एक सीध", "बीच में"],
+  kab: ["in line", "ek line", "above", "below", "upar", "neeche", "एक रेखा", "एक सीध", "ऊपर", "नीचे"],
 };
 export function aakashHidden(level: PlayLevel<unknown>): string[] {
   try { const v = validate(level); return v ? [...HIDDEN[v.params.goal]] : []; } catch { return []; }
