@@ -25,9 +25,10 @@ import { readsAcrossAll } from "../src/play/families/kon/kon.name.ts";
 
 const S = sweep();
 const KIT = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say").misMap["vertex-name"];
-// (discriminating say levels, as a session steered to one is served them: dc-r8-gate2-discriminating-level, answer 2)
+// (discriminating say levels, as a session steered to one is served them: dc-r8-gate2-discriminating-level, answer 2; gate 2,
+// H7: kon/name's space cannot be enumerated, so the gate draws them from four seeds a fade and HABIT_FULL=1 from 200)
 const SAY = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say");
-const LEVELS_D = [1, 2, 3].flatMap((fade) => [1, 7, 42, 99].flatMap((seed) => konLogic.generate({ family: "kon", mode: "name", goal: "say", topicId: SAY.topicId, skillId: SAY.skillId, classLevel: 6, fade, mis: {}, misMap: SAY.misMap, grammar: SAY.grammar, recent: ["name:say:0:50:50:0:0"], seed, focus: KIT }).map((c) => konLogic.validate(c.level)).filter((l) => l && readsAcrossAll(l.params))));
+const LEVELS_D = [1, 2, 3].flatMap((fade) => (S.full ? Array.from({ length: 200 }, (_, i) => 1 + 13 * i) : [1, 7, 42, 99]).flatMap((seed) => konLogic.generate({ family: "kon", mode: "name", goal: "say", topicId: SAY.topicId, skillId: SAY.skillId, classLevel: 6, fade, mis: {}, misMap: SAY.misMap, grammar: SAY.grammar, recent: ["name:say:0:50:50:0:0"], seed, focus: KIT }).map((c) => konLogic.validate(c.level)).filter((l) => l && readsAcrossAll(l.params))));
 let RES = null, OLD = null, over = [];
 // the negative control's children, run under the rules from before H3
 const OLD_KIDS = new Set(["slip:swap 1-2", "slip:swap 2-3", "slip:miss 1, added last", "slip:miss 2, added last", "blind", ...Array.from({ length: 8 }, (_, k) => `read:${k}`)]);

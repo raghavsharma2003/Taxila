@@ -3,7 +3,7 @@
 // slip produces more than 1 time in 10 names nothing by itself.
 //
 // Every number in the packet's "Gate 2: evidence" section is computed here, over every generated measure and draw level
-// (fades 1-3, eight seeds, the coverage's own kit map), from the board, the protractor, the pad as the view lays it out and
+// (gate 2, H7: every level the generator can make, enumerated, 2,510; the coverage's own kit map), from the board, the protractor, the pad as the view lays it out and
 // the law's own predicates (isVertexOff / isCentreOnArm / placement), and asserted. With KON_GATE2_PRINT=<file> the tables
 // are written to that file as JSON (the packet is printed from them).
 //
@@ -22,7 +22,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, baseDir, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
+import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, PLACE_TILTS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, baseDir, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placeLevelOf, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
 import { env } from "../src/play/core/pick.ts";
 import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, repeatSpec, surfaceOf, surfacesDiffer, CHANCE_MEMORY, NAMING_LEVELS } from "../server/play/levels.js";
 import { atLeast, fromOne, oneIn } from "./_session-figure.mjs";
@@ -38,7 +38,8 @@ const COA = "c6-maths-ch02-t03-m-centre-on-arm";
 const req = (goal, seed, fade) => ({ family: "kon", mode: "place", goal, topicId: "c6-maths-ch02-t03", skillId: PE(goal).skillId, classLevel: 6, fade, mis: {},
   misMap: { ...PE(goal).misMap, "centre-on-arm": COA }, grammar: PE(goal).grammar, recent: [], seed });
 const SEEDS = [1, 7, 42, 99, 123, 512, 777, 2024];
-function all(goal) {
+/** levels the generator serves from eight seeds at each fade (the join's order is the served level's seed: joinTable) */
+function sampled(goal) {
   const seen = new Set(), out = [];
   for (const fade of [1, 2, 3]) for (const sd of SEEDS) for (const c of konLogic.generate(req(goal, sd, fade))) {
     const lv = konLogic.validate(c.level), k = JSON.stringify(lv.params);
@@ -46,7 +47,29 @@ function all(goal) {
   }
   return out;
 }
-const LEVELS = { measure: all("measure"), draw: all("draw") };
+const SAMPLED = { measure: sampled("measure"), draw: sampled("draw") };
+// Gate 2, H7 (RULINGS-2026-11-16-gate2.md: "kon/place over every key the generator makes"): every level the generator can
+// make, by enumerating its draws (kon.place.ts placeLevelOf, the function generatePlace calls): every key θ, both
+// orientations, every tilt any fade draws (a steered fade-1 level takes fade 2's), at every fade (the scale), the first
+// accepted on a grid of the continuous draws (nudge, drop, the resting protractor's x0 and r0). Every table here depends on
+// the key, the tilt, the orientation and the tolerances, not on where on the board the figure sits, so one figure per
+// signature and fade is every level the tables can see. Cross-checked: every sampled level's signature is in the set (and
+// 742,987 levels over 3,000 seeds × every fade, both steers, 2026-11-16: none outside it). 2,510 levels (was 8 seeds: the
+// keys 60, 65, 70 and 160 were outside the set; they reached 719 of these 2,510).
+const NUDGE = [0, -12, 11.99, -6, 6], DROP = [0, 12, 23.99, 6, 18], X0 = [160, 140, 180], R0 = [0, -10, 10];
+function every(goal) {
+  const g = PE(goal).grammar ?? {}, tmpl = SAMPLED[goal][0], out = [];
+  for (const fade of [1, 2, 3]) for (let theta = 20; theta <= 160; theta += 5) for (const mirror of [false, true]) for (const tilt of PLACE_TILTS(fade, true)) {
+    let got = null;
+    for (const drop of DROP) { for (const nudge of NUDGE) { for (const x0 of X0) { for (const r0 of R0) { got = placeLevelOf(goal, g, fade, { theta, mirror, tilt, nudge, drop, x0, r0 }); if (got) break; } if (got) break; } if (got) break; } if (got) break; }
+    if (!got) continue;
+    const lv = konLogic.validate({ ...tmpl, fade, levelId: `${got.sig}:f${fade}`, params: got.params });
+    assert.ok(lv, `${got.sig} f${fade}: the law takes it`);
+    out.push({ ...lv, sig: got.sig });
+  }
+  return out;
+}
+const LEVELS = { measure: every("measure"), draw: every("draw") };
 const at = ([x, y], h, r) => { const [c, s] = dir(h); return [x + r * c, y + r * s]; };
 const pose = ([x, y], rot) => ({ x, y, rot: norm(rot) });
 
@@ -174,7 +197,8 @@ function scaleTable(p) {
 // ───────────────────────────── join-wrong-end: one of two buttons ─────────────────────────────
 const SPEC = konLogic.chanceRepeat?.["draw:join-wrong-end"];
 function joinTable() {
-  const draws = LEVELS.draw;
+  // (which button comes first is the served level's seed, a coin, not its key: the sampled levels, with their seeds)
+  const draws = SAMPLED.draw;
   const aFirst = draws.filter((l) => joinAFirst(l.seed)).length;
   const k = SPEC.sightings;
   return {
@@ -239,6 +263,22 @@ test("gate 2, the pieces the proof stands on: the pad as the view lays it out; t
   assert.ok(PD - VO_BAND > TOL_PX + 1, "one nudge from a placement never reaches the band");
   // centre-on-arm's nearest band (the corner on O) is √(PR² + PD²) − tol = 96.7 px from O
   assert.ok(Math.hypot(PR, PD) - TOL_PX > TOL_PX + 1);
+});
+
+test("gate 2, H7: the tables run over every level the generator can make (every key, tilt, orientation and fade); every sampled level is one of them", () => {
+  const sig = (l) => `${l.params.goal}:${l.params.theta}:${l.params.start}:${l.params.mirror ? "m" : ""}:${l.params.scale}`;
+  const all = new Set([...LEVELS.measure, ...LEVELS.draw].map(sig));
+  for (const l of [...SAMPLED.measure, ...SAMPLED.draw]) assert.ok(all.has(sig(l)), `${l.levelId}: sampled but not enumerated`);
+  const keys = (goal) => [...new Set(LEVELS[goal].map((l) => l.params.theta))].sort((a, b) => a - b);
+  // (the judge's keys outside the old set: 60 both goals, 65 draw, 70 and 160 measure)
+  for (const k of [60, 65, 70, 160]) assert.ok(keys("measure").includes(k), `measure ${k}`);
+  for (const k of [60, 65]) assert.ok(keys("draw").includes(k), `draw ${k}`);
+  assert.deepEqual(keys("measure"), [20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 105, 110, 115, 120, 125, 130, 135, 145, 150, 155, 160]);
+  assert.deepEqual(keys("draw"), [20, 25, 30, 35, 40, 60, 65, 115, 120, 125, 130, 135, 140, 145, 150, 155, 160]);
+  assert.equal(LEVELS.measure.length + LEVELS.draw.length, 2510);
+  const sampledSigs = new Set([...SAMPLED.measure, ...SAMPLED.draw].map(sig));
+  assert.ok(sampledSigs.size < all.size, `the eight seeds reach ${sampledSigs.size} of ${all.size}`);
+  console.log(`# H7 kon/place: ${all.size} levels (${LEVELS.measure.length} measure, ${LEVELS.draw.length} draw); the eight seeds reached ${sampledSigs.size}`);
 });
 
 test("gate 2, vertex-off and centre-on-arm (placements): on EVERY generated level the band is the disc it is said to be; no single slip from a placement lands in it; a blind placement lands in it far under 1 in 10", () => {
@@ -311,8 +351,8 @@ test("gate 2, wrong-scale, every reading: a placement within the tolerance shows
     }
   }
   assert.ok(found >= 1, "a placement showing such a reading was tried");
-  const m140 = konLogic.generate(req("measure", 3, 2)).map((c) => c.level.params.theta);
-  for (const sd of SEEDS) for (const f of [2, 3]) m140.push(...konLogic.generate(req("measure", sd, f)).map((c) => c.level.params.theta));
+  // (H7: over every measure level the generator can make, not a sample)
+  const m140 = LEVELS.measure.filter((l) => l.params.scale !== "10").map((l) => l.params.theta);
   assert.ok(!m140.includes(140) && m140.includes(145) && m140.includes(135), "measure never serves 140; its neighbours still");
 });
 
@@ -324,7 +364,7 @@ test("gate 2, join-wrong-end (one of two buttons): one press names nothing; two 
   assert.ok(j.aFirst > 0.3 * j.levels && j.aFirst < 0.7 * j.levels, `A first on ${j.aFirst} of ${j.levels}`);
   assert.ok(chancePick({ goal: "draw", family: "kon", mode: "place" }, "join-wrong-end"));
   // the surface: the asked size and the join order
-  const a = LEVELS.draw.find((l) => joinAFirst(l.seed)), b = LEVELS.draw.find((l) => !joinAFirst(l.seed) && l.params.theta !== a.params.theta);
+  const a = SAMPLED.draw.find((l) => joinAFirst(l.seed)), b = SAMPLED.draw.find((l) => !joinAFirst(l.seed) && l.params.theta !== a.params.theta);
   assert.deepEqual(drawSurface(a.params, a.seed), [`theta:${a.params.theta}`, "join:A"]);
   const sa = surfaceOf(a), sb = surfaceOf(b);
   assert.ok(Array.isArray(sa) && sa.length === 2 && surfacesDiffer(sa, sb));

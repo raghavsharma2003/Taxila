@@ -141,8 +141,8 @@ export function memoAgrees(modeName, goal, childIds = ["careful", "blind", "slip
   return { same: JSON.stringify(plain) === JSON.stringify(memo), sessions: plain.length };
 }
 
-/** what she does after a miss: clear what the goal needs cleared, then the solve */
-function repairOf(lv) {
+/** what she does after a miss: clear what the goal needs cleared, then the solve (also tests/r8-gate2-facts-row.test.mjs) */
+export function repairOf(lv) {
   const logic = logicFor(lv.family, lv.mode), sol = logic.solve(lv) ?? [];
   const g = lv.params?.goal;
   if (lv.family === "stambh" && g === "keep") return [{ kind: "again" }, ...sol];

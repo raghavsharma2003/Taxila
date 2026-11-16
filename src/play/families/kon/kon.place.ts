@@ -602,59 +602,85 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
   }
   for (let k = 0; k < 800 && out.length < 24; k++) {
     const theta = 20 + 5 * Math.floor(rnd() * 29);                          // 20° … 160°
-    if ([0, 90, 180].some((l) => Math.abs(theta - l) <= Math.max(10, 2 * tol))) continue;
-    // the key is never a printed number (on either scale: 180 − a printed number is printed too)
-    if (printed(scale, theta)) continue;
-    // gate 2: never a key one typing slip takes to the other scale's number more than 1 time in 10 (measure: 140)
-    if (goal === "measure" && SCALE_SLIP_READS.has(theta)) continue;
+    if (!placeKeyOk(goal, scale, tol, theta)) continue;
     // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
     // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
     const mirror = rnd() < 0.5;   // the two orientations equally (judging round 2: the outer scale is wrong on half)
     const tilt = fade === 1 && !o.wide ? (rnd() < 0.5 ? 0 : 5 * Math.floor(rnd() * 5) - 10) : 5 * Math.floor(rnd() * 21) - 50;
-    const a1 = norm(5 * Math.round(((mirror ? 180 : 0) + tilt) / 5));
-    // the figure (O and the ends of both arms: draw's OA and the arm the solver draws) centred across the board, as low as
-    // the resting protractor lets it sit, then nudged a little
-    const hs = [a1, norm(a1 + (mirror ? -1 : 1) * theta)], ends = [[0, 0], ...hs.map((h) => dir(h).map((v) => v * ARM))];
-    const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
-    const nudge = (rnd() - 0.5) * 24;
-    const vx0 = Math.round(BW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2 + nudge);
-    const vy = Math.round(Math.max(FIG_LO + 16, FIG_LO + 4 - Math.min(...ys)) + rnd() * 24);
+    // (the figure's nudge across, its drop below the lowest it may sit, the resting protractor's place and turn)
+    const nudge = (rnd() - 0.5) * 24, drop = rnd() * 24;
     const x0 = 140 + Math.floor(rnd() * 41), r0 = norm(Math.floor(rnd() * 21) - 10);
-    const sig = `place:${goal}:${theta}:${a1}${mirror ? "m" : ""}`;
+    const sig = placeSig(goal, theta, placeA1(mirror, tilt), mirror);
     if (seen.has(sig)) continue;
-    // the figure fits: both arms and O's letter stay on the board, above the resting protractor; the placed protractor (and
-    // the vertex-off one) and the resting one fit the board too
-    // (the resting one wholly on the board, REST_MARGIN clear of its edges: gate 1, night rulings)
-    const fits = (q: PlaceParamsLike) => {
-      const x = q.vx ?? 0;
-      if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([x + ARM * c, vy + ARM * s]); }) || !inBoard([x, vy - 16])) return false;
-      const rest = initPlace(q).pose;
-      return poseFits(goodPose(q)) && poseFits(vertexOffPose(q)) && poseFits(rest, PR, REST_MARGIN) && rest.y + PR + 18 <= FIG_LO;
-    };
-    // gate 2, answer 4: a figure centred across the board leaves an acute angle's vertex too near the side for the protractor
-    // (both arms run one way from O, the protractor's half-disc both ways), so a figure that does not fit centred is moved
-    // across, nearest the centre first (the same nudge), within 30 board px of the board's middle; no draw is spent on it
-    let params: PlaceParamsLike = { goal, start: a1, theta, mirror, tol, scale, vx: vx0, vy, tolPx, x0, y0: REST_Y, r0 };
-    if (!fits(params)) {
-      const mid = Math.round(BW / 2 + nudge), tries = Array.from({ length: 31 }, (_, i) => BW / 2 - 30 + 2 * i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b);
-      const x = tries.find((vx) => fits({ ...params, vx }));
-      if (x === undefined) continue;
-      params = { ...params, vx: x };
-    }
-    const good = goodPose(params), vo = vertexOffPose(params);
-    // the rest pose is no placement, and the mal-rules show: vertex-off moves the reading (measure) or the made angle (draw)
-    if (placement(params, initPlace(params).pose).ok) continue;
-    if (goal === "measure") {
-      const ap = asPlaced(params, vo);
-      if (!ap || Math.abs(ap.value - theta) < 3) continue;
-    } else {
-      if (Math.abs(madeAngle(params, vo, markFor(params, vo, theta), "v") - theta) < 4) continue;
-      if (Math.abs(madeAngle(params, good, markFor(params, good, theta), "e") - theta) < 3 * tol) continue;
-    }
-    if (o.need && !o.need(params)) continue;
-    seen.add(sig); out.push({ params, sig });
+    const c = placeLevelOf(goal, { tol, tolPx }, fade, { theta, mirror, tilt, nudge, drop, x0, r0 });
+    if (!c) continue;
+    if (o.need && !o.need(c.params)) continue;
+    seen.add(sig); out.push(c);
   }
   return out;
+}
+/** H7: the tilts of OA's heading generatePlace draws at a fade (fade 1: flat or within 10°, unless steered `wide`; else −50 … 50) */
+export const PLACE_TILTS = (fade: number, wide = false): number[] => (fade === 1 && !wide ? [-10, -5, 0, 5, 10] : Array.from({ length: 21 }, (_, i) => 5 * i - 50));
+/** OA's heading for a tilt and an orientation (generatePlace) */
+export const placeA1 = (mirror: boolean, tilt: number): number => norm(5 * Math.round(((mirror ? 180 : 0) + tilt) / 5));
+/** a measure or draw level's signature: its key (θ), OA's heading, its orientation (placeSigOf reads it back) */
+export const placeSig = (goal: PlaceGoal, theta: number, a1: number, mirror: boolean): string => `place:${goal}:${theta}:${a1}${mirror ? "m" : ""}`;
+/** generatePlace's first checks on a key θ (measure or draw), before any figure is drawn */
+export function placeKeyOk(goal: PlaceGoal, scale: PlaceParamsLike["scale"], tol: number, theta: number): boolean {
+  if ([0, 90, 180].some((l) => Math.abs(theta - l) <= Math.max(10, 2 * tol))) return false;
+  // the key is never a printed number (on either scale: 180 − a printed number is printed too)
+  if (printed(scale, theta)) return false;
+  // gate 2: never a key one typing slip takes to the other scale's number more than 1 time in 10 (measure: 140)
+  if (goal === "measure" && SCALE_SLIP_READS.has(theta)) return false;
+  return true;
+}
+/**
+ * The level generatePlace makes from its draws (the key θ, the orientation, OA's tilt, the nudge across (−12 … 12), the drop
+ * (0 … 24), the resting protractor's x0 and r0), or null where it refuses them. No randomness: the generator draws and calls
+ * this; the gate-2 tests (H7) call it over the whole grid of draws, so they sweep every level the generator can make.
+ */
+export function placeLevelOf(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, fade: number, d: { theta: number; mirror: boolean; tilt: number; nudge: number; drop: number; x0: number; r0: number }): { params: PlaceParamsLike; sig: string } | null {
+  const scale: PlaceParamsLike["scale"] = fade === 1 ? "10" : fade === 2 ? "30" : "landmarks";
+  const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX, { theta, mirror, tilt, nudge, drop, x0, r0 } = d;
+  if (!placeKeyOk(goal, scale, tol, theta)) return null;
+  const a1 = placeA1(mirror, tilt);
+  // the figure (O and the ends of both arms: draw's OA and the arm the solver draws) centred across the board, as low as
+  // the resting protractor lets it sit, then nudged a little
+  const hs = [a1, norm(a1 + (mirror ? -1 : 1) * theta)], ends = [[0, 0], ...hs.map((h) => dir(h).map((v) => v * ARM))];
+  const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
+  const vx0 = Math.round(BW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2 + nudge);
+  const vy = Math.round(Math.max(FIG_LO + 16, FIG_LO + 4 - Math.min(...ys)) + drop);
+  const sig = placeSig(goal, theta, a1, mirror);
+  // the figure fits: both arms and O's letter stay on the board, above the resting protractor; the placed protractor (and
+  // the vertex-off one) and the resting one fit the board too
+  // (the resting one wholly on the board, REST_MARGIN clear of its edges: gate 1, night rulings)
+  const fits = (q: PlaceParamsLike) => {
+    const x = q.vx ?? 0;
+    if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([x + ARM * c, vy + ARM * s]); }) || !inBoard([x, vy - 16])) return false;
+    const rest = initPlace(q).pose;
+    return poseFits(goodPose(q)) && poseFits(vertexOffPose(q)) && poseFits(rest, PR, REST_MARGIN) && rest.y + PR + 18 <= FIG_LO;
+  };
+  // gate 2, answer 4: a figure centred across the board leaves an acute angle's vertex too near the side for the protractor
+  // (both arms run one way from O, the protractor's half-disc both ways), so a figure that does not fit centred is moved
+  // across, nearest the centre first (the same nudge), within 30 board px of the board's middle; no draw is spent on it
+  let params: PlaceParamsLike = { goal, start: a1, theta, mirror, tol, scale, vx: vx0, vy, tolPx, x0, y0: REST_Y, r0 };
+  if (!fits(params)) {
+    const mid = Math.round(BW / 2 + nudge), tries = Array.from({ length: 31 }, (_, i) => BW / 2 - 30 + 2 * i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b);
+    const x = tries.find((vx) => fits({ ...params, vx }));
+    if (x === undefined) return null;
+    params = { ...params, vx: x };
+  }
+  const good = goodPose(params), vo = vertexOffPose(params);
+  // the rest pose is no placement, and the mal-rules show: vertex-off moves the reading (measure) or the made angle (draw)
+  if (placement(params, initPlace(params).pose).ok) return null;
+  if (goal === "measure") {
+    const ap = asPlaced(params, vo);
+    if (!ap || Math.abs(ap.value - theta) < 3) return null;
+  } else {
+    if (Math.abs(madeAngle(params, vo, markFor(params, vo, theta), "v") - theta) < 4) return null;
+    if (Math.abs(madeAngle(params, good, markFor(params, good, theta), "e") - theta) < 3 * tol) return null;
+  }
+  return { params, sig };
 }
 export function placeDifficulty(p: PlaceParamsLike): number {
   if (p.goal === "size") return Math.min(1, 0.35 + (p.thA === p.thB ? 0.1 : 0) + (p.mirA || p.mirB ? 0.1 : 0) + (p.scale === "landmarks" ? 0.2 : p.scale === "30" ? 0.1 : 0));

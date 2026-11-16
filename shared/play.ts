@@ -133,6 +133,15 @@ export const namingOn = (family: string, mode: string): boolean => !NAMING_OFF.h
 /** the facts keys that carry a mix-up (what she did that matches one), dropped when naming is off */
 export const NAMING_FACT_KEYS: readonly string[] = ["mal", "sign", "misconception", "shown", "crossesMissing", "vertex_ok", "arms_ok"];
 /**
+ * Gate 2, H5 (dc-r8-gate2-habit-children): the modes whose level-end facts row, until a mix-up is named on that level (naming
+ * off, or on but not yet named), carries right or wrong (the verdict), first try and the number of checks, and nothing else
+ * of her act (server/play/routes.js seamOut); and whose misses all weigh GAME_WEIGHT, a miss in the mix-up's form as any
+ * other (server/play/levels.js nameOnRepeat). The raw act stays in the trail. Independent of NAMING_OFF: a mode keeps this
+ * when its naming is switched on; once a level names a mix-up, that level's row is naming's own (unchanged).
+ */
+export const FACTS_UNTIL_NAMED: ReadonlySet<string> = new Set(["stambh/tally", "kon/place", "kon/name"]);
+export const factsUntilNamed = (family: string, mode: string): boolean => FACTS_UNTIL_NAMED.has(`${family}/${mode}`);
+/**
  * Gate 2, dc-r8-gate2-habit-children (H1, H3, H4: two sightings are two different acts; kon/name say's order act confirmed on
  * the same level; stambh/tally keep's `five` on two levels). On in the product. A TEST SEAM only: the habit battery
  * (tests/_habit-children.mjs) turns it off inside one synchronous run, and puts it back, to show the failures those rules fix

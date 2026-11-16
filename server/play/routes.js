@@ -28,7 +28,7 @@ import { chancePick, gradeActs, lessonEvidence, withNaming } from "./grade.js";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
 import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
-import { playFactsRow, namingOn } from "../../shared/play.ts";
+import { playFactsRow, namingOn, factsUntilNamed } from "../../shared/play.ts";
 import { baseSpec, dressSpecFor, withVerb } from "./dress.js";
 import { engineFor } from "../../src/play/engines/registry.ts";
 import { record as traceRecord } from "../trace/writer.js";
@@ -74,7 +74,27 @@ export function seamLead(seam, trail, s, s2) {
     // r8 kon/place: whether her protractor sat right at her first decision, so the teacher can name it without guessing
     ...(seam.facts?.placed === "ok" || seam.facts?.placed === "off" ? { placed: seam.facts.placed } : {}) };
 }
-function seamOf(grade, level, moments, impasse) {
+/**
+ * Gate 2, H5 (dc-r8-gate2-habit-children): what the seam says to the teacher. In a mode under shared/play.ts
+ * FACTS_UNTIL_NAMED, until a mix-up is named on this level (`named`: a row of hers carries misconceptionId), its facts are
+ * right or wrong (the verdict, at a level's end), first try (the trail's) and the number of checks (the family's checks, or
+ * its commits), and nothing else of her act: not her answer, her reading, her bundles, what the play-out showed, nor the
+ * lead's misses, extra acts, placement or the picker's step. The raw act stays in the trail. A named level, a misconception
+ * seam (naming's own) and every other mode keep the row as before. → { seam, row } (row: the signed facts row's text). Pure.
+ */
+export function seamOut(level, seam, { named = false, trail = null, s = null, s2 = null, now = null } = {}) {
+  if (!seam) return { seam: null, row: null };
+  const game = `${level.family}/${level.mode}`;
+  if (!named && seam.kind !== "misconception" && factsUntilNamed(level.family, level.mode)) {
+    // (the checks so far: the grade's facts at a level's end, else the facts of the acts so far, `now`)
+    const f = seam.facts ?? {}, checks = Number(f.checks ?? f.commits ?? now?.checks ?? now?.commits) || 0;
+    const facts = { ...(seam.kind === "level_end" ? { verdict: f.verdict, first_try: trail?.firstTry ? 1 : 0 } : {}), checks };
+    return { seam: { kind: seam.kind, facts, ...(seam.bareItem !== undefined ? { bareItem: seam.bareItem } : {}) }, row: playFactsRow({ game, ...facts }) };
+  }
+  return { seam, row: playFactsRow({ game, ...(seam.kind === "level_end" ? seamLead(seam, trail, s, s2) : {}), ...seam.facts }) };
+}
+/** the seam a post makes, before seamOut (exported for the gate-2 H5 test, which plays the route's path with naming on) */
+export function seamOf(grade, level, moments, impasse) {
   if (impasse) return { kind: "impasse", facts: grade?.facts ?? {} };
   if (grade) return { kind: "level_end", facts: { ...grade.facts, verdict: grade.verdict }, bareItem: level.fade === 3 && grade.verdict === "solved" ? { skillId: level.skillId } : null };
   const mis = moments.find((m) => m.kind === "misconception_consequence");
@@ -157,15 +177,16 @@ export const routes = {
     const evidenceToken = ended && s.lessonId && rows.length ? signEvidence({ childId: s.childId, lessonId: s.lessonId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const homeToken = ended && !s.lessonId && rows.length ? signHomeEvidence({ childId: s.childId, levelId: level.levelId, rows, ...(trail ? { trail } : {}) }) : undefined;
     const home = homeToken ? await foldHomeLevel({ child, token: homeToken, skillOk: (id) => id === entry.skillId || (entry.skillIds ?? []).includes(id), q: dbq, write: playDeps.writeHome }) : null;
-    const seam = seamOf(g.grade, level, fresh, !!b.impasse);
+    const seamRaw = seamOf(g.grade, level, fresh, !!b.impasse);
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
     // round 8 P2: a clean first-try win steps the next level's band up, and each step's because rides to the next level
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
     const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
     // round 8 F (to-brain 023): a level_end row leads with the trail summary and the because kinds (this level's choice, the
     // next level's step), telegraphic and inside the 12-pair cap; the family's own facts follow
-    const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind,
-      row: playFactsRow({ game: `${level.family}/${level.mode}`, ...(seam.kind === "level_end" ? seamLead(seam, trail, s, s2) : {}), ...seam.facts }) }) : undefined;
+    // gate 2, H5: until a mix-up is named on this level, the seam carries right or wrong, first try and the checks (seamOut)
+    const { seam, row: seamRow } = seamOut(level, seamRaw, { named: rows.some((r) => r.misconceptionId), trail, s, s2, now: g.facts });
+    const seamToken = seam && s.lessonId ? signSeam({ childId: s.childId, lessonId: s.lessonId, kind: seam.kind, row: seamRow }) : undefined;
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       // (a mix-up from one pick is recorded as the ordinary miss it is graded as)

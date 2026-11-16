@@ -32,7 +32,7 @@ import { whyLine } from "../server/play/why.js";
 import { LOGIC } from "../src/play/families/index.ts";
 import { env } from "../src/play/core/pick.ts";
 import { MIN_BOX } from "../src/play/core/box.ts";
-import { namingOn } from "../shared/play.ts";
+import { namingOn, factsUntilNamed } from "../shared/play.ts";
 import { __test } from "../server/routes/lesson.js";
 import { playEventsOf } from "../server/brain/turn.js";
 import { initLessonState, step } from "../server/director/state.js";
@@ -163,9 +163,15 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
   assert.equal(R.games[0].playTrail.firstTry, true); assert.equal(R.games[0].playTrail.misses, 0);
   assert.ok(R.wrote, "written to kt_evidence");
   const rp = pairs(R.row);
-  assert.equal(rp.game, key); assert.equal(rp.verdict, "solved"); assert.equal(rp.first_try, "1"); assert.equal(rp.misses, "0");
-  assert.equal(rp.chose, (because[0]?.kind ?? "").replace(/^play\./, ""), "the row names the choice's because kind");
-  if (key === "stambh/tally") assert.match(rp.bundles ?? "", /^\d+$/, "the tally's row says how many bundles");
+  assert.equal(rp.game, key); assert.equal(rp.verdict, "solved"); assert.equal(rp.first_try, "1");
+  // gate 2, H5: a mode under FACTS_UNTIL_NAMED (stambh/tally, kon/place, kon/name), until a mix-up is named, rows right or
+  // wrong, first try and the checks only (no misses, no because kind, no bundles: the trail keeps the raw act)
+  const h5 = factsUntilNamed(level.family, level.mode);
+  if (h5) assert.deepEqual(Object.keys(rp), ["game", "verdict", "first_try", "checks"], R.row);
+  else {
+    assert.equal(rp.misses, "0");
+    assert.equal(rp.chose, (because[0]?.kind ?? "").replace(/^play\./, ""), "the row names the choice's because kind");
+  }
   out.evidence.push("right");
   const mal = Object.keys(level.mal ?? {}).find((m) => logic.malActs(level, m));
   if (mal) {
@@ -183,7 +189,7 @@ async function seamFor(topicId, skillId, learner, C, kit, childId) {
     else { assert.equal(g.misconceptionId, level.mal[mal], "the mal-rule's kit misconception reaches her learner state"); assert.deepEqual(g.playTrail.mal[0], { rule: mal, mis: level.mal[mal] }); }
     const wp = pairs(W.row);
     // (a mal-rule that commits a state the solver's acts cannot undo ends not solved: the verdict is the grade's own)
-    assert.equal(wp.verdict, wrong.grade.verdict); assert.equal(wp.first_try, "0"); assert.equal(wp.misses, String(g.playTrail.misses));
+    assert.equal(wp.verdict, wrong.grade.verdict); assert.equal(wp.first_try, "0"); assert.equal(wp.misses, h5 ? undefined : String(g.playTrail.misses));
     out.evidence.push(`mal:${mal}→${wrong.grade.verdict}`);
   } else out.evidence.push("no mal-rule");
   return out;
@@ -211,7 +217,7 @@ describe("round 8: Studio's phone routing → the play family, end to end (dry, 
   }
 
   // r8 stambh/tally: c4 tally marks and pictographs has no lesson script (so no seeded learners): a new child, every kit
-  // skill. s1 is the tally's (keep or read), s2 / s3 the pictograph's; the tally's PLAY row also carries bundles=n.
+  // skill. s1 is the tally's (keep or read), s2 / s3 the pictograph's (gate 2, H5: the tally's PLAY row no longer carries bundles=n).
   test("c4-maths-ch14-t01 (tally marks and pictographs): every kit skill × a new child gets an admitted family at p360, its because, a first screen and its evidence", async () => {
     const topicId = "c4-maths-ch14-t01", kit = kitFromFile(getTopic(topicId));
     const C = { children: { new: { input: {} } } };
