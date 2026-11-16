@@ -614,3 +614,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-engines-draw-once-on-first-play` (2026-11-16): The second-play colour difference (fd-second-play-changes-colours-p412) is a first-play extra: an engine makes one or two more colour draws on its first play in a process (angle-cannon p412 279,234 then 279,233), something built once and kept. The colour-trace test now runs in its own process and passes in any order; the leak check is usable again. What is built once is still to be named by Studio
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-repeat-rules-name-habits` (2026-11-16): A rule that names a mix-up on a repeat is exactly what a habit triggers (the same number, slip or order on every level), and 'the two levels differ' stops only habits that depend on the level. The three gate 2 proofs modelled a blind guess and a single slip on independent levels and were never run on served sessions; the judges found each hole by running the real server path

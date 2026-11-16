@@ -28972,6 +28972,27 @@
    "at": "2026-11-16",
    "title": "Gate 2 per-session figures, n = 4 levels a session (NAMING_LEVELS), computed exactly over all 2^4 outcomes (tests/_session-figure.mjs) from each mode's per-level worst chance as computed over every generated level in its gate-2 test; surfaces left out (upper bounds). Before -> now. stambh/tally read (w = 1/4 weak row, f = 1/100 firm row, every firm/weak split): pair rule 67/256 (5/32 over three levels) -> 13/256 = 1 in 19.7 for the one-slip child; blind guesser 1 in 1,689. kon/place (from one level 1-(1-p)^4 -> P(>=2 of 4)): vertex-off p 0.0929 (drop, r = 30) 1 in 3.1 -> 1 in 21.9; centre-on-arm p 0.0185 1 in 13.9 -> 1 in 499; wrong-scale measure p 0.1 (typing at a named reading) 1 in 2.9 -> 1 in 19.1; wrong-scale draw p 5/181 1 in 9.4 -> 1 in 227; join-wrong-end p 1/2, four of four 1 in 16 (11 in 32 over six with no cap). kon/name (P(>=2 of 4) -> P(>=3 of 4)): say p 1/6 1 in 7.6 -> 1 in 61.7; find and mixed p 1/5 1 in 5.5 -> 1 in 36.8.",
    "source": "inbox/r8-gate2-session.json"
+  },
+  {
+   "id": "dc-r8-gate2-habit-children",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Gate 2's proof becomes a battery of habit children run through served sessions (blind guess, one slip, the same slip every level, a constant answer, what I did last time, first/last/middle option, reading across), each named in under 1 session in 10; two sightings must be two different acts; an order act is confirmed on the same level; before naming the facts row carries right or wrong, first try and checks only; the unit is the child's day. Reverse if a judge finds a missing habit child in two modes after a passed battery: repeat-based naming is dropped for games",
+   "source": "inbox/r8-main-32.json"
+  },
+  {
+   "id": "ms-r8-gate2-first-reading",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Gate 2 first reading: three Opus judges, one per mode, all FAIL; every table figure reproduced. stambh/tally: 'types 16 every level' named in 0.95 of fade-2 served sessions, 'what I typed last time' 0.38, keep five from one level. kon/place: the same keypad slip every level 0.10 (0.19 at fade 2), '75' every level 0.17; 44% of measure sessions repeat a key in their first four levels. kon/name: a swap of two taps every level 1.0, a missed tap with the letter added last 0.59",
+   "source": "inbox/r8-main-32.json"
+  },
+  {
+   "id": "fd-repeat-rules-name-habits",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "A rule that names a mix-up on a repeat is exactly what a habit triggers (the same number, slip or order on every level), and 'the two levels differ' stops only habits that depend on the level. The three gate 2 proofs modelled a blind guess and a single slip on independent levels and were never run on served sessions; the judges found each hole by running the real server path",
+   "source": "inbox/r8-main-32.json"
   }
  ],
  "edges": [
@@ -46264,6 +46285,21 @@
    "src": "dc-r8-gate2-per-session",
    "rel": "measured_by",
    "dst": "ms-r8-gate2-per-session-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-habit-children",
+   "rel": "part_of",
+   "dst": "dc-r8-game-gate-play-then-evidence"
+  },
+  {
+   "src": "dc-r8-gate2-habit-children",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-first-reading"
+  },
+  {
+   "src": "fd-repeat-rules-name-habits",
+   "rel": "constrains",
+   "dst": "dc-r8-gate2-habit-children"
   }
  ]
 }
