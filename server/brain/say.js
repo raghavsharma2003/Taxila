@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, lessonKeyOf } from "./seams.js";
+import { applySeams, seamStart, lessonKeyOf, JOIN_MAX_WORDS } from "./seams.js";
 import { altCall } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
@@ -21,7 +21,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust, joinable, scriptFor, jointOf } from "../director/script.js";
+import { saidMust, joinable, scriptFor, jointOf, saidIn } from "../director/script.js";
 import { fillFriend } from "../director/friend.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
@@ -91,12 +91,21 @@ const ASKS_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?r
 // v6.6 A2 (main, director14: "Virat tumhari pasand hai" presumed their taste, and the line was said again on every ask): said on the
 // turn they ask, once per lesson in full; a later ask gets a short form. It never presumes their taste and ends on ONE question to
 // them, about the thing they asked
-export function honestTasteLine(topic, lang = "hinglish", n = 1) {
+// (dc-r8-director24 A3, main's 035 — c5-t01 offtopic 28: the third ask re-asked the first ask's question, which she had answered: a
+// later ask asks the first of its questions the lesson has not asked yet; with all asked, the honest line alone)
+const TASTE_QS = {
+  hinglish: [(t) => `Tumhara favourite kaun hai?`, (t) => `${capT(t)} ko tum kiske saath dekhte ho?`, (t) => `Tumne pehli baar ${t} ko kab dekha tha?`],
+  english: [(t) => `Who is your favourite?`, (t) => `Who do you watch ${t} with?`, (t) => `When did you first watch ${t}?`],
+};
+export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = []) {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
-  if (lang === "english") return n <= 1 ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?`
-    : [`I'm an AI, so no favourites for me. Who is your favourite?`, `No favourites for me, I'm an AI. What do you like about ${t}?`][(n - 2) % 2];
-  return n <= 1 ? `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`
-    : [`Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?`, `Meri apni pasand nahi hoti, main AI hoon. Tumhe ${t} ke baare mein kya achha lagta hai?`][(n - 2) % 2];
+  const L = lang === "english" ? "english" : "hinglish";
+  const first = L === "english" ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?` : `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`;
+  if (n <= 1) return first;
+  const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
+  const q = TASTE_QS[L].map((f) => f(t)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
+  const head = L === "english" ? (n % 2 ? "No favourites for me, I'm an AI." : "I'm an AI, so no favourites for me.") : (n % 2 ? "Meri apni pasand nahi hoti, main AI hoon." : "Main AI hoon, meri koi pasand nahi hoti.");
+  return q ? `${head} ${q}` : head;
 }
 /** v6.7 A3: a parked aside's return — one question about their thing, in code, naming only their topic (fresh within 4 turns). */
 const RETURN_Q = {
@@ -140,6 +149,7 @@ const ASIDE_AGAIN = {
 };
 export const asideAgainLine = (topic, lang = "hinglish", state = null) => freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim());
 /** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
+const herLines = (state) => (state?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
 const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
 /** v6.5 F1: praise or an aside's topic (never said beside a wrong verdict). */
 const PRAISE_OR_ASIDE = /(?<![\p{L}])(?:wah|waah|shabash|zabardast|kamaal|bahut\s+badhiya|great|awesome|cricket|sixer|virat|kohli|match)(?![\p{L}])/iu;
@@ -357,6 +367,16 @@ export function outsideAuthored(text, spans, fn) {
 const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favorite", "maine", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "sabse", "bahut", "achha", "achhi", "achhe", "accha",
   "acchi", "lagta", "lagti", "lagte", "seedha", "bahar", "andar", "jaati", "jaata", "jaate", "maarta", "maarti", "karta", "karti", "karte", "kyunki",
   "woh", "wala", "wali", "wale", "jab", "phir", "bhi", "aur", "kuch", "sach", "really", "very", "like", "when", "that", "this", "what", "with", "have"]);
+/** dc-r8-director24 A3: her reply to an aside said again after its return — the aside kind's reply form with a noun of the child's line
+ *  (a past verb — "maara", "khela", "dekha" — is no noun), rotated by how many asides she has answered; null when no word of theirs fits. */
+const VERBISH = /(?:aara|ela|ala|ila|kha|aya|iya|aaya|gaye|gayi)$/;
+export function againInHerWords(said, topic, lang = "hinglish", state = null) {
+  const words = j2WordsOf(said, topic).filter((w) => !VERBISH.test(w));
+  if (!words.length) return null;
+  const n = (state?.recent ?? []).filter((t) => t.who === "teacher").length;
+  const r = asideReplyLine({ said, topic, lang, n, words });
+  return r?.form === "word" && r.line ? r.line : null;
+}
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
     .filter((w) => !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !LESSON_SAID.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w));
@@ -1192,7 +1212,9 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
 export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
 /** v6.11 G2: every reply, whatever path wrote it (a neutral line, an early return), says no sentence twice; the parts follow. */
 export async function textReply(args) {
-  let out = await textReply0(args);
+  const joinSink = {};
+  let out = await textReply0({ ...args, joinSink });
+  if (out?.guard && Object.keys(joinSink).length) out = { ...out, guard: { ...out.guard, modelJoins: { ...joinSink } } };
   if (!out?.reply) return out;
   // v6.11 G2 (main on director19 c6 steady 34, 70, offtopic 34: a right answer on the worked example's card closed it without its final
   // answer — the why-probe turn carries no worked close): the worked answer is said with the verdict when her line does not say it
@@ -1246,6 +1268,7 @@ function seamsOf(out, { state, kit, ui = null }) {
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
+    modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out;
@@ -1253,9 +1276,76 @@ function seamsOf(out, { state, kit, ui = null }) {
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }
+/** dc-r8-director24 M (main's 035): the model writes the joins in the turn's own reply call. Each joint the turn may need is asked for
+ *  as a line after her reply — `JOIN <kind>: <words>` — which code takes off the draft (takeJoins), and the seam pass checks (seams.js
+ *  joinProblem) and says, else the authored form. The kinds asked for are the ones code can see coming; one not used is dropped. */
+const JOIN_LINE = /^\s*JOIN\s+([A-Za-z]+)\s*:\s*(.*)$/;
+export function takeJoins(text, sink = {}) {
+  const kept = [];
+  for (const line of String(text ?? "").split(/\n/)) {
+    const m = JOIN_LINE.exec(line);
+    if (m) { if (m[2].trim() && !sink[m[1]]) sink[m[1]] = m[2].trim(); continue; }
+    // (a JOIN written on the reply's own line: the reply is what comes before it)
+    const at = line.search(/\bJOIN\s+[A-Za-z]+\s*:/);
+    if (at >= 0) { const m2 = JOIN_LINE.exec(line.slice(at)); if (m2?.[2].trim() && !sink[m2[1]]) sink[m2[1]] = m2[2].trim(); if (line.slice(0, at).trim()) kept.push(line.slice(0, at)); continue; }
+    kept.push(line);
+  }
+  return kept.join("\n").trim();
+}
+// (the aims are said to the model in English for every lesson language: a Hinglish aim is a line it would say back)
+const JOIN_AIM = { backTo: "going back to the earlier question you will ask again", beforeRemediation: "saying you will look at the same idea another way",
+  afterAside: "coming back to the lesson from the child's topic", afterAiLine: "coming back to learning after saying what you are", afterTryFirst: "handing over the question they offered to try",
+  verdict: "the first words telling them their answer is right, never the answer itself", missVerdict: "the first words telling them gently it is not right yet, never the answer" };
+export function joinsWanted({ state, kit, ui = null, verdict = null, history = [] }) {
+  const lang = state?.ctx?.lang === "english" ? "english" : "hinglish";
+  const has = (k) => (jointOf(kit, k, lang) ?? []).length > 0;
+  const lm = state?.lastMove ?? {};
+  const g0 = state?.lastGraded;
+  const herPrev = String([...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
+  const out = [];
+  if (["not_yet", "incorrect"].includes(String(verdict ?? state?.lastVerdict ?? "")) && lm.scriptBeat?.kind === "remediation") out.push("beforeRemediation");
+  if (ui?.ask?.itemId && ((g0?.itemId && g0.itemId !== ui.ask.itemId) || lm.cameBack || lm.returnReply)) out.push("backTo");
+  if (lm.returnReply || lm.asideResume || (state?.later ?? []).some((p) => p.at === state?.turn)) out.push("afterAside");
+  if (/(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev)) out.push("afterAiLine");
+  if (lm.request === "selftry") out.push("afterTryFirst");
+  // (the opener of the turn's verdict, on a graded card)
+  const v = String(verdict ?? state?.lastVerdict ?? "");
+  if (v === "correct") out.push("verdict"); else if (["not_yet", "incorrect"].includes(v)) out.push("missVerdict");
+  return out.filter((k) => k === "verdict" || k === "missVerdict" || has(k));
+}
+export function joinNoteOf(kinds, lang = "hinglish") {
+  if (!kinds?.length) return null;
+  return `After your reply, on its own line for each: JOIN <kind>: <words>. Kinds: ${kinds.map((k) => `${k} (${JOIN_AIM[k]})`).join("; ")}. Each in ${lang === "english" ? "English" : "the lesson's Hinglish"}, your own words, at most ${JOIN_MAX_WORDS} words, one sentence, no numbers, no question, no word from a question still to come, not a sentence you have said before.`;
+}
 /** The kind of a second view ("parts", "line", "round", "wholes", "unrolled", "example" …): a call's or a hint's `view`; a bars call with
  *  none is "parts". null when it cannot be told. */
 export const viewKindOf = (v) => (!v || v === "held" ? null : typeof v === "string" ? (v === "bars" ? "parts" : v) : v.view === "bars" ? "parts" : v.view ?? (v.template || v.bars || v.labels ? "parts" : null));
+/** dc-r8-director24 T3: the sentence about the child — the check card of the last skill she reached that she answered right at the
+ *  first try, the latest in script order (never the closing question), its `did` clause said in one of `wrap.didFrames` (rotated by the
+ *  lesson's seed; "Aaj tumne {did}." when the script has none). No such card, or no `did` on it: no sentence. */
+export function didSentence(state, kit, L = "hinglish") {
+  const sc = scriptFor(kit)?.script;
+  if (!sc) return null;
+  const lang = L === "english" ? "english" : "hinglish";
+  const reached = [...(state?.introduced ?? [])];
+  const right1 = new Set((state?.rightLog ?? []).filter((x) => (x.misses ?? 0) === 0).map((x) => String(x.id)));
+  const checkIdOf = (id) => { const m = /^script:(.+?):([^:]+)$/.exec(String(id)); return m ? { skillId: m[1], checkId: m[2] } : null; };
+  const firstTry = [...right1].map(checkIdOf).filter(Boolean);
+  for (const skillId of [...reached].reverse()) {
+    const sk = (sc.skills ?? []).find((k) => k.skillId === skillId);
+    const hits = (sk?.checks ?? []).filter((c) => c.did && firstTry.some((x) => x.skillId === skillId && x.checkId === c.id));
+    const card = hits.at(-1);
+    if (!card) continue;
+    const did = saidIn(card.did, lang);
+    if (!did || !String(did).trim()) return null;
+    const frames = (sc.wrap?.didFrames ?? []).map((f) => saidIn(f, lang)).filter((f) => f && /\{did\}/.test(f));
+    const forms = frames.length ? frames : [lang === "english" ? "Today you {did}." : "Aaj tumne {did}."];
+    const f = forms[seamStart(lessonKeyOf(state), "didFrame") % forms.length];
+    const t = f.replace("{did}", String(did).trim().replace(/[.!?\u0964]+$/, ""));
+    return /[.!?\u0964]$/.test(t) ? t : `${t}.`;
+  }
+  return null;
+}
 /** dc-r8-director23 C: the authored caption of the board a picture request redraws — the `viewCaption` of the script object whose `board`
  *  is the board up (the held unit's), in the lesson language. null when none is authored.
  *  (main, integration 72: a caption is written against ONE view, the one the board's own second view draws. `drawn` is the kind of the
@@ -1327,7 +1417,7 @@ async function childSentence(state, L, kit = null) {
   const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: sys }, { role: "user", content: rows + about }], { maxTokens: 60, effort: "none", timeoutMs: 5000 });
   return childSentenceAddressed(childSentenceOk(r?.text, rows), state?.ctx?.firstName);
 }
-async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
+async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null, joinSink = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
@@ -1359,7 +1449,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
     let mine = null;
-    if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L, kit).catch(() => null);
+    // (dc-r8-director24 T3: code picks the card and says Learning's `did` clause for it in an authored frame — no model call)
+    if (end === "wrap" && lines.length >= 2) mine = didSentence(state, kit, L);
     const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
     // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
     const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
@@ -1611,7 +1702,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // the real reply's hedge twin goes to the overflow account (azure.js chat twin, 14.4), a bet's never does
   // v6.6 V1: every draft the model wrote this turn (her own words, as against code's lines put in later)
   const modelSaid = [];
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => { const t = r.text.trim(); modelSaid.push(t); return t; });
+  // (dc-r8-director24 M: the joins she wrote after her reply are taken off it here, before any guard reads the draft)
+  const joinsDrafted = joinSink ?? {};
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => { const t = takeJoins(r.text, joinsDrafted); modelSaid.push(t); return t; });
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
@@ -1686,7 +1779,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let tried = false;
     const onDelta = (_d, text) => {
       if (tried) return;
-      const s1 = firstClosedSentence(text);
+      const s1 = firstClosedSentence(takeJoins(text, {}));
       if (!s1) return;
       tried = true;
       const lock = lockFirstSentence({ reply: text, s1, askEnd: pinned ? askEnd : null, problems, spoken: true, confirmNeeded: G && verdict === "correct", t0: replyT0,
@@ -1698,8 +1791,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       try { onClause({ i: 0, text: lock.s1 }); } catch (e) { console.warn("[lesson] onClause threw:", e?.message); }
     };
     try {
-      return (await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
-        ...(overflow ? {} : { overflow: false }) })).text.trim();
+      return takeJoins((await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
+        ...(overflow ? {} : { overflow: false }) })).text, joinsDrafted);
     } catch (e) {
       // a content-filter block is the safeguarding path below, exactly as on the one-call path
       if (isContentFilter(e)) throw e;
@@ -1743,7 +1836,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
   const retSaid = state.lastMove?.returned?.said ?? null;
   const retNote = retSaid ? returnNoteOf(retSaid, state.lastMove.returned.topic, lang) : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote].filter(Boolean).join(" ");
+  const joinNote = joinNoteOf(joinsWanted({ state, kit, ui, verdict, history }), lang);
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote, joinNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
@@ -2544,7 +2638,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // +calls per turn)
       // (R1 rule 3: a sad aside gets a sad line and no return question — the lesson goes on after it)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
@@ -2922,14 +3016,16 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state)) : null;
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state)) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
     const retQ = guard.returnLine && /[?？]/.test(guard.returnLine) && aside.includes(guard.returnLine) ? guard.returnLine : null;
     // v6.7 A3: an aside said again, already on the list, gets one line (no promise, nothing of hers)
     // (P1: an aside said again after its return was returned already — one plain line, no promise of a later talk)
-    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state)
+    // (dc-r8-director24 A3, main's 035 — c6 offtopic 24, 32, c5-t02 offtopic 32: a second or third aside, its return already had, got a
+    // bare "Achha." / "Theek hai."; it gets a reply in the child's words — the kind's reply form with a noun she said — else the plain ack)
+    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? (againInHerWords(childText, state.lastMove.asideAgain.topic, lang, state) ?? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state))
       : asideAgainLine(state.lastMove.asideAgain.topic, lang, state)) : null;
     if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
     // (dc-r8-director20 R1 rule 3: a sad aside gets one sad line of Learning's, no park and no question; the lesson goes on)
@@ -3158,7 +3254,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; if (sad) guard.returnSad = true; else guard.returnLine = line; } else guard.returnMissed = true;
     }
   }

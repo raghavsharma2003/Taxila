@@ -2,6 +2,63 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `10bb4552` (A3)
+
+**Done:**
+- **A3, repeated asides** (c6 offtopic 24, 32; c5-t02 offtopic 32): an aside said again after its return gets the kind's reply form
+  with a noun of the child's line ("Achha, sixer! Theek hai."), not a bare "Achha." A past verb ("maara", "khela") is no noun. With no
+  word of theirs, the plain ack stands.
+- **A3, the AI line** (c5-t01 offtopic 28): a later ask asks the first question the lesson has not asked (favourite, who she watches
+  with, when she first watched). With every question asked, it is the honest line alone. It never re-asks what she answered.
+- Dry matrix: 0 on every gated predicate. c5-t01 and c6 offtopic 28 changed as asked; counts did not move. The dry persona never
+  repeats an aside after its return, so tests/r8-director24-a3.test.mjs covers that path.
+- `1f8b34f7` is pushed with T3, the c4 steady 96 fixture, M and the H3 give-up (gate: 7367 pass; only the two browser suites fail).
+
+**Next:** H3's second-request rule (waits on the question below), then the harness flags.
+
+**Not ready for director25 yet**, for the same reasons as below.
+
+**Questions for main:** the Hindi and second-request H3 question below is still open.
+
+## 2026-11-16 · `fae6adbd` (T3, c4 steady 96), `9717b18e` and `6b43c214` (M), `92a68d50` (H3 give-up)
+
+**Done:**
+- **T3** (036 item 1): the wrap's sentence about her is code's (`didSentence`, server/brain/say.js). It picks:
+  - the last skill she reached;
+  - in it, the latest check card she answered right at the first try (`rightLog`, misses 0);
+  - that card's `did` (`{hi, en}`), in one of `wrap.didFrames` rotated by the lesson seed.
+  A card with no `did` is skipped. No such card: no sentence. The model's `childSentence` is no longer called on the wrap.
+  No script on int/r6 carries `did` yet, so the dry wrap is unchanged.
+- **c4 steady 96** (036 item 3): tests/fixtures/c4-steady-96.json holds the director24 child line at 95 ("nahi, chhota hoga") and
+  the live row 96.
+  - tests/r8-director24-part96.test.mjs rebuilds the state from the run's script copy and plays her line through `planTurn` and `textReply`.
+  - `partOnce` flags the live row. It reads 0 on today's turn (verdict, why, e2's point; the card held) and on the next one (the card).
+- **M** (035 item 3), in the turn's own reply call:
+  - The one-call reply's last note asks for one `JOIN <kind>: <words>` line for each joint the turn may need and for the verdict's opener.
+  - Code takes those lines off the draft before any guard reads it, on the streamed path too.
+  - The seam pass checks each line (`joinProblem`): one sentence, at most 12 words, no digit, no fraction word, no question, no screen
+    word, no term of a card she has not answered, none of her last four turns. A verdict opener must also say its verdict.
+  - On a failure, or with no line written, the authored form or code's frame is said.
+  - Each seam records `by: model|authored`, plus `fellBack` with the reason. The verdict's seam carries `opener`.
+  - Gated `joinChecked` rereads every model join and opener. New counts rows: `joinsWritten`/`joinsFellBack`, `openersWritten`/`openersFellBack`.
+  - The dry stub writes no JOIN lines, so every joint and opener falls back and no dry line changed.
+  - Not done: the why's opener. A why is joined to its verdict by "kyunki"/"because" inside one sentence, so there is no opener for
+    the model to write and for code to check. Say if you want one anyway.
+- **H3, give-up on a card** (c5-t01 stuck 6, c4 steering 32): a give-up on a live card says the card's own `ask.simpler`, the give_up
+  cell's first line, before the card. Before, it said the beat's simpler, a hint for the point. Dry: c5-t01 stuck 6 changed as asked,
+  and the Hindi request at 8 now says the beat's wording, which is new to her.
+- Dry matrix after each step: 0 on every gated predicate. Counts: only the new rows moved.
+
+**Next:** the rest of H3, a second request for help on the same part getting the worked answer with the board. It waits on the Hindi
+question below because it changes the same pinned rows. Then the rest of A3 (repeated asides, the AI line's re-ask), then the harness flags.
+
+**Not ready for director25 yet:** H3's second-request rule is open. M can only be read in a live run; the dry stub writes no joins.
+
+**Questions for main:**
+- The Hindi H3 question in the entry below is still open, and it decides the second-request rule too. A second request getting the
+  worked answer breaks the same pinned rows: v68 c4 stuck 8, v610 alreadySaidKey stuck c5-t01 60, v64 K1 steering c4.
+  May I retire them?
+
 ## 2026-11-16 · `979fe7fb` (item 8, harness) and `1700767c` (H3)
 
 **Done (gated: test:all 7343 pass; the only failures are the two worktree-only browser suites):**

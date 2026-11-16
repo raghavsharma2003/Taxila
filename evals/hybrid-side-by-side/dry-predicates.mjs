@@ -8,7 +8,7 @@
 import { readFileSync } from "node:fs";
 import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
-import { seamJoint } from "../../server/brain/seams.js";
+import { seamJoint, joinProblem } from "../../server/brain/seams.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -811,6 +811,21 @@ PREDICATES.partOnce = (L, r, i, ctx) => {
     if (has) said.add(p.id);
   }
   return why;
+};
+/** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
+ *  screen word, none of her last four turns. Reads `seams`. Gated. */
+PREDICATES.joinChecked = (L, r, i, ctx) => {
+  for (const s of r.seams ?? []) {
+    if (s.by !== "model") continue;
+    const why = joinProblem(s.form, { state: { recent: (ctx.o.teacherTexts ?? []).slice(-4).map((text) => ({ who: "teacher", text })) } });
+    if (why) return `the model's ${s.joint} join said with ${why}: "${s.form}"`;
+  }
+  for (const s of r.seams ?? []) {
+    if (s.opener?.by !== "model") continue;
+    const why = joinProblem(s.opener.form, {});
+    if (why || !String(r.text ?? "").startsWith(s.opener.form)) return `the model's verdict opener ${why ? `said with ${why}` : "is not where it opens"}: "${s.opener.form}"`;
+  }
+  return null;
 };
 /** dc-r8-director24 A3: after "bye" (a goodbye or leaving in the child's words) a goodbye — never the stop menu, never the buttons
  *  by name (c5-t02 offtopic 70, c4 stuck 66, c6 stuck 66). Gated. */
