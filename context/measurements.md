@@ -6838,3 +6838,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-gate2-first-reading` (2026-11-16): Gate 2 first reading: three Opus judges, one per mode, all FAIL; every table figure reproduced. stambh/tally: 'types 16 every level' named in 0.95 of fade-2 served sessions, 'what I typed last time' 0.38, keep five from one level. kon/place: the same keypad slip every level 0.10 (0.19 at fade 2), '75' every level 0.17; 44% of measure sessions repeat a key in their first four levels. kon/name: a swap of two taps every level 1.0, a missed tap with the letter added last 0.59
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-35599fe` (2026-11-16): Released 35599fe with scripts/release.mjs: web taxila-web--s35599fe-75j3 (was taxila-web--sa50d690-1tpz), worker + canary/nightly jobs on taxila-worker:35599fe (was a50d690); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 35599fe --rollback.
