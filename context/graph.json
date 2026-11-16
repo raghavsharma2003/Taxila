@@ -28881,6 +28881,20 @@
    "at": "2026-11-16",
    "title": "Released 0d5baa1 with scripts/release.mjs: web taxila-web--s0d5baa1-uayv (was taxila-web--s2fcc175-03ep), worker + canary/nightly jobs on taxila-worker:0d5baa1 (was 2fcc175); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0d5baa1 --rollback.",
    "source": "inbox/release-0d5baa1.json"
+  },
+  {
+   "id": "dc-r8-play-action-hue-outside-green",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Design's patch 002 finished in Games (claude/r8-focus-action): the play action hue (ArtTokens.you, play.css --pl-you, the one 'your move' button per state) is outside the green family in every art: kagaz takes Design's marigold #EFA52E with ink #1C1A16; chalk, blueprint and raat take magenta #FF6FD8 with ink #0F1218 (the README kept lime there; the rulings of 2026-11-11 night and 2026-11-15 put it outside green in both looks). 'you' is no longer a painter role: every canvas pick is drawn in focus, and laws.mjs fails a canvas 'you' on every served level. Kagaz and raat hold Design's focus / answer / mix-up (raat focus #8F9BFF, answer #4FE0A2, mix-up #FFB54A; blueprint focus #E7D1FF), asserted in laws.mjs tokenBreaks and tests/r8-play-roles.test.mjs. The 3D engines' selection (yantra turn ring, frame glow, circuit post rings and wire band, her value's label; khand cursor, drag box, landing flash; antariksh reticle, bolt and probe marks) reads the focus token through styles.ts lawColor. Theme B's --tx-move in src/styles/tx-tokens.css is still lime: the play chrome overrides it under [data-tx=b]; Design owns the token. Reverse if: Design gives a dark-art action value outside green (take it), or a judge or a child reads the magenta button as a mix-up or as her pick in two families or more.",
+   "source": "inbox/r8-focus-action.json"
+  },
+  {
+   "id": "ms-r8-play-action-hue-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "The action hue against the meaning roles (WCAG contrast; deuteranopia distance by Studio's tests/theme-palette.test.mjs measure, Viénot 1999 in linear RGB, floor 0.15), n = 4 arts, computed 2026-11-16. Magenta #FF6FD8 (hue 316): chalk on ground 6.02, vs focus 0.336 / answer 0.347 / mix-up 0.607; blueprint 5.50, 0.514 / 0.339 / 0.687; raat 7.93, 0.357 / 0.356 / 0.682; its ink #0F1218 on it 7.60. Kagaz marigold #EFA52E (Design's): on paper 1.74 (a filled button; its ink #1C1A16 on it 8.35), vs focus 0.775 / answer 0.576 / mix-up 0.526. Rejected for the dark arts: marigold #EFA52E and orange #FF9A3D (mix-up distance 0.13 to 0.15), coral #FF8A7A (chalk mix-up 0.176), pink #FF8FA3 (raat answer 0.093). 3D focus on the worlds: yantra lab tiles #F4F6F7 vs kagaz focus 7.14 (old olive 4.58), rooftop pavers 2.69 (old lime 2.46), bench mat #2F6B55 vs blueprint focus 4.46 (lime 5.35); khand grass 2.88 with kagaz focus (raat focus 1.06, old lime 2.29).",
+   "source": "inbox/r8-focus-action.json"
   }
  ],
  "edges": [
@@ -46123,6 +46137,16 @@
    "src": "fd-engines-draw-once-on-first-play",
    "rel": "caused_by",
    "dst": "fd-second-play-changes-colours-p412"
+  },
+  {
+   "src": "dc-r8-play-action-hue-outside-green",
+   "rel": "part_of",
+   "dst": "dc-r8-game-modes-three-laws"
+  },
+  {
+   "src": "dc-r8-play-action-hue-outside-green",
+   "rel": "measured_by",
+   "dst": "ms-r8-play-action-hue-2026-11-16"
   }
  ]
 }
