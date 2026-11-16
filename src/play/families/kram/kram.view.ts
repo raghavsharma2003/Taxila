@@ -100,7 +100,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as KramAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "bag" || last.kind === "cell" || last.kind === "pick") api.sfx("land");
     else if (last.kind === "dial" || last.kind === "lay") api.sfx("tick");
     else api.sfx("tap");
@@ -108,7 +108,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     void ms;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {
