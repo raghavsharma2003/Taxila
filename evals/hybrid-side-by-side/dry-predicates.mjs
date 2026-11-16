@@ -593,26 +593,21 @@ export const ORDER_LAWS = {
   /** dc-r8-director22 R: the reader agrees with what the child meant. The rule-based child writes its intent on its row; the walk's
    *  reading of it (outcome, request, aside reply, flags) must be of the same kind. (Checked on the teacher row that answers it.) */
   readerAgrees(L, r, i, ctx) {
+    // (dc-r8-director23 R2: no equivalence table — the child's intent and the column the walk recorded on her next row match by name;
+    // the only other pairs allowed are these, each with its reason)
     const want = ctx.prevIntent;
     if (!want) return null;
-    const [out, ...tags] = String(ctx.prevRead ?? "").split(" · ");
-    const flags = new Set(ctx.prevFlags ?? []);
-    const rq = tags.find((x) => x !== "aside") ?? null, aside = tags.includes("aside");
-    const REQ = { clarify: ["clarify", "another", "confused"], hindi: ["language"], picture: ["visual"], try_first: ["selftry", "thinking"], repeat: ["repeat", "which"],
-      aside: ["uptake", "aside", "sidebar"], stop: ["stop", "goodbye", "end", "break"] };
-    const quiet = !rq && !aside && out === "no_evidence";
-    const ok = {
-      right: out === "correct" && !rq && !aside,
-      miss: ["incorrect", "partial", "misconception"].includes(out) && !aside,
-      give_up: quiet || flags.has("dontKnow"),
-      yes: quiet, ack: quiet, done: quiet, reason: quiet || out === "correct",
-      aside_reply: aside && !rq,
-      // (an aside is read when the walk takes it up: a request, the flag, or her next turn naming it — the walk's own aside reading)
-      // (state.js step0 reads a no-request line naming an aside of theirs as an aside — the same code, asideTopic, read here)
-      aside: REQ.aside.includes(rq) || (quiet && (flags.has("offTopic") || !!asideTopic(ctx.prevChild ?? "", ["cricket"]))),
-      stop: REQ.stop.includes(rq) || flags.has("wantsToStop"),
-    }[want] ?? (REQ[want] ?? []).includes(rq);
-    return ok ? null : `the child meant ${want}; the walk read "${ctx.prevRead}"${flags.size ? ` (${[...flags].join(", ")})` : ""}: "${String(ctx.prevChild).slice(0, 50)}"`;
+    const col = r.cell?.column ?? "none";
+    if (want === col) return null;
+    const ALLOWED = {
+      "miss>wrong": "a miss is a wrong answer: the column also says whether it matched a mix-up the card lists",
+      "miss>misconception": "a miss is a wrong answer: the column also says whether it matched a mix-up the card lists",
+      "yes>none": "a yes asks for nothing: the walk goes on, no column",
+      "ack>none": "an acknowledgement asks for nothing: the walk goes on, no column",
+      "done>none": "'done' asks for nothing: the walk goes on, no column",
+      "reason>none": "her reason after a key or a verdict is heard and not graded: no column",
+    };
+    return ALLOWED[`${want}>${col}`] ? null : `the child meant ${want}; the walk recorded ${col} ("${String(ctx.prevChild).slice(0, 50)}")`;
   },
   /** Main's 026: no turn says a teach-back's key while the teach-back's question board is up — the key turn shows its answerBoard,
    *  or a cleared board when the script has none. */
@@ -759,6 +754,13 @@ export const ORDER_LAWS = {
 };
 Object.assign(PREDICATES, ORDER_LAWS);
 
+/** dc-r8-director23 R2: the column is what the walk acted on this turn — an answer column (right, wrong, misconception) only on a line the
+ *  walk read as that answer (director23: 11 give-ups and clarifies after a key's check-in recorded as "misconception"). Gated. */
+PREDICATES.columnOfRead = (L, r, i, ctx) => {
+  const col = r.cell?.column, out = String(ctx.prevRead ?? "").split(" ")[0];
+  const want = { right: ["correct"], wrong: ["incorrect", "partial"], misconception: ["misconception"] }[col];
+  return want && ctx.prevRead != null && !want.includes(out) ? `column ${col} on a line read "${ctx.prevRead}"` : null;
+};
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;
@@ -789,7 +791,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

@@ -40,7 +40,8 @@ test("while the teach-back is open a line is its answer or a non-answer: no requ
 
 test("readerAgrees is gated, and flags a misread on a row", () => {
   assert.ok(!PENDING.has("readerAgrees"));
-  const flag = PREDICATES.readerAgrees("L", { who: "teacher", text: "Yeh jawab sahi nahi hai." }, 1, { prevIntent: "yes", prevRead: "incorrect", prevFlags: [], prevChild: "haan, samajh aaya" });
+  // (dc-r8-director23 R2: it compares the child's intent with the column the walk recorded on her row, by name)
+  const flag = PREDICATES.readerAgrees("L", { who: "teacher", text: "Yeh jawab sahi nahi hai.", cell: { column: "wrong" } }, 1, { prevIntent: "yes", prevRead: "incorrect", prevFlags: [], prevChild: "haan, samajh aaya" });
   assert.match(flag, /meant yes/);
   assert.equal(PREDICATES.readerAgrees("L", { who: "teacher", text: "Achha." }, 1, { prevIntent: "yes", prevRead: "no_evidence", prevFlags: [], prevChild: "haan" }), null);
 });

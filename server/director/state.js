@@ -2990,14 +2990,21 @@ const carried = (lm, keep = []) => Object.fromEntries(Object.entries(lm ?? {}).f
  * last turn was on (in compile.js's part ids), the column the child's reply asks for, and the help state of that part as the walk keeps
  * it. Pure; null when the reply asks for no column (a plain "haan") or the walk is not on a script part.
  */
-export function cellAddressOf(prev, input) {
-  if (!prev || input?.event !== "turn") return null;
-  const kit = input.kit, lm = prev.lastMove ?? {}, sb = lm.scriptBeat;
-  const text = String(input.text ?? ""), cls = input.cls ?? {}, rq = cls.request?.type ?? null;
-  const column = SAYS_CLARIFY.test(text) || ["clarify", "another", "confused"].includes(rq) ? "clarify" : rq === "language" ? "hindi"
+/** The column a child's line asks for, by the walk's reading (null: none — a plain "haan"). */
+function columnName(input, prev = null) {
+  const text = String(input?.text ?? ""), cls = input?.cls ?? {}, rq = cls.request?.type ?? null;
+  // (a line with no request that names an aside of theirs is read as an aside — step0's own reading, asideTopic)
+  if (!rq && cls.outcome === "no_evidence" && !cls.asideReply && !SAYS_CLARIFY.test(text) && !GIVE_UP_WORDS.test(text) && asideTopic(text, prev?.ctx?.interests)) return "aside";
+  return SAYS_CLARIFY.test(text) || ["clarify", "another", "confused"].includes(rq) ? "clarify" : rq === "language" ? "hindi"
     : ["repeat", "which"].includes(rq) ? "repeat" : rq === "visual" ? "picture" : ["selftry", "thinking"].includes(rq) ? "try_first"
       : rq === "uptake" ? "aside" : rq === "move_on" ? "move_on" : GIVE_UP_WORDS.test(text) ? "give_up"
         : cls.outcome === "correct" ? "right" : cls.outcome === "misconception" ? "misconception" : ["incorrect", "partial"].includes(cls.outcome) ? "wrong" : null;
+}
+const columnOf = (input, prev) => { const column = columnName(input, prev); return column ? { part: null, column, help: null } : null; };
+export function cellAddressOf(prev, input) {
+  if (!prev || input?.event !== "turn") return null;
+  const kit = input.kit, lm = prev.lastMove ?? {}, sb = lm.scriptBeat;
+  const column = columnName(input, prev);
   if (!column) return null;
   const script = scriptFor(kit)?.script ?? null;
   if (lm.kind === "greet") return script?.greetSimpler ? { part: `${script.topicId ?? "lesson"}:greet`, column, help: "fresh" } : null;
@@ -3042,8 +3049,31 @@ export function step(prev, input) {
     if (out.move) out.move = { ...out.move, ...add };
   }
   // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
-  const cell = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
-  if (cell && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, cell }; if (out.move) out.move = { ...out.move, cell }; }
+  // (dc-r8-director23 R2: the column is what the walk read on THIS turn — a move built from the last one (K's second wording) never keeps
+  // that turn's cell; a column with no part the walk is on is still recorded, with no part)
+  const cell0 = (() => { try { return cellAddressOf(prev, input) ?? (input?.event === "turn" ? columnOf(input, prev) : null); } catch { return null; } })();
+  // (dc-r8-director23 R2, c4 offtopic 46: "samajh nahi aaya" after her reply turn got "Theek hai." and the after-aside joint — the move,
+  // a copy of the last one, kept its asideAck. An aside is acknowledged on the turn that answers one, and only then)
+  // (the second half of a split turn — heldTurn — returns early with the reply turn's returnAnswer still on the state)
+  const isReply = !!input?.cls?.asideReply || (!!out?.state?.returnAnswer && !!prev?.returnAsked);
+  if (input?.event === "turn" && out?.state && !isReply) {
+    if (out.state.returnAnswer) out.state.returnAnswer = undefined;
+    if (out.state.lastMove?.asideAck || out.state.lastMove?.returnReply) { const { asideAck: _a0, returnReply: _r0, ...lmA } = out.state.lastMove; out.state.lastMove = lmA; }
+    if (out.move?.asideAck || out.move?.returnReply) { const { asideAck: _a1, returnReply: _r1, ...mA } = out.move; out.move = mA; }
+  }
+  // (what the walk did decides the column where its action says more than the reading: a park or an aside acknowledged is "aside", a
+  // break or a stop is "stop", her reply's answer is "aside_reply")
+  const lmNow = out?.state?.lastMove ?? {};
+  const acted = input?.event !== "turn" ? null
+    : (out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0) || lmNow.asideAck && !input.cls?.asideReply ? "aside"
+      : lmNow.kind === "break" || lmNow.stopping || (lmNow.kind === "wrap" && lmNow.stopping) ? "stop"
+        : input.cls?.asideReply ? "aside_reply" : null;
+  const cell = acted ? { part: cell0?.part ?? null, column: acted, help: cell0?.help ?? null } : cell0;
+  if (out?.state?.lastMove && input?.event === "turn") {
+    const { cell: _c0, ...lm1 } = out.state.lastMove;
+    out.state.lastMove = cell ? { ...lm1, cell } : lm1;
+    if (out.move) { const { cell: _c1, ...m1 } = out.move; out.move = cell ? { ...m1, cell } : m1; }
+  }
   return out;
 }
 function stepCells(prev, input) {
@@ -3581,7 +3611,10 @@ function step0(prev, input) {
     const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
     const pt = b ? saidIn(b.point, s.ctx?.lang ?? "hinglish") : null;
     const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-6).map((t) => normLine(t.text ?? ""));
-    if (pt && !recentT.some((y) => y.includes(normLine(pt).slice(0, 50))) && !(move.sayFirst ?? []).some((y) => normLine(y).includes(normLine(pt).slice(0, 50)))) { move.sayFirst = [...(move.sayFirst ?? []), String(pt).trim()]; move.resumed = bid; }
+    // (dc-r8-director23 R2: her reply to the child's answer goes on from where the lesson stood — a card posed earlier in the lesson had
+    // its point said then, however long ago; it is not said again because of the aside)
+    const posedEarlier = s.posedAt?.[s.activeItemId] != null && s.posedAt[s.activeItemId] < (s.turn ?? 0);
+    if (pt && !posedEarlier && !recentT.some((y) => y.includes(normLine(pt).slice(0, 50))) && !(move.sayFirst ?? []).some((y) => normLine(y).includes(normLine(pt).slice(0, 50)))) { move.sayFirst = [...(move.sayFirst ?? []), String(pt).trim()]; move.resumed = bid; }
   }
   // v6: which of them is the skill's bridge (its own segment; brain/propose.js)
   if (p.bridgeSaid) move.bridgeSaid = String(p.bridgeSaid);
