@@ -47,10 +47,15 @@ test("D13.1: one sentence said every time is refused; a return without {said}, a
 test("D13.3: a point that solves a later card is refused (c4 e1 '12 … 4 barabar group, har group mein 3' over e3's 12 → 3)", () => {
   const s = script("c4-maths-ch05-t01");
   const e1 = s.skills[1].explain[0], e3 = s.skills[1].explain[2];
-  assert.equal(e3.ask.key, "5");
+  // (director22 clause 8 rewrite, 2026-11-15: e3 now asks the backwards card — 5 of 20 marbles is which fraction, key 1/4 — and
+  // e1's point no longer groups 12 in 4s of 3 (the judge's "2 group" giveaway), so the director18 point is put back below to
+  // show the checker still refuses it; the live pilots must carry no such point at all)
+  assert.equal(e3.ask.key, "1/4");
   assert.match(e3.ask.prompt.hi, /20/);
   assert.notDeepEqual(e3.ask.board, e1.ask.board, "e3 is posed on a heap e1 does not draw");
+  for (const id of PILOTS) assert.deepEqual(pointKeyErrors(script(id)), [], id);
   // the director18 shape: e3 back on 12 → 3 while e1's point groups 12 in 4s of 3
+  e1.point = { hi: "Yeh 12 laddoo hain, 4 barabar group mein, har group mein 3.", en: "Here are 12 laddoos in 4 equal groups, 3 in each group." };
   e3.ask.prompt = { hi: "In 12 kanchon ka 1/4 kitna hai?", en: "What is 1/4 of these 12 marbles?" };
   e3.ask.key = "3";
   assert.ok(pointKeyErrors(s).some((x) => /s2\/e1 point: states 3, the key of c4-maths-ch05-t01-s2\/e3 still to come, with its prompt's 12/.test(x)));
@@ -61,10 +66,13 @@ test("D13.3: c5-t02 e1's why is a full clause; the gap remediations are one shor
   const why = s.skills[0].explain[0].ask.why;
   assert.ok(/\bhain\b/.test(why.hi) && /\bhai\b/.test(why.hi) && !/^2 patti/.test(why.hi), why.hi);
   assert.deepEqual(whyVerbErrors({ skills: [{ ...s.skills[0], explain: [s.skills[0].explain[0]], checks: [], remediation: [] }] }), []);
-  for (const [i, j] of [[1, 2], [2, 2]]) {
+  // (director22 clause 8 rewrite, 2026-11-15: the remediation says were made general, each a different case; s3's is two boxes
+  // of equal sections, each one SECTION short — "ek-ek khaane ki kami" — the same one-short rule in its own thing's word)
+  for (const [i, j, one] of [[1, 2, /ek-ek hissa/], [2, 2, /ek-ek khaane ki kami/]]) {
     const r = s.skills[i].remediation[j];
-    assert.match(r.say.hi, /ek-ek hissa/, `s${i + 1} rem${j}: one short`);
-    assert.doesNotMatch(r.say.hi, /do-do hisse/);
+    assert.equal(r.targets, "c5-maths-ch02-t02-m-gap-thinking");
+    assert.match(r.say.hi, one, `s${i + 1} rem${j}: one short`);
+    assert.doesNotMatch(r.say.hi, /do-do (hisse|khaane)/);
     assert.ok(r.then.board.params.bars.every((b) => b.shade === 0));
   }
   // s1 c1's close shows the answer: shaded

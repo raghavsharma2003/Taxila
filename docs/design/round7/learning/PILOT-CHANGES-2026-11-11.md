@@ -475,3 +475,38 @@ A child takes both c5 ch02 lessons, so they now share one word per idea: the wor
 
 No key, board or card order changed. 104 changed strings read by a reader who did not write them: 90 pass; the 14 that still
 walked a gap ("kitne gap chalna hai") were rewritten as crossing it and pass check.mjs. The `terms` glossaries are unchanged.
+
+## director22 clause 8 and T2/T5 (2026-11-15)
+
+Clause 8 fired for c5-t02, so all four pilots got a full independent read, then fixes, then a second and a third read of every change.
+The readers and the fixers were different agents. No key was wrong in any read.
+
+| Pilot | First read (untrue, giveaway) | Fixed fields (rounds 1+2+3) | Second read pass | Third read pass |
+|---|---|---|---|---|
+| c4 ch05-t01 | 4, 8 | 148 + 61 + 17 | 128/148 | 54/61 |
+| c5 ch02-t01 | 3, 2 | 97 + 51 + 7 | 86/100 | 46/51 |
+| c5 ch02-t02 | 4, 6 | 197 + 23 + 10 | 187/197 | 19/23 |
+| c6 ch06-t01 | 2, 2 | 99 + 12 + 1 | 92/99 | 11/12 |
+
+The main loop read the last round's changes (the c5-t02 and c5-t01 round 3, the c4 round 3 and the c6 ribbon line) and passed them.
+
+- **New fields (T2, T5):**
+  - `teachback.leadIn`: three forms per pilot.
+  - `skills[i].covered`: one sentence per skill. Only the first opens "Aaj ki baat yeh thi"; the wrap says those of the skills reached.
+  - `remediation[j].sayAlt` on every remediation: 5 + 9 + 7 + 6. Each is a different picture of the same mix-up.
+- **Words:**
+  - The drawn strip is "patti" in every pilot.
+  - c4: "bina rang ka" for an unshaded piece; a quarter is 1/4.
+  - c5 chapter: "gap" for a step along the line (the ribbon's pieces are gaps), "hissa" for a part of a strip or whole, "kami" for how far short of a whole, "upar ki line / neeche ki line" for the board's rows, and "poora" only for one whole.
+  - c6: "aadha chakkar" for half a perimeter, "bhuja" for a side, "kinaara" only for the whole edge, and "do guna".
+- **Untrue lines fixed:**
+  - c4: the s3 worked problem (two strips); "20 ka aadha"; both bridges.
+  - c5-t01: the s2 bridge (the lines go to 3); the ruler; the rope steps.
+  - c5-t02: the ribbon card (two ribbons); both bridges; "sit right under".
+  - c6: the s2 bridge; the wrap's breadth sentence.
+- **Giveaways fixed:**
+  - Simplers that read out their card's answer, in all four pilots.
+  - Remediation says that worked their own then-card's case now show a different case, on their own board where they speak its numbers.
+  - c6 s3 e2's halving, and the gate cost (the child now works out ₹380).
+- **Repeated question frames:** changed in every pilot, with every changed card solved again. No skill asks one shape twice.
+- **Left:** the c4 s3 e1 board still draws the 4-part strip under the half while the child predicts. check.mjs requires the card's board to draw its answer board's figure, so this goes to Studio as a board rule.

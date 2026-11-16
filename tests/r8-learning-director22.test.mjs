@@ -39,9 +39,11 @@ test("one word per idea: two words of one synonym set in one script's spoken Hin
 
 const v24 = () => ({
   version: 2.4,
-  teachback: { prompt: T("Ek patti ke 6 barabar tukde hain, 1 rangin. Rangin tukda kaunsa bhinn hai?"), key: "1/6", accept: ["ek bata chhe"], why: T("6 barabar tukdon mein se 1 rangin, toh 1/6.") },
+  teachback: { prompt: T("Ek patti ke 6 barabar tukde hain, 1 rangin. Rangin tukda kaunsa bhinn hai?"), key: "1/6", accept: ["ek bata chhe"], why: T("6 barabar tukdon mein se 1 rangin, toh 1/6."),
+    leadIn: [T("Chalo, aaj ka ek aakhri sawaal, poore paath se.", "Now one last question from the whole lesson."), T("Jaane se pehle ek sawaal aur.", "One more question before we stop."), T("Ab ek sawaal jismein aaj ki saari baat aati hai.", "Now a question that uses all of today.")] },
   wrap: { covered: T("Aaj humne dekha ki barabar tukde hi bhinn banate hain. Neeche ka number batata hai poora kitne tukdon mein bata.", "Today we saw that only equal pieces make a fraction. The bottom number says how many pieces the whole has."), goodbye: T("Phir milte hain!", "See you next time!") },
-  skills: [{ skillId: "x-s1",
+  skills: [{ skillId: "x-s1", covered: T("Barabar tukde hi bhinn banate hain, aur neeche ka number poore ke tukde ginta hai.", "Only equal pieces make a fraction, and the bottom number counts the whole's pieces."),
+    remediation: [{ say: T("Roti ke 3 tukde barabar nahi hain, toh unka naam 1/3 nahi.", "The roti's 3 pieces are not equal, so they are not thirds."), sayAlt: T("Socho ek dost ko bada tukda mila aur do ko chhote: kya yeh barabar baant hai?", "Think: one friend got a big piece and two got small ones. Is that a fair share?") }],
     explain: [{ id: "e1", point: T("Roti ke 4 barabar tukde, har ek 1/4.", "A roti in 4 equal pieces, each 1/4."), pointAlt: T("Ek paper ko do baar modo: chaar ek jaise tukde bante hain.", "Fold a paper twice: four same pieces."),
       ask: { prompt: T("Ek tukda kaunsa bhinn hai?"), key: "1/4", why: T("4 barabar tukdon mein se ek, toh 1/4.", "One of 4 equal pieces, so 1/4."), whyAlt: T("Chaar mein se ek tukda lo, woh chauthai hai.", "Take one of four: that is a quarter.") } }],
     workedExample: { problem: T("Ek cake ke 8 barabar tukde, 3 kha liye.", "A cake in 8 equal pieces, 3 eaten."), problemAlt: T("Socho 8 dost hain aur 3 ne apna tukda le liya.", "Think of 8 friends, and 3 took their piece.") },
@@ -60,6 +62,23 @@ test("v2.4 (E1, C1, S2): the full shape passes; each missing or wrong part is na
   s = v24(); delete s.skills[0].workedExample.problemAlt; assert.ok(d22Errors(s).some((x) => /problemAlt: missing/.test(x)));
   s = v24(); delete s.skills[0].checks[0].reask; assert.ok(d22Errors(s).some((x) => /cannot be asked alone: give it a reask/.test(x)), "'Kya woh sahi hai?' alone");
   s = v24(); s.skills[0].checks[0].reask = T("Kya woh sahi hai?", "Is that right?"); assert.ok(d22Errors(s).some((x) => /points back/.test(x)));
+});
+
+test("director22 T2, T5, clause 8: teach-back lead-ins, a covered sentence per skill, a remediation's second wording, two more word sets", () => {
+  assert.deepEqual(d22Errors(v24()), []);
+  let s = v24(); delete s.teachback.leadIn; assert.ok(d22Errors(s).some((x) => /teachback\.leadIn: three forms/.test(x)));
+  s = v24(); s.teachback.leadIn[1] = T("Ek aakhri sawaal: 1/6 kya hai?", "One last question: what is 1/6?"); assert.ok(d22Errors(s).some((x) => /asks nothing/.test(x)) && d22Errors(s).some((x) => /names no value/.test(x)));
+  s = v24(); s.teachback.leadIn[2] = s.teachback.leadIn[0]; assert.ok(d22Errors(s).some((x) => /the same as another form/.test(x)));
+  s = v24(); delete s.skills[0].covered; assert.ok(d22Errors(s).some((x) => /x-s1\.covered: one sentence/.test(x)));
+  s = v24(); s.skills[0].covered = T("Tumne barabar tukde dekhe. Phir bhinn.", "You saw equal pieces. Then fractions."); assert.ok(d22Errors(s).some((x) => /one sentence \(got 2\)/.test(x)) && d22Errors(s).some((x) => /never what the child did/.test(x)));
+  s = v24(); delete s.skills[0].remediation[0].sayAlt; assert.ok(d22Errors(s).some((x) => /remediation\[0\]\.sayAlt: missing/.test(x)));
+  s = v24(); s.skills[0].remediation[0].sayAlt = s.skills[0].remediation[0].say; assert.ok(d22Errors(s).some((x) => /remediation\[0\]\.sayAlt: repeats a sentence/.test(x)));
+  // the drawn strip and half a perimeter (director22 judges: bar beside patti; aadha raasta / kinaara / chakkar / parimap)
+  const one = (hi) => synonymErrors({ skills: [{ checks: [{ prompt: T(hi) }] }] });
+  assert.equal(one("Is bar ke 4 hisse hain. Patti ka ek hissa rangin hai.").length, 1);
+  assert.equal(one("Aadha raasta 9 cm hai. Aadha chakkar kitna?").length, 1);
+  assert.deepEqual(one("Aadha chakkar 9 cm hai. Do aadhe chakkar milkar poora."), []);
+  assert.deepEqual(one("Is patti ke 4 hisse hain. Doosri patti ke 8."), []);
 });
 
 test("J1: four seam kinds, three forms each, from v2.4; a seam asks, judges and promises nothing", () => {

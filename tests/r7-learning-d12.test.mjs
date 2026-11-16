@@ -48,7 +48,21 @@ test("D12.3: a why stating a later card's key in its skill is refused (c5-t02 e1
 
 test("D12.4: c4's s2 points each model one grouping on their card's board, never the ask's own answer", () => {
   const s = script("c4-maths-ch05-t01");
-  for (const b of s.skills[1].explain) {
+  // (director22 clause 8 rewrite, 2026-11-15: e1's point gave each child "2 group" of 3 before its card asked half of 12 — a
+  // giveaway the judge named — so e1 now deals 12 LOOSE laddoos: no grouping is drawn, so none can be the answer, and its point
+  // walks the equal sharing; e2 and e3 still model one grouping each, never the ask's own answer)
+  const [e1, ...grouped] = s.skills[1].explain;
+  assert.equal(e1.id, "e1");
+  for (const board of [e1.board, e1.ask.board]) {
+    assert.equal(board.template, "shade-grid@1", "e1: loose laddoos, no grouping drawn");
+    assert.equal(board.params.rows * board.params.cols, 12, "e1: the 12 laddoos the point names");
+    assert.equal(board.params.shade, 0, "e1: nothing shaded, so no share is drawn");
+    assert.equal(board.params.hideResult, true, "e1: the total's result hidden");
+  }
+  assert.match(e1.point.hi, /barabar baant/i, "e1: the point walks the equal sharing");
+  assert.doesNotMatch(e1.point.hi, new RegExp(`\\b${String(e1.ask.key).match(/\d+/)[0]}\\b`), "e1: the point never states the ask's answer");
+  assert.equal(grouped.length, 2);
+  for (const b of grouped) {
     const board = b.ask?.board ?? b.board;
     assert.equal(board.template, "equal-groups@1", `${b.id}: a grouping is drawn`);
     const each = board.params.each ?? null;
