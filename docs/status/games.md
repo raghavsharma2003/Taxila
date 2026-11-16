@@ -6,6 +6,54 @@ gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0
 gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 
+## 2026-11-16, exact pickOptions and the habit battery: galti-pakdo and nazariya/tri (branch `claude/r8-pick-options`, from `44f997d83`)
+
+**Done (code `902e6da9a`; `NAMING_OFF` untouched, both modes keep naming and their batteries pass; nothing a child sees changes; no served level changed, because 64,800 served bodies hash the same before and after, `proof.discriminates` included, so no re-cert).** This is answer 2 under "a computed default" of `RULINGS-2026-11-16-gate2-answers.md`. Packets: `docs/design/round8/games-judging/galti-pakdo/BATTERY.md` and `nazariya-tri/BATTERY.md`.
+
+- **Exact `pickOptions`.**
+  - galti-pakdo: the verdict is sab sahi or one of the working's n − 1 lines. check-later's pick is the line the claim is weighed in first, any of the n.
+  - tri `more`: every grid point above the base, (w + 1) × zb of them.
+  - p and k over every generated level (11,105 levels: each entry × fades × 20 seeds × focus):
+
+  | Pick | p before | k before | p after | k after |
+  |---|---|---|---|---|
+  | galti pakdo:neat-correct (250 levels) | 1/3 | 4 | 1/4–1/3 | 3–4 |
+  | galti pakdo:right-answer (741) | 1/2 | 4 | 1/4–1/3 | 3–4 |
+  | galti pakdo:check-later (250) | 1/3 | 4 | 1/4–3/4 | 3, 4, or never (82 levels where 2 or 3 lines in 3 or 4 show it) |
+  | galti sudhaaro: the same three (833 / 501 / 833) | not a pick: named from one level | 1 | as pakdo | 3–4 (check-later: never on 265) |
+  | tri more:shape-looks (2,028) | 1/2 | 4 | 0.103–0.308 | 2 (1,389), 3 (639) |
+
+- **What the battery found, and what was built:**
+  - **galti sudhaaro was not a declared pick**, so a mix-up there was named from one level. Its verdict is the same line pick as pakdo's. The blind verdict was named 0.37 (worst fade) and 0.46 (worst door), and the same slip every level ("the option below") 0.59 and 0.71. It is now `chancePicks: ["sudhaaro"]`. `r7-games-galti-pakdo` now asserts chance weight for its mix-up rows.
+  - **tri `more` failed at both k's.** The careful point has three neighbours on A's top line: one random slip a level was named 0.32, and the same slip every level 0.9–1.0 (0.59–1.0 under the old k). Built:
+    - H1, `triLogic.sightingOf`: the point is the value.
+    - H3's shape, `confirmMore`: a sighting counts only when her next corner after the play-out is again on A's top line. Unconfirmed, it is a plain miss at the game weight.
+    - `malActs` carries the holder's confirmation.
+- **Battery** (`tests/_habit-children.mjs` gains both modes and `cellIds`, because galti's kinds of working hang on the child id): worst non-holder, worst fade / worst door sequence.
+
+  | Mode | Gate | Full |
+  |---|---|---|
+  | galti pakdo | 0.016 / 0.042 | 0.025 / 0.033 (the option below) |
+  | galti sudhaaro | 0.031 / 0.042 | 0.037 / 0.042 (the option below) |
+  | tri more | 0.005 / 0.014 | 0.004 / 0.008 (blind) |
+
+  No cell of a child with no randomness reaches 0.5. Holders (full): tri 0.998–1.000. galti 0.001–0.068, reported not failed: the default asks 3–4 sightings in four levels, and a working is neat, lucky or right a third of the time each, as the ruling foresaw. These habits are listed as the mix-up, with why: "sab sahi every level" holds neat-correct and right-answer, and "a later line weighed first every level" holds check-later.
+- **(family, mix-up) pairs changed:** 4 in p and k; 3 added (sudhaaro).
+- **Tests run (each on its own; not the full gate, not the browser suites):**
+  - `r8-habit-battery-{galti-pakdo,nazariya-tri}` (gate 28 s and 18 s; `HABIT_FULL=1` via the same tool: about 5 min and 2 min);
+  - `r8-habit-battery-{stambh-tally,kon-place,kon-name}` (the shared tool changed);
+  - `r8-picks-default`, `r7-games-galti-pakdo`, `r7-games-nazariya`, `r7-games-chance-weight`, `r4-khand-server`, `r4-khand-law`;
+  - `r8-play-laws`, `r8-naming-off`, `play-evidence`, `r8-gate2-facts-row`, `r8-play-why`, `r8-play-phone-seam`, `r7-games-darpan`, `r7-games-cpu-timing`, `test-isolation`;
+  - `tsc -b`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+
+**Next:** the next families of the ruling's list, `naksha` steps and the tool strips, the same way.
+
+**Questions for main:**
+1. **galti's holders are named 0.001–0.068.** The default is safe and, here, nearly silent. Is a constructed act confirmed on the same level wanted for galti? For example, after the beam tips, she weighs the claim again in the question, or writes the flagged line's step. Or is near-silence acceptable for these three mix-ups?
+2. **check-later on a working whose bug is its first step:** 2 or 3 of its 3 or 4 lines show the mix-up, so k is never there (82 of 250 pakdo levels, 265 of 833 sudhaaro). Accept, or should the generator avoid `at = 1` for neat workings when check-later is the focus?
+3. **tri `box` and `match` are not picks.** lxb and slant-side come from a laid floor or rectangle, a constructed act named from one level, and they are not in the battery. One constant floor size every level would be named on any level where b × h equals it. Battery them next, or are constructed counts outside "every family's picks"?
+4. **The unconfirmed tri row goes to the game weight (0.5) in the grade itself.** `r7-games-chance-weight` requires it (tri `more` is `oneDecision`), and it matches H5. kon/name say's unconfirmed row keeps 0.25 inside the grade, and H5 raises it to 0.5 only at the server's edge. Align the two in the grade?
+
 ## 2026-11-16, gate 2 H5 (the facts row) and H7 (every generated level) (branch `claude/r8-gate2-h5h7`, from `8f5412387`)
 
 **Done (`NAMING_OFF` untouched; nothing a child sees changes; no served level or drawing changed: generatePlace's output is byte-identical over 120,866 levels, so no re-cert):**
