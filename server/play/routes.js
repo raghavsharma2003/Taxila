@@ -80,7 +80,7 @@ function seamOf(grade, level, moments, impasse) {
   const mis = moments.find((m) => m.kind === "misconception_consequence");
   // round 8 law 3: a mix-up from one pick among a few reaches the lesson as an ordinary miss does: no seam at all (evening
   // ruling kon/name 3: nothing about it reaches the teacher's view until it repeats)
-  if (mis && chancePick(level, mis.misconceptionId)) return null;
+  if (mis && chancePick(level, mis.misconceptionId, undefined, mis)) return null;
   // dc-r8-game-gate-play-then-evidence: a mode with naming off sends no misconception seam (her miss shows at level end)
   if (mis && !namingOn(level.family, level.mode)) return null;
   if (mis) return { kind: "misconception", facts: { ...mis.facts, misconception: level.mal[mis.misconceptionId] ?? "" } };
@@ -169,7 +169,7 @@ export const routes = {
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       // (a mix-up from one pick is recorded as the ordinary miss it is graded as)
-      moments: fresh.map((m) => (m.kind === "misconception_consequence" && chancePick(level, m.misconceptionId) ? "law_refused" : m.kind)), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
+      moments: fresh.map((m) => (m.kind === "misconception_consequence" && chancePick(level, m.misconceptionId, undefined, m) ? "law_refused" : m.kind)), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
     const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trail ? { trail } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };

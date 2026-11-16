@@ -133,7 +133,8 @@ export const namingOn = (family: string, mode: string): boolean => !NAMING_OFF.h
 /** the facts keys that carry a mix-up (what she did that matches one), dropped when naming is off */
 export const NAMING_FACT_KEYS: readonly string[] = ["mal", "sign", "misconception", "shown", "crossesMissing", "vertex_ok", "arms_ok"];
 /**
- * Gate 2, dc-r8-gate2-habit-children (H1: two sightings are two different acts). On in the product. A TEST SEAM only: the habit battery
+ * Gate 2, dc-r8-gate2-habit-children (H1, H3, H4: two sightings are two different acts; kon/name say's order act confirmed on
+ * the same level; stambh/tally keep's `five` on two levels). On in the product. A TEST SEAM only: the habit battery
  * (tests/_habit-children.mjs) turns it off inside one synchronous run, and puts it back, to show the failures those rules fix
  * (its negative control). Nothing else writes it.
  */
@@ -720,6 +721,9 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  the act that showed it, and its moment. A sighting counts toward a repeat only when its value differs from every earlier
    *  sighting's (server/play/levels.js nameOnRepeat). null or absent: no value (the repeat rule alone) */
   sightingOf?(level: PlayLevel<P>, malRule: string, state: S, moment: Moment): SightingValue | null;
+  /** gate 2 (H4): a moment whose mix-up is a pick although its goal and mal-rule are not (stambh/tally keep's `five`: one
+   *  button pressed for every stroke), graded at chance weight as chanceMis (gradeLevel and the server's chancePick read this) */
+  chanceAt?(level: PlayLevel<P>, moment: Moment): boolean;
   /** gate 2: a level whose right answer says less than its goal's usual one (kon/name: the first fade-1 level with O at
    *  the vertex, as the book's first figure; a find level where the mix-up's reading meets no other arc): its correct
    *  enters at CHANCE_WEIGHT (the controllerEasy temper, the learner model's one step below a game's weight) and

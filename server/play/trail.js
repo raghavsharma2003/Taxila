@@ -43,7 +43,7 @@ export function buildTrail(level, acts, replay, { grade, minActs = null, isPick 
     if (m.kind !== "misconception_consequence" || !m.misconceptionId || mal.some((x) => x.rule === m.misconceptionId)) continue;
     // round 8 law 3: a mix-up from one pick among a few is not reported (isPick: server/play/grade.js chancePick); the
     // play server names it when it repeats on another surface
-    if (typeof isPick === "function" && isPick(m.misconceptionId)) continue;
+    if (typeof isPick === "function" && isPick(m.misconceptionId, m)) continue;
     if (mal.length >= TRAIL_MAX_MAL) break;
     mal.push({ rule: id(m.misconceptionId), mis: id(level?.mal?.[m.misconceptionId]) });
   }

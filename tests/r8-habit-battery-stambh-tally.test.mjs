@@ -6,7 +6,8 @@
 // number she typed differs from every earlier sighting's (tallyLogic.sightingOf), so two rows on which the mix-up gives the
 // same number (19 and 20 both give 16) are one sighting. Every non-holder child is asserted under 1 in 10 at every fade.
 // keep: its only one-button habit that is named ("|" only, five as five standing lines) is the kit's own second sign, so it
-// is listed as holding the mix-up.
+// is listed as holding the mix-up; H4 (built) names it, like any habit of one button, only on a second keep level with other
+// totals ("five" is a pick: tallyLogic.chanceAt, chanceRepeat "keep:tally-four"). "counted" still names from one level.
 //
 // The negative control runs always: the same children under the rules from before H1 (the battery's `legacy`) must still
 // show the judge's failure ("16 every time": the mix-up's number on rows 19 and 20, the second a firm sighting; "what I
@@ -17,7 +18,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, batteryTable, overLine, holders, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
 
@@ -80,4 +81,30 @@ test("read: every child who does not hold the mix-up is named in fewer than 1 se
 test("keep: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {
   const o = over.filter((x) => x.goal === "keep");
   assert.deepEqual(o, [], o.map((x) => `${x.label}: ${x.share.toFixed(3)} at fade ${x.fade}`).join("\n"));
+});
+
+test("H4: keep's \"five\" needs two levels with different totals (old rules: named from one level); \"counted\" still names from one", () => {
+  const entry = coverage().entries.find((e) => e.family === "stambh" && e.mode === "tally" && e.goal === "keep");
+  const kids = childrenFor("stambh/tally", "keep");
+  const firstNamed = (cid, legacy) => {
+    const child = kids.find((c) => c.id === cid), at = [];
+    withRules(legacy, () => withGenMemo(() => {
+      for (const fade of FADES) for (const pL of PLS) for (const doors of DOOR_SEQS) {
+        const { trace } = runSession({ entry, cell: { goal: "keep", fade, pL, doors }, child, sIdx: 0 });
+        const i = trace.findIndex((x) => x.rows.some((r) => r.misconceptionId === KIT));
+        // the levels named before it are keep levels whose rows' counts (her totals, right) differ from this one's
+        if (i > 0 && !legacy) assert.ok(trace.slice(0, i).some((x) => x.goal === "keep" && x.pick === KIT && x.params.counts.join() !== trace[i].params.counts.join()), `${cid}: named on a second level with other totals`);
+        at.push(i);
+      }
+    }));
+    return at;
+  };
+  for (const cid of ["holder-five", "holder-plain"]) {
+    const old = firstNamed(cid, true), now = firstNamed(cid, false);
+    assert.ok(old.every((i) => i === 0), `${cid}, old rules: named from the first level`);
+    assert.ok(now.every((i) => i !== 0), `${cid}, H4: never from one level`);
+    assert.ok(now.filter((i) => i > 0).length >= 0.9 * now.length, `${cid}, H4: named on a later level in most sessions (${now})`);
+  }
+  // "counted" (the totals short by their bundles, lines across drawn) still names from the first level
+  assert.ok(firstNamed("holder-counted", false).every((i) => i === 0));
 });

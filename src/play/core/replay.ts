@@ -55,7 +55,9 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   const evidence: PlayEvidence[] = [];
   const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as GameWeight, levelId: level.levelId };
   const chance = !!level.goal && !!logic.oneDecision?.includes(level.goal);
-  const pick = (mis?: string) => chance || (!!level.goal && (!!logic.chancePicks?.includes(level.goal) || (!!mis && !!logic.chancePicks?.includes(`${level.goal}:${mis}`))));
+  // gate 2 (H4): a moment the family marks as a pick (FamilyLogic.chanceAt) is one too
+  const at = (m?: Moment) => { if (!m || !HABIT_RULES.on) return false; try { return !!logic.chanceAt?.(level, m); } catch { return false; } };
+  const pick = (mis?: string, m?: Moment) => chance || at(m) || (!!level.goal && (!!logic.chancePicks?.includes(level.goal) || (!!mis && !!logic.chancePicks?.includes(`${level.goal}:${mis}`))));
   // gate 2 (H1): what she did at the pick, as a value (FamilyLogic.sightingOf), from the state just after that act
   const actOf = (mis: string, m: Moment, seq: number): SightingValue | null => {
     if (!HABIT_RULES.on || typeof logic.sightingOf !== "function") return null;
@@ -64,7 +66,7 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
   if (first) {
     if (first.kind === "misconception_consequence") {
       const kit = first.mis ? level.mal[first.mis] : undefined;
-      if (pick(first.mis)) {
+      if (pick(first.mis, first.m)) {
         const v = kit && first.mis && first.m ? actOf(first.mis, first.m, first.seq) : null;
         evidence.push({ ...base, outcome: "incorrect", weight: CHANCE_WEIGHT, ...(kit ? { chanceMis: kit } : {}), ...(v !== null ? { chanceAct: v } : {}), actSeq: first.seq });
       }
