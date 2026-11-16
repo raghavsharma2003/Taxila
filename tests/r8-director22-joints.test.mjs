@@ -1,23 +1,24 @@
-// dc-r8-director22 J2: backTo is said when, and only when, a card comes back after another unit (both directions on the rows); a miss
-// verdict and its remediation always have their joint.
+// dc-r8-director22 J2, rewritten for dc-r8-director23 S: backTo is said when, and only when, a card comes back after another unit, and a
+// miss verdict and its remediation always have their joint — read from the seam pass's record (`seams`) on each row, nothing else.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { checkRun } from "../evals/hybrid-side-by-side/check-run.mjs";
 import { PREDICATES, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
 const D22 = new URL("./fixtures/eval-results/director22", import.meta.url).pathname;
+const row = (seams) => ({ who: "teacher", text: "x", seams });
 
-test("the miss → remediation joint is gated, and director22's steady rows are missing it", () => {
+test("the miss → remediation joint is gated and reads the seams list; director22's rows, which have none, are flagged as unread", () => {
   assert.ok(!PENDING.has("missRemediationJoint"));
-  assert.ok(checkRun(D22).filter((x) => x.predicate === "missRemediationJoint").length >= 3);
+  assert.match(PREDICATES.missRemediationJoint("L", row([{ left: "missVerdict", right: "remediation", joint: null }])), /no joint/);
+  assert.equal(PREDICATES.missRemediationJoint("L", row([{ left: "missVerdict", right: "remediation", joint: "beforeRemediation", form: "Ise ek alag tareeke se dekhte hain." }])), null);
+  assert.ok(checkRun(D22).some((x) => x.predicate === "seamJoints" && /no seams record/.test(x.why)));
 });
 
-test("backTo both ways: said after another unit, never after a hint on the same card", () => {
-  const card = "Neeche kitne chalk ke marks hain?";
-  const ctx = (prevUnit) => ({ prevT: { text: "Pehle wala sawaal", held: { unit: prevUnit } }, saidCards: new Set([card.toLowerCase().slice(0, 40)]), jointHeads: { backTo: ["chalo, pehle wale sawaal ki taraf wapas aate hain"] } });
-  const row = (text) => ({ who: "teacher", text, card, held: { unit: "s1:c2" } });
-  const back = row(`Chalo, pehle wale sawaal ki taraf wapas aate hain. ${card}`);
-  assert.equal(PREDICATES.backToJoint("L", back, 1, ctx("s1:rem:m1")), null);
-  assert.match(PREDICATES.backToJoint("L", back, 1, ctx("s1:c2")), /no return/);
-  assert.match(PREDICATES.backToJoint("L", row(card), 1, ctx("s1:rem:m1")), /no backTo/);
+test("backTo both ways: said at a return, never at a seam that is no return", () => {
+  assert.equal(PREDICATES.backToJoint("L", row([{ left: "verdict", right: "returnCard", joint: "backTo", form: "Chalo." }])), null);
+  assert.match(PREDICATES.backToJoint("L", row([{ left: "start", right: "returnCard", joint: null }])), /no joint/);
+  assert.match(PREDICATES.backToJoint("L", row([{ left: "point", right: "card", joint: "backTo", form: "Chalo." }])), /no return/);
+  // (one joint a seam: a return out of her aside reply takes the after-aside joint, not backTo as well)
+  assert.equal(PREDICATES.backToJoint("L", row([{ left: "asideReply", right: "returnCard", joint: "afterAside", form: "Ab." }])), null);
 });

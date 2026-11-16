@@ -79,7 +79,8 @@ describe("r7-brain-v61.test.mjs", () => {
     setScriptForTest(T1, runScript(T1));
     const { kit, last } = await replay(RUN, "steady", T1, 21);
     const out = await sayAt(kit, last, "Haan, sahi hai, kyunki chhote denominator ka gap bada hota hai aur 1/8 sabse pehle aata hai. Taiyaar ho?");
-    assert.match(out.reply, /^Haan, sahi hai, kyunki sadak 8 barabar hisson mein hai/, out.reply);
+    // (dc-r8-director23 S: on a replayed lesson the verdict frame and the why's opener rotate from its seed)
+    assert.match(out.reply, /^(?:Haan, sahi hai|Bilkul sahi|Haan, bilkul theek|Sahi jawab)(?:, kyunki|\. Dekho,|:) sadak 8 barabar hisson mein hai/, out.reply);
     assert.doesNotMatch(out.reply, /chhote denominator/);
     assert.equal(out.guard.rightWhy, "authored");
   });
