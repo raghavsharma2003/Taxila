@@ -9,6 +9,60 @@ gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fai
 
 **Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
 
+## 2026-11-16, note 004: wrong-scale steered to its side; acute, tilted and steered levels in the layout suite (branch `claude/r8-steer-dir`, from `9e391c176` + `origin/int/r6`)
+
+**Done (`NAMING_OFF` untouched; before a miss, nothing a child sees changes except which levels are served):**
+- **Answer 1, the steer (`534f63dc0`).** After a wrong-scale sighting, the next level opens the same way as the sighting's level and has a key that no sighting had (measure: on both scales; draw: the asked size). The same kind of angle, acute or not, is tried first. Before, the focus went to clockwise levels only.
+  - The sign each pattern carries: "always the inner scale" is wrong exactly where the angle opens anticlockwise, "always the outer scale" where it opens clockwise, "always the larger number" on an acute angle, "always the smaller number" on an obtuse one.
+  - How it works: new optional `FamilyLogic.steerOf`, chance memory `steer`, `steersOf`, then `GenRequest.steers`; `placeSteer`, and `placeNeeds` gains `scale`.
+- **Note 004 item 4, the value rule for draw (the dot differs), in the same commit.** With the steer alone, "last time's right dot" went over the line in the gate sweep: 0.063 worst fade, **0.125 worst door (ttt)**. So while the steer is on, a draw level's mix-up dot is never the right dot of the level just played. Full sweep: she is no longer named (was 0.075).
+- **The level mix by the third level (`40171a2f4`, separate so it can be dropped).** It is still "by the fourth", as answer 4 asks. Served sessions met their first acute or anticlockwise angle only on the fourth level, where a sighting has no level left for its second. With the steer alone (gate sweep), inner scale was 0.167 in measure and 0.125 in draw, and larger number 0.19.
+- **Holders, before → after (gate / full):**
+
+  | Child | Before | After |
+  |---|---|---|
+  | always the inner scale, measure | 0 / 0 | **1.00 / 1.00** |
+  | always the inner scale, draw | 0 / 0 | **1.00 / 1.00** |
+  | always the larger number | 0.031 / 0.063 | **1.00 / 1.00** |
+  | smaller number | 0.92 (full) | 1.00 |
+  | outer scale | 0.96 / 0.98 (full) | 1.00 |
+  | other scale | 1.00 | 1.00 |
+  | vertex-off | 0.924 / 0.932 | 0.909 / 0.961 |
+  | always A | 0.60 | 0.62 |
+
+- **Worst non-holder, full sweep (503 s), before → after:**
+
+  | Goal | Worst fade | Worst door |
+  |---|---|---|
+  | measure | 0.005 → 0.007 | 0.011 → 0.008 |
+  | draw | 0.075 → **0.036** (the right dot, either button, join-wrong-end) | 0.050 → 0.050 |
+
+  No child with no randomness has a cell at 0.5 or more.
+- **Asserted in the battery:** the steer, 10,476 of 10,476 steps (4,588 more under the level mix); draw's dot, 6,032 of 6,032; inner and larger at 0.75 or more; the mix by the third level.
+- **Served levels changed** (gate-sweep sessions, careful child): measure 348 of 768, draw 338 of 768. **Re-certified** kon/place: 4,484 samples, all passing at every size. No cert sample changed, because the cert serves n = 0, which neither change touches, so `play.json` is unchanged and not in the diff.
+- **Task 2: the layout suite.** `tests/r8-games-kon-layout.test.mjs` also plays 8 levels the real picker serves (`placeLayoutLevels`; a headless test lists them):
+
+  | Goal | Acute | Acute, tilted 25° or more | Steered after vertex-off, from base 0 | From base 180 |
+  |---|---|---|---|---|
+  | measure | 35:0 | 20:40 (f2) | 110:135m | 105:180m |
+  | draw | 30:0 | 20:30 (f2) | 135:135m | 115:180m |
+
+  - It passes. No view change was needed.
+  - A first run with 12 levels passed in 12.6 min. The extra 4 were a clockwise tilted acute angle and a level steered after wrong-scale, for each goal, and none showed a fault. I trimmed to these 8 for time: the suite now runs **10.1 min** here (main measured 5–8 min before).
+- **Tests run (each on its own; not the full gate):**
+  - the kon/place battery, gate sweep and `HABIT_FULL=1`;
+  - `r8-games-kon-place`, `r8-games-kon-place-gate2`, `r7-games-kon`, `r7-games-kon-angles`, `r4-games-core-kon`;
+  - `r8-picks-default`, `r8-gate2-facts-row`, `cert-item-hash`, `r7-games-cert-twin`, `test-isolation`;
+  - `tsc -b`, `vite build`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+- **Browser suites:** ran `r8-games-kon-layout` (passes). Not run: the other `*-browser` suites. kon/place's state did not change, so none of them is for kon/place; the kon/name browser checks are inside `r8-games-kon-layout`.
+
+**Next:** restate "gate 2 battery passes: kon/place" with the integrated sha once main merges this; H6 per-day count stays parked.
+
+**Questions for main:**
+1. **The mix by the third level (`40171a2f4`).** Keep it? Without it, the steer names inner 0.17 and larger 0.19 (gate sweep); with it, 1.00. Dropping it means reverting that commit and re-certifying.
+2. **The same kind first.** Beyond answer 1's side, the steer tries the same kind (acute or obtuse) first, so one next level tests both "inner or outer" and "larger or smaller". Accept?
+3. **The dot rule is scoped to draw while the steer is on.** measure's "last time's right number" stays under the line (worst 0.008 by door) without it. Extend it to measure too, for symmetry?
+
 ## 2026-11-16, exact pickOptions and the habit battery: galti-pakdo and nazariya/tri (branch `claude/r8-pick-options`, from `44f997d83`)
 
 **Done (code `902e6da9a`; `NAMING_OFF` untouched, both modes keep naming and their batteries pass; nothing a child sees changes; no served level changed, because 64,800 served bodies hash the same before and after, `proof.discriminates` included, so no re-cert).** This is answer 2 under "a computed default" of `RULINGS-2026-11-16-gate2-answers.md`. Packets: `docs/design/round8/games-judging/galti-pakdo/BATTERY.md` and `nazariya-tri/BATTERY.md`.

@@ -23,6 +23,36 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 ## Gate 2 battery (2026-11-16: H1 built; the discriminating level built; the battery passes)
 
+**Third pass (2026-11-16, main's note 004, branch `claude/r8-steer-dir`).**
+- **Which sign each one-scale or one-number pattern carries.** The protractor's right scale is the one whose 0 lies on OA. On an angle opening anticlockwise that is the outer scale; on one opening clockwise it is the inner scale. So:
+  - "always the inner scale" is wrong exactly on angles that open **anticlockwise**, and right on every clockwise one;
+  - "always the outer scale" is wrong exactly on angles that open **clockwise**;
+  - "always the larger number" is wrong exactly on **acute** angles (the larger of θ and 180 − θ is the wrong one there), on either side;
+  - "always the smaller number" is wrong exactly on **obtuse** angles.
+
+  So the evidence for each is a second miss by the other scale on a level of the **same side and the same kind** as the first, with another key.
+- **The steer (answer 1).** After a wrong-scale sighting, the next level opens the same way as the sighting's level and has a key that none of the sightings had: measure's key on both scales, draw's asked size. A level of the same kind (acute or not) is tried first. Before this, the focus sent the next level to clockwise angles only (the only ones whose solve is evidence on the scale), where the inner reading is right. How it works: a sighting keeps `{ cw, key, acute }` (`placeSteer`, through the new `FamilyLogic.steerOf`, the chance memory, `steersOf` and `GenRequest.steers`), and `placeNeeds` tries side+kind, then side, then the list without it. Answer 4's level mix still comes first. Asserted in the battery: 10,476 of 10,476 steps in the full sweep, and 4,588 more under the level mix.
+- **The level mix moves to the third level.** It is still "by the fourth". Served sessions met their first acute or anticlockwise angle only on the fourth level, where a first sighting has no level left for its second. A separate commit; main can drop it.
+- **draw, note 004 item 4 (the dot differs).** With the steer alone, "last time's right dot" went over the line in the gate sweep: 0.063 worst fade, **0.125 worst door (ttt)**. A same-side level whose mix-up dot is the right dot just played makes that habit act as the mix-up. So while the steer is on, a draw level's mix-up dot is never the right dot of the level just played. Asserted: 6,032 of 6,032 in the full sweep. In the full sweep she is no longer named at all (was 0.075).
+
+| holder | before (gate / full) | after (gate / full) |
+|---|---|---|
+| measure · always the inner scale | 0 / 0 | **1.00 / 1.00** |
+| draw · always the inner scale | 0 / 0 | **1.00 / 1.00** |
+| measure · always the larger number | 0.031 / 0.063 | **1.00 / 1.00** |
+| measure · always the smaller number | 1.00 / 0.92 | 1.00 / 1.00 |
+| measure, draw · always the outer scale | 1.00 / 0.96, 0.98 | 1.00 / 1.00 |
+| the other scale's number or mark | 1.00 / 1.00 | 1.00 / 1.00 |
+
+With the steer but the mix still at the fourth level (gate sweep): inner 0.167 (measure) and 0.125 (draw); larger 0.19 with the same-kind try, 0 without it. Other holders, full sweep: vertex-off 0.909 measure (was 0.924), 0.961 draw (was 0.932); always 'A se jodo' 0.620 (was 0.600).
+
+| goal | worst non-holder, full sweep, worst fade: before → after | worst door: before → after |
+|---|---|---|
+| measure | 0.005 → 0.007 (one random slip a level, vertex-off, fade 3) | 0.011 → 0.008 (placed right, any number, wrong-scale, ggg) |
+| draw | 0.075 (last time's right dot) → 0.036 (the right dot, either button, join-wrong-end, fade 1) | 0.050 → 0.050 (the same child, ggg) |
+
+No child with no randomness has a cell at 0.5 or more. Full sweep: 503 s. **Served levels changed** in gate-sweep sessions, compared with before this branch: careful child 348 of 768 levels in measure and 338 of 768 in draw (third levels, and levels after a wrong-scale sighting). **Re-certified** kon/place: 4,484 samples, all passing at every size. No cert sample changed, because the cert's levels are a fresh child's first level and the focus level (n = 0), which neither change touches, so `server/forge3/certs/play.json` is unchanged. **Browser:** `tests/r8-games-kon-layout.test.mjs` now also plays 8 levels the picker serves: for measure and draw, an acute angle; an acute angle tilted 25° or more; and a level steered after vertex-off from base 0 and from base 180 (`placeLayoutLevels`). It passes, with no view change, in 10.1 min.
+
 **Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`, main's answers 1 and 4).**
 - **Answer 4, the level mix.** No acute angle was ever served: centred across the board, an acute angle's vertex sits too near the side for the protractor's half-disc, so the generator refused every one. A figure that does not fit centred is now moved across, nearest the middle first. From a session's fourth level, while it has not met an acute angle or one opening anticlockwise, the level is one that supplies what is missing (`placeNeeds`). Every served session in the battery's test meets both by its fourth level (asserted). Served levels changed: in the gate sweep's sessions, about two levels in three differ (careful child: 518 of 768 measure, 464 of 768 draw); distinct levels per goal rose (measure 35 to 49, draw 42 to 53 for the careful child). Re-certified: every sample passes at every size.
 - **Answer 1, vertex-off on a discriminating level.** Her sighting carries the level's base direction (the protractor's base line as the solver lays it, `baseDir`) and her offset in the protractor's frame. A second sighting counts only when the two base directions differ by 45° or more, the frame offset is the same (within `VO_BAND`), and so the board offset differs (`discriminatingPair`). After a first sighting the session is steered to a level 45° or more away (fade 1 may tilt for it); in the battery the next level after a holder's first sighting is that far away in every session (asserted at 95% or more). If none can be served within the four levels, vertex-off is not named that day. Note: an angle opening the other way has the same base direction (its OA points the other way, the protractor lies the same), so answer 4's mix does not by itself give question 1 its differing directions; the tilt does.
