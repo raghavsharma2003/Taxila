@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { chapterSynonymErrors, voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
+import { d24Errors, chapterSynonymErrors, voiceTextErrors, friendVerbErrors, bridgeTrueErrors, hookReuseErrors, synonymErrors, d22Errors, allBoardsResolve, jointErrors, asideReplyErrors, SEAM_KINDS } from "../scripts/lesson-scripts/check.mjs";
 
 const T = (hi, en = "x") => ({ hi, en });
 
@@ -138,4 +138,23 @@ test("main 2026-11-15: a chapter shares one word per idea; the chapter word is t
     const all = ["c5-maths-ch02-t01", "c5-maths-ch02-t02"].map((id) => ({ topicId: id, s: JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${id}.json`, import.meta.url), "utf8")) }));
     assert.deepEqual(chapterSynonymErrors(t, all), [], `the live ${t}`);
   }
+});
+
+test("director23 C and T2: a caption for every board's picture view, naming no key still to come; three wrap acknowledgements", () => {
+  const T2 = (hi, en = "x.") => ({ hi, en });
+  const s = () => ({ version: 2.4, teachback: {}, wrap: { ack: [T2("Achha, theek hai."), T2("Hmm, samajh gayi."), T2("Achha, sun liya.")] },
+    skills: [{ skillId: "x-s1", checks: [
+      { id: "c1", prompt: T2("Patti ke 4 hisse, 3 rangin. Rangin hissa kitna?"), key: "3/4", board: { template: "fraction-parts@1", params: { parts: 4, shade: 3 } },
+        viewCaption: T2("Wahi patti ab ek line par hai: har hissa ek gap.", "The same strip, now on a line: each part a gap.") },
+      { id: "c2", prompt: T2("Patti ke 8 hisse, 5 rangin. Kitna?"), key: "5/8", board: { template: "fraction-parts@1", params: { parts: 8, shade: 5 } },
+        viewCaption: T2("Is line par 8 barabar gap hain.", "This line has 8 equal gaps.") }] }] });
+  assert.deepEqual(d24Errors(s()), [], JSON.stringify(d24Errors(s())));
+  assert.deepEqual(d24Errors({ version: 2.3, skills: [{ checks: [{ prompt: T2("a?"), key: "1", board: { template: "x" } }] }] }), [], "v2.3 scripts are not asked");
+  let x = s(); delete x.skills[0].checks[0].viewCaption; assert.ok(d24Errors(x).some((m) => /checks\[0\]\.viewCaption: what to look at/.test(m)));
+  x = s(); x.skills[0].checks[0].viewCaption.hi = "Rangin hissa 3/4 hai."; assert.ok(d24Errors(x).some((m) => /its own card's key "3\/4"/.test(m)));
+  x = s(); x.skills[0].checks[0].viewCaption.hi = "Agle card mein 5/8 aayega."; assert.ok(d24Errors(x).some((m) => /checks\[1\]'s key "5\/8"/.test(m)), "a later card's key");
+  x = s(); x.skills[0].checks[1].viewCaption.hi = "Pichhli patti 3/4 thi; yahan 8 gap hain."; assert.deepEqual(d24Errors(x), [], "an earlier card's key is said and done");
+  x = s(); x.skills[0].checks[0].viewCaption.hi = "Kitne gap hain?"; assert.ok(d24Errors(x).some((m) => /asks nothing/.test(m)));
+  x = s(); x.wrap.ack = x.wrap.ack.slice(0, 2); assert.ok(d24Errors(x).some((m) => /wrap\.ack: three forms/.test(m)));
+  x = s(); x.wrap.ack[0].hi = "Bilkul sahi, shabaash!"; assert.ok(d24Errors(x).some((m) => /grades and praises nothing/.test(m)));
 });

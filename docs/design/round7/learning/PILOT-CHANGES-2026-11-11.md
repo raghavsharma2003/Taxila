@@ -510,3 +510,34 @@ The main loop read the last round's changes (the c5-t02 and c5-t01 round 3, the 
   - c6 s3 e2's halving, and the gate cost (the child now works out ₹380).
 - **Repeated question frames:** changed in every pilot, with every changed card solved again. No skill asks one shape twice.
 - **Left:** the c4 s3 e1 board still draws the 4-part strip under the half while the child predicts. check.mjs requires the card's board to draw its answer board's figure, so this goes to Studio as a board rule.
+
+## director23 list (patch 012, 2026-11-16)
+
+- **Captions (C).**
+  - Every board in the four pilots carries a `viewCaption`: c4 41, c5-t01 45, c5-t02 45, c6 29 (each includes the teach-back's board).
+  - Each was written against the second view the code draws for that board (`altCall`), and says what to look at in it.
+  - Each was read by an independent reader, and again after its fixes.
+  - check.mjs `d24Errors` refuses a caption that asks or that names its own card's key or any later card's key.
+  - A two-denominator number line is ONE line with gaps above and below it, so the c5 scripts now say "line ke upar / line ke
+    neeche" (replacing "upar ki line / neeche ki line").
+- **`wrap.ack`.** Three plain acknowledgements per pilot, none grading or praising.
+- **c6 gate.** s3 e3's board marks the gate ("is bhuja mein 2 m ka gate"). The card asks the cost as "kharcha", and the point
+  says it.
+- **Giveaways and keys.**
+  - Giveaways fixed:
+    - c4: e1's "aadha" before "1/2 hai ya 1/1?";
+    - c5-t01: steady 64 and stuck 44, and s2 e3's simpler;
+    - c5-t02: c1's simpler.
+  - c5-t02: 28 second whys no longer say the key.
+- **Words.**
+  - c4: "upar/neeche wala number" for a fraction's numbers and "upar/neeche wali patti" for strips.
+  - c5-t01: "kilometre" throughout; "chaabi wala khilona".
+  - c6: "kharcha"; the s1 "kitne cm chali" return line is gone.
+  - Parks no longer use the lesson's own words (chakkar, hissa, baantna). Every `asideReturn` reads after "Sahi!".
+- **Left (code, for Brain and Studio):**
+  - `wholes@1` draws at most two wholes, so a picture request on a three-whole card draws nothing new (c4 s3 c3, c5-t02 s1 c2
+    and s3 c1).
+  - A strip board's second view is circles while the card names strips.
+  - The code's own picture lines still say "sankhya rekha", "nishaan" and "tukde".
+  - The c4 s3 e1 board still shows the 4-part strip.
+  - The c5-t01 card about 1/9 is unchanged, per main.
