@@ -7,8 +7,11 @@
 //   - tally-four lands on its own misconception with its own signature (read: 4 × bundles + singles, gap = bundles;
 //     keep "counted": lines across drawn and every total short by exactly its row's bundles; keep "five": no line across
 //     anywhere, whatever the totals: judges round 2, ruling 4) and no other wrong answer is named tally-four: no one-bundle slip, and over random
-//     acts a check is named ⇔ the signature written from the kit's signs; on every generated level the mix-up's answer
-//     differs from every one-bundle slip (skipped, counted twice, one single off) and no read row is bundles only;
+//     acts a check is named ⇔ the signature written from the kit's signs;
+//   - gate 2, the evidence rule (night rulings 2026-11-11): keep names from one level, its totals three ordinary slips or
+//     more from the mix-up's on every generated level, a blind guess under 1 in 10; read names nothing from one level and
+//     is named on a repeat whose bundles and loose lines both differ, two slips landing ≤ 1 in 10 over every servable
+//     pair (the tables computed here, printed in the packet); the server's repeat rule with naming on;
 //   - keep it again ("again") once the scene has passed; undo brings the old tally back;
 //   - tampered params are refused; a verdict field in an act never decides; the first check decides the evidence;
 //   - the server serves a proven level for every coverage entry at every fade, the solver's acts grade solved, the mal
@@ -18,14 +21,15 @@
 //   - every word the view shows exists in all three languages; no clock, randomness or colour literal in the law or view.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, READ_RANGE, numberLineEnd, numberLineAt } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
-import { GAME_WEIGHT, MODES, playFactsRow, sanitizeActs } from "../shared/play.ts";
+import { CHANCE_WEIGHT, GAME_WEIGHT, MODES, namingOn, playFactsRow, sanitizeActs } from "../shared/play.ts";
+import { totalPad } from "../src/play/core/typedtotal.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { cpuNow } from "./_cpu-ms.mjs";
@@ -80,8 +84,13 @@ for (const goal of ["keep", "read"]) {
         const mc = r.ms.filter((m) => m.kind === "misconception_consequence");
         assert.equal(mc.length, 1); assert.equal(mc[0].misconceptionId, mal);
         const g = L.grade(level, env(acts));
-        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, "k-tally-four");
-        assert.equal(g.facts.mal, "tally-four");
+        assert.equal(g.evidence[0].outcome, "incorrect");
+        if (goal === "keep") { assert.equal(g.evidence[0].misconceptionId, "k-tally-four"); assert.equal(g.facts.mal, "tally-four"); }
+        else {
+          // gate 2: read's one typed number is a pick at chance weight, named only on a repeat (server); nothing in her facts
+          assert.equal(g.evidence[0].misconceptionId, undefined); assert.equal(g.evidence[0].chanceMis, "k-tally-four");
+          assert.equal(g.evidence[0].weight, CHANCE_WEIGHT); assert.equal(g.facts.mal, undefined);
+        }
       }
     }
   });
@@ -141,61 +150,223 @@ test("stambh/tally: tally-four's signature is the belief, and no other wrong ans
   }
 });
 
-/**
- * Every way a child reaches a row's number without the mix-up (the packet's list, evening ruling 5), written here from the
- * packet, not from the law's TALLY_SLIPS: a row of n = 5b + s (b bundles, s loose lines).
- *   slips (one thing by accident): a loose line missed / counted twice, a bundle skipped / counted twice, a bundle's line
- *         across missed (that bundle as 4) / counted again (as 6);
- *   readings (a whole way of reading the tally): loose lines dropped, loose lines doubled, the line across as a sixth line,
- *         the lines across alone, each group as one, each bundle as ten, the loose lines alone.
- */
-const SLIPS = {
-  "loose line missed": (b, s) => (s ? 5 * b + s - 1 : null), "loose line twice": (b, s) => (s ? 5 * b + s + 1 : null),
-  "bundle skipped": (b, s) => (b ? 5 * b + s - 5 : null), "bundle twice": (b, s) => (b ? 5 * b + s + 5 : null),
-  "a bundle as 4": (b, s) => (b ? 5 * b + s - 1 : null), "a bundle as 6": (b, s) => (b ? 5 * b + s + 1 : null),
+// ───────────────────────────── gate 2: the evidence rule, proved (night rulings 2026-11-11) ─────────────────────────────
+// Law 3's number: an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself.
+// keep names tally-four from one level; read only when its number is typed on two levels whose bundles AND loose lines
+// both differ. Everything below is worked out here, from the tally, the pad as the view lays it out, and the ways of
+// reading a tally; not from the law's code. The packet's "Gate 2: evidence" tables are printed from these functions
+// (gate2Tables; with TALLY_GATE2_PRINT=<file> the read test writes them to that file as JSON).
+//
+// The pad: its keys in the order the view gives them (typedtotal.ts totalPad), in the grid play.css lays them out in.
+const PAD_KEYS = totalPad(null, () => {}).map((c) => c.label);
+const PAD_COLS = Number(/\.pl-row--pad\s*\{[^}]*repeat\((\d+)/.exec(readFileSync(`${ROOT}src/play/play.css`, "utf8"))[1]);
+const padAt = (k) => { const i = PAD_KEYS.indexOf(k); return [Math.floor(i / PAD_COLS), i % PAD_COLS]; };
+/** the digit keys touching a key (side or corner): a finger that lands one key off */
+const padNear = (d) => PAD_KEYS.filter((k) => /^\d$/.test(k) && k !== d && Math.max(Math.abs(padAt(k)[0] - padAt(d)[0]), Math.abs(padAt(k)[1] - padAt(d)[1])) === 1);
+/** one typing slip on the number she means to type (0..99): one key one off, the two digits swapped, one key not
+ *  registered, one key pressed twice. Each listed way, the ones that change nothing left out. */
+const typos = (v) => {
+  const t = String(v), out = [];
+  for (let i = 0; i < t.length; i++) for (const k of padNear(t[i])) out.push(Number(t.slice(0, i) + k + t.slice(i + 1)));
+  if (t.length === 2) { if (t[0] !== t[1]) out.push(Number(t[1] + t[0])); out.push(Number(t[0]), Number(t[1])); }
+  else out.push(Number(t + t));
+  return out.filter((x) => x !== v && x <= 99);
 };
-const READINGS = {
-  "loose lines dropped": (b, s) => (s ? 5 * b : null), "loose lines doubled": (b, s) => (s ? 5 * b + 2 * s : null),
-  "line across as a sixth": (b, s) => (b ? 6 * b + s : null), "lines across alone": (b) => (b ? b : null),
-  "each group as one": (b, s) => (b ? b + s : null), "each bundle as ten": (b, s) => (b ? 10 * b + s : null), "loose lines alone": (b, s) => (b ? s : null),
+/** the ways of reading a whole tally of b bundles and s loose lines: the right one and seven others. A way of reading is
+ *  how she reads, the same on every level and every row. `strokes`: it counts the strokes of a bundle one by one */
+const WAYS = {
+  right: { of: (b, s) => 5 * b + s, strokes: true }, "loose lines dropped": { of: (b) => 5 * b, strokes: true },
+  "loose lines doubled": { of: (b, s) => 5 * b + 2 * s, strokes: true }, "line across as a sixth": { of: (b, s) => 6 * b + s, strokes: true },
+  "lines across alone": { of: (b) => b }, "each group as one": { of: (b, s) => b + s }, "each bundle as ten": { of: (b, s) => 10 * b + s }, "loose lines alone": { of: (_b, s) => s },
 };
-const bs = (c) => [Math.floor(c / 5), c % 5];
-/** every number one slip or one reading away from a row of c */
-const oneStep = (c) => [...Object.entries(SLIPS), ...Object.entries(READINGS)].map(([k, f]) => [k, f(...bs(c))]).filter(([, v]) => v !== null && v !== c);
-test("stambh/tally: on EVERY generated level (both goals) the mix-up's answer is no slip's and no other reading's (the packet's list)", () => {
-  const bundleFour = (c) => 4 * Math.floor(c / 5) + (c % 5);
-  let n = 0;
-  for (const goal of ["keep", "read"]) for (const level of levels(goal, [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) {
-    const counts = level.params.counts, mal = counts.map(bundleFour), id = level.levelId;
-    // the level law, as the packet states it
-    for (const c of counts) if (c >= 5) assert.notEqual(c % 5, Math.floor(c / 5), `${id}: a row with as many loose lines as bundles (${c})`);
-    if (goal === "read") {
-      const [b, s] = bs(counts[0]);
-      assert.ok(b >= 3 && b !== 5 && s >= 1, `${id}: read ${counts[0]} (${b} bundles, ${s} loose)`);
-      // the mix-up's number is no single slip's or reading's
-      for (const [k, v] of oneStep(counts[0])) assert.notEqual(v, mal[0], `${id}: tally-four ${mal[0]} = ${k}`);
-    } else {
-      assert.ok(counts.filter((c) => c >= 5).length >= 2, `${id}: bundles in at least two rows`);
-      assert.ok(counts.reduce((a, c) => a + Math.floor(c / 5), 0) >= 3, `${id}: at least three groups of five`);
-      // one slip or reading in one row, the rest right; one reading in every row: never the mix-up's totals
-      for (let r = 0; r < counts.length; r++) for (const [k, v] of oneStep(counts[r])) assert.notDeepEqual(counts.map((c, j) => (j === r ? v : c)), mal, `${id}: tally-four = ${k} in row ${r}`);
-      for (const [k, f] of Object.entries(READINGS)) assert.notDeepEqual(counts.map((c) => f(...bs(c)) ?? c), mal, `${id}: tally-four = ${k} in every row`);
-      // and at most one slip or reading per row never reaches it: some row's mix-up number is two or more steps away
-      assert.ok(counts.some((c, r) => mal[r] !== c && !oneStep(c).some(([, v]) => v === mal[r])), `${id}: every row one step from the mix-up`);
-    }
-    assert.notDeepEqual(mal, counts);
-    n++;
+/** one counting slip, read her way: a bundle skipped or counted twice, a loose line missed or counted twice, a stroke of
+ *  a bundle missed or counted again (when her way counts them). Each listed way, the ones that change nothing left out. */
+const countSlips = (w, b, s) => {
+  const v = w.of(b, s), out = [w.of(b + 1, s)];
+  if (b >= 1) out.push(w.of(b - 1, s));
+  if (s >= 1) out.push(w.of(b, s - 1), w.of(b, s + 1));
+  if (w.strokes && b >= 1) out.push(v - 1, v + 1);
+  return out.filter((x) => x !== v && x >= 0);
+};
+const share = (xs, t) => (xs.length ? xs.filter((x) => x === t).length / xs.length : 0);
+/** the chance that ONE ordinary slip, read her way, gives `target` on a row of n: 1 if her way gives it with no slip;
+ *  else the larger of the share of counting slips and the share of typing slips that land on it */
+const slipChance = (w, n, target) => {
+  const b = Math.floor(n / 5), s = n % 5, v = w.of(b, s);
+  return v === target ? 1 : Math.max(share(countSlips(w, b, s), target), share(typos(v), target));
+};
+const mixup = (n) => n - Math.floor(n / 5);
+const BLIND = 1 / 100;   // a blind guess on the pad: any of 0..99, the box takes two digits
+/** the fewest ordinary slips that make her row of n come out as `target`, read her way (3 = three or more) */
+const typeSteps = (v, t) => (v === t ? 0 : typos(v).includes(t) ? 1 : typos(v).some((x) => typos(x).includes(t)) ? 2 : 3);
+const slipsTo = (w, n, target) => {
+  const b = Math.floor(n / 5), s = n % 5;
+  let best = 3;
+  for (let db = -2; db <= 2; db++) for (let ds = -4; ds <= 4; ds++) for (let e = -3; e <= 3; e++) {
+    const cost = Math.abs(db) + Math.abs(ds) + Math.abs(e);
+    if (cost >= best || b + db < 0 || s + ds < 0 ||(e !== 0 && (!w.strokes || b === 0))) continue;
+    best = Math.min(best, cost + typeSteps(w.of(b + db, s + ds) + e, target));
   }
-  assert.ok(n >= 150, `${n} levels`);
-  // the law refuses givens where they collide (served nowhere): 12 and 18 (as many loose lines as bundles: 12 read as 10
-  // either way), 25 and 27 (five bundles: a bundle skipped), 30 (bundles only), 7 and 11 (one or two bundles)
-  const read = levels("read", [3])[0];
-  for (const c of [12, 18, 24, 25, 27, 30, 7, 11, 13]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
-  // keep: bundles in one row only; a row of 12 (2 + 2); rows of one bundle only (each one line short: one slip a row)
-  const keep = levels("keep", [3]).find((lv) => lv.params.cats.length === 3);
-  const kv = (counts) => L.validate({ ...keep, params: { ...keep.params, cats: keep.params.cats.slice(0, counts.length), counts, seq: counts.flatMap((c, r) => Array(c).fill(r)) } });
+  return best;
+};
+/** read: one level's row and every pair of servable levels whose bundles and loose lines both differ */
+function readTable(ns) {
+  const one = ns.map((n) => {
+    const by = Object.fromEntries(Object.entries(WAYS).map(([k, w]) => [k, slipChance(w, n, mixup(n))]));
+    const [way, p] = Object.entries(by).sort((a, b) => b[1] - a[1])[0];
+    return { n, b: Math.floor(n / 5), s: n % 5, mixup: mixup(n), by, way, p };
+  });
+  let worst = { p: 0 }, pairs = 0;
+  for (const x of one) for (const y of one) {
+    if (x.n >= y.n || x.b === y.b || x.s === y.s) continue;
+    pairs++;
+    // the same way of reading on both levels, a slip on each, independently
+    for (const k of Object.keys(WAYS)) { const p = x.by[k] * y.by[k]; if (p > worst.p) worst = { p, a: x.n, b: y.n, way: k, pa: x.by[k], pb: y.by[k] }; }
+  }
+  return { one, pairs, worst, blindPair: BLIND * BLIND };
+}
+/** keep: on a level, every way her totals can all come out as the mix-up's: the fewest slips (a way of reading other
+ *  than the right one counts as one step, once for the level), a blind guess, and one slip in every row */
+function keepRow(counts, things) {
+  const want = counts.map(mixup);
+  let fewest = Infinity, fewestWay = null, perRow = 0, perRowWay = null;
+  for (const [k, w] of Object.entries(WAYS)) {
+    const steps = (k === "right" ? 0 : 1) + counts.reduce((a, c, r) => a + slipsTo(w, c, want[r]), 0);
+    if (steps < fewest) { fewest = steps; fewestWay = k; }
+    // one slip in each row (a row that is already the mix-up's needs none)
+    const p = counts.reduce((a, c, r) => a * (w.of(Math.floor(c / 5), c % 5) === want[r] ? 1 : slipChance(w, c, want[r])), 1);
+    if (p > perRow) { perRow = p; perRowWay = k; }
+  }
+  const groups = counts.reduce((a, c) => a + Math.floor(c / 5), 0);
+  return { counts, mixup: want, fewest, fewestWay, perRow, perRowWay, rowSlips: counts.map((c, r) => slipsTo(WAYS.right, c, want[r])),
+    // "counted": every total the mix-up's, typed blind; "five": no line across in the whole scene, each stroke one of
+    // the two buttons at random (the rows' lengths right is a further chance, left out: the bound only grows)
+    blindCounted: BLIND ** counts.length, fiveSlips: groups, blindFive: 0.5 ** things };
+}
+function gate2Tables() {
+  const servedRead = new Set(), keep = new Map();
+  for (const lv of levels("read", [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) servedRead.add(lv.params.counts[0]);
+  for (const lv of levels("keep", [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) keep.set(lv.params.counts.join(","), keepRow(lv.params.counts, lv.params.seq.length));
+  // every row the law can serve in read: each n in the fades' ranges that the level law takes
+  const lo = Math.min(...Object.values(READ_RANGE).map((r) => r[0])), hi = Math.max(...Object.values(READ_RANGE).map((r) => r[1]));
+  const read = levels("read", [3])[0], servable = [];
+  for (let n = lo; n <= hi; n++) if (L.validate({ ...read, params: { ...read.params, counts: [n] } })) servable.push(n);
+  return { servedRead: [...servedRead].sort((a, b) => a - b), servable, read: readTable(servable), keep: [...keep.values()] };
+}
+
+test("gate 2, keep: on EVERY generated level her totals need three ordinary slips or more to come out as the mix-up's, and a blind guess gives them under 1 in 10 (law 3)", () => {
+  const { keep } = gate2Tables();
+  assert.ok(keep.length >= 60, `${keep.length} keep levels`);
+  for (const k of keep) {
+    const id = k.counts.join(",");
+    assert.ok(k.fewest >= 3, `${id}: the mix-up's totals ${k.mixup} are ${k.fewest} slips away (${k.fewestWay})`);
+    assert.ok(k.blindCounted < 0.1 && k.blindCounted <= 1e-4, `${id}: blind ${k.blindCounted}`);
+    assert.ok(k.fiveSlips >= 3 && k.blindFive < 0.1, `${id}: "five" from ${k.fiveSlips} missing lines across, blind ${k.blindFive}`);
+    assert.ok(k.perRow <= 0.1, `${id}: one slip in every row gives the mix-up's totals ${k.perRow} (${k.perRowWay})`);
+  }
+  // the proof's own pieces, on cases worked by hand: the pad's 9 and 0 touch (49 → 40 is one slip, round 4, judge 2);
+  // 14 → 12 is two slips; a row of 7 is one slip from 6
+  assert.ok(typos(49).includes(40)); assert.ok(!typos(14).includes(12));
+  assert.equal(slipsTo(WAYS.right, 14, 12), 2); assert.equal(slipsTo(WAYS.right, 7, 6), 1); assert.equal(slipsTo(WAYS.right, 49, 40), 1);
+  assert.deepEqual(PAD_KEYS.slice(0, 10), ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]); assert.equal(PAD_COLS, 6);
+  // the keep law that makes it three: bundles in one row only, a row of 12 (2 + 2), rows of one bundle only are refused
+  const k3 = levels("keep", [3]).find((lv) => lv.params.cats.length === 3);
+  const kv = (counts) => L.validate({ ...k3, params: { ...k3.params, cats: k3.params.cats.slice(0, counts.length), counts, seq: counts.flatMap((c, r) => Array(c).fill(r)) } });
   for (const counts of [[13, 4], [12, 5], [7, 8], [5, 3, 9], [5, 7, 9]]) assert.equal(kv(counts), null, String(counts));
   assert.ok(kv([10, 5]) && kv([5, 13, 2]), "a row of two bundles beside a row of one is served");
+  // and those it refuses are the ones under three: one bundle a row is two slips; bundles in one row only, two
+  assert.equal(keepRow([7, 8], 15).fewest, 2); assert.equal(keepRow([13, 4], 17).fewest, 2);
+});
+
+test("gate 2, read: one level names nothing (its one-slip chance can pass 1 in 10); two levels whose bundles and loose lines both differ: ≤ 1 in 10 over every servable pair", () => {
+  const t = gate2Tables(), { one, worst, pairs, blindPair } = t.read;
+  // every level the generator serves is one the proof covers
+  for (const n of t.servedRead) assert.ok(t.servable.includes(n), `${n} served but not in the proof`);
+  assert.ok(pairs >= 100, `${pairs} pairs`);
+  // a way of reading alone never gives the mix-up's number on a servable level (the one the law keeps refusing:
+  // the loose lines dropped when they equal the bundles, as on 18 and 24)
+  for (const r of one) for (const [k, w] of Object.entries(WAYS)) assert.notEqual(w.of(r.b, r.s), r.mixup, `${r.n}: ${k} gives the mix-up's number`);
+  // why one level is not enough: on some served levels one slip lands on the mix-up's number more than 1 time in 10
+  assert.ok(one.some((r) => r.p > 0.1), "some level is over law 3's line alone");
+  assert.ok(worst.p <= 0.1, `pair ${worst.a} & ${worst.b} (${worst.way}): ${worst.p}`);
+  assert.ok(blindPair <= 0.1 && BLIND <= 0.1);
+  // the law still refuses a level where a way of reading gives it: 18 and 24 (loose lines dropped)
+  const read = levels("read", [3])[0];
+  for (const c of [18, 24, 6, 12, 4]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
+  // gate 2 serves again what the slip list refused: five bundles, bundles only
+  for (const c of [25, 26, 27, 20, 40]) assert.ok(L.validate({ ...read, params: { ...read.params, counts: [c] } }), String(c));
+  if (process.env.TALLY_GATE2_PRINT) writeFileSync(process.env.TALLY_GATE2_PRINT, JSON.stringify({ servable: t.servable, servedRead: t.servedRead, one, worst, pairs, keep: t.keep }));
+});
+
+test("gate 2: the read surface has two parts (bundles, loose lines); a repeat counts only when both differ", async () => {
+  const { surfaceOf, surfacesDiffer } = await import("../server/play/levels.js");
+  const read = levels("read", [3])[0], at = (n) => ({ ...read, params: { ...read.params, counts: [n] } });
+  const S = (n) => surfaceOf(at(n));
+  assert.ok(Array.isArray(S(17)) && S(17).length === 2);
+  assert.ok(surfacesDiffer(S(17), S(23)), "3+2 then 4+3: both differ");
+  assert.ok(!surfacesDiffer(S(17), S(19)), "the same bundles");
+  assert.ok(!surfacesDiffer(S(17), S(22)), "the same loose lines");
+  assert.ok(!surfacesDiffer(S(17), S(17)));
+  // another family's one-key surface never counts against parts; one-key surfaces compare as before
+  assert.ok(!surfacesDiffer(S(17), "abc")); assert.ok(surfacesDiffer("a", "b")); assert.ok(!surfacesDiffer("a", "a"));
+  // the same params give the same parts (not tied to the scene's words or the row's kind)
+  assert.deepEqual(surfaceOf({ ...at(17), params: { ...at(17).params, ctx: "traffic", cats: ["bus"] } }), S(17));
+});
+
+test("gate 2, the server's repeat rule with naming on: one read level names nothing; a second whose bundles and loose lines both differ names it; keep names from one level", async () => {
+  const { nameOnRepeat, afterLevelBody } = await import("../server/play/levels.js");
+  const { withNaming } = await import("../server/play/grade.js");
+  const { signSession, verifySession } = await import("../server/play/session.js");
+  const [eKeep, eRead] = TE(), KIT = "c4-maths-ch14-t01-m-tally-four";
+  // served read levels (the server's own generator, the kit's ids), one per row count
+  const byN = new Map();
+  for (const fade of [1, 2, 3]) for (const child of ["a", "b", "c", "d", "e", "f", "g", "h"]) for (let k = 0; k < 4; k++) {
+    const lv = levelsFor(sessionOf(eRead, { fade, childId: child, seed: seedOf(child, entryKey(eRead), k) }), eRead)?.garam;
+    if (lv && !byN.has(lv.params.counts[0])) byN.set(lv.params.counts[0], lv);
+  }
+  const bsOf = (lv) => [Math.floor(lv.params.counts[0] / 5), lv.params.counts[0] % 5];
+  const A = [...byN.values()][0], [ab, as] = bsOf(A);
+  const both = [...byN.values()].find((lv) => bsOf(lv)[0] !== ab && bsOf(lv)[1] !== as);
+  const sameB = [...byN.values()].find((lv) => lv !== A && bsOf(lv)[0] === ab);
+  const sameS = [...byN.values()].find((lv) => lv !== A && bsOf(lv)[1] === as);
+  assert.ok(both && (sameB || sameS), `levels served: ${[...byN.keys()]}`);
+  // the server path with naming ON for stambh/tally: gradeActs → lessonEvidence → nameOnRepeat, and afterLevelBody
+  // remembers the pick (routes.js; withNaming is the flag's only reader, and with naming on it returns the grade unchanged)
+  const mal = (lv) => gradeActs(lv, env(L.malActs(lv, "tally-four")), { final: true });
+  const s0 = sessionOf(eRead);
+  const gA = mal(A), rowsA = nameOnRepeat(lessonEvidence(gA.grade, A), s0, A);
+  assert.equal(rowsA[0].outcome, "incorrect");
+  assert.equal(rowsA[0].misconceptionId, undefined, "one read level names nothing"); assert.equal(rowsA[0].chanceMis, undefined, "nor carries the pick");
+  assert.equal(gA.trail.mal.length, 0, "nor is it in the trail"); assert.equal(gA.grade.facts.mal, undefined);
+  const s1 = afterLevelBody(s0, { grade: gA.grade, level: A });
+  assert.equal(s1.chance.at(-1).mis, KIT); assert.ok(Array.isArray(s1.chance.at(-1).surface));
+  // the session token carries the remembered parts
+  const key = Buffer.alloc(32, 7), s1b = verifySession(signSession(s1, { key }), { key });
+  assert.deepEqual(s1b.chance, s1.chance);
+  const named = nameOnRepeat(lessonEvidence(mal(both).grade, both), s1b, both);
+  assert.equal(named[0].misconceptionId, KIT, `${A.params.counts[0]} then ${both.params.counts[0]}: named on the repeat`);
+  assert.equal(named[0].named, "repeat"); assert.equal(named[0].weight, GAME_WEIGHT);
+  for (const lv of [sameB, sameS, A].filter(Boolean)) {
+    const r = nameOnRepeat(lessonEvidence(mal(lv).grade, lv), s1b, lv);
+    assert.equal(r[0].misconceptionId, undefined, `${A.params.counts[0]} then ${lv.params.counts[0]}: one part the same, not named`);
+  }
+  // a different wrong number on the second level is an ordinary miss, never named
+  const other = gradeActs(both, env([{ kind: "total", row: 0, n: both.params.counts[0] + 2 }, { kind: "check" }]), { final: true });
+  assert.equal(nameOnRepeat(lessonEvidence(other.grade, both), s1b, both)[0].misconceptionId, undefined);
+  // keep: named from one level, with no repeat
+  const K = levelsFor(sessionOf(eKeep), eKeep)?.garam;
+  const kRows = nameOnRepeat(lessonEvidence(mal(K).grade, K), sessionOf(eKeep), K);
+  assert.equal(kRows[0].misconceptionId, KIT); assert.equal(kRows[0].weight, GAME_WEIGHT);
+  // as served today: the flag main switches (shared/play.ts NAMING_OFF). Off: nothing is remembered or named, keep or
+  // read; on: the path above
+  const served = (lv, s) => { const g = withNaming(lv, mal(lv)); return { rows: nameOnRepeat(lessonEvidence(g.grade, lv), s, lv), s2: afterLevelBody(s, { grade: g.grade, level: lv }) }; };
+  const a = served(A, s0), b = served(both, a.s2), k = served(K, sessionOf(eKeep));
+  if (namingOn("stambh", "tally")) {
+    assert.equal(a.rows[0].misconceptionId, undefined); assert.equal(b.rows[0].misconceptionId, KIT); assert.equal(k.rows[0].misconceptionId, KIT);
+  } else {
+    assert.equal(a.s2.chance, undefined, "naming off: nothing remembered");
+    for (const r of [a.rows[0], b.rows[0], k.rows[0]]) { assert.equal(r.misconceptionId, undefined); assert.equal(r.chanceMis, undefined); }
+  }
 });
 
 test("stambh/tally: the law's rules (every stroke legal; groups by five at the check; the scene first; the totals; undo)", () => {
@@ -262,7 +433,9 @@ test("stambh/tally: a verdict field in an act never decides; the first check dec
     assert.equal(ok.verdict, "solved"); assert.equal(ok.evidence[0].outcome, "correct"); assert.ok(ok.clean);
     const wrong = [...L.malActs(level, "tally-four"), { kind: "undo" }, ...L.solve(level).filter((a) => a.kind === "total" || a.kind === "check")];
     const g = L.grade(level, env(wrong));
-    assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, "k-tally-four");
+    assert.equal(g.evidence[0].outcome, "incorrect");
+    assert.equal(g.evidence[0].misconceptionId ?? g.evidence[0].chanceMis, "k-tally-four");
+    assert.equal(g.evidence[0].misconceptionId === undefined, level.params.goal === "read", "read: a pick (gate 2); keep: named");
     assert.deepEqual(L.grade(level, env(wrong)), g);
   }
 });
@@ -424,10 +597,15 @@ for (const e of TE()) for (const fade of [1, 2, 3]) {
       const want = e.goal === "read" ? Math.floor(level.params.counts[0] / 5) : level.params.counts.reduce((a, c) => a + Math.floor(c / 5), 0);
       assert.match(row, new RegExp(`(^| )bundles=${want}( |$)`), row);
       const mg = gradeActs(level, env(L.malActs(level, "tally-four")), { final: true });
-      assert.equal(mg.grade.evidence[0].misconceptionId, "c4-maths-ch14-t01-m-tally-four");
       const mrow = playFactsRow({ game: "stambh/tally", verdict: mg.grade.verdict, first_try: 0, misses: 1, chose: "pick_fit", next: "fade_up", ...mg.grade.facts });
-      assert.match(mrow, / mal=tally-four/, mrow);
-      if (e.goal === "keep") assert.match(mrow, / sign=counted/, mrow);
+      if (e.goal === "keep") {
+        assert.equal(mg.grade.evidence[0].misconceptionId, "c4-maths-ch14-t01-m-tally-four");
+        assert.match(mrow, / mal=tally-four/, mrow); assert.match(mrow, / sign=counted/, mrow);
+      } else {
+        // gate 2: one read level is a pick (chanceMis at chance weight); its facts row says nothing about the mix-up
+        assert.equal(mg.grade.evidence[0].misconceptionId, undefined); assert.equal(mg.grade.evidence[0].chanceMis, "c4-maths-ch14-t01-m-tally-four");
+        assert.doesNotMatch(mrow, /mal=|sign=/, mrow);
+      }
       assert.match(mrow, / answer=[\d,]+/, mrow);
     }
     assert.ok(seen.size >= 2, `${seen.size} distinct levels over 4 children`);

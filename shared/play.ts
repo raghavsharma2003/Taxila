@@ -677,8 +677,9 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  options; a mix-up seen there is reported at chance weight and not kept from one pick (gradeLevel) */
   chancePicks?: readonly string[];
   /** round 8 law 3: what a level shows (a second sighting of a chance-pick mix-up counts only on a level whose surface
-   *  differs); default: the level's params */
-  surfaceOf?(level: PlayLevel<P>): string;
+   *  differs); default: the level's params. Parts (an array): the surface differs only when EVERY part differs (gate 2,
+   *  stambh/tally read: its bundles and its loose lines) */
+  surfaceOf?(level: PlayLevel<P>): string | readonly string[];
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────

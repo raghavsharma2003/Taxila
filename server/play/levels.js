@@ -229,14 +229,31 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   if (sw) { s2.nextKey = sw.key; s2.nextSwitch = sw.because; }
   return s2;
 }
-/** round 8 law 3: what a level shows (the family's surfaceOf, else its params), as a short key. Pure. */
+const surfaceHash = (s) => {
+  let h = 2166136261;
+  for (const ch of s) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+};
+/**
+ * round 8 law 3: what a level shows (the family's surfaceOf, else its params), as a short key. A family that gives parts
+ * (an array: gate 2, stambh/tally read's bundles and loose lines) gets one key per part. Pure.
+ */
 export function surfaceOf(level) {
   let k = null;
   try { k = logicFor(level.family, level.mode)?.surfaceOf?.(level) ?? null; } catch { k = null; }
+  const fm = `${level?.family}/${level?.mode}`;
+  if (Array.isArray(k) && k.length && k.every((x) => typeof x === "string" && x)) return k.map((x, i) => surfaceHash(`${fm}|${i}|${x}`));
   const str = typeof k === "string" && k ? k : JSON.stringify(level?.params ?? null);
-  let h = 2166136261;
-  for (const ch of `${level?.family}/${level?.mode}|${str}`) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
-  return (h >>> 0).toString(36);
+  return surfaceHash(`${fm}|${str}`);
+}
+/**
+ * Two surfaces differ: keys, when they are not the same; parts, only when EVERY part differs (gate 2: tally read's
+ * second level must change both its bundles and its loose lines). A key and parts never count as different.
+ */
+export function surfacesDiffer(a, b) {
+  if (typeof a === "string" && typeof b === "string") return a !== b;
+  if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length) return a.every((x, i) => x !== b[i]);
+  return false;
 }
 /**
  * Round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up from one pick among a few is not kept from that pick
@@ -250,7 +267,7 @@ export function nameOnRepeat(rows, s, level) {
   // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows
   const unnamed = (r) => { const { chanceMis: _c, ...rest } = r; return rest; };
   return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? r
-    : prior.some((p) => p?.mis === r.chanceMis && p?.surface !== here) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
+    : prior.some((p) => p?.mis === r.chanceMis && surfacesDiffer(p?.surface, here)) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });
