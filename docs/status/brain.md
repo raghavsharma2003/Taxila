@@ -2,6 +2,30 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `979fe7fb` (item 8, harness) and `1700767c` (H3)
+
+**Done (gated: test:all 7343 pass; the only failures are the two worktree-only browser suites):**
+- Item 8, harness:
+  - No false key from a whole ("8/8 = 1") or from a term being explained ("1/1 ka matlab").
+  - `contradictionsV6` no longer checks a close against the next unit's board: 23 → 3 on the dry matrix.
+- H3: the walk remembers every sentence she says in the lesson. A clarify or a give-up says the first help not said anywhere in it,
+  else the card alone. `helpRepeats` now reads the whole lesson for these: 5 → 0.
+
+**Question for main (H3):** sending a Hindi request to the worked answer whenever the lesson's wordings are spent breaks three pinned
+live-walk tests that encode the older rule (new words, then the card):
+- r7-brain-v68 "c4 stuck 8";
+- v610 alreadySaidKey stuck c5-t01 60;
+- v64 K1 steering c4.
+
+Should I retire those rows for H3? Until you say, a Hindi request keeps her last two turns, and it gets the worked answer only on the
+worked example's step.
+
+**Still open from 035:**
+- M (the model writes the joins).
+- The rest of H3: a second request goes to the worked answer; a give-up on a card gets the card's own hint.
+- T3 (waits on `did`).
+- The rest of A3: repeated asides; the AI line's re-ask.
+
 ## 2026-11-16 · `1170fb85`, `5bded99b`, `e88cd8b9` (dc-r8-director24 items 1, 2, 4, 7 and part of 5)
 
 **Done (each gated: test:all 7342 pass at the last; the only failures are the two worktree-only browser suites):**
