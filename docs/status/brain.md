@@ -2,6 +2,35 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `cb21c01b` (dc-r8-director23 T2, C, H2, boards, K2, A2 in part)
+
+**Done (gated: test:all 7298 pass; the only failures are the two worktree-only browser suites):**
+- T2:
+  - A miss on the closing question gets a miss verdict before the key.
+  - The sentence about the child is said to her in the second person, about the hardest thing she got right. Code picks it: the
+    closing question if right, else the card right after the most misses. A third-person sentence is not said.
+  - The wrap opens with Learning's `wrap.ack` when the child spoke after the closing key's check-in.
+- C: the picture turn says Learning's `viewCaption` when authored, then the card's question alone. `quietPictureLines` reads 9 until
+  the captions are authored.
+- H2: a help turn whose lines are all in her last two turns says the first help not there (the cell's lines, the card's simpler, the
+  point's simpler, `pointAlt`). With none left and a card following, the card alone. New gated `helpRepeats`: 0.
+- Boards: a remediation on its own turn is drawn on its own board (c4 steady 98).
+- K2: after a wrong answer to a yes-or-no card, one sentence that states the fact.
+- A2, in part: the child's answer to her AI-line question gets a reply in the child's words (c4 offtopic 20).
+- Counts: cardsSaid 280 → 272, cardsSaidAgainWithin2 36 → 28, boardChanged 313 → 314, boardKept 318 → 317, quietPictureLines (new) 9.
+
+**Not yet, and why:**
+- A2's AI question on a worked step (c6 stuck 38, steering 30). Keeping the question makes the next turn say the held step and the next
+  step together, with no check-in between. It needs the walk to hold the step itself, a state change I'll make next.
+- A2's reply to a repeated aside (c6 offtopic 24, 32). The word picker chose "maara" ("Achha, maara!"). It needs a better word pick or
+  Learning's forms, so it stays on the neutral line for now.
+
+**Doing next:** the harness fixes (item 8, in the working tree): `cardWholeAgain` on one-sentence cards with a shorter question, `hindiNewWords`
+on a switch-and-card-only turn (with the walk now saying new words there), no false key from a question's givens, and no contradiction
+counted for a close checked against the next unit's board. Then the A2 step hold.
+
+**Questions for main:** none new.
+
 ## 2026-11-16 · `d93431e1` (dc-r8-director23 R2, the reader's record)
 
 **Done (gated: test:all 7295 pass; the only failures are the two worktree-only browser suites):**
