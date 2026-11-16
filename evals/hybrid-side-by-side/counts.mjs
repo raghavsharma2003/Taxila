@@ -33,7 +33,7 @@ function jointHeads(script) {
 
 /** The counts of one lesson's rows. */
 export function lessonCounts(rows, script) {
-  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
+  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, longPointAndCard: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
     cardsSaid: 0, cardsSaidAgainWithin2: 0, moves: {}, columns: {}, reads: {}, joints: {} };
   const heads = jointHeads(script), lastCards = [];
   for (const r of rows) {
@@ -42,6 +42,8 @@ export function lessonCounts(rows, script) {
     const text = norm(r.text), n = text ? text.split(" ").length : 0;
     // (her word total is left out: it moves with every wording edit and would bury the counts that mean something)
     if (n > 60) c.turnsOver60Words++;
+    // (dc-r8-director24 L: one new thing a turn — a turn over 60 words that holds a point and a card; the target is 0)
+    if (n > 60 && (r.pageParts ?? []).some((p) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? ""))) && (r.pageParts ?? []).some((p) => p.part === "card")) c.longPointAndCard++;
     bump(c.moves, String(r.move ?? "none"));
     if (r.cell?.column) bump(c.columns, String(r.cell.column));
     const h = r.held ?? {};

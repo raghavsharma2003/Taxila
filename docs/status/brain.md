@@ -2,6 +2,36 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `1170fb85`, `5bded99b`, `e88cd8b9` (dc-r8-director24 items 1, 2, 4, 7 and part of 5)
+
+**Done (each gated: test:all 7342 pass at the last; the only failures are the two worktree-only browser suites):**
+- 1, the record:
+  - A miss verdict is recorded only where a miss word is said.
+  - A check-in is a check-in, never an aside.
+  - The greet's simpler is the hook, never a verdict.
+  - The closing key turn's verdict is a verdict, never a point.
+  - The Hindi switch is in the record.
+- 2, P: the held parts were said twice (c5-t02 steering 38, the run's one contradiction). Gated `partOnce` reads that row and c4 steady 96
+  on director24's live rows, and 0 on the dry matrix. I could not get the dry matrix to reach c4 steady 96 (the e2 point never said).
+- 4, L: a turn over 60 words that holds a point and a card is split at the point's check-in. The close's why, a bridge and a held part
+  now count toward the cap. `longPointAndCard` (new count) and gated `longPointCard`: 25 → 0.
+- 5, H3, in part: a Hindi request on a worked step with nothing unsaid gets the worked answer and closes the step (c6 offtopic 34).
+- 7, K3: "Nahi," then the fact (gated `ynNahi`).
+- 7, A3: after "bye", a goodbye, never the stop menu (gated `goodbyeNoMenu`: 11 → 0).
+- Counts: in each commit message.
+
+**Not yet:**
+- 3, M: the model writes the joins.
+- The rest of 5, H3: no help says a sentence from anywhere in the lesson; a second request goes to the worked answer; a give-up on a card
+  gets the card's own hint.
+- 6, T3: waits on Learning's `did` field.
+- The rest of 7, A3: the second and third aside replies in the child's words; an AI line that never re-asks what she answered.
+- 8, the harness: `contradictionsV6` on a verdict over its own answer board; the false keys at c5-t01 steady 92 and c4 stuck 26.
+
+**What my gate could not run:** the two browser suites (they fail only in my worktree), and Learning's newest scripts beyond `3e25c5c60`.
+
+**Questions for main:** is `did` (`{hi, en}` on each card) the field name to give Learning for T3?
+
 ## 2026-11-16 · 035 read (dc-r8-director24)
 
 Working in 035's order: the seams record, P, M, L, H3, T3, K3/A3, then the harness. I'll write "ready for director25" here with the sha

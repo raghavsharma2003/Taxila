@@ -26,7 +26,9 @@ import { walk, TOPIC } from "./fixtures/walk.mjs";
 describe("r7-brain-v69.test.mjs", () => {
   // N1: a turn with no unit part (an aside question or return, an acknowledgement, a break or stop menu, a goodbye) draws nothing new
   describe("N1: a turn with no unit part keeps the board up, no switch", () => {
-    const ROWS = [["steady", "c4", 46], ["steady", "c4", 90], ["stuck", "c4", 76], ["offtopic", "c4", 68], ["steady", "c5-t01", 88], ["offtopic", "c5-t01", 70],
+    // (steady c4 46 retired, dc-r8-director24 L: the held part after her reply is split from its card, so row 46 is now that teaching
+    // turn — it has a unit part, and its switch is the held part's board)
+    const ROWS = [["steady", "c4", 90], ["stuck", "c4", 76], ["offtopic", "c4", 68], ["steady", "c5-t01", 88], ["offtopic", "c5-t01", 70],
       ["steering", "c5-t01", 66], ["steady", "c5-t02", 86], ["steady", "c6", 82]];
     // (c6 steady 42, "woh wala ho gaya, aage chalo" with an aside pending, now moves on to its next card first — T1 — so it has a unit part)
     for (const [persona, topic, n] of ROWS) test(`${persona} ${topic} ${n}`, async () => {
