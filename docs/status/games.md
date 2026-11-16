@@ -2,6 +2,61 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+gate 2 battery passes: stambh/tally (sha: <placeholder>)
+gate 2 battery passes: kon/place (sha: <placeholder>)
+gate 2 battery passes: kon/name (sha: <placeholder>)
+
+## 2026-11-16, gate 2 H1, H3, H4: the habit battery passes on all three modes (branch `claude/r8-gate2-habits`, from `claude/r7-games` `3731cca54`)
+
+**Done (`NAMING_OFF` untouched; nothing a child sees changes; no served level or drawing changed, so no re-cert):** H1, H3 and H4 of `RULINGS-2026-11-16-gate2.md`, one commit each. Every battery `todo` is now a hard assertion. Each negative control still runs every time: the battery's `legacy` runs the same children under the old rules (`shared/play.ts` `HABIT_RULES`, a test seam, off inside one synchronous run) and still finds them named.
+- **H1, two sightings are two different acts.** New `FamilyLogic.sightingOf` gives what she did at the sighting as a value. The grade carries it as `chanceAct` on the pick's row, the session remembers it, and `nameOnRepeat` counts only sightings whose value differs from every earlier one. The value never leaves the play server.
+  - tally read: the number she typed.
+  - kon/place measure: the surface is the key on both scales (`measureSurface`), and the value is the typed number.
+  - draw wrong-scale: the rim mark she dotted.
+  - vertex-off and centre-on-arm: the protractor centre's offset from the vertex on the board, offsets within `tolPx` being one act.
+  - join-wrong-end: no value. It is a pick between two buttons, and its spec already needs both orders.
+- **H3** (kon/name say): an order act is a sighting only when her next name, after the play-out, again puts the vertex at an end (`confirmSay`). Unconfirmed, the row keeps its outcome and weight and loses `chanceMis`. **Nothing shown changes.** After a miss the level already waits for her next name, so it does not ask again.
+- **H4** (tally keep): `five` is a pick (new `FamilyLogic.chanceAt`, read by the grade and by the server's `chancePick` for trail, seam and trace). It is named on a second keep level with other counts and other totals. `counted` still names from one level. `five` no longer puts `mal`/`sign` in her facts from one level (teacher-side only).
+- **Battery additions:**
+  - the same drop every level with a 4 px wobble (place). Under the old rules: 0.97 measure, 0.92 draw.
+  - say's holders name it their way again after the play-out, and the blind guessers guess again (`again`).
+  - a tally test showing `five` is named from the first level under the old rules and never under H4.
+- **Worst child who does not hold the mix-up, worst fade, before → after.**
+
+| Goal | Gate sweep | Full sweep |
+|---|---|---|
+| tally read | 0.172 → 0 | 0.234 → 0.013 |
+| keep | 0 → 0 | 0 → 0 |
+| measure | 0.938 (0.974 with a wobble) → 0.016 | 0.967 → 0.006 |
+| draw | 0.891 (0.911) → 0.026 | 0.920 → 0.021 |
+| say | 1.000 → 0 | 1.000 → 0 |
+| find | 0 → 0 | 0.005 → 0.005 |
+
+  Full-sweep run times: 102 s, 77 s, 79 s. The tables are in each packet's "Gate 2 battery".
+- **Holders (full sweep):**
+  - tally read 0.80 (half her levels: 0.32);
+  - keep 1.00 each (`five` from the second keep level);
+  - measure other scale, smaller and outer 1.00;
+  - **vertex-off 0.46 measure, 0.43 draw (were 1.00);**
+  - draw always A 0.45;
+  - say vertex first and last 1.00, **any order 0.23 (was 0.58)**;
+  - find first letter 0.50.
+- **Tests run (each file on its own):**
+  - the three battery files, gate sweep and `HABIT_FULL=1`;
+  - `r8-games-{stambh-tally,kon-place,kon-place-gate2,kon-name,kon-name-gate2}`, `r7-games-{kon,stambh}`, `r4-games-core-kon`, `r7-games-kon-angles`;
+  - `r8-picks-default`, `r8-play-laws`, `r8-naming-off`, `play-evidence`;
+  - `r8-play-{trail,pick,adapt,follow,phone-seam}`, `r7-games-friend-fill`, `round3-integration`, `test-isolation`;
+  - `tsc -b`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+  - Not the full gate.
+
+**Next:** H5 (the facts row), H7 (the full sweep of every generated level), and the count per child per day; then one judge per mode on "is a child missing from the battery?".
+
+**Questions for main:**
+1. **The placement frame (your open question 1): I took the board.** In the protractor's frame the holder repeats one value and is never named. On the board, offsets within `tolPx` (11, a finger's drop) are one act, so a drop habit with a finger's wobble is caught. The cost is that the vertex-off holder is named only when two of her levels' arms lie more than about 27° apart. Fade 1 tilts lie within 10°, so she is seldom named there: 0.46 and 0.43 overall. A smaller tolerance would name her more often, and would also let a wobbling drop habit through. Keep `tolPx`?
+2. **Say's three sightings under H3.** Confirmation makes a blind child about 1 in 36 a level. At two sightings, "any order" would be named 0.57 (not 0.23), with every non-holder still under 0.011 in the gate sweep. I left it at three. Lower it to two?
+3. **find and H1.** I gave find no act value: it passes without one, and an arc index means nothing across figures. Is "a different pressed target" meant for find too (for example, the arc's place on the screen)?
+4. **A child who repeats her slip on the name after the play-out** (the same swap twice on one level) is named, as H3 intends: by her acts she cannot be told from the belief. Accept?
+
 ## 2026-11-16, gate 2 H2: the habit battery, the negative control (branch `claude/r8-habit-battery`, from `cbd958e59` + `origin/int/r6`)
 
 **Done (no naming rule changed; `NAMING_OFF` untouched; nothing a child sees changes):** H2 of `RULINGS-2026-11-16-gate2.md`.

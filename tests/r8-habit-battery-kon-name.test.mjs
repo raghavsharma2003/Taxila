@@ -2,13 +2,18 @@
 // sessions as the server serves them (tests/_habit-children.mjs), naming forced on inside the battery only (NAMING_OFF in
 // shared/play.ts is unchanged: nothing a child sees or the lesson receives changes).
 //
-// The negative control: no naming rule has changed yet (H3 comes next), so the battery must show the judge's failure: in
-// say, the same order slip on every level (two taps swapped; a tap missed and its letter added last) gives the mix-up's
-// name on every level, and "the levels differ" does nothing against a habit that does not depend on the level. Reading the
-// three letters across the screen does the same on every say level served (the generator serves no level where reading
-// across puts the vertex in the middle), so it is named too. The say assertion is marked todo; find passes already.
+// H3 (dc-r8-gate2-habit-children) is built: in say an order error is a sighting only when it is confirmed on the same level,
+// her name after the play-out being again a name with the vertex at an end (kon.logic.ts confirmSay). A slip is corrected
+// once she has seen which angle her name means (the battery's children then do the solve); a belief is not (the holders
+// name it their way again; the blind guessers guess again: `again` in the battery). Every non-holder child is asserted
+// under 1 in 10 at every fade, in both goals.
 //
-// Run time (this container, one core): gate sweep 18 s; HABIT_FULL=1 76 s. HABIT_PRINT=<file> writes the table.
+// The negative control runs always: the same children under the rules from before H3 (the battery's `legacy`) must still
+// show the judge's failure: in say, the same order slip on every level (two taps swapped; a tap missed and its letter added
+// last) gives the mix-up's name on every level, and "the levels differ" does nothing against a habit that does not depend
+// on the level; reading the three letters across the screen does the same on every say level served.
+//
+// Run time (this container, one core): gate sweep about 20 s; HABIT_FULL=1 about 80 s. HABIT_PRINT=<file> writes the table.
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
@@ -18,9 +23,12 @@ import { NAMING_OFF } from "../shared/play.ts";
 
 const S = sweep();
 const KIT = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say").misMap["vertex-name"];
-let RES = null, over = [];
+let RES = null, OLD = null, over = [];
+// the negative control's children, run under the rules from before H3
+const OLD_KIDS = new Set(["slip:swap 1-2", "slip:swap 2-3", "slip:miss 1, added last", "slip:miss 2, added last", "blind", ...Array.from({ length: 8 }, (_, k) => `read:${k}`)]);
 before(async () => {
   RES = await runBattery("kon/name", S);
+  OLD = await runBattery("kon/name", { ...S, legacy: true, only: (c) => OLD_KIDS.has(c.id) });
   over = overLine(RES);
   if (process.env.HABIT_PRINT) writeFileSync(process.env.HABIT_PRINT, `${batteryTable(RES)}\n\nsweep: ${JSON.stringify(S)}; ${RES.ms} ms\n`);
 });
@@ -53,19 +61,19 @@ test("children who hold the mix-up: listed with why, and how often each is named
   assert.ok(rowOf(RES, "find", "first-letter").all[KIT] > 0);
 });
 
-test("negative control: the judge's failure shows before any rule changes (say: the same swap, the missed tap added last)", () => {
-  for (const c of ["slip:swap 1-2", "slip:swap 2-3", "slip:miss 1, added last", "slip:miss 2, added last"]) {
-    const r = rowOf(RES, "say", c);
-    assert.ok(r.all[KIT] >= 0.9, `${c}: named in ${r.all[KIT]} of her sessions`);
+test("negative control: under the rules from before H3 the judge's failure shows (say: the same swap, the missed tap added last, reading across)", () => {
+  const kids = ["slip:swap 1-2", "slip:swap 2-3", "slip:miss 1, added last", "slip:miss 2, added last", ...Array.from({ length: 8 }, (_, k) => `read:${k}`)];
+  for (const c of kids) {
+    const r = rowOf(OLD, "say", c);
+    assert.ok(r.all[KIT] >= 0.9, `${c}: named in ${r.all[KIT]} of her sessions (old rules)`);
+    // under H3 the same child is under the line
+    assert.ok(rowOf(RES, "say", c).worstFade[KIT].share < LINE, `${c} under H3`);
   }
-  // reading across the screen gives the mix-up's name on every say level served
-  for (let k = 0; k < 8; k++) assert.ok(rowOf(RES, "say", `read:${k}`).all[KIT] >= 0.9, `read:${k}`);
-  // and the children the tables model are under the line
-  assert.ok(rowOf(RES, "say", "blind").worstFade[KIT].share < LINE);
-  assert.ok(rowOf(RES, "find", "blind").worstFade[KIT].share < LINE);
+  // and the children the tables model are under the line, old rules and new
+  for (const R of [OLD, RES]) for (const g of ["say", "find"]) assert.ok(rowOf(R, g, "blind").worstFade[KIT].share < LINE, `${g} blind`);
 });
 
-test("say: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", { todo: "H3 not built: the same swap or missed tap every level 1.00, reading across 1.00, one random slip 0.15 (gate sweep)" }, () => {
+test("say: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {
   const o = over.filter((x) => x.goal === "say");
   assert.deepEqual(o, [], o.map((x) => `${x.label}: ${x.share.toFixed(3)} at fade ${x.fade}`).join("\n"));
 });

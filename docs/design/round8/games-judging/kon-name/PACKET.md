@@ -16,39 +16,45 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 | say | — | vertex-name (the right three letters, the vertex first or last) |
 | find | — | vertex-name (a first- or last-letter arc) |
 
-## Gate 2 battery (H2, 2026-11-16: the negative control, before any rule changes)
+## Gate 2 battery (2026-11-16: H3 built; the battery passes)
 
-`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-name.test.mjs`. The table below shows, for each child and mix-up, the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported. Fails today in `say` (todo in the test). The same swap, the missed tap added last, and reading across the screen in any of the eight directions each give the mix-up's name on every level (the generator serves no say level where reading across puts the vertex in the middle). `find` passes. Its last-letter reader is never named, because the law names only the first-letter pick.
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-name.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
+
+**What was built (H3, an order act is confirmed on the same level).**
+- In `say`, a name with the vertex first or last is a sighting only when her next name, the one after the play-out, is again a name with the vertex at an end (`kon.logic.ts` `confirmSay`).
+- If it is not confirmed, the row stays the miss it was, at the weight it had (H5 is not this change), and carries no mix-up. Nothing is remembered.
+- **Nothing the child sees changes.** After a miss the level already waits for her next name. The moments and the play-out are as before, and the level does not ask again.
+- In the battery, the holders name it their way again after the play-out, the blind guessers guess again, and every other child does the solve: a slip is corrected once she has seen which angle her name means.
+
+**Before → after (worst child who does not hold the mix-up, worst fade).**
+
+| goal | sweep | before | after |
+|---|---|---|---|
+| say | gate | 1.000 (the same swap, the missed tap added last, reading across in each of the 8 directions) | 0 (no such child named at all) |
+| say | full | 1.000 (the same) | 0 |
+| find | gate / full | 0 / 0.005 (blind tap) | 0 / 0.005 (unchanged) |
+
+The negative control still runs every time: the same children under the rules from before H3 (`legacy`) are named in 0.9 or more of their sessions, and under H3 they are under the line.
+
+**Holders, named (full sweep).**
+- Vertex first: 1.00.
+- Vertex last: 1.00.
+- Any order of the three letters: 0.23, down from 0.58. Each of her levels now confirms 4 times in 9, and the spec still asks for three sightings. Fewer than half: reported.
+- find, first letter: 0.50.
+- find, last letter: 0. The law names only the first-letter pick.
 
 | goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
 |---|---|---|---|---|---|---|
-| say | blind: three different letters (random) |  | vertex-name | 0.019 (n 576) | 0.031 (fade 1) | 0.333 (f1 pL0.9 ggg, n 6) |
-| say | one random slip a level (random) |  | vertex-name | 0.134 (n 576) | 0.151 (fade 1) | 0.667 (f1 pL0.9 ttg, n 6) |
-| say | same slip every level: swap 1-2 |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | same slip every level: swap 2-3 |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | same slip every level: miss 1, added last |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | same slip every level: miss 2, added last |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | what I did last time (the same taps) |  | vertex-name | 0.016 (n 192) | 0.047 (fade 1) | 0.500 (f1 pL- gtt, n 2) |
-| say | reads the three letters across the screen: rows top first, left to right |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: rows top first, right to left |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: rows bottom first, left to right |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: rows bottom first, right to left |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: columns left first, top to bottom |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: columns left first, bottom to top |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: columns right first, top to bottom |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | reads the three letters across the screen: columns right first, bottom to top |  | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | starts at the first letter on screen (rows top first, left to right) |  | vertex-name | 0.385 (n 192) | 0.469 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | starts at the second letter on screen (rows top first, left to right) |  | vertex-name | 0.964 (n 192) | 1.000 (fade 2) | 1.000 (f1 pL- ggg, n 2) |
-| say | the mix-up: the vertex first | **holds** | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | the mix-up: the vertex last | **holds** | vertex-name | 1.000 (n 192) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 2) |
-| say | the mix-up: any order of the three letters (random) | **holds** | vertex-name | 0.580 (n 576) | 0.630 (fade 2) | 1.000 (f1 pL0.6 gtt, n 6) |
-| say | constant answer (64 values; worst: constant taps 012) | | vertex-name | 0.167 (n 48) | 0.500 (fade 1) | 1.000 (f1 pL- gtg, n 1) |
-| say | constant values named ≥ 1 in 10 at some fade | | vertex-name | taps 012, taps 023, taps 032, taps 210, taps 230, taps 320 | | |
-| find | the mix-up: the angle at the name's first letter | **holds** | vertex-name | 0.500 (n 192) | 0.500 (fade 1) | 0.500 (f1 pL- ggg, n 2) |
-| find | the mix-up: the angle at the name's last letter | **holds** | vertex-name | 0 (n 192) | 0 (fade 1) | 0 (f1 pL- ggg, n 2) |
-| find | constant answer (5 values; worst: constant arc 0) | | vertex-name | 0 (n 48) | 0 (fade 1) | 0 (f1 pL- ggg, n 1) |
+| say | the mix-up: the vertex first | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: the vertex last | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: any order of the three letters (random) | **holds** | vertex-name | 0.226 (n 2880) | 0.233 (fade 1) | 0.400 (f1 pL- ttg, n 30) |
+| say | constant answer (64 values; worst: constant taps 000) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| find | blind tap (random) |  | vertex-name | 0.005 (n 2880) | 0.005 (fade 2) | 0.033 (f1 pL0.3 ttg, n 30) |
+| find | the mix-up: the angle at the name's first letter | **holds** | vertex-name | 0.500 (n 960) | 0.500 (fade 1) | 0.500 (f1 pL- ggg, n 10) |
+| find | the mix-up: the angle at the name's last letter | **holds** | vertex-name | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
+| find | constant answer (5 values; worst: constant arc 0) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
 
-sweep: {"full":false,"seeds":2,"randomSeeds":6,"constSeeds":1,"constPls":[null,0.3]}; 14695 ms
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 79161 ms
 
 ## Gate 2: evidence
 
@@ -62,6 +68,8 @@ Branch `claude/r8-gate2-name`. Every number below is computed by `tests/r8-games
 - **An ordinary slip** (`say`): one of her three taps lands on another letter (any of the other three, so every neighbouring letter is counted), from the right name either way round; and, separately, two neighbouring taps swapped. (`find`): a tap meant for the key that leaves its touch disc by 8, 16, 24 or 32 board units, in any of 72 directions, and lands on another arc.
 
 ### `say`: one name is 1 in 6 at worst; named on the third (per session)
+
+(2026-11-16, H3: a say name is a sighting only when her next name, after the play-out, again puts the vertex at an end; see "Gate 2 battery". The figures below are for one name, so they are upper bounds now.)
 
 | On every one of the 621 levels | vertex-name | of | chance |
 |---|---|---|---|

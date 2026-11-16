@@ -233,7 +233,15 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
   const apart = (x, ...ys) => ys.every((y) => surfacesDiffer(surfaceOf(x), surfaceOf(y)));
   const a = S[0], b = S.find((l) => apart(l, a)), f = F.find((l) => apart(l, a, b)), c = S.find((l) => apart(l, a, b, f));
   assert.ok(b && f && c);
-  const mal = (lv) => gradeActs(lv, env(konLogic.malActs(lv, "vertex-name")), { final: true });
+  // (gate 2, H3: a say name is a sighting when her name after the play-out is again the vertex at an end: she names it so twice)
+  const malSeq = (lv) => { const m = konLogic.malActs(lv, "vertex-name"); return lv.params.goal === "say" ? [...m, { kind: "clear" }, ...m] : m; };
+  const mal = (lv) => gradeActs(lv, env(malSeq(lv)), { final: true });
+  // one say name that she puts right after the play-out is no sighting: nothing is remembered
+  {
+    const once = gradeActs(a, env([...konLogic.malActs(a, "vertex-name"), { kind: "clear" }, ...konLogic.solve(a)]), { final: true });
+    assert.equal(once.grade.evidence[0].chanceMis, undefined);
+    assert.equal(afterLevelBody(sessionOf(NE("say")), { grade: once.grade, level: a }).chance, undefined);
+  }
   const play = (seq, n0 = 0) => {
     let s = sessionOf(NE("say"), { n: n0 }); const out = [];
     for (const lv of seq) {

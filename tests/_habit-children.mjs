@@ -18,6 +18,10 @@
 // repeat), pooled over all her sessions, the worst fade (pooled over pL, doors and seeds) and the worst single cell.
 // The per-mode tests assert on the worst fade (enough sessions that a child at 1 in 20 is not flagged by chance) and use the
 // worst cell for the known failures.
+//
+// The rules the battery proves (dc-r8-gate2-habit-children H1, H3, H4) are on in the product; `legacy` (runBattery,
+// withRules) runs the same children under the rules from before them (shared/play.ts HABIT_RULES off inside one synchronous
+// run), so each mode's negative control keeps showing the failures those rules fix.
 import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, NAMING_LEVELS } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { logicFor } from "../src/play/families/index.ts";
@@ -25,6 +29,7 @@ import { mulberry32, hash32 } from "../src/play/core/rng.ts";
 import { TALLY_PAD, TALLY_PAD_COLS, four, tallyFourActs, numberLineEnd } from "../src/play/families/stambh/tally.logic.ts";
 import { PAD as KON_PAD, PAD_COLS as KON_PAD_COLS, padTake, goodPose, vertexOffPose, centreOnArmPose, initPlace, asPlaced, markFor, joinAFirst, PRINT_EVERY, norm, BW, BH } from "../src/play/families/kon/kon.place.ts";
 import { asked, nameOf, corners, denotes, labelPoints, arcTargets, arcHit, angleSizes, LETTER_H, LETTER_W } from "../src/play/families/kon/kon.name.ts";
+import { HABIT_RULES } from "../shared/play.ts";
 
 export const MODES = {
   "stambh/tally": { family: "stambh", mode: "tally", goals: ["read", "keep"] },
@@ -71,7 +76,7 @@ function nextOf(s, e, door) {
 // the grade is pure in (level, acts): many children make the same acts on the same served level
 const GRADE_MEMO = new Map();
 function gradeOf(lv, acts, final) {
-  const k = `${final ? 1 : 0}|${lv.levelId}|${lv.fade}|${JSON.stringify(acts)}`;
+  const k = `${HABIT_RULES.on ? 1 : 0}|${final ? 1 : 0}|${lv.levelId}|${lv.fade}|${JSON.stringify(acts)}`;
   if (!GRADE_MEMO.has(k)) GRADE_MEMO.set(k, gradeActs(lv, envOf(acts), { final }));
   return GRADE_MEMO.get(k);
 }
@@ -98,6 +103,16 @@ export function withGenMemo(fn) {
     patched.push([lg, orig]);
   }
   try { return fn(); } finally { for (const [lg, orig] of patched) lg.generate = orig; }
+}
+/**
+ * The rules from before dc-r8-gate2-habit-children's H1, H3 and H4 (the negative control): `legacy` runs fn with the product's
+ * HABIT_RULES switched off, synchronously, and puts it back (the switch is a test seam; nothing else writes it).
+ */
+export function withRules(legacy, fn) {
+  if (!legacy) return fn();
+  const was = HABIT_RULES.on;
+  HABIT_RULES.on = false;
+  try { return fn(); } finally { HABIT_RULES.on = was; }
 }
 export const memoSize = () => LEVEL_MEMO.size + NEXT_MEMO.size + GRADE_MEMO.size + GEN_MEMO.size;
 /** drop the memos (a test file's battery holds them only while it runs) */
@@ -145,9 +160,13 @@ export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS })
     ctx.i = i;
     const own = child.acts[lv.params?.goal];
     const logic = logicFor(lv.family, lv.mode);
-    const first = (lv.family === entry.family && lv.mode === entry.mode && own ? own(lv, ctx) : null) ?? logic.solve(lv);
+    const mine = lv.family === entry.family && lv.mode === entry.mode;
+    const first = (mine && own ? own(lv, ctx) : null) ?? logic.solve(lv);
     const g0 = gradeOf(lv, first, false);
-    const all = g0?.solved ? first : [...first, ...repairOf(lv)];
+    // after a miss: what she does once she has seen the play-out (a child who holds the mix-up may give it again: `again`),
+    // then the solve
+    const again = !g0?.solved && mine ? child.again?.[lv.params?.goal]?.(lv, ctx) ?? [] : [];
+    const all = g0?.solved ? first : [...first, ...again, ...repairOf(lv)];
     const g = gradeOf(lv, all, true);
     const rows = nameOnRepeat(lessonEvidence(g.grade, lv), s, lv);
     for (const r of rows) if (r.misconceptionId) named.add(r.misconceptionId);
@@ -166,10 +185,11 @@ export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS })
  *   ms }>. `seeds`: sessions per cell (random children get `randomSeeds`, constant answers `constSeeds` over `constPls`);
  * `pls`, `fades`, `doors`: the cells; `only`: a filter on the children; `goals`: some of the mode's goals.
  * Async: it yields between children, so in the one-process `npm test` other suites' timers keep running; the generator
- * memo is put on only while one child's sessions run (synchronously), so no other suite ever meets it.
+ * memo is put on only while one child's sessions run (synchronously), so no other suite ever meets it. `legacy`: the rules
+ * from before H1, H3 and H4 (withRules), the same way.
  */
 export async function runBattery(modeName, opts = {}) {
-  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true } = opts;
+  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true, legacy = false } = opts;
   const t0 = performance.now();
   const M = MODES[modeName], out = { mode: modeName, seeds, randomSeeds, constSeeds, constPls: constPls ?? pls, goals: {} };
   for (const goal of goals ?? M.goals) {
@@ -179,7 +199,7 @@ export async function runBattery(modeName, opts = {}) {
     for (const child of childrenFor(modeName, goal)) {
       if (only && !only(child)) continue;
       const run = () => childRow({ entry, goal, kits, child, n: child.random ? randomSeeds : child.constant ? constSeeds : seeds, fades, pls: child.constant && constPls ? constPls : pls, doors });
-      rows.push(genMemo ? withGenMemo(run) : run());
+      rows.push(withRules(legacy, () => (genMemo ? withGenMemo(run) : run())));
       await new Promise((r) => setImmediate(r));
     }
     out.goals[goal] = { kits, rows };
@@ -261,7 +281,9 @@ export function holders(res) {
 export const rowOf = (res, goal, child) => res.goals[goal]?.rows.find((r) => r.child === child) ?? null;
 
 // ───────────────────────────── the children ─────────────────────────────
-// A child: { id, label, acts: { [goal]: (level, ctx) => acts | null }, holds?: { [rule]: why }, random?, constant? }.
+// A child: { id, label, acts: { [goal]: (level, ctx) => acts | null }, holds?: { [rule]: why }, random?, constant?,
+//   again?: { [goal]: (level, ctx) => acts } } (what she does after a miss, once she has seen the play-out, before the solve;
+//   kon/name say, H3: the holders name it their way again, the blind guessers guess again; absent: the solve).
 // ctx: { rng (seeded per session), prev: { level, first, firstTry } | null (her previous level), i (0-based), mem }.
 // null from an act function: she does the solve on that level (the habit has nothing to do there).
 
@@ -393,6 +415,12 @@ const readAct = (n) => ({ kind: "read", n: clamp(n, 0, 180) });
 /** the finger's drops that miss: the centre off by (dx, dy) board px, the turn right (eight ways × six distances) */
 const DROPS = DIRS.flatMap((d) => [12, 16, 20, 24, 28, 32].map((r) => { const L = Math.hypot(d[0], d[1]); return { id: `drop ${r} ${DIR_NAME(d)}`, dx: (r * d[1]) / L, dy: (-r * d[0]) / L }; }));
 const TICKS = [-10, -5, 5, 10];
+/** the same drop every level, give or take a finger's wobble: the centre within JITTER board px of the habit's spot, anywhere
+ *  in that disc, afresh each level (H1: a placement's value is its offset on the board, and offsets within a finger's drop
+ *  of each other are one act) */
+const JITTER = 4;
+const JITTERED = DROPS.filter((d) => /^drop (20|24) (up|up-right)$/.test(d.id));
+const wobble = (d, rng) => { const a = 2 * Math.PI * rng(), r = JITTER * Math.sqrt(rng()); return { dx: d.dx + r * Math.cos(a), dy: d.dy + r * Math.sin(a) }; };
 const near = (v, every) => Math.round(v / every) * every;
 
 function placeChildren(goal) {
@@ -416,6 +444,10 @@ function placeChildren(goal) {
       const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy };
       return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
     });
+    for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id} (reads what it shows)`, (lv, c) => {
+      const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy };
+      return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
+    }, { random: true });
     for (const t of [-3, -2, -1, 1, 2, 3]) add(`turn${t}`, `same every level: the turn ${t}°`, (lv) => { const p = lv.params, g = goodPose(p); return [...head({ ...g, rot: g.rot + t }), readAct(measureRight(p))]; });
     for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant ${X}`, (lv) => at(lv.params, X), { constant: true });
     add("last-first", "what I typed last time (my first number)", (lv, c) => at(lv.params, c.prev ? c.prev.first.find((a) => a.kind === "read")?.n ?? measureRight(lv.params) : measureRight(lv.params)));
@@ -457,6 +489,7 @@ function placeChildren(goal) {
   }, { random: true });
   for (const t of [-1, 1, ...TICKS]) add(`dot${t}`, `same every level: the dot ${t > 0 ? "+" : ""}${t} on the rim`, (lv) => atD(lv.params, rightMark(lv.params) + t));
   for (const d of DROPS) add(`drop:${d.id}`, `same every level: ${d.id}`, (lv) => { const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy }; return atD(p, markFor(p, q, p.theta), "v", q); });
+  for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id}`, (lv, c) => { const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy }; return atD(p, markFor(p, q, p.theta), "v", q); }, { random: true });
   for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant dot ${X}`, (lv) => atD(lv.params, X), { constant: true });
   add("btn-first", "the first join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv)));
   add("btn-last", "the last join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv) === "e" ? "v" : "e"));
@@ -506,8 +539,14 @@ function nameChildren(goal) {
   if (goal === "say") {
     const right = (p) => nameOf(asked(p));
     add("careful", "careful (right every level)", (lv) => sayActs(right(lv.params)));
-    add("blind", "blind: three different letters", (_lv, c) => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return sayActs(xs.slice(0, 3)); }, { random: true });
-    add("blind-any", "blind: any three taps (repeats allowed)", (_lv, c) => sayActs([0, 1, 2].map(() => Math.floor(c.rng() * 4))), { random: true });
+    // H3: her name after the play-out (`again`, before the solve). The blind guessers guess again; a slip or a habit that is
+    // not the belief is corrected once she has seen which angle her name means (the solve); the holders give the belief again
+    const blind3 = (c) => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs.slice(0, 3); };
+    const anyOrder = (k, c) => { const xs = [k.a, k.v, k.b]; for (let i = 2; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs; };
+    const anew = (taps) => [{ kind: "clear" }, ...sayActs(taps)];
+    add("blind", "blind: three different letters (and again after a miss)", (_lv, c) => sayActs(blind3(c)), { random: true, again: { say: (_lv, c) => anew(blind3(c)) } });
+    const blindAny = (c) => [0, 1, 2].map(() => Math.floor(c.rng() * 4));
+    add("blind-any", "blind: any three taps, repeats allowed (and again after a miss)", (_lv, c) => sayActs(blindAny(c)), { random: true, again: { say: (_lv, c) => anew(blindAny(c)) } });
     add("slip-random", "one random slip a level", (lv, c) => sayActs(pickOf(SAY_SLIPS, c.rng).f(right(lv.params), lv.params)), { random: true });
     for (const sl of SAY_SLIPS) add(`slip:${sl.id}`, `same slip every level: ${sl.id}`, (lv) => sayActs(sl.f(right(lv.params), lv.params)));
     for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) for (let d = 0; d < 4; d++) add(`const:${a}${b}${d}`, `constant taps ${a}${b}${d}`, () => sayActs([a, b, d]), { constant: true });
@@ -521,10 +560,14 @@ function nameChildren(goal) {
       const t = [o[idx], ...o.filter((i) => three.has(i) && i !== o[idx])].slice(0, 3);
       return sayActs(t);
     });
-    add("v-first", "the mix-up: the vertex first", (lv) => { const c = asked(lv.params); return sayActs([c.v, c.a, c.b]); }, { holds: { "vertex-name": "the vertex first: the kit's first sign" } });
-    add("v-last", "the mix-up: the vertex last", (lv) => { const c = asked(lv.params); return sayActs([c.a, c.b, c.v]); }, { holds: { "vertex-name": "the vertex last" } });
-    add("v-any", "the mix-up: any order of the three letters", (lv, c) => { const k = asked(lv.params), xs = [k.a, k.v, k.b]; for (let i = 2; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return sayActs(xs); },
-      { random: true, holds: { "vertex-name": "any order is as good: the belief itself (2 in 3 of her names put the vertex at an end)" } });
+    // (after the play-out the holders name it their way again: the vertex first with the arms the other way round, the vertex
+    // last likewise, any order afresh)
+    add("v-first", "the mix-up: the vertex first", (lv) => { const c = asked(lv.params); return sayActs([c.v, c.a, c.b]); },
+      { holds: { "vertex-name": "the vertex first: the kit's first sign" }, again: { say: (lv) => { const c = asked(lv.params); return anew([c.v, c.b, c.a]); } } });
+    add("v-last", "the mix-up: the vertex last", (lv) => { const c = asked(lv.params); return sayActs([c.a, c.b, c.v]); },
+      { holds: { "vertex-name": "the vertex last" }, again: { say: (lv) => { const c = asked(lv.params); return anew([c.b, c.a, c.v]); } } });
+    add("v-any", "the mix-up: any order of the three letters", (lv, c) => sayActs(anyOrder(asked(lv.params), c)),
+      { random: true, holds: { "vertex-name": "any order is as good: the belief itself (2 in 3 of her names put the vertex at an end, the one after the play-out too)" }, again: { say: (lv, c) => anew(anyOrder(asked(lv.params), c)) } });
     return C;
   }
   // find

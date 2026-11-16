@@ -28,10 +28,12 @@
 //   tally-four  read: a bundle read as its four standing lines (answer 4 × bundles + singles, short by the bundles);
 //               keep, from the marks ("five"): one stroke per thing and no line across anywhere, whatever the totals
 //               (five written as five standing lines, the kit's second sign; judges round 2, ruling 4), on a level of at
-//               least three groups of five (evening ruling 1);
+//               least three groups of five (evening ruling 1). Gate 2, H4 (dc-r8-gate2-habit-children): pressing one
+//               button for every stroke is a habit of one button, so "five" names nothing from one level: a pick
+//               (chanceAt), named on a second level with other totals (chanceRepeat "keep:tally-four", sightingOf);
 //               keep, from the totals ("counted"): one stroke per thing, lines across drawn, and every total the row's
 //               count less its bundles (each wrong total short by exactly its row's bundles)
-import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, StambhAct } from "../../../../shared/play.ts";
+import { HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel, type StambhAct } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
@@ -309,7 +311,9 @@ function apply(level: PlayLevel<TallyParams>, s: TallyState, act: StambhAct, seq
       // keep names it from this level (its first check); read's one typed number is a pick at chance weight
       // (chancePicks): it plays out, and its grade carries chanceMis, but nothing about it is in her facts until the
       // server sees it again on a level whose bundles and loose lines both differ (gate 2)
-      if (s.checks === 0 && p.goal === "keep") next = { ...next, mal: "tally-four", sign };
+      // gate 2, H4: keep's "five" (no line across anywhere) is one button for every stroke, a habit like any other: a pick
+      // (keepFivePick), so it too is in her facts only once the server names it on a second level
+      if (s.checks === 0 && p.goal === "keep" && !(sign === "five" && HABIT_RULES.on)) next = { ...next, mal: "tally-four", sign };
       // the gap: what the mix-up leaves out (the bundles read as four, or the lines across not drawn)
       const gap = sign === "five" ? crossesMissing : p.counts.reduce((a, c) => a + Math.floor(c / 5), 0);
       out.push(mom("misconception_consequence", seq, { ...f, sign, gap }, "tally-four"));
@@ -509,6 +513,19 @@ export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
   // loose lines all differ two by two, or on two when one of them is firm (a row no single ordinary slip turns into the
   // mix-up's number: oneSlipFromMixup). Over a session's NAMING_LEVELS (4) levels, a child who slips on every one at the
   // worst rows is named 13 in 256 at worst (the packet's table)
-  chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 } },
+  chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 }, "keep:tally-four": { sightings: 2 } },
   firmSighting: (level: PlayLevel<TallyParams>, rule: string) => rule === "tally-four" && level.params.goal === "read" && !oneSlipFromMixup(level.params.counts[0]),
+  // gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. read: the number she typed, so two rows
+  // on which the mix-up gives the same number (19 and 20 both give 16; 34 and 35 both 28) are one sighting, and "16 every
+  // time" or "what I typed last time" is seen once. keep's "five" (H4): her totals, so two levels count only with other totals
+  sightingOf: (level: PlayLevel<TallyParams>, rule: string, s: TallyState) => (rule !== "tally-four" || !s?.totals ? null
+    : level.params.goal === "read" ? (s.totals[0] !== null && s.totals[0] !== undefined ? `n:${s.totals[0]}` : null)
+    : `t:${s.totals.map((x) => (x === null ? "-" : String(x))).join(",")}`),
+  // gate 2, H4 (dc-r8-gate2-habit-children): keep's "five" needs two levels, with different totals, like any other habit of
+  // one button: its moment is a pick (chanceMis at chance weight, nothing in her facts, seam or trail), named on a second
+  // keep level whose rows' counts differ (the surface) and on which her totals differ (sightingOf). "counted" still names
+  // from one level (three ordinary slips or more from the truth)
+  chanceAt: (level: PlayLevel<TallyParams>, m: Moment) => keepFivePick(level, m),
 };
+/** gate 2, H4: is this moment keep's "five" (a pick)? */
+export const keepFivePick = (level: PlayLevel<TallyParams>, m: Moment): boolean => level.params.goal === "keep" && m.kind === "misconception_consequence" && m.misconceptionId === "tally-four" && m.facts?.sign === "five";
