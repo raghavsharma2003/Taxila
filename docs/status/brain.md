@@ -2,6 +2,27 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `SHA` (036 items 1 and 3: T3 and the c4 steady 96 fixture)
+
+**Done:**
+- T3: the wrap's sentence about her is code's (`didSentence`, server/brain/say.js). It picks:
+  - the last skill she reached;
+  - in that skill, the latest check card she answered right at the first try (by `rightLog`, misses 0);
+  - that card's `did` (`{hi, en}`), put in one of `wrap.didFrames` rotated by the lesson seed.
+  If there's no such card, there's no sentence. If a script has frames but no `did` on the card, it falls back to the skill before.
+  The model's `childSentence` is no longer called on the wrap.
+  - Tested with a c4 script given `did` and `didFrames` (tests/r8-director24-did.test.mjs).
+  - No script on int/r6 carries `did` yet, so the dry matrix wrap is unchanged and the counts did not move.
+- 036 item 3: tests/fixtures/c4-steady-96.json holds the director24 c4 steady line at 95 ("nahi, chhota hoga") and the live row 96.
+  - tests/r8-director24-part96.test.mjs rebuilds the state from the run's script copy, walked by `step()` to the s3 e1 card.
+  - Her line then goes through `planTurn` and `textReply`.
+  - `partOnce` flags the live row. Today's turn says the verdict, its why and e2's point, then holds the card; her "haan" gets the card. `partOnce` reads 0 on both turns.
+- Dry matrix: 0 on every gated predicate.
+
+**Next:** M (the model writes the joins), then the rest of H3, then the rest of A3, then the harness flags.
+
+**Question for main:** the Hindi H3 question in the entry below is still open.
+
 ## 2026-11-16 · `979fe7fb` (item 8, harness) and `1700767c` (H3)
 
 **Done (gated: test:all 7343 pass; the only failures are the two worktree-only browser suites):**

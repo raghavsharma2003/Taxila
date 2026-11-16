@@ -21,7 +21,7 @@ import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust, joinable, scriptFor, jointOf } from "../director/script.js";
+import { saidMust, joinable, scriptFor, jointOf, saidIn } from "../director/script.js";
 import { fillFriend } from "../director/friend.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
@@ -1256,6 +1256,32 @@ function seamsOf(out, { state, kit, ui = null }) {
 /** The kind of a second view ("parts", "line", "round", "wholes", "unrolled", "example" …): a call's or a hint's `view`; a bars call with
  *  none is "parts". null when it cannot be told. */
 export const viewKindOf = (v) => (!v || v === "held" ? null : typeof v === "string" ? (v === "bars" ? "parts" : v) : v.view === "bars" ? "parts" : v.view ?? (v.template || v.bars || v.labels ? "parts" : null));
+/** dc-r8-director24 T3: the sentence about the child — the check card of the last skill she reached that she answered right at the
+ *  first try, the latest in script order (never the closing question), its `did` clause said in one of `wrap.didFrames` (rotated by the
+ *  lesson's seed; "Aaj tumne {did}." when the script has none). No such card, or no `did` on it: no sentence. */
+export function didSentence(state, kit, L = "hinglish") {
+  const sc = scriptFor(kit)?.script;
+  if (!sc) return null;
+  const lang = L === "english" ? "english" : "hinglish";
+  const reached = [...(state?.introduced ?? [])];
+  const right1 = new Set((state?.rightLog ?? []).filter((x) => (x.misses ?? 0) === 0).map((x) => String(x.id)));
+  const checkIdOf = (id) => { const m = /^script:(.+?):([^:]+)$/.exec(String(id)); return m ? { skillId: m[1], checkId: m[2] } : null; };
+  const firstTry = [...right1].map(checkIdOf).filter(Boolean);
+  for (const skillId of [...reached].reverse()) {
+    const sk = (sc.skills ?? []).find((k) => k.skillId === skillId);
+    const hits = (sk?.checks ?? []).filter((c) => c.did && firstTry.some((x) => x.skillId === skillId && x.checkId === c.id));
+    const card = hits.at(-1);
+    if (!card) continue;
+    const did = saidIn(card.did, lang);
+    if (!did || !String(did).trim()) return null;
+    const frames = (sc.wrap?.didFrames ?? []).map((f) => saidIn(f, lang)).filter((f) => f && /\{did\}/.test(f));
+    const forms = frames.length ? frames : [lang === "english" ? "Today you {did}." : "Aaj tumne {did}."];
+    const f = forms[seamStart(lessonKeyOf(state), "didFrame") % forms.length];
+    const t = f.replace("{did}", String(did).trim().replace(/[.!?\u0964]+$/, ""));
+    return /[.!?\u0964]$/.test(t) ? t : `${t}.`;
+  }
+  return null;
+}
 /** dc-r8-director23 C: the authored caption of the board a picture request redraws — the `viewCaption` of the script object whose `board`
  *  is the board up (the held unit's), in the lesson language. null when none is authored.
  *  (main, integration 72: a caption is written against ONE view, the one the board's own second view draws. `drawn` is the kind of the
@@ -1359,7 +1385,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
     let mine = null;
-    if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L, kit).catch(() => null);
+    // (dc-r8-director24 T3: code picks the card and says Learning's `did` clause for it in an authored frame — no model call)
+    if (end === "wrap" && lines.length >= 2) mine = didSentence(state, kit, L);
     const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
     // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
     const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
