@@ -23,7 +23,7 @@
 import type { ChumbakAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material, Role } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -40,6 +40,8 @@ interface Spring { x: number; v: number; to: number }
 export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<ChumbakParams, ChumbakState, ChumbakAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, g = p.goal;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -64,6 +66,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const s = st(), now = api.t;
     actAt = now;
     aim(face, s.face); aim(box, s.box); aim(needle, needleAt(p, s.spot)); aim(map, s.map);
@@ -554,7 +557,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [];
     const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) };
-    const runBtn = (key: string): ControlSpec => ({ id: "run", label: W(`chumbak.run.${key}`), aria: W(`chumbak.run.${key}`), kind: "primary", group: "go", onPress: () => act({ kind: "run" }) });
+    const runBtn = (key: string): ControlSpec => ({ id: "run", label: W(`chumbak.run.${key}`), aria: W(`chumbak.run.${key}`), kind: "primary", group: "go", disabled: wait.waits({ kind: "run" }), onPress: () => act({ kind: "run" }) });
     if (g === "pakka") {
       for (let i = 0; i < (p.bars as number); i++) out.push({ id: `claim-${i}`, label: W("chumbak.pakka.claim", { bar: "ABC"[i] }), kind: "choice", group: "claim", onPress: () => act({ kind: "claim", i }) });
       out.push(undo);

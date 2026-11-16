@@ -8,7 +8,7 @@
 // where the arms meet). The pair and close protractors carry ONE scale (the other would be the answer).
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { diff, meets, norm, targetOf, type KonParams, type KonState } from "./kon.logic.ts";
@@ -28,6 +28,8 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   if (isNameGoal((depsIn.level.params as KonParams | null)?.goal)) return makeNameView(api, depsIn);
   const deps = depsIn as unknown as ViewDeps<KonParams, KonState, KonAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, setGoal = p.goal === "set";
   // a protractor on the base arm: set (both scales), linear / tri / iso (one scale, from the base arm only)
   const protractor = setGoal || p.goal === "linear" || p.goal === "tri" || p.goal === "iso";
@@ -64,6 +66,7 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
   function act(a: KonAct): void { ctl.dispatch(a); deps.changed(); }
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as KonAct | undefined;
     if (last?.kind === "turn" && !refused) api.sfx("slide");
     if (last?.kind === "commit" && refused !== "turn_first") { truthAt = api.t; api.sfx("land"); api.fx.shake(2); }
@@ -211,7 +214,7 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       { id: "nudge-left", label: "↺", aria: "turn anticlockwise a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "turn", deg: norm(cur + step) }) },
       { id: "nudge-right", label: "↻", aria: "turn clockwise a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "turn", deg: norm(cur - step) }) },
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-      { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: cur !== null, disabled: cur === null, onPress: () => act({ kind: "commit" }) },
+      { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: !wait.waits({ kind: "commit" }) && cur !== null, disabled: wait.waits({ kind: "commit" }) || cur === null, onPress: () => act({ kind: "commit" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => drag };

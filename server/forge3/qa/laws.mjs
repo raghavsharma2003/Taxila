@@ -1,4 +1,4 @@
-// Round 8: the three laws of every play family (dc-r8-game-modes-three-laws; docs/design/round8/games-judging/RULINGS-2026-11-11.md),
+// Round 8: the laws of every play family (dc-r8-game-modes-three-laws; docs/design/round8/games-judging/RULINGS-2026-11-11.md),
 // checked on a served level by drawing the family's REAL view headless (a recording 2D context, the painter's audit) through
 // the law's own acts. The play cert (server/forge3/play-cert.js) fails a cell whose level breaks one; tests/r8-play-laws
 // runs it over every (family, mode, goal) the coverage serves.
@@ -17,6 +17,9 @@
 //      (FamilyLogic.oneDecision, chancePicks) the grade never keeps the misconception (gradeLevel reports it at chance
 //      weight as `chanceMis`). Reported for review (not failed): a mal-rule fired by a single input act on a goal not so
 //      declared.
+//   4. After a miss the check waits until her act changes (dc-r8-gate2-shadow S4): the act that missed, pressed again on the
+//      same answer, is off (its control disabled or gone) or refused without playing the miss again or counting a check
+//      (checkWaits; the views use src/play/core/viewkit.ts missWait). CHECK_WAITS_OPEN lists the modes still open.
 // Marks a key can be counted off (a triangle on unit ticks) and lines it can be traced from are not seen by these checks:
 // they are the family tests' and the judges' (LAWS-AUDIT.md lists them per family).
 import { register } from "node:module";
@@ -246,6 +249,70 @@ function howMade(acts, solve, at, frames) {
 }
 
 /**
+ * Law 4 still open (dc-r8-gate2-shadow S4, 2026-11-16): in these modes the act that missed is her answer itself, not a
+ * check control, so "the button waits" does not say what to do; each needs main's choice (LAWS-AUDIT.md, "Law 4"). Their
+ * own check buttons (done, commit, run) already wait. tests/r8-play-laws holds each to law 4 only here.
+ *   pick: a one-tap choice commits; greying the missed choice narrows the options (elimination), and on kon/place draw it
+ *     changes the pick's blind chance that gate 2 reads.
+ *   typed: a number committed in one act; the commit would wait while the number is the one that missed (a logic refusal,
+ *     as kon/name's "unchanged", so the server's replay agrees).
+ *   experiment: the miss is an experiment (a tool used, a jar marked, a thing sorted); doing it again plays its
+ *     consequence again. Is a repeated experiment a check?
+ */
+export const CHECK_WAITS_OPEN = {
+  "todo-jodo/strips": "pick", "nishana/place": "pick", "kyun-lab/dhruv": "pick", "kon/place": "pick, typed", "rang/milao": "pick",
+  "todo-jodo/atoms": "typed, experiment", "nazariya/floor": "typed", "nazariya/powers": "typed", "taraazu/equality": "typed",
+  "aakash/chakkar": "experiment", "aakash/ritu": "experiment", "badlaav/aag": "experiment", "badlaav/palat": "experiment, pick",
+  "bhaap/chakra": "experiment", "bhaap/hawa": "experiment", "chhaano/geela": "experiment", "chhaano/sukha": "experiment",
+  "jaanch/daag": "experiment", "jaanch/neela": "experiment", "rang/pehchaan": "experiment",
+};
+const MISSED = (r) => !!r && (r.refused === "missed" || (r.moments ?? []).some((x) => x.kind === "misconception_consequence" || x.kind === "near_miss" || x.kind === "law_refused"));
+/** the control on screen whose press dispatches `act` (each control's press caught, nothing applied), or null */
+function controlFor(m, act) {
+  let cs = [];
+  try { cs = m.view.controls(); } catch { return null; }
+  const key = JSON.stringify(act), real = m.ctl.dispatch;
+  let caught;
+  m.ctl.dispatch = function (a) { caught = a; return { state: this.state, moments: [], refused: "probe" }; };
+  try {
+    for (const c of cs) { caught = undefined; try { c.onPress(); } catch { /* a press that needs the pointer */ } if (caught !== undefined && JSON.stringify(caught) === key) return c; }
+  } finally { m.ctl.dispatch = real; }
+  return null;
+}
+/** a fresh mount with `n` of `acts` played, the screen settled */
+async function playedTo(level, opts, acts, n) {
+  const m = await mount(level, opts);
+  for (let i = 0; i < n; i++) { m.api.t += 0.5; m.frame(); m.ctl.dispatch(acts[i]); }
+  m.look();
+  return m;
+}
+/** the numbers the facts keep of her checks and tries */
+const checkCounts = (f) => Object.entries(f ?? {}).filter(([k, v]) => typeof v === "number" && /check|tries|tried|attempt|miss/i.test(k));
+/**
+ * Law 4 (dc-r8-gate2-shadow S4): after a miss while a try remains, the check waits until her act changes. The check is the
+ * act that missed (acts[missAt]); its control, where a control made it, is the one whose press dispatches that act. Pressed
+ * again on the same answer it is off (disabled, or gone from the screen), or the law refuses it without playing the miss
+ * out again and without counting a check. `m` is the mount just after the miss; it is pressed. → a break line, or null
+ */
+async function checkWaits(level, opts, acts, missAt, m) {
+  const act = acts[missAt];
+  const before = controlFor(await playedTo(level, opts, acts, missAt), act);
+  const after = controlFor(m, act);
+  if (before && !after) return null;
+  if (after?.disabled) return null;
+  let r = null;
+  const was = checkCounts(m.ctl.facts());
+  if (after) { const real = m.ctl.dispatch; m.ctl.dispatch = function (a) { r = real.call(this, a); return r; }; try { after.onPress(); } finally { m.ctl.dispatch = real; } }
+  else r = m.ctl.dispatch(act);
+  const how = after ? `"${after.id}"` : `the act ${JSON.stringify(act).slice(0, 50)}`;
+  if (MISSED(r)) return `after a miss, ${how} on the same answer plays the miss again`;
+  if (r?.refused) return null;
+  const now = new Map(checkCounts(m.ctl.facts()));
+  const cost = was.find(([k, v]) => (now.get(k) ?? v) > v);
+  return cost ? `after a miss, ${how} on the same answer counts a check (${cost[0]})` : null;
+}
+
+/**
  * The law breaks on one level: [{ law, state, what }] (empty = the level keeps all three), plus `review` items (single-act
  * mal-rules on goals not declared one-decision, for the audit) and `checked` (how many states were looked at).
  */
@@ -321,6 +388,9 @@ export async function lawsFor(level, opts = {}) {
       if (how.kind === "pick" && how.options <= 5) breaks.push({ law: 3, state: `mal:${mal}`, what: `named from one pick among ${how.options} (${JSON.stringify(how.act).slice(0, 60)})` });
       else if (how.kind === "pick") review.push({ law: 3, state: `mal:${mal}`, what: `named from one pick among ${how.options} (${JSON.stringify(how.act).slice(0, 60)})` });
     }
+    // law 4: after the miss, the check waits until her act changes (pressed again on the same answer it is off or refused)
+    const w = await checkWaits(level, opts, acts, missAt, m);
+    if (w) breaks.push({ law: 4, state: `mal:${mal}`, what: w });
   }
   // ── the solve: the view runs to the end without throwing
   let sol = null;

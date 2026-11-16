@@ -8,7 +8,7 @@
 // did not match (its own reading: the consequence, never the law's answer).
 import type { Moment, StambhAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { buildable, targetHalves, valueOf, type StambhParams, type StambhState } from "./stambh.logic.ts";
@@ -19,6 +19,8 @@ const BOUNCE = 0.14;       // s, the settle after landing
 export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<StambhParams, StambhState, StambhAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, picto = level.mode === "picto", n = p.values.length, cols = buildable(p), diff = p.goal === "diff";
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const unit = W(`stambh.unit.${p.ctx}`), catName = (i: number) => W(`stambh.cat.${p.cats[i]}`);
@@ -53,6 +55,7 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const act = (a: StambhAct) => { ctl.dispatch(a); deps.changed(); };
 
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as StambhAct | undefined;
     if (last?.kind === "drop") {
       if (refused) { api.sfx("refuse"); api.fx.shake(2); }
@@ -220,7 +223,7 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (p.half) out.push({ id: "half", label: `½ ${W("stambh.half")}`, aria: "drop a half crate", kind: "pad", group: "stack", disabled: cur % 2 === 1 || cur + 1 > 2 * p.cap, onPress: () => act({ kind: "drop", col: sel, half: true }) });
     out.push({ id: "lift", label: W("stambh.lift"), aria: "lift the top crate", kind: "pad", group: "stack", disabled: cur === 0, onPress: () => act({ kind: "lift", col: sel }) });
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
-    out.push({ id: "done", label: W("stambh.check"), kind: "primary", group: "go", you: any, disabled: !any, onPress: () => act({ kind: "check" }) });
+    out.push({ id: "done", label: W("stambh.check"), kind: "primary", group: "go", you: !wait.waits({ kind: "check" }) && any, disabled: wait.waits({ kind: "check" }) || !any, onPress: () => act({ kind: "check" }) });
     return out;
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react };

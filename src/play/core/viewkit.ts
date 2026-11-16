@@ -42,6 +42,30 @@ export interface ViewDeps<P = unknown, S = unknown, A extends PlayActBody = Play
 }
 export type MakeView = (api: ViewApi, deps: ViewDeps) => FamilyView;
 
+const MISS_KINDS: ReadonlySet<string> = new Set(["misconception_consequence", "near_miss", "law_refused"]);
+/** a dispatch that missed: a mix-up's consequence, a near miss, the law refusing her act, or refused as missed */
+export const isMiss = (ms: readonly Moment[], refused?: string): boolean => refused === "missed" || ms.some((m) => MISS_KINDS.has(m.kind));
+/** her state as an answer: the act counter left out (a refused act bumps it without changing what she made) */
+const answerKey = (s: unknown): string => JSON.stringify(s, (k, v) => (k === "acts" ? undefined : v));
+/**
+ * Law 4 (dc-r8-gate2-shadow S4; server/forge3/qa/laws.mjs checkWaits): after a miss while a try remains, the check waits
+ * until her act changes (stambh/tally's Jaancho, kon/name's Yahi naam). `saw` goes in the view's react; `waits(act)` in its
+ * controls: true while her state is the one the miss left and pressing `act` now would play a miss out again (the law's own
+ * answer, applied and dropped), so the check control is off. A check pressed again on the same answer told her nothing new
+ * and cost her a check.
+ */
+export interface WaitCtl { readonly state: unknown; readonly level: unknown; readonly acts: readonly unknown[]; readonly logic: { apply(level: unknown, state: unknown, act: unknown, seq: number): { moments: Moment[]; refused?: string } } }
+export function missWait(ctl: WaitCtl): { saw(ms: readonly Moment[], refused: string | undefined): void; waits(act: PlayActBody): boolean } {
+  let snap: string | null = null;
+  return {
+    saw(ms, refused) { if (isMiss(ms, refused)) snap = answerKey(ctl.state); },
+    waits(act) {
+      if (snap === null || answerKey(ctl.state) !== snap) return false;
+      try { const r = ctl.logic.apply(ctl.level, ctl.state, act, ctl.acts.length + 1); return isMiss(r.moments, r.refused); } catch { return false; }
+    },
+  };
+}
+
 /** Fit `n` items of preferred size `pref` (≥ `min`) with `gap` into `avail`; returns the size or null if even `min` fails. */
 export function fitRow(n: number, avail: number, pref: number, min: number, gap: number): number | null {
   if (n <= 0) return pref;

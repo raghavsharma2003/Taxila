@@ -11,7 +11,7 @@
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { BhaapAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -32,6 +32,8 @@ type Ku = { filled: number; rains: number; pit: boolean; pumped: number };
 export const makeBhaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<BhaapParams, BhaapState, BhaapAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -49,6 +51,7 @@ export const makeBhaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const s = st(), now = api.t;
     last.why = s.why; last.ev = s.ev;
     actAt = now; aim = false;
@@ -492,7 +495,7 @@ export const makeBhaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
       // never "your move": the button must not hint when the process is complete (the child decides it is)
-      { id: "done", label: W("bhaap.done"), aria: W("bhaap.done"), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) },
+      { id: "done", label: W("bhaap.done"), aria: W("bhaap.done"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) },
     ];
   }
   void cellOf; void UNITS;

@@ -9,7 +9,7 @@
 // start side; a stopwatch runs from the release (a measuring tool, never a limit). No timer ends or rushes anything.
 import type { Moment, YantraAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { BOBS, LEN, SWINGS, periodOf, type Knob, type PendulumParams, type PendulumState } from "./pendulum.logic.ts";
@@ -20,6 +20,8 @@ const SIN20 = Math.sin(20 * RAD);
 export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<PendulumParams, PendulumState, YantraAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, match = p.goal === "match", beat = p.beat ?? 1, n = p.n ?? 5;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, `yantra.pendulum.${k}` as WordKey, v);
   const st = () => ctl.state;
@@ -69,6 +71,7 @@ export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (match) api.sfx("tick");
   }
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as YantraAct | undefined;
     if (last?.kind === "set") api.sfx(refused ? "refuse" : "slide");
     if (last?.kind === "run" && !refused) startRun();
@@ -228,7 +231,7 @@ export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!match) {
       return [
         { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-        { id: "run", label: W("release"), kind: s.live ? "secondary" : "primary", group: "go", you: !s.live, onPress: () => act({ kind: "run" }) },
+        { id: "run", label: W("release"), kind: s.live ? "secondary" : "primary", group: "go", you: !wait.waits({ kind: "run" }) && !s.live, disabled: wait.waits({ kind: "run" }), onPress: () => act({ kind: "run" }) },
         { id: "count", label: W("count", { k: s.taps.length + 1 }), aria: "count one oscillation", kind: "primary", group: "count", you: s.live && runAt >= 0, disabled: !s.live || runAt < 0, onPress: () => act({ kind: "count", at: Math.round((api.t - runAt) * 100) / 100 }) },
       ];
     }
@@ -243,7 +246,7 @@ export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       pad("swing-down", "swing", `${W("swing")} −`, "smaller pull", step(SWINGS, s.k.swing, -1)),
       pad("swing-up", "swing", `${W("swing")} +`, "bigger pull", step(SWINGS, s.k.swing, 1)),
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-      { id: "run", label: W("run"), kind: "primary", group: "go", you: true, onPress: () => act({ kind: "run" }) },
+      { id: "run", label: W("run"), kind: "primary", group: "go", you: !wait.waits({ kind: "run" }), disabled: wait.waits({ kind: "run" }), onPress: () => act({ kind: "run" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => drag };

@@ -16,7 +16,7 @@
 import type { BadlaavAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -34,6 +34,8 @@ type Phase = "before" | "after" | "back" | "blank";
 export const makeBadlaavView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<BadlaavParams, BadState, BadlaavAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -54,6 +56,7 @@ export const makeBadlaavView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     actAt = api.t;
     last.ok = !refused;
     if (last.kind === "use" && !refused && (last.m === "cool" || last.m === "warm")) tried = { next: st().w.next, m: last.m };
@@ -535,10 +538,10 @@ export const makeBadlaavView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (goal === "nishaan" || goal === "ulta") out.push({ id: "run", label: W("badlaav.run"), aria: W("badlaav.run"), kind: "primary", group: "go", onPress: () => act({ kind: "run" }) });
     if (goal === "ghol") {
       out.push({ id: "gone", label: W("badlaav.gone"), aria: W("badlaav.gone"), kind: "secondary", group: "go", onPress: () => act({ kind: "use", m: "gone" }) });
-      out.push({ id: "done", label: W("badlaav.claim"), aria: W("badlaav.claim"), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) });
+      out.push({ id: "done", label: W("badlaav.claim"), aria: W("badlaav.claim"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     }
     if (goal === "trikon") out.push({ id: "wait", label: W("badlaav.tool.wait"), aria: W("badlaav.tool.wait"), kind: "primary", group: "go", onPress: () => act({ kind: "use", m: "wait" }) });
-    if (goal === "raakh") out.push({ id: "done", label: W("badlaav.claim"), aria: W("badlaav.claim"), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) });
+    if (goal === "raakh") out.push({ id: "done", label: W("badlaav.claim"), aria: W("badlaav.claim"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     if (goal === "jang") {
       out.push({ id: "day", label: W("badlaav.tool.day"), aria: W("badlaav.tool.day"), kind: "primary", group: "go", onPress: () => act({ kind: "use", m: "day" }) });
       out.push({ id: "wipe", label: W("badlaav.tool.wipe"), aria: W("badlaav.tool.wipe"), kind: "secondary", group: "go", onPress: () => act({ kind: "use", m: "wipe", at: sel }) });

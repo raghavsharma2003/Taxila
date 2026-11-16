@@ -13,7 +13,7 @@
 import type { Moment, YantraAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { isSource, raysOf, screenOf, seenOf, type MatId, type RoshniParams, type RoshniState, type Seen, type ThingId, type Want } from "./roshni.logic.ts";
@@ -30,6 +30,8 @@ const PANE: Record<MatId, { m: Material; a: number }> = {
 export const makeRoshniView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<RoshniParams, RoshniState, YantraAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal, n = p.things.length;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -42,6 +44,7 @@ export const makeRoshniView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function layout(bw: number, bh: number): void { w = bw; h = bh; }
   const act = (a: YantraAct) => { ctl.dispatch(a); deps.changed(); };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as YantraAct | undefined;
     actAt = api.t;
     looked = last?.kind === "run";
@@ -325,7 +328,7 @@ export const makeRoshniView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-      { id: "run", label: W("yantra.roshni.look"), aria: W("yantra.roshni.look"), kind: "primary", group: "go", onPress: () => act({ kind: "run" }) },
+      { id: "run", label: W("yantra.roshni.look"), aria: W("yantra.roshni.look"), kind: "primary", group: "go", disabled: wait.waits({ kind: "run" }), onPress: () => act({ kind: "run" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, dragging, goal: goalLine, readouts, controls, react };

@@ -8,7 +8,7 @@
 // to its true place and the exact gap is drawn between the boat and it. Landed stones stay on the river as flags.
 import type { KaalAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { withAlpha } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -35,6 +35,8 @@ const RH = 34;   // the river's height, px
 export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<KaalParams, KaalState, KaalAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, n = p.stones.length, century = p.goal === "century", order = p.goal === "order";
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const span = p.hi - p.lo, nT = Math.round(span / p.step), cross = p.lo < 0 && p.hi > 0;
@@ -82,6 +84,7 @@ export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function act(a: KaalAct): void { ctl.dispatch(a); deps.changed(); }
 
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as KaalAct | undefined;
     const now = api.t, P = api.P;
     if (last?.kind === "place") api.sfx(refused ? "refuse" : "slide");
@@ -277,7 +280,7 @@ export const makeKaalView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       { id: "nudge-left", label: "◀", aria: "move the boat a little earlier", kind: "pad", group: "nudge", disabled: m === null, onPress: () => nudge(-1) },
       { id: "nudge-right", label: "▶", aria: "move the boat a little later", kind: "pad", group: "nudge", disabled: m === null, onPress: () => nudge(1) },
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-      { id: "run", label: W("kaal.run"), kind: "primary", group: "go", you: m !== null, disabled: m === null, onPress: () => act({ kind: "check" }) },
+      { id: "run", label: W("kaal.run"), kind: "primary", group: "go", you: !wait.waits({ kind: "check" }) && m !== null, disabled: wait.waits({ kind: "check" }) || m === null, onPress: () => act({ kind: "check" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => !!drag };

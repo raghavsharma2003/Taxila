@@ -7,7 +7,7 @@
 // Only at fade 1 a miss shows "lagbhag N kam / zyada" (and the fill line is drawn); at fade 2-3 only which way it is off.
 import type { Moment, WeighAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -30,6 +30,8 @@ const FLY = 0.32, POUR = 0.6;   // s
 export const makeWeighView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<WeighParams, WeighState, WeighAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, mode = modeOf(p), fill = mode === "fill", fade = level.fade;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const item = W(`taraazu.${mode}.item.${p.ctx}`), label = labelOf(p), truth = truthOf(p);
@@ -123,6 +125,7 @@ export const makeWeighView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   }
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as WeighAct | undefined, s = st();
     lastAnim = api.t;
     if (last) {
@@ -335,7 +338,7 @@ export const makeWeighView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: !s.prev, onPress: () => act({ kind: "undo" }) },
-      { id: "run", label: W(`taraazu.${mode}.run`), kind: "primary", group: "go", you: s.pan.length > 0 && s.locked, disabled: !s.pan.length, onPress: () => act({ kind: "weigh" }) },
+      { id: "run", label: W(`taraazu.${mode}.run`), kind: "primary", group: "go", you: !wait.waits({ kind: "weigh" }) && s.pan.length > 0 && s.locked, disabled: wait.waits({ kind: "weigh" }) || !s.pan.length, onPress: () => act({ kind: "weigh" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => drag !== null };

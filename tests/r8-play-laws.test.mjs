@@ -17,12 +17,15 @@ const KNOWN = {
   // line's; laws.mjs IDEA_WORDS fails a miss line that states it; tests/r8-laws-idea-words.test.mjs)
   // kon: none left (round 8 kon round 2: ends' light is green only when solved and ray-two-ends is a chance pick; place/draw's
   // join-wrong-end is a chance pick; measure is typed)
+  // law 4 (dc-r8-gate2-shadow S4): the modes whose missed act is her answer itself (a pick, a typed number, an experiment),
+  // each waiting on main's choice (laws.mjs CHECK_WAITS_OPEN; LAWS-AUDIT.md "Law 4")
+  ...Object.fromEntries(Object.keys(L.CHECK_WAITS_OPEN).map((k) => [k, [4]])),
 };
 
 // Every language the view can show (laws ruling 2026-11-15, late evening 2: "a law that holds in one language only is not
 // held"): the same seeds and levels in each, KNOWN empty in each.
 for (const lang of ["hinglish", "en", "hi"]) describe(`r8 play laws: every served level of every family (${lang})`, () => {
-  it("no law break outside the listed ones; stambh/tally keeps all three", async () => {
+  it("no law break outside the listed ones; stambh/tally keeps all four", async () => {
     const rows = await L.lawsOverCoverage({ seeds: 2, perGoal: 1, lang });
     assert.ok(rows.length > 150, `levels checked: ${rows.length}`);
     const extra = [];
@@ -103,5 +106,50 @@ describe("r8 play laws: law 3 in the grade and on the server", () => {
     assert.equal(named.misconceptionId, "kit-x"); assert.equal(named.weight, GAME_WEIGHT);
     assert.deepEqual(nameOnRepeat([row], { ...s3, n: 4 }, D), [plain], "past the session's first four levels: named on none");
     assert.deepEqual(nameOnRepeat([{ ...row, chanceMis: "kit-y" }], { ...s3, n: 3 }, D)[0].misconceptionId, undefined, "another mix-up is not named by this one");
+  });
+});
+
+describe("r8 play laws: law 4, the check waits after a miss (dc-r8-gate2-shadow S4)", () => {
+  it("the check button of stambh/bars, kon/zone and nazariya/tri is off after a miss, and not her move", async () => {
+    const { coverage } = await import("../server/play/levels.js");
+    const { coverageLevels } = await import("../server/forge3/qa/cert-levels.mjs");
+    let seen = 0;
+    for (const e of coverage().entries.filter((x) => ["stambh/bars", "kon/zone", "nazariya/tri"].includes(`${x.family}/${x.mode}`))) for (const lv of await coverageLevels(e, 1)) {
+      for (const mal of Object.keys(lv.mal ?? {})) {
+        const m = await L._mount(lv, {});
+        const acts = m.logic.malActs(lv, mal);
+        if (!acts?.length) continue;
+        let missAt = -1;
+        for (let i = 0; i < acts.length && missAt < 0; i++) { const r = m.ctl.dispatch(acts[i]); if (r.refused === "missed" || r.moments.some((x) => ["misconception_consequence", "near_miss", "law_refused"].includes(x.kind))) missAt = i; }
+        if (missAt < 0 || m.logic.goalMet(lv, m.ctl.state)) continue;
+        m.look();
+        const check = m.view.controls().find((c) => c.kind === "primary" && c.group === "go");
+        assert.ok(check, `${lv.levelId} ${mal}: a check control`);
+        assert.equal(check.disabled, true, `${lv.levelId} ${mal}: ${check.id} waits after the miss`);
+        assert.ok(!check.you, `${lv.levelId} ${mal}: a waiting check is not her move`);
+        seen++;
+      }
+    }
+    assert.ok(seen >= 3, `misses checked: ${seen}`);
+  });
+  it("missWait: waits after a miss on the same answer; once her answer changes it does not", async () => {
+    const { missWait } = await import("../src/play/core/viewkit.ts");
+    const { coverage } = await import("../server/play/levels.js");
+    const { coverageLevels } = await import("../server/forge3/qa/cert-levels.mjs");
+    const e = coverage().entries.find((x) => x.family === "stambh" && x.mode === "bars");
+    let seen = 0;
+    for (const lv of await coverageLevels(e, 2)) for (const mal of Object.keys(lv.mal ?? {})) {
+      const m = await L._mount(lv, {}), w = missWait(m.ctl), acts = m.logic.malActs(lv, mal);
+      if (!acts?.length) continue;
+      let missed = false;
+      for (const a of acts) { if (missed) break; const r = m.ctl.dispatch(a); w.saw(r.moments, r.refused); missed = r.refused === "missed" || r.moments.some((x) => ["misconception_consequence", "near_miss", "law_refused"].includes(x.kind)); }
+      if (!missed || m.logic.goalMet(lv, m.ctl.state)) continue;
+      assert.equal(w.waits({ kind: "check" }), true, `${lv.levelId} ${mal}: waits`);
+      const before = JSON.stringify(m.ctl.state);
+      for (const a of m.logic.solve(lv) ?? []) { const r = m.ctl.dispatch(a); w.saw(r.moments, r.refused); if (JSON.stringify(m.ctl.state) !== before) break; }
+      assert.equal(w.waits({ kind: "check" }), false, `${lv.levelId} ${mal}: her answer changed, the check is hers again`);
+      seen++;
+    }
+    assert.ok(seen >= 1, `misses checked: ${seen}`);
   });
 });

@@ -6,7 +6,7 @@
 // after a check. Nothing is timed.
 import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import type { Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -18,6 +18,8 @@ const half = (n2: number) => (n2 % 2 ? `${(n2 - 1) / 2}½` : String(n2 / 2));
 export const makeTriView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<TriParams, TriState, NazariyaAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, t = p.tri, goal = p.goal, fade = level.fade;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -148,10 +150,11 @@ export const makeTriView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (s.done) return out;
       out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: s.depth === 0, onPress: () => act({ kind: "undo" }) });
       const ready = goal === "more" ? !!s.pt : built(p, s.h) > 0;
-      out.push({ id: "done", label: W("nazariya.tri.check"), kind: "primary", you: true, group: "go", disabled: !ready, onPress: () => act({ kind: "check" }) });
+      out.push({ id: "done", label: W("nazariya.tri.check"), kind: "primary", you: !wait.waits({ kind: "check" }), group: "go", disabled: wait.waits({ kind: "check" }) || !ready, onPress: () => act({ kind: "check" }) });
       return out;
     },
     react(ms: Moment[], refused: string | undefined): void {
+      wait.saw(ms, refused);
       const kinds = new Set(ms.map((m) => m.kind));
       if (kinds.has("progress")) { reveal = false; api.sfx("drop"); }
       if (kinds.has("solved")) { reveal = true; api.sfx("good"); api.fx.burst(api.w / 2, api.h / 2, { n: 16, color: api.P.color("good"), speed: 100, life: 0.6, size: 3, kind: "spark" }); }
