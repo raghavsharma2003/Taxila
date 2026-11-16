@@ -1,0 +1,10 @@
+{
+ "nodes": [
+  {"id": "fd-full-disk-crashes-browser-suite", "kind": "finding", "at": "2026-11-16", "title": "Integration 76's pre-gate stopped on the kon layout browser suite with 'page.evaluate: Target crashed' after 581 s. Memory was free (15 GB); the disk allowance was 99% used (695 MB free), mostly two read-only judge checkouts of 4 GB each and 347 temporary test folders. With 6.5 GB freed the same suite passed. A browser crash in a layout suite is a disk signal first; judge checkouts are removed when their judges finish."},
+  {"id": "fd-worker-restart-kills-local-jobs", "kind": "finding", "at": "2026-11-16", "title": "A worker restart of the main session killed integration 76's background chain (started with nohup setsid) partway through. The restart followed a get_session call on another session. Remote session calls (get_session, list_sessions, send_message) are not made while a gate, a release, a paid run or judges are running locally."}
+ ],
+ "edges": [
+  {"src": "fd-full-disk-crashes-browser-suite", "rel": "constrains", "dst": "fd-browser-suites-run-only-in-main"},
+  {"src": "fd-worker-restart-kills-local-jobs", "rel": "constrains", "dst": "fd-browser-suites-run-only-in-main"}
+ ]
+}
