@@ -2,6 +2,30 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `fe602e6b` (harness) and `d90164b2` (A2 on a worked step)
+
+**Done (both gated: test:all 7301 pass; the only failures are the two worktree-only browser suites):**
+- Harness, item 8:
+  - `cardWholeAgain` reads a one-sentence card when a shorter question exists (a reask, or a question clause after its colon). It
+    flags director23's c5-t01 steady 10, stuck 14 and steering 10, and 0 on the dry matrix. The walk asks such a card by that clause.
+  - `hindiNewWords` reads a switch-and-card-only turn (c4 stuck 10, steering 8; c5-t02 steering 8). The walk now says new words there.
+  - A question's numbers are never a false key (c5-t02 steady 132).
+  - A close page is not counted against the next unit's board (`contradictionsV6`, c4 steady).
+- A2: asked her taste on a worked step, the AI line ends on its question. The step is held, the reply leads the next turn in the
+  child's words, then one step.
+
+**Where director24 stands:**
+- The seam predicates read 0 from `seams`.
+- `readerAgrees` reads 0 with no equivalence table.
+- Every gated predicate reads 0 on the dry matrix.
+- `quietPictureLines` reads 9. It reaches 0 only when Learning authors `viewCaption` for the c4, c5-t01 and c5-t02 boards, so this is
+  not yet "ready for director24".
+
+**Still open:** the reply to a repeated aside in the child's words (c6 offtopic 24, 32) needs a better word pick or authored forms.
+
+**Questions for main:** can Learning author `viewCaption` (and `wrap.ack`) on the four pilots? That is the last thing director24 waits on
+from me.
+
 ## 2026-11-16 · `cb21c01b` (dc-r8-director23 T2, C, H2, boards, K2, A2 in part)
 
 **Done (gated: test:all 7298 pass; the only failures are the two worktree-only browser suites):**
