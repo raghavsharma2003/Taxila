@@ -90,7 +90,13 @@ export interface NameFields {
 export interface NameParamsLike extends NameFields { goal: string; start: number; tol: number; scale: "10" | "30" | "landmarks"; vx?: number; vy?: number }
 /** an angle of the figure: its vertex point and its two arm points (point 0 = the vertex V, 1..3 = the ray ends) */
 export interface Corner { v: number; a: number; b: number }
-export interface NameState { taps: number[]; picked: number | null; said: number[] | null }
+/**
+ * say, after a miss (dc-r8-gate2-shadow S3): `checks`, her missed names so far; `waits`, true from a missed name until her
+ * next letter or "Mita do" (the check waits until her name changes); `tapAt`, for each tap, the `checks` it was made under
+ * (a name all of whose taps carry the current count was built after the last miss: builtSinceMiss). "Wapas" keeps `checks`
+ * and `waits` as they are (kon.logic.ts apply), as it keeps the count of checks; `tapAt` goes back with the taps.
+ */
+export interface NameState { taps: number[]; picked: number | null; said: number[] | null; checks?: number; waits?: boolean; tapAt?: number[] }
 
 const R = (d: number) => (d * Math.PI) / 180;
 const norm = (d: number) => ((d % 360) + 360) % 360;
@@ -157,15 +163,25 @@ export function stepName(p: NameParamsLike, s: NameState, a: NameAct, mal: Recor
     const i = Number(a.at);
     if (!Number.isInteger(i) || i < 0 || i > 3) return { refused: "bad_letter" };
     if (s.taps.length >= 3) return { refused: "three_already" };
-    return { nm: { ...s, taps: [...s.taps, i] } };
+    return { nm: { ...s, taps: [...s.taps, i], tapAt: [...tapsAt(s), s.checks ?? 0], waits: false } };
   }
-  if (a.kind === "clear") return s.taps.length ? { nm: { ...s, taps: [] } } : { refused: "nothing" };
+  if (a.kind === "clear") return s.taps.length ? { nm: { ...s, taps: [], tapAt: [], waits: false } } : { refused: "nothing" };
   if (a.kind === "commit") {
     if (s.taps.length !== 3) return { refused: "three_first" };
-    return commitSay(p, { ...s, said: s.taps.slice() }, mal);
+    // dc-r8-gate2-shadow S3: after a miss the check waits until her name has changed (a letter or "Mita do" since it); the
+    // view's "Yahi naam" is off until then, so a second press on the same wrong name neither plays the miss out again nor
+    // costs her a check
+    if (s.waits) return { refused: "unchanged" };
+    const r = commitSay(p, { ...s, said: s.taps.slice() }, mal);
+    return r.commit && !r.commit.done && r.nm ? { ...r, nm: { ...r.nm, checks: (s.checks ?? 0) + 1, waits: true } } : r;
   }
   return { refused: "unknown_act" };
 }
+/** each tap's `checks` count (a state with none: every tap made before any miss) */
+const tapsAt = (s: NameState): number[] => s.taps.map((_, i) => s.tapAt?.[i] ?? 0);
+/** say (dc-r8-gate2-shadow S3): was the name she now has built after her last miss (every tap made since it)? Before any
+ *  miss, every name is. */
+export const builtSinceMiss = (s: NameState): boolean => tapsAt(s).every((k) => k === (s.checks ?? 0));
 /** say: is a name (three point indices) the vertex-name mix-up's: exactly the lit angle's three letters, the vertex not in
  *  the middle (vertex first or last: four of the six orders) */
 export function isVertexNameSaid(p: NameParamsLike, t: number[]): boolean {

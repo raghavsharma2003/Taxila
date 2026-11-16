@@ -555,6 +555,20 @@ export const scaleKey = (p: { goal: string; theta?: number }): number => (p.goal
 /** draw: the rim mark of the right dot, and of the mix-up's (the other scale's), on the solver's placement */
 export const rightDot = (p: { theta?: number; mirror?: boolean }): number => (p.mirror ? 180 - (p.theta ?? 0) : p.theta ?? 0);
 export const otherDot = (p: { theta?: number; mirror?: boolean }): number => 180 - rightDot(p);
+/** gate 2 (dc-r8-gate2-shadow S3): how near (degrees on the rim) the other scale's mark may come to the level just played's
+ *  right mark before a draw wrong-scale sighting stops counting */
+export const COPY_NEAR = 2;
+/**
+ * Gate 2 (dc-r8-gate2-shadow S3), draw: does a wrong-scale sighting on this level count? Not where the other scale's mark on
+ * this level is within COPY_NEAR of the right mark of the level just played (`recent`'s last, when it was a draw level):
+ * there "last time's right dot" dots the mix-up's mark too (the level mix's switch in opening makes such pairs: a 120
+ * opening clockwise after a 120 opening anticlockwise). Every other level and goal: it counts.
+ */
+export function drawSightingCounts(p: PlaceParamsLike, recent: readonly string[]): boolean {
+  if (p.goal !== "draw") return true;
+  const last = placeSigOf(String(recent.slice(-1)[0] ?? ""));
+  return !last || last.goal !== "draw" || Math.abs(otherDot(p) - rightDot(last)) > COPY_NEAR;
+}
 export const placeSteer = (p: PlaceParamsLike): { cw: boolean; key: number; acute: boolean } => ({ cw: !!p.mirror, key: scaleKey(p), acute: isAcute(p) });
 /** a served level's signature (generatePlace's sig) read back: θ, OA's heading, mirror; null for any other */
 export function placeSigOf(sig: string): { goal: string; theta: number; start: number; mirror: boolean } | null {

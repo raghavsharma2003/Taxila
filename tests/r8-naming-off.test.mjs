@@ -32,7 +32,10 @@ for (const key of NAMING_OFF) {
       levels++;
       const sol = logic.solve(level) ?? [];
       const plays = [["solve", sol], ...logic.malRules.map((m) => [m, logic.malActs(level, m)]).filter(([, a]) => a?.length).map(([m, a]) => [m, [...a, ...sol]]),
-        ...logic.malRules.map((m) => [`${m}-only`, logic.malActs(level, m)]).filter(([, a]) => a?.length)];
+        ...logic.malRules.map((m) => [`${m}-only`, logic.malActs(level, m)]).filter(([, a]) => a?.length),
+        // (kon/name say, H3 and dc-r8-gate2-shadow S3: a sighting is her name confirmed by a name built after the miss; the
+        // same name pressed again no longer confirms it)
+        ...(key === "kon/name" && level.params?.goal === "say" ? logic.malRules.map((m) => [`${m}-confirmed`, logic.malActs(level, m)]).filter(([, a]) => a?.length).map(([m, a]) => [m, [...a, { kind: "clear" }, ...a, { kind: "clear" }, ...sol]]) : [])];
       for (const [name, acts] of plays) {
         const raw = gradeActs(level, env(acts), { final: true });
         if (!raw?.grade) continue;

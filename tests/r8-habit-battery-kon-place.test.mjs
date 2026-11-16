@@ -17,7 +17,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, reportedRows, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { DISCRIMINATING_TURN, NAMING_OFF } from "../shared/play.ts";
 import { baseDir } from "../src/play/families/kon/kon.place.ts";
@@ -134,6 +134,9 @@ test("note 004, answer 1: after a sighting of wrong-scale the next level opens t
           const { trace } = runSession({ entry, cell: { goal, fade, pL, doors }, child, sIdx: k });
           trace.forEach((x, i) => {
             if (x.pick !== WS || i >= trace.length - 1) return;
+            // (dc-r8-gate2-shadow S3: a draw sighting whose other-scale mark copies the right mark just played does not count,
+            // so it is not remembered and steers nothing)
+            if (goal === "draw" && i > 0 && trace[i - 1].goal === "draw" && Math.abs(180 - right(trace[i].params) - right(trace[i - 1].params)) <= 2) return;
             const a = trace[i].params, b = trace[i + 1].params, seen = trace.slice(0, i + 1).filter((y) => y.pick === WS).map((y) => key(y.params));
             if (goal === "draw") { draws++; if (Math.abs(180 - right(b) - right(a)) > 2) dot++; }
             // (the level mix of answer 4 comes first: a level that must supply an angle opening anticlockwise is not steered
@@ -191,6 +194,19 @@ test("negative control: under the rules from before H1 the judge's failure shows
   }
   // and the children the tables model are under the line, old rules and new
   for (const R of [OLD, RES]) for (const g of ["measure", "draw"]) for (const rule of Object.keys(R.goals[g].kits)) assert.ok(rowOf(R, g, "blind").worstFade[kit(g, rule)].share < LINE, `${g} blind ${rule}`);
+});
+
+test("dc-r8-gate2-shadow S3: the second-reading judge's children are in the battery (the finger inside the angle along the bisector, a ±8 px wobble, and the rest of the judge's list); every one is under the line but any marked reported, whose figures are printed (REPORTED FIGURES, not assertions); draw's \"last time's right dot\" is not named as wrong-scale", (t) => {
+  for (const g of ["measure", "draw"]) {
+    const ids = new Set(RES.goals[g].rows.map((r) => r.child));
+    for (const id of ["bisector:18", "bisector:26", "wobble8:drop 16 up", "wobble8:drop 28 down-left", "drop30:up", "undershoot:20", "any-after-miss", "slip-two", "last-solve"]) assert.ok(ids.has(id), `${g} ${id}`);
+    assert.equal(RES.goals[g].rows.filter((r) => r.child.startsWith("wobble8:")).length, 32);
+  }
+  for (const id of ["last-turn", "last-other"]) assert.ok(RES.goals.measure.rows.some((r) => r.child === id), id);
+  for (const id of ["last-size", "btn-last-place", "btn-turn"]) assert.ok(RES.goals.draw.rows.some((r) => r.child === id), id);
+  // the judge's counted pair (draw, last time's right dot, wrong-scale): its sightings on a copied mark no longer count
+  assert.equal(rowOf(RES, "draw", "last-key").worstFade[kit("draw", "wrong-scale")].share, 0, "last time's right dot");
+  for (const x of reportedRows(RES)) t.diagnostic(`reported: ${x.goal} · ${x.label} (${x.rule}): named ${x.all.toFixed(3)}, worst fade ${x.worstFade.share.toFixed(3)} (fade ${x.worstFade.at}), worst door sequence ${x.worstDoor.share.toFixed(3)} (${x.worstDoor.at}); ${x.why}`);
 });
 
 test("measure: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {

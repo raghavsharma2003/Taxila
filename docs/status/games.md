@@ -9,6 +9,76 @@ gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fai
 
 **Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
 
+## 2026-11-16, gate 2 S3 (`dc-r8-gate2-shadow`): the three "blocks" fixes and the judges' children (branch `claude/r8-gate2-s3`, from `a92b16a74` + `origin/int/r6`)
+
+**Done (`NAMING_OFF` untouched; S4 and the shadow switch not started):**
+- **kon/name (`616552824`).**
+  - After a miss, "Yahi naam" waits until her name has changed: a letter or "Mita do" since the miss. `stepName` refuses the commit as `unchanged`, "Wapas" keeps the wait, and the view's check control is off meanwhile.
+  - **What the child sees differently:** only this. A second press on the same wrong name used to play the miss out again and cost her a check. Now the button is greyed until she changes a letter.
+  - `confirmSay` counts the next name only when every letter of it was tapped after the miss (`builtNames`).
+- **stambh/tally read (`2ee9261c4`).** A sighting counts only on a row where no reading habit types the mix-up's number (`discriminatingRead`, computed from `READ_HABITS`).
+  - The battery checks `READ_HABITS` against its own readers. That check found a battery bug: the seven no-slip ways typed nothing (fixed).
+  - The new optional `FamilyLogic.sightingCounts` is read by `levels.js`: a sighting that does not count is neither remembered nor counted.
+  - The packet's sentence is corrected.
+- **kon/place draw (`5baf88ed2`).** A wrong-scale sighting does not count where the other scale's mark is within 2° of the level just played's right mark (`drawSightingCounts`). The packet's sentence is corrected.
+- **The battery gains the judges' children (commit 4, below).** A child it cannot bring under the line is marked `reported`: she is left out of the assertions, her figure is printed, and she is listed in each PACKET.md's new "Gate 2, S3" section.
+  - **kon/name:** re-press after a miss (9 bases); repeat, guess and reshuffle (4 bases); a slip on 1 in 3 names; reading across again (8); alphabetical order (a holder); find's six corners, a random corner, corners in turn.
+  - **kon/place:** the bisector finger; a ±8 px wobble (32 a goal); a 30 px drop; an undershot drag; anything after the first miss; two slips; last level's solve, turn, other number, size; button habits.
+  - **stambh/tally:** a skipped bundle with every pad slip (42); a finger offset (16); slips under six ways; two slips; blind after a miss; two ways in turn (30); last numbers ± k; the solve shown.
+- **Each judge's failing figure, before → after (full sweep):**
+  - **tally:** "bundles only, a bundle skipped" 0.013 → **0**.
+  - **place:** "last time's right dot" 0.075 → **0**.
+  - **name:** the double-press children (swap 1.000, careful 2 of 4 0.982, slip 0.475, blind 0.130, second letter 0.762, alternate 0.919, last taps 0.375) → **0** each.
+- **Left over the line (reported, not asserted; full sweep, by worst fade / worst door):**
+  - **kon/name:**
+
+    | child | named |
+    |---|---|
+    | swap, or a tap added last, given again | 1.000 |
+    | alternate, given again | 0.92 / 0.93 |
+    | swap reshuffled / tap added last reshuffled | 0.82 / 0.81 |
+    | random slip given again | 0.45 / 0.48 |
+    | alternate reshuffled | 0.37 / 0.39 |
+    | random slip reshuffled | 0.21 / 0.23 |
+    | swap, then a guess (the judge's fault 2) | 0.149 / 0.169 |
+    | tap added last, then a guess | 0.125 / 0.147 |
+    | find, the larger corner | 0.094 / 0.125 |
+    | find, the right corner | 0.037 / 0.075 (gate sweep 0.375) |
+
+  - **kon/place:** the bisector finger. Draw 0.109–0.128 at fade 2, 0.067 by door. Measure is under in the full sweep (gate sweep door 0.125).
+  - **stambh/tally:** bundles only, a bundle skipped, key 2 one to the right: 0.119 (fade 2) / 0.158 (ttt).
+- **Worst asserted non-holder (full sweep):**
+
+  | mode | goal | by fade / by door |
+  |---|---|---|
+  | kon/name | say | 0.039 / 0.042 |
+  | kon/name | find | 0.025 / 0.036 |
+  | kon/place | measure | 0.018 / 0.025 |
+  | kon/place | draw | 0.036 / 0.050 |
+  | stambh/tally | read | 0 / 0 |
+  | stambh/tally | keep | 0 / 0 |
+
+  Every battery passes, gate sweep and `HABIT_FULL=1`.
+- **What it costs:**
+  - **tally read holder:** 0.797 → **0.182** (gate 0.234). Fade 1 serves no row that counts. Her positive control is now a reported figure; the test still asserts ≥ 0.1. The half-holder: 0.324 → 0.081.
+  - **place draw "always inner":** 1.000 → 0.965.
+- **The harness:** the memo is now dropped at its cap on every sweep. Before, kon/place's full sweep ran out of heap. The full sweep now takes about 19 min, gate sweep 172 s (was 99 s).
+- **Cert:** no served level changed, and the cert's sampled screens are first screens, so none changed. No re-cert; `play.json` untouched (`cert-item-hash`, `r7-games-cert-twin` pass).
+- **Tests run (each on its own; not the full gate):**
+  - the three batteries, gate sweep and `HABIT_FULL=1` each;
+  - `r8-games-kon-name`, `-view`, `-gate2`; `r8-games-stambh-tally`; `r8-games-kon-place`, `-gate2`; `r7-games-kon`, `r7-games-kon-angles`, `r4-games-core-kon`, `r7-games-stambh`;
+  - `r8-play-laws`, `r8-naming-off`, `r8-gate2-facts-row`, `r8-picks-default`, `cert-item-hash`, `r7-games-cert-twin`, `test-isolation`;
+  - `tsc -b`, `vite build`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+  - `r8-naming-off` needed its kon/name say play to confirm with a name built afresh. The edit is in commit 4.
+- **Browser suites:** ran `r8-stambh-tally-layout-browser` (8 pass, 38 s) and `r8-games-kon-layout` (8 pass, 10.2 min). Not run: the other `*-browser` suites (no other family changed).
+
+**Next:** S4, the laws-wide "after a miss the check waits" law, then the shadow switch and `wouldName`.
+
+**Questions for main:**
+1. tally read: steer to a row that counts after a first sighting? (The holder is at 0.18 and is never named at fade 1.) That would change served levels and needs a re-cert.
+2. kon/name: H3 against a habit slip followed by a guess is 0.13–0.17 (the judge's fault 2). Leave it to shadow (S2), or ask for three confirmed sightings?
+3. find: the larger corner is over the line by door (0.125). find has no discriminating level. Is that acceptable in shadow?
+
 ## 2026-11-16, note 004: wrong-scale steered to its side; acute, tilted and steered levels in the layout suite (branch `claude/r8-steer-dir`, from `9e391c176` + `origin/int/r6`)
 
 **Done (`NAMING_OFF` untouched; before a miss, nothing a child sees changes except which levels are served):**
