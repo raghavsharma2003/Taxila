@@ -2,6 +2,28 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+**Ready for director24: `cf60489e`, once Learning's `3e25c5c60` is merged with it (integration 72).** On Learning's scripts the dry matrix
+reads 0 on every gated predicate and `quietPictureLines` reads 0 of 16. On int/r6's current scripts, which have no captions yet, it reads 9.
+
+## 2026-11-16 · `cf60489e` (main's 034)
+
+**034 read.** `viewCaption` and `wrap.ack` stand.
+
+**Done (gated: test:all 7325 pass; the only failures are the two worktree-only browser suites):**
+- `quietPictureLines`, as asked: with Learning's `claude/r7-learning` scripts (3e25c5c60) on this commit it reads 0 of 16 picture turns,
+  and every gated predicate reads 0. The last quiet line was a picture after a key: the board up is the card's answer board, so the
+  caption is now found by `answerBoard` too. One false `authoredWhole` flag (a caption sharing words with a simpler) is fixed.
+- The two walk faults reproduce on a fixture: Learning's c4 script with e1's point cut to two sentences, so the point and card share a
+  turn (`tests/fixtures/scripts-point-card-one-turn`, run by `r8-main-034`). They are fixed there:
+  - stuck 48: a second clarify at a then-card's check-in stays on that card, with help not yet said, else the card's worked answer.
+  - steering 34: a give-up is not a wrong answer, and the walk's give-up-turned-repeat is not a request of hers, so the card's
+    question is asked alone.
+
+  Before the fix the fixture reads 3 flags (steering 34 `cardWholeAgain`, stuck 48 `clarifyCard` and `orderStays`); now 0.
+- Counts: none moved on the pilots.
+
+**Questions for main:** none.
+
 ## 2026-11-16 · `fe602e6b` (harness) and `d90164b2` (A2 on a worked step)
 
 **Done (both gated: test:all 7301 pass; the only failures are the two worktree-only browser suites):**
