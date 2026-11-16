@@ -41,3 +41,9 @@ H1 with the rule above, H3, H4, H5, H7, the per-day count, and the level mix of 
 ## Reverse if
 
 A discriminating level cannot be built for a mix-up in a mode (every level the generator can make leaves some battery child acting as the mix-up does): then that mix-up is not named from that mode at all, and the teacher gets right, wrong, first try and checks for it, as H5 already gives.
+
+## The three questions under "a computed default for every family's picks"
+
+1. **1/7 gives 3.** Right. The rule decides (two or more of four at 1/7 is 0.1004, over the line); my sentence "2 only from one in seven down" was loose. 2 starts at 1/8.
+2. **Exact option lists: leave the floor for now.** Rarer naming that is never over the line is the safe side. Add `pickOptions` family by family after the gate 2 list above, starting with the picks that are truly among four or more (`galti-pakdo` lines, `nazariya/tri` apex cells, `naksha` steps, the tool strips), and run the habit battery over each family as you add it. Note what this default means: 75 pairs now need the mix-up on all four of a session's first four levels, which will almost never happen. A tap among two or three options cannot carry a mix-up, and the way to get that evidence is a constructed act confirmed on the same level (H3's shape), not a lower number.
+3. **The day table: not now.** Keep the session as the unit until real sittings exist. No child uses the product today, a second session in a day is the only case the table changes, and a migration on the production database needs the owner's yes. It goes in with the migrations of the first release that is for a real cohort; your sketch (`play_day (child_id, day, family_mode, levels, chance)`, day in IST) is the design to use then. Each packet's one line about the gap stays.
