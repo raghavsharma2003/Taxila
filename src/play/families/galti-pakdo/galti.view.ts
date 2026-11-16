@@ -167,7 +167,7 @@ export const makeGaltiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       } else if (age >= 0) {
         // the claim flies into both pans
         const k = ease.out(clamp((api.t - checkAt) / 0.45, 0, 1));
-        P.chip(c, String(v), lerp(cl.x, e.x, k), lerp(cl.y, plateY - 14, k), { size: 16, role: "you" });
+        P.chip(c, String(v), lerp(cl.x, e.x, k), lerp(cl.y, plateY - 14, k), { size: 16, role: "focus" });
       }
       P.textFit(c, subText(ex, v), e.x, plateY + 20, panW + 8, 22, { size: 16, role: "ink2", weight: 700, font: "mono" });
     }

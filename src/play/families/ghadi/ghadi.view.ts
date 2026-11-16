@@ -281,7 +281,7 @@ export const makeGhadiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.body(c, x, y, stepW, hh, { role: "q3", r: 8, state: bad ? "look" : "idle", seed: 10 + j });
       P.text(c, String(j + 1), x + 14, y + 14, { size: 15, weight: 800, on: "q3" });
       if (lane >= 0) { P.circle(c, x + stepW / 2, y + hh / 2 + 6, 17, { role: "q2", fill: true }); P.text(c, String(lane + 1), x + stepW / 2, y + hh / 2 + 6, { size: 18, weight: 800, on: "q2" }); }
-      else if (sel >= 0 || drag?.kind === "runner") P.circle(c, x + stepW / 2, y + hh / 2 + 6, 17, { role: "you", width: 2 });
+      else if (sel >= 0 || drag?.kind === "runner") P.circle(c, x + stepW / 2, y + hh / 2 + 6, 17, { role: "focus", width: 2 });
       if (bad) P.magnifier(c, x + stepW - 16, y + 16, 18);
     }
     if (drag?.kind === "runner" && drag.moved) { P.circle(c, drag.x, drag.y, 17, { role: "q2", fill: true }); P.text(c, String(drag.lane + 1), drag.x, drag.y, { size: 18, weight: 800, on: "q2" }); }
@@ -306,7 +306,7 @@ export const makeGhadiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         // the flag: a pole and a pennant at the cell's top right
         const fx = x + cell * 0.72, fy = y + cell * 0.12;
         P.stroke(c, [[fx, fy], [fx, fy + cell * 0.42]], { role: "ink", width: 2 });
-        c.save(); c.fillStyle = P.color("you"); c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx + cell * 0.22, fy + cell * 0.09); c.lineTo(fx, fy + cell * 0.18); c.closePath(); c.fill(); c.restore();
+        c.save(); c.fillStyle = P.color("focus"); c.beginPath(); c.moveTo(fx, fy); c.lineTo(fx + cell * 0.22, fy + cell * 0.09); c.lineTo(fx, fy + cell * 0.18); c.closePath(); c.fill(); c.restore();
       }
       if (bad) P.magnifier(c, x + cell * 0.25, y + cell * 0.75, 16);
     }

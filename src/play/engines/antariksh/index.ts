@@ -61,7 +61,7 @@ export function create(core: Core3D, depsIn: EngineDeps): EngineView {
   let LW = 2, linePx = 300, boxW = 360, boxH = 400;
   const tickLabels = new Map<string, LabelHandle>();
   const L = {
-    aim: core.label({ id: "aim", text: "", lang: "en", size: 20, kind: "numeral", at: { x: 0, y: 0, z: 0 }, dy: -8, align: "bottom", role: "you", frac: true }),
+    aim: core.label({ id: "aim", text: "", lang: "en", size: 20, kind: "numeral", at: { x: 0, y: 0, z: 0 }, dy: -8, align: "bottom", role: "focus", frac: true }),
     truth: [0, 1].map((i) => core.label({ id: `truth${i}`, text: "", lang: "en", size: 20, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", role: "good", frac: true, hidden: true })),
     gap: [0, 1].map((i) => core.label({ id: `gap${i}`, text: "", lang: "en", size: 16, kind: "text", at: { x: 0, y: 0, z: 0 }, align: "top", role: "look", hidden: true })),
     gate: [0, 1, 2].map((i) => core.label({ id: `gate${i}`, text: "", lang: "en", size: 18, kind: "text", at: { x: 0, y: 0, z: 0 }, align: "top", hidden: true })),

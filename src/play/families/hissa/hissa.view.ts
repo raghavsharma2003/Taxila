@@ -219,7 +219,7 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       else if (metre && p.face === 1) P.text(c, `${u / p.b}`, at, ty + 38, { size: 16, role: "ink2", weight: 700, font: "mono" });
     }
     // the rope's length on the run: it lights to the end
-    if (st().ended && runK() > 0) { const len = (p.w * p.a) / p.b; P.stroke(c, [[tx, ty - 12], [tx + len * mpx * runK(), ty - 12]], { role: "you", width: 3 }); }
+    if (st().ended && runK() > 0) { const len = (p.w * p.a) / p.b; P.stroke(c, [[tx, ty - 12], [tx + len * mpx * runK(), ty - 12]], { role: "focus", width: 3 }); }
     y += 72;
     const look = end && !s.done;
     stepper(c, "lay", mx + mw / 2, y, W("hissa.pieces"), String(s.lay), s.lay > 0, s.lay < MAX_LAY, look && s.lay !== p.w);
@@ -280,7 +280,7 @@ export const makeHissaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.body(c, lx, ly, lastW, lastH, { role: "panel", r: 6, state: look ? "look" : "idle" });
     if (ran) { const r = qSub(want(p), q(whole)), fh = Math.min(1.1, r.n / r.d) * (lastH - 8) * k; fillRect(c, lx + 3, ly + lastH - 4 - fh, lastW - 6, fh, "q2", 0.85); }
     if (s.tag[1] > 0 && s.tag[1] <= 24) for (let i = 1; i < s.tag[1]; i++) { const yy = ly + lastH - 4 - (i * (lastH - 8)) / s.tag[1]; P.stroke(c, [[lx + 3, yy], [lx + 14, yy]], { role: "ink2", width: 1.5 }); }
-    if (s.tag[1] > 0 && s.tag[0] > 0) { const yy = ly + lastH - 4 - (Math.min(s.tag[0], s.tag[1] * 1.1) * (lastH - 8)) / s.tag[1]; P.stroke(c, [[lx - 4, yy], [lx + lastW + 4, yy]], { role: "you", width: 2.5 }); }
+    if (s.tag[1] > 0 && s.tag[0] > 0) { const yy = ly + lastH - 4 - (Math.min(s.tag[0], s.tag[1] * 1.1) * (lastH - 8)) / s.tag[1]; P.stroke(c, [[lx - 4, yy], [lx + lastW + 4, yy]], { role: "focus", width: 2.5 }); }
     const t = tagVal(s.tag), r0 = qSub(want(p), q(whole));
     tagCard(c, lx + lastW + 8 + cardW / 2, ly + 4, look && !(t && t.n * r0.d === r0.n * t.d));
     if (end && s.done) P.tick(c, lx + lastW / 2, ly + lastH / 2, 22, 1);

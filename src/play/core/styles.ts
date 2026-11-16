@@ -18,32 +18,32 @@ export const ART: Record<ArtId, ArtTokens> = {
     id: "kagaz", dark: false, ground: "#F3EADB", ground2: "#EADFCB", panel: "#FBF6EC", panelEdge: "#D9C9AE",
     ink: "#2B2118", ink2: "#5A4B3C", ink3: "#7A6A58",
     q1: "#D9921A", q2: "#2F5DA8", q3: "#B4532E", q4: "#46803A",
-    good: "#22794D", look: "#9A5B00", you: "#5B7A00", focus: "#3B47B0", shadow: "rgba(70,48,20,0.22)", jitter: 0.25,
+    good: "#0B736A", look: "#8A5A00", you: "#EFA52E", youInk: "#1C1A16", focus: "#3B47B0", shadow: "rgba(70,48,20,0.22)", jitter: 0.25,
     font: FONTS, sound: "paper",
   },
   chalk: {
     id: "chalk", dark: true, ground: "#1E2A26", ground2: "#26342F", panel: "rgba(255,255,255,0.05)", panelEdge: "rgba(237,239,230,0.55)",
     ink: "#EEF0E7", ink2: "#C4CABD", ink3: "#A3AA9C",
     q1: "#F2D27A", q2: "#8EC9F0", q3: "#F2A7B8", q4: "#86D9AE",
-    good: "#8BE0B3", look: "#F5B465", you: "#CBFF4D", focus: "#A9B4FF", shadow: "rgba(0,0,0,0.25)", jitter: 1,
+    good: "#8BE0B3", look: "#F5B465", you: "#FF6FD8", youInk: "#0F1218", focus: "#A9B4FF", shadow: "rgba(0,0,0,0.25)", jitter: 1,
     font: FONTS, sound: "chalk",
   },
   blueprint: {
     id: "blueprint", dark: true, ground: "#0F2E57", ground2: "#13386A", panel: "rgba(143,211,255,0.10)", panelEdge: "#8FD3FF",
     ink: "#EAF5FF", ink2: "#B9D8F2", ink3: "#93BCE0",
     q1: "#FFD166", q2: "#7FE3FF", q3: "#FFA08A", q4: "#C5B4FF",
-    good: "#74E8BD", look: "#FFB547", you: "#CBFF4D", focus: "#E2B0FF", shadow: "rgba(0,8,24,0.35)", jitter: 0,
+    good: "#74E8BD", look: "#FFB547", you: "#FF6FD8", youInk: "#0F1218", focus: "#E7D1FF", shadow: "rgba(0,8,24,0.35)", jitter: 0,
     font: FONTS, sound: "blip",
   },
   raat: {
     id: "raat", dark: true, ground: "#0A0C12", ground2: "#141826", panel: "rgba(255,255,255,0.05)", panelEdge: "rgba(255,255,255,0.18)",
     ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#9AA2B4",
     q1: "#8B98FF", q2: "#2FD3C7", q3: "#FFD27A", q4: "#FF8A7A",
-    good: "#3DDC97", look: "#FFB547", you: "#CBFF4D", focus: "#C8A6FF", shadow: "rgba(0,0,0,0.4)", jitter: 0,
+    good: "#4FE0A2", look: "#FFB54A", you: "#FF6FD8", youInk: "#0F1218", focus: "#8F9BFF", shadow: "rgba(0,0,0,0.4)", jitter: 0,
     font: FONTS, sound: "glass",
   },
 };
-export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3" | "good" | "look" | "you" | "ground2" | "focus";
+export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3" | "good" | "look" | "ground2" | "focus";
 /**
  * Physical materials a lab draws (the colour IS the condition or the outcome: a black can, rust, iodine blue-black).
  * Families never write a colour literal (tests/play-style-lint.test.mjs); they ask for a material and the direction tunes
@@ -73,9 +73,14 @@ export type BodyState = "idle" | "hover" | "selected" | "good" | "look" | "dim" 
  * patch fills this map, never a colour literal in a check.
  */
 export const LAW_ROLES = { answer: "good", focus: "focus", mixup: "look" } as const satisfies Record<"answer" | "focus" | "mixup", Role>;
-// round 8 law 1 ("green means right, and only right"): the lime "your move" hue belongs to the DOM action button; on the
-// canvas a "you" (her pick, her unchecked mark) is drawn in the focus colour, so nothing lime-green sits on a wrong thing
-export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.panel : r === "you" ? a.focus : (a as unknown as Record<string, string>)[r] ?? a.ink);
+// round 8 law 1 ("green means right, and only right") and Design's patch 002: the action hue (`ArtTokens.you`, marigold on
+// kagaz, magenta on the dark arts, never green) belongs to the DOM action button only, so it is not a painter role at all;
+// her pick and her unchecked mark are drawn in "focus" (the laws fail any canvas use of "you": server/forge3/qa/laws.mjs;
+// a stray untyped "you" still paints focus, never the action hue)
+export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.panel : (r as string) === "you" ? a.focus : (a as unknown as Record<string, string>)[r] ?? a.ink);
+/** The colour a meaning role is drawn in, for every renderer that is not the 2D painter (the 3D engines' selection rings,
+ *  cursors and her value's label): one token change moves the painter and the engines together. */
+export const lawColor = (a: ArtTokens, m: keyof typeof LAW_ROLES): string => roleColor(a, LAW_ROLES[m]);
 
 // ───────────────────────────── the audit (read by the shot harness) ─────────────────────────────
 
@@ -88,7 +93,7 @@ export interface AuditMark { kind: string; x: number; y: number; w: number; h: n
 /** a drawn line a view declares (an arm, a ray): chips must not sit across it */
 export interface AuditSeg { kind: string; x0: number; y0: number; x1: number; y1: number; seq?: number }
 /** round 8 laws: every colour role a frame painted, by the painter op that painted it (the law checks read what green and
- *  focus were used for: server/forge3/qa/laws.mjs). `role` is the role asked for ("you" is painted as focus). */
+ *  focus were used for: server/forge3/qa/laws.mjs). `role` is the role asked for. */
 export interface AuditUse { op: string; role: string; /** a text's first characters */ s?: string }
 export interface Audit { frame: number; texts: AuditText[]; targets: AuditTarget[]; box: { w: number; h: number }; art: ArtId; young: boolean; /** labels that could not fit their box even wrapped at the floor (drawn with an ellipsis): must be 0 */ clipped: number; marks: AuditMark[]; segs: AuditSeg[]; uses?: AuditUse[] }
 export function newAudit(art: ArtId, young: boolean): Audit { return { frame: 0, texts: [], targets: [], box: { w: 0, h: 0 }, art, young, clipped: 0, marks: [], segs: [], uses: [] }; }

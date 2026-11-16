@@ -235,7 +235,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const fb: Box = { x: x0, y: y + 1, w: flagW, h: rh - 2 }, flagged = s.marks.includes(i);
       if (touched) target(`flag-${i}`, fb);
       const look = (s.why === "middle" || s.why === "not_pole" || s.why === "both_ends") && s.on === i;
-      P.body(c, fb.x + 4, fb.y + 4, fb.w - 8, fb.h - 8, { role: flagged ? "you" : "panel", r: 10, state: !touched ? "dim" : look ? "look" : flagged ? "selected" : "idle" });
+      P.body(c, fb.x + 4, fb.y + 4, fb.w - 8, fb.h - 8, { role: flagged ? "focus" : "panel", r: 10, state: !touched ? "dim" : look ? "look" : flagged ? "selected" : "idle" });
       const fx = fb.x + fb.w / 2 - 6;
       if (touched) {
         P.stroke(c, [[fx, cy + 10], [fx, cy - 11]], { role: flagged ? "ink" : "ink3", width: 2.5 });
@@ -304,7 +304,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (const q of ["N", "S"] as const) {
       const hb: Box = { x: q === "N" ? mx - 10 : mx + mw / 2, y: my - 9, w: mw / 2 + 10, h: mh + 18 };
       target(`hold-${q}`, hb);
-      if (pole === q) P.circle(c, q === "N" ? mx + 2 : mx + mw - 2, my + mh / 2, mh * 0.72, { role: "you", width: 3 });
+      if (pole === q) P.circle(c, q === "N" ? mx + 2 : mx + mw - 2, my + mh / 2, mh * 0.72, { role: "focus", width: 3 });
     }
     for (let i = 0; i < n; i++) {
       const y = top + i * rowH, by = y + 14, bh = 26, bx = x0 + labW + endW, bw = cw - labW - endW * 2;
@@ -318,7 +318,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const eb: Box = { x: end ? bx + bw : bx - endW, y: y + 2, w: endW, h: rowH - 4 };
         target(`end-${i}-${end}`, eb);
         P.body(c, eb.x + 4, by - 4, eb.w - 8, bh + 8, { role: "panel", r: 10, state: "hover" });
-        P.circle(c, eb.x + eb.w / 2, by + bh / 2, 6, { role: "you", width: 2 });
+        P.circle(c, eb.x + eb.w / 2, by + bh / 2, 6, { role: "focus", width: 2 });
         // what each pole did at this end, written by it
         const done = s.tests.filter((t) => t.i === i && t.end === end);
         done.forEach((t, k) => P.text(c, W(`chumbak.res.${t.p}.${t.r}`), end ? eb.x + eb.w - 2 : eb.x + 2, by + bh + 14 + k * 17, { size: 14, role: t.r === "push" ? "look" : "ink2", weight: 700, align: end ? "right" : "left", maxW: cw * 0.42 }));
@@ -440,7 +440,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const ahead = aheadQ !== null && ((Math.round(aheadQ - boxQ - k) % 4) + 4) % 4 === 0 && Math.abs(aheadQ - boxQ - Math.round(aheadQ - boxQ)) < 0.12;
       // the letters on chips (they read on every art direction's dial)
       P.chip(c, DIRS[k], lx, ly, { size: fs, role: k === 0 ? "ink" : "ink2", font: "ui" });
-      if (ahead) P.circle(c, lx, ly, fs * 0.95, { role: "you", width: 3 });
+      if (ahead) P.circle(c, lx, ly, fs * 0.95, { role: "focus", width: 3 });
       const [tx, ty] = dirv(boxQ + k + 0.5);
       P.stroke(c, [[cx + tx * (r - 5), cy + ty * (r - 5)], [cx + tx * (r - 11), cy + ty * (r - 11)]], { role: "ink3", width: 1.5 });
     }

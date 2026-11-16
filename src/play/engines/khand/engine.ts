@@ -9,7 +9,7 @@
 import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
 import type { PointerKind } from "../../core/stage.ts";
 import type { ControlSpec, Readout } from "../../core/viewkit.ts";
-import { ART } from "../../core/styles.ts";
+import { ART, lawColor } from "../../core/styles.ts";
 import type { Scene, WebGLRenderer } from "three";
 import type { Core3D, EngineDeps, EngineView, LabelHandle, Sfx } from "../core3d/api.ts";
 import type { NzState, Plot } from "../../families/nazariya/grid.ts";
@@ -45,7 +45,7 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
   stick.style.cssText = "position:absolute;left:12px;bottom:12px;width:104px;height:104px;border-radius:52px;display:none;touch-action:none;" +
     `background:${art.panel};opacity:0.82;border:2px solid ${art.panelEdge}`;
   const knob = document.createElement("div");
-  knob.style.cssText = `position:absolute;left:32px;top:32px;width:40px;height:40px;border-radius:20px;background:${art.you}`;
+  knob.style.cssText = `position:absolute;left:32px;top:32px;width:40px;height:40px;border-radius:20px;background:${lawColor(art, "focus")}`;   // her finger on the stick: focus, not the action hue
   stick.appendChild(knob); host.appendChild(stick);
   const theme = (["mitti", "barf", "jungle"].includes(deps.spec.dress.theme) ? deps.spec.dress.theme : "mitti") as Theme;
   const scene = new KhandScene(core.renderer as WebGLRenderer, core.scene as Scene, art, makeAtlas(), "day", theme);
@@ -324,7 +324,7 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
       const s = ctl.state as NzState, out: Readout[] = [];
       if (side) {
         const ap = areaPerimeter(p, s.h);
-        out.push({ k: "Fence", v: fade === 1 || reveal || s.done ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" });
+        out.push({ k: "Fence", v: fade === 1 || reveal || s.done ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "focus" });
       } else if (mode === "floor") {
         const ap = areaPerimeter(p, s.h);
         if (fade === 1 || reveal || s.done) { out.push({ k: "Floor", v: String(ap.area), role: "q1" }, { k: "Fence", v: String(ap.perimeter), role: "q4" }); }
@@ -332,9 +332,9 @@ export function create(core: Core3D, deps: EngineDeps): EngineView {
       } else if (mode === "array") {
         const a = p as unknown as ArrayParams, f = pitCells(a, a.pit).filter((i) => s.h[i] >= 1).length;
         if (fade < 3) out.push({ k: "Filled", v: `${f}`, role: "q1" });
-        if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" });
+        if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "focus" });
       } else if (mode === "powers") {
-        if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" });
+        if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "focus" });
         if (fade === 1 || s.done) out.push({ k: "Built", v: String(built(p, s.h)), role: "q1" });
       } else out.push({ k: "Blocks", v: String(built(p, s.h)), role: "q1" });
       return out;

@@ -145,7 +145,7 @@ export const makeSolidView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     readouts(): Readout[] {
       const s = st(), live = fade === 1 || reveal || s.done;
       const k = want === "face" ? "nazariya.solid.stamped" : want === "edge" ? "nazariya.solid.run" : "nazariya.solid.pinned";
-      return [{ k: W(k), v: live ? String(s[want].length) : "?", role: "you" }];
+      return [{ k: W(k), v: live ? String(s[want].length) : "?", role: "focus" }];
     },
     controls(): ControlSpec[] {
       const s = st(), out: ControlSpec[] = [];

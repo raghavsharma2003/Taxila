@@ -175,9 +175,9 @@ export const makeNakshaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const P = api.P;
     for (const [dx, dy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
       P.stroke(c, [[x, y], [x + dx * r * 0.85, y + dy * r * 0.85]], { role: "ink2", width: 2, alpha });
-      P.circle(c, x + dx * r * 0.85, y + dy * r * 0.85, r * 0.42, { role: "you", width: 1.8, alpha });
+      P.circle(c, x + dx * r * 0.85, y + dy * r * 0.85, r * 0.42, { role: "focus", width: 1.8, alpha });
     }
-    P.circle(c, x, y, r * 0.45, { role: "you", fill: true, alpha });
+    P.circle(c, x, y, r * 0.45, { role: "focus", fill: true, alpha });
   }
   function ship(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const P = api.P;
@@ -197,24 +197,24 @@ export const makeNakshaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
   function rider(c: CanvasRenderingContext2D, x: number, y: number, s: number, ang: number): void {
     const P = api.P, r = s * 0.26;
-    P.circle(c, x, y, r, { role: "you", fill: true });
+    P.circle(c, x, y, r, { role: "focus", fill: true });
     const tip: [number, number] = [x + Math.cos(ang) * r * 1.9, y + Math.sin(ang) * r * 1.9];
     const a1: [number, number] = [x + Math.cos(ang + 2.4) * r * 1.05, y + Math.sin(ang + 2.4) * r * 1.05], a2: [number, number] = [x + Math.cos(ang - 2.4) * r * 1.05, y + Math.sin(ang - 2.4) * r * 1.05];
-    c.save(); c.fillStyle = P.color("you"); c.beginPath(); c.moveTo(tip[0], tip[1]); c.lineTo(a1[0], a1[1]); c.lineTo(a2[0], a2[1]); c.closePath(); c.fill(); c.restore();
+    c.save(); c.fillStyle = P.color("focus"); c.beginPath(); c.moveTo(tip[0], tip[1]); c.lineTo(a1[0], a1[1]); c.lineTo(a2[0], a2[1]); c.closePath(); c.fill(); c.restore();
     P.circle(c, x, y, r * 0.42, { role: "panel", fill: true });
   }
   function truck(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const P = api.P;
     P.body(c, x - s * 0.5, y - s * 0.34, s * 0.62, s * 0.42, { role: "q1", r: 2 });
-    P.body(c, x + s * 0.14, y - s * 0.24, s * 0.34, s * 0.32, { role: "you", r: 2 });
+    P.body(c, x + s * 0.14, y - s * 0.24, s * 0.34, s * 0.32, { role: "focus", r: 2 });
     P.circle(c, x - s * 0.3, y + s * 0.12, s * 0.12, { role: "ink", fill: true });
     P.circle(c, x + s * 0.3, y + s * 0.12, s * 0.12, { role: "ink", fill: true });
   }
   function pump(c: CanvasRenderingContext2D, x: number, y: number, s: number, alpha = 1): void {
     const P = api.P;
     P.stroke(c, [[x, y], [x, y - s]], { role: "ink2", width: 2.5, alpha });
-    c.save(); c.globalAlpha = alpha; c.fillStyle = P.color("you"); c.beginPath(); c.moveTo(x, y - s); c.lineTo(x + s * 0.62, y - s * 0.78); c.lineTo(x, y - s * 0.56); c.closePath(); c.fill(); c.restore();
-    P.circle(c, x, y, 4, { role: "you", fill: true, alpha });
+    c.save(); c.globalAlpha = alpha; c.fillStyle = P.color("focus"); c.beginPath(); c.moveTo(x, y - s); c.lineTo(x + s * 0.62, y - s * 0.78); c.lineTo(x, y - s * 0.56); c.closePath(); c.fill(); c.restore();
+    P.circle(c, x, y, 4, { role: "focus", fill: true, alpha });
   }
   /** a straight arrow (dir) or a turn arrow (l / r) inside a chip of size s centred at (x, y) */
   function arrowGlyph(c: CanvasRenderingContext2D, x: number, y: number, s: number, step: Step): void {
@@ -270,7 +270,7 @@ export const makeNakshaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const spot = ghost ?? s.at;
     if (spot) {
       const [dx, dy] = geoXY(spot), k = !ghost && s.ended ? animK() : 1;
-      if (!ghost && s.ended && k < 1) P.circle(c, dx, dy, r * (0.6 + 1.6 * k), { role: "you", width: 2, alpha: 1 - k });
+      if (!ghost && s.ended && k < 1) P.circle(c, dx, dy, r * (0.6 + 1.6 * k), { role: "focus", width: 2, alpha: 1 - k });
       drone(c, dx, dy - (ghost ? r * 0.5 : 0), r, ghost ? 0.75 : 1);
     } else { const rw = Math.min(r * 0.8, 12); drone(c, x0 + rw * 1.4, y0 - 12 - rw * 1.3, rw, 0.55); }
     if (end && s.done && s.at) { const [tx, ty] = geoXY(s.at); P.tick(c, tx + r * 1.4, ty - r * 1.6, Math.min(26, r * 2), 1); }
@@ -298,7 +298,7 @@ export const makeNakshaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       [rx, ry] = [a[0] + (b[0] - a[0]) * bounce, a[1] + (b[1] - a[1]) * bounce];
       ang = ANGLE[run.heads[Math.min(run.heads.length - 1, i + (fr > 0.5 && i < n ? 1 : 0))]];
     } else { [rx, ry] = cellC(rp.start); ang = ANGLE[rp.goal === "turns" ? rp.heading : "n"]; if (rp.goal !== "turns") ang = NaN; }
-    if (Number.isNaN(ang)) { P.circle(c, rx, ry, cell * 0.26, { role: "you", fill: true }); P.circle(c, rx, ry, cell * 0.11, { role: "panel", fill: true }); }
+    if (Number.isNaN(ang)) { P.circle(c, rx, ry, cell * 0.26, { role: "focus", fill: true }); P.circle(c, rx, ry, cell * 0.11, { role: "panel", fill: true }); }
     else rider(c, rx, ry, cell, ang);
     if (end && run) {
       const last = run.cells[run.cells.length - 1], [ex, ey] = cellXY(last);
@@ -416,9 +416,9 @@ export const makeNakshaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     dotGrid(c, plotO, hp.cols, hp.rows, hp.labels < 3);
     const pts = s.corners.map((q) => dotXY(plotO, q));
     if (pts.length >= 3 && s.ended) { const k = animK(); fillPoly(c, pts, s.done && end ? "good" : "q1", 0.3 * k); }
-    if (pts.length >= 2) P.stroke(c, pts, { role: "you", width: 3.5, closed: s.ended });
-    if (pts.length >= 3 && !s.ended) P.stroke(c, [pts[pts.length - 1], pts[0]], { role: "you", width: 2, dash: [5, 6], alpha: 0.6 });
-    pts.forEach(([x, y], i) => P.circle(c, x, y, Math.max(5, dot * 0.16), { role: "you", fill: i === pts.length - 1 && !s.ended, width: 2.5 }));
+    if (pts.length >= 2) P.stroke(c, pts, { role: "focus", width: 3.5, closed: s.ended });
+    if (pts.length >= 3 && !s.ended) P.stroke(c, [pts[pts.length - 1], pts[0]], { role: "focus", width: 2, dash: [5, 6], alpha: 0.6 });
+    pts.forEach(([x, y], i) => P.circle(c, x, y, Math.max(5, dot * 0.16), { role: "focus", fill: i === pts.length - 1 && !s.ended, width: 2.5 }));
     if (end && pts.length) {
       const cx = pts.reduce((a, q) => a + q[0], 0) / pts.length, cy = pts.reduce((a, q) => a + q[1], 0) / pts.length;
       if (s.done) P.tick(c, cx, cy, Math.min(28, dot * 0.8), 1);

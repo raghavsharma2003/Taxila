@@ -315,8 +315,8 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     // the cuts: a line across the field and a knife mark on the edge
     if (p.goal === "area") {
-      for (const at of cx) { const x = ox + at * sx; P.stroke(c, [[x, oy - 6], [x, oy + B * sy]], { role: "you", width: 2.5, dash: drag?.side === 0 && drag.v === at ? [4, 3] : undefined }); }
-      for (const at of cy) { const y = oy + at * sy; P.stroke(c, [[ox - 6, y], [ox + A * sx, y]], { role: "you", width: 2.5, dash: drag?.side === 1 && drag.v === at ? [4, 3] : undefined }); }
+      for (const at of cx) { const x = ox + at * sx; P.stroke(c, [[x, oy - 6], [x, oy + B * sy]], { role: "focus", width: 2.5, dash: drag?.side === 0 && drag.v === at ? [4, 3] : undefined }); }
+      for (const at of cy) { const y = oy + at * sy; P.stroke(c, [[ox - 6, y], [ox + A * sx, y]], { role: "focus", width: 2.5, dash: drag?.side === 1 && drag.v === at ? [4, 3] : undefined }); }
     }
     sideLabels(c, 0, pa, sx);
     sideLabels(c, 1, pb, sy);
@@ -585,7 +585,7 @@ export const makeGunaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let at = 1; at < racks; at++) {
       const gx0 = stripX + (racks - at) * colK, set = s.posts.includes(at), tw = Math.max(44, colK);
       if (!s.done) api.target(`post-${at}`, gx0 - tw / 2, digitY - 26, tw, 52);
-      if (set) P.text(c, ",", gx0, digitY + 6, { size: 30, role: "you", weight: 900, font: "mono" });
+      if (set) P.text(c, ",", gx0, digitY + 6, { size: 30, role: "focus", weight: 900, font: "mono" });
       else P.circle(c, gx0, digitY + 14, 2.5, { role: "ink3", fill: true });
       if (end && !s.done && set !== right.includes(at)) P.magnifier(c, gx0, digitY + 16, 14);
     }

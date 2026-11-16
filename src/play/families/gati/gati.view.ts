@@ -200,7 +200,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const tx = x + 6 + r + q * sp, ty = binY + binH - r - 7;
         P.circle(c, tx, ty, r, { role: "q2", fill: true }); P.text(c, labelOf(lane), tx, ty, { size: 16, weight: 800, on: "q2" });
       });
-      if (!here.length && (sel >= 0 || drag)) P.circle(c, x + binW / 2, binY + binH - 18, 10, { role: "you", width: 2 });
+      if (!here.length && (sel >= 0 || drag)) P.circle(c, x + binW / 2, binY + binH - 18, 10, { role: "focus", width: 2 });
       if (bad(j)) P.magnifier(c, x + binW - 14, binY + 14, 14);
     }
     if (drag?.moved) { P.circle(c, drag.x, drag.y, 16, { role: "q2", fill: true }); P.text(c, labelOf(drag.lane), drag.x, drag.y, { size: 16, weight: 800, on: "q2" }); }

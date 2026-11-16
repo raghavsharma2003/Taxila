@@ -275,7 +275,7 @@ export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const b = rest[at] ? (target.get(rest[at]) as Box) : null;
       const cx = b ? b.x - GAP / 2 : rest.length ? (target.get(rest[rest.length - 1]) as Box).x + (target.get(rest[rest.length - 1]) as Box).w + GAP / 2 : engineBox.x + engineBox.w + GAP / 2;
       const cy = b ? b.y : rest.length ? (target.get(rest[rest.length - 1]) as Box).y : engineBox.y;
-      P.stroke(c, [[cx, cy - 4], [cx, cy + WH + 4]], { role: "you", width: 4 });
+      P.stroke(c, [[cx, cy - 4], [cx, cy + WH + 4]], { role: "focus", width: 4 });
     }
     if (drag?.moved) drawWagon(c, drag.id, s.train.includes(drag.id), true);
     // the first contact: how to play, in the lesson's language (only before the first act)
