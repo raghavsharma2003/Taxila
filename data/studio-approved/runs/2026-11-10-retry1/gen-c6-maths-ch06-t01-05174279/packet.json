@@ -1,0 +1,166 @@
+{
+  "v": 1,
+  "id": "gen-c6-maths-ch06-t01-05174279",
+  "source": "generated",
+  "topicId": "c6-maths-ch06-t01",
+  "archetype": "area-claim@1",
+  "hash": "05174279f4f43cd24d0d46820cfbc428",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": true,
+      "p412": true,
+      "l1366": true
+    },
+    "fails": {
+      "p360": [],
+      "p412": [],
+      "l1366": []
+    }
+  },
+  "images": [
+    {
+      "vp": "p360",
+      "file": "piece-p360.png",
+      "sha256": "fc454eaf95ee7dc69082c0c79bb55609fe38b35bf2e0bb95baea8ce0573496bb"
+    },
+    {
+      "vp": "p412",
+      "file": "piece-p412.png",
+      "sha256": "8a644d9b555b7675ea7a15cdf41279adf988bfbe3477c31de2b375863a0a20f1"
+    },
+    {
+      "vp": "l1366",
+      "file": "piece-l1366.png",
+      "sha256": "2a184cace4573bc6d3aeecb1e6f231e7794a6def48cab6d2016afc254ec66c4c"
+    }
+  ],
+  "target": {
+    "topicId": "c6-maths-ch06-t01",
+    "archetype": "area-claim@1",
+    "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+    "skillId": "c6-maths-ch06-t01-s1",
+    "beat": "rem:c6-maths-ch06-t01-m-area-perimeter",
+    "when": "remediation",
+    "check": "c6-maths-ch06-t01-s1:c2"
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-10T18:28:50.812Z"
+  },
+  "topic": {
+    "mixup": {
+      "id": "c6-maths-ch06-t01-m-area-perimeter",
+      "belief": "Confuses perimeter with area, multiplying length by breadth for the perimeter",
+      "signs": [
+        "Says the perimeter of a 6 cm by 4 cm rectangle is 24",
+        "Uses square units for perimeter",
+        "Says 'perimeter is inside the shape'"
+      ]
+    },
+    "cards": [
+      {
+        "prompt": "A rectangle is 8 cm by 5 cm. What is its perimeter?",
+        "key": "26 cm",
+        "acceptable": [
+          "26"
+        ]
+      },
+      {
+        "prompt": "A square has side 7 m. What is its perimeter?",
+        "key": "28 m",
+        "acceptable": [
+          "28"
+        ]
+      },
+      {
+        "prompt": "A triangle has sides 5 cm, 6 cm and 9 cm. What is its perimeter?",
+        "key": "20 cm",
+        "acceptable": [
+          "20"
+        ]
+      },
+      {
+        "prompt": "For a 12 m by 7 m garden, Raj says the perimeter is 19 m. Fix his answer.",
+        "key": "38 m: he added only two of the four sides; 2 × (12 + 7) = 38",
+        "acceptable": [
+          "38",
+          "38 m"
+        ]
+      },
+      {
+        "prompt": "A square has side 5 cm. If you double the side, predict what happens to the perimeter.",
+        "key": "It doubles too, from 20 cm to 40 cm",
+        "acceptable": [
+          "doubles",
+          "40 cm",
+          "dugna"
+        ]
+      },
+      {
+        "prompt": "Why does the rectangle formula say 2 × (length + breadth)?",
+        "key": "A rectangle has two equal lengths and two equal breadths; going once round adds length + breadth twice",
+        "acceptable": [
+          "two lengths and two breadths"
+        ]
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "area-claim@1",
+    "skills": [
+      "c6-maths-ch06-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Grid par plot claim karo",
+      "round": "Round",
+      "area": "area",
+      "perimeter": "perimeter",
+      "claim": "CLAIMED",
+      "need": "chahiye",
+      "sq": "sq",
+      "units": "units",
+      "newShape": "is baar nayi shape",
+      "maxArea": "sabse zyada area",
+      "runDone": "Field complete",
+      "timeUp": "Time up"
+    },
+    "grid": {
+      "cols": 15,
+      "rows": 10
+    },
+    "drift": 0,
+    "rounds": [
+      {
+        "goal": "area",
+        "target": 40,
+        "seconds": 30,
+        "different": false
+      },
+      {
+        "goal": "perimeter",
+        "target": 26,
+        "seconds": 25,
+        "different": true,
+        "targets": "c6-maths-ch06-t01-m-area-perimeter"
+      },
+      {
+        "goal": "area",
+        "target": 49,
+        "seconds": 28,
+        "different": true
+      },
+      {
+        "goal": "perimeter",
+        "target": 20,
+        "seconds": 26,
+        "different": false
+      }
+    ]
+  }
+}

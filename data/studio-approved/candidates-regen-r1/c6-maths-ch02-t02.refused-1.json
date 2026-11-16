@@ -1,0 +1,213 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch02-t02",
+    "archetype": "angle-cannon@1",
+    "misconceptionId": "c6-maths-ch02-t02-m-vertex-name",
+    "skillId": "c6-maths-ch02-t02-s1",
+    "beat": "rem:c6-maths-ch02-t02-m-vertex-name",
+    "when": "remediation",
+    "check": "c6-maths-ch02-t02-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 4,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "strings.coach",
+        "code": "brain_violence",
+        "text": "Turret ghumao, chhodkar fire karo"
+      },
+      {
+        "key": "waves.1.title",
+        "code": "brain_violence",
+        "text": "Turret milao"
+      },
+      {
+        "key": "waves.3.sub",
+        "code": "brain_violence",
+        "text": "Turret ko poora ghumakar dekho"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodkar fire karo",
+      "wave": "Lehar",
+      "threat": "NISHANA AT",
+      "copy": "YEH TURN MILAO",
+      "only": "SIRF IS PAR LAGO",
+      "hit": "SEEDHA NISHANA",
+      "close": "PAAS",
+      "offBy": "itna fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishana",
+      "hits": "nishane",
+      "acute": "chhota kona",
+      "right": "seedha kona",
+      "obtuse": "bada kona",
+      "reflex": "bahut bada kona"
+    },
+    "waves": [
+      {
+        "title": "Naam ka nishana",
+        "sub": "Har turn ko dhyan se dekho",
+        "mode": "call",
+        "items": [
+          90,
+          90
+        ],
+        "range": 180,
+        "scaffold": "tens",
+        "speed": 0.7
+      },
+      {
+        "title": "Turret milao",
+        "sub": "Dono arms ko dhyan se milao",
+        "mode": "copy",
+        "items": [
+          90,
+          90
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.85
+      },
+      {
+        "title": "Kona pehchano",
+        "sub": "Har nishane ka roop dekho",
+        "mode": "classify",
+        "items": [
+          90,
+          90
+        ],
+        "kind": "right",
+        "range": 180,
+        "scaffold": "none",
+        "speed": 1
+      },
+      {
+        "title": "Ghoomta nishana",
+        "sub": "Turret ko poora ghumakar dekho",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.1
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "items:dropped",
+      "items:dropped",
+      "items:dropped",
+      "items:dropped"
+    ]
+  },
+  "raw": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodkar fire karo",
+      "wave": "Lehar",
+      "threat": "NISHANA AT",
+      "copy": "YEH TURN MILAO",
+      "only": "SIRF IS PAR LAGO",
+      "hit": "SEEDHA NISHANA",
+      "close": "PAAS",
+      "offBy": "itna fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishana",
+      "hits": "nishane",
+      "acute": "chhota kona",
+      "right": "seedha kona",
+      "obtuse": "bada kona",
+      "reflex": "bahut bada kona"
+    },
+    "waves": [
+      {
+        "title": "Naam ka nishana",
+        "sub": "Har turn ko dhyan se dekho",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          90,
+          180
+        ],
+        "range": 180,
+        "scaffold": "tens",
+        "speed": 0.7,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      },
+      {
+        "title": "Turret milao",
+        "sub": "Dono arms ko dhyan se milao",
+        "mode": "copy",
+        "items": [
+          90,
+          180,
+          90,
+          180
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.85,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      },
+      {
+        "title": "Kona pehchano",
+        "sub": "Har nishane ka roop dekho",
+        "mode": "classify",
+        "items": [
+          90,
+          180,
+          90,
+          180
+        ],
+        "kind": "right",
+        "range": 180,
+        "scaffold": "none",
+        "speed": 1,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      },
+      {
+        "title": "Ghoomta nishana",
+        "sub": "Turret ko poora ghumakar dekho",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270,
+          360
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.1,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      }
+    ]
+  }
+}

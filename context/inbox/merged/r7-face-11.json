@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-r8-extended-bilabials",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Every look uses the extended b / m / p rule (track.ts VisemeScheduler.extendedBilabials = true); it was lamp2's only. On r8's own lip solver the 24-line Diya battery seals 132/132 b/m/p words vs 123/132, no new unowed closure, the same timing."
+  },
+  {
+   "id": "ms-r7-face-r8-bilabial-battery-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "r8 bilabial battery (offline, 24 stored Diya lines, r8 product weights path + the lips.js seal line): base rule 123/132 sealed, extended 132/132; unowed closures 4 vs 4 (same Azure-origin spots); offset vs CTC median +10 ms, 95% within +-50 ms in both arms (n = 21)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-face-r8-extended-bilabials",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-r8-bilabial-battery-2026-11-05"
+  },
+  {
+   "src": "ms-r7-face-r8-bilabial-battery-2026-11-05",
+   "rel": "caused_by",
+   "dst": "ms-r7-face-route-b-battery-2026-11-04"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-face-r8-extended-bilabials (2026-11-05)\nThis is independent of the owner's look decision (main: \"keep going on whatever doesn't depend on the route choice\"). The owner's face-review page listed it as an open option.\n- **Before.** The extended b / m / p rule (visemes.ts `addBilabialsExtended`) seals every b / m / p word, including those that Azure's viseme stream and the base text rule miss: \"dhoop\", \"carbon\", \"about\", \"tum\", \"lagbhag\", \"खुशबू\", \"Shabash\", \"Ab\", \"vaashpikaran\". The stage switched it on for a key-rig look (lamp2) only. r8, the default for every child, kept the base rule.\n- **Now.** `VisemeScheduler.extendedBilabials` defaults to true (track.ts), so every look uses the extended rule. The stage only adds the key rig's own lead (KEY_LEAD_MS). `resolveVisemes` without options still uses the base rule (the battery and the tests use both).\n- **Why it is safe on r8.** On r8's own drawing path the extended rule adds no closure the audio does not ask for, and it does not move the mouth's timing (`ms-r7-face-r8-bilabial-battery-2026-11-05`).\n- **Reversal condition.** A real-phone or owner viewing finds r8's added closures read as stutters in fast speech. In that case set the default back to false. It is one line.\n",
+  "measurements": "## ms-r7-face-r8-bilabial-battery-2026-11-05 (2026-11-05)\n`evals/face-puppet/r8-bilabial-battery.mjs` → `docs/design/round7/face/r8-bilabial-battery.json`. It is offline: no Azure spend and no browser. It uses the 24 stored Diya lines (`evals/face-puppet/out/diya/`), the same battery as the lamp2 / route-b measurements.\n- **Path.** r8's product mouth: `resolveVisemes` (base vs extended rule), then `weightsAt` at 60 fps, sampled at audio time + EVENT_LEAD_MS (no key lead).\n- **Seal criterion.** This is r8's own lip solver (`runtime/lips.js`): `cPP = smoothstep(0.6, 0.92, viseme_PP) > 0.85` shuts the lip gap and holds it for 67 ms, whatever the jaw does. A first version also required the jaw to be near closed. That gave 91 / 99 of 132, which is stricter than what r8 draws, so it was replaced by the solver's rule.\n- **Results.** Sealed b / m / p words: base 123/132, extended **132/132**. Unowed closures (sealed frames inside no b / m / p word window): 4 in both arms, at the same spots, so they come from Azure's own viseme stream and not from the rule. Offset vs the wav2vec2 alignment (E3): median +10 ms, IQR 0..+20, 95% within ±50 ms, n = 21, in both arms (the bar is −125..+45 ms).\n- **Limits.** These are weights on the product path, not pixels. Nobody has looked at the added closures in motion on r8 yet. That belongs to the owner's viewing and the real-phone pass.\n"
+ }
+}

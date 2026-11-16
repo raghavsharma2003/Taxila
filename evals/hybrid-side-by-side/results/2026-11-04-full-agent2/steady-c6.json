@@ -1,0 +1,161 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ke chaaron taraf ki doori, yaani perimeter, seekhenge. Boundary ke poore chakkar ki doori nikalne ke liye hum kya jodenge?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1752
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo ek chhota sawaal karte hain. Triangle ki teen sides 5, 6 aur 9 cm hain. Chaaron taraf ki kul doori kitni hogi?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2302,
+   "replyReadyMs": 4054
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 76
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Pehle sirf do sides jodo: 5 cm aur 6 cm milkar kitne cm hote hain?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2370,
+   "replyReadyMs": 2446
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1465
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 4 kaha; yahan 5 aur 6 ko jodna hai, 4 nahi. Cricket ground ki boundary par pehle 5 kadam, phir 6 kadam chale, toh pehle 5 aur phir 1 kadam mila kar 6 hue; ab aur 5 kadam baaki hain. 5 aur 6 milkar kitne kadam hue?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3028,
+   "replyReadyMs": 4493
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 982
+  },
+  {
+   "who": "teacher",
+   "text": "Tum pooch rahi ho kyun. Number line par 5 se shuru karke 6 kadam aage badho; jahan pahunchte ho, wahi dono sides ki mili hui lambai hai. 5 ke baad 6 kadam chalne par kaunse number par pahunchoge?",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2688,
+   "replyReadyMs": 3670
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1130
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, ab ek halka sa check karte hain. Agar 5 kadam chale aur phir 6 kadam, toh kul kitne kadam chale?",
+   "move": "probe",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2161,
+   "replyReadyMs": 3291
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1170
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 6 kaha. Woh sirf doosri side ki lambai hai; pehli side ke 5 bhi jodne hain. Cricket mein pehle 5 run, phir 6 run bane, toh pehle 5 aur agle 5 milkar 10 hue, aur 1 run bacha. Kul kitne run hue?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2767,
+   "replyReadyMs": 3937
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 756
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example. Socho pehle 2 runs bane, phir 3 runs; 2 se aage teen gino: 3, 4, 5. Dono milakar kitne runs hue?",
+   "move": "worked_example",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 5716,
+   "replyReadyMs": 6472
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1715
+  },
+  {
+   "who": "teacher",
+   "text": "Ab isi tarah perimeter ke liye sides ko ek-ek karke jodna hai. Jaldi! 9 cm side wale square ka perimeter kya hai?",
+   "move": "retrieval",
+   "card": "Jaldi! 9 cm side wale square ka perimeter kya hai?",
+   "replyMs": 8033,
+   "replyReadyMs": 9748,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1697
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 kaha. Square ki chaaron sides barabar hoti hain; agar har side 9 cm ho, toh 9 cm ko chaar baar jodenge. Pehle do sides milkar kitne cm honge?",
+   "move": "reteach",
+   "card": "Jaldi! 9 cm side wale square ka perimeter kya hai?",
+   "replyMs": 2637,
+   "replyReadyMs": 4334
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 997
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum aaj ke liye rokna chahti ho. Carry on, short break, ya stop for today?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1310,
+   "replyReadyMs": 2307
+  }
+ ]
+}

@@ -1,0 +1,738 @@
+// Kon · place (r8, c6-maths-ch02-t03, docs/design/round8/games-engine-needs.md §1): the child PLACES the protractor. An angle
+// is drawn; a loose protractor lies beside it. She drags it by its body (it translates), turns it by the handle under its
+// centre (it rotates about its own centre point, 1° steps), locks it ("Rakh do"), and then:
+//   measure  reads the angle off the scale (tapping a number band on the scale, ±1), "Yahi hai"
+//   draw     only the first arm OA is drawn: she puts a dot on the scale's rim and joins it to O or to A with the ruler
+//   size     the same kind of angle twice, each under a protractor of a different size: which angle is more (or the same)?
+// PURE law + generator + solver, on a fixed board of BW × BH board px (y UP, angles anticlockwise from +x, as everywhere in
+// kon); the view scales the board into its box. Acts carry board coordinates, so the server replays them on any device.
+//
+// The law (main's condition, 2026-11-11): placement passes when the centre point is within tolPx of the vertex and the base
+// line is within ±3° of an arm (the other arm crossing the scale's half-disc). The reading is graded against the angle the
+// protractor AS PLACED shows. A wrong placement read "correctly" is the placement mix-up (`vertex-off`), never right: a placed
+// protractor that is off can never solve, whatever is read off it.
+// Mal-rules (each with its own visible signature, `shown` in the moment's facts):
+//   vertex-off      the bottom edge on the vertex: the centre sits the base-to-centre depth PD off it, along the normal. The
+//                   play-out is a ring on O and the dashed join to the protractor's centre ("centre_off")
+//   centre-on-arm   (Learning's kit split, 2026-11-11: vertex-off is now ONLY the bottom edge on O) the centre mark on an arm's
+//                   end point (A, or B in measure) with the base along that arm, or the protractor's corner at O with the base
+//                   along an arm: a placement a guess rarely makes (law 3). The same play-out as vertex-off: a ring on O and
+//                   the dashed join from O to where her centre is ("centre_on_arm"). The rule maps it once the kit id
+//                   reaches int/r6 (integration 49)
+// Judging round 3 (ruling 1): her number is graded only on a placed protractor. An off placement is named by the placement
+// alone (never by the number she typed), and its play-out shows the placement only: no arm from her misplaced centre, her
+// number's chip neutral (the arm ran beside OB and told her a right 150 was right)
+//   wrong-scale     the other scale's number: 180 − θ ("other_scale")
+//   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
+//                   ("far_end"). Judging round 2 (law 3): the join is a pick between two buttons, so a guess makes it half
+//                   the time: graded at chance weight as chanceMis (konLogic.chancePicks), never named from one join
+// Gate 2, law 3 read per session (2026-11-16): none of the four is named from one level. Each is a pick (chanceMis at chance
+// weight; konLogic.chancePicks, chanceRepeat): vertex-off, centre-on-arm and wrong-scale on a second level that differs,
+// join-wrong-end on its fourth, within the session's first four levels (server/play/levels.js NAMING_LEVELS). The moments
+// and the play-out are unchanged.
+// size names no mix-up (main 2026-11-11): the kit's tool-size belief is about the READING one angle gives under two tools, and
+// this goal asks which of two angles is more, never for a reading. Judging round 2 (law 2): a miss shows only her own pick,
+// never the readings (they would settle the next pick); any of the three answers can be the key.
+// Judging round 2 (law 3, the scale): a first-try solve is evidence about the scale only where the outer scale is the WRONG
+// one at the placement the level is built for (the angle opens clockwise: `mirror`), so wrong-scale is discriminated there
+// only, and listed first; the two orientations are served equally. measure: she TYPES the reading (the view prints no value);
+// the number she types decides the scale (θ on the scale whose 0 is on the placed arm, or 180 − θ).
+import type { Facts, Moment } from "../../../../shared/play.ts";
+
+export type PlaceGoal = "measure" | "draw" | "size";
+export const PLACE_GOALS: readonly PlaceGoal[] = ["measure", "draw", "size"];
+export const PLACE_MAL = ["vertex-off", "centre-on-arm", "join-wrong-end"] as const;
+export const isPlaceGoal = (g: string | undefined): g is PlaceGoal => PLACE_GOALS.includes(g as PlaceGoal);
+
+/** the board (board px; at a 360 px phone the play canvas is about 324-360 × 350-420 px, so 1 board px ≥ 1 CSS px there and
+ *  the protractor is ≥ 200 px wide) */
+export const BW = 320, BH = 340;
+/** protractor radius, the base-to-centre depth (the strip under the base line down to the bottom edge), arm length */
+export const PR = 105, PD = 24, ARM = 130;
+/** the centre tolerance (board px): a finger's drop: about 11 CSS px from the vertex at 360 (1 board px ≈ 1.03 CSS px in its 360 × 349 play box), about 25 at 1366. It stays
+ *  under PD / 2, so the bottom-edge placement (PD off) is never a placement */
+export const TOL_PX = 11;
+/** gate 2 (night rulings 2026-11-11: "give the tolerance that names vertex-off"): the vertex-off band, board px. vertex-off is
+ *  named when the base lies along an arm (±BASE_TOL°) and the centre is within VO_BAND of the point PD along the inward
+ *  normal from O: 14 to 34 board px from O, within 24.6° of the normal, on the side the protractor opens. One nudge (1 board
+ *  px) or one turn (1°, about its own centre) from any placement (centre ≤ TOL_PX) stays ≤ TOL_PX + 1 = 12 < 14 from O, so no
+ *  single slip lands in it; at 11 a position-only drop spread evenly over a disc of 30 px round O landed in it 1 time in 9.3,
+ *  at 10 at most 1 in 10.8 for every radius (tests/r8-games-kon-place-gate2.test.mjs) */
+export const VO_BAND = 10;
+/** size: the two protractors' radii */
+export const R_BIG = 108, R_SMALL = 78;
+/** base within ±BASE_TOL° of an arm; a reading within READ_TOL of what the scale shows */
+export const BASE_TOL = 3, READ_TOL = 2;
+/** where the loose protractor rests at the start: low on the board, under the angle (its centre's y). Gate 1 (night rulings,
+ *  2026-11-11): the resting protractor is wholly on the board, its strip REST_MARGIN board px clear of the bottom edge (at
+ *  PD + 4 a tilted strip met the edge at 360) */
+export const REST_Y = PD + 8, REST_MARGIN = 6;
+/** the angle's figure stays above this line (the resting protractor, with its numbers, stays under it) */
+export const FIG_LO = 156;
+/** the numbers the protractor prints at each scale setting: "10" every 20° (every 10° would touch at 360), "30" every 30°,
+ *  "landmarks" only 0, 90 and 180. A key on a printed number could be read off the number without the ticks: never served
+ *  (main 2026-11-11) */
+export const PRINT_EVERY: Record<PlaceParamsLike["scale"], number> = { "10": 20, "30": 30, landmarks: 90 };
+export const printed = (scale: PlaceParamsLike["scale"], v: number) => v % PRINT_EVERY[scale] === 0;
+/** size: both protractors print the SAME numbers (judging round 2: fewer numbers on the small tool could feed the tool-size
+ *  belief), every 30° at fades 1 and 2 (every 20° would touch on the small one at 360), landmarks at fade 3 */
+export const SIZE_PRINT_EVERY: Record<PlaceParamsLike["scale"], number> = { "10": 30, "30": 30, landmarks: 90 };
+export const sizePrinted = (scale: PlaceParamsLike["scale"], v: number) => v % SIZE_PRINT_EVERY[scale] === 0;
+/** the turning handle: on the protractor's body, half way up from the centre, at the scale's 90 */
+export const KNOB_AT = 0.5;
+
+export interface PlaceFields {
+  /** the vertex O, the first arm's heading a1 (= start), the angle θ (theta), the second arm on the clockwise side (mirror) */
+  vx?: number; vy?: number;
+  /** the centre tolerance, board px */
+  tolPx?: number;
+  /** the loose protractor's start pose */
+  x0?: number; y0?: number; r0?: number;
+  /** size: the angle at P (top) and Q (bottom), each opening from a base at 0° (or from 180°, mirrored); P under the big one */
+  thA?: number; thB?: number; bigA?: boolean; mirA?: boolean; mirB?: boolean;
+}
+export interface PlaceParamsLike extends PlaceFields { goal: string; start: number; theta?: number; mirror?: boolean; tol: number; scale: "10" | "30" | "landmarks" }
+export interface Pose { x: number; y: number; rot: number }
+export interface Placed { centreErrPx: number; baseErrDeg: number; ok: boolean; arm: number; zeroOnArm: boolean }
+export interface PlaceState {
+  pose: Pose; locked: boolean; mark: number | null;
+  /** the placement at the first committed decision (the evidence's `placed`) */
+  first: Placed | null; read: number | null; joined: "v" | "e" | null; pick: string | null; made: number | null;
+  /** measure: the misses she has made on a placed protractor (gate 1, night ruling 2: from the second her number's arm is
+   *  no longer drawn, or the misses become a too-high, too-low guide); absent until the first */
+  placedMisses?: number;
+}
+
+export const norm = (d: number) => ((d % 360) + 360) % 360;
+export const diff = (a: number, b: number) => { const d = Math.abs(norm(a) - norm(b)); return Math.min(d, 360 - d); };
+const R = (d: number) => (d * Math.PI) / 180;
+const D = (r: number) => (r * 180) / Math.PI;
+export const dir = (h: number): [number, number] => [Math.cos(R(h)), Math.sin(R(h))];
+const headingOf = (dx: number, dy: number) => norm(D(Math.atan2(dy, dx)));
+const r1 = (v: number) => Math.round(v * 10) / 10;
+
+/** the arms' headings: measure has two (OA at a1, OB at a1 ± θ); draw only OA */
+export function arms(p: PlaceParamsLike): number[] {
+  return p.goal === "measure" ? [norm(p.start), norm(p.start + (p.mirror ? -1 : 1) * (p.theta ?? 0))] : [norm(p.start)];
+}
+const V = (p: PlaceParamsLike): [number, number] => [p.vx ?? 0, p.vy ?? 0];
+/** the far end A of the first arm */
+export const farEnd = (p: PlaceParamsLike): [number, number] => { const [x, y] = V(p), [c, s] = dir(p.start); return [x + ARM * c, y + ARM * s]; };
+/** a point on the protractor's rim at rim angle r (0 … 180 from the outer scale's 0, anticlockwise) */
+export const rimPoint = (pose: Pose, r: number, rad = PR): [number, number] => { const [c, s] = dir(pose.rot + r); return [pose.x + rad * c, pose.y + rad * s]; };
+/** the rim angle of a point seen from the protractor's centre (−180 … 180 about the half-disc) */
+export const rimAngleOf = (pose: Pose, x: number, y: number) => { const a = norm(headingOf(x - pose.x, y - pose.y) - pose.rot); return a > 270 ? a - 360 : a; };
+/** the normal into the half-disc */
+export const inward = (pose: Pose) => dir(pose.rot + 90);
+
+/**
+ * How the protractor sits on the angle: the centre's distance from the vertex, the base line's angle off the best arm, and
+ * whether that is a placement (centre within tolPx, base within ±3°, and for measure the other arm crossing the half-disc).
+ * `zeroOnArm`: the OUTER scale's 0 lies on that arm (else the inner scale's 0 does).
+ */
+export function placement(p: PlaceParamsLike, pose: Pose): Placed {
+  const [vx, vy] = V(p), hs = arms(p);
+  const centreErrPx = r1(Math.hypot(pose.x - vx, pose.y - vy));
+  let best: { e: number; arm: number; zero: boolean; inside: boolean } | null = null;
+  hs.forEach((h, k) => {
+    const e0 = diff(pose.rot, h), e180 = diff(pose.rot + 180, h), e = Math.min(e0, e180);
+    let inside = true;
+    if (hs.length === 2) { const rel = norm(hs[1 - k] - pose.rot); inside = rel >= 2 && rel <= 178; }
+    // a base that puts the other arm inside the half-disc wins over one that does not
+    if (!best || (inside && !best.inside) || (inside === best.inside && e < best.e)) best = { e, arm: k, zero: e0 <= e180, inside };
+  });
+  const b = best as unknown as { e: number; arm: number; zero: boolean; inside: boolean };
+  const tolPx = p.tolPx ?? TOL_PX;
+  return { centreErrPx, baseErrDeg: r1(b.e), ok: centreErrPx <= tolPx && b.e <= BASE_TOL && b.inside, arm: b.arm, zeroOnArm: b.zero };
+}
+/** the number on the scale whose 0 sits on the placed arm, at rim angle r */
+export const scaleValue = (pl: Pick<Placed, "zeroOnArm">, r: number) => (pl.zeroOnArm ? r : 180 - r);
+
+/**
+ * measure: what the protractor AS PLACED shows for the angle: where the other arm (from the true vertex) crosses the rim,
+ * read on the scale whose 0 is on the placed arm. null when that arm never crosses the half-disc.
+ */
+export function asPlaced(p: PlaceParamsLike, pose: Pose, pl = placement(p, pose)): { r: number; value: number; at: [number, number] } | null {
+  const hs = arms(p);
+  if (hs.length < 2) return null;
+  const [vx, vy] = V(p), [ux, uy] = dir(hs[1 - pl.arm]);
+  const dx = vx - pose.x, dy = vy - pose.y, b = dx * ux + dy * uy, c = dx * dx + dy * dy - PR * PR, disc = b * b - c;
+  if (disc < 0) return null;
+  for (const t of [-b + Math.sqrt(disc), -b - Math.sqrt(disc)]) {
+    if (t < 0 || t > ARM) continue;
+    const x = vx + t * ux, y = vy + t * uy, r = rimAngleOf(pose, x, y);
+    if (r < -0.5 || r > 180.5) continue;
+    return { r: r1(r), value: r1(scaleValue(pl, r)), at: [x, y] };
+  }
+  return null;
+}
+/** draw: the angle the drawn arm makes: at O (joined to O) or at A (joined to A, the far end), degrees 0 … 180 */
+export function madeAngle(p: PlaceParamsLike, pose: Pose, mark: number, end: "v" | "e"): number {
+  const [dx, dy] = rimPoint(pose, mark), [vx, vy] = V(p);
+  if (end === "v") return r1(diff(p.start, headingOf(dx - vx, dy - vy)));
+  const [ex, ey] = farEnd(p);
+  return r1(diff(p.start + 180, headingOf(dx - ex, dy - ey)));
+}
+/** the pose of the solver: centre on O, the base on OA, the outer 0 on OA (or the inner 0, when the angle opens clockwise:
+ *  measure's OB, or the side draw's figure leaves room on; draw accepts either side) */
+export function goodPose(p: PlaceParamsLike): Pose {
+  const [vx, vy] = V(p);
+  return { x: vx, y: vy, rot: p.mirror ? norm(p.start + 180) : norm(p.start) };
+}
+/** the rim angle where the scale whose 0 is on the placed arm reads v */
+export const markFor = (p: PlaceParamsLike, pose: Pose, v: number) => (placement(p, pose).zeroOnArm ? v : 180 - v);
+/** vertex-off: the same base, but the bottom edge on O, so the centre sits PD off it, into the half-disc */
+export function vertexOffPose(p: PlaceParamsLike): Pose {
+  const g = goodPose(p), [nx, ny] = inward(g);
+  return { x: r1(g.x + PD * nx), y: r1(g.y + PD * ny), rot: g.rot };
+}
+/** does this pose sit on the angle the vertex-off way (the base along an arm, the bottom edge at O)? */
+export function isVertexOff(p: PlaceParamsLike, pose: Pose): boolean {
+  const pl = placement(p, pose);
+  if (pl.baseErrDeg > BASE_TOL) return false;
+  if (p.goal === "measure") { const hs = arms(p), rel = norm(hs[1 - pl.arm] - pose.rot); if (rel < 2 || rel > 178) return false; }
+  const [nx, ny] = inward(pose), [vx, vy] = V(p);
+  return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= Math.min(VO_BAND, p.tolPx ?? TOL_PX);
+}
+/** centre-on-arm: the centre mark on an arm's end point (A; B too in measure) with the base along that arm, or the protractor's
+ *  bottom corner on O with the base along an arm (each within the centre tolerance and ±3°) */
+export function isCentreOnArm(p: PlaceParamsLike, pose: Pose): boolean {
+  const tol = p.tolPx ?? TOL_PX, [vx, vy] = V(p), hs = arms(p), [bx, by] = dir(pose.rot), [nx, ny] = inward(pose);
+  for (const h of hs) {
+    if (Math.min(diff(pose.rot, h), diff(pose.rot + 180, h)) > BASE_TOL) continue;
+    const [c, sn] = dir(h);
+    if (Math.hypot(pose.x - (vx + ARM * c), pose.y - (vy + ARM * sn)) <= tol) return true;
+    for (const side of [-1, 1]) if (Math.hypot(pose.x + side * PR * bx - PD * nx - vx, pose.y + side * PR * by - PD * ny - vy) <= tol) return true;
+  }
+  return false;
+}
+/** centre-on-arm's pose: the centre mark on A (the end of OA), the base along OA, opening as the right placement does. Part of
+ *  the protractor then lies off the board (A is near the board's edge, and the whole tool cannot sit there): it is her own
+ *  placement, and what it reads still shows (the ring on O, the join to her centre, the arm her number or mark means) */
+export function centreOnArmPose(p: PlaceParamsLike): Pose {
+  const [ax, ay] = farEnd(p);
+  return { x: r1(ax), y: r1(ay), rot: goodPose(p).rot };
+}
+/**
+ * The ring on O and the dashed join to the protractor's centre (the vertex-off signature) are drawn only in the play-out of a
+ * COMMITTED decision (`truthOn`: the view's play-out is running, after at least one commit), and only when that placement is
+ * the bottom edge on O. Never before her first commit, never for any other off placement (it would show where the centre goes).
+ */
+export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: PlaceState }, truthOn: boolean, mal: Record<string, string> = {}): boolean {
+  if (!truthOn || s.commits < 1 || !s.pl?.locked || p.goal === "size") return false;
+  if (s.pl.read === null && s.pl.joined === null) return false;
+  // (centre-on-arm only where the level names it: an unnamed off placement never shows where the centre belongs)
+  return !placement(p, s.pl.pose).ok && (isVertexOff(p, s.pl.pose) || ("centre-on-arm" in mal && isCentreOnArm(p, s.pl.pose)));
+}
+/** the level's join-button order (judging round 2): "A se jodo" first on about half the levels, fixed per level */
+export const joinAFirst = (seed: number) => ((Math.imul(seed | 0, 2654435761) >>> 16) & 1) === 1;
+/**
+ * Gate 2 (law 3): what a draw level shows for a join, in two parts: the asked size (where the right dot is) and the join
+ * buttons' order. The server names join-wrong-end only on four levels with four different sizes and both orders among them
+ * (konLogic.chanceRepeat): (1/2)^4 = 1 in 16 for blind joins, and a habit of pressing one place (the first button, the
+ * left one) never makes it under both orders.
+ */
+export const drawSurface = (p: { theta?: number }, seed: number): string[] => [`theta:${p.theta ?? 0}`, `join:${joinAFirst(seed) ? "A" : "O"}`];
+/**
+ * Gate 2, H1 (dc-r8-gate2-habit-children): what a measure level shows is its key on both scales. θ and 180 − θ are one key
+ * (the other scale's number of one is the other's reading), so a second sighting counts only on a key that differs on both
+ * scales, as draw asks for another asked size. The tilt, the start pose and the side it opens to are not a different key.
+ */
+export const measureSurface = (p: { theta?: number }): string => `key:${Math.min(p.theta ?? 0, 180 - (p.theta ?? 0))}`;
+/**
+ * Gate 2, H1: what she did at a sighting, as a value (FamilyLogic.sightingOf). Two sightings count as two only when these
+ * differ (server/play/levels.js nameOnRepeat):
+ *   vertex-off, centre-on-arm  where her protractor's centre sat, as an offset from the vertex ON THE BOARD (what she did with
+ *                              her finger, relative to the screen), and two offsets within the centre tolerance (a finger's
+ *                              drop, tolPx) are one act. vertex-off also carries (main's answer 1, 2026-11-16) the level's
+ *                              base direction and the offset in the protractor's own frame: a second sighting counts only
+ *                              when the base directions differ by 45° or more and the frame offset is the same, so the
+ *                              offset differs on the board (shared/play.ts discriminatingPair). The bottom edge on O is held
+ *                              in the protractor's frame; a habit of dropping the finger the same way is held on the board;
+ *   wrong-scale                measure: the number she typed; draw: the rim mark she dotted;
+ *   join-wrong-end             none: the pick is between two buttons, so her act has two values at most, and the join's spec
+ *                              already asks for both button orders among its four (konLogic.chanceRepeat `cover`).
+ */
+export function placeSighting(p: PlaceParamsLike, s: PlaceState | undefined, malRule: string): string | { xy: [number, number]; tol: number; base?: number; pf?: [number, number]; ptol?: number } | null {
+  if (!s) return null;
+  const dx = r1(s.pose.x - (p.vx ?? 0)), dy = r1(s.pose.y - (p.vy ?? 0)), tol = p.tolPx ?? TOL_PX;
+  if (malRule === "vertex-off") {
+    // gate 2, answer 1 (dc-r8-gate2-discriminating-level): the level's base direction and her offset in the protractor's frame
+    // (turned back by the base direction): a second sighting counts only on a level whose base direction differs by 45° or
+    // more, with the same offset in that frame (within the vertex-off band, VO_BAND) and so another on the board
+    // (shared/play.ts discriminatingPair)
+    const b = baseDir(p), [c, sn] = dir(-b);
+    return { xy: [dx, dy], tol, base: b, pf: [r1(dx * c - dy * sn), r1(dx * sn + dy * c)], ptol: Math.min(VO_BAND, tol) };
+  }
+  if (malRule === "centre-on-arm") return { xy: [dx, dy], tol };
+  if (malRule === "wrong-scale") return p.goal === "measure" ? (s.read === null ? null : `n:${s.read}`) : s.mark === null ? null : `r:${s.mark}`;
+  return null;
+}
+
+// ───────────────────────────── gate 2: the measure pad's slips ─────────────────────────────
+/** the measure pad as the view lays it out (kon.place.view.ts: 1 … 9, 0, ⌫, in play.css's six-column grid) */
+export const PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫"] as const;
+export const PAD_COLS = 6;
+const padAt = (k: string) => { const i = (PAD as readonly string[]).indexOf(k); return [Math.floor(i / PAD_COLS), i % PAD_COLS]; };
+/** the digit keys touching a key (side or corner) */
+export const padNear = (d: string) => PAD.filter((k) => /^\d$/.test(k) && k !== d && Math.max(Math.abs(padAt(k)[0] - padAt(d)[0]), Math.abs(padAt(k)[1] - padAt(d)[1])) === 1) as string[];
+/** what the pad holds after these presses (the view's rule: no fourth digit, nothing after a lone 0, nothing over 180) */
+export const padTake = (keys: string[]): number | null => { let t = ""; for (const d of keys) { if (t.length >= 3 || t === "0" || Number(t + d) > 180) continue; t += d; } return t === "" ? null : Number(t); };
+/** one typing slip on the number she means to type: one key one off, two neighbouring presses swapped, one press not
+ *  registered, one press registered twice; each as the pad takes it, the ones that change nothing left out */
+export function typedSlips(v: number): number[] {
+  const k = [...String(v)], out: (number | null)[] = [];
+  for (let i = 0; i < k.length; i++) for (const n of padNear(k[i])) out.push(padTake([...k.slice(0, i), n, ...k.slice(i + 1)]));
+  for (let i = 0; i + 1 < k.length; i++) if (k[i] !== k[i + 1]) out.push(padTake([...k.slice(0, i), k[i + 1], k[i], ...k.slice(i + 2)]));
+  for (let i = 0; i < k.length; i++) out.push(padTake([...k.slice(0, i), ...k.slice(i + 1)]));
+  for (let i = 0; i < k.length; i++) out.push(padTake([...k.slice(0, i + 1), k[i], ...k.slice(i + 1)]));
+  return out.filter((x): x is number => x !== null && x !== v);
+}
+/** the share of one typing slip on reading v that lands on the other scale's number (180 − v, ±READ_TOL) */
+export const scaleSlipShare = (v: number) => { const xs = typedSlips(v); return xs.length ? xs.filter((x) => Math.abs(x - (180 - v)) <= READ_TOL).length / xs.length : 0; };
+/**
+ * Gate 2 (law 3): the readings whose other-scale number one typing slip reaches more than 1 time in 10 (140: "40" is 140
+ * with the 1 missed, "41" the 4 and 1 swapped; 141; 159: "19" twice; and 16, 164-166, which no key is). A measure level is never built on one, and a placement
+ * that shows one names no wrong-scale (her number is an ordinary miss there).
+ */
+export const SCALE_SLIP_READS: ReadonlySet<number> = new Set(Array.from({ length: 181 }, (_, v) => v).filter((v) => scaleSlipShare(v) > 0.1));
+
+/** size: the right answer: "a" (P is more), "b" (Q is more) or "same"; and the bigger tool's angle */
+export const sizeAnswer = (p: PlaceFields) => (p.thA === p.thB ? "same" : (p.thA ?? 0) > (p.thB ?? 0) ? "a" : "b");
+export const bigOne = (p: PlaceFields) => (p.bigA ? "a" : "b");
+/** size: each angle's vertex and protractor radius (P on top: its numbers stay 10 px under the board's top; Q's strip and
+ *  name stay above the bottom) */
+export function sizeFigs(p: PlaceFields): { v: [number, number]; rad: number; th: number; mirror: boolean }[] {
+  const ra = p.bigA ? R_BIG : R_SMALL, rb = p.bigA ? R_SMALL : R_BIG;
+  return [
+    { v: [BW / 2, BH - 10 - ra - 18], rad: ra, th: p.thA ?? 0, mirror: !!p.mirA },
+    { v: [BW / 2, Math.round(PD * (rb / PR)) + 30], rad: rb, th: p.thB ?? 0, mirror: !!p.mirB },
+  ];
+}
+
+// ───────────────────────────── acts and the law ─────────────────────────────
+
+export type PlaceAct =
+  | { kind: "move"; x: number; y: number } | { kind: "spin"; deg: number } | { kind: "lock" } | { kind: "free" }
+  | { kind: "read"; n: number } | { kind: "mark"; r: number } | { kind: "join"; end: "v" | "e" } | { kind: "pick"; which: "a" | "b" | "same" };
+export const PLACE_ACTS = ["move", "spin", "lock", "free", "read", "mark", "join", "pick"];
+export const initPlace = (p: PlaceParamsLike): PlaceState => ({ pose: { x: p.x0 ?? BW / 2, y: p.y0 ?? REST_Y, rot: norm(p.r0 ?? 0) }, locked: false, mark: null, first: null, read: null, joined: null, pick: null, made: null });
+
+export type StepOut = { pl?: PlaceState; refused?: string; commit?: { kind: Moment["kind"]; facts: Facts; mis?: string; done?: boolean } };
+const isInt = (v: unknown, lo: number, hi: number) => Number.isInteger(v) && (v as number) >= lo && (v as number) <= hi;
+const half = (v: number) => Math.round(v * 2) / 2;
+
+/** one act on the place state (the caller wraps it in undo, counts and moments) */
+export function stepPlace(p: PlaceParamsLike, s: PlaceState, a: PlaceAct, mal: Record<string, string>): StepOut {
+  const k = a.kind;
+  if (p.goal === "size") {
+    if (k !== "pick") return { refused: "unknown_act" };
+    if (a.which !== "a" && a.which !== "b" && a.which !== "same") return { refused: "bad_pick" };
+    return commitSize(p, { ...s, pick: a.which }, mal);
+  }
+  if (k === "move") {
+    if (s.locked) return { refused: "locked" };
+    const x = Number(a.x), y = Number(a.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y) || x < -40 || x > BW + 40 || y < -40 || y > BH + 40) return { refused: "bad_move" };
+    return { pl: { ...s, pose: { ...s.pose, x: half(x), y: half(y) } } };
+  }
+  if (k === "spin") {
+    if (s.locked) return { refused: "locked" };
+    const d = Number(a.deg);
+    if (!Number.isFinite(d)) return { refused: "bad_turn" };
+    return { pl: { ...s, pose: { ...s.pose, rot: norm(Math.round(d)) } } };   // the 1° snap is the law's, not the view's
+  }
+  if (k === "lock") return s.locked ? { refused: "locked" } : { pl: { ...s, locked: true, mark: null } };
+  if (k === "free") return s.locked ? { pl: { ...s, locked: false, mark: null } } : { refused: "not_locked" };
+  if (k === "read") {
+    if (p.goal !== "measure") return { refused: "unknown_act" };
+    if (!s.locked) return { refused: "lock_first" };
+    const n = Number(a.n);
+    if (!isInt(n, 0, 180)) return { refused: "bad_read" };
+    return commitMeasure(p, { ...s, read: n }, mal);
+  }
+  if (k === "mark") {
+    if (p.goal !== "draw") return { refused: "unknown_act" };
+    if (!s.locked) return { refused: "lock_first" };
+    const r = Number(a.r);
+    if (!isInt(r, 0, 180)) return { refused: "bad_mark" };
+    return { pl: { ...s, mark: r } };
+  }
+  if (k === "join") {
+    if (p.goal !== "draw") return { refused: "unknown_act" };
+    if (!s.locked) return { refused: "lock_first" };
+    if (s.mark === null) return { refused: "mark_first" };
+    if (a.end !== "v" && a.end !== "e") return { refused: "bad_join" };
+    return commitDraw(p, { ...s, joined: a.end }, mal);
+  }
+  return { refused: "unknown_act" };
+}
+const placedFacts = (pl: Placed): Facts => ({ placed: pl.ok ? "ok" : "off", centre_px: Math.round(pl.centreErrPx), base_deg: Math.round(pl.baseErrDeg) });
+
+function commitMeasure(p: PlaceParamsLike, s: PlaceState, mal: Record<string, string>): StepOut {
+  const pl = placement(p, s.pose), n = s.read as number, next = { ...s, first: s.first ?? pl };
+  const f: Facts = { ...placedFacts(pl), read: n };
+  if (!pl.ok) {
+    // a placement that is off never solves, whatever is read off it (main's condition): the bottom edge on O is vertex-off
+    if ("vertex-off" in mal && isVertexOff(p, s.pose)) {
+      const ap = asPlaced(p, s.pose, pl);
+      return { pl: next, commit: { kind: "misconception_consequence", mis: "vertex-off", facts: { ...f, shown: "centre_off", ...(ap ? { scale: Math.round(ap.value) } : {}) } } };
+    }
+    if ("centre-on-arm" in mal && isCentreOnArm(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "centre-on-arm", facts: { ...f, shown: "centre_on_arm" } } };
+    return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
+  }
+  const ap = asPlaced(p, s.pose, pl);
+  if (!ap) return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
+  const e = Math.abs(n - ap.value);
+  if (e <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
+  // a miss on a placed protractor (counted: the view stops drawing her number's arm from the second)
+  const missed = { ...next, placedMisses: (s.placedMisses ?? 0) + 1 };
+  if ("wrong-scale" in mal && Math.abs(n - (180 - ap.value)) <= READ_TOL && Math.abs(180 - 2 * ap.value) > 2 * READ_TOL && !SCALE_SLIP_READS.has(Math.round(ap.value)))
+    return { pl: missed, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
+  return { pl: missed, commit: { kind: e <= 2 * READ_TOL + 1 ? "near_miss" : "law_refused", facts: { ...f, gap: `${Math.round(e)}°`, why: "read_off" } } };
+}
+function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, string>): StepOut {
+  const pl = placement(p, s.pose), mark = s.mark as number, end = s.joined as "v" | "e";
+  const made = madeAngle(p, s.pose, mark, end), next = { ...s, first: s.first ?? pl, made };
+  const f: Facts = { ...placedFacts(pl), made: `${Math.round(made)}°`, at: end === "v" ? "O" : "A" };
+  const th = p.theta ?? 0, mv = scaleValue(pl, mark);
+  if (!pl.ok) {
+    if ("vertex-off" in mal && isVertexOff(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "vertex-off", facts: { ...f, shown: "centre_off" } } };
+    if ("centre-on-arm" in mal && isCentreOnArm(p, s.pose)) return { pl: next, commit: { kind: "misconception_consequence", mis: "centre-on-arm", facts: { ...f, shown: "centre_on_arm" } } };
+    return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "placed_off" } } };
+  }
+  // placed: the mark is graded on the protractor as placed (the scale whose 0 is on OA), and the arm must start at O
+  if (end === "v" && Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
+  if (end === "e") {
+    // the right mark joined to A: join-wrong-end's signature; one of two join buttons, so the grade keeps it at chance weight
+    // as chanceMis (konLogic.chancePicks "draw:join-wrong-end"), never on her record from one join. Gate 2 (law 3): no `sign`
+    // fact either (it had named the belief in the facts after one press); the server names it only on four levels
+    // (konLogic.chanceRepeat), and an unmapped level's A-join is the same plain refusal as any other
+    if (Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: "join-wrong-end" in mal
+      ? { kind: "misconception_consequence", mis: "join-wrong-end", facts: { ...f, shown: "far_end" } }
+      : { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
+    return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
+  }
+  if ("wrong-scale" in mal && Math.abs(mv - (180 - th)) <= READ_TOL && Math.abs(180 - 2 * th) > 2 * READ_TOL)
+    return { pl: next, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
+  const e = Math.abs(mv - th);
+  return { pl: next, commit: { kind: e <= 2 * READ_TOL + 1 ? "near_miss" : "law_refused", facts: { ...f, gap: `${Math.round(e)}°`, why: "landed_off" } } };
+}
+function commitSize(p: PlaceParamsLike, s: PlaceState, mal: Record<string, string>): StepOut {
+  const f: Facts = { pick: s.pick as string };
+  if (s.pick === sizeAnswer(p)) return { pl: s, commit: { kind: "solved", done: true, facts: f } };
+  void mal;
+  return { pl: s, commit: { kind: "law_refused", facts: { ...f, why: "other_angle", shown: "her_pick" } } };
+}
+
+/** the solver's acts */
+export function solvePlace(p: PlaceParamsLike): PlaceAct[] {
+  if (p.goal === "size") return [{ kind: "pick", which: sizeAnswer(p) as "a" | "b" | "same" }];
+  const g = goodPose(p), head: PlaceAct[] = [{ kind: "move", x: g.x, y: g.y }, { kind: "spin", deg: g.rot }, { kind: "lock" }];
+  return p.goal === "measure" ? [...head, { kind: "read", n: p.theta ?? 0 }] : [...head, { kind: "mark", r: markFor(p, g, p.theta ?? 0) }, { kind: "join", end: "v" }];
+}
+/** a mal-rule's acts (null when the belief makes no different move here) */
+export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
+  const th = p.theta ?? 0;
+  if (p.goal === "size") return null;
+  const g = goodPose(p), at = (q: Pose): PlaceAct[] => [{ kind: "move", x: q.x, y: q.y }, { kind: "spin", deg: q.rot }, { kind: "lock" }];
+  if (mal === "vertex-off") {
+    const q = vertexOffPose(p);
+    if (p.goal === "measure") {
+      // she reads the misplaced protractor CORRECTLY: the number it shows as placed (main's condition)
+      const ap = asPlaced(p, q);
+      return ap ? [...at(q), { kind: "read", n: Math.round(ap.value) }] : null;
+    }
+    return [...at(q), { kind: "mark", r: markFor(p, q, th) }, { kind: "join", end: "v" }];
+  }
+  if (mal === "centre-on-arm") {
+    // the centre mark on A, the base along OA; she reads whatever it shows there (or, when OB never crosses it, the size she
+    // expects), or marks the asked size on it and joins to O
+    const q = centreOnArmPose(p);
+    if (p.goal === "measure") { const ap = asPlaced(p, q); return [...at(q), { kind: "read", n: ap ? Math.round(ap.value) : th }]; }
+    return [...at(q), { kind: "mark", r: markFor(p, q, th) }, { kind: "join", end: "v" }];
+  }
+  // wrong-scale is discriminated only where the outer scale is the wrong one (the angle opens clockwise): elsewhere the
+  // "always the outer scale" reader solves, and her first-try solve says nothing about the scale
+  if (mal === "wrong-scale" && p.mirror && Math.abs(180 - 2 * th) > 2 * READ_TOL && !(p.goal === "measure" && SCALE_SLIP_READS.has(th))) return p.goal === "measure" ? [...at(g), { kind: "read", n: 180 - th }] : [...at(g), { kind: "mark", r: markFor(p, g, 180 - th) }, { kind: "join", end: "v" }];
+  if (mal === "join-wrong-end" && p.goal === "draw") return [...at(g), { kind: "mark", r: markFor(p, g, th) }, { kind: "join", end: "e" }];
+  return null;
+}
+/**
+ * Without the concept a child can: point at a landmark (0 / 90 / 180 on the scale), lock the protractor where it lies, or
+ * (size) take the angle under the bigger tool. A level any of these passes is never served.
+ */
+export function shortcutPlace(p: PlaceParamsLike, mal: Record<string, string>): PlaceAct[] | null {
+  // size: one pick among three, any of which can be the key (judging round 2): a fixed habit (the bigger tool, the smaller,
+  // "the same") wins a third of the levels, which is chance, and the pick enters at the chance weight
+  if (p.goal === "size") return null;
+  const th = p.theta ?? 0;
+  if ([0, 90, 180].some((l) => Math.abs(th - l) <= Math.max(10, 2 * p.tol))) {
+    const l = [0, 90, 180].find((x) => Math.abs(th - x) <= Math.max(10, 2 * p.tol)) as number, g = goodPose(p);
+    const head: PlaceAct[] = [{ kind: "move", x: g.x, y: g.y }, { kind: "spin", deg: g.rot }, { kind: "lock" }];
+    return p.goal === "measure" ? [...head, { kind: "read", n: l }] : [...head, { kind: "mark", r: markFor(p, g, l) }, { kind: "join", end: "v" }];
+  }
+  // the protractor as it lies: locked where it rests, any landmark read / marked there
+  const rest = initPlace(p);
+  if (placement(p, rest.pose).ok) return [{ kind: "lock" }];
+  void mal;
+  return null;
+}
+
+// ───────────────────────────── facts, validation, generation ─────────────────────────────
+
+/** the value the child is working towards, as on-screen facts (measure: nothing; the angle's size IS the answer) */
+export function placeValueFacts(p: PlaceParamsLike): Facts {
+  if (p.goal === "draw") return { angle: `${p.theta}°` };
+  if (p.goal === "size") return { compare: "P,Q" };
+  return { measure: "AOB" };
+}
+/** the evidence beyond the trail: the placement at the first committed decision, and what was read */
+export function placeEvidence(s: PlaceState | undefined): { placed: { centreErrPx: number; baseErrDeg: number; ok: boolean } | null; read: number | null } {
+  const f = s?.first ?? null;
+  return { placed: f ? { centreErrPx: f.centreErrPx, baseErrDeg: f.baseErrDeg, ok: f.ok } : null, read: s?.read ?? null };
+}
+export function placeFacts(p: PlaceParamsLike, s: PlaceState | undefined, p0: Facts): Facts {
+  const f: Facts = { ...p0 };
+  if (!s || p.goal === "size") { if (s?.pick) f.pick = s.pick; return f; }
+  const pl = s.first ?? (s.locked ? placement(p, s.pose) : null);
+  if (pl) Object.assign(f, placedFacts(pl));
+  if (s.read !== null) f.read = s.read;
+  if (s.made !== null) f.made = `${Math.round(s.made)}°`;
+  if (s.locked) f.locked = "yes";
+  return f;
+}
+const fin = (v: unknown, lo: number, hi: number) => { const n = Number(v); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
+export function validatePlace<P extends PlaceParamsLike>(q: Partial<P>): P | null {
+  const tol = Number(q.tol), scale = q.scale === "30" || q.scale === "landmarks" ? q.scale : "10";
+  if (!(tol >= 1 && tol <= 15)) return null;
+  if (q.goal === "size") {
+    const thA = fin(q.thA, 10, 170), thB = fin(q.thB, 10, 170);
+    if (thA === null || thB === null || !Number.isInteger(thA) || !Number.isInteger(thB)) return null;
+    return { goal: "size", start: 0, tol, scale, thA, thB, bigA: !!q.bigA, mirA: !!q.mirA, mirB: !!q.mirB } as unknown as P;
+  }
+  const theta = Number(q.theta), vx = fin(q.vx, 0, BW), vy = fin(q.vy, 0, BH), tolPx = fin(q.tolPx ?? TOL_PX, 3, 15);
+  const x0 = fin(q.x0, 0, BW), y0 = fin(q.y0, 0, BH), r0 = Number(q.r0), start = Number(q.start);  if (!Number.isInteger(theta) || theta < 10 || theta > 170 || vx === null || vy === null || tolPx === null || x0 === null || y0 === null) return null;
+  if (!Number.isFinite(r0) || !Number.isFinite(start)) return null;
+  // the base-to-centre depth must stay outside the centre tolerance, or vertex-off would be a placement
+  if (tolPx >= PD / 2) return null;
+  return { goal: q.goal, start: norm(start), theta, mirror: !!q.mirror, tol, scale, vx, vy, tolPx, x0, y0, r0: norm(r0) } as unknown as P;
+}
+
+/** every point a placed protractor (rim, labels, strip) covers, for the board fit, `m` board px inside the board */
+export function poseFits(pose: Pose, rad = PR, m = 2): boolean {
+  const pts: [number, number][] = [];
+  for (let r = 0; r <= 180; r += 10) pts.push(rimPoint(pose, r, rad + 23));   // (the numbers stand 13 px out and are ~17 px tall)
+  // the outer 0 and 180 sit off the base line, and their numbers run wider than the rim
+  pts.push(rimPoint(pose, 5, rad + 28), rimPoint(pose, 175, rad + 28));
+  const [nx, ny] = inward(pose), [bx, by] = dir(pose.rot);
+  for (const s of [-1, 1]) pts.push([pose.x + s * bx * (rad + 4) - nx * PD, pose.y + s * by * (rad + 4) - ny * PD]);
+  return pts.every(([x, y]) => x >= m && x <= BW - m && y >= m && y <= BH - m);
+}
+/** an arm's end with its letter (16 px, 24 board px beyond the end) on the board and above the resting protractor */
+const inBoard = ([x, y]: [number, number], lo = FIG_LO) => x >= 32 && x <= BW - 32 && y >= lo && y <= BH - 32;
+
+/**
+ * Gate 2 (RULINGS-2026-11-16-gate2-answers.md, dc-r8-gate2-discriminating-level), the base direction of a measure or draw
+ * level: the heading of the protractor's base line as the solver places it (goodPose's rot, −180 … 180). A placement's offset
+ * held in the protractor's frame moves on the board when this turns. An angle opening the other way round on the same line
+ * has the same base direction (its OA points the other way, the protractor lies the same): only the tilt turns it.
+ */
+export const baseDir = (p: PlaceParamsLike): number => { const r = goodPose(p).rot; return r > 180 ? r - 360 : r; };
+/** two levels' base directions differ by DISCRIMINATING_TURN or more (shared/play.ts) */
+export const basesApart = (a: number, b: number, turn = 45) => diff(a, b) >= turn;
+/** answer 4: the kinds of angle a session of measure or draw must have met by its fourth level */
+export const isAcute = (p: { theta?: number }) => (p.theta ?? 0) < 90;
+export const opensAnticlockwise = (p: { mirror?: boolean }) => !p.mirror;
+/**
+ * Note 004, answer 1 (2026-11-16): what of a level a wrong-scale sighting keeps to steer the next level: the side the angle
+ * opens to (`cw`: clockwise, the level's mirror) and its key (`key`: measure's on both scales, as measureSurface; draw's
+ * asked size). A child who always reads one scale is right on one side and wrong on the other ("always the inner scale" is
+ * wrong exactly where the angle opens anticlockwise, "always the outer scale" where it opens clockwise), so the evidence is
+ * a second miss on the same side with another key.
+ */
+export const scaleKey = (p: { goal: string; theta?: number }): number => (p.goal === "measure" ? Math.min(p.theta ?? 0, 180 - (p.theta ?? 0)) : p.theta ?? 0);
+/** draw: the rim mark of the right dot, and of the mix-up's (the other scale's), on the solver's placement */
+export const rightDot = (p: { theta?: number; mirror?: boolean }): number => (p.mirror ? 180 - (p.theta ?? 0) : p.theta ?? 0);
+export const otherDot = (p: { theta?: number; mirror?: boolean }): number => 180 - rightDot(p);
+/** gate 2 (dc-r8-gate2-shadow S3): how near (degrees on the rim) the other scale's mark may come to the level just played's
+ *  right mark before a draw wrong-scale sighting stops counting */
+export const COPY_NEAR = 2;
+/**
+ * Gate 2 (dc-r8-gate2-shadow S3), draw: does a wrong-scale sighting on this level count? Not where the other scale's mark on
+ * this level is within COPY_NEAR of the right mark of the level just played (`recent`'s last, when it was a draw level):
+ * there "last time's right dot" dots the mix-up's mark too (the level mix's switch in opening makes such pairs: a 120
+ * opening clockwise after a 120 opening anticlockwise). Every other level and goal: it counts.
+ */
+export function drawSightingCounts(p: PlaceParamsLike, recent: readonly string[]): boolean {
+  if (p.goal !== "draw") return true;
+  const last = placeSigOf(String(recent.slice(-1)[0] ?? ""));
+  return !last || last.goal !== "draw" || Math.abs(otherDot(p) - rightDot(last)) > COPY_NEAR;
+}
+export const placeSteer = (p: PlaceParamsLike): { cw: boolean; key: number; acute: boolean } => ({ cw: !!p.mirror, key: scaleKey(p), acute: isAcute(p) });
+/** a served level's signature (generatePlace's sig) read back: θ, OA's heading, mirror; null for any other */
+export function placeSigOf(sig: string): { goal: string; theta: number; start: number; mirror: boolean } | null {
+  const m = /^place:(measure|draw):(\d+):(\d+)(m?)$/.exec(String(sig));
+  return m ? { goal: m[1], theta: Number(m[2]), start: Number(m[3]), mirror: m[4] === "m" } : null;
+}
+/**
+ * What a measure or draw level must be, beyond the law's own checks (gate 2, the answers of 2026-11-16), from what the session
+ * has served and seen. → the predicates to try, strictest first (an empty list: no constraint).
+ *   the mix (answer 4)  by its third level (`n`, 0-based, ≥ NAMING_LEVELS − 2) a session has served at least one acute angle
+ *                       and at least one that opens anticlockwise: from the third on, while either is missing, a level is
+ *                       one that supplies what is missing (an acute angle opening anticlockwise supplies both). The ruling
+ *                       asks it by the fourth; by the third leaves the fourth for a second level of the same side and kind
+ *                       after a sighting on it (note 004: a one-scale or one-number reader is wrong on one side or kind
+ *                       only, and met it first on the fourth level, too late for a second sighting);
+ *   the steer (answer 1) after a sighting of vertex-off (`bases`: the base directions of its levels), a level whose base
+ *                       direction differs by `turn` or more from every one of them (else from at least one), so the bottom
+ *                       edge on the vertex sits elsewhere on the board while it sits the same in the protractor's frame.
+ *                       Within the session's first NAMING_LEVELS levels only.
+ *   the side (note 004, answer 1) after a sighting of wrong-scale (`scale`: the side its latest level opens to, its kind,
+ *                       acute or not, and the keys of every such level), a level opening the same way with a key none of
+ *                       them had, of the same kind first; strictest first with the steer above, then alone, then the list
+ *                       without it. draw (note 004, item 4): while it is on, the mix-up's dot is never the right dot of the
+ *                       level just played. Within the first NAMING_LEVELS levels only.
+ */
+export function placeNeeds(o: { n?: number; recent?: string[]; bases?: number[]; scale?: { cw: boolean; keys: number[]; acute?: boolean } | null; levels?: number; turn?: number }): { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] {
+  const levels = o.levels ?? 4, n = Number(o.n) || 0, turn = o.turn ?? 45;
+  const served = (o.recent ?? []).map(placeSigOf).filter((x): x is NonNullable<ReturnType<typeof placeSigOf>> => !!x);
+  const needAcute = n >= levels - 2 && !served.some(isAcute), needAcw = n >= levels - 2 && !served.some(opensAnticlockwise);
+  const mix = (p: PlaceParamsLike) => (!needAcute || isAcute(p)) && (!needAcw || opensAnticlockwise(p));
+  const bases = n < levels ? (o.bases ?? []).filter((b) => Number.isFinite(b)) : [];
+  const sc = n < levels && o.scale ? o.scale : null;
+  // draw (note 004, item 4: the dot differs): on the steered level the mix-up's dot is not the level just played's right dot,
+  // so a child who dots last time's right dot does not act as the mix-up there
+  const last = placeSigOf(String((o.recent ?? []).slice(-1)[0] ?? ""));
+  // (kept in every need while the steer is on, the level mix's too)
+  const dotDiffers = (p: PlaceParamsLike) => !sc || p.goal !== "draw" || !last || last.goal !== "draw" || Math.abs(otherDot(p) - rightDot(last)) > READ_TOL;
+  const side = (p: PlaceParamsLike) => !sc || (!!p.mirror === sc.cw && !sc.keys.includes(scaleKey(p)));
+  // (the same kind of angle first: "always the larger number" is wrong exactly on an acute angle, "always the smaller" on an
+  // obtuse one, so a level of the same side and kind tells every one-scale or one-number reader from the slip)
+  const kind = (p: PlaceParamsLike) => !sc || typeof sc.acute !== "boolean" || isAcute(p) === sc.acute;
+  const list = (level: 0 | 1 | 2) => {
+    const out: { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] = [], tag = ["", "+side", "+side+kind"][level];
+    const m = (p: PlaceParamsLike) => mix(p) && dotDiffers(p) && (level < 1 || side(p)) && (level < 2 || kind(p));
+    if (bases.length) {
+      out.push({ id: `mix+steer-every${tag}`, ok: (p) => m(p) && bases.every((b) => basesApart(baseDir(p), b, turn)), steer: true });
+      if (bases.length > 1) out.push({ id: `mix+steer-one${tag}`, ok: (p) => m(p) && bases.some((b) => basesApart(baseDir(p), b, turn)), steer: true });
+    }
+    if (needAcute || needAcw || sc) out.push({ id: `mix${tag}`, ok: m, steer: false });
+    return out;
+  };
+  return sc ? [...list(2), ...list(1), ...list(0)] : list(0);
+}
+
+/**
+ * The generator's grid: θ every 5° (readable off 5° ticks), away from the landmarks; the figure fits the board.
+ * `need` (gate 2, placeNeeds): only levels it passes are kept; `wide`: fade 1 takes any tilt too (a steered level: the base
+ * direction must turn by 45° or more, and fade 1's own tilts lie within 10°).
+ */
+export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, rnd: () => number, fade: number, o: { need?: (p: PlaceParamsLike) => boolean; wide?: boolean } = {}): { params: PlaceParamsLike; sig: string }[] {
+  const out: { params: PlaceParamsLike; sig: string }[] = [], seen = new Set<string>();
+  const scale: PlaceParamsLike["scale"] = fade === 1 ? "10" : fade === 2 ? "30" : "landmarks";
+  const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX;
+  if (goal === "size") {
+    for (let k = 0; k < 200 && out.length < 16; k++) {
+      // the key is any of the three, equally (judging round 2): P more, Q more, the same; and either tool can hold the bigger
+      const key = Math.floor(rnd() * 3), one = 30 + 5 * Math.floor(rnd() * 25);   // 30 … 150
+      const other = key === 2 ? one : one - (15 + 5 * Math.floor(rnd() * 6));
+      if (other < 20 || [one, other].some((t) => Math.abs(t - 90) < 10)) continue;
+      // neither angle sits on a printed number (fades 1 and 2): reading them is the skill
+      if (fade < 3 && [one, other].some((t) => sizePrinted(scale, t))) continue;
+      const bigA = rnd() < 0.5, mirA = rnd() < 0.4, mirB = rnd() < 0.4;
+      const params: PlaceParamsLike = { goal, start: 0, tol, scale, thA: key === 1 ? other : one, thB: key === 1 ? one : other, bigA, mirA, mirB };
+      const sig = `size:${params.thA}:${params.thB}:${bigA ? "A" : "B"}${mirA ? "m" : ""}${mirB ? "m" : ""}`;
+      if (seen.has(sig)) continue;
+      seen.add(sig); out.push({ params, sig });
+    }
+    return out;
+  }
+  for (let k = 0; k < 800 && out.length < 24; k++) {
+    const theta = 20 + 5 * Math.floor(rnd() * 29);                          // 20° … 160°
+    if (!placeKeyOk(goal, scale, tol, theta)) continue;
+    // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
+    // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
+    const mirror = rnd() < 0.5;   // the two orientations equally (judging round 2: the outer scale is wrong on half)
+    const tilt = fade === 1 && !o.wide ? (rnd() < 0.5 ? 0 : 5 * Math.floor(rnd() * 5) - 10) : 5 * Math.floor(rnd() * 21) - 50;
+    // (the figure's nudge across, its drop below the lowest it may sit, the resting protractor's place and turn)
+    const nudge = (rnd() - 0.5) * 24, drop = rnd() * 24;
+    const x0 = 140 + Math.floor(rnd() * 41), r0 = norm(Math.floor(rnd() * 21) - 10);
+    const sig = placeSig(goal, theta, placeA1(mirror, tilt), mirror);
+    if (seen.has(sig)) continue;
+    const c = placeLevelOf(goal, { tol, tolPx }, fade, { theta, mirror, tilt, nudge, drop, x0, r0 });
+    if (!c) continue;
+    if (o.need && !o.need(c.params)) continue;
+    seen.add(sig); out.push(c);
+  }
+  return out;
+}
+/** H7: the tilts of OA's heading generatePlace draws at a fade (fade 1: flat or within 10°, unless steered `wide`; else −50 … 50) */
+export const PLACE_TILTS = (fade: number, wide = false): number[] => (fade === 1 && !wide ? [-10, -5, 0, 5, 10] : Array.from({ length: 21 }, (_, i) => 5 * i - 50));
+/** OA's heading for a tilt and an orientation (generatePlace) */
+export const placeA1 = (mirror: boolean, tilt: number): number => norm(5 * Math.round(((mirror ? 180 : 0) + tilt) / 5));
+/** a measure or draw level's signature: its key (θ), OA's heading, its orientation (placeSigOf reads it back) */
+export const placeSig = (goal: PlaceGoal, theta: number, a1: number, mirror: boolean): string => `place:${goal}:${theta}:${a1}${mirror ? "m" : ""}`;
+/** generatePlace's first checks on a key θ (measure or draw), before any figure is drawn */
+export function placeKeyOk(goal: PlaceGoal, scale: PlaceParamsLike["scale"], tol: number, theta: number): boolean {
+  if ([0, 90, 180].some((l) => Math.abs(theta - l) <= Math.max(10, 2 * tol))) return false;
+  // the key is never a printed number (on either scale: 180 − a printed number is printed too)
+  if (printed(scale, theta)) return false;
+  // gate 2: never a key one typing slip takes to the other scale's number more than 1 time in 10 (measure: 140)
+  if (goal === "measure" && SCALE_SLIP_READS.has(theta)) return false;
+  return true;
+}
+/**
+ * The level generatePlace makes from its draws (the key θ, the orientation, OA's tilt, the nudge across (−12 … 12), the drop
+ * (0 … 24), the resting protractor's x0 and r0), or null where it refuses them. No randomness: the generator draws and calls
+ * this; the gate-2 tests (H7) call it over the whole grid of draws, so they sweep every level the generator can make.
+ */
+export function placeLevelOf(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, fade: number, d: { theta: number; mirror: boolean; tilt: number; nudge: number; drop: number; x0: number; r0: number }): { params: PlaceParamsLike; sig: string } | null {
+  const scale: PlaceParamsLike["scale"] = fade === 1 ? "10" : fade === 2 ? "30" : "landmarks";
+  const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX, { theta, mirror, tilt, nudge, drop, x0, r0 } = d;
+  if (!placeKeyOk(goal, scale, tol, theta)) return null;
+  const a1 = placeA1(mirror, tilt);
+  // the figure (O and the ends of both arms: draw's OA and the arm the solver draws) centred across the board, as low as
+  // the resting protractor lets it sit, then nudged a little
+  const hs = [a1, norm(a1 + (mirror ? -1 : 1) * theta)], ends = [[0, 0], ...hs.map((h) => dir(h).map((v) => v * ARM))];
+  const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
+  const vx0 = Math.round(BW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2 + nudge);
+  const vy = Math.round(Math.max(FIG_LO + 16, FIG_LO + 4 - Math.min(...ys)) + drop);
+  const sig = placeSig(goal, theta, a1, mirror);
+  // the figure fits: both arms and O's letter stay on the board, above the resting protractor; the placed protractor (and
+  // the vertex-off one) and the resting one fit the board too
+  // (the resting one wholly on the board, REST_MARGIN clear of its edges: gate 1, night rulings)
+  const fits = (q: PlaceParamsLike) => {
+    const x = q.vx ?? 0;
+    if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([x + ARM * c, vy + ARM * s]); }) || !inBoard([x, vy - 16])) return false;
+    const rest = initPlace(q).pose;
+    return poseFits(goodPose(q)) && poseFits(vertexOffPose(q)) && poseFits(rest, PR, REST_MARGIN) && rest.y + PR + 18 <= FIG_LO;
+  };
+  // gate 2, answer 4: a figure centred across the board leaves an acute angle's vertex too near the side for the protractor
+  // (both arms run one way from O, the protractor's half-disc both ways), so a figure that does not fit centred is moved
+  // across, nearest the centre first (the same nudge), within 30 board px of the board's middle; no draw is spent on it
+  let params: PlaceParamsLike = { goal, start: a1, theta, mirror, tol, scale, vx: vx0, vy, tolPx, x0, y0: REST_Y, r0 };
+  if (!fits(params)) {
+    const mid = Math.round(BW / 2 + nudge), tries = Array.from({ length: 31 }, (_, i) => BW / 2 - 30 + 2 * i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b);
+    const x = tries.find((vx) => fits({ ...params, vx }));
+    if (x === undefined) return null;
+    params = { ...params, vx: x };
+  }
+  const good = goodPose(params), vo = vertexOffPose(params);
+  // the rest pose is no placement, and the mal-rules show: vertex-off moves the reading (measure) or the made angle (draw)
+  if (placement(params, initPlace(params).pose).ok) return null;
+  if (goal === "measure") {
+    const ap = asPlaced(params, vo);
+    if (!ap || Math.abs(ap.value - theta) < 3) return null;
+  } else {
+    if (Math.abs(madeAngle(params, vo, markFor(params, vo, theta), "v") - theta) < 4) return null;
+    if (Math.abs(madeAngle(params, good, markFor(params, good, theta), "e") - theta) < 3 * tol) return null;
+  }
+  return { params, sig };
+}
+export function placeDifficulty(p: PlaceParamsLike): number {
+  if (p.goal === "size") return Math.min(1, 0.35 + (p.thA === p.thB ? 0.1 : 0) + (p.mirA || p.mirB ? 0.1 : 0) + (p.scale === "landmarks" ? 0.2 : p.scale === "30" ? 0.1 : 0));
+  return Math.min(1, (p.goal === "draw" ? 0.45 : 0.4) + (p.start % 180 ? 0.15 : 0) + (p.mirror ? 0.1 : 0) + (p.scale === "landmarks" ? 0.2 : p.scale === "30" ? 0.1 : 0));
+}
+/** what the teacher may not say first: measure's reading (the angle's size); draw gives its angle; size's numbers are on screen */
+export const placeHidden = (p: PlaceParamsLike): number[] => (p.goal === "measure" ? [p.theta ?? 0] : []);

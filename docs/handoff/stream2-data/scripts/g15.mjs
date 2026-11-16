@@ -1,0 +1,10 @@
+import { gateCtxFor, regate, retime, withSectors } from "/home/user/Taxila/server/stagecraft/board-sync.js";
+import { expand } from "/home/user/Taxila/server/forge/explainer/templates.js";
+const text="Screen par rectangle dekhiye: 15 equal parts, unmein 6 marked. Marked fraction ko simplest form mein kaise likhenge?";
+const ask={ intent: { intentId: "L:wb:1", lessonId: "L", kind: "whiteboard" }, line: { lessonId: "L", text }, kit: null, mode: "fresh" };
+const ctx=gateCtxFor(ask,{});
+const x=expand({template:"shade-grid@1",rows:3,cols:5,shade:6,hideResult:true});
+console.log(x.ok,x.errors);
+const s=withSectors(retime(x.script, x.script.durationMs, ctx.speechMs), ctx.reply);
+const g=regate({...s,board:{w:400,h:300,ground:"paper",...s.board}},ask,ctx);
+console.log(g.ok, g.gate.checks.filter(c=>!c.pass).map(c=>c.id+JSON.stringify(c.detail)));

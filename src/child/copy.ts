@@ -32,6 +32,9 @@ const S = {
   grownupSignIn: "Please ask a grown-up to sign in again.",
   signIn: "Sign in",
   connectionWeak: "Something went wrong. Try again.",
+  // round 8 step f: the designed offline state (the device says it has no network), never "something went wrong"
+  offlineTitle: "You're offline.",
+  offlineLine: "Today's lesson needs the internet. Nothing is lost: it picks up where you left off.",
   tryAgain: "Try again",
   loading: "Getting things ready",
   homeLoading: "Getting today ready",
@@ -100,6 +103,7 @@ const S = {
   soundsOlder: "Sound effects",
   talkMode: "Talk mode",
   tapToTalk: "Tap to talk",
+  handsFree: "Hands-free",
   openMic: "Open mic (headphones only)",
   openMicNeeds: "Plug in headphones to use open mic.",
   teacherFace: "Teacher's face",

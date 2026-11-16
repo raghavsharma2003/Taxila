@@ -9,9 +9,11 @@
 //                Measured: the home's first GET /api/child/map normalised its class's kits synchronously (~0.9 s on the
 //                loop, CPU profile), right beside the child's lesson start, which waited behind it.
 // Every step is guarded: a failed warm costs the first request what it cost before, nothing more.
-// TAXILA_BOOT_WARM=0 turns it off.
+// TAXILA_BOOT_WARM=0 (or off / false / no) turns it off.
 
-const on = () => process.env.TAXILA_BOOT_WARM !== "0";
+// off, 0, false or no (PLAT-53: only "0" worked, so TAXILA_BOOT_WARM=off left the warm-up on)
+export const bootWarmOn = (env = process.env) => !["off", "0", "false", "no"].includes(String(env.TAXILA_BOOT_WARM ?? "").trim().toLowerCase());
+const on = () => bootWarmOn();
 
 /** @returns {Promise<Record<string, number|string>>} ms per step, for the startup log */
 export async function warmSync() {

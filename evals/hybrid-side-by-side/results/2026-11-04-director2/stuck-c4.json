@@ -1,0 +1,177 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj cricket-style equal shares se fractions seekhenge. Tumhe cricket pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 948
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya—pasand hona zaroori nahi. Socho, paratha 4 equal tukdon mein baante: tum kitne tukde logi? End mein Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1307,
+   "replyReadyMs": 2255
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1383
+  },
+  {
+   "who": "teacher",
+   "text": "Ek roti ko 2 bilkul barabar tukdon mein kaato. Har tukda whole ka half, yani aadha hota hai. Tum ek tukda dikhao.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1187,
+   "replyReadyMs": 2570
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1043
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere chalenge. Equal parts matlab sab tukde same size. Roti ke 2 same tukdon mein, ek tukda kya kehlaayega?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 993,
+   "replyReadyMs": 2036
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1312
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek roti ko do barabar hisson mein baanto. Har hissa aadha kehlaata hai. Roti ko do hisson mein baantkar batao: ek hissa kya hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 995,
+   "replyReadyMs": 2307
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1462
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 5 kaha, Riya. Kya tum roti ke 5 tukde keh rahi ho, ya ek hissa ka naam bata rahi ho?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1922,
+   "replyReadyMs": 3384,
+   "guard": [
+    "negates"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1693
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Sahi naam “aadha” hai, kyunki roti 2 barabar hisson mein banti hai. Ab 15 pencils ka 1/3 padhte hain: yeh kya poochta hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 914,
+   "replyReadyMs": 2607
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1199
+  },
+  {
+   "who": "teacher",
+   "text": "Socho, ek chocolate ko 3 barabar hisson mein baanta. 1/3 matlab unmein se ek hissa. Ab 12 ka 1/3 tum nikalo.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2438,
+   "replyReadyMs": 3637,
+   "guard": [
+    "screen",
+    "answerinq",
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1719
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle har group ki jagah banaao. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 2522,
+   "replyReadyMs": 4241,
+   "guard": [
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "incorrect",
+   "classifyMs": 1200
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha. Ab fraction ko dekho: neeche wala number kis baat ki taraf ishara karta hai? Khaali jagah phir bharo.",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1706,
+   "replyReadyMs": 2906,
+   "guard": [
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1312
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj rukna chahti ho. Tum keh sakti ho: jaari rakhein, chhota break lein, ya aaj band karein.",
+   "move": "break",
+   "card": null,
+   "replyMs": 2254,
+   "replyReadyMs": 3566,
+   "guard": [
+    "screen"
+   ]
+  }
+ ],
+ "agent": []
+}

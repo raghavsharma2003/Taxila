@@ -1,0 +1,81 @@
+diff --git a/server/lanes.js b/server/lanes.js
+index c7dd3c46..6845f99e 100644
+--- a/server/lanes.js
++++ b/server/lanes.js
+@@ -149,6 +149,13 @@ const DEFAULT = createLanes();
+  */
+ export function admit(call) { return DEFAULT.admit(call); }
+ 
++/** TESTS ONLY: forget the process-wide lanes' state (a hot 429 pauses the background lane for 10 s, and a queued background call
++ *  then waits on an unref'd timer, so a later suite in the same process hangs: tests/r5-overflow -> tests/r5-reply-twin). */
++export function _resetDefaultLanes() {
++  for (const b of DEFAULT.buckets.values()) { if (b.timer) clearTimeout(b.timer); for (const q of b.queue) q.resolve?.(); }
++  DEFAULT.buckets.clear();
++}
++
+ /**
+  * @param {{ quotaLane?: QuotaLane, deployment: string, kind: string, status: number | string, usage?: { in?: number, out?: number } }} done
+  */
+diff --git a/tests/lanes-reset.test.mjs b/tests/lanes-reset.test.mjs
+new file mode 100644
+index 00000000..cfe93727
+--- /dev/null
++++ b/tests/lanes-reset.test.mjs
+@@ -0,0 +1,16 @@
++// TE-14: a hot 429 settled on the process-wide lanes pauses the background lane for 10 s; _resetDefaultLanes forgets it, so
++// suites sharing a process (scripts/test-leak-check.mjs) do not inherit it.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { admit, settle, _resetDefaultLanes } from "../server/lanes.js";
++
++test("a hot 429 pauses a background call on that deployment; the reset lets it through at once", () => {
++  _resetDefaultLanes();
++  const call = { quotaLane: "background", deployment: "taxila-fast", kind: "chat" };
++  assert.equal(admit(call), undefined, "no pause yet");
++  settle({ quotaLane: "hot", deployment: "taxila-fast", kind: "chat", status: 429 });
++  assert.ok(admit(call) instanceof Promise, "paused: the background call queues");
++  _resetDefaultLanes();
++  assert.equal(admit(call), undefined, "after the reset: admitted at once");
++  _resetDefaultLanes();
++});
+diff --git a/tests/r5-overflow.test.mjs b/tests/r5-overflow.test.mjs
+index 5eb8d16a..29d27619 100644
+--- a/tests/r5-overflow.test.mjs
++++ b/tests/r5-overflow.test.mjs
+@@ -2,6 +2,7 @@
+ // (server/azure.js overflowFor). TEST lesson 5d18d152 and production at 06 UTC on 2026-10-15 (51 of 361 taxila-fast calls)
+ // were throttled by load sharing the eastus2 deployment, and a throttled reply is the fallback line the child hears.
+ import { describe, test, beforeEach, afterEach } from "node:test";
++import { _resetDefaultLanes } from "../server/lanes.js";
+ import assert from "node:assert/strict";
+ import { chat, chatStream, overflowFor, isContentFilter } from "../server/azure.js";
+ 
+@@ -14,6 +15,7 @@ beforeEach(() => {
+     AZURE_OPENAI_API_KEY_OVERFLOW: "k-over", TAXILA_OVERFLOW_DEPLOYMENTS: "taxila-fast, taxila-brain" });
+ });
+ afterEach(() => {
++  _resetDefaultLanes();
+   globalThis.fetch = realFetch;
+   for (const k of ["AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT_OVERFLOW", "AZURE_OPENAI_API_KEY_OVERFLOW", "TAXILA_OVERFLOW_DEPLOYMENTS"])
+     if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k];
+diff --git a/tests/r5-reply-twin.test.mjs b/tests/r5-reply-twin.test.mjs
+index 5b060348..dd139dbd 100644
+--- a/tests/r5-reply-twin.test.mjs
++++ b/tests/r5-reply-twin.test.mjs
+@@ -2,6 +2,7 @@
+ // 2026-10-16 08-10 UTC the primary reply account stood at the 6 s cap on 29% of taxila-fast calls, and a twin on the SAME
+ // deployment hit the same wall; evals/latency/reply-hedge-arm.mjs: hung primary 0/12 answered vs 12/12 on the twin.
+ import { describe, test, beforeEach, afterEach } from "node:test";
++import { _resetDefaultLanes } from "../server/lanes.js";
+ import assert from "node:assert/strict";
+ import { chat } from "../server/azure.js";
+ import { _setTraceDeps, _resetTrace, flushTrace } from "../server/trace/writer.js";
+@@ -16,7 +17,7 @@ beforeEach(() => {
+     AZURE_OPENAI_API_KEY_OVERFLOW: "k-over", TAXILA_OVERFLOW_DEPLOYMENTS: "taxila-fast" });
+   delete process.env.TAXILA_REPLY_TWIN;
+ });
+-afterEach(() => { globalThis.fetch = realFetch; for (const k of KEYS) if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; });
++afterEach(() => { _resetDefaultLanes(); globalThis.fetch = realFetch; for (const k of KEYS) if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k]; });
+ const ok = (text) => new Response(JSON.stringify({ choices: [{ finish_reason: "stop", message: { content: text } }], usage: { prompt_tokens: 3, completion_tokens: 1 } }), { status: 200 });
+ /** primary: "hang" (answers only when aborted: never) | ms to answer after; the overflow answers at once */
+ const stub = (primary) => { globalThis.fetch = async (url, init) => {

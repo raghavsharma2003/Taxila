@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-held-board-studio",
+      "kind": "decision",
+      "at": "2026-11-09",
+      "title": "dc-r7-held-board, Studio's half (main's v6.8 on director16, reversal clause 1). Contract proposed to Brain: a script turn's whiteboard intent carries intent.held = { board, unit, switchTo?: { board, unit, atChar, atClause? } }. With it, Studio draws held.board from its ref as authored: no line-driven preselect, no gate on her words, no ladder fallback. A refusal keeps the page up. held.board equal to the board up (by ref) is KEPT, shown at its end state with no redraw, so Hindi, clarify, aside and \"sawaal kya hai\" turns hold the board. At most one switch, to switchTo.board from her words at atChar. A picture ask draws the held board's second view BESIDE it on one split board, 640 × 300: the held board left (still), the view right, each a 320-wide panel at 0.8 geometry. Small words are written one size up, every op stays inside its own panel, and the panels are certified one by one. If the lint refuses a panel, the held board stays alone, never the view instead of it. Her picture line comes from the drawn view: studioSeam.preselectedAltLine (\"Wahi poora ab gol: 4 barabar hisse\", \"Pizza: 3 alag-alag tukde\"), never \"yahi numbers\". S9b's remediation-board view does not fire under held. Reverse with the held rule (main's reversal: the teaching axes below 3.5 because a point or remediation lost its own picture)."
+    },
+    {
+      "id": "ms-r7-held-board-split-360-2026-11-09",
+      "kind": "measurement",
+      "at": "2026-11-09",
+      "title": "The picture split at 360 × 640 portrait, on the real child route (Playwright, the whiteboard player). The stage box is height-bound, about 202 × 180 px above the teacher's PiP, so a 400 × 300 board is drawn at 0.505–0.6 and a 400 × 600 stack at 0.34. A 640 × 300 board keeps the height-bound scale. Measured: with words kept at their size, the split's smallest word was 12 px against 16 px for the rectangle alone (the player zooms a lone board to its words). With small words one size up in the split, both the pizza and rectangle splits have every word inside the stage box and words no smaller than the board alone, with no tap target on the board. Of 8 sample card boards, 7 split; the lettered hexagon's six side labels refuse the lint and its board stays alone. The rectangle's unrolled side labels are tight but do not touch. tests/r8-held-board-browser.test.mjs pins it."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-held-board-studio", "rel": "part_of", "dst": "dc-r7-held-board" },
+    { "src": "dc-r7-held-board-studio", "rel": "supersedes", "dst": "dc-r7-remediation-second-view" },
+    { "src": "dc-r7-held-board-studio", "rel": "measured_by", "dst": "ms-r7-held-board-split-360-2026-11-09" }
+  ]
+}

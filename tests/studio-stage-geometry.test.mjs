@@ -15,19 +15,18 @@ const haveChromium = !!browsersDir && existsSync(browsersDir) && readdirSync(bro
 const SKIP = process.env.STUDIO_BROWSER === "0" ? "STUDIO_BROWSER=0" : !haveChromium ? "no Chromium under PLAYWRIGHT_BROWSERS_PATH" : false;
 const KID = { id: "kid-studio", first_name: "Kabir", class_level: 5, language_pref: "hinglish", teacher_id: "arjun" };
 
-let vite, browser, base;
+let app, browser, base;
 before(async () => {
   if (SKIP) return;
-  const { createServer } = await import("vite");
-  vite = await createServer({ root: ROOT, configFile: ROOT + "vite.config.ts", logLevel: "error", server: { port: 0, strictPort: false, host: "127.0.0.1", hmr: false } });
-  await vite.listen();
-  base = vite.resolvedUrls.local[0].replace(/\/$/, "");
+  // gate speed (main, 2026-11-05): the prebuilt dist/ (the dev server when dist/ is stale: tests/support/app-server.mjs)
+  app = await (await import("./support/app-server.mjs")).appServer();
+  base = app.url;
   const { chromium } = await import("playwright");
   browser = await chromium.launch();
 });
 after(async () => {
   await browser?.close();
-  await vite?.close();
+  await app?.close();
 });
 
 const script = (w, h) => ({ v: 1, scriptId: "s1", line: { lessonId: "L-st" }, anchor: "line_audio_start", board: { w, h, ground: "chalk" }, mode: "fresh",
@@ -61,7 +60,10 @@ const BOARDS = [{ w: 400, h: 300 }, { w: 300, h: 400 }, { w: 1600, h: 900 }];
 
 test("the Studio stage box sits inside the Work tray, keeps its aspect, and nothing overflows (360 x 800 → 1920 x 1080)", { skip: SKIP, timeout: 300_000 }, async () => {
   const fails = [];
-  for (const vp of VIEWPORTS) for (const board of BOARDS) {
+  // gate speed: the 15 viewport x board cases are independent page loads: 4 at a time
+  const cases = VIEWPORTS.flatMap((vp) => BOARDS.map((board) => ({ vp, board })));
+  let next = 0;
+  await Promise.all(Array.from({ length: 4 }, async () => { while (next < cases.length) { const { vp, board } = cases[next++];
     const page = await lessonWith(vp, board);
     try {
       await page.waitForSelector('[data-testid="tray"][data-kind="studio"] [data-testid="studio-box"]', { timeout: 30_000 });
@@ -76,7 +78,7 @@ test("the Studio stage box sits inside the Work tray, keeps its aspect, and noth
       });
       const tag = `${vp.width}x${vp.height} board ${board.w}x${board.h}`;
       const { tray, box } = m;
-      if (!tray || !box) { fails.push(`${tag}: no tray/box`); continue; }
+      if (!tray || !box) { fails.push(`${tag}: no tray/box`); continue; }   // (next case)
       if (box.w < 100 || box.h < 75) fails.push(`${tag}: box too small ${box.w}x${box.h}`);
       if (box.x < tray.x - 0.5 || box.y < tray.y - 0.5 || box.x + box.w > tray.x + tray.w + 0.5 || box.y + box.h > tray.y + tray.h + 0.5) fails.push(`${tag}: box outside tray ${JSON.stringify(m)}`);
       // round 3 forge: the stage frames the board's drawn content (src/studio/boardView.ts): the box keeps the FRAME's aspect
@@ -85,6 +87,6 @@ test("the Studio stage box sits inside the Work tray, keeps its aspect, and noth
       if (m.trayScroll && (m.trayScroll.sh > m.trayScroll.ch + 1 || m.trayScroll.sw > m.trayScroll.cw + 1)) fails.push(`${tag}: tray scrolls ${JSON.stringify(m.trayScroll)}`);
       if (m.page.sw > m.page.iw + 1) fails.push(`${tag}: horizontal page scroll ${m.page.sw} > ${m.page.iw}`);
     } finally { await page.close(); }
-  }
+  } }));
   assert.deepEqual(fails, []);
 });

@@ -8,6 +8,7 @@ import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Rea
 import { ease } from "../../core/juice.ts";
 import { withAlpha, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
+import { word } from "../../engines/words.ts";
 import { lineHelpers as H, type LineParams, type LineState } from "./line.logic.ts";
 
 export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
@@ -22,6 +23,10 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   let landAt = -1, solvedAt = -1, looks = 0, truthAt = -1, truthFor: boolean[] = p.values.map(() => false);
   let orderLookAt = -1;   // compare: a wrong "which is smaller" draws the line's own answer (further left is smaller)
   const span = p.hi - p.lo;
+  // r7 nishana2: a ÷ hop draws a chain of hops from 0 that ends at pod × divisor (live at fade 1, after a commit later);
+  // a decimal hop gets a taller tick at each half (x.5) so the tenths can be counted from a landmark
+  const divHop = p.hop?.op === "÷", decHop = !!p.hop && p.values[0].form === "decimal";
+  let chainFor: number | null = null;
 
   const st = () => ctl.state;
   const toPx = (v: number) => x0 + ((v - p.lo) / span) * (x1 - x0);
@@ -54,7 +59,9 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const now = api.t;
     if (last?.kind === "place" && !refused) api.sfx("slide");
     // a commit always lands the pod and raises the truth flags (a miss is the law's answer, not a refusal to look)
+    if (last?.kind === "place" || last?.kind === "undo") chainFor = null;
     if (last?.kind === "commit" && refused !== "place_first") {
+      chainFor = st().marks[0];
       landAt = now; truthAt = now + 0.18; api.sfx("land"); api.fx.shake(2);
       truthFor = p.values.map(() => true);
       const i = 0, mx = st().marks[i]; if (mx !== null) api.fx.burst(toPx(mx), ly, { n: 8, color: api.P.color("ink3"), speed: 90, life: 0.4, size: 3, kind: "dust", up: 60 });
@@ -118,8 +125,13 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const px = (v: number) => (toPx(v) - cx) * zoom + cx, y = (ly - cy) * zoom + cy;
     P.stroke(c, [[px(p.lo) - 10, y], [px(p.hi) + 10, y]], { role: "ink", width: 3 });
     if (p.minor > 0) for (let v = p.lo; v <= p.hi + 1e-9; v += p.minor) P.stroke(c, [[px(v), y - 7], [px(v), y + 7]], { role: "ink3", width: 1.5, seed: Math.round(v * 100) });
+    halfTicks(c, px, y);
     const nMaj = Math.round(span / p.major);
     for (let k = 0; k <= nMaj; k++) { const X = px(p.lo + k * p.major); P.stroke(c, [[X, y - 13], [X, y + 13]], { role: "ink", width: 2.5, seed: k }); }
+  }
+  function halfTicks(c: CanvasRenderingContext2D, px: (v: number) => number, y: number): void {
+    if (!decHop || !(p.minor > 0)) return;
+    for (let v = p.lo + 0.5; v < p.hi; v += 1) api.P.stroke(c, [[px(v), y - 10], [px(v), y + 10]], { role: "ink2", width: 2, seed: Math.round(v * 10) });
   }
   function drawLine(c: CanvasRenderingContext2D, cx = 0, cy = 0, zoom = 1, clipR = 0): void {
     const P = api.P;
@@ -137,6 +149,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (clipR) { c.save(); c.beginPath(); c.arc(cx, cy, clipR, 0, Math.PI * 2); c.clip(); P.veil(c, cx - clipR, cy - clipR, clipR * 2, clipR * 2, api.art.dark ? 0.92 : 0.96); }
     P.stroke(c, [[px(p.lo) - 10, y], [px(p.hi) + 10, y]], { role: "ink", width: 3 });
     if (p.minor > 0) for (let v = p.lo; v <= p.hi + 1e-9; v += p.minor) P.stroke(c, [[px(v), y - 7], [px(v), y + 7]], { role: "ink3", width: 1.5, seed: Math.round(v * 100) });
+    halfTicks(c, px, y);
     const nMaj = Math.round(span / p.major);
     for (let k = 0; k <= nMaj; k++) {
       const v = p.lo + k * p.major, X = px(v);
@@ -164,9 +177,56 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     api.target(`pod:${i}`, X - Math.max(26, pw / 2 + 4), hy - 26, Math.max(52, pw + 8), 52 + (ly - hy));
   }
 
+  /**
+   * ÷: the start ring at 0, the flag at the dividend (a dashed drop under it) and the chain of hops whose end is pod ×
+   * divisor. A positive divisor is that many equal hops, each the pod's size; a negative one is hops OF the divisor, the
+   * pod counting them (a negative count hops backward; a part-count draws the last hop part-way).
+   */
+  function drawDivChain(c: CanvasRenderingContext2D): void {
+    const P = api.P, h = p.hop!, X0 = toPx(0), Xa = toPx(h.a), by = Math.min(ly + 104, Hh - 30);
+    P.circle(c, X0, ly, 9, { role: "ink", width: 3 });
+    P.stroke(c, [[X0, ly + 10], [X0, by]], { role: "ink3", width: 1.5, dash: [3, 4] });
+    P.circle(c, Xa, ly, 9, { role: "look", width: 3 });
+    P.stroke(c, [[Xa, ly + 10], [Xa, by + 8]], { role: "look", width: 2, dash: [3, 4] });
+    // the two words never touch: pushed apart about their midpoint when the flag sits near 0
+    const need = 92, dir = Xa >= X0 ? 1 : -1, mid = (X0 + Xa) / 2, close = Math.abs(Xa - X0) < need;
+    const lx0 = clamp(close ? mid - (dir * need) / 2 : X0, 40, W - 40), lxa = clamp(close ? mid + (dir * need) / 2 : Xa, 40, W - 40);
+    P.text(c, word(lang, "nishana.start"), lx0, ly - 22, { size: 14, weight: 700, role: "ink2" });
+    P.text(c, word(lang, "nishana.reach"), lxa, ly - 22, { size: 14, weight: 700, role: "look" });
+    const x = level.fade === 1 ? markOf(0) : drag ? null : chainFor;
+    if (x === null || x === undefined || Math.abs(x) < 1e-6) return;
+    const ends: number[] = [0];
+    if (h.b > 0) for (let k = 1; k <= h.b; k++) ends.push(k * x);
+    else { const step = h.b * Math.sign(x), whole = Math.floor(Math.abs(x) + 1e-9); for (let k = 1; k <= whole; k++) ends.push(k * step); if (Math.abs(x) - whole > 1e-3) ends.push(x * h.b); }
+    c.save(); c.strokeStyle = P.color(ROLE[0]); c.lineWidth = 2.5; c.setLineDash([6, 4]);
+    for (let k = 1; k < ends.length; k++) {
+      const xa = toPx(ends[k - 1]), xb = toPx(ends[k]), hgt = Math.min(22, 6 + Math.abs(xb - xa) * 0.18);
+      c.beginPath(); c.moveTo(xa, by); c.quadraticCurveTo((xa + xb) / 2, by + 2 * hgt, xb, by); c.stroke();
+    }
+    c.restore();
+    const xe = toPx(ends[ends.length - 1]), d = xe >= toPx(ends[ends.length - 2]) ? 1 : -1;
+    P.stroke(c, [[xe - 7 * d, by - 6], [xe, by], [xe - 7 * d, by + 6]], { role: ROLE[0], width: 2.5 });
+  }
+
   function draw(c: CanvasRenderingContext2D): void {
     const P = api.P, now = api.t, s = st();
     drawLine(c);
+    // hop: the start on its integer (a ring on the line, "start" under the numbers) and the hop from it to where the pod is
+    // now, an arc UNDER the number labels (above the line the pods ride and would hide it)
+    if (divHop && p.hop) drawDivChain(c);
+    else if (p.hop) {
+      const X = toPx(p.hop.a), by = Math.min(ly + 104, Hh - 30);
+      P.circle(c, X, ly, 9, { role: "ink", width: 3 });
+      P.stroke(c, [[X, ly + 10], [X, by]], { role: "ink3", width: 1.5, dash: [3, 4] });
+      P.text(c, word(lang, "nishana.start"), X, ly - 22, { size: 14, weight: 700, role: "ink2" });
+      const mk = markOf(0);
+      if (mk !== null && mk !== undefined && Math.abs(toPx(mk) - X) > 6) {
+        const xa = X, xb = toPx(mk), hgt = Math.min(36, 10 + Math.abs(xb - xa) * 0.12);
+        c.save(); c.beginPath(); c.strokeStyle = P.color(ROLE[0]); c.lineWidth = 2.5; c.setLineDash([6, 5]);
+        c.moveTo(xa, by); c.quadraticCurveTo((xa + xb) / 2, by + 2 * hgt, xb, by); c.stroke(); c.restore();
+        P.stroke(c, [[xb - 6, by - 7], [xb, by], [xb + 6, by - 7]], { role: ROLE[0], width: 2.5 });
+      }
+    }
     api.target("line", x0 - 20, ly - 60, x1 - x0 + 40, 120);
     // after a wrong order: an arrow under the line from the right-hand pod to the left-hand one, "smaller" at its head
     if (cmpGoal && orderLookAt >= 0 && s.marks.every((m) => m !== null)) {
@@ -225,6 +285,9 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function goal(): string {
     if (roundGoal) return st().landed ? say(lang, "line.goal.round2", { t: unitWord(p.to ?? 100) }) : say(lang, "line.goal.round", { v: p.values[0].text });
     if (cmpGoal) return say(lang, "line.goal.cmp");
+    const neg = (x: number) => H.fmt(x).replace("-", "−");
+    if (divHop && p.hop) return p.hop.b > 0 ? word(lang, "nishana.goal.div", { v: p.values[0].text, n: p.hop.b, a: neg(p.hop.a) }) : word(lang, "nishana.goal.divNeg", { v: p.values[0].text, b: neg(p.hop.b), a: neg(p.hop.a) });
+    if (p.hop) return word(lang, "nishana.goal.hop", { a: H.fmt(p.hop.a).replace("-", "−"), v: p.values[0].text });
     return say(lang, "line.goal", { v: p.values[0].text });
   }
   function readouts(): Readout[] { return []; }

@@ -1,0 +1,316 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj rectangles, squares aur polygons ka perimeter, cricket ground ki boundary jaisa. Tumhe kaunsa shape pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1008
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Cricket pitch ke chaaron taraf ek round lagana boundary ki poori length hoti hai. Isse perimeter kehte hain—tum kya ginogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 4313,
+   "replyReadyMs": 5321,
+   "guard": [
+    "script"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 855
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kisi bhi shape ki bahari boundary par chaloge, jitni total doori hogi wahi perimeter hai. Sirf bahari sides ginogi ya andar wali bhi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1340,
+   "replyReadyMs": 2195
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 743
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—main dheere chalungi. Perimeter matlab shape ki sabhi bahari sides ko jodna. Rectangle ki chaar sides hoti hain; kitni sides jodogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2096,
+   "replyReadyMs": 2839
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 642
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, परिमाप मतलब आकृति की बाहर वाली सभी भुजाओं की कुल लंबाई। आयत में बाहर वाली कितनी भुजाएँ गिनोगी?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2268,
+   "replyReadyMs": 2910
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1147
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, आयत में 4 बाहर वाली भुजाएँ होती हैं—ऊपर, नीचे, बायाँ और दायाँ। अब इन चारों की लंबाइयाँ जोड़ोगी या सिर्फ दो की?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1209,
+   "replyReadyMs": 2356
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 863
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ayat mein upar-neeche 50 meter aur baayen-daayen 30 meter hote hain. Isliye dono naap do-do baar judte hain.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 4014,
+   "replyReadyMs": 4877,
+   "guard": [
+    "script"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 608
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, apni aankhon ke saamne ek ayat socho: upar-neeche 50 m, aur baayen-daayen 30 m. Bahar ki kitni sides hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2759,
+   "replyReadyMs": 3367,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 687
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ayat ki bahari 4 sides hoti hain: do 50 meter aur do 30 meter. Ab 50 ko kitni baar ginogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1114,
+   "replyReadyMs": 1801
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 702
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, Riya. 50 meter wali side do baar aati hai—upar aur neeche. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1967,
+   "replyReadyMs": 2669
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 903
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Tum jaari rakh sakti ho, chhota break le sakti ho, ya aaj band kar sakti ho—kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1701,
+   "replyReadyMs": 2604
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ke chaaron taraf ki doori, yaani perimeter, samjhenge. Agar boundary par rassi lagani ho, toh ground ke andar ki jagah naapoge ya uske kinaare ki doori?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1433
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Cricket ground ke kinaare rassi lagani hai, toh sirf kinaare ki doori naapte hain; isi ko perimeter kehte hain. Ek triangle ki teen sides 5, 6 aur 9 centimetre hain; teeno ko jodoge toh perimeter kitna hoga?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3081,
+   "replyReadyMs": 4514
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 927
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, triangle wali baat clear nahi hui. Socho teen lakdiyon se triangle bana hai: ek 5, doosri 6, teesri 9 centimetre. Puri boundary naapne ke liye pehli do lakdiyon ki lambai kitni hogi?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3512,
+   "replyReadyMs": 4439
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 970
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere dheere chalte hain. Pehle sirf ek kadam: pehli lakdi 5 centimetre ki hai, doosri 6 centimetre ki. In dono ki lambai mila kar kitni hogi?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3041,
+   "replyReadyMs": 4011
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 543
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein dheere dheere batati hoon. Pehli lakdi paanch centimetre ki hai aur doosri chhe centimetre ki. Dono ko jodne par kitne centimetre honge?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3026,
+   "replyReadyMs": 3569
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "incorrect",
+   "classifyMs": 1345
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne paanch kaha. Paanch sirf pehli lakdi ki lambai hai; pehli aur doosri lakdi milane par paanch ke aage chhe aur ginne hain. Paanch se shuru karke chhe kadam aage gino: kahan pahunchoge?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2912,
+   "replyReadyMs": 4257
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, ek-ek karke ginte hain. Paanch ke baad chhe, saat, aath, nau, das, gyaarah aata hai. Isliye paanch aur chhe milkar gyaarah centimetre hain. Ab gyaarah mein nau jodne ke liye, pehle ek jodoge toh kya milega?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3085,
+   "replyReadyMs": 3086
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 511
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tasveer se samajhna aasaan hoga. paanch aur chhe mila kar gyaarah centimetre hote hain. Ab gyaarah mein nau aur jodne par kitne centimetre honge?",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2675,
+   "replyReadyMs": 3186
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1398
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tumne tasveer maangi thi; maine dikhayi nahi. Maaf karna. Paanch aur chhe milkar gyaarah hain; gyaarah mein nau aur milao toh kitne centimetre honge?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2897,
+   "replyReadyMs": 4295
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "incorrect",
+   "classifyMs": 1023
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne saat kaha. Chalo gyaarah mein nau ko chhote tukdon mein jodein: pehle gyaarah mein ek jodo. Kitna hoga?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2647,
+   "replyReadyMs": 3670
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 2794
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, aaj yahin rukte hain. Tumne trikon ki teenon bhujayein jodkar ghera naapne ka abhyaas kiya; jodna abhi aur pakka karna hai. Alvida!",
+   "move": "wrap",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3709,
+   "replyReadyMs": 6503
+  }
+ ]
+}

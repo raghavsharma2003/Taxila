@@ -1,0 +1,215 @@
+{
+  "v": 1,
+  "id": "gen-c5-maths-ch02-t01-e14f359b",
+  "approved": true,
+  "hash": "e14f359bfaf821bd2f1f21800b74a84b",
+  "archetype": "catch-on-line@1",
+  "spec": {
+    "archetype": "catch-on-line@1",
+    "skills": [
+      "c5-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Dock ko drag karke chalao",
+      "wave": "Daura",
+      "of": "mein se",
+      "clear": "saaf",
+      "landed": "sahi jagah",
+      "precision": "safai",
+      "chain": "lagataar",
+      "bestChain": "sabse lambi lagataar",
+      "exact": "BILKUL SAHI",
+      "close": "PAAS",
+      "inside": "ANDAR",
+      "offBy": "itna fark",
+      "same": "WAHI JAGAH",
+      "runDone": "Daura poora",
+      "toughest": "Sabse mushkil"
+    },
+    "waves": [
+      {
+        "title": "Chhote tukde",
+        "sub": "Fraction pakdo aur line par lao",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 2,
+        "scaffoldTicks": 2,
+        "speed": 82,
+        "gap": 2.8,
+        "items": [
+          [
+            "1/2"
+          ],
+          [
+            "1/2"
+          ],
+          [
+            "1/2"
+          ]
+        ]
+      },
+      {
+        "title": "Barabar hisse",
+        "sub": "Har fraction ko dhyan se pakdo",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 3,
+        "scaffoldTicks": 3,
+        "speed": 92,
+        "gap": 2.3,
+        "items": [
+          [
+            "1/3"
+          ],
+          [
+            "2/3"
+          ],
+          [
+            "1/3"
+          ],
+          [
+            "2/3"
+          ]
+        ]
+      },
+      {
+        "title": "Naye fractions",
+        "sub": "Fractions ko ek-ek karke lao",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 4,
+        "scaffoldTicks": 4,
+        "speed": 101,
+        "gap": 2,
+        "items": [
+          [
+            "1/4"
+          ],
+          [
+            "3/4"
+          ],
+          [
+            "2/4"
+          ],
+          [
+            "1/4"
+          ]
+        ]
+      },
+      {
+        "title": "Aur abhyas",
+        "sub": "Har item par nazar rakho",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 5,
+        "scaffoldTicks": 5,
+        "speed": 110,
+        "gap": 1.7,
+        "items": [
+          [
+            "1/5"
+          ],
+          [
+            "3/5"
+          ],
+          [
+            "2/5"
+          ],
+          [
+            "4/5"
+          ],
+          [
+            "1/5"
+          ]
+        ]
+      }
+    ],
+    "adapt": {
+      "slowAfterMisses": 2,
+      "slowFactor": 0.86,
+      "fastAfterChain": 4,
+      "fastFactor": 1.07,
+      "minScale": 0.7,
+      "maxScale": 1.3,
+      "scaffoldPods": 3
+    }
+  },
+  "for": {
+    "topic": "c5-maths-ch02-t01",
+    "skill": "c5-maths-ch02-t01-s1",
+    "misconceptionId": "c5-maths-ch02-t01-m-count-marks",
+    "beat": "rem:c5-maths-ch02-t01-m-count-marks",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c5-maths-ch02-t01-m-count-marks",
+      "belief": "Counts the tick marks instead of the equal gaps when naming a fraction",
+      "signs": [
+        "Calls the first of 3 marks 1/3",
+        "Counts the 0 or 1 as a part",
+        "Gets denominators one too small"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "6ee980200e415227bb5831e579097d1e7f86f9a82523b794fdc299ba512d4d0c"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "5bb87c7b6fb244c060e3540f6715b44ff5acff1a9ff35cbd3630300225be1145"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), 2026-11-11",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The ticks in every wave equal the denominators (2, 3, 4, 5), so each item lands on a drawn mark. With ticks 3 the board draws 2 inner marks, which catches a child who counts marks and calls the first one 1/2. No title or sub says where an item goes. The labels are Roman Hinglish with no number words. 'safai' for precision and 'Daura' for wave are unusual word choices but understandable. The coach line 'Dock ko drag karke chalao' is low-contrast grey but legible at both sizes."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Every wave's ticks matches its denominator (2, 3, 4, 5), so each item lands exactly on a mark, and 2/4 sits on the middle of the quarters line. The interior ticks are the board's equal-part divisions, not marks that point at an item. Titles and subs only say what to do. All strings are Roman Hinglish with digits only. The quarters and fifths waves would trip a child who names a fraction by counting marks (3 marks read as thirds, 4 marks as quarters)."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:33:06.098Z"
+  },
+  "approvedAt": "2026-11-11T07:19:36.891Z"
+}

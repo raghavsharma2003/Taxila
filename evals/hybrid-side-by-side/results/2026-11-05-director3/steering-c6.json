@@ -1,0 +1,223 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket ground jaise shapes ka perimeter dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1010
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya! Cricket pasand hai—socho ground ke chaaron taraf boundary rope lagani ho. Tum rope ki total lambai kaise nikalogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1673,
+   "replyReadyMs": 2683
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 980
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere-dheere. Perimeter ka matlab sabhi sides ko jodna. Rectangle ki 4 sides hoti hain—ab pehli side kaunsi hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2540,
+   "replyReadyMs": 3520,
+   "guard": [
+    "affirms",
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 994
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—ab chhote steps. Perimeter ke liye sabhi sides jodte hain; rectangle mein kaunsi lengths dikh rahi hain?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1264,
+   "replyReadyMs": 2258
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1212
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki lambi sides 50 m aur chhoti sides 30 m hain. Kaunsi sides barabar hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2766,
+   "replyReadyMs": 3978,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "rectangle | perimeter | 50 m | 30 m",
+     "numbers": "50 30"
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1255
+  },
+  {
+   "who": "teacher",
+   "text": "Rectangle mein saamne wali sides barabar hoti hain. Diya hai: 3, 50 m aur 30 m. Pehle: 2 × (50 + 30) = 2 × 80 = 160 m. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2804,
+   "replyReadyMs": 4059,
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 791
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis topic par baat karein? Phir perimeter par wapas aayenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1205,
+   "replyReadyMs": 1996
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1191
+  },
+  {
+   "who": "teacher",
+   "text": "cricket ke baare mein: pakka, thodi der mein uski baat. Pehle dekho: 2 × (50 + 30) = 2 × 80 = 160. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2600,
+   "replyReadyMs": 3791,
+   "guard": [
+    "underived"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "underived",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 944
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, Hindi mein: teen ko 160 se guna karna hai. Pehle 160 ko teen baar jodo. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1297,
+   "replyReadyMs": 2241
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1126
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum khud hal karo. 160 ko teen baar jodkar khaali jagah bharo.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2354,
+   "replyReadyMs": 3480,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "flat"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1146
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum rukna chahti ho. Jaari rakhein, thoda viraam lein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2629,
+   "replyReadyMs": 3775,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

@@ -31,8 +31,10 @@ export class VisemeScheduler {
   /** Word batches that arrived before any viseme of their part (merged when the visemes come). */
   private orphanWords = new Map<string, WordEvent[]>();
   lead = EVENT_LEAD_MS;
-  /** The extended bilabial rule (visemes.ts addBilabialsExtended): set by the stage for a key-rig look (lamp2) only. */
-  extendedBilabials = false;
+  /** The extended bilabial rule (visemes.ts addBilabialsExtended), on for every look. Round 7: it was lamp2's only; on
+   *  r8's own lip solver (runtime/lips.js seal line) the 24-line Diya battery seals 132/132 b / m / p words vs 123/132 with
+   *  the base rule, with no new unowed closure and the same timing (evals/face-puppet/r8-bilabial-battery.mjs). */
+  extendedBilabials = true;
   /** Events received / parts dropped as stale (for the stage stats). */
   received = 0;
   stale = 0;

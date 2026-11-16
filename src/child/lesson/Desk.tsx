@@ -18,11 +18,12 @@ import type { DeskActions, DeskModel } from "./model.ts";
 import { PhaseLine } from "./PhaseLine.tsx";
 import { tw2 } from "../../copy/en.ts";
 import { QuestionCard } from "./QuestionCard.tsx";
-import { EndConfirm } from "./sheets/EndConfirm.tsx";
+import { BreakSheet, EndConfirm } from "./sheets/EndConfirm.tsx";
 import { HelpSheet } from "./sheets/HelpSheet.tsx";
 import { HintSheet } from "./sheets/HintSheet.tsx";
 import { PauseSheet } from "./sheets/Pause.tsx";
 import { Summary } from "./Summary.tsx";
+import { isAnswerTray } from "./answers.ts";
 import { captionVisible, SpeechRow, TeacherWindow } from "./TeacherWindow.tsx";
 import { TroubleScreen } from "./TroubleScreen.tsx";
 import { TroubleStrip } from "./TroubleStrip.tsx";
@@ -84,13 +85,33 @@ export interface DeskProps {
   /** r4 K-P2: a skin name written on the root as data-skin (CSS only: the zones, layout and behaviour never change). */
   skin?: string;
   /** r4 K-P2: the lesson-end screen in place of the Summary (the Kaksha Debrief). Absent: today's Summary. */
-  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void }) => ReactNode;
+  renderSummary?: (p: { m: DeskModel; meters: TapSource[]; onFinish: () => void; onFinishTo?: (to: string) => void }) => ReactNode;
   /** r4 K-P12: the skin's intake card (m.intake), drawn at the top of the Question card. Absent: nothing (today). */
   renderIntake?: (m: DeskModel) => ReactNode;
+  /** r7 app-lesson-stage-first: a skin's own body in place of the Desk's phone / wide grids. The Desk still owns the
+   *  root, the sheets, the live regions, the trouble screens and the Summary; it hands the body the very nodes it would
+   *  have placed (top bar, card, dock, strip) and a renderer for any tray, so behaviour is identical. */
+  renderBody?: (p: DeskBodyParts) => ReactNode;
+}
+
+/** r7: what the Desk hands a skin's body (renderBody). */
+export interface DeskBodyParts {
+  m: DeskModel;
+  a: DeskProps["a"];
+  media: DeskMedia;
+  topBar: ReactNode;
+  card: ReactNode;
+  dock: ReactNode;
+  strip: ReactNode;
+  /** Any tray model → the node the Desk would render for it (answer surfaces via AnswerTray, the rest via WorkTray). */
+  renderTray: (tray: NonNullable<DeskModel["tray"]>) => ReactNode;
+  isAnswerTray: (tray: NonNullable<DeskModel["tray"]>) => boolean;
+  floor: Floor;
+  lit: boolean;
 }
 
 /** r4 K-P2: what a skin passes the Desk (LessonScreen hands it to the skin's frame, which calls back with it). */
-export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake">;
+export type DeskSkin = Pick<DeskProps, "skin" | "renderSummary" | "renderIntake" | "renderBody">;
 
 /** The tray's content (absolutely positioned in .dk-tray-body) plus the tray zone's padding. */
 function trayNeedOf(el: Element | null): number {
@@ -100,7 +121,7 @@ function trayNeedOf(el: Element | null): number {
   return Math.ceil((el as HTMLElement).offsetHeight + (zs ? parseFloat(zs.paddingTop) + parseFloat(zs.paddingBottom) : 0));
 }
 
-export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake }: DeskProps) {
+export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLine = true, supportCode, theme, skin, renderSummary, renderIntake, renderBody }: DeskProps) {
   const root = useRef<HTMLDivElement>(null);
   const measureRef = useRef<() => void>(() => {});
   const ro = useRef<ResizeObserver | null>(null);
@@ -109,7 +130,9 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     const el = root.current;
     if (!el || !onSize) return;
     const measure = () => {
-      const fs = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1;
+      // the browser / OS text size, times Me → Bigger text (the shell's data-comfort; child.css scales the type by 1.18)
+      const comfort = el.closest('[data-comfort="large"]') ? 1.18 : 1;
+      const fs = (parseFloat(getComputedStyle(document.documentElement).fontSize) / 16 || 1) * comfort;
       const vv = window.visualViewport;
       const inset = vv ? Math.max(0, Math.round(window.innerHeight - vv.height)) : 0;
       onSize({
@@ -181,6 +204,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     "data-motion": m.reducedMotion ? "reduce" : undefined,
     "data-overflow": L.overflow ? "1" : undefined,
     "data-skin": skin || undefined,
+    "data-body": renderBody ? "stage" : undefined,
     "data-testid": "lesson",
     lang: "en-IN",
   } as const;
@@ -196,19 +220,19 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     return <div {...rootAttrs}><TroubleScreen m={m} id={full} onAction={a.troubleAction} code={supportCode} />{liveRegions}</div>;
   }
   if (m.summary) {
-    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
+    return <div {...rootAttrs} data-summary="1">{renderSummary ? renderSummary({ m, meters: media.meters, onFinish: a.finish, onFinishTo: a.finishTo }) : <Summary m={m} meters={media.meters} onFinish={a.finish} />}{liveRegions}</div>;
   }
 
   const topBar = <TopBar m={m} a={a} notMeWindow={!!(notMeWindow ?? m.notMeWindow)} phaseLine={phaseLine} wide={L.kind === "wide"} />;
   // round 3 play mode (docs/design/round3/play/patches/04): the game's own goal rail is the card while a play piece is up
   const playMode = m.tray?.kind === "studio" && (m.tray.studio?.artifact?.kind as string | undefined) === "play";
-  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
+  const card = playMode ? null : <QuestionCard ask={m.ask} answer={m.answer} waiting={!!m.askWaiting} young={young} onHear={a.hearQuestion} onFix={a.fixAnswer} goal={m.ask ? null : m.shortTitle ? t("card.goal", { topic: m.shortTitle }) : null}
     lead={m.intake && renderIntake ? renderIntake(m) : null} />;
   // The answer surfaces (tiles, the NumberPad, the Help menu over them) are AnswerTray's; the activity and the board
   // stay WorkTray's (W1-B). BUILD-PLAN W1-A items 3 and 11.
-  const answerTray = m.tray && (m.tray.kind === "tiles" || m.tray.kind === "pad" || !!m.tray.overlay);
+  const answerTray = m.tray && isAnswerTray(m.tray);
   const tray = m.tray && L.geometry === "work" ? answerTray ? (
-    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} />
+    <AnswerTray tray={m.tray} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} askKey={m.ask?.itemId ?? m.ask?.text ?? null} />
   ) : (
     <WorkTray tray={m.tray} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />
   ) : null;
@@ -217,7 +241,13 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
   const faceMedia = { meters: media.meters, mic: media.mic };
 
   let body: ReactNode;
-  if (L.kind === "wide" && L.wide) {
+  if (renderBody) {
+    const isAnswer = isAnswerTray;
+    const renderTray = (tr: NonNullable<DeskModel["tray"]>) => isAnswer(tr)
+      ? <AnswerTray tray={tr} floor={floor} young={young} actions={a} slash={m.padSlash} comma={m.padComma} askKey={m.ask?.itemId ?? m.ask?.text ?? null} />
+      : <WorkTray tray={tr} floor={floor} young={young} modules={media.modules} lang={media.lang} ageBand={media.ageBand} actions={a} onModuleFailed={a.moduleFailed} />;
+    body = renderBody({ m, a, media, topBar, card, dock, strip, renderTray, isAnswerTray: isAnswer, floor, lit });
+  } else if (L.kind === "wide" && L.wide) {
     const W = L.wide;
     const style = {
       gridTemplateColumns: `${W.gutter}px ${W.leftW}px ${W.gap}px ${W.rightW}px 1fr`,
@@ -234,7 +264,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
           <div className="dk-zone dk-zone--window" data-zone="window"><TeacherWindow m={m} media={faceMedia} floor={floor} labelBelow={false} /></div>
           <p className="dk-ailabel" data-ai-label="">{t("teacher.label", { T: m.teacher.name })}</p>
           <span />
-          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />}</div>
+          <div className="dk-zone dk-zone--caption" data-zone="caption">{m.captionsOn && <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />}</div>
           <span />
         </div>
         <div className="dk-col dk-col--right" style={{ gridColumn: 4, gridTemplateRows: `${right.padTop}px ${right.card}px ${right.gapA}px ${right.tray}px ${right.gapB}px ${right.strip}px ${right.dock}px ${right.pad}px` }}>
@@ -259,7 +289,7 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
         {topBar}
         <div className="dk-zone dk-zone--teacher" data-zone="teacher">{faceZone}</div>
         <div className="dk-zone dk-zone--caption" data-zone="caption">{L.geometry === "face" && !L.keyboard && m.captionsOn && z.caption > 0 && (
-          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor)} lang={m.caption.lang} />
+          <Caption text={m.caption.text} speaking={m.caption.speaking} visible={captionVisible(floor, m.caption.soundFailed)} lang={m.caption.lang} soundFailed={m.caption.soundFailed} />
         )}</div>
         <div className="dk-zone dk-zone--card" data-zone="card">{card}</div>
         <div className="dk-zone dk-zone--tray" data-zone="tray">{L.keyboard ? (m.tray ? <p className="dk-traystrip">{t("tray.activity")}</p> : null) : tray}</div>
@@ -274,7 +304,8 @@ export function Desk({ m, a, media, dockRef, live, onSize, notMeWindow, phaseLin
     <div {...rootAttrs}>
       {body}
       {m.sheet === "pause" && <PauseSheet onContinue={a.resume} onEnd={a.askEnd} />}
-      {m.sheet === "end" && <EndConfirm young={young} onKeep={a.cancelEnd} onEnd={a.endLesson} />}
+      {m.sheet === "end" && <EndConfirm young={young} onKeep={a.cancelEnd} onEnd={a.endLesson} onBreak={a.takeBreak} />}
+      {m.sheet === "break" && <BreakSheet since={m.breakSince ?? null} teacher={m.teacher.name} onBack={a.resume} onEnd={a.endLesson} />}
       {m.sheet === "hint" && <HintSheet onPick={a.hintPick} onClose={a.resume} />}
       {(m.sheet === "help" || m.sheet === "grownup") && (
         <HelpSheet teacherId={m.teacher.id} band={m.band} childName={m.childName} backVisible={m.helpBackVisible} lead={m.helpLead ?? "grownup"} grownUp={m.sheet === "grownup"}

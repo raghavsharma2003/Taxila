@@ -6,6 +6,7 @@ import { expressiveSeam } from "../server/voice/expressive/seam.js";
 import { safetyRegister } from "../server/voice/expressive/safety.js";
 import { renderParts } from "../server/voice/expressive/render.js";
 import { createGovernor } from "../server/voice/expressive/governor.js";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const MOVES = ["greet", "retrieval", "hook", "explain", "worked_example", "probe", "hint", "reteach", "show_module", "practice", "teachback", "celebrate", "break", "wrap", "repair", "safeguard"];
 const DISPLAYS = ["delight", "warm_pride", "enthusiasm", "gentle_concern", "playful", "calm_curious", "sheepish_own", "neutral_warm", "calm_steady"];
@@ -79,7 +80,11 @@ const SAFETY_REPLIES = [
 ];
 const style = { engine: "dhd", dhd: { voice: "en-IN-Diya:DragonHDLatestNeural", baseRate: -35 }, voice: "marin", instructions: "", version: "t", spoken: { mode: "hinglish" } };
 
-test("HV-3: 200 safety fixtures → 0 fillers, 0 non-verbals, only [calm], helplines digit by digit, 300 ms between sentences", () => {
+test("HV-3: 200 safety fixtures → 0 fillers, 0 non-verbals, only [calm], helplines digit by digit, 300 ms between sentences", (t) => {
+  // audit V-27: the expressive layer is off by default; this test exercises it, so it switches it on (restored after)
+  const prevExpr = process.env.TAXILA_VOICE_EXPRESSIVE;
+  process.env.TAXILA_VOICE_EXPRESSIVE = "1";
+  t.after(() => { if (prevExpr === undefined) delete process.env.TAXILA_VOICE_EXPRESSIVE; else process.env.TAXILA_VOICE_EXPRESSIVE = prevExpr; });
   const gov = createGovernor({ now: () => 0 });
   let n = 0;
   for (let i = 0; i < 200; i++) {
@@ -137,12 +142,14 @@ test("budget: plan + align + compile ≤ 3 ms p99 (pure code; TEACHER-BRAIN §5.
   const reply = "Chalo, 27 aur 35 jodte hain. Pehle tens: 20 aur 30, matlab 50. Phir 7 aur 5, 12. Toh total kya hua?";
   const t = [];
   for (let i = 0; i < 600; i++) {
-    const t0 = performance.now();
+    const t0 = cpuNow();
     const plan = expressiveSeam.planDelivery(base({ move: "worked_example", teacherAffect: { display: "neutral_warm", intensity: 1, cause: "none", turn: i } }), reply);
     renderParts({ lessonId: "B", text: reply, style, delivery: plan, gov, log: false });
-    if (i >= 200) t.push(performance.now() - t0); // after JIT warm-up, as a live process runs it
+    if (i >= 200) t.push(cpuNow() - t0); // after JIT warm-up, as a live process runs it
   }
   t.sort((a, b) => a - b);
+  // CPU time, not the wall clock (main 2026-11-09: p95 3.19 ms on a shared CI runner from a PR that touched no voice code;
+  // tests/_cpu-ms.mjs): the budget is this code's own work, and a busy runner's scheduler is not it. Same 3 ms bar.
   // p95 here: inside a test process that just ran 20k-moment sweeps the p99 sample is a GC pause, not this code
   // (standalone, 1,800 warm iterations: plan p99 0.20 ms + render p99 0.60 ms; w2g-plan-latency-2026-10-04)
   assert.ok(t[Math.floor(t.length * 0.95)] <= 3, `p95 ${t[Math.floor(t.length * 0.95)].toFixed(2)} ms (p99 ${t[Math.floor(t.length * 0.99)].toFixed(2)})`);

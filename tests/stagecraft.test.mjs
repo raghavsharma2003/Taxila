@@ -1,6 +1,9 @@
 // E-ST0 unit tests for Stagecraft (server/stagecraft/**; docs/design/stagecraft/STAGECRAFT.md). $0, no network.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import fs from "node:fs";
+import path from "node:path";
+import os from "node:os";
 import { ENGINE_SPECS } from "../shared/studio-spec.ts";
 import { config, initPortfolio, step, preferredRung } from "../server/stagecraft/conductor.js";
 import { buildCatalog, admissible, liveArchetypes } from "../server/stagecraft/catalog.js";
@@ -297,15 +300,22 @@ test("telemetry fold: readiness, waste, swaps excluded; rows never carry words",
   for (const e of effects.filter((x) => x.e === "telemetry")) for (const v of Object.values(e.row)) assert.ok(typeof v !== "string" || v.length < 200);
 });
 
-// round 4 content: Studio v2 is off the child path unless certified AS ITSELF at all three sizes (server/forge3/tray-gate.js);
-// no library piece is today, so "on" now keeps the W2 view and counts the refusal. The slot shape is still checked.
-test("seam bridge: on → a Studio v2 reveal goes through the tray gate (refused today: the W2 view stands); shadow → the W2 view is untouched; slot is never loading", async () => {
+// round 7 D8 (amends round 4's "off the child path unless certified at all three sizes"): a Studio v2 piece certified at
+// the device's class is proposed through the tray gate. The slot shape is still checked.
+test("seam bridge: on → a Studio v2 reveal goes through the tray gate (certified at this class: proposed); shadow → the W2 view is untouched; slot is never loading", async () => {
+  // (an empty approval store: this topic's catalogue game is on data/studio-approved/never.json since 2026-11-11 — the path
+  // under test is the unjudged catalogue one, with the judged rule switched off)
+  const AP = await import("../server/studio/approved.js");
+  AP._useStore(fs.mkdtempSync(path.join(os.tmpdir(), "no-store-")));
+  try {
   const { studioSeam } = await import("../server/studio/seam.js");
   const bridge = await import("../server/stagecraft/seam-bridge.js");
   const { revealPoint } = await import("../server/stagecraft/adapters.js");
   const builders = { instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) };
   for (const mode of ["on", "shadow"]) {
     const lessonId = `bridge-${mode}`;
+    // (a p412 phone: at p360 every Studio v2 world is refused, main 2026-11-10)
+    (await import("../server/studio/seam.js")).noteViewport(lessonId, { w: 380, h: 519 }, false);
     studioSeam.prefetch({ lessonId, purpose: "practice" });
     const host = bridge.attach(lessonId, new StagecraftHost({ lessonId, mode, catalog, builders, clock: () => 30_000 }));
     host.input({ t: "state", key: key({ lessonId }), at: 0 });
@@ -315,18 +325,35 @@ test("seam bridge: on → a Studio v2 reveal goes through the tray gate (refused
     assert.equal(p.want.need, "practice");
     assert.equal(revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "explain", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog }).want, null);
     const w2view = { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } };
-    const v = bridge.augmentView(lessonId, w2view, p);
+    // (main's ruling 2026-11-10: a catalogue piece needs a judged pass — unjudged, the tray gate refuses it and the W2 view
+    // stands; the certified-at-this-class path below is the switch off)
+    const was = process.env.STUDIO_CATALOGUE_JUDGED;
+    process.env.STUDIO_CATALOGUE_JUDGED = "off";
+    let v;
+    try { v = bridge.augmentView(lessonId, w2view, p); } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
     if (mode === "shadow") assert.equal(v, w2view);
     else {
-      assert.equal(v.propose.reveal, "w2-piece", "the uncertified Studio v2 piece is not proposed: the W2 view stands");
-      assert.ok((host.gateRefusals ?? 0) >= 1, "the refusal is counted");
+      // round 7 D8: the library piece is certified at this device's class, so it is proposed (it was refused while the
+      // gate required all three sizes)
+      assert.equal(v.propose.reveal, `${lessonId}:c1`, "the certified Studio v2 piece is proposed");
+      assert.equal(host.gateRefusals ?? 0, 0, "nothing refused");
       const { _lesson } = await import("../server/studio/seam.js");
-      assert.ok(![..._lesson(lessonId).pieces.values()].some((x) => x.source === "stagecraft"), "no Stagecraft piece was created");
+      assert.ok([..._lesson(lessonId).pieces.values()].some((x) => x.source === "stagecraft"), "a Stagecraft piece was created");
       const slot = bridge.stagecraftSlot({ slotId: "s", intentId: "i", state: "ready", stagecraft: { rung: "engine_default" } });
       assert.equal(slot.state, "ready"); assert.equal(slot.artifact.kind, "stagecraft");
     }
     bridge.detach(lessonId);
   }
+  // (the switch on — the default: the same unjudged catalogue piece is refused by the tray gate, and the W2 view stands)
+  const lessonId = "bridge-judged";
+  (await import("../server/studio/seam.js")).noteViewport(lessonId, { w: 380, h: 519 }, false);
+  studioSeam.prefetch({ lessonId, purpose: "practice" });
+  const host = bridge.attach(lessonId, new StagecraftHost({ lessonId, mode: "on", catalog, builders, clock: () => 30_000 }));
+  host.input({ t: "state", key: key({ lessonId }), at: 0 });
+  const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "practice_set", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
+  assert.equal(bridge.augmentView(lessonId, { statuses: [], onScreen: null, propose: { reveal: "w2-piece" } }, p).propose.reveal, "w2-piece", "an unjudged catalogue piece is not proposed");
+  bridge.detach(lessonId);
+  } finally { AP._useStore(null); }
 });
 
 test("kernel point (P4): null without a host; with a host it builds a point whose want comes from the kernel view only", async () => {
@@ -340,4 +367,45 @@ test("kernel point (P4): null without a host; with a host it builds a point whos
   assert.equal(p.kind, "request_answered"); assert.equal(p.want.childRequested, true);
   assert.equal(kernelView(lesson.id).request.kind, "game_request");
   bridge.detach(lesson.id);
+});
+
+test("phone play (main 2026-11-10): at p360 a refused Studio v2 game's place goes to the play family the Games picker chooses for the skill, with a phone because; the switch off keeps the script's board", async () => {
+  // (an empty approval store: this topic's catalogue game is on data/studio-approved/never.json since 2026-11-11 — the path
+  // under test is the unjudged catalogue one, with the judged rule switched off)
+  const AP = await import("../server/studio/approved.js");
+  AP._useStore(fs.mkdtempSync(path.join(os.tmpdir(), "no-store-")));
+  try {
+  const { studioSeam, noteViewport, _lesson, phonePlayStats } = await import("../server/studio/seam.js");
+  const bridge = await import("../server/stagecraft/seam-bridge.js");
+  const { revealPoint } = await import("../server/stagecraft/adapters.js");
+  const { admitPlay } = await import("../server/forge3/compose.js");
+  assert.ok(admitPlay(SKILL, TOPIC), `${TOPIC} has a play family`);
+  const builders = { instant: createBuilders().instant, generatedSpec: async () => ({ ok: false }), image: async () => ({ ok: false }), liveCodegen: async () => ({ ok: false }), library: async () => ({ ok: false }) };
+  const was = process.env.STUDIO_CATALOGUE_JUDGED;
+  process.env.STUDIO_CATALOGUE_JUDGED = "off";
+  try {
+    for (const sw of ["on", "off"]) {
+      const lessonId = `phone-${sw}`, swWas = process.env.STUDIO_PHONE_PLAY;
+      process.env.STUDIO_PHONE_PLAY = sw;
+      try {
+        noteViewport(lessonId, { w: 324, h: 187 }, false);
+        studioSeam.prefetch({ lessonId, purpose: "practice", topicId: TOPIC, child: { id: `c-${lessonId}`, class_level: 4, language_pref: "hinglish" } });
+        const host = bridge.attach(lessonId, new StagecraftHost({ lessonId, mode: "on", catalog, builders, clock: () => 30_000 }));
+        host.input({ t: "state", key: key({ lessonId }), at: 0 });
+        const p = revealPoint({ lessonId, turnSeq: 6, safety: false, beat: "practice_set", beatChanged: true, topicId: TOPIC, skillId: SKILL, band: "B2", lang: "hinglish", kitHash: "k1", lastPolicyRevealTurn: 0, at: 30_000, phase: "her_turn" }, { catalog });
+        const asked0 = phonePlayStats.asked;
+        const v = bridge.augmentView(lessonId, { statuses: [], onScreen: null }, p);
+        assert.notEqual(v?.propose?.reveal, `${lessonId}:c1`, "no Studio v2 world at p360");
+        await new Promise((r) => setTimeout(r, 400));
+        const play = [..._lesson(lessonId).pieces.values()].find((x) => x.source === "play");
+        if (sw === "on") {
+          assert.equal(phonePlayStats.asked, asked0 + 1, "the play family was asked for once");
+          assert.ok(play, "a play piece took the game's place");
+          assert.match(play.facts.because, /^phone: [a-z-]+ covers this skill$/);
+        } else assert.equal(play, undefined, "switch off: the script's board stands");
+        bridge.detach(lessonId);
+      } finally { if (swWas === undefined) delete process.env.STUDIO_PHONE_PLAY; else process.env.STUDIO_PHONE_PLAY = swWas; }
+    }
+  } finally { if (was === undefined) delete process.env.STUDIO_CATALOGUE_JUDGED; else process.env.STUDIO_CATALOGUE_JUDGED = was; }
+  } finally { AP._useStore(null); }
 });

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Asha Painted Keys</title>
+<style>
+:root {
+  --paper: #F6F3EC; --surface: #FFFFFF; --ink: #1A1C22; --ink-2: #4C505A; --line: #868A94; --accent: #26304A;
+  --cream: #F6D198; --chip: #ECE6DA; --radius-window: 24px; --elev-card: 0 1px 2px rgba(26,28,34,.08), 0 4px 12px rgba(26,28,34,.06);
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.45 "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", sans-serif; overflow-x: hidden; }
+.wrap { max-width: 1400px; margin: 0 auto; padding: 20px 16px 40px; }
+h1 { font-size: 22px; line-height: 1.2; margin: 0 0 4px; letter-spacing: -0.01em; }
+.sub { margin: 0 0 16px; color: var(--ink-2); max-width: 70ch; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; margin: 0 0 12px; }
+button, .seg button { font: inherit; font-weight: 700; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+  min-height: 44px; padding: 0 14px; cursor: pointer; }
+button.primary { background: var(--accent); color: #F5F2E8; border-color: var(--accent); }
+button:focus-visible { outline: 3px solid #3B6FD8; outline-offset: 2px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.seg button { border: 0; border-radius: 0; min-width: 64px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--chip); }
+label.tog { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 600; cursor: pointer; }
+label.tog input { width: 20px; height: 20px; accent-color: var(--accent); }
+.status { font: 13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--ink-2); min-height: 1.4em; margin: 0 0 14px; }
+.timeline { display: flex; height: 8px; border-radius: 4px; overflow: hidden; margin: 0 0 6px; background: var(--chip); position: relative; }
+.timeline i { display: block; height: 100%; }
+.timeline .head { position: absolute; top: -3px; width: 2px; height: 14px; background: var(--ink); left: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 13px; color: var(--ink-2); margin: 0 0 18px; }
+.legend span::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; background: var(--c); }
+.stage { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+.stage[data-capture] { gap: 16px; }
+figure.slot { margin: 0; display: flex; flex-direction: column; align-items: center; max-width: 100%; }
+.win { position: relative; overflow: hidden; background: var(--cream); max-width: 100%; isolation: isolate; }
+.r8 .win { background: #FBE5BD; }
+.win canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.win.window { border-radius: var(--radius-window); }
+.win.window.card { border: 1px solid var(--line); box-shadow: var(--elev-card); }
+.win.circle { border-radius: 50%; }
+.win.plate { border-radius: 16px; }
+.aitag { position: absolute; left: 0; bottom: 0; z-index: 2; font-weight: 700; font-size: 16px; line-height: 1; padding: 3px 5px;
+  background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; }
+.tlabel { padding-top: 8px; font-size: 14px; font-weight: 600; color: var(--ink-2); text-align: center; }
+figcaption.meta { margin-top: 6px; font-size: 12px; color: var(--ink-2); text-align: center; }
+.row { display: flex; align-items: center; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 8px 14px 8px 8px; max-width: 100%; }
+.row .say { font-size: 16px; line-height: 1.35; max-width: 220px; }
+.notes { margin-top: 28px; color: var(--ink-2); font-size: 14px; max-width: 75ch; }
+.notes h2 { font-size: 16px; color: var(--ink); margin: 0 0 6px; }
+.notes p { margin: 0 0 8px; }
+.err { color: #9B1C1C; font-weight: 700; }
+[data-capture] .meta { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header data-capture-hide>
+    <h1>Asha, painted keys (lamp2)</h1>
+    <p class="sub">One teacher, in the slots she has in today's app, at their real CSS sizes. One driver (the production PuppetDriver) moves every slot at once. Her voice is the product voice, Azure DragonHD Diya, with Azure's viseme events.</p>
+    <div class="bar">
+      <button class="primary" id="play" type="button">Play the 15 s scene</button>
+      <div class="seg" role="group" aria-label="Viewport">
+        <button type="button" data-vp="360">360</button><button type="button" data-vp="412">412</button><button type="button" data-vp="1366">1366</button>
+      </div>
+      <label class="tog"><input type="checkbox" id="calm"> Safety turn (calm face)</label>
+      <label class="tog"><input type="checkbox" id="reduced"> Reduced motion</label>
+    </div>
+    <div class="timeline" aria-hidden="true"><i style="width:10%;background:#C9CED8"></i><i style="width:52%;background:#26304A"></i><i style="width:15.3%;background:#3E8E7E"></i><i style="width:9.3%;background:#B98A2E"></i><i style="width:13.4%;background:#C2593F"></i><b class="head" id="head"></b></div>
+    <div class="legend"><span style="--c:#C9CED8">0-1.5 s idle</span><span style="--c:#26304A">1.5-9.3 s her Hinglish line</span><span style="--c:#3E8E7E">9.6-11.9 s listening, nods</span><span style="--c:#B98A2E">11.9-13.3 s thinking</span><span style="--c:#C2593F">13.3-15 s warm smile, then a turn</span></div>
+    <p class="status" id="status" aria-live="polite">Loading...</p>
+  </header>
+  <section class="stage" id="stage" aria-label="Asha in the app's slots"></section>
+  <section class="notes" data-capture-hide>
+    <h2>What this is</h2>
+    <p>Painted keys of her approved front, swapped, never stretched: ten painted mouths timed from Diya's visemes (60 ms crossfades), painted eye keys for blinks and glances, painted brows, and only small rigid motion of the head (within 2 degrees) and a sub-pixel breath.</p>
+    <p>The safety turn switch puts the face in the product's calm state (no smile, no listening nods) for her next line. Reduced motion scales head motion down, as in the app.</p>
+    <p>Frame sizes come from the app's own layout at 360 x 800, 412 x 915 and 1366 x 768 (lesson desk window, play / work speech row, child home, onboarding "meet", lesson summary).</p>
+  </section>
+</div>
+<script>/*BUNDLE*/</script>
+<script>
+window.PACK = /*PACK*/;
+window.LINE = /*LINE*/;
+window.WAV = "/*WAV*/";
+</script>
+<script>
+(() => {
+  "use strict";
+  const Q = new URLSearchParams(location.search);
+  const CAPTURE = Q.get("capture") === "1";
+  const ONLY = Q.get("only");
+  const $ = (s) => document.querySelector(s);
+  const statusEl = $("#status");
+  if (CAPTURE) { document.querySelector(".stage").dataset.capture = "1"; document.querySelector("header").style.display = "none"; document.querySelector(".notes").style.display = "none"; document.querySelector(".wrap").style.padding = "12px"; }
+  // ---- the slots at their real CSS sizes (measured on the app's own screens, docs/design/round4/audit/shots)
+  const SETS = {
+    "360": [
+      { id: "desk", name: "Lesson desk window", w: 325, h: 316, shape: "window", view: "medium", label: true },
+      { id: "row", name: "Play / work speech row", w: 80, h: 80, shape: "circle", view: "close", row: true },
+      { id: "home", name: "Child home", w: 319, h: 172, shape: "window card", view: "medium", label: true },
+      { id: "meet", name: "Onboarding: meet your teacher", w: 220, h: 222, shape: "window", view: "medium" },
+      { id: "summary", name: "Lesson summary", w: 78, h: 100, shape: "plate", view: "medium", label: true },
+    ],
+    "412": [
+      { id: "desk", name: "Lesson desk window", w: 375, h: 405, shape: "window", view: "medium", label: true },
+      { id: "row", name: "Play / work speech row", w: 80, h: 80, shape: "circle", view: "close", row: true },
+      { id: "home", name: "Child home", w: 319, h: 240, shape: "window card", view: "medium", label: true },
+      { id: "meet", name: "Onboarding: meet your teacher", w: 220, h: 222, shape: "window", view: "medium" },
+      { id: "summary", name: "Lesson summary", w: 78, h: 100, shape: "plate", view: "medium", label: true },
+    ],
+    "1366": [
+      { id: "desk", name: "Lesson desk window (wide)", w: 440, h: 440, shape: "window", view: "medium", label: true },
+      { id: "home", name: "Child home", w: 279, h: 312, shape: "window card", view: "medium", label: true },
+      { id: "meet", name: "Onboarding: meet your teacher", w: 220, h: 222, shape: "window", view: "medium" },
+      { id: "summary", name: "Lesson summary", w: 78, h: 100, shape: "plate", view: "medium", label: true },
+    ],
+  };
+  const pickVp = () => { const q = Q.get("vp"); if (SETS[q]) return q; const w = innerWidth; return w < 390 ? "360" : w < 840 ? "412" : "1366"; };
+  let vp = pickVp();
+  // ---- the line: PCM (WAV s16 mono) for the tap, the marks for the visemes
+  const b64 = (s) => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+  const wav = b64(window.WAV), dv = new DataView(wav.buffer);
+  const SR = dv.getUint32(24, true), N = (wav.length - 44) >> 1, PCM = new Float32Array(N);
+  for (let i = 0; i < N; i++) PCM[i] = dv.getInt16(44 + i * 2, true) / 32768;
+  const VIS = window.LINE.visemes.map(([ms, id]) => ({ ms, id })), WORDS = window.LINE.words.map(([ms, durMs, text]) => ({ ms, durMs, text }));
+  const LINE_S = N / SR;
+  // ---- the scene (seconds from Play)
+  const SPEAK_AT = 1.5, LISTEN_AT = 9.6, THINK_AT = 11.9, WARM_AT = 13.3, TURN_AT = 13.7, END = 15.2;
+  const statusAt = (st) => st < SPEAK_AT ? null : st < LISTEN_AT ? "speaking" : st < THINK_AT ? "listening" : st < WARM_AT ? "thinking" : st < END ? "your_turn" : null;
+  // the child answering: two short phrases (a syllable-rate envelope), the Listener nods at each phrase-final pause
+  const childAt = (st) => { const ph = (a, b) => st > a && st < b ? 0.32 + 0.16 * Math.sin((st - a) * 2 * Math.PI * 4.2) ** 2 : 0; return Math.max(ph(9.75, 10.55), ph(10.85, 11.55)); };
+  const ease = (x) => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+  // the turn: 13 degrees (the brief's 12-20 range; blind C1 read 16 as "the face slides over the skull" 2/5)
+  const turnAt = (st) => 13 * ease((st - TURN_AT) / 0.55) * (1 - ease((st - 14.55) / 0.55));
+  const win = new Float32Array(2048);
+  const tapAt = (st) => {
+    const pos = Math.round((st - SPEAK_AT) * SR);
+    let s2 = 0;
+    for (let i = 0; i < 2048; i++) { const j = pos - 2048 + i; const v = j >= 0 && j < N ? PCM[j] : 0; win[i] = v; s2 += v * v; }
+    return { buf: win, sampleRate: SR, t: st, level: Math.min(1, Math.sqrt(s2 / 2048) * 4), fresh: false };
+  };
+  // ---- build
+  const T = window.TxPuppet, P = window.PACK;
+  let rigs = [], driver = null, imgs = null, fan = null;
+  const stage = $("#stage");
+  const reducedQ = matchMedia("(prefers-reduced-motion: reduce)").matches || Q.get("reduced") === "1";
+  $("#reduced").checked = reducedQ;
+  if (Q.get("calm") === "1") $("#calm").checked = true;
+  function buildSlots() {
+    for (const r of rigs) try { r.dispose(); } catch (e) {}
+    rigs = []; stage.innerHTML = "";
+    const set = SETS[vp].filter((s) => !ONLY || s.id === ONLY);
+    for (const s of set) {
+      const fig = document.createElement("figure"); fig.className = "slot"; fig.dataset.slot = s.id;
+      const w = document.createElement("div"); w.className = "win " + s.shape; w.style.width = s.w + "px"; w.style.height = s.h + "px";
+      const cv = document.createElement("canvas"); w.appendChild(cv);
+      if (s.row) {
+        const tag = document.createElement("span"); tag.className = "aitag"; tag.textContent = "AI"; w.appendChild(tag);
+        const row = document.createElement("div"); row.className = "row"; row.appendChild(w);
+        const say = document.createElement("div"); say.className = "say"; say.textContent = "Agar ek dabbe mein baarah pencil hain..."; row.appendChild(say);
+        fig.appendChild(row);
+      } else fig.appendChild(w);
+      if (s.label) { const l = document.createElement("div"); l.className = "tlabel"; l.textContent = "Asha · AI teacher"; fig.appendChild(l); }
+      const cap = document.createElement("figcaption"); cap.className = "meta"; cap.textContent = `${s.name}, ${s.w} × ${s.h}`; fig.appendChild(cap);
+      stage.appendChild(fig);
+      // a pack without its own framings (r8) takes the product's r8 views (src/face-puppet/assets.ts)
+      const view = P.geom.views ? P.geom.views[s.view] : (s.view === "close" ? [140, 70, 744] : [60, 8, 904]);
+      const dprV = CAPTURE ? Number(Q.get("dpr") || 2) : Math.min(2, devicePixelRatio || 1);
+      const rig = P.geom.rev === "lamp2"
+        ? new T.KeyRig(cv, P.geom, imgs, { view, reducedMotion: $("#reduced").checked, dpr: dprV })
+        : new T.Puppet2DRig(cv, P.geom, null, imgs, { ext: "webp", view, preserve: CAPTURE, reducedMotion: $("#reduced").checked, dpr: dprV });
+      rig.slot = s.id;
+      rigs.push(rig);
+    }
+    document.querySelectorAll(".seg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.vp === vp)));
+  }
+  function newDriver() {
+    driver = new T.PuppetDriver({ band: "b2", seed: 7, reducedMotion: $("#reduced").checked });
+    if (P.geom.rev === "lamp2") driver.visemes.lead += T.KEY_LEAD_MS;   // the key rig's lead (schedule.ts KEY_LEAD_MS)
+    fan = { clock: null, frame(bs, head, gaze, lean, breath) { for (const r of rigs) { r.clock = this.clock; r.calm = driver.inSafety; r.frame(bs, head, gaze, lean, breath); } } };
+  }
+  // ---- one tick of the scene at scene time st (s) and wall clock nowMs (ms); playAt = the perf-clock ms of the line's first sample
+  let sc = null;
+  function startScene(nowMs, playAtMs, idleOnly = false) {
+    newDriver();
+    sc = { t0: nowMs, playAt: playAtMs, pushed: idleOnly, looked: idleOnly, warmed: idleOnly, calmed: false, last: null, frames: 0 };
+    if ($("#calm").checked && !idleOnly) { driver.safetyTurn(nowMs); sc.calmed = true; }
+  }
+  const LOG = [];
+  function tick(nowMs) {
+    const st = (nowMs - sc.t0) / 1000;
+    if (!sc.pushed && st >= SPEAK_AT - 0.2) { driver.visemes.push(1, sc.playAt, Q.get("bilabial") === "0" ? VIS : (P.geom.rev === "lamp2" ? T.addBilabials2 : T.addBilabials)(VIS, WORDS), WORDS, nowMs, window.LINE.text); sc.pushed = true; }
+    // the warm smile a beat after the floor moves to your_turn (the floor change releases whatever expression is up)
+    if (!sc.warmed && st >= WARM_AT + 0.15) { driver.evalEmote("warm", nowMs, undefined, 1.6, 1); sc.warmed = true; }
+    driver.evalHead = [0, turnAt(st), 0];
+    const tap = tapAt((nowMs - sc.playAt) / 1000 + SPEAK_AT);
+    const f = driver.frame({ nowMs, tap, status: statusAt(st), childLevel: childAt(st) }, fan);
+    sc.frames++;
+    sc.last = { st, state: f.state, lip: f.lipSource };
+    if (CAPTURE) {
+      const r0 = rigs[0];
+      LOG.push({ st: +st.toFixed(4), state: f.state, lip: f.lipSource, gap: r0.mouth && r0.mouth.p ? +(+r0.mouth.p.g).toFixed(2) : null,
+        mouth: r0.mouthShown ? [r0.mouthShown.a, r0.mouthShown.b, +r0.mouthShown.k.toFixed(3)] : (r0.mouth ? r0.mouth.name : null),
+        eyes: r0.eyesShown ? [r0.eyesShown.a, r0.eyesShown.b, +r0.eyesShown.k.toFixed(3)] : null,
+        brows: r0.browsShown ? [r0.browsShown.a, r0.browsShown.b, +r0.browsShown.k.toFixed(3)] : null,
+        pose: r0.pose ? [+r0.pose.rot.toFixed(3), +r0.pose.sway.toFixed(3), +r0.pose.nod.toFixed(3)] : null,
+        brow: [+(f.mouth.browInnerUp || 0).toFixed(2), +(((f.mouth.browOuterUpLeft || 0) + (f.mouth.browOuterUpRight || 0)) / 2).toFixed(2)],
+        blinkL: r0.eyes ? +(+r0.eyes.L.blink).toFixed(3) : null, jaw: +(f.mouth.jawOpen || 0).toFixed(3), pp: +(f.mouth.viseme_PP || 0).toFixed(3),
+        smile: +(((f.mouth.mouthSmileLeft || 0) + (f.mouth.mouthSmileRight || 0)) / 2).toFixed(3), yaw: +f.head[1].toFixed(2), pitch: +f.head[0].toFixed(2), gaze: f.gaze.map((v) => +v.toFixed(1)) });
+    }
+    return st;
+  }
+  // ---- live playback
+  let actx = null, src = null, raf = 0;
+  async function play() {
+    cancelAnimationFrame(raf);
+    if (src) try { src.stop(); } catch (e) {}
+    buildSlots();
+    let playAt = performance.now() + SPEAK_AT * 1000;
+    try {
+      actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+      await actx.resume();
+      const buf = actx.createBuffer(1, N, SR); buf.copyToChannel(PCM, 0);
+      src = actx.createBufferSource(); src.buffer = buf; src.connect(actx.destination);
+      const when = actx.currentTime + SPEAK_AT;
+      src.start(when);
+      const ts = actx.getOutputTimestamp ? actx.getOutputTimestamp() : null;
+      if (ts && ts.performanceTime) playAt = ts.performanceTime + (when - ts.contextTime) * 1000;
+      else playAt = performance.now() + (SPEAK_AT + (actx.outputLatency || actx.baseLatency || 0)) * 1000;
+    } catch (e) { statusEl.textContent = "Audio could not start here; the face still plays."; }
+    startScene(playAt - SPEAK_AT * 1000, playAt);
+    const loop = () => {
+      const st = tick(performance.now());
+      const head = $("#head"); if (head) head.style.left = Math.min(100, st / 15 * 100) + "%";
+      statusEl.textContent = `t ${st.toFixed(1)} s · ${sc.last.state} · mouth from ${sc.last.lip}${$("#calm").checked ? " · safety calm" : ""}`;
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+  }
+  function idle() {
+    cancelAnimationFrame(raf);
+    buildSlots();
+    const t0 = performance.now();
+    startScene(t0 - 999000, t0 + 1e9, true);   // a scene clock far past its end: idle, no line
+    const loop = () => { tick(performance.now()); raf = requestAnimationFrame(loop); };
+    raf = requestAnimationFrame(loop);
+  }
+  // ---- capture API (Playwright): a virtual clock at 60 Hz, deterministic
+  window.cap = {
+    ready: null,
+    start() { buildSlots(); this.now = 100000; startScene(this.now, this.now + SPEAK_AT * 1000); this.st = 0; tick(this.now); },
+    // gl.finish() per step: SwiftShader queues GL work, and hundreds of queued frames stall the next screenshot
+    step(toSt) { while (this.st < toSt - 1e-6) { this.st = Math.min(toSt, +(this.st + 1 / 60).toFixed(6)); tick(100000 + this.st * 1000); } for (const r of rigs) if (r.R.gl) r.R.gl.finish(); return this.st; },
+    log() { return LOG; },
+    rigs() { return rigs.map((r) => r.slot); },
+    // fps: real-time loop for `secs`, rAF timestamps, the scene playing from `from`
+    async fps(secs, from) {
+      buildSlots(); const t0 = performance.now(); startScene(t0 - from * 1000, t0 + (SPEAK_AT - from) * 1000);
+      const ts = []; return new Promise((res) => { const loop = (now) => { tick(performance.now()); ts.push(now); if (now - t0 < secs * 1000) requestAnimationFrame(loop); else {
+        const d = ts.slice(1).map((v, i) => v - ts[i]); d.sort((a, b) => a - b);
+        res({ frames: ts.length, secs: (ts[ts.length - 1] - ts[0]) / 1000, fps: (ts.length - 1) / ((ts[ts.length - 1] - ts[0]) / 1000), p50: d[d.length >> 1], p95: d[Math.floor(d.length * 0.95)], max: d[d.length - 1] }); } };
+        requestAnimationFrame(loop); });
+    },
+  };
+  (async () => {
+    try {
+      imgs = {};
+      await Promise.all(Object.entries(P.imgs).map(async ([n, u]) => { const im = new Image(); im.src = u; await im.decode(); imgs[n] = im; }));
+      document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => { vp = b.dataset.vp; idle(); }));
+      $("#play").addEventListener("click", play);
+      $("#reduced").addEventListener("change", idle);
+      if (CAPTURE) { window.cap.ready = true; return; }
+      idle();
+      statusEl.textContent = `Ready · slots for ${vp} wide · press Play for sound`;
+    } catch (e) { statusEl.innerHTML = '<span class="err">Could not start: ' + String(e && e.message || e) + "</span>"; window.cap.ready = "error: " + e; }
+  })();
+})();
+</script>
+</body>
+</html>

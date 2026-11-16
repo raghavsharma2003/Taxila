@@ -70,7 +70,7 @@ test("framed TTS v2: server frames parse back on the client across any chunk bou
     assert.equal(got[1].payload.length, ms(50) * 2);
     assert.deepEqual([...got[3].payload], [1, 2, 3]);
   }
-  assert.deepEqual(CFRAME, { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5 }); // r5 (QA D12): + adpcm
+  assert.deepEqual(CFRAME, { pcm: 0, event: 1, header: 2, turn: 3, end: 4, adpcm: 5, opus: 6 }); // r5 (QA D12): + adpcm; r7: + opus
   assert.deepEqual({ ...CFRAME }, { ...FRAME }, "the client and server frame types agree");
   // unframed: raw PCM only, JSON dropped (old clients)
   const raw = [];

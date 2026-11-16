@@ -1,0 +1,196 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ground ki boundary se perimeter, yaani chaaron taraf ki lambai, dekhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 910
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai, Riya—toh ground ki boundary socho. Perimeter, yaani chaaron taraf ki kul lambai, nikalne ke liye kya-kya naapogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1692,
+   "replyReadyMs": 2602
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1163
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, bilkul. Perimeter thodi der ruk sakta hai. Tum kis baare mein baat karna chahti ho? Phir is hisse ke baad lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1838,
+   "replyReadyMs": 3001
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1062
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kisi bhi shape ka perimeter uski sabhi sides jodkar milta hai. Cricket ground ki chaar sides hon, toh kin lambaiyon ko jodogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1470,
+   "replyReadyMs": 2532
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1095
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, “pata nahi” theek hai; maine ground ki sides saaf nahi batayi thi. Rani ke park mein length 50 m, breadth 30 m. Ek round kaise milega?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2170,
+   "replyReadyMs": 3265
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1111
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, geoboard par game khelo: rectangle banao. Uski bahar wali sides ko dekho; ek round sirf unhi par chalega. Kitni sides dikh rahi hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3945,
+   "replyReadyMs": 5056,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "level"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1150
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter ke liye shape ki poori boundary jodni hoti hai; ek side chhoot jaaye toh round adhoora rahega. Geoboard par boundary trace karke dekho.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2691,
+   "replyReadyMs": 3841,
+   "guard": [
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 789
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ye boring lag raha hai. Geoboard par ab tareeka badalte hain: perimeter ko picture, story ya game se dekhein?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1587,
+   "replyReadyMs": 2376,
+   "guard": [
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 971
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa tareeka chahiye: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 996,
+   "replyReadyMs": 1967
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1014
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek din Meena ne park ka poora chakkar lagaya. Woh chaaron sides par chali; isi kul raaste ko perimeter kehte hain. Meena ne kitni sides par chalna tha?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1481,
+   "replyReadyMs": 2495
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1058
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho, theek hai. Screen par bhi teen choices hain: abhi jaari rakhein, chhota break lein, ya aaj ke liye rokein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3212,
+   "replyReadyMs": 4270,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

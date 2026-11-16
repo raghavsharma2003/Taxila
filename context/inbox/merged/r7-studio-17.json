@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "fx-r7-w9-digit-in-number",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "W9 (main: the c5-maths-ch01-t01 place-value board masked its hundreds digit '?' but wrote '10,500' under the boxes): when a board writes a withheld DIGIT in a cell of its own (a place-value box, a column), every number on it that CONTAINS that digit is a reveal too, and regate masks the whole number '?'. A board that never splits a number into digits is unchanged ('15 cm' beside an answer of 5 is no reveal). Tested in tests/r7-motion-templates.test.mjs.",
+   "reversal": "none: a board never shows its own answer"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## fx-r7-w9-digit-in-number: a hidden digit stays hidden (2026-11-04)\n\nWhen the board hides a digit the child must find (\"?\" in the hundreds box), it no longer writes the whole number underneath that would give the digit away.\n"
+ }
+}

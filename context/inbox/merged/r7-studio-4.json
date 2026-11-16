@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-first-clause-board-hold",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "First-clause hold (C1 studio-board-timing): when a board is still planning but a code board that passes every stage check (W gates, not a page shown, shares a word with her line, fits the device) bounds the wait, the seam's planning ack carries etaMs (the ladder's sync deadline); turn.js copies it onto ui.studioSlot (patch to-brain/003); the client holds her FIRST sample by boardHoldMs(slot) = etaMs when 0 < etaMs <= 300 ms, else 0 (src/studio/boardHold.ts; patch to-voice/001 on the folded turn-audio path). Never a hold for a board that may not come, a board already on the response, or a resume. Reversal: live recordings show the pause is heard as a stall, or holds rarely fire (then lower the sync deadline instead)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-first-clause-board-hold",
+      "rel": "extends",
+      "dst": "dc-r7-board-prewarm"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-first-clause-board-hold: she may wait a beat for a board that is about to land (2026-11-04)\n\nWhen the server knows a board will be on the stage within a few hundred milliseconds, the turn says so, and the voice holds her first word for at most 300 ms so she does not point at an empty board. It never waits for a board that might not come. Brain and Voice apply the two small patches.\n"
+  }
+}

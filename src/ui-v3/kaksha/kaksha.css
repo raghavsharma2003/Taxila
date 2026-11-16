@@ -22,7 +22,7 @@
 
 .kx-top { display: flex; align-items: center; gap: 8px; min-height: 64px; padding-top: env(safe-area-inset-top); }
 .kx-sp { flex: 1; }
-.kx-mark { display: flex; align-items: center; gap: 10px; font: 700 15px/1 var(--k-mono); letter-spacing: .24em; }
+.kx-mark { display: flex; align-items: center; gap: 10px; font: 700 15px/1 var(--k-mono); letter-spacing: .24em; text-transform: uppercase; }
 .kx-mark i { width: 22px; height: 22px; border: 1.5px solid var(--k-move); border-radius: 50%; position: relative; display: block; }
 .kx-mark i::after { content: ""; position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--k-her); top: -4px; left: 6px; transform-origin: 3px 14px; animation: kx-orb 6s linear infinite; }
 @keyframes kx-orb { to { transform: rotate(360deg); } }
@@ -128,6 +128,10 @@
 .kx-sheet { --k-cut: 16px; position: fixed; left: 0; right: 0; bottom: 0; z-index: 40; max-width: 560px; margin: 0 auto; padding: 18px 16px 24px; background: var(--k-panel-solid);
   border: 1px solid var(--k-line-2); transform: translateY(110%); transition: transform .45s var(--k-e-out); visibility: hidden; }
 .kx-sheet.is-on { transform: none; visibility: visible; }
+/* r7: the sheet is a direct child of .kx-screen, whose `> :not(.kx-sky) { position: relative }` (0,2,0) beat its
+   position: fixed, so on a phone the World's station sheet and the Hangar's item sheet opened BELOW the page's end,
+   off-screen (found shooting app-practice-entry). Same fix as the dock (nav.css). */
+.kx-screen > .kx-sheet.kx-sheet { position: fixed; }
 
 /* reduced motion: the consequence shows, the motion does not */
 .kx[data-motion="reduced"] *, .kx[data-motion="reduced"] *::before, .kx[data-motion="reduced"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -151,3 +155,49 @@
   .kx-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .kx-hangar-main { max-width: 980px; }
 }
+/* r7: "Your class is here" under the World's title (F Learning: the parent's school chapter) */
+.kx-school { display: flex; align-items: center; gap: 8px; margin-top: 6px; font-size: 15px; }
+.kx-school i { flex: none; width: 8px; height: 8px; transform: rotate(45deg); background: var(--c, var(--k-ion)); }
+/* r7 app-home-plan-states: the quiet second link, what they did today, the made-for strip, the jar line */
+.kx-textlink { display: inline-flex; align-items: center; min-height: 48px; margin-top: 6px; color: var(--k-ink-2); font-size: 16px; text-decoration: underline; text-underline-offset: 4px; }
+.kx-did { --k-cut: 10px; margin: 14px auto 0; max-width: 340px; padding: 12px 14px; text-align: left; border: 1px solid var(--k-line-2); background: var(--k-panel); }
+.kx-did-ask { margin: 6px 0 2px; color: var(--k-ink-2); font-size: 15px; }
+.kx-did-ans { margin: 0; font: 600 18px/1.3 var(--k-sans); display: flex; flex-wrap: wrap; gap: 8px; align-items: baseline; }
+.kx-did-how { font: 500 14px/1 var(--k-mono); color: var(--k-secure); }
+.kx-madefor { margin: 14px auto 0; max-width: 340px; text-align: left; }
+.kx-madefor ul { list-style: none; margin: 6px 0 0; padding: 0; display: flex; gap: 8px; overflow-x: auto; }
+.kx-madefor-item { --k-cut: 8px; display: grid; gap: 4px; width: 104px; padding: 4px; border: 1px solid var(--k-line); background: var(--k-panel); color: var(--k-ink); font-size: 14px; text-decoration: none; }
+.kx-madefor-item img, .kx-madefor-item i { display: block; width: 96px; height: 72px; object-fit: cover; background: var(--k-deep); }
+.kx-jar { font-size: 15px; }
+/* done with something to show: her portrait steps down so the day's card and the made-for strip sit above the dock */
+@media (max-width: 899px) {
+  .kx-home[data-summary="1"] .kx-home-face { width: min(46vw, 190px); }
+  .kx-home[data-summary="1"] .kx-home-main { gap: 12px; align-content: start; padding-top: 4px; }
+}
+@media (min-width: 900px) {
+  .kx-home-copy .kx-did, .kx-home-copy .kx-madefor { margin-left: 0; width: 340px; }
+}
+/* r7 app-practice-entry: the station sheet's "Practise this" (a quiet frame with the ion edge, not a second volt) */
+.kx-ghost--go { display: inline-flex; align-items: center; gap: 8px; border-color: var(--k-ion); color: var(--k-ink); }
+/* on phones the dock is a bottom bar: the sheet rises above it (from 1024 px the dock is a left rail) */
+@media (max-width: 1023px) { .kx-hasdock > .kx-sheet.kx-sheet { bottom: calc(64px + env(safe-area-inset-bottom, 0px)); max-height: calc(100dvh - 140px); overflow-y: auto; } }
+
+/* r7 app-motion-transitions (go.ts: React Router navigate with a View Transition). The screen fades out fast and the new
+   one rises in; her window (kx-asha) morphs between Home, Your teacher and the lesson's stage; the dock (kx-dock) holds
+   still. Reduced motion never starts a transition (go.ts), and the OS setting stops any that would. The pseudo-elements
+   live on the document root, outside .kx, so the curve is written out (the k tokens are not defined there). */
+::view-transition-old(root) { animation: kx-vt-out .16s cubic-bezier(.16, 1, .3, 1) both; }
+::view-transition-new(root) { animation: kx-vt-in .32s cubic-bezier(.16, 1, .3, 1) both; }
+@keyframes kx-vt-out { to { opacity: 0; } }
+@keyframes kx-vt-in { from { opacity: 0; transform: translateY(10px); } }
+nav.kx-nav.kx-nav { view-transition-name: kx-dock; }
+::view-transition-group(kx-dock) { animation: none; }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+/* r7 app-world-hangar-depth: the chapters the ledger sealed (a state of the map, never a collectible) */
+.kx-seals { display: grid; gap: 8px; margin-top: 4px; }
+.kx-seals ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.kx-seal { --k-cut: 8px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 8px; border: 1px solid var(--k-secure); background: var(--k-panel); color: var(--k-ink); font: 600 15px/1.2 var(--k-sans); }
+.kx-seal svg { width: 26px; height: 26px; flex: none; color: var(--c, var(--k-secure)); }
+.kx-seal-since { font: 500 14px/1 var(--k-mono); color: var(--k-ink-3); }

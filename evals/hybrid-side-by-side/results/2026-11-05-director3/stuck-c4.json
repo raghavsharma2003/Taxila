@@ -1,0 +1,214 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj cricket ke shares jaise fractions dekhenge. Tumhe cricket mein batting pasand hai ya bowling?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1151
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya—batting ya bowling choose karna zaroori nahi. Socho: cake ko do barabar shares mein baantoge toh har share kaisa hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1565,
+   "replyReadyMs": 2716
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 696
+  },
+  {
+   "who": "teacher",
+   "text": "Ek roti ko do bilkul same tukdon mein kaato: har tukda half, yani aadha. Dono tukde same size hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1130,
+   "replyReadyMs": 1826
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 920
+  },
+  {
+   "who": "teacher",
+   "text": "Dheere chalenge. Equal parts matlab sab tukde same size. Do same tukde hon, har tukda half hota hai. Kya dono tukde same hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1373,
+   "replyReadyMs": 2293
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 897
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, barabar hissa matlab sab tukde ek hi size ke. Ek roti ke do barabar tukde hon, har tukda aadha hai. Kya tukde barabar hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1220,
+   "replyReadyMs": 2117
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 992
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 5 se tum shayad paanch tukde keh rahi ho. Agar kul 3 barabar hisse hon, ek hissa 1/3 hota hai. Tum kitne kul hisse gin rahi ho?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 3167,
+   "replyReadyMs": 4159,
+   "guard": [
+    "screen",
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 960
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Ab sirf problem padho: 1/3 of 15 pencils—15 kul pencils hain, aur 1/3 ek barabar hissa maangta hai. Yeh kya pooch raha hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1885,
+   "replyReadyMs": 2845
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1078
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, board dekho: ek roti ke chaar barabar hisse hain. Puri roti ko kitne barabar hisso mein baanta gaya?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3113,
+   "replyReadyMs": 4191,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "1 3"
+    }
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1033
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, roti ko 4 barabar hisson mein baanta gaya hai. Ismein kul kitne hisse hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2480,
+   "replyReadyMs": 3513,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 851
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha. Picture mein roti ke 4 tukde dikh rahe hain. Ab 1/3 mein kul barabar groups gino.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 2721,
+   "replyReadyMs": 3572,
+   "guard": [
+    "negates",
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "flat"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1318
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+   "move": "break",
+   "card": null,
+   "replyMs": 2982,
+   "replyReadyMs": 4300,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "wrap"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

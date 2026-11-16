@@ -1,0 +1,45 @@
+{
+ "nodes": [
+  {
+   "id": "dc-owner-2026-10-27-build-first",
+   "kind": "decision",
+   "at": "2026-10-27",
+   "title": "Owner directive: build the full product first. Testing, safety and compliance come after it works. Order: (1) build the full product with every requirement and feature; (2) test it ourselves and keep iterating on internal feedback until it is a real, fully working product; (3) only when it is about to go to real users, do the security / safety / compliance pass. Why (owner): the architecture, stack, product, UI/UX and backend are not final, so safety and compliance work on them now is wasted effort. Existing safety code stays in place (not removed, not extended, not measured). Unit tests and build gates still run on code changes. Supersedes the 14.x practice of gating every release on sim-lab safety batteries and QA safety lists. Reverse: the owner says the product is complete and user testing is next."
+  },
+  {
+   "id": "dc-owner-2026-10-27-azure-soft",
+   "kind": "decision",
+   "at": "2026-10-27",
+   "title": "Owner directive: keep Azure usage from being unnecessarily high, and ask the owner before anything that needs high usage. This is guidance, not a hard rule: the product build comes first. Background: ms-azure-spend-2026-10-24. Reverse: the owner changes it."
+  },
+  {
+   "id": "dc-owner-2026-10-27-claude-judges",
+   "kind": "decision",
+   "at": "2026-10-27",
+   "title": "Owner directive: evaluation judges (sim-lab judges, rubric scoring, blind judges) run on Claude (the Claude Code session itself) instead of Foundry models (Kimi K2.6, GPT, Grok) on Azure. Why: the sim lab's Kimi K2.6 'thinking' judge alone was about ₹41k of October's Azure spend. Reverse: the owner changes it."
+  },
+  {
+   "id": "ms-azure-spend-2026-10-24",
+   "kind": "measurement",
+   "at": "2026-10-24",
+   "title": "Azure spend, measured with Cost Management REST (ActualCost), read-only, 2026-10-24.\n- Since 2026-07-01: ₹2,68,400 ($2,797) against the $5,000 Startup Sponsorship (2026-07-08 to 2027-04-04; spending limit 'LimitRemoved'). October: ₹2,46,429.\n- 100% first-party Microsoft usage, OnDemand: no marketplace, no reservations.\n- About 89% was Foundry Models / Tools on burst days of our own test batteries: 2 Oct ₹15.5k, 4 Oct ₹24.9k, 14 Oct ₹25.5k, 15 Oct ₹64.5k, 21 Oct ₹15.3k. Quiet days (8, 12, 13, 16 Oct) were ₹1.2k.\n- Top meters: Kimi K2.6 thinking output ₹38.9k (the sim lab's judge2 taxila-kimi26), Neural HD TTS ₹23.9k, gpt-5.x/6 tokens ~₹95k, gpt-4o-mini-tts ₹15.4k (the sim lab's child voice), PG vCore ₹11.3k.\n- Fixed per day ≈ ₹1,500: taxila-cin-pg ₹602 (unused since the India move didn't cut over), taxila-web ₹150, studio-qa ₹75, LB + IP ₹70, taxila-worker and taxila-sin-staging ₹38 each; vp-research ≈ ₹290 and vyakti-voice ≈ ₹190 are other projects.\n- Budgets created: credit-guard-total ₹4.8L annual from 2026-07-01, credit-guard-monthly ₹30k."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-owner-2026-10-27-azure-soft",
+   "rel": "caused_by",
+   "dst": "ms-azure-spend-2026-10-24"
+  },
+  {
+   "src": "dc-owner-2026-10-27-claude-judges",
+   "rel": "caused_by",
+   "dst": "ms-azure-spend-2026-10-24"
+  }
+ ],
+ "md": {
+  "decisions": "## Owner directives, 2026-10-27 (handoff)\n\n- **dc-owner-2026-10-27-build-first:** build the whole product first. Then test it ourselves and iterate. Safety, security and compliance come only before real users. Existing safety code stays, frozen.\n- **dc-owner-2026-10-27-azure-soft:** Azure usage should stay sensible. Ask before anything heavy. This is guidance, not a hard rule.\n- **dc-owner-2026-10-27-claude-judges:** judges and evaluation run on Claude, not on Foundry models.\n",
+  "measurements": "## ms-azure-spend-2026-10-24\n\nAbout $2,797 of the $5,000 grant is used. It was almost all our own test batteries' model calls on a few burst days. The fixed cost is about ₹1,500/day, of which ₹602 is the unused India Postgres.\n",
+  "rejected": ""
+ }
+}

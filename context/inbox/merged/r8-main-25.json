@@ -1,0 +1,44 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-game-modes-judging-4-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Fourth judging of the three game modes (claude/r7-games e26cc539d; 111 screens; two fresh Opus judges at high effort per mode): stambh/tally round 4 FAIL and FAIL; kon/name round 3 FAIL and FAIL; kon/place round 3 PASS and FAIL. n = 6 verdicts (20 across the day). Every ruling from the round before found done on the screens in all three; 0 wrong keys or scales; laws 1 and 2 pass in all three. Four of the five failing verdicts block on what the game records, not on what the child sees: tally, two slips together or a neighbouring pad key reach the mix-up's number (49 typed as 40); kon/name, the key sits on a small corner arc two times in three; kon/place, sign=join-wrong-end reaches the teacher from one press of one of two buttons. One blocks on the screen: kon/name's row says two angles are unequal that are equal in size (isosceles figure). Reports: docs/design/round8/games-judging/<mode>/judges/."
+  },
+  {
+   "id": "dc-r8-game-gate-play-then-evidence",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "The gate for a new game mode is split in two. Gate 1, play: a mode is shown to children when two fresh judges pass everything the child sees and does (facts, words against picture, readability, language, nothing given away, no passing by trial unseen, fit for class, a true end screen, law 1 and law 2); shown on gate 1 alone it runs with naming off, recording right or wrong, first try and the number of checks, and naming no mix-up to the learner model or the teacher. Gate 2, evidence: naming is switched on when the mode's evidence rule is proved (a mix-up named only on a repeat across two levels that differ, or from a constructed act whose chance under a blind guess and any single slip is worked out and under 1 in 10), by a table in the packet and an assertion over every level, read by one judge. Law 3 gets its number: more than 1 in 10 names nothing. Standing after the fourth judging: kon/place passes gate 1 (three fixes proved by test first); stambh/tally passes gate 1 after two fixes; kon/name does not (one untrue row). Rulings: docs/design/round8/games-judging/RULINGS-2026-11-11-night.md. Reverse if: a mode shown with naming off teaches something wrong that an evidence finding would have caught (that mode goes back behind both gates); or after gate 2's proof a judge still finds a single-slip route in two modes running (then naming needs a repeat in every mode)."
+  },
+  {
+   "id": "fd-game-judging-does-not-converge-on-evidence",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "In five judgings of three game modes in one day (20 verdicts, 2 passes), every round fixed what the last round found and a fresh judge then found one more way an ordinary slip could be recorded as the mix-up (5 bundles; loose lines equal to bundles; two slips together; a neighbouring pad key; a small-arc bias; a two-button pick). The child-facing faults did converge (none blocking in two of three modes by the fourth judging). Holding a game from children until no judge can find an evidence hole keeps practice from children for a fault that does not touch the child who plays."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-game-gate-play-then-evidence",
+   "rel": "supersedes",
+   "dst": "dc-r8-game-modes-need-two-judges"
+  },
+  {
+   "src": "dc-r8-game-gate-play-then-evidence",
+   "rel": "measured_by",
+   "dst": "ms-r8-game-modes-judging-4-2026-11-11"
+  },
+  {
+   "src": "dc-r8-game-gate-play-then-evidence",
+   "rel": "caused_by",
+   "dst": "fd-game-judging-does-not-converge-on-evidence"
+  },
+  {
+   "src": "dc-r8-game-modes-three-laws",
+   "rel": "constrains",
+   "dst": "dc-r8-game-gate-play-then-evidence"
+  }
+ ]
+}

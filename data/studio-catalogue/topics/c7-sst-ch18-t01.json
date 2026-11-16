@@ -6,157 +6,245 @@
  "class": 7,
  "topicType": "T3",
  "plan": {
-  "game": "town-lab@1",
-  "hint": "council mode: gram sabha / panchayat / ward decisions within a budget"
+  "game": "sort-storm@1",
+  "hint": "sort: what stays vs what changes after an election; the three organs; the three levels of government"
  },
  "game": {
-  "archetype": "town-lab@1",
+  "archetype": "sort-storm@1",
   "spec": {
-   "archetype": "town-lab@1",
+   "archetype": "sort-storm@1",
    "skills": [
     "c7-sst-ch18-t01"
    ],
    "lang": "en",
    "strings": {
     "round": "Round",
-    "done": "right",
-    "have": "you have",
-    "need": "you need",
-    "has": "has",
-    "wants": "wants",
-    "trades": "trades",
-    "market": "market",
-    "coins": "coins",
-    "open": "OPEN",
-    "price": "price",
-    "cost": "cost",
-    "profit": "profit",
-    "sold": "sold",
-    "target": "target",
-    "stock": "stock",
-    "lock": "LOCK",
-    "run": "RUN",
-    "perMonth": "per month",
-    "years": "years",
-    "goal": "goal",
-    "saved": "saved",
-    "interest": "interest",
-    "budget": "budget",
-    "left": "left",
-    "families": "families helped",
-    "runDone": "Town closed",
-    "noDeal": "no deal",
-    "reset": "start again",
-    "rupee": "₹"
+    "sorted": "sorted",
+    "tests": "tests",
+    "coach": "Drag each card into its bin",
+    "runDone": "Belt cleared",
+    "missed": "missed",
+    "why": "because",
+    "yes": "yes",
+    "no": "no",
+    "magnetic": "magnetic",
+    "light": "light",
+    "floats": "floats",
+    "conducts": "conducts",
+    "burns": "burns",
+    "starch": "starch",
+    "tMagnet": "Magnet",
+    "tTorch": "Torch",
+    "tTank": "Water",
+    "tTester": "Circuit",
+    "tFlame": "Flame",
+    "tIodine": "Iodine",
+    "tPaper": "Paper",
+    "tBiuret": "Copper test",
+    "tTurmeric": "Turmeric",
+    "tLitmus": "Litmus",
+    "tRose": "China rose",
+    "fat": "fat",
+    "protein": "protein",
+    "acidity": "acidity",
+    "acid": "acid",
+    "base": "base",
+    "neutral": "neutral"
    },
-   "title": "Town Lab",
+   "title": "State and Government",
    "rounds": [
     {
-     "mode": "barter",
-     "title": "Swap through town",
-     "sub": "trade what each person wants",
-     "start": "rice",
-     "goal": "pot",
-     "traders": [
+     "title": "After an election",
+     "sub": "What can change? What stays the same?",
+     "bins": [
       {
-       "name": "Weaver",
-       "glyph": "person",
-       "has": "cloth",
-       "wants": "rice"
+       "id": "stays",
+       "label": "Stays the same"
       },
       {
-       "name": "Potter",
-       "glyph": "pot",
-       "has": "pot",
-       "wants": "salt"
-      },
-      {
-       "name": "Trader",
-       "glyph": "boat",
-       "has": "salt",
-       "wants": "cloth"
-      },
-      {
-       "name": "Farmer",
-       "glyph": "wheat",
-       "has": "wheat",
-       "wants": "pot"
+       "id": "changes",
+       "label": "Can change"
       }
      ],
-     "money": false,
+     "tools": [],
+     "items": [
+      {
+       "id": "territory",
+       "text": "Territory",
+       "bin": "stays",
+       "src": "c7-sst-ch18-t01-i03"
+      },
+      {
+       "id": "people",
+       "text": "India's people",
+       "bin": "stays",
+       "src": "c7-sst-ch18-t01-i03"
+      },
+      {
+       "id": "sovereignty",
+       "text": "Sovereignty",
+       "bin": "stays",
+       "src": "c7-sst-ch18-t01-i03"
+      },
+      {
+       "id": "party",
+       "text": "Ruling party",
+       "bin": "changes",
+       "src": "c7-sst-ch18-t01-i03"
+      },
+      {
+       "id": "ministers",
+       "text": "Ministers",
+       "bin": "changes",
+       "src": "c7-sst-ch18-t01-i02"
+      },
+      {
+       "id": "pm",
+       "text": "Prime Minister",
+       "bin": "changes",
+       "src": "c7-sst-ch18-t01-i02"
+      }
+     ],
+     "speed": 0.85,
      "targets": "c7-sst-ch18-t01-m1"
     },
     {
-     "mode": "market",
-     "title": "Price your stall",
-     "sub": "customers choose what to buy",
-     "good": "mango",
-     "glyph": "apple",
-     "cost": 20,
-     "stock": 6,
-     "buyers": [
-      30,
-      40,
-      50,
-      60,
-      70,
-      80,
-      90,
-      100
-     ],
-     "target": 120
-    },
-    {
-     "mode": "savings",
-     "title": "Save for a goal",
-     "sub": "choose a monthly saving plan",
-     "goal": 6000,
-     "years": 2,
-     "rate": 5
-    },
-    {
-     "mode": "council",
-     "title": "Ward budget",
-     "sub": "help the most families",
-     "budget": 50,
-     "projects": [
+     "title": "Three organs",
+     "sub": "Which organ of government is it?",
+     "bins": [
       {
-       "name": "handpumps",
-       "glyph": "tap",
-       "cost": 12,
-       "helps": 180
+       "id": "leg",
+       "label": "Legislature"
       },
       {
-       "name": "school roof",
-       "glyph": "school",
-       "cost": 25,
-       "helps": 220
+       "id": "exe",
+       "label": "Executive"
       },
       {
-       "name": "streetlights",
-       "glyph": "bulb",
-       "cost": 15,
-       "helps": 150
-      },
-      {
-       "name": "drain repair",
-       "glyph": "road",
-       "cost": 20,
-       "helps": 200
-      },
-      {
-       "name": "clean water",
-       "glyph": "drop",
-       "cost": 18,
-       "helps": 160
+       "id": "jud",
+       "label": "Judiciary"
       }
-     ]
+     ],
+     "tools": [],
+     "items": [
+      {
+       "id": "parliament",
+       "text": "Parliament",
+       "bin": "leg",
+       "src": "c7-sst-ch18-t01-i04"
+      },
+      {
+       "id": "makelaws",
+       "text": "Makes laws",
+       "bin": "leg",
+       "src": "c7-sst-ch18-t01-i04"
+      },
+      {
+       "id": "assembly",
+       "text": "State assembly",
+       "bin": "leg"
+      },
+      {
+       "id": "runs",
+       "text": "Carries out laws",
+       "bin": "exe",
+       "src": "c7-sst-ch18-t01-i04"
+      },
+      {
+       "id": "police",
+       "text": "Police",
+       "bin": "exe"
+      },
+      {
+       "id": "civil",
+       "text": "Civil servants",
+       "bin": "exe"
+      },
+      {
+       "id": "courts",
+       "text": "Courts",
+       "bin": "jud",
+       "src": "c7-sst-ch18-t01-i04"
+      },
+      {
+       "id": "disputes",
+       "text": "Settles disputes",
+       "bin": "jud",
+       "src": "c7-sst-ch18-t01-i04"
+      }
+     ],
+     "speed": 1
+    },
+    {
+     "title": "Three levels",
+     "sub": "Who mainly looks after it?",
+     "bins": [
+      {
+       "id": "union",
+       "label": "Union level"
+      },
+      {
+       "id": "statelvl",
+       "label": "State level"
+      },
+      {
+       "id": "local",
+       "label": "Local level"
+      }
+     ],
+     "tools": [],
+     "items": [
+      {
+       "id": "defence",
+       "text": "Defence",
+       "bin": "union",
+       "src": "c7-sst-ch18-t01-i05"
+      },
+      {
+       "id": "railways",
+       "text": "Railways",
+       "bin": "union",
+       "src": "c7-sst-ch18-t01-i05"
+      },
+      {
+       "id": "currency",
+       "text": "Currency",
+       "bin": "union",
+       "src": "c7-sst-ch18-t01-i06"
+      },
+      {
+       "id": "statepolice",
+       "text": "Police",
+       "bin": "statelvl",
+       "src": "c7-sst-ch18-t01-i05"
+      },
+      {
+       "id": "lights",
+       "text": "Streetlights",
+       "bin": "local",
+       "src": "c7-sst-ch18-t01-i05"
+      },
+      {
+       "id": "drains",
+       "text": "Town drains",
+       "bin": "local",
+       "src": "c7-sst-ch18-t01-i05"
+      },
+      {
+       "id": "water",
+       "text": "Village water",
+       "bin": "local",
+       "src": "c7-sst-ch18-t01-i05"
+      }
+     ],
+     "speed": 1.1,
+     "targets": "c7-sst-ch18-t01-m2"
     }
    ]
   },
   "repairs": [],
-  "attempts": 2,
-  "model": "taxila-fast-bg"
+  "attempts": 1,
+  "model": "claude-hand-authored"
  },
  "explainer": {
   "archetype": "scene-explainer@1",
@@ -2162,24 +2250,127 @@
  },
  "keys": [
   {
-   "itemId": "r1",
-   "key": "3 trades",
-   "prompt": "trade what each person wants"
+   "itemId": "r1:territory",
+   "key": "Stays the same",
+   "prompt": "Territory → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i03"
   },
   {
-   "itemId": "r2",
-   "key": "₹60 → profit 200 (target 120)",
-   "prompt": "customers choose what to buy"
+   "itemId": "r1:people",
+   "key": "Stays the same",
+   "prompt": "India's people → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i03"
   },
   {
-   "itemId": "r3",
-   "key": "₹244 a month",
-   "prompt": "choose a monthly saving plan"
+   "itemId": "r1:sovereignty",
+   "key": "Stays the same",
+   "prompt": "Sovereignty → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i03"
   },
   {
-   "itemId": "r4",
-   "key": "540 families: handpumps, drain repair, clean water",
-   "prompt": "help the most families"
+   "itemId": "r1:party",
+   "key": "Can change",
+   "prompt": "Ruling party → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i03"
+  },
+  {
+   "itemId": "r1:ministers",
+   "key": "Can change",
+   "prompt": "Ministers → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i02"
+  },
+  {
+   "itemId": "r1:pm",
+   "key": "Can change",
+   "prompt": "Prime Minister → which of [Stays the same | Can change]",
+   "src": "c7-sst-ch18-t01-i02"
+  },
+  {
+   "itemId": "r2:parliament",
+   "key": "Legislature",
+   "prompt": "Parliament → which of [Legislature | Executive | Judiciary]",
+   "src": "c7-sst-ch18-t01-i04"
+  },
+  {
+   "itemId": "r2:makelaws",
+   "key": "Legislature",
+   "prompt": "Makes laws → which of [Legislature | Executive | Judiciary]",
+   "src": "c7-sst-ch18-t01-i04"
+  },
+  {
+   "itemId": "r2:assembly",
+   "key": "Legislature",
+   "prompt": "State assembly → which of [Legislature | Executive | Judiciary]"
+  },
+  {
+   "itemId": "r2:runs",
+   "key": "Executive",
+   "prompt": "Carries out laws → which of [Legislature | Executive | Judiciary]",
+   "src": "c7-sst-ch18-t01-i04"
+  },
+  {
+   "itemId": "r2:police",
+   "key": "Executive",
+   "prompt": "Police → which of [Legislature | Executive | Judiciary]"
+  },
+  {
+   "itemId": "r2:civil",
+   "key": "Executive",
+   "prompt": "Civil servants → which of [Legislature | Executive | Judiciary]"
+  },
+  {
+   "itemId": "r2:courts",
+   "key": "Judiciary",
+   "prompt": "Courts → which of [Legislature | Executive | Judiciary]",
+   "src": "c7-sst-ch18-t01-i04"
+  },
+  {
+   "itemId": "r2:disputes",
+   "key": "Judiciary",
+   "prompt": "Settles disputes → which of [Legislature | Executive | Judiciary]",
+   "src": "c7-sst-ch18-t01-i04"
+  },
+  {
+   "itemId": "r3:defence",
+   "key": "Union level",
+   "prompt": "Defence → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
+  },
+  {
+   "itemId": "r3:railways",
+   "key": "Union level",
+   "prompt": "Railways → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
+  },
+  {
+   "itemId": "r3:currency",
+   "key": "Union level",
+   "prompt": "Currency → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i06"
+  },
+  {
+   "itemId": "r3:statepolice",
+   "key": "State level",
+   "prompt": "Police → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
+  },
+  {
+   "itemId": "r3:lights",
+   "key": "Local level",
+   "prompt": "Streetlights → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
+  },
+  {
+   "itemId": "r3:drains",
+   "key": "Local level",
+   "prompt": "Town drains → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
+  },
+  {
+   "itemId": "r3:water",
+   "key": "Local level",
+   "prompt": "Village water → which of [Union level | State level | Local level]",
+   "src": "c7-sst-ch18-t01-i05"
   }
  ],
  "check": {

@@ -18,8 +18,11 @@ export interface TeacherRecord {
   characterName: string;
   pronouns: Pronouns;
   signatureColor: string;
-  /** Interim rig stills (§8, scripts/teacher-stills.mjs): public/assets/gen/teacher/<id>/<pose>.webp. */
-  stills: { portrait: string; wave: string; resting: string; reading: string; watering: string; telescope: string };
+  /** Art ids of the character's stills (teacher/<id>/<pose>). For a tutor with rig stills (shared/tutors.js `stills`) the
+   *  art loader maps each id to the still of the puppet look this page shows (round 7: rendered from that look's live rig,
+   *  public/assets/teacher/<id>-stills/<rev>/<look>-<pose>.webp, ledger public/assets/teacher/asha-stills/1/index.json), so a card and the
+   *  lesson face are the same face, and the record itself never waits on the look. */
+  stills: { portrait: string; wave: string; resting: string; reading: string; watering: string; telescope: string; smile: string; listening: string; thinking: string; curious: string; proud: string };
 }
 
 /** The name the child gave a character: `id` is the character it belongs to (a name never follows a switch). */
@@ -44,11 +47,12 @@ export function teacherRecord(id: string | null | undefined, band: string, name?
     id: t.id,
     name: name && name.trim() ? name.trim() : own,
     characterName: own,
-    pronouns: pronounsFor(t.look.presentedGender),
+    pronouns: t.pronouns ?? pronounsFor(t.look.presentedGender),
     signatureColor: t.look.signatureColor,
     stills: {
       portrait: still("portrait"), wave: still("wave"), resting: still("resting"),
       reading: still("reading"), watering: still("watering"), telescope: still("telescope"),
+      smile: still("smile"), listening: still("listening"), thinking: still("thinking"), curious: still("curious"), proud: still("proud"),
     },
   };
 }

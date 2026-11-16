@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-practice-entry",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Practice is reachable from the dock and from a World station ('Practise this' → /practice/<topic of the skill>, never on a hold), and practice talks like any lesson (it was forced to text; the child's Type instead and the parent's text-only still hold). Reverse: the practice lane cannot carry voice.",
+   "source": "inbox/r7-app-7.json"
+  },
+  {
+   "id": "ms-r7-app-sheet-offscreen",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "The World station sheet and the Hangar item sheet rendered below the page end on phones (360x800: sheet top at y=849, off-screen): `.kx-screen > :not(.kx-sky) { position: relative }` (0,2,0) beat `.kx-sheet { position: fixed }`. Fixed with `.kx-screen > .kx-sheet.kx-sheet`, and the sheet now rises above the phone dock (method: app-shots station, Playwright boundingBox; n=1 per size).",
+   "source": "inbox/r7-app-7.json"
+  }
+ ],
+ "edges": [],
+ "md": "## dc-r7-app-practice-entry\nA child who has secured an idea in their World can go straight to a short practice set on it. The set uses the existing practice route: retrieval of verified-key items, with feedback inside the run and nothing carried over. Practice used to be text-only for no recorded reason. It now follows the child's own Talk settings like every lesson.\n\n## ms-r7-app-sheet-offscreen\nThis was found while shooting the new 'Practise this' button. Tapping a station on a phone seemed to do nothing, because the sheet opened at the very end of the page, below the fold. It is the same CSS specificity trap that had broken the dock earlier.\n"
+}

@@ -1,0 +1,49 @@
+From: Studio (C1), 2026-11-10 — the approval lane (STUDIO-11; main's go; dc-r8-selection-before-generation layer 3)
+Subject: a scripted remediation marked `piece` asks Studio for the approved piece of its mix-up
+
+The approval lane stores generated pieces approved offline (data/studio-approved: predicate checks, a render at p360 / p412 /
+l1366, a separate Claude judge), each FOR one mix-up of one topic. A remediation already fires only for the child who showed
+that mix-up (scriptBeat.beatId "rem:<misconceptionId>"), so the beat is the selection: when Learning's script marks the
+remediation entry `"piece": true` (to-learning/006), this carries `piece: true` onto its scriptBeat (both remediation paths in
+state.js) and onto the whiteboard ask (propose.js refOf). Studio's seam (requestIntent) then reveals the approved piece for that
+mix-up when the tray gate passes it at the child's device size, and the script's own board otherwise — so nothing changes for
+a remediation not marked, or a mix-up with no approved piece. Her line points at the piece from its facts row (the slot's
+facts, as for any Studio piece); the piece holds the tray while the child plays it (it is not a board).
+
+Two lines. Apply with `git apply` on the Brain branch.
+
+diff --git a/server/brain/propose.js b/server/brain/propose.js
+index 378281b00..8e9dac6d3 100644
+--- a/server/brain/propose.js
++++ b/server/brain/propose.js
+@@ -226,7 +226,7 @@ export function closureEnd(reply) {
+   for (const m of r.matchAll(CLOSURE)) end = m.index + m[0].length;
+   return end ? skipSpace(r, end) : 0;
+ }
+-const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ...(b.ownBoard ? { ownBoard: true } : {}), ...(b.answers?.length ? { answers: [...b.answers] } : {}) });
++const refOf = (b) => ({ scriptId: b.scriptId, beatId: b.beatId, kind: b.kind, ...(b.ownBoard ? { ownBoard: true } : {}), ...(b.answers?.length ? { answers: [...b.answers] } : {}), ...(b.piece ? { piece: true } : {}) });
+ /**
+  * v5 B1: the parts of a scripted line and their boards, from the move (state.js closeBeat / closedBeat / scriptBeat / cardBeat):
+  * a closure, a give-up and the skill's bridge on the board the last turn ended on; a missed card's close on that card's own
+diff --git a/server/director/state.js b/server/director/state.js
+index 66d4eafdc..f5cc46459 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -990,7 +990,7 @@ function walkRemedy(s, input, item) {
+     return plan("reteach", SH.scriptRemedyV2(), { item: then, probe: probeFor(then), skillId: item.skillId,
+       content: [`their question: ${s.ctx.lang === "english" ? item.prompt_en : item.prompt_hi}`, `its answer: ${item.answer}`],
+       rendered: [/[.!?।]$/.test(sayLine.trim()) ? sayLine.trim() : `${sayLine.trim()}.`],
+-      scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}) } });
++      scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}), ...(r.piece ? { piece: true } : {}) } });
+   }
+   s.nextItemId = then.id;
+   const mis = kit.misconceptions.find((m) => m.id === targets);
+@@ -1000,7 +1000,7 @@ function walkRemedy(s, input, item) {
+   return plan("reteach", SH.scriptRemedy(), { skillId: item.skillId,
+     content: [`their question: ${lang === "english" ? item.prompt_en : item.prompt_hi}`, `its answer: ${item.answer}`, ...(mis?.belief ? [`the wrong idea: ${mis.belief}`] : []),
+       `the new way: ${r.move}`, ...(say ? [`say this explanation in your words: ${say}`] : []), `follow-up question: ${lang === "english" ? then.prompt_en : then.prompt_hi}`],
+-    scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}) } });
++    scriptBeat: { scriptId: scriptIdOf(kit), skillId: item.skillId, beatId: `rem:${targets}`, kind: "remediation", ...(r.board ? { board: r.board } : {}), ...(r.piece ? { piece: true } : {}) } });
+ }
+ // ───────────── round 7 A6: teaching-question evidence (PIPELINE §A Brain item 3; kill switch TAXILA_R7_STEP_CHECK=off) ─────────────
+ export const stepCheckOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_STEP_CHECK ?? ""));

@@ -52,6 +52,8 @@ export const EN = {
   "card.hear_short": "Hear",
   "card.your_answer": "Your answer:",
   "card.your_question": "Your question",
+  // r7 (3b): the board on screen is about something else for a moment; the open question folds to this line
+  "card.waiting": "Your question is waiting",
   "card.not_sent": "Not sent yet",
   "card.sent": "Sent",
   "card.not_yet": "Let's look again",
@@ -78,6 +80,16 @@ export const EN = {
   // r5 QA: on a 393 px phone the field is ~160 px wide beside Send and Talk; the long label was cut to "Type your answ"
   "dock.type_placeholder": "Your answer",
   "dock.numbers": "123",
+  // r7 app-handsfree-dock: the hands-free readout (the duplex engine decides the floor; no talk button) and the mute switch
+  "hf.listening": "Speak any time",
+  "hf.starting": "Getting ready to listen",
+  "hf.hearing": "Listening",
+  "hf.muted_line": "Mic is off",
+  "hf.wait": "Take your time",
+  "hf.speaking": "Cut in any time",
+  "hf.thinking": "{T} is thinking",
+  "hf.mute": "Mute",
+  "hf.unmute": "Unmute",
   "dock.delete": "Delete",
   // top bar
   "bar.pause": "Pause",
@@ -123,6 +135,14 @@ export const EN = {
   "end.title": "End the lesson?",
   "end.keep": "Keep going",
   "end.end": "End lesson",
+  // r7 (D5): Pause → End is the check-in: keep going, a short break, or end for today (never an instant end)
+  "end.sub": "Nothing is lost. Pick what you need.",
+  "end.break": "Short break",
+  "break.title": "On a break",
+  "break.sub": "Your mic is off and {T} will wait. Pick up exactly where you left off.",
+  "break.for": "Break: {m} min {s} s",
+  "break.back": "I'm back",
+  "break.end": "End for today",
   // safety help sheet (§6.4.9). Helpline numbers re-verified at launch [M: re-verify].
   "help.title": "You're not in trouble.",
   "help.sub": "You can talk to someone.",

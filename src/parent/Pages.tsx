@@ -2,18 +2,19 @@
 // profile, DELETE MY ACCOUNT), Help and safety, Change PIN (PRODUCT-DESIGN-V2 §6.5.5), and the public helpline page.
 // Every consent-grade act asks for the account password, and its errors sit on the password field in sentences (§4.7).
 // Pages that would hold nothing real yet (Monthly talk, Family, Plan, Saved lessons) are not linked at all (P6).
+import { PairCard } from "../app/PairCard.tsx";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Art, Button, HoldButton, Icon, PinPad, Speaker, TileGroup } from "../ui/index.ts";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { loadMe, postJson, refreshMe, type ChildRow, type Me } from "../app/api.ts";
+import { loadMe, refreshMe, type ChildRow, type Me } from "../app/api.ts";
 import { bandForClass } from "../app/band.ts";
 import { Helplines } from "../app/Shell.tsx";
 import { isRelock, parentApi, type ParentMemory } from "./api.ts";
-import { BOARD_NAME, isPasswordError, parentError } from "./copy.ts";
+import { BOARD_NAME, consentEffect, isPasswordError, labelTitle, parentError, TEACHER_FALLBACK } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 import { useGate } from "./Gate.tsx";
-import { PageState, ParentShell, RowLink, useChildren } from "./Shell.tsx";
+import { PageState, ParentShell, RowLink, signOut, useChildren } from "./Shell.tsx";
 
 const teacherNameOf = (c: ChildRow) => (c as ChildRow & { teacher_name?: string | null }).teacher_name || teacherRecord(c.teacher_id, bandForClass(c.class_level)).name;
 
@@ -26,15 +27,16 @@ export function More() {
     <ParentShell title="More" child={current} kids={kids}>
       <h1 className="pa-h1">More</h1>
       <ul className="pa-list pa-more">
-        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note and the weekly letter">Notes</RowLink></li>
-        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language, words on screen">Controls</RowLink></li>
+        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note, the weekly letter and the monthly report">Notes</RowLink></li>
+        <li><RowLink to={`/parent/teaching${qs}`} sub="What the teacher did in recent lessons, and why">How the teacher teaches</RowLink></li>
+        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language">Controls</RowLink></li>
         <li><RowLink to={`/parent/children${qs}`} sub="Add a child, switch child">Children</RowLink></li>
         <li><RowLink to={`/parent/data${qs}`} sub="Your choices, download, delete">Data and privacy</RowLink></li>
         <li><RowLink to={`/parent/help${qs}`} sub="Helplines, what happens if a child is worried, Forgot PIN">Help and safety</RowLink></li>
         <li><RowLink to={`/parent/pin${qs}`}>Change parent PIN</RowLink></li>
         <li><RowLink to="/trust">Our promises</RowLink></li>
       </ul>
-      <Button variant="quiet" onClick={async () => { await postJson("/api/auth/logout", {}).catch(() => {}); await refreshMe().catch(() => {}); nav("/"); }}>Sign out</Button>
+      <Button variant="quiet" onClick={() => signOut(nav)}>Sign out</Button>
     </ParentShell>
   );
 }
@@ -94,6 +96,8 @@ export function Children() {
                   <Button small variant="secondary" onClick={() => nav(`/parent?c=${k.id}`)}>See {k.first_name}'s week</Button>
                   <Button small variant="quiet" aria-expanded={open === k.id} onClick={() => setOpen(open === k.id ? null : k.id)}>Delete profile</Button>
                 </div>
+                {/* r7 app-child-device-pairing (App): the child's own phone or tablet, by a one-time code */}
+                <PairCard childId={k.id} name={k.first_name} />
                 {open === k.id && <DeleteChild child={k} onDone={(n) => { setGone(n); setOpen(null); reload(); }} />}
               </li>
             ))}
@@ -114,7 +118,7 @@ const CHOICES: { purpose: Purpose; title: string; yes: string; no: string; effec
     effectNo: () => "Each lesson starts fresh. The Garden or Sky map and the Notebook stay hidden." },
   { purpose: "memory", title: "Remember what your child likes", yes: "Yes", no: "No",
     effectYes: "Interests your child mentions (cricket, a pet's name) are used in examples, and a good moment from an earlier lesson may open the next one. You can see and delete each memory below.",
-    effectNo: (t) => `${t} won't use your child's interests in examples.` },
+    effectNo: (t) => `${labelTitle(t)} won't use your child's interests in examples.` },
   // ship5 p3-voicesig. KEEP IN STEP with server/routes/parent.js CONSENT_SPEECH.voice_pace_memory (the spoken version).
   { purpose: "voice_pace_memory", title: "Remember your child's usual answering pace", yes: "Yes, remember", no: "Only this lesson",
     effectYes: "Only numbers about how long your child usually takes to start an answer are kept on Taxila's own database, never recordings or words. We are still testing what they can tell the teacher; for now they change nothing in lessons.",
@@ -157,7 +161,7 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
         <Speaker src={`/api/parent/speak?what=consent&row=${c.purpose}`} label={`Listen: ${c.title}`} />
       </div>
       <p>Now: <strong>{now === null ? "Not answered" : now ? c.yes : c.no}</strong></p>
-      <p className="pa-effect">{now === false ? c.effectNo(teacherName) : c.effectYes}</p>
+      <p className="pa-effect">{consentEffect(now, c.effectYes, c.effectNo(teacherName))}</p>
       {!editing ? <Button small variant="secondary" onClick={() => { setEditing(true); setPick(now === null ? null : now ? "yes" : "no"); }}>Change</Button> : (
         <div className="pa-stack-sm">
           <TileGroup label={c.title} columns={2} value={pick} onChange={(v) => setPick(v as "yes" | "no")}
@@ -180,7 +184,7 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
  * consent's own promise: "You can see and delete each one"; a child's "please forget that" deletes this lesson's rows and
  * the ones she had in hand, the rest are here). The rows are shown as stored, labelled as the teacher AI's own note.
  */
-function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
+export function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
   const { relock } = useGate();
   const [m, setM] = useState<ParentMemory | null>(null);
   const [err, setErr] = useState<string | null>(null);
@@ -339,7 +343,7 @@ export function Data() {
     const t = window.setTimeout(() => document.getElementById(loc.hash.slice(1))?.scrollIntoView({ block: "start" }), 50);
     return () => window.clearTimeout(t);
   }, [loc.hash, me]);
-  const teacherName = current ? teacherNameOf(current) : "Your child's teacher";
+  const teacherName = current ? teacherNameOf(current) : TEACHER_FALLBACK;
   return (
     <ParentShell title="Data and privacy" child={current} kids={kids}>
       <h1 className="pa-h1">Data and privacy</h1>
@@ -383,7 +387,7 @@ export function Help() {
   const { lockNow } = useGate();
   const { kids, current } = useChildren();
   const name = current?.first_name ?? "your child";
-  const T = current ? teacherNameOf(current) : "The teacher";
+  const T = current ? teacherNameOf(current) : TEACHER_FALLBACK;
   return (
     <ParentShell title="Help and safety" child={current} kids={kids}>
       <h1 className="pa-h1">Help and safety</h1>
@@ -399,16 +403,16 @@ export function Help() {
         <section className="pa-card" aria-labelledby="pa-worry-h" id="alert">
           <h2 id="pa-worry-h" className="pa-h2">When a child says something worrying</h2>
           <ul className="pa-steps">
-            <li>{T} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up you trust".</li>
-            <li>{T} never asks {name} to explain, and never keeps it a secret from you.</li>
+            <li>{labelTitle(T)} stops the lesson at once and shows {name} the helplines and "Talk to a grown-up you trust".</li>
+            <li>{labelTitle(T)} never asks {name} to explain, and never keeps it a secret from you.</li>
             <li>Taxila's safeguarding team is told, and a person looks at what happened. If they need to reach you, they will.</li>
             <li>Lessons may pause while they look. {name} sees a calm screen with the helplines, never a warning.</li>
           </ul>
           <p className="pa-effect">What to do: find a quiet moment, ask {name} how they are, and listen. If {name} might be in danger, call Childline 1098.</p>
         </section>
         <section className="pa-card" aria-labelledby="pa-ai-h">
-          <h2 id="pa-ai-h" className="pa-h2">{T} is an AI</h2>
-          <p>{T} is a computer program, not a person, and says so to {name}. You see what {name} learns here.</p>
+          <h2 id="pa-ai-h" className="pa-h2">{labelTitle(T)} is an AI</h2>
+          <p>{labelTitle(T)} is a computer program, not a person, and says so to {name}. You see what {name} learns here.</p>
           <RowLink to="/trust">Our promises</RowLink>
         </section>
         <section className="pa-card" aria-labelledby="pa-forgot-h">

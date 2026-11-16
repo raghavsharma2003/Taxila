@@ -1,0 +1,54 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r144-spoken-fractions",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "Spoken Devanagari fractions earn evidence (4A, main's 14.4 item from 4B's finding). classify() over the 52 fraction-key kit items x 4 Devanagari spoken forms of the key ('<n> बटा <d>', '<n> बता <d>', '+ होगा', 'मेरे ख्याल से +'): correct 0/208 before, 208/208 after (156 by the code number path). Wrong forms (n/(d+1), (n+1)/d, d/n, and 'मुझे बता दो' on every item): 0/208 credited before and after; 'मुझे बता दो' no evidence 52/52. Three changes: spoken-number.js reads बटा / बता as OVER (बता only between two numbers) and a Devanagari दो after a verb stem as the verb unless a fraction claims it; learner/affect.js no longer reads '<n> बता दो' as asking for the answer; tailAgrees reads a spoken Devanagari fraction as the number itself. Side-effect check (main): tailAgrees and unitsAfterNumbers old vs new over 2,008 Devanagari sim-lab child lines x their item keys: only the 2 fraction lines moved; 0 unit readings moved. A first version that kept vowel signs in wordToks moved 206 (then 832) other Devanagari tail verdicts and was replaced. Shared fixture: 4B's tests/fixtures/spoken-fractions.json (34 cases, the engine's valuesOf and duplex/understand.js valuesIn test the same file): the grader read 32/34 at first ('2 बता दो' lost the digit numerator; 'एक बार और दिखा दो' read 1) and 34/34 after two narrow rules: a digit numerator stays open before an OVER word with a number after it (and a digit denominator then closes the fraction), and 'एक बार' with words after it is 'once', not 1. The grader keeps 'एक' in running Hindi as 1 ('मेरे ख्याल से एक'), where 4B's readers count it only alone or in 'एक बटा'. Old vs new numberPhrases / spokenNumber / unitsAfterNumbers / statedResults / selfCorrected over 3,162 sim-lab child lines (636 Devanagari): 25 lines moved, 21 'ek baar / एक बार' narrative lines (once) and 4 '<digit> over <digit>' lines now read as one value ('2 over 5' -> 0.4, '1.5 over 9' -> 1/6); 0 unit readings moved. The 208/208 and 0/208 still hold."
+  },
+  {
+   "id": "ms-r144-affirm-opener",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "No affirmation that approves what nobody said (open-r143-affirm-on-no-answer; brain/say.js affirmOpenerFix on every lane's final reply, never a safeguard). (a) not_yet / partial verdict or truly empty input: the leading affirmation goes; (b) a right answer that opens No / nahi / नहीं: a bare Yes / Haan / हाँ opener becomes Right / Sahi / सही. Same function over the sim lab's transcripts: 14.2 decided Director 860 turns 1 stripped, 0 left; e46a281 decided 1,698 turns 3 polarity rewrites, 0 left; f444f064 continuer OOS 415 turns 0 (a 'Right-align' opener is not an affirmation); p30 re-run 1 polarity rewrite ('Yes, Pihu—earthworm has no legs' -> 'Right, Pihu—…'). Not covered: the polarity case on the agent lane's streamed first clause."
+  },
+  {
+   "id": "dc-r144-ways-chips-lang",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "r5 QA D41 (14.4): the ways-in chips (picture / story / game / back, director/state.js waysChips) go through chipLabels(lang) like the stop and check-in chips (Hinglish 'Picture dikhao / Kahani mein batao / Game khelte hain / Lesson par wapas', Hindi 'तस्वीर दिखाओ / कहानी में बताओ / गेम खेलते हैं / पाठ पर वापस'); the Director still reads the ids, and each label said aloud reads as its request (a Devanagari story ask needs its telling verb, so 'इस कहानी में राजा कौन है' is not one). The Hinglish LANGUAGE rule (compiler/compile.js) no longer follows a switch to English: her English words, even a whole English line ('Can we do the lesson now?'), keep Hinglish; only a language request (requests.js 'language', PINNED) changes it. Reversal: a Hinglish-pref child who keeps writing English and is understood worse in Hinglish (owner report or sim-lab register check)."
+  },
+  {
+   "id": "ms-r144-story-question",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "A question about THIS story is not a story request (14.4, main; director/requests.js STORY_QUESTION): a question word (kaun / kya / kahan / kyun / kab / kaise / kitne, who / what / where / why / when / how, and the Devanagari forms) with 'is / iss / yeh / this kahani / story / इस कहानी' reads as no request ('is kahani mein raja kaun hai' was a story request). Old vs new requestOf over 3,162 sim-lab child lines (225 records, r5-rel143 runs): 0 moved (1 line read as a story request before, 'kahani shuru karein?', and still does; 11 lines mention kahani / story). Tests: 6 questions stay questions, 8 requests stay requests."
+  },
+  {
+   "id": "open-r144-hindi-english-line",
+   "kind": "open",
+   "at": "2026-10-15",
+   "title": "The Hindi LANGUAGE rule (compiler/compile.js) still follows a switch to English, where D41 made the Hinglish one hold. Left for 14.4 (main): a Devanagari child typing Roman / English may be fighting the keyboard rather than asking for English. Wanted before any change: how often Hindi-pref children write English in sim-lab / TEST, and what the hidden truth says they wanted."
+  },
+  {
+   "id": "rj-r144-wordtoks-keep-marks",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Keeping Devanagari vowel signs (\\p{M}) in spoken-number.js wordToks so 'बटा' tokenises whole (4A, 14.4 spoken fractions): it moved 206 of 2,008 sim-lab Devanagari tail verdicts that had nothing to do with fractions, e.g. 'पाँच मीटर' for '5 m' true -> false. Replaced by reading a spoken Devanagari fraction as one number before tokenising (DEVA_FRACTION), which moved only the 2 fraction lines."
+  },
+  {
+   "id": "rj-r144-ignore-devanagari-tail",
+   "kind": "rejection",
+   "at": "2026-10-15",
+   "title": "Fixing the keep-marks side effect by having tailAgrees ignore a Devanagari tail entirely (4A, 14.4 spoken fractions): it moved 832 of 2,008 sim-lab Devanagari tail verdicts the other way (contradicting tails stopped vetoing). Replaced by DEVA_FRACTION with wordToks unchanged (2 moved, both fraction lines false -> true, 0 unit readings moved)."
+  },
+  {
+   "id": "dc-r144-deep-marks-switch",
+   "kind": "decision",
+   "at": "2026-10-15",
+   "status": "proposed",
+   "title": "The deep-kind audit's 1,927 marks are measured before they are applied: TAXILA_KIT_DEEP_MARKS=1 (off by default) loads data/kits/deep-marks-2026-10-15.json as deep: false through the kit loader; the patch itself (main's deep-kind-fix, items.js plainEvidence) is applied on claude/r4-conversation and changes nothing while no kit carries deep: false. The sim lab's 2x2 (marks off/on x a kind-only / audit-aware decided child) decides. Reversal: on apply, write the marks into the kits (evals/kit-deep-kinds/apply.mjs --write) and remove the switch and the list; on reject, remove both and keep the patch's code inert."
+  }
+ ]
+}

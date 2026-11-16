@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-device-boot",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "A paired child device boots child mode from the readable tx_paired cookie and GET /api/child/boot, never /api/me (403 scope.child_device on a device-only browser). The boot's me is cut client-side to scope:'child', guardian:null, that one child. A 401 with tx_paired set means unpaired: back to /pair with a gentle note. Supersedes the /api/me scope:'child' ask in dc-r7-app-device-pairing. Reverse: Platform serves a child-scoped /api/me.",
+   "source": "inbox/r7-app-29.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-device-boot",
+   "rel": "supersedes",
+   "dst": "dc-r7-app-device-pairing"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-device-boot`\nThe child's own device knows whose it is from a cookie the pairing left, and asks only child routes for the rest. Nothing on it shows a brother's or sister's name or the parent's email.\n"
+ }
+}

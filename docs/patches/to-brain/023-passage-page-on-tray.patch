@@ -1,0 +1,41 @@
+From: Studio (C1), 2026-11-10 — the passage board (PASSAGE.md; main's yes: a passage is reading matter, not a whiteboard)
+Subject: [PATCH 023, on top of 020] the board beat on Studio's tray, with the page she is reading from
+
+Studio built the passage side on claude/r4-content: server/studio/passage.js (the kit's text paged for 360 px, exactly the
+kit's words), the "passage" tray artifact and its renderer (16 px+, line height 1.6, no sideways scroll, 44 px page buttons),
+the tray gate's predicate at p360 / p412 / l1366 (all 169 kit passages pass), and studioSeam.showPassage(lessonId,
+{ passage, page, lang }) — one piece per passage per lesson; a later call turns its page.
+
+This adds Brain's half to 020's server/director/passage.js (apply 020 first):
+- studioPassageOf(beat, { page, lang }): the showPassage arguments for a "board" beat (null for "aloud").
+- pageFor(beat, item, current): the page that holds the text the item quotes, else the current page. The page she is reading
+  from is the page shown: pass page 1 with the beat, then pageFor(...) for each question and hint turn on that passage.
+Wiring (yours, where 020's note puts the beat in state.js / turn.js): on the beat's turn and whenever the page changes,
+seamSafe("studio.passage", () => studioSeam.showPassage(lesson.id, studioPassageOf(beat, { page, lang })), null).
+
+--- a/server/director/passage.js
++++ b/server/director/passage.js
+@@ -25,3 +25,23 @@
+ 
+ /** What the voice says for an "aloud" beat: the title, then the lines in order, as the kit wrote them. */
+ export const aloudText = (beat) => [beat.title, ...beat.lines].filter(Boolean).join("\n");
++
++// ───────────── Studio's half (to-brain/023): the board beat on the tray, at the page she is reading from ─────────────
++// A "board" beat is shown by Studio as reading matter (a passage artifact, server/studio/passage.js: the kit's text exactly,
++// paged for a 360 px phone), never a whiteboard. The page is Brain's to say: 1 when the beat runs; on later turns (the question
++// and its hints) the page that holds the part of the text the question is about — `pageFor` finds it from a quoted span of
++// the item's prompt when there is one, else the page stays where it is. Call studioSeam.showPassage on the beat's turn and
++// again whenever the page changes; Studio keeps one piece per passage and only turns its page.
++import { pagePassage, pageAt } from "../studio/passage.js";
++
++/** The page (1-based) of `beat`'s passage that holds the text the item quotes ('…' / "…" / ‘…’ in its English prompt), or `current`. */
++export function pageFor(beat, item, current = 1) {
++  const q = /["“‘']([^"”’']{6,})["”’']/.exec(String(item?.prompt_en ?? ""))?.[1];
++  if (!beat?.text || !q) return current;
++  const at = beat.text.indexOf(q.trim());
++  return at < 0 ? current : pageAt(pagePassage({ text: beat.text }), at);
++}
++
++/** The arguments for studioSeam.showPassage(lessonId, …) for a "board" beat, or null for an "aloud" one. */
++export const studioPassageOf = (beat, { page = 1, lang = null } = {}) =>
++  beat?.mode === "board" ? { passage: { id: beat.passageId, text: beat.text, title: beat.title ?? null, kind: beat.kind ?? null }, page, lang } : null;

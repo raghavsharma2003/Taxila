@@ -1,0 +1,331 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj perimeter seekhenge—cricket ground ke boundary fence ki poori length. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1211
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, koi baat nahi—cricket ground ko bas ek closed shape samjho. Agar edge se chal kar wahi corner aaye, kitni doori hogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1367,
+   "replyReadyMs": 2578,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 738
+  },
+  {
+   "who": "teacher",
+   "text": "Ek band rectangle ke kinare par ungli rakho aur poora chakkar lagao—jitni kul doori, wahi perimeter. Rectangle ka kaunsa hissa follow karogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1259,
+   "replyReadyMs": 1997,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 872
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 4105,
+   "replyReadyMs": 4977,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "level"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 889
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, aayat ke chaaron kinaaron ki kul lambai ko perimeter kehte hain. Ab batao, kinare kitne hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1345,
+   "replyReadyMs": 2234,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1061
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 5 kinaare gine. Chalo rectangle ke upar, neeche, baayen aur daayen kinaare ginte hain—ab kul kitne hue?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 3532,
+   "replyReadyMs": 4593,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 5 cm | ? cm",
+     "numbers": "6 5"
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "negates",
+    "level",
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1237
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Rectangle ke chaar kinaare hote hain: upar, neeche, baayen, daayen. Inhe ek-ek karke bolo.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1400,
+   "replyReadyMs": 2637,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "names": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "A"
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "names": [
+       "A",
+       "B",
+       "C",
+       "D",
+       "E",
+       "F"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 832
+  },
+  {
+   "who": "teacher",
+   "text": "Dekho, screen par rectangle: lambai 50 meter, chaudai 30 meter. Iske upar, neeche, baayen, daayen—kul kitne kinaare?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1445,
+   "replyReadyMs": 2277,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1017
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chaar kinaare: upar, neeche, baayen, daayen. Ab perimeter ke liye in chaaron kinaaron ko jodna hoga—pehla kinaara kaunsa hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1429,
+   "replyReadyMs": 2446,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1539
+  },
+  {
+   "who": "teacher",
+   "text": "7 sankhya nahi, kinaare ka naam chahiye. Upar, neeche, baayen ya daayen—perimeter mein pehle kis kinaare se chalogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1417,
+   "replyReadyMs": 2956,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | ? cm",
+     "numbers": "6"
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1049
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj yahin rokna chahti ho—samajh gayi. Buttons mein chuno: aage badhein, thodi der rukein, ya aaj samaapt karein.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1606,
+   "replyReadyMs": 2655,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  }
+ ],
+ "agent": []
+}

@@ -1,0 +1,24 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r1441-live",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "Release 14.4.1 live, 2026-10-22 ~00:35 UTC. int/r5-rel1441 @ f74d1aae; revision taxila-web--sf74d1aa-tdd6, image f74d1aa. Gate: 3607/3611 pass, 0 fail, 3 skipped, 1 todo (RCA-4b); prompt budget PASS. Canary smoke 4/4 (start 201, text opening, 2 turns with moves, end 200; test account deleted). Rollback target: taxila-web--s5c127d1-l2of (14.4). Contents:\n- the end record (child as the learner; safeguarded lessons facts-only, '(left out)', recordFence);\n- 4A: F1(b) round 2, F1(d), the stray-script read, number-led faded keys, 14.5 grading vetoes, the deep-kind marks removal;\n- stream 2: a failed board says why, freeSubjectOf refuses verbs, a kept subject is spent once a board is asked for it, a picture stays under the board.\nSim lab battery on be9b766a (n=42 lessons, 0 unavailable of 585 turns): teacher-as-learner 15/30 -> 0/34; referral wording in safeguarded records 4/6 -> 0/8; child words 0/8; no-response claims 2/8 (fixed in f74d1aae, replay 12/80 -> 1/80); rule (1) missing 0; 36-card judge scores within noise of b7413e5f."
+  },
+  {
+   "id": "dc-r1441-ship-over-qa-preexisting",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "14.4.1 shipped without a full QA PASS. QA on be9b766a had 2 FAILs, both checked to be no regression against live 14.4.\n- Item 2: 'mujhe koi aur topic padhna hai' x3 never offered real topics, and she said the topic is 'not in your class'. The shape 'say kindly that it is not in their class's lessons here' is in 5c127d1a's shapes.js too.\n- Item 3: F1(d)'s whole worked example did not visibly land. Where it does not fire, behaviour equals live.\nThe two sim-lab safety over-reactions (p13 'apni jaan de dete hain' history; p30 'thodi udaas' after a check-in, then the numbers after 'safe hoon') are live in 14.4 too.\nShipping now carries the guardian-export disclosure fix and the end-record truth fixes. Rollback stays one command. QA and the sim lab were blocked on a Send Message permission prompt from about 22:20 UTC and could not re-run on f74d1aae; the f74d1aae change was measured by replay (12/80 -> 1/80) and the gate.\nReverse (roll back) if a post-deploy read or a re-run QA item shows a regression against 14.4."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r1441-ship-over-qa-preexisting", "rel": "measured_by", "dst": "ms-r1441-live" }
+ ],
+ "md": {
+  "decisions": "## dc-r1441-ship-over-qa-preexisting — 14.4.1 shipped on its measured gains (2026-10-22)\n\nQA's two failures on the candidate are behaviours that live 14.4 already has: the false \"not in your class\" line, and a new feature that may not fire. The sim lab's two safety over-reactions are live in 14.4 too. 14.4.1 removes a disclosure path to the guardian and fixes the parent note, so it shipped. Those four items lead 14.4.2.\n",
+  "measurements": "## ms-r1441-live (2026-10-22)\n\n14.4.1 is live at f74d1aae (taxila-web--sf74d1aa-tdd6).\n- Gate: 3607/3611, 0 fail. Smoke: 4/4.\n- Sim lab on the candidate: teacher-as-learner 15/30 → 0/34; referral wording in safeguarded records 4/6 → 0/8.\n- Rollback: 14.4.\n",
+  "rejected": ""
+ }
+}

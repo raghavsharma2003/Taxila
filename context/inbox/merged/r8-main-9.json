@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-learning-read-through-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Read-through of the 156 simpler and why sentences two Sonnet agents wrote for the 30 staged scripts (all had passed check.mjs; Learning had read 3 topics). A fresh Opus agent that wrote none of them read all 156 against their problem and board with three questions (true? simpler than what it replaces? gives the answer away?): 73 failed (67 not simpler, mostly near-copies of the problem; 3 not true; 4 language; 0 giveaways). All 73 were rewritten; a second fresh agent read the rewrites: 9 failed (3 not simpler, 2 not true, 4 language), fixed and read by Learning only. Totals: 156 read, 82 fixed. Learning ae9d5be55."
+  },
+  {
+   "id": "fd-gated-sentences-fail-a-reader",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Sentences that pass the script gates fail a reader about half the time: 73 of 156 agent-written simplers and whys (47%) failed an independent read, 3 of them untrue. The gates check form (length, slots, numbers on the board), not whether a sentence is simpler or true. So 'nothing a child hears that nobody read' is a measured need, and a rewrite needs its own read (9 of 73 rewrites failed again)."
+  }
+ ],
+ "edges": [
+  {"src": "fd-gated-sentences-fail-a-reader", "rel": "measured_by", "dst": "ms-r8-learning-read-through-2026-11-11"},
+  {"src": "dc-r8-director20", "rel": "measured_by", "dst": "ms-r8-learning-read-through-2026-11-11"}
+ ]
+}

@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-ghadi",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "ghadi (time and clocks) as one never-timed law family for classes 4-5: set (a geared clock set to a board's time: minute hand wound, hour hand creeps with it, hour sector, a.m./p.m. day strip), run (arrive: wind the bus clock on by the trip; leave: wind back; trip: make the ticket that runs the departure clock onto the arrival), race (podium checked by the race itself), calendar (flag a date n days / w weeks d days ahead; the hops start the day after today). 4 topics: c4-maths-ch12-t01, c4-maths-ch12-t02, c5-maths-ch12-t01, c5-maths-ch12-t02. Why: the four time topics were served only by ITEM-ARENA. Reverse: a child pilot shows the geared clock does the carrying for the child so the elapsed-time belief never surfaces."
+  },
+  {
+   "id": "ms-r7-games-ghadi-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "ghadi play-cert (forge3-qa, p360/p412/l1366, game mounted): every ghadi sample passes at every size; 48 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-ghadi",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-ghadi-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-ghadi`\n\n**ghadi** (time and clocks, classes 4-5) is a law family. Nothing in it runs on a clock: every hand, ticket, runner and flag moves only on a touch, and the law answers only on run.\n\n- **set/hands** (c4-maths-ch12-t01): set a geared clock to the board's time, then ring the bell. The child winds the minute hand, the hour hand follows, and passing 12 turns a.m. into p.m. The hour hand drops into its hour sector; the day strip sets a.m. or p.m. There is no digital readout of the child's clock.\n- **run** (c4-maths-ch12-t02, c5-maths-ch12-t01):\n  - **arrive**: wind the bus clock on by the trip.\n  - **leave**: wind it back from the arrival.\n  - **trip**: make the ticket (hours and minutes) that runs the departure clock onto the arrival.\n  - Trips are written as h + min, minutes past 60, 1.5 h, or a quarter / three quarters of an hour.\n- **race/podium** (c5-maths-ch12-t02, c5-maths-ch12-t01): put the runners on the podium; the race then runs each runner in exactly their time.\n- **calendar/days** (c4-maths-ch12-t02): plant the flag n days (or w weeks d days) ahead; the hops start from today.\n\nMal-rules map only to the topic's own kit ids: minute-number, hour-hand-next, noon-12am, minutes-past-60, base-ten-time, include-start-day, decimal-hours, quarter-as-25, base-hundred (also for 1 min 5 s read as 105 s on c5-t01), bigger-time-faster, longer-decimal-bigger, minute-as-hundred.\n\nNot admitted: c5-maths-ch12-t02-s2 (the difference between two timings in parts of a second) has no honest mechanic here.\n\n**Reverse if** a child pilot shows that the geared clock does the carrying for the child, so the elapsed-time belief never shows.\n",
+  "measurements": "## `ms-r7-games-ghadi-cert`\n\nghadi play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** every ghadi sample passes at every size (counts in server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-ghadi.test.mjs, 48 tests. An independent checker winds its own hour / minute / half clock one minute at a time and agrees with the law over at least 2000 random acts per case. Generator p95 is under 5 ms.\n"
+ }
+}

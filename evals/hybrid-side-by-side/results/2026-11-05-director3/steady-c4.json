@@ -1,0 +1,193 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions mein equal shares dekhenge—cricket pizza jaisa! Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 957
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya! Cricket mein ball ko sab players ke liye barabar baantna ho, toh har ek ko kitna milega? Golu ko bhi sikhayenge.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1404,
+   "replyReadyMs": 2361
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1065
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Agar 1 roti ko 3 barabar hisson mein baante, har hissa one-third hota hai. 3 mein se 1 hissa kitna?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1206,
+   "replyReadyMs": 2271
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 1077
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 4 bola—shayad tum ek hissa soch rahi ho. Ab batao, 1/3 of 15 pencils mein 15 kis cheez ki sankhya hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2450,
+   "replyReadyMs": 3527,
+   "guard": [
+    "negates",
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 905
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 1/3 mein neeche wala number batata hai ki total cheezein kitne equal groups mein baantni hain. Ab tum try karo.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 2655,
+   "replyReadyMs": 3560,
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1297
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, ab fill karo: 1/3 ka matlab 1 of kitne equal groups? Apna answer bolo.",
+   "move": "repair",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1048,
+   "replyReadyMs": 2345
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1923
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 6 nahi; fraction ke neeche wala number groups batata hai. Ab 1/3 mein neeche ka number dekhkar bolo: kitne equal groups?",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1351,
+   "replyReadyMs": 3274
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 901
+  },
+  {
+   "who": "teacher",
+   "text": "Jaise 1/5 ka matlab 5 barabar groups mein se 1. Toh 1/3 mein total kitne equal groups honge?",
+   "move": "reteach",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 2496,
+   "replyReadyMs": 3397,
+   "guard": [
+    "readscard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1507
+  },
+  {
+   "who": "teacher",
+   "text": "Ab isi rule se batao: one-third mein 1, kitne equal groups mein se liya gaya hai?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1286,
+   "replyReadyMs": 2793
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1177
+  },
+  {
+   "who": "teacher",
+   "text": "Woh wala: jawab 3. 8 nahi, Riya; neeche ka number hi total equal groups batata hai. Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1274,
+   "replyReadyMs": 2451
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1451
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, hum aage badhein, thoda pause lein, ya aaj ke liye stop karein—tum kya choose karti ho?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2806,
+   "replyReadyMs": 4257,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

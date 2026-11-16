@@ -34,6 +34,11 @@ export function planPrior(plan, x = {}) {
     successFirst: !!lesson?.successFirst,
     newSkillBudget: lesson?.pace?.newSkillBudget ?? 1,
     why: (lesson?.why ?? []).map((w) => ({ code: w.code, ref: w.ref })),
+    // round 7 (Learning patch 006): R5's prerequisite check (a wheel-spinning skill's weak prerequisite, checked before teaching)
+    // and R9's ceiling on the share of teaching minutes the level path may give to foundation work (≤ .6)
+    prereqCheck: lesson?.prereqCheck?.forTopicId && lesson.prereqCheck.prereqTopicId && getTopic(lesson.prereqCheck.prereqTopicId)
+      ? { skillId: lesson.prereqCheck.skillId ?? null, forTopicId: lesson.prereqCheck.forTopicId, prereqTopicId: lesson.prereqCheck.prereqTopicId } : null,
+    foundationShare: typeof lesson?.foundationShare === "number" ? Math.max(0, Math.min(0.6, lesson.foundationShare)) : null,
   });
 }
 

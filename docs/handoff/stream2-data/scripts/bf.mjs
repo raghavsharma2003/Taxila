@@ -1,0 +1,10 @@
+import * as BF from "/home/user/Taxila/server/stagecraft/board-first.js";
+import { gateCtxFor } from "/home/user/Taxila/server/stagecraft/board-sync.js";
+import { gateWhiteboard } from "/home/user/Taxila/server/studio/qa/whiteboard.js";
+import { getKit } from "/home/user/Taxila/server/content/index.js";
+const kit = await getKit("c4-maths-ch05-t01",{generate:false});
+const a = { intent: { intentId: "x:wb:1", lessonId: "x", kind: "whiteboard", beat: "explain" }, line: { lessonId: "x", text: "" }, kit: { topicId: kit.topicId, content: [] }, mode: "fresh" };
+const p = BF.preselect(a, { kit });
+console.log(p?.row);
+const bad = { ...a, line: { ...a.line, text: "Board par dekho: roti 6 equal parts mein kati hai." } };
+console.log(BF.takePreselected(bad, gateCtxFor(bad, { kit })), BF.pickState(bad));

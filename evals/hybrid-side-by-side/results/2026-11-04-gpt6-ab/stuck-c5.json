@@ -1,0 +1,202 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket score se fractions ko number line par dekhenge. Cricket mein tumhe batting pasand hai ya bowling?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 781
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, batting ya bowling chunna zaroori nahi. Cricket pitch ko do barabar hisson mein baantein, toh aadhe raste par kya hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2168,
+   "replyReadyMs": 2949
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 838
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak ek seedha rasta socho. Use 5 barabar gaps mein baanto; pehla gap kahan khatam hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2585,
+   "replyReadyMs": 3423,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1115
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalte hain. Line par 0 se 1 tak ki jagah socho. Use 5 barabar gaps mein baanto. Pehla gap kahan khatam hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 5163,
+   "replyReadyMs": 6278,
+   "guard": [
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 990
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, sankhya rekha par 0 se 1 tak ki doori ko 5 barabar hisson mein baantna hai. Kul kitne hisse honge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1419,
+   "replyReadyMs": 2409
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1270
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, kul 5 barabar hisse. Sankhya rekha par 0 se 1 tak unke beech 5 barabar faasle honge. Pehla faasla kahan khatam hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1721,
+   "replyReadyMs": 2991
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 960
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, pehla faasla 0 ke turant baad pehli nishani par khatam hota hai. Ab 2/5 ke liye: neeche ka 5 batata hai ki 0 se 1 tak 5 barabar faasle chahiye. Itna theek?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1927,
+   "replyReadyMs": 2887
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 799
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, socho: 0 se 1 tak paanch barabar hisse hain. 0 se doosre hisse ke baad wali nishani kahan hogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3103,
+   "replyReadyMs": 3902,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1061
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, “haan” se jagah nahi pata chalti. Doosre hisse ke baad wali nishani 0 se doosri nishani hai, yani 2/5. Kaunsi nishani?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1762,
+   "replyReadyMs": 2823
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 694
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 7 kaha. Main pooch rahi thi 0 se ginte hue doosri nishani kaunsi hai. Tumhara 7 kis cheez ke liye tha?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 5130,
+   "replyReadyMs": 5824,
+   "guard": [
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1066
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum aaj ke liye rukna chahti ho, theek hai. Chaaho toh aage badhein, chhota break lein, ya aaj ke liye band karein—kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 4220,
+   "replyReadyMs": 5286,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

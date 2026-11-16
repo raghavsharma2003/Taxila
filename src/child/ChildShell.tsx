@@ -3,8 +3,10 @@
 // It writes data-band on <html> and on its own [data-v2] root, and data-theme: ALWAYS "light" for Young (b1/b2 are
 // light-only, `ds-band-fork-older`), the child's Light / Dark / Match phone choice for Older. No child-facing error
 // copy beyond the designed T8 line: a missing session asks for a grown-up.
+import { tr7 } from "../copy/en.ts";
+import { pairedChildId } from "../app/device.ts";
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { Link, Outlet, useParams } from "react-router-dom";
+import { Link, Outlet, useNavigate, useParams } from "react-router-dom";
 import { ApiError, getMe, type ChildRow, type MeResponse } from "./api.ts";
 import { bandForClass, effectiveBand, familyOf, type Band, type Family } from "./band.ts";
 import { t, type Lang } from "./copy.ts";
@@ -14,6 +16,8 @@ import { TeacherNameProvider } from "../ui/teacher/useTeacher.ts";
 import { prefetchDuplexConfig } from "../duplex/flags.ts";
 import "./child.css";
 import { kakshaShellAttrs } from "../ui-v3/kaksha/shell-theme.ts";
+import { BootMark, kxBoot } from "../app/Shell.tsx";
+import { Cta, Ghost, Glyph, KxRoot, StatePanel } from "../ui-v3/kaksha/kit.tsx";
 
 export interface ChildCtx {
   cid: string;
@@ -73,9 +77,19 @@ function useHtmlAttrs(band: Band | null, theme: "light" | "dark" | undefined, re
 
 export function ChildShell({ children }: { children?: ReactNode }) {
   const { cid = "" } = useParams();
+  const nav = useNavigate();
   const [me, setMe] = useState<MeResponse | null>(null);
   const [state, setState] = useState<"loading" | "ok" | "signedout" | "missing" | "error">("loading");
   const [n, setN] = useState(0);
+  // round 8 step f: the device's own network state; when it comes back, the shell tries again by itself
+  const [online, setOnline] = useState(() => (typeof navigator === "undefined" ? true : navigator.onLine !== false));
+  useEffect(() => {
+    const up = () => { setOnline(true); setN((x) => x + 1); };
+    const down = () => setOnline(false);
+    window.addEventListener("online", up);
+    window.addEventListener("offline", down);
+    return () => { window.removeEventListener("online", up); window.removeEventListener("offline", down); };
+  }, []);
   const [prefs, setPrefs] = usePrefs(cid);
   const osReduced = useReducedMotionQuery();
 
@@ -88,7 +102,12 @@ export function ChildShell({ children }: { children?: ReactNode }) {
         setMe(m);
         setState(m.children.some((c) => c.id === cid) ? "ok" : "missing");
       })
-      .catch((e) => live && setState(e instanceof ApiError && e.status === 401 ? "signedout" : "error"));
+      .catch((e) => {
+        if (!live) return;
+        // r7 device pairing: a paired device whose pairing ended (the parent unpaired it) goes back to /pair, gently
+        if (e instanceof ApiError && e.status === 401 && pairedChildId()) { nav("/pair?unpaired=1", { replace: true }); return; }
+        setState(e instanceof ApiError && e.status === 401 ? "signedout" : "error");
+      });
     return () => {
       live = false;
     };
@@ -118,12 +137,34 @@ export function ChildShell({ children }: { children?: ReactNode }) {
   };
 
   if (!ctx) {
+    const offline = !online;
     return (
       <div {...rootAttrs}>
         <main className="cs-gate" aria-busy={state === "loading"} data-testid="child-gate">
-          {state !== "loading" && (
+          {/* r7 app-cold-start-loading: the Volt mark while /api/me answers (the first paint's own look), never a blank */}
+          {state === "loading" && kxBoot() && <BootMark />}
+          {state !== "loading" && kxBoot() && (
+            // Kaksha boot look (r7 app-secondary-screens-kaksha): the gate is a Kaksha state panel, not the old card
+            <KxRoot family="older" reducedMotion={false} screen="gate">
+              <div className="kx-screen kx-page"><main className="kx-page-main kx-home-state">
+                <StatePanel glyph={state === "error" ? "offline" : "door"} tone={state === "error" && !offline ? "rose" : undefined} headId="kx-gate-h"
+                  title={state === "error" ? (offline ? t("offlineTitle") : t("connectionWeak")) : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}
+                  line={state === "error" && offline ? t("offlineLine") : undefined}>
+                  {state === "error" ? (
+                    <Ghost onClick={() => setN((x) => x + 1)}><Glyph name="replay" size={20} /> {t("tryAgain")}</Ghost>
+                  ) : (
+                    <Cta to={state === "signedout" ? `/start/phone?login=1&next=${encodeURIComponent(location.pathname)}` : "/who"} go={(to) => nav(to)}>
+                      {state === "signedout" ? t("signIn") : t("home")}
+                    </Cta>
+                  )}
+                </StatePanel>
+              </main></div>
+            </KxRoot>
+          )}
+          {state !== "loading" && !kxBoot() && (
             <div className="cs-card cs-gate-card">
-              <h1 tabIndex={-1}>{state === "error" ? t("connectionWeak") : t("grownupSignIn")}</h1>
+              <h1 tabIndex={-1}>{state === "error" ? (offline ? t("offlineTitle") : t("connectionWeak")) : state === "missing" ? tr7("gate.missing") : t("grownupSignIn")}</h1>
+              {state === "error" && offline && <p>{t("offlineLine")}</p>}
               {state === "error" ? (
                 <button type="button" className="cs-btn cs-btn--primary" onClick={() => setN((x) => x + 1)}>{t("tryAgain")}</button>
               ) : (

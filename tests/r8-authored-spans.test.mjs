@@ -1,0 +1,43 @@
+// Main on integration 51 (c5-t01 steady 96, the dry matrix's last row): after "Hindi mein bolo" the key's why "toh line par uski sirf ek
+// jagah hai … wahi ek mark" was said "toh rekha par … wahi ek nishaan" — the sentence test missed a why with code's "Bilkul sahi, kyunki"
+// in front, and the why came from the beat just closed (lastMove.closeBeat), a field it never read. No word pass (Hindi words, twins)
+// touches authored text: authoredSpans finds every spoken string of the script, the move's fields and Learning's library forms wherever
+// they are said; outsideAuthored runs a pass on the rest only.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { authoredSpans, outsideAuthored } from "../server/brain/say.js";
+import { inHindiWords } from "../server/brain/register.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+
+// (c5-t01's s2 c3 why as Learning wrote it in 69628e89d)
+const WHY = "3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark";
+const kit = kitFromFile(getTopic("c5-maths-ch02-t01"));
+
+test("a why after code's frame keeps its words in Hindi mode; her own words around it are turned", () => {
+  const state = { lastMove: { kind: "repair", closeBeat: { beatId: "c3" } } };
+  const line = `Bilkul sahi, kyunki ${WHY.charAt(0).toLowerCase()}${WHY.slice(1)}. Chalo, yeh line jaldi dekho.`;
+  const spans = authoredSpans(state, null, kit);
+  const out = outsideAuthored(line, spans(line), (x) => inHindiWords(x));
+  assert.ok(out.includes(WHY), out);
+  assert.match(out, /Chalo, yeh rekha jaldi dekho/);
+});
+
+test("a slotted script string is authored with its slot filled; a line with no authored text is turned whole", () => {
+  const spans = authoredSpans({ lastMove: {} }, null, kit);
+  // (Learning director22: the friend line now reads "{friend} ka kehna hai ki …", so the verb agrees with any name)
+  const card = "Zoya ka kehna hai ki 3/4 do number hain, 3 aur 4.";
+  assert.equal(spans(card).length, 1);
+  assert.deepEqual(spans("Yeh line dekho, ab."), []);
+  assert.equal(outsideAuthored("Yeh line dekho.", [], (x) => inHindiWords(x)), "Yeh rekha dekho.");
+});
+
+// Studio's patch 025 (director20 c6): the Hindi-words pass keeps the script's own word for a term — "triangle" where c6 says "triangle" —
+// and still turns every other English word ("length" becomes "lambai")
+test("the script's own term forms are kept in Hindi mode; other words are still turned", async () => {
+  const { scriptOwnTerms } = await import("../server/brain/say.js");
+  const k6 = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const keep = scriptOwnTerms(k6);
+  assert.ok(keep.includes("triangle") && keep.includes("rectangle") && !keep.includes("tribhuj"), keep.join(","));
+  assert.equal(inHindiWords("Is triangle ki 3 bhujayein, aur length dekho", { keep }), "Is triangle ki 3 bhujayein, aur lambai dekho");
+});

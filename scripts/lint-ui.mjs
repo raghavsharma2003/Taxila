@@ -46,6 +46,7 @@ export const ALLOW = {
     ["src/styles/tokens.css", "the palette is defined here"],
     ["src/modules/frame/", "the sandboxed engine frame is its own document with its own kit palette"],
     ["src/avatar/three/", "WebGL material and shader colours (not CSS)"],
+    ["src/modules/scene/palette.ts", "the scene's drawing palette (sky, sea, leaf, fire …): art painted inside the stage box, like the whiteboard palette (round 7 M5a)"],
     ["src/modules/whiteboard/palette.ts", "the board's drawing palette (chalk / paper inks), drawn inside the sandboxed engine frame (engines/explainer.tsx) like the frame's own kit palette"],
     ["src/pages/LessonDev.tsx", "dev route only (/dev/lesson, VITE_DEV_ROUTES=1): never in a production build"],
     ["src/pages/AvatarDev.tsx", "dev route only (/dev/avatar, VITE_DEV_ROUTES=1): never in a production build"],
@@ -57,6 +58,8 @@ export const ALLOW = {
     // r4 Kaksha (BUILD-SPEC K-P7)
     ["src/ui-v3/kaksha/tokens.css", "the Kaksha palette is defined here (mirrors tokens.ts; tests/r4-kaksha-lint.test.mjs K-MIRROR and K-CONTRAST)"],
     ["src/ui-v3/kaksha/tokens.ts", "the Kaksha palette's source of truth (night / dawn); every other Kaksha file uses the --k-* variables"],
+    // round 8 (docs/design/round8/PHASE2-BRIEF.md §1)
+    ["src/styles/tx-tokens.css", "THE round 8 token set (themes A and B) is defined here; tests/r8-tx-tokens.test.mjs measures every text pair"],
   ],
   "L-DEVA": [
     // ship5 integration (p2-face)

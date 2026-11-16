@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-pilot-scripts-boards",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: Studio's full whiteboard gate (certifyBoardRef W-checks, int/r6 integration 6) on every board of the three pilot lesson scripts. Run in-session, no model calls. Stand-in lines: an explain beat's point; the worked example's problem + step results + answer; a check's prompt with its key and accepted forms withheld (W9); a remediation's move. First run: 67 boards, 21 failed. With the kit passed to the gate (its vocabulary and numbers): 16 failed. The gate found 4 real defects, all fixed. (1) c4 s1/c2, W9: the check's bar wrote 1/3, its own answer; the board was removed and the prompt is self-contained. (2) c4 s2/c1, W4: the check's equal-groups board drew 6 per plate, a number the question never says; the board was removed. (3) c4 s1/rem2, W8: a 'roti' whole was cut by lines through its centre; it is now a circle in 4 equal sectors, and the move says so. (4) c4 s2/rem2, W4: the compare board's '7, 3, 3, 3' did not read as the move's numbers; it is now '7 + 3 + 3 + 3' in both, with 2 rows per side. Left: only W6 timing (8 boards) and W19 where W6 was its only end-state failure. W6 compares the board's length with the stand-in's length, not her real line; Studio re-times and re-gates each board against her real line at turn time. So tests/r7-learning-lesson-scripts.test.mjs enforces every W-check except W6 in CI, and also runs Brain's validateTopicScript (9/9 skills walkable, 0 errors). Answer keys and thenKeys are unchanged, so the blind verification (ms-r7-pilot-scripts-blind) stands. Date 2026-11-05."
+  }
+ ],
+ "edges": [{ "from": "ms-r7-pilot-scripts-boards", "to": "dc-r7-pilot-scripts-format", "kind": "supports" }],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

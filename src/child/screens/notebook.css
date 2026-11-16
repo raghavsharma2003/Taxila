@@ -9,3 +9,11 @@
   color: var(--ink); font: 600 16px/1 var(--font-ui, system-ui, sans-serif); display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
 .nb-btn:disabled { opacity: .45; }
 .nb-btn--go { margin-left: auto; border-color: var(--ink); }
+
+/* r7 "Then and now": each pakka skill next to where it started */
+.kx-growth-pair { display: grid; gap: 10px; }
+@media (min-width: 720px) { .kx-growth-pair { grid-template-columns: 1fr auto; align-items: end; } }
+.kx-growth-then { display: grid; gap: 6px; }
+.kx-growth-now { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 16px/1.3 var(--k-sans); color: var(--k-ion); }
+.kx-growth-helped { margin: 8px 0 0; }
+.kx-growth-helped a { color: var(--k-ion); text-decoration: underline; text-underline-offset: 3px; }

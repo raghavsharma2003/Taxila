@@ -1,0 +1,764 @@
+{
+ "date": "2026-11-10",
+ "method": "Headless Chromium (Playwright chromium.launch()), each woff2 loaded by @font-face from node_modules/@fontsource/* (5.3.0) as a data: URL, document.fonts.load + document.fonts.ready; advance = width / 1000 at a 1000 px size (em-fraction). 'canvas' = CanvasRenderingContext2D.measureText; 'svg' = an SVG <text> getComputedTextLength with font-variant-numeric: tabular-nums, which is how src/modules/whiteboard/Player.tsx draws. Board characters are every character of every text the boards draw (opGeometry texts: stacked fraction pieces and numwork cells included) of the four pilot scripts' board refs (data/lesson-scripts/*.json) and the BOARD_REFS examples, classified by face (numwork cells and NUMERAL-only runs: numeral; Devanagari: deva; else word), weighted by frequency. stringCheck = each drawn string's svg width / (codepoints x the face's board-character average).",
+ "fonts": {
+  "numeral": "STIX Two Text 400, latin subset (@fontsource/stix-two-text 5.3.0, OFL-1.1)",
+  "word": "Atkinson Hyperlegible Next 600, latin subset (@fontsource/atkinson-hyperlegible-next 5.3.0, OFL-1.1)",
+  "deva": "Mukta 600, devanagari subset (@fontsource/mukta 5.3.0, OFL-1.1)"
+ },
+ "loaded": [
+  {
+   "family": "STIX Two Text",
+   "weight": "400",
+   "status": "loaded"
+  },
+  {
+   "family": "Atkinson Hyperlegible Next",
+   "weight": "600",
+   "status": "loaded"
+  },
+  {
+   "family": "Mukta",
+   "weight": "600",
+   "status": "loaded"
+  }
+ ],
+ "sources": {
+  "boards": 299,
+  "strings": {
+   "numeral": 815,
+   "word": 253,
+   "deva": 0
+  },
+  "devaSample": "आधा तिहाई चौथाई भिन्न संख्या रेखा बराबर हिस्से अंश हर जोड़ घटाव गुणा भाग परिमाप क्षेत्रफल कोण त्रिभुज वृत्त",
+  "n": {
+   "numeralBoardChars": 1406,
+   "wordBoardChars": 1361,
+   "wordLetters": 874,
+   "digits": 10,
+   "devaCodepoints": 107
+  }
+ },
+ "old": {
+  "ADVANCE": 0.58,
+  "DIGIT_ADVANCE": 0.6,
+  "note": "ADVANCE: a handwriting face, 'measured loosely'; DIGIT_ADVANCE: Geist Mono (App's render measure 2026-11-07)"
+ },
+ "constants": {
+  "file": "shared/whiteboard.js TEXT_FACES (the measured advances rounded to 3 places)",
+  "numeral": {
+   "digit": 0.495,
+   "space": 0.235,
+   "op": 0.712,
+   "other": 0.37
+  },
+  "word": {
+   "digit": 0.632,
+   "space": 0.303,
+   "other": 0.565
+  },
+  "deva": {
+   "char": 0.384
+  },
+  "DIGIT_ADVANCE": 0.495
+ },
+ "advances": {
+  "numeral": {
+   "digit": 0.495,
+   "space": 0.235,
+   "op": 0.7118,
+   "other": 0.3697
+  },
+  "word": {
+   "digit": 0.632,
+   "space": 0.303,
+   "other": 0.5647
+  },
+  "deva": {
+   "char": 0.3842
+  }
+ },
+ "advancesNote": "drawn width of a run = font size x the sum of its characters' class advances (numeral: digit / space / op +−×÷= / other; word: digit / space / other; any Devanagari codepoint: deva.char, Mukta). digit = the tabular digit (max = avg: the player draws tabular-nums). op / other = frequency-weighted over the board characters of that class.",
+ "modelCheck": {
+  "numeral": {
+   "n": 815,
+   "p05": 1,
+   "p50": 1,
+   "p95": 1.0038,
+   "max": 1.1117,
+   "widest": [
+    [
+     "?",
+     1.1117
+    ],
+    [
+     "?",
+     1.1117
+    ],
+    [
+     "?",
+     1.1117
+    ]
+   ]
+  },
+  "word": {
+   "n": 253,
+   "p05": 0.8293,
+   "p50": 1.09,
+   "p95": 1.2036,
+   "max": 1.3228,
+   "widest": [
+    [
+     "O",
+     1.3051
+    ],
+    [
+     "Q",
+     1.3228
+    ],
+    [
+     "Q",
+     1.3228
+    ]
+   ]
+  },
+  "deva": {
+   "n": 19,
+   "min": 0.6085,
+   "max": 1.5782
+  }
+ },
+ "summary": {
+  "numeral": {
+   "digitsCanvas": {
+    "avg": 0.495,
+    "max": 0.495,
+    "min": 0.495
+   },
+   "digitsTabular": {
+    "avg": 0.495,
+    "max": 0.495,
+    "min": 0.495
+   },
+   "space": 0.235,
+   "boardChars": {
+    "canvas": {
+     "avg": 0.4694,
+     "n": 1406
+    },
+    "svg": {
+     "avg": 0.4694,
+     "n": 1406
+    }
+   },
+   "stringCheck": {
+    "n": 815,
+    "p50": 1.0545,
+    "p90": 1.0545,
+    "p95": 1.0545,
+    "max": 1.5339
+   }
+  },
+  "word": {
+   "digitsCanvas": {
+    "avg": 0.5815,
+    "max": 0.656,
+    "min": 0.43
+   },
+   "digitsTabular": {
+    "avg": 0.632,
+    "max": 0.632,
+    "min": 0.632
+   },
+   "space": 0.303,
+   "boardChars": {
+    "canvas": {
+     "avg": 0.5247,
+     "n": 1361
+    },
+    "svg": {
+     "avg": 0.5359,
+     "n": 1361
+    }
+   },
+   "lettersByFrequency": {
+    "canvas": {
+     "avg": 0.5683,
+     "n": 874
+    },
+    "svg": {
+     "avg": 0.5683,
+     "n": 874
+    }
+   },
+   "stringCheck": {
+    "n": 253,
+    "p50": 1.0762,
+    "p90": 1.1369,
+    "p95": 1.1831,
+    "max": 1.3939
+   }
+  },
+  "deva": {
+   "digitsCanvas": {
+    "avg": 0.5,
+    "max": 0.5,
+    "min": 0.5
+   },
+   "digitsTabular": {
+    "avg": 0.5,
+    "max": 0.5,
+    "min": 0.5
+   },
+   "space": 0.228,
+   "perCodepoint": {
+    "canvas": 0.358,
+    "svg": 0.358,
+    "codepoints": 107
+   }
+  }
+ },
+ "opsMeasured": {
+  "+": 0.72,
+  "−": 0.72,
+  "×": 0.655,
+  "÷": 0.577,
+  "=": 0.72
+ },
+ "digits": {
+  "numeral": {
+   "canvas": {
+    "0": 0.495,
+    "1": 0.495,
+    "2": 0.495,
+    "3": 0.495,
+    "4": 0.495,
+    "5": 0.495,
+    "6": 0.495,
+    "7": 0.495,
+    "8": 0.495,
+    "9": 0.495
+   },
+   "tabular": {
+    "0": 0.495,
+    "1": 0.495,
+    "2": 0.495,
+    "3": 0.495,
+    "4": 0.495,
+    "5": 0.495,
+    "6": 0.495,
+    "7": 0.495,
+    "8": 0.495,
+    "9": 0.495
+   }
+  },
+  "word": {
+   "canvas": {
+    "0": 0.656,
+    "1": 0.43,
+    "2": 0.569,
+    "3": 0.592,
+    "4": 0.621,
+    "5": 0.602,
+    "6": 0.617,
+    "7": 0.529,
+    "8": 0.621,
+    "9": 0.578
+   },
+   "tabular": {
+    "0": 0.632,
+    "1": 0.632,
+    "2": 0.632,
+    "3": 0.632,
+    "4": 0.632,
+    "5": 0.632,
+    "6": 0.632,
+    "7": 0.632,
+    "8": 0.632,
+    "9": 0.632
+   }
+  },
+  "deva": {
+   "canvas": {
+    "0": 0.5,
+    "1": 0.5,
+    "2": 0.5,
+    "3": 0.5,
+    "4": 0.5,
+    "5": 0.5,
+    "6": 0.5,
+    "7": 0.5,
+    "8": 0.5,
+    "9": 0.5
+   },
+   "tabular": {
+    "0": 0.5,
+    "1": 0.5,
+    "2": 0.5,
+    "3": 0.5,
+    "4": 0.5,
+    "5": 0.5,
+    "6": 0.5,
+    "7": 0.5,
+    "8": 0.5,
+    "9": 0.5
+   }
+  }
+ },
+ "lettersWordFace": {
+  "a": 0.544,
+  "b": 0.587,
+  "c": 0.502,
+  "d": 0.586,
+  "e": 0.555,
+  "f": 0.349,
+  "g": 0.582,
+  "h": 0.565,
+  "i": 0.285,
+  "j": 0.255,
+  "k": 0.536,
+  "l": 0.301,
+  "m": 0.87,
+  "n": 0.565,
+  "o": 0.567,
+  "p": 0.587,
+  "q": 0.591,
+  "r": 0.368,
+  "s": 0.497,
+  "t": 0.36,
+  "u": 0.559,
+  "v": 0.509,
+  "w": 0.723,
+  "x": 0.522,
+  "y": 0.499,
+  "z": 0.492,
+  "A": 0.662,
+  "B": 0.634,
+  "C": 0.654,
+  "D": 0.683,
+  "E": 0.589,
+  "F": 0.562,
+  "G": 0.711,
+  "H": 0.699,
+  "I": 0.415,
+  "J": 0.546,
+  "K": 0.654,
+  "L": 0.548,
+  "M": 0.848,
+  "N": 0.71,
+  "O": 0.737,
+  "P": 0.617,
+  "Q": 0.747,
+  "R": 0.639,
+  "S": 0.604,
+  "T": 0.592,
+  "U": 0.687,
+  "V": 0.628,
+  "W": 0.877,
+  "X": 0.666,
+  "Y": 0.627,
+  "Z": 0.615
+ },
+ "perChar": {
+  "numeral": {
+   "0": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "1": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "2": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "3": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "4": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "5": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "6": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "7": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "8": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   "9": {
+    "canvas": 0.4949991760253906,
+    "svg": 0.495
+   },
+   " ": {
+    "canvas": 0.23499966430664063,
+    "svg": 0.235
+   },
+   "×": {
+    "canvas": 0.654998779296875,
+    "svg": 0.655
+   },
+   "=": {
+    "canvas": 0.7199988403320312,
+    "svg": 0.72
+   },
+   "?": {
+    "canvas": 0.4109992980957031,
+    "svg": 0.411
+   },
+   "+": {
+    "canvas": 0.7199988403320312,
+    "svg": 0.72
+   },
+   "/": {
+    "canvas": 0.38699935913085937,
+    "svg": 0.387
+   },
+   "-": {
+    "canvas": 0.3149995727539063,
+    "svg": 0.315
+   },
+   ".": {
+    "canvas": 0.24499964904785157,
+    "svg": 0.245
+   },
+   ",": {
+    "canvas": 0.24499964904785157,
+    "svg": 0.245
+   },
+   "°": {
+    "canvas": 0.404999267578125,
+    "svg": 0.405
+   }
+  },
+  "word": {
+   "0": {
+    "canvas": 0.6559989624023438,
+    "svg": 0.632
+   },
+   "1": {
+    "canvas": 0.42999935913085935,
+    "svg": 0.632
+   },
+   "2": {
+    "canvas": 0.5689990234375,
+    "svg": 0.632
+   },
+   "3": {
+    "canvas": 0.5919990234375,
+    "svg": 0.632
+   },
+   "4": {
+    "canvas": 0.6209988403320312,
+    "svg": 0.632
+   },
+   "5": {
+    "canvas": 0.6019990234375,
+    "svg": 0.632
+   },
+   "6": {
+    "canvas": 0.6169989013671875,
+    "svg": 0.632
+   },
+   "7": {
+    "canvas": 0.5289990844726562,
+    "svg": 0.632
+   },
+   "8": {
+    "canvas": 0.6209988403320312,
+    "svg": 0.632
+   },
+   "9": {
+    "canvas": 0.5779991455078125,
+    "svg": 0.632
+   },
+   "P": {
+    "canvas": 0.6169989013671875,
+    "svg": 0.617
+   },
+   "i": {
+    "canvas": 0.2849996032714844,
+    "svg": 0.285
+   },
+   "z": {
+    "canvas": 0.4919991455078125,
+    "svg": 0.492
+   },
+   "a": {
+    "canvas": 0.5439992065429687,
+    "svg": 0.544
+   },
+   "C": {
+    "canvas": 0.6539988403320313,
+    "svg": 0.654
+   },
+   "k": {
+    "canvas": 0.5359990844726562,
+    "svg": 0.536
+   },
+   "e": {
+    "canvas": 0.5549990844726562,
+    "svg": 0.555
+   },
+   " ": {
+    "canvas": 0.30299951171875,
+    "svg": 0.303
+   },
+   "q": {
+    "canvas": 0.5909989013671875,
+    "svg": 0.591
+   },
+   "u": {
+    "canvas": 0.5589990844726562,
+    "svg": 0.559
+   },
+   "l": {
+    "canvas": 0.3009993896484375,
+    "svg": 0.301
+   },
+   "p": {
+    "canvas": 0.5869989624023437,
+    "svg": 0.587
+   },
+   "r": {
+    "canvas": 0.3679993286132813,
+    "svg": 0.368
+   },
+   "t": {
+    "canvas": 0.3599994201660156,
+    "svg": 0.36
+   },
+   "s": {
+    "canvas": 0.496999267578125,
+    "svg": 0.497
+   },
+   "L": {
+    "canvas": 0.5479991455078125,
+    "svg": 0.548
+   },
+   "d": {
+    "canvas": 0.5859990234375,
+    "svg": 0.586
+   },
+   "o": {
+    "canvas": 0.5669989624023437,
+    "svg": 0.567
+   },
+   ":": {
+    "canvas": 0.25299954223632815,
+    "svg": 0.253
+   },
+   "b": {
+    "canvas": 0.5869989624023437,
+    "svg": 0.587
+   },
+   ",": {
+    "canvas": 0.2519996185302734,
+    "svg": 0.252
+   },
+   "c": {
+    "canvas": 0.5019991455078125,
+    "svg": 0.502
+   },
+   "h": {
+    "canvas": 0.5649990844726562,
+    "svg": 0.565
+   },
+   "B": {
+    "canvas": 0.6339989013671875,
+    "svg": 0.634
+   },
+   "R": {
+    "canvas": 0.6389989624023438,
+    "svg": 0.639
+   },
+   "n": {
+    "canvas": 0.5649990844726562,
+    "svg": 0.565
+   },
+   "g": {
+    "canvas": 0.5819990844726562,
+    "svg": 0.582
+   },
+   "W": {
+    "canvas": 0.8769984130859375,
+    "svg": 0.877
+   },
+   "M": {
+    "canvas": 0.8479985961914063,
+    "svg": 0.848
+   },
+   "m": {
+    "canvas": 0.8699984741210938,
+    "svg": 0.87
+   },
+   "Q": {
+    "canvas": 0.746998779296875,
+    "svg": 0.747
+   },
+   "S": {
+    "canvas": 0.6039989013671875,
+    "svg": 0.604
+   },
+   "T": {
+    "canvas": 0.5919990234375,
+    "svg": 0.592
+   },
+   "×": {
+    "canvas": 0.5349991455078125,
+    "svg": 0.535
+   },
+   "-": {
+    "canvas": 0.3689994812011719,
+    "svg": 0.369
+   },
+   "=": {
+    "canvas": 0.6169989013671875,
+    "svg": 0.617
+   },
+   "A": {
+    "canvas": 0.6619989624023438,
+    "svg": 0.662
+   },
+   "H": {
+    "canvas": 0.6989989013671875,
+    "svg": 0.699
+   },
+   "O": {
+    "canvas": 0.736998779296875,
+    "svg": 0.737
+   },
+   "w": {
+    "canvas": 0.7229988403320312,
+    "svg": 0.723
+   },
+   "D": {
+    "canvas": 0.6829989013671875,
+    "svg": 0.683
+   },
+   "v": {
+    "canvas": 0.5089991149902344,
+    "svg": 0.509
+   },
+   "J": {
+    "canvas": 0.5459990234375,
+    "svg": 0.546
+   },
+   "f": {
+    "canvas": 0.34899951171875,
+    "svg": 0.349
+   },
+   "N": {
+    "canvas": 0.7099988403320312,
+    "svg": 0.71
+   },
+   "°": {
+    "canvas": 0.38099932861328123,
+    "svg": 0.381
+   },
+   "E": {
+    "canvas": 0.5889990234375,
+    "svg": 0.589
+   },
+   "K": {
+    "canvas": 0.6539988403320313,
+    "svg": 0.654
+   }
+  }
+ },
+ "frequency": {
+  "numeral": {
+   "0": 158,
+   "1": 276,
+   "2": 137,
+   "3": 116,
+   "4": 108,
+   "5": 81,
+   "6": 68,
+   "7": 29,
+   "8": 43,
+   "9": 17,
+   " ": 222,
+   "×": 15,
+   "=": 42,
+   "?": 20,
+   "+": 62,
+   "/": 1,
+   "-": 3,
+   ".": 5,
+   ",": 1,
+   "°": 2
+  },
+  "word": {
+   "0": 31,
+   "1": 46,
+   "2": 29,
+   "3": 26,
+   "4": 24,
+   "5": 35,
+   "6": 19,
+   "7": 12,
+   "8": 17,
+   "9": 14,
+   "P": 9,
+   "i": 43,
+   "z": 10,
+   "a": 108,
+   "C": 12,
+   "k": 17,
+   "e": 64,
+   " ": 215,
+   "q": 13,
+   "u": 20,
+   "l": 28,
+   "p": 30,
+   "r": 53,
+   "t": 39,
+   "s": 46,
+   "L": 3,
+   "d": 11,
+   "o": 34,
+   ":": 1,
+   "b": 14,
+   ",": 2,
+   "c": 61,
+   "h": 24,
+   "B": 6,
+   "R": 7,
+   "n": 19,
+   "g": 10,
+   "W": 1,
+   "M": 3,
+   "m": 144,
+   "Q": 2,
+   "S": 2,
+   "T": 6,
+   "×": 2,
+   "-": 2,
+   "=": 2,
+   "A": 3,
+   "H": 1,
+   "O": 3,
+   "w": 4,
+   "D": 2,
+   "v": 5,
+   "J": 1,
+   "f": 3,
+   "N": 7,
+   "°": 10,
+   "E": 5,
+   "K": 1
+  }
+ }
+}

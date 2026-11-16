@@ -24,6 +24,14 @@ export function pFirstTry(difficulty: number, pL = DEFAULT_PL): number {
   return sigm(logit(p) - 2.4 * (difficulty - 0.45));
 }
 
+/** The family mal-rule the Director's focus names (req.focus is a kit misconception id; misMap maps mal-rule → kit id), or
+ *  null. A generator uses it to add levels shaped to tell THAT belief apart (games audit GAMES-01). */
+export function focusMal(req: Pick<GenRequest, "focus" | "misMap">): string | null {
+  if (!req.focus) return null;
+  for (const [mal, kit] of Object.entries(req.misMap ?? {})) if (kit === req.focus) return mal;
+  return null;
+}
+
 export function proveLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S, A>, level: PlayLevel<P>): Omit<LevelProof, "pFirstTry" | "score" | "genMs"> | null {
   const sol = logic.solve(level);
   if (!sol || !sol.length) return null;

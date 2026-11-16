@@ -1,0 +1,186 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ground ki boundary se perimeter, yaani chaaron taraf ki lambai, dekhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1207
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maine tumhari pasand poochhi thi; “haan” se woh pata nahi chali. Cricket ground ka chakkar lagao toh kaunsi lambai ginni hogi? Baad mein Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2595,
+   "replyReadyMs": 3802
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1225
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. Perimeter matlab boundary ki poori lambai. Iske liye sab sides ki lambai jodte hain. Kya koi side chhodenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3762,
+   "replyReadyMs": 4987
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 916
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya, chhota bolungi. Polygon ka perimeter sab sides jodkar milta hai; cricket ground par bhi. Koi side chhootegi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1365,
+   "replyReadyMs": 2281
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 921
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket ground ki boundary socho: do lengths 50 m, do breadths 30 m. Perimeter kaise jodogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2635,
+   "replyReadyMs": 3556,
+   "guard": [
+    "screen",
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1061
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, koi baat nahi. Picture mein 50 m wali do sides hain. Un dono ko jodoge toh kitna?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1697,
+   "replyReadyMs": 2758
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 854
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, thodi der kuch aur baat karte hain; phir is step par lautenge. Kis baare mein?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1138,
+   "replyReadyMs": 1992
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 990
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket ki baat end mein pakka karenge. Abhi ek round ka perimeter 160 m nikla tha; teen rounds ke liye usse teen baar lena hai. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1692,
+   "replyReadyMs": 2682
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 888
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, ek chakkar ki kul lambai 160 meter hai; ab teen chakkaron ki kul lambai nikalo. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 3132,
+   "replyReadyMs": 4020,
+   "guard": [
+    "underived"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1728
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, pehle tum koshish karo; madad baad mein. 160 meter ke teen chakkar, kul kitne meter?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1524,
+   "replyReadyMs": 3252
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1097
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum abhi rukna chahti ho. Aage badhein, chhota break lein, ya aaj ke liye band karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2523,
+   "replyReadyMs": 3620,
+   "guard": [
+    "nostop",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

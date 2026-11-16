@@ -1,0 +1,34 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-relevel-c4-7-claude",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F W2a: class 4-7 kit items with no measured ge were rated by Claude with rubric v2 (sha 6ef389e48b5d5752). n = 4,695 items in 118 packets, 8 parallel in-session raters plus an independent second rater on 8 packets (n = 320). ge = mean grade - 0.5. Mean grade - class = -0.32. Overlap agreement: MAE 0.27 grade, 96.6% within 0.5, 99.7% within 1, Pearson 0.96, mean offset 0.02. Both raters are the same model, so this measures consistency, not validity against human teachers."
+  },
+  {
+   "id": "dc-r7-w5-teen-numerals",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F W5 (open-r143-kit-filter-collisions, kit text only): a counting 'teen' in her Hinglish kit text becomes the numeral 3 (339 strings by rule, 25 by per-string decision). Kept: number names that are the exercise, counting in Hindi as content, the English 'teen'. Ambiguous and left for the owner or Brain: 'teen-chauthai' (c5-maths x4) and a spoken pictograph option. Answers, acceptable forms, ids and misconceptions are never rewritten. Reverse if: an offline filter probe shows numerals change how she reads the line."
+  },
+  {
+   "id": "dc-r7-kit-checks-on-claude",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04): the spend-gated kit workflows author on Azure (taxila-gpt6, about 815 calls, about $26 in all) and every check runs on Claude in session: the blind solve of new keys, the equivalence of new forms, adjudication and the level rating. This keeps author and checker independent and follows the owner's 2026-10-27 directive. scripts/kits/run.mjs (dry run by default, --run, --cap, resumable). Reverse if: Claude's in-session checking cannot keep pace with a run."
+  },
+  {
+   "id": "ms-r7-gap-items-end-of-class",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F: after the relevel, 6 class 4-7 topics had no end-of-class item (ge >= C-0.75; tests/rs6-merged-kits 379/385, baseline before relevel 380/385). 18 new items (3 per topic) were authored, blind-solved and level-rated, each by a separate Claude agent: solver agreed with the key on 18/18 (2 by equivalent wording, added to acceptable); rated end-of-class in 5 of 6 topics. Result: 384/385 (gap left: c7-english-ch01-t01, also a gap before the relevel); harder chip strictly above item 1 in 325/385 (was 283)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-w5-teen-numerals\nRoman 'teen' (= three) in kit strings trips Azure's content filter inside her reply brief, and a block costs the child the turn. scripts/kits/w5-filter-numerals.mjs rewrites counting uses by rule: never quoted text, number names, the English word, or answer/acceptable/id fields. scripts/kits/w5-decisions.json records 25 per-string rewrites, the kept groups and 2 ambiguous groups; the remaining list is docs/design/round7/learning/W5-SKIPPED.md.\n\n## dc-r7-kit-checks-on-claude\nThe first estimate counted Azure solvers, adjudicators and raters: about 6,840 calls, about $127. With checks on Claude it is about 815 calls, about $26 (OWNER.md §2). The level rating (W2) needs no owner approval: it costs nothing on Azure.",
+  "measurements": "## ms-r7-relevel-c4-7-claude\n2026-11-04. Method: evals/kit-runs/w2-relevel/RATER.md (frozen rubric v2, sha 6ef389e48b5d5752). Raters see the question, its key and the class, never the chapter. They use the 2025-26 NCERT scope of classes C-2..C+1 from data/curriculum. n = 4,695 class 4-7 items (all items without a ge), 118 packets of at most 40, 8 Claude subagents. Second rater: 8 packets (n = 320), independent. Agreement: MAE 0.27, within 0.5 = 96.6%, within 1 = 99.7%, Pearson r = 0.96, offset +0.02. Mean (grade - class) = -0.32. Lowest: class-7 English and Hindi (-1.1 to -1.5: rhymes, opposites, plurals, spelling). Highest: class-6 astronomy (+0.3). Caveat: both raters are the same model, so this is consistency, not validity; a human-teacher spot check is for the test phase. Merged into data/kits by scripts/kits/w2-merge.mjs (ge = mean grade - 0.5, geSource claude-v2).\n\n## ms-r7-gap-items-end-of-class\n2026-11-04. Author, blind solver and level rater were 3 separate Claude agents (evals/kit-runs/gap-items/). n = 18 items in 6 topics: c5-evs-ch04-t02, c5-hindi-ch01-t01, c7-english-ch01-t01, c7-english-ch05-t01, c7-hindi-ch04-t01, c7-hindi-ch05-t01. Agreement 18/18. Rated grades: class 5 items 4.5-5.5, class 7 items 5.5-7. End-of-class coverage went from 379 to 384 of 385. c7-english-ch01-t01 is still a gap: its best new item rated 6.5 (needs 6.75). It goes to W3 (real-text language kits).",
+  "rejected": ""
+ }
+}

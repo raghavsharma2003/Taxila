@@ -1,0 +1,50 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-no-probe-without-authored-question",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "A script card answered right no longer gets a why-probe turn. All 42 probe turns in director20 ended on the card's close with nothing for the child, because no probe line is authored; the walk now goes on to the next part (Brain 1765faf1). Probes return only as authored questions on the card: Learning proposes, after the staged batches are read, where a probe earns its place (cards where a right answer can come from a wrong reason; the kit's mix-ups say which). Reverse if: the next judged run or a child session shows right-for-the-wrong-reason answers passing unnoticed on scripted cards; then authored probes are written for those cards first."
+  },
+  {
+   "id": "ms-pilot-scripts-fix-rounds-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "The four live pilot scripts, read sentence by sentence and fixed (Learning c4881b652): first read 79 faults in 782 fields; fix rounds 1, 2 and 3 were each re-read by readers who had not written them, and 29, 12 and 4 of their rewrites failed; the last 4 (all low) fixed by hand; 0 wrong keys at every read. c4's yes/no cards went from 12 'No' to 3 'Yes' of 8. Over all fix rounds on pilots and staged batches: 926 rewrites judged, 119 failed (12.9%), 62 new faults found nearby, 1 wrong key introduced and caught. 10 remediation boards removed where the say became a general rule. Changes per card: docs/design/round7/learning/PILOT-CHANGES-2026-11-11.md; cost: FIX-ROUND-COST-2026-11.md."
+  },
+  {
+   "id": "ms-staged-batch-5-read-2026-11-11",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Staged batch 5 (c6-ch02-t03, c6-ch05-t01, c6-ch07-t01, c6-ch07-t03, c6-ch07-t04) read in full: 919 fields, 102 faulted (11.1%), about 9 untrue, about 56 giveaways, 0 wrong keys. Two shapes the predicates missed: a card repeating a kit ladder item's frame, and one answer word across a whole skill where the key is not yes/no (every 'which is more' keyed 'same'; every factor-or-multiple keyed 'multiple'). Predicates (e2) and (f2) approved to cover them."
+  },
+  {
+   "id": "ms-brain-predicates-on-director20-rows",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "New dry predicates run over director20's 16 live lessons before their fixes (Brain 70b2fc457, 1765faf1, 9ba271158): authoredWhole 115 (65 on the dry matrix); parkReturned 3, returnNoPark 1, returnAlone 2, parkGoesOn 5, aiAskAnswered 8; returnReply (her reply must be one of Learning's forms) 9. All read 0 on the dry matrix after the fixes. Causes of authoredWhole: Hindi word swaps inside authored cards in state.js, the canned-aside filter dropping an authored hook sentence, the Hindi word pass inside re-posed cards, and withoutClosedKeys cutting a simpler in half."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director20",
+   "rel": "constrains",
+   "dst": "dc-r8-no-probe-without-authored-question"
+  },
+  {
+   "src": "dc-r8-director20",
+   "rel": "measured_by",
+   "dst": "ms-brain-predicates-on-director20-rows"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-pilot-scripts-fix-rounds-2026-11-11"
+  },
+  {
+   "src": "dc-r8-staged-scripts-read-in-full",
+   "rel": "measured_by",
+   "dst": "ms-staged-batch-5-read-2026-11-11"
+  }
+ ]
+}

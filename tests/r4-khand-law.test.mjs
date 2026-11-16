@@ -11,6 +11,7 @@ import { pickLevels, env } from "../src/play/core/pick.ts";
 import { replayAll } from "../src/play/core/replay.ts";
 import { mulberry32 } from "../src/play/core/rng.ts";
 import { sanitizeActs } from "../shared/play.ts";
+import { cpuNow } from "./_cpu-ms.mjs";
 
 const CASES = [
   { mode: "views", goals: ["build3", "same"], grammars: [{}, { views: ["top"] }, { views: ["front"] }] },
@@ -144,14 +145,15 @@ describe("r4-khand nazariya: levels are proven", () => {
         for (const kitId of level.proof.discriminates) {
           const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId);
           const mg = logic.grade(level, env(logic.malActs(level, mal)));
-          assert.equal(mg.evidence[0]?.misconceptionId, kitId, `${level.levelId} ${mal}`);
+          assert.equal((mg.evidence[0]?.misconceptionId ?? mg.evidence[0]?.chanceMis), kitId, `${level.levelId} ${mal}`);
           assert.equal(mg.evidence[0]?.outcome, "incorrect");
         }
       }
       for (let i = 0; i < 40; i++) {
         const goal = c.goals[i % c.goals.length];
+        const t0 = cpuNow(); // CPU, not the wall clock (tests/_cpu-ms.mjs): r.ms read 63.7 ms once on a loaded box (2026-11-10)
         const r = pickLevels(logic, reqOf(logic, c.mode, goal, 900 + i, [1, 2, 3][i % 3], c.grammars[i % c.grammars.length]));
-        if (r) ms.push(r.ms);
+        if (r) ms.push(cpuNow() - t0);
       }
       ms.sort((a, b) => a - b);
       assert.ok(ms[Math.floor(0.95 * (ms.length - 1))] <= 50, `generator p95 ${ms[Math.floor(0.95 * (ms.length - 1))]} ms`);

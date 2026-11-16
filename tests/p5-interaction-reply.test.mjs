@@ -110,7 +110,8 @@ test("a REQUESTED story whose numbers state the key is not cut to the bare quest
   // tests/round2-conversation.test.mjs)
   process.env.TAXILA_P5_LEADSLOT = "off";
   const leaky = `Ek din Riya ne socha, jawab ${key} hai, haan ${key}. ${q}`;
-  const clean = `Ek din Riya ne ek roti ke barabar tukde kiye aur sabko ek-ek diya. ${q}`;
+  // (no word of a twin pair beside its twin in the card — data/lesson-twins.json: "tukde" beside the card's "slice" is one)
+  const clean = `Ek din Riya ne ek roti sabke saath baant di aur sabko ek-ek diya. ${q}`;
   const seen = scripted(leaky, leaky, clean);
   const out = await textReply({ instructions: "x", state: r.state, kit: K, childText: "Tell it as a story", history: [], ui: r.ui, module: r.state.module, verdict: null });
   assert.ok(out.guard.caught.includes("leak"), JSON.stringify(out.guard));

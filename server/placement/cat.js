@@ -86,7 +86,9 @@ export function nextItem({ classLevel: C, pool, asked, prior = priorFor(C), rnd 
   if (shouldStop({ classLevel: C, asked, prior })) return null;
   const used = new Set(asked.map((x) => x.item.id));
   const usedTopics = new Set(asked.map((x) => x.item.topicRef).filter(Boolean));
-  let cands = pool.filter((it) => !used.has(it.id));
+  // Two items of one pair (the same question at two levels, or a close variant: `pairId`) are never both asked in a round.
+  const usedPairs = new Set(asked.map((x) => x.item.pairId).filter(Boolean));
+  let cands = pool.filter((it) => !used.has(it.id) && !(it.pairId && usedPairs.has(it.pairId)));
   if (countBelow(asked, C) >= LIMITS.maxBelow) cands = cands.filter((it) => it.ge >= C - 1);
   if (countOnGrade(asked, C) >= LIMITS.maxOnGrade) cands = cands.filter((it) => it.ge < C - 1 || it.ge >= C);
   if (countAbove(asked, C) >= LIMITS.maxAbove) cands = cands.filter((it) => it.ge < C);

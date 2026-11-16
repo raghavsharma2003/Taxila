@@ -89,13 +89,28 @@ export class FrameReader {
  * Complete the handshake on an upgraded socket and return the connection. Emits "message" (data: Buffer|string,
  * binary: boolean) and "close" (code, reason) once. `send(text|Buffer)`, `close(code, reason)`.
  */
+/** Every open server WebSocket, for the shutdown drain (server/shutdown.js). */
+const OPEN = new Set();
+export const openWebSockets = () => OPEN.size;
+/**
+ * Shutdown (round 7, platform-graceful-shutdown): send `message` (if any) on every open socket, then close it with 1012
+ * Service Restart so the client reconnects to a live replica. → how many were open.
+ */
+export function drainWebSockets(message) {
+  const all = [...OPEN];
+  for (const ws of all) { try { if (message) ws.send(message); ws.close(1012, "server restart"); } catch { /* gone */ } }
+  return all.length;
+}
+
 export function acceptWebSocket(req, socket, head, { maxPayload = 256 * 1024, maxMessage = 1024 * 1024 } = {}) {
   const ws = new EventEmitter();
+  OPEN.add(ws);
   const reader = new FrameReader({ maxPayload });
   let parts = null, partsOp = 0, partsLen = 0, closed = false;
   const finish = (code, reason) => {
     if (closed) return;
     closed = true;
+    OPEN.delete(ws);
     try { socket.end(encodeFrame(OP.close, closeBody(code, reason))); } catch { /* gone */ }
     setTimeout(() => socket.destroy(), 1000).unref?.();
     ws.emit("close", code, reason);

@@ -8,7 +8,10 @@ import { endEvents } from "../server/learner/live.js";
 import { fold, newLedger } from "../server/learner/kt/ledger.js";
 import { classify } from "../server/director/classify.js";
 import { cls } from "./fixtures/kit.mjs";
+import { kitPath } from "./fixtures/kit-path.mjs";
 
+describe("round2-truth (kit path: lesson scripts off)", () => {
+kitPath();
 describe("round2 truth", () => {
   // prod w1c-reteach 10/13 (2026-10-06): V1.4's pace park took the skill out of the lesson while W1-C's re-check was
   // pending, so the ladder never decided again and the arm in flight never resolved. HEAD: 80/120 skill-runs stuck.
@@ -130,4 +133,5 @@ describe("round2 truth", () => {
       assert.equal(ok.outcome, "correct");
     } finally { globalThis.fetch = realFetch; for (const k of Object.keys(process.env)) if (!(k in env)) delete process.env[k]; Object.assign(process.env, env); }
   });
+});
 });

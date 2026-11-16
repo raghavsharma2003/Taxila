@@ -19,6 +19,7 @@
 //     (`lessonState.moveVoiced`), and the appended-last check is the BRANCH for the reply now being
 //     answered — derived from step() itself (director/state.js branchesFor), with the safety escape first,
 //     because the safeguard move only reaches the instructions one turn later.
+import { methodsLine, SHORT_TURN_WORDS } from "../conversation/methods.js";
 import { playCheck } from "../director/play-verbs.js";
 import { SHAPES as REL_SHAPES } from "../relational/policy.js";
 import { floorText, FLOOR_HEADING } from "./floor.js";
@@ -66,6 +67,11 @@ const ESCAPE_VOICE = "unsafe, hurt or scared → no lesson now: calm care, a tru
 const ESCAPE_NUMBER_RESERVE = " 1098";
 const SAFEGUARD_CHECK = "care first: no lesson content this turn; a trusted adult and Childline 1098 if not said yet.";
 const SAFEGUARD_CHECK_VOICE = "care first: no lesson content this turn; a trusted adult and Childline if not said yet.";
+// 14.4: the check-in tier (state.js checkTier): a person noticing and asking, no helpline numbers this turn
+const DISTRESS_CHECK = "care first: no lesson content this turn; notice it warmly, then ask gently if they are okay (okay, never safe); no helpline numbers this turn.";
+// 14.4.3: the helped tier (state.js: help is in place): the hold and the board stay; the numbers and "are you safe?" are not re-said
+const SAFEGUARD_HELPED = "care first: no lesson content this turn; help is in place: no helpline numbers again unless they ask, never ask again if they are safe.";
+const AFTER_CHECK = "the safety check already read their earlier heavy words: no helpline, no telling them to go to a grown-up now, no question about harm or being safe; answer what they said now, as their teacher";
 const STOP = "they want to stop → stop, short warm goodbye";
 /**
  * Corrective shapes after the teacher's own words broke the floor (director/safety.js floorViolations, whose
@@ -144,7 +150,12 @@ function lessonParts({ lessonState: s, item, content = [], branches, topic, lang
           : `- the question (content — pose as written, in their language): "${posed(promptFor(item, language))}"`,
         drop: null,
       });
-      if (item.diagnostic) parts.push({ text: `- its choices (content — read them plainly, in this order): ${posed(optionsSpoken(item, language))}`, drop: 9 });
+      // 14.4.3 (sim lab 6da8f599 p30 r3 #7, and 12 of 160 option-card turns in the 14.4 records): on the text lane the
+      // choices are the buttons, and "read them plainly" put them in her line, glued ("…ko batao. Bad — … It makes no
+      // difference — … Good — …"); there they are for checking only. The voice lane still reads them (a child may not read).
+      if (item.diagnostic) parts.push({ text: lane === "text"
+        ? `- its choices are the buttons (for checking only; never list or read them in your words): ${item.options.map((o) => o.text).join(" | ")}`
+        : `- its choices (content — read them plainly, in this order): ${posed(optionsSpoken(item, language))}`, drop: 9 });
       const also = item.acceptable?.length ? `; also accept: ${item.acceptable.join(", ")}` : "";
       parts.push({ text: `- key, for checking only: ${item.answer}${also}`, drop: null });
       parts.push({
@@ -202,7 +213,7 @@ function moveParts(move, voiced, rel) {
 }
 
 const LANGUAGE = {
-  hinglish: "mirror the child. Default natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. If they switch to English or to Hindi, follow them.",
+  hinglish: "natural spoken Hinglish (Hindi sentence, everyday English words), Roman script when written. Their English words, even a whole English line, are still Hinglish to you: keep Hinglish. If they speak Hindi, follow them.",
   hindi: "mirror the child. Default simple spoken Hindi (Roman script when written); the lesson's own idea-words in Hindi, an English term only as a short gloss after the Hindi word. If they switch to English or Hinglish, follow them.",
   english: "mirror the child. Default simple Indian English. If they speak Hindi or Hinglish, reply in natural Hinglish.",
 };
@@ -211,10 +222,12 @@ const PINNED = { hinglish: "Hinglish", hindi: "simple Hindi", english: "simple E
 // round 2 (conversation; owner-4 2026-10-06 "Hindi mein samjhao": the next turn read as English, "equal parts", "total",
 // "one-third"): a child who ASKED for Hindi gets Hindi words for everyday things; English stays only for a maths or science term
 const PINNED_MORE = { hindi: " Everyday words in Hindi (barabar, hissa, kul, kitne); English only for a maths or science term." };
-function languageRule(language, ageBand, pinned = false) {
-  const words = ageBand === "6-9" ? " Short everyday words a 7-year-old knows." : "";
+/** Voice lane only (TALKING-RULES §1, docs/research/voice/v4): her words are heard. A shape, never a line; sized to the cap. */
+export const SPOKEN_NOTE = " Said aloud: short chunks, key word last, feeling held to the end.";
+export function languageRule(language, ageBand, pinned = false, lane = "text", plain = false) {
+  const words = ageBand === "6-9" || plain ? " Short everyday words a 7-year-old knows." : "";
   const rule = pinned && PINNED[language] ? `they asked for ${PINNED[language]}: every turn in ${PINNED[language]} (Roman script when written), even when they reply in another language.${PINNED_MORE[language] ?? ""}` : LANGUAGE[language] ?? LANGUAGE.hinglish;
-  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.`;
+  return `LANGUAGE: ${rule} Maths and science words in English, with the Hindi word beside a new one.${words} Plain speech only: no markdown, no emoji, no symbols like ÷ or =.${lane === "voice" ? SPOKEN_NOTE : ""}`;
 }
 
 const SAME_ITEM_MOVES = new Set(["hint", "reteach", "repair"]);
@@ -240,7 +253,8 @@ function branchClause(branches, posed = (t) => t) {
  * against a question nobody asked). Voice lane: the check is the branch for the reply being answered.
  */
 function lastParts({ lessonState: s, move, item, branches, ageBand, language, protegeName, lane, writtenAsk = false }) {
-  const n = TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
+  // round 7 A8: "chhota bolo" (the short method) caps her turn for the rest of the lesson
+  const n = move.methods?.includes("short") ? Math.min(SHORT_TURN_WORDS, TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"]) : TURN_WORDS[ageBand] ?? TURN_WORDS["10-15"];
   const voice = lane === "voice";
   const lvl = s.hintLevel;
   const fix = [...Object.keys(FLOOR_FIX).filter((k) => s.correction?.includes(k)), ...Object.keys(REL_FLOOR_FIX).filter((k) => s.correction?.includes(k))]
@@ -252,11 +266,14 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
         : `the key stays unsaid (ladder rung ${lvl} of 4) — no answer, no giveaway; if they ask for it, nudge instead`;
   let check, shape;
   if (move.kind === "safeguard") {
-    check = voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
+    check = move.tier === "check" ? DISTRESS_CHECK : move.tier === "helped" ? SAFEGUARD_HELPED : voice ? SAFEGUARD_CHECK_VOICE : SAFEGUARD_CHECK;
     // W2-I R3 (P2: a spoken-planning preface on 18/18 heavy turns): the reply begins with the child, never with a sentence
     // about how she will respond; the vetted opening is prepended in code (server/relational/openings.js).
     check = `${check} Begin with the child, never with how you will respond.`;
-    shape = "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
+    shape = move.tier === "check" ? "at most 30 words, short warm sentences. End with your one gentle question, then stop."
+      : move.tier === "helped" ? "at most 35 words, short calm sentences. End warmly, with no question about being safe, then stop."
+      : move.sameStory ? "at most 35 words, short calm sentences. End with your one new question, never about being safe, then stop."
+      : "at most 35 words, short calm sentences. End by asking if they are okay right now, then stop.";
   } else if (move.intake) {
     // round 4 (session-first intake, director/session/beat.js): the move's own question is the only one; for the confirm probe
     // that is the kit question, pinned verbatim (content); never a lesson explanation or a quiz of her own here
@@ -293,6 +310,12 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   const pc = move.kind !== "safeguard" && move.kind !== "wrap" && s.playOn?.mode ? playCheck(s.playOn, language) : null;
   if (pc) check = pc;
   if (fix.length) check = `your last turn broke the floor — first ${fix.join("; ")}; then ${check}`;
+  // 14.4 (QA TEST d359423b / a9c3136d t7-t8, 9ad86661): the turns a check-in released, and a read the Director set aside, still
+  // carry the child's heavy words in the history, and the reply made the safeguarding call itself from them ("mar jaunga ko
+  // main seriously leta hoon… aap safe hain?", "turant batayiye… akele mat rahiye") on 4 of 4 drafts. The call is made: last.
+  if (move.kind !== "safeguard" && s.safeguardedAt == null && (move.setAside || (s.checkReleased != null && s.turn - s.checkReleased <= 3))) {
+    check = `${check}; ${AFTER_CHECK}`;
+  }
   // round 3 (relational-human): a memory about THIS child from the record (last lesson's learning, a win), said FIRST in a
   // few words of her own. Here, not mid-brief: position is mechanism (memory-2day 2026-10-09: in the MOVE section the
   // opener callback was voiced 0/3, and 0/3 again as a bare "FIRST" note under a hook shape that also says how to open). A note, never a line;
@@ -303,11 +326,14 @@ function lastParts({ lessonState: s, move, item, branches, ageBand, language, pr
   // round 4 (conversation): what the child's request must get this turn, last (position is mechanism; director/shapes.js
   // MUST_NOTE). A note, never a line; droppable (shed before anything else here when the section is over its cap).
   const must = move.must && move.kind !== "safeguard" && move.kind !== "wrap" && !fix.length
-    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "").slice(0, 300)}`, drop: 9 }] : [];
+    ? [{ text: `THIS TURN FIRST (a note, not words to say): ${String(move.must).replace(/["“”]/g, "")}`, drop: 9 }] : [];
   return [
     ...lead,
     ...must,
     { text: `ONE MORE CHECK: ${check}`, drop: null },
+    // round 7 A8 (brain-steering-persistence): how they asked to be taught, last and never shed (position is mechanism);
+    // not on a safeguard or a wrap (move.methods is not set there)
+    ...(methodsLine(move.methods) ? [{ text: `- ${methodsLine(move.methods)}`, drop: null }] : []),
     { text: `${TURN_SHAPE_PREFIX} (last and most important): ${shape}`, drop: null },
   ];
 }
@@ -339,7 +365,7 @@ export function compileWithReport(input, { budget = TOKEN_BUDGET, caps = {} } = 
     // the move; it sheds before anything but the brief's callbacks/wins/interests (drop 4). Pace knobs never go here.
     { id: "vibe", parts: (input.vibe ?? input.lessonState?.vibe) ? [{ text: vibeRow(input.vibe ?? input.lessonState.vibe), drop: 4 }] : [] },
     { id: "move", parts: moveParts(input.move, voiced, input.lessonState?.rel) },
-    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned), drop: null }] },
+    { id: "language", parts: [{ text: languageRule(input.language, ageBand, !!input.lessonState?.ctx?.langPinned, lane, !!input.lessonState?.ctx?.plainWords), drop: null }] },
     { id: "last", parts: lastParts({ ...input, lane, ageBand, protegeName: input.character.protege.name }) },
   ];
   // The voice branch's next question is posed in spoken notation when it fits the `last` cap; when the reading is

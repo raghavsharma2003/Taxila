@@ -57,7 +57,7 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     if (drag?.moved) {
       const ax = Math.min(drag.x0, drag.x1), bx = Math.max(drag.x0, drag.x1), az = Math.min(drag.z0, drag.z1), bz = Math.max(drag.z0, drag.z1);
-      P.stroke(c, [[ox + ax * cell, oy + az * cell], [ox + (bx + 1) * cell, oy + az * cell], [ox + (bx + 1) * cell, oy + (bz + 1) * cell], [ox + ax * cell, oy + (bz + 1) * cell]], { role: tool === "build" ? "you" : "look", width: 3, closed: true });
+      P.stroke(c, [[ox + ax * cell, oy + az * cell], [ox + (bx + 1) * cell, oy + az * cell], [ox + (bx + 1) * cell, oy + (bz + 1) * cell], [ox + ax * cell, oy + (bz + 1) * cell]], { role: tool === "build" ? "focus" : "look", width: 3, closed: true });
     }
     if (views) {
       // the front profile (columns x, seen from z < 0) and the side profile (rows z), target outlined, the child's filled
@@ -98,9 +98,9 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     goal: () => goalOf(level, lang),
     readouts(): Readout[] {
       const s = st(), out: Readout[] = [];
-      if (side) { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "you" }); }
+      if (side) { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }, { k: "Side", v: pad ? String(num) : s.named !== null ? String(s.named) : "?", role: "focus" }); }
       else if (mode === "floor") { const ap = areaPerimeter(p, s.h), show = fade === 1 || reveal || s.done; out.push({ k: "Floor", v: show ? String(ap.area) : "?", role: "q1" }, { k: "Fence", v: show ? String(ap.perimeter) : "?", role: "q4" }); }
-      else if (mode === "array" || mode === "powers") { if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "you" }); if (mode === "powers") out.push({ k: "Next", v: `${(p as unknown as PowersParams).s}×${(p as unknown as PowersParams).s}${(p as unknown as PowersParams).goal === "cube" ? `×${(p as unknown as PowersParams).s}` : ""}`, role: "q3" }); }
+      else if (mode === "array" || mode === "powers") { if (pad || s.named !== null) out.push({ k: "Number", v: pad ? String(num) : String(s.named), role: "focus" }); if (mode === "powers") out.push({ k: "Next", v: `${(p as unknown as PowersParams).s}×${(p as unknown as PowersParams).s}${(p as unknown as PowersParams).goal === "cube" ? `×${(p as unknown as PowersParams).s}` : ""}`, role: "q3" }); }
       else out.push({ k: "Blocks", v: String(built(p, s.h)), role: "q1" });
       return out;
     },

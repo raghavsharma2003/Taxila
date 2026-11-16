@@ -1,0 +1,122 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r144-safeguard-tiers",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "Tiered safeguard (main safety review, the owner's directive after lesson e6392332: the helpline only when sure). ONE model read of a low mood or another fright (the words-only read's new `about`: sad_or_lonely / other_fright, or the label call and the words read disagreeing) opens a warm CHECK-IN: she notices it and asks one gentle open question; no helpline numbers, no Help sheet, no incident row. The next turn decides: distress again, or words that neither say fine nor carry on, is the full script (escalated: the vetted opening, the helplines on the board, an incident); one silence waits once; clearly fine, a bare okay, carry on, the continue chip, an answer (graded and served as it stands) or a request goes back to the lesson with one warm 'you can always tell me or a grown-up' line; a stop ends it. Every SURE signal keeps the full script at once: the predicate's families, the relational floor, a filter block the child's own words trip (sureBy), an understanding note, a read naming self_harm / hurt_by_person / afraid_of_person_or_home / unsafe_now, a read that names no kind, a late answer (no next turn would follow a check-in). Reverse if a check-in is ever followed by a disclosure that the next turn's read misses, or if a sure kind is read as a check kind on any curated disclosure line."
+  },
+  {
+   "id": "ms-r144-tier-fp-2000",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 2704,
+   "method": "scratchpad tierfp.mjs: b145 classify() (label call on grok-4-1-fast-non-reasoning OR the words-only read with the about note, the teacher's last words as context) over sim-lab child lines; 2,000 ordinary lines (seed 1432, no safety card, not a safeguard turn) and the 704 safeguard-turn lines the predicate misses; TEST endpoints, model-only",
+   "title": "Tiered safeguard on 2,000 ordinary sim-lab lines: 0 full scripts, 1 check-in (sad_or_lonely, a health answer naming sadness and loneliness), 1,999 none; 14.4 V2 had 1/2000 distress, all of it the full script. On the 704 safeguard-turn lines the predicate misses: 136 SURE (afraid_of_person_or_home 106, self_harm 12, hurt_by_person 8, unnamed 8, unsafe_now 2), 39 CHECK, 529 none. The 39 CHECK lines read by hand: a child asking her to keep a secret and be her only friend (no third party, so the relational floor's honest boundary, not a disclosure), a monkey chase, low mood after being scolded at home, tiredness, 'I am scared I said something wrong', and replies inside an episode. None is a disclosure that waits a turn for the helplines."
+  },
+  {
+   "id": "ms-r144-census-15",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 151,
+   "method": "15 production lesson exports coded by 3 parallel agents against one fixed taxonomy (F1-F14, P0/P1/P2), root cause checked in code where possible; docs/research/census/2026-10-21-failure-census.md (codes and causes only, no child words)",
+   "title": "Failure census, 15 production lessons: 151 findings (27 P0, 78 P1, 46 P2), cause verified in code for 73. Weighted Pareto (P0 3, P1 2, P2 1): topic not followed 29, screen != speech 27, abstract teaching 25, other 25, repetition 24, relational 24 (11 of 15 lessons) = 54%; latency 18, visuals 17, misheard 17, option != action 16, fragments 16, confusion not acted on 13, false safeguard 12, grading 12, hold outlasting its trigger 8. False safeguards rank 13th by weight but are 6 of 27 P0s, the largest P0 group."
+  },
+  {
+   "id": "dc-r144-deva-bully-context",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "fuzzy.js: the Devanagari bully token (also what the recogniser writes for 'spoke') is the bully shape only with the child, their class or a bully's act in the same line (मुझे / मेरे / हम / क्लास / स्कूल / करता / मारता / परेशान …); Roman 'bully' unchanged. Owner census c85501ec t6: an ASR garble beside a riddle's answer opened the full script and ended the lesson. The red-team recall fingerprint (every set, 40 seeds) and all 229 safety tests pass. Reverse on any disclosure line with the Devanagari word and none of the context words."
+  },
+  {
+   "id": "dc-r144-rewrite-block-probe",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "say.js: a content-filter block on a REWRITE or REPAIR call is judged like every other reply-side block (refines dc-r1431-completion-block-probe): a non-harm detector, a neutral line; else the child's own words alone decide (childWordsTrip): clear, a neutral line; harm, the safeguard (sureBy content_filter); a probe that could not run, the check-in tier (filterUnsure), never the full script at once. Owner census dad0c9db t22: 'pata nahi' got the helpline script with no disclosure in the lesson. Reverse if an unprobed block is ever found on words that were a disclosure."
+  },
+  {
+   "id": "dc-r144-opening-body-clean",
+   "kind": "decision",
+   "at": "2026-10-21",
+   "title": "openings.js withSafetyOpening: after the vetted opening, a model-body sentence that names a helpline or the trusted adult again, or scolds the child (bad words, 'I am stopping the lesson', shame), is dropped; the opening is never touched. An escalation out of a check-in on words that say nothing heavy uses the CHECK opening, never 'you did the right thing by telling me'. Owner census c85501ec t7: both helplines twice in one turn and a scolding line to a child who had answered a riddle."
+  },
+  {
+   "id": "rj-r144-bare-ok-everywhere",
+   "kind": "rejection",
+   "at": "2026-10-21",
+   "title": "Tried: adding a whole-reply bare okay ('theek hai', 'ok', 'haan ji theek hai') to fine.js FINE, so it releases every model episode. Broke 2 tests of the 14.3 decision: after the full script a bare okay agrees with 'tell a grown-up you trust'; it states nothing about the child. Kept as bareOk(), read only by the check-in tier, whose own question is 'are you okay right now?'."
+  },
+  {
+   "id": "fd-r144-relfloor-skipped-on-safeguard",
+   "kind": "finding",
+   "at": "2026-10-21",
+   "title": "Found in review of the tier change, before it shipped: turn.js re-plans for the relational floor only when the move is not already a safeguard, and keeps the classifier's distressKind; with a check-in tier both would have left a relational-floor turn (a third party's secret) as a check-in. Fixed: needSafety also on a check-in move, and relCls carries sureBy relational_floor; the same for a filter block the words trip (sureBy content_filter). Tests pin both."
+  },
+  {
+   "id": "open-r144-help-back-to-lesson",
+   "kind": "open",
+   "at": "2026-10-21",
+   "title": "Census F7b: the Help sheet's 'Back to the lesson' button (useDesk.ts closeHelp) only closes the sheet on the device; the server's hold does not hear it. Not changed in 14.4: after the full script the hold is deliberate (predicate episodes keep it), and a tap is not a reply. To decide: send it as a calm-turn signal (never a release on predicate episodes) and measure on TEST."
+  },
+  {
+   "id": "ms-r144-about-note-ab",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "n": 699,
+   "method": "scratchpad aboutab.mjs: the words-only read alone on grok-4-1-fast-non-reasoning, 14.4 V2 brief vs V2 + the about note, same lines (the 704 sim-lab safeguard-turn lines the predicate misses; 699 read on both arms), TEST endpoints, model-only",
+   "title": "The about note costs the words-only read 15 distress reads on safeguard-turn lines (V2 181 / 699, with about 166 / 699: 44 lost, 29 gained). All 44 lost, read by hand, are replies INSIDE an open episode to 'are you safe?' ('thik hai… main Papa ko bata dungi', '1098?', 'thoda sa theek hoon', tiredness, the no-third-party secrecy line); none is a first disclosure, and inside an episode the hold rules (fine.js vetoes, the stay turn) decide, not this read. First-disclosure recall rests on the curated set (every sure line SURE 4/4) and the label call OR-ed beside it (ms-r144-tier-fp-2000: 136 sure on the predicate-missed lines). Not measured: real children's first disclosures (none in the corpus is real)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r144-safeguard-tiers",
+   "rel": "supersedes",
+   "dst": "dc-r143-animal-scare-unchanged"
+  },
+  {
+   "src": "dc-r144-safeguard-tiers",
+   "rel": "measured_by",
+   "dst": "ms-r144-tier-fp-2000"
+  },
+  {
+   "src": "dc-r144-safeguard-tiers",
+   "rel": "caused_by",
+   "dst": "ms-r144-census-15"
+  },
+  {
+   "src": "dc-r144-deva-bully-context",
+   "rel": "caused_by",
+   "dst": "ms-r144-census-15"
+  },
+  {
+   "src": "dc-r144-rewrite-block-probe",
+   "rel": "supersedes",
+   "dst": "dc-r1431-completion-block-probe"
+  },
+  {
+   "src": "dc-r144-opening-body-clean",
+   "rel": "caused_by",
+   "dst": "ms-r144-census-15"
+  },
+  {
+   "src": "rj-r144-bare-ok-everywhere",
+   "rel": "constrains",
+   "dst": "dc-r144-safeguard-tiers"
+  },
+  {
+   "src": "fd-r144-relfloor-skipped-on-safeguard",
+   "rel": "part_of",
+   "dst": "dc-r144-safeguard-tiers"
+  },
+  {
+   "src": "dc-r144-safeguard-tiers",
+   "rel": "measured_by",
+   "dst": "ms-r144-about-note-ab"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r144-safeguard-tiers — the helpline only when sure (2026-10-21, main safety review)\n\nThe owner, after lesson e6392332 (a misheard line opened the full helpline script, \"no problem, you misheard\" kept it, and only \"okay I will call\" let the lesson go on): the card must come up only when it is sure the child is in trouble. The floor itself does not move: every sure signal still gets the full script on the same turn. What changes is ONE model read of something that is not clearly harm.\n\n- **Check-in** (no numbers, no Help sheet, no incident): the words-only read says sad_or_lonely or other_fright, or the label call and the words read disagree (about \"none\"); a filter block whose words-alone probe could not run.\n- **Full script at once**: the predicate's families (now with Hinglish / Devanagari passive ideation, \"main na hoti toh achha hota\"), the relational floor, a block the child's words trip, an understanding note, a read naming self_harm / hurt_by_person / afraid_of_person_or_home / unsafe_now, a read naming no kind, a late answer.\n- **The next turn** escalates to the full script (with its incident) unless the child is clearly fine, says a bare okay, carries on, answers the lesson (graded and served as it stands) or asks for something; one silence waits once; a stop ends the lesson.\n\nMeasured (ms-r144-tier-fp-2000): 0 full scripts and 1 check-in on 2,000 ordinary lines; on 704 safeguard-turn lines the predicate misses, 136 sure, 39 check-in (read by hand: none a disclosure that waits), 529 none. Reverse if a check-in is ever followed by a disclosure the next turn misses, or a curated disclosure line reads as a check kind.\n\n## dc-r144-deva-bully-context, dc-r144-rewrite-block-probe, dc-r144-opening-body-clean\n\nThree more causes of the census's false safeguards, each from one owner lesson: a lone Devanagari bully token (an ASR garble) as a disclosure; a blocked rewrite call failing straight to the script; the model body after the vetted opening repeating both helplines and scolding the child. See the graph nodes for the rule and the reversal.",
+  "measurements": "## ms-r144-tier-fp-2000 (2026-10-21, n = 2,704)\n\nb145 classify() on grok-4-1-fast-non-reasoning (label call OR the words-only read with the about note, her last words as context), TEST endpoints, model-only. 2,000 ordinary sim-lab lines (seed 1432): NO 1,999, CHECK 1, SURE 0. 704 safeguard-turn lines the predicate misses: SURE 136 (afraid_of_person_or_home 106, self_harm 12, hurt_by_person 8, unnamed 8, unsafe_now 2), CHECK 39 (sad_or_lonely 20, none 12, other_fright 7), NO 529. Script: scratchpad tierfp.mjs; result tierfp-result.json (synthetic sim-lab lines).\n\n## ms-r144-census-15 (2026-10-21, n = 151 findings)\n\n15 production lessons, 3 coders, taxonomy F1-F14; docs/research/census/2026-10-21-failure-census.md.\n\n## ms-r144-about-note-ab (2026-10-21, n = 699)\n\nThe words-only read alone, V2 brief vs V2 + about note, on the 704 predicate-missed safeguard-turn lines (699 read on both): 181 → 166 distress (44 lost, 29 gained). The 44 lost are in-episode replies to \"are you safe?\", none a first disclosure (read by hand). Script: scratchpad aboutab.mjs.",
+  "rejected": "## rj-r144-bare-ok-everywhere (2026-10-21)\n\nA whole-reply bare okay as fine.js FINE broke the 14.3 rule that a bare yes / okay after the full script is agreement, not a state (2 tests). It answers the check-in's own question only, so it lives in bareOk(), read by the check-in branch alone."
+ }
+}

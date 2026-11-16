@@ -3,7 +3,8 @@
 // Routes same-origin requests through Node fetch because the sandbox proxy breaks Chromium.
 import { chromium } from "/home/user/Taxila/node_modules/playwright/index.mjs";
 import fs from "fs";
-export const BASE = (process.env.TAXILA_BASE || "https://taxila.dev").replace(/\/+$/, "");
+import { resolveBase } from "../../tests/prod/base.mjs";
+export const BASE = resolveBase(process.env.TAXILA_BASE); // no default
 export const SHOTS = "/home/user/Taxila/docs/design/reset/audit/shots";
 export const OUT = (process.env.RA || new URL(".", import.meta.url).pathname) + "/out"; // RA = a scratch dir; out/ holds test-account credentials and must never be committed
 fs.mkdirSync(SHOTS, { recursive: true }); fs.mkdirSync(OUT, { recursive: true });

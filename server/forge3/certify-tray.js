@@ -24,6 +24,7 @@ import { measureDocument } from "./qa/measure.js";
 import { judgeFrame, QA_VERSION } from "./qa/checks.js";
 import { servesView } from "./certify.js";
 import { VP_CLASSES, contractBox, SKELETON_CERT_FILE, MODULE_CERT_FILE } from "./tray-gate.js";
+import { kitItemIndex } from "./item-hash.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const VIEWPORT = { p360: { width: 360, height: 800 }, p412: { width: 412, height: 915 }, l1366: { width: 1366, height: 768 } };
@@ -250,6 +251,27 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       fs.writeFileSync(arg("out", SKELETON_CERT_FILE), JSON.stringify(table, null, 1));
       for (const [id, bands] of Object.entries(table.archetypes)) for (const [b, c] of Object.entries(bands)) console.log(`CELL ${id} ${b} n=${c.n} serve ${JSON.stringify(c.serveByViewport)} ${c.fails.slice(0, 4).join(" ")}`);
     }
+    // --stamp-items: give every certified module sample that cites a kit item (params.itemId) its item hash, WITHOUT re-rendering,
+    // but only when the sample is still what the planner makes from the current kit (its params are among planEngine's output
+    // over every current item, no per-cell cap). A sample whose params the current kit no longer produces is stale: listed,
+    // not stamped (re-certify its engine with --modules --only <engine>).
+    if (argv.includes("--stamp-items")) {
+      const outFile = arg("out", MODULE_CERT_FILE);
+      const table = JSON.parse(fs.readFileSync(outFile, "utf8"));
+      const idx = kitItemIndex();
+      const current = new Set((await moduleSamples(100000)).map((x) => `${x.engine}|${hash(x.params)}`));
+      let stamped = 0;
+      const stale = [];
+      for (const smp of table.samples ?? []) {
+        const id = smp.params?.itemId;
+        if (!id) continue;
+        if (!current.has(`${smp.engine}|${hash(smp.params)}`) || !idx.has(id)) { stale.push(`${smp.engine} ${smp.mode} ${id}`); continue; }
+        if (smp.itemHash !== idx.get(id).hash) { smp.itemHash = idx.get(id).hash; stamped++; }
+      }
+      fs.writeFileSync(outFile, JSON.stringify(table, null, 1));
+      console.log(`stamped ${stamped}; stale ${stale.length}${stale.length ? ":\n  " + stale.join("\n  ") : ""}`);
+      if (stale.length) process.exitCode = 1;
+    }
     if (argv.includes("--modules")) {
       const per = Number(arg("per", "8")) || 8;
       const dist = path.resolve(arg("dist", path.join(REPO, "dist")));
@@ -260,6 +282,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       const ctx = await browser.newContext({ viewport: { width: 360, height: 800 }, deviceScaleFactor: 2, hasTouch: true });
       const table = { v: 1, qa: QA_VERSION, at: new Date().toISOString(), viewports: VP_CLASSES, boxes: "docs/design/round4/build/box-contract.json tray boxes (b3 older, b2 young)",
         source: "shared/engine-catalog.js planEngine over every kit item (show, predict), lang hinglish; plus modules.js interactiveDefault tasks", engines: {}, samples: [] };
+      const itemIdx = kitItemIndex();
       const queue = [...samples];
       // one page per worker (each page its own frame): the samples are independent
       await Promise.all(Array.from({ length: conc }, async () => {
@@ -270,7 +293,9 @@ if (import.meta.url === `file://${process.argv[1]}`) {
           const young = s.band === "young";
           const views = await judgeModule(page, s, young, shots ? path.join(shots, "modules") : null);
           addViews(cellOf(table, ["engines", s.engine, "modes", s.mode, s.band]), views);
-          table.samples.push({ engine: s.engine, mode: s.mode, band: s.band, topicId: s.topicId, params: s.params, views });
+          // a sample that cites a kit item records the item's hash: the cert check fails when that item changes (item-hash.js)
+          const itemHash = s.params?.itemId ? itemIdx.get(s.params.itemId)?.hash ?? null : undefined;
+          table.samples.push({ engine: s.engine, mode: s.mode, band: s.band, topicId: s.topicId, params: s.params, ...(itemHash !== undefined ? { itemHash } : {}), views });
           console.log(`${s.engine} ${s.mode} ${s.band} ${s.topicId}: ${views.map((v) => `${v.vp}:${v.serve ? "ok" : `${v.fails.join("+")}(${v.minPx}px${v.err ? " " + v.err : ""})`}`).join(" ")}`);
         }
       }));

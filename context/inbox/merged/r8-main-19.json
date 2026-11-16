@@ -1,0 +1,17 @@
+{
+ "nodes": [
+  {
+   "id": "ms-tx-switch-on-production-release-23",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "The ?tx= switch checked on production after release 23 (377f1a3), one browser device at 360 x 740, n = 1 walk: landing on /?tx=a stores the choice; /start (no query) then renders set-up with data-tx=a on a light surface, the title in Literata 600 (loaded), paper background rgb(246,243,236); /start?tx=off stores off and no themed root remains. Before the fix (release 22, 4 routes) 0 of 4 kept the choice. The CI browser job on this commit logged 16 mirror-resolve failures and still ran its 146 tests, so the install fallback (or a late apt recovery) held."
+  }
+ ],
+ "edges": [
+  {
+   "src": "fd-tx-switch-lost-on-redirect-release-22",
+   "rel": "measured_by",
+   "dst": "ms-tx-switch-on-production-release-23"
+  }
+ ]
+}

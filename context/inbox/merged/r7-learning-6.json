@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-day-plan-rules-r2-r5-r9",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-conductor-day-plan): the planner gains R2 (a sitting at or after 20:00 gets only the band's minimum segment set once this child's own close ring shows late sittings going worse: on at a .40 bad-share gap with at least 4 late and 4 early closes, off below .20 or with an arm under 4, folded at night), R5 (a wheel-spinning skill, 10 or more opportunities without 3 in a row, whose first prerequisite topic within depth 3 has seen skills with pL < .4 gets a prerequisite check on the next lesson slot; not re-checked within 3 days) and R9 (a child placed at least half a grade below the expected level gets foundationShare min(.6, .2 + .15·gap), halved in a test window). New view keys kt.wheelSpin and learner.placementGap are late keys, so old snapshots replay. Validators V15, V16, V18 and V20 cover them. Thresholds are CONDUCTOR.md §4.4's. Reverse if: staging shows R2 latching for more than 1 in 4 children, or R5 prereq checks that the Director's own confirm probe finds already secure more than half the time."
+  },
+  {
+   "id": "dc-r7-lesson-brief-slot",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F: server/conductor/slot.js is the one reader of the day plan's lesson slot at a lesson start (lessonBriefFor → { plan, brief }, null without a plan or on any error). The start used to hand the Director the home's plan summary, which has no slots, so planPrior never saw the planner's opener, success-first or new-skill budget. Applying it is Brain's (docs/patches/to-brain/006-lesson-brief.md: lesson.js passes the real plan to sessionStartCtx, wraps at brief.wrapAt, and planPrior reads prereqCheck and foundationShare). Reverse if: Brain moves the plan read into the Director itself."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-day-plan-rules-r2-r5-r9\nPure rules in server/conductor/adapt.js (lateSittingLatch, wheelSpinView, prereqPick, foundationShare). Planner wiring in planner.js. The R2 latch and the R5 checked-skill record live in conductor state adapt.lateMinSet / adapt.prereqChecked (decide.js foldNight and lesson.ended). They appear in PlannerInputs only when they can fire, so a child with none of this evidence plans and hashes exactly as before. Still not built: R4 (needs format families, the how-this-child-learns item), R6 (needs an η refit, M2+ only), R7, R11-R14 (need consumers on the child and parent surfaces).\n\nalso fixed: conductor/view.js loadView destructured school.subjects from a Promise.all that never held it (round 7 F week 1), so the rotation's subject was always the stale fallback in the Conductor's plan. It is now awaited.\n\n## dc-r7-lesson-brief-slot\nThe brief is §4.5's LessonBrief plus LessonBriefAdd: slotId, planVersion, subject, targetMin, segments with lanes, wrapAt / hardStopAt, holdNewTopics, newSkillBudget, opener, successFirst, soloRounds (band base; R7 not built), promisesDue, reviewItemIds, testChapters, prereqCheck, foundationShare, why, adaptTrace. It carries no θ, η, gap or sibling field.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

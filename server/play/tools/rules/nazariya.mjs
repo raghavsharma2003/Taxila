@@ -30,6 +30,23 @@ export const RULES = [
   R("c4-maths-ch11-t02", N, "mirror", "complete", { "copy-no-flip": "copy-no-flip", "distance-off": "distance-not-kept", "wrong-direction": "wrong-direction" }, { axes: ["x", "z"], hmax: 2 }, ["kagaz", "chalk"]),
   R("c5-maths-ch10-t02", N, "mirror", "complete", { "copy-no-flip": "copy-not-flip" }, { axes: ["x"] }, ["kagaz", "chalk"]),
   R("c6-maths-ch09-t01", N, "mirror", "complete", { "wrong-axis": "vertical-only" }, { axes: ["z", "x"] }),
+  // r7 nazariya2 · the area of a triangle as the cloth on the floor plot (mode tri, a 2D view: Khand does not draw it). box:
+  // lay the rectangle the right-angled cloth was cut from (s1; a rectangle with the slanted side as one of its sides is
+  // slant-side). more: tent B's top corner moved so its cloth is more than tent A's on the same base (s3; the corner slid
+  // along A's top line, "the middle one looks bigger", is shape-looks). match: lay as much floor as the cloth (s2, and s3
+  // when the top corner is anywhere over the base: one entry, its generator lays both cloths); the b × h floor is lxb, slant × leg ÷ 2 is slant-side. Not admitted: an
+  // obtuse triangle's outside height (no kit skill asks for it).
+  R("c6-maths-ch06-t03", N, "tri", "box", { "slant-side": "slant-side" }, {}),
+  R("c6-maths-ch06-t03", N, "tri", "more", { "shape-looks": "shape-looks" }, {}),
+  R("c6-maths-ch06-t03", N, "tri", "match", { lxb: "lxb", "slant-side": "slant-side" }, {}),
+  // r7 nazariya2 · faces, edges and corners of a solid turned in the hand (mode solid, a 2D view): stamp every face, run a
+  // finger along every edge, pin every corner; only what is in sight can be marked. Marking exactly the first picture's
+  // faces / edges / corners is visible-only; pinning every corner when the edges were asked (or running every edge when
+  // the corners were) is edges-corners. Not admitted: cuboid-different (one solid at a time never shows it), the curved
+  // solids (no kit skill or belief about curved faces).
+  R("c4-maths-ch01-t01", N, "solid", "edges", { "visible-only": "visible-only", "edges-corners": "edges-corners" }, { solids: ["cube", "cuboid"] }, ["kagaz", "chalk"]),
+  R("c4-maths-ch01-t01", N, "solid", "faces", { "visible-only": "visible-only" }, { solids: ["cube", "cuboid"] }, ["kagaz", "chalk"]),
+  R("c4-maths-ch01-t01", N, "solid", "corners", { "visible-only": "visible-only", "edges-corners": "edges-corners" }, { solids: ["pyramid", "prism"] }, ["kagaz", "chalk"]),
 ];
 
 export const ACTS = {
@@ -49,4 +66,11 @@ export const ACTS = {
   "c4-maths-ch11-t02|complete": ["s1", "s2", "s3"], // flip across a standing line; keep the distance; a lying line
   "c5-maths-ch10-t02|complete": ["s1"],          // complete a design across a mirror line
   "c6-maths-ch09-t01|complete": ["s3"],          // complete a figure symmetric about a line
+  // r7 nazariya2
+  "c6-maths-ch06-t03|box": ["s1"],               // the right-angled cloth as half of the rectangle it was cut from
+  "c6-maths-ch06-t03|more": ["s3"],              // any top corner on the far side of the rectangle: the same half; only the height counts
+  "c6-maths-ch06-t03|match": ["s2", "s3"],       // half of the two sides round the square corner multiplied; any cloth in its rectangle
+  "c4-maths-ch01-t01|edges": ["s1", "s2"],       // an edge is where two faces meet (not a corner); every edge of a cube / cuboid, hidden ones too
+  "c4-maths-ch01-t01|faces": ["s2"],             // every face of a cube / cuboid, the hidden back, bottom and far side too
+  "c4-maths-ch01-t01|corners": ["s3"],           // the corners (and in turning, the faces) of a pyramid and a prism
 };

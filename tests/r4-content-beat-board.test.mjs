@@ -31,5 +31,5 @@ describe("r4 content: beat cards", () => {
     const pic = { template: "fraction-parts@1", script: { ops: ops("fraction-parts@1", { parts: 4, shade: 1 }) } };
     assert.deepEqual(preferPicture([steps, pic]).map((x) => x.template), ["fraction-parts@1", "column-op@1"]);
   });
-  it("is off by default", () => { delete process.env.TAXILA_BEAT_BOARD; assert.equal(beatBoardOn(), false); process.env.TAXILA_BEAT_BOARD = "1"; assert.equal(beatBoardOn(), true); });
+  it("is on by default (round 7 C1 item 5); 0 turns it off", () => { delete process.env.TAXILA_BEAT_BOARD; assert.equal(beatBoardOn(), true); process.env.TAXILA_BEAT_BOARD = "0"; assert.equal(beatBoardOn(), false); process.env.TAXILA_BEAT_BOARD = "1"; assert.equal(beatBoardOn(), true); });
 });

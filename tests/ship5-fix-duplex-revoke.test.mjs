@@ -79,6 +79,7 @@ class QuietLink {
   emit(e) { for (const f of [...this.fns]) f(e); }
   async connect() { this.emit({ type: "connection", state: "connected" }); }
   applyInstructions() {} sendChild() {} promptTeacher() {} interrupt() {} setPushToTalk() {} talkStart() {} talkEnd() {} close() {}
+  keepNextReply() { this.kept = (this.kept ?? 0) + 1; }
 }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 function apiWith(turn) {
@@ -100,6 +101,7 @@ test("B3 runtime: the revoked turn already landed → only the new words are pos
   link.emit({ type: "child_final", text: "haan didi, ready hoon example do", startedAt: Date.now(), typed: false, revokeOf: { turnId: 1, text: "haan didi ready hoon" } });
   await wait(30);
   assert.deepEqual(a.calls.map((c) => c.childText), ["haan didi ready hoon", "example do"]);
+  assert.equal(link.kept, undefined, "landed: the revoked turn's reply is still the one to drop");
   rt.dispose();
 });
 
@@ -119,6 +121,7 @@ test("B3 runtime: the revoked turn still in flight → the merged words supersed
   const sent = a.calls.map((c) => [c.childText, c.turnSeq, !!c.edited]);
   assert.deepEqual(sent.at(-1), ["teen bata chaar", sent[0][1], true], JSON.stringify(sent));
   assert.equal(sent.filter((x) => x[0] === "teen bata chaar").length, 1);
+  assert.equal(link.kept, 1, "audit V-05: the link is told the one reply is the merged turn's (the revoke's drop must not take it)");
   rt.dispose();
 });
 

@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-kyun-chumbak",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Magnets (c6-science-ch04-t02, -t03) as two never-timed kyun-lab modes, dhruv and disha: pins along a hidden magnet (sira), a toy train (jodo), the sure test by repulsion (pakka), a magnet imagined snapped (todo), the kit's own 20 pins against 8 (taakat); a hung magnet and a map (latkao), a compass turned with her (ghoomo), a compass by the iron (loha). Why: the two topics had no game. Reverse: a child pilot shows pakka is solved by claiming each bar in turn, todo is answered by copying the whole magnet's letters without testing, or ghoomo is read off the landmark's place on screen."
+  },
+  {
+   "id": "ms-r7-games-kyun-chumbak-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "kyun-lab chumbak play-cert (forge3-qa, p360/p412/l1366): 64 of 64 dhruv/disha samples pass at every size (kyun-lab 208 of 208; the table 4104 of 4104); every goal solved by real taps at 360 x 640 on seeds 3 and 17 (32 runs over looks 1-3), every mal-rule state reached by real taps (6 runs), 24 audit runs in raat/chalk/blueprint and Hinglish/Hindi/English; smallest tap target 48 px, no clipped label, no text under 14 px."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-games-kyun-chumbak", "rel": "measured_by", "dst": "ms-r7-games-kyun-chumbak-cert" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-kyun-chumbak`\n\nMagnets join **kyun-lab** as two modes (src/play/families/kyun-lab/chumbak.logic.ts, chumbak.view.ts); the fair-test lab and its c6-science-ch04-t01 magnet lab are untouched. Nothing runs on a clock. Every fact is a kit sentence (KIT_OF, read out of data/kits/c6-science.json by tests/r7-games-kyun-chumbak.test.mjs). The only fact-numbers are the kit's 20 pins and 8 pins (t02 m1 diagnostic) and the quarter turn (t03: east is a quarter turn clockwise from north). Pin counts along the magnet (5 at a pole, 1 in the middle, 0 off it), the 7 spots, carriage counts and break layouts are declared scene values.\n\n- **dhruv/sira** (t02 s1): touch a pin along a cover hiding a magnet (never at the cover's ends); flag the two poles; lift. middle-strong = m3.\n- **dhruv/jodo** (s2): turn carriages of a magnetic toy train and push; like poles push apart. Look 3 hides the letters. No belief mapped.\n- **dhruv/pakka** (s2): bars that look alike, one a magnet; bring either pole of a marked magnet to any end; \"Magnet: X\" holds only after a push. pull-proves = m4 (a plain iron nail clings to the same pole).\n- **dhruv/todo** (s3): a magnet imagined snapped (the kit's \"never try it\"), 2-4 pieces; label new ends N / S / no pole, test with the marked magnet. one-pole = m2.\n- **dhruv/taakat** (s3): dip the kit's small thin (20) and big grey (8) magnets; tag the stronger. big-stronger = m1.\n- **disha/latkao** (t03 s1): let a hung magnet go (it settles N end north whatever the twist); turn the map along it. No belief mapped.\n- **disha/ghoomo** (s2): turn herself (the box turns with her, the needle does not) and the box; read the letter ahead. needle-turns = m3.\n- **disha/loha** (s2): the same by a steel almirah, iron table or bar magnet (the needle turns to it); walk away first. iron-trust = m2.\n- Not admitted: t03 m1 (north is cold): no mechanic by ruling; the kit's ice-box remediation would need one. t03 s3 (make a compass): no act makes one.\n- Seeded difficulty nudge so first levels differ across children (tested).",
+  "measurements": "## `ms-r7-games-kyun-chumbak-cert`\n\nkyun-lab play-cert, 2026-11-08 (forge3-qa, local harness, p360 / p412 / l1366, every art direction): 64 of 64 dhruv/disha samples pass at every size; kyun-lab 208 of 208; the table 4104 of 4104 (server/forge3/certs/play.json). A first run failed p360 Q2.whole on all 64: the goal line was clipped in the 320 px Studio box; every goal / why / done line is now ≤ 64 characters (tested).\n\n- **Tests:** tests/r7-games-kyun-chumbak.test.mjs (41 tests): an independent checker (its own tables for where pins cling, which joint couples, what pushes, where the needle points) agrees with the law over random play; mal-rules fold their kit ids; tampered params refused; CPU-time speed bars; words in three languages, no digits but the kit's.\n- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 and 17 (looks 1-3), every mal-rule state reached, 24 audit runs across arts and languages; page.mouse on canvas targets and getByTestId on DOM controls, never a dispatch. Smallest target 48 px, nothing clipped. Shots in docs/design/round7/games/runshots-kyun-chumbak/."
+ }
+}

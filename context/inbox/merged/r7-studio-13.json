@@ -1,0 +1,39 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-maps-no-outline",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "Map boards (main's decision, option b): places pinned at their TRUE latitude/longitude on a labelled 5° degree grid with a compass, and NO outline of any kind: no country, state, coastline or region shape, from memory or from data, because an Indian product must show India's official boundaries and none is sourced yet. places@1 draws only a frame, edge ticks, small crosses where grid lines meet, degree labels, a compass, the Tropic of Cancer / 82.5°E meridian when the kit names them, and pins with names. Every pin comes from data/geo/india-places.json (61 places; cities from Natural Earth 1:10m populated places, public domain; heritage sites, Kanyakumari and Darjeeling from Wikidata P625, CC0; each row names its source record; built by scripts/build-india-places.mjs). Option (a), an official outline, waits on the owner (on main's decision list).",
+      "reversal": "an owner-approved, provenance-recorded Survey of India outline is committed"
+    },
+    {
+      "id": "dc-r7-board-places-template",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "places@1 (C1 item 5, India map places): places.js picks a science/SST/EVS kit naming ≥ 3 gazetteer places (never a maths word problem), up to 6 in the kit's order and words ('Bombay' stays Bombay). Frame = the places' extent padded 2.5°, snapped to 5°, one scale both ways, widened ≤ 10° toward the board's room. Names are laid out before anything is drawn: beside the pin, else 30/52 units out on a leader that crosses nothing; a grid cross a name needs the room of is left out; a place whose name fits nowhere is left off (her line is written only from what is drawn); a named line whose name fits nowhere is left off. Gate change: W4 treats ≥ 3 evenly spaced degree labels of one direction ('15°N', '20°N', '25°N', each the whole text) as an AXIS, like a number line's ticks; a lone or uneven degree is still checked. Explain ladder: after label@1, before the library. Recordings docs/design/round7/studio/map-*."
+    },
+    {
+      "id": "ms-r7-board-places-reach",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 33,
+      "method": "placesCall over every class 1-9 science/SST/EVS kit; expand + retime to an 8 s line naming the drawn places + gateWhiteboard with the kit; the template explainerFor returns; code only, no model calls",
+      "title": "33 kits name ≥ 3 places; 33/33 boards pass every W gate; places@1 is the board drawn in 29 (the rest keep an earlier rung, e.g. a timeline). 138 of the 147 named places are pinned; the 9 left off are near neighbours (Delhi/Jaipur/Panipat/Shimla, Ajanta/Ellora, Patna/Pataliputra) or a long name at the frame's edge (Thiruvananthapuram). The Tropic / 82.5°E lines are drawn in every kit that names them."
+    },
+    {
+      "id": "fx-r7-p4-board-sync-order-not-clock",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "tests/p4-content-unit 'board sync: the line plan wins inside the deadline' (App: failed under single-process npm test load, 28/28 alone): the speculative-board half asserted syncMs < 900; now it asserts ORDER (the spec board answered before the 2 s line plan landed). 8 parallel copies: 8/8 pass."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-board-places-template", "rel": "implements", "dst": "dc-r7-maps-no-outline" },
+    { "src": "dc-r7-board-places-template", "rel": "measured_by", "dst": "ms-r7-board-places-reach" }
+  ],
+  "md": {
+    "decisions": "## dc-r7-maps-no-outline: maps show places on a degree grid, no outline (2026-11-04)\n\nMap boards pin places at their true latitude and longitude on a labelled grid with a compass. They draw no outline of India, its states or its coast, because an official, sourced boundary is required and none has been provided yet. Reversal: an owner-approved, provenance-recorded Survey of India outline is committed.\n\n## dc-r7-board-places-template: the places board (2026-11-04)\n\nWhen a geography, history or EVS lesson names three or more places, the board shows them on that grid, in the lesson's own words, with the Tropic of Cancer or the 82.5°E meridian when the lesson mentions them.\n",
+    "measurements": "## ms-r7-board-places-reach (2026-11-04, n = 33 kits)\n\n33 lessons name three or more places; all 33 boards pass the board gates and 29 now show the map. 138 of 147 named places are pinned; the rest sit too close to a neighbour to label.\n"
+  }
+}

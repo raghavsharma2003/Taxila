@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-later-visible",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A7 (PIPELINE §A Brain item 6, brain-later-list-visible + brain-parked-promise-tracking). The Director's existing Later list (s.later) is now on the screen. ui.later lists entries as LaterEntryUi: open, due (at its boundary or the wrap), or returned (for 2 turns once served). ui.moment carries the turn's moment: park, detour, decline, stop_check or returned. A tap on an entry (chipId later:<id>) is a request to talk about it now: never graded, the entry is served with the returnParked shape, and the lesson carries on. Her own promise is kept: when her final line promises later (baad mein … karenge / dekhenge / samjhaungi, come back to … later) and the Director parked nothing that turn, the child's topic (the request topic, else their words ≤ 60 chars, screened in code) is parked, so it comes back before the wrap. Never on a safeguard turn, and never twice. The agent lane's ui gets the same ui.later. Code: server/director/later.js."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-brain-later-visible (2026-11-04, stream A Brain)\n\nThe owner wants parked questions to be seen and kept. The Later list already existed in the Director's state but was invisible and only Director-parked. Now it is on the screen with its status; the turn tells the client what conversational moment happened; a tap brings an item back now; and her own spoken promise to come back to something creates an entry if the Director did not park one, so a promise she makes is a promise kept before the wrap. The promise predicate is a code regex over her final line; it adds at most one entry a turn, from the child's topic, screened like every parked topic, and never on a safeguard turn. Reversal: if her promises park noise (a \"baad mein\" that was not about the child's topic), narrow the regex or require a request topic.\n"
+ }
+}

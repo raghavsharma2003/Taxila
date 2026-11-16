@@ -17,19 +17,18 @@ const haveChromium = !!browsersDir && existsSync(browsersDir) && readdirSync(bro
 const SKIP = process.env.ENGINES_BROWSER === "0" ? "ENGINES_BROWSER=0" : !haveChromium ? "no Chromium under PLAYWRIGHT_BROWSERS_PATH" : false;
 const KID = { id: "kid-geo", first_name: "Kabir", class_level: 6, language_pref: "hinglish", teacher_id: "arjun" };
 
-let vite, browser, base;
+let app, browser, base;
 before(async () => {
   if (SKIP) return;
-  const { createServer } = await import("vite");
-  vite = await createServer({ root: ROOT, configFile: ROOT + "vite.config.ts", logLevel: "error", server: { port: 0, strictPort: false, host: "127.0.0.1", hmr: false } });
-  await vite.listen();
-  base = vite.resolvedUrls.local[0].replace(/\/$/, "");
+  // gate speed (main, 2026-11-05): the prebuilt dist/ (the dev server when dist/ is stale: tests/support/app-server.mjs)
+  app = await (await import("./support/app-server.mjs")).appServer();
+  base = app.url;
   const { chromium } = await import("playwright");
   browser = await chromium.launch({ args: ["--autoplay-policy=no-user-gesture-required"] });
 });
 after(async () => {
   await browser?.close();
-  await vite?.close();
+  await app?.close();
 });
 
 /** The child route with a Director whose opening mounts `mount` and puts it in the tray. */

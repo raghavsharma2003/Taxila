@@ -16,19 +16,73 @@
 
 export const LIMITS = Object.freeze({ maxOps: 120, maxPointsPerStroke: 240, maxTextChars: 24, maxDurationMs: 60_000, minBoard: 100, maxBoard: 2000,
   maxNumRows: 8, maxNumCols: 12, maxCellChars: 6, maxWordCellChars: 12 });
-export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "erase"]);
+export const OPS = Object.freeze(["stroke", "line", "arrow", "rect", "circle", "ellipse", "polygon", "sector", "text", "label", "numwork", "highlight", "brace", "erase", "move", "rotate", "scale", "follow", "sweep", "morph"]);
+/**
+ * round 8 (board grammar, C1 Studio 2026-11-10; names confirmed by design r8): what an op MEANS on the board, drawn by the
+ * renderer per role (src/modules/whiteboard/palette.ts) — a rename is one line here. No role = ink.
+ *   focus   the part asked about / the group named (the spoken step): a solid outline plus a tint
+ *   slot    the answer slot: the asked "?" in a dashed box
+ *   answer  an answer board's mark (Learning's `mark`): solid, with a tick or a ring
+ *   mixup   the easy-to-mix-up marker: always a dashed line
+ *   muted   the parts not in focus: lighter ink
+ * Shapes belong to the role, not the theme (the meaning survives greyscale: rolesByShape); a theme owns only colour.
+ */
+export const ROLE = Object.freeze({ focus: "focus", slot: "slot", answer: "answer", mixup: "mixup", muted: "muted" });
+export const ROLES = Object.freeze(Object.values(ROLE));
+/** The roles that carry a meaning (muted and ink do not): at most 3 on a board — focus; slot OR answer; mixup. */
+export const MEANING_ROLES = Object.freeze([ROLE.focus, ROLE.slot, ROLE.answer, ROLE.mixup]);
+const CLOSED = new Set(["rect", "circle", "ellipse", "polygon", "sector"]);
+const OPEN = new Set(["line", "stroke", "arrow"]);
 export const INKS = Object.freeze(["chalk", "accent", "ink", "mark", "good", "soft"]);
 export const GROUNDS = Object.freeze(["chalk", "paper", "grid"]);
 export const NUM_LAYOUTS = Object.freeze(["column_add", "column_sub", "column_mul", "long_div", "fraction", "equation", "number_line"]);
 /** Board-unit font sizes of the three text sizes; a cell of numwork is size m. */
 export const TEXT_SIZE = Object.freeze({ s: 18, m: 24, l: 34 });
-/** Average glyph advance as a share of the font size (a handwriting face; measured loosely, used for boxes only). */
-const ADVANCE = 0.58;
+/**
+ * round 8 (board grammar item 7, "a maths face"): the board's text faces, one per text role, and each face's MEASURED
+ * advances (em-fractions of the font size). numeral: a number, a fraction or a numwork cell, in STIX Two Text (lining
+ * numerals); word: every other word, in Atkinson Hyperlegible Next 600; deva: a Devanagari word, Mukta 600 (the word
+ * stack falls back to it per glyph). The player draws with `family`/`weight` (src/modules/whiteboard/Player.tsx, faces in
+ * faces.css, self-hosted); the fit, the lint and the templates measure with `advance`. Measured 2026-11-10 from the woff2
+ * files in headless Chromium at 1000 px, as the player draws them (SVG text, tabular-nums), the letters weighted by their
+ * frequency on the pilot scripts' and BOARD_REFS boards: docs/design/round8/font-measure-2026-11-10.json (n, method).
+ * Classes: digit (tabular: every digit one advance), space, op (+ − × ÷ =, numeral face), other (any other character);
+ * any Devanagari codepoint is deva.char, whatever the run's face.
+ */
+export const TEXT_FACES = Object.freeze({
+  numeral: Object.freeze({ family: '"Board STIX Two Text", "Board Mukta", "STIX Two Text", "Times New Roman", serif', weight: 400, advance: Object.freeze({ digit: 0.495, space: 0.235, op: 0.712, other: 0.37 }) }),
+  word: Object.freeze({ family: '"Board Atkinson Hyperlegible Next", "Board Mukta", "Atkinson Hyperlegible Next", Mukta, system-ui, sans-serif', weight: 600, advance: Object.freeze({ digit: 0.632, space: 0.303, other: 0.565 }) }),
+  deva: Object.freeze({ family: '"Board Atkinson Hyperlegible Next", "Board Mukta", Mukta, "Noto Sans Devanagari", system-ui, sans-serif', weight: 600, advance: Object.freeze({ char: 0.384 }) }),
+});
+/** A run that is only a number, a fraction or an equation's numerals and operators (drawn in the numeral face). */
+const NUMERAL = /^[\d\s.,/:?+\-−×÷=%°]+$/u;
+const DEVA_CHAR = /[ऀ-ॿ]/u;
+/** THE text-role mapping (one, for the renderer and the measure): a text → "numeral" | "word" | "deva". A numwork cell or
+ *  a stacked fraction's numeral is numeral whatever it holds (pass numeral: true). */
+export function textFace(text, { numeral = false } = {}) {
+  const s = String(text ?? "");
+  if (DEVA_CHAR.test(s)) return "deva";
+  return numeral || NUMERAL.test(s) ? "numeral" : "word";
+}
+/** A run's drawn width as a share of its font size (multiply by the size for board units), in its face's measured advances. */
+export function textEm(text, face = textFace(text)) {
+  const A = TEXT_FACES[face === "numeral" ? "numeral" : "word"].advance;
+  let w = 0;
+  for (const c of String(text ?? "")) {
+    if (DEVA_CHAR.test(c)) w += TEXT_FACES.deva.advance.char;
+    else if (c >= "0" && c <= "9") w += A.digit;
+    else if (/\s/u.test(c)) w += A.space;
+    else if (A.op !== undefined && /[+−×÷=]/u.test(c)) w += A.op;
+    else w += A.other;
+  }
+  return w;
+}
 
 const isNum = (n) => typeof n === "number" && Number.isFinite(n);
 const ID_RE = /^[A-Za-z0-9_.:-]{1,32}$/;
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const round1 = (v) => Math.round(v * 10) / 10;
+const round2 = (v) => Math.round(v * 100) / 100;
 
 /** Text the board may carry: a label, a number or a short term, never narration (≤ 24 chars, no markup, one line). */
 export function textProblem(t) {
@@ -44,12 +98,116 @@ export function textProblem(t) {
 }
 
 /** A text's box in board units (centre-anchored when align is middle). */
+/** A numeral's advance (STIX Two Text, tabular: every digit 0.495 em; TEXT_FACES.numeral). */
+export const DIGIT_ADVANCE = TEXT_FACES.numeral.advance.digit;
 export function textBox(text, size = "m", at = [0, 0], align = "middle") {
   const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
-  const w = Math.max(fs * 0.6, [...String(text)].length * fs * ADVANCE);
+  // round 8 (board grammar item 1): a text with a simple fraction in it is drawn STACKED: its box is the stack's
+  const runs = fractionRuns(text, size);
+  if (runs) {
+    const x = align === "start" ? at[0] : align === "end" ? at[0] - runs.w : at[0] - runs.w / 2;
+    return { x, y: at[1] - runs.h / 2, w: runs.w, h: runs.h };
+  }
+  // (round 8 item 7: measured per face — a number in the numeral face, a word in the word face: TEXT_FACES)
+  const w = Math.max(fs * 0.6, fs * textEm(text));
   const h = fs * 1.2;
   const x = align === "start" ? at[0] : align === "end" ? at[0] - w : at[0] - w / 2;
   return { x, y: at[1] - h * 0.75, w, h };
+}
+
+// ───────────────────────────── stacked fractions (round 8, board grammar item 1) ─────────────────────────────
+
+/** A simple fraction a/b written in a text: a 1-2 digit numerator (or "?") over a denominator 1-12, standing alone. */
+const FRAC_RE = /(?<![\d/.,])(\d{1,2}|\?)\s*\/\s*(\d{1,2})(?![\d/.,])/g;
+/** A stacked fraction's numeral size for a text size: 0.8 of it, never below the small size (the legibility floor counts
+ *  the numeral's own px, so a stack never brings a board's smallest word below the "s" words it already has). */
+export const stackNumeral = (fs) => Math.max(TEXT_SIZE.s, round1(fs * 0.8));
+/** The rule under a stacked numerator: about 0.065 em of the numeral (design r8), never a hairline. */
+export const stackRule = (ns) => Math.max(1.6, round2(ns * 0.065));
+const pieceW = (t, fs) => fs * textEm(t);
+/**
+ * A text as runs when it holds a simple fraction (b ≤ 12): [{ t } | { n, d }] with each run's width, the whole run's width
+ * and height (board units, at text size `size`). null when the text has no fraction (drawn as one line, as before).
+ */
+export function fractionRuns(text, size = "m") {
+  const s = String(text ?? "");
+  if (!s.includes("/")) return null;
+  const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m, ns = stackNumeral(fs);
+  const pieces = [];
+  let last = 0, any = false;
+  for (const m of s.matchAll(FRAC_RE)) {
+    const d = Number(m[2]);
+    if (!(d >= 1 && d <= 12)) continue;
+    const before = s.slice(last, m.index).trim();
+    if (before) pieces.push({ t: before, w: pieceW(before, fs) });
+    pieces.push({ n: m[1], d: m[2], w: Math.max(textEm(m[1], "numeral"), textEm(m[2], "numeral")) * ns + ns * 0.36 });
+    last = m.index + m[0].length; any = true;
+  }
+  if (!any) return null;
+  const after = s.slice(last).trim();
+  if (after) pieces.push({ t: after, w: pieceW(after, fs) });
+  const gap = fs * 0.28;
+  const w = pieces.reduce((a, p) => a + p.w, 0) + gap * (pieces.length - 1);
+  return { pieces, fs, ns, gap, w, h: Math.max(fs * 1.2, ns * 2.44) };
+}
+/**
+ * The ONE stacked-fraction drawing (numwork's `fraction` layout and every text run use it): the numerator over a straight
+ * rule over the denominator, the rule at `barY`. → { texts, path, width }.
+ */
+export function fracStack(cx, barY, n, d, ns, halfW) {
+  const off = ns * 0.62;
+  return {
+    texts: [{ x: round1(cx), y: round1(barY - off), text: String(n), size: ns, align: "middle", face: "numeral" }, { x: round1(cx), y: round1(barY + off), text: String(d), size: ns, align: "middle", face: "numeral" }],
+    path: `M${f1(cx - halfW)},${f1(barY)} L${f1(cx + halfW)},${f1(barY)}`,
+    width: stackRule(ns),
+  };
+}
+/** A text's drawing: one line, or its runs with every fraction stacked, centred on at[1] (where the player writes a line). */
+function textDrawing(text, size, at, align) {
+  const fs = TEXT_SIZE[size] ?? TEXT_SIZE.m;
+  const runs = fractionRuns(text, size);
+  if (!runs) return { texts: [{ x: at[0], y: at[1], text, size: fs, align }], paths: [], widths: [] };
+  const box = textBox(text, size, at, align);
+  const texts = [], paths = [], widths = [];
+  let x = box.x;
+  for (const p of runs.pieces) {
+    const cx = x + p.w / 2;
+    if (p.t !== undefined) texts.push({ x: round1(cx), y: at[1], text: p.t, size: fs, align: "middle" });
+    else { const st = fracStack(cx, at[1], p.n, p.d, runs.ns, p.w / 2 - runs.ns * 0.1); texts.push(...st.texts); paths.push(st.path); widths.push(st.width); }
+    x += p.w + runs.gap;
+  }
+  return { texts, paths, widths, box };
+}
+
+/** Where a brace's label sits: past its apex along its side, by half the label's own extent (stacked labels are taller). */
+export function braceGeometry(op) {
+  const [x1, y1] = op.from, [x2, y2] = op.to;
+  const L = Math.hypot(x2 - x1, y2 - y1) || 1;
+  const t = [(x2 - x1) / L, (y2 - y1) / L];
+  const want = { up: [0, -1], down: [0, 1], left: [-1, 0], right: [1, 0] }[op.side ?? "up"] ?? [0, -1];
+  // the normal of the span on the asked side
+  let n = [-t[1], t[0]];
+  if (n[0] * want[0] + n[1] * want[1] < 0) n = [-n[0], -n[1]];
+  const h = Math.min(16, Math.max(8, L * 0.12)), q = h / 2;
+  const P = (u, v) => [x1 + u * t[0] + v * n[0], y1 + u * t[1] + v * n[1]];
+  const m = L / 2, k = Math.min(q, L / 4);
+  const pts = [[0, 0], [0, q], [k, q], [m - k, q], [m, q], [m, h], [m, q], [m + k, q], [L - k, q], [L, q], [L, 0]];
+  const W = pts.map(([u, v]) => P(u, v));
+  // quadratic corners: start → (k,q) via (0,q); straight to (m-k,q); → apex (m,h) via (m,q); back → (m+k,q) via (m,q); straight; → end via (L,q)
+  const d = `M${f1(W[0][0])},${f1(W[0][1])} Q${f1(W[1][0])},${f1(W[1][1])} ${f1(W[2][0])},${f1(W[2][1])} L${f1(W[3][0])},${f1(W[3][1])} Q${f1(W[4][0])},${f1(W[4][1])} ${f1(W[5][0])},${f1(W[5][1])} Q${f1(W[6][0])},${f1(W[6][1])} ${f1(W[7][0])},${f1(W[7][1])} L${f1(W[8][0])},${f1(W[8][1])} Q${f1(W[9][0])},${f1(W[9][1])} ${f1(W[10][0])},${f1(W[10][1])}`;
+  const apex = P(m, h);
+  const xs = W.map((p) => p[0]), ys = W.map((p) => p[1]);
+  const box = { x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs), h: Math.max(...ys) - Math.min(...ys) };
+  return { d, apex, n, box };
+}
+/** The id of a brace's label text op: "<brace id>.l" (so a page that renames its ops keeps the pair). */
+export const braceLabelId = (id) => `${id}.l`.slice(-32);
+/** The centre of a brace's label (size `size`): beyond the apex by a gap plus half the label's extent along the normal. */
+export function braceLabelAt(op, text, size = "m") {
+  const { apex, n } = braceGeometry(op);
+  const b = textBox(text, size, [0, 0], "middle");
+  const ext = Math.abs(n[1]) > Math.abs(n[0]) ? b.h / 2 : b.w / 2;
+  return [round1(apex[0] + n[0] * (ext + 5)), round1(apex[1] + n[1] * (ext + 5))];
 }
 
 // ───────────────────────────── normalise ─────────────────────────────
@@ -85,6 +243,9 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const prior = new Set(priorIds ?? []);
   const seen = new Set();
   const isTarget = (id) => seen.has(id) || prior.has(id);
+  const drawnById = new Map();   // this script's own ops so far (a move targets one of them)
+  const shifted = new Map();     // target id → [dx, dy] of the moves so far (moves add up: a dot hops twice)
+  const braceLabels = [];        // a brace's label, written as its own text op right after the brace
   const list = raw.ops.slice(0, LIMITS.maxOps);
   if (raw.ops.length > LIMITS.maxOps) fix(`ops_over_${LIMITS.maxOps}`);
   for (const [i, o] of list.entries()) {
@@ -106,6 +267,13 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
     }
     if (o.ink !== undefined) { if (INKS.includes(o.ink)) base.ink = o.ink; else bad("ink"); }
     if (o.weight !== undefined) { if ([1, 2, 3].includes(o.weight)) base.weight = o.weight; else bad("weight"); }
+    // round 8: what the op means (ROLE); a motion, an erase never carries one
+    if (o.role !== undefined) {
+      if (!ROLES.includes(o.role) || MOTION.has(o.op) || o.op === "erase") bad("role");
+      else if (o.role === ROLE.mixup && CLOSED.has(o.op)) bad("role_mixup_closed");      // a mix-up is a dashed LINE, never a box
+      else if (o.role === ROLE.slot && OPEN.has(o.op)) bad("role_slot_open");            // a slot is a dashed BOX
+      else base.role = o.role;
+    }
     const fill = (k = "fill") => (o[k] === undefined ? {} : INKS.includes(o[k]) ? { [k]: o[k] } : (bad(k), {}));
     let op = null;
     switch (o.op) {
@@ -115,6 +283,7 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (Array.isArray(o.points) && o.points.length > LIMITS.maxPointsPerStroke) bad("too_many_points");
         if (pts.length < (o.op === "polygon" ? 3 : 2)) { bad("points"); break; }
         op = { ...base, points: pts, ...(o.op === "polygon" ? fill() : {}) };
+        if (o.dashed === true) op.dashed = true;
         break;
       }
       case "line":
@@ -136,6 +305,28 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (w !== o.w || h !== o.h) bad("rect:clamped");
         if (w <= 0 || h <= 0) { bad("rect_empty"); break; }
         op = { ...base, at, w: round1(w), h: round1(h), ...fill(), ...(isNum(o.round) && o.round > 0 ? { round: Math.min(o.round, Math.min(w, h) / 2) } : {}) };
+        if (o.dashed === true) op.dashed = true;
+        break;
+      }
+      case "brace": {
+        // round 8 (board grammar item 3): a curly brace over the span from → to, its apex toward `side`, naming the group
+        // with `label`. The label is written as its OWN text op (id "<id>.l") at the apex, so every gate, mask and count
+        // that reads a board's words reads it (a label no gate sees could state a key)
+        const from = P(o.from, `${where}.from`), to = P(o.to, `${where}.to`);
+        if (!from || !to || Math.hypot(to[0] - from[0], to[1] - from[1]) < 16) { bad("brace"); break; }
+        op = { ...base, from, to, side: ["up", "down", "left", "right"].includes(o.side) ? o.side : (o.side === undefined ? "up" : (bad("brace_side"), "up")) };
+        if (typeof o.labelId === "string" && ID_RE.test(o.labelId) && o.label === undefined) op.labelId = o.labelId;
+        if (o.label !== undefined && o.label !== "") {
+          const tp = textProblem(o.label);
+          const lid = braceLabelId(o.id);
+          if (tp || seen.has(lid) || list.some((x) => x?.id === lid)) { bad(`brace_label_${tp ?? "id"}`); break; }
+          const size = ["s", "m", "l"].includes(o.size) ? o.size : "m";
+          const at = braceLabelAt(op, o.label.trim(), size);
+          const b = textBox(o.label.trim(), size, at, "middle");
+          if (b.x < 0 || b.y < 0 || b.x + b.w > bw || b.y + b.h > bh) { bad("brace_label_off_board"); break; }
+          op.labelId = lid;
+          braceLabels.push({ id: lid, op: "text", at, text: o.label.trim(), size, startMs: op.endMs, endMs: Math.min(LIMITS.maxDurationMs, op.endMs + 300), ...(op.role ? { role: op.role } : {}), ...(op.ink ? { ink: op.ink } : {}) });
+        }
         break;
       }
       case "circle":
@@ -193,6 +384,71 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         if (o.layout === "number_line") {
           if (!Array.isArray(o.range) || !isNum(o.range[0]) || !isNum(o.range[1]) || o.range[1] <= o.range[0]) { bad("number_line_range"); op = null; break; }
           op.range = [o.range[0], o.range[1]];
+          // round 7: the line's own length, when the board places marks on it (number-line-hop's dots and hops are placed
+          // on a line W long; a line sized by its label count put the start dot off the end of a short line)
+          if (isNum(o.w)) op.w = round1(clamp(o.w, 160, Math.max(160, bw - at[0])));
+        }
+        break;
+      }
+      case "move": {
+        // round 7 (C1 studio-whiteboard-motion-ops): an earlier op slides by `by` (board units) over [startMs, endMs],
+        // optionally hopping along an arc `arc` units high (a number-line jump); a fraction split is its parts moving
+        // apart. The target's FINAL box is kept on the board (the shift is clamped), so nothing ever leaves the board.
+        const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
+        if (!tgt || !Array.isArray(o.by) || o.by.length !== 2 || !isNum(o.by[0]) || !isNum(o.by[1])) { bad("move"); break; }
+        let box; try { box = opGeometry(tgt, drawnById).box; } catch { bad("move_target"); break; }
+        const [sx, sy] = shifted.get(o.target) ?? [0, 0];
+        box = { ...box, x: box.x + sx, y: box.y + sy };
+        const dx = clamp(o.by[0], -box.x, bw - box.x - box.w), dy = clamp(o.by[1], -box.y, bh - box.y - box.h);
+        if (dx !== o.by[0] || dy !== o.by[1]) bad("move:clamped");
+        if (!dx && !dy) { bad("move_nothing"); break; }
+        op = { ...base, target: o.target, by: [round1(dx), round1(dy)] };
+        shifted.set(o.target, [sx + op.by[0], sy + op.by[1]]);
+        if (isNum(o.arc) && o.arc > 0) op.arc = round1(Math.min(o.arc, box.y + Math.min(0, dy)));
+        if (tgt.startMs > op.startMs) bad("move_before_target");
+        break;
+      }
+      // round 7 (C1 studio-whiteboard-motion-ops, M1): the rest of the motion family. Each acts on an EARLIER op of this
+      // script over [startMs, endMs]; what the op may be is fixed per kind (a word is only ever translated, never turned or
+      // stretched), and the target's place after the motion must lie on the board (refused, never clamped: a motion that
+      // would carry a part off the board is no motion).
+      case "rotate":
+      case "scale":
+      case "follow":
+      case "sweep":
+      case "morph": {
+        const tgt = typeof o.target === "string" ? drawnById.get(o.target) : null;
+        if (!tgt) { bad(`${o.op}_target`); break; }
+        if (!MOTION_TARGETS[o.op].includes(tgt.op) || (o.op === "sweep" && !tgt.fill)) { bad(`${o.op}_target_kind`); break; }
+        if (tgt.startMs > s) bad(`${o.op}_before_target`);
+        op = { ...base, target: o.target };
+        if (o.op === "rotate") {
+          const about = P(o.about, `${where}.about`);
+          if (!isNum(o.deg) || !o.deg || Math.abs(o.deg) > 720 || !about) { bad("rotate"); op = null; break; }
+          op.deg = round1(o.deg); op.about = about;
+        } else if (o.op === "scale") {
+          const about = P(o.about, `${where}.about`);
+          const k = isNum(o.k) ? [o.k, o.k] : Array.isArray(o.k) && o.k.length === 2 && isNum(o.k[0]) && isNum(o.k[1]) ? o.k : null;
+          if (!k || !about || k.some((v) => Math.abs(v) < 0.1 || Math.abs(v) > 4) || (k[0] === 1 && k[1] === 1)) { bad("scale"); op = null; break; }
+          if (tgt.op === "circle" && (k[0] !== k[1] || k[0] < 0)) { bad("scale_circle"); op = null; break; }
+          op.k = [round2(k[0]), round2(k[1])]; op.about = about;
+        } else if (o.op === "follow") {
+          // the path is offsets from where the target is when the follow starts ([0,0] implied first)
+          const path = Array.isArray(o.path) ? o.path.filter((q) => Array.isArray(q) && q.length === 2 && isNum(q[0]) && isNum(q[1])).slice(0, 32) : [];
+          if (path.length < 1 || path.length !== (o.path?.length ?? 0)) { bad("follow_path"); op = null; break; }
+          op.path = path.map((q) => [round1(q[0]), round1(q[1])]);
+        } else if (o.op === "sweep") {
+          op.dir = ["up", "down", "left", "right"].includes(o.dir) ? o.dir : (bad("sweep_dir"), "right");
+        } else if (o.op === "morph") {
+          const n = tgt.points?.length ?? 0;
+          const to = Array.isArray(o.to) ? o.to.map((q, j) => P(q, `${where}.to${j}`)) : [];
+          if (to.length !== n || to.some((q) => !q)) { bad("morph_points"); op = null; break; }
+          op.to = to;
+        }
+        if (op && o.op !== "sweep") {
+          // where the target ends up, after every motion so far and this one: on the board, or the motion is refused
+          let end; try { end = opGeometry(finalOp(tgt, [...ops, op]), drawnById).box; } catch { end = null; }
+          if (!end || end.x < -0.5 || end.y < -0.5 || end.x + end.w > bw + 0.5 || end.y + end.h > bh + 0.5) { bad(`${o.op}_off_board`); op = null; }
         }
         break;
       }
@@ -204,7 +460,26 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
         break;
       }
     }
-    if (op) { ops.push(op); seen.add(op.id); }
+    if (op) { ops.push(op); seen.add(op.id); drawnById.set(op.id, op); }
+    for (const t of braceLabels.splice(0)) { ops.push(t); seen.add(t.id); drawnById.set(t.id, t); }
+  }
+  // round 8: at most 3 meaning roles on a board — focus; slot OR answer (one colour, two shapes: a board is posing or
+  // answering, never both); mixup
+  if (ops.some((o) => o.role === ROLE.slot) && ops.some((o) => o.role === ROLE.answer)) {
+    fix("roles_slot_and_answer");
+    for (const o of ops) if (o.role === ROLE.answer) delete o.role;
+  }
+  // a brace's label sits at its apex wherever the brace now is (a page scaled onto a panel moves both: the label is placed
+  // again, by its own size, so a stacked label never runs into its brace)
+  for (const o of ops) {
+    if (o.op !== "brace") continue;
+    const lab = drawnById.get(braceLabelId(o.id));
+    if (lab && lab.op === "text") { lab.at = braceLabelAt(o, lab.text, lab.size); o.labelId = lab.id; }
+  }
+  // a slot box and a mix-up line are dashed by their role, an answer never is (shapes belong to the role)
+  for (const o of ops) {
+    if ((o.role === ROLE.mixup && OPEN.has(o.op) && o.op !== "arrow") || (o.role === ROLE.slot && o.op === "rect")) o.dashed = true;
+    if (o.role === ROLE.answer && o.dashed) delete o.dashed;
   }
   if (!ops.length) errors.push("nothing_to_draw");
   const lastEnd = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
@@ -218,6 +493,21 @@ export function normalizeScript(raw, { strict = false, clauses = false, priorIds
   const script = { v: 1, scriptId: typeof raw.scriptId === "string" ? raw.scriptId.slice(0, 64) : "wb", line, anchor: "line_audio_start", board,
     mode: raw.mode === "continue" ? "continue" : "fresh", durationMs: Math.round(durationMs), ops: sorted };
   if (raw.facts && typeof raw.facts === "object" && raw.facts.onScreen && typeof raw.facts.onScreen === "object") script.facts = cleanFacts(raw.facts);
+  // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's whiteboard intent; absent = no card open, today's behaviour)
+  if (typeof raw.ofCard === "boolean") script.ofCard = raw.ofCard;
+  // round 7 (director7 B1/S2: one board per segment of a turn): the page turns at each later segment. `switches` [{ clause,
+  // atMs }] in order: the ops from atMs (the estimate) to the next switch are that segment's page (and the erase of the page
+  // before); the player moves them onto clause `clause`'s real onset when the voice reports it (lineClock.ts)
+  if (Array.isArray(raw.switches)) {
+    const sw = raw.switches.slice(0, 8).filter((x) => x && Number.isInteger(x.clause) && x.clause >= 0 && x.clause < 64 && isNum(x.atMs) && x.atMs > 0 && x.atMs < LIMITS.maxDurationMs)
+      // (#44: `word` / `wordIndex` — the segment's first spoken word and how many words of her line come before it: the
+      // player lands the page on that word's REAL onset when the voice sends word timings, else on the clause's)
+      .map((x) => ({ clause: x.clause, atMs: Math.round(x.atMs), ...(typeof x.word === "string" && x.word.length > 0 && x.word.length <= 24 ? { word: x.word } : {}),
+        ...(Number.isInteger(x.wordIndex) && x.wordIndex >= 0 && x.wordIndex < 2000 ? { wordIndex: x.wordIndex } : {}),
+        // (main 2026-11-08, App 3b: Brain's segment `ofCard`, is this page the open card's own board; the card waits when not)
+        ...(typeof x.ofCard === "boolean" ? { ofCard: x.ofCard } : {}) })).sort((a, b) => a.atMs - b.atMs);
+    if (sw.length) script.switches = sw;
+  }
   return { ok: errors.length === 0, script: errors.length && !ops.length ? null : script, errors, fixes };
 }
 
@@ -228,8 +518,50 @@ function cleanFacts(f) {
     if (isNum(v)) onScreen[k] = v;
     else if (typeof v === "string" && v.length <= 40 && !/[<>{}\n]/.test(v)) onScreen[k] = v;
   }
+  const counts = cleanCounts(f.counts);
   return { kind: typeof f.kind === "string" ? f.kind : "diagram", archetype: typeof f.archetype === "string" ? f.archetype.slice(0, 40) : "whiteboard",
-    onScreen, ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+    onScreen, ...(counts ? { counts } : {}), ...(Number.isInteger(f.step) ? { step: f.step } : {}), ...(typeof f.itemId === "string" ? { itemId: f.itemId } : {}) };
+}
+/**
+ * round 7 (director5 SC1): what a template board DRAWS, counted by the template that drew it (never read back from pixels):
+ * lines [{ gaps, gapsPerWhole?, ticks, innerTicks }] (one per scale: a two-denominator line has two), marks [{ at, label }]
+ * (label "?" = the asked mark, "" = unlabelled), parts / shaded, rows / cols, groups / each, sides / corners / sideValues
+ * ["6 cm", …], radius. Unknown keys and bad values are dropped. → the counts, or null.
+ */
+const COUNT_INTS = ["parts", "shaded", "rows", "cols", "groups", "each", "sides", "corners", "steps", "events", "bars", "labels", "places", "hops", "digits", "halves"];
+const smallStr = (v) => typeof v === "string" && v.length <= 24 && !/[<>{}\n]/.test(v);
+function cleanCounts(c) {
+  if (!c || typeof c !== "object") return null;
+  const out = {};
+  for (const k of COUNT_INTS) if (Number.isInteger(c[k]) && c[k] >= 0 && c[k] <= 500) out[k] = c[k];
+  if (Array.isArray(c.lines)) {
+    const ls = c.lines.slice(0, 3).map((l) => Object.fromEntries(["gaps", "gapsPerWhole", "ticks", "innerTicks"].filter((k) => Number.isInteger(l?.[k]) && l[k] >= 0 && l[k] <= 500).map((k) => [k, l[k]])))
+      .filter((l) => Object.keys(l).length);
+    if (ls.length) out.lines = ls;
+  }
+  if (Array.isArray(c.marks)) {
+    const ms = c.marks.slice(0, 24).filter((m) => smallStr(m?.at) && (m.label === undefined || smallStr(m.label))).map((m) => ({ at: m.at, label: m.label ?? "" }));
+    if (ms.length) out.marks = ms;
+  }
+  if (Array.isArray(c.sideValues)) { const sv = c.sideValues.slice(0, 8).filter(smallStr); if (sv.length) out.sideValues = sv; }
+  if (smallStr(c.radius)) out.radius = c.radius;
+  // (director6 #2: word boards count too) compare columns, chart values, angles, amounts
+  if (Array.isArray(c.columns)) {
+    const cs = c.columns.slice(0, 2).filter((x) => x && typeof x === "object").map((x) => ({ title: smallStr(x.title) ? x.title : "", items: Number.isInteger(x.items) && x.items >= 0 && x.items <= 12 ? x.items : 0,
+      quantities: (Array.isArray(x.quantities) ? x.quantities : []).slice(0, 6).filter((q) => Number.isInteger(q?.n) && q.n >= 0 && q.n <= 1000 && smallStr(q.what)).map((q) => ({ n: q.n, what: q.what })) }));
+    if (cs.length) out.columns = cs;
+  }
+  if (Array.isArray(c.values)) { const vs = c.values.slice(0, 8).filter(smallStr); if (vs.length) out.values = vs; }
+  // (director8 S3′: fraction-bars@1, a picture's second view — each equal whole: its parts, the parts shaded, its label)
+  if (Array.isArray(c.wholes)) {
+    const ws = c.wholes.slice(0, 3).filter((x) => Number.isInteger(x?.parts) && x.parts >= 1 && x.parts <= 24 && Number.isInteger(x?.shaded) && x.shaded >= 0 && x.shaded <= x.parts)
+      .map((x) => ({ parts: x.parts, shaded: x.shaded, label: smallStr(x.label) ? x.label : "" }));
+    if (ws.length) out.wholes = ws;
+  }
+  // (Learning's D7: equal-groups@1's equal share drawn beside unequal groups — { groups, each })
+  if (c.equalTo && Number.isInteger(c.equalTo.groups) && Number.isInteger(c.equalTo.each) && c.equalTo.groups >= 1 && c.equalTo.groups <= 12 && c.equalTo.each >= 0 && c.equalTo.each <= 100) out.equalTo = { groups: c.equalTo.groups, each: c.equalTo.each };
+  for (const k of ["angles", "amounts"]) if (Array.isArray(c[k])) { const ns = c[k].slice(0, 6).filter((n) => Number.isFinite(n) && n >= 0 && n <= 100000); if (ns.length) out[k] = ns; }
+  return Object.keys(out).length ? out : null;
 }
 
 // ───────────────────────────── timeline ─────────────────────────────
@@ -361,6 +693,8 @@ const bbox = (pts) => {
  * @returns {{ paths: string[], texts: { x: number, y: number, text: string, size: number, align: string, small?: boolean }[], fill?: string, box: { x: number, y: number, w: number, h: number } }}
  */
 export function opGeometry(op, byId = new Map()) {
+  // a move draws nothing of its own (the Player shifts its target)
+  if (MOTION.has(op.op)) return { paths: [], texts: [], box: { x: 0, y: 0, w: 0, h: 0 } };
   const rnd = seeded(op.id);
   const amp = 2.2 * (op.weight ?? 2);
   switch (op.op) {
@@ -405,23 +739,29 @@ export function opGeometry(op, byId = new Map()) {
       return { paths: [outline], texts: [], fill: op.fill ? outline : undefined, box: { x: cx - op.r, y: cy - op.r, w: 2 * op.r, h: 2 * op.r } };
     }
     case "text": {
-      const size = TEXT_SIZE[op.size] ?? TEXT_SIZE.m, align = op.align ?? "middle";
-      return { paths: [], texts: [{ x: op.at[0], y: op.at[1], text: op.text, size, align }], box: textBox(op.text, op.size, op.at, align) };
+      const align = op.align ?? "middle";
+      const dr = textDrawing(op.text, op.size, op.at, align);
+      return roleDressed(op, { paths: dr.paths, widths: dr.widths, texts: dr.texts, box: textBox(op.text, op.size, op.at, align) }, rnd, amp);
     }
     case "label": {
-      const size = TEXT_SIZE.s;
       const to = op.to ?? (op.target && byId.get(op.target) ? centreOf(opGeometry(byId.get(op.target), byId).box) : null);
       const box = textBox(op.text, "s", op.at, "middle");
-      const paths = [];
+      const paths = [], widths = [];
       if (to) {
         // the leader leaves the label's box edge nearest the point, and stops just short of it
         const from = [clamp(to[0], box.x, box.x + box.w), to[1] < box.y ? box.y - 2 : to[1] > box.y + box.h ? box.y + box.h + 2 : clamp(to[1], box.y, box.y + box.h)];
         const dx = to[0] - from[0], dy = to[1] - from[1], len = Math.hypot(dx, dy);
-        if (len > 8) paths.push(polyPath([from, [to[0] - (dx / len) * 4, to[1] - (dy / len) * 4]], rnd, amp * 0.6));
+        if (len > 8) { paths.push(polyPath([from, [to[0] - (dx / len) * 4, to[1] - (dy / len) * 4]], rnd, amp * 0.6)); widths.push(undefined); }
       }
-      return { paths, texts: [{ x: op.at[0], y: op.at[1], text: op.text, size, align: "middle" }], box };
+      const dr = textDrawing(op.text, "s", op.at, "middle");
+      return roleDressed(op, { paths: [...paths, ...dr.paths], widths: [...widths, ...dr.widths], texts: dr.texts, box }, rnd, amp);
     }
-    case "numwork": return numworkGeometry(op, rnd, amp);
+    case "brace": {
+      const g = braceGeometry(op);
+      return { paths: [g.d], texts: [], box: g.box };
+    }
+    // (round 8 item 7: a numwork cell is drawn in the numeral face whatever it holds: TEXT_FACES)
+    case "numwork": { const g = numworkGeometry(op, rnd, amp); return { ...g, texts: g.texts.map((t) => ({ ...t, face: "numeral" })) }; }
     case "highlight": {
       const t = byId.get(op.target);
       const b = t ? opGeometry(t, byId).box : { x: 0, y: 0, w: 0, h: 0 };
@@ -437,6 +777,24 @@ export function opGeometry(op, byId = new Map()) {
   return { paths: [], texts: [], box: { x: 0, y: 0, w: 0, h: 0 } };
 }
 const centreOf = (b) => [b.x + b.w / 2, b.y + b.h / 2];
+/**
+ * round 8: a word's role shape, part of its own drawing (so the fit, the overlap lint and every gate see it): a slot's
+ * "?" sits in a dashed box; an answer's value gets a tick after it. Other roles change only the colour (the player).
+ */
+function roleDressed(op, g, rnd, amp) {
+  const b = g.box;
+  if (op.role === ROLE.slot) {
+    const p = 5, x = b.x - p, y = b.y - p * 0.6, w = b.w + 2 * p, h = b.h + p * 1.2;
+    const box = `M${f1(x + 4)},${f1(y)} L${f1(x + w - 4)},${f1(y)} Q${f1(x + w)},${f1(y)} ${f1(x + w)},${f1(y + 4)} L${f1(x + w)},${f1(y + h - 4)} Q${f1(x + w)},${f1(y + h)} ${f1(x + w - 4)},${f1(y + h)} L${f1(x + 4)},${f1(y + h)} Q${f1(x)},${f1(y + h)} ${f1(x)},${f1(y + h - 4)} L${f1(x)},${f1(y + 4)} Q${f1(x)},${f1(y)} ${f1(x + 4)},${f1(y)} Z`;
+    return { ...g, paths: [box, ...g.paths], widths: [undefined, ...(g.widths ?? [])], dashed: [true, ...g.paths.map(() => false)], slotFill: box, box: { x, y, w, h } };
+  }
+  if (op.role === ROLE.answer && (op.op === "text" || op.op === "label")) {
+    const s = Math.max(10, Math.min(16, b.h * 0.5)), x = b.x + b.w + 6, y = b.y + b.h / 2 + s * 0.15;
+    const tick = `M${f1(x)},${f1(y - s * 0.1)} L${f1(x + s * 0.38)},${f1(y + s * 0.35)} L${f1(x + s)},${f1(y - s * 0.55)}`;
+    return { ...g, paths: [...g.paths, tick], widths: [...(g.widths ?? []), undefined], box: { x: b.x, y: Math.min(b.y, y - s * 0.6), w: b.w + 6 + s + 2, h: Math.max(b.h, s) } };
+  }
+  return g;
+}
 
 /** Number work laid out by code: right-aligned columns, the rule above the result, carries above their column. */
 function numworkGeometry(op, rnd, amp) {
@@ -477,44 +835,51 @@ function numworkGeometry(op, rnd, amp) {
   }
   if (op.layout === "fraction") {
     // rows[0]: numerators and operators, rows[1]: denominators (blank under an operator); a bar under each fraction
-    const top = rows[0] ?? [], bot = rows[1] ?? [];
+    const top = rows[0] ?? [], bot = rows[1] ?? [], widths = [];
     const n = Math.max(top.length, bot.length);
     for (let j = 0; j < n; j++) {
       const cx = x0 + (j + 0.5) * cw * 1.6;
       const t = top[j] ?? "", b = bot[j] ?? "";
       if (b) {
-        texts.push({ x: cx, y: y0, text: t, size: fs, align: "middle" });
-        texts.push({ x: cx, y: y0 + rh, text: b, size: fs, align: "middle" });
-        paths.push(polyPath([[cx - cw * 0.6, y0 + rh * 0.3], [cx + cw * 0.6, y0 + rh * 0.3]], rnd, amp * 0.4));
-      } else if (t) texts.push({ x: cx, y: y0 + rh * 0.5, text: t, size: fs, align: "middle" });
+        // (round 8: the one stacked-fraction drawing, shared with every text run)
+        const st = fracStack(cx, y0 + rh * 0.3, t, b, fs, cw * 0.6);
+        texts.push(...st.texts); paths.push(st.path); widths.push(st.width);
+      } else if (t) texts.push({ x: cx, y: y0 + rh * 0.3, text: t, size: fs, align: "middle" });
     }
-    return { paths, texts, box: { x: x0, y: y0 - rh, w: n * cw * 1.6, h: rh * 2.4 } };
+    return { paths, widths, texts, box: { x: x0, y: y0 - rh, w: n * cw * 1.6, h: rh * 2.4 } };
   }
   if (op.layout === "number_line") {
     const [a, b] = op.range;
-    const W = Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
+    const W = Number.isFinite(op.w) ? op.w : Math.max(160, (rows[0]?.length ?? 6) * cw * 2.2);
     const xOf = (v) => x0 + 12 + ((v - a) / (b - a)) * (W - 24);
     paths.push(polyPath([[x0, y0], [x0 + W, y0]], rnd, amp * 0.4));
     const span = b - a, step = span <= 20 ? 1 : span <= 100 ? 10 : Math.pow(10, Math.floor(Math.log10(span)) - 1) * 5;
     let ticks = 0;
     for (let v = Math.ceil(a / step) * step; v <= b + 1e-9 && ticks < 41; v += step, ticks++) paths.push(`M${f1(xOf(v))},${f1(y0 - 7)} L${f1(xOf(v))},${f1(y0 + 7)}`);
     for (const c of rows[0] ?? []) {
+      // (an empty cell is an unlabelled tick: number-line-scale@1 labels every k-th tick when the labels would touch)
       const v = Number(c);
-      if (Number.isFinite(v) && v >= a && v <= b) texts.push({ x: xOf(v), y: y0 + rh * 0.95, text: c, size: fs * 0.8, align: "middle" });
+      if (c !== "" && Number.isFinite(v) && v >= a && v <= b) texts.push({ x: xOf(v), y: y0 + rh * 0.95, text: c, size: fs * 0.8, align: "middle" });
     }
     return { paths, texts, box: { x: x0, y: y0 - 10, w: W, h: rh * 1.3 } };
   }
   // equation / long_div: one row per line, left-aligned tokens (long_div: rows[0] = [divisor, dividend], below = steps)
+  const widths = [];
   rows.forEach((r, i) => {
     const line = r.join(" ");
-    texts.push({ x: x0, y: y0 + i * rh, text: line, size: fs, align: "start" });
+    // (round 8: a fraction in an equation is stacked, as everywhere)
+    const dr = textDrawing(line, "m", [x0, y0 + i * rh], "start");
+    texts.push(...dr.texts); for (const [k, d] of dr.paths.entries()) { paths.push(d); widths.push(dr.widths[k]); }
   });
   if (op.layout === "long_div" && rows[0]?.length >= 2) {
     const dv = textBox(rows[0][0] + " ", "m", [x0, y0], "start");
-    paths.push(polyPath([[dv.x + dv.w, y0 + 6], [dv.x + dv.w, y0 - fs], [dv.x + dv.w + Math.max(40, rows[0][1].length * fs * ADVANCE + 12), y0 - fs]], rnd, amp * 0.4));
+    paths.push(polyPath([[dv.x + dv.w, y0 + 6], [dv.x + dv.w, y0 - fs], [dv.x + dv.w + Math.max(40, fs * textEm(rows[0][1], "numeral") + 12), y0 - fs]], rnd, amp * 0.4));
   }
   const w = Math.max(...rows.map((r) => textBox(r.join(" "), "m", [x0, y0], "start").w), 20);
-  return { paths, texts, box: { x: x0, y: y0 - rh * 0.8, w, h: rows.length * rh } };
+  // (a row of stacked fractions is taller than a line, centred on its row: the box holds its stacks)
+  const half = rows.map((r) => (fractionRuns(r.join(" "), "m")?.h ?? 0) / 2);
+  const top = Math.min(y0 - rh * 0.8, y0 - half[0]), bottom = Math.max(y0 + (rows.length - 0.8) * rh, y0 + (rows.length - 1) * rh + half[rows.length - 1]);
+  return { paths, widths: paths.map((_, k) => widths[k]), texts, box: { x: x0, y: top, w, h: bottom - top } };
 }
 
 // ───────────────────────────── lint (the strict render-check's layout half) ─────────────────────────────
@@ -534,7 +899,16 @@ export function lintScript(script) {
     const g = opGeometry(o, byId);
     const b = g.box;
     if (b.x < -2 || b.y < -2 || b.x + b.w > BW + 2 || b.y + b.h > BH + 2) issues.push({ id: o.id, check: "inside_board", detail: b });
-    if (o.op === "text" || o.op === "label" || o.op === "numwork") textOps.push({ o, b });
+    // (round 8: a brace is placed like a word: it must not run into one)
+    if (o.op === "text" || o.op === "label" || o.op === "numwork" || o.op === "brace") textOps.push({ o, b });
+    // a number line's own row labels never touch each other (App, 2026-11-07: "100200300…" at 0-1000 step 100, 360 dp)
+    if (o.op === "numwork" && o.layout === "number_line") {
+      const xs = g.texts.map((t) => ({ x: t.x, w: t.size * textEm(t.text, "numeral") })).sort((p, q) => p.x - q.x);
+      for (let k = 1; k < xs.length; k++) {
+        const gap = (xs[k].x - xs[k].w / 2) - (xs[k - 1].x + xs[k - 1].w / 2);
+        if (gap < 6) { issues.push({ id: o.id, check: "row_labels_touch", detail: { gap: Math.round(gap), at: k } }); break; }
+      }
+    }
   }
   for (let i = 0; i < textOps.length; i++) {
     for (let j = i + 1; j < textOps.length; j++) {
@@ -542,10 +916,201 @@ export function lintScript(script) {
       // only texts that are on the board at the same time (neither erased before the other appears)
       const aGone = er.get(A.o.id)?.endMs ?? Infinity, bGone = er.get(B.o.id)?.endMs ?? Infinity;
       if (aGone <= B.o.startMs || bGone <= A.o.startMs) continue;
+      // (a brace and its own label touch by design)
+      if ((A.o.op === "brace" && B.o.id === braceLabelId(A.o.id)) || (B.o.op === "brace" && A.o.id === braceLabelId(B.o.id))) continue;
       const ix = Math.min(A.b.x + A.b.w, B.b.x + B.b.w) - Math.max(A.b.x, B.b.x);
       const iy = Math.min(A.b.y + A.b.h, B.b.y + B.b.h) - Math.max(A.b.y, B.b.y);
       if (ix > 3 && iy > 3) issues.push({ id: `${A.o.id}+${B.o.id}`, check: "text_overlap", detail: { ix: Math.round(ix), iy: Math.round(iy) } });
     }
   }
   return issues;
+}
+
+// ───────────────────────────── motion (round 7, C1 studio-whiteboard-motion-ops) ─────────────────────────────
+
+/** The eased progress (0..1) of a move at t (smoothstep: starts and lands softly, like a hand sliding a cut-out). */
+const ease = (p) => p * p * (3 - 2 * p);
+/** The shift [dx, dy] of op `id` at time t from every move targeting it (reducedMotion: a started move is complete). */
+export function moveShift(ops, id, t, reducedMotion = false) {
+  let x = 0, y = 0;
+  for (const m of ops) {
+    if (m.op !== "move" || m.target !== id) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    const p = reducedMotion ? 1 : ease(p0);
+    x += m.by[0] * p;
+    y += m.by[1] * p - (reducedMotion || !m.arc ? 0 : m.arc * 4 * p0 * (1 - p0));
+  }
+  return [x, y];
+}
+/** An op translated by [dx, dy] (every coordinate it carries). */
+export function shiftOp(op, dx, dy) {
+  const P = (p) => [round1(p[0] + dx), round1(p[1] + dy)];
+  const o = { ...op };
+  if (Array.isArray(o.points)) o.points = o.points.map(P);
+  for (const k of ["from", "to", "at", "c"]) if (Array.isArray(o[k])) o[k] = P(o[k]);
+  return o;
+}
+/** The script as it ENDS: every moved, turned, scaled, morphed op at its final place and shape, the motion ops themselves
+ *  gone. The gates judge this too (a piece that slides onto another, or a label that ends off its part, is caught where it
+ *  lands). */
+export function settledScript(script) {
+  const ops = script?.ops ?? [];
+  if (!ops.some((o) => MOTION.has(o.op))) return script;
+  const targets = new Set(ops.flatMap((o) => (MOTION.has(o.op) ? [o.target] : [])));
+  return { ...script, ops: ops.filter((o) => !MOTION.has(o.op)).map((o) => (targets.has(o.id) ? finalOp(o, ops) : o)) };
+}
+
+// round 7 (C1 motion ops, M1): rotate / scale / follow / sweep / morph. Move, rotate, scale and follow are affine: each
+// target's transform at time t is their product in script order (a later turn is about a point on the board as it is
+// then). Sweep reveals a filled shape's fill along a direction; morph carries a stroke's or polygon's points to new ones.
+export const MOTION = new Set(["move", "rotate", "scale", "follow", "sweep", "morph"]);
+/** What each motion may act on: a word, a number line or a box of text is only ever translated (move / follow). */
+export const MOTION_TARGETS = Object.freeze({
+  rotate: ["stroke", "line", "arrow", "polygon", "circle", "sector"],
+  scale: ["stroke", "line", "arrow", "polygon", "rect", "ellipse", "circle"],
+  follow: ["stroke", "line", "arrow", "polygon", "rect", "circle", "ellipse", "sector", "text", "label", "numwork"],
+  sweep: ["rect", "circle", "ellipse", "polygon", "sector"],
+  morph: ["stroke", "polygon"],
+});
+export const isMotionOp = (o) => MOTION.has(o?.op);
+const I = [1, 0, 0, 1, 0, 0];
+// SVG matrix(a b c d e f): x' = a x + c y + e, y' = b x + d y + f; mul(M, N) = M after N
+const mul = (M, N) => [M[0] * N[0] + M[2] * N[1], M[1] * N[0] + M[3] * N[1], M[0] * N[2] + M[2] * N[3], M[1] * N[2] + M[3] * N[3], M[0] * N[4] + M[2] * N[5] + M[4], M[1] * N[4] + M[3] * N[5] + M[5]];
+const apply = (M, p) => [M[0] * p[0] + M[2] * p[1] + M[4], M[1] * p[0] + M[3] * p[1] + M[5]];
+const translate = (x, y) => [1, 0, 0, 1, x, y];
+const about = (q, M) => mul(translate(q[0], q[1]), mul(M, translate(-q[0], -q[1])));
+/** A point a share p (0..1) of the way along a polyline that starts at [0,0]. */
+function along(path, p) {
+  const pts = [[0, 0], ...path];
+  const seg = pts.slice(1).map((q, i) => Math.hypot(q[0] - pts[i][0], q[1] - pts[i][1]));
+  const total = seg.reduce((a, b) => a + b, 0);
+  if (!total) return pts.at(-1);
+  let d = p * total;
+  for (let i = 0; i < seg.length; i++) {
+    if (d <= seg[i] || i === seg.length - 1) { const k = seg[i] ? Math.min(1, d / seg[i]) : 1; return [pts[i][0] + (pts[i + 1][0] - pts[i][0]) * k, pts[i][1] + (pts[i + 1][1] - pts[i][1]) * k]; }
+    d -= seg[i];
+  }
+  return pts.at(-1);
+}
+/** One affine motion op at progress p0 (0..1); `still`: the end state (no hop). */
+function stepMatrix(m, p0, still) {
+  const p = still ? 1 : ease(p0);
+  if (m.op === "move") return translate(m.by[0] * p, m.by[1] * p - (still || !m.arc ? 0 : m.arc * 4 * p0 * (1 - p0)));
+  if (m.op === "follow") { const q = along(m.path, p); return translate(q[0], q[1]); }
+  if (m.op === "rotate") { const a = (m.deg * p * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a); return about(m.about, [c, s, -s, c, 0, 0]); }
+  if (m.op === "scale") return about(m.about, [1 + (m.k[0] - 1) * p, 0, 0, 1 + (m.k[1] - 1) * p, 0, 0]);
+  return I;
+}
+/** The transform of op `id` at time t from every affine motion on it (reducedMotion: a started motion is complete). */
+export function motionMatrix(ops, id, t, reducedMotion = false) {
+  let M = I;
+  for (const m of ops) {
+    if (m.target !== id || !(m.op === "move" || m.op === "rotate" || m.op === "scale" || m.op === "follow")) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    M = mul(stepMatrix(m, reducedMotion ? 1 : p0, reducedMotion || p0 >= 1), M);
+  }
+  return M;
+}
+export const isIdentity = (M) => Math.abs(M[0] - 1) < 1e-9 && Math.abs(M[1]) < 1e-9 && Math.abs(M[2]) < 1e-9 && Math.abs(M[3] - 1) < 1e-9 && Math.abs(M[4]) < 1e-9 && Math.abs(M[5]) < 1e-9;
+/** The op's points at time t under its morphs (null when none has started). */
+export function morphAt(ops, op, t, reducedMotion = false) {
+  let pts = null;
+  for (const m of ops) {
+    if (m.op !== "morph" || m.target !== op.id) continue;
+    const p0 = opProgress(m, t);
+    if (p0 <= 0) continue;
+    const p = reducedMotion ? 1 : ease(p0), from = pts ?? op.points;
+    pts = from.map((q, i) => [q[0] + (m.to[i][0] - q[0]) * p, q[1] + (m.to[i][1] - q[1]) * p]);
+  }
+  return pts;
+}
+/** How much of a filled op's fill its sweep has revealed at t, and from which side: null when no sweep targets it. */
+export function sweepAt(ops, id, t, reducedMotion = false) {
+  const m = ops.find((o) => o.op === "sweep" && o.target === id);
+  if (!m) return null;
+  const p0 = opProgress(m, t);
+  return { p: reducedMotion ? (p0 > 0 ? 1 : 0) : ease(p0), dir: m.dir };
+}
+/** An op carried by a matrix (the end of its motions): every coordinate moved, lengths scaled, a circle's radius by the
+ *  scale, a sector's angles by the turn, a rect / ellipse re-boxed (they are only ever scaled along the axes). */
+export function transformOp(op, M) {
+  if (isIdentity(M)) return op;
+  const P = (q) => { const r = apply(M, q); return [round1(r[0]), round1(r[1])]; };
+  const o = { ...op };
+  if (Array.isArray(o.points)) o.points = o.points.map(P);
+  for (const k of ["from", "to", "at"]) if (Array.isArray(o[k]) && op.op !== "rect") o[k] = P(o[k]);
+  const sx = Math.hypot(M[0], M[1]), sy = Math.hypot(M[2], M[3]);
+  if (op.op === "circle" || op.op === "sector") {
+    o.c = P(o.c); o.r = round1(o.r * Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])));
+    if (op.op === "sector") { const turn = (Math.atan2(M[1], M[0]) * 180) / Math.PI; o.fromDeg = round1(op.fromDeg + turn); o.toDeg = round1(op.toDeg + turn); }
+  } else if (op.op === "ellipse") { o.c = P(o.c); o.rx = round1(o.rx * sx); o.ry = round1(o.ry * sy); }
+  else if (op.op === "rect") {
+    const a = apply(M, op.at), b = apply(M, [op.at[0] + op.w, op.at[1] + op.h]);
+    o.at = [round1(Math.min(a[0], b[0])), round1(Math.min(a[1], b[1]))]; o.w = round1(Math.abs(b[0] - a[0])); o.h = round1(Math.abs(b[1] - a[1]));
+  } else if (Array.isArray(o.c)) o.c = P(o.c);
+  return o;
+}
+/** The op as it ends under the motions in `ops` (morphs, then the affine product). */
+export function finalOp(op, ops) {
+  const end = Number.MAX_SAFE_INTEGER;
+  const pts = morphAt(ops, op, end, true);
+  return transformOp(pts ? { ...op, points: pts.map((q) => [round1(q[0]), round1(q[1])]) } : op, motionMatrix(ops, op.id, end, true));
+}
+
+// ───────────────────────────── round 8: sizes and roles by shape ─────────────────────────────
+
+/**
+ * The font sizes (board units) of every word an op draws, its stacked numerals at their own size (the legibility floor
+ * counts a numeral's own px); a carry, written small by design, is left out. [] for an op with no words.
+ */
+export function opTextSizes(op, byId = new Map()) {
+  if (op?.op !== "text" && op?.op !== "label" && op?.op !== "numwork") return [];
+  try { return opGeometry(op, byId).texts.filter((t) => !t.small).map((t) => t.size); } catch { return [TEXT_SIZE.m]; }
+}
+
+/** An op's shape, colour ignored: what a child who cannot tell the colours apart still sees. */
+function shapeOf(op) {
+  if (op.op === "brace") return "brace";
+  if (op.op === "text" || op.op === "label" || op.op === "numwork") return op.role === ROLE.slot ? "dashed-closed" : op.role === ROLE.answer && op.op !== "numwork" ? "tick" : "words";
+  if (op.op === "highlight") return op.style === "circle" ? "ring" : "mark";
+  if (op.op === "circle" && !op.fill && !op.dashed) return "ring";
+  if (CLOSED.has(op.op)) return op.dashed ? "dashed-closed" : op.fill ? "fill-closed" : "closed";
+  if (OPEN.has(op.op)) return op.dashed ? "dashed-open" : "open";
+  return "other";
+}
+/** The shape each meaning role must have on a board (design r8: the meaning survives greyscale). */
+export const ROLE_SHAPES = Object.freeze({ focus: ["fill-closed"], slot: ["dashed-closed"], answer: ["tick", "ring"], mixup: ["dashed-open"] });
+/**
+ * Does every meaning role on this board read by SHAPE alone (colour ignored)? focus: a closed outline with a fill; slot: a
+ * dashed closed box; answer: a solid mark with a tick or a ring; mixup: a dashed open line. Fails when a role present has
+ * no op of its shape, when a role's shape op has another shape (a solid slot, a dashed mix-up box), when an op of one role
+ * — or an unmarked op — takes another present role's shape (two dashed boxes as slot and mixup), or when the board holds
+ * more than 3 meaning roles or both slot and answer. Words (texts) and a brace carry their role by colour beside a shape.
+ * PURE. → { ok, why }
+ */
+export function rolesByShape(script) {
+  const ops = settledScript(script ?? { ops: [] }).ops ?? [];
+  const drawn = ops.filter((o) => o.op !== "erase" && !MOTION.has(o.op));
+  const present = MEANING_ROLES.filter((r) => drawn.some((o) => o.role === r));
+  const why = [];
+  if (present.includes(ROLE.slot) && present.includes(ROLE.answer)) why.push("slot_and_answer");
+  if (present.length > 3) why.push("over_3_roles");
+  for (const r of present) if (!drawn.some((o) => o.role === r && ROLE_SHAPES[r].includes(shapeOf(o)))) why.push(`${r}_lacks_shape`);
+  for (const o of drawn) {
+    const sh = shapeOf(o), own = MEANING_ROLES.includes(o.role) ? o.role : null;
+    if (sh === "words" || sh === "brace") continue;
+    // a role's own SHAPE op (not its words) has the role's shape: a focus box is filled, a slot dashed, a mix-up a dashed line
+    if (own && own !== ROLE.focus && !ROLE_SHAPES[own].includes(sh) && !(own === ROLE.answer && (sh === "open" || sh === "fill-closed"))) why.push(`${o.id}:${own}_not_${ROLE_SHAPES[own][0]}`);
+    if (own === ROLE.focus && CLOSED.has(o.op) && sh !== "fill-closed") why.push(`${o.id}:focus_not_filled`);
+    for (const r of present) {
+      if (r === own || !ROLE_SHAPES[r].includes(sh)) continue;
+      // (an unmarked filled shape — a roti, a dot — is ink, not focus: only the dashed and ticked shapes are reserved)
+      if (!own && r === ROLE.focus) continue;
+      if (!own && r === ROLE.answer && sh === "ring") continue;
+      why.push(`${o.id}:${own ?? "ink"}_shares_${r}_shape`);
+    }
+  }
+  return { ok: why.length === 0, why: why.slice(0, 6).join(", ") };
 }

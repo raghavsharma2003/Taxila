@@ -13,9 +13,13 @@ import {
   SphereGeometry, BackSide, Vector2, Vector3, type WebGLRenderer, type Camera, type Texture,
 } from "three";
 import type { ArtTokens } from "../../../../shared/play.ts";
+import { ART, lawColor } from "../../core/styles.ts";
 import { meshVolume, volumeOf, type MeshOut } from "./mesher.ts";
 import { MAT, tileOf } from "./tiles.ts";
-import { SKY, type SkyPalette } from "./palette.ts";
+import { SKY, WORLD_FOCUS_ART, type SkyPalette } from "./palette.ts";
+
+/** her pick on the world: the focus token of the art the world reads (palette.ts WORLD_FOCUS_ART) */
+const worldFocus = (): string => lawColor(ART[WORLD_FOCUS_ART], "focus");
 
 export type Snap = "front" | "side" | "top" | null;
 export interface Hit { kind: "block" | "ground"; x: number; z: number; y: number; nx: number; ny: number; nz: number }
@@ -159,10 +163,11 @@ export class KhandScene {
     this.root.add(this.terrain.mesh, this.build.mesh);
     this.overlay.renderOrder = 10;
     this.root.add(this.overlay, this.glow);
-    const you = new Color(cssToNum(art.you));
-    this.cursor = new LineSegments(new EdgesGeometry(new BoxGeometry(1.04, 1.04, 1.04)), new LineBasicMaterial({ color: you, depthTest: false, transparent: true, opacity: 0.95 }));
+    // her cursor and her drag box are her pick, not a verdict: the focus colour (law 1; the 2D painter's "selected")
+    const focus = new Color(cssToNum(worldFocus()));
+    this.cursor = new LineSegments(new EdgesGeometry(new BoxGeometry(1.04, 1.04, 1.04)), new LineBasicMaterial({ color: focus, depthTest: false, transparent: true, opacity: 0.95 }));
     this.cursor.renderOrder = 20; this.cursor.visible = false; this.overlay.add(this.cursor);
-    this.dragBox = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({ color: you, transparent: true, opacity: 0.28, depthWrite: false }));
+    this.dragBox = new Mesh(new BoxGeometry(1, 1, 1), new MeshBasicMaterial({ color: focus, transparent: true, opacity: 0.28, depthWrite: false }));
     this.dragBox.renderOrder = 19; this.dragBox.visible = false; this.overlay.add(this.dragBox);
     const n = 48; this.dustV = new Float32Array(n * 3);
     const dg = new BufferGeometry(); dg.setAttribute("position", new BufferAttribute(new Float32Array(n * 3), 3));
@@ -328,7 +333,7 @@ export class KhandScene {
     const ax = Math.min(r.x0, r.x1), bx = Math.max(r.x0, r.x1), az = Math.min(r.z0, r.z1), bz = Math.max(r.z0, r.z1);
     this.dragBox.scale.set(bx - ax + 1.02, 1.02, bz - az + 1.02);
     this.dragBox.position.set((ax + bx + 1) / 2, r.y + 0.5, (az + bz + 1) / 2);
-    (this.dragBox.material as MeshBasicMaterial).color.set(cssToNum(remove ? this.art.look : this.art.you));
+    (this.dragBox.material as MeshBasicMaterial).color.set(cssToNum(remove ? lawColor(this.art, "mixup") : worldFocus()));
   }
   /** Columns that differ from the goal glow in the "look again" hue (never red, never a cross). */
   setGlow(cells: { x: number; z: number; h: number }[]): void {
@@ -402,7 +407,7 @@ export class KhandScene {
   /** Juice: a flash where blocks landed, and a puff of dust (scaled to the act, capped). */
   pulse(cells: { x: number; y: number; z: number }[], good = false): void {
     if (!cells.length) return;
-    const mat = new MeshBasicMaterial({ color: new Color(cssToNum(good ? this.art.good : this.art.you)), transparent: true, opacity: 0.55, depthWrite: false });
+    const mat = new MeshBasicMaterial({ color: new Color(cssToNum(good ? lawColor(this.art, "answer") : worldFocus())), transparent: true, opacity: 0.55, depthWrite: false });
     for (const c of cells.slice(0, 40)) {
       const m = new Mesh(new BoxGeometry(1.08, 1.08, 1.08), mat); m.position.set(c.x + 0.5, c.y + 0.5, c.z + 0.5); m.renderOrder = 17;
       this.overlay.add(m); this.pulses.push({ m, t: 0 });

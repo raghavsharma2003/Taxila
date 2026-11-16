@@ -1,0 +1,179 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj perimeter, yani boundary length, rectangles, squares aur polygons ka—cricket ground ki boundary jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 964
+  },
+  {
+   "who": "teacher",
+   "text": "Badhiya, Riya! Cricket ground ki boundary ke chaaron taraf chalne ki total distance ko perimeter kehte hain. Agar tum boundary round karo, kya naapogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1288,
+   "replyReadyMs": 2252
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 877
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Phir perimeter par wapas aayenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1189,
+   "replyReadyMs": 2066
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1131
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—perimeter par wapas: polygon ki har side jodo. Cricket boundary ki chaar sides 20, 30, 20, 30 m hain; total kitna?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1406,
+   "replyReadyMs": 2537
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1069
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 20 plus 30 equals 50; phir 20 plus 30 equals 50; dono milkar 100 m. Agla step dekhna hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2519,
+   "replyReadyMs": 3588,
+   "guard": [
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1019
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo game: main ek polygon bolungi, tum uski sides ginna. Pehla polygon triangle hai—uski kitni sides hoti hain, Riya?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3028,
+   "replyReadyMs": 4047,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 999
+  },
+  {
+   "who": "teacher",
+   "text": "Triangle ki 3 sides hoti hain. Har side 5 units ho, toh perimeter ke liye 5 ko teen baar jodo—total kitna, Riya?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1619,
+   "replyReadyMs": 2618,
+   "guard": [
+    "affirms"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 937
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh boring lag raha hai—style badalte hain: picture, story, ya game mein se ek choose karo. Riya, kya choose karogi?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1976,
+   "replyReadyMs": 2913,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1102
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 680,
+   "replyReadyMs": 1782
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 830
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, park ka ek round perimeter tha: 2 × (50 + 30) = 160 m; teen rounds ke liye— Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2253,
+   "replyReadyMs": 3083,
+   "guard": [
+    "underived"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1367
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum rukna chahti ho. Choose karo: continue karein, short break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1653,
+   "replyReadyMs": 3020,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ]
+  }
+ ],
+ "agent": []
+}

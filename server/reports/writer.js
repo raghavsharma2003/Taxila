@@ -72,8 +72,15 @@ export function laneAOrder(lines, lang, cadence) {
   const dropped = [];
   const words = () => keep.reduce((a, l) => a + wordCount(l.text), 0);
   const over = () => words() > VOICE_WORDS[cadence] || keep.map((l) => l.text).join(" ").length > VOICE_CHARS;
-  const DROP = [() => keep.filter((l) => l.section === "row").at(-1), () => keep.filter((l) => l.section === "row").at(-1),
-    () => keep.find((l) => l.section === "interest"), () => keep.find((l) => l.section === "tricky")];
+  // monthly (round 7 F): the optional sections go first, then the spoken rows as before
+  const sec = (name) => () => keep.find((l) => l.section === name);
+  // term (R2): the still-learning count goes before the monthly extras; Then → now rows go last among the optional ones
+  const lastOf = (name) => () => keep.filter((l) => l.section === name).at(-1);
+  const DROP = [sec("still"), sec("ways"), sec("routine"), sec("curious"), sec("hard"), sec("hold"), sec("next"), lastOf("change"), lastOf("change"), lastOf("change"), ...Array.from({ length: 5 }, () => () => keep.filter((l) => l.section === "row").at(-1)),
+    () => keep.filter((l) => l.section === "row").at(-1), () => keep.filter((l) => l.section === "row").at(-1),
+    () => keep.find((l) => l.section === "interest"), () => keep.filter((l) => l.section === "tricky").at(-1),
+    () => keep.filter((l) => l.section === "strength" && !l.mustKeep).at(-1), () => keep.filter((l) => l.section === "strength" && !l.mustKeep).at(-1),
+    () => keep.filter((l) => l.section === "tricky").at(-1), () => keep.filter((l) => l.section === "tricky").at(-1)];
   for (const pick of DROP) {
     if (!over()) break;
     const l = pick();

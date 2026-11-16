@@ -1,0 +1,88 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-hybrid-brain",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: one teacher brain, hybrid. The strong LLM plans, chooses and words moves with tools; code keeps the invariants as tools/post-checks (verified grading, level-calibrated item offer, Later list, stop protocol, parent limits, screen truth, frozen safety floor). A Claude-judged side-by-side at end of week 1 (about 12 lessons per lane) picks the default lane; the losing paths are then deleted. Why: owner 2026-10-14 (AGENT.md); 128-lesson gate (agent better on coherence/follows/adapts/human, worse on read accuracy and 6.0 vs 3.4 s turn p50). Reverse: the side-by-side favours the Director, or the agent lane cannot reach about 3.5 s p50."
+  },
+  {
+   "id": "dc-r7-handsfree-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: hands-free D5 duplex is the default for every child; tap stays a visible fallback. Why: OWNER-RESET #10/#16; no real users yet, so the per-hour cost is test-only. Reverse: owner says otherwise, or the cost per child-hour at launch is unacceptable."
+  },
+  {
+   "id": "dc-r7-age-bands",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: age bands classes 1-3 young, 4-6 preteen, 7-9 teen; class 4 moves to the older look. Brain owns the one band table (shared/learner.ts BANDS, shared/bands.ts); every other copy derives from it. Why: OWNER-RESET #1 (class 4 looked babyish). Reverse: the owner prefers class 4 in the young look."
+  },
+  {
+   "id": "dc-r7-turn-length",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: explanation and worked-example turns may run 40-50 words for classes 5-9 when the board carries the detail. Why: 18-25-word caps make explanations thin (gap map brain-explanation-plans). Reverse: the owner or a Claude-judged review finds the turns too long to listen to."
+  },
+  {
+   "id": "dc-r7-stop-limits",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: stop and limits. Add 'wrap up in 2' and a real timed break (mic paused, resume in place). 'Stop for today' ends the lesson. At a parent limit mid-lesson she finishes the current question, then wraps. No parent control stays inert: each is wired or hidden. Why: OWNER-RESET #7, #11. Reverse: the owner prefers another behaviour."
+  },
+  {
+   "id": "dc-r7-session-first-default",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: session-first start is the default for everyone, with a Start-only Home. Daily subject comes from the parent timetable, then the child's intake, then Conductor rotation. Why: one-subject-forever today, plus the owner's 'just start'. Reverse: the owner prefers a chooser."
+  },
+  {
+   "id": "dc-r7-stage-first-shell",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: stage-first lesson shell (content is the hero, face as PiP, steer chips, Later tray). Supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP'). App writes the 360/412/1280 geometry; Studio applies it to box-contract.json. Why: OWNER-RESET #12 (presentation). Reverse: the owner's review prefers the Desk layout."
+  },
+  {
+   "id": "dc-r7-studio-v2-serving",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: Studio v2 is served wherever certified (412-px phones, laptops); the board twin stays on 360 px until the portrait relayout. Amends dc-r4c-studio-v2-off-child-path. Why: 41 engines and 385 authored topics never reach children. Reverse: a certified piece renders badly on a real device."
+  },
+  {
+   "id": "dc-r7-games-revive",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: revive ITEM-ARENA and Khand MEASURE. The first wave-3 real-time engine is E6 Yantra (science physics). Timed or fast mechanics only on secure skills. Why: build-first replaces the 2026-10-10 stop; OWNER-RESET #3. Reverse: the owner picks another engine."
+  },
+  {
+   "id": "dc-r7-personalisation-persist",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: 'how this child learns' (format/representation responsiveness, interests, pace) persists across lessons. Consent handling is part of the later compliance pass. Why: build-first. Reverse: the compliance pass requires a different consent step."
+  },
+  {
+   "id": "dc-r7-scope",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: depth first for CBSE classes 4-7 (Studio, games, kits); classes 1-3 and 8-9 keep working. Parked: RBSE, Hindi-medium, the explore tier, teacher choice, child-named teacher. Why: OWNER-RESET target band 9-13. Reverse: the owner widens scope."
+  },
+  {
+   "id": "dc-r7-no-branch-merges",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7: do not merge claude/r4-asha-rig2, r4-games-core, r4-khand, r5-simlab or ev/*. Salvage by path checkout in the owning stream. Why: parallel histories already in int/r6; simlab is 99% results. Reverse: a needed piece cannot be salvaged by path."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-hybrid-brain",
+   "rel": "constrains",
+   "dst": "dc-owner-2026-10-27-build-first"
+  }
+ ],
+ "md": {
+  "decisions": "## Round 7 main-loop decisions (2026-11-04)\n\nTwelve reversible decisions that start round 7. Full text: docs/design/round7/PIPELINE.md §D.\n\n- One hybrid teacher brain.\n- Hands-free for every child.\n- Age bands 1-3 / 4-6 / 7-9.\n- Longer explanation turns with the board.\n- Wrap-up and break, and no inert parent controls.\n- Session-first start.\n- Stage-first lesson shell.\n- Studio v2 served wherever certified.\n- Games revived, with Yantra first.\n- Personalisation persists.\n- Classes 4-7 first.\n- Salvage branches by path.\n",
+  "measurements": "## ms-r7-gap-map (2026-11-04)\n\nSeven read-only pillar readers (workflow wf_f8ed24e3-497, 9 agents) mapped 180 product gaps against the vision.\n- Brain 21, voice 27, Studio 33, face 16, app 30, learning 29, platform 24.\n- About 17 broken, 63 missing, 85 partial, 4 built-unmerged.\n- Plus an 8-stream pipeline and a completeness critique.\n\nIn short: a child can tap and talk through one graded maths lesson. That is far from the OWNER-RESET bar.\n",
+  "rejected": ""
+ }
+}

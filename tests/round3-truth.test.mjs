@@ -132,7 +132,9 @@ describe("round3 truth: 02 every Director re-teach is a logged decision", () => 
       const bySkill = {};
       for (let i = 0; i < 45 && !r.end; i++) {
         const prev = r.state;
-        r = step(prev, { event: "turn", kit: KK, cls: cls(prev.activeItemId ? "incorrect" : "no_evidence"), now: (prev.turn + 1) * 20_000, comp: cmp });
+        // (O3, main on director21: a remediation re-teach follows only an answer that shows its misconception — the struggling child's
+        // wrong answers here are read as one, as the run this pins was)
+        r = step(prev, { event: "turn", kit: KK, cls: cls(prev.activeItemId ? "misconception" : "no_evidence"), now: (prev.turn + 1) * 20_000, comp: cmp });
         const d = r.state.lastReteach;
         if (!d || d.turn !== r.state.turn || !d.armId || !["reteach", "recap"].includes(d.move)) continue;
         decisions++;

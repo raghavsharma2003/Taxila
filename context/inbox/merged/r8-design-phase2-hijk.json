@@ -1,0 +1,41 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-design-minifier-has-weight",
+   "kind": "measurement",
+   "at": "2026-11-11",
+   "title": "Round 8 walk (production build, 136 screens x 2 themes): the production CSS minifier wraps a selector list that holds :has() in :is() (an engine without :has() keeps the rest), and :is() takes its strongest argument's weight. tx-tokens.css's B block `[data-tx=b], :root:has(.kx[data-tx=b]:not([data-tx-surface]))` became (0,4,0) and beat the light surface (0,2,0): every B set-up and light screen rendered night in the built app only (the dev server keeps the list unwrapped). Fix: the :has() branch in :where(); tests/r8-tx-tokens.test.mjs fails on a bare :has() in a token block. Law: a dev-server screenshot does not prove the built CSS; walk the production build."
+  },
+  {
+   "id": "dc-r8-design-palette-one-source",
+   "kind": "decision",
+   "at": "2026-11-11",
+   "title": "The board's meaning colours have one source: Studio's src/theme/palette.ts. src/styles/tx-tokens.css carries the same values under the matching names (A = PAPER roles and board.paper.role; B = NIGHT.board.chalk.role); tests/r8-palette-sync.test.mjs fails on a difference, with the differences a sent patch removes listed as PENDING (the list only shrinks). Answer #0B736A (main, 2026-11-11). Reverse if: Studio's deutan check measures answer against mix-up under 0.15 (today 0.155): then the answer moves, in both files.",
+   "reversal": "Studio's deuteranopia distance for answer vs mix-up falls under 0.15"
+  },
+  {
+   "id": "cp-r8-design-home-one-line",
+   "kind": "component",
+   "at": "2026-11-11",
+   "title": "The home's one true line under ?tx= (src/ui-v3/r8/homeLine.ts, main's ruling 3): parked questions (the server's jar count, digits) first, then resuming, then today's lesson time; nothing when none is true; never a card or a topic title. Other home states keep their own line."
+  },
+  {
+   "id": "cp-r8-design-public-and-world",
+   "kind": "component",
+   "at": "2026-11-11",
+   "title": "Round 8 steps h and i under ?tx=: the public site through one root (Site.tsx siteTx(); light in both themes), new-look captures on the landing (public/site/tx/), the boot skeleton on the theme's ground; World and Hangar (subject marks in tx-tokens, the orbit planet in her colour); her presence in place of the face wherever Comms is used. The walk's list of what remains: docs/design/round8/phase2/walk/README.md."
+  }
+ ],
+ "edges": [
+  {
+   "src": "cp-r8-design-public-and-world",
+   "rel": "measured_by",
+   "dst": "ms-r8-design-minifier-has-weight"
+  },
+  {
+   "src": "dc-r8-design-palette-one-source",
+   "rel": "part_of",
+   "dst": "dc-r8-design-direction-a"
+  }
+ ]
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Game · Taxila</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="../layout.css">
+<link rel="stylesheet" href="skin.css">
+<script src="../content.js" defer></script>
+</head>
+<body class="child lesson play">
+<header class="lbar">
+  <a class="btn-quiet" href="#" data-i="back"><span data-c="game.map"></span></a>
+  <div class="lbar-title"><b data-c="game.name"></b><span class="phases"><span class="of" style="display:block" data-c="game.kicker"></span></span></div>
+  <button class="btn-icon" aria-label="Captions" data-i="cc"></button>
+</header>
+<main class="desk">
+  <section class="stage game" aria-label="Game" data-board="game"></section>
+  <div class="talk">
+    <div class="tutor is-talking"><span class="tutor-face" aria-hidden="true">A</span><span class="tutor-meta"><b data-c="teacher.name"></b><small data-c="tutor.talking"></small></span></div>
+    <p class="caption" data-c="game.line"></p>
+  </div>
+  <section class="levelend">
+    <h2 data-c="game.done"></h2>
+    <p data-c="game.why"></p>
+    <div class="choices">
+      <a class="btn-secondary" href="#"><span data-c="game.same"></span><small data-c="game.same.sub"></small></a>
+      <a class="btn-primary" href="#"><span data-c="game.harder"></span><small data-c="game.harder.sub"></small></a>
+    </div>
+  </section>
+</main>
+</body>
+</html>

@@ -1,0 +1,51 @@
+{
+ "date": "2026-10-10",
+ "method": "lamp3 (v3 a): ONE mouth model sheet. Every speech key keeps its own painted LIPS, but the inside of its opening is\nreplaced by a single shared interior (teeth, tongue, shadow) taken from one master key, so consecutive mouths can\ndiffer only in the lip contour (J1-Jfinal: \"the teeth / mouth interior change between consecutive frames\").\n  opening   per key: seeds = teeth (a* < 21, L* > 55) or dark interior (L* < 38) inside the mouth ellipse; a vertical\n            closing bridges the tongue (lip-coloured, so colour alone cannot find it); holes filled; the largest\n            component; eroded 1 px so the lips' painted inner edge stays the key's own.\n  interior  the master key's opening content, edge-extended outward (nearest interior pixel) so it covers any key's\n            opening; per key it is shifted vertically so the master's upper-lip line meets that key's (teeth hang from\n            the upper lip), and blended in with a 1.5 px feather.\n  openness  each key's real drawn opening (mean opening height over the central 40 px, rig px) -> geom.json, for the\n            lip-sync estimator (the drawn mouth, not a table).\n    python3 -I interior.py <master-key> [--show]     (rewrites rs/k-<key>.png for the speech keys; originals kept in rs-v2/)",
+ "master": "aa",
+ "keys": {
+  "aa": {
+   "opening_px": 3157,
+   "opening_height_px": 26.0,
+   "top_line_shift_px": 0
+  },
+  "eh": {
+   "opening_px": 2078,
+   "opening_height_px": 18.85,
+   "top_line_shift_px": 3
+  },
+  "oh": {
+   "opening_px": 2002,
+   "opening_height_px": 20.39,
+   "top_line_shift_px": 1
+  },
+  "ee": {
+   "opening_px": 1162,
+   "opening_height_px": 7.71,
+   "top_line_shift_px": 0
+  },
+  "ltd": {
+   "opening_px": 1538,
+   "opening_height_px": 9.8,
+   "top_line_shift_px": -1
+  },
+  "fv": {
+   "opening_px": 1150,
+   "opening_height_px": 9.8,
+   "top_line_shift_px": -1
+  },
+  "oo": {
+   "opening_px": 146,
+   "opening_height_px": 3.41,
+   "top_line_shift_px": 8
+  }
+ },
+ "openness": {
+  "aa": 1.0,
+  "eh": 0.725,
+  "oh": 0.784,
+  "ee": 0.297,
+  "ltd": 0.377,
+  "fv": 0.377,
+  "oo": 0.131
+ }
+}

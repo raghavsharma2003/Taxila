@@ -1,0 +1,56 @@
+[
+  {
+    "id": "gen-c5-maths-ch02-t01-bffb1ecd",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.waves[1].sub",
+        "detail": "Sub \"4 equal gaps mein pehla mark\" says the wave is about the first mark, but the wave's items are \"1/4\", \"2/4\", \"3/4\", \"1/4\": 2/4 and 3/4 are the second and third marks, so the label is wrong for half the wave."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[0].title / sub",
+        "detail": "Title \"Aadha raasta\" and sub \"Do equal gaps ka middle mark\" tell the child where every item of the wave (\"1/2\") goes before she catches it."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[1].sub",
+        "detail": "\"4 equal gaps mein pehla mark\" states the place of \"1/4\" (the first mark), which the wave asks the child to find."
+      }
+    ],
+    "readable": { "p412": true, "l1366": true },
+    "notes": "Every fraction is placed on a line whose gap count equals its denominator (2, 4, 5, 3), so a child who counts marks instead of gaps would misplace items and see why; the faults are the wave labels. Both screens are legible with nothing cut off; coach text \"Dock ko drag karke mark pakdo\" is dim grey but readable."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t02-14fe3de9",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "spec.waves[2].title",
+        "detail": "Title \"Half mark\" on a 2-gap line whose only items are \"1/2\" names the spot where the child must catch 1/2."
+      }
+    ],
+    "readable": { "p412": true, "l1366": true },
+    "notes": "Catching unit fractions one at a time on one 0-1 line puts 1/8 near 0 and 1/2 far from it, so a child who thinks 1/8 > 1/4 sees the belief fail; on topic. Waves 1 and 2 place fractions that do not sit on the drawn marks (\"1/6\", \"1/3\" on an 8-gap line; \"1/8\", \"1/4\" on a 6-gap line), which may confuse a class-5 child, and \"precision\": \"safai\" (cleanliness) is an odd word, but I do not count either as a fault."
+  },
+  {
+    "id": "gen-c6-maths-ch06-t01-254ee040",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screenshot",
+        "detail": "The coach text \"Grid par khet banao\" is drawn over the top row of grid cells, and the goal pill \"Daud 1/4 kshetrafal 40 varg ikai\" butts against the bottom of the \"KSHETRAFAL — / GHERA — / DAUD 1/4\" pills: overlapping elements."
+      }
+    ],
+    "readable": { "p412": true, "l1366": false },
+    "notes": "All targets can be built on the 15x10 grid (area 40 as 8x5; perimeters 26, 20 and 38 as 8x5, 5x5 and 12x7) and match the topic keys. Building area 40 and then a different shape with perimeter 26 shows a child who multiplies for perimeter where she goes wrong. The labels are plain class-6 Hindi in Roman script (\"kshetrafal\", \"ghera\", \"varg ikai\"); \"Daud\" for round is unusual but understandable."
+  }
+]

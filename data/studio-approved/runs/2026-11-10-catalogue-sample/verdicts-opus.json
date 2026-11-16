@@ -1,0 +1,186 @@
+[
+  {
+    "id": "cat-c4-english-ch05-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 6, "kind": "unreadable", "where": "coach line, all three sizes", "detail": "Coach text \"Tap a wagon before the train reaches the fork\" is cut off on screen as \"Tap a wagon before the train reaches t…\" at p360, p412 and l1366, so the child never sees the full instruction." },
+      { "item": 6, "kind": "unreadable", "where": "l1366, wagon 1", "detail": "\"Dhruv remembers a spring\" fills the wagon edge to edge; the top and bottom lines touch the card border." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "Story facts and sequence agree with the keys (pond dries, monkey shakes berries, elephant brings water, Dhruv shows the spring). The rounds' 'targets' name the a/an and plural mix-ups, but no round practises them; topic.mixup is null, so this is not counted."
+  },
+  {
+    "id": "cat-c4-maths-ch04-t03",
+    "verdict": "fail",
+    "faults": [
+      { "item": 2, "kind": "off_topic", "where": "spec.rounds[0] \"Build the bill\" / \"Use an exact amount\"; rounds[1] \"Give back change\"", "detail": "The topic is rounding to the nearest 10/100/1000 (cards: \"Round 47 to the nearest 10\", \"Round 6730 to the nearest 1000\"). The piece grades exact payment and exact change with notes and coins (\"Pencils 4 × ₹1.50\"); no step asks the child to round, despite the sub \"Round first to estimate\"." },
+      { "item": 6, "kind": "unreadable", "where": "p360 stat bar and coach", "detail": "\"PATIENCE 9…\" pill is cut off at the right edge, and coach \"Tap notes and coins to put them on the counter\" shows as \"Tap notes and coins to put…\"." },
+      { "item": 6, "kind": "unreadable", "where": "p412 coach", "detail": "Coach shows as \"Tap notes and coins to put…\"." },
+      { "item": 6, "kind": "unreadable", "where": "l1366 prompt pill over coach", "detail": "The \"Round 1 Bill\" pill sits on top of the coach line, leaving \"Tap note[…] to put…\" with the middle hidden." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "Prices read as paise (150 → ₹1.50) and are internally consistent; the fault is the topic, not the arithmetic."
+  },
+  {
+    "id": "cat-c5-evs-ch10-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 2, "kind": "off_topic", "where": "spec.archetype food-web; species grass/insects/deer/frog/snake/tiger; strings.arrows \"Drag from the food to the one that eats it\"", "detail": "The topic is about the shared Earth: pollution spreading across places and borders not stopping air, water or animals (cards on food colour spreading in water, the downstream village, Amur falcons crossing countries). The piece is a forest food chain and removal game, which does not practise that idea." },
+      { "item": 6, "kind": "unreadable", "where": "l1366 prompt pill", "detail": "The \"Step 1/4 Drag from the food to the one that eats it\" pill overlaps the top of the \"Snakes\" node circle." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": false },
+    "notes": "The food-web content itself (grass → insects → frog → snake; grass → deer → tiger) is sound; it is aimed at the wrong topic."
+  },
+  {
+    "id": "cat-c5-hindi-ch02-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 4, "kind": "register", "where": "spec.strings.coach / screen bottom line, all sizes", "detail": "\"फाँक पर पहुँचने से पहले डिब्बा चुनो\": फाँक means a slice or a crack, not a railway fork (दोराहा/कांटा/मोड़). A class 5 child cannot tell what to do before. The c6 Hindi piece uses \"मोड़ से पहले\"." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "Story facts agree with the keys: the goat is untied, goes to Hariya's yard and its kid, Bhola bows his head, Dadi judges. The cause pairs \"दादी ने रस्सी खुलवाई → बकरी अपने घर गई\" and \"बकरी हरिया के आँगन गई → सच का पता चला\" are a little interchangeable, but I do not count that as a fault."
+  },
+  {
+    "id": "cat-c5-hindi-ch04-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 4, "kind": "register", "where": "spec.strings.coach / screen bottom line, all sizes", "detail": "\"फाँक तक पहुँचने से पहले डिब्बा चुनो\": फाँक (slice/crack) is the wrong word for the rail fork, so the instruction makes no sense to a class 5 child." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "Festival content agrees with the keys (Buddha idols bathed on the first day; splashing water washes away the old year). The keys cannot confirm \"तीन दिन\", so I do not count it."
+  },
+  {
+    "id": "cat-c5-maths-ch02-t02",
+    "verdict": "fail",
+    "faults": [
+      { "item": 6, "kind": "unreadable", "where": "number line feedback over coach, all three sizes", "detail": "The orange feedback \"off by ~1/10\" is drawn on top of the coach \"Drag the dock to the fraction\", so both lines show as garbled \"ofDraby the~1/10ock to the fraction\" at p360, p412 and l1366." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "Fractions and line ranges are correct, and the piece is on topic (placing 1/8 vs 1/4 aims at the bigger-denominator mix-up). The first screen also shows a leftover 1/4 marker and feedback before the child has acted, so I cannot check whether \"~1/10\" is the right gap."
+  },
+  {
+    "id": "cat-c5-maths-ch14-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 6, "kind": "unreadable", "where": "compass buttons, all three sizes", "detail": "The labels \"north\", \"west\", \"east\", \"south\" are wider than their circles; the circle outlines cut through the letters and \"west\"/\"east\" almost touch each other (worst at p360)." },
+      { "item": 6, "kind": "unreadable", "where": "map, all sizes", "detail": "The \"Neem\" place label sits over the blue blocked cell next to it." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "Spec is correct and on topic (compass-direction routing, then turn-based steering for left/right). The text is still legible; it fails only because of the overlaps."
+  },
+  {
+    "id": "cat-c6-english-ch16-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 1, "kind": "wrong_fact", "where": "spec.rounds[1].pairs[2].cause", "detail": "\"The poem glows in silence\" is wrong: it is the eternal flame that glows (cards: \"Which word in the poem rhymes with 'glows'?\"; the 'who' round has the line \"The flame glows in silence\"). A poem does not glow." },
+      { "item": 6, "kind": "unreadable", "where": "coach line, all three sizes", "detail": "\"Tap a wagon before the train reaches the fork\" is cut off as \"Tap a wagon before the train reaches t…\"." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "The 'who' round invents a \"Visitor\" speaker. Lines like \"We remember their courage\" could equally be the poet's, but I cannot check the poem text, so I do not count it as a fault."
+  },
+  {
+    "id": "cat-c6-hindi-ch13-t01",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "The seed → sprout → tree → flowers/fruit order matches the key \"ख, ग, घ, क\", and the root/stem reasons match the keys. The coach \"मोड़ से पहले एक डिब्बा चुनो\" is clear and the screen is clean at every size."
+  },
+  {
+    "id": "cat-c6-maths-ch05-t02",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "The rules (prime in 1-20 including 1, composite, primes in 10-100) suit the topic and its mix-ups, and the visible items 11, 13 and 17 are primes. At l1366 a falling hexagon briefly grazes the prompt pill, which is acceptable for a moving item."
+  },
+  {
+    "id": "cat-c6-science-ch01-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 4, "kind": "register", "where": "prompt on screen, all sizes (strings.predict + outcome)", "detail": "\"Tap every setup that will show it: sets\" is ungrammatical template text; a class 6 child cannot easily read it as \"Tap every bowl where the curd will set\". The setup label \"none\" (for no starter curd) is also unclear." },
+      { "item": 6, "kind": "unreadable", "where": "p360 stat bar", "detail": "The third pill is cut off at the right edge, showing \"DAY 0\" with the rest hidden." }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "The curd fair-test idea is on topic. I cannot tell from the spec whether the engine treats \"+ curd / cold\" as setting or not setting (in reality it sets, just more slowly), so I do not count it."
+  },
+  {
+    "id": "cat-c6-science-ch02-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 3, "kind": "gives_answer", "where": "spec.rounds[2].items", "detail": "Item labels contain their own bin: \"Guava tree\" (bin Tree) and \"Rose bush\" (bush = shrub, bin Shrub). \"Woody hibiscus\" and \"Soft mint\" also give the stem clue that decides the answer instead of asking the child to test it." },
+      { "item": 6, "kind": "unreadable", "where": "l1366 prompt pill over coach", "detail": "The \"Round 1 Test the stem, then sort\" pill covers a second copy of the coach, leaving stray \"Te\" … \"t\" fragments on both sides." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": false },
+    "notes": "The sorting keys are correct (mint, wheat, coriander and tall banana are herbs; rose, hibiscus and jasmine are shrubs; mango, neem and the young mango are trees). The coach says \"Test the stem\" but spec.tools is empty, so it is unclear how the child tests anything."
+  },
+  {
+    "id": "cat-c6-science-ch04-t02",
+    "verdict": "fail",
+    "faults": [
+      { "item": 6, "kind": "unreadable", "where": "action button, all three sizes", "detail": "The main button label \"RELEASE\" is cut off as \"RELE…\" at p360, p412 and l1366." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "The pole-placement rounds (roll left/right/stay centre, label the mystery bar) practise attraction and repulsion correctly. The prompt \"roll to the left\" does not say what to do, but the left/right slots make it workable."
+  },
+  {
+    "id": "cat-c6-science-ch05-t03",
+    "verdict": "fail",
+    "faults": [
+      { "item": 6, "kind": "unreadable", "where": "l1366 prompt pill over coach", "detail": "The \"Round 1 Watch the path, then sort\" pill covers a second copy of the coach, leaving stray \"Wa\" … \"t\" fragments." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": false },
+    "notes": "Most keys match the cards (train linear, giant wheel circular, swing oscillatory). \"Bicycle axle\" → Linear and \"Child on slide\" → Linear are arguable (the axle also turns; a slide can be curved), but I cannot settle them from the keys, so I do not count them."
+  },
+  {
+    "id": "cat-c6-science-ch11-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 1, "kind": "wrong_key", "where": "spec.rounds[1].items soil-wash", "detail": "\"Soil washed away\" is graded into the bin \"Other use\". Soil erosion is what happens when forests are cut (card: \"Rain will wash the soil away… because there are no roots\"); it is not a use of anything, so the key is wrong whichever bin it goes in." },
+      { "item": 6, "kind": "unreadable", "where": "l1366 prompt pill over coach", "detail": "The \"Round 1 Test it, then sort it\" pill covers a second copy of the coach, leaving stray \"Te\" … \"t\" fragments." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": false },
+    "notes": "Round 1 (nature vs made by people) is correct. The coach \"Test it, then sort it\" has no test tool (tools: [])."
+  },
+  {
+    "id": "cat-c6-sst-ch09-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 1, "kind": "wrong_key", "where": "spec.rounds[0] cause pairs (screen: cause \"Everyone uses the home\" with options \"No one does everything\", \"Everyone helps with chores\", \"The child shares a task\")", "detail": "All three effects on screen follow reasonably from \"Everyone uses the home\" (and from \"Tasks are shared fairly\"), but only \"Everyone helps with chores\" is graded right, so a child with the correct idea is marked wrong. In the 'who' round, \"We can share drinking water.\" (graded Neighbour) could equally be the Volunteer's line." },
+      { "item": 6, "kind": "unreadable", "where": "coach line, all three sizes", "detail": "\"Tap a wagon before the train reaches the fork\" is cut off as \"Tap a wagon before the train reaches t…\"." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "On topic (sharing housework, community support). The fault is pairs that are not distinct enough to grade one answer as the only right one."
+  },
+  {
+    "id": "cat-c7-maths-ch11-t03",
+    "verdict": "fail",
+    "faults": [
+      { "item": 2, "kind": "off_topic", "where": "spec.rounds rules \"common\" (4,6), \"cfactor\" (12,18), \"common\" (8,15)", "detail": "The topic is the relation HCF × LCM = product of two numbers (cards: \"Check that HCF × LCM = 12 × 18\", \"HCF is 4 and product is 96. Find their LCM\"). The piece only has the child swipe common multiples and common factors; it never uses or tests the HCF × LCM relation." }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "The visible items are correct (24 is a common multiple of 4 and 6; 40 and 52 are not). Round 3 asks for common multiples of 8 and 15 in 2-120, where only 120 qualifies, yet hitRate is 0.35. I cannot tell how the engine handles that."
+  },
+  {
+    "id": "cat-c7-maths-ch14-t01",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "Equidistant pins (perpendicular bisector) and 60°/30°/45° angles are constructible and on topic. The first screen shows no compass or straightedge tool despite the coach \"Use only the compass and straightedge\", and at p360 the TIME bar is clipped though its text is readable. I cannot confirm the angle round avoids protractor-style dragging."
+  },
+  {
+    "id": "cat-c7-science-ch10-t02",
+    "verdict": "pass",
+    "faults": [],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "The stomata open/close leaf lab practises gas exchange and water loss as the topic asks. The \"CO₂ ↑\" label beside the stem could be read as CO₂ travelling up the stem, but it may just show a level rising; I cannot tell, so I do not count it."
+  },
+  {
+    "id": "cat-c7-sst-ch18-t01",
+    "verdict": "fail",
+    "faults": [
+      { "item": 2, "kind": "off_topic", "where": "spec.rounds modes barter / market / savings / council", "detail": "The topic is the state vs the government, the organs and the three levels of government (cards: \"four features of a state\", \"Legislature; Executive; Judiciary\", \"Union, State, local\"). The piece is barter (\"Weaver has cloth wants rice\"), stall pricing, saving with interest and a ward budget, which is economics; only the ward budget touches local government, and it does not test which level does what." },
+      { "item": 6, "kind": "unreadable", "where": "\"start again\" button, all three sizes", "detail": "The two-line label \"start again\" spills out of its button; the border runs through the text, worst at l1366." }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "The barter chain is solvable (rice → cloth → salt → pot), and the economics content looks internally correct, but it belongs to a different topic."
+  }
+]

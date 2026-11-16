@@ -18,13 +18,15 @@ export interface Lesson {
   id?: string;
 }
 
-export type DisabledReason = "clash" | "past" | "outside_hours" | "day_off";
+export type DisabledReason = "clash" | "past" | "outside_hours" | "day_off" | "before_start" | "too_long";
 
 export const REASON_TEXT: Record<DisabledReason, string> = {
   clash: "Already has a lesson",
   past: "Already past",
   outside_hours: "Outside lesson hours",
   day_off: "Day off",
+  before_start: "Before the first day",
+  too_long: "Longer than the limit",
 };
 
 export const DAY_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
@@ -278,4 +280,54 @@ export function nextIndex(key: string, from: number, disabled: boolean[], cols =
     case "End": return lastOk;
     default: return null;
   }
+}
+
+// ---------- clock values ("HH:MM") and date ranges (round 7 F item 3: no native pickers in set-up or the corner) ----------
+
+/** "18:30" → 1110; null for anything else. */
+export function hhmmToMin(s: string | null | undefined): number | null {
+  const m = /^([01]\d|2[0-3]):([0-5]\d)$/.exec(String(s ?? ""));
+  return m ? Number(m[1]) * 60 + Number(m[2]) : null;
+}
+
+/** 1110 → "18:30" (clamped to the day). */
+export function minToHhmm(min: number): string {
+  const m = Math.max(0, Math.min(23 * 60 + 59, Math.round(min)));
+  return `${String(Math.floor(m / 60)).padStart(2, "0")}:${String(m % 60).padStart(2, "0")}`;
+}
+
+/** Lesson hours: the rail ranges for "From" and "Until", and the rule that Until is at least an hour after From. */
+export const HOURS_FROM: RailRange = { from: 5 * 60, until: 14 * 60 + 15, step: 15 };
+export const HOURS_UNTIL: RailRange = { from: 12 * 60, until: 24 * 60, step: 15 };
+export const HOURS_MIN_SPAN = 60;
+
+/** Keep a lesson-hours pair valid after one end moved: the other end moves to keep HOURS_MIN_SPAN between them. */
+export function fixHours(start: number, end: number, moved: "start" | "end"): { start: number; end: number } {
+  if (end - start >= HOURS_MIN_SPAN) return { start, end };
+  return moved === "start" ? { start, end: Math.min(HOURS_UNTIL.until - HOURS_UNTIL.step, start + HOURS_MIN_SPAN) } : { start: Math.max(HOURS_FROM.from, end - HOURS_MIN_SPAN), end };
+}
+
+export interface RangeInput {
+  today: Iso;
+  /** Days shown on each strip (default 28). */
+  days?: number;
+  /** The chosen first day (the "to" strip disables days before it and past maxSpanDays after it). */
+  from: Iso | null;
+  /** Longest range in days, counted from `from` (default 21: a school test window). */
+  maxSpanDays?: number;
+}
+
+/** The "from" strip of a date range: every day from today. */
+export function rangeFromStrip(inp: RangeInput): StripDay[] {
+  return dateStrip({ today: inp.today, days: inp.days ?? 28, lessons: [] });
+}
+
+/** The "to" strip: days before `from` are disabled (before_start), and days more than maxSpanDays after it (too_long). */
+export function rangeToStrip(inp: RangeInput): StripDay[] {
+  const span = inp.maxSpanDays ?? 21;
+  const from = inp.from ?? inp.today;
+  return dateStrip({ today: inp.today, days: inp.days ?? 28, lessons: [] }).map((d) => {
+    const reason: DisabledReason | undefined = d.iso < from ? "before_start" : d.iso > addDays(from, span) ? "too_long" : undefined;
+    return reason ? { ...d, disabled: true, reason, aria: `${d.aria}, ${REASON_TEXT[reason].toLowerCase()}` } : d;
+  });
 }

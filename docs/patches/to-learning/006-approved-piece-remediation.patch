@@ -1,0 +1,65 @@
+From: Studio (C1), 2026-11-10 — the approval lane (STUDIO-11; main's go; dc-r8-selection-before-generation layer 3)
+Subject: the four pilots' remediation for one named mix-up each is marked `piece`
+
+Which beat: the remediation that fires for the mix-up the pilot's approved generated piece is aimed at (server/studio/
+approved.js PILOT_TARGETS), first remediation entry targeting it. With Brain's to-brain/022, that remediation asks Studio for
+the approved piece; with no approved piece, or one the tray gate refuses at the child's size, the script's own board is
+drawn exactly as now. Which line: her remediation `say` stands as written — it already explains the mix-up; Studio's facts row
+for the piece lets her point at it. If you want an authored pointing line, add `"pieceSay": { "hi": …, "en": … }` beside
+`piece`; Brain would carry it (not in 022).
+
+  c4-maths-ch05-t01  skills[0].remediation[0]  m-unequal-parts
+  c5-maths-ch02-t01  skills[0].remediation[0]  m-count-marks
+  c5-maths-ch02-t02  skills[0].remediation[0]  m-bigger-denominator
+  c6-maths-ch06-t01  skills[0].remediation[1]  m-area-perimeter
+
+Apply with `git apply` on the Learning branch.
+
+diff --git a/data/lesson-scripts/c4-maths-ch05-t01.json b/data/lesson-scripts/c4-maths-ch05-t01.json
+index fe41ec921..e779e95b7 100644
+--- a/data/lesson-scripts/c4-maths-ch05-t01.json
++++ b/data/lesson-scripts/c4-maths-ch05-t01.json
+@@ -347,6 +347,7 @@
+    "remediation": [
+     {
+      "targets": "c4-maths-ch05-t01-m-unequal-parts",
++     "piece": true,
+      "move": "fair-sharing story, imagined: one watermelon cut as 1 big slice + 2 small → fair? no → no slice has a fraction name; then a sheet of paper folded into 8 same-size parts → each part is 1/8 → only same-size parts carry a fraction name; then the torn roti on the board",
+      "say": { "hi": "Ek tarbooz socho: 1 bada tukda, 2 chhote tukde. Yeh baant barabar nahi, isliye kisi tukde ka fraction naam nahi banta. Ab socho, ek kaagaz ko mod kar 8 barabar hisse banaye: har hissa 1/8 hai.", "en": "Think of a watermelon: 1 big piece, 2 small pieces. That's not a fair split, so no piece gets a fraction name. Now imagine folding a sheet of paper into 8 equal parts: each part is 1/8." },
+      "simpler": { "hi": "Tukde ek size ke hon, tabhi naam milta hai, jaise kaagaz ka 1/8. Chhote-bade tukdon ka koi naam nahi.", "en": "Pieces get a name only when they are the same size, like the paper's 1/8. Big-and-small pieces get no name." },
+diff --git a/data/lesson-scripts/c5-maths-ch02-t01.json b/data/lesson-scripts/c5-maths-ch02-t01.json
+index 884ce58eb..9e575ef01 100644
+--- a/data/lesson-scripts/c5-maths-ch02-t01.json
++++ b/data/lesson-scripts/c5-maths-ch02-t01.json
+@@ -373,6 +373,7 @@
+    "remediation": [
+     {
+      "targets": "c5-maths-ch02-t01-m-count-marks",
++     "piece": true,
+      "move": "ribbon at a tailor's shop, 0 to 1 m, one line cut in 6 on top and 12 below; marks = chalk marks (nishaan), gaps = ribbon pieces; marks inside + 1 = pieces; a mark's name comes from counting pieces, not marks; top: 5 marks → 6 pieces → first mark at 1/6 m; then below: 11 marks → 12 pieces → 1/12 m (the trap says 1/11)",
+      "say": { "hi": "Darzi ka ribbon socho, 0 se 1 metre. Upar 5 chalk ke nishaan hain, aur ribbon ke 6 barabar tukde. Pehla nishaan pehle tukde ke end par hai, isliye uska naam 1/6 metre. Naam tukde ginkar milta hai, nishaan ginkar nahi.", "en": "Picture a tailor's ribbon, 0 to 1 metre. On top there are 5 chalk marks, and the ribbon is in 6 equal pieces. The first mark ends the first piece, so its name is 1/6 metre. The name comes from counting pieces, not marks." },
+      "simpler": { "hi": "5 nishaan, 6 tukde. Tukde gino, toh pehla nishaan 1/6 metre par hai.", "en": "5 marks, 6 pieces. Count the pieces, and the first mark is at 1/6 metre." },
+diff --git a/data/lesson-scripts/c5-maths-ch02-t02.json b/data/lesson-scripts/c5-maths-ch02-t02.json
+index 38f0ae10c..356df5974 100644
+--- a/data/lesson-scripts/c5-maths-ch02-t02.json
++++ b/data/lesson-scripts/c5-maths-ch02-t02.json
+@@ -174,6 +174,7 @@
+    "remediation": [
+     {
+      "targets": "c5-maths-ch02-t02-m-bigger-denominator",
++     "piece": true,
+      "move": "one 0-to-1 line, sixths above and twelfths below: 1/12 stops right by 0 while 1/2 sits mid-line → more cuts of the same whole, smaller part; 12 > 2 but 1/12 < 1/2",
+      "say": { "hi": "Rekha dekho, 0 se 1 tak. Neeche ise 12 barabar hisson mein kaata hai. 12 bada number hai, par uska ek hissa, 1/12, zero ke bilkul paas ruk jaata hai, jabki 1/2 rekha ke beech mein hai. Hisse jitne zyada, har tukda utna chhota.", "en": "Look at the line, 0 to 1. The bottom is cut into 12 equal parts. 12 is the bigger number, but its one part, 1/12, stops right by zero, while 1/2 is mid-line. The more parts, the smaller each piece." },
+      "simpler": { "hi": "Ek roti socho: 12 log baantein toh har kisi ko chhota sa tukda, do log baantein toh aadhi-aadhi.", "en": "Think of one roti: shared by 12, everyone gets a tiny bit; shared by two, it's half each." },
+diff --git a/data/lesson-scripts/c6-maths-ch06-t01.json b/data/lesson-scripts/c6-maths-ch06-t01.json
+index 39e94a093..26e0e93cb 100644
+--- a/data/lesson-scripts/c6-maths-ch06-t01.json
++++ b/data/lesson-scripts/c6-maths-ch06-t01.json
+@@ -189,6 +189,7 @@
+     },
+     {
+      "targets": "c6-maths-ch06-t01-m-area-perimeter",
++     "piece": true,
+      "move": "thread vs tiles on the same rectangle: thread laid along the edge, then straightened against a ruler = perimeter (cm); tiles laid inside = area; a perimeter question → thread, so add the edge lengths one by one, never multiply them",
+      "say": { "hi": "Yeh rectangle 14 cm lamba, 9 cm chauda hai. Kinaare par dhaaga lapeto, phir kholke scale par rakho: woh lambai parimap hai, cm mein. Andar tiles bichhao toh woh area hai. Parimap mein chaaron kinaare jodte hain, guna nahi.", "en": "This rectangle is 14 cm long and 9 cm wide. Wrap a thread round its edge, then lay it straight on a ruler: that length is the perimeter, in cm. Tiles inside are the area. For the perimeter we add the four edges, not multiply." },
+      "simpler": { "hi": "Dhaaga kinaare par, tiles andar. Humein dhaaga chahiye, toh bas chaaron kinaare jodo.", "en": "Thread on the edge, tiles inside. We want the thread, so just add the four edges." },

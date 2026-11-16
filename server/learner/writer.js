@@ -10,7 +10,7 @@ import { q, tx } from "../db.js";
 import { assertWritable, canWrite, classifyChildTable, isRatchetDown, legalModeOf, tablesForbiddenIn } from "./mode.js";
 import { dropReason } from "./kt/bktr.js";
 import { ENGINE_VERSION, currentTheta } from "./kt/ability.js";
-import { foldOrder } from "./kt/ledger.js";
+import { foldOrder, PARAMS_VERSION } from "./kt/ledger.js";
 // W2 seam commit (BUILD-PLAN §4): the Relational OS writers (W2-I) are reached through this module too, so a learner or
 // relational write has one import point. A name defined here shadows a same-named relational export (ESM rule).
 export * from "../relational/writers.js";
@@ -156,7 +156,7 @@ export function ktEvidenceStmt(child, ev) {
   [ev.id, c.id, ev.sessionId, ev.sessionStartAt ?? ev.at, ev.episodeId, ev.at ?? ev.sessionStartAt, ev.skillIds, ev.teach ? "teach" : ev.cls, ev.teach ? -1 : ev.outcome,
     ev.grader ?? "code", ev.graderVersion ?? "v0", ev.itemKey ?? "", !!ev.teach, ev.assisted ?? null, !!ev.controllerEasy, !!ev.gamingWindowKt,
     !!ev.preAttemptHelp, ev.form ?? null, ev.target ?? null, ev.topicType ?? null, ev.misconceptionId ?? null, ev.discriminates ?? null,
-    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? "kt-r2-2026-10-07", legalModeOf(c),
+    ev.misRoute ?? null, ev.entryRung ?? 0, !!ev.contaminated, ev.kitVerified ?? null, ev.paramsVersion ?? PARAMS_VERSION, legalModeOf(c),
     // CE contract fields (007_comprehension.sql): the facet fold reads them on replay, so they are the log too.
     ev.via ?? null, ev.ebo ?? null, ev.shapeId ?? null, ev.weaveHost ?? null, !!ev.coincident, !!ev.unfamiliarContext, !!ev.deferenceDiscount,
     typeof ev.spanOk === "boolean" ? ev.spanOk : null]);
@@ -251,6 +251,25 @@ export function ledgerStmts(child, before, after, events, { currentTheta: thetaO
 }
 
 /** The serialising lock for one child's learner writes (LEARNER-MODEL §5: order by seq under the lock). */
+/**
+ * Aborts the transaction (1/0) unless the child's kt_evidence still ends at `maxSeq`: a writer outside the turn (placement
+ * prior, late correction) folds before it takes the lock, so a turn that committed in between would be folded over and
+ * its cached fold go stale. On the abort the writer reloads and folds again (audit LEARN-26).
+ */
+export const seqGuardStmt = (childId, maxSeq) => stmt("session",
+  "select 1 / (case when coalesce((select max(seq) from kt_evidence where child_id = $1), 0) = $2 then 1 else 0 end) as ok", [String(childId), Number(maxSeq) || 0]);
+/**
+ * The 001 skill_state projection of every skill a fold changed (the turn writes the same, brain/turn.js). Writers outside
+ * the turn left it out, so their evidence never reached skill_state, which topic choice reads (audit LEARN-26).
+ * @param {(sk: any, now: number) => any} project live.js legacySkillState (passed in: live.js imports this module)
+ */
+export function projectionStmts(child, before, after, now, project) {
+  const changed = Object.keys(after.skills).filter((id) => JSON.stringify(before.skills[id]) !== JSON.stringify(after.skills[id])).sort();
+  return changed.map((id) => skillStateStmt(child.id, project(after.skills[id], now), child));
+}
+/** How many times a writer outside the turn reloads and folds again when its seq guard fails. */
+export const FOLD_RETRIES = 3;
+
 export const lockStmt = (childId) => stmt("session", "select pg_advisory_xact_lock(hashtext($1)) is null as locked", [String(childId)]);
 
 /**

@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-react-think-from-speech-end",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Behind TAXILA_R7_FACE_REACT (off by default; ?react=1/0 per device): the lesson floor's heard maps to the face's THINKING, so her thinking face starts when the child stops talking, not when the transcript lands, and entering thinking takes one breath (off under reduced motion and in a safety turn, cut at her first audio). Verdict-blind, proven by AT-F12; the verdict-colour ask was dropped (main, option a: design-v2-face-verdict-neutral stands)."
+  },
+  {
+   "id": "ms-r7-face-react-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Face-reacts on vs off (react-turns.mjs, real desk runtime, SwiftShader, 2 child turns per run; x1 n=2, x4/x6 n=6 turns per arm): face thinking after the child stops 14/93/132 ms vs 429/514/594 ms; thinking covers 100% of the gap vs ~80%; her first sound after the child stops +12/-54/-59 ms (no move); face speaking 66-77 ms after her first audio (vs 67-96); driver work p95 unchanged within noise."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-face-react-think-from-speech-end",
+   "rel": "measured_by",
+   "dst": "ms-r7-face-react-2026-11-05"
+  },
+  {
+   "src": "dc-r7-face-react-think-from-speech-end",
+   "rel": "constrains",
+   "dst": "design-v2-face-verdict-neutral"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-face-react-think-from-speech-end` (2026-11-05)\nMain's ask: the wait between the child's last word and her reply should read as listening and then thinking. Brain measured about 3 s from the child's last word to her reply, about 1.5 s of which cannot easily be removed.\n- **What already existed.** Without any change, the face already listens while the child talks: the listening state for the whole utterance, eye contact (gaze yaw range about 3°), small nods (the mic-level Listener), a tilt, blinks at the listening rate, and a held parted-lips pose (jaw 0.13, still, not speech). It already thinks once the floor reads thinking: expressions released within 300 ms, then a cognitive look-away (gaze pitch swings about 25°) and the K1 receipt nod.\n- **The gap.** The lesson floor reads `heard` from the end of the child's speech until the transcript lands, about 0.4 s in the scripted lesson and often longer live. `faceStatusOf` mapped `heard` to listening. So for the first ~20% of every wait her face still held the listening face, parted lips included.\n- **Now, behind `TAXILA_R7_FACE_REACT`** (server env, exactly `1`, sent as `react` on GET /api/face/config; `?react=1` / `?react=0` set it per device; off by default):\n  - `heard` maps to thinking (`src/ui/teacher/floor.ts`, moved out of `Teacher.tsx` so it is unit-testable). Thinking now starts within 1-2 frames of the end of the child's speech.\n  - Entering thinking takes one breath (`driver.ts` `THINK_INHALE`: +0.9 of the idle breath's amplitude over 1.4 s, a raised sine). It never runs under reduced motion or in a safety turn, and it is cut at her first audio frame.\n  - Weak phones on the lite path have no live stage, so none of this runs there.\n- **Verdict-blind, and proven.** Nothing in the face path reads an answer. `tests/r7-face-verdict-blind.test.mjs` (AT-F12, the face-side sibling of AT-U12) shows three things. First, the face is a pure function of its inputs: two drivers fed the same listen → heard → thinking → reply sequence draw byte-identical frames (pose, timing, magnitude, breath), with the flag on and off. Second, no input carries the answer: the driver's input is {nowMs, tap, status, childLevel}, the floor mapping takes the floor and the flag only, and no face-path module names a verdict in code. Third, on the real runtime the script's \"correct\" and \"not yet\" turns think alike. Main's third item, a verdict-coloured face, was **dropped** (main, option a, 2026-11-05). It contradicted `design-v2-face-verdict-neutral` and `design-v2-rejected-correctness-face`: it is a farmable social reward and leaks covert checks, and that decision's reversal condition (a pilot with ≥ 20% unsure) has not been met. The verdict stays on the work and in her words.\n- **Reversal condition.** A child pilot reads the early thinking face as \"she isn't listening any more\" (for example, the child starts again more often after a `heard`). In that case keep the flag off.\n",
+  "measurements": "## `ms-r7-face-react-2026-11-05` (2026-11-05)\n`evals/face-puppet/react-turns.mjs` → `docs/design/round7/face/react/`: `summary.json`, the per-run JSON with the per-frame face log, and recordings at 412 px (`react-on-412.webm`, `react-off-412.webm`). The page is the real lesson runtime on /dev/desk?live=1, with the scripted Director thinking 1.5 s (`?slow=1500`) and the live puppet. The harness uses SwiftShader and a 412×915 viewport. Each run has two child turns: the child talks for 1.6 s through the link's own talkStart / talkEnd, and the script's replies are \"correct\" then \"not yet\". Times are measured from the floor's own changes, not the harness's polling. There is 1 run per arm at ×1 and 3 runs per arm at CPU ×4 and ×6 (2 turns each).\n\n| | ×1 off / on | ×4 off / on | ×6 off / on |\n|---|---|---|---|\n| face thinking after the child stops (p50) | 429 / **14** ms | 514 / **93** ms | 594 / **132** ms |\n| share of the wait spent thinking | 0.80 / **1.00** | 0.82 / **1.00** | 0.82 / **1.00** |\n| her first sound after the child stops (p50) | 2222 / 2234 ms | 2485 / 2431 ms | 2596 / 2537 ms |\n| face speaking after her first audio (p50) | 71 / 77 ms | 67 / 66 ms | 96 / 75 ms |\n| driver work p95 while thinking | 0.9 / 0.7 ms | 8.4 / 7.6 ms | 8.6 / 10.7 ms |\n| jaw while thinking (max) | 0.13 / 0 | 0.13 / 0 | 0.13 / 0 |\n\nHer first sound does not move: the differences are +12 / −54 / −59 ms, which is noise. Driver work is the whole frame's JS. It is inflated by the CPU throttle, and the on and off arms are within each other's noise. The 66-96 ms to the speaking face is the page's own main-thread work when the reply arrives: the face changes on its first drawn frame after her audio starts, so thinking never runs into her speech.\n"
+ }
+}

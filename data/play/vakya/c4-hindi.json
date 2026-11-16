@@ -1,0 +1,440 @@
+{
+ "v": 1,
+ "source": "data/kits/c4-hindi.json",
+ "items": [
+  {
+   "id": "c4-hindi-ch02-t01-rl-h4",
+   "topicId": "c4-hindi-ch02-t01",
+   "skillId": "c4-hindi-ch02-t01-s5",
+   "kind": "practice",
+   "difficulty": 4,
+   "lang": "hi",
+   "prompt": {
+    "en": "Change this sentence so it describes many leaves: “एक पत्ता पत्थर के पास गिरा।” Write the full changed sentence.",
+    "hi": "इस वाक्य को कई पत्तों के लिए बदलो: “एक पत्ता पत्थर के पास गिरा।” पूरा बदला हुआ वाक्य लिखो।"
+   },
+   "keyFrom": "answer",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "गिरा",
+      "गिरे"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "के"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "पत्ते",
+      "पत्ता"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "पास"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "पत्थर"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "कई"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "कई",
+     "पत्ते",
+     "पत्थर",
+     "के",
+     "पास",
+     "गिरे"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "8bd187c8"
+  },
+  {
+   "id": "c4-hindi-ch03-t01-rl-h2",
+   "topicId": "c4-hindi-ch03-t01",
+   "skillId": "c4-hindi-ch03-t01-s4",
+   "kind": "contrast",
+   "difficulty": 4,
+   "lang": "hi",
+   "prompt": {
+    "en": "At a plant sale, write the correct pair for ‘नीम का ___ पेड़ और उसकी ___ पत्तियाँ’। Choose from ‘बड़ा/बड़ी’ and ‘कड़वे/कड़वी’.",
+    "hi": "पौधों की बिक्री के लिए वाक्य पूरा करो: ‘नीम का ___ पेड़ और उसकी ___ पत्तियाँ।’ ‘बड़ा/बड़ी’ और ‘कड़वे/कड़वी’ में से सही शब्द चुनो।"
+   },
+   "keyFrom": "acceptable",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "कड़वी",
+      "कड़वे"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "और"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "बड़ा",
+      "बड़ी"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "पत्तियाँ"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "पेड़"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "बड़ा",
+     "पेड़",
+     "और",
+     "कड़वी",
+     "पत्तियाँ"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "fad32e3f"
+  },
+  {
+   "id": "c4-hindi-ch05-t01-i11",
+   "topicId": "c4-hindi-ch05-t01",
+   "skillId": "c4-hindi-ch05-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "hi",
+   "prompt": {
+    "en": "I said: ‘लोमड़ी बोला, भालू बोली।’ Fix both verbs.",
+    "hi": "मैंने कहा — ‘लोमड़ी बोला, भालू बोली।’ दोनों गड़बड़ ठीक करो।"
+   },
+   "keyFrom": "answer",
+   "engine": "लोमड़ी",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "बोला"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "भालू"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "बोली"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "लोमड़ी",
+     "बोली",
+     "भालू",
+     "बोला"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "word-order",
+     "train": [
+      "लोमड़ी",
+      "बोला",
+      "भालू",
+      "बोली"
+     ]
+    }
+   ],
+   "mis": "c4-hindi-ch05-t01-mc-animal-gender",
+   "malKit": "c4-hindi-ch05-t01-mc-animal-gender",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "057451b5"
+  },
+  {
+   "id": "c4-hindi-ch05-t01-rl-h3",
+   "topicId": "c4-hindi-ch05-t01",
+   "skillId": "c4-hindi-ch05-t01-s5",
+   "kind": "contrast",
+   "difficulty": 4,
+   "lang": "hi",
+   "prompt": {
+    "en": "Complete both lines with the matching verb forms: ‘नेहा मैदान में ___। अमन मैदान में ___।’ Choose from गई and गया.",
+    "hi": "क्रिया के सही रूप लगाकर दोनों वाक्य पूरे करो: ‘नेहा मैदान में ___। अमन मैदान में ___।’ विकल्प हैं—गई और गया।"
+   },
+   "keyFrom": "answer",
+   "engine": "नेहा",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "मैदान"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "अमन"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "में"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "मैदान"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "गई",
+      "गया"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "गया",
+      "गई"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "में"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "नेहा",
+     "मैदान",
+     "में",
+     "गई",
+     "अमन",
+     "मैदान",
+     "में",
+     "गया"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5a2f02ff"
+  },
+  {
+   "id": "c4-hindi-ch06-t01-i08",
+   "topicId": "c4-hindi-ch06-t01",
+   "skillId": "c4-hindi-ch06-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "hi",
+   "prompt": {
+    "en": "Amar ended with ‘आपका पुत्र’. If his sister Lata wrote to their father, what would she write?",
+    "hi": "अमर ने पत्र के आख़िर में ‘आपका पुत्र’ लिखा। अगर उसकी बहन लता पिताजी को पत्र लिखती, तो क्या लिखती?"
+   },
+   "keyFrom": "answer",
+   "engine": "आपकी",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "लता"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "पुत्री"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "आपकी",
+     "पुत्री",
+     "लता"
+    ]
+   ],
+   "mals": [],
+   "mis": "c4-hindi-ch06-t01-mc-closing-gender",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "8d46758c"
+  },
+  {
+   "id": "c4-hindi-ch09-t01-i09",
+   "topicId": "c4-hindi-ch09-t01",
+   "skillId": "c4-hindi-ch09-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "hi",
+   "prompt": {
+    "en": "I said: ‘रसगुल्ला बोली और बरफ़ी बहन रूठ गया।’ Fix both verbs.",
+    "hi": "मैंने कहा — ‘रसगुल्ला बोली और बरफ़ी बहन रूठ गया।’ दोनों क्रियाएँ ठीक करो।"
+   },
+   "keyFrom": "answer",
+   "engine": "रसगुल्ला",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "गया",
+      "गई"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "बहन"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "रूठ"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "बोली",
+      "बोला"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "बरफ़ी"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "और"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "रसगुल्ला",
+     "बोला",
+     "और",
+     "बरफ़ी",
+     "बहन",
+     "रूठ",
+     "गई"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "रसगुल्ला",
+      "बोली",
+      "और",
+      "बरफ़ी",
+      "बहन",
+      "रूठ",
+      "गया"
+     ]
+    }
+   ],
+   "mis": "c4-hindi-ch09-t01-mc-sweet-gender",
+   "malKit": "c4-hindi-ch09-t01-mc-sweet-gender",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "fa00f62f"
+  }
+ ]
+}

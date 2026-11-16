@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-ask-voice",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Ask has 'Say it' (Kaksha): the clip is recorded as the lesson's push-to-talk fallback records one and heard by Voice's POST /api/voice/transcribe with the child's id (no lesson yet; Voice to-voice/003); the words go into the field for the child to fix before Ask, never straight to a lesson. Hands-free (default) listens as Ask opens only when the mic is already allowed; Tap to talk and Type instead wait for the tap; a failure says to type instead. Reverse: Voice prefers a separate Ask route, or live tests show the auto-listen surprises children.",
+   "source": "inbox/r7-app-13.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-ask-voice`\nThis is a voice-first product, and Ask was the one child screen where the only way in was typing. Now a child can say the question, see what Asha heard, and fix a misheard word before asking. That matters because a misheard question would start a whole lesson on the wrong thing. There is no new recognizer: the same server ASR that hears the child in lessons hears them here. Nothing is stored on the device, and the clip is sent once.\n"
+ }
+}

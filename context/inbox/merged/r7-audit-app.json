@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "r7-audit-app-deletions",
+   "kind": "decision",
+   "title": "Round-7 app audit: the unrouted v3 shell, the child stubs, ensureFont, dead child helpers and unreferenced images and fonts were deleted",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "rj-app-static-text-tests",
+   "kind": "rejection",
+   "title": "Rejected: tests that match a source file's text to prove a UI fix (they passed while behaviour was broken: APP-01, 02, 04, 06). Where the logic can be pulled into a pure .ts module or measured in Chromium, test that",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## r7-audit-app-deletions\n**Round-7 app audit deleted code nothing reads (checked: importers incl. dynamic, tests, scripts, Dockerfiles, CI, docs that say to run them). Every path below is still in git at 5936744c (the commit before the deletion commit); `git show 5936744c:<path>`.**\n- src/ui-v3/V3Root.tsx, Stage.tsx, TeacherFace.tsx, TurnIndicator.tsx, Toast.tsx, toast.ts, floor.ts, motion.ts, flag.ts, index.ts, v3.css, Preview.tsx, screens/**, gallery/** (the unrouted v3 design-system shell; the ui.v3 flag never changed anything)\n- src/face-puppet/adapter.tsx (its only caller was V3Root); evals/face-puppet/bundle-size.mjs now measures src/face-puppet/PuppetFace.tsx instead\n- docs/design/reset/prework/rs1/shoot.mjs (drove the deleted gallery)\n- src/app/childStubs.tsx and .child-stub in src/styles/app.css; src/styles/parent.css (imported by nothing)\n- src/app/band.ts ensureFont and FONT_URL (fetched a Google Fonts stylesheet for a font no style used)\n- src/child/day.ts: markRefused, getChildPlan, markerPlan, requestLesson, ChildPlan, RequestAnswer; src/child/api.ts: getTutors, chooseTutor (offerOf stays); src/child/band.ts defaultReading; src/child/prefs.ts: world, mirror, picture, address; src/child/dev/harness.html and harness.tsx; src/child/lesson/deskLayout.ts geometryForTray; src/child/lesson/captions.ts captionMode, readingFor, CaptionMode; src/app/landing/Site.tsx SITE_TUTORS and TeacherPortrait\n- public/landing/*.webp (3), public/fonts/mukta-{400,600,700}-latin and -latin-ext (6) and mukta-700-devanagari, 15 files in public/brand (favicon-48.png and share-1200x630.png stay)\n- tests: tests/ui-v3-lint.test.mjs lost the S-FLOOR dead-file checks, P-TOAST and the floor-map test (the near-miss helpline-digit scan stays over the remaining tree); tests/r7-face-fallback.test.mjs lost the adapter test\n- Kept on purpose: the classic child skin (APP-44), the parked 3D head and Arjun, `offerOf`, `TeacherNamer.tsx`, `stage-geometry.mjs`, ledge.ts and the helpline predicates (safety floor, frozen), `Icon.tsx`, `primitives.tsx`, `tokens.css`, `tokens.ts`, `fonts/` and `lint/rules.mjs` under src/ui-v3.\n- Not done (not proven dead in this pass): the unused copy keys (APP-45/47), the constant lesson-model fields thinkingSeconds/offlineBadge/noPack, the never-passed supportCode prop, the unused src/ui exports Card/Hi/StatusGlyph/ReauthField/Chip, Footer/TopBar in app/Shell.tsx, Trust in Public.tsx.\n"
+ }
+}

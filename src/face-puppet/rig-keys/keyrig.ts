@@ -2,6 +2,12 @@
 // breath)) plus the surface the stage reads from a rig (R.dpr, view, reduced, life.reduced, mouth, stats, warm, dispose),
 // so PuppetDriver drives it unchanged. Canvas 2D, no WebGL: per frame it draws two rigid layers and at most five
 // painted patches (brows, eyes, two mouths in a crossfade). No mesh, no warp.
+// Route (b), round 7 (opt-in: KeyRigOptions.jaw, the device's ?jaw=1): a 2.5D cut-out JAW layer. The face is composed in
+// its own head-space buffer; the lower lip and chin (a feathered jaw-shaped region under the lip line) are lifted out and
+// translated DOWN by the continuous viseme jaw (rigid translation, never a warp), and the opened gap is filled with the
+// mouth interior. The painted keys still give every mouth SHAPE; the jaw gives the continuous OPENING, which the
+// stepped keys alone could not time (lip spread 67% → 100% of lines within ±50 ms in route-b/battery.mjs). On a seal the
+// jaw closes with the mbp key.
 // Quality and cost: every layer is resampled ONCE per canvas size into a cache at device resolution (high-quality
 // downscale; the 80 px speech row draws 1/7-scale bitmaps, never a 900 px image per frame), so a frame is a handful of
 // near-1:1 bilinear blits. Patches are cached on the head layer's own pixel grid (their sub-pixel offset baked in), so a
@@ -27,6 +33,18 @@ export interface KeyRigOptions {
   clear?: [number, number, number];
   reducedMotion?: boolean;
   seed?: number;
+  /** Route (b): the 2.5D jaw layer (see the header). */
+  jaw?: boolean;
+}
+
+/** Route (b) jaw tuning, in the pack's native px. */
+export const JAW = { maxDropPx: 7, regionRx: 92, regionRy: 64, regionDy: 30, featherPx: 14, normJaw: 0.62 };
+
+/** The jaw layer's drop for a frame: the continuous viseme jaw, closed with the mbp key on a seal. Pure (unit-tested). */
+export function jawDrop(bs: Record<string, number>, mouth: Swap<MouthKey>, maxPx = JAW.maxDropPx): number {
+  const j = Math.min(1, Math.max(0, (bs.jawOpen ?? 0) / JAW.normJaw));
+  const seal = (mouth.b === "mbp" ? mouth.k : 0) + (mouth.a === "mbp" ? 1 - mouth.k : 0);
+  return j * (1 - Math.min(1, seal)) * maxPx;
 }
 
 type Ctx = CanvasRenderingContext2D;
@@ -39,6 +57,7 @@ const mkCanvas = (w: number, h: number): HTMLCanvasElement | OffscreenCanvas => 
 
 export class KeyRig {
   static async load(canvas: HTMLCanvasElement, base: string, opts: KeyRigOptions = {}): Promise<KeyRig> {
+    // (opts.jaw: route (b)'s jaw layer)
     const geom = (await (await fetch(`${base}geom.json`)).json()) as KeyGeom;
     const names = ["body", "head", ...Object.keys(geom.keys)];
     const imgs: Record<string, Source> = {};
@@ -78,6 +97,14 @@ export class KeyRig {
   private scale = 1;
   private origin = [0, 0];
   private disposed = false;
+  private jawOn: boolean;
+  /** Route (b): the current jaw drop (native px), the composed face, the lifted jaw piece and its feathered mask. */
+  jaw = 0;
+  private faceBuf: HTMLCanvasElement | OffscreenCanvas | null = null;
+  private jawBuf: HTMLCanvasElement | OffscreenCanvas | null = null;
+  private jawMask: HTMLCanvasElement | OffscreenCanvas | null = null;
+  private lipLine = 0;
+  private interior = "rgb(70,28,24)";
 
   constructor(canvas: HTMLCanvasElement, geom: KeyGeom, imgs: Record<string, Source>, opts: KeyRigOptions = {}) {
     this.geom = geom;
@@ -92,6 +119,38 @@ export class KeyRig {
     const c = opts.clear ?? geom.clear;
     this.clear = `rgb(${Math.round(c[0] * 255)},${Math.round(c[1] * 255)},${Math.round(c[2] * 255)})`;
     this.eyeKeys = new EyeKeys(opts.seed ?? 11);
+    this.jawOn = !!opts.jaw;
+    if (this.jawOn) this.measureMouth();
+  }
+
+  /** Route (b): the lip line (the darkest row down the mouth's centre column of the rest face) and the interior colour
+   *  (the darkest pixel of the open aa key), read once from the pack's own pixels. */
+  private measureMouth(): void {
+    const g = this.geom, mr = g.keys.aa?.rect ?? g.keys.mbp?.rect;
+    if (!mr) { this.jawOn = false; return; }
+    const head = this.imgs.head, aa = this.imgs.aa;
+    const [hx, hy] = g.rects.head;
+    try {
+      const cx = Math.round((mr[0] + mr[2]) / 2);
+      const c = mkCanvas(head.width, head.height);
+      const x = c.getContext("2d") as CanvasRenderingContext2D;
+      x.drawImage(head, 0, 0);
+      const col = x.getImageData(cx - hx, mr[1] - hy, 1, mr[3] - mr[1]).data;
+      let best = 1e9, by = 0;
+      for (let i = 0; i < col.length / 4; i++) { const l = col[4 * i] + col[4 * i + 1] + col[4 * i + 2]; if (l < best) { best = l; by = i; } }
+      this.lipLine = mr[1] + by;
+      if (aa) {
+        const a = mkCanvas(aa.width, aa.height);
+        const y = a.getContext("2d") as CanvasRenderingContext2D;
+        y.drawImage(aa, 0, 0);
+        const d = y.getImageData(0, 0, aa.width, aa.height).data;
+        let dk = 1e9, rgb = [70, 28, 24];
+        for (let i = 0; i < d.length; i += 4) { if (d[i + 3] < 200) continue; const l = d[i] + d[i + 1] + d[i + 2]; if (l < dk) { dk = l; rgb = [d[i], d[i + 1], d[i + 2]]; } }
+        this.interior = `rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+      }
+    } catch {
+      this.lipLine = Math.round((mr[1] + mr[3]) / 2);
+    }
   }
 
   /** Canvas size from its CSS box x dpr; rebuilds the layer caches when the size or the framing changes. */
@@ -139,6 +198,27 @@ export class KeyRig {
     const hx = g.rects.head[0], hy = g.rects.head[1];
     put("head", g.rects.head, hx, hy);
     for (const [k, v] of Object.entries(g.keys)) put(k, v.rect, hx, hy);
+    if (this.jawOn) {
+      // the composed-face buffer and the jaw mask, on the head layer's device grid
+      const H = this.cache.head;
+      if (!H) return;
+      this.faceBuf = mkCanvas(H.c.width, H.c.height);
+      this.jawBuf = mkCanvas(H.c.width, H.c.height);
+      const m = mkCanvas(H.c.width, H.c.height);
+      const mx = m.getContext("2d") as CanvasRenderingContext2D;
+      const mr = g.keys.aa?.rect ?? g.keys.mbp.rect;
+      const cx = ((mr[0] + mr[2]) / 2 - hx) * s, ly = (this.lipLine - hy) * s;
+      // a jaw-shaped ellipse below the lip line, feathered: the lower lip, the chin and a little cheek
+      mx.filter = `blur(${(JAW.featherPx * s) / 2}px)`;
+      mx.fillStyle = "#fff";
+      mx.beginPath();
+      mx.ellipse(cx, ly + JAW.regionDy * s, JAW.regionRx * s, JAW.regionRy * s, 0, 0, Math.PI * 2);
+      mx.fill();
+      mx.filter = "none";
+      mx.globalCompositeOperation = "destination-out";
+      mx.fillRect(0, 0, m.width, Math.max(0, ly - 1)); // nothing above the lip line moves
+      this.jawMask = m;
+    }
   }
 
   apply(bs: Record<string, number>, head: number[], gaze: number[], lean: number, breath: number): void {
@@ -154,6 +234,10 @@ export class KeyRig {
     const m = this.mouthShown;
     this.mouth.name = m.k >= 0.5 ? m.b : m.a;
     this.mouth.p.g = this.mouth.name === "mbp" ? 0 : this.mouthKeys.openness(tMs) * 10;
+    if (this.jawOn) {
+      this.jaw = this.reduced ? 0.6 * jawDrop(bs, m) : jawDrop(bs, m);
+      if (this.mouth.name !== "mbp") this.mouth.p.g += this.jaw * 2;
+    }
   }
 
   render(): void {
@@ -187,9 +271,13 @@ export class KeyRig {
     fig(-neckRise + 0.6 * p.nod);
     ctx.translate(g.pivot[0], g.pivot[1]); ctx.rotate((p.rot * Math.PI) / 180); ctx.translate(-g.pivot[0], -g.pivot[1]);
     const hx = g.rects.head[0], hy = g.rects.head[1];
+    // route (b): compose the face (head + keys) in head-grid device px first, then move the jaw, then draw it once
+    const fb = this.jawOn && this.faceBuf ? (this.faceBuf.getContext("2d") as CanvasRenderingContext2D) : null;
+    if (fb) { fb.setTransform(1, 0, 0, 1, 0, 0); fb.globalAlpha = 1; fb.clearRect(0, 0, this.faceBuf!.width, this.faceBuf!.height); }
     const blit = (name: string, alpha = 1) => {
       const C = this.cache[name];
       if (!C || alpha <= 0.001) return;
+      if (fb) { fb.globalAlpha = alpha; fb.drawImage(C.c, C.ox, C.oy); draws++; return; }
       ctx.globalAlpha = alpha;
       ctx.drawImage(C.c, hx + C.ox / s, hy + C.oy / s, C.c.width / s, C.c.height / s);
       draws++;
@@ -205,6 +293,36 @@ export class KeyRig {
       // fading from a key back to the front: the old key fades OUT over the front
       if (fadeOut(sw, none)) blit(sw.a, 1 - sw.k);
       else pair(sw, none);
+    }
+    if (fb) {
+      const d = this.jaw * s; // device px
+      if (d > 0.25 && this.jawBuf && this.jawMask) {
+        const jb = this.jawBuf.getContext("2d") as CanvasRenderingContext2D;
+        jb.setTransform(1, 0, 0, 1, 0, 0);
+        jb.globalCompositeOperation = "copy";
+        jb.globalAlpha = 1;
+        jb.drawImage(this.faceBuf!, 0, 0);
+        jb.globalCompositeOperation = "destination-in";
+        jb.drawImage(this.jawMask, 0, 0);
+        jb.globalCompositeOperation = "source-over";
+        // the opened gap: the mouth interior, a lens as wide as the mouth's opening, from the lip line down by the drop
+        const mr = g.keys.aa?.rect ?? g.keys.mbp.rect;
+        const cx = ((mr[0] + mr[2]) / 2 - hx) * s, ly = (this.lipLine - hy) * s, half = ((mr[2] - mr[0]) / 2) * 0.62 * s;
+        // soft-edged (a hard dark band read as a slit drawn on the lips, judge pass 1 of the round 7 sheet)
+        fb.globalAlpha = 0.9;
+        fb.filter = `blur(${Math.max(0.5, 0.9 * s)}px)`;
+        fb.fillStyle = this.interior;
+        fb.beginPath();
+        fb.ellipse(cx, ly + d / 2, half * 0.92, d / 2 + 0.5 * s, 0, 0, Math.PI * 2);
+        fb.fill();
+        fb.filter = "none";
+        fb.globalAlpha = 1;
+        fb.drawImage(this.jawBuf, 0, d);
+        draws += 2;
+      }
+      ctx.globalAlpha = 1;
+      ctx.drawImage(this.faceBuf!, hx, hy, this.faceBuf!.width / s, this.faceBuf!.height / s);
+      draws++;
     }
     ctx.globalAlpha = 1;
     this.R.draws = draws;

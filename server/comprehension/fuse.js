@@ -2,13 +2,14 @@
 // (server/learner/kt/ledger.js, unchanged: K, D, M and θ) and then through facets.js (U, T) with the PRE-event
 // retrievability, in the same seq order and with the same de-duplication, so replay always equals the online fold
 // (TP1-TP2 extended to `comp`). Pure: no clock, no randomness, no I/O.
-import { fold as ktFold, foldOrder, newLedger, canonical, ledgerDigest, rank, DELAY_MS } from "../learner/kt/ledger.js";
+import { openFold, foldOrder, newLedger, canonical, ledgerDigest, rank, DELAY_MS } from "../learner/kt/ledger.js";
 import { ITEM_CLASSES } from "../learner/kt/outcomes.js";
 import { retrievability, daysBetween } from "../learner/kt/fsrs.js";
 import { applyFacetEvent, applyFacetTeach, facetDrop, facetsOfClass, newFacet } from "./facets.js";
 import { COMP_PARAMS_VERSION, FACET } from "./params.js";
 import { familyOf } from "./probes/shapes.js";
 import { misP } from "../learner/kt/misconception.js";
+import { isPlacementRow } from "../learner/kt/placement.js";
 
 /**
  * Misconception saturation guard [U]: a further hit on a misconception already at p ≥ 0.95 adds no information but,
@@ -41,15 +42,21 @@ const MOVE_EPS = 0.02;
  * @param {import("../learner/kt/ledger.js").FoldCtx} [ctx]
  */
 export function fuseEvidence(state, events, ctx = {}) {
-  let ledger = state.ledger;
+  // ONE copy of the ledger for the whole batch (audit LEARN-25: a copy per event was quadratic in the child's history)
+  const F = openFold(state.ledger);
+  const ledger = F.L;
   const comp = structuredClone(state.comp);
   for (let ev of foldOrder(events)) {                      // the ledger's own order (seq; unsequenced in arrival order)
     if (ledger.seen[ev.id] !== undefined || comp.seen[ev.id]) continue;
-    const pre = ledger;
-    const startAt = pre.session?.sessionId === ev.sessionId ? pre.session.startAt : new Date(ev.sessionStartAt ?? ev.at).toISOString();
-    ev = guardMis(ev, pre);
-    ledger = ktFold(pre, [ev], ctx);
+    const startAt = ledger.session?.sessionId === ev.sessionId ? ledger.session.startAt : new Date(ev.sessionStartAt ?? ev.at).toISOString();
+    ev = guardMis(ev, ledger);
+    // the target skill's PRE-event state, copied: the fold below mutates the ledger in place
+    const target0 = ev.target ?? ev.skillIds?.[0];
+    const sk0 = target0 ? ledger.skills[target0] : undefined;
+    const preSk = sk0 ? { ...sk0, flags: { ...sk0.flags } } : undefined;
+    F.apply(ev, ctx);
     comp.seen[ev.id] = 1;
+    if (isPlacementRow(ev)) continue;                      // a placement site seeds θ only (kt/placement.js): no facet
     const drop = facetDrop(ev, ctx);
     if (drop) { comp.drops[drop] = (comp.drops[drop] ?? 0) + 1; continue; }
 
@@ -66,7 +73,6 @@ export function fuseEvidence(state, events, ctx = {}) {
     // U/T evidence lands on the item's target skill only (a conjunctive host never moves the earlier skill's facets: E7).
     const target = ev.target ?? ev.skillIds[0];
     const c = comp.skills[target];
-    const preSk = pre.skills[target];
     const R = retrievability(preSk?.mem ?? null, startAt);
     const anchor = preSk?.learnedAt ?? preSk?.anchorAt ?? null;
     const delayDays = anchor ? daysBetween(anchor, startAt) : 0;

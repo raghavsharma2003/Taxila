@@ -1,0 +1,73 @@
+diff --git a/server/brain/propose.js b/server/brain/propose.js
+index 614fce1..813db25 100644
+--- a/server/brain/propose.js
++++ b/server/brain/propose.js
+@@ -152,6 +152,8 @@ export function whiteboardIntentOf({ lessonId, turn, beat, next, kit, item, line
+       // round 7 (dc-r7-teaching-scripts; Studio's BOARD-REFS): the scripted beat's board, explicit on the ask, so Studio's
+       // preselect reads one field and never the Director's state shape (an absent or failing ref: Studio's own pick)
+       ...(next?.lastMove?.scriptBeat?.board ? { boardRef: next.lastMove.scriptBeat.board } : {}),
++      // round 7 M5a (Studio's patch 011): an explain beat's code-built scene (Studio plays it instead of a board, withheld over a live key)
++      ...(next?.lastMove?.scriptBeat?.scene ? { sceneRef: next.lastMove.scriptBeat.scene } : {}),
+       ...(next?.lastMove?.scriptBeat ? { scriptBeat: { scriptId: next.lastMove.scriptBeat.scriptId, beatId: next.lastMove.scriptBeat.beatId, kind: next.lastMove.scriptBeat.kind } } : {}),
+     },
+     line: { lessonId, ...(line.teacherReplySeq != null ? { teacherReplySeq: line.teacherReplySeq } : {}), text: String(line.text ?? "") },
+diff --git a/server/director/script.js b/server/director/script.js
+index 22c3d6a..9dcf251 100644
+--- a/server/director/script.js
++++ b/server/director/script.js
+@@ -61,6 +61,8 @@ export function validateSkillScript(sk, kit, { classLevel } = {}) {
+     shape(`explain[${i}].convey`, b?.convey);
+     if (b?.board && !b.board.auto && !b.board.template) err(`explain[${i}].board: a template or { auto: true }`);
+     if (b?.board?.template && !String(b.point ?? "").trim()) err(`explain[${i}].point: what on the board to point at`);
++    // round 7 M5a (Studio's patch 011): a scene names its topic; Studio plays the topic's code-built scene, else the board
++    if (b?.scene && !/^c\d-[a-z]+-ch\d+-t\d+$/.test(String(b.scene.topic ?? ""))) err(`explain[${i}].scene: { topic: <topic id> }`);
+   }
+   // the worked example: stated, givens, every step (results hold), the answer = the last result, and why
+   const w = sk?.workedExample ?? {};
+diff --git a/server/director/state.js b/server/director/state.js
+index 34308f1..dc7c05c 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -533,7 +533,7 @@ function walkNext(s, input, prefix) {
+   const sk = w ? skillScriptOf(kit, w.skillId) : null;
+   if (!sk) { s.walk = undefined; return null; }
+   const skillId = w.skillId;
+-  const ref = (kind, beatId, board) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}) } });
++  const ref = (kind, beatId, board, scene) => ({ scriptBeat: { scriptId: scriptIdOf(kit), skillId, beatId, kind, ...(board ? { board } : {}), ...(scene ? { scene } : {}) } });
+   while (w.i < w.beats.length) {
+     const [kind, id] = w.beats[w.i].split(":");
+     w.i += 1;
+@@ -552,7 +552,7 @@ function walkNext(s, input, prefix) {
+       if (!b) continue;
+       return plan("explain", join(prefix, SH.scriptExplain({ bridge: !!bridge, board: !!b.board })), { skillId, format: formatFor(s, kit, skillId),
+         content: [...bridgeLine, `the idea: ${b.convey}`, ...(b.point ? [`on the board, point at: ${b.point}`] : []),
+-          ...(b.terms?.length ? [`words: ${b.terms.join(", ")}`] : [])], ...ref("explain", b.id, b.board) });
++          ...(b.terms?.length ? [`words: ${b.terms.join(", ")}`] : [])], ...ref("explain", b.id, b.board, b.scene) });
+     }
+     if (kind === "worked") {
+       const we = sk.workedExample;
+diff --git a/shared/contracts.ts b/shared/contracts.ts
+index daf0213..6ef2d89 100644
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -712,7 +712,12 @@ export interface SkillScript {
+   remediation: Remediation[];
+   bridgeToNext: string | null;
+ }
+-export interface ExplainBeat { id: string; convey: string; board?: BoardRef | null; point?: string; terms?: string[] }
++export interface ExplainBeat { id: string; convey: string; board?: BoardRef | null; point?: string; terms?: string[];
++  /** round 7 M5a (Studio's patch 011): a code-built cinematic scene for the beat instead of a board (server/forge/animate/scenes.js;
++   *  Studio's sceneFor). Never on a check: a scene may show a value a card asks (Studio withholds it over a live key anyway). */
++  scene?: SceneRef | null }
++/** A scene for an explain beat: the topic whose code-built scene plays (Studio's SCENES); absent or not built → the board. */
++export interface SceneRef { topic: string }
+ export interface WorkedExampleScript {
+   problem: string;
+   givens: string[];
+@@ -753,4 +758,6 @@ export interface ScriptBeatRef {
+   beatId: string;
+   kind: "hook" | "explain" | "worked" | "check" | "ladder" | "remediation" | "bridge";
+   board?: BoardRef | null;
++  /** round 7 M5a (Studio's patch 011): an explain beat's scene (on the board ask as intent.sceneRef) */
++  scene?: SceneRef | null;
+ }

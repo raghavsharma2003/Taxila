@@ -1,0 +1,74 @@
+[
+  {
+    "id": "gen-c4-maths-ch05-t01-343d63a3",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p360 screen, bottom of play area",
+        "detail": "The orange label \"Barabar parts\" is drawn on top of the coach line \"Bar ko equal kaato\", so the two texts overlap and both are hard to read; a dashed circle below them is cut off by the bottom edge."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 screen, bottom of play area",
+        "detail": "A dimmed \"Barabar parts\" sits on top of \"Bar ko equal kaato\" (overlapping text); the dashed circle under it is cut off by the bottom edge."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen, bottom of play area",
+        "detail": "A dimmed \"Barabar parts\" overlaps \"Bar ko equal kaato\"; the dashed circle at the lower right is cut off by the bottom edge of the card."
+      }
+    ],
+    "readable": { "p360": false, "p412": false, "l1366": false },
+    "notes": "The fraction content is correct (cut into 3 or 4 equal parts, cut at 1/3, 2/3, 1/4, 1/2) and it targets the equal-parts mix-up. Wave 3's labels do not match its items: the title is \"Spot the whole\" and the sub is \"Teen equal pieces yaad rakho\", but it includes a {\"parts\": 4} item. This is a mismatch rather than a wrong fact, so I did not count it."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t01-b3dc0103",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.waves[3] (\"Galti sudharo\")",
+        "detail": "The sub says \"4 marks ka matlab 5 gaps hai\", but the wave sets \"ticks\": 5 and \"scaffoldTicks\": 6. The other waves follow ticks = marks inside 0-1 (ticks 1 → 2 gaps, 3 → 4, 4 → 5), so this line has 5 marks and 6 gaps. The text tells the child something false about the line in front of them, and neither item (\"1/5\", \"1/4\") falls on a mark of that line."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "first screen at every size, falling \"1/2\" pod",
+        "detail": "A guide line drops from the lower \"1/2\" pod straight to the middle of the 0-1 line (l1366: line runs from x≈306 to x≈1259, pointer lands at ≈783), so the screen shows where 1/2 goes before the child places it."
+      },
+      {
+        "item": 4,
+        "kind": "language_mix",
+        "where": "spec.strings.same",
+        "detail": "\"W वही jagah\": a Devanagari word inside an otherwise Roman-script Hinglish piece, plus a stray \"W\"."
+      }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": true },
+    "notes": "Waves 1-3 are correct and fit the mix-up of counting marks instead of gaps (1/2 with 1 mark, 1/4 with 3 marks, 3/5 with 4 marks). On the first screen I could not see the middle tick that \"ticks\": 1 implies, but that may be how the engine shows ticks, so I did not count it."
+  },
+  {
+    "id": "gen-c6-maths-ch06-t01-0f803073",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen, goal card",
+        "detail": "The card \"Round 1/4  Stake exactly 40 sq units\" sits over the top edge of the grid and touches the AREA/PERIMETER/ROUND pills. It also covers the coach line \"Grid par plot banao\", which shows only as blurred text behind the card."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "on-screen goal text at all sizes",
+        "detail": "\"Stake exactly 40 sq units\": \"stake\" is not a plain word for a class 6 child, and this English sentence does not match the piece's Hinglish strings (\"Grid par plot banao\", \"sabse zyada area\")."
+      }
+    ],
+    "readable": { "p360": true, "p412": true, "l1366": false },
+    "notes": "The targets work on the 15x10 grid (area 40, perimeter 26, perimeter 28), and the area-40 round followed by a different perimeter-26 shape works against the area/perimeter mix-up. The last round, \"maxArea\" with target 40 (\"sabse zyada area\"), does not say what limit applies: if it is perimeter 26, the true maximum is 42 (6x7). I cannot tell the limit from the spec, so I did not count it."
+  }
+]

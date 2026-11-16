@@ -18,11 +18,13 @@ test("clientChild: teacher_id is the teacher who speaks (Asha for every class); 
   assert.equal(clientChild({ id: "c", first_name: "Riya", class_level: 7, teacher_id: "asha", teacher_name: "Asha" }).teacher_name, null, "her own name is no custom name");
   assert.equal(clientChild(null), null);
   // the rollback: the client is told who actually teaches again
+  // (one process runs every test file: put back whatever value was there before, never just delete it)
+  const was = process.env.TAXILA_SINGLE_TEACHER;
   process.env.TAXILA_SINGLE_TEACHER = "off";
   try {
     assert.equal(clientChild({ id: "d", first_name: "Riya", class_level: 7, teacher_id: null }).teacher_id, "arjun");
   } finally {
-    delete process.env.TAXILA_SINGLE_TEACHER;
+    if (was === undefined) delete process.env.TAXILA_SINGLE_TEACHER; else process.env.TAXILA_SINGLE_TEACHER = was;
   }
 });
 

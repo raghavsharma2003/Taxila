@@ -8,19 +8,21 @@
 import { beatTiming, type BeatRoundT, type BeatSpec } from "../../../../shared/studio-spec-ext/beat.ts";
 import { matraWeights, normText } from "../../../../shared/studio-spec-ext/common.ts";
 import { C, W, H } from "../../core/tokens.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 import { clamp, hexA, lerp, rng } from "../../core/math.ts";
 import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts";
 import { sfx } from "../../core/sfx.ts";
 import { drawCoach, drawIntro, drawStatCard } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
 import { RoundFlow, SUBJECT_ACCENT, devaReady, shuffled, textBlock } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
 
 const GATE_X = 250, LANE_Y = 330, CATCH_Y = 548;
 interface WordT { w: string; t: number; beat: number }
 interface Orb { word: string; x: number; y: number; caught: boolean }
 
 function create(api: EngineApi, spec: BeatSpec): EngineInstance {
-  const T = spec.strings, accent = SUBJECT_ACCENT[(spec.skills[0] ?? "").split("-")[1]] ?? "#FF8FB1";
+  const T = spec.strings, accent = SUBJECT_ACCENT[(spec.skills[0] ?? "").split("-")[1]] ?? C.beatAccent;
   const devaNeeded = /[ऀ-ॿ]/.test(JSON.stringify(spec));
   let fontOk = !devaNeeded; if (devaNeeded) void devaReady().then(() => { fontOk = true; });
   const { spb, lead } = beatTiming(spec);
@@ -180,7 +182,7 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
     hud.set("combo", String(g.combo), { bump: true, tone: g.combo >= 4 ? "mint" : null });
   }
   function paintBg(c: Ctx) {
-    const gr = c.createRadialGradient(GATE_X, LANE_Y, 30, 500, 312, 820); gr.addColorStop(0, "#1C1530"); gr.addColorStop(0.5, "#0F0D1C"); gr.addColorStop(1, "#06060B");
+    const gr = c.createRadialGradient(GATE_X, LANE_Y, 30, 500, 312, 820); gr.addColorStop(0, C.beatGlow); gr.addColorStop(0.5, C.beatBgMid); gr.addColorStop(1, C.beatBg);
     c.fillStyle = gr; c.fillRect(0, 0, W, H); c.fillStyle = hexA(accent, 0.04); c.fillRect(0, 0, W, H);
   }
   function render(ctx: Ctx, now: number) {
@@ -193,8 +195,8 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
     for (let k = 0; k < 4; k++) { const rr = 60 + ((ph + k / 4) % 1) * 520; ctx.save(); ctx.strokeStyle = hexA(accent, 0.12 * (1 - (rr - 60) / 520)); ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(GATE_X, LANE_Y, rr, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
     if (r.mode === "beat" || r.mode === "matra") {
       // lane
-      ctx.save(); const lg = ctx.createLinearGradient(0, LANE_Y - 50, 0, LANE_Y + 50); lg.addColorStop(0, "rgba(255,255,255,0)"); lg.addColorStop(0.5, "rgba(255,255,255,.05)"); lg.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = lg; ctx.fillRect(0, LANE_Y - 60, W, 120); ctx.strokeStyle = "rgba(255,255,255,.08)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, LANE_Y + 52); ctx.lineTo(W, LANE_Y + 52); ctx.stroke(); ctx.restore();
+      ctx.save(); const lg = ctx.createLinearGradient(0, LANE_Y - 50, 0, LANE_Y + 50); lg.addColorStop(0, withAlpha(C.hi, 0)); lg.addColorStop(0.5, withAlpha(C.hi, .05)); lg.addColorStop(1, withAlpha(C.hi, 0));
+      ctx.fillStyle = lg; ctx.fillRect(0, LANE_Y - 60, W, 120); ctx.strokeStyle = withAlpha(C.hi, .08); ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, LANE_Y + 52); ctx.lineTo(W, LANE_Y + 52); ctx.stroke(); ctx.restore();
       const pulse = r.mode === "beat" ? Math.max(0, 1 - ((g.lineT - lead) / spb - Math.floor((g.lineT - lead) / spb)) * 3) : 0;
       bloom(ctx, accent, GATE_X, LANE_Y, 110, 0.25 + 0.35 * pulse);
       ctx.save(); ctx.strokeStyle = accent; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(GATE_X, LANE_Y - 70); ctx.lineTo(GATE_X, LANE_Y + 70); ctx.stroke(); ctx.restore();
@@ -220,7 +222,7 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
     } else if (r.mode === "rhyme") {
       const it = r.items[g.item];
       // the cue line as a card
-      ctx.save(); ctx.fillStyle = "rgba(18,16,30,.94)"; roundRect(ctx, 110, 168, 780, 116, 22); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.6); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.beatCue, .94); roundRect(ctx, 110, 168, 780, 116, 22); ctx.fill(); ctx.strokeStyle = hexA(accent, 0.6); ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
       const shown = g.caught && g.verdict ? it.cue.replace(/_{2,}/, g.verdict === "right" ? g.caught.word : it.answer) : it.cue;
       textBlock(api, ctx, shown, 500, 226, 740, { font: "display", size: 44, weight: 700, color: g.caught && g.verdict === "right" ? C.mint : C.ink }, 2);
       for (const o of g.orbs) {
@@ -229,7 +231,7 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
         const y = o.y, a = clamp((y - 280) / 50, 0, 1) * (o.y > CATCH_Y + 50 ? clamp(1 - (o.y - CATCH_Y - 50) / 60, 0, 1) : 1);
         if (a <= 0.01 && !show) continue;
         const ww = Math.max(130, api.measure(ctx, o.word, { font: "display", size: 46, weight: 700 }) + 46);
-        ctx.save(); ctx.globalAlpha = show ? 1 : a; bloom(ctx, show ? C.mint : accent, o.x, y, ww * 0.6, 0.3); ctx.fillStyle = "rgba(24,20,40,.96)"; roundRect(ctx, o.x - ww / 2, y - 36, ww, 72, 36); ctx.fill(); ctx.strokeStyle = show ? C.mint : hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.globalAlpha = show ? 1 : a; bloom(ctx, show ? C.mint : accent, o.x, y, ww * 0.6, 0.3); ctx.fillStyle = withAlpha(C.beatChip, .96); roundRect(ctx, o.x - ww / 2, y - 36, ww, 72, 36); ctx.fill(); ctx.strokeStyle = show ? C.mint : hexA(accent, 0.9); ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
         api.text(ctx, o.word, o.x, y + 2, { font: "display", size: 46, weight: 700, align: "center", baseline: "middle", alpha: show ? 1 : a });
         if (show) tick(ctx, o.x + ww / 2 + 6, y - 30, C.mint, 0.8);
       }
@@ -239,7 +241,7 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
       ctx.beginPath(); ctx.moveTo(cx - cw / 2, CATCH_Y - 30); ctx.quadraticCurveTo(cx - cw / 2 + 6, CATCH_Y + 22, cx, CATCH_Y + 22); ctx.quadraticCurveTo(cx + cw / 2 - 6, CATCH_Y + 22, cx + cw / 2, CATCH_Y - 30); ctx.stroke(); ctx.restore();
       if (g.caught && g.caught.word) {
         const ok = g.verdict === "right", ww = Math.max(130, api.measure(ctx, g.caught.word, { font: "display", size: 46, weight: 700 }) + 46);
-        ctx.save(); ctx.fillStyle = ok ? "rgba(20,40,32,.96)" : "rgba(40,30,16,.96)"; roundRect(ctx, cx - ww / 2, CATCH_Y - 70, ww, 66, 33); ctx.fill(); ctx.strokeStyle = ok ? C.mint : C.amber; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = ok ? withAlpha(C.beatRightCard, .96) : withAlpha(C.beatWrongCard, .96); roundRect(ctx, cx - ww / 2, CATCH_Y - 70, ww, 66, 33); ctx.fill(); ctx.strokeStyle = ok ? C.mint : C.amber; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
         api.text(ctx, g.caught.word, cx, CATCH_Y - 36, { font: "display", size: 44, weight: 700, color: ok ? C.mint : C.amber, align: "center", baseline: "middle" });
         if (!ok) magnifier(ctx, cx + ww / 2 + 16, CATCH_Y - 60, C.amber, 0.8);
       }
@@ -248,13 +250,13 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
       g.syl.forEach((s, i) => {
         const x = GATE_X + (1.6 + i * g.sylGap - g.sylT) * 190; if (x < -80 || x > W + 80) return;
         const m = g.marks.get(i), done = m !== undefined, col = !done ? C.ink : m === s.w ? C.mint : C.amber;
-        ctx.save(); ctx.globalAlpha = x < GATE_X - 30 ? 0.6 : 1; ctx.fillStyle = done ? hexA(col, 0.15) : "rgba(255,255,255,.05)"; roundRect(ctx, x - 44, LANE_Y - 46, 88, 92, 18); ctx.fill(); ctx.strokeStyle = done ? col : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.globalAlpha = x < GATE_X - 30 ? 0.6 : 1; ctx.fillStyle = done ? hexA(col, 0.15) : withAlpha(C.hi, .05); roundRect(ctx, x - 44, LANE_Y - 46, 88, 92, 18); ctx.fill(); ctx.strokeStyle = done ? col : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
         api.text(ctx, s.syl, x, LANE_Y - 6, { font: "ui", size: 48, weight: 700, align: "center", baseline: "middle", alpha: x < GATE_X - 30 ? 0.6 : 1 });
         if (done) api.text(ctx, s.w === 2 ? "ऽ" : "।", x, LANE_Y + 72, { font: "ui", size: 40, weight: 700, color: col, align: "center", baseline: "middle" });
       });
       // the meter: 13 | 11 for a doha half-line pair, else the running count
       const total = g.syl.reduce((a, s) => a + s.w, 0), cap = Math.max(total, 13), bw = 560, x0 = 220, y0 = 196;
-      ctx.save(); ctx.fillStyle = "rgba(255,255,255,.06)"; roundRect(ctx, x0, y0, bw, 26, 13); ctx.fill(); ctx.fillStyle = accent; roundRect(ctx, x0, y0, bw * clamp(g.meter / cap, 0, 1), 26, 13); ctx.fill();
+      ctx.save(); ctx.fillStyle = withAlpha(C.hi, .06); roundRect(ctx, x0, y0, bw, 26, 13); ctx.fill(); ctx.fillStyle = accent; roundRect(ctx, x0, y0, bw * clamp(g.meter / cap, 0, 1), 26, 13); ctx.fill();
       if (total > 13) { const yx = x0 + bw * (13 / cap); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(yx, y0 - 10); ctx.lineTo(yx, y0 + 36); ctx.stroke(); }
       ctx.restore();
       api.text(ctx, `${T.meter} ${g.meter}`, x0 + bw + 20, y0 + 14, { font: "ui", size: 40, weight: 700, color: C.ink, baseline: "middle" });
@@ -262,13 +264,13 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
       // the two pads
       for (const [i, lab] of [[0, T.short], [1, T.long]] as [number, string][]) {
         const x = 150 + i * 360, y = 470;
-        ctx.save(); ctx.fillStyle = "rgba(24,20,40,.96)"; roundRect(ctx, x, y, 340, 112, 22); ctx.fill(); ctx.strokeStyle = i ? accent : C.ion; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.fillStyle = withAlpha(C.beatChip, .96); roundRect(ctx, x, y, 340, 112, 22); ctx.fill(); ctx.strokeStyle = i ? accent : C.ion; ctx.lineWidth = 4; ctx.stroke(); ctx.restore();
         api.text(ctx, lab, x + 170, y + 58, { font: "ui", size: 44, weight: 700, align: "center", baseline: "middle" });
       }
       for (const f of g.flashes) { const k = api.now() - f.t; if (k < 0.8) api.text(ctx, f.s, f.x, LANE_Y - 100 - k * 30, { font: "ui", size: 48, weight: 700, color: f.c, align: "center", baseline: "middle", alpha: 1 - k / 0.8 }); }
     }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
     if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.roundR}/${g.roundN}`, T.onBeat], [String(g.best), T.combo]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.onBeat], [String(g.best), T.combo]] });
     drawCoach(api, ctx, r.mode === "beat" ? T.tap : r.mode === "rhyme" ? T.catch : T.mark, flow.state === "play" ? g.coachA : 0, now, r.mode === "matra" ? 120 : 600);
@@ -304,4 +306,4 @@ function create(api: EngineApi, spec: BeatSpec): EngineInstance {
     },
   };
 }
-export const beat: EngineDef<BeatSpec> = { archetype: "beat-line@1", label: "Game · Poem Beat", accent: "#FF8FB1", create };
+export const beat: EngineDef<BeatSpec> = { archetype: "beat-line@1", label: "Game · Poem Beat", get accent() { return C.beatAccent; }, create };

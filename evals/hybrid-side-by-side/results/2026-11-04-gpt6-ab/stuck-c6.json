@@ -1,0 +1,213 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket field ke chaaron taraf ki doori, perimeter, dekhenge. Cricket mein tumhe kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1431
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, cricket pasand hona zaroori nahi. Riya, socho park ke chaaron taraf ek round lagana hai. Raaste ka kaunsa hissa chalogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1194,
+   "replyReadyMs": 2625
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 942
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kisi bhi shape ki bahar wali lakeer par chalna socho. Uske saare sides ki doori jodne se perimeter milta hai. Kya jodoge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1338,
+   "replyReadyMs": 2280
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 820
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalte hain. Perimeter matlab bahar ka poora raasta. Har side ki lambai jodte hain. Kya jodte hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1589,
+   "replyReadyMs": 2409
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1040
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, parimap matlab kisi aakriti ke chaaron taraf ki kul doori. Aayat ki chaar bhujayein hoti hain. Kul doori ke liye kya jodenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3092,
+   "replyReadyMs": 4132,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1012
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 5 kaha. Aayat mein chaar bhujayein hoti hain; perimeter ke liye kin bhujayon ki lambai jodogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 4078,
+   "replyReadyMs": 5090,
+   "guard": [
+    "screen",
+    "negates"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "twoq"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1060
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, Rani ke park ki lambai 50 m, chaudai 30 m. Ek round ka perimeter: 50 aur 30 jodkar 80, do guna 160 m. Ek round kaunsa raasta hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3218,
+   "replyReadyMs": 4278,
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1009
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek aayat socho: upar aur neeche ki taraf 50 m hai, dono chhoti taraf 30 m. Upar ke barabar kaunsi taraf hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2818,
+   "replyReadyMs": 3827,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1298
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ‘haan’ se taraf ka naam nahi pata chalta. Upar ke barabar neeche wali taraf hai; dono 50 m hain. Kaunsi taraf barabar hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1579,
+   "replyReadyMs": 2877
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 905
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek round ki doori: 50 aur 30 ka yog 80, uska do guna 160 m. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2538,
+   "replyReadyMs": 3443,
+   "guard": [
+    "underived"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1646
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum keh rahi ho aaj ke liye bas. Chaaho toh aage badhein, thoda viraam lein, ya aaj ke liye rok dein—tum kya chahti ho?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2778,
+   "replyReadyMs": 4424,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

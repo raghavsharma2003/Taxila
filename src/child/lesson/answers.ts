@@ -31,6 +31,16 @@ export const helpAskedKey = (chipId: string | undefined): W1AKey | null => {
   return k ? (`help.asked.${k}` as W1AKey) : null;
 };
 
+/** APP-12: a chip that asks for something (a steer, a later entry, a stop or break choice, a safeguard choice, a switch offer,
+ *  a help request) is a request the child made, never "Your answer". Only a plain item tile is an answer. */
+export const isRequestChip = (chipId: string | undefined): boolean =>
+  !!chipId && (helpAskedKey(chipId) !== null || chipId === "slower" || /^(steer|later|stop|break|safe|switch):/.test(chipId));
+
+/** APP-04: tiles and the pad are answer surfaces; an overlay (Help menu, no-mic card) alone goes to AnswerTray only over
+ *  those. Over a module, Studio piece or board it is a layer WorkTray draws above the mounted work (never lost to a Help tap). */
+export const isAnswerTray = (tr: { kind: string; overlay?: unknown }): boolean =>
+  tr.kind === "tiles" || tr.kind === "pad" || (!!tr.overlay && tr.kind !== "module" && tr.kind !== "studio" && tr.kind !== "board");
+
 /** A small whole number as dots on a Young picture tile: null when the label is not one. */
 /** round 3 fix (experience B10): a label that is words, not a numeral / short answer ("Keep going", "Stop for today"):
  *  its tile is set at the label size (desk.css .dk-tile[data-words]), never the 36-40 px numeral size. */

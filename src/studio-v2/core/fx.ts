@@ -2,6 +2,8 @@
 // flash (mint/amber tint, never red). Reduced motion drops particles and shake; the game stays playable.
 import { C, W, H, MIN, SAFE } from "./tokens.ts";
 import { ease, hexA, lerp } from "./math.ts";
+/** The top of the coach band (src/studio-v2/core/ui.ts drawCoach: a 38-unit line centred at y 600). */
+const COACH_TOP = 575;
 import { glow, type Ctx, type TextOpts } from "./draw.ts";
 
 interface P { x: number; y: number; vx: number; vy: number; life: number; t: number; size: number; color: string; g: number; drag: number; shard: boolean; rot: number; vr: number; floor?: number }
@@ -31,7 +33,9 @@ export class FX {
     const size = Math.max(MIN.label, o.size ?? 44), rise = o.rise ?? 70, half = (size * 0.62 * text.length) / 2 + 8;
     // keep the whole rise clear of the safe zones (DESIGN-V3 §6.3): type label top-left 180×75, teacher PiP top-right 162.5²
     const cx = Math.min(W - half - 8, Math.max(half + 8, x));
-    let top = y - rise - size * 0.6;
+    // (and clear of the coach band at the bottom — drawCoach's line at y 600: a pop anchored to an item that fell out of the
+    // bottom was drawn over the coach text; approval-lane pilot c4 slice-at, judged unreadable at all three sizes, 2026-11-10)
+    let top = Math.min(y - rise - size * 0.6, COACH_TOP - size * 1.2 - rise);
     if (cx + half > SAFE.pip.x && top < SAFE.pip.y + SAFE.pip.h + 6) top = SAFE.pip.y + SAFE.pip.h + 6;
     if (cx - half < SAFE.label.x + SAFE.label.w && top < SAFE.label.y + SAFE.label.h + 6) top = SAFE.label.y + SAFE.label.h + 6;
     this.T.push({ text, x: cx, y: top + rise + size * 0.6, t: 0, life: o.life ?? 0.9, color: o.color ?? C.ink, size, rise });

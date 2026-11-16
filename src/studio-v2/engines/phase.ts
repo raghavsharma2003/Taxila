@@ -5,11 +5,13 @@
 // Every control change is logged in sim time; the host replays the log with the same fixed step and grades the goal.
 import { WATER, WATER_PROBES, waterGoalMet, waterInit, waterStep, type PhaseSpec, type WaterInput, type WaterLog, type WaterState } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, lerp, mix, rng } from "../core/math.ts";
 import { bloom, roundRect, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
 import { pill, voltRing } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../core/types.ts";
+import { dots } from "../core/dots.ts";
 
 const BK = { x0: 360, x1: 640, top: 250, bot: 540 }, N = 96, SL = { x: 190, y0: 250, y1: 530 }, BTN = { fan: { x: 870, y: 330 }, lid: { x: 870, y: 430 } };
 interface P { x: number; y: number; vx: number; vy: number; role: "ice" | "liq" | "vap" | "drop" | "gone"; site: number }
@@ -42,8 +44,8 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   function startStep(i: number) {
     g.si = i; g.from = s.t; g.base = s; g.stepT = 0; g.pick = null; g.warn = 0;
     const st = spec.steps[i];
-    if (st.kind === "probe") { g.phase = "probe"; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, `${T.predict}: ${WATER_PROBES[st.probe].q}`); }
-    else { g.phase = "goal"; api.task(`${T.step} ${i + 1}/${spec.steps.length}`, st.goal === "evaporate" ? `${st.text} (${T.noBoil} ${st.tMax} °C)` : st.text); }
+    if (st.kind === "probe") { g.phase = "probe"; api.task(`${T.step} ${dots(i, spec.steps.length)}`, `${T.predict}: ${WATER_PROBES[st.probe].q}`); }
+    else { g.phase = "goal"; api.task(`${T.step} ${dots(i, spec.steps.length)}`, st.goal === "evaporate" ? `${st.text} (${T.noBoil} ${st.tMax} °C)` : st.text); }
     api.event("step_start", { step: i + 1, kind: st.kind, targets: st.targets ?? null });
   }
   const chips = () => { const st = step(); if (!st || st.kind !== "probe") return []; const opts = WATER_PROBES[st.probe].options; return opts.map((o, i) => ({ o, x: 500 + (i - (opts.length - 1) / 2) * 290, y: 586, w: 270, h: 70 })); };
@@ -77,7 +79,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
         if (waterGoalMet(st.goal, s, g.base, st.arg)) {
           const grade = api.answer(`s${g.si + 1}`, { log: { $hostLog: "controls" }, until: s.t, from: g.from }, "right");
           g.results.push(grade.verdict); g.phase = "met"; g.stepT = 0;
-          api.task(`${T.step} ${g.si + 1}/${spec.steps.length}`, `${T.done}: ${st.text}`, "done");
+          api.task(`${T.step} ${dots(g.si, spec.steps.length)}`, `${T.done}: ${st.text}`, "done");
           api.fx.flash(C.mint, 0.1); sfx.blip({ f: 659, dur: 0.12, type: "triangle", gain: 0.14 }); setTimeout(() => sfx.blip({ f: 988, dur: 0.18, type: "triangle", gain: 0.12 }), 110);
           api.facts({ step: st.goal, verdict: grade.verdict, T: +s.T.toFixed(1), ice: +s.ice.toFixed(2), gone: +(s.vapour + s.escaped).toFixed(2), droplets: +s.droplets.toFixed(2) });
         }
@@ -129,45 +131,45 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
   }
   function next() { if (g.si + 1 < spec.steps.length) startStep(g.si + 1); else { g.phase = "final"; api.task("", T.done, "done"); api.done({ steps: spec.steps.length, right: g.results.filter((r) => r === "right").length }); } }
   function paintBg(c: Ctx) {
-    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, "#0A0C12"); gr.addColorStop(1, "#10131B"); c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    c.fillStyle = "#151924"; roundRect(c, 300, 556, 400, 26, 10); c.fill();
+    const gr = c.createLinearGradient(0, 0, 0, H); gr.addColorStop(0, C.bg); gr.addColorStop(1, C.bg1); c.fillStyle = gr; c.fillRect(0, 0, W, H);
+    c.fillStyle = C.phaseBurner; roundRect(c, 300, 556, 400, 26, 10); c.fill();
   }
   function render(ctx: Ctx, now: number) {
     ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     // burner / chiller glow
-    if (u.heat > 0) bloom(ctx, "#FF8A4C", 500, 568, 160 + 80 * u.heat, 0.5 * u.heat);
-    if (u.heat < 0) bloom(ctx, "#7FD6FF", 500, 568, 160, -0.5 * u.heat);
+    if (u.heat > 0) bloom(ctx, C.phaseHeatGlow, 500, 568, 160 + 80 * u.heat, 0.5 * u.heat);
+    if (u.heat < 0) bloom(ctx, C.phaseCool, 500, 568, 160, -0.5 * u.heat);
     // beaker glass
-    ctx.save(); ctx.fillStyle = "rgba(139,152,255,.04)"; ctx.fillRect(BK.x0, BK.top, BK.x1 - BK.x0, BK.bot - BK.top);
-    ctx.strokeStyle = "rgba(220,230,255,.45)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(BK.x0, BK.top - 20); ctx.lineTo(BK.x0, BK.bot); ctx.lineTo(BK.x1, BK.bot); ctx.lineTo(BK.x1, BK.top - 20); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = withAlpha(C.ion, .04); ctx.fillRect(BK.x0, BK.top, BK.x1 - BK.x0, BK.bot - BK.top);
+    ctx.strokeStyle = withAlpha(C.phaseGlass, .45); ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(BK.x0, BK.top - 20); ctx.lineTo(BK.x0, BK.bot); ctx.lineTo(BK.x1, BK.bot); ctx.lineTo(BK.x1, BK.top - 20); ctx.stroke(); ctx.restore();
     // lid
-    if (u.lid) { ctx.fillStyle = "#9FD8F0"; roundRect(ctx, BK.x0 - 16, BK.top - 6, BK.x1 - BK.x0 + 32, 14, 6); ctx.fill(); bloom(ctx, "#7FD6FF", 500, BK.top, 180, 0.25); }
+    if (u.lid) { ctx.fillStyle = C.phaseDrop; roundRect(ctx, BK.x0 - 16, BK.top - 6, BK.x1 - BK.x0 + 32, 14, 6); ctx.fill(); bloom(ctx, C.phaseCool, 500, BK.top, 180, 0.25); }
     // ice bonds
-    ctx.strokeStyle = "rgba(190,235,255,.35)"; ctx.lineWidth = 2; ctx.beginPath();
+    ctx.strokeStyle = withAlpha(C.phaseIceBond, .35); ctx.lineWidth = 2; ctx.beginPath();
     for (let i = 0; i < N; i++) { const a = ps[i]; if (a.role !== "ice") continue; for (const j of [i + 1, i + 12]) { const b = ps[j]; if (!b || b.role !== "ice" || Math.hypot(a.x - b.x, a.y - b.y) > 18) continue; ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); } }
     ctx.stroke();
-    for (const b of g.bubbles) { ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.stroke(); }
+    for (const b of g.bubbles) { ctx.strokeStyle = withAlpha(C.hi, .55); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2); ctx.stroke(); }
     for (const p of ps) {
       if (p.role === "gone" && p.y < -10) continue;
-      const col = p.role === "ice" ? "#CFF2FF" : p.role === "liq" ? mix("#5F7BFF", "#9AA7FF", clamp(s.T / 100, 0, 1)) : p.role === "drop" ? "#9FD8F0" : "rgba(242,244,248,.75)";
+      const col = p.role === "ice" ? C.phaseIce : p.role === "liq" ? mix(C.phaseWaterCold, C.phaseWaterHot, clamp(s.T / 100, 0, 1)) : p.role === "drop" ? C.phaseDrop : withAlpha(C.ink, .75);
       const r = p.role === "vap" || p.role === "gone" ? 3.5 : 5;
       ctx.fillStyle = col; ctx.globalAlpha = p.role === "vap" || p.role === "gone" ? 0.55 : 1; ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
     if (s.vapour > 0.02) api.text(ctx, T.invisible, 500, BK.top + 34, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center" });
     // heat slider
-    ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(SL.x, SL.y0); ctx.lineTo(SL.x, SL.y1); ctx.stroke();
-    const hy = lerp(SL.y1, SL.y0, (u.heat + 1) / 2), hcol = u.heat > 0 ? "#FF9A5C" : u.heat < 0 ? "#7FD6FF" : C.ink2;
+    ctx.strokeStyle = withAlpha(C.hi, .14); ctx.lineWidth = 10; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(SL.x, SL.y0); ctx.lineTo(SL.x, SL.y1); ctx.stroke();
+    const hy = lerp(SL.y1, SL.y0, (u.heat + 1) / 2), hcol = u.heat > 0 ? C.phaseHeat : u.heat < 0 ? C.phaseCool : C.ink2;
     ctx.strokeStyle = hcol; ctx.lineWidth = 10; ctx.beginPath(); ctx.moveTo(SL.x, (SL.y0 + SL.y1) / 2); ctx.lineTo(SL.x, hy); ctx.stroke();
-    ctx.fillStyle = "#1F2536"; ctx.beginPath(); ctx.arc(SL.x, hy, 26, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = hcol; ctx.lineWidth = 4; ctx.stroke();
+    ctx.fillStyle = C.phaseKnob; ctx.beginPath(); ctx.arc(SL.x, hy, 26, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = hcol; ctx.lineWidth = 4; ctx.stroke();
     if (g.phase === "goal" && g.si === 0 && u.heat === 0) voltRing(ctx, SL.x, hy, 36, now);
-    api.text(ctx, T.heat, SL.x, SL.y0 - 30, { font: "mono", size: 38, weight: 600, color: "#FF9A5C", align: "center" });
-    api.text(ctx, T.cool, SL.x, SL.y1 + 56, { font: "mono", size: 38, weight: 600, color: "#7FD6FF", align: "center" });
+    api.text(ctx, T.heat, SL.x, SL.y0 - 30, { font: "mono", size: 38, weight: 600, color: C.phaseHeat, align: "center" });
+    api.text(ctx, T.cool, SL.x, SL.y1 + 56, { font: "mono", size: 38, weight: 600, color: C.phaseCool, align: "center" });
     // thermometer
     const tx = 668, ty0 = 260, ty1 = 520, tk = clamp((s.T + 20) / 140, 0, 1);
-    ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(tx, ty0); ctx.lineTo(tx, ty1); ctx.stroke();
-    ctx.strokeStyle = s.T >= 99.9 ? "#FF9A5C" : s.T <= 0 ? "#7FD6FF" : C.ion; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, lerp(ty1, ty0, tk)); ctx.stroke();
+    ctx.strokeStyle = withAlpha(C.hi, .25); ctx.lineWidth = 16; ctx.beginPath(); ctx.moveTo(tx, ty0); ctx.lineTo(tx, ty1); ctx.stroke();
+    ctx.strokeStyle = s.T >= 99.9 ? C.phaseHeat : s.T <= 0 ? C.phaseCool : C.ion; ctx.lineWidth = 9; ctx.beginPath(); ctx.moveTo(tx, ty1); ctx.lineTo(tx, lerp(ty1, ty0, tk)); ctx.stroke();
     for (const [v, lb] of [[0, "0"], [100, "100"]] as [number, string][]) { const y = lerp(ty1, ty0, (v + 20) / 140); ctx.strokeStyle = C.ink2; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(tx + 12, y); ctx.lineTo(tx + 24, y); ctx.stroke(); api.text(ctx, lb, tx + 24, y + 13, { font: "mono", size: 38, weight: 600, color: C.ink3 }); }
     const st = step();
     if (st && st.kind === "goal" && st.goal === "evaporate") { const y = lerp(ty1, ty0, (st.tMax + 20) / 140); ctx.strokeStyle = C.amber; ctx.lineWidth = 3; ctx.setLineDash([6, 6]); ctx.beginPath(); ctx.moveTo(tx - 20, y); ctx.lineTo(tx + 20, y); ctx.stroke(); ctx.setLineDash([]); }
@@ -175,21 +177,21 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
     // buttons
     for (const [k, b, label] of [["fan", BTN.fan, T.fan], ["lid", BTN.lid, T.lid]] as const) {
       const on = u[k] > 0.5;
-      ctx.fillStyle = on ? "rgba(139,152,255,.18)" : "rgba(22,26,36,.95)"; roundRect(ctx, b.x - 100, b.y - 40, 200, 80, 18); ctx.fill(); ctx.strokeStyle = on ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke();
+      ctx.fillStyle = on ? withAlpha(C.ion, .18) : withAlpha(C.bg2, .95); roundRect(ctx, b.x - 100, b.y - 40, 200, 80, 18); ctx.fill(); ctx.strokeStyle = on ? C.ion : C.line2; ctx.lineWidth = 2; ctx.stroke();
       api.text(ctx, label, b.x, b.y + 2, { font: "mono", size: 38, weight: 600, color: on ? C.ion : C.ink2, align: "center", baseline: "middle", maxWidth: 192 });
-      if (k === "fan" && on && !api.reducedMotion) { ctx.strokeStyle = "rgba(139,152,255,.5)"; ctx.lineWidth = 3; for (let i = 0; i < 3; i++) { const y = BK.top - 10 + i * 30, o = (now * 200 + i * 60) % 120; ctx.beginPath(); ctx.moveTo(BK.x1 + 120 - o, y); ctx.lineTo(BK.x1 + 80 - o, y); ctx.stroke(); } }
+      if (k === "fan" && on && !api.reducedMotion) { ctx.strokeStyle = withAlpha(C.ion, .5); ctx.lineWidth = 3; for (let i = 0; i < 3; i++) { const y = BK.top - 10 + i * 30, o = (now * 200 + i * 60) % 120; ctx.beginPath(); ctx.moveTo(BK.x1 + 120 - o, y); ctx.lineTo(BK.x1 + 80 - o, y); ctx.stroke(); } }
     }
     if (g.plateau) pill(api, ctx, g.plateau, 500, 204, { color: C.ink, size: 38 });
     if (g.warn > 0 && st && st.kind === "goal") pill(api, ctx, `over ${st.tMax} °C: cool it down`, 500, 204, { color: C.amber, size: 38 });
     // probe chips + reveal
     if (st && st.kind === "probe") {
       const pr = WATER_PROBES[st.probe];
-      if (g.phase === "probe") for (const c of chips()) { ctx.fillStyle = "rgba(22,26,36,.96)"; roundRect(ctx, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, c.o, c.x, c.y + 2, { font: "display", size: 40, weight: 700, align: "center", baseline: "middle", maxWidth: 250 }); }
+      if (g.phase === "probe") for (const c of chips()) { ctx.fillStyle = withAlpha(C.bg2, .96); roundRect(ctx, c.x - c.w / 2, c.y - c.h / 2, c.w, c.h, 18); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke(); api.text(ctx, c.o, c.x, c.y + 2, { font: "display", size: 40, weight: 700, align: "center", baseline: "middle", maxWidth: 250 }); }
       if (g.phase === "reveal") {
         const ok = g.pick === pr.key, k = clamp(g.stepT / 0.5, 0, 1);
-        ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = "rgba(10,12,18,.82)"; ctx.fillRect(0, 0, W, H);
-        const cx = 500, cy = 340, R = 150; ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
-        const inner = st.probe === "steam" ? "#9FD8F0" : "rgba(242,244,248,.8)";
+        ctx.save(); ctx.globalAlpha = k; ctx.fillStyle = withAlpha(C.bg, .82); ctx.fillRect(0, 0, W, H);
+        const cx = 500, cy = 340, R = 150; ctx.strokeStyle = withAlpha(C.hi, .7); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.stroke();
+        const inner = st.probe === "steam" ? C.phaseDrop : withAlpha(C.ink, .8);
         for (let i = 0; i < 26; i++) { const a = i * 2.4 + g.stepT * (st.probe === "steam" ? 0.4 : 2.2), rr = (0.2 + ((i * 37) % 70) / 100) * R; ctx.fillStyle = inner; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * rr, cy + Math.sin(a * 1.3) * rr * 0.8, st.probe === "steam" ? 7 : 5, 0, Math.PI * 2); ctx.fill(); }
         api.text(ctx, pr.key.toUpperCase(), cx, cy + R + 56, { font: "mono", size: 40, weight: 600, color: ok ? C.mint : C.ion, align: "center" });
         if (ok) tick(ctx, cx + R + 30, cy - R + 20);
@@ -217,7 +219,7 @@ function create(api: EngineApi, spec: PhaseSpec): EngineInstance {
     update, render, bot,
     seam: () => ({ phase: g.phase, step: step()?.kind ?? null, T: +s.T.toFixed(2), ice: +s.ice.toFixed(3), liquid: +s.liquid.toFixed(3), gone: +(s.vapour + s.escaped).toFixed(3), droplets: +s.droplets.toFixed(3), simT: +s.t.toFixed(2), u: { ...u } }),
     knob(k) { if (k === "again") { s = waterInit(spec.start); log.length = 0; log.push({ t: 0, heat: 0, fan: 0, lid: 0 }); api.resetLog("controls"); api.record("controls", log[0]); u.heat = u.fan = u.lid = 0; want.heat = want.fan = want.lid = 0; lastLogT = 0; acc = 0; g.results = []; startStep(0); return true; } return false; },
-    board: () => ({ title: "Same water, three states", lines: ["0 °C holds while ice melts; 100 °C holds while water boils.", "Vapour is invisible. Clouds and steam are droplets."], figure: { kind: "chain", items: ["ice", "water", "vapour", "droplets"] }, accent: "#7FD6FF" }),
+    board: () => ({ title: "Same water, three states", lines: ["0 °C holds while ice melts; 100 °C holds while water boils.", "Vapour is invisible. Clouds and steam are droplets."], figure: { kind: "chain", items: ["ice", "water", "vapour", "droplets"] }, accent: C.phaseCool }),
   };
 }
-export const phase: EngineDef<PhaseSpec> = { archetype: "phase-shift@1", label: "Sim · States of water", accent: C.sci, create };
+export const phase: EngineDef<PhaseSpec> = { archetype: "phase-shift@1", label: "Sim · States of water", get accent() { return C.sci; }, create };

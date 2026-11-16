@@ -1,0 +1,138 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch06-t01",
+    "archetype": "instrument@1",
+    "misconceptionId": "c4-maths-ch06-t01-m-edge-start",
+    "how": "the mode is the topic's quantity: length topics cut (km and m on a long rule: show 'km+m', scaleMax up to 2000000 mm), capacity pours, mass weighs; every number in the base unit (cut mm: 6 cm is 60); a length-reading mix-up round starts the object off 0 (from 3 to 9)",
+    "skillId": "c4-maths-ch06-t01-s1",
+    "beat": "rem:c4-maths-ch06-t01-m-edge-start",
+    "when": "remediation",
+    "check": "c4-maths-ch06-t01-s1:c1"
+  },
+  "archetype": "instrument@1",
+  "spec": {
+    "archetype": "instrument@1",
+    "skills": [
+      "c4-maths-ch06-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Raund",
+      "measured": "Naapa gaya",
+      "precision": "Safai",
+      "hold": "Roko",
+      "release": "Chhodo",
+      "cut": "Lambai",
+      "set": "Set karo",
+      "am": "Subah",
+      "pm": "Shaam",
+      "tapAt": "Yahan tap karo",
+      "runDone": "Raund poora",
+      "offBy": "Itna fark",
+      "exact": "Bilkul sahi",
+      "after": "Baad mein",
+      "minutes": "Minute",
+      "balanced": "Santulit",
+      "heavy": "Bhaari",
+      "light": "Halka"
+    },
+    "title": "Ruler par lambai",
+    "rounds": [
+      {
+        "mode": "cut",
+        "title": "Ruler par nishaan",
+        "sub": "chhoti lambai ko dhyaan se dekho",
+        "items": [
+          {
+            "target": 60,
+            "show": "cm"
+          },
+          {
+            "target": 80,
+            "show": "cm"
+          },
+          {
+            "target": 120,
+            "show": "cm"
+          }
+        ],
+        "scaleMax": 3000,
+        "minor": 30,
+        "tol": 5,
+        "speed": 1,
+        "targets": "c4-maths-ch06-t01-m-edge-start"
+      },
+      {
+        "mode": "cut",
+        "title": "Lambi cheez",
+        "sub": "door ke nishaan par nazar rakho",
+        "items": [
+          {
+            "target": 340000,
+            "show": "km+m"
+          },
+          {
+            "target": 1250000,
+            "show": "km+m"
+          }
+        ],
+        "scaleMax": 2000000,
+        "minor": 20000,
+        "tol": 500,
+        "speed": 0.8,
+        "targets": "c4-maths-ch06-t01-m-concat-units"
+      },
+      {
+        "mode": "cut",
+        "title": "Alag lambaiyan",
+        "sub": "har cheez ko ruler par dekho",
+        "items": [
+          {
+            "target": 100,
+            "show": "cm"
+          },
+          {
+            "target": 200,
+            "show": "cm"
+          },
+          {
+            "target": 340,
+            "show": "cm"
+          }
+        ],
+        "scaleMax": 2000000,
+        "minor": 20000,
+        "tol": 5,
+        "speed": 0.9,
+        "targets": "c4-maths-ch06-t01-m-m-is-10cm"
+      }
+    ]
+  },
+  "hash": "2e83e71fd4a73048809314cd43ac8b4f",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 3,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "instrument@1",
+    "onScreen": {
+      "title": "Ruler par lambai",
+      "rounds": 3,
+      "first": "Ruler par nishaan: chhoti lambai ko dhyaan se dekho"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T12:45:59.394Z"
+  }
+}

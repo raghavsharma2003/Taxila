@@ -1,0 +1,85 @@
+From: Studio (C1), 2026-11-10 — journey audit JRN-02 and JRN-04, routed to the App session
+Subject: [PATCH 011] the "mic is off" card gets a slot of its own; Hello keeps its main button on screen at 360 x 640
+
+JRN-02 (the card ran under the steer chips). The card is AnswerTray's no_mic overlay; StageBody gave it the tiles' height
+(answerNeedOf: 152), and its 96 px art + title + line + "Not now" is taller, so "Not now" sat under the chips. Fix: answerNeedOf
+returns 160 for tray.overlay === "no_mic" (the stage yields to it, as for the help menu), and on the tiles/pad tray the card
+drops its art and tightens its gap and padding (desk.css) so title, line and "Not now" fit in the slot. Layout only.
+Measured at class 6 / class 3, Chromium, kaksha dev page fixture=no-mic:
+  360x640  before: "Not now" y 458-506, chips y 472-520 (overlap)  after: "Not now" y 404-452, tray 304-464, chips 472-520
+  360x720  before: "Not now" y 538-586, chips 552-600             after: "Not now" y 484-532, tray 384-544, chips 552-600
+  412x860  after: "Not now" y 604-652, tray 524-684, chips 692
+  class 3 (young, no chips) 360x640: "Not now" y 421-485 inside tray 336-496, dock 504
+
+JRN-04 (Hello pushed its next step below the fold). src/ui-v3/kaksha/kit.css, one block under @media (max-height: 740px)
+and (max-width: 899px) (single column only): the Hello screen is one viewport high, the card column scrolls inside it, the
+card's primary action (.kx-hello-card > .kx-cta or > .kx-hello-pair) is sticky at the foot of the screen, and her face
+shrinks (greet min(78vw, 300px, 32dvh); compact never under 184 px so her name and "AI teacher" print whole). No colour, type or
+look changed. Taller phones are untouched (412x860 numbers identical before and after).
+Measured with the real /c/c1/hello route (mocked /api/me), main button bottom edge, 640 high viewport:
+  card      before  after
+  greet      619    565   (Tap to hear)
+  ai         565    568   (Got it)
+  picture    670    608   (That's me)
+  likes      575    588   (That's right)
+  feel       723    608   (Next)
+  hi         479    482
+All six are inside 640 and the page no longer scrolls (scrollHeight 640). Same at class 3.
+Not done: the classic (non-Kaksha) .hello skin is not touched (reachable only with ?ui=classic).
+
+Checked: tsc -b shows only errors in src/studio-v2/engines/slice.ts, another session's uncommitted file; none in these three.
+Tests that read these files pass (r7-app-steer, round3-fix, r7-app-motion, r7-app-identity, r7-app-audit-batch3,
+r4-kaksha-audit, r7-app-secondary, r7-app-feel, r4-asha-setup-cut, r7-app-shell). No new test: the proof is the rendered
+measurement above (tests/prod/r4-kaksha-desk-shots.mjs shows the card at fixture=no-mic). Apply with `git apply`.
+Merge note: StageBody.tsx / answerNeedOf is beside APP-21 (patch 010 edits stageLayout.ts only); no overlap with it.
+
+diff --git a/src/child/lesson/desk.css b/src/child/lesson/desk.css
+index fb07caeae..7d71072aa 100644
+--- a/src/child/lesson/desk.css
++++ b/src/child/lesson/desk.css
+@@ -186,6 +186,11 @@
+ .dk-nomic-art { width: 96px; height: 96px; display: grid; place-items: center; color: var(--ink-2); }
+ .dk-nomic-title { font-weight: 700; font-size: var(--t-label); }
+ .dk-nomic-sub { color: var(--ink-2); }
++/* JRN-02: on the answer surface the card is title + line + "Not now" in the 160 px slot the stage gives it (no art: 96 px of
++   art cannot fit, and the card ran under the steer chips at 360x640) */
++.dk-tray--tiles .dk-nomic, .dk-tray--pad .dk-nomic { gap: 4px; padding: var(--space-2); overflow: hidden; }
++.dk-tray--tiles .dk-nomic-art, .dk-tray--pad .dk-nomic-art { display: none; }
++.dk-tray--tiles .dk-nomic-title, .dk-tray--pad .dk-nomic-title, .dk-tray--tiles .dk-nomic-sub, .dk-tray--pad .dk-nomic-sub { margin: 0; line-height: 1.2; }
+ 
+ /* ── The Answer dock: the ONLY lamp target ── */
+ .dk-dock { position: relative; height: 100%; display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line);
+diff --git a/src/ui-v3/kaksha/kit.css b/src/ui-v3/kaksha/kit.css
+index a13dc5702..561aa9ad1 100644
+--- a/src/ui-v3/kaksha/kit.css
++++ b/src/ui-v3/kaksha/kit.css
+@@ -196,6 +196,16 @@
+ .kx-hello-face .kx-who { white-space: nowrap; }
+ .kx-hello-face[data-compact] .kx-who b { font-size: 16px; padding: 5px 7px; }
+ .kx-hello-face[data-compact] .kx-ai { font-size: 14px; padding: 4px 6px; }
++/* JRN-04: on a short phone (360x640) her face shrinks and the card's primary action stays on screen as a bottom bar
++   (sticky at the foot of the screen while the card's own content scrolls past); layout only, nothing restyled */
++@media (max-height: 740px) and (max-width: 899px) {
++  .kx-hello.kx-screen { height: 100dvh; min-height: 0; padding-bottom: 8px; }
++  .kx-hello .kx-page-main { min-height: 0; padding: 12px 0; overflow-y: auto; overscroll-behavior: contain; }
++  .kx-hello-grid { gap: 8px; }
++  .kx-hello-face { width: min(78vw, 300px, 32dvh); }
++  .kx-hello-face[data-compact] { width: min(52vw, 204px, max(24dvh, 184px)); } /* never under 184: her name and "AI teacher" print whole */
++  .kx-hello-card > .kx-cta, .kx-hello-card > .kx-hello-pair { position: sticky; bottom: 12px; z-index: 2; }
++}
+ /* Ask "Say it": the listening chip (ion edge, a live dot; still under reduced motion) */
+ .kx-chip--live { color: var(--k-ink); border-color: var(--k-ion); box-shadow: inset 0 0 0 1px var(--k-ion); }
+ .kx-rec-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--k-rose); animation: kx-blink 1.2s ease-in-out infinite; }
+diff --git a/src/ui-v3/kaksha/lesson/StageBody.tsx b/src/ui-v3/kaksha/lesson/StageBody.tsx
+index cbea6696b..278dd3271 100644
+--- a/src/ui-v3/kaksha/lesson/StageBody.tsx
++++ b/src/ui-v3/kaksha/lesson/StageBody.tsx
+@@ -28,6 +28,8 @@ const px = (r: Rect | null | undefined): CSSProperties | undefined => (r ? { lef
+ export function answerNeedOf(tray: TrayModel | null, young: boolean): number {
+   if (!tray) return 0;
+   if (tray.overlay === "help_menu") return young ? 248 : 216;
++  // JRN-02: the "mic is off" card has a slot of its own: its title, line and "Not now" (art hidden on short phones, desk.css)
++  if (tray.overlay === "no_mic") return 160;
+   if (tray.kind === "pad") return young ? 248 : 232;
+   if (tray.kind === "tiles") {
+     const n = tray.tiles?.length ?? 0;

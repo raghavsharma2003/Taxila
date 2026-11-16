@@ -35,7 +35,9 @@ test("failures: a wrong re-check, another re-teach before any success, a differe
   assert.deepEqual(pick(resolveAttempt(A, [item("L1", T + 60_000, "C0", { assisted: "parent" })])), ["contaminated", true, null]);
   const lost = resolveAttempt(A, [item("L1", T + 60_000, "C0"), item("L2", T + DELAY_MS + 60_000, "C4")]);
   assert.deepEqual(pick(lost), ["repaired_now", true, 0.3], "repaired, then the next lesson's answer was wrong: final with the stage reached");
-  assert.deepEqual(pick(resolveAttempt(A, [], [], T + HORIZON_MS + 1)), ["failed", true, 0], "the 30-day horizon closes an attempt nothing ever answered");
+  // audit 2026-11-09 LEARN-27: closed, but with no outcome and no reward (no answer says nothing about the method; "failed"
+  // with reward 0 added a failure to the arm's shared posterior for every child who simply did not come back)
+  assert.deepEqual(pick(resolveAttempt(A, [], [], T + HORIZON_MS + 1)), [null, true, null], "the 30-day horizon closes an attempt nothing ever answered");
   assert.equal(resolveAttempt(A, [item("L1", T - 60_000, "C0")], [], T + 1000).outcome, null, "evidence BEFORE the re-teach says nothing");
   assert.equal(resolveAttempt(A, [{ ...item("L1", T + 60_000, "C0"), via: "late" }], [], T + 1000).outcome, null, "a late correction is not an answer");
 });
@@ -169,4 +171,13 @@ test("every trigger a re-teach decision can write is allowed by the reteach_atte
   const triggers = new Set([...src.matchAll(/trigger:\s*"([a-z_0-9]+)"/g), ...src.matchAll(/return "([a-z_0-9]+)";/g)].map((m) => m[1]).filter((t) => /_/.test(t)));
   for (const t of triggers) assert.ok(allowed.has(t), `trigger '${t}' is not allowed by the check (${[...allowed].join(", ")})`);
   assert.ok(triggers.has("misconception_seen") && triggers.has("two_fails_post_rung3"));
+});
+
+test("audit LEARN-27: a re-teach nobody answered after is no evidence about the method (no reward), not a failure", async () => {
+  const { resolveAttempt } = await import("../server/comprehension/resolve.js");
+  const a = { id: "r1", skillId: "s1", sessionId: "L1", misId: null, at: "2026-10-01T10:00:00.000Z" };
+  const out = resolveAttempt(a, [], [], Date.parse("2026-11-02T10:00:00.000Z"));
+  assert.equal(out.final, true);
+  assert.equal(out.reward, null);
+  assert.notEqual(out.outcome, "failed");
 });

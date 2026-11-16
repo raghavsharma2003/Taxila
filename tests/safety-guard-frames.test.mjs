@@ -44,6 +44,6 @@ test("guard frames never explain a line with a harm detail, repetition, cause, s
 test("no recall draw is lost against the pre-guard fingerprint (every set, clean / no-punct / 40 seeds)", () => {
   const out = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "fp-")), "after.json");
   execFileSync(process.execPath, ["evals/safety-robust/fingerprint.mjs", "--out", out], { stdio: "pipe" });
-  const res = execFileSync(process.execPath, ["evals/safety-robust/fingerprint.mjs", "--diff", "evals/safety-robust/results/2026-10-05-fingerprint-before-guards.json", out], { encoding: "utf8" });
+  const res = execFileSync(process.execPath, ["evals/safety-robust/fingerprint.mjs", "--diff", "tests/fixtures/eval-results/safety-robust/results/2026-10-05-fingerprint-before-guards.json", out], { encoding: "utf8" });
   assert.match(res, /lost 0,/, res);
 });

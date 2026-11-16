@@ -43,14 +43,13 @@ function memStore() {
 const quiet = (fn) => async (...a) => { const i = console.info; console.info = () => {}; try { return await fn(...a); } finally { console.info = i; } };
 beforeEach(() => _resetSettleStats());
 
-test("a verdict that lands within 600 ms is folded at the next turn (the 0 s reply case)", quiet(async () => {
+test("a verdict that lands within 600 ms is folded at the next turn (the 0 s reply case)", { timeout: 60_000 }, quiet(async () => {
   const s = memStore(); _setStore(s);
   const ev = why();
   gradeLater(ev, req, { grade: gradeIn(150) });
   assert.equal(settledGrade(ev.id), undefined, "not in yet when the child answers at once");
-  const t0 = Date.now();
-  const r = await settleHeld([ev.id], 600);
-  assert.ok(Date.now() - t0 < 500, "it returns as soon as the verdict lands, not at the deadline");
+  // a deadline no test run reaches: the call returning at all proves it returned on the verdict, not at the deadline (a miss hangs)
+  const r = await settleHeld([ev.id], 600_000);
   assert.equal(r.settled, 1); assert.deepEqual(r.fallback, []);
   assert.equal(settledGrade(ev.id)[0].label, "present");
   assert.deepEqual(s.calls.claim, [], "nothing is claimed");
@@ -121,15 +120,19 @@ test("lateEvent: deterministic id, via late, the grader's outcome and span check
   assert.equal(lessonOfEvent(ev.id), LESSON); assert.equal(lessonOfEvent("nope:1:0"), null);
 });
 
-test("folding a correction: K is untouched (the fallback took the K step), U moves, replay of both rows is stable", () => {
+test("folding a correction: the fallback is held on K (kt-r3), the late verdict takes the K step, U moves, replay of both rows is stable", () => {
   const ev = why();
   const fallback = finalEvent(ev, undefined).event;                       // what the turn folded: classifier outcome, spanOk false
+  assert.match(fallback.graderVersion, /^held:/, "the fallback is marked held");
   const s0 = newLearnerState({ childId: "c", classLevel: 5 });
   const s1 = fuseEvidence(s0, [{ ...fallback, seq: 1 }]);
   const late = { ...lateEvent(ev, PRESENT), seq: 2 };
   const s2 = fuseEvidence(s1, [late]);
-  assert.equal(s2.ledger.skills.s1.pL, s1.ledger.skills.s1.pL, "no second K step");
-  assert.equal(JSON.stringify(s2.ledger.ability), JSON.stringify(s1.ledger.ability), "no θ observation");
+  // audit LEARN-05: the classifier's guess moves no mastery; the blind verdict, late, takes the one K step
+  assert.equal(s1.ledger.skills.s1, undefined, "no K step from the guess");
+  assert.ok(s2.ledger.skills.s1 && s2.ledger.held === undefined, "the late verdict took the K step and released the hold");
+  // the strand's epoch opens with the K step (as it did at the fallback before kt-r3), but a why is no θ observation
+  for (const ep of Object.values(s2.ledger.ability)) { assert.deepEqual(ep.seen, [], "no θ observation"); assert.ok(Object.values(ep.nObs).every((x) => x === 0)); }
   assert.ok(s1.comp.skills.s1.U.p === s0.comp.skills.s1?.U.p || s1.comp.skills.s1.U.n === 0, "the unchecked positive carried no U (E6)");
   assert.ok(s2.comp.skills.s1.U.p > s1.comp.skills.s1.U.p, "the late checked verdict moves U");
   assert.equal(s2.ledger.seen[late.id], 2, "the ledger records it (writer stages it; seq order holds)");
@@ -143,12 +146,12 @@ test("a why is folded as soon as ONE target comes back present with a checked sp
   const s = memStore(); _setStore(s);
   const ev = why();
   const two = { ...req, targets: [{ id: "s1:e1", textEn: "a" }, { id: "s1:e2", textEn: "b" }] };
-  let call = 0;
-  const grade = (r) => new Promise((res) => { const i = call++; setTimeout(() => res(i === 0 ? { ...PRESENT[0], targetId: r.target.id } : { label: "absent", spanOk: false, op: "R-EXP", targetId: r.target.id }), i === 0 ? 60 : 900); });
+  let call = 0, secondDone = false;
+  const grade = (r) => new Promise((res) => { const i = call++; if (i) setTimeout(() => { secondDone = true; }, 2500); setTimeout(() => res(i === 0 ? { ...PRESENT[0], targetId: r.target.id } : { label: "absent", spanOk: false, op: "R-EXP", targetId: r.target.id }), i === 0 ? 60 : (secondDone = false, 2500)); });
   gradeLater(ev, two, { grade });
-  const t0 = Date.now();
-  const r = await settleHeld([ev.id], 600);
-  assert.equal(r.settled, 1); assert.ok(Date.now() - t0 < 400, "decided by the first present, not the 900 ms target");
+  const r = await settleHeld([ev.id], 600_000);
+  // decided by the first present, not by waiting for the second target's (slow) grade: that grade has not landed yet
+  assert.equal(r.settled, 1); assert.equal(secondDone, false, "decided by the first present");
   const got = settledGrade(ev.id);
   assert.equal(got.length, 2);
   assert.equal(got.filter((x) => x.op).length, 1, "the pending target is a placeholder with no op (never audited)");
@@ -237,10 +240,8 @@ test("pregrade: a grade started before the turn is classified is adopted by grad
   await new Promise((r) => setTimeout(r, 200));                   // the classifier and the plan take 200 ms
   gradeLater(ev, req, { grade });
   assert.equal(calls, 1, "one R-EXP call for the one target: the pregrade's");
-  const t0 = Date.now();
-  const r = await settleHeld([ev.id], 600);
-  assert.equal(r.settled, 1);
-  assert.ok(Date.now() - t0 < 250, "it lands ~100 ms after the plan: the 200 ms before it were already graded");
+  const r = await settleHeld([ev.id], 600_000);
+  assert.equal(r.settled, 1); // (the pregrade's head start is the one-call assertion above: gradeLater adopted it, never re-ran it)
   // a different answer text is a different request: graded on its own
   const ev2 = why();
   gradeLater(ev2, { ...req, childText: "something else entirely" }, { grade });

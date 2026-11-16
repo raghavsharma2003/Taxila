@@ -1,0 +1,157 @@
+diff --git a/server/director/state.js b/server/director/state.js
+index f48ded44..4a220698 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -1570,8 +1570,37 @@ const NUMERIC_KEY = /^[-−]?[\d,]+(?:[./]\d+)?$/;
+  * kit item; a text-lane turn with no item gets it from the words actually said, routes/lesson.js), how the child
+  * is expected to answer, what the tray holds, the phase and a ≤ 24-character title.
+  */
++// r4 K-P11 (stream K, for 4A's intake): the subject words the intake card's trail prints (chrome is English, G-EN-1)
++const INTAKE_SUBJECT = { maths: "Maths", science: "Science", evs: "EVS", english: "English", hindi: "Hindi", sst: "Social Science", social: "Social Science" };
++
++/**
++ * PURE. r4 K-P11: what the child's screen may show of the session-first intake (BUILD-SPEC §3.2), from the intake beat's own
++ * state and the syllabus graph ONLY: never a model's words, no database read, nothing added to the prompt.
++ *   phase   "ask" (her opening / a follow-up) · "which" (one of two chapters) · "mapped" (the confirm probe on the picked topic)
++ *           · "plan" (the decided segment: the one-line agenda)
++ *   mapped  the topic the intake mapped the child's words to: its title, and the trail class · subject · chapter (getTopic)
++ *   plan    the segments the session opened, purpose only (no titles: TUTOR-MODEL "3 dots"); a foundation segment carries the
++ *           asked topic as its `then`
++ * Exported for tests; null when the move is not an intake move.
++ * @returns {{ phase: "ask"|"which"|"mapped"|"plan", mapped?: { topicId: string, title: string, trail: string[] }, plan?: { segments: { purpose: string }[] } } | null}
++ */
++export function intakeUi(s, p, move) {
++  if (!p?.intake || !move) return null;
++  const st = s.intake ?? {};
++  const phase = move.kind === "intake_agenda" ? "plan" : move.kind === "intake_confirm" ? "mapped" : st.stage === "which" ? "which" : "ask";
++  const out = { phase };
++  const seg = phase === "plan" ? s.session?.segments?.at(-1) ?? null : null;
++  const topicId = phase === "plan" ? (seg?.then?.topicId ?? seg?.topicId ?? p.segment?.topicId ?? null) : phase === "mapped" ? (st.pick?.topicId ?? null) : null;
++  const t = topicId ? getTopic(topicId) : null;
++  if (t) out.mapped = { topicId: t.id, title: t.title, trail: [`Class ${t.classLevel}`, INTAKE_SUBJECT[t.subject] ?? t.subject, t.chapter.title] };
++  if (seg) out.plan = { segments: [{ purpose: seg.purpose }, ...(seg.then?.purpose ? [{ purpose: seg.then.purpose }] : [])] };
++  return out;
++}
++
+ function uiFor(s, p, move, item, kit) {
+   const ui = { status: "your_turn" };
++  const intake = intakeUi(s, p, move);
++  if (intake) ui.intake = intake;
+   const topic = getTopic(s.topicId);
+   const board = p.whiteboard ?? (item ? anchorOf(item, s.ctx.lang) : null);
+   if (board && !isObjective(board.value, kit, topic)) ui.whiteboard = board;
+diff --git a/shared/contracts.ts b/shared/contracts.ts
+index 8701a7eb..4f8520e0 100644
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -140,6 +140,16 @@ export interface UiDirectives {
+    * Until W2-C sends it, the client counts the graded items of a practice lesson itself (useDesk practiceCount).
+    */
+   practice?: { n: number; of: number; done?: boolean };
++  // r4-4A (patch K-P11 from stream K): the session-first intake as the child's screen may show it (BUILD-SPEC §3.2). Built
++  // by the Director from the intake beat's state and the syllabus graph only (server/director/state.js intakeUi): never a
++  // model's words. Absent outside the intake.
++  intake?: {
++    phase: "ask" | "which" | "mapped" | "plan";
++    /** the topic the child's words were mapped to: its syllabus title and the trail class · subject · chapter */
++    mapped?: { topicId: string; title: string; trail: string[] };
++    /** the session's opened segments, purpose only (no titles on the agenda strip) */
++    plan?: { segments: Array<{ purpose: string }> };
++  };
+ }
+ 
+ /** The teacher as every surface shows them: the server is the one source (compiler/characters teacherCard). */
+diff --git a/tests/r4-kaksha-intake.test.mjs b/tests/r4-kaksha-intake.test.mjs
+new file mode 100644
+index 00000000..8912901c
+--- /dev/null
++++ b/tests/r4-kaksha-intake.test.mjs
+@@ -0,0 +1,88 @@
++// K-P11 (stream K's patch request for 4A's intake): ui.intake from the Director (server/director/state.js intakeUi), on 4A's
++// own intake fixtures (tests/r4-conversation-session.test.mjs sessionLesson). Pure: no network, no model, no database.
++//   - the phase follows the beat (ask → mapped (confirm) → plan; which on a two-chapter question)
++//   - every title and trail is the SYLLABUS GRAPH's (getTopic) for the mapped topic: never a model's words
++//   - no ui.intake outside the intake; nothing added to the prompt (the compiled instructions are byte-identical)
++// Run: node --test tests/r4-kaksha-intake.test.mjs
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import fs from "node:fs";
++import { initLessonState, step, intakeUi } from "../server/director/state.js";
++import { instructionsFor } from "../server/compiler/instructions.js";
++import { getTopic } from "../server/content/curriculum.js";
++import { kitFromFile } from "../server/content/kits.js";
++import { CTX, BRIEF, cls } from "./fixtures/kit.mjs";
++
++const kitFor = (id) => { const t = getTopic(id); return t ? kitFromFile(t) : null; };
++const NE = cls("no_evidence");
++function sessionLesson({ provisional = "c6-maths-ch06-t01", subjects = ["maths", "science"], pointer = { maths: 7 } } = {}) {
++  const kit = kitFor(provisional);
++  const ctx = { ...CTX, classLevel: 6, ageBand: "10-12", sessionId: "s-test", topicTitle: getTopic(provisional).title,
++    session: { subjects, pointer, prior: { classLevel: 6, dueReviews: [], levelPathTopic: provisional, pointer } } };
++  const s0 = initLessonState({ topicId: provisional, kit, ctx, seed: 7, now: 0 });
++  const r = step(s0, { event: "start", kit, now: 0 });
++  return { kit, r: { ...r, state: { ...r.state, brief: { ...BRIEF, classLevel: 6, ageBand: "10-12" }, mode: "text", kitHash: kit.hash, kitVerified: kit.verified } } };
++}
++/** The syllabus graph's own words for a topic: what ui.intake.mapped must equal, field by field. */
++const SUBJ = { maths: "Maths", science: "Science", evs: "EVS", english: "English", hindi: "Hindi", sst: "Social Science", social: "Social Science" };
++const graphOf = (topicId) => { const t = getTopic(topicId); return { topicId: t.id, title: t.title, trail: [`Class ${t.classLevel}`, SUBJ[t.subject], t.chapter.title] }; };
++
++test("K-P11: the start is phase 'ask' with no mapping yet", () => {
++  const { r } = sessionLesson();
++  assert.equal(r.move.kind, "intake");
++  assert.deepEqual(r.ui.intake, { phase: "ask" });
++});
++
++test("K-P11: 'aaj fractions padhaya' → 'mapped' on the confirm probe, then 'plan'; titles and trails are the syllabus graph's", () => {
++  const { r } = sessionLesson();
++  let t = step(r.state, { event: "turn", kit: kitFor("c6-maths-ch06-t01"), cls: NE, text: "aaj fractions padhaya, ma'am ne equivalent fractions kiya", now: 10_000 });
++  assert.equal(t.move.kind, "intake_confirm");
++  assert.equal(t.ui.intake.phase, "mapped");
++  assert.deepEqual(t.ui.intake.mapped, graphOf(t.state.intake.pick.topicId), "the mapped card is the graph's topic, word for word");
++  assert.equal(t.ui.intake.plan, undefined);
++  t = step(t.state, { event: "turn", kit: kitFor("c6-maths-ch06-t01"), cls: NE, text: "pata nahi", now: 20_000 });
++  assert.equal(t.move.kind, "intake_agenda");
++  assert.equal(t.ui.intake.phase, "plan");
++  const seg = t.state.session.segments.at(-1);
++  assert.deepEqual(t.ui.intake.mapped, graphOf(seg.then?.topicId ?? seg.topicId));
++  assert.deepEqual(t.ui.intake.plan.segments.map((x) => x.purpose), [seg.purpose, ...(seg.then?.purpose ? [seg.then.purpose] : [])]);
++  for (const x of t.ui.intake.plan.segments) assert.deepEqual(Object.keys(x), ["purpose"], "no titles on the agenda strip");
++  // the next turn teaches: no intake on the screen any more
++  const n = step(t.state, { event: "turn", kit: kitFor(t.state.topicId), cls: NE, text: "example pehle", now: 30_000 });
++  assert.equal(n.ui.intake, undefined);
++});
++
++test("K-P11: a switch inside the session ('magnets padhna hai') is a 'plan' on the graph's magnets topic", () => {
++  const { r } = sessionLesson();
++  const t = step(r.state, { event: "turn", kit: kitFor("c6-maths-ch06-t01"), cls: NE, text: "aaj kuch nahi hua", now: 10_000 });
++  const req = { outcome: "no_evidence", confidence: 1, source: "request", flags: NE.flags, request: { type: "switch", subject: "magnets", whole: true } };
++  const n = step(t.state, { event: "turn", kit: kitFor(t.state.topicId), cls: req, text: "mujhe magnets padhna hai", now: 20_000 });
++  assert.equal(n.move.kind, "intake_agenda");
++  assert.equal(n.ui.intake.phase, "plan");
++  assert.deepEqual(n.ui.intake.mapped, graphOf(n.state.topicId));
++  assert.ok(n.ui.intake.mapped.topicId.startsWith("c6-science-ch04"));
++});
++
++test("K-P11: never model text — every mapped string is found in the syllabus file, and the child's words never are in it", () => {
++  const { r } = sessionLesson();
++  const said = "aaj fractions padhaya, ma'am ne equivalent fractions kiya";
++  const t = step(r.state, { event: "turn", kit: kitFor("c6-maths-ch06-t01"), cls: NE, text: said, now: 10_000 });
++  const m = t.ui.intake.mapped;
++  const t0 = getTopic(m.topicId);
++  const file = fs.readFileSync(new URL(`../data/curriculum/c${t0.classLevel}-${t0.subject}.json`, import.meta.url), "utf8");
++  for (const s of [m.title, m.trail[2]]) assert.ok(file.includes(JSON.stringify(s).slice(1, -1)), `"${s}" is in the syllabus file`);
++  assert.ok(!JSON.stringify(t.ui.intake).includes("ma'am"), "the child's own words are not echoed into the card");
++});
++
++test("K-P11: no ui.intake outside a session, and the prompt is unchanged by it", () => {
++  const kit = kitFor("c6-maths-ch07-t03");
++  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx: { ...CTX, classLevel: 6 }, seed: 7, now: 0 });
++  const r = step(s0, { event: "start", kit, now: 0 });
++  assert.equal(r.ui.intake, undefined);
++  // intakeUi is pure and only reads the beat, the session and the graph; the compiled instructions do not see ui
++  const { kit: k1, r: sr } = sessionLesson();
++  const a = instructionsFor(sr.state, k1, "text");
++  const b = instructionsFor({ ...sr.state, lastUi: { ...sr.state.lastUi, intake: undefined } }, k1, "text");
++  assert.equal(a, b, "ui.intake never reaches the prompt");
++  assert.equal(intakeUi(sr.state, {}, sr.move), null, "a plan without the intake flag has no intake card");
++});

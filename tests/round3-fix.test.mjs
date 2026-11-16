@@ -6,6 +6,7 @@ import { describe, test, afterEach } from "node:test";
 import assert from "node:assert/strict";
 
 import { initLessonState, step } from "../server/director/state.js";
+import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { scanSafety } from "../server/director/safety.js";
@@ -264,7 +265,13 @@ import { build as buildCoverage, ACTS, RULES } from "../server/play/tools/build-
 
 describe("round3 fix: play is admitted by the skill its act exercises (adversarial B1)", () => {
   test("skills a game does not exercise are not admitted (the review's five)", () => {
-    for (const sk of ["c4-maths-ch07-t01-s1", "c5-maths-ch04-t01-s1", "c4-maths-ch10-t02-s1", "c7-maths-ch15-t01-s1", "c6-science-ch01-t02-s1"]) assert.equal(hasPlay(sk), false, sk);
+    // r7: ITEM-ARENA (the broad net, after every law family) may serve these skills, but only with their OWN verified items;
+    // no law family whose act exercises another skill is ever admitted for them
+    for (const sk of ["c4-maths-ch07-t01-s1", "c5-maths-ch04-t01-s1", "c4-maths-ch10-t02-s1", "c7-maths-ch15-t01-s1", "c6-science-ch01-t02-s1"]) {
+      const e = entryFor({ skillId: sk });
+      assert.ok(e === null || e.family === "arena", sk);
+      assert.equal(hasPlay(sk), e !== null, sk);
+    }
     for (const sk of ["c4-maths-ch07-t01-s2", "c5-maths-ch04-t01-s2", "c6-maths-ch07-t03-s1", "c7-science-ch10-t01-s3"]) assert.equal(hasPlay(sk), true, sk);
   });
   test("every rule has an authored ACTS entry, every entry's skills are exactly its ACTS, and the file on disk is the build", () => {
@@ -284,7 +291,8 @@ describe("round3 fix: play is admitted by the skill its act exercises (adversari
     assert.deepEqual([...new Set(lessonEvidence(g.grade, r.level).map((e) => e.skillId))], ["c4-maths-ch07-t01-s2"]);
   });
   test("an addition lesson's 'game khelna hai' is never answered with the subtraction game (no topic fallback for a named skill)", async () => {
-    assert.equal(entryFor({ skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" }), null);
+    const e = entryFor({ skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" });
+    assert.ok(e === null || e.family === "arena", "only the arena, with the addition skill's own items");
     const live = await buildLive({ ask: "game", lessonId: "11111111-1111-1111-1111-111111111111", child: { id: "00000000-0000-0000-0000-0000000000cc", class_level: 4, language_pref: "hinglish" },
       skillId: "c4-maths-ch07-t01-s1", topicId: "c4-maths-ch07-t01" }, { q: undefined });
     assert.ok(!live || live.artifact.play.mode !== "bundles");
@@ -394,10 +402,11 @@ describe("round3 fix: the engine on screen is one the item can use, and one the 
 describe("round3 fix: her words name what is really on the screen (experience B2, B3, B10)", () => {
   test("a game ask that got no play piece is said honestly: the engine kept is 'the activity', never 'game mode'", () => {
     const shape = "they want to play: the activity is the way in now; one idea; let the picture do the work";
-    assert.match(askTruth(shape, "game", "engine"), /no game is ready for this yet.*the activity already on the screen/);
-    assert.match(askTruth(shape, "game", "none"), /no game is ready for this yet.*in words/);
+    // round 7 (zero spoken build state or failure): what exists is offered, a missing game is never narrated
+    assert.match(askTruth(shape, "game", "engine"), /the activity already on the screen is the way to try it now.*never say a game is not ready/);
+    assert.match(askTruth(shape, "game", "none"), /a quick spoken game (?:between you two )?on this idea now.*never say a game is not ready/);
     const moving = "they asked to see it moving: name the movement in your first words — what on the screen they can move, drag or tap, and what changes as they do (never a video you do not have); one idea";
-    assert.match(askTruth(moving, "animation", "none"), /nothing moves on the screen this turn.*never ask them to drag or tap/);
+    assert.match(askTruth(moving, "animation", "none"), /show the movement in words.*never ask them to drag or tap; never say nothing moves/);
     assert.equal(askTruth("a picture of the same idea", "diagram", "none"), "a picture of the same idea");
   });
   test("the strips are A and B in her facts as on the screen (never bar1 / bar2), and a lab's run button is named as printed", async () => {
@@ -507,12 +516,16 @@ describe("round3 fix: 'yeh nahi padhna, photosynthesis padhna hai' switches the 
     assert.equal(go.move.kind, "wrap");
     assert.equal(go.state.switchTo, "c7-science-ch10-t01");
   });
-  test("a subject not in their class gets an honest 'not here' and the choices (no Start button)", async () => {
+  // 14.4.2 (main: "not in your class" about a subject that IS in their book is a false claim, 38aad918 c4): a subject with no
+  // topic found is never "not here"; she will look for it, and the buttons are real topics of THEIR class, never the ask
+  test("a subject with no topic found: she will look for it, never 'not in their class'; the buttons are topics of their own class", async () => {
     const kit = await getKitFix("c7-maths-ch08-t01", { generate: false });
     let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: KABIR("c7-maths-ch08-t01"), seed: 3, now: 0 }), { event: "start", kit, now: 0 });
     r = step(r.state, { event: "turn", kit, cls: { outcome: "no_evidence", confidence: 1, source: "request", request: { type: "switch", subject: "quantum mechanics", whole: true }, flags: {} }, now: 20_000, text: "quantum mechanics padhna hai" });
-    assert.ok(!r.ui.chips.some((c) => String(c.id).startsWith("switch:")));
-    assert.match(r.move.shape, /not in their class's lessons/);
+    assert.doesNotMatch(r.move.shape, /say kindly that it is not in their class/);
+    assert.match(r.move.shape, /look for it/);
+    const offered = r.ui.chips.filter((c) => String(c.id).startsWith("switch:"));
+    assert.ok(offered.every((c) => c.id.slice("switch:".length).startsWith("c7-")), JSON.stringify(r.ui.chips));
   });
 });
 
@@ -583,3 +596,8 @@ describe("round3 fix: an example she was ASKED for may use its own numbers besid
     assert.ok(out2.guard.caught.includes("parts"), "a sentence about the screen is still checked against it");
   });
 });
+
+// This file walks real kits through the Director, which loads each topic's real lesson script into server/director/script.js's
+// per-topic cache (read once per topic per process). Under --experimental-test-isolation=none that cache outlives this file and a
+// later suite driving a mini-kit on the same topicId would walk the real script. Clear it as the last test (an after() runs too late).
+test("cleanup: the script cache this file filled is cleared for the next suite", () => { setScriptForTest(); });

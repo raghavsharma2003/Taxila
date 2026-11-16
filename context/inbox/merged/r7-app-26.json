@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-coldstart-answers",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Learning's to-app/007 is built: two asks feed cold-start placement (POST /api/placement/onboarding).\n(1) Set-up's child step asks the parent 'How does school feel for {name} right now?' with Learning's FeelPicker for the class's main subjects: maths, and EVS for classes 1-5 or science for 6+. It is optional, and 'Not sure' clears. It is posted as parentView after the school chapter and before the PIN, and a miss never stops set-up.\n(2) Hello gains a card after the likes and before the voice check: one row per main subject of three drawn faces (Easy, Okay, Tricky). There is no right answer, no score, no question marks and no timer; 'Got it' is the only feedback. It posts childPicks once on Next, never blocking, and skipping is fine.\nReverse: Learning moves the asks elsewhere, or placement drops the child's own pick.",
+   "source": "inbox/r7-app-26.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-coldstart-answers`\nMost children now arrive on day one with a feel for where to begin: the parent's tap in set-up, the child's face at Hello. Neither is a test, and either one alone is enough.\n"
+ }
+}

@@ -4,6 +4,10 @@
 
 const DONT_KNOW = /(pata\s*nahi+n?|nahi+n?\s*pata|maa?lo+o?m\s*nahi+n?|nahi+n?\s*aata|don'?t\s*know|dunno|no\s*idea|\bidk\b|not\s*sure|पता\s*नहीं|नहीं\s*पता|मालूम\s*नहीं|नहीं\s*आता)/i;
 const JUST_TELL = /(just\s*tell|tell\s*me\s*the\s*answer|(answer|jawa+b|uttar)\s*(batao|bata\s*do|bolo|de\s*do)|(aap|tum|didi|bhaiya|sir)\s*(hi\s*)?bata\s*do|bas\s*bata\s*do|जवाब\s*बता|बता\s*दो)/i;
+// main 14.4 (4B): azure-speech writes the fraction word बटा as बता, so "एक बता दो" is "one over two", not "tell me": a बता
+// right after a number is the fraction's, never the request's (a "जवाब बता दो" elsewhere in the reply still asks)
+const NUM_HI = "(?:\\d+|एक|दो|तीन|चार|पाँच|पांच|छह|छः|छे|सात|आठ|नौ|दस|ग्यारह|बारह|तेरह|चौदह|पंद्रह|सोलह|सत्रह|अठारह|उन्नीस|बीस)";
+const FRACTION_BATA = new RegExp(`(^|\\s)(${NUM_HI})\\s+बता(?=\\s+${NUM_HI}(?:\\s|$|[.,!?।]))`, "gu");
 const MINIMAL = /^(h+m+|u+m+|u+h+|o+k+(a+y+)?|ha+n?|ji+|achh?a+|thee?k\s*hai|thik|yes|no|nahi+n?|hmm+)[\s.!?…]*$/i;
 
 const WINDOW = 10;
@@ -15,7 +19,7 @@ export function readUtterance(text) {
   return {
     words,
     dontKnow: words > 0 && words <= 8 && DONT_KNOW.test(t),
-    asksForAnswer: JUST_TELL.test(t),
+    asksForAnswer: JUST_TELL.test(t.replace(FRACTION_BATA, "$1$2 बटा")),
     minimal: words > 0 && MINIMAL.test(t),
   };
 }

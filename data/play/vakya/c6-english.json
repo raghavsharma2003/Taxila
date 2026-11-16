@@ -1,0 +1,1674 @@
+{
+ "v": 1,
+ "source": "data/kits/c6-english.json",
+ "items": [
+  {
+   "id": "c6-english-ch01-t01-i11",
+   "topicId": "c6-english-ch01-t01",
+   "skillId": "c6-english-ch01-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix the mistake: 'Every year Madhumati taked the bananas to the market and sold them.'",
+    "hi": "Galti dhoondo aur theek karo: 'Every year Madhumati taked the bananas to the market and sold them.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "sold"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "bananas"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "Madhumati"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the",
+      "a"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "them"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "taked",
+      "took"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "the",
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "market"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "madhumati",
+     "took",
+     "the",
+     "bananas",
+     "to",
+     "the",
+     "market",
+     "and",
+     "sold",
+     "them"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "madhumati",
+      "taked",
+      "the",
+      "bananas",
+      "to",
+      "the",
+      "market",
+      "and",
+      "sold",
+      "them"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch01-t01-m-past-regularise",
+   "malKit": "c6-english-ch01-t01-m-past-regularise",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "3f65988a"
+  },
+  {
+   "id": "c6-english-ch01-t01-rl-h3",
+   "topicId": "c6-english-ch01-t01",
+   "skillId": "c6-english-ch01-t01-s5",
+   "kind": "near_transfer",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "Complete with the correct past-tense verb and article: ‘As soon as {friendF} ___ (see) the notice, she joined ___ art club.’",
+    "hi": "Sahi past-tense verb aur article se sentence poora karo: ‘As soon as {friendF} ___ (see) the notice, she joined ___ art club.’"
+   },
+   "keyFrom": "acceptable",
+   "engine": "As",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "notice"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "club"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "a",
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "{friendF}"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "a",
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "she"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "soon"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "as"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "saw",
+      "see"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "joined"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w11",
+     "forms": [
+      "art"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "as",
+     "soon",
+     "as",
+     "{friendf}",
+     "saw",
+     "the",
+     "notice",
+     "she",
+     "joined",
+     "the",
+     "art",
+     "club"
+    ]
+   ],
+   "mals": [],
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "91070981"
+  },
+  {
+   "id": "c6-english-ch02-t01-i11",
+   "topicId": "c6-english-ch02-t01",
+   "skillId": "c6-english-ch02-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Mr Raven is male. Find and fix the mistake: 'The fox told the raven that you are a very fine bird.'",
+    "hi": "Mr Raven male hai. Galti dhoondo aur theek karo: 'The fox told the raven that you are a very fine bird.'"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "that"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "fox"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "he",
+      "you"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "raven"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "bird"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "very"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "fine"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "told"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "are",
+      "was"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w11",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "fox",
+     "told",
+     "the",
+     "raven",
+     "that",
+     "he",
+     "was",
+     "a",
+     "very",
+     "fine",
+     "bird"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "the",
+      "fox",
+      "told",
+      "the",
+      "raven",
+      "that",
+      "you",
+      "are",
+      "a",
+      "very",
+      "fine",
+      "bird"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch02-t01-m-reported-tense",
+   "malKit": "c6-english-ch02-t01-m-reported-tense",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "c26c2092"
+  },
+  {
+   "id": "c6-english-ch02-t01-rl-h3",
+   "topicId": "c6-english-ch02-t01",
+   "skillId": "c6-english-ch02-t01-s5",
+   "kind": "near_transfer",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "{friendF} said, “I lost my library card.” Complete the report: {friendF} said that ___ had lost ___ library card.",
+    "hi": "{friendF} ne kaha, 'I lost my library card.' Reported speech poori karo: {friendF} said that ___ had lost ___ library card."
+   },
+   "keyFrom": "acceptable",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "library"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "had",
+      "has"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "lost"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "card"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "my",
+      "her"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "She",
+      "I"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "she",
+     "had",
+     "lost",
+     "her",
+     "library",
+     "card"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "8840986d"
+  },
+  {
+   "id": "c6-english-ch05-t01-i11",
+   "topicId": "c6-english-ch05-t01",
+   "skillId": "c6-english-ch05-t01-s5",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Your friend's school bag is too heavy. Make an offer starting with 'Let me'.",
+    "hi": "Tumhare dost ka school bag bahut bhaari hai. 'Let me' se shuru karke madad offer karo."
+   },
+   "keyFrom": "answer",
+   "engine": "Let",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "carry"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "bag"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "me"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "your"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "let",
+     "me",
+     "carry",
+     "your",
+     "bag"
+    ]
+   ],
+   "mals": [],
+   "mis": "c6-english-ch05-t01-m-let-me-to",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "de23092a"
+  },
+  {
+   "id": "c6-english-ch05-t01-i12",
+   "topicId": "c6-english-ch05-t01",
+   "skillId": "c6-english-ch05-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'Let me to share my tiffin with you.'",
+    "hi": "Galti dhoondo: 'Let me to share my tiffin with you.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "Let",
+   "wagons": [
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w1",
+     "forms": [
+      "my"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "with"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "me"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "tiffin"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "share"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "let",
+     "me",
+     "share",
+     "my",
+     "tiffin",
+     "with",
+     "you"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "let",
+      "me",
+      "to",
+      "share",
+      "my",
+      "tiffin",
+      "with",
+      "you"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch05-t01-m-let-me-to",
+   "malKit": "c6-english-ch05-t01-m-let-me-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "ff329bd3"
+  },
+  {
+   "id": "c6-english-ch07-t01-i14",
+   "topicId": "c6-english-ch07-t01",
+   "skillId": "c6-english-ch07-t01-s5",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Change the verbs to the past: 'Amber (find) many facts and (become) curious about neem.'",
+    "hi": "Verbs ko past mein badlo: 'Amber (find) many facts and (become) curious about neem.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Amber",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "find",
+      "found"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "about"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "became",
+      "become"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "many"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "neem"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "curious"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "facts"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "amber",
+     "found",
+     "many",
+     "facts",
+     "and",
+     "became",
+     "curious",
+     "about",
+     "neem"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5bcbd50b"
+  },
+  {
+   "id": "c6-english-ch09-t01-i11",
+   "topicId": "c6-english-ch09-t01",
+   "skillId": "c6-english-ch09-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'You must to consult an elder before you use them.'",
+    "hi": "Galti dhoondo aur theek karo: 'You must to consult an elder before you use them.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "You",
+   "wagons": [
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w1",
+     "forms": [
+      "consult"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "must"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "elder"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "an"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "you",
+     "must",
+     "consult",
+     "an",
+     "elder"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "you",
+      "must",
+      "to",
+      "consult",
+      "an",
+      "elder"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch09-t01-m-modal-to",
+   "malKit": "c6-english-ch09-t01-m-modal-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "1d9c5113"
+  },
+  {
+   "id": "c6-english-ch09-t01-i13",
+   "topicId": "c6-english-ch09-t01",
+   "skillId": "c6-english-ch09-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'Mother added two turmerics and many salt to the dal.'",
+    "hi": "Galti dhoondo aur theek karo: 'Mother added two turmerics and many salt to the dal.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Mother",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "of"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "salt"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "dal"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "pinch"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "some"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "turmeric"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w11",
+     "forms": [
+      "added"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "mother",
+     "added",
+     "a",
+     "pinch",
+     "of",
+     "turmeric",
+     "and",
+     "some",
+     "salt",
+     "to",
+     "the",
+     "dal"
+    ]
+   ],
+   "mals": [],
+   "mis": "c6-english-ch09-t01-m-uncountable-plural",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "7a2fdfb1"
+  },
+  {
+   "id": "c6-english-ch09-t01-rl-h3",
+   "topicId": "c6-english-ch09-t01",
+   "skillId": "c6-english-ch09-t01-s5",
+   "kind": "contrast",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "For a school cooking demo, complete both questions with “much” or “many”: “How ___ ginger do we need? How ___ cloves do we need?” Give the words in order.",
+    "hi": "School cooking demo ke liye dono questions mein “much” ya “many” bharo: “How ___ ginger do we need? How ___ cloves do we need?” Words order mein batao."
+   },
+   "keyFrom": "blanks",
+   "engine": "How",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "need"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "How"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "many",
+      "much"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "need"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "we"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "many",
+      "much"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "ginger"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "cloves"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w11",
+     "forms": [
+      "we"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "how",
+     "much",
+     "ginger",
+     "do",
+     "we",
+     "need",
+     "how",
+     "many",
+     "cloves",
+     "do",
+     "we",
+     "need"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "0ab3c638"
+  },
+  {
+   "id": "c6-english-ch12-t01-i13",
+   "topicId": "c6-english-ch12-t01",
+   "skillId": "c6-english-ch12-t01-s5",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Put these steps in order and add first, then and finally: 'close your eyes / sit with your back straight / breathe slowly for one minute'.",
+    "hi": "In steps ko order mein lagao aur first, then, finally jodo: 'close your eyes / sit with your back straight / breathe slowly for one minute'."
+   },
+   "keyFrom": "acceptable",
+   "engine": "First",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "breathe",
+      "straight"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "straight",
+      "breathe"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "finally"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "then"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "your"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "sit",
+      "eyes"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "close"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "eyes",
+      "sit"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "first",
+     "sit",
+     "straight",
+     "then",
+     "close",
+     "your",
+     "eyes",
+     "finally",
+     "breathe"
+    ]
+   ],
+   "mals": [],
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "a29f5eee"
+  },
+  {
+   "id": "c6-english-ch13-t01-i11",
+   "topicId": "c6-english-ch13-t01",
+   "skillId": "c6-english-ch13-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'Chitra polish the shell and make bowls from it.'",
+    "hi": "Galti dhoondo aur theek karo: 'Chitra polish the shell and make bowls from it.'"
+   },
+   "keyFrom": "answer",
+   "engine": "Chitra",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "polish",
+      "polishes"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "it"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "from"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "bowls"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "shell"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "make",
+      "makes"
+     ],
+     "init": 1
+    }
+   ],
+   "keys": [
+    [
+     "chitra",
+     "polishes",
+     "the",
+     "shell",
+     "and",
+     "makes",
+     "bowls",
+     "from",
+     "it"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "chitra",
+      "polish",
+      "the",
+      "shell",
+      "and",
+      "make",
+      "bowls",
+      "from",
+      "it"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch13-t01-m-third-person-s",
+   "malKit": "c6-english-ch13-t01-m-third-person-s",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "6370a96b"
+  },
+  {
+   "id": "c6-english-ch14-t01-i15",
+   "topicId": "c6-english-ch14-t01",
+   "skillId": "c6-english-ch14-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'The kite drifted slow and then rose quick.'",
+    "hi": "Galti dhoondo aur theek karo: 'The kite drifted slow and then rose quick.'"
+   },
+   "keyFrom": "answer",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "kite"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "slow",
+      "slowly"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "then"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "drifted"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "quickly",
+      "quick"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "rose"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "kite",
+     "drifted",
+     "slowly",
+     "and",
+     "then",
+     "rose",
+     "quickly"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "the",
+      "kite",
+      "drifted",
+      "slow",
+      "and",
+      "then",
+      "rose",
+      "quick"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch14-t01-m-adverb-adjective",
+   "malKit": "c6-english-ch14-t01-m-adverb-adjective",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "634f6e93"
+  },
+  {
+   "id": "c6-english-ch15-t01-i10",
+   "topicId": "c6-english-ch15-t01",
+   "skillId": "c6-english-ch15-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Choose much or many: 'She received ___ awards. She did not have ___ time to rest.'",
+    "hi": "Much ya many chuno: 'She received ___ awards. She did not have ___ time to rest.'"
+   },
+   "keyFrom": "blanks",
+   "engine": "She",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "did"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "time"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "rest"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "much",
+      "many"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "received"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "not"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "much",
+      "many"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w8",
+     "forms": [
+      "awards"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w9",
+     "forms": [
+      "have"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w10",
+     "forms": [
+      "She"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w11",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "she",
+     "received",
+     "many",
+     "awards",
+     "she",
+     "did",
+     "not",
+     "have",
+     "much",
+     "time",
+     "to",
+     "rest"
+    ]
+   ],
+   "mals": [],
+   "mis": "c6-english-ch15-t01-m-much-many",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "7177e212"
+  },
+  {
+   "id": "c6-english-ch15-t01-i13",
+   "topicId": "c6-english-ch15-t01",
+   "skillId": "c6-english-ch15-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "You want to interview Ila Sachani. Find and fix the question: 'Where you were born?'",
+    "hi": "Tum Ila Sachani ka interview lena chahte ho. Is question ko theek karo: 'Where you were born?'"
+   },
+   "keyFrom": "answer",
+   "engine": "Where",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "born"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "were",
+      "was"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "where",
+     "were",
+     "you",
+     "born"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "word-order",
+     "train": [
+      "where",
+      "you",
+      "were",
+      "born"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch15-t01-m-question-order",
+   "malKit": "c6-english-ch15-t01-m-question-order",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "c5c969c1"
+  },
+  {
+   "id": "c6-english-ch15-t01-rl-h3",
+   "topicId": "c6-english-ch15-t01",
+   "skillId": "c6-english-ch15-t01-s5",
+   "kind": "near_transfer",
+   "difficulty": 4,
+   "lang": "en",
+   "prompt": {
+    "en": "At a school craft fair, you want to ask an artist about the place where she learned embroidery. Turn this into a correct interview question: ‘Where you did learn embroidery?’",
+    "hi": "School craft fair mein tum artist se poochna chahte ho ki unhone embroidery kahan seekhi. Isse sahi interview question banao: ‘Where you did learn embroidery?’"
+   },
+   "keyFrom": "answer",
+   "engine": "Where",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "you"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "learn"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "did",
+      "do"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "embroidery"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "where",
+     "did",
+     "you",
+     "learn",
+     "embroidery"
+    ]
+   ],
+   "mals": [],
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "54c0abd3"
+  },
+  {
+   "id": "c6-english-ch16-t01-i14",
+   "topicId": "c6-english-ch16-t01",
+   "skillId": "c6-english-ch16-t01-s5",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find and fix: 'Let's to always remember their sacrifice.'",
+    "hi": "Galti dhoondo aur theek karo: 'Let's to always remember their sacrifice.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "Let's",
+   "wagons": [
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w1",
+     "forms": [
+      "sacrifice"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "remember"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "their"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "always"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "let's",
+     "always",
+     "remember",
+     "their",
+     "sacrifice"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "let's",
+      "to",
+      "always",
+      "remember",
+      "their",
+      "sacrifice"
+     ]
+    }
+   ],
+   "mis": "c6-english-ch16-t01-m-lets-form",
+   "malKit": "c6-english-ch16-t01-m-lets-form",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "2973041d"
+  }
+ ]
+}

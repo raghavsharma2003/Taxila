@@ -4,8 +4,11 @@
 # the TEST_DATABASE_URL / CONDUCTOR_TEST_DATABASE_URL repository secrets (never the production DATABASE_URL). So this
 # run cannot prove `migrations-applied` for production: the deploy scripts check the TARGET database's
 # schema_migrations themselves (infra/gate.mjs migrationsGate) before any revision is created.
-# Chromium is installed into PLAYWRIGHT_BROWSERS_PATH so the browser suites (engines-browser, module-tray-geometry,
-# forge-g2, voice-features-browser) RUN here instead of skipping.
+#
+# Round 7 (platform-gate-speed): the one ~20 min `npm test` process is split into a matrix of shards
+# (scripts/test-shard.mjs: unit suites weighted by tests/shard-weights.json, the browser suites and the db suites as
+# their own shards; each suite in its own process). `gates` is the aggregate: it passes only when `build` and EVERY
+# shard passed, and gateEvidence also refuses a sha with any failed shard check.
 name: gates
 on:
   push:
@@ -15,15 +18,44 @@ on:
 concurrency:
   group: gates-${{ github.ref }}
   cancel-in-progress: true
+env:
+  CI: "1"
 jobs:
-  gates:
-    name: gates
+  build:
+    name: build
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: tsc
+        run: npx tsc -b
+      - name: vite build
+        run: npx vite build
+      - name: prompt budget
+        run: node scripts/check-prompt-budget.mjs
+
+  test:
+    name: test (${{ matrix.group }} ${{ matrix.shard }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { group: unit, shard: 1/4 }
+          - { group: unit, shard: 2/4 }
+          - { group: unit, shard: 3/4 }
+          - { group: unit, shard: 4/4 }
+          - { group: browser, shard: 1/1 }
+          - { group: db, shard: 1/1 }
     env:
-      CI: "1"
-      TEST_DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-      CONDUCTOR_TEST_DATABASE_URL: ${{ secrets.CONDUCTOR_TEST_DATABASE_URL }}
+      TEST_DATABASE_URL: ${{ matrix.group == 'db' && secrets.TEST_DATABASE_URL || '' }}
+      CONDUCTOR_TEST_DATABASE_URL: ${{ matrix.group == 'db' && secrets.CONDUCTOR_TEST_DATABASE_URL || '' }}
       PLAYWRIGHT_BROWSERS_PATH: ${{ github.workspace }}/.pw-browsers
     steps:
       - uses: actions/checkout@v4
@@ -33,12 +65,24 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - name: chromium for the browser suites
-        run: npx playwright install --with-deps chromium
-      - name: tsc
-        run: npx tsc -b
-      - name: vite build
+        if: matrix.group == 'browser'
+        # --with-deps runs apt. On 2026-11-11 the runners could not resolve the Ubuntu mirrors for over an hour and this
+        # step failed on every branch before a test ran. The runner image ships Chrome, so Chromium's libraries are normally there:
+        # when apt cannot be reached the browser alone is installed and the suites still run (not yet seen on a runner).
+        run: timeout 240 npx playwright install --with-deps chromium || npx playwright install chromium
+      - name: vite build (suites that serve dist/)
         run: npx vite build
-      - name: npm test
-        run: npm test
-      - name: prompt budget
-        run: node scripts/check-prompt-budget.mjs
+      - name: test shard
+        run: node scripts/test-shard.mjs --group ${{ matrix.group }} --shard ${{ matrix.shard }}
+
+  gates:
+    name: gates
+    if: always()
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: every gate job passed
+        run: |
+          echo "build=${{ needs.build.result }} test=${{ needs.test.result }}"
+          test "${{ needs.build.result }}" = success && test "${{ needs.test.result }}" = success

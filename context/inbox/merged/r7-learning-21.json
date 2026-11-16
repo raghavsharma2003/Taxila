@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-question-jar-wired",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F item 8: the Question jar is wired end to end by Learning patch 004b (docs/patches/to-brain/004b-question-jar.patch, a ready-to-apply diff against claude/r4-conversation; it lands after director4). Lesson end writes the unserved parked questions to question_jar and emits teacher.promise. The next lesson's greeting comes back to the first carried question (shapes.returnJar). Serving a carried entry marks its row answered and emits teacher.promise_kept. Learning ships the pure pieces in server/learner/jar.js: jarLaterEntries, jarServed, emitJarEvents, and jarItemsFromLesson skipping carried entries. Reverse if: director4 or later judging shows the jar opening crowds the lesson start (then serve it at the first item boundary instead of the greeting)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-question-jar-wired (2026-11-05, F Learning)\n\nItem 8's Learning half (migration 037, learner/jar.js, plan.jar, promisesDue, the promise_kept handler) has been in since week 2, but Brain never applied patch 004. Nothing called jarWriteStmts, answerStmts or keptEvents, and the Director never read learnerView.jar. That is the cross-lesson half of director3's 'promises not kept' finding.\n\nPatch 004b is a real diff against Brain's head, checked with git apply --check. Brain's full gates pass with it applied: tsc, vite and four shards. It changes:\n- **routes/lesson.js:** the start carries the hook in and keeps what the opening served; the end writes the jar, never from a safeguarded lesson, with its rows before the Conductor's.\n- **director/state.js:** the warm-up start serves the first carried entry.\n- **director/shapes.js:** a new returnJar shape.\n- **brain/turn.js:** a carried entry served at a later boundary is kept in the turn's transaction.\n- **tests/w2-seams.test.mjs:** the tx-order assertion allows the jar rows.\n\ntests/r7-brain-question-jar.test.mjs proves the three behaviours: a parked question reaches the jar; the next lesson opens on it; promise_kept closes the Conductor's promise. Main sends the patch to Brain with the director4 verdict, so director4 measures one change.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

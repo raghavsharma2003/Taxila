@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r8-approval-lane-studio",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "The approval lane (STUDIO-11; main's go on docs/design/round7/studio/APPROVAL-LANE.md; layer 3 of dc-r8-selection-before-generation), built. A generated Stagecraft spec reaches a child only when approved OFFLINE: scripts/approve-generate.mjs (the one paid step, main runs it with the key; ≤ 2 attempts a topic, hard --usd cap, manifest of each call's deployment, tokens and cost), scripts/approve-check.mjs (today's predicate checks and a render in the real Desk tray at p360, p412 and l1366, writing a judge packet), a separate Claude judge on rubric v1 (data/studio-approved/JUDGE-PROMPT.md: the images, the spec as data, the cards and keys, the mix-up, never the author's reasoning), scripts/approve-store.mjs (data/studio-approved/<topic>/<id>.json, the commit is the approval; the verdict, the prompt's sha256 and the images' sha256 kept). The tray gate accepts an approved hash at the sizes its render passed (server/studio/approved.js approvedVerdict); the runtime calls no judge. Each piece is FOR { topic, skill, misconceptionId, beat: rem:<misconceptionId> } with a `because`: the seam reveals it only on the scripted remediation for that mix-up marked `piece` (Brain to-brain/022, Learning to-learning/006); any other child gets the script's board. Reverse if approved pieces are judged worse than the script's boards in a director run.",
+      "reverse": "an approved piece is judged worse than the script's own board at its remediation in a director run"
+    },
+    {
+      "id": "ms-r8-catalogue-claude-sample",
+      "kind": "measurement",
+      "at": "2026-11-10",
+      "title": "The catalogue under the Claude rubric (evals/studio-catalogue/claude-sample-2026-11-10): 20 of 369 checked catalogue games, seeded sample (seed 20261110), rendered at p360 / p412 / l1366 and judged by a separate Claude agent (Opus) on rubric v1. 4/20 pass; 11/20 (55%) have a content fault (off topic 4, register 3, wrong key 2, wrong fact 1, answer given away 1); 5 more fail on readability only (17 unreadable faults in 13 pieces, mostly repeated engine layouts). The old DeepSeek-V4-Flash check passed all 20. Also: the tray certificates (certs/catalogue.json, 2026-10-09) are stale — every sampled game fails Q1/Q4 at p360 on today's render, where the certificate says it passes."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r8-approval-lane-studio", "rel": "measured_by", "dst": "ms-r8-catalogue-claude-sample" },
+    { "src": "dc-r8-approval-lane-studio", "rel": "constrains", "dst": "stagecraft-spec-default-deployment" }
+  ]
+}

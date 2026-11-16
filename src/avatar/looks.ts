@@ -16,9 +16,6 @@ export const lookById = (id: string | null | undefined): (LookEntry & { id: stri
 /** The look a tutor wears, or null if it is not published (the caller keeps the pre-rig face). */
 export const lookFor = (t: Pick<TutorCharacter, "lookId"> | null | undefined) => lookById(t?.lookId);
 
-/** Every published look id (the dev side-by-side lists them). */
-export const lookIds = () => Object.keys(LOOKS);
-
 /** The plate's three images, absolute. Null when the look ships no plate (it cannot be on the lesson path then). */
 export function plateUrls(e: LookEntry): { plate: string; mouth: string; blink: string } | null {
   const f = e.plate?.files;
@@ -39,16 +36,4 @@ export function fetchRuntime(e: LookEntry): Promise<RuntimeJson> {
     runtimes.set(url, p);
   }
   return p;
-}
-
-/** Warm the HTTP cache with a look's GLB (child home on Wi-Fi; never on the lesson's cold path). */
-export function prefetchLook(e: LookEntry, tier: "Bplus" | "Blite" = "Bplus"): void {
-  const t = e.tiers[tier];
-  if (!t || typeof document === "undefined") return;
-  const href = lookUrl(e, t.file);
-  if (document.head.querySelector(`link[rel="prefetch"][href="${href}"]`)) return;
-  const l = document.createElement("link");
-  l.rel = "prefetch";
-  l.href = href;
-  document.head.appendChild(l);
 }

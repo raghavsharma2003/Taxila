@@ -1,0 +1,667 @@
+{
+ "v": 1,
+ "source": "data/kits/c5-english.json",
+ "items": [
+  {
+   "id": "c5-english-ch01-t01-i07",
+   "topicId": "c5-english-ch01-t01",
+   "skillId": "c5-english-ch01-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'is' or 'are': Papa's spectacles ___ on his head.",
+    "hi": "'Is' lagega ya 'are'? Papa's spectacles ___ on his head."
+   },
+   "keyFrom": "acceptable",
+   "engine": "Papa's",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "his"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is",
+      "are"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "head"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "on"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "spectacles"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "papa's",
+     "spectacles",
+     "are",
+     "on",
+     "his",
+     "head"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch01-t01-m-pair-noun",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "548c2086"
+  },
+  {
+   "id": "c5-english-ch02-t01-rl-g2",
+   "topicId": "c5-english-ch02-t01",
+   "skillId": "c5-english-ch02-t01-s2",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Complete this account of yesterday’s cricket match using the simple past: “The ball ___ (fly) over the boundary, and the crowd ___ (cheer).” Give both missing words in order.",
+    "hi": "Kal ke cricket match ka account simple past mein poora karo: ‘The ball ___ (fly) over the boundary, and the crowd ___ (cheer).’ Dono missing words order mein batao."
+   },
+   "keyFrom": "acceptable",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "crowd"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "cheered",
+      "cheer"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "fly",
+      "flew"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "and"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "ball"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "ball",
+     "flew",
+     "and",
+     "the",
+     "crowd",
+     "cheered"
+    ]
+   ],
+   "mals": [],
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "5503d0fa"
+  },
+  {
+   "id": "c5-english-ch06-t01-i09",
+   "topicId": "c5-english-ch06-t01",
+   "skillId": "c5-english-ch06-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'We should to close the tap while brushing.'",
+    "hi": "Galti dhoondo: 'We should to close the tap while brushing.'"
+   },
+   "keyFrom": "answer",
+   "engine": "We",
+   "wagons": [
+    {
+     "id": "x1",
+     "forms": [
+      "to"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w1",
+     "forms": [
+      "tap"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "should"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "close"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "brushing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "while"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "we",
+     "should",
+     "close",
+     "the",
+     "tap",
+     "while",
+     "brushing"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "extra-wagon",
+     "train": [
+      "we",
+      "should",
+      "to",
+      "close",
+      "the",
+      "tap",
+      "while",
+      "brushing"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch06-t01-m-should-to",
+   "malKit": "c5-english-ch06-t01-m-should-to",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "bfd247cc"
+  },
+  {
+   "id": "c5-english-ch06-t01-i10",
+   "topicId": "c5-english-ch06-t01",
+   "skillId": "c5-english-ch06-t01-s4",
+   "kind": "near_transfer",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Give one way your family can save water at home. Begin with 'We should ...'",
+    "hi": "Ghar mein paani bachane ka ek tarika batao. 'We should ...' se shuru karo."
+   },
+   "keyFrom": "acceptable",
+   "engine": "We",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "should"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "the"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "close"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "tap"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "brushing"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "while"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "we",
+     "should",
+     "close",
+     "the",
+     "tap",
+     "while",
+     "brushing"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch06-t01-m-should-to",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "f141d422"
+  },
+  {
+   "id": "c5-english-ch07-t01-i10",
+   "topicId": "c5-english-ch07-t01",
+   "skillId": "c5-english-ch07-t01-s4",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in: Kho-kho is ___ (fast) than ludo.",
+    "hi": "'Fast' ko compare wala word banakar blank bharo: 'Kho-kho is ___ (fast) than ludo.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "Kho-kho",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "faster"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "ludo"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "than"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "kho-kho",
+     "is",
+     "faster",
+     "than",
+     "ludo"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch07-t01-m-double-comparative",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "daa8c874"
+  },
+  {
+   "id": "c5-english-ch09-t01-i06",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Find the mistake: 'My mother is teacher in a school.'",
+    "hi": "Galti dhoondo: 'My mother is teacher in a school.'"
+   },
+   "keyFrom": "answer",
+   "engine": "My",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "teacher"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "school"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "an",
+      "a"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "in"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "mother"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "my",
+     "mother",
+     "is",
+     "a",
+     "teacher",
+     "in",
+     "a",
+     "school"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "missing-wagon",
+     "train": [
+      "my",
+      "mother",
+      "is",
+      "teacher",
+      "in",
+      "a",
+      "school"
+     ]
+    }
+   ],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "malKit": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "21aa0efc"
+  },
+  {
+   "id": "c5-english-ch09-t01-i07",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s3",
+   "kind": "practice",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in 'a' or 'an': He is ___ electrician.",
+    "hi": "'A' ya 'an' — kaunsa aayega? 'He is ___ electrician.'"
+   },
+   "keyFrom": "acceptable",
+   "engine": "He",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "a",
+      "an"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "electrician"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "is"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "he",
+     "is",
+     "an",
+     "electrician"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch09-t01-m-article-job",
+   "decides": "order+form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "1ba99d96"
+  },
+  {
+   "id": "c5-english-ch09-t01-i11",
+   "topicId": "c5-english-ch09-t01",
+   "skillId": "c5-english-ch09-t01-s4",
+   "kind": "translate_rep",
+   "difficulty": 2,
+   "lang": "en",
+   "prompt": {
+    "en": "'Maali' in Hindi. What is it in English? And 'chowkidar'?",
+    "hi": "'Maali' aur 'chowkidar' ko English mein kya kehte hain?"
+   },
+   "keyFrom": "acceptable",
+   "engine": "Gardener",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "guard"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "security"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "gardener",
+     "security",
+     "guard"
+    ]
+   ],
+   "mals": [],
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "217e1200"
+  },
+  {
+   "id": "c5-english-ch10-t01-i04",
+   "topicId": "c5-english-ch10-t01",
+   "skillId": "c5-english-ch10-t01-s3",
+   "kind": "practice",
+   "difficulty": 3,
+   "lang": "en",
+   "prompt": {
+    "en": "Fill in: The bangles are ___ (paint) with gold lines.",
+    "hi": "'Paint' ka sahi form lagao: The bangles are ___ with gold lines."
+   },
+   "keyFrom": "acceptable",
+   "engine": "The",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "lines"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "painted"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "are"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "gold"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "bangles"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "with"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "the",
+     "bangles",
+     "are",
+     "painted",
+     "with",
+     "gold",
+     "lines"
+    ]
+   ],
+   "mals": [],
+   "mis": "c5-english-ch10-t01-m-passive-base",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "e23d5dca"
+  }
+ ]
+}

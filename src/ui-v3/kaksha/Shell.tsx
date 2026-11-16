@@ -17,10 +17,14 @@ import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 import { kakshaThemeFor } from "./tokens.ts";
 import { kt } from "./copy.ts";
 import { lookAttr } from "./look.ts";
+import type { TapSource } from "../../avatar/tap.ts";
+import { txTheme } from "../r8/tx.ts";
+import "../r8/kx.css";
+import { Presence } from "../r8/Presence.tsx";
 
 export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
-    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen}>
+    <div className="v3 kx" data-ktheme={kakshaThemeFor(family)} data-klook={lookAttr(family)} data-motion={reducedMotion ? "reduced" : undefined} data-kscreen={screen} data-tx={txTheme() ?? undefined}>
       {children}
     </div>
   );
@@ -127,14 +131,24 @@ export interface CommsProps {
   showName?: boolean;
   className?: string;
   style?: CSSProperties;
+  /** Her output meters (lip-sync) when she speaks outside a lesson: the home's daily greeting (Face stream). */
+  meters?: TapSource[];
 }
 
-export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style }: CommsProps) {
+export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style, meters }: CommsProps) {
   const speaking = floor === "speaking" || floor === "showing";
+  // round 8 (?tx=): her presence (a circle, her name, "AI teacher" always printed), never the face picture
+  if (txTheme()) return (
+    <figure className={`kx-comms kx-comms--tx${showName ? "" : " kx-comms--noname"}${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
+      <Presence name={teacherName} floor={floor} size="hero" />
+      {/* showName={false}: the caller prints her name and "AI teacher" beside the circle, so the circle's own pair is read once */}
+      {!showName && <figcaption className="kx-sr">{`${teacherName}, ${kt("aiTeacher")}`}</figcaption>}
+    </figure>
+  );
   return (
     <figure className={`kx-comms kx-cut${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
       <div className="kx-comms-lit" aria-hidden="true" />
-      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false}
+      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false} meters={meters}
         lights="up" reducedMotion={reducedMotion} className="kx-comms-face" />
       <i className="kx-tick kx-tick--a" aria-hidden="true" />
       <i className="kx-tick kx-tick--b" aria-hidden="true" />

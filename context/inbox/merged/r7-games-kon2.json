@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-kon2",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "kon extended to lines and angles: lines/parallel and lines/perp (c7-maths-ch05-t02), cross/corr and cross/alt (c7-maths-ch05-t03), ends/ends (c6-maths-ch02-t01); three new modes on kon's arm, one new act (stop); earlier kon levels unchanged. Reverse: children align line 2 by eye without the grid or the angles, or ends is played as a four-way pick."
+  },
+  {
+   "id": "ms-r7-games-kon2-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-kon2",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-kon2-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-kon2`\n\n**kon** (angles as turning) now also covers three arena-only line topics. It does this with three new modes on the same turning arm, plus one new act, `stop`. No new family was added. The law is in `src/play/families/kon/kon.lines.ts` and the boards are in `kon.lines.view.ts`. Each kon function sends a line goal to that code first, so every earlier goal runs the same code as before. A test pins the generator's output hash for each earlier goal (7 goals × 3 fades × 3 seeds). A second test pins the levelId each earlier coverage entry serves. Nothing in it is timed, and no turn snaps into place.\n\n- **c7-maths-ch05-t02 · lines/parallel.** The board is squared paper (plain at fade 3). Line 1 is drawn short through O, at least 18° off flat and off upright. The child turns line 2 about P, a point off line 1. The run extends both lines past the sheet and zooms out until they meet, if they do. When they are parallel it shows the gap is equal at two places. Mal-rule `not-meet-on-page` → kit `not-meet-on-page`: a line 7° off whose crossing lies outside the sheet (checked in the test).\n- **c7-maths-ch05-t02 · lines/perp.** The child turns line 2 about O on a tilted line 1. The run lays a set-square on the crossing. Mal-rule `perp-upright` → kit `perp-upright`: line 2 stood straight up.\n- **c7-maths-ch05-t03 · cross/corr, cross/alt.** A road crosses canal 1 at X1, where only a stub of the canal shows, marked with ∠1 and its number. At X2 a one-scale protractor sits on the road ray of ∠2. The child opens ∠2 so canal 2 runs parallel to canal 1. The run opens canal 1 to full length and zooms out to the crossing if there is one. corr: ∠2 is the corresponding angle (equal to ∠1) or the angle beside it on the same road ray (180° − ∠1). alt: ∠1 lies between the canals, and ∠2 is its alternate angle (equal) or its same-side interior angle (180° − ∠1). Either way, copying ∠1's number never passes every level. Mal-rules: `corr-position` → kit `alternate-position` (the beside angle given ∠1's number); `same-side-equal` → kit `interior-equal`; `alt-same-side` → kit `alternate-position` (the same-side angle taken as the alternate, so the real alternate is opened to 180° − ∠1).\n- **c6-maths-ch02-t01 · ends/ends.** There are 3 or 4 lettered points on one faint track. The child drags two stops onto points, or off the end of the track (that end then goes on forever), until only the named segment, ray or line is left. ◀ ▶ also move each stop. The run sends a light along every open end. Mal-rules: `ray-two-ends` → kit `ray-two-ends`; `ray-order` → kit `ray-order` (ray XY started at Y); `line-ends` → kit `longer-line` (a line stopped at its two letters, as if it had a length).\n- **Not covered:** kit `c7-maths-ch05-t02-m-same-length` (a judging belief; no producing act shows it, though the parallel run shows a short line 1 and a long line 2 with an equal gap); `c7-maths-ch05-t03-m-always-equal` (needs a pair of non-parallel lines whose angles the child would copy; no honest single act was found); skill c6-ch02-t01-s3 (counting segments) and its kit `only-sides` (it needs a join-pairs mechanic, which is a different act).\n- **Reversal:** if children solve lines by eye without using the grid or the angles, or play ends as a pick from four, drop the mode and serve those topics with ITEM-ARENA again.\n",
+  "measurements": "## `ms-r7-games-kon2-cert`\n\nkon play-cert, 2026-11-06 (forge3-qa, local harness, p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 120/120 kon samples pass at p360, p412 and l1366 with the game mounted (15 entries × 2 seeds × 4 art directions; 40 samples are the 5 new entries for lines, cross and ends; the smallest text is 16 px). The full play table: 3496/3496 samples (server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-kon.test.mjs has 18 tests. Each new goal is checked on validate / solve / shortcut-free, on every mal-rule naming its own misconception, and on 2000 or more random acts. An independent coordinate checker judges any goal the law calls met: cross and dot products of direction vectors, a 2×2 solve for where two lines cross, and its own reading of a figure's ends. Generator p95 stays at or below 50 ms. Every new coverage entry serves through currentLevel. The earlier goals' generator hashes and served levelIds are pinned. tests/r7-games-kon-angles.test.mjs and tests/r4-games-core-kon.test.mjs still pass unchanged.\n"
+ }
+}

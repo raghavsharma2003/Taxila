@@ -19,7 +19,7 @@ let prevFetchFn, reachable = false;
 describe("migrations applied", { skip: !sql && "no DATABASE_URL", concurrency: false, timeout: 90_000 }, () => {
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction; neonConfig.fetchFunction = nativeFetch;
-    reachable = await Promise.race([sql.query("select 1").then(() => true, (e) => (console.error("[migrations-applied] probe:", e?.message?.slice(0, 160)), false)), new Promise((r) => setTimeout(() => r(false), 60_000))]);
+    reachable = await Promise.race([sql.query("select 1").then(() => true, (e) => (console.error("[migrations-applied] probe:", e?.message?.slice(0, 160)), false)), new Promise((r) => setTimeout(() => r(false), 10_000).unref())   /* 10 s: a reachable Neon answers in < 1 s; was 60 s, 3% of the whole gate */]);
   });
   after(() => { neonConfig.fetchFunction = prevFetchFn; });
 
@@ -27,6 +27,6 @@ describe("migrations applied", { skip: !sql && "no DATABASE_URL", concurrency: f
     if (!reachable) return t.skip("database unreachable");
     assert.ok(migrationFiles().length >= 7);
     const missing = await unappliedMigrations((text) => sql.query(text));
-    assert.deepEqual(missing, [], `apply with node --env-file=.env.local scripts/migrate.mjs: ${missing.join(", ")}`);
+    assert.deepEqual(missing, [], `apply with node scripts/migrate.mjs (test branch by default; --prod for production): ${missing.join(", ")}`);
   });
 });

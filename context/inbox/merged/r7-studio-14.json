@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-motion-family",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "C1 item 6, M1: the whiteboard motion family beyond move. rotate (deg about a point), scale (k = [kx, ky] about a point; negative = mirror/fold), follow (a path of offsets, even speed by length), sweep (a filled shape's fill revealed from one side), morph (a stroke's/polygon's points to new ones). Each targets an earlier op of the script, only of the kinds it may (MOTION_TARGETS: text, labels and number work are only ever translated), and is REFUSED (not clamped) when the target would end off the board. Affine motions compose in script order (motionMatrix); the Player draws a moved op under one SVG matrix with stroke width divided back by the scale; settledScript/finalOp give the end board, which W19 gates (an arm turned onto a word is refused). Reduced motion: a started motion is at its end. Recordings docs/design/round7/studio/motion-{angle,area,cycle}-* (hand-built demos in evals/studio-timing/motion-demos.mjs); M2 puts the motion into the code templates."
+    }
+  ],
+  "edges": [],
+  "md": {
+    "decisions": "## dc-r7-motion-family: boards that turn, fill, travel and fold (2026-11-04)\n\nThe whiteboard can now turn a line (an angle opening), fill a shape from one side (area filling row by row), carry a dot along a path (a droplet through the water cycle), flip a shape (a fold) and reshape a drawing, in addition to sliding. Nothing ever moves off the board, and the finished board is checked like any other.\n"
+  }
+}

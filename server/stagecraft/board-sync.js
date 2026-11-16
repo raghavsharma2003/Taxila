@@ -18,10 +18,12 @@
 //   4. no code board passes: wait for the line planner up to its budget (the pre-ship5 behaviour), then a late speculative
 //      board; then nothing (the caller's template-rung fallback, else voice).
 // Kill switch TAXILA_BOARD_SYNC=0: plan() is exactly deps.planWhiteboard (the old path). Never throws.
-import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing } from "../studio/request.js";
+import { answersRequest, samePage, shownBefore, freeAsked, subjectWords, numberLineBoard, clockBoard, askedNumbers, faceDrawing, selfAnswer } from "../studio/request.js";
 import { gateWhiteboard, withheldValues, numbersIn, partitionCounts } from "../studio/qa/whiteboard.js";
+import { isMotionOp } from "../../shared/whiteboard.js";
 import { speechMsOf, redactLine, WB_BOARD, sectorsForCutCircles } from "../studio/plan.js";
 import { explainerFor } from "../forge/explainer/lesson.js";
+import { BOARD_WORDS } from "../forge/explainer/templates.js";
 import { catalogueEntry } from "./catalogue.js";
 import { fitLegible } from "./board-legible.js";
 import { takePreselected } from "./board-first.js";
@@ -89,22 +91,150 @@ export function gateCtxFor(ask, { kit, redact = [], prior = [] } = {}) {
   const content = (ask?.kit?.content ?? []).map(String).slice(0, 8);
   const itemText = ask?.kit?.item ? [ask.kit.item.prompt_en, ask.kit.item.prompt_hi].filter(Boolean) : [];
   const kitForGate = { ...(kit ?? {}), expectations: [...(kit?.expectations ?? []), ...content, ...itemText] };
-  const withhold0 = withheldValues({ items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
+  const withhold0 = withheldValues({ workedExample: kit?.workedExample, items: [...(kit?.items ?? []), ...(ask?.kit?.item && !(kit?.items ?? []).some((i) => i.id === ask.kit.item.id) ? [ask.kit.item] : [])] },
     { itemId: ask?.kit?.item?.id, line: text });
   // round 5 (stream 2): the numbers the child asked to see are not withheld (the open question's own key still is)
   const request = ask?.intent?.request ?? null;
-  const withhold = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
+  const withhold1 = freeAsked(withhold0, request, ask?.kit?.item?.id ? (kit?.items ?? []).find((i) => i.id === ask.kit.item.id) ?? ask.kit.item : null);
+  // round 7 (main, director4 S2: "boards must show the authored rows and numbers"): a SCRIPTED beat's board (intent.boardRef)
+  // shows what Learning authored and certified. On an explain or worked beat no card is open, so nothing is withheld (the
+  // kit's other items' keys masked "6 cm | ? cm" on c6); a remediation withholds only its own item's key; a check beat
+  // keeps the full set (its card is live)
+  const sk = ask?.intent?.boardRef ? ask?.intent?.scriptBeat?.kind ?? null : null;
+  // (a scripted CARD's board writes its authored labels on purpose — "2/4" on the 1/4-hops card, whose key is "before 2/4" —
+  // and Learning's check.mjs certifies each card's board against that card's own answers: those labels are not withheld,
+  // every other kit key still is; director5 then-cards)
+  // (director6: a then-card's board, or a check card's OWN board — Brain's scriptBeat.ownBoard — draws every number it
+  // authors; a check that BORROWS its explain beat's board, which may teach the answer — c4 s3 c1, "1 hissa = 1/2" under
+  // "the bigger piece's fraction?" — frees only its mark labels)
+  const ownCard = String(ask?.intent?.scriptBeat?.beatId ?? "").startsWith("then:") || ask?.intent?.scriptBeat?.ownBoard === true;
+  // round 7 (main, director7 S1: "? equal parts", "7 + ? + ? + ?" on 36 check boards): a scripted card whose answers Brain
+  // sends (scriptBeat.answers: its key and accept forms) withholds THOSE only — the asked value is the one "?"; every other
+  // number its board writes is drawn, whatever her line happens to say this turn (the card's numbers are on the card, not
+  // always in line.text)
+  // (director8, c5-t02: ~40 "?" over stated numbers — every number in the ACCEPT forms was withheld: "5 wali roti ka
+  // tukda", "her brother, 4/6" hid the card's own givens. Only the KEY's values are withheld, and never one her line —
+  // which carries the spoken card — states: "1/12, 1/6, 1/3" is an order of numbers the card gives)
+  // (director10 G3: a correct verdict's reveal frees the key as if her line said it)
+  const revealed = revealOf(ask?.intent?.scriptBeat);
+  const revealText = revealed.join(" ");
+  const cardAnswers = sk === "check" && Array.isArray(ask?.intent?.scriptBeat?.answers) ? answerValues(ask.intent.scriptBeat.answers, `${text} ${revealText}`) : null;
+  // (and a card's OWN board writes the labels Learning authored and certified against its answers: "before 2/4" names the
+  // 2/4 its board labels — that label is the card's given, never the "?")
+  const withhold0b = !sk ? withhold1 : cardAnswers ? withoutLabels({ values: cardAnswers, words: [], phrases: [] }, ask.intent.boardRef, { authored: ownCard }) : sk === "check" ? withoutLabels(withhold1, ask.intent.boardRef, { authored: ownCard })
+    : sk === "remediation" && ask?.kit?.item?.id ? withheldValues({ items: [ask.kit.item] }, { itemId: ask.kit.item.id, line: text }) : { values: [], words: [] };
+  const rv = (n) => { const m = /^(\d+(?:\.\d+)?)(?:\/(\d+))?$/.exec(String(n).replace(/\s+/g, "")); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+  const withhold = revealed.length && Array.isArray(withhold0b?.values)
+    ? { ...withhold0b, values: withhold0b.values.filter((v) => { const x = rv(v); return x == null ? !revealed.includes(String(v)) : !revealed.some((r) => rv(r) != null && Math.abs(rv(r) - x) < 1e-9); }) } : withhold0b;
+  // (a card's OWN board writes the numbers Learning authored — "70°" given beside the asked "?" — as an explain board does:
+  // they are not invented (W4); the values it withholds stay out)
+  const refNums = sk && sk !== "check" ? refNumbers(ask.intent.boardRef)
+    : sk === "check" && ownCard ? refNumbers(ask.intent.boardRef).filter((v) => !(withhold?.values ?? []).map(String).includes(v)) : [];
   if (request?.subject) kitForGate.expectations.push(request.subject, ...subjectWords(request.subject));
   if (request?.said?.length) kitForGate.expectations.push(...request.said);
-  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold,
-    ...(request ? { extraNumbers: askedNumbers(request), face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}) };
+  // main 14.4: the answer her own question asks for, when her line already states it (selfAnswer): never drawn (W18)
+  const sa = selfAnswer(spoken, { worked: String(kit?.workedExample?.problem ?? "") });
+  // (director10 G2: a close said in the closed card's authored why — "cake ke 4 tukde barabar nahi hain" — over that card's
+  // OWN board: the board's words are the ones Learning authored on the card (W5), its separate wholes are wholes, not her
+  // parts (W8), and its numbers are the card's (W17). W9 — nothing withheld drawn — and her counts against its parts stay)
+  const authoredRef = !!sk && (sk !== "check" || ownCard);
+  const wholesN = authoredRef ? refWholes(ask.intent.boardRef) : null;
+  return { reply: text, kit: kitForGate, band: ask?.intent?.style?.band ?? "B3", speechMs: speechMsOf(spoken), banned: redact, prior, withhold, ...(sa ? { answers: [sa.answer] } : {}),
+    ...(revealText ? { revealText } : {}),
+    ...(authoredRef ? { authoredRef: true, extraWords: [...TEMPLATE_WORDS, ...refWords(ask.intent.boardRef)].filter((w) => !(withhold?.words ?? []).map((x) => String(x).toLowerCase()).includes(w)), authoredNumbers: refNums } : {}),
+    ...(wholesN ? { wholes: wholesN } : {}),
+    ...(request ? { face: faceDrawing(request), asked: request.kind !== "number_line" && !faceDrawing(request) } : {}),
+    ...(request || refNums.length ? { extraNumbers: [...(request ? askedNumbers(request) : []), ...refNums] } : {}) };
+}
+/** A card's answers as withheld values: the numbers in its KEY (answers[0]; "between 0 and 1/3" → "0", "1/3") that her line
+ *  does not state (as itself or an equal fraction: "2/4" states 1/2). Accept forms withhold nothing: they quote the card's
+ *  givens ("5 wali roti ka tukda", "her brother, 4/6"). */
+/**
+ * director10 G3: the values a CORRECT verdict reveals on the answered card's board, from Brain's verdict segment
+ * (scriptBeat.reveal): `true` → the card's key (answers[0]); an array → those values. Her page need not say the digits:
+ * "Haan, sahi hai" over the card's "?" writes the key. → string[] (empty when no reveal).
+ */
+export function revealOf(beat) {
+  try {
+    const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((m) => m.replace(/\s+/g, ""));
+    const r = beat?.reveal;
+    if (r === true) return Array.isArray(beat?.answers) && beat.answers.length ? [...new Set(nums(beat.answers[0]))] : [];
+    if (Array.isArray(r)) return [...new Set(r.flatMap((v) => nums(v)))].slice(0, 8);
+    if (typeof r === "string" || typeof r === "number") return nums(r);
+    return [];
+  } catch { return []; }
+}
+export function answerValues(answers, line = "") {
+  const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []).map((m) => m.replace(/\s+/g, ""));
+  const val = (n) => { const m = /^(\d+)\/(\d+)$/.exec(n); return m ? (Number(m[2]) ? Number(m[1]) / Number(m[2]) : NaN) : Number(n); };
+  const said = nums(line).map((n) => ({ n, v: val(n) }));
+  const stated = (n) => said.some((s) => s.n === n || (n.includes("/") && s.n.includes("/") && Math.abs(s.v - val(n)) < 1e-9));
+  return [...new Set(nums(answers[0]).filter((n) => !stated(n)))];
+}
+/**
+ * A withheld set without the values a board ref AUTHORS to show (rational equality: "2/4" frees "1/2"): mark labels, side
+ * lengths and dims, the words of list items ("2 tukde") — those only for a card's OWN board (`authored`). round 7
+ * (director6 #1): only an asked mark (no label) is "?"; a number the card states is drawn. Structural params (den, num,
+ * parts, groups) are not values shown and free nothing.
+ */
+function withoutLabels(w, ref, { authored = false } = {}) {
+  try {
+    const params = { ...(ref ?? {}), ...(ref?.params ?? {}) };
+    const val = (t) => { const m = String(t).trim().match(/^(\d+(?:\.\d+)?)(?:\s*\/\s*(\d+))?$/); return m ? Number(m[1]) / (m[2] ? Number(m[2]) : 1) : null; };
+    const nums = (t) => (String(t ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []);
+    const shown = [];
+    for (const m of Array.isArray(params.marks) ? params.marks : []) if (m && typeof m === "object" && !Array.isArray(m)) shown.push(...nums(m.label));
+    if (authored) for (const k of ["sides", "w", "h", "r", "value"]) for (const v of [params[k]].flat()) if (v != null) shown.push(...nums(v));
+    // (lines@1: an angle the card's board writes as a value — the asked one is authored "?", never a value)
+    if (authored && Array.isArray(params.angles) && params.angles.some((a) => a && "at" in a)) for (const a of Array.isArray(params.angles) ? params.angles : []) if (typeof a?.value === "number") shown.push(String(a.value));
+    if (authored) for (const k of ["items", "steps", "stages", "parts", "names"]) for (const v of [params[k], params.left?.[k], params.right?.[k]].flat()) if (typeof v === "string") shown.push(...nums(v));
+    if (authored) for (const t of [params.left?.title, params.right?.title, params.whole, params.centre]) if (typeof t === "string") shown.push(...nums(t));
+    const vals = shown.map(val).filter((v) => v != null);
+    if (!vals.length || !w?.values?.length) return w;
+    return { ...w, values: w.values.filter((v) => { const x = val(v); return x == null || !vals.some((l) => Math.abs(l - x) < 1e-9); }) };
+  } catch { return w; }
+}
+/** director11 S3: the words a template itself writes in Hindi mode ("2 barabar hisse", "parimap") — the board's own. */
+// (round 8: + the words a template writes of its own: legend rows — templates.js BOARD_WORDS)
+const TEMPLATE_WORDS = ["barabar", "hisse", "parimap", ...BOARD_WORDS];
+/** The words a script board ref authors (every string in its params: titles, items, labels …), lower case. */
+function refWords(ref) {
+  const out = new Set();
+  const walk = (v) => {
+    if (typeof v === "string") for (const w of v.toLowerCase().match(/\p{L}+/gu) ?? []) out.add(w);
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === "object") Object.values(v).forEach(walk);
+  };
+  try { walk(ref?.params); } catch { /* a ref is data */ }
+  return [...out];
+}
+/** How many separate wholes a script board ref draws side by side (bars, wholes): a count of WHOLES, never a partition. */
+export function refWholes(ref) {
+  const p = ref?.params ?? {};
+  const n = Array.isArray(p.bars) ? p.bars.length : Array.isArray(p.wholes) ? p.wholes.length : 0;
+  return n >= 2 ? n : null;
+}
+/** The numbers a script board ref authors (its params, nested or flat: sides, w, h, marks, labels …), as strings. */
+function refNumbers(ref) {
+  const out = new Set();
+  const walk = (v) => {
+    if (typeof v === "number" && Number.isFinite(v)) out.add(String(v));
+    else if (typeof v === "string") for (const m of v.match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? []) out.add(m.replace(/\s+/g, ""));
+    else if (Array.isArray(v)) v.forEach(walk);
+    else if (v && typeof v === "object") Object.values(v).forEach(walk);
+  };
+  try { walk(ref); } catch { /* a ref is data */ }
+  return [...out];
 }
 
 /** Scale a script's op times to a new spoken length (k clamped 0.5-2), first op no later than 800 ms. Shape only. */
-export function retime(script, fromMs, toMs) {
+export function retime(script, fromMs, toMs, maxK = 2) {
   if (!script?.ops?.length || !(fromMs > 0) || !(toMs > 0)) return script;
-  const k = Math.max(0.5, Math.min(2, toMs / fromMs));
-  const ops = script.ops.map((o) => ({ ...o, startMs: Math.round(o.startMs * k), endMs: Math.max(Math.round(o.startMs * k) + 120, Math.round(o.endMs * k)) }));
+  const k = Math.max(0.5, Math.min(maxK, toMs / fromMs));
+  // (past 2x — a script board under its long authored line — the starts spread over her line but each stroke is drawn at
+  // most 2x slower: a 6x stroke crawls, and W6 refuses one over 6 s)
+  const kd = Math.min(k, 2);
+  const ops = script.ops.map((o) => ({ ...o, startMs: Math.round(o.startMs * k), endMs: Math.max(Math.round(o.startMs * k) + 120, Math.round(o.startMs * k + (o.endMs - o.startMs) * kd)) }));
   const first = Math.min(...ops.map((o) => o.startMs));
   const shift = first > 800 ? first - 800 : 0;
   const shifted = shift ? ops.map((o) => ({ ...o, startMs: o.startMs - shift, endMs: o.endMs - shift })) : ops;
@@ -122,6 +252,48 @@ export function withSectors(script, lineText) {
   if (!counts.size) return script;
   const ops = sectorsForCutCircles(script.ops, counts, []);
   return ops === script.ops ? script : { ...script, ops };
+}
+/**
+ * round 7 (C1 studio-whiteboard-motion-ops, the day-4 "board that moves"): a whole cut into equal sectors SPLITS — each
+ * part slides a little outward along its middle, after the parts are drawn — so "equal parts" is seen happening. Only
+ * when the script has no word inside the whole (a label would be left behind), and only through the full gate (the
+ * caller gates the split first and keeps the still board when the split is refused: motion never costs a board).
+ * reducedMotion players land the parts at once. PURE.
+ */
+export function withSplit(script) {
+  const ops = script?.ops ?? [];
+  if (ops.some(isMotionOp)) return script;
+  const groups = new Map();
+  for (const o of ops) if (o.op === "sector" && Array.isArray(o.c)) { const k = `${o.c[0]},${o.c[1]},${o.r}`; (groups.get(k) ?? groups.set(k, []).get(k)).push(o); }
+  const moves = [];
+  for (const parts of groups.values()) {
+    if (parts.length < 2 || parts.length > 12) continue;
+    const { c, r } = parts[0];
+    // a word drawn inside the whole would be left where it was: no split for that whole
+    if (ops.some((o) => (o.op === "text" || o.op === "label") && Array.isArray(o.at) && Math.hypot(o.at[0] - c[0], o.at[1] - c[1]) < r)) continue;
+    const at = Math.max(...parts.map((o) => o.endMs)) + 250;
+    const d = Math.max(6, Math.min(16, r * 0.14));
+    for (const o of parts) {
+      const mid = ((o.fromDeg + o.toDeg) / 2) * Math.PI / 180;   // degrees clockwise from 12 o'clock
+      moves.push({ id: `split-${o.id}`.slice(0, 32), op: "move", target: o.id, by: [Math.round(Math.sin(mid) * d * 10) / 10, Math.round(-Math.cos(mid) * d * 10) / 10], startMs: at, endMs: at + 700 });
+    }
+    // the whole's own outline would be left behind as a ring the parts slide across (seen in the round-7 recording):
+    // it fades out as they split, unless a later op points at it
+    for (const w of ops) {
+      if (w.op !== "circle" || !Array.isArray(w.c) || Math.hypot(w.c[0] - c[0], w.c[1] - c[1]) > 1 || Math.abs((w.r ?? 0) - r) > 1) continue;
+      if (ops.some((o) => o.target === w.id)) continue;
+      moves.push({ id: `split-out-${w.id}`.slice(0, 32), op: "erase", target: w.id, startMs: at, endMs: at + 700 });
+    }
+  }
+  if (!moves.length) return script;
+  const end = Math.max(...moves.map((m) => m.endMs));
+  return { ...script, ops: [...ops, ...moves], durationMs: Math.max(Number(script.durationMs) || 0, end + 200) };
+}
+/** The split board when it passes the gate against her line, else the still one (motion never costs a board). */
+function splitOrStill(s, ask, ctx) {
+  const sp = withSplit(s);
+  if (sp !== s) { const r = regate(sp, ask, ctx); if (r.ok) return r; }
+  return regate(s, ask, ctx);
 }
 /**
  * r12 RCA failure 7 (owner lesson a95d2ff1, board pages 3-5: "those examples were drawn above the previous content"). The
@@ -159,7 +331,7 @@ export function boardModeFor(script, under = []) {
 export function regate(script, ask, ctx) {
   if (!script?.ops?.length) return { ok: false, script: null, gate: null };
   const raw = { ...script, scriptId: ask?.intent?.intentId ?? script.scriptId, line: { lessonId: ask?.line?.lessonId ?? "", ...(ask?.line?.teacherReplySeq != null ? { teacherReplySeq: ask.line.teacherReplySeq } : {}) },
-    anchor: "line_audio_start", mode: ask?.mode === "continue" ? "continue" : "fresh" };
+    anchor: "line_audio_start", mode: ask?.mode === "continue" && !ask?.intent?.boardRef ? "continue" : "fresh" };   // (a scripted page is new: director4 S1)
   delete raw.facts;
   let g = gateWhiteboard(raw, ctx);
   // round 4 content: a board refused ONLY because it writes the answer to her question (W9) keeps its picture with that
@@ -168,20 +340,51 @@ export function regate(script, ask, ctx) {
   for (let k = 0; k < 3 && !g.pass; k++) {
     const failing = g.checks.filter((c) => !c.pass);
     // (W18, her own question's answer, is masked the same way: its detail is the number, written as a reveal of every op)
-    if (!failing.length || failing.some((c) => c.id !== "W9.no_reveal" && c.id !== "W18.her_answer_unsaid")) break;
-    const reveals = failing.flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
-    const masked = maskReveals(g.script ?? raw, reveals);
+    // (round 7: a moving board's W19.settled that only repeats those two is masked with them)
+    const MASKABLE = (id) => id === "W9.no_reveal" || id === "W18.her_answer_unsaid";
+    // (round 7 M2: masking also runs beside a timing miss: W6 is judged against her REAL line later, and a picture asked
+    // for before her line exists — Brain's S4 c6 perimeter request — was dropped for a reveal it could have masked)
+    const OTHER_OK = (id) => MASKABLE(id) || id === "W6.timing";
+    if (!failing.length || !failing.some((c) => MASKABLE(c.id))
+      || failing.some((c) => !OTHER_OK(c.id) && !(c.id === "W19.settled" && (c.detail ?? []).every(OTHER_OK)))) break;
+    const reveals = failing.filter((c) => MASKABLE(c.id)).flatMap((c) => (c.id === "W9.no_reveal" ? c.detail ?? [] : (c.detail ?? []).flatMap((n) => (g.script ?? raw).ops.map((o) => `${o.id}: ${n} = answer ${n}`))));
+    const hits = [];
+    const masked = maskReveals(g.script ?? raw, reveals, hits);
     if (!masked) break;
+    noteMasked(ask?.intent?.intentId, hits);
     g = gateWhiteboard({ ...masked, facts: undefined }, ctx);
   }
   return g.pass ? { ok: true, script: { ...g.script, facts: g.facts }, gate: g } : { ok: false, script: null, gate: g };
 }
 
 /**
+ * round 7 (main, director7 S1, the live guard): which value each "?" this lesson's gate wrote stands for, per intent (a
+ * paged board's pages are `${intentId}:p${i}`), keyed by the op's text AS MASKED ("? m", a numwork's rows): the drawn board
+ * is matched by that text, so a candidate board the gate masked but the stage never drew flags nothing. Bounded.
+ */
+const maskLog = new Map();
+function noteMasked(intentId, hits) {
+  if (!hits.length || intentId == null) return;
+  const id = String(intentId);
+  maskLog.set(id, [...(maskLog.get(id) ?? []), ...hits].slice(-40));
+  while (maskLog.size > 300) maskLog.delete(maskLog.keys().next().value);
+}
+/** The numbers her line STATES that the drawn board writes as "?" (a check's own answer she has not said is not one). */
+export function statedAsUnknown(script, lineText, intentId) {
+  const id = String(intentId ?? "");
+  const log = [...maskLog].filter(([k]) => k === id || k.startsWith(`${id}:`)).flatMap(([, v]) => v);
+  if (!log.length || !Array.isArray(script?.ops)) return [];
+  const shown = new Set(script.ops.flatMap((o) => (o.op === "text" || o.op === "label") && /\?/.test(String(o.text ?? "")) ? [String(o.text)]
+    : o.op === "numwork" && Array.isArray(o.rows) && o.rows.flat().some((c) => String(c) === "?") ? [JSON.stringify(o.rows)] : []));
+  const stated = new Set(String(lineText ?? "").match(/\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []);
+  return [...new Set(log.filter((h) => shown.has(h.text) && stated.has(String(h.value))).map((h) => String(h.value)))];
+}
+
+/**
  * The script with every W9 reveal written as "?": "o7: 12 = answer 12" → that op's token; "o3: marks 3/4 on o2" → the
  * marker dropped; "word: scale" → the word replaced. null when nothing could be masked.
  */
-export function maskReveals(script, reveals) {
+export function maskReveals(script, reveals, log = null) {
   if (!script?.ops?.length || !Array.isArray(reveals) || !reveals.length) return null;
   const esc = (w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   let ops = script.ops.map((o) => ({ ...o }));
@@ -200,16 +403,17 @@ export function maskReveals(script, reveals) {
     const o = ops.find((x) => x.id === tok[1]);
     if (!o) continue;
     const src = `(^|[^\\d/.])${esc(tok[2])}($|[^\\d/.])`;
-    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; }
+    if ((o.op === "text" || o.op === "label") && new RegExp(src).test(String(o.text))) { o.text = String(o.text).replace(new RegExp(src, "g"), "$1?$2"); changed = true; log?.push({ text: o.text, value: tok[2] }); }
     else if (o.op === "numwork" && o.layout === "fraction" && /^\d+\/\d+$/.test(tok[2]) && Array.isArray(o.rows) && String(o.rows?.[0]?.[0]) === tok[2].split("/")[0] && String(o.rows?.[1]?.[0]) === tok[2].split("/")[1]) {
       // a stacked fraction a over b: its top written "?" (the whole stays, so the question is still what she asked)
       o.rows = [["?"], ...o.rows.slice(1)];
       changed = true;
+      log?.push({ text: JSON.stringify(o.rows), value: tok[2] });
     }
     else if (o.op === "numwork" && Array.isArray(o.rows)) {
       const before = JSON.stringify(o.rows);
       o.rows = o.rows.map((row) => row.map((c) => (String(c) === tok[2] || new RegExp(src).test(String(c)) ? "?" : c)));
-      changed ||= JSON.stringify(o.rows) !== before;
+      if (JSON.stringify(o.rows) !== before) { changed = true; log?.push({ text: JSON.stringify(o.rows), value: tok[2] }); }
     }
   }
   return changed ? { ...script, ops } : null;
@@ -260,7 +464,7 @@ export function codeBoard(ask0, { kit, lessonId, band = "B3" } = {}, ctx0) {
       const x = explainerFor({ lessonId, kit, item, openItem: item, band, ...t });
       if (!x?.params?.script) continue;
       const s = withSectors(retime(x.params.script, Math.max(800, Number(x.params.script.durationMs) || 0), ctx.speechMs), ctx.reply);
-      const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
+      const r = splitOrStill({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
       if (r.ok) return { ...r, template: x.template, by: x.by };
     }
     // 2. the topic's authored catalogue boards (data/studio-catalogue: one per line of its checked explainer, kit-grounded,
@@ -270,7 +474,7 @@ export function codeBoard(ask0, { kit, lessonId, band = "B3" } = {}, ctx0) {
     for (const b0 of cat?.boards ?? []) {
       const b = { ...b0, script: fitLegible(b0.script) };
       const s = withSectors(retime(b.script, Math.max(800, Number(b.script.durationMs) || 0), ctx.speechMs), ctx.reply);
-      const r = regate(s, ask, ctx);
+      const r = splitOrStill(s, ask, ctx);
       if (r.ok) return { ...r, template: `catalogue:${b.line}`, by: "catalogue" };
     }
   } catch { /* the code board is a floor, never a failure */ }
@@ -284,6 +488,59 @@ export function templateBoard(ask, script, ctx) {
   const r = regate({ ...s, board: { ...WB_BOARD, ...(s.board ?? {}) } }, ask, ctx);
   return r.ok ? r : null;
 }
+/**
+ * round 7 (C1 M3b, step markers bound to her words): a board's labelled steps land on the words that name them. For each
+ * text / label op her line names (one of its words of 4+ letters, in order through her line), the estimated onset of that
+ * word (its place in the line × the line's length in ms) is when the step should appear; the step's group — the ops drawn
+ * since the previous named step (its box, its arrow, then its word) — is DELAYED so its word lands ~250 ms before she says
+ * it. Steps are only ever delayed (the board still starts on time: W6), never reordered, and the whole is capped so it
+ * ends with her line. → { script, anchored: n } (n = steps placed on her words; 0 → the script unchanged). PURE.
+ */
+export function anchorSteps(script, lineText, speechMs) {
+  const ops = script?.ops ?? [];
+  const line = String(lineText ?? "").toLowerCase();
+  if (!ops.length || !line || !(speechMs > 0)) return { script, anchored: 0 };
+  const order = ops.map((o, i) => [o, i]).sort((a, b) => a[0].startMs - b[0].startMs || a[1] - b[1]).map(([, i]) => i);
+  const words = (t) => (String(t).toLowerCase().match(/[\p{L}\p{N}]{4,}/gu) ?? []);
+  let from = 0;
+  const marks = [];   // [position in `order`, onset ms]
+  order.forEach((i, k) => {
+    const o = ops[i];
+    if (o.op !== "text" && o.op !== "label") return;
+    const ws = words(o.text);
+    if (!ws.length) return;
+    let at = -1;
+    for (const w of ws) { const j = line.indexOf(w, from); if (j >= 0 && (at < 0 || j < at)) at = j; }
+    if (at < 0) return;
+    from = at + 1;
+    marks.push([k, Math.round((at / line.length) * speechMs)]);
+  });
+  if (marks.length < 2) return { script, anchored: 0 };
+  const shift = new Array(order.length).fill(0);
+  let d = 0, prev = -1;
+  for (const [k, onset] of marks) {
+    const want = onset - 250 - ops[order[k]].startMs;
+    if (want > d) d = want;
+    for (let q = prev + 1; q <= k; q++) shift[q] = d;
+    prev = k;
+  }
+  for (let q = prev + 1; q < order.length; q++) shift[q] = d;
+  // (the board still starts at once: in the first step's group only its word waits for her; what is drawn before it — the
+  // first box — keeps a start by 1.2 s, W6)
+  const firstStart = ops[order[0]].startMs;
+  for (let q = 0; q < marks[0][0]; q++) shift[q] = Math.min(shift[q], Math.max(0, 1200 - firstStart));
+  // never past her line: the delays are scaled down until the board ends within it (+1.5 s)
+  const lastEnd = (f) => Math.max(...order.map((i, k) => ops[i].endMs + shift[k] * f));
+  let f = 1;
+  while (f > 0 && lastEnd(f) > speechMs + 1500) f = Math.round((f - 0.1) * 10) / 10;
+  // (already in step — every named step drawn no earlier than her word — the board is unchanged, its steps still counted)
+  if (!d) return { script, anchored: marks.length, moved: 0 };
+  if (f <= 0) return { script, anchored: 0 };
+  const out = ops.map((o) => ({ ...o }));
+  order.forEach((i, k) => { const dd = Math.round(shift[k] * f); out[i].startMs += dd; out[i].endMs += dd; });
+  return { script: { ...script, ops: out, durationMs: Math.max(script.durationMs ?? 0, ...out.map((o) => o.endMs)) + 200 }, anchored: marks.length, moved: marks.length };
+}
+
 /** A template shown as the LAST rung (the line plan failed): re-timed to her line so it draws while she speaks (W6). */
 export function retimeToLine(script, lineText) {
   if (!script?.ops?.length) return script;
@@ -302,7 +559,7 @@ export async function plan(ask, o) {
   const t0 = Date.now();
   const startLine = () => settle(Promise.resolve().then(() => o.planWhiteboard(ask, { kit: o.kit, prev: o.prev, redact: o.redact, budgetMs: o.budgetMs, avoid: o.avoid, seen: o.seen })));
   if (!boardSyncOn()) return (await startLine()).v ?? { ok: false, script: null, usd: 0, why: "planner_error" };
-  const prior = ask?.mode === "continue" ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
+  const prior = ask?.mode === "continue" && !ask?.intent?.boardRef ? (o.prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
   const ctx = gateCtxFor(ask, { kit: o.kit, redact: o.redact, prior });
   const tag = (r, source, extra = {}) => ({ ok: true, script: r.script, gate: r.gate, usd: extra.usd ?? 0, ms: Date.now() - t0, source, syncMs: Date.now() - t0, ...extra });
   // round 5 (stream 2, RCA-1): a ready-made board (speculative, code, template) is drawn only when it shows what the child
@@ -325,7 +582,8 @@ export async function plan(ask, o) {
   // ... and a clock asked for ("ghadi draw karo") is drawn by code too (request.js clockBoard)
   // QA pass 12 D35 (prod b8fb4ee2, TEST f10fcd57: "number line pe dikhao" named no numbers, so no code line; the line plan
   // failed ~1 in 2 and the slot went "failed" under her "… dikhaiye"): with none asked, the numbers HER line says are drawn
-  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i).slice(0, 4);
+  // (never the answer her own question asks for, when her line states it: TEST 1695e941 drew 0 … 160, 160 the answer)
+  const lineNumbers = (String(ask?.line?.text ?? "").match(/-?\d+(?:\.\d+)?(?:\/\d+)?/g) ?? []).filter((x, i, a) => a.indexOf(x) === i && !(ctx.answers ?? []).includes(x)).slice(0, 4);
   const nlRequest = request?.kind === "number_line" && !request.said?.length && lineNumbers.length ? { ...request, said: lineNumbers } : request;
   const nl0 = request?.kind === "number_line" ? numberLineBoard(nlRequest, { scriptId: String(ask?.intent?.intentId ?? "nl"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs })
     : request?.subject ? clockBoard(request, { scriptId: String(ask?.intent?.intentId ?? "clock"), lessonId: ask?.line?.lessonId ?? "", spanMs: ctx.speechMs }) : null;
@@ -337,6 +595,10 @@ export async function plan(ask, o) {
   // ship5 fixer (experience B1, V3.3 "a child's request is answered on stage within 3 s p90"): when the CHILD asked for
   // the board and a code board already passes against her line, the line plan gets a short head start only
   const deadlineAt = t0 + (ask?.requested && code ? Math.min(BOARD_SYNC_MS(), REQUESTED_SYNC_MS) : BOARD_SYNC_MS());
+  // round 7 (C1 studio-board-timing): with a code board that already passes, the board is on the stage by the deadline at
+  // the latest (the ladder takes the first of line / spec / code); the seam tells the client so her first clause can wait
+  // for a board milliseconds away. Without one, no promise (null).
+  try { o?.onDeadline?.(code ? deadlineAt : null, code); } catch { /* telemetry never breaks the ladder */ }
   const specE = specs.get(String(ask?.intent?.intentId ?? ""));
   let line = null;
   for (;;) {

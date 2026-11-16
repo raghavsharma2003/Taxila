@@ -1,0 +1,175 @@
+{
+  "v": 1,
+  "id": "gen-c5-maths-ch02-t02-a1bc53b3",
+  "approved": true,
+  "hash": "a1bc53b35dcef9092777f7d8c7edb9ed",
+  "archetype": "catch-on-line@1",
+  "spec": {
+    "archetype": "catch-on-line@1",
+    "skills": [
+      "c5-maths-ch02-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Dhyan se pakdo",
+      "wave": "Wave",
+      "of": "mein se",
+      "clear": "Saaf round",
+      "landed": "Pakda gaya",
+      "precision": "Kitni sahi jagah",
+      "chain": "Lagataar pakad",
+      "bestChain": "Sabse lambi pakad",
+      "exact": "Bilkul sahi",
+      "close": "Paas",
+      "inside": "Line ke andar",
+      "offBy": "Itna door",
+      "same": "Wahi jagah",
+      "runDone": "Round khatam",
+      "toughest": "Sabse mushkil"
+    },
+    "waves": [
+      {
+        "title": "Pizza line",
+        "sub": "Har item ko pakdo",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 8,
+        "scaffoldTicks": 8,
+        "speed": 82,
+        "gap": 2.8,
+        "items": [
+          [
+            "1/8"
+          ],
+          [
+            "1/4"
+          ],
+          [
+            "1/2"
+          ],
+          [
+            "1/8"
+          ],
+          [
+            "1/4"
+          ],
+          [
+            "1/2"
+          ]
+        ]
+      },
+      {
+        "title": "Roti line",
+        "sub": "Ek ek item pakdo",
+        "line": [
+          0,
+          1
+        ],
+        "ticks": 6,
+        "scaffoldTicks": 6,
+        "speed": 90,
+        "gap": 2.3,
+        "items": [
+          [
+            "1/6"
+          ],
+          [
+            "1/3"
+          ],
+          [
+            "1/6"
+          ],
+          [
+            "1/3"
+          ],
+          [
+            "1/6"
+          ],
+          [
+            "1/3"
+          ]
+        ]
+      }
+    ],
+    "adapt": {
+      "slowAfterMisses": 2,
+      "slowFactor": 0.86,
+      "fastAfterChain": 4,
+      "fastFactor": 1.07,
+      "minScale": 0.7,
+      "maxScale": 1.3,
+      "scaffoldPods": 3
+    }
+  },
+  "for": {
+    "topic": "c5-maths-ch02-t02",
+    "skill": "c5-maths-ch02-t02-s1",
+    "misconceptionId": "c5-maths-ch02-t02-m-bigger-denominator",
+    "beat": "rem:c5-maths-ch02-t02-m-bigger-denominator",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c5-maths-ch02-t02-m-bigger-denominator",
+      "belief": "Believes 1/8 > 1/4 because 8 > 4 (whole-number bias)",
+      "signs": [
+        "Chooses 1/8 of a pizza to get more",
+        "Orders unit fractions by the bottom number",
+        "Says 1/10 is the biggest"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "6f697f1338a15fbcb9d799fef1cdbe7ab2a6b8bfd923bb62259e677e48ed11af"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "d1fe3b97ca2a338fc7e035a7d3ae3666c68b28769235454cb8a88d2bd1c27f9d"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "two separate Claude Opus judges (lean, 4 reads), rubric v2, 2026-11-11, renders at da0e71b93",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Wave 1 ticks 8 fits 1/8, 1/4, 1/2; wave 2 ticks 6 fits 1/6, 1/3. Titles 'Pizza line' / 'Roti line' and subs 'Har item ko pakdo' / 'Ek ek item pakdo' say only what to do. The catcher's starting position sits near the 1/8 tick but not on it; it looks like the default start, not a guide mark."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "Claude Opus judge B, 2026-11-11",
+    "content": "pass",
+    "faults": [],
+    "notes": "Wave 1 uses ticks 8 for 1/8, 1/4, 1/2 and wave 2 uses ticks 6 for 1/6, 1/3, so every item lands on a tick. Placing 1/8 nearest 0, with 1/4 and 1/2 further along, shows where the 'bigger bottom number = bigger fraction' belief goes wrong. The subs ('Har item ko pakdo', 'Ek ek item pakdo') only say what to do. In both screenshots the catcher starts near the first 1/8 tick but not on it (pointer at about x=208 against the tick at about x=197 at p412). From one still frame I cannot tell whether this is the engine's default start position or a hint, so I have not counted it."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:43:58.755Z"
+  },
+  "approvedAt": "2026-11-11T10:00:47.059Z"
+}

@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-rang",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "rang (colour) as a never-timed law family for class 7 science chapter 2: a dropper worked a drop at a time. pehchaan (t01): litmus (s2) and desi (s3) drop each of the kit's household liquids onto blue/red litmus or haldi paper/gudhal water and sort it acidic, basic or neutral, a sort taken only when the colours seen leave one kind (desi's gudhal water short at looks 2-3, so haldi finds the bases first). milao (t02): boond (s2, s1) baking soda into lemon juice or vinegar with gudhal water until the pink goes (green on a look-3 item), plain water beside it; ilaaj (s3, s1) the kit's uses (ant bite: baking soda; stomach acid: antacid; acidic soil: lime). Facts, colours and liquids only from the kit; drop counts are scene values and never shown. Why: the two topics had no game. Reverse: a child pilot shows the bins tapped by trial (many not_sure / wrong_bin refusals per level) rather than read from the colours."
+  },
+  {
+   "id": "ms-r7-games-rang-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "rang play-cert (forge3-qa, p360/p412/l1366): every rang sample passes at every size (32 samples; table 4248/4248); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (24 runs); every mal-rule state reached (8); no clipped label; smallest tap target 48 px; tests/r7-games-rang.test.mjs 29 tests."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-rang",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-rang-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-rang`\n\n**rang** (colour, class 7 science, chapter 2) is a law family with two modes. Nothing runs on a clock and nothing is an answer box: the child drops a drop from a cup onto an indicator, sorts the cup by the colours it gave, or adds a base to a glass a drop at a time and says when the colour is right. Nothing is tasted, touched or drunk; the only way a liquid moves is the dropper, and any safety line is the teacher's.\n\n- **pehchaan** (c7-science-ch02-t01). The kit's liquids only: lemon juice, vinegar, soap solution, baking soda solution, pure water, sugar solution, common salt solution. A sort is taken only when the colours seen leave one kind.\n  - litmus (s2): blue and red litmus strips; a neutral liquid needs both.\n  - desi (s3): haldi paper and gudhal water; at looks 2 and 3 the gudhal water is one drop per cup that is not a base (a scene value), so haldi finds the bases first (the kit's own way).\n- **milao** (c7-science-ch02-t02). Gudhal water in an acid is pink; the pink fades as a base goes in, is gone at the right amount, and turns green past it. Once a base is in, the glass is labelled \"A salt and water form / Heat is given out\".\n  - boond (s2, s1): baking soda solution into lemon juice or vinegar, plain water on the bench too.\n  - ilaaj (s3, s1): the kit's uses: an ant bite's formic acid with baking soda, too much stomach acid with an antacid (milk of magnesia), acidic soil with lime (chuna); lemon juice (an acid itself) and plain water beside them.\n- **Mal-rules** (kit ids):\n  - t01 m3 made-red (a base sorted acidic because haldi went red) and own-red (a neutral liquid sorted acidic on red litmus alone): the other indicator shows the same liquid giving the same kind;\n  - t02 m2 water-only (Done on a pink glass after plain water);\n  - t02 m3 too-much (Done for no pink after extra base: it is green);\n  - t02 m1 harm-mix (Danger! once a base is in: the label of what forms; no harm mechanic).\n- **Not admitted** (the lead's ruling, the teacher's lines): t01 m1 (acids burn), t01 m2 (tasting is fine), t01 m4 (bases always safe). t01 s1 and s4 have no act.\n- **Numbers:** none on screen. The drops a glass takes, the glass's capacity and the gudhal drops are scene values with no fact claimed.\n\nReverse if a child pilot shows the bins tapped by trial (many not_sure / wrong_bin refusals per level) rather than read from the colours.",
+  "measurements": "## `ms-r7-games-rang-cert`\n\nrang play-cert, 2026-11-09 (forge3-qa, local harness, sizes p360 / p412 / l1366, every art direction).\n\n- **Cert:** every rang sample passes at every size (32 samples); the table stands at 4248 of 4248.\n- **Tests:** tests/r7-games-rang.test.mjs, 29 tests:\n  - an independent checker, with its own reading of the kit (the liquids' kinds read out of the kit's sorted-table answer and its neutral sentence), agrees with every step the law takes over random play;\n  - every mal-rule folds its kit id; the not-admitted beliefs have no mechanic;\n  - every colour and every liquid is traced to a kit sentence; no rang word holds a digit or a word for tasting, touching or drinking;\n  - every goal, why and done line fits the 320 px Studio box;\n  - generator and picker p95 are measured in CPU time.\n- **Browser runs** (page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch):\n  - every goal solved by real taps at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (24 runs);\n  - every mal-rule state reached the same way (8);\n  - no clipped label; smallest tap target 48 px.\n- **Shots:** docs/design/round7/games/runshots-rang/."
+ }
+}

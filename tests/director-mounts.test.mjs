@@ -17,6 +17,7 @@ import { diagnosticItems } from "../server/forge/derive.js";
 import { requestFill } from "../server/forge/index.js";
 import { lintKits } from "../scripts/lint-kits.mjs";
 import { initLessonState, step } from "../server/director/state.js";
+import { setScriptForTest } from "../server/director/script.js";
 
 // Offline Forge (code pick, no model, no Neon, no Blob) ONLY inside the tests that build fills, restored after:
 // `npm test` (node --test tests/) runs every file in ONE process, and a file-level env write here once turned the
@@ -212,3 +213,9 @@ test("kit lint: no engine id outside ENGINES; no-engine kits within the ratchet"
   assert.equal(r.kits, 830);
   assert.ok(r.aliasOnly >= 156, `kits resolved only through a catalog alias: ${r.aliasOnly}`);
 });
+
+// The planner and step() above load the REAL lesson scripts of the real kits into server/director/script.js's per-topic cache
+// (scriptFor reads once per topic per process). Under `--experimental-test-isolation=none` that cache outlives this file and
+// a later suite that builds a mini-kit on the same topicId (kit-pin, lesson-safety, r1442-worked-fidelity) gets the real
+// script's items instead of its own. A file-level after() would run only when every file is done, so clear it as the last test.
+test("cleanup: the script cache this file filled is cleared for the next suite", () => { setScriptForTest(); });

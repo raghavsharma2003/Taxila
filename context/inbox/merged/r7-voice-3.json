@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-talked",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B6 (voice-talked-not-read). The voice v4 TALKING-RULES patch (docs/research/voice/v4, 2026-10-04) is ported in two halves. Voice half, in this branch, on DragonHD as measured by the v4 caps probe: brisk is no longer a rate speed-up (PACE_DELTA.brisk 0: a clause speed-up came out no faster, n=3-4), so brisk is carried by the words; the calm/reassuring pitch is -8% (-6% and -4% moved nothing measurable); a planned pause P is written as a break of max(50, P-200) ms and one under 250 ms is not written (break X yields ~max(300, X+200) ms); the think_aloud moment drops its comma pauses and starts sentence pauses at 300 ms; the Hindi think fillers are अच्छा/चलो (हम्म was swallowed in 2 of 3 renders, उम्म unmeasured). Brain half, docs/patches/to-brain/001-talking-rules-spoken-register.patch, re-ported onto today's compiler/director files: SPOKEN_NOTE on the voice lane's language rule (a shape, never a line; prompt budget passes); isUptakeQuestion, so a short echo question at the start of a turn survives one-question-per-turn; a 'when the child jokes' character note; the not_yet verdict note ends 'curious and slower'. compiler, director-truth, kit-budget and every suite touching the question logic pass with it applied. Reverse any of the DragonHD numbers if an owner ear check on live lines hears them as worse; the probe was n=3-4 per cell."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-talked",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-talked — her lines talked, not read (2026-11-04)\n\nThe voice v4 study's patch is finally applied. On the voice side: 'brisk' is no longer a rate speed-up, since DragonHD ignores clause-level speed-ups; brisk has to come from shorter wording. Calm lines drop pitch by 8%, the smallest drop the probe could hear. Planned pauses are written 200 ms shorter, because the voice adds that much, and pauses under 250 ms are left out. The Hindi thinking fillers are words the voice actually says. The prompt-side half goes to Brain as a patch, re-ported onto today's files: a 'said aloud' note on the voice lane, a short echo question at the start of a turn kept as spoken uptake, a play-along note for jokes, and 'curious and slower' on a wrong answer. All numbers come from a probe with 3-4 renders per cell; reverse any of them if the owner's ear check on live lines hears them as worse.\n"
+ }
+}

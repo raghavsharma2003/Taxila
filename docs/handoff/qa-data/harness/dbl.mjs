@@ -1,0 +1,13 @@
+import fs from "fs";
+import { launch, open, PHONE, BASE, sleep, shot } from "/home/user/Taxila/tests/e2e/qa-lib.mjs";
+const Q = "/tmp/claude-0/-home-user-Taxila/9217c10b-ccf3-5b3e-ae56-20087ae0d8a1/scratchpad/qa"; const acc = JSON.parse(fs.readFileSync(Q + "/accounts.json")).p4;
+const b = await launch(); const { ctx, page, log } = await open(b, PHONE, { init: () => localStorage.setItem("taxila.child.5701f985-94f8-4a7f-9cba-1685106522f7.prefs", JSON.stringify({ hello: true })) });
+await ctx.addCookies(JSON.parse(fs.readFileSync(Q + "/state-p4.json")).cookies);
+await page.goto(BASE + "/c/" + acc.cid + "/"); await sleep(3000);
+console.log("home:", (await page.locator("body").innerText()).replace(/\s+/g, " ").slice(0, 160));
+const s = page.locator("[data-testid=start-lesson]");
+const bb = await s.boundingBox(); await page.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2); await page.touchscreen.tap(bb.x + bb.width / 2, bb.y + bb.height / 2).catch(() => {});
+await sleep(15000); await shot(page, "dbl-start");
+const starts = log.trace.filter((e) => e.kind === "net.res" && /lesson\/start/.test(e.data?.path)).map((e) => e.data.status + " " + e.data.ms + "ms");
+console.log("lesson/start responses:", starts, "path:", new URL(page.url()).pathname, "tts lines:", log.trace.filter((e) => e.kind === "tts.request").length);
+await b.close();

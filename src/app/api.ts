@@ -1,5 +1,6 @@
 // Account-level API used by the shell, onboarding, the picker and the Parent corner. Same-origin fetch with
 // the httpOnly guardian cookie (src/lesson/api.ts request helper); the client never holds a token.
+import { meOrChildDevice } from "./device.ts";
 import { ApiError, getJson, postJson } from "../lesson/api.ts";
 import { takeEarlyMe } from "./boot.ts";
 
@@ -10,7 +11,11 @@ export interface ChildRow {
   teacher_id: string; avatar: string | null; interests: string[];
 }
 export interface Me {
-  guardian: { id: string; email: string; name: string; locale: string };
+  /** r7 device pairing: "child" = a paired child device's session (child routes only, one child, no guardian); absent or
+   *  "parent" = the parent's own sign-in. */
+  scope?: "parent" | "child";
+  /** null on a child-scoped session (the parent corner then asks for the parent's own sign-in). */
+  guardian: { id: string; email: string; name: string; locale: string } | null;
   children: ChildRow[];
   consents: { child_id: string | null; purpose: string; granted: boolean; version: string; created_at: string }[];
 }
@@ -20,7 +25,8 @@ let cached: Promise<Me | null> | null = null;
 export function loadMe(): Promise<Me | null> {
   if (!cached) {
     const early = takeEarlyMe<Me>();
-    const read = () => getJson<Me>("/api/me");
+    // r7 device pairing: a paired child device reads the child's own Me (device.ts), never the parent's
+    const read = () => meOrChildDevice<Me>(() => getJson<Me>("/api/me"));
     cached = (early ? early.catch(read) : read()).catch((e) => {
       cached = null;
       if (e instanceof ApiError && e.status === 401) return null;

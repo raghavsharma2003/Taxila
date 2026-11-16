@@ -1,58 +1,15 @@
 // Learner-model persistence: skill_state, misconception_state, evidence, and the child brief.
-// Every writer asserts its row count (inherited rejection: dead writers / UPDATE-only writers).
+// The writes themselves are statement builders in writer.js (one transaction with the turn).
 import { q, one } from "../db.js";
-import { withDue } from "./bkt.js";
+import { BANDS } from "./bands.js";
 import { fitBrief, cleanRows } from "./brief.js";
 import { misconceptionById, skillById } from "../content/index.js";
-import { skillStateStmt, misconceptionFlagStmt } from "./writer.js";
 import { fold, newLedger } from "./kt/ledger.js";
-
-function expectRows(rows, n, what) {
-  if (rows.length !== n) throw new Error(`${what}: expected ${n} row(s), wrote ${rows.length}`);
-  return rows;
-}
-
-/** @returns {import("../../shared/contracts").SkillState} */
-function fromRow(r, now) {
-  const s = {
-    skillId: r.skill_id, pKnown: r.p_known, status: r.status, attempts: r.attempts, correctUnaided: r.correct_unaided,
-    generativePass: r.generative_pass, delayedPass: r.delayed_pass, lastSeen: new Date(r.last_seen).toISOString(),
-  };
-  if (r.next_review) s.nextReview = new Date(r.next_review).toISOString();
-  return withDue(s, now);
-}
-
-/** → { [skillId]: SkillState } for the given skills (missing skills are simply absent). */
-export async function loadSkillStates(childId, skillIds, now = new Date()) {
-  if (!skillIds.length) return {};
-  const rows = await q("select * from skill_state where child_id = $1 and skill_id = any($2::text[])", [childId, skillIds]);
-  return Object.fromEntries(rows.map((r) => [r.skill_id, fromRow(r, now)]));
-}
-
-/** Learned skills whose review time has come, soonest first — the warm-up retrieval pool. */
-export async function loadDueSkills(childId, limit = 3) {
-  const rows = await q(
-    `select * from skill_state where child_id = $1 and status in ('learned_today','mastered','due')
-       and next_review is not null and next_review <= now() order by next_review limit $2`, [childId, limit]);
-  return rows.map((r) => fromRow(r));
-}
 
 // Statement builders ({ text, params, layer }) for writes that must land in one transaction with the turn
 // that caused them (routes/lesson.js). They live in the ONE writer module (writer.js), which checks the
 // child's legal_mode before building any of them; re-exported here so existing imports keep working.
 export { skillStateStmt, evidenceStmt, misconceptionFlagStmt, misconceptionResolveStmt } from "./writer.js";
-
-/** @param {{ id: string, legal_mode: string }} child the child row (its mode gates the write) */
-export async function saveSkillState(child, s) {
-  const { text, params } = skillStateStmt(child.id, s, child);
-  expectRows(await q(text, params), 1, "skill_state upsert");
-}
-
-/** @param {{ id: string, legal_mode: string }} child the child row (its mode gates the write) */
-export async function flagMisconception(child, misconceptionId) {
-  const { text, params } = misconceptionFlagStmt(child.id, misconceptionId, child);
-  return expectRows(await q(text, params), 1, "misconception_state upsert")[0].evidence_count;
-}
 
 /** Open misconception ids, most recent first. */
 export async function loadActiveMisconceptionIds(childId, limit = 3) {
@@ -96,7 +53,12 @@ export async function loadRecentStuck(childId, skillIds) {
 }
 
 /** Classes 1-4 → "6-9", classes 5-9 → "10-15" (the two design bands of learning-science §3.8). */
-export const ageBandFor = (classLevel) => (classLevel <= 4 ? "6-9" : "10-15");
+// round 7 (decision D3): the legacy age band is the band table's (class 4 is "10-15" now); out of range → the nearest end
+// (no class known: "10-15", as before)
+export const ageBandFor = (classLevel) => {
+  const c = Math.round(Number(classLevel));
+  return Number.isFinite(c) ? BANDS[Math.min(9, Math.max(1, c))].contract : "10-15";
+};
 
 /**
  * Vibe defaults by band. The old vibeFrom() inferred pace and verbosity from the child's raw transcripts
@@ -174,30 +136,4 @@ export async function loadKtEvents(childId) {
  */
 export async function loadLedger(child, ctx = {}) {
   return fold(newLedger({ childId: child.id, classLevel: child.class_level }), await loadKtEvents(child.id), ctx);
-}
-
-/** Cached KT skill states (kt_skill_state) for the given skills, keyed by skill id. */
-export async function loadKtSkillStates(childId, skillIds) {
-  if (!skillIds.length) return {};
-  const rows = await q("select * from kt_skill_state where child_id = $1 and skill_id = any($2::text[])", [childId, skillIds]);
-  return Object.fromEntries(rows.map((r) => [r.skill_id, {
-    skillId: r.skill_id, paramsVersion: r.params_version, pL: r.p_l, retention: r.retention, mem: r.mem, n: r.n, flags: r.flags,
-    recent: r.recent ?? [], opp: r.opp, run: r.run, display: r.display, refresh: r.refresh,
-    nextReviewAt: r.next_review_at ? new Date(r.next_review_at).toISOString() : null,
-    prior: r.prior_pl0 == null ? null : { pL0: r.prior_pl0, epochId: r.prior_epoch_id, seq: r.prior_seq == null ? null : Number(r.prior_seq) },
-    ...(r.extra ?? {}),
-  }]));
-}
-
-/** Active misconceptions from kt_misconception (unresolved, with at least one hit), most likely first. */
-export async function loadKtMisconceptions(childId, limit = 5) {
-  return q(`select misconception_id, logit, hits, last_at, resolved_at, check_scheduled_at from kt_misconception
-     where child_id = $1 and resolved_at is null and hits > 0 order by logit desc, misconception_id limit $2`, [childId, limit]);
-}
-
-/** Conductor view key kt.dueCount from the new ledger cache (learned skills whose review time has come). */
-export async function ktDueCount(childId, now = new Date()) {
-  const r = await one(`select count(*)::int as n from kt_skill_state where child_id = $1 and display in ('learned_today','mastered','durable')
-     and (refresh or (next_review_at is not null and next_review_at <= $2))`, [childId, new Date(now).toISOString()]);
-  return r?.n ?? 0;
 }

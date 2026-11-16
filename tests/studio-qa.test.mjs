@@ -191,18 +191,23 @@ test("gate (browser): goldens pass at their params and at held-out params; seede
   const { runGate } = await import("../server/studio/qa/gate.js");
   const { MUTANTS } = await import("../evals/live-studio/mutants.mjs");
   const job = (id, html, which = "params") => ({ archetypeId: id, fragment: html, params: G[id][which], strings: G[id][`${which}Strings`] ?? G[id].strings, band: G[id].band, perf: false });
+  // gate speed (main, 2026-11-05): the 11 gate runs are independent (each its own browser context, perf off), so they run
+  // 4 at a time on the file's one browser; every run is asserted exactly as before
+  const runs = [];
   for (const [id, which] of [["bar_chart_read", "params"], ["bar_chart_read", "alt"], ["sort_bins", "alt"]]) {
-    const r = await runGate(browser, job(id, golden(id), which));
-    assert.equal(r.pass, true, `${id} ${which}: ${JSON.stringify(r.checks.filter((c) => !c.pass))}`);
+    runs.push(async () => { const r = await runGate(browser, job(id, golden(id), which));
+      assert.equal(r.pass, true, `${id} ${which}: ${JSON.stringify(r.checks.filter((c) => !c.pass))}`); });
   }
   const pick = { bar_chart_read: ["bar_off_3px", "tick_wrong", "hint_colour", "names_overlap", "hardcoded_answer", "fetch_call", "no_done", "overflow"] };
   for (const [kind, ids] of Object.entries(pick)) for (const mid of ids) {
     const [, , edits] = MUTANTS[kind].find((m) => m[0] === mid);
     let html = golden(kind);
     for (const [f, rep] of edits) { assert.ok(html.includes(f), `${mid} applies`); html = html.split(f).join(rep); }
-    const r = await runGate(browser, job(kind, html));
-    assert.equal(r.pass, false, `${kind}/${mid} must be caught`);
+    runs.push(async () => { const r = await runGate(browser, job(kind, html));
+      assert.equal(r.pass, false, `${kind}/${mid} must be caught`); });
   }
+  let next = 0;
+  await Promise.all(Array.from({ length: 4 }, async () => { while (next < runs.length) await runs[next++](); }));
 });
 
 test("whiteboard continue mode: new words never land on the previous board's words (gate), and the fixer slides them off", () => {

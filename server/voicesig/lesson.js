@@ -39,12 +39,17 @@ export const PACE_CONSENT_VER = "2026-10-05.vs1";
 export const MAX_SESSION_ROWS = 120;
 
 /**
- * TAXILA_VOICESIG = off | shadow | on. Unset → shadow: the pipeline ships ON (owner: ship it) and every state is gated
- * to shadow until measured on children; `off` is the kill switch (no kv read, no trace, the client keeps its old tap).
+ * TAXILA_VOICESIG = off | shadow | on | internal. `off` is the kill switch (no kv read, no trace, the client keeps its old
+ * tap). `shadow`: states are computed and logged, nothing acts. `on`: a state acts only when the evidence gate passes
+ * (measured on children, precision bar, ladder ≥ 1, a fitted calibration). Round 7 (stream B, voice-voicesig-acting;
+ * owner 2026-10-27 build first, test ourselves, then measure): `internal`, the DEFAULT, lets a computed state hand its
+ * tie-breakers (followUpProbe / gentlerHint / slowerPace) to the Director in our own lessons, before the evidence bar is
+ * met. The evidence path is unchanged: the adapter still runs as shadow, so a state moves no learner-model evidence (CE8:
+ * zero evidence weight); only which rung, probe or pace she picks changes. Set `shadow` to go back to logging only.
  */
 export function seamMode(env = process.env) {
-  const m = String(env?.TAXILA_VOICESIG ?? "shadow").trim().toLowerCase();
-  return m === "off" || m === "on" ? m : "shadow";
+  const m = String(env?.TAXILA_VOICESIG ?? "internal").trim().toLowerCase();
+  return m === "off" || m === "on" || m === "shadow" ? m : "internal";
 }
 
 /** class → the adapter's age band (younger children's acoustic cues are halved, SPEC §4.2). */
@@ -70,6 +75,9 @@ export function formOf(item, context) {
   if (Array.isArray(item.options) && item.options.length) return "choice_spoken";
   return /^\s*-?\d+(?:[.,/]\d+)?\s*$/.test(String(item.answer ?? "")) ? "number" : "word";
 }
+
+/** The states whose live read hands the Director a tie-breaker (hintsOf); in `internal` mode these act. */
+export const INTERNAL_ACTING = new Set(["fragileCorrect", "effortfulGuess", "searching", "workingAloud"]);
 
 /** Consumer hints from a LIVE read, in the tie-breaker vocabulary the Director / comprehension / pace already read. */
 export function hintsOf(read) {
@@ -183,7 +191,8 @@ export function turn(t) {
     const ctx = {
       verdict, safety: false, words: L.words, o3History, context, form, langMode: L.langMode, ageBand: ageBandOf(t.classLevel),
       ling: { idk: L.idk?.v ?? null, hedge: !!L.hedge, fillerLex: fillerLexOf(L.toks) === true, toks: L.toks, repairDir: L.repairDir ?? null, thinkAloud: !!L.thinkAloudLex, tFluent: false },
-      baseline, mode, ladder: t.ladder ?? LADDER,
+      // internal: the adapter's own rule stays shadow (no evidence weight); only the hints below act
+      baseline, mode: mode === "internal" ? "shadow" : mode, ladder: t.ladder ?? LADDER,
       // a fitted per-head calibration (none ships: SPEC §6.3 fits it on the pilot); without one the adapter keeps every
       // state shadow by its own rule, whatever the gate says
       ...(t.cal ? { cal: t.cal } : {}),
@@ -200,10 +209,12 @@ export function turn(t) {
       turns: (t.vsb?.turns ?? 0) + 1,
     };
     if (!vs || vs.abstain) return { ...NONE, vsb, reasons: [] };
-    const gate = vs.state ? gateReason(vs.state, { mode, evidence: t.evidence ?? EVIDENCE, ladder: t.ladder ?? LADDER }) : "no_state";
-    // Live needs BOTH the adapter's own rule (mode on, level >= 1, a fitted calibration) AND the precision gate.
-    const live = !!vs.state && !vs.shadow && gate === null;
-    const read = { state: vs.state, proposed: vs.proposed ?? null, licence: vs.licence, live, why: live ? null : gate === null ? "adapter_shadow" : gate, tAgree: !!vs.tAgree, baselineN: vs.baselineN };
+    const gate = vs.state ? gateReason(vs.state, { mode: mode === "internal" ? "shadow" : mode, evidence: t.evidence ?? EVIDENCE, ladder: t.ladder ?? LADDER }) : "no_state";
+    // Live needs BOTH the adapter's own rule (mode on, level >= 1, a fitted calibration) AND the precision gate; in
+    // `internal` mode a computed state is live for its tie-breakers whatever the evidence says (round 7: we test it ourselves)
+    const internal = mode === "internal" && !!vs.state;
+    const live = internal || (!!vs.state && !vs.shadow && gate === null);
+    const read = { state: vs.state, proposed: vs.proposed ?? null, licence: vs.licence, live, why: internal ? "internal" : live ? null : gate === null ? "adapter_shadow" : gate, tAgree: !!vs.tAgree, baselineN: vs.baselineN };
     const hints = hintsOf(read);
     // Round 3 (shadow log of what she WOULD have done): the tie-breakers this read would hand the Director if its state
     // were live. Never handed to anything here; brain/turn.js (patch 05) runs the counterfactual plan with them and
@@ -314,11 +325,15 @@ export function config(env = process.env) {
 /** GET /api/voicesig/status: the per-state table for the status page (VALUES-100 V2 item 3). */
 export function status(env = process.env) {
   const mode = seamMode(env);
-  const states = statusTable({ mode });
+  // internal (round 7): the states that hand a tie-breaker act in our own lessons, labelled as unmeasured on children
+  const states = statusTable({ mode: mode === "internal" ? "shadow" : mode }).map((s) => (mode === "internal" && INTERNAL_ACTING.has(s.state)
+    ? { ...s, live: true, why: "internal", says: "internal: hands its tie-breaker to our own lessons; not yet measured on children" } : s));
   return {
     ver: SEAM_VER, mode, liveStates: states.filter((s) => s.live).map((s) => s.state), states, components: COMPONENTS,
     persistence: env.VOICESIG_SUBJECT_KEY ? "per_child_under_pace_consent" : "session_only_no_subject_key",
-    honesty: states.some((s) => s.population === "children")
+    honesty: mode === "internal"
+      ? "No state is measured on children yet. In internal mode the states that hand a tie-breaker (a why probe, a gentler hint, a slower pace) act in our own lessons anyway; their numbers below are simulated or adult speech, labelled; none moves learner-model evidence."
+      : states.some((s) => s.population === "children")
       ? "Some states are measured on children; the rest show simulated or adult-speech numbers, labelled, and run in shadow."
       : "No state is measured on children yet: every number here is simulated or adult speech, and every state runs in shadow.",
   };

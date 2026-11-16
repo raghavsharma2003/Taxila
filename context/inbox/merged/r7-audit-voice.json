@@ -1,0 +1,62 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-audit-voice-stop-without-telling-engine",
+   "kind": "rejection",
+   "title": "Stopping her reply in the link without telling the hands-free engine: on D4 the mic stayed gated and answers were dropped as echo",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "rj-r7-audit-voice-bridge-dropped-sink",
+   "kind": "rejection",
+   "title": "UiBridge.cachingStream wrapped the speech fetch with two arguments and dropped the player's sink: no visemes, no word onsets, clause onsets without playAt in the child app",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "dc-r7-audit-voice-stream-stall-watch",
+   "kind": "decision",
+   "title": "A reply whose audio ran out and whose stream sends nothing for 5 s ends with what was heard (PcmStreamPlayer.stallMs)",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "dc-r7-audit-voice-call-open-time-limit",
+   "kind": "decision",
+   "title": "The transcription call's token and connection requests are each limited to 10 s; past that the link falls back to the talk button",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-r7-audit-voice-holdcue-live",
+   "kind": "open",
+   "title": "The thinking-pause cue is live in hands-free although r3vs-holdcue-shadow says shadow until a children's pilot (audit V-22)",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "open-r7-audit-voice-expressive-default",
+   "kind": "open",
+   "title": "w2g-expressive-layer-built (default on for DragonHD) against rj-ssml-delivery-plan-2026-10-04 (listeners preferred plain): the blind test is still pending (audit V-27)",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [
+  {
+   "src": "rj-r7-audit-voice-bridge-dropped-sink",
+   "rel": "constrains",
+   "dst": "w2gfix-clause-events-on-player-clock"
+  },
+  {
+   "src": "open-r7-audit-voice-holdcue-live",
+   "rel": "constrains",
+   "dst": "r3vs-holdcue-shadow"
+  },
+  {
+   "src": "open-r7-audit-voice-expressive-default",
+   "rel": "constrains",
+   "dst": "rj-ssml-delivery-plan-2026-10-04"
+  }
+ ],
+ "md": {
+  "rejected": "## rj-r7-audit-voice-stop-without-telling-engine (2026-11-10)\n**Tried (shipped until the audit):** `CascadeLink.stopReply` cleared `current` before stopping playback, and only `finishReply` (reached from the playback's `ended`) told the duplex engine. **Broke:** a stop from a tap (pause, hear again, a typed answer) never reached the engine. It kept her 'speaking': on D4 half-duplex the mic stayed gated for 30 s in the repro and two answers were dropped as her echo. `herStopped` alone is not enough either: the governor's `her_stopped` is a no-op, so the floor stays hers. **Instead:** a stop by hand reports her line as ended (`stopByHand` → `duplex.replyEnded()`). Rule: whoever tells the engine she started must tell it she stopped on every path (tests/audit-voice-link.test.mjs, V-04).\n\n## rj-r7-audit-voice-bridge-dropped-sink (2026-11-10)\n**Tried (shipped until the audit):** `UiBridge.cachingStream = async (req, signal) => fetchSpeechStream(req, signal)`. **Broke:** `SpeechStreamFetch` has a third argument, the player's `ClauseSink`. Without it clause onsets were emitted at parse time with no `playAt` and viseme and word batches were dropped, in the child app only (the dev pages build the link without the bridge, and the bridge test called it with two arguments). This silently undid `w2gfix-clause-events-on-player-clock`. **Instead:** the wrapper is typed as `SpeechStreamFetch` and passes the sink (V-13).\n",
+  "decisions": "## dc-r7-audit-voice-stream-stall-watch (2026-11-10)\n`PcmStreamPlayer` arms a watch when its last scheduled audio ends with the stream still open. If no byte arrives for `stallMs` (5 s) the request is abandoned and the reply ends as completed with what was heard, like a mid-reply failure. Before, a stalled connection (or the server hang fixed as V-01) left the lesson on 'speaking' with no exit. Reverse if phones on slow links show real gaps over 5 s mid-reply (raise the number; do not remove the watch).\n\n## dc-r7-audit-voice-call-open-time-limit (2026-11-10)\n`CascadeLink.open()` limits the token request and the call's connection request to `openTimeoutMs` (10 s, the same as the channel-open wait) each. A stalled request used to leave the dock on 'getting ready to listen' with no talk button, and a reconnect never gave up. Past the limit the link falls back to push-to-talk recording, which also ends the hands-free expectation in the bridge.\n",
+  "open": "## open-r7-audit-voice-holdcue-live (2026-11-10)\nAudit V-22. `r3vs-holdcue-shadow` keeps the thinking-pause cue shadow until a children's pilot; `rejected.md` records 0 of 12 cut-offs prevented and one 2.0 s false delay. The cue is wired into the live engine (`src/duplex/liveTap.ts:50-54`) and went live when hands-free became every child's default. Decide: unsubscribe it, or record the decision to run it live.\n\n## open-r7-audit-voice-expressive-default (2026-11-10)\nAudit V-27. Expressive SSML is default on for DragonHD (`w2g-expressive-layer-built`); `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the same shape below plain. The blind test named as the reversal condition has not run.\n"
+ }
+}

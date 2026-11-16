@@ -1,0 +1,85 @@
+diff -ruN a/server/brain/say.js b/server/brain/say.js
+--- a/server/brain/say.js	2026-10-21 15:31:40.070044631 +0000
++++ b/server/brain/say.js	2026-10-21 15:31:40.097933236 +0000
+@@ -149,12 +149,14 @@
+     safeguardCheck: `Are you okay right now? If anything is worrying you, tell a grown-up you trust, or call ${HELPLINE_LINE}.`,
+     other: "Sorry, I lost my words for a second. Can you say that again?",
+     checkinStop: "That's okay. We can keep going, take a short break, or stop for today. You choose.",
++    checkinResume: "Shall we carry on with the lesson, or stop for today? Either is completely fine.",
+     checkinRel: "That's okay, stopping is completely fine. Are you okay right now, and is a grown-up nearby?",
+     forgetSafety: "That is not something to forget, because your safety matters. You did the right thing by telling. Please tell a grown-up you trust, so they can help." },
+   hinglish: { wrap: "Aaj ke liye itna hi. Phir milte hain!", safeguard: `Tumne jo bataya, woh zaroori hai. Kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo. Kya tum abhi theek ho?`,
+     safeguardCheck: `Kya tum abhi theek ho? Agar koi baat pareshan kar rahi hai, toh kisi bade ko batao jis par bharosa ho, ya ${HELPLINE_LINE_HI} pe call karo.`,
+     other: "Ek second, meri baat atak gayi. Kya tum phir se bata sakte ho?",
+     checkinStop: "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
++    checkinResume: "Kya hum lesson aage karein, ya aaj ke liye yahin rukein? Dono bilkul theek hai.",
+     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
+     forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
+ };
+@@ -277,7 +279,7 @@
+   // round 2 safety floor: a check-in the model could not write is the fixed offer of the choices (stop named), never
+   // "say that again" (that asks a child who said stop to say it twice)
+   if (state.lastMove?.checkin) {
+-    const line = FALLBACK[lang === "english" ? "english" : "hinglish"][state.lastMove.checkin === "rel" ? "checkinRel" : "checkinStop"];
++    const line = FALLBACK[lang === "english" ? "english" : "hinglish"][state.lastMove.checkin === "rel" ? "checkinRel" : state.lastMove.checkin === "resume" ? "checkinResume" : "checkinStop"];
+     return state.ctx.address === "aap" && lang !== "english" ? toAap(line) : line;
+   }
+   if (item && !CLOSING_MOVES.has(kind)) {
+diff -ruN a/server/director/state.js b/server/director/state.js
+--- a/server/director/state.js	2026-10-21 15:31:40.067944818 +0000
++++ b/server/director/state.js	2026-10-21 15:31:40.097014012 +0000
+@@ -1439,12 +1439,14 @@
+     }
+     if (fineNow) {
+       s.safeguard.asked = true;
+-      return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
++      return plan("repair", SH.resumeAfterFine(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }], checkin: "resume" });
+     }
+     s.safeguard.calm += 1;
+     if (s.safeguard.calm < 2) return plan("safeguard", SH.safeguardStay(), { whiteboard: HELPLINES });
+     s.safeguard.asked = true;
+-    return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }] });
++    // census F4 (dad0c9db t25-27: the resume turn asked a rule never taught instead of the carry-on / stop offer): the resume
++    // is a check-in, so brain/say.js guards its words (no lesson question, stopping offered) and its fixed line is the offer
++    return plan("repair", SH.resumeAfterSafeguard(), { chips: [{ id: "safe:continue", label: labels.cont }, { id: "safe:stop", label: labels.stop }], checkin: "resume" });
+   }
+   if (s.phase === "done") return toWrap(s, { stopping: true });
+   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
+diff -ruN a/tests/r5-census-resume-checkin.test.mjs b/tests/r5-census-resume-checkin.test.mjs
+--- a/tests/r5-census-resume-checkin.test.mjs	1970-01-01 00:00:00.000000000 +0000
++++ b/tests/r5-census-resume-checkin.test.mjs	2026-10-21 15:31:54.692300541 +0000
+@@ -0,0 +1,34 @@
++// census 2026-10-21 F4 P2 (dad0c9db t25-27): after a safeguard the resume turn asked a rule never taught instead of the
++// carry-on / stop offer: the resume plan carried no `checkin`, so brain/say.js never ran checkInProblems on its words,
++// and a model failure fell back to the item's question. Safety lane patch (main applies it). Pure.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { initLessonState, step } from "../server/director/state.js";
++import { checkInProblems, fallbackReply } from "../server/brain/say.js";
++import { findItem } from "../server/director/items.js";
++import { kit as mk, CTX, cls } from "./fixtures/kit.mjs";
++
++const kit = mk();
++const turn = (r, c, extra = {}) => step(r.state, { event: "turn", kit, cls: c, text: "x", now: 10_000 * (r.state.turn + 1), ...extra });
++
++test("F4: the resume after a safeguard is a check-in: a lesson question in it is caught, stopping must be offered, and its fixed line is the offer", () => {
++  let r = step(initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
++  for (let i = 0; i < 3 && !r.state.activeItemId; i++) r = turn(r, cls("no_evidence"));
++  r = turn(r, cls("no_evidence", { flags: { distress: true, distressKind: "self_harm" } }));
++  assert.equal(r.move.kind, "safeguard");
++  for (let i = 0; i < 4 && r.move.kind === "safeguard"; i++) r = turn(r, cls("no_evidence"));
++  assert.equal(r.move.kind, "repair", "the resume offer");
++  assert.equal(r.move.checkin, "resume");
++  const item = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null;
++  assert.deepEqual(checkInProblems("Kya hum aage chalein ya aaj ke liye rukein?", { kind: "resume", active: item }), []);
++  assert.ok(checkInProblems("Achha, ab batao 3 + 4 kitna hota hai?", { kind: "resume", active: item }).includes("hold"));
++  assert.ok(checkInProblems("Chalo aage badhte hain.", { kind: "resume", active: item }).includes("nostop"));
++  const line = fallbackReply(r.state, item);
++  assert.match(line, /rukein|stop for today/);
++  assert.doesNotMatch(line, /\?.*\?/);
++  if (item) assert.ok(!line.includes(item.prompt_en ?? "@@"), "never the item's question");
++  // and the child's carry-on goes back to the lesson as before
++  const back = turn(r, cls("no_evidence"), { chipId: "safe:continue" });
++  assert.notEqual(back.move.kind, "safeguard");
++  assert.equal(back.move.checkin, undefined);
++});

@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-known-words-devanagari-fragments",
+   "kind": "rejection",
+   "at": "2026-11-08",
+   "title": "Safety (deferred to the safety pass): evals/safety-robust/build-known.mjs splits Devanagari at combining marks, so regenerating known-words after the c8/c9 Hindi language kits added fragments that are not words (विृक्ष, िचार, क्त, सु) alongside real ones. They are harmless today (KNOWN_NEAR only stops a token being read as a solo slot word), but a fragment could mask a garbled safety word. Not fixed now under the build-first directive (existing safety code stays as it is); the safety pass should tokenise by grapheme cluster and re-derive the list."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "rejected": "\n## `rj-r7-known-words-devanagari-fragments` (2026-11-08)\n\nDeferred to the safety pass.\n\n`evals/safety-robust/build-known.mjs` splits Devanagari at combining marks. Regenerating known-words after the c8/c9 Hindi language kits therefore added fragments that are not words (विृक्ष, िचार, क्त, सु), alongside real ones.\n\nThey are harmless today, since KNOWN_NEAR only stops a token being read as a solo slot word. But a fragment could mask a garbled safety word.\n\n**Not fixed now,** under the build-first directive: existing safety code stays as it is. The safety pass should tokenise by grapheme cluster and re-derive the list.\n"
+ }
+}

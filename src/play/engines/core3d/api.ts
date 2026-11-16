@@ -24,7 +24,7 @@ export const CORE3D_VERSION = "core3d@1" as const;
 // ───────────────────────────── engines and tiers ─────────────────────────────
 
 /** The real-game engines (FEASIBILITY.md §4.3). Each renders one or more family laws. */
-export const ENGINES = ["antariksh", "khand"] as const;
+export const ENGINES = ["antariksh", "khand", "yantra"] as const;
 export type EngineId = (typeof ENGINES)[number];
 
 /**
@@ -75,6 +75,7 @@ export const DRESS_ENUMS = Object.freeze({
 export const ENGINE_THEMES: Record<EngineId, readonly string[]> = {
   antariksh: ["neela-nebula", "laal-grah", "hara-toofan"],
   khand: ["mitti", "barf", "jungle"],
+  yantra: ["lab", "rooftop", "bench"],
 };
 export interface Dress {
   theme: string;
@@ -128,7 +129,7 @@ export interface LabelSpec {
   at: Vec3 | { box: { x: number; y: number } };
   /** pixel offset after projection, and which point of the label sits on the anchor */
   dx?: number; dy?: number; align?: "center" | "top" | "bottom";
-  role?: "ink" | "you" | "good" | "look" | "q1" | "q2";
+  role?: "ink" | "focus" | "good" | "look" | "q1" | "q2";
   frac?: boolean;
   hidden?: boolean;
   /** clamp the label horizontally into the box (its text stays whole; it may sit a little off its anchor at an edge) */
@@ -202,7 +203,7 @@ export interface Core3D {
   label(spec: LabelSpec): LabelHandle;
   /** the label palette of the engine's theme (art-pack colours as numbers, 0xRRGGBB): applied to every label's pill and
    *  roles as CSS variables, so colours live with the theme, never as literals in CSS */
-  labelColors(c: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number }): void;
+  labelColors(c: { ink: number; focus: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number }): void;
   /** a touch region for this frame, CSS px (drag-anywhere engines register the whole world once per layout) */
   target(id: string, x: number, y: number, w: number, h: number): void;
   audio: AudioBus;

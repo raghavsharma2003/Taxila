@@ -1,0 +1,81 @@
+{
+ "method": "blind 3-image questionnaire (ref still, 8 moments, 6 consecutive frames); prompt verbatim",
+ "prompt": "Three images.\nImage 1: a character design, a single approved illustration.\nImage 2: eight numbered frames (1-8, reading order) taken from a 15-second animation of a character, rendered live in a small app window.\nImage 3: six numbered consecutive frames (1-6, reading order, 1/15 s apart) from the same animation.\nJudge strictly, from what is drawn. Answer every item.\n1. same_person: is the animated character (images 2 and 3) the same person as image 1, drawn in the same style? true/false.\n2. childish: does the animated character read as childish (a child, or a toddler-cartoon look) rather than an adult? true/false.\n3. uncanny: is anything uncanny (dead or misaligned eyes, rubbery or melting mouth, warped features, a face that seems to slide over the head)? true/false.\n4. moving_photo: does the animation read like a photograph or a still painting being warped (\"a moving photo\", a deepfake), rather than a drawn character that is animated? true/false.\n5. premium: how premium and production-quality is the animation, 1-5 (5 = top-tier studio quality, 3 = acceptable, 1 = broken or cheap).\n6. defects: list visible rendering defects with image and frame number (seams or cut lines, smears, texture swimming, a pop or jump between consecutive frames, broken teeth or mouth interior, eye errors, hair or jewellery breaking up). Empty string if none.\n7. reads_as: for each frame of image 2, what the character is doing, in 2-6 words.\n8. apparent_age: an age range for the character in image 2.\n9. one_fix: the single change that would most improve the animation.\nReply JSON only: {\"same_person\":bool,\"childish\":bool,\"uncanny\":bool,\"moving_photo\":bool,\"premium\":n,\"defects\":\"\",\"reads_as\":{\"1\":\"\",\"2\":\"\",\"3\":\"\",\"4\":\"\",\"5\":\"\",\"6\":\"\",\"7\":\"\",\"8\":\"\"},\"apparent_age\":\"\",\"one_fix\":\"\"}",
+ "inputs": {
+  "ref": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/ref-lamp2.png",
+  "moments": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/j4-moments.png",
+  "seq": "/tmp/claude-0/-home-user-Taxila/4f5bd6cc-5f93-53a8-934d-4a29dc9ad564/scratchpad/l2/judge/j4-seq.png"
+ },
+ "runs": [
+  {
+   "model": "taxila-kimi26",
+   "rep": 0,
+   "date": "2026-10-10T10:46:56.365Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": false,
+    "premium": 2,
+    "defects": "Image 2 frame 2: teeth appear as a flat malformed block and mouth interior lacks depth; Image 3 frame 4: mouth pops open with jumbled teeth; Image 3 frame 5: teeth and mouth interior inconsistently rendered from frame 4; general: hair curl outlines and earring positions shift subtly between frames (texture swimming)",
+    "reads_as": {
+     "1": "Neutral idle expression",
+     "2": "Mouth open speaking",
+     "3": "Lips parted neutral face",
+     "4": "Neutral looking forward",
+     "5": "Neutral relaxed pose",
+     "6": "Eyes glancing sideways",
+     "7": "Gentle smile facing forward",
+     "8": "Soft smile facing forward"
+    },
+    "apparent_age": "25-35",
+    "one_fix": "Stabilize mouth interior and lock teeth shapes across consecutive frames"
+   },
+   "usage": {
+    "prompt_tokens": 4008,
+    "completion_tokens": 5935,
+    "total_tokens": 9943,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 0,
+     "image_tokens": 3535
+    }
+   }
+  },
+  {
+   "model": "taxila-kimi26",
+   "rep": 1,
+   "date": "2026-10-10T10:47:55.325Z",
+   "answer": {
+    "same_person": true,
+    "childish": false,
+    "uncanny": false,
+    "moving_photo": true,
+    "premium": 2,
+    "defects": "Image 2 frame 2: jaw/lower face warps downward when mouth opens; mouth interior lacks definition; Image 3 frames 4-5: teeth and mouth corner smear slightly during motion",
+    "reads_as": {
+     "1": "Neutral calm expression",
+     "2": "Speaking with mouth open",
+     "3": "Lips slightly parted",
+     "4": "Neutral composed face",
+     "5": "Neutral resting expression",
+     "6": "Eyes glancing sideways",
+     "7": "Slight pleased smile",
+     "8": "Soft subtle smile"
+    },
+    "apparent_age": "25-35",
+    "one_fix": "Add natural head and neck movement instead of a locked static head"
+   },
+   "usage": {
+    "prompt_tokens": 4008,
+    "completion_tokens": 9777,
+    "total_tokens": 13785,
+    "audio_prompt_tokens": 0,
+    "prompt_tokens_details": {
+     "cached_tokens": 1024,
+     "image_tokens": 3535
+    }
+   }
+  }
+ ]
+}

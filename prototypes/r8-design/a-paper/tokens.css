@@ -1,0 +1,59 @@
+/* Direction A, "Paper and ink": the ONE token set. Every colour, size, space and radius the screens use is here.
+   Fonts (all SIL Open Font Licence, self-hostable as woff2): Atkinson Hyperlegible Next (UI), Source Serif 4
+   (display and reading), STIX Two Text (maths), Mukta (Devanagari). The prototype links Google Fonts; the product
+   would serve the same files from /fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=STIX+Two+Text:ital,wght@0,400;0,500;1,400&family=Mukta:wght@400;600&display=swap");
+
+:root {
+  /* ground and surfaces: warm paper */
+  --bg: #F4EFE6;
+  --surface: #FFFDF8;
+  --surface-2: #EBE4D7;
+  --line: #E0D7C7;
+  --line-2: #C9BBA3;
+  /* ink */
+  --ink: #1C1A16;
+  --ink-2: #4B453C;
+  --ink-3: #655E53;
+  /* the one warm accent: marigold. It marks the primary action and "your move" */
+  --accent: #EFA52E;
+  --on-accent: #1C1A16;
+  --move: #EFA52E;
+  --on-move: #1C1A16;
+  --move-text: #7E4C00;
+  /* the teacher: indigo */
+  --tutor: #3B47B0;
+  --tutor-soft: #E2E4F5;
+  /* the board is paper: colour carries meaning */
+  --board-bg: #FFFDF8;
+  --board-ink: #1C1A16;
+  --board-soft: #6F675B;
+  --focus: #3B47B0;        /* the part being talked about (her pointer is her colour) */
+  --focus-fill: #DCE0F5;
+  --ans: #1C7348;          /* the answer, always with a tick or a box */
+  --ans-fill: #DAEEE1;
+  --mix: #A84B22;          /* a mix-up: rust, always dashed; never red, never a verdict */
+  --ok: #1C7348;
+
+  /* type: 8 sizes */
+  --font-ui: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-display: "Source Serif 4", Georgia, serif;
+  --font-read: "Source Serif 4", Georgia, serif;
+  --font-math: "STIX Two Text", "STIX Two Math", "Cambria Math", serif;
+  --font-deva: "Mukta", "Noto Sans Devanagari", sans-serif;
+  --t-1: 14px; --t-2: 16px; --t-3: 18px; --t-4: 21px; --t-5: 26px; --t-6: 32px; --t-7: 44px; --t-8: 60px;
+
+  /* space: one scale */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+
+  /* corners: three */
+  --r-1: 8px; --r-2: 16px; --r-3: 999px;
+
+  /* real shadows, warm */
+  --shadow-1: 0 1px 2px rgb(60 40 10 / .06), 0 2px 6px rgb(60 40 10 / .05);
+  --shadow-2: 0 1px 2px rgb(60 40 10 / .06), 0 10px 28px -6px rgb(60 40 10 / .16);
+
+  /* motion */
+  --ease-out: cubic-bezier(.22, .7, .2, 1);
+  --dur-1: 160ms; --dur-2: 320ms; --dur-3: 700ms;
+}

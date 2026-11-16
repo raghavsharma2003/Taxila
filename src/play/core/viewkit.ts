@@ -16,6 +16,8 @@ export interface ControlSpec {
   /** controls with the same group share a row */
   group?: string;
   aria?: string;
+  /** a toggle that is on now (an aimed option): rendered as aria-pressed */
+  pressed?: boolean;
 }
 export interface Readout { k: string; v: string; role?: Role }
 export interface FamilyView extends View {
@@ -35,6 +37,8 @@ export interface ViewDeps<P = unknown, S = unknown, A extends PlayActBody = Play
   lang: Lang;
   /** ask the host to re-render its DOM chrome (goal, readouts, controls) */
   changed(): void;
+  /** the parent's wording switch for the shot (O-G4): "fire" (default) or "scan" */
+  verb?: "fire" | "scan";
 }
 export type MakeView = (api: ViewApi, deps: ViewDeps) => FamilyView;
 

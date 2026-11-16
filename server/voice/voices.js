@@ -73,10 +73,14 @@ export function warnUnmeasuredOnce() {
   if (rows.length) console.info(`[voice] unprobed DragonHD rows speak gpt-4o-mini-tts until probed: ${rows.join(", ")}`);
 }
 
-/** Is the expressive layer on for this engine? dhd: on unless TAXILA_VOICE_EXPRESSIVE=0; oai: only with =all. */
+/**
+ * Is the expressive layer (the per-clause SSML delivery plan) on for this engine? OFF by default (audit V-27, an owner
+ * call to confirm): context/rejected.md `rj-ssml-delivery-plan-2026-10-04` records listeners scoring the planned SSML
+ * lower than the plain line on DragonHD (2.10 vs 2.40, choppy / slow), yet it shipped on by default for dhd. Until the
+ * pending blind listen says otherwise: dhd only with TAXILA_VOICE_EXPRESSIVE=1 (or on / dhd / all); oai only with =all.
+ */
 export function expressiveOn(engine, env = process.env) {
   const v = String(env.TAXILA_VOICE_EXPRESSIVE ?? "").toLowerCase();
-  if (v === "0" || v === "off") return false;
-  if (engine === "dhd") return true;
+  if (engine === "dhd") return v === "1" || v === "on" || v === "dhd" || v === "all";
   return v === "all";
 }

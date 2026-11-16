@@ -1,0 +1,45 @@
+diff --git a/server/routes/account.js b/server/routes/account.js
+index a6eb9406..37573f41 100644
+--- a/server/routes/account.js
++++ b/server/routes/account.js
+@@ -2,7 +2,7 @@
+ import { randomBytes, createHash, createHmac } from "crypto";
+ import { q, one, tx, GUARD_FAILED } from "../db.js";
+ import { need, bad, send, HttpError } from "../http.js";
+-import { createSession, destroySession, requireGuardian, requireChild } from "../auth.js";
++import { createSession, destroySession, requireGuardian, requireChild, deviceOnly, scopeRefused } from "../auth.js";
+ import { requireParentIfPinSet, checkAccountPassword, verifySecret, hashSecret, rateLimit } from "./parent.js";
+ import { SINGLE_TEACHER_ID, servesClass, singleTeacher, teacherFor } from "../compiler/characters/index.js";
+ import { onConsentChange } from "../conductor/hooks.js";
+@@ -300,6 +300,9 @@ export async function createChild(req, res, body) {
+ }
+ 
+ export async function updateChild(req, res, body) {
++  // a paired child device saves her own picks only (avatar, interests): the profile facts are the parent's, PIN or no PIN.
++  // The router already refuses other fields from a device (server/pair/scope.js DEVICE_FIELDS); this is the handler's own.
++  if (deviceOnly(req) && Object.keys(body ?? {}).some((k) => !["childId", "avatar", "interests"].includes(k))) throw scopeRefused();
+   const { child } = await requireChild(req, need(body, "childId").childId);
+   if (body.board !== undefined && !BOARDS.includes(body.board)) throw bad("unknown board");
+   if (body.schoolMedium !== undefined && !MEDIUMS.includes(body.schoolMedium)) throw bad("unknown school medium");
+diff --git a/server/routes/placement.js b/server/routes/placement.js
+index 94e05392..36d76a26 100644
+--- a/server/routes/placement.js
++++ b/server/routes/placement.js
+@@ -12,7 +12,7 @@
+ // 404 not a Postgres 500, and a stale itemId is a 409 carrying the current item so the client re-renders instead of showing
+ // an error. A retried answer to the item just graded is idempotent (placement/session.js).
+ import { send, bad, notFound, HttpError } from "../http.js";
+-import { requireChild } from "../auth.js";
++import { requireChild, deviceOnly, scopeRefused } from "../auth.js";
+ import { q, one } from "../db.js";
+ import { startPlacement, answerPlacement, publicItem, loadBank, poolFor } from "../placement/index.js";
+ import { summaryOf, placementResultsOf } from "../placement/store.js";
+@@ -104,6 +104,8 @@ async function noteFor(child) {
+  * change of answer moves where topic choice starts, never adds a second site to the ledger.
+  */
+ async function onboarding(req, res, body) {
++  // a paired child device sends her own "feels" picks only; the parent's view is the parent's (server/pair/scope.js)
++  if (deviceOnly(req) && body?.parentView !== undefined) throw scopeRefused();
+   const { child } = await requireChild(req, body?.childId);
+   const row = await one("select onboarding_answers from child where id = $1", [child.id]);
+   const answers = mergeAnswers(row?.onboarding_answers, body, child.class_level);

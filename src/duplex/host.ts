@@ -322,6 +322,8 @@ export class EngineHost {
       return;
     }
     const view = this.fanin.view(ev.t, (from) => this.audio.voicedAfter(from));
+    // audit V-07: the child's own words (her echo already removed) with no device onset this turn seed one
+    if (ev.type === "final" && view.text.trim() && !this.her.speaking) this.audio.seedOnset(ev.t);
     const alt = view.text ? this.echo.stripAll(view.text, ev.t, this.fanin.lag.p90) : "";
     const s = this.safety.check(view.text, view.coverageEndMs, ev.t, alt && alt !== view.text ? [alt] : []);
     this.maybeAskSemantic(view, ev.t);

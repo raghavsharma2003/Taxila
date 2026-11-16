@@ -1,0 +1,160 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket pitch ki tarah number line par fractions ki jagah dhoondhenge. Agar 0 se 1 tak ka raasta do barabar hisson mein baanto, beech ka number kya hoga?",
+   "move": "hook",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1608
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo ek chhota sa check karte hain. Ghar 0 par hai, chai ki dukaan 1 par; raasta do barabar gaps mein banta hai. Beech wale mark par kaunsa number hoga?",
+   "move": "probe",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2788,
+   "replyReadyMs": 4396
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Socho ek roti do barabar tukdon mein kati: ek tukda poori roti ka aadha hai. Waise hi 0 se 1 ke do barabar gaps mein pehle gap ke baad ka mark kya hoga?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3699,
+   "replyReadyMs": 3700
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1462
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 4 kaha. Ek roti ko do barabar tukdon mein kaato: ek tukda chaar roti nahi, aadhi roti hota hai. Raaste ka beech bhi aadha hai. Do barabar gaps mein pehle mark ko kya kahoge?",
+   "move": "reteach",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2535,
+   "replyReadyMs": 3997
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 899
+  },
+  {
+   "who": "teacher",
+   "text": "Kyunki 0 se 1 tak poora raasta hai, aur beech tak sirf uske do barabar hisson mein se ek hissa tay hota hai. Cricket pitch ka aadha raasta poori pitch se chhota hoga. Do barabar gaps mein pehla mark kis fraction par hoga?",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 3193,
+   "replyReadyMs": 4092
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1029
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahe ho samajh gaya. Chhota sa check: 0 se 1 tak chaar barabar gaps hon, toh pehle mark ka fraction kya hoga?",
+   "move": "probe",
+   "card": "0 se 1 ki line mein beech mein 3 marks hain, jo 4 barabar gaps banate hain. Pehla mark kya hai?",
+   "replyMs": 5063,
+   "replyReadyMs": 6092
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1391
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 6 kaha. Socho 0 se 1 tak cricket pitch ko chaar barabar kadmon mein baanta: pehle mark tak sirf ek kadam hai, poore chaar nahi. Ek kadam poori pitch ka kitna hissa hai?",
+   "move": "reteach",
+   "card": "4 barabar gaps wali 0 se 1 ki line par doosra mark kya hai? Iska koi aur naam bata sakte ho?",
+   "replyMs": 3383,
+   "replyReadyMs": 4774
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 742
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example. Chocolate bar ko chaar barabar tukdon mein baanto; ek tukda poori bar ka ek chauthai hai. Waise hi chaar barabar gaps mein pehle mark tak ek gap hai. Pehle mark ka fraction kya hoga?",
+   "move": "reteach",
+   "card": "4 barabar gaps wali 0 se 1 ki line par doosra mark kya hai? Iska koi aur naam bata sakte ho?",
+   "replyMs": 2691,
+   "replyReadyMs": 3433
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1870
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai. Chaar barabar gaps mein pehle mark tak ek gap hota hai. Us mark ko kaunsa fraction kahoge?",
+   "move": "probe",
+   "card": "4 barabar gaps wali 0 se 1 ki line par doosra mark kya hai? Iska koi aur naam bata sakte ho?",
+   "replyMs": 2370,
+   "replyReadyMs": 4240
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1215
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 kaha. Ab seedhi par chaar barabar paidan socho: doosre paidan tak chaar mein se do paidan chadhe. Doosre mark tak kitne gaps paar hue?",
+   "move": "reteach",
+   "card": "4 barabar gaps wali 0 se 1 ki line par doosra mark kya hai? Iska koi aur naam bata sakte ho?",
+   "replyMs": 2677,
+   "replyReadyMs": 3892
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1178
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Carry on, chhota break, ya aaj ke liye stop—screen par teenon choices hain.",
+   "move": "break",
+   "card": null,
+   "replyMs": 1262,
+   "replyReadyMs": 2440
+  }
+ ]
+}

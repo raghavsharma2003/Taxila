@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-first-sound",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 B5 (voice-first-sound-latency b, c; verdict hold). (b) The turn-audio fold is the default: src/lesson/ttsStream.ts turnAudioEnabled is on unless VITE_TURN_AUDIO=0 or the device key says 0, so the turn and her audio share one response. (c) The continuer is for every child, on every lane, D5 included. server/latency/ack.js continuerAllowed is on by default; TAXILA_ACK_CONTINUER=cohort keeps round 5's owner cohort and =off turns it off. The client no longer turns it off on D5: it plays through her output, which is the D5 stereo reference, and the engine counts it as her sounding. Brain A5 joint: lessonTurn's hooks.onClause (the Director's locked first clause, brain/say.js streamAsk) is synthesised inside the turn-audio fold as soon as it is guarded; the rest follows the turn. A reply that no longer starts with what was said (failed closed to safeguarding) is said in full, never skipped. So the client needs no separate SSE player while the fold is on; the SSE route stays the path for a client with the fold off. Verdict hold: it already applies only to her reply, never to the ack or continuer (a separate player). With the continuer on every lane, her first sound is no longer held; the reply, which can carry the verdict, still waits for VERDICT_HOLD_MS (2500, unchanged until D5 EOT data from live lessons). (e) Perceive on D5 deltas waits on the delta-streaming ear model (B4, TAXILA_D5_ASR) and its live arm. Reverse the D5 continuer if Voice Live's turn detection is shown to open items on it (phantom child turns) in a live arm; reverse the fold default if its error rate on phones exceeds plain /api/lesson/turn plus tts-stream."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-first-sound",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-first-sound — fold on, continuer for everyone, the Director's first clause spoken early (2026-11-04)\n\nThe first sound after the child stops is now the short continuer or uptake for every child on every lane, D5 included. The continuer plays through her own output, which D5's echo canceller already references. The turn-audio fold is on by default, so the turn and her audio come back in one response. Brain's streamed Director reply plugs into that fold: the locked first clause is synthesised on the server the moment it is guarded, the rest follows the turn, and a reply that turned into safeguarding after that clause is said in full. The verdict hold still delays only her reply, never the continuer, so it no longer costs her first sound. Its 2.5 s value waits for D5 end-of-turn data from live lessons. Reversals: drop the D5 continuer if a live arm shows Voice Live opening items on it; drop the fold default if phones show more errors on it than on the two-request path.\n"
+ }
+}

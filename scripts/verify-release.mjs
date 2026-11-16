@@ -38,7 +38,7 @@ export const KNOWN_SKIPS = [
 export const GATES = [
   ["typecheck", "tsc -b (vite exits 0 with type errors)", "npx", ["tsc", "-b"]],
   ["prompt-budget", "worst-case compiles fit; the gate throws, never truncates", "node", ["scripts/check-prompt-budget.mjs"]],
-  ["kit-budget", "every kit item compiles on every lane, language, band", "node", ["--test", "tests/kit-budget.test.mjs"]],
+  ["kit-budget", "every kit item compiles on every lane, language, band", "node", ["--test", "tests/kit-budget-lint.test.mjs", ...[1, 2, 3, 4, 5, 6, 7, 8, 9].map((c) => `tests/kit-budget-c${c}.test.mjs`)]],
   ["persona-invariants", "floor invariants on every character × lane, with negative controls", "node", ["evals/persona-invariants.mjs"]],
   ["never-rules", "teacher-output NEVER predicate: red-team table + coded corpus", "node", ["evals/never-rules.mjs"]],
   ["pii", "scrubPii: refuting shapes, Devanagari, answers untouched", "node", ["evals/pii.mjs"]],

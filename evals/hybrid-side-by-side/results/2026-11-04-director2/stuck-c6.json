@@ -1,0 +1,182 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket-pitch jaisi shapes ka perimeter naapenge. Tumhe cricket mein sabse zyada kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1472
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya—cricket choice zaroori nahi. Socho, pitch ke chaaron taraf rope lagani ho: rope kitni length ki chahiye? Golu ko batao.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1016,
+   "replyReadyMs": 2488
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 899
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter matlab boundary ke chaaron taraf chalna: har side ki length jodte hain. Rectangle ki chaar sides hoti hain—kaunsi-kaunsi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1006,
+   "replyReadyMs": 1905
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 899
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, aur dheere: rectangle ki 4 sides hoti hain. Ab har side ko ek-ek karke ginenge. Tum count karke batao: one, two, three, four?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1770,
+   "replyReadyMs": 2669,
+   "guard": [
+    "level"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 974
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, aayat (rectangle) mein chaar bhujayein hoti hain. Ab ginें: ek, do, teen, chaar. Tumne kitni bhujayein gini?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2269,
+   "replyReadyMs": 3243,
+   "guard": [
+    "level"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1364
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 5 bhujayein gini. Aayat mein chaar hoti hain; ab 4 bhujayein gin kar batao.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2677,
+   "replyReadyMs": 4041,
+   "guard": [
+    "negates",
+    "answerinq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1021
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, park ki chaaron bhujayein ginte hain: 50, 30, 50, 30 meter.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2336,
+   "replyReadyMs": 3357,
+   "guard": [
+    "invented"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1225
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kalpana karo: ek aayat ki chaar sides hain—50, 30, 50, 30 meter. Pehli side kitni hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2381,
+   "replyReadyMs": 3606,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1274
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehli side 50 meter hai. Isliye perimeter mein 50 meter bhi jodenge. Doosri side kitni hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1063,
+   "replyReadyMs": 2337
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1603
+  },
+  {
+   "who": "teacher",
+   "text": "Tum bharo. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1932,
+   "replyReadyMs": 3535,
+   "guard": [
+    "underived"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1205
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Jaari rakhein, chhota break lein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2226,
+   "replyReadyMs": 3431,
+   "guard": [
+    "wrap"
+   ]
+  }
+ ],
+ "agent": []
+}

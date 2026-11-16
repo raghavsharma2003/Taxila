@@ -1,0 +1,268 @@
+TAP version 13
+# Subtest: child-name check: serve-time, kit-exempt, never child-free state
+    # Subtest: two children, the kit item names one of them: both get the activity, in either order
+    ok 1 - two children, the kit item names one of them: both get the activity, in either order
+      ---
+      duration_ms: 139.287746
+      type: 'test'
+      ...
+    # Subtest: a non-kit string carrying the child's name is caught for THAT child only, on a cached body too
+    ok 2 - a non-kit string carrying the child's name is caught for THAT child only, on a cached body too
+      ---
+      duration_ms: 4148.941215
+      type: 'test'
+      ...
+    # Subtest: the cached gate verdict ignores the child: gateFill without a name equals gateFill with any name on kit text
+    ok 3 - the cached gate verdict ignores the child: gateFill without a name equals gateFill with any name on kit text
+      ---
+      duration_ms: 39.061256
+      type: 'test'
+      ...
+    1..3
+ok 1 - child-name check: serve-time, kit-exempt, never child-free state
+  ---
+  duration_ms: 4394.957322
+  type: 'suite'
+  ...
+# Subtest: per-lesson learner snapshot
+    # Subtest: a primed snapshot personalises a call that passes no learner (same fill key as passing it)
+    ok 1 - a primed snapshot personalises a call that passes no learner (same fill key as passing it)
+      ---
+      duration_ms: 32.9859
+      type: 'test'
+      ...
+    1..1
+ok 2 - per-lesson learner snapshot
+  ---
+  duration_ms: 33.375791
+  type: 'suite'
+  ...
+# Subtest: turn path (needByMs 2000): code pick now, model pick upgrades the cache later
+    # Subtest: cold fill at 2 s makes no model call, ships the code pick with error no_time
+    ok 1 - cold fill at 2 s makes no model call, ships the code pick with error no_time
+      ---
+      duration_ms: 27.41574
+      type: 'test'
+      ...
+    # Subtest: upgrade rule: a model pick replaces a code pick; nothing else overwrites
+    ok 2 - upgrade rule: a model pick replaces a code pick; nothing else overwrites
+      ---
+      duration_ms: 0.342223
+      type: 'test'
+      ...
+    1..2
+ok 3 - turn path (needByMs 2000): code pick now, model pick upgrades the cache later
+  ---
+  duration_ms: 28.146858
+  type: 'suite'
+  ...
+# Subtest: prefetch plans before it counts
+    # Subtest: only mountable items take the slots, in the Director's practice-queue order, and the turn call is a memory hit
+    ok 1 - only mountable items take the slots, in the Director's practice-queue order, and the turn call is a memory hit
+      ---
+      duration_ms: 72.744169
+      type: 'test'
+      ...
+    # Subtest: a kit with nothing mountable spends no slots and calls nothing
+    ok 2 - a kit with nothing mountable spends no slots and calls nothing
+      ---
+      duration_ms: 46.829091
+      type: 'test'
+      ...
+    1..2
+ok 4 - prefetch plans before it counts
+  ---
+  duration_ms: 119.951085
+  type: 'suite'
+  ...
+# Subtest: gradeEvent: the event → evidence mapping (the client's correct flag is never read)
+    # Subtest: fraction-bars shade: goal_met with this fill's goal is correct; other events and other modules are not evidence
+    ok 1 - fraction-bars shade: goal_met with this fill's goal is correct; other events and other modules are not evidence
+      ---
+      duration_ms: 5.751249
+      type: 'test'
+      ...
+    # Subtest: fraction-bars compare: the value comes from the server binding; a forged correct:true on a wrong bar is incorrect
+    ok 2 - fraction-bars compare: the value comes from the server binding; a forged correct:true on a wrong bar is incorrect
+      ---
+      duration_ms: 48.045674
+      type: 'test'
+      ...
+    # Subtest: scene choice-card: key id → correct, a trap → its kit misconception, an unknown id → null
+    ok 3 - scene choice-card: key id → correct, a trap → its kit misconception, an unknown id → null
+      ---
+      duration_ms: 8.145646
+      type: 'test'
+      ...
+    # Subtest: scene sequence-steps: the exact order is correct, any other permutation incorrect, a malformed one null
+    ok 4 - scene sequence-steps: the exact order is correct, any other permutation incorrect, a malformed one null
+      ---
+      duration_ms: 15.175034
+      type: 'test'
+      ...
+    1..4
+ok 5 - gradeEvent: the event → evidence mapping (the client's correct flag is never read)
+  ---
+  duration_ms: 77.440968
+  type: 'suite'
+  ...
+# [forge-g1-serve] scene agreement: 977 fills, 2613 verdicts, 0 disagreements
+# Subtest: results are private copies
+    # Subtest: mutating a result's grade or command does not touch the shared cached fill
+    ok 1 - mutating a result's grade or command does not touch the shared cached fill
+      ---
+      duration_ms: 2.257522
+      type: 'test'
+      ...
+    1..1
+ok 6 - results are private copies
+  ---
+  duration_ms: 2.445285
+  type: 'suite'
+  ...
+# Subtest: client view and routes
+    # Subtest: a scene fill's client view carries no grade, binding, misconception map or distractors
+    ok 1 - a scene fill's client view carries no grade, binding, misconception map or distractors
+      ---
+      duration_ms: 6.573233
+      type: 'test'
+      ...
+    # Subtest: per-child limits: 30 requests a minute, then 429; another child is unaffected; the window slides
+    ok 2 - per-child limits: 30 requests a minute, then 429; another child is unaffected; the window slides
+      ---
+      duration_ms: 0.68654
+      type: 'test'
+      ...
+    1..2
+ok 7 - client view and routes
+  ---
+  duration_ms: 7.388647
+  type: 'suite'
+  ...
+# Subtest: drift pins
+    # Subtest: liveRenderers is pinned to the frame registry (with and without the scene flag)
+    ok 1 - liveRenderers is pinned to the frame registry (with and without the scene flag)
+      ---
+      duration_ms: 0.491514
+      type: 'test'
+      ...
+    # Subtest: the vendored scene@1 validator equals the docs source (header and --emit guard aside)
+    ok 2 - the vendored scene@1 validator equals the docs source (header and --emit guard aside)
+      ---
+      duration_ms: 5.456905
+      type: 'test'
+      ...
+    # Subtest: SharedKey string-to-sign follows the documented 12-header + canonical layout
+    ok 3 - SharedKey string-to-sign follows the documented 12-header + canonical layout
+      ---
+      duration_ms: 0.684803
+      type: 'test'
+      ...
+    1..3
+ok 8 - drift pins
+  ---
+  duration_ms: 6.772055
+  type: 'suite'
+  ...
+# Subtest: fill keys stay child-free under the new version
+ok 9 - fill keys stay child-free under the new version
+  ---
+  duration_ms: 0.329507
+  type: 'test'
+  ...
+# Subtest: gradeEvent agrees with the scene@1 renderer's own verdicts (src/modules/frame/scene/runtime.ts)
+    # Subtest: every choice option and a right/wrong order of every G1 scene fill in c4-c7 maths/science/EVS/English
+    ok 1 - every choice option and a right/wrong order of every G1 scene fill in c4-c7 maths/science/EVS/English
+      ---
+      duration_ms: 3976.74618
+      type: 'test'
+      ...
+    1..1
+ok 10 - gradeEvent agrees with the scene@1 renderer's own verdicts (src/modules/frame/scene/runtime.ts)
+  ---
+  duration_ms: 3976.893878
+  type: 'suite'
+  ...
+# Subtest: player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop
+ok 11 - player → puppet: viseme batches on the player clock, re-anchored on underrun and resume, cut on stop
+  ---
+  duration_ms: 10.382337
+  type: 'test'
+  ...
+# Subtest: player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock
+ok 12 - player → puppet: every batch of one part on one anchor carries the SAME playAt on a stepping audio clock
+  ---
+  duration_ms: 1.96779
+  type: 'test'
+  ...
+# Subtest: seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST
+ok 13 - seam (patch 03): a child's request is proposed, shown by slotFor, revealed by onReveal and graded by the HOST
+  ---
+  duration_ms: 30.376154
+  type: 'test'
+  ...
+# Subtest: seam (patch 03): a safeguard quarantines Stagecraft for the rest of the lesson
+ok 14 - seam (patch 03): a safeguard quarantines Stagecraft for the rest of the lesson
+  ---
+  duration_ms: 3.011793
+  type: 'test'
+  ...
+# Subtest: seam (patch 03): spacing is 2 with a Stagecraft host (P5) and stays 4 without one; off = no host = the Wave 2 view
+ok 15 - seam (patch 03): spacing is 2 with a Stagecraft host (P5) and stays 4 without one; off = no host = the Wave 2 view
+  ---
+  duration_ms: 0.532314
+  type: 'test'
+  ...
+# [studio] whiteboard drawn source=spec sync=40ms spec=-
+# [studio] facts row left out of the compile: Cannot read properties of undefined (reading 'lang')
+# Subtest: seam (patch 03): the whiteboard ask goes through board sync (speculative board first, then the line plan)
+ok 16 - seam (patch 03): the whiteboard ask goes through board sync (speculative board first, then the line plan)
+  ---
+  duration_ms: 110.479445
+  type: 'test'
+  ...
+# Subtest: peekFactsRow = the row the next turn's slotFor + factsRowForSlot give when the screen does not change
+ok 17 - peekFactsRow = the row the next turn's slotFor + factsRowForSlot give when the screen does not change
+  ---
+  duration_ms: 16.908752
+  type: 'test'
+  ...
+# Subtest: peekFactsRow follows the host's outcome, and gives nothing when the Director takes the tray or after a safety turn
+ok 18 - peekFactsRow follows the host's outcome, and gives nothing when the Director takes the tray or after a safety turn
+  ---
+  duration_ms: 22.083146
+  type: 'test'
+  ...
+# Subtest: withFactsRows: content that does not change keeps the instructions as they are (no recompile)
+ok 19 - withFactsRows: content that does not change keeps the instructions as they are (no recompile)
+  ---
+  duration_ms: 3.152382
+  type: 'test'
+  ...
+# Subtest: player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun
+ok 20 - player clock: line anchor at the first sample; clause onsets at their scheduled playback time across an underrun
+  ---
+  duration_ms: 12.038851
+  type: 'test'
+  ...
+# Subtest: player clock: no req → anchor still marked (any line), clause events not emitted by the player
+ok 21 - player clock: no req → anchor still marked (any line), clause events not emitted by the player
+  ---
+  duration_ms: 1.715186
+  type: 'test'
+  ...
+# Subtest: probe: performance.now is the real clock after the files above ran
+ok 22 - probe: performance.now is the real clock after the files above ran
+  ---
+  duration_ms: 31.254149
+  type: 'test'
+  ...
+1..22
+# tests 32
+# suites 9
+# pass 32
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 9999.5583

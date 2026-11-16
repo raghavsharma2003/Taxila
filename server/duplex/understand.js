@@ -38,6 +38,8 @@ const NUM_WORDS = new Map(Object.entries({
   ek: 1, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, panch: 5, chhe: 6, saat: 7, aath: 8, nau: 9, das: 10, barah: 12, bees: 20,
   pachees: 25, chhappan: 56,
 }));
+/** Verb stems before "दो"/"do" = "give" (never घटा / जोड़: arithmetic). Same set as src/duplex/numerals.ts VERB_DO_STEM. */
+const VERB_DO_STEM = /^(?:बता|समझा|दिखा|सुना|कर|दे|लिख|बोल|सिखा|बना|bata|samjha|dikha|suna|kar|de|likh|bol|sikha|bana)$/u;
 /** "एक" is also the article "a/one" in running Hindi; it counts as a value only when it stands alone or in "एक बटा …". */
 const WEAK_ONE = new Set(["एक", "ek", "one"]);
 
@@ -50,9 +52,12 @@ export function valuesIn(text) {
   const out = [];
   const num = (w) => (/^[-−]?\d+(?:[./]\d+)?$/.test(w) ? w : NUM_WORDS.has(w) ? String(NUM_WORDS.get(w)) : null);
   for (let i = 0; i < toks.length; i++) {
+    // round 5 (tests/fixtures/spoken-fractions.json): "दो" / "do" right after a verb stem is the verb "give", not 2
+    if ((toks[i] === "दो" || toks[i] === "do") && VERB_DO_STEM.test(toks[i - 1] ?? "")) continue;
     const a = num(toks[i]);
     if (a === null) continue;
-    if (/^(?:बटा|बटे|by|upon|over|bata)$/.test(toks[i + 1] ?? "") && num(toks[i + 2] ?? "") !== null) {
+    // "बता": azure-speech's spelling of बटा, a fraction only between two numbers (as every join here already requires)
+    if (/^(?:बटा|बटे|बता|by|upon|over|bata)$/.test(toks[i + 1] ?? "") && num(toks[i + 2] ?? "") !== null) {
       out.push({ v: `${a}/${num(toks[i + 2])}`, at: i + 2 });
       i += 2;
       continue;

@@ -5,6 +5,18 @@
 // always shown in full, whatever the band.
 import type { Board as BoardModel } from "./model.ts";
 import { isHelpline } from "./ledge.ts";
+import type { ReactNode } from "react";
+import { mathRuns } from "./mathRuns.ts";
+
+function typeset(text: string): ReactNode {
+  return mathRuns(text).map((r, i) =>
+    "frac" in r ? (
+      <span key={i} className="dk-frac"><span className="dk-frac-n">{r.frac[0]}</span><span className="dk-frac-slash">/</span><span className="dk-frac-d">{r.frac[1]}</span></span>
+    ) : (
+      r.text
+    ),
+  );
+}
 
 export function Board({ board, young }: { board: BoardModel; young: boolean }) {
   const lines = board.lines.filter((l) => l.text.trim());
@@ -19,7 +31,7 @@ export function Board({ board, young }: { board: BoardModel; young: boolean }) {
           l.kind === "image" ? (
             <img key={i} className="dk-board-img" src={l.text} alt="" />
           ) : (
-            <p key={i} className={`dk-chalk ${l.kind === "math" ? "dk-chalk--math" : ""}`}>{l.text}</p>
+            <p key={i} className={`dk-chalk ${l.kind === "math" ? "dk-chalk--math" : ""}`}>{l.kind === "math" ? typeset(l.text) : l.text}</p>
           ),
         )}
         {board.chalked && (

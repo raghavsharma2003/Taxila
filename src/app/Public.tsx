@@ -119,7 +119,7 @@ export function Help() {
         <p>If a child says something that sounds unsafe, the teacher stops the lesson, tells them they are not in trouble, gives these numbers and asks them to find a grown-up they trust. You see it in the parent corner.</p>
         <h2 className="sv-page-h2">Help with Taxila</h2>
         <p>Signed in? Open the parent corner and choose Help and safety. To sign in again on this or another phone, use <Link to="/start/phone?login=1">Sign in</Link> with your email and password.</p>
-        <p>Forgot your password? A reset is not ready yet: it comes with sign-in by a code sent to your phone. Until then a forgotten password cannot be recovered from this page.</p>
+        <p>Forgot your password? <Link to="/signin">Sign in with a code</Link> we email you, or choose Forgot password on the sign-in screen to set a new one. Codes by phone are not ready yet.</p>
       </div>
     </SitePage>
   );

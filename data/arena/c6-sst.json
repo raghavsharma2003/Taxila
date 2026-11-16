@@ -1,0 +1,791 @@
+{
+ "v": 1,
+ "tier": "A",
+ "source": "data/kits/c6-sst.json",
+ "challenges": [
+  {
+   "id": "c6-sst-ch01-t01-i01",
+   "topicId": "c6-sst-ch01-t01",
+   "skillId": "c6-sst-ch01-t01-s1",
+   "difficulty": 1,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "On a map, the scale says 1 cm = 5 km. Your school and the railway station are 4 cm apart on the map. How far apart are they really?",
+    "hi": "Map pe scale hai 1 cm = 5 km. Map pe school aur railway station 4 cm door hain. Asli mein kitni doori hai?"
+   },
+   "hint": "Point to the scale: each cm is 5 km",
+   "mis": "c6-sst-ch01-t01-m3",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "21 km"
+    },
+    {
+     "id": "o2",
+     "text": "20 km"
+    },
+    {
+     "id": "o3",
+     "text": "2 km"
+    },
+    {
+     "id": "o4",
+     "text": "40 km"
+    }
+   ],
+   "keyText": "20 km"
+  },
+  {
+   "id": "c6-sst-ch01-t01-rl-h1",
+   "topicId": "c6-sst-ch01-t01",
+   "skillId": "c6-sst-ch01-t01-s1",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A cycling-route map uses 1 cm = 4 km. The route from the library to the lake is 2 cm, then from the lake to the stadium is 3 cm. How long is the whole route?",
+    "hi": "Cycling-route map par 1 cm = 4 km hai. Library se lake tak route 2 cm, aur lake se stadium tak 3 cm hai. Poora route kitna lamba hai?"
+   },
+   "hint": "Add both route sections before applying the scale.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "10 km"
+    },
+    {
+     "id": "o2",
+     "text": "21 km"
+    },
+    {
+     "id": "o3",
+     "text": "20 km"
+    },
+    {
+     "id": "o4",
+     "text": "2 km"
+    }
+   ],
+   "keyText": "20 km"
+  },
+  {
+   "id": "c6-sst-ch01-t01-rl-h2",
+   "topicId": "c6-sst-ch01-t01",
+   "skillId": "c6-sst-ch01-t01-s3",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "On a globe, Point A is at 20°N, 70°E; Point B at 20°N, 80°E; and Point C at 10°N, 80°E. Which point is directly south of B: A or C?",
+    "hi": "Globe par Point A 20°N, 70°E; Point B 20°N, 80°E; aur Point C 10°N, 80°E par hai. B ke seedhe south mein kaun hai: A ya C?"
+   },
+   "hint": "Compare the east coordinates first, then the north coordinates.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "A"
+    },
+    {
+     "id": "o2",
+     "text": "C"
+    }
+   ],
+   "keyText": "C"
+  },
+  {
+   "id": "c6-sst-ch01-t01-rl-h3",
+   "topicId": "c6-sst-ch01-t01",
+   "skillId": "c6-sst-ch01-t01-s4",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "IST follows the 82.5°E meridian. A town at 97.5°E is 15° farther east. When an IST clock reads 12 noon, what is the town's local solar time? Use 15° = 1 hour.",
+    "hi": "IST 82.5°E meridian par based hai. 97.5°E wala town usse 15° east mein hai. Jab IST clock mein dopahar 12 baje hon, town ka local solar time kya hoga? 15° = 1 hour lo."
+   },
+   "hint": "Convert the longitude difference into a time difference.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "0 pm"
+    },
+    {
+     "id": "o2",
+     "text": "10 pm"
+    },
+    {
+     "id": "o3",
+     "text": "1 pm"
+    },
+    {
+     "id": "o4",
+     "text": "2 pm"
+    }
+   ],
+   "keyText": "1 pm"
+  },
+  {
+   "id": "c6-sst-ch02-t01-rl-h5",
+   "topicId": "c6-sst-ch02-t01",
+   "skillId": "c6-sst-ch02-t01-s1",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "An atlas lists the Pacific, Atlantic and Indian Oceans by size. Which ocean comes next in this largest-to-smallest list: Southern or Arctic?",
+    "hi": "Atlas mein size ke hisaab se Pacific, Atlantic aur Indian Oceans likhe hain. Largest-to-smallest list mein agla kaunsa hoga: Southern ya Arctic?"
+   },
+   "hint": "Ocean sizes ka poora order yaad karo.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Southern"
+    },
+    {
+     "id": "o2",
+     "text": "Arctic"
+    }
+   ],
+   "keyText": "Southern"
+  },
+  {
+   "id": "c6-sst-ch03-t01-rl-o2",
+   "topicId": "c6-sst-ch03-t01",
+   "skillId": "c6-sst-ch03-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "After floods, a river leaves layers of fine soil across a wide, flat area near Patna. Which landform can repeated deposits help build: a plain or a mountain?",
+    "hi": "Baadh ke baad Patna ke paas ek nadi chaudi, samtal jagah par baarik mitti ki partein chhodti hai. Aise baar-baar jamaav se kaunsa landform ban sakta hai: plain ya mountain?"
+   },
+   "hint": "River deposits can build up a wide, low area.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "a plain"
+    },
+    {
+     "id": "o2",
+     "text": "a mountain"
+    }
+   ],
+   "keyText": "a plain"
+  },
+  {
+   "id": "c6-sst-ch04-t01-i02",
+   "topicId": "c6-sst-ch04-t01",
+   "skillId": "c6-sst-ch04-t01-s3",
+   "difficulty": 2,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "How many years passed between 500 BCE and 200 BCE?",
+    "hi": "500 BCE aur 200 BCE ke beech kitne saal beete?"
+   },
+   "hint": "Point: both are BCE, so we subtract",
+   "mis": "c6-sst-ch04-t01-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "300 years"
+    },
+    {
+     "id": "o2",
+     "text": "301 years"
+    },
+    {
+     "id": "o3",
+     "text": "302 years"
+    },
+    {
+     "id": "o4",
+     "text": "3 years"
+    }
+   ],
+   "keyText": "300 years"
+  },
+  {
+   "id": "c6-sst-ch04-t01-rl-o1",
+   "topicId": "c6-sst-ch04-t01",
+   "skillId": "c6-sst-ch04-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A museum labels two coins: one from 320 BCE and another from 120 BCE. Which coin is older: the 320 BCE coin or the 120 BCE coin?",
+    "hi": "Museum mein do coins par 320 BCE aur 120 BCE likha hai. Kaunsa coin zyada purana hai: 320 BCE wala ya 120 BCE wala?"
+   },
+   "hint": "On a BCE timeline, years count down as time moves forward.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "23 BCE"
+    },
+    {
+     "id": "o2",
+     "text": "321 BCE"
+    },
+    {
+     "id": "o3",
+     "text": "320 BCE"
+    },
+    {
+     "id": "o4",
+     "text": "640 BCE"
+    }
+   ],
+   "keyText": "320 BCE"
+  },
+  {
+   "id": "c6-sst-ch04-t01-rl-h1",
+   "topicId": "c6-sst-ch04-t01",
+   "skillId": "c6-sst-ch04-t01-s3",
+   "difficulty": 4,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "An excavation report dates a settlement to 350 BCE and a nearby inscription to 50 BCE. How many years apart are these dates?",
+    "hi": "Excavation report mein ek settlement 350 BCE ka aur paas ka inscription 50 BCE ka bataya gaya hai. Dono dates mein kitne saal ka antar hai?"
+   },
+   "hint": "For two BCE dates, find the difference between their numbers.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "300 years"
+    },
+    {
+     "id": "o2",
+     "text": "30 years"
+    },
+    {
+     "id": "o3",
+     "text": "301 years"
+    },
+    {
+     "id": "o4",
+     "text": "3 years"
+    }
+   ],
+   "keyText": "300 years"
+  },
+  {
+   "id": "c6-sst-ch04-t01-rl-h3",
+   "topicId": "c6-sst-ch04-t01",
+   "skillId": "c6-sst-ch04-t01-s5",
+   "difficulty": 4,
+   "itemKind": "why",
+   "prompt": {
+    "en": "A king’s inscription says his army won a battle, but gives no enemy account. Why should a historian check other sources: to test whether the claim is accurate, or to find a newer date for the stone?",
+    "hi": "Raja ke inscription mein likha hai ki uski sena battle jeeti, par dushman ka account nahi hai. Historian ko doosre sources kyun check karne chahiye: claim sahi hai ya nahi jaanchne ke liye, ya stone ki nayi date dhoondhne ke liye?"
+   },
+   "hint": "One source may leave out facts that challenge its account.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "to test whether the claim is accurate"
+    },
+    {
+     "id": "o2",
+     "text": "to find a newer date for the stone"
+    }
+   ],
+   "keyText": "to test whether the claim is accurate"
+  },
+  {
+   "id": "c6-sst-ch06-t01-i05",
+   "topicId": "c6-sst-ch06-t01",
+   "skillId": "c6-sst-ch06-t01-s4",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "Has the Harappan script been deciphered (read) yet?",
+    "hi": "Kya Harappan lipi abhi tak padhi (decipher) ja saki hai?"
+   },
+   "hint": "Ask whether we know what the seals 'say'",
+   "mis": "c6-sst-ch06-t01-m1",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-sst-ch06-t01-rl-o1",
+   "topicId": "c6-sst-ch06-t01",
+   "skillId": "c6-sst-ch06-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Your class is labelling a map of Harappan sites. Which site should go in Kachchh, Gujarat: Dholavira or Harappa?",
+    "hi": "Class Harappan sites ka map label kar rahi hai. Kachchh, Gujarat mein kaunsi site mark karoge: Dholavira ya Harappa?"
+   },
+   "hint": "Recall where each site lies today.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "Dholavira"
+    },
+    {
+     "id": "o2",
+     "text": "Harappa"
+    }
+   ],
+   "keyText": "Dholavira"
+  },
+  {
+   "id": "c6-sst-ch06-t01-rl-h3",
+   "topicId": "c6-sst-ch06-t01",
+   "skillId": "c6-sst-ch06-t01-s5",
+   "difficulty": 4,
+   "itemKind": "predict",
+   "prompt": {
+    "en": "Suppose a river near a Harappan town gradually changed course, reducing water for its fields. Which is more likely over time: farming and trade weaken, or trade grows because harvests shrink?",
+    "hi": "Maano ek Harappan town ke paas nadi dheere-dheere raasta badalti hai aur kheton ko kam paani milta hai. Samay ke saath kya zyada mumkin hai: kheti aur vyapar kamzor hon, ya fasal ghatne se vyapar badhe?"
+   },
+   "hint": "Then consider how fewer crops affect goods available to exchange.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "farming and trade weaken"
+    },
+    {
+     "id": "o2",
+     "text": "trade grows because harvests shrink"
+    }
+   ],
+   "keyText": "farming and trade weaken"
+  },
+  {
+   "id": "c6-sst-ch08-t01-i11",
+   "topicId": "c6-sst-ch08-t01",
+   "skillId": "c6-sst-ch08-t01-s1",
+   "difficulty": 2,
+   "itemKind": "retrieval",
+   "prompt": {
+    "en": "How many languages are listed in the Eighth Schedule of the Constitution?",
+    "hi": "Constitution ki Eighth Schedule mein kitni bhashayein listed hain?"
+   },
+   "hint": "Point to the list of languages in the Eighth Schedule of the Constitution",
+   "mis": "c6-sst-ch08-t01-m3",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "numeric",
+   "options": [
+    {
+     "id": "o1",
+     "text": "27"
+    },
+    {
+     "id": "o2",
+     "text": "220"
+    },
+    {
+     "id": "o3",
+     "text": "22"
+    },
+    {
+     "id": "o4",
+     "text": "23"
+    }
+   ],
+   "keyText": "22"
+  },
+  {
+   "id": "c6-sst-ch08-t01-rl-o2",
+   "topicId": "c6-sst-ch08-t01",
+   "skillId": "c6-sst-ch08-t01-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "At a book fair, the same epic story appears in Tamil and Awadhi versions. What is the shared thread here: the story or the language?",
+    "hi": "Book fair mein ek hi mahakavya ki kahani Tamil aur Awadhi versions mein hai. Yahan shared thread kya hai: kahani ya bhasha?"
+   },
+   "hint": "Separate what is told from how it is told.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "the story"
+    },
+    {
+     "id": "o2",
+     "text": "the language"
+    }
+   ],
+   "keyText": "the story"
+  },
+  {
+   "id": "c6-sst-ch08-t01-rl-h1",
+   "topicId": "c6-sst-ch08-t01",
+   "skillId": "c6-sst-ch08-t01-s2",
+   "difficulty": 4,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A school exhibition shows kites for Uttarayan in Gujarat and sesame sweets for Makar Sankranti in Maharashtra. Both mark the sun’s northward journey. What is their shared thread: identical customs or a common seasonal idea?",
+    "hi": "School exhibition mein Gujarat ke Uttarayan ki patangein aur Maharashtra ki Makar Sankranti ki til mithai dikhayi gayi hain. Dono suraj ki uttar ki yatra se jude hain. Shared thread kya hai: bilkul ek jaise riwaaz ya ek common seasonal idea?"
+   },
+   "hint": "Look beneath the activities for what both mark.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "identical customs"
+    },
+    {
+     "id": "o2",
+     "text": "a common seasonal idea"
+    }
+   ],
+   "keyText": "a common seasonal idea"
+  },
+  {
+   "id": "c6-sst-ch09-t01-rl-h4",
+   "topicId": "c6-sst-ch09-t01",
+   "skillId": "c6-sst-ch09-t01-s1",
+   "difficulty": 4,
+   "itemKind": "contrast",
+   "prompt": {
+    "en": "Sana lives with her parents. Her uncle lives in another city but regularly helps pay her school fees. Does his support make Sana’s household a joint family? Answer yes or no, based on who lives together.",
+    "hi": "Sana apne parents ke saath rehti hai. Doosre shehar mein rehne wale uncle regular school fees mein madad karte hain. Kya isse Sana ka ghar joint family ban jaata hai? Saath kaun rehta hai, iske hisaab se haan ya nahin batao."
+   },
+   "hint": "Support from elsewhere is different from sharing a household.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "no"
+  },
+  {
+   "id": "c6-sst-ch10-t01-rl-o2",
+   "topicId": "c6-sst-ch10-t01",
+   "skillId": "c6-sst-ch10-t01-s2",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A new law limits how much plastic packaging shops can use. Government officers visit shops to check whether they follow it. Which organ of government are the officers working for: legislature, executive or judiciary?",
+    "hi": "Naya kanoon shops mein plastic packaging ki matra seemit karta hai. Sarkari officers shops mein jaakar check karte hain ki kanoon maana ja raha hai ya nahi. Officers kis ang ke liye kaam kar rahe hain: legislature, executive ya judiciary?"
+   },
+   "hint": "Match their action to an organ’s job.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "legislature"
+    },
+    {
+     "id": "o2",
+     "text": "executive"
+    },
+    {
+     "id": "o3",
+     "text": "judiciary"
+    }
+   ],
+   "keyText": "executive"
+  },
+  {
+   "id": "c6-sst-ch11-t01-rl-o1",
+   "topicId": "c6-sst-ch11-t01",
+   "skillId": "c6-sst-ch11-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Several villages in one block want to coordinate repairs to a road between them. Which Panchayati Raj tier works at block level: gram panchayat, panchayat samiti, or zila parishad?",
+    "hi": "Ek block ke kai gaon apne beech ki sadak ki marammat milkar karna chahte hain. Block star par kaunsa Panchayati Raj nikay kaam karta hai: gram panchayat, panchayat samiti, ya zila parishad?"
+   },
+   "hint": "Match that area to the middle tier of Panchayati Raj.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "gram panchayat"
+    },
+    {
+     "id": "o2",
+     "text": "panchayat samiti"
+    },
+    {
+     "id": "o3",
+     "text": "zila parishad"
+    }
+   ],
+   "keyText": "panchayat samiti"
+  },
+  {
+   "id": "c6-sst-ch11-t01-rl-o2",
+   "topicId": "c6-sst-ch11-t01",
+   "skillId": "c6-sst-ch11-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "Meena is 19 and her name is on her village's voters' list. She was not elected to the panchayat. Can she still attend the gram sabha: yes or no?",
+    "hi": "Meena 19 saal ki hai aur uska naam gaon ki voter list mein hai. Woh panchayat mein chuni nahi gayi. Kya woh phir bhi gram sabha mein aa sakti hai: haan ya nahin?"
+   },
+   "hint": "Think about the age and voters' list requirements.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-sst-ch12-t01-rl-o1",
+   "topicId": "c6-sst-ch12-t01",
+   "skillId": "c6-sst-ch12-t01-s1",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A farming area near Jaipur is gaining shops and new housing, but is not yet a town. Which urban local body fits it: municipal corporation, municipal council or nagar panchayat?",
+    "hi": "Jaipur ke paas ek kheti wala ilaaka ab dukaanon aur naye gharon ke saath shehri ban raha hai, par abhi town nahi hai. Iske liye kaunsi urban local body sahi hai: municipal corporation, municipal council ya nagar panchayat?"
+   },
+   "hint": "Focus on the change from rural to urban.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "municipal corporation"
+    },
+    {
+     "id": "o2",
+     "text": "municipal council"
+    },
+    {
+     "id": "o3",
+     "text": "nagar panchayat"
+    }
+   ],
+   "keyText": "nagar panchayat"
+  },
+  {
+   "id": "c6-sst-ch12-t01-rl-o2",
+   "topicId": "c6-sst-ch12-t01",
+   "skillId": "c6-sst-ch12-t01-s2",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A streetlight near Zoya’s school is broken. Her city is divided into wards, each with an elected representative. What is that representative called: councillor, mayor or municipal commissioner?",
+    "hi": "Zoya ke school ke paas streetlight kharab hai. Uska shehar wards mein bata hai, aur har ward ka ek chuna hua representative hai. Use kya kehte hain: councillor, mayor ya municipal commissioner?"
+   },
+   "hint": "Look for the elected representative, not the appointed official.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "councillor"
+    },
+    {
+     "id": "o2",
+     "text": "mayor"
+    },
+    {
+     "id": "o3",
+     "text": "municipal commissioner"
+    }
+   ],
+   "keyText": "councillor"
+  },
+  {
+   "id": "c6-sst-ch13-t01-i07",
+   "topicId": "c6-sst-ch13-t01",
+   "skillId": "c6-sst-ch13-t01-s1",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A farm worker is paid in sacks of rice instead of money. Is this economic work? Explain.",
+    "hi": "Ek khet mazdoor ko paison ki jagah chawal ki boriyan milti hain. Kya yeh economic kaam hai? Samjhao."
+   },
+   "hint": "Point to payment in kind",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "yesno",
+   "options": [
+    {
+     "id": "o1",
+     "text": "yes",
+     "word": "yes"
+    },
+    {
+     "id": "o2",
+     "text": "no",
+     "word": "no"
+    }
+   ],
+   "keyText": "yes"
+  },
+  {
+   "id": "c6-sst-ch14-t01-rl-o1",
+   "topicId": "c6-sst-ch14-t01",
+   "skillId": "c6-sst-ch14-t01-s1",
+   "difficulty": 3,
+   "itemKind": "practice",
+   "prompt": {
+    "en": "A workshop buys clay and shapes it into water pots for sale. Is the workshop’s activity primary, secondary or tertiary?",
+    "hi": "Ek workshop mitti khareedkar bechne ke liye matke banati hai. Workshop ka kaam primary, secondary ya tertiary hai?"
+   },
+   "hint": "Think about the sector that makes goods from materials.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "secondary"
+    },
+    {
+     "id": "o2",
+     "text": "tertiary"
+    }
+   ],
+   "keyText": "secondary"
+  },
+  {
+   "id": "c6-sst-ch14-t01-rl-o2",
+   "topicId": "c6-sst-ch14-t01",
+   "skillId": "c6-sst-ch14-t01-s1",
+   "difficulty": 3,
+   "itemKind": "near_transfer",
+   "prompt": {
+    "en": "A delivery rider brings a repaired phone from a repair shop to its owner. Is the rider’s activity primary, secondary or tertiary?",
+    "hi": "Ek delivery rider repaired phone ko repair shop se uske owner tak pahunchata hai. Rider ka kaam primary, secondary ya tertiary hai?"
+   },
+   "hint": "Focus on the rider’s work, not the phone.",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "form": "choice",
+   "options": [
+    {
+     "id": "o1",
+     "text": "secondary"
+    },
+    {
+     "id": "o2",
+     "text": "tertiary"
+    }
+   ],
+   "keyText": "tertiary"
+  }
+ ]
+}

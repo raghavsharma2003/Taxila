@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-secure-since",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "The World's Yesterday/Today reads the ledger's secureSince (Learning, migration 046) instead of the device snapshot: a skill is new today when its stamp falls on today's local day, an unstamped secure skill is old; the device snapshot (rollSnapshot) stays only for a map with no stamps at all (046 not applied). Reverse: Learning drops secureSince.",
+   "source": "inbox/r7-app-19.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-secure-since",
+   "rel": "part_of",
+   "dst": "dc-r7-app-chapter-seals"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-secure-since`\nWhat became pakka today is now the ledger's fact, not one device's memory. A child who learns on the tablet sees the same 'new today' on the phone. Until the migration is applied everywhere, the device snapshot still fills in.\n"
+ }
+}

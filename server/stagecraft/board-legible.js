@@ -8,11 +8,13 @@
 // The fit: shrink the board's GEOMETRY (points, centres, radii, boxes) by one factor so the smallest text reaches the
 // legibility bar, and keep every text size as authored (text sizes are fixed tokens s/m/l: they cannot grow). The result
 // is re-gated by the caller with the full gate; overlaps the shrink causes are refused there (W2), never hidden here.
-import { TEXT_SIZE } from "../../shared/whiteboard.js";
+import { TEXT_SIZE, opTextSizes } from "../../shared/whiteboard.js";
 import { PHONE_TRAY } from "../studio/archetypes/index.js";
 import { MIN_TEXT_PX } from "../studio/qa/whiteboard.js";
 
-const sizeOf = (o) => (o.op === "text" ? TEXT_SIZE[o.size] ?? TEXT_SIZE.m : o.op === "label" ? TEXT_SIZE.s : o.op === "numwork" ? TEXT_SIZE.m * (o.marks?.some((m) => m.kind === "carry") ? 0.62 : 1) : null);
+// (round 8: a text with a stacked fraction counts its numerals' own size)
+const textMin = (o) => Math.min(...opTextSizes(o), o.op === "label" ? TEXT_SIZE.s : TEXT_SIZE[o.size] ?? TEXT_SIZE.m);
+const sizeOf = (o) => (o.op === "text" || o.op === "label" ? textMin(o) : o.op === "numwork" ? TEXT_SIZE.m * (o.marks?.some((m) => m.kind === "carry") ? 0.62 : 1) : null);
 const isPt = (p) => Array.isArray(p) && p.length === 2 && p.every((v) => typeof v === "number" && Number.isFinite(v));
 
 /** The smallest text size on the phone tray, in px (Infinity when the board has no text). */

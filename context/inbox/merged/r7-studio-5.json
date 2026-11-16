@@ -1,0 +1,40 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-beat-cards-on",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "Beat cards are on by default (C1 item 5): every fresh board carries its card (picture / formula / steps / example / takeaway, beats-done dots, 'checkpoint ahead' before a check) and a skill's first board prefers a picture. TAXILA_BEAT_BOARD=0 turns it off. Recording: docs/design/round7/studio/beat-card-*. Reversal: the owner finds the header noisy on phones."
+    },
+    {
+      "id": "dc-r7-board-timeline",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "timeline@1 (C1 item 5, the first of the truth primitives): a true-scale timeline from the kit's own 'label (year)' chains (server/forge/explainer/timeline.js), across for <= 4 events (labels alternate above/below) or down for 5-6 (one row each), labels spread clear and leader-lined to their year's tick, ticks not dots (W8 reads dots as a count). Facts: event1..eventN 'year label', span. Picked by explainerFor after the code pick, before the library's model-written flow. Recordings: docs/design/round7/studio/timeline-*. Reversal: a kit chain's labels read badly on the board (then that kit's library entry wins)."
+    },
+    {
+      "id": "ms-r7-board-timeline-reach",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 830,
+      "method": "timelineCall over every class 1-9 kit in maths, science, evs, sst, english and hindi (830 kits); expand + gateWhiteboard against a line that says each year and label; code only",
+      "title": "7 kits get a timeline (c7-sst-ch16, c8-sst-ch02/03/04/09, c9-sst-ch12, c9-science-ch02-t03); 7/7 expand and pass every W gate; all 7 were a model-written flow/parts board before."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-board-timeline",
+      "rel": "measured_by",
+      "dst": "ms-r7-board-timeline-reach"
+    },
+    {
+      "src": "dc-r7-board-timeline",
+      "rel": "extends",
+      "dst": "dc-r7-beat-cards-on"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-beat-cards-on: every fresh board carries its beat card (2026-11-04)\n\nThe card says what kind of board it is and how far the lesson has come, and warns of a check ahead. It was built in round 4 and left off; it is now on.\n\n## dc-r7-board-timeline: true-scale timelines from the kit's own dates (2026-11-04)\n\nHistory topics now get a real timeline: each event sits at its true place in time, and its label is the kit authors' own words. A long gap looks long. Up to four events run left to right; five or six run down the board.\n",
+    "measurements": "## ms-r7-board-timeline-reach (2026-11-04, n = 830 kits)\n\n7 topics get a timeline today, all c7-c9 social science plus the history of cell theory. All 7 pass every board gate. Before, each showed a model-written flowchart.\n"
+  }
+}

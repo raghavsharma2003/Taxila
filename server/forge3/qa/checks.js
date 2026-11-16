@@ -19,7 +19,7 @@
 import { FLOORS } from "../../../shared/play.ts";
 
 /** Studio v2 host minimums in design units of its 1000 x 625 world (src/studio-v2/core/tokens.ts MIN). */
-export const SV2_MIN = Object.freeze({ label: 38, value: 48, target: 130, worldW: 1000 });
+export const SV2_MIN = Object.freeze({ label: 38, labelYoung: 43, value: 48, target: 130, worldW: 1000 });
 export const QA_VERSION = "forge3-qa@2";
 
 /**
@@ -42,7 +42,9 @@ export function judgeView(m, o = {}) {
   let canvasLabel = null, canvasTarget = null;
   if (m.canvas && (o.artifactKind === "stagecraft" || m.kind === "stagecraft")) {
     const s = m.canvas.w / SV2_MIN.worldW;
-    canvasLabel = Math.round(SV2_MIN.label * s * 10) / 10;
+    // (2026-11-10: for a young child the engines draw no text below MIN_YOUNG.label, 43 units — src/studio-v2/core/draw.ts —
+    // so the canvas's smallest label is 43 × scale there, not 38)
+    canvasLabel = Math.round((o.young ? SV2_MIN.labelYoung : SV2_MIN.label) * s * 10) / 10;
     canvasTarget = Math.round(SV2_MIN.target * s);
     minPx = minPx == null ? canvasLabel : Math.min(minPx, canvasLabel);
   }

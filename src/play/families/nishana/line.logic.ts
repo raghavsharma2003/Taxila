@@ -1,6 +1,18 @@
 // Nishana · land it on the line (DESIGN.md §3.3). The child places a marker for a value on a number line and commits; the
 // pod lands where the child put it, the truth flag rises at the computed position and the gap is drawn exactly. Compare
 // mode: place two values, then say which is smaller. PURE law + generator + solver + grader.
+// r7 hop mode (studio-play-coverage-expansion): the pod starts on an integer drawn on the line and the child lands it where
+// "−3 + (−4)", "5 − (−2)" or "−3 × 4" ends (adding a negative hops left; subtracting one hops right; a product is repeated
+// hops). Mal-rules from the verified kit slugs: subtract-smaller · two-neg-positive · sign-of-bigger · neg-neg.
+// r7 nishana2: two more hop kinds on the same line.
+//   ÷ (c7-ch10-t02): the dividend is a flag on the line and the pod is the quotient; a chain of hops from 0 ends at
+//   pod × divisor. A positive divisor is b equal hops whose size is the pod ("−12 ÷ 3": 3 equal hops reach −12, each is?);
+//   a negative divisor is hops OF the divisor, the pod counting them (a backward hop counts minus: "12 ÷ (−3)": how many
+//   hops of −3 reach 12?). The sign comes from which way the hops go. Mal-rules: div-neg-neg (−20 ÷ −5 = −4) and
+//   div-by-size (12 ÷ (−3) = 4), both the kit's sign-mix.
+//   decimals (c7-ch03-t04): the pod starts on a decimal drawn on a tenths line and hops a decimal ("2.5 + 1.25"); a
+//   wrong lining-up of places lands visibly elsewhere. Mal-rules: dec-right-align (2.5 + 1.25 = 1.50),
+//   dec-separate-parts (2.7 + 1.5 = 3.12), dec-smaller-from-larger (5.3 − 2.8 = 3.5).
 //
 // Values are exact rationals (whole numbers, fractions, mixed numbers, decimals, integers). Mal-rules predict where a
 // child holding a belief would put the marker; a level is served only if each mapped mal-rule's position is far from the
@@ -19,11 +31,15 @@ export interface LineParams {
   major: number; minor: number;        // tick steps in line units (minor 0 = none); labels on majors
   values: LineValue[];                 // 1 (place) or 2 (compare)
   tol: number;                         // absolute tolerance in line units
-  goal: "place" | "compare" | "round";
+  goal: "place" | "compare" | "round" | "hop";
+  /** hop goal: the expression's operands (the pod starts at `a`, drawn on the line) */
+  hop?: Hop;
   labels: "all" | "major" | "ends";    // what is written under the ticks (fade)
   /** round goal: the rounding unit; the line runs between two neighbouring landmarks (lo, hi = lo + to) */
   to?: number;
 }
+export type HopOp = "+" | "-" | "×" | "÷";
+export interface Hop { a: number; b: number; op: HopOp }
 export interface LineState extends Undoable<LineState> {
   marks: (number | null)[];
   commits: number;
@@ -34,7 +50,62 @@ export interface LineState extends Undoable<LineState> {
   acts: number;
 }
 export const LINE_MAL = ["whole-number-bias", "line-as-unit", "all-less-than-one", "count-marks", "decimal-place", "sign-ignored", "neg-order-line", "neg-magnitude", "longer-bigger", "shorter-bigger", "first-digit-compare", "line-spacing",
-  "round-truncate", "round-chain", "round-last-digit"] as const;
+  "round-truncate", "round-chain", "round-last-digit", "subtract-smaller", "two-neg-positive", "sign-of-bigger", "neg-neg",
+  "div-neg-neg", "div-by-size", "dec-right-align", "dec-separate-parts", "dec-smaller-from-larger"] as const;
+
+/** decimals are exact to the thousandth (a decimal hop's operands have at most 2 places) */
+const r3 = (x: number) => Math.round(x * 1000) / 1000;
+/** a decimal hop: an operand that is not a whole number */
+export const isDecHop = (h: Hop) => !Number.isInteger(h.a) || !Number.isInteger(h.b);
+/** the hop expression's value (exact integers; a decimal hop to the thousandth; a quotient only when it is whole) */
+export const hopValue = (h: Hop) => (h.op === "+" ? r3(h.a + h.b) : h.op === "-" ? r3(h.a - h.b) : h.op === "×" ? h.a * h.b : h.a / h.b);
+/** "−3 + (−4)": a negative right operand in brackets, the minus sign as − */
+export const hopText = (h: Hop) => {
+  const n = (x: number) => (x < 0 ? `−${-x}` : String(x));
+  return `${n(h.a)} ${h.op === "-" ? "−" : h.op} ${h.b < 0 ? `(${n(h.b)})` : n(h.b)}`;
+};
+/** the places a decimal is written with (shortest form: 2.5 has 1, 0.35 has 2, 3 has 0) */
+export const placesOf = (x: number) => (Number.isInteger(x) ? 0 : Math.abs(x * 10 - Math.round(x * 10)) < 1e-9 ? 1 : 2);
+/** the digits a decimal is written with, read as one whole number ("2.5" → 25, "0.35" → 35, "1.25" → 125) */
+const digitsOf = (x: number) => Math.round(x * 10 ** placesOf(x));
+/** 2.5 + 1.25 = 1.50: the last digits lined up as if whole numbers, the point put back at the longer number's places */
+function rightAligned(h: Hop): number | null {
+  const pa = placesOf(h.a), pb = placesOf(h.b), P = Math.max(pa, pb);
+  if (pa === pb) return null;
+  const r = h.op === "+" ? digitsOf(h.a) + digitsOf(h.b) : digitsOf(h.a) - digitsOf(h.b);
+  return r < 0 ? null : r3(r / 10 ** P);
+}
+/** 2.7 + 1.5 = 3.12: wholes added, then the parts after the point added as whole numbers and written after the point */
+function separateParts(h: Hop): number | null {
+  const pa = placesOf(h.a), pb = placesOf(h.b);
+  if (pa !== pb || pa === 0) return null;
+  const w = Math.floor(h.a) + Math.floor(h.b), f = Math.round((h.a - Math.floor(h.a)) * 10 ** pa) + Math.round((h.b - Math.floor(h.b)) * 10 ** pb);
+  return r3(Number(`${w}.${f}`));
+}
+/** 5.3 − 2.8 = 3.5: in each column the smaller digit from the larger, whichever is on top (5 = 5.00 filled in) */
+function smallerFromLarger(h: Hop): number | null {
+  const P = Math.max(placesOf(h.a), placesOf(h.b));
+  let A = Math.round(h.a * 10 ** P), B = Math.round(h.b * 10 ** P), r = 0;
+  for (let u = 1; A > 0 || B > 0; u *= 10) { r += Math.abs((A % 10) - (B % 10)) * u; A = Math.floor(A / 10); B = Math.floor(B / 10); }
+  return r3(r / 10 ** P);
+}
+/** where a child holding a hop belief lands (null = the belief agrees with the truth or says nothing here) */
+export function malHop(h: Hop, mal: string): number | null {
+  const t = hopValue(h);
+  let r: number | null = null;
+  if (mal === "subtract-smaller" && h.op === "-" && h.b < 0) r = h.a + h.b;                       // 3 − (−2) "must be smaller": 1
+  if (mal === "two-neg-positive" && h.op === "+" && h.a < 0 && h.b < 0) r = -(h.a + h.b);          // (−3) + (−4) = 7
+  if (mal === "sign-of-bigger" && h.op === "+" && Math.sign(h.a) !== Math.sign(h.b) && t < 0) r = -t;   // (−8) + 3 = 5
+  if (mal === "neg-neg" && h.op === "×" && h.a < 0 && h.b < 0) r = -t;                             // (−3) × (−4) = −12
+  if (mal === "div-neg-neg" && h.op === "÷" && h.a < 0 && h.b < 0) r = -t;                         // (−20) ÷ (−5) = −4: "both are minus"
+  if (mal === "div-by-size" && h.op === "÷" && h.a > 0 && h.b < 0) r = -t;                         // 12 ÷ (−3) = 4: ÷ its size, the minus dropped
+  if (isDecHop(h)) {
+    if (mal === "dec-right-align") r = rightAligned(h);
+    if (mal === "dec-separate-parts" && h.op === "+") r = separateParts(h);
+    if (mal === "dec-smaller-from-larger" && h.op === "-") r = smallerFromLarger(h);
+  }
+  return r !== null && r !== t ? r : null;
+}
 
 /** Round half up to a multiple of `to` (the school rule). */
 export const roundTo = (v: number, to: number) => Math.floor(v / to + 0.5) * to;
@@ -62,6 +133,8 @@ export function malPosition(p: LineParams, v: LineValue, mal: string): number | 
     case "count-marks": return v.form === "fraction" && p.minor > 0 ? p.lo + (v.num - 1) / v.den * 1 : null;                              // counts the 0 tick as one
     case "decimal-place": return v.form === "decimal" && x > 0 && x < 0.1 ? x * 10 : v.form === "decimal" && x >= 1 && x < 10 && v.den >= 10 ? x / 10 : null;
     case "sign-ignored": return v.form === "integer" && x < 0 ? -x : null;
+    case "subtract-smaller": case "two-neg-positive": case "sign-of-bigger": case "neg-neg":
+    case "div-neg-neg": case "div-by-size": case "dec-right-align": case "dec-separate-parts": case "dec-smaller-from-larger": return p.hop ? malHop(p.hop, mal) : null;
     case "neg-order-line": return v.form === "integer" && x < 0 && p.lo < 0 ? p.lo - x - 1 : null;                                          // −1, −2, −3 … written left to right from the far left, −k at lo + k − 1
   }
   return null;
@@ -85,13 +158,32 @@ function validate(level: PlayLevel<unknown>): PlayLevel<LineParams> | null {
   const p = level.params as Partial<LineParams> | null;
   if (!p || !Number.isInteger(p.lo) || !Number.isInteger(p.hi) || (p.hi as number) <= (p.lo as number)) return null;
   if (!Array.isArray(p.values) || !p.values.length || p.values.length > 2) return null;
-  if (p.goal !== "place" && p.goal !== "compare" && p.goal !== "round") return null;
+  if (p.goal !== "place" && p.goal !== "compare" && p.goal !== "round" && p.goal !== "hop") return null;
   if ((p.goal === "compare") !== (p.values.length === 2)) return null;
   if (p.goal === "round") {
     const to = Number(p.to);
     if (!(to >= 10) || (p.hi as number) - (p.lo as number) !== to || (p.lo as number) % to !== 0 || p.values.length !== 1 || p.values[0].den !== 1) return null;
   }
   const lo = p.lo as number, hi = p.hi as number;
+  let hop: LineParams["hop"] | undefined;
+  if (p.goal === "hop") {
+    const h = p.hop, ok = (x: unknown) => Number.isInteger(x) && Math.abs(x as number) <= 100;
+    // a decimal hop: non-negative operands of at most 2 places, + or −, never below 0
+    const dec = (x: unknown) => typeof x === "number" && Number.isFinite(x) && x >= 0 && x <= 100 && Math.abs(x * 100 - Math.round(x * 100)) < 1e-9;
+    if (h && (!Number.isInteger(h.a) || !Number.isInteger(h.b))) {
+      if (!dec(h.a) || !dec(h.b) || (h.op !== "+" && h.op !== "-") || p.values.length !== 1 || h.a < lo || h.a > hi) return null;
+      hop = { a: h.a, b: h.b, op: h.op };
+      const t = hopValue(hop), v0 = p.values[0];
+      if (t < 0 || !Number.isInteger(v0.num) || !Number.isInteger(v0.den) || 100 % v0.den !== 0 || Math.abs(v0.num / v0.den - t) > 1e-9) return null;
+    } else {
+      if (!h || !ok(h.a) || !ok(h.b) || !["+", "-", "×", "÷"].includes(h.op) || p.values.length !== 1 || h.a < lo || h.a > hi) return null;
+      // a quotient on the line is a whole number: a divisor that does not divide, or 0, is refused
+      if (h.op === "÷" && (h.b === 0 || h.a % h.b !== 0 || lo > 0 || hi < 0)) return null;
+      hop = { a: h.a, b: h.b, op: h.op };
+      // the value is the expression's, never what the level says it is
+      if (p.values[0].den !== 1 || p.values[0].num !== hopValue(hop)) return null;
+    }
+  }
   const values: LineValue[] = [];
   for (const v of p.values) {
     if (!v || !Number.isInteger(v.num) || !Number.isInteger(v.den) || v.den < 1 || typeof v.text !== "string" || v.text.length > 12) return null;
@@ -102,7 +194,8 @@ function validate(level: PlayLevel<unknown>): PlayLevel<LineParams> | null {
   const major = Number(p.major), minor = Number(p.minor ?? 0), tol = Number(p.tol);
   if (!(major > 0) || (hi - lo) / major > 20 || !(tol > 0) || tol > (hi - lo) / 8) return null;
   const labels = p.labels === "major" || p.labels === "ends" ? p.labels : "all";
-  return { ...level, params: { lo, hi, major, minor: minor > 0 && (hi - lo) / minor <= 60 ? minor : 0, values, tol, goal: p.goal, labels, ...(p.goal === "round" ? { to: Number(p.to) } : {}) } } as PlayLevel<LineParams>;
+  if (hop) values[0] = { ...values[0], text: hopText(hop), form: isDecHop(hop) ? "decimal" : "integer" };
+  return { ...level, params: { lo, hi, major, minor: minor > 0 && (hi - lo) / minor <= 60 ? minor : 0, values, tol, goal: p.goal, labels, ...(p.goal === "round" ? { to: Number(p.to) } : {}), ...(hop ? { hop } : {}) } } as PlayLevel<LineParams>;
 }
 function init(level: PlayLevel<LineParams>): LineState {
   return { marks: level.params.values.map(() => null), commits: 0, landed: false, ordered: null, rounded: null, done: false, acts: 0, prev: null, depth: 0 };
@@ -128,7 +221,7 @@ function apply(level: PlayLevel<LineParams>, s: LineState, act: LineAct, seq: nu
       const next = bump(pushUndo(s, { ...s, commits: s.commits + 1, landed: all }));
       if (all) {
         if (p.goal === "round") { out.push(mom("progress", seq, { landed: "yes", value: p.values[0].text })); return { state: next, moments: out }; }
-        if (p.goal === "place") { out.push(mom("solved", seq, { value: p.values[0].text, at: fmt(s.marks[0] as number) })); return { state: { ...next, done: true }, moments: out }; }
+        if (p.goal === "place" || p.goal === "hop") { out.push(mom("solved", seq, { value: p.values[0].text, at: fmt(s.marks[0] as number) })); return { state: { ...next, done: true }, moments: out }; }
         out.push(mom("progress", seq, { landed: "both" }));
         return { state: next, moments: out };
       }
@@ -212,11 +305,11 @@ function solve(level: PlayLevel<LineParams>): LineAct[] | null {
 function shortcut(level: PlayLevel<LineParams>): LineAct[] | null {
   const p = level.params;
   if (p.goal === "round") return null;   // the law refuses a rounding before the value has landed on the line
-  if (p.goal !== "place") return null;
+  if (p.goal !== "place" && p.goal !== "hop") return null;
   const v = valueOf(p.values[0]);
   // landmark guesses a child could make without the concept: the ends, the middle, and (when every tick is labelled with the
   // value's own text) reading the label. A labelled tick that IS the value is a reading task, not a placement.
-  const guesses = [p.lo, p.hi, (p.lo + p.hi) / 2];
+  const guesses = [p.lo, p.hi, (p.lo + p.hi) / 2, ...(p.hop ? [p.hop.a, p.hop.b, -p.hop.a] : []), ...(p.hop?.op === "÷" ? [0, -p.hop.b] : [])];   // hop: staying put, the operand
   if (p.labels !== "ends") for (let t = p.lo; t <= p.hi + 1e-9; t += p.major) guesses.push(t);   // a labelled tick is read, not placed
   for (const x of guesses) if (Math.abs(x - v) <= p.tol) return [{ kind: "place", which: 0, x }, { kind: "commit" }];
   return null;
@@ -239,7 +332,7 @@ function malActs(level: PlayLevel<LineParams>, mal: string): LineAct[] | null {
 
 // ───────────────────────────── generation ─────────────────────────────
 
-interface LineGrammar { forms?: LineForm[]; ranges?: [number, number][]; dens?: number[]; tolFrac?: number; goal?: "place" | "compare" | "round"; maxWhole?: number; decimals?: number; to?: number[]; maxV?: number }
+interface LineGrammar { forms?: LineForm[]; ranges?: [number, number][]; dens?: number[]; tolFrac?: number; goal?: "place" | "compare" | "round" | "hop"; maxWhole?: number; decimals?: number; to?: number[]; maxV?: number; ops?: HopOp[]; maxOp?: number }
 /** Round-goal candidates: values between two landmarks, mixed on purpose so each rounding belief has levels it fails on. */
 function roundCandidates(req: GenRequest, g: LineGrammar, rnd: () => number): { lo: number; hi: number; v: number; to: number }[] {
   const out: { lo: number; hi: number; v: number; to: number }[] = [];
@@ -277,12 +370,12 @@ function difficultyOf(p: LineParams): number {
 function generate(req: GenRequest): Candidate<LineParams>[] {
   const g = req.grammar as LineGrammar;
   const forms = g.forms ?? ["fraction"];
-  const goal = (req.goal as "place" | "compare" | "round") ?? g.goal ?? "place";
+  const goal = (req.goal as "place" | "compare" | "round" | "hop") ?? g.goal ?? "place";
   const rnd = mulberry32(req.seed), out: Candidate<LineParams>[] = [];
   const tolFrac = g.tolFrac ?? 0.025;
   const mk = (params: LineParams, sig: string): Candidate<LineParams> => ({
     signature: sig, difficulty: difficultyOf(params),
-    level: { v: "play@1", levelId: `line-${sig}-${req.seed}`.replace(/[^a-z0-9:/.,_-]/gi, "_"), family: "nishana", mode: goal === "compare" ? "compare" : "place", topicId: req.topicId, skillId: req.skillId,
+    level: { v: "play@1", levelId: `line-${sig}-${req.seed}`.replace(/[^a-z0-9:/.,_-]/gi, "_"), family: "nishana", mode: goal === "compare" ? "compare" : goal === "hop" ? "hop" : "place", topicId: req.topicId, skillId: req.skillId,
       fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: "number-line", seed: req.seed,
       proof: { solvable: true, shortcutFree: true, minActs: 0, solutions: 0, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
   });
@@ -303,6 +396,27 @@ function generate(req: GenRequest): Candidate<LineParams>[] {
     if (form === "whole") { const step = Math.max(1, Math.round((hi - lo) / 40)); for (let k = lo + step; k < hi; k += step) vs.push({ text: k.toLocaleString("en-IN"), num: k, den: 1, form }); }
     return vs;
   };
+  if (goal === "hop" && g.ops?.includes("÷")) return divHops(g, req, rnd, mk);
+  if (goal === "hop" && g.decimals) return decimalHops(g, req, rnd, mk);
+  if (goal === "hop") {
+    // operands with at least one negative; the line fits the start, the end and every hop between, majors every 5
+    const ops = g.ops ?? ["+", "-"], m = g.maxOp ?? (ops.includes("×") ? 6 : 12);
+    for (let k = 0; k < 80; k++) {
+      const op = ops[Math.floor(rnd() * ops.length)];
+      const a = Math.floor(rnd() * (2 * m + 1)) - m, b = Math.floor(rnd() * (2 * m + 1)) - m;
+      if (a === 0 || b === 0 || (a > 0 && b > 0) || (op === "×" && (Math.abs(a) < 2 || Math.abs(b) < 2))) continue;
+      const h = { a, b, op }, t = hopValue(h);
+      const reach = Math.max(Math.abs(a), Math.abs(t), op === "×" ? 0 : Math.abs(a + b), 4);
+      const half = op === "×" ? Math.ceil((reach + 1) / 10) * 10 : Math.ceil((reach + 1) / 5) * 5;
+      const lo = -half, hi = half, span = hi - lo;
+      const v: LineValue = { text: hopText(h), num: t, den: 1, form: "integer" };
+      const major = span <= 40 ? 5 : 10, minor = span <= 60 ? 1 : 0;
+      // an integer landing: a neighbour must be a different answer (tolerance under half a step)
+      const tol = Math.min(span * tolFrac, 0.45);
+      out.push(mk({ lo, hi, major, minor: req.fade === 3 ? 0 : minor, values: [v], tol, goal, labels: req.fade === 3 ? "ends" : "major", hop: h }, `hop:${a}${op}${b}`));
+    }
+    return out;
+  }
   if (goal === "round") {
     for (const r of roundCandidates(req, g, rnd)) {
       const v: LineValue = { text: r.v.toLocaleString("en-IN"), num: r.v, den: 1, form: "whole" };
@@ -330,10 +444,73 @@ function generate(req: GenRequest): Candidate<LineParams>[] {
   return out;
 }
 
+type Mk = (params: LineParams, sig: string) => Candidate<LineParams>;
+/**
+ * ÷ hops (r7 nishana2): q × b = a with at least one of a, b negative, |a| ≤ 24 so the line keeps a tick per unit (span ≤ 60).
+ * The line is symmetric about 0 (the chain starts there; the flag at a, the pod at q and the mirror −q all fit).
+ */
+function divHops(g: LineGrammar, req: GenRequest, rnd: () => number, mk: Mk): Candidate<LineParams>[] {
+  const out: Candidate<LineParams>[] = [], mq = g.maxOp ?? 9, tolFrac = g.tolFrac ?? 0.025;
+  for (let k = 0; k < 80; k++) {
+    const q = (1 + Math.floor(rnd() * mq)) * (rnd() < 0.5 ? -1 : 1), b = (2 + Math.floor(rnd() * 5)) * (rnd() < 0.5 ? -1 : 1), a = q * b;
+    if ((a > 0 && b > 0) || Math.abs(a) > 24) continue;
+    const h: Hop = { a, b, op: "÷" };
+    const half = Math.ceil((Math.max(Math.abs(a), Math.abs(q), 4) + 1) / 5) * 5, lo = -half, hi = half, span = hi - lo;
+    const v: LineValue = { text: hopText(h), num: q, den: 1, form: "integer" };
+    const tol = Math.min(span * tolFrac, 0.45);
+    out.push(mk({ lo, hi, major: span <= 40 ? 5 : 10, minor: req.fade === 3 ? 0 : 1, values: [v], tol, goal: "hop", labels: req.fade === 3 ? "ends" : "major", hop: h }, `hop:${a}÷${b}`));
+  }
+  return out;
+}
+/**
+ * Decimal hops (r7 nishana2): a start with 1-2 places (sometimes a whole number for a subtraction: 5 = 5.00) and a hop of
+ * 1-2 places; the line runs between whole numbers, 2 to 4 long with a tick per tenth (a hundredth sits between two
+ * ticks), wide enough for the start, the truth and (when it fits) where each wrong lining-up lands. Landing is within
+ * 0.03: a tenth off is a different answer.
+ */
+function decimalHops(g: LineGrammar, req: GenRequest, rnd: () => number, mk: Mk): Candidate<LineParams>[] {
+  const out: Candidate<LineParams>[] = [], ops = (g.ops ?? ["+", "-"]).filter((o) => o === "+" || o === "-"), maxP = Math.min(2, g.decimals ?? 2);
+  const draw = (maxW: number, whole: boolean) => {
+    const pl = whole ? 0 : 1 + Math.floor(rnd() * maxP), den = 10 ** pl;
+    let n = Math.floor(rnd() * maxW * den) + 1;
+    if (pl === 2 && n % 10 === 0) n += 1 + Math.floor(rnd() * 9);
+    if (pl === 1 && n % 10 === 0) n += 1 + Math.floor(rnd() * 9);
+    return whole ? Math.max(1, Math.round(n / den)) : r3(n / den);
+  };
+  for (let k = 0; k < 120; k++) {
+    const op = ops[Math.floor(rnd() * ops.length)];
+    const a = draw(9, op === "-" && rnd() < 0.2), b = draw(op === "-" ? Math.max(1, Math.floor(a)) : 4, false);
+    const h: Hop = { a, b, op };
+    if (!isDecHop(h) || (op === "-" && b >= a)) continue;
+    const t = hopValue(h);
+    let lo = Math.floor(Math.min(a, t)), hi = Math.ceil(Math.max(a, t));
+    if (hi - lo > 4) continue;
+    // a belief landing within 3 tolerances of the truth cannot be told apart from a slip: such a sum is not served
+    if (Object.keys(req.misMap).some((mal) => { const m = malHop(h, mal); return m !== null && Math.abs(m - t) <= 3 * 0.03; })) continue;
+    // widen to show where the beliefs land when they fit (a line at most 4 long)
+    for (const mal of Object.keys(req.misMap)) {
+      const m = malHop(h, mal);
+      if (m === null) continue;
+      const l2 = Math.min(lo, Math.floor(m)), h2 = Math.max(hi, Math.ceil(m));
+      if (h2 - l2 <= 4) { lo = l2; hi = h2; }
+    }
+    if (hi - lo < 2) { if (lo > 0) lo -= 1; else hi += 1; }
+    if (hi === t) hi += 1;
+    if (lo === t && lo > 0) lo -= 1;
+    if (hi - lo > 4) continue;
+    const gg = gcd(Math.round(t * 100), 100);
+    const v: LineValue = { text: hopText(h), num: Math.round(t * 100) / gg, den: 100 / gg, form: "decimal" };
+    out.push(mk({ lo, hi, major: 1, minor: req.fade === 3 ? 0 : 0.1, values: [v], tol: 0.03, goal: "hop", labels: req.fade === 3 ? "ends" : "major", hop: h }, `hop:${a}${op}${b}`));
+  }
+  return out;
+}
+
 function facts(level: PlayLevel<LineParams>, s: LineState): Facts {
   const p = level.params, f: Facts = { line: `${p.lo} to ${p.hi}`, goal: p.goal };
   p.values.forEach((v, i) => { f[`value${i + 1}`] = v.text; if (s.marks[i] !== null) f[`mark${i + 1}`] = fmt(s.marks[i] as number); });
   if (s.commits) f.commits = s.commits;
+  if (p.hop && p.hop.op === "÷") { f.reach = fmt(p.hop.a); f.hops = Math.abs(p.hop.b); }
+  else if (p.hop) f.from = fmt(p.hop.a);
   if (p.goal === "round" && p.to) { f.to = p.to; f.ends = `${fmtWhole(p.lo)},${fmtWhole(p.hi)}`; if (s.rounded !== null) f.rounded = fmtWhole(s.rounded); }
   if (s.done) f.done = "yes";
   return f;
@@ -347,7 +524,7 @@ function grade(level: PlayLevel<LineParams>, acts: PlayActEnvelope<LineAct>[]): 
 }
 
 export const lineLogic: FamilyLogic<LineParams, LineState, LineAct> = {
-  family: "nishana", modes: ["place", "compare"], malRules: LINE_MAL,
+  family: "nishana", modes: ["place", "compare", "hop"], malRules: LINE_MAL,
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const lineHelpers = { valueOf, gapText, gapInfo, malPosition, ratStr, sub, fmt, roundTo, fmtWhole };

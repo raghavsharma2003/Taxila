@@ -1,0 +1,18 @@
+diff --git a/server/routes/voice.js b/server/routes/voice.js
+index ab6b6470d..15caf55c2 100644
+--- a/server/routes/voice.js
++++ b/server/routes/voice.js
+@@ -149,8 +149,11 @@ const allowClip = limiter(CLIP_PER_MINUTE);
+  * @type {(req: any, res: any, body: { lessonId: string, audio: string, mime?: string }) => Promise<void>}
+  */
+ async function transcribe(req, res, body) {
+-  const { lessonId, audio } = need(body, "lessonId", "audio");
+-  const { lesson, guardian, child } = await lessonFor(req, lessonId);
++  // r7 App (app-ask-voice): Ask "Say it" transcribes BEFORE a lesson exists, so a body with childId and no lessonId is the
++  // child's own clip (requireChild; the same consent, limiter, size checks and age-band prompt by the child's class)
++  const ask = !body?.lessonId && body?.childId;
++  const { audio } = need(body, "audio");
++  const { lesson, guardian, child } = ask ? { lesson: null, ...(await requireChild(req, String(body.childId))) } : await lessonFor(req, need(body, "lessonId").lessonId);
+   if (!(await hasConsent(guardian.id, child.id, "core_tutoring"))) throw forbidden("core_tutoring consent is required for voice");
+   if (!allowClip(guardian.id)) throw new HttpError(429, "too many transcription requests");
+   if (typeof audio !== "string" || audio.length > (MAX_CLIP_BYTES * 4) / 3 + 4) throw bad("audio missing or too large");

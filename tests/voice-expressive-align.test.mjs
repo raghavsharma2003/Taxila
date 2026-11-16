@@ -6,8 +6,6 @@ import { align, preserved, clausesOf, withoutFiller } from "../server/voice/expr
 import { lintSsml, lintPromptText, leakWords } from "../server/voice/expressive/lint.js";
 import { renderParts } from "../server/voice/expressive/render.js";
 import { createGovernor } from "../server/voice/expressive/governor.js";
-import { compileOmni } from "../server/voice/expressive/compile/omni.js";
-import { compileMai } from "../server/voice/expressive/compile/mai.js";
 import { compileOai } from "../server/voice/expressive/compile/oai-tts.js";
 import { plainSsml } from "../server/voice/expressive/compile/dhd.js";
 import { splitSentences } from "../server/voice/sentences.js";
@@ -96,16 +94,11 @@ test("HV-1: 2,000+ replies × 3 voices compile with 0 paralinguistic tags, only 
   assert.deepEqual(Object.keys(problems), [], JSON.stringify(Object.fromEntries(Object.entries(problems).map(([k, v]) => [k, v.slice(0, 3)]))));
 });
 
-test("the other compilers: omni writes native tags only where licensed; mai never a tag or bracket; oai never alters the text", () => {
+// audit V-39: the omni and mai compilers were removed (no engine used them); oai is the other live compiler
+test("the oai compiler never alters the text", () => {
   const plan = align("Haha, cold drink? Phir toh paudhe burp karte! Nahi, paudhe paani peete hain.", { ...momentsFor(0), safety: false, move: "explain", verdict: "ungraded",
     childLaughed: true, band: "B2", teacherAffect: { display: "playful", intensity: 1, cause: "child_joke", turn: 3 }, engagement: "engaged" });
   assert.equal(plan.row, "laughter");
-  const omni = compileOmni(plan.clauses, { voice: "hi-IN-Diya:DragonHDOmniLatestNeural" });
-  assert.match(omni, /\[laughter\]/);
-  assert.deepEqual(lintSsml(omni, "omni"), []);
-  const mai = compileMai(plan.clauses, { voice: "hi-IN-Priya", styles: ["cheerful", "calm"] });
-  assert.ok(!/\[/.test(mai));
-  assert.deepEqual(lintSsml(mai, "mai"), []);
   const o = compileOai(plan.clauses, "accent: Indian");
   assert.equal(o.text, plan.clauses.map(withoutFiller).join(" "));
   assert.match(o.instructions, /^accent: Indian\nFeeling: \w+, (low|medium|high)\. Pace: \w+\.$/);

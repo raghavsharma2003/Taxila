@@ -1,0 +1,9 @@
+Standing decisions from main (they replace "wait for main's reply" in the brief, so you do not stall):
+- Fix every confirmed broken and inconsistent finding in your area, smallest change first, each with a test that fails before and passes after.
+- Deletions: go ahead when the report (or you) proves nothing reads the thing: importers incl. dynamic, package.json, CI, Dockerfiles, tests, docs that tell someone to run it, context/ citations. Keep anything the owner parked rather than retired (the 3D head and Arjun, face polish r9/r10, the classic skin), anything context/ cites as evidence, and scripts/gpu and other AWS build scripts (an open owner question). One commit for deletions, separate from fixes, with a context inbox entry listing each removed path and the last commit that holds it.
+- "Not good enough" redesigns and naming choices: do not build. Write them as short proposals in docs/design/round7/audit/<area>-proposals.md (what the child or parent sees now, the proposed change, the cost) for the owner.
+- Another stream's file: write a patch at docs/patches/to-<owner>/NNN-<name>.patch with a test, never edit it. shared/contracts.ts and DB migrations: same, as a patch plus a note.
+- Nothing paid, no deploys, no network harnesses. NEVER run anything under tests/prod or any eval that imports tests/prod/lib.mjs: with no env it targets PRODUCTION. Tests run with DATABASE_URL blank. No .env files, no secrets, no scheduling tools, no web fetches.
+- Gate before every push: npx tsc -b && npx vite build && node scripts/check-prompt-budget.mjs && npm run test:all. A browser suite that times out on page load under load is re-run once alone.
+- Merge origin/int/r6 before each push. Push small and often: a stopped session loses whatever is not pushed. After each push send main (your parent session) one short message: sha, finding ids closed, what is left.
+- Plain words in everything you write.

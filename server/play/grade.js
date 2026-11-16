@@ -3,11 +3,35 @@
 // verdict is never read: a model never grades, and neither does the device.
 import { logicFor } from "../../src/play/families/index.ts";
 import { replayAll } from "../../src/play/core/replay.ts";
-import { sanitizeActs, playFactsRow } from "../../shared/play.ts";
+import { sanitizeActs, playFactsRow, namingOn, NAMING_FACT_KEYS, GAME_WEIGHT, HABIT_RULES } from "../../shared/play.ts";
+import { buildTrail } from "./trail.js";
 
 export const MAX_ACTS = 400;
 
-/** → { grade, moments, solved, facts } for the acts so far (final = the level is being closed). */
+/** The solver's minimum acts for a level (the proof's, else the solver's own), or null. */
+export function minActsOf(level, logic = logicFor(level.family, level.mode)) {
+  if (Number.isFinite(level?.proof?.minActs) && level.proof.minActs > 0) return level.proof.minActs;
+  try { const v = logic?.validate(level); const s = v ? logic.solve(v) : null; return s?.length || null; } catch { return null; }
+}
+
+/**
+ * Round 8 law 3: is this mal-rule, on this level, a pick among a few (graded at chance weight as chanceMis, never named
+ * from one act)? The same test gradeLevel makes (src/play/core/replay.ts): the goal is oneDecision or a chancePick, or the
+ * pair `goal:mal` is a chancePick, or (gate 2, H4) the family marks the moment as one (chanceAt).
+ */
+export function chancePick(level, mis, logic = logicFor(level?.family, level?.mode), moment = null) {
+  const g = level?.goal;
+  // gate 2 (H4): a moment the family marks as a pick (FamilyLogic.chanceAt: stambh/tally keep's "five")
+  let at = false;
+  if (moment && HABIT_RULES.on) try { at = !!logic?.chanceAt?.(level, moment); } catch { at = false; }
+  return at || (!!g && (!!logic?.oneDecision?.includes(g) || !!logic?.chancePicks?.includes(g) || (!!mis && !!logic?.chancePicks?.includes(`${g}:${mis}`))));
+}
+
+/**
+ * → { grade, moments, solved, facts, trail } for the acts so far (final = the level is being closed). Round 8 P3: when the
+ * level ends (a grade), `trail` is the server's report of how it went (server/play/trail.js), built AFTER the grade from
+ * the same replay; nothing that grades reads it.
+ */
 export function gradeActs(level, rawActs, { final = false } = {}) {
   const logic = logicFor(level.family, level.mode);
   if (!logic) return null;
@@ -17,7 +41,28 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
   const r = replayAll(logic, v, acts);
   const solved = logic.goalMet(v, r.state);
   const grade = solved || final ? logic.grade(v, acts) : null;
-  return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)) };
+  // (a mix-up from one pick is not in the trail the lesson reads: it surfaces only when it repeats, routes.js)
+  const trail = grade ? buildTrail(v, acts, r, { grade, minActs: minActsOf(v, logic), isPick: (rule, m) => chancePick(v, rule, logic, m) }) : null;
+  return { grade, moments: r.moments, solved, acts: acts.length, facts: logic.facts(v, r.state), factsRow: playFactsRow(logic.facts(v, r.state)), trail };
+}
+
+/**
+ * dc-r8-game-gate-play-then-evidence: what leaves the play server for a mode with naming OFF (shared/play.ts NAMING_OFF).
+ * The grade keeps right or wrong, first try (clean) and the checks; every name of a mix-up goes: misconceptionId,
+ * chanceMis and discriminates on the evidence rows (a pick's miss then weighs as any miss, GAME_WEIGHT), the mal-rules in
+ * the trail, and the mix-up keys in the facts (and so in the facts row and the seam). The moments are left as they are:
+ * they drive only her own play-out and line on the device. Pure; a mode with naming on is returned unchanged.
+ */
+export function withNaming(level, g) {
+  if (!g || namingOn(level?.family, level?.mode)) return g;
+  const facts = (f) => (f && typeof f === "object" ? Object.fromEntries(Object.entries(f).filter(([k]) => !NAMING_FACT_KEYS.includes(k))) : f);
+  const row = (e) => {
+    const { misconceptionId: m, chanceMis: c, chanceAct: _a, discriminates: _d, ...rest } = e;
+    return (m || c) && e.outcome !== "correct" ? { ...rest, weight: GAME_WEIGHT } : rest;
+  };
+  const grade = g.grade ? { ...g.grade, evidence: (g.grade.evidence ?? []).map(row), facts: facts(g.grade.facts) } : g.grade;
+  const f = facts(g.facts);
+  return { ...g, grade, facts: f, factsRow: playFactsRow(f), trail: g.trail ? { ...g.trail, mal: [] } : g.trail };
 }
 
 /**
@@ -27,7 +72,7 @@ export function gradeActs(level, rawActs, { final = false } = {}) {
 export function lessonEvidence(grade, level) {
   if (!grade?.evidence?.length) return [];
   return grade.evidence.map((e) => ({
-    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}),
+    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}), ...(e.chanceMis ? { chanceMis: e.chanceMis, ...(e.chanceAct !== undefined ? { chanceAct: e.chanceAct } : {}) } : {}),
     ...(e.discriminates ? { discriminates: e.discriminates } : {}), source: "game", itemId: `play:${level.levelId}`, probe: "P10", hintsUsed: 0, weight: e.weight,
   }));
 }

@@ -6,7 +6,7 @@
 
 .pl-root {
   --pl-bg: #F3EADB; --pl-bg2: #EADFCB; --pl-ink: #2B2118; --pl-ink2: #5A4B3C; --pl-line: rgba(43,33,24,.14);
-  --pl-btn: #FBF6EC; --pl-btn-ink: #2B2118; --pl-you: #C2F542; --pl-you-ink: #0E1116; --pl-accent: #2F5DA8;
+  --pl-btn: #FBF6EC; --pl-btn-ink: #2B2118; --pl-you: #EFA52E; --pl-you-ink: #1C1A16; --pl-focus: #3B47B0; --pl-accent: #2F5DA8;
   --pl-font: "Atkinson Hyperlegible Next", system-ui, sans-serif; --pl-display: "Bricolage Grotesque", "Atkinson Hyperlegible Next", sans-serif;
   --pl-mono: "Geist Mono", ui-monospace, monospace;
   position: relative; box-sizing: border-box; width: 100%; height: 100%; overflow: hidden;
@@ -17,9 +17,24 @@
 }
 .pl-root * { box-sizing: border-box; }
 .pl-root[data-young] { font-size: 16px; }
-.pl-root[data-art="chalk"] { --pl-bg: #1A2420; --pl-bg2: #22302B; --pl-ink: #EEF0E7; --pl-ink2: #C4CABD; --pl-line: rgba(238,240,231,.16); --pl-btn: #26342F; --pl-btn-ink: #EEF0E7; --pl-accent: #8EC9F0; }
-.pl-root[data-art="blueprint"] { --pl-bg: #0C2546; --pl-bg2: #0F2E57; --pl-ink: #EAF5FF; --pl-ink2: #B9D8F2; --pl-line: rgba(143,211,255,.22); --pl-btn: #13386A; --pl-btn-ink: #EAF5FF; --pl-accent: #7FE3FF; }
-.pl-root[data-art="raat"] { --pl-bg: #0A0C12; --pl-bg2: #10131B; --pl-ink: #F2F4F8; --pl-ink2: #A9B0C0; --pl-line: rgba(255,255,255,.12); --pl-btn: #161A24; --pl-btn-ink: #F2F4F8; --pl-accent: #8B98FF; }
+.pl-root[data-art="chalk"] { --pl-bg: #1A2420; --pl-bg2: #22302B; --pl-ink: #EEF0E7; --pl-ink2: #C4CABD; --pl-line: rgba(238,240,231,.16); --pl-btn: #26342F; --pl-btn-ink: #EEF0E7; --pl-accent: #8EC9F0; --pl-you: #FF6FD8; --pl-you-ink: #0F1218; --pl-focus: #A9B4FF; }
+.pl-root[data-art="blueprint"] { --pl-bg: #0C2546; --pl-bg2: #0F2E57; --pl-ink: #EAF5FF; --pl-ink2: #B9D8F2; --pl-line: rgba(143,211,255,.22); --pl-btn: #13386A; --pl-btn-ink: #EAF5FF; --pl-accent: #7FE3FF; --pl-you: #FF6FD8; --pl-you-ink: #0F1218; --pl-focus: #E7D1FF; }
+.pl-root[data-art="raat"] { --pl-bg: #0A0C12; --pl-bg2: #10131B; --pl-ink: #F2F4F8; --pl-ink2: #A9B0C0; --pl-line: rgba(255,255,255,.12); --pl-btn: #161A24; --pl-btn-ink: #F2F4F8; --pl-accent: #8B98FF; --pl-you: #FF6FD8; --pl-you-ink: #0F1218; --pl-focus: #8F9BFF; }
+/* Design's patch 002 (docs/patches/to-games/002-tx-roles): the action hue (--pl-you, the one "your move" button per state)
+   is outside the green family in every art: marigold on kagaz, magenta on the dark arts; her pick (aria-pressed) is the
+   focus colour. These equal src/play/core/styles.ts ART (you, youInk, focus): tests/r8-play-roles.test.mjs holds the two. */
+/* round 8: under the new look the play chrome reads Design's tokens (src/styles/tx-tokens.css) */
+[data-tx] .pl-root.pl-root {
+  --pl-bg: var(--tx-bg); --pl-bg2: var(--tx-surface-2); --pl-ink: var(--tx-ink); --pl-ink2: var(--tx-ink-2);
+  --pl-line: var(--tx-line); --pl-btn: var(--tx-surface); --pl-btn-ink: var(--tx-ink);
+  --pl-you: var(--tx-move); --pl-you-ink: var(--tx-on-move); --pl-focus: var(--tx-focus); --pl-accent: var(--tx-tutor);
+  --pl-font: var(--tx-font-ui); --pl-display: var(--tx-font-display); --pl-mono: var(--tx-font-ui);
+}
+/* theme B's --tx-move is still lime in tx-tokens.css (Design's file); the rulings of 2026-11-11 and 2026-11-15 put the action
+   outside the green family in both looks, so the play chrome takes raat's action (ART.raat.you) until Design moves it */
+[data-tx="b"] .pl-root.pl-root { --pl-you: #FF6FD8; --pl-you-ink: #0F1218; }
+[data-tx] .pl-root .pl-mark { border-radius: 50%; transform: none; }
+[data-tx] .pl-root .pl-title { text-transform: none; letter-spacing: 0; }
 
 .pl-top { grid-area: top; display: flex; align-items: center; gap: 10px; padding: 0 12px; border-bottom: 1px solid var(--pl-line); min-width: 0; }
 .pl-mark { width: 8px; height: 8px; transform: rotate(45deg); background: var(--pl-accent); flex: none; }
@@ -40,6 +55,9 @@
 .pl-rail { grid-area: rail; display: flex; align-items: center; gap: 10px; padding: 8px 12px; min-height: 52px; border-top: 1px solid var(--pl-line); min-width: 0; }
 .pl-goal { margin: 0; flex: 1; min-width: 0; font-family: var(--pl-display); font-weight: 650; font-size: 16px; line-height: 1.25; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pl-readouts { display: flex; gap: 12px; flex: none; max-width: 52%; overflow: hidden; }
+/* round 8 H: the child's "why this game" line, above the goal (≤ 64 chars; two lines at most at 360 px) */
+.pl-rail:has(.pl-why) { flex-wrap: wrap; row-gap: 2px; }
+.pl-why { margin: 0; flex: 1 1 100%; min-width: 0; font-size: 16px; line-height: 1.25; opacity: 0.85; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 /* readouts are text, not pills: a bordered pill read as a too-small button (judges, 2026-10-09) */
 .pl-readout { display: inline-flex; align-items: baseline; gap: 5px; padding: 2px 2px; font-family: var(--pl-mono); white-space: nowrap; }
 .pl-readout i { font-style: normal; font-size: 14px; color: var(--pl-ink2); }
@@ -47,6 +65,16 @@
 
 .pl-controls { grid-area: controls; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px 12px; min-width: 0; }
 .pl-controls:empty { display: none; }
+/* r7: the teacher's PiP may overlap the play box's bottom-right corner on a phone (StudioStage keeps the box ≥ MIN_BOX and
+   names the corner: --pip-keep-w / --pip-keep-h on the closest [data-pip-keep], read live by PlayStage into --pl-keep-*).
+   The controls stand clear of it on the right and are at least as tall as it, so no button and no part of the world sits
+   under her tile. Absent = nothing reserved. */
+.pl-root[data-keep] .pl-controls { padding-right: max(12px, var(--pl-keep-w, 0px)); min-height: var(--pl-keep-h, 0px); box-sizing: border-box; }
+.pl-root[data-keep] .pl-controls:empty { display: flex; }
+/* r7: once a level is solved its controls empty and the row collapsed, so the world grew to the bottom and the doors
+   (absolute, over the root's foot) covered the world's last rows (seen in a real browser: aankde's levelled towers). While
+   the doors show, the empty controls row keeps their height, so the world ends where the doors begin. */
+.pl-root[data-doors] .pl-controls:empty { display: flex; min-height: 100px; box-sizing: border-box; }
 .pl-row { display: flex; gap: 8px; flex-wrap: wrap; }
 .pl-row--pad { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 6px; }
 .pl-btn { min-height: 48px; min-width: 48px; padding: 0 16px; border-radius: 14px; border: 1px solid var(--pl-line); background: var(--pl-btn); color: var(--pl-btn-ink);
@@ -97,3 +125,28 @@
 /* r4-khand patch 07: the class 4-5 text floor (16 px) on the host chrome, and numerals at 18 px for every band */
 .pl-root[data-young] .pl-title, .pl-root[data-young] .pl-tag, .pl-root[data-young] .pl-readout i, .pl-root[data-young] .pl-btn--ghost, .pl-root[data-young] .pl-door span { font-size: 16px; }
 .pl-readout b { font-size: 18px; }
+
+/* ITEM-ARENA (round 4 G1): the question is the goal line and is never clamped; options sit two to a row and wrap */
+/* r7 taraazu weigh / fill and todo-jodo atoms (hcf / lcm): a long goal beside its readouts was clipped; the pan's contents (500 g ×2 · 200 g …) can be long; on a phone the readouts take their own line
+   under the goal (full width, wrapping) instead of clipping beside it */
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-rail, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-rail { flex-wrap: wrap; row-gap: 4px; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-goal, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-goal { flex: 1 1 100%; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readouts, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readouts { max-width: 100%; flex-wrap: wrap; row-gap: 2px; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readouts:empty, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readouts:empty { display: none; }
+.pl-root[data-family="taraazu"]:not([data-layout="wide"]) .pl-readout, .pl-root[data-family="todo-jodo"][data-mode="atoms"]:not([data-layout="wide"]) .pl-readout { white-space: normal; }
+/* r7 vakya: the goal is the kit's own prompt (a sentence with blanks the child completes), so it must read whole: up to
+   four lines on a phone, the world above takes the rest */
+.pl-root[data-family="vakya"]:not([data-layout="wide"]) .pl-goal { -webkit-line-clamp: 4; }
+/* r8 kon place / name (judging round 2): the line under the board changes with the state (after "Rakh do", and the end line
+   with its checks), so on a phone it always keeps room for two lines: the board never moves when the line does */
+.pl-root[data-family="kon"][data-mode="place"]:not([data-layout="wide"]) .pl-goal, .pl-root[data-family="kon"][data-mode="name"]:not([data-layout="wide"]) .pl-goal { min-height: 2.5em; }
+/* r8 kon place (the hold of 2026-11-11): the protractor never changes size while she reads. measure and draw grow from two
+   rows of controls (↺ ↻ · Wapas, Rakh do) to three after "Rakh do" (the number pad and its row; the dot's nudges, the two
+   joins and their row), which shrank the board under her. On a phone the controls keep a band of three rows from the first
+   screen (3 × 48 + 2 × 8 + the 8 + 12 padding), the rows standing at its foot, so the go row stays where her thumb is and
+   the world box (and the protractor drawn in it) keeps one size in every state of the level. */
+.pl-root[data-family="kon"][data-mode="place"]:not([data-layout="wide"]):is([data-goal="measure"], [data-goal="draw"]) .pl-controls { min-height: max(180px, var(--pl-keep-h, 0px)); justify-content: flex-end; }
+.pl-root[data-family="arena"] .pl-goal { display: block; -webkit-line-clamp: unset; overflow: visible; font-size: 17px; }
+.pl-row--options { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.pl-row--options .pl-btn { white-space: normal; line-height: 1.25; min-height: 56px; padding: 8px 12px; text-align: left; font-size: 17px; }
+.pl-btn[aria-pressed="true"] { outline: 3px solid var(--pl-focus); outline-offset: 1px; }   /* her pick: focus (law 1), not the action hue */

@@ -10,6 +10,7 @@
 // Tier D (`?tier=D`, Save-Data, low device memory) and the child's "still picture"/"voice only" choice never load a
 // background (§7.4 "tier D: backgrounds are replaced by flat --paper"); spots still load (≤ 40 KB each).
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { faceLook } from "../face-puppet/look.ts";
 
 export interface ArtEntry {
   id: string;
@@ -53,6 +54,17 @@ export function loadArtTable(): Promise<Table> {
       // Dev only, before gen-assets ran: the masters themselves (never in a build: the vite plugin drops them).
       const ix = (await readJson("/assets/gen/INDEX.json")) as { items?: Record<string, { path?: string; status?: string; width?: number; height?: number }> } | null;
       for (const [id, it] of Object.entries(ix?.items ?? {})) if (it.status === "done" && it.path) out.set(id, { id, url: toUrl(it.path), width: it.width, height: it.height });
+    }
+    // the teacher's stills (Face stream, evals/face-puppet/stills.mjs): her own rig per look, a ledger of their own
+    // (teacherRecord's look-free ids, teacher/asha/<pose>, map to the still of the look this page paints: faceLook())
+    const [teacher, look] = await Promise.all([
+      readJson("/assets/teacher/asha-stills/1/index.json") as Promise<{ assets?: (ArtEntry & { look?: string; alias?: string })[] } | null>,
+      faceLook().catch(() => null),
+    ]);
+    for (const a of teacher?.assets ?? []) {
+      if (!a?.id || !a.url) continue;
+      if (!out.has(a.id)) out.set(a.id, a);
+      if (a.alias && a.look === look && !out.has(a.alias)) out.set(a.alias, { ...a, id: a.alias });
     }
     table = out;
     return out;

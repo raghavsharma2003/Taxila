@@ -18,6 +18,7 @@
 // child's words); a lesson end on such a replica writes no bond rows for that lesson (the next lesson's snapshot is still
 // exact: the cache is only ever moved by complete end transactions).
 import { q, one } from "../db.js";
+import { NOT_PLACEMENT } from "../learner/kt/placement.js";
 import { legalModeOf } from "../learner/mode.js";
 import { BANDS } from "../learner/bands.js";
 import { STAGES, stageFor, stageRank } from "./bond.js";
@@ -72,7 +73,7 @@ const langOf = (lang) => (lang === "english" || lang === "hindi" ? lang : "hingl
  */
 const COUNTS_SQL = `with ev as (
     select seq, session_id, item_key, cls, outcome, skill_ids, pre_attempt_help, entry_rung, contaminated
-    from kt_evidence where child_id = $1 and not contaminated)
+    from kt_evidence where child_id = $1 and not contaminated and ${NOT_PLACEMENT})
   select
     (select count(distinct e.session_id)::int from ev e
        where (e.cls = 'item.open' or e.cls like 'item.mcq%') and e.outcome = 0 and not e.pre_attempt_help and e.entry_rung = 0

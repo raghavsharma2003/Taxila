@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "r7-audit-topic-decided-on-askable-skills",
+   "kind": "decision",
+   "title": "A topic is finished or not on its askable skills only (skills with a loaded non-teach-back item), through one helper used by nextTopicFor and the parent's Progress page",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "r7-audit-learner-dead-code-removed",
+   "kind": "decision",
+   "title": "Removed learner dead code with no reader (audit LEARN-50, 51, 52); last commit holding it: 24472528",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "learner-kt-r3-params",
+   "kind": "decision",
+   "title": "Learner params kt-r3: no learning step after a failed card, teaching capped +0.20 per skill per lesson, unverdicted why/teach-back held on K until the late verdict, per-lesson budgets kept by lesson, leaked right answers at half weight, one ledger copy per fused batch",
+   "at": "2026-11-10"
+  },
+  {
+   "id": "placement-start-below-level-only",
+   "kind": "decision",
+   "title": "Cold start: only a below-level answer (Hard, tricky) sets a start; About right and Easy keep the calendar's start",
+   "at": "2026-11-10"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## r7-audit-topic-decided-on-askable-skills\n**`askableSkillIds` / `decidingStates` (server/content/next-topic.js): a skill whose items were all dropped at load, or that never had one (reading aloud, recitation), can never be 'learned', so it no longer holds its topic open. Used by nextTopicFor and routes/parent.js syllabus (audit CD-01 and its parent copy).** Reverse if: those skills get a gradable item (then they decide again automatically).\n\n## r7-audit-learner-dead-code-removed\n**Removed, each checked for importers (static and dynamic) in server/, src/, scripts/, api/, tests/, evals/, shared/, package.json, Dockerfiles and context/. The last commit that holds all of them is `24472528`.**\n- `server/learner/model.js`: `loadSkillStates`, `loadDueSkills`, `saveSkillState`, `flagMisconception`, `loadKtSkillStates`, `loadKtMisconceptions`, `ktDueCount`, and their private helpers `fromRow`, `expectRows`.\n- `server/conductor/clock.js`: `floorTo`.\n- `server/director/session/flags.js`: `sessionFirstOn`.\n- `server/routes/parent.js`: `delayedCheckMap`, `topicParentState`, `hafteSpeech`; unused imports `topicStatus`, `GRADER_WORDS`.\n- `src/onboarding/Consent.tsx`: the `TrustStep` alias (no route uses it).\nKept on purpose: `reteachOutcomeStmt`, `armPosteriorStmt`, `actorRowStmts` (context/open.md and open-conductor-m0-deliverables cite them as open work); `consentChangedStmts`, `settingChangedStmts` (designed call sites; LEARN-23 proposes wiring them); `kt/gen.js`, `kt/index.js` (test fixture, eval); `withDue`, `loadLedger`, `MeetStep` (a test, an eval, a pending patch use them); the placement CAT (LEARN-42: content-data was told to use it); the session-first lane (LEARN-49, owner).\n\n## learner-kt-r3-params\n**Main approved 2026-11-10 (audit LEARN-02, 04, 05, 25, 28, 29). Replay on the four pilots, before and after: `evals/learner-pilot-replay/results/2026-11-10/README.md`. An all-wrong child's 24-63 wrong answers used to end at 0.40-0.83, above the prior on every skill; under kt-r3 they end at 0.13-0.25 and the weak-foundation rule fires on all 12 skills. All-right and mixed children are unchanged within 0.003.** One consequence to know: where the blind grader never answers (an offline sim, a grader outage), no why or teach-back counts, so no skill reaches \"learned today\". Reverse if: a replay of real lessons shows children who do learn held at practising because their verdicts settle late and the correction is lost.\n\n## placement-start-below-level-only\n**Main approved 2026-11-10 (audit LEARN-07). Before it, a class-5 child on 9 Nov started at chapter 1 for \"About right\" and chapter 2 for \"Easy\", against chapter 9 by the calendar. This does not repeat `rj-topic-relative-difficulty-easiest-first`: it removes chapter-1 starts instead of adding them. Cold-start sim (n = 300, SIMULATED): for on-track children, the error at lesson 1 drops from 0.77 to 0.63; too-hard first lessons rise from 0.08 to 0.11.** Reverse if: real first lessons show \"About right\" children at the calendar chapter failing their first items more than the old start did.\n"
+ }
+}

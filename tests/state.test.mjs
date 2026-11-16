@@ -100,6 +100,9 @@ test("no evidence is taken after an assertion (the answer was said) (TAXILA_P5_C
 }));
 
 test("a misconception gets one re-teach with the kit's representation, then the ladder", () => {
+  // round 7 A4: this fixture walks the classic item order (no per-skill arc)
+  const savedArc = process.env.TAXILA_R7_SKILL_ARC; process.env.TAXILA_R7_SKILL_ARC = "off";
+  try {
   let r = toPractice();
   while (!r.item?.targetsMisconception) r = turn(r, cls("correct"));
   const mis = { misconceptionId: "c4-maths-ch05-t01-m1" };
@@ -110,6 +113,7 @@ test("a misconception gets one re-teach with the kit's representation, then the 
   r = turn(r, cls("misconception", mis));
   assert.equal(r.move.kind, "hint", "the same misconception is not re-taught twice in a lesson");
   assert.ok(r.move.hintLevel < 4);
+  } finally { if (savedArc === undefined) delete process.env.TAXILA_R7_SKILL_ARC; else process.env.TAXILA_R7_SKILL_ARC = savedArc; }
 });
 
 test("why-after-correct: always on a new skill, never after a hinted answer", () => {

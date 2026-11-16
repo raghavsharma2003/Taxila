@@ -1,0 +1,22 @@
+diff --git a/src/child/lesson/TeacherWindow.tsx b/src/child/lesson/TeacherWindow.tsx
+index a0c9bdbf..eef40728 100644
+--- a/src/child/lesson/TeacherWindow.tsx
++++ b/src/child/lesson/TeacherWindow.tsx
+@@ -4,6 +4,7 @@
+ import type { TapSource } from "../../avatar/tap.ts";
+ import type { Floor } from "../../lesson/floor.ts";
+ import { Teacher } from "../../ui/teacher/Teacher.tsx";
++import { protegeStaging } from "../../ui/teacher/Protege.tsx";
+ import { Caption } from "./Caption.tsx";
+ import type { DeskModel } from "./model.ts";
+ 
+@@ -13,7 +14,8 @@ export function TeacherWindow({ m, media, floor, labelBelow = true }: { m: DeskM
+   return (
+     <div className="dk-window" data-testid="teacher-window">
+       <Teacher teacherId={m.teacher.id} band={m.band} floor={floor} form={m.faceForm} meters={media.meters} mic={media.mic}
+-        reducedMotion={m.reducedMotion} label={labelBelow ? "below" : "none"} lights={m.lights} aiPicto={m.family === "young"} affect={m.affect ?? null} />
++        reducedMotion={m.reducedMotion} label={labelBelow ? "below" : "none"} lights={m.lights} aiPicto={m.family === "young"} affect={m.affect ?? null}
++        protege={protegeStaging(m)} />
+     </div>
+   );
+ }

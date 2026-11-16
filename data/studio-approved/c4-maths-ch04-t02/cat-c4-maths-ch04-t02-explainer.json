@@ -1,0 +1,474 @@
+{
+  "v": 1,
+  "id": "cat-c4-maths-ch04-t02-explainer",
+  "approved": true,
+  "hash": "8be2e5f2430a2d2f1f24b7abb4de3f88",
+  "archetype": "scene-explainer@1",
+  "spec": {
+    "archetype": "scene-explainer@1",
+    "skills": [
+      "c4-maths-ch04-t02"
+    ],
+    "lang": "en",
+    "strings": {
+      "again": "Show again",
+      "yourTurn": "Your turn",
+      "check": "Check",
+      "right": "Right",
+      "look": "Look again",
+      "myth": "MYTH",
+      "busted": "BUSTED",
+      "order": "Tap in order"
+    },
+    "title": "Compare 4-digit numbers",
+    "accent": "ion",
+    "targets": "c4-maths-ch04-t02-m-right-to-left",
+    "scenes": [
+      {
+        "id": "s1",
+        "layout": "row",
+        "els": [
+          {
+            "id": "title",
+            "type": "title",
+            "text": "Compare 4-digit numbers"
+          },
+          {
+            "id": "myth",
+            "type": "myth",
+            "text": "Start comparing from the right"
+          }
+        ]
+      },
+      {
+        "id": "s2",
+        "layout": "row",
+        "els": [
+          {
+            "id": "a",
+            "type": "node",
+            "text": "6482",
+            "sub": "number",
+            "glyph": "book",
+            "color": "ion"
+          },
+          {
+            "id": "b",
+            "type": "node",
+            "text": "6428",
+            "sub": "number",
+            "glyph": "book",
+            "color": "mint"
+          },
+          {
+            "id": "left",
+            "type": "label",
+            "text": "Compare from the left",
+            "x": 120,
+            "y": 430,
+            "color": "ion"
+          },
+          {
+            "id": "thousands",
+            "type": "label",
+            "text": "thousands",
+            "x": 150,
+            "y": 485,
+            "color": "amber"
+          },
+          {
+            "id": "hundreds",
+            "type": "label",
+            "text": "hundreds",
+            "x": 330,
+            "y": 485,
+            "color": "amber"
+          },
+          {
+            "id": "tens",
+            "type": "label",
+            "text": "tens",
+            "x": 510,
+            "y": 485,
+            "color": "amber"
+          },
+          {
+            "id": "ones",
+            "type": "label",
+            "text": "ones",
+            "x": 690,
+            "y": 485,
+            "color": "amber"
+          }
+        ]
+      },
+      {
+        "id": "s3",
+        "layout": "split",
+        "els": [
+          {
+            "id": "bar",
+            "type": "bar",
+            "parts": 10,
+            "shaded": 1,
+            "x": 100,
+            "y": 350,
+            "w": 800,
+            "text": "0 to 10000"
+          },
+          {
+            "id": "axis",
+            "type": "axis",
+            "min": 0,
+            "max": 10000,
+            "step": 1000,
+            "unit": "number",
+            "scale": "linear",
+            "y": 500
+          },
+          {
+            "id": "mark",
+            "type": "mark",
+            "axis": "axis",
+            "value": 1000,
+            "text": "1000",
+            "color": "mint"
+          }
+        ]
+      },
+      {
+        "id": "s4",
+        "layout": "grid",
+        "els": [
+          {
+            "id": "n1",
+            "type": "node",
+            "text": "3012",
+            "sub": "1st",
+            "glyph": "ruler",
+            "color": "ion"
+          },
+          {
+            "id": "n2",
+            "type": "node",
+            "text": "3120",
+            "sub": "2nd",
+            "glyph": "ruler",
+            "color": "mint"
+          },
+          {
+            "id": "n3",
+            "type": "node",
+            "text": "3201",
+            "sub": "3rd",
+            "glyph": "ruler",
+            "color": "amber"
+          },
+          {
+            "id": "n4",
+            "type": "node",
+            "text": "3210",
+            "sub": "4th",
+            "glyph": "ruler",
+            "color": "sun"
+          }
+        ]
+      },
+      {
+        "id": "s5",
+        "layout": "row",
+        "els": [
+          {
+            "id": "q",
+            "type": "title",
+            "text": "Choose the bigger number"
+          },
+          {
+            "id": "o1",
+            "type": "label",
+            "text": "4520",
+            "x": 220,
+            "y": 400,
+            "color": "ion"
+          },
+          {
+            "id": "o2",
+            "type": "label",
+            "text": "3980",
+            "x": 620,
+            "y": 400,
+            "color": "mint"
+          }
+        ]
+      }
+    ],
+    "text": {
+      "L1": "A number with more digits is bigger, so every 4-digit number is bigger than every 3-digit number.",
+      "L2": "To compare numbers with the same number of digits, start from the left.",
+      "L3": "Compare thousands first, then hundreds, tens, and ones.",
+      "L4": "As soon as one place is different, that place decides; later digits do not matter.",
+      "L5": "For 6482 and 6428, thousands and hundreds match, so compare the tens.",
+      "L6": "Eight tens is more than two tens, so 6482 is bigger than 6428.",
+      "L7": "On a number line, spacing shows value. 1000 is one tenth of the way from 0 to 10000.",
+      "L8": "Now compare 4520 and 3980. Tap the bigger number."
+    },
+    "narration": {
+      "L1": {
+        "text": "A number with more digits is bigger, so every 4-digit number is bigger than every 3-digit number.",
+        "dur": 4,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L2": {
+        "text": "To compare numbers with the same number of digits, start from the left.",
+        "dur": 3,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L3": {
+        "text": "Compare thousands first, then hundreds, tens, and ones.",
+        "dur": 3,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L4": {
+        "text": "As soon as one place is different, that place decides; later digits do not matter.",
+        "dur": 4,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L5": {
+        "text": "For 6482 and 6428, thousands and hundreds match, so compare the tens.",
+        "dur": 4,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L6": {
+        "text": "Eight tens is more than two tens, so 6482 is bigger than 6428.",
+        "dur": 3,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L7": {
+        "text": "On a number line, spacing shows value. 1000 is one tenth of the way from 0 to 10000.",
+        "dur": 4,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      },
+      "L8": {
+        "text": "Now compare 4520 and 3980. Tap the bigger number.",
+        "dur": 3,
+        "lead": 0,
+        "tail": 0,
+        "pauses": []
+      }
+    },
+    "beats": [
+      {
+        "line": "L1",
+        "gap": 0.3,
+        "scene": "s1",
+        "cues": [
+          {
+            "at": 0,
+            "do": "show",
+            "dur": 0.7,
+            "target": "title"
+          }
+        ]
+      },
+      {
+        "line": "L2",
+        "gap": 0.3,
+        "scene": "s2",
+        "cues": [
+          {
+            "at": 0.8,
+            "do": "show",
+            "dur": 0.7,
+            "target": [
+              "a",
+              "b"
+            ]
+          }
+        ]
+      },
+      {
+        "line": "L3",
+        "gap": 0.3,
+        "scene": "s2",
+        "cues": [
+          {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": [
+              "left",
+              "thousands",
+              "hundreds",
+              "tens",
+              "ones"
+            ]
+          }
+        ]
+      },
+      {
+        "line": "L4",
+        "gap": 0.3,
+        "scene": "s2",
+        "cues": [
+          {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1,
+            "target": "left"
+          }
+        ]
+      },
+      {
+        "line": "L5",
+        "gap": 0.3,
+        "scene": "s2",
+        "cues": [
+          {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1,
+            "target": "tens"
+          }
+        ]
+      },
+      {
+        "line": "L6",
+        "gap": 0.3,
+        "scene": "s2",
+        "cues": [
+          {
+            "at": 0,
+            "do": "highlight",
+            "dur": 1,
+            "target": "a"
+          }
+        ]
+      },
+      {
+        "line": "L7",
+        "gap": 0.3,
+        "scene": "s3",
+        "cues": [
+          {
+            "at": 0,
+            "do": "show",
+            "dur": 1,
+            "target": [
+              "axis",
+              "bar",
+              "mark"
+            ]
+          },
+          {
+            "at": 1,
+            "do": "focus",
+            "dur": 1,
+            "target": "mark"
+          }
+        ]
+      },
+      {
+        "line": "L8",
+        "gap": 0,
+        "scene": "s5",
+        "cues": [
+          {
+            "at": 0,
+            "do": "show",
+            "dur": 0.8,
+            "target": [
+              "q",
+              "o1",
+              "o2"
+            ]
+          },
+          {
+            "at": 1,
+            "do": "interactive",
+            "dur": 1
+          }
+        ]
+      }
+    ],
+    "task": {
+      "kind": "tap",
+      "prompt": "Which number is bigger?",
+      "options": [
+        "o1",
+        "o2"
+      ],
+      "answer": "o1",
+      "src": "c4-maths-ch04-t02-i01"
+    }
+  },
+  "for": {
+    "topic": "c4-maths-ch04-t02",
+    "skill": null,
+    "misconceptionId": null,
+    "beat": null,
+    "when": "catalogue"
+  },
+  "because": {
+    "rule": "the topic's catalogue piece, shown where the tray gate certifies it; judged on rubric v1 (main's ruling 2026-11-10)"
+  },
+  "source": "catalogue",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "996b1110e46d8107eeca82942731573fb6b55dab78f224c5fc439f118ce347ae"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "3df8f2ea35e98d2e49bbc7b3478773adb0853d1af06ea4a2b70ed67c78aca719"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "a separate Claude judge (Opus), packet only, rubric v2, p412+l1366",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The myth element \"Start comparing from the right\" in scene s1 and the whole of scene s4 (ordering 3012, 3120, 3201, 3210 with subs \"1st\"-\"4th\") are never cued by any beat, so I cannot tell if they are ever shown."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "a second separate Claude judge (Opus), packet only, rubric v2",
+    "content": "pass",
+    "faults": [],
+    "notes": "Scene s4 (3012 1st ... 3210 4th) and the s1 myth \"Start comparing from the right\" are never shown by any beat; cannot tell whether that is intended. Cannot tell from the packet whether the s2 place labels line up under the digits of 6482 / 6428."
+  },
+  "generation": null,
+  "approvedAt": "2026-11-11T01:29:33.660Z"
+}

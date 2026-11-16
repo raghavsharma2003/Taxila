@@ -63,6 +63,18 @@ before(async () => {
   // suites load and run beside it: 24 s of the default 30 s on a 4-core container, 44-46 s after its restart. This is a
   // ROOT hook: a timeout here failed every later test in the run (2,000+). The page's own checks keep their waits.
   await page.goto(`${base}tests/fixtures/engine-harness.html`, { timeout: 120_000 });
+  // Warm each engine's module graph once, before any scenario is timed: the first mount of an engine makes the dev server
+  // transform it (and, for the first one, the whole shared runtime), which took longer than the first scenario's wait
+  // under the gate's 4-at-a-time load (three failures on the first scenario). A scenario then waits on readiness only.
+  const seen = new Set();
+  for (const sc of SCENARIOS) {
+    if (seen.has(sc.engine)) continue;
+    seen.add(sc.engine);
+    await page.evaluate(([e, p, o]) => window.mount(e, p, o), [sc.engine, sc.params, { lang: sc.lang ?? "english", ageBand: sc.ageBand ?? "10-15", goal: sc.goal }]);
+    const h = await page.waitForSelector("iframe", { timeout: 120_000 });
+    await (await h.contentFrame()).waitForSelector(".ek[data-engine]", { timeout: 120_000 });
+  }
+  await page.evaluate(() => { document.querySelector("iframe")?.remove(); window.events = []; });
 });
 after(async () => {
   await browser?.close();
@@ -102,7 +114,7 @@ for (const sc of SCENARIOS) {
     await page.evaluate(([e, p, o]) => window.mount(e, p, o), [sc.engine, sc.params, { lang: sc.lang ?? "english", ageBand: sc.ageBand ?? "10-15", goal: sc.goal }]);
     const handle = await page.waitForSelector("iframe");
     const frame = await handle.contentFrame();
-    await frame.waitForSelector(`.ek[data-engine]`, { timeout: 15_000 });
+    await frame.waitForSelector(`.ek[data-engine]`, { timeout: 60_000 }); // readiness; the engines are warm (before), so this is only a ceiling
     const hit = (sc.ageBand ?? "10-15") === "6-9" ? 64 : 48;
     const a = await audit(frame, hit);
     assert.deepEqual(a.small, [], `targets below ${hit}px`);

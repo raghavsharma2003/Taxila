@@ -9,8 +9,11 @@ import { dirname, join } from "node:path";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const FIXED = ["todo-jodo", "taraazu", "nishana", "kyun-lab"];
-const SKIP = new Set(["index.mjs", "rule.mjs"]);
-const extra = readdirSync(HERE).filter((f) => f.endsWith(".mjs") && !SKIP.has(f) && !FIXED.includes(f.slice(0, -4))).map((f) => f.slice(0, -4)).sort();
+const SKIP = new Set(["index.mjs", "rule.mjs", "never.mjs"]);
+// LAST: the broad-net families, which admit only what no law family has taken (the first rule for a skill wins)
+const NET = ["arena"];
+const extra = readdirSync(HERE).filter((f) => f.endsWith(".mjs") && !SKIP.has(f) && !FIXED.includes(f.slice(0, -4)) && !NET.includes(f.slice(0, -4))).map((f) => f.slice(0, -4)).sort()
+  .concat(NET.filter((n) => readdirSync(HERE).includes(`${n}.mjs`)));
 
 /** [{ family, RULES, ACTS, check? }] in admission order. */
 export const FAMILY_RULES = [];

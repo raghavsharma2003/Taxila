@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-home-plan-states",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The Kaksha Home renders the Conductor's day states from ChildPlanResponse with one main action each: homework → 'Homework help' (to Ask with homework=1) plus a quiet 'Today's lesson instead' link; test_window → 'Your <subject> test is coming up' + Revise; done → One more, with a 'Today you did' card (plan.did[0], the verified tick) and a 'Made for you' strip (to the Notebook); start/test show the jar line when jar.waiting > 0. Nothing is counted against a target. Reverse: Learning changes ChildPlanResponse or the owner wants a different primary action per state.",
+   "source": "inbox/r7-app-3.json"
+  },
+  {
+   "id": "ms-r7-app-home-done-fits-360",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "At 360x800 the done state with both the day card and the made-for strip overflowed the dock with her full portrait; with data-summary the portrait steps down to min(46vw,190px) and everything sits above the dock (n=1 mocked shot per size: 360x800, 412x915, 1280x800; method app-shots.mjs --plan done).",
+   "source": "inbox/r7-app-3.json"
+  }
+ ],
+ "edges": [],
+ "md": "## dc-r7-app-home-plan-states\nThe Conductor (Learning, PR #42) decides the child's day; the Home only shows it. Each state gets one main button so a child never has to choose between two equal actions: homework help when the parent turned it on, Revise in a test window, One more after the day's session. The secondary things (today's lesson instead of homework, the jar of waiting questions, what was made for her) are a link, a line or a strip, never a second big button. The 'Today you did' card shows one real answer with the verified tick from the verified-key classifier, not a score or a count. App codes to the existing ChildPlanResponse fields (homework, jar.waiting, did, madeFor); PR #42 doesn't change them, so nothing was needed from Learning.\n\n## ms-r7-app-home-done-fits-360\nThe done state has the most on it. With her large portrait the made-for strip went under the dock at 360 wide. When there is a summary to show, the Home marks itself data-summary and the portrait shrinks, so the whole day fits above the dock without scrolling on a small phone.\n"
+}

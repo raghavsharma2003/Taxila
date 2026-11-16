@@ -1,0 +1,29 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-board-geometry-to-scale",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "measured@1 (C1 item 5, geometry by constraint): a shape the kit states with its measures (geometry.js: 'rectangle 8 cm by 5 cm', 'length .. breadth ..', 'square of side 7 m', 'triangle with sides 3, 4 and 5 cm', 'circle of radius 5 cm'; the first stated; units must agree) is drawn TO SCALE: rectangle / square with its dimensions on its sides, a triangle built from its three sides (law of cosines; triangle inequality checked), a circle with a radius arrow and 'r = 5 cm' below it. Every measure outside the shape (recordings caught labels on a side and on the rim). explainerFor: after the code pick, but ahead of the generic shape@1. Recordings docs/design/round7/studio/geo-*."
+    },
+    {
+      "id": "ms-r7-board-geometry-reach",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "n": 22,
+      "method": "measuredCall over every class 3-9 maths kit, expand + retime to a 6 s line saying the measures + gateWhiteboard, and the template explainerFor returns; code only",
+      "title": "22 kits state a measured shape (8 rect, 4 square, 5 triangle, 5 circle); 22/22 pass every W gate; measured@1 is the drawn board in 11 (before: a model flow, a key-terms board or the generic shape@1)."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-board-geometry-to-scale",
+      "rel": "measured_by",
+      "dst": "ms-r7-board-geometry-reach"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-board-geometry-to-scale: shapes drawn to their real measures (2026-11-04)\n\nWhen a maths lesson talks about a rectangle 8 cm by 5 cm, a triangle with sides 3, 4 and 5 cm or a circle of radius 5 cm, the board now draws exactly that shape in the right proportions, with each measure written beside it.\n",
+    "measurements": "## ms-r7-board-geometry-reach (2026-11-04, n = 22 kits)\n\n22 maths lessons state a measured shape; all pass the board gates. In 11 the to-scale shape is now the board shown.\n"
+  }
+}

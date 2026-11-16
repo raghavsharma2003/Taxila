@@ -1,0 +1,78 @@
+/* Direction B, "Night class": the ONE token set. Every colour, size, space and radius the screens use is here.
+   Fonts (all SIL Open Font Licence, self-hostable as woff2): Atkinson Hyperlegible Next (UI), Bricolage Grotesque
+   (display), Literata (the parent corner's reading face), STIX Two Text (maths), Mukta (Devanagari). The prototype
+   links Google Fonts; the product would serve the same files from /fonts. */
+@import url("https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Next:wght@400;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=STIX+Two+Text:ital,wght@0,400;0,500;1,400&family=Mukta:wght@400;600&display=swap");
+
+:root {
+  /* ground and surfaces: the dark kept, calmed (one blue-grey family, no pure black) */
+  --bg: #0F1218;
+  --surface: #171B24;
+  --surface-2: #1E2330;
+  --line: #262C39;
+  --line-2: #3A4254;
+  /* ink */
+  --ink: #EEF1F6;
+  --ink-2: #B4BBC9;
+  --ink-3: #9098AA;
+  /* volt lime: ONLY "your move" (her turn, her primary action). Never decoration */
+  --accent: #CBFF4D;
+  --on-accent: #0F1218;
+  --move: #CBFF4D;
+  --on-move: #0F1218;
+  --move-text: #CBFF4D;
+  /* the teacher: ion indigo */
+  --tutor: #8F9BFF;
+  --tutor-soft: #252B4A;
+  /* the board: a luminous slate; colour carries meaning */
+  --board-bg: #131B26;
+  --board-ink: #F3F1EA;     /* chalk */
+  --board-soft: #8F9CAE;
+  --focus: #8F9BFF;         /* the part being talked about: her colour, because she is pointing at it */
+  --focus-fill: #283260;
+  --ans: #4FE0A2;           /* the answer, always with a tick or a box */
+  --ans-fill: #133A2D;
+  --mix: #FFB54A;           /* a mix-up: amber, always dashed; never red, never a verdict */
+  --ok: #4FE0A2;
+
+  /* type: 8 sizes */
+  --font-ui: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-read: "Literata", Georgia, serif;
+  --font-math: "STIX Two Text", "STIX Two Math", "Cambria Math", serif;
+  --font-deva: "Mukta", "Noto Sans Devanagari", sans-serif;
+  --t-1: 14px; --t-2: 16px; --t-3: 18px; --t-4: 21px; --t-5: 26px; --t-6: 32px; --t-7: 44px; --t-8: 60px;
+
+  /* space: one scale */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 64px;
+
+  /* corners: three */
+  --r-1: 6px; --r-2: 12px; --r-3: 999px;
+
+  /* depth on dark is lightness steps plus one soft glow for the board */
+  --shadow-1: none;
+  --shadow-2: 0 18px 48px -12px #0F1218;
+  --glow: 0 0 6px;
+
+  /* motion */
+  --ease-out: cubic-bezier(.22, .7, .2, 1);
+  --ease-settle: cubic-bezier(.2, .9, .25, 1.18);
+  --dur-1: 160ms; --dur-2: 320ms; --dur-3: 700ms;
+}
+
+/* the parent corner and onboarding (the parent's screens) are light, as in DESIGN-V3 §11 */
+.parent {
+  --bg: #F6F6F2;
+  --surface: #FFFFFF;
+  --surface-2: #ECECE6;
+  --line: #ECECE6;
+  --line-2: #C6C6BD;
+  --ink: #15171C;
+  --ink-2: #474C57;
+  --ink-3: #474C57;
+  --accent: #3F4FD8;
+  --on-accent: #FFFFFF;
+  --tutor: #3F4FD8;
+  --tutor-soft: #E6E8FB;
+  --ok: #0B7D55;
+}

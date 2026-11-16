@@ -4,6 +4,7 @@
 import { C, FONT, W, H } from "./tokens.ts";
 import { clamp, ease } from "./math.ts";
 import { roundRect, type Ctx } from "./draw.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 export type BoardFigure =
   | { kind: "numberline"; min: number; max: number; marks: { v: number; label: string }[] }
@@ -26,7 +27,7 @@ export function sanitizeBoard(b: BoardSpec | null | undefined, fallbackTitle: st
 export function drawBoard(ctx: Ctx, b: BoardSpec, p: number): void {
   const acc = b.accent ?? C.ion;
   ctx.fillStyle = C.board; ctx.fillRect(0, 0, W, H);
-  ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1;
+  ctx.strokeStyle = withAlpha(C.hi, .035); ctx.lineWidth = 1;
   for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
   for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
   const seg = (i: number, n: number) => clamp((p * (n + 1) - i), 0, 1);

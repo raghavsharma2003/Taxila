@@ -1,0 +1,18 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-code-spec-ab",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "Turn-replay A/B of dc-r7-code-spec on integration 10 (4 steady lessons, 160 turns, 939 calls, about $0.62): first-audio-ready p50/p90 1,852/3,123 ms → 1,954/3,498 ms with the flag on. On code turns the speculated reply cut the read's wait (used replies 1,490 ms) but gave up the streamed early clause (baseline early-clause code turns 970 ms) and missed on 19%. No gain as built; the flag stays off."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-code-spec", "rel": "measured_by", "dst": "ms-r7-code-spec-ab" }
+ ],
+ "md": {
+  "measurements": "## `ms-r7-code-spec-ab` (2026-11-06, stream A Brain)\n\n**Method:**\n- evals/turn-replay.mjs, `--personas steady`.\n- int/r6 7e2d7eea7, plus the harness-only fbaa0f4c, plus Brain 61fb6850 (`TAXILA_CODE_SPEC=on`).\n- Baseline: the steady rows of 2026-11-06-int10, on the same tree without 61fb6850.\n- n = 160 turns each. 939 calls, about $0.62, against a cap of 1,000 / $0.70.\n\n**first-audio-ready p50 / p90:**\n\n| | Baseline | Flag on |\n|---|---|---|\n| All turns | 1,852 / 3,123 ms | 1,954 / 3,498 ms |\n| Code-classified turns | 1,710 ms | 1,747 ms |\n| … speculated reply used (78) | – | 1,490 ms |\n| … missed (18) | – | 2,168 ms |\n| … early clause streamed | 21 turns at 970 ms | 3 turns |\n\n**Conclusion:** as built, the speculated reply loses the streamed early clause. The flag stays off.\n\n**Proposed next step:** stream the speculated reply and hold its first guarded clause until the read returns clean. Fix the 19% misses first: the facts row differs between the speculated and the real plan.\n\n**Source:** evals/turn-replay/results/2026-11-06-int10-codespec/README.md.",
+  "decisions": "",
+  "rejected": ""
+ }
+}

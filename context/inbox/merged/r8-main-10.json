@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "fd-give-up-predicate-too-narrow",
+   "kind": "finding",
+   "at": "2026-11-11",
+   "title": "Correction of fd-dry-matrix-blind-to-the-reply-layer. 'A give-up with help spent gets no key' survived director20 because its dry predicate was too narrow (it knew only 'aap batao' and 'pata nahi, aap', and required a re-said sentence), not because the fault lives only in the reply layer. With the predicate widened (any bare 'pata nahi' / 'nahi pata' / 'aap batao' / 'nahi aata'; help spent once the card had a miss or was said twice; the turn must say the key) the dry walk fails on the same three rows as the live run plus c5-t02 offtopic 24: the walk itself drops the key before any model text exists. The repair seen on c5-t02 steering 30 (guard mustsay,leak) is a separate reply-layer fault. Found by Brain with check-run.mjs over director20's rows. Lesson: a predicate at zero means nothing until it has been run over rows known to hold the fault."
+  }
+ ],
+ "edges": [
+  {"src": "fd-give-up-predicate-too-narrow", "rel": "supersedes", "dst": "fd-dry-matrix-blind-to-the-reply-layer"},
+  {"src": "fd-give-up-predicate-too-narrow", "rel": "measured_by", "dst": "ms-director20-2026-11-11"},
+  {"src": "dc-r8-director20", "rel": "caused_by", "dst": "fd-give-up-predicate-too-narrow"}
+ ]
+}

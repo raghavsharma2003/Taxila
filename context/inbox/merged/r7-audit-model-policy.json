@@ -1,0 +1,26 @@
+{
+ "nodes": [
+  {
+   "id": "dc-owner-model-policy-top-model-high-effort",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Recorded from CLAUDE.md (the line has no date of its own; the oldest tracked copy is the 2026-11-06 commit ae880e84): the main loop and every build and review agent run on the top model at high effort, no downgrades. Superseded 2026-11-10 by dc-owner-model-policy-2026-11-10."
+  },
+  {
+   "id": "dc-owner-model-policy-2026-11-10",
+   "kind": "decision",
+   "at": "2026-11-10",
+   "title": "Owner directive 2026-11-10, replacing 'top model at high effort, no downgrades': Fable 5.2 orchestrates (the main loop: decisions, triage, synthesis). Build and fix sessions run on Opus 5.5 (complex or multi-file work) or Sonnet 5.5 (well-scoped work against a spec) at medium effort, raised to high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on Haiku 5.5. Source: Anthropic's model guide. Reason: 13 Fable audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work. Reverse if: the owner restores the top-model rule, or a task class fails at high effort on its assigned model (move that class up one model)."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-owner-model-policy-2026-11-10",
+   "rel": "supersedes",
+   "dst": "dc-owner-model-policy-top-model-high-effort"
+  }
+ ],
+ "md": {
+  "decisions": "\n## `dc-owner-model-policy-top-model-high-effort`\nCLAUDE.md's old model-policy line: main loop and every build and review agent on the top model at high effort, no downgrades. Written down here so that the new policy can supersede something. The line carried no date; the oldest tracked copy is the 2026-11-06 repository commit.\n\n## `dc-owner-model-policy-2026-11-10`\nThe owner's directive of 2026-11-10 (CLAUDE.md carries the same text). Fable 5.2 orchestrates: the main loop, for decisions, triage and synthesis. Build and fix sessions run on Opus 5.5 for complex or multi-file work, or Sonnet 5.5 for well-scoped work against a spec, at medium effort; high only when a task fails at medium. File search, log reading and other cheap-to-check sub-tasks run on Haiku 5.5. Source: Anthropic's model guide. Why: 13 Fable audit sessions hit the Fable usage limit within 35 minutes on 2026-11-09 and stopped mid-work, so the old rule (top model, high effort, no downgrades for everyone) could not be kept. Reverse if the owner restores it, or a task class keeps failing at high effort on its assigned model.\n"
+ }
+}

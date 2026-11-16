@@ -146,6 +146,17 @@ export function continuerCohortHas(email, env = process.env) {
   }
   return false;
 }
+/**
+ * Round 7 (B5, voice-first-sound-latency c): may this child's device get a continuer? Every child by default (the continuer
+ * is the first sound on every lane, D5 included); TAXILA_ACK_CONTINUER=cohort keeps round 5's owner cohort only
+ * (TAXILA_ACK_CONTINUER_FOR), =off turns it off. The device still has to ask for it (typed and tapped turns never do). Pure.
+ */
+export function continuerAllowed(email, env = process.env) {
+  const m = String(env.TAXILA_ACK_CONTINUER ?? "").trim().toLowerCase();
+  if (m === "off" || m === "0" || m === "false") return false;
+  if (m === "cohort") return continuerCohortHas(email, env);
+  return true;
+}
 /** The register the continuer is said in (the child's language preference). */
 export const continuerLangOf = (child) => (String(child?.language_pref ?? "").toLowerCase() === "english" ? "en" : "hi");
 /** The continuer to say on this turn: rotates with the turn, never the one said last. PURE. */

@@ -712,7 +712,8 @@
             "solverAnswer": "दाना",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch02-t01-p1"
         },
         {
           "id": "c3-hindi-ch02-t01-i02",
@@ -736,7 +737,8 @@
             "solverAnswer": "निराली",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch02-t01-p1"
         },
         {
           "id": "c3-hindi-ch02-t01-i03",
@@ -897,7 +899,8 @@
             "solverAnswer": "रास्ता न भटकें, एक-दूसरे के पीछे घर पहुँचें, मिलकर काम करें",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch02-t01-p1"
         },
         {
           "id": "c3-hindi-ch02-t01-i09",
@@ -924,7 +927,8 @@
             "solverAnswer": "दूसरी चींटियाँ आकर मिलकर दाना उठाएँगी",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch02-t01-p1"
         },
         {
           "id": "c3-hindi-ch02-t01-i10",
@@ -1008,7 +1012,8 @@
             "solverAnswer": "चींटी छोटी होकर भी मेहनत करती है और सब मिलकर काम करती हैं",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch02-t01-p1"
         },
         {
           "id": "c3-hindi-ch02-t01-i13",
@@ -1077,7 +1082,13 @@
         "sports team working together",
         "festival cleaning at home"
       ],
-      "passage": "चींटी (original poem)\nछोटी-सी चींटी, काली-काली,\nदाना लेकर चली निराली।\nलाइन में चलतीं सब मिलकर,\nथकतीं नहीं कभी भी दिनभर।\nमेहनत से घर भरती जातीं,\nहमको भी यह बात सिखातीं।"
+      "passages": [
+        {
+          "id": "c3-hindi-ch02-t01-p1",
+          "title": "चींटी",
+          "text": "छोटी-सी चींटी, काली-काली,\nदाना लेकर चली निराली।\nलाइन में चलतीं सब मिलकर,\nथकतीं नहीं कभी भी दिनभर।\nमेहनत से घर भरती जातीं,\nहमको भी यह बात सिखातीं।"
+        }
+      ]
     },
     {
       "topicId": "c3-hindi-ch03-t01",
@@ -2088,8 +2099,7 @@
             "ि",
             "छोटी",
             "chhoti",
-            "छोटी वाली",
-            "चिड़िया"
+            "छोटी वाली"
           ],
           "hints": [
             "Clap it: चि-ड़ि-या. Is the first beat quick or stretched?",
@@ -3266,8 +3276,8 @@
             "Reads मित्र as 'mi-tar'"
           ],
           "diagnostic": {
-            "prompt_en": "Riya wrote \"प्रिय ___ सारा\" in the letter — which spelling of the word for friend is right?",
-            "prompt_hi": "रिया ने पत्र में ‘प्रिय ___ सारा’ लिखा — दोस्त के लिए जो शब्द आया, वह सही कैसे लिखा है?",
+            "prompt_en": "{friendF} wrote \"प्रिय ___ सारा\" in the letter — which spelling of the word for friend is right?",
+            "prompt_hi": "{friendF} ने पत्र में ‘प्रिय ___ सारा’ लिखा — दोस्त के लिए जो शब्द आया, वह सही कैसे लिखा है?",
             "options": [
               {
                 "text": "मित्र",
@@ -3302,7 +3312,7 @@
           "id": "c3-hindi-ch07-t01-mc-part-order",
           "belief": "Thinks the parts of a letter can go anywhere — the name of the writer at the top, the greeting at the end",
           "signs": [
-            "Starts the letter with 'तुम्हारी मित्र, रिया'",
+            "Starts the letter with 'तुम्हारी मित्र, {friendF}'",
             "Puts प्रिय सारा at the bottom"
           ],
           "diagnostic": {
@@ -3315,7 +3325,7 @@
                 "correct": true
               },
               {
-                "text": "तुम्हारी मित्र, रिया",
+                "text": "तुम्हारी मित्र, {friendF}",
                 "misconceptionId": "c3-hindi-ch07-t01-mc-part-order",
                 "correct": false
               },
@@ -3342,26 +3352,26 @@
           "id": "c3-hindi-ch07-t01-mc-closing-gender",
           "belief": "Thinks the closing is always 'तुम्हारा मित्र' whoever writes it, or that it changes with the reader not the writer",
           "signs": [
-            "A girl writes तुम्हारा मित्र, रिया",
+            "A girl writes तुम्हारा मित्र, {friendF}",
             "Changes the closing because the friend is a boy"
           ],
           "diagnostic": {
-            "prompt_en": "Riya is a girl. How should she end her letter?",
-            "prompt_hi": "रिया लड़की है। उसे पत्र के आख़िर में क्या लिखना चाहिए?",
+            "prompt_en": "{friendF} is a girl. How should she end her letter?",
+            "prompt_hi": "{friendF} लड़की है। उसे पत्र के आख़िर में क्या लिखना चाहिए?",
             "options": [
               {
-                "text": "तुम्हारी मित्र, रिया",
+                "text": "तुम्हारी मित्र, {friendF}",
                 "misconceptionId": null,
                 "correct": true
               },
               {
-                "text": "तुम्हारा मित्र, रिया",
+                "text": "तुम्हारा मित्र, {friendF}",
                 "misconceptionId": "c3-hindi-ch07-t01-mc-closing-gender",
                 "correct": false
               }
             ],
             "verified": {
-              "solverAnswer": "तुम्हारी मित्र, रिया",
+              "solverAnswer": "तुम्हारी मित्र, {friendF}",
               "agrees": true,
               "oneCorrect": true,
               "optionCount": 2,
@@ -3369,7 +3379,7 @@
             }
           },
           "remediation": {
-            "representation": "Two signature cards with a boy and a girl icon: तुम्हारा मित्र, अमन | तुम्हारी मित्र, रिया",
+            "representation": "Two signature cards with a boy and a girl icon: तुम्हारा मित्र, अमन | तुम्हारी मित्र, {friendF}",
             "moveShape": "Ask who is writing, let the child pick the card, then switch the writer and ask again"
           }
         }
@@ -3381,33 +3391,34 @@
           "kind": "retrieval",
           "difficulty": 1,
           "prompt_en": "Who wrote this letter, and to whom?",
-          "prompt_hi": "रिया का पत्र सुनो — ‘प्रिय मित्र सारा, नमस्ते! … तुम्हारी मित्र, रिया’। ये पत्र किसने लिखा और किसको?",
-          "answer": "रिया ने सारा को लिखा",
+          "prompt_hi": "{friendF} का पत्र सुनो — ‘प्रिय मित्र सारा, नमस्ते! … तुम्हारी मित्र, {friendF}’। ये पत्र किसने लिखा और किसको?",
+          "answer": "{friendF} ने सारा को लिखा",
           "acceptable": [
             "riya ne sara ko",
-            "रिया ने",
+            "{friendF} ने",
             "सारा को",
-            "Riya to Sara"
+            "{friendF} to Sara"
           ],
           "hints": [
             "Look at the name at the very end.",
             "The name after प्रिय is the reader.",
             "Writer is at the bottom; reader after ___.",
-            "Riya wrote it to Sara."
+            "{friendF} wrote it to Sara."
           ],
           "verified": {
-            "solverAnswer": "रिया ने सारा को",
+            "solverAnswer": "{friendF} ने सारा को",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch07-t01-p1"
         },
         {
           "id": "c3-hindi-ch07-t01-i02",
           "skillId": "c3-hindi-ch07-t01-s3",
           "kind": "retrieval",
           "difficulty": 1,
-          "prompt_en": "Riya wrote: 'In the summer holidays I went to my Nani's village.' Where did Riya go in the holidays?",
-          "prompt_hi": "रिया ने पत्र में लिखा — ‘मैं गर्मी की छुट्टियों में नानी के गाँव गई थी।’ बताओ, रिया छुट्टियों में कहाँ गई?",
+          "prompt_en": "{friendF} wrote: 'In the summer holidays I went to my Nani's village.' Where did {friendF} go in the holidays?",
+          "prompt_hi": "{friendF} ने पत्र में लिखा — ‘मैं गर्मी की छुट्टियों में नानी के गाँव गई थी।’ बताओ, {friendF} छुट्टियों में कहाँ गई?",
           "answer": "नानी के गाँव",
           "acceptable": [
             "nani ke gaon",
@@ -3444,7 +3455,7 @@
             "तारीख़"
           ],
           "hints": [
-            "Where is Riya writing from?",
+            "Where is {friendF} writing from?",
             "And on which day?",
             "On top: the place and the ___.",
             "At the top: place and date (स्थान और तारीख़)."
@@ -3554,7 +3565,7 @@
             "नेत्र"
           ],
           "hints": [
-            "Think back to the words in Riya's letter, or words about writing and drawing.",
+            "Think back to the words in {friendF}'s letter, or words about writing and drawing.",
             "A drawing is also called…",
             "Letter = pa___.",
             "पत्र, चित्र, त्रिभुज all have त्र."
@@ -3563,7 +3574,7 @@
           "verified": {
             "solverAnswer": "पत्र / चित्र",
             "agrees": true,
-            "note": "Solved blind from prompt_hi; matches key. HINT LEAK (mild): hint 1 (\"What is this whole chapter about — a letter?\") points straight at पत्र; a pump should only cue the search (\"Think of words you saw in Riya's letter\"). (2026-10-02 re-check) FIXED (2026-10-02): hint 1 now only points where to look (Riya's letter / writing-and-drawing words) instead of naming 'a letter'; the passage now contains both पत्र and चित्र."
+            "note": "Solved blind from prompt_hi; matches key. HINT LEAK (mild): hint 1 (\"What is this whole chapter about — a letter?\") points straight at पत्र; a pump should only cue the search (\"Think of words you saw in {friendF}'s letter\"). (2026-10-02 re-check) FIXED (2026-10-02): hint 1 now only points where to look ({friendF}'s letter / writing-and-drawing words) instead of naming 'a letter'; the passage now contains both पत्र and चित्र."
           }
         },
         {
@@ -3571,8 +3582,8 @@
           "skillId": "c3-hindi-ch07-t01-s4",
           "kind": "practice",
           "difficulty": 2,
-          "prompt_en": "Riya is a girl. Fill in: '___ मित्र, रिया' (तुम्हारा / तुम्हारी)",
-          "prompt_hi": "रिया लड़की है। खाली जगह भरो — ‘___ मित्र, रिया’। तुम्हारा या तुम्हारी?",
+          "prompt_en": "{friendF} is a girl. Fill in: '___ मित्र, {friendF}' (तुम्हारा / तुम्हारी)",
+          "prompt_hi": "{friendF} लड़की है। खाली जगह भरो — ‘___ मित्र, {friendF}’। तुम्हारा या तुम्हारी?",
           "answer": "तुम्हारी",
           "acceptable": [
             "tumhari",
@@ -3582,7 +3593,7 @@
             "Who is writing — a boy or a girl?",
             "The closing matches the writer.",
             "For a girl: tumha___.",
-            "Riya writes तुम्हारी मित्र."
+            "{friendF} writes तुम्हारी मित्र."
           ],
           "targetsMisconception": "c3-hindi-ch07-t01-mc-closing-gender",
           "verified": {
@@ -3642,7 +3653,8 @@
             "solverAnswer": "ताकि पता चले पत्र कब लिखा गया",
             "agrees": true,
             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
-          }
+          },
+          "passageId": "c3-hindi-ch07-t01-p1"
         },
         {
           "id": "c3-hindi-ch07-t01-i11",
@@ -3737,7 +3749,13 @@
         "a festival at home",
         "a pen-pal in another state"
       ],
-      "passage": "रिया का पत्र (original letter)\nजयपुर, 5 जून\nप्रिय मित्र सारा,\nनमस्ते! तुम कैसी हो? मैं गर्मी की छुट्टियों में नानी के गाँव गई थी। वहाँ आम के बड़े-बड़े पेड़ हैं। नानी ने मुझे मीठे आम खिलाए और रात को कहानियाँ सुनाईं। मैंने आम के पेड़ का एक चित्र भी बनाया है। तुम्हारी छुट्टियाँ कैसी चल रही हैं? जवाब में पत्र ज़रूर लिखना।\nतुम्हारी मित्र,\nरिया"
+      "passages": [
+        {
+          "id": "c3-hindi-ch07-t01-p1",
+          "title": "{friendF} का पत्र",
+          "text": "जयपुर, 5 जून\nप्रिय मित्र सारा,\nनमस्ते! तुम कैसी हो? मैं गर्मी की छुट्टियों में नानी के गाँव गई थी। वहाँ आम के बड़े-बड़े पेड़ हैं। नानी ने मुझे मीठे आम खिलाए और रात को कहानियाँ सुनाईं। मैंने आम के पेड़ का एक चित्र भी बनाया है। तुम्हारी छुट्टियाँ कैसी चल रही हैं? जवाब में पत्र ज़रूर लिखना।\nतुम्हारी मित्र,\n{friendF}"
+        }
+      ]
     },
     {
       "topicId": "c3-hindi-ch08-t01",
@@ -4632,8 +4650,7 @@
           "answer": "बच्चे, टोकरी, फूल",
           "acceptable": [
             "bachche tokri phool",
-            "बच्चे टोकरी फूल",
-            "तीन शब्द"
+            "बच्चे टोकरी फूल"
           ],
           "hints": [
             "Which words name a person, place or thing?",
@@ -9350,8 +9367,8 @@
           "skillId": "c3-hindi-ch18-t01-s3",
           "kind": "contrast",
           "difficulty": 3,
-          "prompt_en": "Riya says: 'To be one, everyone must eat the same food.' Is she right?",
-          "prompt_hi": "रिया कहती है — ‘एक होने के लिए सबको एक जैसा खाना खाना चाहिए।’ क्या वह सही है?",
+          "prompt_en": "{friendF} says: 'To be one, everyone must eat the same food.' Is she right?",
+          "prompt_hi": "{friendF} कहती है — ‘एक होने के लिए सबको एक जैसा खाना खाना चाहिए।’ क्या वह सही है?",
           "answer": "नहीं; खाना अलग-अलग होकर भी हम मिलकर एक रह सकते हैं",
           "acceptable": [
             "नहीं",

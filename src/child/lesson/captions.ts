@@ -2,15 +2,14 @@
 // punctuation so a line never wraps mid-word in portrait. There are no word timestamps on either lane
 // (R5), so while she speaks the clause advances on a speech-rate estimate; once she stops, the last full
 // sentence (usually the question she handed over, up to two lines) stays up. No word highlight ships until E-8 says it may.
-import type { Band, ReadingLevel } from "../band.ts";
 
 const MAX_WORDS_PER_LINE = 9;
 /** ~2.6 spoken words per second for her Hinglish register, plus a beat per clause. */
 const MS_PER_WORD = 380;
 const CLAUSE_BEAT_MS = 250;
 
-/** A tail chunk this short is merged into the chunk before it (never a stranded fragment). */
-const MIN_TAIL_WORDS = 4;
+/** A clause chunk fits two caption lines at the narrowest caption box (195 px beside her picture at 360 px). */
+const MAX_CHARS = 38;
 /** At rest, the last full sentence may take two lines. */
 const MAX_REST_WORDS = MAX_WORDS_PER_LINE * 2;
 
@@ -22,17 +21,28 @@ export function clauses(text: string): string[] {
     .split(/(?<=[,.;:!?।…])\s+|\s*[—–]\s*|\s+-\s+/)
     .map((s) => s.trim())
     .filter(Boolean);
-  // A long clause with no punctuation is cut at word boundaries, and a short tail joins the chunk before.
+  // A long clause is cut at word boundaries into the FEWEST chunks that each fit the caption: at most MAX_WORDS_PER_LINE
+  // words AND MAX_CHARS characters (r7 director10 replay: 39 of 273 clauses of one lesson lost their last words at 360 px,
+  // where the line beside her picture is 195 px, two lines of about 24 characters). The chunks are balanced by length,
+  // so there is never a stranded 2-word tail.
   const out: string[] = [];
   for (const p of parts) {
     const words = p.split(" ");
-    const chunks: string[][] = [];
-    for (let i = 0; i < words.length; i += MAX_WORDS_PER_LINE) chunks.push(words.slice(i, i + MAX_WORDS_PER_LINE));
-    if (chunks.length > 1 && chunks[chunks.length - 1].length < MIN_TAIL_WORDS) {
-      const tail = chunks.pop()!;
-      chunks[chunks.length - 1] = [...chunks[chunks.length - 1], ...tail];
-    }
-    for (const c of chunks) out.push(c.join(" "));
+    const n = Math.max(Math.ceil(words.length / MAX_WORDS_PER_LINE), Math.ceil(p.length / MAX_CHARS), 1);
+    if (n === 1 || words.length < 2) { out.push(p); continue; }
+    const target = p.length / n;
+    let cur: string[] = [], len = 0, made = 0;
+    words.forEach((w, i) => {
+      const left = words.length - i;
+      // close the chunk before this word when it has reached its share, and the rest can still make the remaining chunks
+      const over = len + 1 + w.length;
+      const share = made < n - 1 && over > target * 1.15 && left >= n - 1 - made;
+      if (cur.length && (share || over > MAX_CHARS || cur.length >= MAX_WORDS_PER_LINE)) {
+        out.push(cur.join(" ")); made++; cur = []; len = 0;
+      }
+      cur.push(w); len += (len ? 1 : 0) + w.length;
+    });
+    if (cur.length) out.push(cur.join(" "));
   }
   return out;
 }
@@ -62,13 +72,3 @@ export function clauseAt(list: string[], ms: number, speaking: boolean): number 
   }
   return list.length - 1;
 }
-
-export type CaptionMode = "icons" | "phrase";
-
-/** Defaults by reading level; captions-always overrides (§3.8 table). */
-export function captionMode(reading: ReadingLevel, always: boolean): CaptionMode {
-  if (always) return "phrase";
-  return reading === "R0" ? "icons" : "phrase";
-}
-
-export const readingFor = (band: Band): ReadingLevel => (band === "b1" ? "R0" : band === "b2" ? "R1" : "R2");

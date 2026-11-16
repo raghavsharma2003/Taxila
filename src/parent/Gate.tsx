@@ -17,6 +17,8 @@ import { PasswordAgain } from "./fields.tsx";
 import "../ui-v3/tokens.css";
 import "../ui-v3/kaksha/tokens.css";
 import "./parent.css";
+import { txAttrs } from "../ui-v3/r8/tx.ts";
+import "../ui-v3/r8/parent.css";
 
 /** Release 11 (dc-r4-volt-everywhere): the parent corner wears Volt night "calm" through K's own scope (src/ui-v3/kaksha:
  *  `.kx` + data-klook + data-ktheme); parent.css re-points the v2 tokens at the k tokens under it. */
@@ -196,7 +198,7 @@ export function Gate({ children }: { children: ReactNode }) {
   if (phase.k === "signedOut") return <Navigate to={`/start/phone?login=1&next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
 
   return (
-    <div className="pa-gate kx" {...VOLT_CALM} data-gate={phase.k}>
+    <div className="pa-gate kx" {...VOLT_CALM} {...txAttrs("light")} data-gate={phase.k}>
       <header className="pa-gate-top">
         <Brand to="/who" />
         <span className="pa-spacer" />
@@ -322,7 +324,7 @@ function ForgotPin({ onDone, onCancel, onWait }: { onDone: (g: GateState) => voi
 function Erased({ r }: { r: ErasedReceipt }) {
   const day = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short" });
   return (
-    <div className="pa-gate kx" {...VOLT_CALM} data-gate="erased">
+    <div className="pa-gate kx" {...VOLT_CALM} {...txAttrs("light")} data-gate="erased">
       <header className="pa-gate-top"><Brand to="/" /></header>
       <main id="main" className="pa-gate-card">
         <section className="pa-gate-head pa-receipt" role="status" aria-labelledby="pa-receipt-h" data-receipt={r.code}>

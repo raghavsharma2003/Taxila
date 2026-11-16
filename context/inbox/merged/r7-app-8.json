@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-debrief-reflect-emote",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "The Debrief asks 'What helped today?' (Older only; only when this lesson used two or more supports: a piece she built or a board, plus her explanation) with chips for each made piece, The drawing, How {T} explained, Trying it myself, Not sure; one tap goes to Learning's POST /api/child/reflect as a choice. A goodbye row (Wave / Thanks / That was fun) goes to Brain's POST /api/child/emote. Both are sent by the lesson frame, never by the Debrief, and absent until the lesson has an id. Reverse: the reflect beat proves noise in the owner's test.",
+   "source": "inbox/r7-app-8.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-debrief-reflect-emote",
+   "rel": "part_of",
+   "dst": "dc-r7-app-debrief-made"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-app-debrief-reflect-emote\nThe end of a lesson now asks one optional question and offers one optional goodbye. 'What helped?' only appears when there was a real choice of supports, so it never asks about a lesson that was just talk. The answer is a preference that nudges her next comparable choice; it is not shown to parents and is never reported as what works for the child. The thank-you line makes no promise of memory, because the memory consent may be off. The goodbye has three closed options, one per lesson, and she may mention it once next time, never as a guilt hook.\n"
+ }
+}

@@ -131,7 +131,10 @@ test("K-AI: her name always travels with 'AI teacher'", async () => {
   const m = await import(path.join(DIR, "copy.ts"));
   assert.equal(m.KX.aiTeacher.en, "AI teacher");
   const views = read(path.join(DIR, "views.tsx"));
-  assert.match(views, /label=\{`\$\{kt\("start"\)\}, with \$\{p\.teacher\.name\}, \$\{kt\("aiTeacher"\)\}`\}/, "Start's accessible name names her as an AI teacher");
+  // r7: the main action's word follows the day's state (Start / Homework help / Revise / One more); her name and "AI
+  // teacher" travel with every one of them
+  assert.match(views, /label=\{`\$\{ctaWord\}, with \$\{p\.teacher\.name\}, \$\{kt\("aiTeacher"\)\}`\}/, "Start's accessible name names her as an AI teacher");
+  assert.match(views, /: kt\("start"\)/, "the start state's word is still Start");
 });
 
 test("K-THEME: family → theme (young → dawn, older → night)", async () => {

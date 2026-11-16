@@ -1,0 +1,21 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-ofcard-wire",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Brain's ofCard (BoardSegment, v6.2 T46) reaches the client on the composed whiteboard script: page 0 as script.ofCard (from intent.ofCard) and each later page as switches[k].ofCard (from intent.segments[k].ofCard). Studio's patch to-studio/002 does the carrying in normalizeScript, segmentsOf/pagesBoard and seam drawn(). App's reader (boardPage.ts boardOnTray) already reads that shape. Brain confirmed that a paged turn's new card is its last page (3a holds). Reverse: Studio sends the flags elsewhere on the artifact.",
+   "source": "inbox/r7-app-27.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-ofcard-wire",
+   "rel": "part_of",
+   "dst": "dc-r7-app-card-waiting"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-ofcard-wire`\nThe flag that tells the card to wait travels on the board itself, page by page, so the phone needs nothing else from the turn.\n"
+ }
+}

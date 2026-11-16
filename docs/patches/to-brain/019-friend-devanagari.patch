@@ -1,0 +1,500 @@
+From: Learning (F, claude/r7-audit-content-data)
+Subject: [PATCH 019] the {friendF} slot fills in Devanagari inside a Hindi string, and the Hindi kits use the slot (audit CD-17)
+
+The Hindi kits name the friend रिया as plain text: 55 uses in c3 to c9 Hindi. In 18 items and diagnostics the English prompt says
+{friendF} (filled with Zoya, Meera, Tara or Diya) while the Hindi prompt says रिया, so one question names two girls, and the
+child's own name is not checked against the Hindi one. The slot never reached Devanagari because fillFriend only knew Latin names.
+
+Two halves that go in together. Apply the data on its own and the Hindi strings show a Latin name inside Devanagari text;
+apply server/director/friend.js on its own and nothing changes.
+
+- server/director/friend.js: a string with more Devanagari than Latin letters (the slot itself not counted) gets the name in
+  Devanagari (ज़ोया, मीरा, तारा, दीया; कबीर, अर्जुन, ईशान, अमन). Everything else is unchanged. Both scripts of the child's own
+  name are excluded from the pick (NFC-normalised, so ज़ typed either way matches).
+- data/kits/c3..c9-hindi.json: the whole word रिया becomes {friendF} (55 strings; "शुक्रिया" and "हरियाली" are not whole words
+  and are left alone). The English prompt and the Hindi prompt of an item now fill to the same friend.
+- tests/r7-audit-friend-devanagari.test.mjs: the fill in each script, the child's name in both scripts, no whole-word रिया left
+  in any kit, every slot in every kit fills, and one pinned item (c3-hindi-ch07-t01-i02).
+
+Open for Brain: a Hindi answer key that holds the name (c3-hindi-ch07-t01-i01, "रिया ने सारा को लिखा") now fills to the
+Devanagari form. A child's spoken answer arrives as a transcript, which may be in Latin letters. If the grader compares
+strings, add the Latin form to `acceptable` at fill time (fillFriendDeep could fill `acceptable` in both scripts).
+
+After this lands, re-run `node server/play/tools/build-arena.mjs` (the Hindi arena prompts then carry the slot, which Games fills).
+
+diff --git a/data/kits/c1-hindi.json b/data/kits/c1-hindi.json
+index 54e4f740..9d9b1a94 100644
+--- a/data/kits/c1-hindi.json
++++ b/data/kits/c1-hindi.json
+@@ -2844,7 +2844,7 @@
+      "difficulty": 3,
+      "prompt_en": "Has a friend ever helped you, or have you helped a friend? Tell me one time.",
+      "prompt_hi": "कभी तुम्हारे किसी दोस्त ने तुम्हारी मदद की है, या तुमने किसी की? एक बात बताओ।",
+-     "answer": "Any one helping moment told in a sentence, e.g. 'मेरी पेंसिल टूट गई तो रिया ने अपनी दी'",
++     "answer": "Any one helping moment told in a sentence, e.g. 'मेरी पेंसिल टूट गई तो {friendF} ने अपनी दी'",
+      "acceptable": [
+       "मदद",
+       "पेंसिल",
+diff --git a/data/kits/c3-hindi.json b/data/kits/c3-hindi.json
+index fa4399fc..92990a91 100644
+--- a/data/kits/c3-hindi.json
++++ b/data/kits/c3-hindi.json
+@@ -3277,7 +3277,7 @@
+           ],
+           "diagnostic": {
+             "prompt_en": "{friendF} wrote \"प्रिय ___ सारा\" in the letter — which spelling of the word for friend is right?",
+-            "prompt_hi": "रिया ने पत्र में ‘प्रिय ___ सारा’ लिखा — दोस्त के लिए जो शब्द आया, वह सही कैसे लिखा है?",
++            "prompt_hi": "{friendF} ने पत्र में ‘प्रिय ___ सारा’ लिखा — दोस्त के लिए जो शब्द आया, वह सही कैसे लिखा है?",
+             "options": [
+               {
+                 "text": "मित्र",
+@@ -3312,7 +3312,7 @@
+           "id": "c3-hindi-ch07-t01-mc-part-order",
+           "belief": "Thinks the parts of a letter can go anywhere — the name of the writer at the top, the greeting at the end",
+           "signs": [
+-            "Starts the letter with 'तुम्हारी मित्र, रिया'",
++            "Starts the letter with 'तुम्हारी मित्र, {friendF}'",
+             "Puts प्रिय सारा at the bottom"
+           ],
+           "diagnostic": {
+@@ -3325,7 +3325,7 @@
+                 "correct": true
+               },
+               {
+-                "text": "तुम्हारी मित्र, रिया",
++                "text": "तुम्हारी मित्र, {friendF}",
+                 "misconceptionId": "c3-hindi-ch07-t01-mc-part-order",
+                 "correct": false
+               },
+@@ -3352,26 +3352,26 @@
+           "id": "c3-hindi-ch07-t01-mc-closing-gender",
+           "belief": "Thinks the closing is always 'तुम्हारा मित्र' whoever writes it, or that it changes with the reader not the writer",
+           "signs": [
+-            "A girl writes तुम्हारा मित्र, रिया",
++            "A girl writes तुम्हारा मित्र, {friendF}",
+             "Changes the closing because the friend is a boy"
+           ],
+           "diagnostic": {
+             "prompt_en": "{friendF} is a girl. How should she end her letter?",
+-            "prompt_hi": "रिया लड़की है। उसे पत्र के आख़िर में क्या लिखना चाहिए?",
++            "prompt_hi": "{friendF} लड़की है। उसे पत्र के आख़िर में क्या लिखना चाहिए?",
+             "options": [
+               {
+-                "text": "तुम्हारी मित्र, रिया",
++                "text": "तुम्हारी मित्र, {friendF}",
+                 "misconceptionId": null,
+                 "correct": true
+               },
+               {
+-                "text": "तुम्हारा मित्र, रिया",
++                "text": "तुम्हारा मित्र, {friendF}",
+                 "misconceptionId": "c3-hindi-ch07-t01-mc-closing-gender",
+                 "correct": false
+               }
+             ],
+             "verified": {
+-              "solverAnswer": "तुम्हारी मित्र, रिया",
++              "solverAnswer": "तुम्हारी मित्र, {friendF}",
+               "agrees": true,
+               "oneCorrect": true,
+               "optionCount": 2,
+@@ -3379,7 +3379,7 @@
+             }
+           },
+           "remediation": {
+-            "representation": "Two signature cards with a boy and a girl icon: तुम्हारा मित्र, अमन | तुम्हारी मित्र, रिया",
++            "representation": "Two signature cards with a boy and a girl icon: तुम्हारा मित्र, अमन | तुम्हारी मित्र, {friendF}",
+             "moveShape": "Ask who is writing, let the child pick the card, then switch the writer and ask again"
+           }
+         }
+@@ -3391,11 +3391,11 @@
+           "kind": "retrieval",
+           "difficulty": 1,
+           "prompt_en": "Who wrote this letter, and to whom?",
+-          "prompt_hi": "रिया का पत्र सुनो — ‘प्रिय मित्र सारा, नमस्ते! … तुम्हारी मित्र, रिया’। ये पत्र किसने लिखा और किसको?",
+-          "answer": "रिया ने सारा को लिखा",
++          "prompt_hi": "{friendF} का पत्र सुनो — ‘प्रिय मित्र सारा, नमस्ते! … तुम्हारी मित्र, {friendF}’। ये पत्र किसने लिखा और किसको?",
++          "answer": "{friendF} ने सारा को लिखा",
+           "acceptable": [
+             "riya ne sara ko",
+-            "रिया ने",
++            "{friendF} ने",
+             "सारा को",
+             "{friendF} to Sara"
+           ],
+@@ -3406,7 +3406,7 @@
+             "{friendF} wrote it to Sara."
+           ],
+           "verified": {
+-            "solverAnswer": "रिया ने सारा को",
++            "solverAnswer": "{friendF} ने सारा को",
+             "agrees": true,
+             "note": "Solved blind from prompt_hi; matches key. (2026-10-02 re-check)"
+           },
+@@ -3418,7 +3418,7 @@
+           "kind": "retrieval",
+           "difficulty": 1,
+           "prompt_en": "{friendF} wrote: 'In the summer holidays I went to my Nani's village.' Where did {friendF} go in the holidays?",
+-          "prompt_hi": "रिया ने पत्र में लिखा — ‘मैं गर्मी की छुट्टियों में नानी के गाँव गई थी।’ बताओ, रिया छुट्टियों में कहाँ गई?",
++          "prompt_hi": "{friendF} ने पत्र में लिखा — ‘मैं गर्मी की छुट्टियों में नानी के गाँव गई थी।’ बताओ, {friendF} छुट्टियों में कहाँ गई?",
+           "answer": "नानी के गाँव",
+           "acceptable": [
+             "nani ke gaon",
+@@ -3582,8 +3582,8 @@
+           "skillId": "c3-hindi-ch07-t01-s4",
+           "kind": "practice",
+           "difficulty": 2,
+-          "prompt_en": "{friendF} is a girl. Fill in: '___ मित्र, रिया' (तुम्हारा / तुम्हारी)",
+-          "prompt_hi": "रिया लड़की है। खाली जगह भरो — ‘___ मित्र, रिया’। तुम्हारा या तुम्हारी?",
++          "prompt_en": "{friendF} is a girl. Fill in: '___ मित्र, {friendF}' (तुम्हारा / तुम्हारी)",
++          "prompt_hi": "{friendF} लड़की है। खाली जगह भरो — ‘___ मित्र, {friendF}’। तुम्हारा या तुम्हारी?",
+           "answer": "तुम्हारी",
+           "acceptable": [
+             "tumhari",
+@@ -3752,8 +3752,8 @@
+       "passages": [
+         {
+           "id": "c3-hindi-ch07-t01-p1",
+-          "title": "रिया का पत्र",
+-          "text": "जयपुर, 5 जून\nप्रिय मित्र सारा,\nनमस्ते! तुम कैसी हो? मैं गर्मी की छुट्टियों में नानी के गाँव गई थी। वहाँ आम के बड़े-बड़े पेड़ हैं। नानी ने मुझे मीठे आम खिलाए और रात को कहानियाँ सुनाईं। मैंने आम के पेड़ का एक चित्र भी बनाया है। तुम्हारी छुट्टियाँ कैसी चल रही हैं? जवाब में पत्र ज़रूर लिखना।\nतुम्हारी मित्र,\nरिया"
++          "title": "{friendF} का पत्र",
++          "text": "जयपुर, 5 जून\nप्रिय मित्र सारा,\nनमस्ते! तुम कैसी हो? मैं गर्मी की छुट्टियों में नानी के गाँव गई थी। वहाँ आम के बड़े-बड़े पेड़ हैं। नानी ने मुझे मीठे आम खिलाए और रात को कहानियाँ सुनाईं। मैंने आम के पेड़ का एक चित्र भी बनाया है। तुम्हारी छुट्टियाँ कैसी चल रही हैं? जवाब में पत्र ज़रूर लिखना।\nतुम्हारी मित्र,\n{friendF}"
+         }
+       ]
+     },
+@@ -9368,7 +9368,7 @@
+           "kind": "contrast",
+           "difficulty": 3,
+           "prompt_en": "{friendF} says: 'To be one, everyone must eat the same food.' Is she right?",
+-          "prompt_hi": "रिया कहती है — ‘एक होने के लिए सबको एक जैसा खाना खाना चाहिए।’ क्या वह सही है?",
++          "prompt_hi": "{friendF} कहती है — ‘एक होने के लिए सबको एक जैसा खाना खाना चाहिए।’ क्या वह सही है?",
+           "answer": "नहीं; खाना अलग-अलग होकर भी हम मिलकर एक रह सकते हैं",
+           "acceptable": [
+             "नहीं",
+diff --git a/data/kits/c4-hindi.json b/data/kits/c4-hindi.json
+index 33ad776a..103f6d9b 100644
+--- a/data/kits/c4-hindi.json
++++ b/data/kits/c4-hindi.json
+@@ -1554,7 +1554,7 @@
+      "kind": "near_transfer",
+      "difficulty": 4,
+      "prompt_en": "{friendF} searched every corner of the garden for her lost badge. Which expression fits better: ‘कोना-कोना छान मारा’ or ‘फुदक-फुदककर चली’?",
+-     "prompt_hi": "रिया ने खोया हुआ बैज ढूँढ़ने के लिए बगीचे का हर कोना देखा। कौन-सा प्रयोग ठीक है: ‘कोना-कोना छान मारा’ या ‘फुदक-फुदककर चली’?",
++     "prompt_hi": "{friendF} ने खोया हुआ बैज ढूँढ़ने के लिए बगीचे का हर कोना देखा। कौन-सा प्रयोग ठीक है: ‘कोना-कोना छान मारा’ या ‘फुदक-फुदककर चली’?",
+      "answer": "कोना-कोना छान मारा",
+      "acceptable": [
+       "कोना-कोना छान मारा।",
+@@ -1563,7 +1563,7 @@
+      "hints": [
+       "Is the sentence about searching thoroughly or moving by jumping?",
+       "Choose the expression that describes checking a place completely.",
+-      "रिया ने बगीचे का ___।",
++      "{friendF} ने बगीचे का ___।",
+       "कोना-कोना छान मारा—यानी हर जगह अच्छी तरह खोजा।"
+      ],
+      "ge": 2.75,
+@@ -3061,7 +3061,7 @@
+      "kind": "practice",
+      "difficulty": 4,
+      "prompt_en": "{friendF}'s lunchbox has only potato parathas every day. Kabir's has roti, dal and a different vegetable. Whose lunch follows the advice to eat a variety of foods, and why?",
+-     "prompt_hi": "रिया के टिफ़िन में रोज़ सिर्फ़ आलू के पराँठे हैं। कबीर के टिफ़िन में रोटी, दाल और अलग-अलग सब्ज़ियाँ हैं। तरह-तरह का भोजन खाने की सलाह कौन मान रहा है और क्यों?",
++     "prompt_hi": "{friendF} के टिफ़िन में रोज़ सिर्फ़ आलू के पराँठे हैं। कबीर के टिफ़िन में रोटी, दाल और अलग-अलग सब्ज़ियाँ हैं। तरह-तरह का भोजन खाने की सलाह कौन मान रहा है और क्यों?",
+      "answer": "कबीर, क्योंकि वह अलग-अलग तरह का भोजन खाता है।",
+      "acceptable": [
+       "कबीर, क्योंकि वह विविध भोजन खाता है",
+@@ -4428,7 +4428,7 @@
+       "All parts in order, ending with नाती/नातिन and your name."
+      ],
+      "verified": {
+-      "solverAnswer": "दिनांक; प्यारी नानी, सादर प्रणाम! …; आपकी नातिन, रिया",
++      "solverAnswer": "दिनांक; प्यारी नानी, सादर प्रणाम! …; आपकी नातिन, {friendF}",
+       "agrees": true,
+       "note": "Open response; key gives a valid model answer."
+      },
+@@ -6040,7 +6040,7 @@
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "Read: ‘At Onam, families make flower designs and eat a special meal. At Diwali, {friendF}’s family lights lamps and eats sweets.’ Name one similarity and one difference between these celebrations.",
+-     "prompt_hi": "पढ़ो: ‘ओणम पर परिवार फूलों की सजावट बनाते हैं और विशेष भोजन खाते हैं। दिवाली पर रिया का परिवार दीये जलाता है और मिठाई खाता है।’ दोनों त्योहारों में एक समानता और एक अंतर बताओ।",
++     "prompt_hi": "पढ़ो: ‘ओणम पर परिवार फूलों की सजावट बनाते हैं और विशेष भोजन खाते हैं। दिवाली पर {friendF} का परिवार दीये जलाता है और मिठाई खाता है।’ दोनों त्योहारों में एक समानता और एक अंतर बताओ।",
+      "answer": "समानता: दोनों में खास भोजन खाया जाता है; अंतर: ओणम पर फूलों की सजावट होती है, दिवाली पर दीये जलते हैं।",
+      "acceptable": [
+       "दोनों में खाने की चीज़ें बनती हैं; ओणम में फूल सजाते हैं और दिवाली में दीये जलाते हैं"
+@@ -9001,7 +9001,7 @@
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "{friendF} says, ‘We made a चाल to keep our quiz questions secret.’ Here, does ‘चाल चलना’ mean moving a chess piece or making a clever plan?",
+-     "prompt_hi": "रिया कहती है, ‘प्रश्नोत्तरी के सवाल गुप्त रखने के लिए हमने एक चाल चली।’ यहाँ ‘चाल चलना’ का मतलब शतरंज का मोहरा चलना है या चतुर योजना बनाना?",
++     "prompt_hi": "{friendF} कहती है, ‘प्रश्नोत्तरी के सवाल गुप्त रखने के लिए हमने एक चाल चली।’ यहाँ ‘चाल चलना’ का मतलब शतरंज का मोहरा चलना है या चतुर योजना बनाना?",
+      "answer": "चतुर योजना बनाना",
+      "acceptable": [
+       "योजना बनाना",
+@@ -9741,11 +9741,11 @@
+      "kind": "practice",
+      "difficulty": 3,
+      "prompt_en": "At a school science exhibition, {friendF} asks, “Will this model show a solar eclipse?” Aman replies, “Yes, it will.” Which line should you read with a rising voice: {friendF}’s or Aman’s?",
+-     "prompt_hi": "स्कूल की विज्ञान प्रदर्शनी में रिया पूछती है, “क्या यह मॉडल सूर्यग्रहण दिखाएगा?” अमन कहता है, “हाँ, दिखाएगा।” किसकी बात बोलते समय आवाज़ ऊपर जाएगी—रिया की या अमन की?",
+-     "answer": "रिया की",
++     "prompt_hi": "स्कूल की विज्ञान प्रदर्शनी में {friendF} पूछती है, “क्या यह मॉडल सूर्यग्रहण दिखाएगा?” अमन कहता है, “हाँ, दिखाएगा।” किसकी बात बोलते समय आवाज़ ऊपर जाएगी—{friendF} की या अमन की?",
++     "answer": "{friendF} की",
+      "acceptable": [
+-      "रिया",
+-      "रिया का प्रश्न",
++      "{friendF}",
++      "{friendF} का प्रश्न",
+       "{friendF}",
+       "{friendF}’s"
+      ],
+@@ -9753,7 +9753,7 @@
+       "कौन-सी पंक्ति में कोई जानकारी पूछी जा रही है?",
+       "प्रश्न और उत्तर बोलने के ढंग में अंतर सोचो।",
+       "ऊपर जाती आवाज़ से ___ की पंक्ति पढ़ो।",
+-      "रिया की—उसकी पंक्ति प्रश्न है।"
++      "{friendF} की—उसकी पंक्ति प्रश्न है।"
+      ],
+      "ge": 2.5,
+      "geSource": "raters-v2",
+diff --git a/data/kits/c5-hindi.json b/data/kits/c5-hindi.json
+index 5bd11db5..f4c8cc9b 100644
+--- a/data/kits/c5-hindi.json
++++ b/data/kits/c5-hindi.json
+@@ -1424,8 +1424,8 @@
+      "skillId": "c5-hindi-ch02-t01-s1",
+      "kind": "practice",
+      "difficulty": 3,
+-     "prompt_en": "Read: ‘नील ने पूछा, “क्या फैसला हो गया?” रिया बोली, “हाँ, दोनों की बात सुनी गई!”’ Which reading is correct: pause after ‘पूछा’ and raise your voice at the question, or pause after ‘क्या’ and raise your voice at ‘हाँ’?",
+-     "prompt_hi": "पढ़ो— ‘नील ने पूछा, “क्या फैसला हो गया?” रिया बोली, “हाँ, दोनों की बात सुनी गई!”’ कौन-सा पढ़ने का ढंग सही है: ‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना, या ‘क्या’ के बाद ठहरकर ‘हाँ’ पर आवाज़ उठाना?",
++     "prompt_en": "Read: ‘नील ने पूछा, “क्या फैसला हो गया?” {friendF} बोली, “हाँ, दोनों की बात सुनी गई!”’ Which reading is correct: pause after ‘पूछा’ and raise your voice at the question, or pause after ‘क्या’ and raise your voice at ‘हाँ’?",
++     "prompt_hi": "पढ़ो— ‘नील ने पूछा, “क्या फैसला हो गया?” {friendF} बोली, “हाँ, दोनों की बात सुनी गई!”’ कौन-सा पढ़ने का ढंग सही है: ‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना, या ‘क्या’ के बाद ठहरकर ‘हाँ’ पर आवाज़ उठाना?",
+      "answer": "‘पूछा’ के बाद ठहरकर सवाल पर आवाज़ उठाना",
+      "acceptable": [
+       "पहला ढंग",
+@@ -4476,7 +4476,7 @@
+      "kind": "far_transfer",
+      "difficulty": 4,
+      "prompt_en": "{friendF} loses sight of her family at a busy metro station. Which plan shows presence of mind: A—stay near the help desk, tell staff her family’s phone number, then wait there; or B—board the next train and search every coach?",
+-     "prompt_hi": "भीड़भाड़ वाले मेट्रो स्टेशन पर रिया को अपना परिवार दिखाई नहीं देता। कौन-सी योजना सूझबूझ दिखाती है: A—सहायता काउंटर के पास रहकर कर्मचारी को परिवार का फ़ोन नंबर बताए, फिर वहीं रुके; या B—अगली ट्रेन में चढ़कर हर डिब्बे में ढूँढ़े?",
++     "prompt_hi": "भीड़भाड़ वाले मेट्रो स्टेशन पर {friendF} को अपना परिवार दिखाई नहीं देता। कौन-सी योजना सूझबूझ दिखाती है: A—सहायता काउंटर के पास रहकर कर्मचारी को परिवार का फ़ोन नंबर बताए, फिर वहीं रुके; या B—अगली ट्रेन में चढ़कर हर डिब्बे में ढूँढ़े?",
+      "answer": "A",
+      "acceptable": [
+       "ए",
+@@ -4484,7 +4484,7 @@
+       "सहायता काउंटर के पास रहकर कर्मचारी से मदद लेना"
+      ],
+      "hints": [
+-      "किस योजना में रिया को ढूँढ़ना आसान रहेगा?",
++      "किस योजना में {friendF} को ढूँढ़ना आसान रहेगा?",
+       "सुरक्षित जगह और स्टेशन कर्मचारी की मदद पर ध्यान दो।",
+       "पहले सहायता काउंटर, फिर कर्मचारी को ___ बताना है।",
+       "A—वहीं रुकने और कर्मचारी से मदद लेने पर परिवार उसे ढूँढ़ सकेगा।"
+diff --git a/data/kits/c6-hindi.json b/data/kits/c6-hindi.json
+index a6e71eff..3cc3506f 100644
+--- a/data/kits/c6-hindi.json
++++ b/data/kits/c6-hindi.json
+@@ -628,14 +628,14 @@
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "{friendF} was born in Jaipur but now works in Pune. Complete with the precise words: Jaipur is her ___, and Pune is her ___ — जन्मभूमि or कर्मभूमि?",
+-     "prompt_hi": "रिया का जन्म जयपुर में हुआ, लेकिन अब वह पुणे में काम करती है। सही शब्द भरकर बताओ—जयपुर उसकी ___ और पुणे उसकी ___ है: जन्मभूमि या कर्मभूमि?",
++     "prompt_hi": "{friendF} का जन्म जयपुर में हुआ, लेकिन अब वह पुणे में काम करती है। सही शब्द भरकर बताओ—जयपुर उसकी ___ और पुणे उसकी ___ है: जन्मभूमि या कर्मभूमि?",
+      "answer": "जयपुर—जन्मभूमि; पुणे—कर्मभूमि",
+      "acceptable": [
+       "जन्मभूमि, कर्मभूमि",
+       "जयपुर जन्मभूमि, पुणे कर्मभूमि"
+      ],
+      "hints": [
+-      "दोनों शहरों से रिया का संबंध किस तरह अलग है?",
++      "दोनों शहरों से {friendF} का संबंध किस तरह अलग है?",
+       "एक शब्द जन्म से जुड़ा है, दूसरा काम से।",
+       "जयपुर: ___; पुणे: ___।",
+       "जयपुर जन्मभूमि, पुणे कर्मभूमि; पहला जन्मस्थान है, दूसरा कार्यस्थल।"
+@@ -4295,18 +4295,18 @@
+      "skillId": "c6-hindi-ch06-t01-s4",
+      "kind": "practice",
+      "difficulty": 4,
+-     "prompt_en": "A student says, ‘मैं अपनी दीदी से प्रेरणा लेती हूँ।’ Retell this about {friendF}, without quoting her. Complete: ‘रिया कहती है कि ___ ___ दीदी से प्रेरणा लेती है।’",
+-     "prompt_hi": "एक छात्रा कहती है, ‘मैं अपनी दीदी से प्रेरणा लेती हूँ।’ अब रिया के बारे में उसकी बात बिना उद्धरण के बताओ। पूरा करो: ‘रिया कहती है कि ___ ___ दीदी से प्रेरणा लेती है।’",
++     "prompt_en": "A student says, ‘मैं अपनी दीदी से प्रेरणा लेती हूँ।’ Retell this about {friendF}, without quoting her. Complete: ‘{friendF} कहती है कि ___ ___ दीदी से प्रेरणा लेती है।’",
++     "prompt_hi": "एक छात्रा कहती है, ‘मैं अपनी दीदी से प्रेरणा लेती हूँ।’ अब {friendF} के बारे में उसकी बात बिना उद्धरण के बताओ। पूरा करो: ‘{friendF} कहती है कि ___ ___ दीदी से प्रेरणा लेती है।’",
+      "answer": "वह अपनी",
+      "acceptable": [
+       "वह अपनी दीदी से प्रेरणा लेती है",
+-      "रिया कहती है कि वह अपनी दीदी से प्रेरणा लेती है"
++      "{friendF} कहती है कि वह अपनी दीदी से प्रेरणा लेती है"
+      ],
+      "hints": [
+       "अब वाक्य कौन सुना रहा है?",
+       "बोलने वाली का उल्लेख बाहर से हो रहा है; सर्वनाम बदलो।",
+       "‘मैं’ की जगह ___ आएगा; दीदी से संबंध बताने वाला शब्द ___ रहेगा।",
+-      "वह अपनी; रिया के लिए ‘मैं’ बदलता है, लेकिन दीदी उसी की हैं।"
++      "वह अपनी; {friendF} के लिए ‘मैं’ बदलता है, लेकिन दीदी उसी की हैं।"
+      ],
+      "ge": 5.5,
+      "geSource": "raters-v2",
+diff --git a/data/kits/c7-hindi.json b/data/kits/c7-hindi.json
+index e14f2e67..e53f63c1 100644
+--- a/data/kits/c7-hindi.json
++++ b/data/kits/c7-hindi.json
+@@ -3915,8 +3915,8 @@
+      "kind": "near_transfer",
+      "difficulty": 3,
+      "prompt_en": "A kundaliya teaches 'think before you act, or you will regret it later.' {friendF} bought a costly toy without asking about it and it broke the same day. How does the lesson apply?",
+-     "prompt_hi": "एक कुंडलिया सिखाती है — ‘काम करने से पहले सोचो, नहीं तो बाद में पछताना पड़ेगा।’ रिया ने बिना पूछे-जाँचे महँगा खिलौना ख़रीदा और वह उसी दिन टूट गया। यह सीख यहाँ कैसे लागू होती है?",
+-     "answer": "रिया ने बिना सोचे-परखे ख़रीदा, इसलिए बाद में पछताना पड़ा; पहले जाँचती तो पैसे और दुख दोनों बचते",
++     "prompt_hi": "एक कुंडलिया सिखाती है — ‘काम करने से पहले सोचो, नहीं तो बाद में पछताना पड़ेगा।’ {friendF} ने बिना पूछे-जाँचे महँगा खिलौना ख़रीदा और वह उसी दिन टूट गया। यह सीख यहाँ कैसे लागू होती है?",
++     "answer": "{friendF} ने बिना सोचे-परखे ख़रीदा, इसलिए बाद में पछताना पड़ा; पहले जाँचती तो पैसे और दुख दोनों बचते",
+      "acceptable": [
+       "बिना सोचे किया तो पछताई",
+       "पहले सोचना चाहिए था",
+diff --git a/data/kits/c8-hindi.json b/data/kits/c8-hindi.json
+index c45d5ad6..521be586 100644
+--- a/data/kits/c8-hindi.json
++++ b/data/kits/c8-hindi.json
+@@ -2423,7 +2423,7 @@
+    "skillExamples": [
+     {
+      "skillId": "c8-hindi-ch04-t01-s4",
+-     "problem": "मीना के अनौपचारिक पत्र के टुकड़े उलटे-पुलटे हैं: ‘तुम्हारी सहेली, मीना’ / ‘प्रिय रिया,’ / ‘जयपुर, 12 मार्च 2026’ / ‘पिछले हफ़्ते हम आमेर का किला देखने गए…’ / ‘सप्रेम नमस्ते।’ हर टुकड़े का नाम बताओ और सही क्रम में लगाओ।",
++     "problem": "मीना के अनौपचारिक पत्र के टुकड़े उलटे-पुलटे हैं: ‘तुम्हारी सहेली, मीना’ / ‘प्रिय {friendF},’ / ‘जयपुर, 12 मार्च 2026’ / ‘पिछले हफ़्ते हम आमेर का किला देखने गए…’ / ‘सप्रेम नमस्ते।’ हर टुकड़े का नाम बताओ और सही क्रम में लगाओ।",
+      "givens": [
+       "पाँच टुकड़े",
+       "पत्र सहेली को है → अनौपचारिक"
+@@ -2436,7 +2436,7 @@
+       },
+       {
+        "do": "किसे लिखा → नाम से पुकारना",
+-       "result": "संबोधन: प्रिय रिया,"
++       "result": "संबोधन: प्रिय {friendF},"
+       },
+       {
+        "do": "पुकारने के बाद → नमस्ते/प्यार",
+@@ -2451,7 +2451,7 @@
+        "result": "समापन: तुम्हारी सहेली, मीना"
+       }
+      ],
+-     "answer": "स्थान-दिनांक (जयपुर, 12 मार्च 2026) → संबोधन (प्रिय रिया,) → अभिवादन (सप्रेम नमस्ते।) → मुख्य बात (पिछले हफ़्ते…) → समापन (तुम्हारी सहेली, मीना)",
++     "answer": "स्थान-दिनांक (जयपुर, 12 मार्च 2026) → संबोधन (प्रिय {friendF},) → अभिवादन (सप्रेम नमस्ते।) → मुख्य बात (पिछले हफ़्ते…) → समापन (तुम्हारी सहेली, मीना)",
+      "why": "पत्र ऊपर से नीचे पढ़ा जाता है → कहाँ-कब → किसे → नमस्ते → बात → किसकी ओर से; अनौपचारिक पत्र में ‘सेवा में’ और ‘विषय’ नहीं होते",
+      "source": "हरिद्वार — language point: Knows the parts of an informal letter (स्थान-दिनांक, संबोधन, अभिवादन, मुख्य बात, समापन) and how it differs from a formal one"
+     },
+@@ -5777,7 +5777,7 @@
+      "kind": "error_spot",
+      "difficulty": 2,
+      "prompt_en": "{friendF} says: 'तरुण के स्वप्न is about the dreams students see while sleeping before exams.' Correct her.",
+-     "prompt_hi": "रिया कहती है — ‘तरुण के स्वप्न’ उन सपनों के बारे में है जो छात्र परीक्षा से पहले नींद में देखते हैं।’ उसे सुधारो।",
++     "prompt_hi": "{friendF} कहती है — ‘तरुण के स्वप्न’ उन सपनों के बारे में है जो छात्र परीक्षा से पहले नींद में देखते हैं।’ उसे सुधारो।",
+      "answer": "नहीं; यहाँ स्वप्न का अर्थ जीवन का ऊँचा लक्ष्य/आदर्श है — आज़ाद, बराबरी वाले देश का सपना, जिसके लिए काम करना है",
+      "acceptable": [
+       "लक्ष्य",
+diff --git a/data/kits/c9-hindi.json b/data/kits/c9-hindi.json
+index a255d15b..ff67cb6d 100644
+--- a/data/kits/c9-hindi.json
++++ b/data/kits/c9-hindi.json
+@@ -923,7 +923,7 @@
+      "kind": "near_transfer",
+      "difficulty": 3,
+      "prompt_en": "{friendF} thought hostel life in the city would be all fun. After a week she found many problems and missed home. Which saying fits?",
+-     "prompt_hi": "रिया को लगता था शहर के हॉस्टल में बस मज़ा ही मज़ा होगा। हफ़्ते भर में उसे बहुत-सी परेशानियाँ दिखीं और घर याद आने लगा। कौन-सी लोकोक्ति ठीक बैठती है?",
++     "prompt_hi": "{friendF} को लगता था शहर के हॉस्टल में बस मज़ा ही मज़ा होगा। हफ़्ते भर में उसे बहुत-सी परेशानियाँ दिखीं और घर याद आने लगा। कौन-सी लोकोक्ति ठीक बैठती है?",
+      "answer": "दूर के ढोल सुहावने होते हैं",
+      "acceptable": [
+       "दूर के ढोल सुहावने",
+@@ -7335,7 +7335,7 @@
+      "kind": "far_transfer",
+      "difficulty": 4,
+      "prompt_en": "{friendF} is in a hostel with fever, but when Mummy calls she says ‘सब बढ़िया है’. How is she like the poet, and what would you tell her?",
+-     "prompt_hi": "रिया हॉस्टल में है और उसे बुख़ार है, पर मम्मी का फ़ोन आने पर वह कहती है — ‘सब बढ़िया है।’ वह कवि जैसी कैसे है, और तुम उसे क्या कहोगे?",
++     "prompt_hi": "{friendF} हॉस्टल में है और उसे बुख़ार है, पर मम्मी का फ़ोन आने पर वह कहती है — ‘सब बढ़िया है।’ वह कवि जैसी कैसे है, और तुम उसे क्या कहोगे?",
+      "answer": "दोनों अपना दुख छिपाते हैं ताकि घरवाले चिंता न करें — प्रेम के कारण; पर बीमारी जैसी असली ज़रूरत में किसी बड़े (वार्डन/माता-पिता) को बताना ज़रूरी है",
+      "acceptable": [
+       "दुख छिपाती है ताकि चिंता न हो",
+@@ -7347,7 +7347,7 @@
+      "hints": [
+       "What do {friendF} and the poet both hide?",
+       "Love is kind — but should a fever stay secret?",
+-      "दोनों ___ छिपाते हैं; पर रिया को ___ बताना चाहिए।",
++      "दोनों ___ छिपाते हैं; पर {friendF} को ___ बताना चाहिए।",
+       "Both hide pain out of love; but {friendF} should tell an adult she is ill."
+      ],
+      "targetsMisconception": "c9-hindi-ch12-t01-mc-why-hide",
+diff --git a/server/director/friend.js b/server/director/friend.js
+index 606d4993..71483131 100644
+--- a/server/director/friend.js
++++ b/server/director/friend.js
+@@ -4,14 +4,23 @@
+ const FRIENDS = ["Zoya", "Kabir", "Meera", "Arjun", "Ishaan", "Tara"];
+ const FRIENDS_F = ["Zoya", "Meera", "Tara", "Diya"];
+ const FRIENDS_M = ["Kabir", "Arjun", "Ishaan", "Aman"];
+-const pickNot = (list, me) => list.find((n) => n.toLowerCase() !== me) ?? list[0];
++/** The same names in Devanagari, for a Hindi string (CD-17: the Hindi kits named the friend रिया, a name that was never a slot). */
++export const DEVANAGARI = Object.freeze({ Zoya: "ज़ोया", Kabir: "कबीर", Meera: "मीरा", Arjun: "अर्जुन", Ishaan: "ईशान", Tara: "तारा", Diya: "दीया", Aman: "अमन" });
++/** A string is Hindi when it has more Devanagari letters than Latin ones. */
++const isDevanagari = (t0) => { const t = t0.replace(/\{friend[FM]?\}/g, ""); return (t.match(/[\u0900-\u097F]/g)?.length ?? 0) > (t.match(/[A-Za-z]/g)?.length ?? 0); };
++// the child's own name, in either script, is never picked
++const pickNot = (list, me) => list.find((n) => n.toLowerCase() !== me && DEVANAGARI[n].normalize("NFC") !== me) ?? list[0];
+ 
+-/** A string with every {friend} / {friendF} / {friendM} slot filled (unchanged when it has none). */
++/**
++ * A string with every {friend} / {friendF} / {friendM} slot filled (unchanged when it has none). A Hindi (Devanagari) string
++ * gets the name in Devanagari; the English and Hinglish prompts of the same item get the same friend in Latin letters.
++ */
+ export function fillFriend(text, childName = "") {
+   const t = String(text ?? "");
+   if (!t.includes("{friend")) return text;
+-  const me = String(childName ?? "").trim().toLowerCase();
+-  return t.replaceAll("{friendF}", pickNot(FRIENDS_F, me)).replaceAll("{friendM}", pickNot(FRIENDS_M, me)).replaceAll("{friend}", pickNot(FRIENDS, me));
++  const me = String(childName ?? "").trim().toLowerCase().normalize("NFC");
++  const name = (list) => { const n = pickNot(list, me); return isDevanagari(t) ? DEVANAGARI[n] : n; };
++  return t.replaceAll("{friendF}", name(FRIENDS_F)).replaceAll("{friendM}", name(FRIENDS_M)).replaceAll("{friend}", name(FRIENDS));
+ }
+ 
+ const FILLED = new WeakMap();
+diff --git a/tests/r7-audit-friend-devanagari.test.mjs b/tests/r7-audit-friend-devanagari.test.mjs
+new file mode 100644
+index 00000000..7aa5fe1c
+--- /dev/null
++++ b/tests/r7-audit-friend-devanagari.test.mjs
+@@ -0,0 +1,43 @@
++// CD-17: the Hindi kits named the friend रिया as plain text, so the English prompt said one girl and the Hindi prompt another,
++// and the slot never reached Devanagari. The slot now fills in Devanagari inside a Hindi string.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { readFileSync, readdirSync } from "node:fs";
++import { fillFriend, fillFriendDeep, DEVANAGARI } from "../server/director/friend.js";
++
++test("a Hindi string gets the friend's name in Devanagari; English and Hinglish keep Latin letters; one friend for all of them", () => {
++  assert.equal(fillFriend("{friendF} ने सारा को पत्र लिखा।"), `${DEVANAGARI.Zoya} ने सारा को पत्र लिखा।`);
++  assert.equal(fillFriend("{friendF} wrote a letter to Sara."), "Zoya wrote a letter to Sara.");
++  assert.equal(fillFriend("{friendF} ne Sara ko patr likha."), "Zoya ne Sara ko patr likha.");
++  const item = fillFriendDeep({ prompt_en: "Who wrote it? {friendF}.", prompt_hi: "किसने लिखा? {friendF}।", answer: "{friendF}" });
++  assert.equal(item.prompt_en, "Who wrote it? Zoya.");
++  assert.equal(item.prompt_hi, `किसने लिखा? ${DEVANAGARI.Zoya}।`);
++});
++
++test("the child's own name, in either script, is never the friend", () => {
++  assert.equal(fillFriend("{friendF}", "Zoya"), "Meera");
++  assert.equal(fillFriend("{friendF} ने कहा", "ज़ोया"), `${DEVANAGARI.Meera} ने कहा`);
++  assert.equal(fillFriend("{friendM} ने कहा", "कबीर"), `${DEVANAGARI.Arjun} ने कहा`);
++});
++
++test("no Hindi kit names रिया as a plain word any more, and every slot fills", () => {
++  const RE = /(?<![ऀ-ॿ])रिया(?![ऀ-ॿ])/;
++  const dir = new URL("../data/kits/", import.meta.url);
++  let slots = 0;
++  for (const f of readdirSync(dir).filter((x) => /^c\d+-[a-z]+\.json$/.test(x))) {
++    const walk = (x) => {
++      if (typeof x === "string") { assert.ok(!RE.test(x), `${f}: ${x.slice(0, 60)}`); if (x.includes("{friend")) { slots++; assert.ok(!/\{friend[FM]?\}/.test(fillFriend(x))); } }
++      else if (Array.isArray(x)) x.forEach(walk);
++      else if (x && typeof x === "object") Object.values(x).forEach(walk);
++    };
++    walk(JSON.parse(readFileSync(new URL(f, dir), "utf8")));
++  }
++  assert.ok(slots > 700, `slots seen: ${slots}`);
++});
++
++test("an item whose English prompt uses the slot has the same slot in its Hindi prompt (c3-hindi-ch07-t01-i02)", () => {
++  const t = JSON.parse(readFileSync(new URL("../data/kits/c3-hindi.json", import.meta.url), "utf8")).topics.find((x) => x.topicId === "c3-hindi-ch07-t01");
++  const it = t.items.find((x) => x.id === "c3-hindi-ch07-t01-i02");
++  assert.match(it.prompt_en, /\{friendF\}/);
++  assert.match(it.prompt_hi, /\{friendF\}/);
++});

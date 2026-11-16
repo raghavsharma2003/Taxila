@@ -1,0 +1,165 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket treats baantte hue fractions seekhenge. Roti ke chaar barabar tukdon mein se ek tukde ko kya kehte hain?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1055
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai, toh socho roti team mein chaar bachchon ko barabar baantni hai. Har bachche ko jo ek tukda milega, use kya kehte hain?",
+   "move": "repair",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2512,
+   "replyReadyMs": 3567
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 718
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Neeche button se hum lesson par laut sakte hain.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 3706,
+   "replyReadyMs": 4424,
+   "fellBack": "diversion_no_return"
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1634
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, cricket wali roti sochte hain. Chaar barabar tukdon mein se ek tukde ko kya kehte hain?",
+   "move": "probe",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2193,
+   "replyReadyMs": 3827
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Roti ke chaar barabar tukde hain, aur hum ek tukde ki baat kar rahe hain. Chaar ko neeche aur ek ko upar rakhein, toh ek tukda kaise bolenge?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2340,
+   "replyReadyMs": 2341
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 788
+  },
+  {
+   "who": "teacher",
+   "text": "Roti ke chaar barabar tukdon mein ek tukda mila. Tum bolo, ise one-fourth kahenge ya one-half?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2577,
+   "replyReadyMs": 3365
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "incorrect",
+   "classifyMs": 1561
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne teen kaha. Roti ke chaar barabar tukde hon, toh ek tukda one-fourth hota hai; teen tukde lo, toh three-fourths. Game yahan nahi hai, par hum bolkar quick game khel sakte hain: tarbooz A ke tukde alag size ke hain, B ke teenon barabar; kiske har tukde ko one-third kahenge?",
+   "move": "reteach",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 3094,
+   "replyReadyMs": 4655
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 900
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, yeh boring lag raha hai. Tarbooz wala sawaal chhodte hain; cricket ka chhota bolkar game khelte hain. Chaar barabar cricket teams mein se ek team ko one-fourth kahenge ya one-half?",
+   "move": "repair",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2813,
+   "replyReadyMs": 3713
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1395
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket wala bolkar game! Chaar barabar teams mein se ek team ko one-fourth kahenge ya one-half?",
+   "move": "probe",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 2371,
+   "replyReadyMs": 3766
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1242
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 2 bola. Chaar barabar teams mein se ek team one-fourth hoti hai; one-half ke liye do barabar hisse hote hain. Ab cricket wali baat: chaar barabar teams mein se ek team ko kya kahenge?",
+   "move": "repair",
+   "card": "Tarbooz A ke 3 tukde kiye: ek bada aur do chhote. Tarbooz B ke 3 tukde kiye, sab barabar. Kisme har tukda ek-tihaai hai?",
+   "replyMs": 3013,
+   "replyReadyMs": 4255
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1099
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho—no pressure. Hum continue kar sakte hain, short break le sakte hain, ya aaj ke liye stop kar sakte hain; tum choose karo.",
+   "move": "break",
+   "card": null,
+   "replyMs": 3068,
+   "replyReadyMs": 4167,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ]
+  }
+ ]
+}

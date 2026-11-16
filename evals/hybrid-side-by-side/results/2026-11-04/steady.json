@@ -1,0 +1,308 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher hoon. Aaj perimeter yani boundary naapenge—cricket ground ke chaaron taraf ki line jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1744
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pitch ke chaaron taraf rope lagani ho, toh tum boundary ki poori length naapogi—isi ko perimeter kehte hain. Tum kaise naapogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1112,
+   "replyReadyMs": 2856
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 674
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Polygon ka perimeter nikalne ke liye uski sabhi sides ki lengths add karte hain. Rectangle ki sides kaise jodogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1396,
+   "replyReadyMs": 2070
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 759
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 4 nahi—rectangle mein opposite sides equal hoti hain. Ek round ka perimeter 2 times 50 plus 30, yani 160 m hota hai. 3 rounds ke liye kya karogi?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1274,
+   "replyReadyMs": 2033
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 852
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek round rectangle ki chaar sides hoti hain: 50 plus 30 plus 50 plus 30, total 160 m. Ab 3 rounds mein 160 ko 3 se multiply karna hai. Tum likho.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1499,
+   "replyReadyMs": 2351
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1508
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Ab perimeter ka rule use karke ek chhota triangle wala question try karte hain. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1302,
+   "replyReadyMs": 2810
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 797
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne sirf ek side li. Perimeter ke liye triangle ki teenon sides ko ek saath add karna hota hai. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 819,
+   "replyReadyMs": 1616
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 594
+  },
+  {
+   "who": "teacher",
+   "text": "Jaise ek triangular sandwich ki sides 3 cm, 4 cm aur 5 cm hon, perimeter ke liye teenon sides add karte hain. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1172,
+   "replyReadyMs": 1766
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 710
+  },
+  {
+   "who": "teacher",
+   "text": "Ab rectangle ke real-life uses par dhyaan denge. Boundary naapna aur poori surface cover karna alag ideas hain. Tablecloth ke chaaron taraf lace lagana aur table ko cloth se dhakna: kisme perimeter chahiye, kisme area?",
+   "move": "probe",
+   "card": "Tablecloth ke chaaron taraf lace lagana aur table ko cloth se dhakna: kisme perimeter chahiye, kisme area?",
+   "replyMs": 1013,
+   "replyReadyMs": 1723
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "no_evidence",
+   "classifyMs": 911
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumhara answer mujhe clearly sunai nahi diya. Please wahi answer ek baar phir se bolo. Tablecloth ke chaaron taraf lace lagana aur table ko cloth se dhakna: kisme perimeter chahiye, kisme area?",
+   "move": "repair",
+   "card": "Tablecloth ke chaaron taraf lace lagana aur table ko cloth se dhakna: kisme perimeter chahiye, kisme area?",
+   "replyMs": 1079,
+   "replyReadyMs": 1990
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 800
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum ab rukna chahti ho. Tum continue kar sakti ho, short break le sakti ho, ya aaj ke liye stop kar sakti ho. Tum kya choose karti ho?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1173,
+   "replyReadyMs": 1973
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ke chaaron taraf ki lambai, yaani perimeter, nikalna seekhenge. Agar ground ke kinare rassi lagani ho, toh kya sirf ek side naapna kaafi hoga?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1273
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tumne ek side kaha. Par rassi ko ground ke poore kinare par ghumana ho, toh baaki kinare bhi naapne padenge. Triangle ki sides paanch, chhe aur nau centimetre hain; poore kinare ki lambai kitni hogi?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2545,
+   "replyReadyMs": 3818
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Triangle ki teen sides hain: paanch, chhe aur nau centimetre. Pehle paanch aur chhe jodo; kitna aaya?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2034,
+   "replyReadyMs": 2035
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1164
+  },
+  {
+   "who": "teacher",
+   "text": "Chaar nahi; paanch mein chhe jodne ke liye paanch se chhe kadam aage gino. Ginti dikhati hoon. Paanch se chhe kadam aage jaakar kaunsa number aata hai?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3266,
+   "replyReadyMs": 4430
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1066
+  },
+  {
+   "who": "teacher",
+   "text": "Tum pooch rahi ho kyun. Kyunki dono sides ki lambai jodne par hi unki kul lambai milti hai. Paanch se chhe kadam aage ginne par kaunsa number aata hai?",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2610,
+   "replyReadyMs": 3676
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 642
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahi ho samajh aa gaya. Chhota sa check: paanch se chhe kadam aage ginoge, toh kaunsa number milega?",
+   "move": "probe",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2027,
+   "replyReadyMs": 2669
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 771
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne chhe kaha. Chhe kadam ginne mein chhe shuruaat nahi, kadmon ki ginti hai: paanch ke baad chhe pehla kadam hai, saat doosra. Paanch se do kadam aage kaunsa number aata hai?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3157,
+   "replyReadyMs": 3928
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 404
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example lete hain. Cricket mein tumhare paas paanch runs hain; phir do runs aur mile. Kul kitne runs hue?",
+   "move": "worked_example",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2244,
+   "replyReadyMs": 2648
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1228
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, cricket wala example hi lete hain. Paanch runs ke baad do aur runs aaye. Kul kitne runs hue?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2035,
+   "replyReadyMs": 3263
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 975
+  },
+  {
+   "who": "teacher",
+   "text": "Paanch runs mein do runs jodne par kul saat runs hote hain. Ab isi tarah teenon sides jodo. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 8558,
+   "replyReadyMs": 9533,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1347
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, aaj yahin rukte hain. Humne perimeter mein sides jodne ki practice ki; unka total nikalna abhi aur practice maangta hai. Bye!",
+   "move": "wrap",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3351,
+   "replyReadyMs": 4698
+  }
+ ]
+}

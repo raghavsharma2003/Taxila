@@ -5,7 +5,7 @@
 //   - the equipped Hangar items (identity, not reward). v1 is this device; a server pref lands before 100% (K-O answers).
 // Storage failures are silent: the World still draws from the map, with nothing marked new and nothing equipped.
 const snapKey = (cid: string) => `kx.world.${cid}.seen`;
-const equipKey = (cid: string) => `kx.hangar.${cid}.equipped`;
+export const equipKey = (cid: string) => `kx.hangar.${cid}.equipped`;
 
 interface Snap { day: string; ids: string[]; prev: string[] }
 
@@ -55,4 +55,21 @@ export function writeEquipped(cid: string, slot: string, itemId: string): Record
     /* storage blocked: the choice lasts this view only */
   }
   return next;
+}
+
+
+/**
+ * r7 (K-P5 at last): the set that was secure before today, from the ledger's own stamps (Learning's secureSince on
+ * /api/child/map, migration 046) instead of this device's snapshot. A skill is new today when its stamp falls on today's
+ * local day; a null stamp (secure before the stamps existed) is old. null when the map carries no stamps at all (046 not
+ * applied yet): the World then keeps the device snapshot (rollSnapshot).
+ */
+export function secureBeforeToday(skills: ReadonlyArray<{ skillId: string; state: string; secureSince?: string | null }>, day = localDay()): Set<string> | null {
+  if (!skills.some((k) => "secureSince" in k)) return null;
+  const out = new Set<string>();
+  for (const k of skills) {
+    if (k.state !== "secure") continue;
+    if (!k.secureSince || localDay(new Date(k.secureSince)) !== day) out.add(k.skillId);
+  }
+  return out;
 }

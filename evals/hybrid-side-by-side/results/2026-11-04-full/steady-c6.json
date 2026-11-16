@@ -1,0 +1,319 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj perimeter yani boundary naapenge—cricket ground ke chaaron taraf ki line jaisi. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1445
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, imagine cricket pitch ke chaaron taraf rope lagani ho—tum rope sirf length par lagaogi ya poori boundary par? Golu ko baad mein sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1440,
+   "replyReadyMs": 2885
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 753
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter matlab boundary ki har side jodna. Rectangle mein length aur breadth dono do-do baar aate hain. Ab tum apne words mein batao kyun?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2484,
+   "replyReadyMs": 3237,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 785
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, park ki length 50 m aur breadth 30 m hai. Ek round perimeter hai: 50 plus 30 is 80, times 2 is 160 m. Agla step dikhaun?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2324,
+   "replyReadyMs": 3109,
+   "guard": [
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 4382
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki do lengths 50 m aur do breadths 30 m hoti hain. Isliye 50 plus 30 is 80; do baar 80, yani 160 m. Aage dekhein?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1961,
+   "replyReadyMs": 6343,
+   "guard": [
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1098
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek round 160 m hai; teen rounds ke liye isi distance ko 3 se multiply karna hoga. Teen rounds mein total kitna hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1571,
+   "replyReadyMs": 2669
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "no_evidence",
+   "classifyMs": 672
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, yahan 3 rounds ko 160 m se multiply karna hai: 3 times 160 is 480 m. Park ka total distance 480 m hai.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 799,
+   "replyReadyMs": 1471
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 367
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, jaise ghar ke rectangular garden ki length 50 m aur breadth 30 m: ek round 160 m, teen rounds 480 m. Tum kya notice karti ho?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1290,
+   "replyReadyMs": 1657
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 936
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter poori boundary ka distance hota hai; rectangle mein length aur breadth dono do-do baar judte hain. Agar 2 rounds hon, total distance kaise nikaalogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1185,
+   "replyReadyMs": 2121
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "no_evidence",
+   "classifyMs": 669
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 2 rounds ke liye 160 ko 2 se multiply karna hai: 320 m. Tumne 8 kis step mein socha?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1481,
+   "replyReadyMs": 2150
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 888
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Screen par teen choices hain: continue, short break, ya aaj stop karna. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1285,
+   "replyReadyMs": 2173
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ki boundary se perimeter samjhenge. Agar ground ke chaaron taraf rope lagani ho, toh kya naapoge?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 984
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya. Perimeter yani boundary ki poori length. Cricket ground ke chaaron sides ki lengths jodoge—kaunsa operation karna hoga?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 8048,
+   "replyReadyMs": 9032,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1297
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Cricket ground ki boundary matlab uska chaaron taraf ka kinara. Triangle ka kinara teen sides se banta hai; 5 cm, 6 cm aur 9 cm wali teen sides milaakar kitni lambi hongi?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3177,
+   "replyReadyMs": 4474
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "incorrect",
+   "classifyMs": 1543
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 4 kaha, par 4 yahan sides ki lambai ko jodkar nahi aata. Socho triangle ke teen kinare par alag alag ribbon lagani hai: 5 cm, 6 cm aur 9 cm. Pehle 5 aur 6 jodo, kitna hota hai?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3122,
+   "replyReadyMs": 4665
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1057
+  },
+  {
+   "who": "teacher",
+   "text": "Kyuki perimeter nikalne ke liye triangle ki teeno sides ki lengths jodni hoti hain. Pehle do sides ko saath jodna ek chhota step hai. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 7450,
+   "replyReadyMs": 8507,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1332
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, tum keh rahe ho samajh gaya. Chhota sa check: 5 cm aur 6 cm milaakar kitna hota hai?",
+   "move": "probe",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2469,
+   "replyReadyMs": 3801
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 897
+  },
+  {
+   "who": "teacher",
+   "text": "5 aur 6 ko jodne par 11 hota hai. Ab 11 mein 9 jodo; triangle ka poora perimeter kitna hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 7332,
+   "replyReadyMs": 8229,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 789
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ek aur example lete hain. Cricket bat ke grip ke teen kinare 2 cm, 3 cm aur 4 cm maan lo; poore kinare ki lambai ke liye teeno jodte hain. Pehle 2 cm aur 3 cm milaakar kitna hoga?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2426,
+   "replyReadyMs": 3215
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1193
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, chalo isi example se shuru karte hain. Do centimetre aur teen centimetre milaakar kitne centimetre hote hain?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1881,
+   "replyReadyMs": 3074
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "no_evidence",
+   "classifyMs": 1146
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 kaha. Do centimetre ki ribbon aur teen centimetre ki ribbon ko ek saath rakho: do ke baad teen, chaar, paanch gino. Dono milaakar kitne centimetre hue?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2937,
+   "replyReadyMs": 4083
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1014
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, aaj yahin rukte hain. Humne kinare ki lambai jodne ki practice ki; do aur teen ka jod abhi aur practice maangta hai. Bye!",
+   "move": "wrap",
+   "card": null,
+   "replyMs": 2026,
+   "replyReadyMs": 3040
+  }
+ ]
+}

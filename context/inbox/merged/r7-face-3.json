@@ -1,0 +1,10 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-home-daily-greeting",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Her once-a-day home greeting is a PRE-RENDERED clip, never live TTS (PRODUCT-DESIGN-V2 \u00a73.3: no name in it): a fixed pool of 27 short lines (3 per part of day per language, grown-up register, no gendered Hindi verb about the child) in server/face-puppet/greetings.js; GET /api/tutors/greeting picks one per child per IST day (stable all day); clips are rendered once by scripts/character/render-greetings.mjs (Diya DragonHD, needs keys) with viseme sidecars; until rendered the response has clip:null and she only glances. Client: src/face-puppet/useDailyGreeting.ts plays it after the first tap (never at page load), lip-synced via clipBridge, then emits a faceCues gaze 'start' (new target, [data-testid=start-lesson]); App applies docs/patches/to-app/004 (KakshaHome \u2192 HomeView \u2192 Comms \u2192 Teacher meters/floor). Verified headless (evals/face-puppet/greeting-shots.mjs): silent before the tap, speaks after it, silent on a same-day reload."
+  }
+ ]
+}

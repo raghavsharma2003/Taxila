@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-stagecraft-fed-never-stale",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "C1 item 9 (M4): Stagecraft's reveal point uses the skill being taught (state.lastMove.skillId, not kit.skills[0]); its sources are fed at the point (kernel-point feedPoint: a state input that invalidates on a topic, skill or beat change, the beat lookahead from server/stagecraft/lookahead.js on a change, the stuck signal from two non-correct graded answers; STAGECRAFT_FEEDS=off disables them); seam slotFor never reveals or keeps a Stagecraft piece whose skill differs from the move's skill (hint.skillId from Brain patch 009). Feeding at the point instead of after her reply needs no Brain hook (replay: 0.597 vs 0.590 built ahead).",
+      "reversal": "Brain's planBeat lookahead ships (replace lookahead.js NEXT_BEATS with it), or live traces show the guard dropping more than ~15% of reveals (then build the point after the move instead)"
+    },
+    {
+      "id": "ms-r7-stagecraft-replay",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "n": 94,
+      "method": "evals/stagecraft/replay.mjs: 94 recorded conversation-r3 lessons (final6-after + heldout-after, c4-7, 469 min) through the production StagecraftHost + kernelPoint/feedPoint, virtual clock from recorded latencies and word counts, spec build time from calibration.json, recorded whiteboards as stage time; $0, no model call",
+      "title": "Production now: 67 reveals of another skill, 244/717 stage turns stale, stage active 0.516, 4.63 pieces/10 min. M4 (skill fix + feeds + guard + rest): 0 stale reveals, 0/643 stale stage turns, stage active 0.470 (0.554 without rest), 5.44 pieces/10 min, 55% of reveals built ahead, 0.84 specs/lesson (~$0.001). Per class active: c4 0.46, c5 0.50, c6 0.50, c7 0.39."
+    }
+  ]
+}

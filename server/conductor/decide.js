@@ -7,6 +7,8 @@ import { addDays, dayMin, daysBetween, dayKindLookup, isoWeek, jitterSec, learni
 import { runGuards, summarize } from "./guards.js";
 import { buildPlannerInputs, inputsHash, planDay } from "./planner.js";
 import { validatePlan } from "./validate.js";
+import { R5, lateSittingLatch } from "./adapt.js";
+import { foldReflect } from "../learner/reflect.js";
 
 const BAD_CLOSE = new Set(["strained", "tired"]);
 const RESUMABLE = new Set(["network", "profile_switch"]);
@@ -130,6 +132,14 @@ function foldNight(s, day, H, { arm, armFrom = day }) {
   const wasActive = s.counters.lastActiveDay === day || s.counters.activeDays.includes(day);
   const cut = addDays(day, -PLAN.closesMaxDays);
   s.adapt.closes = s.adapt.closes.filter((c) => c.day >= cut).slice(-PLAN.closesRing);
+  // round 7 F (adapt.js): the R2 latch on the trimmed ring; R5's checked skills older than the re-check gap expire
+  const late = lateSittingLatch(s.adapt.closes, !!s.adapt.lateMinSet);
+  if (late !== !!s.adapt.lateMinSet) H.rule(late ? "R2:on" : "R2:off");
+  if (late) s.adapt.lateMinSet = true; else delete s.adapt.lateMinSet;
+  if (s.adapt.prereqChecked) {
+    const kept = Object.entries(s.adapt.prereqChecked).filter(([, d]) => daysBetween(d, armFrom) < R5.recheckDays);   // armFrom: today on a catch-up
+    if (kept.length) s.adapt.prereqChecked = Object.fromEntries(kept); else delete s.adapt.prereqChecked;
+  }
   s.counters.activeDays = s.counters.activeDays.filter((d) => d > addDays(day, -7)).sort();
   s.school.testWindows = s.school.testWindows.filter((w) => w.to >= day);
   const oCut = addDays(day, -PLAN.overridesKeepDays);
@@ -159,11 +169,26 @@ function enqueueReports(s, day, H, active) {
     // Forge G2 end-of-day (server/forge/g2/conductor-job.js): ingest finished builds, deliver approved ones, ask for
     // tomorrow's. One per child per learning day; same window as the daily note.
     H.enqueue("forge.g2.nightly", `forge.g2.nightly:${s.childId}:${day}`, { day }, { runAfter }); H.rule("forge_g2_nightly");
+    // round 7 F: the day's explain-format outcomes into the population posterior (server/learner/formatJobs.js)
+    H.enqueue("format.join", `format.join:${s.childId}:${day}`, { day }, { runAfter }); H.rule("format_join");
   }
   if (weekday(day) === 0) {
     const wk = isoWeek(day);
     H.enqueue("parent.letter", `parent.letter:${s.childId}:${wk}`, { isoWeek: wk }, { runAfter });
     H.rule("parent_letter");
+  }
+  // round 7 F: the monthly report (PARENT-REPORT §2), on the fold of the month's last learning day; one per child and month
+  if (addDays(day, 1).endsWith("-01")) {
+    const month = day.slice(0, 7);
+    H.enqueue("parent.monthly", `parent.monthly:${s.childId}:${month}`, { month }, { runAfter });
+    H.rule("parent_monthly");
+  }
+  // round 7 F batch R2: the term report (PARENT-REPORT §2, S14), on the fold of the term's last learning day (30 Sep: T1
+  // Apr-Sep; 31 Mar: T2 Oct-Mar, named by the year it started, reports/facts.js TERM_RE); one per child and term
+  if (day.endsWith("-09-30") || day.endsWith("-03-31")) {
+    const y = Number(day.slice(0, 4)), term = day.endsWith("-09-30") ? `${y}-T1` : `${y - 1}-T2`;
+    H.enqueue("parent.term", `parent.term:${s.childId}:${term}`, { term }, { runAfter });
+    H.rule("parent_term");
   }
 }
 
@@ -213,7 +238,10 @@ const HANDLERS = {
     if (s.mode === "in_lesson" && s.lesson?.lessonId !== ev.lessonId) H.audit("lesson_overlap");
     // attribute the lesson to its slot (or today's first unstarted live slot) so a re-plan freezes it
     const p = todaysPlan(s);
-    const slot = p && (p.slots.find((x) => x.id === ev.slotId) || p.slots.find((x) => x.kind === "live_lesson" && !p.startedSlotIds.includes(x.id)));
+    // (audit 2026-11-09 LEARN-21: only a lesson takes the lesson slot. A homework, Ask or practice start used it up and, at
+    // its end, marked the slot's prerequisite check as run. An event with no kind is a lesson, as before.)
+    const isLesson = !ev.kind || ev.kind === "live" || ev.kind === "lesson";
+    const slot = p && (p.slots.find((x) => x.id === ev.slotId) || (isLesson ? p.slots.find((x) => x.kind === "live_lesson" && !p.startedSlotIds.includes(x.id)) : undefined));
     if (slot) { p.shownSlotIds = addId(p.shownSlotIds, slot.id); p.startedSlotIds = addId(p.startedSlotIds, slot.id); }
     s.mode = "in_lesson"; s.modeSince = t.iso;
     s.lesson = { lessonId: ev.lessonId, since: t.iso, ...(slot ? { slotId: slot.id } : {}) };
@@ -225,6 +253,9 @@ const HANDLERS = {
     if (s.lesson?.lessonId === ev.lessonId) delete s.lesson;
     const p = todaysPlan(s);
     if (p && slotId) p.doneSlotIds = addId(p.doneSlotIds, slotId);
+    // R5: the lesson that carried a prerequisite check ran it; that skill is not re-checked for R5.recheckDays
+    const check = p && slotId ? p.slots.find((x) => x.id === slotId)?.prereqCheck : null;
+    if (check && ev.minutes > 0) s.adapt.prereqChecked = { ...(s.adapt.prereqChecked ?? {}), [check.skillId]: t.today };
     if (RESUMABLE.has(ev.reason)) {
       const until = new Date(t.nowMs + PLAN.resumeWindowMin * 60_000);
       s.resumable = { lessonId: ev.lessonId, until: until.toISOString() };
@@ -247,7 +278,13 @@ const HANDLERS = {
     if (ev.to === "wheel_spin") H.replanSoon("wheel_spin");
     else H.rule(`milestone:${ev.to}`);
   },
-  "teacher.promise"(s, ev) {
+  "child.reflect"(s, ev) { foldReflect(s, ev); },
+  "teacher.promise_kept"(s, ev, H) {
+    const before = s.promises.length;
+    s.promises = s.promises.filter((p) => p.id !== ev.promiseId);
+    if (s.promises.length !== before) H.replanSoon("promise_kept");
+  },
+    "teacher.promise"(s, ev) {
     if (s.promises.some((p) => p.id === ev.promiseId)) return;
     s.promises = [...s.promises, { id: ev.promiseId, kind: ev.what.kind, ref: ev.what.ref, by: ev.by }].slice(-PLAN.promisesMax);
   },
@@ -264,6 +301,9 @@ const HANDLERS = {
       case "schoolEnd": s.routine.schoolEnd = String(v); break;
       case "wakeTime": s.routine.wakeTime = String(v); break;
       case "tz": s.tz = String(v); s.routine.tz = String(v); break;
+      case "sharedPhone": if (v === true) s.household = { shared: true }; else delete s.household; break;
+      case "anchor": s.routine.anchor = String(v); break;
+      case "lessonMin": s.routine.lessonMin = v; break;          // int 10-60 (events.SETTING_VALUE)
     }
     // a lowered cap or earlier bedtime reaches a live lesson at its next segment boundary (dc AR-5 R8)
     if (lowers && s.mode === "in_lesson" && s.lesson) H.cmd({ kind: "brief.refresh", lessonId: s.lesson.lessonId });
@@ -297,10 +337,18 @@ const HANDLERS = {
     if (ev.date === t.today) H.replanNow("replan:day_override");
   },
   "school.test_announced"(s, ev, H) {
-    const w = { subject: ev.subject, from: addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
+    const w = { subject: ev.subject, from: ev.from && ev.from <= ev.on ? ev.from : addDays(ev.on, -4), to: ev.on, chapters: [...ev.chapters].sort() };
     s.school.testWindows = [...s.school.testWindows.filter((x) => !(x.subject === w.subject && x.to === w.to)), w];
     H.replanSoon("test_window");
   },
+  "school.test_cleared"(s, ev, H) {
+    s.school.testWindows = s.school.testWindows.filter((x) => x.subject !== ev.subject);
+    H.replanSoon("test_window");
+  },
+  // round 7 F: the school's position and timetable live in their own tables (child.school_chapter, child_timetable);
+  // the planner reads them through the school.subjects view key, so a change only asks for a re-plan.
+  "school.pointer_set"(s, ev, H) { H.replanSoon("school_pointer"); },
+  "school.timetable_set"(s, ev, H) { H.replanSoon("timetable"); },
   "clock.wakeup"(s, ev, H, t) {
     switch (ev.reason) {
       case "day_start": H.replanNow("day_start"); break;                  // skipped inside replan if inputsHash is unchanged

@@ -21,7 +21,6 @@ export function sessionFirstMode() {
   const v = String(env("TAXILA_SESSION_FIRST") ?? "off").trim().toLowerCase();
   return v === "on" || v === "1" || v === "true" ? "on" : v === "shadow" ? "shadow" : "off";
 }
-export const sessionFirstOn = () => sessionFirstMode() === "on";
 
 /**
  * round 4 (the owner first, main session 2026-10-10): TAXILA_SESSION_FIRST_FOR = comma-separated guardian accounts, each a

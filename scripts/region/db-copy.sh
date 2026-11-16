@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # The in-job half of scripts/region/db-copy.mjs (read that file's header first). Runs in a stock postgres:17 image
-# inside the ACA environment's VNet. Inputs (env): SRC_URL, DST_URL (secrets), MODE copy|verify|migrations, EXPECTED
-# (comma list of db/migrations files), REPLACE 0|1, TLS_MODE verify-full|require, ROOTS_PEM. Output: DBCOPY_* lines on
+# inside the ACA environment's VNet. Inputs (env): SRC_URL, DST_URL (secrets), MODE copy|verify|migrations|apply, EXPECTED
+# (comma list of db/migrations files), REPLACE 0|1, TLS_MODE verify-full|require, ROOTS_PEM, MIGRATIONS_TGZ (apply only:
+# base64 of `git archive --format=tar.gz <sha> db/migrations`). Output: DBCOPY_* lines on
 # stdout (read back from Log Analytics) and errors; never a connection string. Exit 0 only when everything matched.
 set -uo pipefail
 T0=$(date +%s)
@@ -14,8 +15,8 @@ clean() { tr '"\\\n\r\t' "'/   " | cut -c1-600; }
 fail() { emit RESULT "{\"ok\":false,\"mode\":\"$MODE\",\"stage\":\"$1\",\"error\":\"$(printf '%s' "$2" | clean)\"}"; emit DONE "{}"; exit 1; }
 RO="-c default_transaction_read_only=on"
 src() { PGOPTIONS="$RO" psql "$SRC_URL" -X -q -v ON_ERROR_STOP=1 -At "$@"; }
-# only copy mode writes the target; verify and migrations sessions are read-only too
-DST_OPTS=""; [ "$MODE" = "copy" ] || DST_OPTS="$RO"
+# only copy and apply write the target; verify and migrations sessions are read-only too
+DST_OPTS="$RO"; case "$MODE" in copy|apply) DST_OPTS="" ;; esac
 dst() { PGOPTIONS="$DST_OPTS" psql "$DST_URL" -X -q -v ON_ERROR_STOP=1 -At "$@"; }
 INFO="select current_setting('server_version') || '|' || coalesce((select (case when ssl then 't' else 'f' end) || '|' || coalesce(version,'') from pg_stat_ssl where pid = pg_backend_pid()), 'f|')"
 emit START "{\"mode\":\"$MODE\",\"client\":\"$(pg_dump --version | clean)\",\"tls\":\"$PGSSLMODE\"}"
@@ -27,7 +28,7 @@ D_INFO=$(dst -c "$INFO" 2>&1) || fail connect_target "$D_INFO"
 D_TLS=$(tls_of dst); [ -n "$D_TLS" ] || fail tls_target "target session is not TLS"
 D_INFO="$D_INFO|client:$D_TLS"
 S_INFO=""
-if [ "$MODE" != "migrations" ]; then
+if [ "$MODE" != "migrations" ] && [ "$MODE" != "apply" ]; then
   S_INFO=$(src -c "$INFO" 2>&1) || fail connect_source "$S_INFO"
   S_TLS=$(tls_of src); [ -n "$S_TLS" ] || fail tls_source "source session is not TLS"
   S_INFO="$S_INFO|client:$S_TLS"
@@ -70,6 +71,24 @@ if [ "$MODE" = "copy" ]; then
   emit STEP "{\"dumpBytes\":$DUMP_BYTES,\"dumpS\":$((S2-S1)),\"restoreS\":$((S3-S2)),\"extensions\":\"$EXTS\"}"
 fi
 
+# apply (scripts/migrate.mjs --job): every file of EXPECTED the target has not recorded, in name order, each in ONE
+# transaction together with its schema_migrations row (psql -1 over the file + the insert): whole or not at all.
+APPLIED=""
+if [ "$MODE" = "apply" ]; then
+  mkdir -p $WD/mig && printf '%s' "$MIGRATIONS_TGZ" | base64 -d | tar -xz --strip-components=2 -C $WD/mig || fail unpack "MIGRATIONS_TGZ did not unpack"
+  OUT=$(dst -c "create table if not exists schema_migrations (name text primary key, applied_at timestamptz not null default now())" 2>&1) || fail schema_migrations "$OUT"
+  HAVE=",$(dst -c "select coalesce(string_agg(name, ',' order by name collate \"C\"), '') from schema_migrations" 2>&1),"
+  for m in $(printf '%s' "$EXPECTED" | tr ',' ' '); do
+    case "$HAVE" in *",$m,"*) continue ;; esac
+    [ -f "$WD/mig/$m" ] || fail unpack "$m is not in MIGRATIONS_TGZ"
+    { cat "$WD/mig/$m"; printf '\n;\ninsert into schema_migrations(name) values (%s);\n' "'$m'"; } > $WD/apply.sql
+    A0=$(date +%s)
+    OUT=$(dst -1 -f $WD/apply.sql 2>&1) || fail "apply $m (rolled back)" "$OUT"
+    APPLIED="$APPLIED${APPLIED:+,}$m"
+    emit APPLIED "{\"file\":\"$m\",\"s\":$(( $(date +%s) - A0 ))}"
+  done
+fi
+
 # per-table checksums. The source side runs inside the dump's snapshot when there is one.
 sums() { # $1 = src|dst  $2 = snapshot or ""
   local side=$1 snap=$2 tables sql t
@@ -93,7 +112,7 @@ for m in $(printf '%s' "$EXPECTED" | tr ',' ' '); do
 done
 
 OK=true; MISMATCH=""; S_MIG=""; SEQ_OK=null; NT=0
-if [ "$MODE" != "migrations" ]; then
+if [ "$MODE" != "migrations" ] && [ "$MODE" != "apply" ]; then
   SRC_SUMS=$(sums src "$SNAP" 2>&1) || fail checksum_source "$SRC_SUMS"
   S_MIG=$(printf '%s\n' "$SRC_SUMS" | sed -n 's/^#mig|//p')
   ALL=$( (printf '%s\n' "$SRC_SUMS"; printf '%s\n' "$DST_SUMS") | grep -v '^#' | cut -d'|' -f1 | sort -u)
@@ -113,6 +132,6 @@ fi
 if [ -n "$SNAP" ]; then echo "commit;" >&3; exec 3>&-; wait $HOLD_PID 2>/dev/null; fi
 
 j() { printf '"%s"' "$(printf '%s' "$1" | clean)"; }
-emit RESULT "{\"ok\":$OK,\"mode\":\"$MODE\",\"seconds\":$(( $(date +%s) - T0 )),\"target\":$(j "$D_INFO"),\"source\":$(j "$S_INFO"),\"tables\":$NT,\"mismatched\":$(j "$MISMATCH"),\"sequencesMatch\":$SEQ_OK,\"targetMigrations\":$(j "$D_MIG"),\"sourceMigrations\":$(j "$S_MIG"),\"missingMigrations\":$(j "$MISSING"),\"snapshot\":$([ -n "$SNAP" ] && echo true || echo false)}"
+emit RESULT "{\"ok\":$OK,\"mode\":\"$MODE\",\"seconds\":$(( $(date +%s) - T0 )),\"target\":$(j "$D_INFO"),\"source\":$(j "$S_INFO"),\"tables\":$NT,\"mismatched\":$(j "$MISMATCH"),\"sequencesMatch\":$SEQ_OK,\"targetMigrations\":$(j "$D_MIG"),\"sourceMigrations\":$(j "$S_MIG"),\"missingMigrations\":$(j "$MISSING"),\"appliedMigrations\":$(j "$APPLIED"),\"snapshot\":$([ -n "$SNAP" ] && echo true || echo false)}"
 emit DONE "{}"
 [ "$OK" = true ]

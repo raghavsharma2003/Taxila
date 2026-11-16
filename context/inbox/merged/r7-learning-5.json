@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-placement-prior",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04, option (a)): a finished placement round seeds the KT θ prior as one kt_evidence row per strand (via 'placement', migration 039; site in item_key 'site|<strand>|<mu>|<sd>'). The ledger records the site and folds it into the subject's next epoch base once (initialBase, or the next opened epoch); it never makes a skill state, session, θ observation or facet. Every kt_evidence reader that counts or claims skips it by ONE predicate (isPlacementRow / notPlacement), guarded by tests/r7-learning-placement-prior.test.mjs. Weight: the site is a likelihood N(mu, sd²) with sd floored at 1.0 GE. Reverse (widen the floor) if: on staging or pilot data, placed children's θ after their first two sessions still differs from an unplaced replay by more than 0.5 GE for more than 1 in 5 children whose answers disagree with the placement; tighten it if placement predicts first-session accuracy better than the class prior."
+  },
+  {
+   "id": "ms-r7-placement-prior-weight",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Round 7 F: placement site weight in the real fold (kt/ledger.js; class 5 maths:core; class prior mu 4.5 sd 1.3; site mu 2.0; class-level item.open answers, distinct skills, one session). Floor 0.6/0.8/1.0 GE → θ after 4 correct 3.11/3.50/3.80 (no placement 5.22), after 6 correct 3.43/3.84/4.14 (5.51); wrong answers agree with the site at every floor. Chosen 1.0: after 2 correct θ is 1.3 GE past the site, after 4 1.8 GE past it. Site at 5.5 (ahead) with 6 wrong: θ 3.01 (no placement 1.41). n = 1 deterministic fold per cell (no randomness); method: scratch script folding placementEvents + item events through fold(), currentTheta."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-placement-prior\nOption (a) of the two main was offered: (b), a per-child fold ctx, needed patches to Brain's turn.js and supersede.js and makes replay depend on something outside kt_evidence. Pieces: server/learner/kt/placement.js (isPlacementRow, notPlacement/NOT_PLACEMENT, placementEvents, siteOf, PLACEMENT_SITE_SD_MIN), kt/ledger.js applyPlacement + ensureEpoch consumes placementPending, kt/ability.js withPlacement (exported from initialBase), comprehension/fuse.js skips the row, server/placement/kt.js writePlacementPrior (same commit contract as a Studio event), routes/placement.js calls it when a round finishes. Guarded readers: reports/facts.js, reports/truth.js loadTruth, reports/check.js (3 reads), relational/seam.js COUNTS_SQL, comprehension/session.js; the rest are scoped to a lesson session_id or explicit ids, or are the replay readers.\n\nalso changed: ability.js read cat.js's placement summary as a POSTERIOR (site precision 1/sd² − 1/prior), which pulls the mean all the way to mu however wide sd is; cat.js ownEvidence is a flat-prior LIKELIHOOD, so the site is now exactly N(mu, sd²). Only initialBase({ placement }) used it, and nothing called that with a placement before this change (tests/rs6-placement still passes).",
+  "measurements": "## ms-r7-placement-prior-weight\n| floor | 2 correct | 4 correct | 6 correct | 6 wrong |\n|---|---|---|---|---|\n| none (class prior) | 4.77 | 5.22 | 5.51 | 1.41 |\n| 0.6 | 2.70 | 3.11 | 3.43 | 1.88 |\n| 0.8 | 3.03 | 3.50 | 3.84 | 1.81 |\n| 1.0 (chosen) | 3.30 | 3.80 | 4.14 | 1.75 |\n\nθ mean (GE), class 5, site at 2.0. One session's θ evidence is capped (THETA_STRAND_CAP), so later sessions keep moving it; the epoch's Glicko inflation also weakens the site with days.",
+  "rejected": ""
+ }
+}

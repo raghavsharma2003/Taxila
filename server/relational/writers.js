@@ -15,7 +15,10 @@ import { NAME_SHAPE, STAGES } from "./bond.js";
 export const RELATIONAL_TABLES = Object.freeze(["rel_bond", "rel_event", "relational_note", "rel_overlay_window"]);
 export const REL_EVENT_DIMS = Object.freeze(["teacher_owned", "repair", "address", "stage", "milestone", "ritual", "christen", "session"]);
 export const REL_NOTE_KINDS = Object.freeze(["boundary_warmth", "boundary_secret", "boundary_contact", "boundary_romance", "boundary_goodbye",
-  "identity_asked", "memory_forgotten", "milestone", "christened", "teacher_slip_owned", "safeguard_handoff"]);
+  "identity_asked", "memory_forgotten", "milestone", "christened", "teacher_slip_owned", "safeguard_handoff",
+  // round 7 (App, the Debrief): the child's closed end-of-lesson emote (slots { emote: wave | thanks | fun }); needs the migration
+  // that admits it in relational_note.kind (number from main)
+  "child_emote"]);
 const TEACHER_OWNED = new Set(["unheard", "unfair", "teacher_error", "net_loss"]);
 /** The India day an end is counted on (one expression, used by the session event and the cache, so they always agree). */
 const DAY = "((now() at time zone 'Asia/Kolkata')::date)";

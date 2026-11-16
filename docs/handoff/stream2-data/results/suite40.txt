@@ -1,0 +1,653 @@
+TAP version 13
+# Subtest: B3 parent payloads and account deletion (child process, Neon test branch)
+ok 1 - B3 parent payloads and account deletion (child process, Neon test branch)
+  ---
+  duration_ms: 296.464222
+  type: 'test'
+  ...
+# Subtest: readUtterance: pata-nahi, just-tell-me and minimal answers in Hinglish, Hindi and English
+ok 2 - readUtterance: pata-nahi, just-tell-me and minimal answers in Hinglish, Hindi and English
+  ---
+  duration_ms: 3.219696
+  type: 'test'
+  ...
+# Subtest: frustration loop after three don't-knows; a real answer resets it
+ok 3 - frustration loop after three don't-knows; a real answer resets it
+  ---
+  duration_ms: 0.476051
+  type: 'test'
+  ...
+# Subtest: gaming: repeated just-tell-me or cycling through different wrong answers discounts evidence
+ok 4 - gaming: repeated just-tell-me or cycling through different wrong answers discounts evidence
+  ---
+  duration_ms: 0.732381
+  type: 'test'
+  ...
+# Subtest: wheel-spinning: ten opportunities without three in a row
+ok 5 - wheel-spinning: ten opportunities without three in a row
+  ---
+  duration_ms: 0.366919
+  type: 'test'
+  ...
+# Subtest: revealsAnswer: a key the question does not name leaks anywhere; a named option only in a verdict
+ok 6 - revealsAnswer: a key the question does not name leaks anywhere; a named option only in a verdict
+  ---
+  duration_ms: 7.528621
+  type: 'test'
+  ...
+# Subtest: practice queue: teach-back held back, the diagnostic third or later (content F0, RS-6); isomorphic stays on skill
+ok 7 - practice queue: teach-back held back, the diagnostic third or later (content F0, RS-6); isomorphic stays on skill
+  ---
+  duration_ms: 4.465196
+  type: 'test'
+  ...
+# Subtest: safety predicate: self-harm, abuse and fear families in three scripts; idioms stay quiet
+ok 8 - safety predicate: self-harm, abuse and fear families in three scripts; idioms stay quiet
+  ---
+  duration_ms: 247.907626
+  type: 'test'
+  ...
+# Subtest: lip: silence keeps the jaw shut and her floor off
+ok 9 - lip: silence keeps the jaw shut and her floor off
+  ---
+  duration_ms: 17.704376
+  type: 'test'
+  ...
+# Subtest: lip: onset after 2 voiced frames, offset only after ≥ 250 ms of silence (§3.1 VAD)
+ok 10 - lip: onset after 2 voiced frames, offset only after ≥ 250 ms of silence (§3.1 VAD)
+  ---
+  duration_ms: 24.719885
+  type: 'test'
+  ...
+# Subtest: lip: the jaw opens on voice and closes on silence within ~150 ms (τ 50 ms)
+ok 11 - lip: the jaw opens on voice and closes on silence within ~150 ms (τ 50 ms)
+  ---
+  duration_ms: 24.315481
+  type: 'test'
+  ...
+# Subtest: lip: level-normalised: the same speech 10 dB quieter converges to a similar jaw (GR-9)
+ok 12 - lip: level-normalised: the same speech 10 dB quieter converges to a similar jaw (GR-9)
+  ---
+  duration_ms: 705.335971
+  type: 'test'
+  ...
+# Subtest: lip: mouthClose never exceeds jawOpen; shapes are hints below the jaw
+ok 13 - lip: mouthClose never exceeds jawOpen; shapes are hints below the jaw
+  ---
+  duration_ms: 38.102254
+  type: 'test'
+  ...
+# Subtest: lip ring: reads the frame at t − faceDelay; flush empties it
+ok 14 - lip ring: reads the frame at t − faceDelay; flush empties it
+  ---
+  duration_ms: 0.550351
+  type: 'test'
+  ...
+# Subtest: amplitude fallback: a meter level maps back to the RMS the meter heard
+ok 15 - amplitude fallback: a meter level maps back to the RMS the meter heard
+  ---
+  duration_ms: 0.952806
+  type: 'test'
+  ...
+# Subtest: floorState: the tap is canonical for her speech; the child talking wins; status is the cross-check
+ok 16 - floorState: the tap is canonical for her speech; the child talking wins; status is the cross-check
+  ---
+  duration_ms: 0.314242
+  type: 'test'
+  ...
+# Subtest: contract 2 (events suppressed): with status stuck at 'thinking' the face still goes speaking → your_turn from the tap
+ok 17 - contract 2 (events suppressed): with status stuck at 'thinking' the face still goes speaking → your_turn from the tap
+  ---
+  duration_ms: 27.212325
+  type: 'test'
+  ...
+# Subtest: I-blink: per-state rates hold (idle ≈ 17/min, speaking ≈ 26/min) and both lids always move together
+ok 18 - I-blink: per-state rates hold (idle ≈ 17/min, speaking ≈ 26/min) and both lids always move together
+  ---
+  duration_ms: 268.971693
+  type: 'test'
+  ...
+# Subtest: I13: a blink's closing phase is visible at the 20 and 30 fps caps (≥ 1 frame between open and shut)
+ok 19 - I13: a blink's closing phase is visible at the 20 and 30 fps caps (≥ 1 frame between open and shut)
+  ---
+  duration_ms: 57.251047
+  type: 'test'
+  ...
+# Subtest: I12: no continuous mutual gaze longer than 4 s, in every state
+ok 20 - I12: no continuous mutual gaze longer than 4 s, in every state
+  ---
+  duration_ms: 100.136445
+  type: 'test'
+  ...
+# Subtest: I10: eye-in-head stays inside ±25° yaw / +20…−25° pitch; head ≤ 20°
+ok 21 - I10: eye-in-head stays inside ±25° yaw / +20…−25° pitch; head ≤ 20°
+  ---
+  duration_ms: 35.205204
+  type: 'test'
+  ...
+# Subtest: I8: nod peak is frame-rate independent (±20% at 15/24/30 fps; GR-1.2)
+ok 22 - I8: nod peak is frame-rate independent (±20% at 15/24/30 fps; GR-1.2)
+  ---
+  duration_ms: 0.417892
+  type: 'test'
+  ...
+# Subtest: I1: THINKING is verdict-neutral: an expression is released within 300 ms of entering it
+ok 23 - I1: THINKING is verdict-neutral: an expression is released within 300 ms of entering it
+  ---
+  duration_ms: 1.01037
+  type: 'test'
+  ...
+# Subtest: reduced motion: head motion ≥ 3× smaller, blinks unchanged; gentle face never touches brows or blinks
+ok 24 - reduced motion: head motion ≥ 3× smaller, blinks unchanged; gentle face never touches brows or blinks
+  ---
+  duration_ms: 32.610331
+  type: 'test'
+  ...
+# Subtest: compositor: lips own the jaw, mouthClose ≤ jawOpen, the jaw ceiling holds, deltas are capped, tiny weights zeroed
+ok 25 - compositor: lips own the jaw, mouthClose ≤ jawOpen, the jaw ceiling holds, deltas are capped, tiny weights zeroed
+  ---
+  duration_ms: 1.081179
+  type: 'test'
+  ...
+# Subtest: static tier: only KNOWN-bad GPUs go down; everything else starts at B
+ok 26 - static tier: only KNOWN-bad GPUs go down; everything else starts at B
+  ---
+  duration_ms: 1.035629
+  type: 'test'
+  ...
+# Subtest: probe: a slow 2 s probe moves B → B-lite or D; a fast one keeps B
+ok 27 - probe: a slow 2 s probe moves B → B-lite or D; a fast one keeps B
+  ---
+  duration_ms: 0.362001
+  type: 'test'
+  ...
+# Subtest: governor: a steady 20 fps cap is not 'bad' (regression: 50 ms frames were counted as long)
+ok 28 - governor: a steady 20 fps cap is not 'bad' (regression: 50 ms frames were counted as long)
+  ---
+  duration_ms: 12.606654
+  type: 'test'
+  ...
+# Subtest: governor: pixels first, then ONE tier step, only in her silence, after 5 s of bad
+ok 29 - governor: pixels first, then ONE tier step, only in her silence, after 5 s of bad
+  ---
+  duration_ms: 7.394764
+  type: 'test'
+  ...
+# Subtest: contract 1 (static): src/avatar/** creates no AudioContext, output, delay, worklet or media-source node
+ok 30 - contract 1 (static): src/avatar/** creates no AudioContext, output, delay, worklet or media-source node
+  ---
+  duration_ms: 10.10851
+  type: 'test'
+  ...
+# Subtest: contract 1 (runtime) + 3 (reconnect): the tap adds one analysis-only node per stream, never connected onward
+ok 31 - contract 1 (runtime) + 3 (reconnect): the tap adds one analysis-only node per stream, never connected onward
+  ---
+  duration_ms: 8.854141
+  type: 'test'
+  ...
+# Subtest: LevelMeter.onTap: fires now when attached, on every attach, and with null on detach
+ok 32 - LevelMeter.onTap: fires now when attached, on every attach, and with null on detach
+  ---
+  duration_ms: 0.280386
+  type: 'test'
+  ...
+# Subtest: plate mouth: 5 cells with hysteresis (no flicker on a boundary)
+ok 33 - plate mouth: 5 cells with hysteresis (no flicker on a boundary)
+  ---
+  duration_ms: 0.172121
+  type: 'test'
+  ...
+# Subtest: mutation check: I12, I1 and lid symmetry each trip on their mutation (and hold unmutated)
+ok 34 - mutation check: I12, I1 and lid symmetry each trip on their mutation (and hold unmutated)
+  ---
+  duration_ms: 69.948896
+  type: 'test'
+  ...
+# Subtest: mutation check: I8 trips when the spring integrates one step per frame (the pre-GR-1.2 bug)
+ok 35 - mutation check: I8 trips when the spring integrates one step per frame (the pre-GR-1.2 bug)
+  ---
+  duration_ms: 0.621313
+  type: 'test'
+  ...
+# Subtest: every tutor's lookId is published with B+, B-lite and its own rendered plate
+ok 36 - every tutor's lookId is published with B+, B-lite and its own rendered plate
+  ---
+  duration_ms: 1.926038
+  type: 'test'
+  ...
+# Subtest: published files live under /assets/teacher/<look>/<rev>/ with content-hashed names (immutable by serve.mjs's rule)
+ok 37 - published files live under /assets/teacher/<look>/<rev>/ with content-hashed names (immutable by serve.mjs's rule)
+  ---
+  duration_ms: 31.96385
+  type: 'test'
+  ...
+# Subtest: each published runtime.json follows the contract and names only published tiers
+ok 38 - each published runtime.json follows the contract and names only published tiers
+  ---
+  duration_ms: 7.810156
+  type: 'test'
+  ...
+# Subtest: each published GLB's JSON follows the contract (meshes, bones, ARKit morph names)
+ok 39 - each published GLB's JSON follows the contract (meshes, bones, ARKit morph names)
+  ---
+  duration_ms: 12.561644
+  type: 'test'
+  ...
+# Subtest: each published GLB's meshopt-compressed buffer views really decode with the runtime's MeshoptDecoder
+ok 40 - each published GLB's meshopt-compressed buffer views really decode with the runtime's MeshoptDecoder
+  ---
+  duration_ms: 69.192261
+  type: 'test'
+  ...
+# Subtest: validateRuntime names what breaks the contract
+ok 41 - validateRuntime names what breaks the contract
+  ---
+  duration_ms: 1.060322
+  type: 'test'
+  ...
+# Subtest: resolveShading: iteration-2 defaults; merged when declared or implied; candidate fixes are flags
+ok 42 - resolveShading: iteration-2 defaults; merged when declared or implied; candidate fixes are flags
+  ---
+  duration_ms: 1.064015
+  type: 'test'
+  ...
+# Subtest: the shader defines every per-look switch resolveShading can raise
+ok 43 - the shader defines every per-look switch resolveShading can raise
+  ---
+  duration_ms: 0.754183
+  type: 'test'
+  ...
+# Subtest: finalWeights: B+ folds visemes, H passes them; clamp; jaw ceiling; correctives are products of clamped parents
+ok 44 - finalWeights: B+ folds visemes, H passes them; clamp; jaw ceiling; correctives are products of clamped parents
+  ---
+  duration_ms: 1.618489
+  type: 'test'
+  ...
+# Subtest: rigTierFor and coverBox
+ok 45 - rigTierFor and coverBox
+  ---
+  duration_ms: 1.043925
+  type: 'test'
+  ...
+# Subtest: GLTFLoader / KTX2Loader / MeshoptDecoder are imported only by the lazy rig module
+ok 46 - GLTFLoader / KTX2Loader / MeshoptDecoder are imported only by the lazy rig module
+  ---
+  duration_ms: 90.428583
+  type: 'test'
+  ...
+# Subtest: the rig renders on a hand-made opaque WebGL2 context with Neutral tone mapping (gap 10)
+ok 47 - the rig renders on a hand-made opaque WebGL2 context with Neutral tone mapping (gap 10)
+  ---
+  duration_ms: 1.333333
+  type: 'test'
+  ...
+# Subtest: audio floor: the rig, the plate and the stage never create or route audio
+ok 48 - audio floor: the rig, the plate and the stage never create or route audio
+  ---
+  duration_ms: 0.749344
+  type: 'test'
+  ...
+# Subtest: face.rig is off by default and switched only by the build env or this device's storage (?facerig= writes it)
+ok 49 - face.rig is off by default and switched only by the build env or this device's storage (?facerig= writes it)
+  ---
+  duration_ms: 0.216843
+  type: 'test'
+  ...
+# Subtest: publish-look refuses a source without a complete plate, before writing anything
+ok 50 - publish-look refuses a source without a complete plate, before writing anything
+  ---
+  duration_ms: 205.287612
+  type: 'test'
+  ...
+# Subtest: asset hygiene: no bake-off identity and no unversioned look file is under public/
+ok 51 - asset hygiene: no bake-off identity and no unversioned look file is under public/
+  ---
+  duration_ms: 12.947173
+  type: 'test'
+  ...
+# Subtest: avatar tutor routes
+    # Subtest: GET: auth on the child id; current may be null; live comes from the open-lesson query
+    ok 1 - GET: auth on the child id; current may be null; live comes from the open-lesson query
+      ---
+      duration_ms: 5.245821
+      type: 'test'
+      ...
+    # Subtest: POST: the pick is one statement (live check + update + log) with from_id = the previous teacher
+    ok 2 - POST: the pick is one statement (live check + update + log) with from_id = the previous teacher
+      ---
+      duration_ms: 0.990334
+      type: 'test'
+      ...
+    # Subtest: POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success
+    ok 3 - POST: the statement returning no row (a lesson opened in between) is a 409, not a silent success
+      ---
+      duration_ms: 0.498485
+      type: 'test'
+      ...
+    # Subtest: POST: an open lesson → 409 before any write; a parked tutor (anyone but Asha) → 403, under any offer mode
+    ok 4 - POST: an open lesson → 409 before any write; a parked tutor (anyone but Asha) → 403, under any offer mode
+      ---
+      duration_ms: 1.114789
+      type: 'test'
+      ...
+    # Subtest: GET: the offer is [asha] for every class, mode single (no picker)
+    ok 5 - GET: the offer is [asha] for every class, mode single (no picker)
+      ---
+      duration_ms: 2.890658
+      type: 'test'
+      ...
+    # Subtest: POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen
+    ok 6 - POST B1: a switch goes through the Parent-corner gate; a parent-set non-default teacher counts as chosen
+      ---
+      duration_ms: 0.911301
+      type: 'test'
+      ...
+    # Subtest: teacherFor: Asha for every class and saved row (single teacher); the rollback bounds a saved pick by the sheet's classes
+    ok 7 - teacherFor: Asha for every class and saved row (single teacher); the rollback bounds a saved pick by the sheet's classes
+      ---
+      duration_ms: 0.622459
+      type: 'test'
+      ...
+    # Subtest: teacherForLesson: the lesson's pinned teacher wins over the child's current pick
+    ok 8 - teacherForLesson: the lesson's pinned teacher wins over the child's current pick
+      ---
+      duration_ms: 0.386254
+      type: 'test'
+      ...
+    1..8
+ok 52 - avatar tutor routes
+  ---
+  duration_ms: 14.348905
+  type: 'suite'
+  ...
+# Subtest: cast: Asha live; Arjun and Uma parked (dc-r4-single-teacher-asha); every live tutor has a persona sheet; style notes ≤ 8 words with no friendship claim
+ok 53 - cast: Asha live; Arjun and Uma parked (dc-r4-single-teacher-asha); every live tutor has a persona sheet; style notes ≤ 8 words with no friendship claim
+  ---
+  duration_ms: 4.949942
+  type: 'test'
+  ...
+# Subtest: eligibility (sheet ranges): Asha alone for every class → no picker
+ok 54 - eligibility (sheet ranges): Asha alone for every class → no picker
+  ---
+  duration_ms: 1.645466
+  type: 'test'
+  ...
+# Subtest: eligibility: parked tutors never appear, not even in a draft-inclusive preview or the wide offer
+ok 55 - eligibility: parked tutors never appear, not even in a draft-inclusive preview or the wide offer
+  ---
+  duration_ms: 0.518625
+  type: 'test'
+  ...
+# Subtest: eligibility (wide ranges, two live looks): option counts per band stay in range
+ok 56 - eligibility (wide ranges, two live looks): option counts per band stay in range
+  ---
+  duration_ms: 1.053866
+  type: 'test'
+  ...
+# Subtest: order: stable per child, shuffled across children, no position bias (n = 4,000 ids, 2 tutors)
+ok 57 - order: stable per child, shuffled across children, no position bias (n = 4,000 ids, 2 tutors)
+  ---
+  duration_ms: 24.284289
+  type: 'test'
+  ...
+# Subtest: pickCovering keeps ≥ 1 per presented gender when it must drop tutors
+ok 58 - pickCovering keeps ≥ 1 per presented gender when it must drop tutors
+  ---
+  duration_ms: 0.414256
+  type: 'test'
+  ...
+# Subtest: decideChoice: unknown → 400, live lesson → 409, anyone but Asha → 403, a B1 switch needs the parent
+ok 59 - decideChoice: unknown → 400, live lesson → 409, anyone but Asha → 403, a B1 switch needs the parent
+  ---
+  duration_ms: 1.284134
+  type: 'test'
+  ...
+# Subtest: the cast's server registry and the manifest agree (a character, its voice and its face are one unit)
+ok 60 - the cast's server registry and the manifest agree (a character, its voice and its face are one unit)
+  ---
+  duration_ms: 0.210411
+  type: 'test'
+  ...
+# Subtest: migration 008 is additive only
+ok 61 - migration 008 is additive only
+  ---
+  duration_ms: 1.05068
+  type: 'test'
+  ...
+# [azure] chat [REDACTED:REFRESH_DEPLOY_GPT6_LUNA] 200 90ms
+# [azure] chat [REDACTED:REFRESH_DEPLOY_GPT61_SOL] 200 1ms
+# [azure] chat grok-4-1-fast-non-reasoning 200 1ms
+# Subtest: reasoning family: OpenAI reasoning deployments incl. every gpt-6 name; open models are not
+ok 62 - reasoning family: OpenAI reasoning deployments incl. every gpt-6 name; open models are not
+  ---
+  duration_ms: 1.829785
+  type: 'test'
+  ...
+# Subtest: effort floor: 'none' becomes 'low' on gpt-6.1-sol and gpt-6-astra only
+ok 63 - effort floor: 'none' becomes 'low' on gpt-6.1-sol and gpt-6-astra only
+  ---
+  duration_ms: 0.592485
+  type: 'test'
+  ...
+# Subtest: gpt-6 deployments get no classify hedge, like [REDACTED:DEPLOY_FAST]; open models keep 1500 ms
+ok 64 - gpt-6 deployments get no classify hedge, like [REDACTED:DEPLOY_FAST]; open models keep 1500 ms
+  ---
+  duration_ms: 0.434565
+  type: 'test'
+  ...
+# Subtest: image lane (A4): gpt-image-2.5-flare by default, quality always low, gpt-image-2 then sunburst as fallbacks
+ok 65 - image lane (A4): gpt-image-2.5-flare by default, quality always low, gpt-image-2 then sunburst as fallbacks
+  ---
+  duration_ms: 2.55573
+  type: 'test'
+  ...
+# Subtest: chat() body: gpt-6 gets max_completion_tokens + reasoning_effort, never max_tokens
+ok 66 - chat() body: gpt-6 gets max_completion_tokens + reasoning_effort, never max_tokens
+  ---
+  duration_ms: 101.690887
+  type: 'test'
+  ...
+# Subtest: update: correct raises, wrong lowers, no_evidence is a no-op
+ok 67 - update: correct raises, wrong lowers, no_evidence is a no-op
+  ---
+  duration_ms: 1.402284
+  type: 'test'
+  ...
+# Subtest: update: every hint rung weakens a success; at the assertion it is almost no evidence
+ok 68 - update: every hint rung weakens a success; at the assertion it is almost no evidence
+  ---
+  duration_ms: 0.343914
+  type: 'test'
+  ...
+# Subtest: update: hints do not soften a wrong answer, weight scales the move, partial is half a success
+ok 69 - update: hints do not soften a wrong answer, weight scales the move, partial is half a success
+  ---
+  duration_ms: 2.349641
+  type: 'test'
+  ...
+# Subtest: status ladder: practice alone never reaches learned_today; a generative pass does
+ok 70 - status ladder: practice alone never reaches learned_today; a generative pass does
+  ---
+  duration_ms: 0.998011
+  type: 'test'
+  ...
+# Subtest: mastery needs a delayed retrieval pass in a LATER session
+ok 71 - mastery needs a delayed retrieval pass in a LATER session
+  ---
+  duration_ms: 0.628078
+  type: 'test'
+  ...
+# Subtest: review schedule expands on delayed success and restarts on failure
+ok 72 - review schedule expands on delayed success and restarts on failure
+  ---
+  duration_ms: 0.586969
+  type: 'test'
+  ...
+# Subtest: no decay by absence: time alone never lowers pKnown; it only makes a skill due
+ok 73 - no decay by absence: time alone never lowers pKnown; it only makes a skill due
+  ---
+  duration_ms: 0.235582
+  type: 'test'
+  ...
+# Subtest: legacy delayed retrieval uses the 20 h rule (PRODUCT-DESIGN §6.4.1): 19 h later is not delayed, 20 h is
+ok 74 - legacy delayed retrieval uses the 20 h rule (PRODUCT-DESIGN §6.4.1): 19 h later is not delayed, 20 h is
+  ---
+  duration_ms: 0.36717
+  type: 'test'
+  ...
+# Subtest: ranks: priority = 100 − 10 × rank + urgency; the Director's proposal ranks read back exactly (W2-C proposal.js)
+ok 75 - ranks: priority = 100 − 10 × rank + urgency; the Director's proposal ranks read back exactly (W2-C proposal.js)
+  ---
+  duration_ms: 4.577072
+  type: 'test'
+  ...
+# Subtest: G-KERNEL-PURE: equal inputs give a byte-equal plan; a planted clock or random call is caught
+ok 76 - G-KERNEL-PURE: equal inputs give a byte-equal plan; a planted clock or random call is caught
+  ---
+  duration_ms: 142.807025
+  type: 'test'
+  ...
+# Subtest: G-KERNEL-ORDER: no accepted proposal sits under a higher accepted proposal's veto (5k generated turns)
+ok 77 - G-KERNEL-ORDER: no accepted proposal sits under a higher accepted proposal's veto (5k generated turns)
+  ---
+  duration_ms: 184.448505
+  type: 'test'
+  ...
+# Subtest: G-BUDGET: 10k turns — exactly one move, ≤ 1 new thing on screen, never a reveal on a closing move, no callback in a correction
+ok 78 - G-BUDGET: 10k turns — exactly one move, ≤ 1 new thing on screen, never a reveal on a closing move, no callback in a correction
+  ---
+  duration_ms: 118.988602
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY: a child's goodbye beside any pedagogy, plan or Studio proposal → RELEASE wins in 100% of 10k turns (safety alone outranks it)
+ok 79 - G-AUTHORITY: a child's goodbye beside any pedagogy, plan or Studio proposal → RELEASE wins in 100% of 10k turns (safety alone outranks it)
+  ---
+  duration_ms: 178.670394
+  type: 'test'
+  ...
+# Subtest: G-AUTHORITY: a teacher-owned repair (OWN_SLIP / AFFIRM_RECHECK) is accepted and precedes the Director's next item
+ok 80 - G-AUTHORITY: a teacher-owned repair (OWN_SLIP / AFFIRM_RECHECK) is accepted and precedes the Director's next item
+  ---
+  duration_ms: 1.129408
+  type: 'test'
+  ...
+# Subtest: relational floor: SAFETY freezes everything below; floorFix is carried; rapport never rides a correction
+ok 81 - relational floor: SAFETY freezes everything below; floorFix is carried; rapport never rides a correction
+  ---
+  duration_ms: 0.727091
+  type: 'test'
+  ...
+# Subtest: Studio: a reveal needs the attention slot (rejected beside a new module or chips); the whiteboard ask follows the same rule
+ok 82 - Studio: a reveal needs the attention slot (rejected beside a new module or chips); the whiteboard ask follows the same rule
+  ---
+  duration_ms: 0.964841
+  type: 'test'
+  ...
+# Subtest: G-LAT: kernel p99 ≤ 10 ms over 10k simulated turns
+ok 83 - G-LAT: kernel p99 ≤ 10 ms over 10k simulated turns
+  ---
+  duration_ms: 337.738135
+  type: 'test'
+  ...
+# Subtest: reasons: a closed vocabulary — every code the proposers emit is known; a typo throws
+ok 84 - reasons: a closed vocabulary — every code the proposers emit is known; a typo throws
+  ---
+  duration_ms: 88.908224
+  type: 'test'
+  ...
+# Subtest: trace rows: codes and digests only (no words), one statement per turn, idempotent per (lesson, turn)
+ok 85 - trace rows: codes and digests only (no words), one statement per turn, idempotent per (lesson, turn)
+  ---
+  duration_ms: 2.377509
+  type: 'test'
+  ...
+# Subtest: the whiteboard ask (W2-E fixer): only on moves that explain, never over an interactive piece or a ready reveal; it REPLACES the template rung
+ok 86 - the whiteboard ask (W2-E fixer): only on moves that explain, never over an interactive piece or a ready reveal; it REPLACES the template rung
+  ---
+  duration_ms: 0.872101
+  type: 'test'
+  ...
+# Subtest: relational adapter: HOLD_ONE_TURN is surfaced (holdOneTurn) rather than silently dropped
+ok 87 - relational adapter: HOLD_ONE_TURN is surfaced (holdOneTurn) rather than silently dropped
+  ---
+  duration_ms: 0.34174
+  type: 'test'
+  ...
+# Subtest: trace rows: item_id / misconception_id only when the database has the columns; the comprehension trail is codes
+ok 88 - trace rows: item_id / misconception_id only when the database has the columns; the comprehension trail is codes
+  ---
+  duration_ms: 3.311494
+  type: 'test'
+  ...
+# Subtest: G-QUOTA: 20 Studio races + a consolidation burst on a shared deployment → 0 hot-path 429s (the control arm without lanes does 429)
+ok 89 - G-QUOTA: 20 Studio races + a consolidation burst on a shared deployment → 0 hot-path 429s (the control arm without lanes does 429)
+  ---
+  duration_ms: 295.652146
+  type: 'test'
+  ...
+# Subtest: admit: hot and untagged calls never wait; background waits only when its 30% share is spent; a hot 429 pauses background
+ok 90 - admit: hot and untagged calls never wait; background waits only when its 30% share is spent; a hot 429 pauses background
+  ---
+  duration_ms: 18.624997
+  type: 'test'
+  ...
+# Subtest: the module's default lanes keep the azure.js contract: admit → undefined for hot and a first background call; settle never throws
+ok 91 - the module's default lanes keep the azure.js contract: admit → undefined for hot and a first background call; settle never throws
+  ---
+  duration_ms: 1.083017
+  type: 'test'
+  ...
+# Subtest: the 30% cap is for SHARED deployments only: 40 builds on a Studio arm are never delayed, and the live whiteboard never queues behind builds
+ok 92 - the 30% cap is for SHARED deployments only: 40 builds on a Studio arm are never delayed, and the live whiteboard never queues behind builds
+  ---
+  duration_ms: 0.913417
+  type: 'test'
+  ...
+# Subtest: sharedHot: the default pools, TAXILA_SHARED_HOT overrides, and the hot DEPLOY_* the server runs on are always included
+ok 93 - sharedHot: the default pools, TAXILA_SHARED_HOT overrides, and the hot DEPLOY_* the server runs on are always included
+  ---
+  duration_ms: 3.074091
+  type: 'test'
+  ...
+# Subtest: G-MOMENT: flipping the verdict correct ↔ not_yet with the same relational affect changes `verdict` and nothing else
+ok 94 - G-MOMENT: flipping the verdict correct ↔ not_yet with the same relational affect changes `verdict` and nothing else
+  ---
+  duration_ms: 8.234048
+  type: 'test'
+  ...
+# Subtest: teacherAffect has one producer: the relational directive; without one the Moment is neutral_warm (cause none), never a correct-keyed delight
+ok 95 - teacherAffect has one producer: the relational directive; without one the Moment is neutral_warm (cause none), never a correct-keyed delight
+  ---
+  duration_ms: 0.671229
+  type: 'test'
+  ...
+# Subtest: TA8: safety suppresses affect (calm_steady, cause safety), whatever the directive says; no prelude on a safety turn
+ok 96 - TA8: safety suppresses affect (calm_steady, cause safety), whatever the directive says; no prelude on a safety turn
+  ---
+  duration_ms: 0.503401
+  type: 'test'
+  ...
+# Subtest: L3 uptake prelude: the child's own key token, verdict-neutral; off by default; never on the realtime lane or a typed turn
+ok 97 - L3 uptake prelude: the child's own key token, verdict-neutral; off by default; never on the realtime lane or a typed turn
+  ---
+  duration_ms: 2.586443
+  type: 'test'
+  ...
+# Subtest: the Moment's band, language, bond stage and thinking-aloud licence
+ok 98 - the Moment's band, language, bond stage and thinking-aloud licence
+  ---
+  duration_ms: 0.580691
+  type: 'test'
+  ...
+# Subtest: engagement comes from the child's words and actions only, and strain follows the frustration loop (signals add, never remove)
+ok 99 - engagement comes from the child's words and actions only, and strain follows the frustration loop (signals add, never remove)
+  ---
+  duration_ms: 0.754895
+  type: 'test'
+  ...
+# Subtest: beats: moves map onto beat types; a beat keeps its id while it lasts; a misconception re-teach is a contrast beat
+ok 100 - beats: moves map onto beat types; a beat keeps its id while it lasts; a misconception re-teach is a contrast beat
+  ---
+  duration_ms: 0.89012
+  type: 'test'
+  ...

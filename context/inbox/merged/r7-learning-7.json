@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-household-v1",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (main 2026-11-04): the household allocator is a reduced v1. A parent with two or more children can say they share one phone (Controls, 'One phone for the children'; parent.setting_changed{sharedPhone} to each child's Conductor, folded into state.household). Then each child's plan step computes, synchronously and purely (conductor/household.js allocate), her own window on that phone from her siblings' conductor_state rows: sittings in progress are fixed, the rest go younger first with a 5-minute hand-over, each clipped to min(allowedTo, bedtime − 60), shorter than 3 minutes → none. The window reaches the planner as the view key household.window (recorded in the decision snapshot, so replay is exact); a future window becomes the sitting's window and can only shorten it (V28). No new tables, no inbox, no worker, no courier events, no hysteresis. Reverse if: a household needs presence-wins or overrun re-flow (then the household.md worker design)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-household-v1\nWhat v1 drops from household.md: the household tables, the inbox and the 60 s debounce, the worker pass, the courier event household.window_assigned (the window is a recorded view key, read at the child's own plan step), presence-wins re-flow when a sibling starts early or out of order, overrun re-flow, and the 10-minute hysteresis against a delivered window. A sibling's re-plan therefore reaches the others only at their own next plan step. No sibling id, name, band, length or count reaches a child's plan, brief or screen (V30); the view value is only { state, from, to }. The children are never shown a time.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

@@ -1,0 +1,367 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya! Main Asha, tumhari AI teacher. Aaj cricket ground ki boundary jaise perimeter nikaalenge. Tumhe cricket mein sabse zyada kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 925
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, cricket pasand hai! Socho boundary ke ek kone se chal kar poori boundary ghoomkar wahi laut aaye—kitni doori hui?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1632,
+   "replyReadyMs": 2557,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 918
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, dheere chalenge. Perimeter matlab shape ke bahar ka poora edge. Rectangle ki boundary mein chaar sides hoti hain. Tum kitni sides gin rahi ho?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1210,
+   "replyReadyMs": 2128,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 909
+  },
+  {
+   "who": "teacher",
+   "text": "Rectangle ki 4 sides hoti hain: upar, neeche, left, right. Ab tum gin kar bolo—kitni sides?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2437,
+   "replyReadyMs": 3346,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | 5 cm | ? cm",
+     "numbers": "6 5"
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "level"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 896
+  },
+  {
+   "who": "teacher",
+   "text": "Screen par rectangle dekho: length 50 m, breadth 30 m. Iski boundary ki chaar sides mein kaun-si sides same hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1332,
+   "replyReadyMs": 2228,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1045
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Rectangle mein opposite sides same hoti hain: length-length, breadth-breadth. Screen par length wali sides kaun-si hain?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1253,
+   "replyReadyMs": 2298,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "names": [
+      "A",
+      "B",
+      "C",
+      "D",
+      "E",
+      "F"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {
+     "labels": "A"
+    },
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "names": [
+       "A",
+       "B",
+       "C",
+       "D",
+       "E",
+       "F"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 972
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute rukta hai. Kis baare mein baat karni hai? Phir perimeter par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2516,
+   "replyReadyMs": 3488,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 996
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein boundary rope perimeter jaisi hoti hai—poora edge ghoomti hai. Tumhe batting pasand hai ya bowling?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1387,
+   "replyReadyMs": 2383,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "6 cm | ? cm",
+     "numbers": "6"
+    },
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 814
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. क्रिकेट में सीमा-रेखा मैदान का बाहरी किनारा होती है, जैसे आयत का परिमाप। तुम्हें बल्लेबाजी पसंद है या गेंदबाजी?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1352,
+   "replyReadyMs": 2166,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1042
+  },
+  {
+   "who": "teacher",
+   "text": "Riya. Diya hai: the flower bed is a closed five-sided shape (pentagon), sides: 4 m, 5 m, 3 m, 6 m, 2 m. Pehle: P = 4 + 5 + 3 + 6 + 2. Phir: 4 + 5 = 9 m. Phir: 9 + 3 = 12 m. Phir: 12 + 6 = 18 m. Phir: 18 + 2 = 20 m. Toh jawab: 20 m. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2828,
+   "replyReadyMs": 3870,
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "pentagon"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "shape@1",
+    "onScreen": {},
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "pentagon"
+     }
+    }
+   },
+   "guard": [
+    "affirms",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "affirms"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1049
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+   "move": "break",
+   "card": null,
+   "replyMs": 2876,
+   "replyReadyMs": 3925,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "wrap"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

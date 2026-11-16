@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {"id": "jd-r7-director2-2026-11-04", "kind": "measurement", "at": "2026-11-04",
+   "title": "Director re-run after the 11-item fix block: 12 lessons (c4/c5/c6 × 4 scenarios), same scripted child, cb999f79, ~$0.21. Three Claude judges (one per class) compared every turn against the BEFORE twin; not blind. Fixed: affirming wrong answers, false 'didn't hear'. Mostly fixed: button deflection, English card read-aloud, verbatim repeats. Still present: quiz in costume ('game:'/'kahani:' labels), picture→'words mein dekho', answer inside the question, abandoned items, no real worked examples, level drops, unkept promises. c6 stuck and steering worse. Guard rewrites 10→14; p50 slower in 7 of 12. Root causes: guards detect but don't prevent; a guard instruction causes a defect; prompt text recited; teaching improvised, not rendered from the kit. docs/design/round7/judgements/director2-2026-11-04.md."},
+  {"id": "dc-r7-brain-structural-block", "kind": "decision", "at": "2026-11-04",
+   "title": "Stop patching the Director line by line; next block is structural. S1 guards enforce (regenerate once with the constraint, else a code line; no flagged line ships). S2 worked examples code-rendered from the kit; questions templated so the answer cannot be inside. S3 one live item; arc follows the kit's skill order with bridges. S4 steering real (picture→Studio board, game→play family; harness records the screen). S5 remove sentence-shaped prompt text. S6 reply-model A/B (taxila-gpt6 vs taxila-fast). Reverse: a re-run after S1-S5 shows the same defects (then the plan and wording architecture is the problem, not enforcement)."}
+ ],
+ "edges": [
+  {"src": "dc-r7-brain-structural-block", "rel": "measured_by", "dst": "jd-r7-director2-2026-11-04"},
+  {"src": "dc-r7-brain-structural-block", "rel": "part_of", "dst": "dc-r7-hybrid-director-default"}
+ ],
+ "md": {
+  "measurements": "## jd-r7-director2-2026-11-04 (main loop judge, 2026-11-04)\n\nMethod: stream A's harness, Director-only re-run at cb999f79 (fix block 2), results/2026-11-04-director2; n = 12 lessons (c4/c5/c6 × steady/offtopic/stuck/steering), ~10 child turns each, same scripted Hinglish child as 2026-11-04-full. Three Claude judges, one per class, read every teacher turn of each NEW lesson and its BEFORE twin; the main loop combined their verdicts; not blind. Per-item table and root causes: docs/design/round7/judgements/director2-2026-11-04.md.",
+  "decisions": "## dc-r7-brain-structural-block (2026-11-04, main loop)\n\nAfter two fix blocks the surface defects moved but the owner's core complaints stayed: quiz in costume, steering not real, the answer inside the question, abandoned items, no real worked example. The guards detected the bad turns but did not stop them. So the next Brain block is structural (S1-S6): enforcing guards, code-rendered worked examples and question templates, one live item, real steering through Studio and the play family with the harness recording the screen, de-recited prompts, and a reply-model A/B. Reversal: if a re-run after S1-S5 shows the same defects, the plan and wording architecture is the problem and gets redesigned."
+ }
+}

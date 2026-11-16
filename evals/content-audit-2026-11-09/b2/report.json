@@ -1,0 +1,50 @@
+{
+ "solved": 188,
+ "agreed": 188,
+ "findings": [
+  {
+   "id": "c5-maths-ch07-t02-i08",
+   "verdict": "question_flawed",
+   "prompt_en": "Tara says 10 houses need 40 sticks because each house adds 4. Check her.",
+   "key": "She forgot the first house needs 5 (one extra stick): 4 × 10 + 1 = 41 (acceptable: '41', 'wrong')",
+   "mine": "Wrong, 41 only IF the first house uses 5 sticks; the prompt never says so",
+   "why": "My answer matches the key in substance, but only by guessing the hidden premise. The prompt gives neither the stick-house picture nor the first house's stick count; '41' cannot be derived from the words alone (a 6-stick first house would give 42). Answerable only if the lesson shows the 5-stick house immediately before this item; as a standalone/spaced-review item it is unanswerable."
+  }
+ ],
+ "hinglish": [
+  {
+   "id": "pl-c4-maths-m05",
+   "phrase": "ek baar baad lagane ke liye kitne metre chahiye",
+   "why": "'baad' is meant as baadh/baad (बाड़, fence) but reads as 'baad' (after): 'to put after once'. The sibling item pl-c4-maths-l01 and the class-5 items say 'fencing'/'boundary'; use 'fencing' or 'baadh'."
+  },
+  {
+   "id": "c4-maths-ch14-t02-i07",
+   "phrase": "Bike aamon ka bar 20 aur 30 ke theek beech mein rukta hai",
+   "why": "'Bike' (बिके, sold) at sentence start reads as English 'bike'; a reader or TTS voice will say 'bike'. 'Beche gaye aamon ka bar' is unambiguous. (Same spelling mid-sentence in pl-c5-maths-e01 'tickets bike' is less confusing.)"
+  },
+  {
+   "id": "pl-c4-maths-e03",
+   "phrase": "3 squares chauṛa aur 2 squares lamba",
+   "why": "Transliteration diacritic 'ṛ' in otherwise plain Roman Hinglish (every other item writes 'chauda'); wrong script mix for display/TTS."
+  }
+ ],
+ "level": [
+  {
+   "id": "pl-c5-maths-l12",
+   "why": "Needs the average (mean) of two numbers and gives a decimal answer 12.5. Average is not in the class 5 NCERT syllabus (arithmetic mean arrives in class 7 data handling); a class-5 placement item should not hinge on it."
+  },
+  {
+   "id": "pl-c5-maths-m02",
+   "why": "Correct option is 'Reflex angle' (north to south-west clockwise = 225°). Class 5 NCERT angles cover acute/right/obtuse (and straight); reflex is class 6 vocabulary. Borderline (one class up), and it also needs the 8-point compass."
+  }
+ ],
+ "other_notes": [
+  "All 188 keys agree with my blind answers; no key_wrong and no acceptable_wrong found after scanning every acceptable list.",
+  "Unfilled template placeholder {friendF} appears in prompt_en, prompt_hi, options and keys of c5-maths-ch12-t01-rl-h1 and DIAG:c5-maths-ch12-t02-m-bigger-time-faster. Fine if substituted at runtime (the key's acceptable forms carry the same placeholder, so matching must substitute there too).",
+  "Placement items with format 'numeric' whose key is not a plain number: pl-c4-maths-e11 ('3/8'), pl-c5-maths-e03 ('3/4'), pl-c4-maths-m11 ('3:25 p.m.'), pl-c5-maths-l12 ('12.5'). Check the numeric input/matcher accepts fractions, a clock time with p.m., and decimals.",
+  "Near-duplicate placement items across bands (same numbers, same answer): pl-c4-maths-m05 = pl-c4-maths-l01 (18 m × 7 m garden, 50 m); pl-c5-maths-m10 = pl-c5-maths-l02 (18 × 12 garden, 60 m); pl-c5-maths-m11 = pl-c5-maths-l05 (2 min 35 s = 155 s); pl-c5-maths-m12 = pl-c5-maths-l07 (buses 12 and 18 min, 36). A child who meets both gets the same question twice, and the 'late' band is no harder than 'mid'.",
+  "Loose acceptable forms (not wrong answers, but they accept an incomplete reply): c4-maths-ch13-t01-i09 accepts bare '64' for 'what are the two parts, and the total'; c4-maths-ch03-t01-i07 accepts bare '16' for 'odd or even?'; c5-maths-ch03-t01-i10 accepts 'quarter turn' with no direction.",
+  "WE:c4-maths-ch06-t01 concludes 'The stick is 9 cm long' though the problem never states the ruler's unit (cm).",
+  "pl-c5-maths-m12 EN says one bus 'returns every 12 minutes' but asks when they 'next leave together'; pl-c5-maths-l07 words the same problem cleanly."
+ ]
+}

@@ -1,0 +1,562 @@
+// Stambh · tally (round 8, c4-maths-ch14-t01 s1: organise data using tally marks and a table). Tallies drawn in fives.
+//   keep  a small scene passes one thing at a time (bangles on a stall, vehicles at a crossing). For each thing the child
+//         picks its row and makes one stroke there with one of two buttons, "|" (a standing line) or "╱" (the line across).
+//         When the scene has passed she writes each row's total into the table, then checks.
+//   read  a row of tallies stands; she writes how many it shows, then checks.
+// PURE law + generator + solver + grader. The law:
+//   - a bundle is four standing lines and one line across, worth 5; a row reads 5 × bundles + singles (one per stroke);
+//   - every stroke is legal: a fifth standing line without a cross is a mark but no bundle, a line across after fewer or
+//     more than four standing lines closes a group that is no bundle; nothing is refused for its shape, so trying the
+//     line across until it "works" finds nothing out;
+//   - at a check the law groups each row by fives (a group ends at a line across or at the fifth standing line) and shows
+//     the groups; a row is kept right when it has one stroke per thing of its kind AND every group but the last open one
+//     is a bundle; the table is right when every total is the row's count;
+//   - keep: once the scene has passed she may keep it again from the start ("again": strokes and totals clear; undo
+//     brings them back), which is how a tally is repaired after the strip has folded away.
+// Mal-rule (deterministic malActs). Gate 2, the evidence rule (night rulings 2026-11-11, dc-r8-game-gate-play-then-evidence;
+// the proof tables are computed in tests/r8-games-stambh-tally.test.mjs and printed in the packet's "Gate 2: evidence"):
+//   keep names it from one level: her totals together are at least three ordinary slips from the truth, and a blind guess
+//        on the pad gives them far under 1 time in 10 (law 3's number);
+//   read names nothing from one level (a pick at chance weight: chancePicks, chanceMis); the server names it when the
+//        mix-up's number is typed on three levels whose bundles AND loose lines differ two by two, or on two such levels
+//        when one of them is firm (no single ordinary slip gives its number: chanceRepeat, firmSighting; surfaceOf: one
+//        part each; server/play/levels.js nameOnRepeat), within the session's first four levels. Gate 2 read per session
+//        (2026-11-16): a child who slips on every level is named at most 13 times in 256 over a session.
+// The level law (tellsApart) no longer lists slips. It keeps what a slip-chance cannot cover: no row whose loose lines
+// equal its bundles (dropping the loose lines is a way of reading, the same on every level, and it gives the mix-up's
+// number there), and keep's three-slip structure (bundles in two rows, one row of two).
+//   tally-four  read: a bundle read as its four standing lines (answer 4 × bundles + singles, short by the bundles);
+//               keep, from the marks ("five"): one stroke per thing and no line across anywhere, whatever the totals
+//               (five written as five standing lines, the kit's second sign; judges round 2, ruling 4), on a level of at
+//               least three groups of five (evening ruling 1). Gate 2, H4 (dc-r8-gate2-habit-children): pressing one
+//               button for every stroke is a habit of one button, so "five" names nothing from one level: a pick
+//               (chanceAt), named on a second level with other totals (chanceRepeat "keep:tally-four", sightingOf);
+//               keep, from the totals ("counted"): one stroke per thing, lines across drawn, and every total the row's
+//               count less its bundles (each wrong total short by exactly its row's bundles)
+import { HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel, type StambhAct } from "../../../../shared/play.ts";
+import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { mulberry32 } from "../../core/rng.ts";
+
+export type TallyGoal = "keep" | "read";
+export interface TallyParams {
+  goal: TallyGoal;
+  /** the scene (words only; never changes the maths) and its category ids, in row order */
+  ctx: string;
+  cats: string[];
+  /** the true count per row (read: one row, the tally shown) */
+  counts: number[];
+  /** keep: the order the things pass, as row indices (each row's count of them); read: [] */
+  seq: number[];
+  /** the fade (1..3): sizes grow with it */
+  labels: 1 | 2 | 3;
+}
+export interface TallyState extends Undoable<TallyState> {
+  /** each row's strokes in order (true = the line across) */
+  marks: boolean[][];
+  /** keep: the next thing to pass (seq.length = the scene has passed) */
+  at: number;
+  /** what she wrote in each row's total cell (read: [her answer]) */
+  totals: (number | null)[];
+  checks: number; done: boolean; acts: number;
+  /** the mal-rule the first check showed (a fact for the teacher), or null */
+  mal: string | null;
+  /** which of the kit's signs the first check showed: "counted" (lines across drawn, totals four per bundle), "five" (no
+   *  line across anywhere: five written as five standing lines) */
+  sign?: TallySign | null;
+}
+export type TallySign = "counted" | "five";
+export const TALLY_MAL = ["tally-four"] as const;
+/** scene id → its category ids (each has a word stambh.cat.<id>); each category has its own drawn shape */
+export const TALLY_CONTEXTS: Record<string, string[]> = {
+  bangles: ["kaanch", "kada", "moti"],
+  traffic: ["car", "bus", "auto", "cycle"],
+};
+/** the most strokes a row holds (ten bundles and four: what the 360 px row is laid out for) */
+export const MAX_COUNT = 54;
+const MAX_SCENE = 30;
+/** the largest cases the generator serves (the layout test and the packet's largest screens use them): a read row of
+ *  READ_MAX strokes; a keep scene of KEEP_SCENE_MAX things across three rows, one row at KEEP_ROW_MAX */
+export const READ_MAX = 49, KEEP_ROW_MAX = 14, KEEP_SCENE_MAX = 28;
+/** keep: the scene's size (things in all) the generator serves at each fade (gate 2, H7: the tests enumerate every keep
+ *  level from these, each row 2 … KEEP_ROW_MAX, keepRowsAt rows, tellsApart) */
+export const KEEP_SCENE: Record<1 | 2 | 3, [number, number]> = { 1: [15, 18], 2: [17, 23], 3: [20, KEEP_SCENE_MAX] };
+/** keep: the rows a scene of this context has at a fade (two at fade 1, else three, as many as the context has) */
+export const keepRowsAt = (labels: 1 | 2 | 3, cats: readonly string[]): number => (labels === 1 ? 2 : Math.min(3, cats.length));
+/** read: the rows the generator serves at each fade (three to nine bundles; the last fade up to READ_MAX) */
+export const READ_RANGE: Record<1 | 2 | 3, [number, number]> = { 1: [16, 19], 2: [16, 34], 3: [21, READ_MAX] };
+/**
+ * read: the end of the number line under a miss (gate 1, night ruling 1, 2026-11-11). One scale for the whole level, set
+ * from the level's fade alone: twice the largest row that fade serves, up to the next ten (40, 70, 100). Never from her
+ * number or the key, so a bigger number never stands left of a smaller one; a number past the end stands at the end.
+ */
+export const numberLineEnd = (p: Pick<TallyParams, "labels">): number => Math.ceil((2 * READ_RANGE[p.labels][1]) / 10) * 10;
+/** where a number stands on that line, as a share of it (0 at 0, 1 at the end; past the end, 1) */
+export const numberLineAt = (p: Pick<TallyParams, "labels">, v: number): number => Math.min(1, Math.max(0, v / numberLineEnd(p)));
+
+/**
+ * Can the evidence tell tally-four apart? The level law after gate 2 (night rulings 2026-11-11, "stop listing slips"). A
+ * slip is an accident, so its chance is what counts; the proof (tests/r8-games-stambh-tally.test.mjs, "gate 2", and the
+ * packet's "Gate 2: evidence") works that chance out for every served level and pair. The law keeps only:
+ *   - no row holding a bundle has as many loose lines as bundles (2 bundles + 2 lines = 12: the mix-up reads 10, and so
+ *     does dropping the loose lines). Dropping them is a way of reading, not an accident: she would do it on every level,
+ *     so no repeat can tell it from the mix-up;
+ *   - read: at least one bundle (with none, the mix-up's number is the right one);
+ *   - keep: bundles in at least two rows and a row of two bundles, so her totals together need at least three ordinary
+ *     slips to come out as the mix-up's (the keep table) and the level may name it alone.
+ * Gone with the slip list (the chance table makes them unneeded): read's three bundles or more, never five bundles, at
+ * least one loose line, and the "two steps from every slip" count.
+ */
+export function tellsApart(counts: readonly number[]): boolean {
+  if (counts.some((c) => c >= 5 && c % 5 === Math.floor(c / 5))) return false;
+  if (counts.length === 1) return counts[0] >= 5;
+  return counts.filter((c) => c >= 5).length >= 2 && counts.some((c) => Math.floor(c / 5) >= 2);
+}
+
+/** the strokes a count is tallied in: bundles (four standing, the fifth across), then the loose standing lines */
+export const tallyOf = (n: number): boolean[] => Array.from({ length: n }, (_, i) => i % 5 === 4);
+/** a tally-four reader's number: each bundle read as its four standing lines */
+export const four = (n: number) => 4 * Math.floor(n / 5) + (n % 5);
+export interface TallyGroup { from: number; len: number; kind: "bundle" | "five" | "short" | "open" }
+/**
+ * The law's commit pass: a row's strokes in groups. A group ends at a line across (a bundle when it closes four standing
+ * lines, else "short") or at its fifth standing line ("five": a fifth standing line, no bundle); what is left is "open".
+ */
+export function groupsOf(marks: readonly boolean[]): TallyGroup[] {
+  const out: TallyGroup[] = [];
+  let from = 0, standing = 0;
+  marks.forEach((m, i) => {
+    if (m) { out.push({ from, len: i - from + 1, kind: standing === 4 ? "bundle" : "short" }); from = i + 1; standing = 0; return; }
+    standing++;
+    if (standing === 5) { out.push({ from, len: 5, kind: "five" }); from = i + 1; standing = 0; }
+  });
+  if (from < marks.length) out.push({ from, len: marks.length - from, kind: "open" });
+  return out;
+}
+/** a row is tallied as tallies are: every fifth stroke across, every other standing */
+export const bundled = (marks: readonly boolean[]) => marks.every((m, i) => m === (i % 5 === 4));
+export const bundlesIn = (marks: readonly boolean[]) => groupsOf(marks).filter((g) => g.kind === "bundle").length;
+/** where a line across belongs and is missing: each group of five standing lines */
+export const crossesMissingIn = (marks: readonly boolean[]) => groupsOf(marks).filter((g) => g.kind === "five").length;
+/** values the teacher may not say before the child does (every row's count) */
+export function tallyHidden(level: PlayLevel<unknown>): number[] {
+  const p = level.params as Partial<TallyParams> | null;
+  return p && Array.isArray(p.counts) ? [...new Set(p.counts.filter((x) => typeof x === "number"))] : [];
+}
+
+/**
+ * Pure geometry of a row's strokes (the view draws them; a test proves ten bundles fit a 360 px row): strokes left to right
+ * at spacing `sp`, a gap after each group, wrapping to a new line when the next group would cross the width. `grouped`:
+ * the law's commit pass (a gap after every group, groupsOf); else the child's own (a gap after each line across only).
+ * Returns each standing stroke's x and line, each line across's span, the lines used, and the sizes chosen.
+ */
+export function tallyFlow(marks: readonly boolean[], width: number, height: number, grouped: boolean, maxStroke = 34, band = 0) {
+  const groups: { from: number; len: number }[] = [];
+  if (grouped) for (const g of groupsOf(marks)) groups.push({ from: g.from, len: g.len });
+  else { let from = 0; marks.forEach((m, i) => { if (m) { groups.push({ from, len: i - from + 1 }); from = i + 1; } }); if (from < marks.length) groups.push({ from, len: marks.length - from }); }
+  const unitsOf = (g: { from: number; len: number }) => Math.max(1, marks.slice(g.from, g.from + g.len).filter((m) => !m).length);
+  // one pass of the flow at stroke spacing sp: a group wraps whole when it fits a fresh line, else stroke by stroke; with a
+  // plan (lineOf: each group's line), each group goes on its planned line
+  const flow = (sp: number, lineOf?: (gi: number) => number) => {
+    const gap = sp * 1.4, x00 = sp * 0.6;
+    const stand: { i: number; x: number; line: number }[] = [], across: { i: number; x0: number; x1: number; line: number }[] = [];
+    let x = x00, line = 0, right = x00;
+    for (const [gi, g] of groups.entries()) {
+      const units = unitsOf(g);
+      if (lineOf) { if (lineOf(gi) !== line) { line = lineOf(gi); x = x00; } }
+      else if (x > x00 && x + units * sp > width && x00 + units * sp <= width) { line++; x = x00; }
+      let x0 = x, l0 = line;
+      for (let k = g.from; k < g.from + g.len; k++) {
+        if (marks[k]) {
+          // the line across lies over the standing lines of its group on this line (a lone one takes a place of its own)
+          if (x === x0) x += sp;
+          across.push({ i: k, x0: x0 - sp * 0.5, x1: x - sp * 0.5, line: l0 });
+        } else {
+          if (x + sp * 0.4 > width) { line++; x = x00; x0 = x; l0 = line; }
+          stand.push({ i: k, x, line }); x += sp;
+        }
+      }
+      right = Math.max(right, x);
+      x += gap;
+    }
+    return { stand, across, lines: line + 1, right };
+  };
+  // the fewest lines whose strokes are still plainly legible (spacing ≥ 8 px, height ≥ 22 px): a row is read along one
+  // line wherever it can be; only when no line count reaches that, the biggest strokes that fit the box
+  const B = Math.max(1, Math.ceil(marks.length / 5));
+  let best = null as null | { sp: number; sh: number; lineH: number; f: ReturnType<typeof flow> }, fewest = null as typeof best;
+  const score = (b: { sp: number; sh: number }) => Math.min(b.sp * 2.4, b.sh);
+  // one line's exact width in spacings: the lead-in, each group's standing lines (a lone line across takes one), the gaps
+  const units1 = 0.6 + groups.reduce((a, g) => a + Math.max(1, marks.slice(g.from, g.from + g.len).filter((m) => !m).length), 0) + 1.4 * Math.max(0, groups.length - 1);
+  // on two lines or more, loose lines after the last line across are never put under a closed group (evening ruling 4):
+  // the closed groups fill the first lines q at a time and the rest, with the loose lines last, take the last line, so the
+  // loose lines stand beyond the end of the line above
+  const last = groups[groups.length - 1], loose = !!last && !marks.slice(last.from, last.from + last.len).some((m) => m);
+  const closed = groups.length - (loose ? 1 : 0);
+  // the strokes' height and the pitch from one line to the next: one line takes the box; on two or more, between two lines
+  // of strokes at least half a stroke's height and at least `band` (room for the play-out's count) (evening ruling 4)
+  const vert = (lines: number, sp: number) => {
+    if (lines === 1) return { sh: Math.min(maxStroke, height * 0.72, sp * 4.2), lineH: height };
+    const sh = Math.max(1, Math.min(maxStroke, sp * 4.2, height / (1.5 * lines - 0.5), (height - (lines - 1) * band) / lines));
+    return { sh, lineH: sh + Math.max(sh / 2, band) };
+  };
+  const plan = (lines: number) => {
+    if (!loose || closed < lines) return null;
+    const q = Math.floor(closed / lines), lineOf = (gi: number) => (gi < q * (lines - 1) ? Math.floor(gi / q) : lines - 1);
+    const widths = Array.from({ length: lines }, () => 0.6 - 1.4);
+    groups.forEach((g, gi) => { widths[lineOf(gi)] += unitsOf(g) + 1.4; });
+    return { lineOf, units: Math.max(...widths) };
+  };
+  for (let lines = 1; lines <= 8; lines++) {
+    const perLine = Math.ceil(B / lines), pl = lines > 1 ? plan(lines) : null;
+    const sp = Math.min(maxStroke * 0.4, width / (lines === 1 ? units1 + 0.01 : pl ? pl.units + 0.01 : perLine * 5.4 + 0.6));
+    const f = flow(sp, pl?.lineOf);
+    if (f.lines > lines) continue;
+    const { sh, lineH } = vert(lines, sp);
+    if (!fewest && sp >= 8 && sh >= 22) fewest = { sp, sh, lineH, f };
+    if (!best || score({ sp, sh }) > score(best) + 0.01) best = { sp, sh, lineH, f };
+  }
+  if (fewest) best = fewest;
+  if (!best) { const sp = Math.max(2, width / (B * 5.4 + 0.6)), f = flow(sp); best = { sp, ...vert(f.lines, sp), f }; }
+  return { sp: best.sp, sh: best.sh, lineH: best.lineH, lines: best.f.lines, stand: best.f.stand, across: best.f.across, right: best.f.right };
+}
+
+const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
+const isInt = (x: unknown): x is number => typeof x === "number" && Number.isInteger(x);
+
+function validate(level: PlayLevel<unknown>): PlayLevel<TallyParams> | null {
+  const p = level.params as Partial<TallyParams> | null;
+  if (!p || level.mode !== "tally" || (p.goal !== "keep" && p.goal !== "read")) return null;
+  const cats = typeof p.ctx === "string" ? TALLY_CONTEXTS[p.ctx] : undefined;
+  if (!cats || !Array.isArray(p.cats) || !Array.isArray(p.counts) || !Array.isArray(p.seq)) return null;
+  const n = p.cats.length;
+  if (p.counts.length !== n || new Set(p.cats).size !== n || !p.cats.every((c) => typeof c === "string" && cats.includes(c))) return null;
+  if (!p.counts.every((c) => isInt(c) && c >= 1 && c <= MAX_COUNT)) return null;
+  const labels = p.labels === 2 || p.labels === 3 ? p.labels : 1;
+  if (p.goal === "read") {
+    // one row, given (gate 2: a row of bundles only is served again; the chance table covers its bundle-skipped slip)
+    if (n !== 1 || p.seq.length !== 0 || p.counts[0] < 5) return null;
+  } else {
+    if (n < 2 || n > 3 || p.seq.length > MAX_SCENE || !p.seq.every((r) => isInt(r) && r >= 0 && r < n)) return null;
+    if (!p.counts.every((c, r) => (p.seq as number[]).filter((x) => x === r).length === c)) return null;
+  }
+  // the level law: only givens where the evidence rule holds (tellsApart; gate 2)
+  if (!tellsApart(p.counts)) return null;
+  return { ...level, params: { goal: p.goal, ctx: p.ctx as string, cats: [...p.cats], counts: [...p.counts], seq: [...p.seq], labels } };
+}
+function init(level: PlayLevel<TallyParams>): TallyState {
+  const p = level.params;
+  return { marks: p.goal === "read" ? [tallyOf(p.counts[0])] : p.cats.map(() => []), at: 0, totals: p.cats.map(() => null),
+    checks: 0, done: false, acts: 0, mal: null, sign: null, prev: null, depth: 0 };
+}
+const sceneLeft = (p: TallyParams, s: TallyState) => (p.goal === "keep" ? p.seq.length - s.at : 0);
+/** her keep is right row by row (one stroke per thing, bundled) and the table is right */
+const rowRight = (p: TallyParams, s: TallyState, r: number) => (p.goal === "read" || (s.marks[r].length === p.counts[r] && bundled(s.marks[r])));
+const totalRight = (p: TallyParams, s: TallyState, r: number) => s.totals[r] === p.counts[r];
+/**
+ * The tally-four signature on this state, or null. Only on givens the level law serves (tellsApart).
+ *   read: the bundles read as four (4 × bundles + singles);
+ *   keep "five": one stroke per thing in every row and no line across anywhere, whatever the totals (judges round 2,
+ *        ruling 4: a tally kept with no line across is the kit's second sign however she then counts it);
+ *   keep "counted": one stroke per thing in every row, lines across drawn, and every total the row's count less its
+ *        bundles (each wrong total short by exactly its row's bundles, the rest right).
+ */
+export function tallyFourSign(p: TallyParams, s: Pick<TallyState, "marks" | "totals">): TallySign | null {
+  if (!tellsApart(p.counts)) return null;
+  if (p.goal === "read") return s.totals[0] === four(p.counts[0]) ? "counted" : null;
+  if (!p.cats.every((_, r) => s.marks[r].length === p.counts[r])) return null;
+  // "five": no line across in any row, and the level holds at least three groups of five (evening ruling 1)
+  if (s.marks.every((m) => m.every((x) => !x))) return p.counts.reduce((a, c) => a + Math.floor(c / 5), 0) >= 3 ? "five" : null;
+  // "counted": every row holding bundles short by exactly its own bundles, every other row right
+  if (p.counts.every((c, r) => s.totals[r] === four(c))) return "counted";
+  return null;
+}
+
+function apply(level: PlayLevel<TallyParams>, s: TallyState, act: StambhAct, seq: number): { state: TallyState; moments: Moment[]; refused?: string } {
+  const p = level.params, out: Moment[] = [];
+  if (s.done) return { state: s, moments: [], refused: "level_over" };
+  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
+  const bump = (st: TallyState): TallyState => ({ ...st, acts: s.acts + 1 });
+  if (s.acts === 0) out.push(mom("first_act", seq, { act: act.kind }));
+  const no = (why: string) => ({ state: bump(s), moments: out, refused: why });
+  if (act.kind === "mark") {
+    if (p.goal !== "keep") return no("given");
+    const r = Number(act.row);
+    if (!isInt(r) || r < 0 || r >= p.cats.length) return no("bad_row");
+    if (s.at >= p.seq.length) return no("none_left");
+    const marks = s.marks.map((m, i) => (i === r ? [...m, !!act.across] : m));
+    return { state: bump(pushUndo(s, { ...s, marks, at: s.at + 1 })), moments: out };
+  }
+  if (act.kind === "total") {
+    // (a cleared cell travels as n absent: the server's act sanitiser keeps numbers, strings and booleans only)
+    const r = Number(act.row), n = act.n ?? null;
+    if (!isInt(r) || r < 0 || r >= p.cats.length) return no("bad_row");
+    if (n !== null && (!isInt(n) || n < 0 || n > 99)) return no("bad_number");
+    if (sceneLeft(p, s) > 0) return no("scene_first");
+    const totals = s.totals.map((t, i) => (i === r ? n : t));
+    return { state: bump(pushUndo(s, { ...s, totals })), moments: out };
+  }
+  if (act.kind === "again") {
+    // keep: the scene passes again from the start; what the first check showed stays (the evidence is the first check's)
+    if (p.goal !== "keep") return no("given");
+    if (sceneLeft(p, s) > 0) return no("scene_first");
+    return { state: bump(pushUndo(s, { ...s, marks: p.cats.map(() => []), totals: p.cats.map(() => null), at: 0 })), moments: out };
+  }
+  if (act.kind === "check") {
+    if (sceneLeft(p, s) > 0) return no("scene_first");
+    if (s.totals.some((t) => t === null)) return no("fill_first");
+    const rows = p.cats.map((_, r) => r);
+    const bundles = s.marks.reduce((a, m) => a + bundlesIn(m), 0), crossesMissing = s.marks.reduce((a, m) => a + crossesMissingIn(m), 0);
+    const answer = s.totals.join(",");
+    const f: Facts = { bundles, goal: p.goal, answer, ...(p.goal === "keep" ? { crossesMissing } : {}) };
+    const offRows = rows.filter((r) => !rowRight(p, s, r)), offTotals = rows.filter((r) => !totalRight(p, s, r));
+    let next = bump(pushUndo(s, { ...s, checks: s.checks + 1 }));
+    if (!offRows.length && !offTotals.length) { out.push(mom("solved", seq, f)); return { state: { ...next, done: true }, moments: out }; }
+    const sign = Object.keys(level.mal).includes("tally-four") ? tallyFourSign(p, s) : null;
+    if (sign) {
+      // keep names it from this level (its first check); read's one typed number is a pick at chance weight
+      // (chancePicks): it plays out, and its grade carries chanceMis, but nothing about it is in her facts until the
+      // server sees it again on a level whose bundles and loose lines both differ (gate 2)
+      // gate 2, H4: keep's "five" (no line across anywhere) is one button for every stroke, a habit like any other: a pick
+      // (keepFivePick), so it too is in her facts only once the server names it on a second level
+      if (s.checks === 0 && p.goal === "keep" && !(sign === "five" && HABIT_RULES.on)) next = { ...next, mal: "tally-four", sign };
+      // the gap: what the mix-up leaves out (the bundles read as four, or the lines across not drawn)
+      const gap = sign === "five" ? crossesMissing : p.counts.reduce((a, c) => a + Math.floor(c / 5), 0);
+      out.push(mom("misconception_consequence", seq, { ...f, sign, gap }, "tally-four"));
+      return { state: next, moments: out, refused: "missed" };
+    }
+    // one thing from the answer: one total one off (its row kept right), or one row one stroke off with its total its own
+    const off = [...new Set([...offRows, ...offTotals])];
+    const near = p.goal === "read" ? Math.abs((s.totals[0] ?? 0) - p.counts[0]) === 1
+      : off.length === 1 && Math.abs(s.marks[off[0]].length - p.counts[off[0]]) <= 1 && Math.abs((s.totals[off[0]] ?? 0) - p.counts[off[0]]) <= 1;
+    const why = p.goal === "read" ? "read_off" : offRows.some((r) => s.marks[r].length === p.counts[r]) ? "not_bundled" : offRows.length ? "tally_off" : "totals_off";
+    out.push(mom(near ? "near_miss" : "law_refused", seq, { ...f, why }));
+    return { state: next, moments: out, refused: "missed" };
+  }
+  return no("unknown_act");
+}
+const goalMet = (_l: PlayLevel<TallyParams>, s: TallyState) => s.done;
+
+/** the acts that keep the scene with `strokes` (one per thing: across or not) and write `totals`, then check */
+function keepActs(p: TallyParams, across: (row: number, kth: number) => boolean, totals: number[]): StambhAct[] {
+  const acts: StambhAct[] = [], seen = p.cats.map(() => 0);
+  for (const r of p.seq) { acts.push({ kind: "mark", row: r, across: across(r, seen[r]) }); seen[r]++; }
+  totals.forEach((n, r) => acts.push({ kind: "total", row: r, n }));
+  acts.push({ kind: "check" });
+  return acts;
+}
+const readActs = (n: number): StambhAct[] => [{ kind: "total", row: 0, n }, { kind: "check" }];
+function solve(level: PlayLevel<TallyParams>): StambhAct[] {
+  const p = level.params;
+  return p.goal === "read" ? readActs(p.counts[0]) : keepActs(p, (_r, k) => k % 5 === 4, p.counts);
+}
+/**
+ * The tally-four child's acts, in each of its forms: "counted" (keep: the bundles drawn as tallies are drawn, each row's
+ * total counted off its standing lines; read: 4 × bundles + singles), "five" (keep: five written as five standing lines,
+ * no line across anywhere, the totals counted right), "plain" (keep: five standing lines AND each group of them read as
+ * four: named "five", as every tally with no line across is). Null on givens the level law does not serve.
+ */
+export function tallyFourActs(p: TallyParams, form: "counted" | "five" | "plain"): StambhAct[] | null {
+  if (!tellsApart(p.counts)) return null;
+  if (p.goal === "read") return form === "counted" ? readActs(four(p.counts[0])) : null;
+  if (form === "counted") return keepActs(p, (_r, k) => k % 5 === 4, p.counts.map(four));
+  if (form === "five") return keepActs(p, () => false, p.counts);
+  return keepActs(p, () => false, p.counts.map(four));
+}
+function malActs(level: PlayLevel<TallyParams>, mal: string): StambhAct[] | null {
+  // the main form: the bundles are drawn right and counted by their standing lines
+  return mal === "tally-four" ? tallyFourActs(level.params, "counted") : null;
+}
+/**
+ * The idea-free ways through, tried on the law (a level any of them passes is never served):
+ *   read: the standing lines alone, the groups, the groups and the loose lines, the bundles read as four;
+ *   keep: every stroke standing with each row's strokes counted (a table right, no bundle drawn: tally-four's "five"
+ *         form); every stroke a line across; the bundles read as four.
+ */
+export function idleWays(p: TallyParams): StambhAct[][] {
+  if (p.goal === "read") {
+    const n = p.counts[0], b = Math.floor(n / 5), s = n % 5, groups = b + (s ? 1 : 0);
+    return [4 * b + s, b, groups, b + s, s].filter((x) => x >= 0 && x <= 99).map(readActs);
+  }
+  return [keepActs(p, () => false, p.counts), keepActs(p, () => true, p.counts), keepActs(p, () => false, p.counts.map(four))];
+}
+function shortcut(level: PlayLevel<TallyParams>): StambhAct[] | null {
+  for (const acts of idleWays(level.params)) {
+    let s = init(level);
+    for (let i = 0; i < acts.length; i++) s = apply(level, s, acts[i], i + 1).state;
+    if (s.done) return acts;
+  }
+  return null;
+}
+
+function difficultyOf(p: TallyParams): number {
+  if (p.goal === "read") { const n = p.counts[0]; return Math.min(1, 0.25 + 0.035 * Math.floor(n / 5) + (n % 5 ? 0.05 : 0) + 0.06 * (p.labels - 1)); }
+  return Math.min(1, 0.3 + 0.015 * p.seq.length + 0.08 * (p.cats.length - 2) + 0.05 * (p.labels - 1));
+}
+interface TallyGrammar { goal?: TallyGoal }
+function generate(req: GenRequest): Candidate<TallyParams>[] {
+  const g = req.grammar as TallyGrammar;
+  const goal: TallyGoal = req.goal === "read" || req.goal === "keep" ? req.goal : g.goal ?? "keep";
+  const rnd = mulberry32(req.seed), out: Candidate<TallyParams>[] = [], seen = new Set<string>();
+  const labels = (req.fade === 2 || req.fade === 3 ? req.fade : 1) as 1 | 2 | 3;
+  const int = (lo: number, hi: number) => lo + Math.floor(rnd() * (hi - lo + 1));
+  const ctxIds = Object.keys(TALLY_CONTEXTS);
+  const mk = (params: TallyParams, sig: string): Candidate<TallyParams> => ({
+    signature: sig, difficulty: difficultyOf(params),
+    level: { v: "play@1", levelId: `stambh-${sig}-${req.seed}`.replace(/[^a-z0-9:/.,_-]/gi, "_"), family: "stambh", mode: "tally", topicId: req.topicId, skillId: req.skillId,
+      fade: req.fade, goal, params, targets: Object.values(req.misMap), mal: req.misMap, slip: null, context: params.ctx, seed: req.seed,
+      proof: { solvable: true, shortcutFree: true, minActs: 2, solutions: 1, discriminates: [], pFirstTry: 0, score: 0, genMs: 0 } },
+  });
+  // the sizes by fade: read 16-19 / 16-34 / 21-49 (three to nine bundles); keep a scene of 15-18 / 17-23 / 20-28 things.
+  // Served only where the level law holds (tellsApart): no row with as many loose lines as bundles; keep with bundles in
+  // at least two rows and a row of two
+  const RANGE = READ_RANGE[labels];
+  const SCENE = KEEP_SCENE[labels];
+  for (let k = 0; k < 400 && out.length < 16; k++) {
+    const ctx = ctxIds[Math.floor(rnd() * ctxIds.length)], all = TALLY_CONTEXTS[ctx];
+    if (goal === "read") {
+      const n = int(RANGE[0], RANGE[1]);
+      if (!tellsApart([n])) continue;
+      const cat = all[Math.floor(rnd() * all.length)];
+      const params: TallyParams = { goal, ctx, cats: [cat], counts: [n], seq: [], labels };
+      const sig = `tally:read:${n}`;
+      if (seen.has(sig)) continue;
+      seen.add(sig); out.push(mk(params, sig));
+      continue;
+    }
+    const nc = keepRowsAt(labels, all);
+    const start = Math.floor(rnd() * (all.length - nc + 1)), cats = all.slice(start, start + nc);
+    // each row 2..KEEP_ROW_MAX things; the scene's size by fade; the law decides (tellsApart)
+    const counts = cats.map(() => int(2, KEEP_ROW_MAX)), total = counts.reduce((a, c) => a + c, 0);
+    if (total < SCENE[0] || total > SCENE[1] || !tellsApart(counts)) continue;
+    const seq: number[] = [];
+    counts.forEach((c, r) => { for (let i = 0; i < c; i++) seq.push(r); });
+    for (let i = seq.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [seq[i], seq[j]] = [seq[j], seq[i]]; }
+    const params: TallyParams = { goal, ctx, cats, counts, seq, labels };
+    const sig = `tally:keep:${ctx}:${counts.join(",")}`;
+    if (seen.has(sig)) continue;
+    seen.add(sig); out.push(mk(params, sig));
+  }
+  return out;
+}
+function facts(level: PlayLevel<TallyParams>, s: TallyState): Facts {
+  const p = level.params;
+  // the evidence first (the lesson's PLAY row keeps 12 pairs, six of them its lead): bundles, the mal-rule, the lines
+  // across missing, her answer; then the goal and the progress
+  const f: Facts = { bundles: s.marks.reduce((a, m) => a + bundlesIn(m), 0) };
+  if (s.mal) f.mal = s.mal;
+  if (s.mal && s.sign && p.goal === "keep") f.sign = s.sign;
+  const cm = s.marks.reduce((a, m) => a + crossesMissingIn(m), 0);
+  if (p.goal === "keep" && cm) f.crossesMissing = cm;
+  if (s.checks) f.answer = s.totals.map((t) => (t === null ? "-" : String(t))).join(",");
+  f.goal = p.goal;
+  if (sceneLeft(p, s) > 0) f.left = sceneLeft(p, s);
+  if (s.checks) f.checks = s.checks;
+  if (s.done) f.done = "yes";
+  return f;
+}
+const tallyText = (m: readonly boolean[]) => groupsOf(m).map((g) => m.slice(g.from, g.from + g.len).map((x) => (x ? "/" : "|")).join("")).join(" ") || "–";
+function board(level: PlayLevel<TallyParams>, s: TallyState) {
+  const p = level.params;
+  const rows = p.cats.map((c, r) => `${c}: ${tallyText(s.marks[r])} = ${s.totals[r] ?? "?"}`);
+  return { title: "Tally", lines: [p.ctx, ...(p.goal === "keep" ? [`${sceneLeft(p, s)} left`] : []), ...rows] };
+}
+function grade(level: PlayLevel<TallyParams>, acts: PlayActEnvelope<StambhAct>[]): PlayGrade {
+  return gradeLevel(tallyLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
+}
+
+/**
+ * Gate 2 (night rulings 2026-11-11): what a level shows, for the server's repeat rule (server/play/levels.js nameOnRepeat).
+ * read: two parts, its bundles and its loose lines; a second sighting counts only when BOTH differ (the server compares
+ * the parts one by one). keep is named from one level, so its surface is only its rows.
+ */
+export const tallySurface = (level: PlayLevel<TallyParams>): string | readonly string[] => {
+  const p = level.params;
+  return p.goal === "read" ? [`bundles:${Math.floor(p.counts[0] / 5)}`, `loose:${p.counts[0] % 5}`] : `keep:${p.counts.join(",")}`;
+};
+
+/** the answer pad as the view lays it out (typedtotal.ts totalPad, six keys a row in play.css: 1 2 3 4 5 6 / 7 8 9 0 ⌫);
+ *  the gate-2 test checks this copy against the view's own */
+export const TALLY_PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] as const;
+export const TALLY_PAD_COLS = 6;
+const padAt = (k: string): [number, number] => { const i = TALLY_PAD.indexOf(k as (typeof TALLY_PAD)[number]); return [Math.floor(i / TALLY_PAD_COLS), i % TALLY_PAD_COLS]; };
+const padNear = (d: string) => TALLY_PAD.filter((k) => k !== d && Math.max(Math.abs(padAt(k)[0] - padAt(d)[0]), Math.abs(padAt(k)[1] - padAt(d)[1])) === 1);
+/** one typing slip on the number she means (0..99): a key one off (side or corner), the two digits swapped, a key not
+ *  registered, a key pressed twice (the box takes two digits) */
+function typedSlips(v: number): number[] {
+  const t = String(v), out: number[] = [];
+  for (let i = 0; i < t.length; i++) for (const k of padNear(t[i])) out.push(Number(t.slice(0, i) + k + t.slice(i + 1)));
+  if (t.length === 2) { if (t[0] !== t[1]) out.push(Number(t[1] + t[0])); out.push(Number(t[0]), Number(t[1])); } else out.push(Number(t + t));
+  return out.filter((x) => x !== v && x <= 99);
+}
+/** the ways of reading a whole tally of b bundles and s loose lines (the right one and seven others); `strokes`: it counts
+ *  a bundle's strokes one by one, so one of them can be missed or counted again */
+const WAYS: readonly { of: (b: number, s: number) => number; strokes?: true }[] = [
+  { of: (b, s) => 5 * b + s, strokes: true }, { of: (b) => 5 * b, strokes: true }, { of: (b, s) => 5 * b + 2 * s, strokes: true },
+  { of: (b, s) => 6 * b + s, strokes: true }, { of: (b) => b }, { of: (b, s) => b + s }, { of: (b, s) => 10 * b + s }, { of: (_b, s) => s },
+];
+/**
+ * Gate 2, read: can ONE ordinary slip, under any way of reading, give the mix-up's number on a row of n? A counting slip (a
+ * bundle skipped or counted twice, a loose line missed or counted twice, a stroke of a bundle missed or counted again) or
+ * a typing slip on the pad. The proof (tests/r8-games-stambh-tally.test.mjs) works out each row's chance on its own and
+ * checks this answer on every row read can serve.
+ */
+export function oneSlipFromMixup(n: number): boolean {
+  const b = Math.floor(n / 5), s = n % 5, m = four(n);
+  return WAYS.some((w) => {
+    const v = w.of(b, s), counted = [w.of(b + 1, s), ...(b >= 1 ? [w.of(b - 1, s)] : []), ...(s >= 1 ? [w.of(b, s - 1), w.of(b, s + 1)] : []), ...(w.strokes && b >= 1 ? [v - 1, v + 1] : [])];
+    return v === m || counted.some((x) => x !== v && x === m) || typedSlips(v).includes(m);
+  });
+}
+
+/**
+ * Gate 2, read: the reading habits (dc-r8-gate2-shadow S3), the habit battery's "same every level" readers
+ * (tests/_habit-children.mjs, which checks its own list against this one): each way of reading (WAYS, the right one
+ * included) with each counting slip made on every level (none; a bundle skipped or counted twice; a loose line missed or
+ * counted twice; for a way that counts a bundle's strokes, a stroke missed or counted twice), but the right reading with no
+ * slip. A habit's number on a row of n: `of(n)`.
+ */
+export const READ_HABITS: readonly { id: string; of: (n: number) => number }[] = WAYS.flatMap((w, wi) => {
+  const slips: [string, (b: number, s: number) => number][] = [
+    ["none", (b, s) => w.of(b, s)], ["a bundle skipped", (b, s) => w.of(Math.max(0, b - 1), s)], ["a bundle twice", (b, s) => w.of(b + 1, s)],
+    ["a loose line missed", (b, s) => w.of(b, Math.max(0, s - 1))], ["a loose line twice", (b, s) => w.of(b, s + 1)],
+    ...(w.strokes ? ([["a stroke missed", (b, s) => w.of(b, s) - 1], ["a stroke twice", (b, s) => w.of(b, s) + 1]] as [string, (b: number, s: number) => number][]) : []),
+  ];
+  return slips.filter(([sn]) => wi !== 0 || sn !== "none").map(([sn, f]) => ({ id: `way ${wi}/${sn}`, of: (n: number) => f(Math.floor(n / 5), n % 5) }));
+});
+/**
+ * Gate 2, read (dc-r8-gate2-shadow S3, the discriminating level for numbers): a row of n tells the mix-up from every reading
+ * habit when no habit types the mix-up's number there (four(n)). On any other row (25, 31, 37, 43, 49: "bundles only, a
+ * bundle skipped" types 4 × bundles there too; 26 … 29 "a bundle skipped"; fade 1's 16, 17 and 19) a sighting does not
+ * count (sightingCounts).
+ */
+export const discriminatingRead = (n: number): boolean => { const m = four(n); return !READ_HABITS.some((h) => Math.max(0, Math.min(99, h.of(n))) === m); };
+
+export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
+  family: "stambh", modes: ["tally"], malRules: TALLY_MAL,
+  validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
+  // gate 2: read's typed number is a pick at chance weight (named only on a repeat); keep names from one level
+  chancePicks: ["read"],
+  surfaceOf: tallySurface,
+  // gate 2, per session (RULINGS-2026-11-15, "To Games, 2026-11-16"): read names tally-four on three levels whose bundles and
+  // loose lines all differ two by two, or on two when one of them is firm (a row no single ordinary slip turns into the
+  // mix-up's number: oneSlipFromMixup). Over a session's NAMING_LEVELS (4) levels, a child who slips on every one at the
+  // worst rows is named 13 in 256 at worst (the packet's table)
+  chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 }, "keep:tally-four": { sightings: 2 } },
+  firmSighting: (level: PlayLevel<TallyParams>, rule: string) => rule === "tally-four" && level.params.goal === "read" && !oneSlipFromMixup(level.params.counts[0]),
+  // dc-r8-gate2-shadow S3: read's sighting counts only on a row where no reading habit types the mix-up's number
+  // (discriminatingRead); keep is not a typed number (its rules: H4 and its own level law)
+  sightingCounts: (level: PlayLevel<TallyParams>, rule: string) => !HABIT_RULES.on || rule !== "tally-four" || level.params.goal !== "read" || discriminatingRead(level.params.counts[0]),
+  // gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. read: the number she typed, so two rows
+  // on which the mix-up gives the same number (19 and 20 both give 16; 34 and 35 both 28) are one sighting, and "16 every
+  // time" or "what I typed last time" is seen once. keep's "five" (H4): her totals, so two levels count only with other totals
+  sightingOf: (level: PlayLevel<TallyParams>, rule: string, s: TallyState) => (rule !== "tally-four" || !s?.totals ? null
+    : level.params.goal === "read" ? (s.totals[0] !== null && s.totals[0] !== undefined ? `n:${s.totals[0]}` : null)
+    : `t:${s.totals.map((x) => (x === null ? "-" : String(x))).join(",")}`),
+  // gate 2, H4 (dc-r8-gate2-habit-children): keep's "five" needs two levels, with different totals, like any other habit of
+  // one button: its moment is a pick (chanceMis at chance weight, nothing in her facts, seam or trail), named on a second
+  // keep level whose rows' counts differ (the surface) and on which her totals differ (sightingOf). "counted" still names
+  // from one level (three ordinary slips or more from the truth)
+  chanceAt: (level: PlayLevel<TallyParams>, m: Moment) => keepFivePick(level, m),
+};
+/** gate 2, H4: is this moment keep's "five" (a pick)? */
+export const keepFivePick = (level: PlayLevel<TallyParams>, m: Moment): boolean => level.params.goal === "keep" && m.kind === "misconception_consequence" && m.misconceptionId === "tally-four" && m.facts?.sign === "five";

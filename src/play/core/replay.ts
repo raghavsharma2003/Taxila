@@ -7,8 +7,13 @@
 //     misconception, a discriminating correct); a decisive refusal (e.g. "done" with a composite leaf) → incorrect;
 //   - the VERDICT is the end state: solved if the goal is met at the end (a child who recovered after a slip still solved
 //     the level; the evidence still records the slip);
-//   - no acts → no evidence; the game weight is GAME_WEIGHT; mastery is never decided here.
-import { GAME_WEIGHT, type FamilyLogic, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict } from "../../../shared/play.ts";
+//   - no acts → no evidence; the game weight is GAME_WEIGHT; mastery is never decided here;
+//   - a correct outcome on a one-decision goal (logic.oneDecision) enters at CHANCE_WEIGHT, the arena's chance-adjusted
+//     weight: a lucky first tap lands those 20 to 40 % of the time (games audit GAMES-03). Its misses keep GAME_WEIGHT.
+//   - round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up is named only by an act a guess rarely produces. A mal-rule
+//     signature on a goal decided by one pick among a few (oneDecision, chancePicks) enters at CHANCE_WEIGHT as
+//     `chanceMis`, never as misconceptionId: the server names it when it repeats on a level whose surface differs.
+import { CHANCE_WEIGHT, GAME_WEIGHT, HABIT_RULES, type FamilyLogic, type GameWeight, type Moment, type PlayActBody, type PlayActEnvelope, type PlayEvidence, type PlayGrade, type PlayLevel, type PlayVerdict, type SightingValue } from "../../../shared/play.ts";
 
 export interface Replayed<S> { state: S; moments: Moment[]; refused: number; refusals: { seq: number; code: string }[] }
 
@@ -40,24 +45,40 @@ export interface GradeOpts {
 export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S, A>, level: PlayLevel<P>, acts: PlayActEnvelope<A>[], opts: GradeOpts = {}): PlayGrade {
   const r = replayAll(logic, level, acts);
   const solved = acts.length > 0 && logic.goalMet(level, r.state);
-  const decisive: { kind: string; seq: number; mis?: string }[] = [];
-  for (const m of r.moments) if (DECISIVE.has(m.kind)) decisive.push({ kind: m.kind, seq: m.seq, mis: m.misconceptionId });
+  const decisive: { kind: string; seq: number; mis?: string; m?: Moment }[] = [];
+  for (const m of r.moments) if (DECISIVE.has(m.kind)) decisive.push({ kind: m.kind, seq: m.seq, mis: m.misconceptionId, m });
   for (const f of r.refusals) if (opts.decisiveRefusals?.includes(f.code)) decisive.push({ kind: "decisive_refusal", seq: f.seq });
   decisive.sort((a, b) => a.seq - b.seq);
   const first = decisive[0] ?? null;
   const clean = !r.moments.some((m) => m.kind === "misconception_consequence");
   const verdict: PlayVerdict = acts.length === 0 ? "ungraded" : solved ? "solved" : opts.partial ? "partial" : "not_yet";
   const evidence: PlayEvidence[] = [];
-  const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as typeof GAME_WEIGHT, levelId: level.levelId };
+  const base = { skillId: level.skillId, via: "game" as const, weight: GAME_WEIGHT as GameWeight, levelId: level.levelId };
+  const chance = !!level.goal && !!logic.oneDecision?.includes(level.goal);
+  // gate 2 (H4): a moment the family marks as a pick (FamilyLogic.chanceAt) is one too
+  const at = (m?: Moment) => { if (!m || !HABIT_RULES.on) return false; try { return !!logic.chanceAt?.(level, m); } catch { return false; } };
+  const pick = (mis?: string, m?: Moment) => chance || at(m) || (!!level.goal && (!!logic.chancePicks?.includes(level.goal) || (!!mis && !!logic.chancePicks?.includes(`${level.goal}:${mis}`))));
+  // gate 2 (H1): what she did at the pick, as a value (FamilyLogic.sightingOf), from the state just after that act
+  const actOf = (mis: string, m: Moment, seq: number): SightingValue | null => {
+    if (!HABIT_RULES.on || typeof logic.sightingOf !== "function") return null;
+    try { return logic.sightingOf(level, mis, replayAll(logic, level, acts.filter((e) => e.seq <= seq)).state, m) ?? null; } catch { return null; }
+  };
   if (first) {
     if (first.kind === "misconception_consequence") {
       const kit = first.mis ? level.mal[first.mis] : undefined;
-      evidence.push({ ...base, outcome: "incorrect", ...(kit ? { misconceptionId: kit } : {}), actSeq: first.seq });
+      if (pick(first.mis, first.m)) {
+        const v = kit && first.mis && first.m ? actOf(first.mis, first.m, first.seq) : null;
+        evidence.push({ ...base, outcome: "incorrect", weight: CHANCE_WEIGHT, ...(kit ? { chanceMis: kit } : {}), ...(v !== null ? { chanceAct: v } : {}), actSeq: first.seq });
+      }
+      else evidence.push({ ...base, outcome: "incorrect", ...(kit ? { misconceptionId: kit } : {}), actSeq: first.seq });
     } else if (first.kind === "near_miss") evidence.push({ ...base, outcome: "partial", actSeq: first.seq });
     else if (first.kind === "decisive_refusal") evidence.push({ ...base, outcome: "incorrect", actSeq: first.seq });
     else if (first.kind === "solved") {
-      const d = level.proof.discriminates[0];
-      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), actSeq: first.seq });
+      // gate 2: a faint solve (FamilyLogic.faintSolve) enters at chance weight and tells nothing against a mix-up
+      let faint = false;
+      try { faint = !!logic.faintSolve?.(level); } catch { faint = false; }
+      const d = faint ? undefined : level.proof.discriminates[0];
+      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), ...(chance || faint ? { weight: CHANCE_WEIGHT } : {}), actSeq: first.seq });
     }
   } else if (opts.final && acts.length > 0 && !solved) {
     evidence.push({ ...base, outcome: opts.partial ? "partial" : "incorrect", actSeq: acts[acts.length - 1].seq });

@@ -5,6 +5,7 @@
 // and round). Ends hands-on: tap where the water you cannot see is; the host checks the tap against the vapour region.
 import { WC_VAPOUR_REGION, type WaterCycleSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
+import { withAlpha } from "../../theme/palette.ts";
 import { clamp, ease, lerp, rng } from "../core/math.ts";
 import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
@@ -28,61 +29,61 @@ function create(api: EngineApi, spec: WaterCycleSpec): EngineInstance {
   const grains = Array.from({ length: 140 }, () => ({ x: 520 + r0() * 480, y: 478 + r0() * 147, r: 7 + r0() * 9 }));
   const live = { tapped: null as null | { x: number; y: number; ok: boolean; t: number }, done: false };
   const paintBase = (g: Ctx) => {
-    const sky = g.createLinearGradient(0, 0, 0, SEA_Y); sky.addColorStop(0, "#08122A"); sky.addColorStop(0.7, "#1A2C55"); sky.addColorStop(1, "#3E5482");
+    const sky = g.createLinearGradient(0, 0, 0, SEA_Y); sky.addColorStop(0, C.wcSkyTop); sky.addColorStop(0.7, C.wcSkyMid); sky.addColorStop(1, C.wcSkyLow);
     g.fillStyle = sky; g.fillRect(0, 0, W, H);
-    const r2 = rng(9); for (let i = 0; i < 80; i++) { g.globalAlpha = 0.2 + r2() * 0.4; g.fillStyle = "#DDE6FF"; g.fillRect(r2() * W, r2() * 200, 1.5, 1.5); } g.globalAlpha = 1;
+    const r2 = rng(9); for (let i = 0; i < 80; i++) { g.globalAlpha = 0.2 + r2() * 0.4; g.fillStyle = C.wcStar; g.fillRect(r2() * W, r2() * 200, 1.5, 1.5); } g.globalAlpha = 1;
   };
   const paintLand = (g: Ctx) => {
-    g.fillStyle = "#1E2B25"; g.beginPath(); g.moveTo(440, H); for (let x = 440; x <= W; x += 10) g.lineTo(x, landY(x)); g.lineTo(W, H); g.closePath(); g.fill();
-    g.fillStyle = "#2D3650"; g.beginPath(); g.moveTo(640, 360); for (let x = 640; x <= W; x += 10) g.lineTo(x, landY(x)); g.lineTo(W, 380); g.closePath(); g.fill();
-    g.fillStyle = "#E6ECF5"; g.beginPath(); g.moveTo(735, 257); g.lineTo(760, 229); g.lineTo(790, 256); g.lineTo(772, 250); g.lineTo(760, 260); g.closePath(); g.fill();
+    g.fillStyle = C.wcLand; g.beginPath(); g.moveTo(440, H); for (let x = 440; x <= W; x += 10) g.lineTo(x, landY(x)); g.lineTo(W, H); g.closePath(); g.fill();
+    g.fillStyle = C.wcHills; g.beginPath(); g.moveTo(640, 360); for (let x = 640; x <= W; x += 10) g.lineTo(x, landY(x)); g.lineTo(W, 380); g.closePath(); g.fill();
+    g.fillStyle = C.wcSnow; g.beginPath(); g.moveTo(735, 257); g.lineTo(760, 229); g.lineTo(790, 256); g.lineTo(772, 250); g.lineTo(760, 260); g.closePath(); g.fill();
   };
   function render(ctx: Ctx, now: number) {
     const t = sh.head.t, z = V("cam.zoom"), cx = V("cam.x"), cy = V("cam.y");
     ctx.drawImage(api.layer("base", paintBase), 0, 0, W, H);
     ctx.save(); ctx.translate(500, 312); ctx.scale(z, z); ctx.translate(-cx, -cy);
     const sunA = V("sun.a"), heat = V("sun.heat");
-    if (sunA > 0.01) { bloom(ctx, "#FFC46B", 150, 120, 150 + 90 * heat, sunA * (0.5 + 0.4 * heat)); ctx.save(); ctx.globalAlpha = sunA; ctx.fillStyle = "#FFE7A8"; ctx.beginPath(); ctx.arc(150, 120, 44, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+    if (sunA > 0.01) { bloom(ctx, C.wcSunGlow, 150, 120, 150 + 90 * heat, sunA * (0.5 + 0.4 * heat)); ctx.save(); ctx.globalAlpha = sunA; ctx.fillStyle = C.wcSun; ctx.beginPath(); ctx.arc(150, 120, 44, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
     const landA = V("land.a"); if (landA > 0.01) { ctx.save(); ctx.globalAlpha = landA; ctx.drawImage(api.layer("land", paintLand), 0, 0, W, H); ctx.restore(); }
     // groundwater cut-away: grains with water filling the gaps (a sponge, not a lake)
     const gA = V("ground.a"), flow = V("flow");
     if (gA > 0.01) {
       ctx.save(); ctx.globalAlpha = gA; ctx.beginPath(); ctx.moveTo(520, H); for (let x = 520; x <= W; x += 10) ctx.lineTo(x, Math.max(landY(x) + 30, 478)); ctx.lineTo(W, H); ctx.closePath(); ctx.clip();
-      ctx.fillStyle = "#2A2118"; ctx.fillRect(520, 470, 480, 160);
-      const wl = lerp(625, 520, clamp(flow, 0, 1)); ctx.fillStyle = "rgba(80,150,255,.55)"; ctx.fillRect(520, wl, 480, H - wl);
-      for (const g of grains) { ctx.fillStyle = "#6B5642"; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2); ctx.fill(); }
-      if (!api.reducedMotion) { ctx.fillStyle = "rgba(160,205,255,.9)"; for (let i = 0; i < 24; i++) { const k = ((t * 0.08 + i / 24) % 1); ctx.beginPath(); ctx.arc(980 - k * 470, wl + 18 + (i % 5) * 18 + Math.sin(k * 20 + i) * 6, 3, 0, Math.PI * 2); ctx.fill(); } }
+      ctx.fillStyle = C.wcSoil; ctx.fillRect(520, 470, 480, 160);
+      const wl = lerp(625, 520, clamp(flow, 0, 1)); ctx.fillStyle = withAlpha(C.wcGroundWater, .55); ctx.fillRect(520, wl, 480, H - wl);
+      for (const g of grains) { ctx.fillStyle = C.wcGrain; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI * 2); ctx.fill(); }
+      if (!api.reducedMotion) { ctx.fillStyle = withAlpha(C.wcSeep, .9); for (let i = 0; i < 24; i++) { const k = ((t * 0.08 + i / 24) % 1); ctx.beginPath(); ctx.arc(980 - k * 470, wl + 18 + (i % 5) * 18 + Math.sin(k * 20 + i) * 6, 3, 0, Math.PI * 2); ctx.fill(); } }
       ctx.restore();
     }
     // sea
     const seaA = V("sea.a");
     if (seaA > 0.01) {
       ctx.save(); ctx.globalAlpha = seaA;
-      const gr = ctx.createLinearGradient(0, SEA_Y, 0, H); gr.addColorStop(0, "#1E5594"); gr.addColorStop(1, "#0B2142"); ctx.fillStyle = gr;
+      const gr = ctx.createLinearGradient(0, SEA_Y, 0, H); gr.addColorStop(0, C.wcSea); gr.addColorStop(1, C.wcSeaDeep); ctx.fillStyle = gr;
       ctx.beginPath(); ctx.moveTo(0, H); for (let x = 0; x <= 500; x += 10) ctx.lineTo(x, SEA_Y + Math.sin(x * 0.04 + t * 1.6) * 4); ctx.lineTo(500, H); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = "rgba(200,225,255,.25)"; ctx.lineWidth = 2; for (let k = 0; k < 4; k++) { ctx.beginPath(); for (let x = 0; x <= 480; x += 10) { const y = SEA_Y + 20 + k * 30 + Math.sin(x * 0.05 + t * (1.2 + k * 0.2) + k) * 3; if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); }
+      ctx.strokeStyle = withAlpha(C.wcSeaLine, .25); ctx.lineWidth = 2; for (let k = 0; k < 4; k++) { ctx.beginPath(); for (let x = 0; x <= 480; x += 10) { const y = SEA_Y + 20 + k * 30 + Math.sin(x * 0.05 + t * (1.2 + k * 0.2) + k) * 3; if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); }
       ctx.restore();
     }
     // river
-    if (flow > 0.01) { ctx.save(); ctx.strokeStyle = "rgba(110,170,255,.85)"; ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.setLineDash([18, 14]); ctx.lineDashOffset = api.reducedMotion ? 0 : t * 60; ctx.globalAlpha = flow; ctx.beginPath(); ctx.moveTo(765, 262); ctx.bezierCurveTo(720, 340, 650, 360, 600, 410); ctx.bezierCurveTo(560, 440, 520, 445, 470, 446); ctx.stroke(); ctx.restore(); }
+    if (flow > 0.01) { ctx.save(); ctx.strokeStyle = withAlpha(C.wcRiver, .85); ctx.lineWidth = 7; ctx.lineCap = "round"; ctx.setLineDash([18, 14]); ctx.lineDashOffset = api.reducedMotion ? 0 : t * 60; ctx.globalAlpha = flow; ctx.beginPath(); ctx.moveTo(765, 262); ctx.bezierCurveTo(720, 340, 650, 360, 600, 410); ctx.bezierCurveTo(560, 440, 520, 445, 470, 446); ctx.stroke(); ctx.restore(); }
     // invisible vapour: barely-there shimmer rising from the sea (a teaching cue, labelled invisible)
     const evap = V("evap");
-    if (evap > 0.01 && !sh.interactive) for (const v of vap) { const k = (v.ph + t * v.sp) % 1, y = SEA_Y - k * 250, x = v.x + Math.sin(k * 8 + v.w) * 10; ctx.fillStyle = `rgba(220,235,255,${0.28 * evap * (1 - k)})`; ctx.fillRect(x, y, 2.2, 2.2); }
+    if (evap > 0.01 && !sh.interactive) for (const v of vap) { const k = (v.ph + t * v.sp) % 1, y = SEA_Y - k * 250, x = v.x + Math.sin(k * 8 + v.w) * 10; ctx.fillStyle = withAlpha(C.wcVapour, 0.28 * evap * (1 - k)); ctx.fillRect(x, y, 2.2, 2.2); }
     // cloud = droplets
     const cond = V("cond"), wind = V("wind"), ccx = lerp(300, 715, ease.inOutSine(wind)), ccy = lerp(190, 212, wind);   // ends clear of the teacher PiP zone
-    if (cond > 0.01) { ctx.save(); ctx.globalAlpha = Math.min(1, cond * 1.2); for (const p of puffs) { const r = p.r * (0.4 + 0.6 * cond); ctx.fillStyle = "rgba(235,240,250,.85)"; ctx.beginPath(); ctx.arc(ccx + p.ox * (0.5 + 0.5 * cond), ccy + p.oy, r, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = "rgba(170,180,200,.35)"; ctx.beginPath(); ctx.ellipse(ccx, ccy + 28, 130 * cond, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
+    if (cond > 0.01) { ctx.save(); ctx.globalAlpha = Math.min(1, cond * 1.2); for (const p of puffs) { const r = p.r * (0.4 + 0.6 * cond); ctx.fillStyle = withAlpha(C.wcCloud, .85); ctx.beginPath(); ctx.arc(ccx + p.ox * (0.5 + 0.5 * cond), ccy + p.oy, r, 0, Math.PI * 2); ctx.fill(); } ctx.fillStyle = withAlpha(C.wcCloudShade, .35); ctx.beginPath(); ctx.ellipse(ccx, ccy + 28, 130 * cond, 22, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
     // rain
     const rain = V("rain");
-    if (rain > 0.01) { ctx.save(); ctx.strokeStyle = `rgba(150,195,255,${0.8 * rain})`; ctx.lineWidth = 3; for (const d of drops) { const k = (d.ph + t * d.sp) % 1, x = ccx + d.ox, y0 = ccy + 30, y = lerp(y0, landY(x), k); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 3, y + 14); ctx.stroke(); } ctx.restore(); }
+    if (rain > 0.01) { ctx.save(); ctx.strokeStyle = withAlpha(C.wcRain, 0.8 * rain); ctx.lineWidth = 3; for (const d of drops) { const k = (d.ph + t * d.sp) % 1, x = ccx + d.ox, y0 = ccy + 30, y = lerp(y0, landY(x), k); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - 3, y + 14); ctx.stroke(); } ctx.restore(); }
     ctx.restore();   // camera
     // kettle inset: the clear gap is the vapour; the white plume is droplets
     const kA = V("kettle.a"), zk = V("zoom");
     if (kA > 0.01 && zk > 0.01) {
       const ix = 300, iy = 330, R = 160 * ease.outCubic(zk);
-      ctx.save(); ctx.globalAlpha = kA; ctx.beginPath(); ctx.arc(ix, iy, R, 0, Math.PI * 2); ctx.fillStyle = "#121726"; ctx.fill(); ctx.clip();
-      ctx.fillStyle = "#4A5168"; ctx.beginPath(); ctx.ellipse(ix - 30, iy + 90, 70, 50, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.strokeStyle = "#4A5168"; ctx.lineWidth = 16; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(ix + 20, iy + 70); ctx.lineTo(ix + 70, iy + 30); ctx.stroke();
-      for (let i = 0; i < 26; i++) { const k = ((t * 0.5 + i / 26) % 1), px = ix + 78 + k * 40 + Math.sin(k * 9 + i) * 10 * k, py = iy + 10 - 40 - k * 130; ctx.fillStyle = `rgba(240,244,250,${0.75 * (1 - k)})`; ctx.beginPath(); ctx.arc(px, py, 8 + k * 16, 0, Math.PI * 2); ctx.fill(); }
+      ctx.save(); ctx.globalAlpha = kA; ctx.beginPath(); ctx.arc(ix, iy, R, 0, Math.PI * 2); ctx.fillStyle = C.wcInset; ctx.fill(); ctx.clip();
+      ctx.fillStyle = C.wcInsetHill; ctx.beginPath(); ctx.ellipse(ix - 30, iy + 90, 70, 50, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = C.wcInsetHill; ctx.lineWidth = 16; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(ix + 20, iy + 70); ctx.lineTo(ix + 70, iy + 30); ctx.stroke();
+      for (let i = 0; i < 26; i++) { const k = ((t * 0.5 + i / 26) % 1), px = ix + 78 + k * 40 + Math.sin(k * 9 + i) * 10 * k, py = iy + 10 - 40 - k * 130; ctx.fillStyle = withAlpha(C.wcMist, 0.75 * (1 - k)); ctx.beginPath(); ctx.arc(px, py, 8 + k * 16, 0, Math.PI * 2); ctx.fill(); }
       ctx.restore();
       ctx.save(); ctx.globalAlpha = kA; ctx.strokeStyle = C.ion; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(ix, iy, R, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
       if (V("lbl.gap") > 0.01) { ctx.save(); ctx.globalAlpha = V("lbl.gap"); ctx.strokeStyle = C.ion; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(ix + 80, iy + 22); ctx.lineTo(ix + 200, iy + 60); ctx.stroke(); api.text(ctx, T.gap, ix + 206, iy + 72, { font: "mono", size: 38, weight: 600, color: C.ion, maxWidth: 480 }); ctx.restore(); }
@@ -91,15 +92,15 @@ function create(api: EngineApi, spec: WaterCycleSpec): EngineInstance {
     // labels (screen space, never scaled below the minimum)
     const lbl = (k: string, text: string, x: number, y: number, col: string = C.ink) => { const a = V("lbl." + k); if (a > 0.01) api.text(ctx, text, x, y, { font: "mono", size: 38, weight: 600, color: col, alpha: a, maxWidth: 560 }); };
     const toS = (x: number, y: number) => [(x - cx) * z + 500, (y - cy) * z + 312];
-    if (!sh.interactive) lbl("vapour", T.vapour, 60, 330, "#BFD4FF");
+    if (!sh.interactive) lbl("vapour", T.vapour, 60, 330, C.wcVapourLabel);
     const [ccxS, ccyS] = toS(ccx, ccy);
     { const a = V("lbl.cloud"); if (a > 0.01) api.text(ctx, T.cloud, clamp(ccxS - 150, 420, 700), clamp(ccyS + 4, 190, 560), { font: "mono", size: 38, weight: 600, color: C.ink, alpha: a, align: "right", baseline: "middle", maxWidth: 400 }); }
     lbl("cool", T.cool, 200, 120, C.ink2);
-    lbl("rain", T.rain, clamp(ccxS + 140, 200, 820), ccyS + 110, "#9CC4FF");
-    lbl("river", T.river, 560, 470, "#9CC4FF");
-    lbl("ground", T.ground, 560, 600, "#9CC4FF");
+    lbl("rain", T.rain, clamp(ccxS + 140, 200, 820), ccyS + 110, C.wcRainLabel);
+    lbl("river", T.river, 560, 470, C.wcRainLabel);
+    lbl("ground", T.ground, 560, 600, C.wcRainLabel);
     const tA = V("title.a"); if (tA > 0.01) { ctx.save(); ctx.globalAlpha = tA; api.text(ctx, T.title, 500, 300, { font: "display", size: 74, weight: 800, align: "center", baseline: "middle", maxWidth: 900 }); ctx.strokeStyle = C.ion; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(500 - 130 * tA, 360); ctx.lineTo(500 + 130 * tA, 360); ctx.stroke(); ctx.restore(); }
-    if (live.tapped) { const tp = live.tapped, k = clamp(tp.t / 0.3, 0, 1); ctx.save(); ctx.globalAlpha = k; ctx.strokeStyle = tp.ok ? C.mint : C.amber; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(tp.x, tp.y, 30, 0, Math.PI * 2); ctx.stroke(); if (tp.ok) tick(ctx, tp.x + 46, tp.y - 26); else magnifier(ctx, tp.x + 46, tp.y - 26); if (tp.ok || tp.t > 1.2) { const R = WC_VAPOUR_REGION; ctx.setLineDash([10, 8]); ctx.strokeStyle = C.mint; ctx.strokeRect(R.x, R.y, R.w, R.h); ctx.setLineDash([]); for (const v of vap) { const kk = (v.ph + now * v.sp) % 1; ctx.fillStyle = `rgba(220,235,255,${0.45 * (1 - kk)})`; ctx.fillRect(v.x, SEA_Y - kk * 250, 2.4, 2.4); } } ctx.restore(); }
+    if (live.tapped) { const tp = live.tapped, k = clamp(tp.t / 0.3, 0, 1); ctx.save(); ctx.globalAlpha = k; ctx.strokeStyle = tp.ok ? C.mint : C.amber; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(tp.x, tp.y, 30, 0, Math.PI * 2); ctx.stroke(); if (tp.ok) tick(ctx, tp.x + 46, tp.y - 26); else magnifier(ctx, tp.x + 46, tp.y - 26); if (tp.ok || tp.t > 1.2) { const R = WC_VAPOUR_REGION; ctx.setLineDash([10, 8]); ctx.strokeStyle = C.mint; ctx.strokeRect(R.x, R.y, R.w, R.h); ctx.setLineDash([]); for (const v of vap) { const kk = (v.ph + now * v.sp) % 1; ctx.fillStyle = withAlpha(C.wcVapour, 0.45 * (1 - kk)); ctx.fillRect(v.x, SEA_Y - kk * 250, 2.4, 2.4); } } ctx.restore(); }
     api.fx.drawWorld(ctx);
   }
   api.onPointer({
@@ -130,8 +131,8 @@ function create(api: EngineApi, spec: WaterCycleSpec): EngineInstance {
       const R = WC_VAPOUR_REGION; return { type: "tap", at: [R.x + R.w * 0.5, R.y + R.h * 0.4], after: 2000 };
     },
     knob: (k) => sh.knob(k, () => { live.tapped = null; live.done = false; }),
-    board: () => ({ title: "Same water, round and round", lines: ["Vapour is invisible; clouds are droplets.", "Groundwater fills the gaps in soil, like a sponge."], figure: { kind: "chain", items: ["sea", "vapour", "cloud", "rain", "river"] }, accent: "#9CC4FF" }),
+    board: () => ({ title: "Same water, round and round", lines: ["Vapour is invisible; clouds are droplets.", "Groundwater fills the gaps in soil, like a sponge."], figure: { kind: "chain", items: ["sea", "vapour", "cloud", "rain", "river"] }, accent: C.wcRainLabel }),
     dispose: () => sh.dispose(),
   };
 }
-export const watercycle: EngineDef<WaterCycleSpec> = { archetype: "water-cycle@1", label: "Animation · Water", accent: C.sci, create };
+export const watercycle: EngineDef<WaterCycleSpec> = { archetype: "water-cycle@1", label: "Animation · Water", get accent() { return C.sci; }, create };

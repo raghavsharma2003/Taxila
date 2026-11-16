@@ -6,12 +6,21 @@ export const SAFE = {
   pip: { x: W - 162.5, y: 0, w: 162.5, h: 162.5 },   // top-right square, 26% of the short side: the teacher
 };
 export const MIN = { label: 38, value: 48, stroke: 4, target: 130 };
-export const C = {
-  bg: "#0A0C12", bg1: "#10131B", bg2: "#161A24", bg3: "#1F2431", stage: "#0D1017", board: "#0E1118",
-  ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#848CA0",
-  ion: "#8B98FF", ionDeep: "#4F5BD5", volt: "#CBFF4D", mint: "#3DDC97", amber: "#FFB547",
-  sci: "#2FD3C7", sun: "#FFD27A", line: "rgba(255,255,255,.08)", line2: "rgba(255,255,255,.15)",
-} as const;
+/** Classes 4-5 (the stage's `young` flag): the play floor is 16 px, and a 412 px phone gives the world about 0.376 px per
+ *  unit, so no text a young child sees is drawn below 43 units (16 / 0.376). Applied once, in the shared text helper
+ *  (draw.ts makeText), never per engine; engines read it as `api.minLabel` for their layout math. */
+export const MIN_YOUNG = { label: 43 } as const;
+import { ENGINE_1, ENGINE_2, NIGHT, themeOf, type StudioColours, type ThemeName } from "../../theme/palette.ts";
+/** The active theme's engine colours (src/theme/palette.ts: the one colour file). Engines read `C.x` when they draw, so
+ *  `useStudioTheme` before an engine is created switches everything it paints; night (today's look) is the default. */
+export const C: StudioColours & typeof ENGINE_1.night & typeof ENGINE_2.night = { ...NIGHT.studio, ...ENGINE_1.night, ...ENGINE_2.night };
+let activeTheme: ThemeName = "night";
+export function useStudioTheme(name: ThemeName | string | null | undefined): ThemeName {
+  const t = themeOf(name);
+  Object.assign(C, t.studio, ENGINE_1[t.name], ENGINE_2[t.name]); activeTheme = t.name;
+  return activeTheme;
+}
+export const studioTheme = (): ThemeName => activeTheme;
 export const FONT = {
   display: '"Bricolage Grotesque", system-ui, sans-serif',
   ui: '"Atkinson Hyperlegible Next", system-ui, sans-serif',

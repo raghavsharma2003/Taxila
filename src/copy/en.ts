@@ -144,8 +144,8 @@ export const W2A = {
   "auth.err.signin": "That email and password do not match.",
   "auth.err.name.missing": "Enter your name.",
   "auth.err.network": "We could not reach Taxila. Check the internet and try again.",
-  "auth.err.generic": "Something went wrong. Please try again.",
-  "auth.err.wait": "Too many tries. Wait a few minutes and try again.",
+  "auth.err.generic": "Something went wrong. Try again.",
+  "auth.err.wait": "Too many tries. Wait a minute, then try again.",
   // onboarding step 8: the sound and mic check
   "check.title": "Check sound and the microphone",
   "check.body": "So {child} can hear {T} and {T} can hear {child}.",
@@ -172,10 +172,6 @@ export const subjectWords = (s: string | null | undefined): string =>
 
 /** W2-H: the Studio stage (LIVE-STUDIO §4, STUDENT-FLOW §5.3): the caption chip, the child's controls, skeleton chrome. */
 export const W2H = {
-  // the caption chip while a piece is being made (rotated per lesson so it never becomes a tic)
-  "making.0": "{T} is making this for you",
-  "making.1": "{T} is drawing this for you",
-  "making.2": "{T} is putting this together",
   // the child's controls on a piece
   "again": "Show me again",
   "notThis": "Not this one",
@@ -232,4 +228,90 @@ export const NB = {
 export type NBKey = keyof typeof NB;
 export function tnb(key: NBKey, vars: Record<string, string | number> = {}): string {
   return NB[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
+}
+
+// round 7 stream E (App): the child app and lesson shell. Other streams send copy here by patch (§A: App owns this file).
+export const R7 = {
+  // F Learning to-app/001: the chapter the parent said school is on, on the World and the map
+  "map.schoolHere": "Your class is here",
+  "map.schoolHereAt": "Your class is here: {subject} · {chapter}",
+  // r7 app-me-settings: What {T} remembers (STUDENT-FLOW §11.4)
+  "mem.title": "What {T} remembers",
+  "mem.from": "From what you said on {date}",
+  "mem.forget": "Forget this",
+  "mem.forgotten": "{T} has forgotten that.",
+  "mem.off": "{T} doesn't remember anything between days. Your grown-up chose this.",
+  "mem.none": "{T} hasn't kept anything you said yet.",
+  "mem.row": "What {T} remembers",
+  // r7 homework help: the one confirm after the match (Learning's ladder), then the lesson starts
+  "hw.checking": "Finding it in your book…",
+  "hw.confirm": "Is this from {topic}?",
+  "hw.yes": "Yes",
+  "hw.no": "Not this",
+  // r7 app-notebook-log: the Notebook's pages
+  "nb.lessons": "Lessons",
+  "nb.made": "Made for you",
+  "nb.madeEmpty": "Things {T} makes for you will be here.",
+  "nb.close": "Close",
+  "nb.jar": "Questions",
+  // r7 9-15 onboarding sweep: Hello for the older family
+  "hello.likesOlder": "Your parent picked these. Still you?",
+  // r7 app-ask-voice: "Say it" on Ask
+  // r7 app-pwa-install
+  "app.install": "Put Taxila on this phone",
+  "gate.missing": "We could not find this learner. Go back and pick who is learning.",
+  "who.err": "Taxila could not open just now. Check the internet and try again.",
+  "who.retry": "Try again",
+  "who.help": "Get help",
+  "app.installNote": "It opens like an app, with its own icon.",
+  "ask.say": "Say it",
+  "ask.listening": "Listening… tap when done",
+  "ask.hearing": "Hearing you…",
+  "ask.heard": "This is what {T} heard. Fix anything, then Ask.",
+  "ask.none": "I didn't catch that. Say it again, or type it.",
+  "ask.failed": "Talking isn't working right now. Type your question instead.",
+  "jar.waiting": "{T} will bring these back",
+  "jar.answered": "Answered",
+  "jar.answeredOn": "answered on {date}",
+  "jar.empty": "When {T} saves a question for later, it waits here.",
+  // r7 app-notebook-log growth page: "Then and now" (what became pakka, next to where it started; never a count)
+  "nb.growth": "Then and now",
+  "growth.then": "First met on {date}",
+  "growth.thenHint": "First met on {date}, with a hint",
+  "growth.now": "Secure since {date}",
+  "growth.helped": "This helped",
+  "growth.empty": "When something becomes pakka, it shows here, next to where you started.",
+  // r7 (Learning to-app/007): "Maths feels…" at Hello: a feeling, never a test (no right answer, no score)
+  "feel.title": "How school feels right now",
+  "feel.sub": "Pick a face. There is no right answer.",
+  "feel.row": "{S} feels",
+  "feel.easy": "Easy",
+  "feel.okay": "Okay",
+  "feel.tricky": "Tricky",
+  "feel.got": "Got it",
+  "feel.next": "Next",
+  // r7 app-auth-email-otp: sign in with a code sent by email
+  "code.title": "Sign in with a code",
+  "code.why": "We email you a 6-digit code. No password needed.",
+  "code.email": "Email",
+  "code.send": "Email me a code",
+  "code.sent": "If {email} has a Taxila account, a code is on its way. It works for {min} minutes.",
+  "code.field": "The 6-digit code",
+  "code.go": "Sign in",
+  "code.again": "Send a new code",
+  "code.other": "Use a different email",
+  "code.password": "Sign in with a password instead",
+  "code.instead": "Email me a code instead",
+  "code.err.bad": "That code is not right. Check the email and type it again.",
+  "code.err.tries": "Too many tries with that code. Ask for a new one.",
+  "code.err.shape": "The code is 6 digits.",
+  "code.err.unavailable": "Codes by email are not working right now. Sign in with your password instead.",
+  "code.err.phone": "Codes by phone are not ready yet. Use your email.",
+  "code.err.wait": "Too many tries. Wait a minute, then try again.",
+  "code.err.network": "You seem to be offline. Check the internet and try again.",
+  "code.err.generic": "Something went wrong. Try again.",
+} as const;
+export type R7Key = keyof typeof R7;
+export function tr7(key: R7Key, vars: Record<string, string | number> = {}): string {
+  return R7[key].replace(/\{(\w+)\}/g, (m, k: string) => (vars[k] === undefined ? m : String(vars[k])));
 }

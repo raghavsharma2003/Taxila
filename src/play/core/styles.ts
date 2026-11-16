@@ -18,32 +18,32 @@ export const ART: Record<ArtId, ArtTokens> = {
     id: "kagaz", dark: false, ground: "#F3EADB", ground2: "#EADFCB", panel: "#FBF6EC", panelEdge: "#D9C9AE",
     ink: "#2B2118", ink2: "#5A4B3C", ink3: "#7A6A58",
     q1: "#D9921A", q2: "#2F5DA8", q3: "#B4532E", q4: "#46803A",
-    good: "#22794D", look: "#9A5B00", you: "#5B7A00", shadow: "rgba(70,48,20,0.22)", jitter: 0.25,
+    good: "#0B736A", look: "#8A5A00", you: "#EFA52E", youInk: "#1C1A16", focus: "#3B47B0", shadow: "rgba(70,48,20,0.22)", jitter: 0.25,
     font: FONTS, sound: "paper",
   },
   chalk: {
     id: "chalk", dark: true, ground: "#1E2A26", ground2: "#26342F", panel: "rgba(255,255,255,0.05)", panelEdge: "rgba(237,239,230,0.55)",
     ink: "#EEF0E7", ink2: "#C4CABD", ink3: "#A3AA9C",
     q1: "#F2D27A", q2: "#8EC9F0", q3: "#F2A7B8", q4: "#86D9AE",
-    good: "#8BE0B3", look: "#F5B465", you: "#CBFF4D", shadow: "rgba(0,0,0,0.25)", jitter: 1,
+    good: "#8BE0B3", look: "#F5B465", you: "#FF6FD8", youInk: "#0F1218", focus: "#A9B4FF", shadow: "rgba(0,0,0,0.25)", jitter: 1,
     font: FONTS, sound: "chalk",
   },
   blueprint: {
     id: "blueprint", dark: true, ground: "#0F2E57", ground2: "#13386A", panel: "rgba(143,211,255,0.10)", panelEdge: "#8FD3FF",
     ink: "#EAF5FF", ink2: "#B9D8F2", ink3: "#93BCE0",
     q1: "#FFD166", q2: "#7FE3FF", q3: "#FFA08A", q4: "#C5B4FF",
-    good: "#74E8BD", look: "#FFB547", you: "#CBFF4D", shadow: "rgba(0,8,24,0.35)", jitter: 0,
+    good: "#74E8BD", look: "#FFB547", you: "#FF6FD8", youInk: "#0F1218", focus: "#E7D1FF", shadow: "rgba(0,8,24,0.35)", jitter: 0,
     font: FONTS, sound: "blip",
   },
   raat: {
     id: "raat", dark: true, ground: "#0A0C12", ground2: "#141826", panel: "rgba(255,255,255,0.05)", panelEdge: "rgba(255,255,255,0.18)",
     ink: "#F2F4F8", ink2: "#A9B0C0", ink3: "#9AA2B4",
     q1: "#8B98FF", q2: "#2FD3C7", q3: "#FFD27A", q4: "#FF8A7A",
-    good: "#3DDC97", look: "#FFB547", you: "#CBFF4D", shadow: "rgba(0,0,0,0.4)", jitter: 0,
+    good: "#4FE0A2", look: "#FFB54A", you: "#FF6FD8", youInk: "#0F1218", focus: "#8F9BFF", shadow: "rgba(0,0,0,0.4)", jitter: 0,
     font: FONTS, sound: "glass",
   },
 };
-export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3" | "good" | "look" | "you" | "ground2";
+export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3" | "good" | "look" | "ground2" | "focus";
 /**
  * Physical materials a lab draws (the colour IS the condition or the outcome: a black can, rust, iodine blue-black).
  * Families never write a colour literal (tests/play-style-lint.test.mjs); they ask for a material and the direction tunes
@@ -51,13 +51,15 @@ export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3"
  */
 export type Material = "water" | "ice" | "rust" | "wood" | "iron" | "steel" | "clay" | "soil" | "cotton" | "roti" | "mould" | "leaf" | "leafPale"
   | "starch" | "nostarch" | "black" | "white" | "red" | "blue" | "copper" | "aluminium" | "brass" | "plastic" | "wool" | "glow" | "paper"
-  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow";
+  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow"
+  | "pink" | "turmeric" | "hibiscus";   // r7 rang: hibiscus dark pink (magenta) in an acid; turmeric yellow; hibiscus water's own purplish colour
 const MAT_LIGHT: Record<Material, string> = {
   water: "#5E9FD6", ice: "#CFE9F7", rust: "#A4471F", wood: "#B27A45", iron: "#5D6168", steel: "#9AA3AD", clay: "#B9734E", soil: "#7A5233",
   cotton: "#FBF9F4", roti: "#D8A45E", mould: "#6F8F5A", leaf: "#3F8A3A", leafPale: "#E8EDCF", starch: "#1F2240", nostarch: "#C99A2E",
   black: "#1B1B1B", white: "#F6F6F2", red: "#C8402F", blue: "#2F5DA8", copper: "#B8652F", aluminium: "#C9CED3", brass: "#C9A13B", plastic: "#E2574C",
   wool: "#C65B7C", glow: "#FFD34D", paper: "#EFE7D6", seed: "#B9A06A", sprout: "#4F9A3E", oil: "#D8B23A", paint: "#3F6FB5", graphite: "#3B3D42",
   rubber: "#5A4A3F", salt: "#F1F1EE", magnetN: "#C8402F", magnetS: "#2F5DA8", sun: "#F2B21B", frost: "#BFE3F5", shadow: "#2A2420",
+  pink: "#C2307A", turmeric: "#E9B526", hibiscus: "#8E6A9E",
 };
 const MAT_DARK: Record<Material, string> = {
   ...MAT_LIGHT,
@@ -65,14 +67,36 @@ const MAT_DARK: Record<Material, string> = {
   leaf: "#5BB255", starch: "#3A3F7A", black: "#2A2A2E", copper: "#D98A4E", graphite: "#62666E", rubber: "#7D6A5C", shadow: "#05070B",
 };
 export type BodyState = "idle" | "hover" | "selected" | "good" | "look" | "dim" | "ghost";
-export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.panel : (a as unknown as Record<string, string>)[r] ?? a.ink);
+/**
+ * Round 8 law 1 ("green means right, and only right"): the meaning roles Design names (answer, focus, mix-up) and the
+ * painter role that draws each. This is the one place the law checks (server/forge3/qa/laws.mjs) read; a Design token
+ * patch fills this map, never a colour literal in a check.
+ */
+export const LAW_ROLES = { answer: "good", focus: "focus", mixup: "look" } as const satisfies Record<"answer" | "focus" | "mixup", Role>;
+// round 8 law 1 ("green means right, and only right") and Design's patch 002: the action hue (`ArtTokens.you`, marigold on
+// kagaz, magenta on the dark arts, never green) belongs to the DOM action button only, so it is not a painter role at all;
+// her pick and her unchecked mark are drawn in "focus" (the laws fail any canvas use of "you": server/forge3/qa/laws.mjs;
+// a stray untyped "you" still paints focus, never the action hue)
+export const roleColor = (a: ArtTokens, r: Role): string => (r === "panel" ? a.panel : (r as string) === "you" ? a.focus : (a as unknown as Record<string, string>)[r] ?? a.ink);
+/** The colour a meaning role is drawn in, for every renderer that is not the 2D painter (the 3D engines' selection rings,
+ *  cursors and her value's label): one token change moves the painter and the engines together. */
+export const lawColor = (a: ArtTokens, m: keyof typeof LAW_ROLES): string => roleColor(a, LAW_ROLES[m]);
 
 // ───────────────────────────── the audit (read by the shot harness) ─────────────────────────────
 
-export interface AuditText { s: string; px: number; x: number; y: number; w: number; align: CanvasTextAlign }
+/** `halo`: drawn over a ground-coloured halo (it stays readable where a line runs under it); `seq`: the draw order within
+ *  the frame, shared with AuditSeg (a line noted before a text lies under it) */
+export interface AuditText { s: string; px: number; x: number; y: number; w: number; align: CanvasTextAlign; halo?: boolean; seq?: number }
 export interface AuditTarget { id: string; x: number; y: number; w: number; h: number }
-export interface Audit { frame: number; texts: AuditText[]; targets: AuditTarget[]; box: { w: number; h: number }; art: ArtId; young: boolean; /** labels that could not fit their box even wrapped at the floor (drawn with an ellipsis): must be 0 */ clipped: number }
-export function newAudit(art: ArtId, young: boolean): Audit { return { frame: 0, texts: [], targets: [], box: { w: 0, h: 0 }, art, young, clipped: 0 }; }
+/** a drawn mark's box (a tick, a chip, a ring, a point's dot): the layout checks hold marks clear of letters and lines */
+export interface AuditMark { kind: string; x: number; y: number; w: number; h: number }
+/** a drawn line a view declares (an arm, a ray): chips must not sit across it */
+export interface AuditSeg { kind: string; x0: number; y0: number; x1: number; y1: number; seq?: number }
+/** round 8 laws: every colour role a frame painted, by the painter op that painted it (the law checks read what green and
+ *  focus were used for: server/forge3/qa/laws.mjs). `role` is the role asked for. */
+export interface AuditUse { op: string; role: string; /** a text's first characters */ s?: string }
+export interface Audit { frame: number; texts: AuditText[]; targets: AuditTarget[]; box: { w: number; h: number }; art: ArtId; young: boolean; /** labels that could not fit their box even wrapped at the floor (drawn with an ellipsis): must be 0 */ clipped: number; marks: AuditMark[]; segs: AuditSeg[]; uses?: AuditUse[] }
+export function newAudit(art: ArtId, young: boolean): Audit { return { frame: 0, texts: [], targets: [], box: { w: 0, h: 0 }, art, young, clipped: 0, marks: [], segs: [], uses: [] }; }
 
 // ───────────────────────────── the painter ─────────────────────────────
 
@@ -85,8 +109,12 @@ function hash(n: number): number { let x = (n | 0) * 374761393; x = (x ^ (x >>> 
 export class Painter {
   art: ArtTokens; audit: Audit; young: boolean;
   constructor(art: ArtTokens, audit: Audit, young: boolean) { this.art = art; this.audit = audit; this.young = young; }
+  /** the draw order of audited texts and noted lines (AuditText.seq, AuditSeg.seq) */
+  private seq = 0;
   get minText(): number { return this.young ? FLOORS.textYoung : FLOORS.text; }
-  color(r: Role): string { return roleColor(this.art, r); }
+  color(r: Role): string { this.use("color", r); return roleColor(this.art, r); }
+  /** record a colour role painted this frame (round 8 laws; the audit's `uses`) */
+  private use(op: string, role: string, s?: string): void { this.audit.uses?.push(s === undefined ? { op, role } : { op, role, s: s.slice(0, 24) }); }
   /** A physical material's colour in this direction. */
   material(m: Material): string { return (this.art.id === "kagaz" ? MAT_LIGHT : MAT_DARK)[m]; }
   /** A veil of the ground over a region (the loupe's lens, a cupboard's dark, a card behind text). */
@@ -147,7 +175,8 @@ export class Painter {
   /** A body of a role: a block, a bar, a pan, a set-up card. `lift` raises it (drag / selected). */
   body(c: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, o: { role: Role; r?: number; lift?: number; state?: BodyState; seed?: number; fill?: number }): void {
     const a = this.art, r = o.r ?? Math.min(12, h * 0.25), lift = o.lift ?? 0, st = o.state ?? "idle";
-    const col = this.color(o.role), alpha = st === "dim" ? 0.45 : st === "ghost" ? 0.35 : 1;
+    this.use("body", o.role); if (st === "selected" || st === "good" || st === "look") this.use(`body:${st}`, st === "selected" ? "focus" : st);
+    const col = roleColor(this.art, o.role), alpha = st === "dim" ? 0.45 : st === "ghost" ? 0.35 : 1;
     c.save(); c.globalAlpha = alpha;
     if (a.id === "kagaz") {
       // paper-cut: a darker cut layer offset below, the sheet, a highlight on the top edge
@@ -177,7 +206,7 @@ export class Painter {
       }
     }
     if (o.fill !== undefined && o.fill > 0) { c.globalAlpha = alpha; c.fillStyle = withAlpha(col, a.dark ? 0.55 : 0.85); rr(c, x + 3, y + h * (1 - o.fill) + 3 - lift * 0.4, w - 6, h * o.fill - 6, Math.max(2, r - 3)); c.fill(); }
-    if (st === "selected" || st === "hover") { c.globalAlpha = 1; c.strokeStyle = st === "selected" ? a.you : withAlpha(a.ink, 0.5); c.lineWidth = st === "selected" ? 3.5 : 2; c.setLineDash(st === "hover" ? [5, 5] : []); rr(c, x - 4, y - 4 - lift * 0.4, w + 8, h + 8, r + 4); c.stroke(); c.setLineDash([]); }
+    if (st === "selected" || st === "hover") { c.globalAlpha = 1; c.strokeStyle = st === "selected" ? a.focus : withAlpha(a.ink, 0.5); c.lineWidth = st === "selected" ? 3.5 : 2; c.setLineDash(st === "hover" ? [5, 5] : []); rr(c, x - 4, y - 4 - lift * 0.4, w + 8, h + 8, r + 4); c.stroke(); c.setLineDash([]); }
     if (st === "good") { c.globalAlpha = 1; c.strokeStyle = a.good; c.lineWidth = 3; rr(c, x - 3, y - 3, w + 6, h + 6, r + 3); c.stroke(); }
     if (st === "look") { c.globalAlpha = 1; c.strokeStyle = a.look; c.lineWidth = 3; c.setLineDash([6, 5]); rr(c, x - 3, y - 3, w + 6, h + 6, r + 3); c.stroke(); c.setLineDash([]); }
     c.restore();
@@ -217,7 +246,8 @@ export class Painter {
   /** A stroke along points: chalk jitters it, blueprint plots it, kagaz and raat draw it clean. */
   stroke(c: CanvasRenderingContext2D, pts: [number, number][], o: { role: Role; width?: number; dash?: number[]; closed?: boolean; alpha?: number; seed?: number }): void {
     if (pts.length < 2) return;
-    const a = this.art, col = this.color(o.role);
+    this.use("stroke", o.role);
+    const a = this.art, col = roleColor(this.art, o.role);
     c.save(); c.globalAlpha = o.alpha ?? 1; c.strokeStyle = col; c.lineWidth = o.width ?? 2.5; c.lineCap = "round"; c.lineJoin = "round"; c.setLineDash(o.dash ?? []);
     const passes = a.id === "chalk" && (o.width ?? 2.5) >= 3 ? 2 : 1;
     for (let p = 0; p < passes; p++) {
@@ -231,7 +261,8 @@ export class Painter {
     c.restore();
   }
   circle(c: CanvasRenderingContext2D, x: number, y: number, r: number, o: { role: Role; fill?: boolean; width?: number; alpha?: number }): void {
-    const col = this.color(o.role);
+    this.use("circle", o.role);
+    const col = roleColor(this.art, o.role);
     c.save(); c.globalAlpha = o.alpha ?? 1;
     c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2);
     if (o.fill) { c.fillStyle = this.art.id === "chalk" ? withAlpha(col, 0.6) : col; c.fill(); }
@@ -242,20 +273,27 @@ export class Painter {
   /** The label colour with the most contrast on a body of `role` (text drawn ON a block, a bag, a pod). */
   labelOn(role: Role): string { return labelOn(this.art, role); }
   /** Text, never below the floor; recorded in the audit with its rendered size and box. Returns the width.
-   *  `on`: the role of the body the text sits on (the label colour is then chosen for contrast, overriding `role`). */
-  text(c: CanvasRenderingContext2D, s: string, x: number, y: number, o: { size: number; role?: Role; on?: Role; weight?: number; font?: "display" | "ui" | "mono"; align?: CanvasTextAlign; baseline?: CanvasTextBaseline; maxW?: number; alpha?: number }): number {
+   *  `on`: the role of the body the text sits on (the label colour is then chosen for contrast, overriding `role`).
+   *  `halo`: a ground-coloured halo under the glyphs, so a line drawn before the text never hides it (kon/place's scale
+   *  numbers over the arms, judging round 3). */
+  text(c: CanvasRenderingContext2D, s: string, x: number, y: number, o: { size: number; role?: Role; on?: Role; weight?: number; font?: "display" | "ui" | "mono"; align?: CanvasTextAlign; baseline?: CanvasTextBaseline; maxW?: number; alpha?: number; halo?: boolean }): number {
     const px = Math.max(o.size, this.minText);
     const fam = /[ऀ-ॿ]/.test(s) ? this.art.font.deva : this.art.font[o.font ?? "ui"];
     c.save();
     c.font = `${o.weight ?? 600} ${px}px ${fam}`; c.textAlign = o.align ?? "center"; c.textBaseline = o.baseline ?? "middle";
-    c.fillStyle = o.on ? labelOn(this.art, o.on) : this.color(o.role ?? "ink"); c.globalAlpha = o.alpha ?? 1;
+    if (!o.on) this.use("text", o.role ?? "ink", s);
+    c.fillStyle = o.on ? labelOn(this.art, o.on) : roleColor(this.art, o.role ?? "ink"); c.globalAlpha = o.alpha ?? 1;
     let w = c.measureText(s).width;
     let fit = px;
     if (o.maxW && w > o.maxW) { fit = Math.max(this.minText, Math.floor((px * o.maxW) / w)); c.font = `${o.weight ?? 600} ${fit}px ${fam}`; w = c.measureText(s).width; }
     if (this.art.id === "raat" && (o.role === "q1" || o.role === "q2" || o.role === "good")) { c.globalAlpha = (o.alpha ?? 1) * 0.35; c.fillText(s, x, y + 1); c.globalAlpha = o.alpha ?? 1; }
+    if (o.halo) {
+      c.save(); c.lineJoin = "round"; c.lineWidth = Math.max(3, fit * 0.32); c.strokeStyle = this.art.ground; c.globalAlpha = (o.alpha ?? 1) * 0.94;
+      c.strokeText(s, x, y); c.restore();
+    }
     c.fillText(s, x, y);
     c.restore();
-    if ((o.alpha ?? 1) > 0.4) this.audit.texts.push({ s: s.slice(0, 24), px: fit, x, y, w, align: o.align ?? "center" });
+    if ((o.alpha ?? 1) > 0.4) this.audit.texts.push({ s: s.slice(0, 24), px: fit, x, y, w, align: o.align ?? "center", ...(o.halo ? { halo: true } : {}), seq: this.seq++ });
     return w;
   }
   /**
@@ -286,15 +324,28 @@ export class Painter {
     const size = Math.max(o.size ?? 16, this.minText), padX = size * 0.6, h = size * 1.8;
     c.save(); c.font = `700 ${size}px ${this.art.font[o.font ?? "mono"]}`; const tw = c.measureText(s).width; c.restore();
     const w = tw + padX * 2, a = this.art;
+    this.audit.marks?.push({ kind: "chip", x: cx - w / 2, y: cy - h / 2, w, h });
     c.save();
     c.fillStyle = a.dark ? "rgba(8,10,16,0.78)" : "rgba(255,252,245,0.94)"; rr(c, cx - w / 2, cy - h / 2, w, h, h / 2); c.fill();
-    c.strokeStyle = o.role ? this.color(o.role) : a.panelEdge; c.lineWidth = 1.5; rr(c, cx - w / 2, cy - h / 2, w, h, h / 2); c.stroke();
+    if (o.role) this.use("chip", o.role);
+    c.strokeStyle = o.role ? roleColor(this.art, o.role) : a.panelEdge; c.lineWidth = 1.5; rr(c, cx - w / 2, cy - h / 2, w, h, h / 2); c.stroke();
     c.restore();
     this.text(c, s, cx, cy + 0.5, { size, role: o.role ?? "ink", weight: 700, font: o.font ?? "mono" });
     return { w, h };
   }
+  /** A chip's box for `s` (as chip() would draw it), to place it before drawing. */
+  chipSize(c: CanvasRenderingContext2D, s: string, o: { size?: number; font?: "ui" | "mono" | "display" } = {}): { w: number; h: number } {
+    const size = Math.max(o.size ?? 16, this.minText);
+    c.save(); c.font = `700 ${size}px ${this.art.font[o.font ?? "mono"]}`; const tw = c.measureText(s).width; c.restore();
+    return { w: tw + size * 1.2, h: size * 1.8 };
+  }
+  /** Record a drawn mark's box, or a drawn line, for the layout checks (draws nothing). */
+  note(kind: string, x: number, y: number, w: number, h: number): void { this.audit.marks?.push({ kind, x, y, w, h }); }
+  noteSeg(kind: string, a: [number, number], b: [number, number]): void { this.audit.segs?.push({ kind, x0: a[0], y0: a[1], x1: b[0], y1: b[1], seq: this.seq++ }); }
   /** A tick (goal met): the only "right" mark there is, and it sits on the work. */
   tick(c: CanvasRenderingContext2D, x: number, y: number, s: number, k = 1): void {
+    if (k > 0) this.audit.marks?.push({ kind: "tick", x: x - s * 0.4 - 2, y: y - s * 0.35 - 2, w: s * 0.85 + 4, h: s * 0.65 + 4 });
+    this.use("tick", "good");
     c.save(); c.strokeStyle = this.art.good; c.lineWidth = Math.max(3, s * 0.16); c.lineCap = "round"; c.lineJoin = "round";
     c.beginPath(); const p1 = [x - s * 0.4, y], p2 = [x - s * 0.1, y + s * 0.3], p3 = [x + s * 0.45, y - s * 0.35];
     c.moveTo(p1[0], p1[1]);
@@ -304,6 +355,7 @@ export class Painter {
   }
   /** A magnifier ("look again"): never a cross, never red. */
   magnifier(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
+    this.use("magnifier", "look");
     c.save(); c.strokeStyle = this.art.look; c.lineWidth = Math.max(2.5, s * 0.12); c.lineCap = "round";
     c.beginPath(); c.arc(x - s * 0.1, y - s * 0.1, s * 0.3, 0, Math.PI * 2); c.stroke();
     c.beginPath(); c.moveTo(x + s * 0.12, y + s * 0.12); c.lineTo(x + s * 0.4, y + s * 0.4); c.stroke(); c.restore();
@@ -316,7 +368,7 @@ export class Painter {
     c.strokeStyle = this.art.dark ? "rgba(255,255,255,0.8)" : "#3F4FD8"; c.lineWidth = 2.5; c.beginPath(); c.arc(x, y, s * 0.55 * (1 - press * 0.2), 0, Math.PI * 2); c.stroke();
     c.restore();
   }
-  particleColor(r: Role): string { return this.color(r); }
+  particleColor(r: Role): string { this.use("particle", r); return roleColor(this.art, r); }
 }
 
 /** The kagaz cut layer under every body (its edge carries the ≥ 3:1 boundary against the paper; tests/play-react). */

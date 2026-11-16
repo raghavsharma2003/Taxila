@@ -1,0 +1,218 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch02-t01",
+    "archetype": "sort-storm@1",
+    "misconceptionId": "c6-maths-ch02-t01-m-longer-line",
+    "skillId": "c6-maths-ch02-t01-s1",
+    "beat": "rem:c6-maths-ch02-t01-m-longer-line",
+    "when": "remediation",
+    "check": "c6-maths-ch02-t01-s1:c1"
+  },
+  "why": "unverified_key",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "byProp:bins-must-be-values",
+      "string:item.text",
+      "string:item.text",
+      "round:items"
+    ]
+  },
+  "raw": {
+    "archetype": "sort-storm@1",
+    "skills": [
+      "c6-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "sorted": "sort ho gaya",
+      "tests": "tests",
+      "coach": "Cards padho aur sort karo",
+      "runDone": "Belt clear",
+      "missed": "missed",
+      "why": "kyunki",
+      "yes": "haan",
+      "no": "nahin",
+      "magnetic": "magnetic",
+      "light": "light",
+      "floats": "floats",
+      "conducts": "conducts",
+      "burns": "burns",
+      "starch": "starch",
+      "tMagnet": "Magnet",
+      "tTorch": "Torch",
+      "tTank": "Water",
+      "tTester": "Circuit",
+      "tFlame": "Flame",
+      "tIodine": "Iodine",
+      "tPaper": "Paper",
+      "tBiuret": "Copper test",
+      "tTurmeric": "Turmeric",
+      "tLitmus": "Litmus",
+      "tRose": "China rose",
+      "fat": "fat",
+      "protein": "protein",
+      "acidity": "acidity",
+      "acid": "acid",
+      "base": "base",
+      "neutral": "neutral"
+    },
+    "title": "Line Sketch Sort",
+    "rounds": [
+      {
+        "title": "Sketch dekho",
+        "sub": "Har card ko sahi box do",
+        "byProp": "acidity",
+        "bins": [
+          {
+            "id": "a",
+            "label": "Box A",
+            "glyph": "ruler"
+          },
+          {
+            "id": "b",
+            "label": "Box B",
+            "glyph": "road"
+          }
+        ],
+        "tools": [
+          "torch"
+        ],
+        "items": [
+          {
+            "id": "beam",
+            "text": "Torch se aage jaati",
+            "glyph": "torch",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i01"
+          },
+          {
+            "id": "ruler",
+            "text": "Ruler ka edge",
+            "glyph": "ruler",
+            "bin": "b",
+            "src": "c6-maths-ch02-t01-i02"
+          },
+          {
+            "id": "fixed",
+            "text": "Fixed length",
+            "glyph": "balance",
+            "bin": "b",
+            "src": "c6-maths-ch02-t01-i03"
+          },
+          {
+            "id": "forever",
+            "text": "Dono taraf jaati",
+            "glyph": "road",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i03"
+          }
+        ],
+        "speed": 1.05,
+        "targets": "c6-maths-ch02-t01-m-longer-line"
+      },
+      {
+        "title": "Drawing compare",
+        "sub": "Kya badla, dhyan se dekho",
+        "bins": [
+          {
+            "id": "a",
+            "label": "Box A",
+            "glyph": "ruler"
+          },
+          {
+            "id": "b",
+            "label": "Box B",
+            "glyph": "road"
+          }
+        ],
+        "tools": [],
+        "items": [
+          {
+            "id": "same",
+            "text": "XY, 3 cm sketch",
+            "glyph": "ruler",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "again",
+            "text": "XY, 10 cm sketch",
+            "glyph": "road",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "ends",
+            "text": "2 endpoints",
+            "glyph": "spark",
+            "bin": "b",
+            "src": "c6-maths-ch02-t01-i03"
+          },
+          {
+            "id": "noends",
+            "text": "No endpoints",
+            "glyph": "road",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i03"
+          }
+        ],
+        "speed": 0.9,
+        "targets": "c6-maths-ch02-t01-m-longer-line"
+      },
+      {
+        "title": "Final check",
+        "sub": "Apna reason bhi socho",
+        "bins": [
+          {
+            "id": "a",
+            "label": "Box A",
+            "glyph": "question"
+          },
+          {
+            "id": "b",
+            "label": "Box B",
+            "glyph": "question"
+          }
+        ],
+        "tools": [],
+        "items": [
+          {
+            "id": "measure",
+            "text": "Length naap sakte",
+            "glyph": "ruler",
+            "bin": "b",
+            "src": "c6-maths-ch02-t01-i07"
+          },
+          {
+            "id": "endless",
+            "text": "Aage bhi chalti",
+            "glyph": "road",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i07"
+          },
+          {
+            "id": "rahul",
+            "text": "Same XY, naya sketch",
+            "glyph": "pen",
+            "bin": "a",
+            "src": "c6-maths-ch02-t01-i06"
+          },
+          {
+            "id": "join",
+            "text": "AB, BC, CA",
+            "glyph": "group",
+            "bin": "b",
+            "src": "c6-maths-ch02-t01-i08"
+          }
+        ],
+        "speed": 0.75,
+        "targets": "c6-maths-ch02-t01-m-longer-line"
+      }
+    ]
+  }
+}

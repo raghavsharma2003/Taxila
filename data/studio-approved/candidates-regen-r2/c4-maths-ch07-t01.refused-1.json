@@ -1,0 +1,116 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch07-t01",
+    "archetype": "dukaan@1",
+    "misconceptionId": "c4-maths-ch07-t01-m-misalign",
+    "skillId": "c4-maths-ch07-t01-s1",
+    "beat": "rem:c4-maths-ch07-t01-m-misalign",
+    "when": "remediation",
+    "check": "c4-maths-ch07-t01-s1:c1"
+  },
+  "why": "fell_back",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": true,
+    "repairs": [
+      "price:not-payable",
+      "price:not-payable",
+      "price:not-payable",
+      "num:price",
+      "price:not-payable",
+      "price:not-payable",
+      "round:customers",
+      "fallback-default"
+    ]
+  },
+  "raw": {
+    "archetype": "dukaan@1",
+    "skills": [
+      "c4-maths-ch07-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "served": "Serve hua",
+      "patience": "Jaldi karo",
+      "bill": "Bill",
+      "pays": "De rahe hain",
+      "change": "Bacha hua",
+      "pack": "Pack",
+      "crates": "Dibbe",
+      "left": "Bacha",
+      "enough": "Kaafi hai",
+      "notEnough": "Kaafi nahi",
+      "budget": "Budget",
+      "coach": "Socho",
+      "runDone": "Run complete",
+      "exact": "Bilkul sahi",
+      "short": "Kam",
+      "over": "Zyada",
+      "carry": "Aage le jao",
+      "full": "Pura",
+      "each": "Har ek",
+      "inLast": "Aakhri mein"
+    },
+    "title": "Dukaan Rush",
+    "rounds": [
+      {
+        "mode": "pay",
+        "title": "Jodai wali dukaan",
+        "sub": "Bills sambhal kar banao",
+        "customers": [
+          {
+            "items": [
+              {
+                "name": "Bada box",
+                "price": 3402,
+                "qty": 1
+              },
+              {
+                "name": "Chhota tag",
+                "price": 57,
+                "qty": 1
+              }
+            ],
+            "pays": 3459
+          },
+          {
+            "items": [
+              {
+                "name": "Toy train",
+                "price": 3256,
+                "qty": 1
+              },
+              {
+                "name": "Sticker",
+                "price": 48,
+                "qty": 1
+              }
+            ],
+            "pays": 3304
+          },
+          {
+            "items": [
+              {
+                "name": "Pencil box",
+                "price": 2345,
+                "qty": 1
+              },
+              {
+                "name": "Notebook set",
+                "price": 1432,
+                "qty": 1
+              }
+            ],
+            "pays": 3777
+          }
+        ],
+        "coins": true,
+        "speed": 0.8,
+        "targets": "c4-maths-ch07-t01-m-misalign"
+      }
+    ]
+  }
+}

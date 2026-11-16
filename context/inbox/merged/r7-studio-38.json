@@ -1,0 +1,14 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-passage-artifact",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "A kit passage is shown as reading matter, its own tray artifact (kind \"passage\"), never a whiteboard template: the whiteboard's anti-narration rule (24 characters, no sentences) stays (main's yes, 2026-11-10; Learning's PASSAGE.md had asked for passage@1). server/studio/passage.js pages the kit's text exactly (poems and letters between lines, prose at sentence ends, ≤ 280 characters / 8 lines at 360 px; the pages joined are the text); src/studio/PassageRenderer.tsx shows one page in real wrapped text, 16 px or more (18 Young), line height 1.6 for Devanagari matras, no sideways scroll (a page taller than a short tray scrolls down inside the box), prev / next of 44 px or more, the page the server names; the tray gate certifies it by predicate at the device's box (all 169 kit passages pass at p360, p412 and l1366, Older and Young). studioSeam.showPassage(lessonId, { passage, page, lang }) puts it on the tray, one piece per passage, a later call turning its page. Brain passes the page with the beat: to-brain/023 (on 020) adds studioPassageOf and pageFor (the page holding the text the item quotes). Reverse if a director run shows a child unable to read a passage at 360 px.",
+      "reverse": "a director run or a hand check shows a passage page unreadable at 360 px"
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-passage-artifact", "rel": "constrains", "dst": "dc-r7-held-board" }
+  ]
+}
