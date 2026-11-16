@@ -138,7 +138,10 @@ describe("r7-brain-v64.test.mjs", () => {
       replyDeps.chat = async () => ({ text: rows[n].text });
       const out = await textReply({ instructions: instructionsFor(pl.state, kit), state: pl.state, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null });
       // (v6.6 F1′: a re-pose frame in any of its forms; try-first an invitation)
-      const FR = [...FRAMES.again.hinglish, ...FRAMES.again.english, ...TRY_FIRST.hinglish, ...TRY_FIRST.english, "Theek hai,", "Theek hai.", "Achha,", "Achha.", "Haan,", "Haan.", "Zaroor,", "Zaroor."];
+      // (dc-r8-director22 W: after "main khud karti hoon" with the card said in her last two turns she says the go-ahead alone, its dash a
+      // full stop, and waits — the card stays live, unsaid)
+      const GO = [...TRY_FIRST.hinglish, ...TRY_FIRST.english].map((f) => f.replace(/\s*[—–-]\s*$/, "."));
+      const FR = [...GO, ...FRAMES.again.hinglish, ...FRAMES.again.english, ...TRY_FIRST.hinglish, ...TRY_FIRST.english, "Theek hai,", "Theek hai.", "Achha,", "Achha.", "Haan,", "Haan.", "Zaroor,", "Zaroor."];
       let rest = out.reply.replace(card, "").trim();
       for (const f of FR) if (rest.toLowerCase().startsWith(f.toLowerCase())) { rest = rest.slice(f.length).trim(); break; }
       if (/Yaad karo:|Remember:/.test(out.reply)) bad.push(`row ${n}: "Yaad karo" | ${out.reply.slice(0, 100)}`);

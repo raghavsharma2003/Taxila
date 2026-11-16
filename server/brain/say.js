@@ -2859,7 +2859,18 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (a reask's {friend} slot is filled as the card's is — state.js friendly)
       const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : cardSs.at(-1);
       const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2;
-      if (cardSs.length >= 2 && q && helped && !missedTwice && last2.some((t) => t.includes(norm(card).toLowerCase()))) {
+      const saidIn2 = last2.some((t) => t.includes(norm(card).toLowerCase()));
+      // (dc-r8-director22 W: a card said in her last two turns is not said again unless the child asks for it — "phir se bolo", "sawaal kya
+      // hai?" — or it is a picture turn (its card keeps its own page, P3), or the second miss is past: the question alone, after any turn)
+      const rqNow = String(state.lastMove?.request ?? "");
+      const askedForIt = ["repeat", "which"].includes(rqNow);
+      if (saidIn2 && rqNow === "selftry" && !missedTwice) {
+        // (W: "ruko, main khud karti hoon" — a short go-ahead, and she waits; the card stays live, unsaid)
+        tail = null; guard.cardHeldForTry = true;
+        if (guard.afterTryFirst) body = body.filter((x) => norm(x) !== norm(guard.afterTryFirst));
+        body = body.map((x) => x.replace(/\s*[—–-]\s*$/, ".")).filter((x) => !REPOSE_FRAME.test(x));
+      // (a Hindi request keeps S1 as it was: the question alone only after help said in Hindi; with none, the card in Hindi is its new words)
+      } else if (cardSs.length >= 2 && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
       }
