@@ -72,7 +72,7 @@ export const makeTriView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     if (drag?.moved) {
       const ax = Math.min(drag.x0, drag.x1), bx = Math.max(drag.x0, drag.x1) + 1, az = Math.min(drag.z0, drag.z1), bz = Math.max(drag.z0, drag.z1) + 1;
-      P.stroke(c, [XY(ax, az), XY(bx, az), XY(bx, bz), XY(ax, bz)], { role: drag.lay ? "you" : "look", width: 3, closed: true });
+      P.stroke(c, [XY(ax, az), XY(bx, az), XY(bx, bz), XY(ax, bz)], { role: drag.lay ? "focus" : "look", width: 3, closed: true });
     }
     if (goal === "more") {
       // A's top line across the plot (fade 1): every corner on it gives the same cloth
@@ -82,7 +82,7 @@ export const makeTriView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (s.pt) {
         drawCloth(c, s.pt, s.done ? "good" : "q2", { alpha: 0.5, labels: false, tag: "B" });
         const [X, Y] = XY(s.pt[0], s.pt[1]);
-        P.circle(c, X, Y, Math.max(6, cell * 0.22), { role: "you", fill: true });
+        P.circle(c, X, Y, Math.max(6, cell * 0.22), { role: "focus", fill: true });
       }
     } else {
       drawCloth(c, [t.xa, t.za], s.done ? "good" : "q2", { alpha: 0.42, labels: true });

@@ -208,13 +208,13 @@ export class BenchScene {
     const wall = blockTexture(T, this.rnd); m.wall.map = wall; m.wall.needsUpdate = true;
     const cells = cellTexture(T); cells.repeat.set(2, 1); m.drum.map = cells; m.drum.needsUpdate = true;
     const glassTex = glassTexture(T.mirror.glass); m.glass.map = glassTex; m.glass.color.set(0xffffff); m.glass.needsUpdate = true;
-    const ringTex = turnRingTexture(T.you); (this.turnRing.material as MeshBasicMaterial).map = ringTex; (this.turnRing.material as MeshBasicMaterial).needsUpdate = true;
+    const ringTex = turnRingTexture(T.focus); (this.turnRing.material as MeshBasicMaterial).map = ringTex; (this.turnRing.material as MeshBasicMaterial).needsUpdate = true;
     this.texs.push(tt, tile, wall, cells, ringTex, glassTex);
     const c = new Color();
     for (let i = 0; i < p.cols * p.rows; i++) { const j = 1 + (this.rnd() - 0.5) * 2 * T.tile.jitter; this.tiles.setColorAt(i, c.set(shade(T.tile.face, j))); }
     if (this.tiles.instanceColor) this.tiles.instanceColor.needsUpdate = true;
     m.mFrame.color.set(T.mirror.frame); m.mFrame.emissive.set(0x000000);
-    m.mFrameSel.color.set(T.mirror.frame); m.mFrameSel.emissive.set(T.you); m.mFrameSel.emissiveIntensity = 0.45;
+    m.mFrameSel.color.set(T.mirror.frame); m.mFrameSel.emissive.set(T.focus); m.mFrameSel.emissiveIntensity = 0.45;
     m.glass.emissive.set(shade(T.mirror.glass, 0.3));
     m.body.color.set(T.lamp.body); m.trim.color.set(T.lamp.trim); m.lensM.color.set(T.lamp.lens);
     m.capM.color.set(T.panel.frame); this.mastMat.color.set(T.panel.frame); this.fanMat.color.set(T.panel.fan);

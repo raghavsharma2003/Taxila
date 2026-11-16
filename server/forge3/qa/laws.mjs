@@ -6,7 +6,9 @@
 //   1. Green means right, and only right. Nothing is green before she acts. After a miss with a try left, green is only a
 //      tick (a part she got right), never the colour of a value, a line, a body or a chip; a miss screen that holds green
 //      and no "look" anywhere tells her she is right when she is not. Selection is the focus colour (the painter draws a
-//      selected body and every canvas "you" in focus; uses of "you" are reported, not failed).
+//      selected body in focus). The action hue ("you", Design's patch 002) is the DOM action button's only: any canvas use
+//      of "you", in any state, is a break (the action hue on a figure). The art's four role colours are Design's on kagaz
+//      and raat (DESIGN_ROLES), and the action hue is outside the green family in every art.
 //   2. After a miss the screen never holds the key while a try remains: no text drawn after the miss holds a value the
 //      family keeps hidden (server/play/react.js hiddenOf: what a line may not say before she produces it) unless that
 //      value was on screen before she acted (a given) or is her own value. In the science families (IDEA_WORDS, laws ruling
@@ -147,9 +149,40 @@ async function mods() {
   const [{ ART, Painter, newAudit, LAW_ROLES }, { VIEWS }, { logicFor }, { hiddenOf }] = await Promise.all([
     import("../../../src/play/core/styles.ts"), import("../../../src/play/families/views.ts"), import("../../../src/play/families/index.ts"), import("../../play/react.js"),
   ]);
-  MOD = { ART, Painter, newAudit, VIEWS, logicFor, hiddenOf };
+  MOD = { ART, Painter, newAudit, VIEWS, logicFor, hiddenOf, LAW_ROLES };
   ROLE = LAW_ROLES;
   return MOD;
+}
+
+/**
+ * Design's patch 002 (docs/patches/to-games/002-tx-roles/README.md §3): the four role colours on kagaz and raat, the same
+ * values as src/styles/tx-tokens.css themes A and B and Studio's board. Raat's action is null: the README keeps lime there,
+ * and the rulings of 2026-11-11 (night) and 2026-11-15 put the action outside the green family in both looks, so raat's
+ * action is held only to that (actionOutsideGreen). The painter role of each meaning is LAW_ROLES; "action" is ArtTokens.you.
+ */
+export const DESIGN_ROLES = {
+  kagaz: { focus: "#3B47B0", answer: "#0B736A", mixup: "#8A5A00", action: "#EFA52E", actionInk: "#1C1A16" },
+  raat: { focus: "#8F9BFF", answer: "#4FE0A2", mixup: "#FFB54A", action: null, actionInk: "#0F1218" },
+};
+/** a hex colour's hue in degrees (0..360), or -1 for a grey */
+export function hueOf(hex) {
+  const n = parseInt(hex.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  if (!d) return -1;
+  return ((mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 + 360) % 360;
+}
+/** the green family (yellow-green lime through teal): the hues a child reads as "right" */
+export const GREEN_HUES = [65, 175];
+export const actionOutsideGreen = (hex) => { const h = hueOf(hex); return h < 0 || h < GREEN_HUES[0] || h > GREEN_HUES[1]; };
+/** law 1 on the art's tokens: Design's role values on kagaz and raat, and the action hue outside green in every art */
+export function tokenBreaks(art) {
+  const out = [];
+  if (!art) return out;
+  const want = DESIGN_ROLES[art.id], role = { ...ROLE };
+  if (want) for (const k of ["focus", "answer", "mixup"]) if (String(art[role[k]]).toUpperCase() !== want[k]) out.push({ law: 1, state: "tokens", what: `${art.id} ${k} ${art[role[k]]} is not Design's ${want[k]}` });
+  if (want?.action && art.you.toUpperCase() !== want.action) out.push({ law: 1, state: "tokens", what: `${art.id} action ${art.you} is not Design's ${want.action}` });
+  if (want && art.youInk.toUpperCase() !== want.actionInk) out.push({ law: 1, state: "tokens", what: `${art.id} action ink ${art.youInk} is not Design's ${want.actionInk}` });
+  if (!actionOutsideGreen(art.you)) out.push({ law: 1, state: "tokens", what: `${art.id} action ${art.you} is in the green family (hue ${Math.round(hueOf(art.you))})` });
+  return out;
 }
 
 /** Mount the family's view headless on `level`; drive acts through the law; draw it at a few ages after each act. */
@@ -235,6 +268,7 @@ export async function lawsFor(level, opts = {}) {
   const given = first.texts;
   for (const u of first.uses) if (u.role === ROLE.answer && u.op !== "particle") { breaks.push({ law: 1, state: "initial", what: `green before any act (${u.op})` }); break; }
   for (const u of first.uses) if (u.role === "you") uses.add(u.op);
+  breaks.push(...tokenBreaks(M.ART[opts.art ?? "kagaz"]));
   // ── each mal-rule's acts, step by step: the screen after the first miss while a try remains
   const mals = Object.keys(level.mal ?? {}).filter((id) => (logic.malRules ?? []).includes(id));
   for (const mal of mals) {
@@ -297,7 +331,10 @@ export async function lawsFor(level, opts = {}) {
     const s = m.look();
     checked++;
     if (s.err) breaks.push({ law: 0, state: "solved", what: `view threw: ${s.err}` });
+    for (const u of s.uses) if (u.role === "you") uses.add(u.op);
   }
+  // the action hue is the DOM action button's only (patch 002): a canvas "you" in any state is a figure in the action hue
+  if (uses.size) breaks.push({ law: 1, state: "any", what: `the action hue ("you") on a figure (${[...uses].join(", ")}): draw her pick in focus` });
   const allow = ALLOWED[`${level.family}/${level.mode}`] ?? [];
   const allowed = breaks.filter((b) => allow.some((a) => a.law === b.law && a.re.test(b.what)));
   return { breaks: breaks.filter((b) => !allowed.includes(b)), allowed, review, checked, youOps: [...uses] };

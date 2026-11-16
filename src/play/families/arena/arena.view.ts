@@ -69,15 +69,15 @@ export const makeArenaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const o = p.options[i], q = pos[i]; if (!q) continue;
       const out = s.out.includes(o.id), aimed = s.aim === o.id, hit = s.done && o.id === p.key;
       api.target(`opt-${o.id}`, q.x - q.r, q.y - q.r, q.r * 2, q.r * 2);
-      P.circle(c, q.x, q.y, q.r, { role: hit ? "good" : out ? "ink3" : aimed ? "you" : "ink2", width: aimed || hit ? 4 : 2, alpha: out ? 0.35 : 1 });
+      P.circle(c, q.x, q.y, q.r, { role: hit ? "good" : out ? "ink3" : aimed ? "focus" : "ink2", width: aimed || hit ? 4 : 2, alpha: out ? 0.35 : 1 });
       if (hit) P.circle(c, q.x, q.y, q.r * (1 + clamp((api.t - hitAt) / 0.5, 0, 1) * 0.5), { role: "good", width: 2, alpha: 1 - clamp((api.t - hitAt) / 0.5, 0, 1) });
-      P.text(c, LETTERS[i], q.x, q.y, { size: Math.round(q.r * 0.8), weight: 800, font: "display", role: out ? "ink3" : aimed ? "you" : "ink", alpha: out ? 0.45 : 1 });
+      P.text(c, LETTERS[i], q.x, q.y, { size: Math.round(q.r * 0.8), weight: 800, font: "display", role: out ? "ink3" : aimed ? "focus" : "ink", alpha: out ? 0.45 : 1 });
     }
     // the ship and the aim line
     const sx = W / 2, sy = H * 0.86;
     P.stroke(c, [[sx - 16, sy + 12], [sx, sy - 18], [sx + 16, sy + 12], [sx, sy + 4]], { role: "ink", width: 3, closed: true });
     const ai = p.options.findIndex((o) => o.id === s.aim);
-    if (ai >= 0 && pos[ai]) P.stroke(c, [[sx, sy - 20], [pos[ai].x, pos[ai].y + pos[ai].r]], { role: "you", width: 2, dash: [6, 6] });
+    if (ai >= 0 && pos[ai]) P.stroke(c, [[sx, sy - 20], [pos[ai].x, pos[ai].y + pos[ai].r]], { role: "focus", width: 2, dash: [6, 6] });
     // after a miss: the hint rung (never the key)
     if (s.out.length && !s.done && p.hint) {
       const lines = wrap(c, p.hint, Math.min(W - 32, 520), 16), top = H * 0.6;

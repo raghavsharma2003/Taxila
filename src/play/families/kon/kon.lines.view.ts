@@ -163,11 +163,11 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     if (cur !== null) {
       c.save();
       if (!run) { c.beginPath(); c.rect(sx - half, sy - half, 2 * half, 2 * half); c.clip(); }
-      P.stroke(c, longLine(piv, cur), { role: "you", width: run ? 3 : 4 });
+      P.stroke(c, longLine(piv, cur), { role: "focus", width: run ? 3 : 4 });
       c.restore();
-      if (!run) { const k = W(...at(piv, cur, 3.4)); P.circle(c, k[0], k[1], 10, { role: "you", fill: true }); P.text(c, "2", k[0], k[1] - 22, { size: 18, weight: 700, role: "you" }); }
+      if (!run) { const k = W(...at(piv, cur, 3.4)); P.circle(c, k[0], k[1], 10, { role: "focus", fill: true }); P.text(c, "2", k[0], k[1] - 22, { size: 18, weight: 700, role: "focus" }); }
     }
-    P.circle(c, ...W(...piv), 6, { role: "you", fill: true });
+    P.circle(c, ...W(...piv), 6, { role: "focus", fill: true });
     const lp = W(piv[0], piv[1]);
     P.text(c, g === "perp" ? "O" : "P", lp[0] - 16, lp[1] + 18, { size: 18, weight: 700, role: "ink2" });
     if (g === "parallel") P.text(c, "O", sx + 16, sy + 18, { size: 16, weight: 700, role: "ink3" });
@@ -232,12 +232,12 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       }
       c.save(); c.beginPath(); c.strokeStyle = P.color("ink3"); c.lineWidth = 1.5; c.arc(o2[0], o2[1], R, -rad(r2), -rad(r2 + sg2 * 180), sg2 > 0); c.stroke(); c.restore();
       const l2 = W(...at(x2, r2 + sg2 * 90, 0.62));
-      P.text(c, "∠2", l2[0], l2[1], { size: 16, weight: 700, role: "you" });
+      P.text(c, "∠2", l2[0], l2[1], { size: 16, weight: 700, role: "focus" });
     }
     // canal 2: the child's arm, the line through X2 both ways
     if (cur !== null) {
-      P.stroke(c, run ? longLine(x2, cur) : [W(...at(x2, cur, -2.6)), W(...at(x2, cur, 2.6))], { role: "you", width: run ? 3 : 4 });
-      if (!run) { const k = W(...at(x2, cur, 2.2)); P.circle(c, k[0], k[1], 10, { role: "you", fill: true }); }
+      P.stroke(c, run ? longLine(x2, cur) : [W(...at(x2, cur, -2.6)), W(...at(x2, cur, 2.6))], { role: "focus", width: run ? 3 : 4 });
+      if (!run) { const k = W(...at(x2, cur, 2.2)); P.circle(c, k[0], k[1], 10, { role: "focus", fill: true }); }
     }
     P.circle(c, o2[0], o2[1], 6, { role: "ink", fill: true });
     api.target("dial", o2[0] - u * 3, o2[1] - u * 3, u * 6, u * 6);
@@ -254,11 +254,11 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     c.save(); c.beginPath(); c.moveTo(...tip); c.lineTo(b[0] + nx, b[1] + ny); c.lineTo(b[0] - nx, b[1] - ny); c.closePath(); c.fillStyle = api.P.color(role as never); c.fill(); c.restore();
   }
   /** a figure (segment / ray / line) on the track from its stops, with dots on stopped ends and arrows on open ones */
-  function figure(c: CanvasRenderingContext2D, sp: Stops, role: "you" | "ink2", dy0 = 0, dash?: number[]): void {
+  function figure(c: CanvasRenderingContext2D, sp: Stops, role: "focus" | "ink2", dy0 = 0, dash?: number[]): void {
     const T = track(), end = (side: -1 | 1, v: number): [number, boolean] => (v >= 0 ? [T.sOf(v), true] : [side * T.edge, false]);
     const [s0, d0] = end(-1, sp.lo), [s1, d1] = end(1, sp.hi);
     const A = T.pos(s0), B = T.pos(s1), off = (q: Pt): Pt => [q[0], q[1] + dy0];
-    pa().stroke(c, [off(A), off(B)], { role, width: role === "you" ? 6 : 3, dash });
+    pa().stroke(c, [off(A), off(B)], { role, width: role === "focus" ? 6 : 3, dash });
     for (const [q, stopped, sgn] of [[A, d0, -1], [B, d1, 1]] as const) {
       if (stopped) pa().circle(c, ...off(q), 7, { role, fill: true });
       else arrowHead(c, off(q), [T.d[0] * sgn, T.d[1] * sgn], role);
@@ -270,7 +270,7 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // the faint track, end to end
     Pa.stroke(c, [T.pos(-T.edge), T.pos(T.edge)], { role: "ink3", width: 2, dash: [3, 7] });
     const placed = sp.lo !== -2 && sp.hi !== -2;
-    if (placed) figure(c, sp, "you");
+    if (placed) figure(c, sp, "focus");
     // the points and their letters (above the track)
     for (let i = 0; i < n; i++) {
       const q = T.pos(T.sOf(i));
@@ -282,10 +282,10 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const [x, y] = held === side ? heldAt : stopPos(side, sp[side]);
       const nx = -T.d[1] * 18, ny = -T.d[0] * 18;
       if (held !== side && sp[side] === -1) continue;   // an open end shows as its arrow
-      Pa.stroke(c, [[x + nx, y + ny], [x - nx, y - ny]], { role: "you", width: 8 });
-      if (sp[side] === -2 && held !== side) Pa.circle(c, x, y, 22, { role: "you", width: 1.5, alpha: 0.5 });
+      Pa.stroke(c, [[x + nx, y + ny], [x - nx, y - ny]], { role: "focus", width: 8 });
+      if (sp[side] === -2 && held !== side) Pa.circle(c, x, y, 22, { role: "focus", width: 1.5, alpha: 0.5 });
       // each stop carries its number (the ◀ ▶ rows say which stop they move)
-      Pa.text(c, side === "lo" ? "1" : "2", x - T.up[0] * 34, y - T.up[1] * 34, { size: 16, weight: 700, role: "you" });
+      Pa.text(c, side === "lo" ? "1" : "2", x - T.up[0] * 34, y - T.up[1] * 34, { size: 16, weight: 700, role: "focus" });
     }
     api.target("track", cx - T.edge, cy - 60, 2 * T.edge, 120);
     if (truthAt < 0 || !placed || held) return;

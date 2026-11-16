@@ -89,7 +89,7 @@ export function PlayMap({ world, art, lang, onClose }: { world: PlayWorldFamily;
                 <rect width={SW} height={SH} rx="12" fill={hatched ? "url(#pl-hatch)" : fill(s.state)} stroke={ink ? a.q2 : pencil ? a.ink2 : a.ink3}
                   strokeWidth={ink ? 2.5 : 1.5} strokeDasharray={s.state === "ahead" ? "5 5" : pencil ? "2 3" : undefined} />
                 {hatched && <rect x="6" y="9" width={SW - 12} height={SH - 18} rx="6" fill={a.ground} opacity="0.85" />}
-                {s.here && <circle cx={SW - 9} cy="9" r="5" fill={a.you} />}
+                {s.here && <circle cx={SW - 9} cy="9" r="5" fill={a.focus} />}
                 {s.recheck && <circle cx="9" cy="9" r="5" fill={a.look} />}
                 {titleLines(s.title).map((ln, i, arr) => (
                   <text key={i} x={SW / 2} y={SH / 2 + 5 + (arr.length === 2 ? (i ? 9 : -8) : 0)} textAnchor="middle" fontSize="14" fontWeight={ink ? 700 : 600} fill={ink ? (a.dark ? a.ground : "#fff") : a.ink}>{ln}</text>

@@ -230,13 +230,13 @@ export const makeCircuitView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     });
     if (!s.done) for (const [k, m] of knots) { Pp.circle(c, m[0], m[1], 6, { role: "q2", fill: true }); api.target(`w:${k}`, m[0] - 22, m[1] - 22, 44, 44); }
     // the rubber band of a wire being drawn
-    if (dragFrom) Pp.stroke(c, [at(dragFrom), finger], { role: "you", width: 3, dash: [7, 5] });
+    if (dragFrom) Pp.stroke(c, [at(dragFrom), finger], { role: "focus", width: 3, dash: [7, 5] });
     // the terminals (screw posts): drawn and registered last, so they win the touch
     const over = dragFrom ? api.hit(finger[0], finger[1]) : null;
     for (const [t, q] of pos) {
       c.save(); c.fillStyle = Pp.material("brass"); c.beginPath(); c.arc(q[0], q[1], 8, 0, Math.PI * 2); c.fill(); c.restore();
       Pp.circle(c, q[0], q[1], 8, { role: "ink", width: 2 });
-      if (t === dragFrom || over === `t:${t}`) Pp.circle(c, q[0], q[1], 15, { role: "you", width: 3 });
+      if (t === dragFrom || over === `t:${t}`) Pp.circle(c, q[0], q[1], 15, { role: "focus", width: 3 });
       if (!s.done) api.target(`t:${t}`, q[0] - 22, q[1] - 22, 44, 44);
     }
     // the law's answer, while the board it judged is the board on screen

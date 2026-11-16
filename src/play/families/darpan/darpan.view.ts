@@ -144,15 +144,15 @@ export const makeDarpanView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         if (u > 0 && u < 1) {
           // the figure flips over the line: its across-the-line part shrinks through zero to the mirror image
           const t = Math.min(1, u * 1.25), k2 = Math.cos(Math.PI * t);
-          drawFig(c, (q) => { const r = reflectPt(q, a), m: V = [(q[0] + r[0]) / 2, (q[1] + r[1]) / 2]; return [m[0] + (q[0] - m[0]) * k2, m[1] + (q[1] - m[1]) * k2]; }, { fill: false, role: "you", width: 2.5, alpha: 0.9 });
+          drawFig(c, (q) => { const r = reflectPt(q, a), m: V = [(q[0] + r[0]) / 2, (q[1] + r[1]) / 2]; return [m[0] + (q[0] - m[0]) * k2, m[1] + (q[1] - m[1]) * k2]; }, { fill: false, role: "focus", width: 2.5, alpha: 0.9 });
         }
-        lineAt(c, a, u >= 1 ? (folded ? "good" : "look") : "you", { width: 3.2 });
+        lineAt(c, a, u >= 1 ? (folded ? "good" : "look") : "focus", { width: 3.2 });
         return;
       }
       if (end && s.ended && folded === false) drawFig(c, (q) => reflectPt(q, a), { fill: false, role: "look", width: 2.5, dash: [6, 5] });
-      lineAt(c, a, end && s.ended ? (folded ? "good" : "look") : "you", { width: 3.2, dash: end && s.ended ? undefined : [10, 6] });
+      lineAt(c, a, end && s.ended ? (folded ? "good" : "look") : "focus", { width: 3.2, dash: end && s.ended ? undefined : [10, 6] });
     });
-    if (ghost !== null && held) lineAt(c, wm.cands[ghost], "you", { width: 2.5, alpha: 0.6, dash: [4, 6] });
+    if (ghost !== null && held) lineAt(c, wm.cands[ghost], "focus", { width: 2.5, alpha: 0.6, dash: [4, 6] });
     P.circle(c, cx, cy, 4.5, { role: "ink", fill: true });
     if (end && s.ended) {
       const m = Math.min(28, sc * 1.4), x = cx + box - m * 0.6, y = cy - box + m * 0.6;
@@ -200,11 +200,11 @@ export const makeDarpanView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const [sx, sy] = rim(0, Rd + f * 0.35);
     P.circle(c, sx, sy, 3.5, { role: "ink2", fill: true });
     const [px, py] = rim(shownAngle, Rd - 2), [qx, qy] = rim(shownAngle - 5, Rd + f * 0.55), [rx, ry] = rim(shownAngle + 5, Rd + f * 0.55);
-    c.save(); c.fillStyle = P.color("you"); c.beginPath(); c.moveTo(px, py); c.lineTo(qx, qy); c.lineTo(rx, ry); c.closePath(); c.fill(); c.restore();
+    c.save(); c.fillStyle = P.color("focus"); c.beginPath(); c.moveTo(px, py); c.lineTo(qx, qy); c.lineTo(rx, ry); c.closePath(); c.fill(); c.restore();
     // the marks (order): pinned on the rim; after the spin, good where it landed and look where it did not
     if (tp.goal === "order") s.marks.forEach((m, j) => {
       const [mx, my] = rim(m, Rd);
-      const role: Role = end && s.ended ? (anim?.folds[j] ? "good" : "look") : "you";
+      const role: Role = end && s.ended ? (anim?.folds[j] ? "good" : "look") : "focus";
       P.circle(c, mx, my, 6, { role, fill: true });
       P.circle(c, mx, my, 6, { role: "panel", width: 1.5 });
     });

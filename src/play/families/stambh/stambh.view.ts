@@ -144,7 +144,7 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let i = 0; i < n; i++) {
       const x = colX(i), fixed = !cols.includes(i), hh = s.h[i];
       if (!fixed) api.target(`col-${i}`, px0 + colW * i, top - 40, colW, base - top + 40);
-      if (!fixed && !s.done && i === sel && cols.length > 1) P.stroke(c, [[x - bw / 2, base + 3], [x + bw / 2, base + 3]], { role: "you", width: 4 });
+      if (!fixed && !s.done && i === sel && cols.length > 1) P.stroke(c, [[x - bw / 2, base + 3], [x + bw / 2, base + 3]], { role: "focus", width: 4 });
       const role = fixed ? "q2" : "q1";
       const whole = Math.floor(hh / 2), half = hh % 2;
       for (let k = 0; k < whole + half; k++) {
@@ -181,7 +181,7 @@ export const makeStambhView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (i > 0) P.stroke(c, [[10, y0], [w - 10, y0]], { role: "ink3", width: 1, alpha: 0.35 });
       api.target(`pick-${i}`, 0, y0, gut, rowH);
       api.target(`col-${i}`, gut, y0, w - gut, rowH);
-      if (!s.done && i === sel) P.stroke(c, [[6, y0 + 8], [6, y0 + rowH - 8]], { role: "you", width: 4 });
+      if (!s.done && i === sel) P.stroke(c, [[6, y0 + 8], [6, y0 + rowH - 8]], { role: "focus", width: 4 });
       P.textFit(c, catName(i), 14 + (gut - 18) / 2, cy - 11, gut - 18, 20, { size: 16, role: "ink", weight: 700 });
       P.text(c, String(p.values[i]), 14 + (gut - 18) / 2, cy + 12, { size: 16, role: "ink2", font: "mono", weight: 700 });
       // slot guides (fade 1: every slot; fade 2: a faint line; fade 3: none)

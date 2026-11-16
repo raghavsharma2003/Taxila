@@ -33,7 +33,7 @@ export function drawTotalCell(api: ViewApi, c: CanvasRenderingContext2D, cx: num
   api.target(o.id, cx - cw / 2, cy - ch / 2, cw, ch);
   const box: [number, number][] = [[cx - cw / 2 - 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy - ch / 2 - 3], [cx + cw / 2 + 3, cy + ch / 2 + 3], [cx - cw / 2 - 3, cy + ch / 2 + 3]];
   P.body(c, cx - cw / 2, cy - ch / 2, cw, ch, { role: "panel", r: 10, state: o.open ? "idle" : "dim" });
-  if (o.picked) P.stroke(c, box, { role: "you", width: 3, closed: true });
+  if (o.picked) P.stroke(c, box, { role: "focus", width: 3, closed: true });
   if (o.value !== null) P.text(c, String(o.value), cx, cy + 1, { size: o.size, role: "ink", font: "mono", weight: 700 });
   const k = o.check;
   if (!k) return;

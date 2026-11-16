@@ -176,7 +176,7 @@ export const makeFeetaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!s.done) {
       const sx = x0 + at * pc, sy = rulerBY - 24;
       api.target("scissors", sx - 24, sy - 24, 48, 48);
-      P.circle(c, sx, sy, 15, { role: drag ? "you" : "q4", fill: true });
+      P.circle(c, sx, sy, 15, { role: drag ? "focus" : "q4", fill: true });
       P.stroke(c, [[sx, sy + 10], [sx, rulerBY + rh * 0.36]], { role: "q4", width: 2 });
       P.circle(c, sx, sy, 6, { role: "panel", fill: true });
     }
@@ -210,7 +210,7 @@ export const makeFeetaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.stroke(c, [[tx0, y], [xe, y]], { role: "q1", width: p.goal === "rope" ? 6 : 4 });
       if (!st().done) {
         api.target("cut", xe - 22, y - 26, 44, 44);
-        P.circle(c, xe, y, 11, { role: drag ? "you" : "q4", fill: true });
+        P.circle(c, xe, y, 11, { role: drag ? "focus" : "q4", fill: true });
       }
     }
   }
@@ -328,7 +328,7 @@ export const makeFeetaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (!s.done) api.target(`slot-${j}`, x, slotY, slotW, slotH);
       P.body(c, x, slotY, slotW, slotH, { role: "q3", r: 8, state: bad ? "look" : "idle", seed: 10 + j, fill: 0.3 + (0.5 * (j + 1)) / n });
       if (lane >= 0) { P.circle(c, x + slotW / 2, slotY + slotH / 2, 17, { role: "q2", fill: true }); P.text(c, String(lane + 1), x + slotW / 2, slotY + slotH / 2, { size: 18, weight: 800, on: "q2" }); }
-      else if (sel >= 0 || drag?.kind === "lane") P.circle(c, x + slotW / 2, slotY + slotH / 2, 17, { role: "you", width: 2 });
+      else if (sel >= 0 || drag?.kind === "lane") P.circle(c, x + slotW / 2, slotY + slotH / 2, 17, { role: "focus", width: 2 });
       if (bad) P.magnifier(c, x + slotW - 14, slotY + 14, 16);
     }
     if (drag?.kind === "lane" && drag.moved) { P.circle(c, drag.x, drag.y, 17, { role: "q2", fill: true }); P.text(c, String(drag.lane + 1), drag.x, drag.y, { size: 18, weight: 800, on: "q2" }); }

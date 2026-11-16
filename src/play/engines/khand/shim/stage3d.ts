@@ -8,7 +8,7 @@ import type { ArtId, Lang, Moment, PlayActBody, PlayLevel } from "../../../../..
 import type { PlayController } from "../../../core/controller.ts";
 import type { StageHandle } from "../../../core/stage.ts";
 import type { ControlSpec, FamilyView, Readout } from "../../../core/viewkit.ts";
-import { ART, newAudit, type Audit } from "../../../core/styles.ts";
+import { ART, lawColor, newAudit, type Audit } from "../../../core/styles.ts";
 import { sound, type SoundEvent } from "../../../core/sound.ts";
 import { mulberry32, hash32 } from "../../../core/rng.ts";
 import { dressFor, ENGINE_THEMES, TIER_BUDGET, type AudioBus, type Core3D, type EngineEntry, type EngineView, type LabelHandle, type LabelSpec, type Perf3D, type PlayTier, type ProgressStore, type Sfx, type Vec3 } from "./api.ts";
@@ -63,9 +63,9 @@ export function mountStage3D(host: HTMLElement, entry: EngineEntry, o: Stage3DOp
   const floorOf = (s: LabelSpec) => (s.kind === "numeral" ? 18 : o.young || s.lang === "hi" ? 16 : 14);
   const styleLabel = (el: HTMLSpanElement, s: LabelSpec) => {
     const px = Math.max(s.size, floorOf(s)), role = s.role ?? "ink";
-    const ink = role === "ink" ? art.ink : role === "you" ? art.ink : (art as unknown as Record<string, string>)[role] ?? art.ink;
+    const ink = role === "ink" ? art.ink : role === "focus" ? art.ink : (art as unknown as Record<string, string>)[role] ?? art.ink;
     el.lang = s.lang;
-    el.style.cssText = `position:absolute;white-space:nowrap;font:600 ${px}px/1.2 ${s.lang === "hi" ? art.font.deva : art.font.ui};color:${ink};background:${art.panel};border:1px solid ${role === "you" ? art.you : art.panelEdge};border-radius:12px;padding:2px 10px`;
+    el.style.cssText = `position:absolute;white-space:nowrap;font:600 ${px}px/1.2 ${s.lang === "hi" ? art.font.deva : art.font.ui};color:${ink};background:${art.panel};border:1px solid ${role === "focus" ? lawColor(art, "focus") : art.panelEdge};border-radius:12px;padding:2px 10px`;
     el.dataset.px = String(px);
   };
   function placeLabels(): void {

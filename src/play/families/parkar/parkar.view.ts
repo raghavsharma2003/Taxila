@@ -204,10 +204,10 @@ export const makeParkarView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.text(c, "cm", rx0 + rpc * p.max + 4, ry - 10, { size: 16, role: "ink2", weight: 700, font: "mono", align: "left" });
     // the compass: the needle at 0, the pencil at the opening, the hinge above
     const xn = rx0, xp = rx0 + r * rpc, top: XY = [(xn + xp) / 2, ry - 22 - Math.min(18, r * 2)];
-    P.stroke(c, [[xn, ry], top, [xp, ry]], { role: drag?.kind === "open" ? "you" : "q4", width: 3 });
+    P.stroke(c, [[xn, ry], top, [xp, ry]], { role: drag?.kind === "open" ? "focus" : "q4", width: 3 });
     P.circle(c, top[0], top[1], 5, { role: "q4", fill: true });
     if (!st().done) api.target("pencil", xp - 22, ry - 30, 44, 44);
-    P.circle(c, xp, ry, 6, { role: drag?.kind === "open" ? "you" : "q4", fill: true });
+    P.circle(c, xp, ry, 6, { role: drag?.kind === "open" ? "focus" : "q4", fill: true });
   }
 
   function drawProtractor(c: CanvasRenderingContext2D): void {
@@ -219,7 +219,7 @@ export const makeParkarView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (let d = 0; d <= 180; d += 10) { const u = dir(d), k = d % 30 === 0 ? 12 : 6; P.stroke(c, [[q[0] + u[0] * R, q[1] + u[1] * R], [q[0] + u[0] * (R - k), q[1] + u[1] * (R - k)]], { role: "ink2", width: 1.2 }); }
     for (let d = 0; d <= 180; d += 30) { const u = dir(d); P.text(c, String(d), q[0] + u[0] * (R + 16), q[1] + u[1] * (R + 16) - (d % 180 === 0 ? 10 : 0), { size: 16, role: "ink2", weight: 700, font: "mono" }); }
     const u = dir(pd);
-    P.stroke(c, [q, [q[0] + u[0] * (R + 18), q[1] + u[1] * (R + 18)]], { role: "you", width: 2.5 });
+    P.stroke(c, [q, [q[0] + u[0] * (R + 18), q[1] + u[1] * (R + 18)]], { role: "focus", width: 2.5 });
     P.chip(c, `${pd}°`, q[0] + u[0] * R * 0.55, q[1] + u[1] * R * 0.55, { size: 16, role: "ink" });
     if (!st().done) api.target("protractor", q[0] - R - 10, q[1] - R - 10, 2 * R + 20, 2 * R + 20);
   }
@@ -253,7 +253,7 @@ export const makeParkarView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     // spots and their labels, the crossings to pin
     for (const [id, q] of allSpots()) {
       const px = toPx(q), given = B.ids.includes(id);
-      P.circle(c, px[0], px[1], given ? 5 : 4.5, { role: sel === id || pv === id ? "you" : "ink", fill: true });
+      P.circle(c, px[0], px[1], given ? 5 : 4.5, { role: sel === id || pv === id ? "focus" : "ink", fill: true });
       if (given && !(p.goal === "equi" && (id === "A" || id === "B"))) label(c, id, q);
       if (given && p.goal === "equi") label(c, id, [q[0], q[1] - 0.9]);
       if (!S.done && inBoard(px[0], px[1])) api.target(`s:${id}`, px[0] - 22, px[1] - 22, 44, 44);

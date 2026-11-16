@@ -693,9 +693,13 @@ export interface ArtTokens {
   q1: string; q2: string; q3: string; q4: string;
   good: string;                        // "goal met": always with a tick shape
   look: string;                        // "look again": always with a magnifier shape; never red, never a cross
-  you: string;                         // the reserved "your move" hue (one element per state): the DOM action button only
-  /** round 8 law 1 (dc-r8-game-modes-three-laws): the picked thing (a selected row, box, card, her unchecked mark) is outlined
-   *  in the focus colour, a blue-violet that is never green; the canvas never paints "you" (Painter maps it here) */
+  /** the action hue: the one "your move" element per state (the DOM action button, play.css --pl-you), never on a figure and
+   *  never in the green family (Design's patch 002: marigold on kagaz; the dark arts' magenta). Not a painter role. */
+  you: string;
+  /** the action button's text on `you` */
+  youInk: string;
+  /** round 8 law 1 (dc-r8-game-modes-three-laws): the picked thing (a selected row, box, card, her unchecked mark, a 3D
+   *  engine's selection ring or cursor) is drawn in the focus colour, a blue-violet that is never green */
   focus: string;
   shadow: string;
   /** stroke character: 0 = machine-clean, 1 = chalk / hand */

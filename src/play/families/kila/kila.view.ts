@@ -214,21 +214,21 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const P = api.P, a = x + s * 0.48, b = x + s * 0.9, top = y + s * 0.5, bot = y + s * 0.9;   // the right half: a tower may stand left
     for (let k = 0; k <= 3; k++) {
       const u = a + ((b - a) * k) / 3;
-      P.stroke(c, [[u, top], [u, bot]], { role: "you", width: 1.6 });
+      P.stroke(c, [[u, top], [u, bot]], { role: "focus", width: 1.6 });
       const v = top + ((bot - top) * k) / 3;
-      P.stroke(c, [[a, v], [b, v]], { role: "you", width: 1.6 });
+      P.stroke(c, [[a, v], [b, v]], { role: "focus", width: 1.6 });
     }
   }
   /** divisibility: the net lies under the foe's number, across the square's lower part */
   function divNet(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const P = api.P, a = x + s * 0.24, b = x + s * 0.76, top = y + s * 0.6, bot = y + s * 0.92;
-    for (let k = 0; k <= 4; k++) { const u = a + ((b - a) * k) / 4; P.stroke(c, [[u, top], [u, bot]], { role: "you", width: 1.8 }); }
-    for (let k = 0; k <= 2; k++) { const v = top + ((bot - top) * k) / 2; P.stroke(c, [[a, v], [b, v]], { role: "you", width: 1.8 }); }
+    for (let k = 0; k <= 4; k++) { const u = a + ((b - a) * k) / 4; P.stroke(c, [[u, top], [u, bot]], { role: "focus", width: 1.8 }); }
+    for (let k = 0; k <= 2; k++) { const v = top + ((bot - top) * k) / 2; P.stroke(c, [[a, v], [b, v]], { role: "focus", width: 1.8 }); }
   }
   function trap(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const cx = x + s * 0.69, cy = y + s * 0.68, r = s * 0.2;   // the right half: a tower may stand left
-    api.P.circle(c, cx, cy, r, { role: "you", width: 3 });
-    for (let k = 0; k < 8; k++) { const a = (k * Math.PI) / 4; api.P.stroke(c, [[cx + Math.cos(a) * r, cy + Math.sin(a) * r], [cx + Math.cos(a) * r * 0.55, cy + Math.sin(a) * r * 0.55]], { role: "you", width: 2 }); }
+    api.P.circle(c, cx, cy, r, { role: "focus", width: 3 });
+    for (let k = 0; k < 8; k++) { const a = (k * Math.PI) / 4; api.P.stroke(c, [[cx + Math.cos(a) * r, cy + Math.sin(a) * r], [cx + Math.cos(a) * r * 0.55, cy + Math.sin(a) * r * 0.55]], { role: "focus", width: 2 }); }
   }
   function gate(c: CanvasRenderingContext2D, x: number, y: number, s: number): void {
     const P = api.P;
@@ -347,7 +347,7 @@ export const makeKilaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (sh < 24) return;
     const sx = bx + 18, rowH = sh / rowsAll;
     P.body(c, sx, sy, 8, sh, { role: "ink3", r: 4 });
-    c.save(); c.globalAlpha = 0.9; P.body(c, sx - 2, sy + top * rowH, 12, Math.max(8, rowsSeen * rowH), { role: "you", r: 5 }); c.restore();
+    c.save(); c.globalAlpha = 0.9; P.body(c, sx - 2, sy + top * rowH, 12, Math.max(8, rowsSeen * rowH), { role: "focus", r: 5 }); c.restore();
     for (const q of look) P.circle(c, sx + 4, sy + (rowOf(q - 1) + 0.5) * rowH, 4, { role: "q4", fill: true });
     const br = rowOf(Math.max(0, Math.min(n, Math.ceil(shown)) - 1));
     if (st().beat > 0) P.circle(c, sx + 4, sy + (br + 0.5) * rowH, 3, { role: "ink2", fill: true });

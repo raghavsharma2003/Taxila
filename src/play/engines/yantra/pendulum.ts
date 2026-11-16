@@ -51,7 +51,7 @@ export function createPendulum(core: Core3D, deps: EngineDeps): EngineView {
   //    rack), and one line at the bottom (a hint before the first run, the law's answer after it)
   const tag = LANGTAG[lang];
   const massL = core.label({ id: "mass", text: "", lang: "en", size: 18, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "center", hidden: true });
-  const lenL = core.label({ id: "len", text: "", lang: "en", size: 18, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", dy: -8, role: "you", hidden: true });
+  const lenL = core.label({ id: "len", text: "", lang: "en", size: 18, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", dy: -8, role: "focus", hidden: true });
   const marks: LabelHandle[] = scene.marksAt().map((m) => core.label({ id: `cm${m.cm}`, text: String(m.cm), lang: "en", size: 18, kind: "numeral", at: { x: m.at.x, y: m.at.y, z: m.at.z }, align: "center", dx: -16 }));
   const beatL = core.label({ id: "beat", text: match ? W("every", { t: beat.toFixed(2) }) : "0.0 s", lang: match ? tag : "en", size: 16, kind: match ? "text" : "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", dy: -4, role: "q2" });
   const line = core.label({ id: "line", text: "", lang: tag, size: 15, kind: "text", at: { box: { x: 0, y: 0 } }, align: "bottom", hidden: true, keepInBox: true });

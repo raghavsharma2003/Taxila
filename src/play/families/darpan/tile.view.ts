@@ -152,8 +152,8 @@ export const makeTileView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const total = anim ? anim.sum : 0, rr = Math.min(box * 0.9, sc * reach * 0.3 + f * 1.4);
     if (anim && s.ended && k < 1) {
       const a = p.tilt + total * k;
-      arcLine(c, p.tilt, a, rr, "you", 3);
-      P.stroke(c, [[cx, cy], ray(a, rr + 6)], { role: "you", width: 3 });
+      arcLine(c, p.tilt, a, rr, "focus", 3);
+      P.stroke(c, [[cx, cy], ray(a, rr + 6)], { role: "focus", width: 3 });
     }
     if (end && s.ended && anim) {
       const miss = anim.miss, rw = Math.min(box * 0.92, sc * reach * 0.75);

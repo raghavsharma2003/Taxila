@@ -58,7 +58,7 @@ function createBeam(core: Core3D, deps: EngineDeps): EngineView {
   let outcome: Moment["kind"] | null = null;
 
   // ── labels: the picked mirror's heading (fade 1, as the 2D view), and one hint while the child is new to the bench
-  const angle: LabelHandle = core.label({ id: "angle", text: "", lang: "en", size: 18, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", dy: -4, role: "you", hidden: true });
+  const angle: LabelHandle = core.label({ id: "angle", text: "", lang: "en", size: 18, kind: "numeral", at: { x: 0, y: 0, z: 0 }, align: "bottom", dy: -4, role: "focus", hidden: true });
   const hintL: LabelHandle = core.label({ id: "hint", text: "", lang: LANGTAG[lang], size: core.young ? 16 : 15, kind: "text", at: { box: { x: 0, y: 0 } }, align: "bottom", hidden: true, keepInBox: true });
   function labels(): void {
     const s = st(), m = s.placed.find((x) => x.id === sel) ?? null;
