@@ -2,6 +2,17 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 06:40 · `a8f8c7dc` (K)
+
+**Done (gated: test:all 7244 pass; the only failures are the two worktree-only browser suites):** K — a key is said once: the why's
+second wording after a key is the card's simpler with the check-in, no verdict frame, no key again, over the board the key was said
+over. A yes-or-no key with its why is a sentence ("Nahi, kyunki …"). Gated `keyOnce`: 3 on the rows before, 0 after. Counts:
+moves.repair 82 → 62, reteach 65 → 85; boardChanged 294 → 292, boardKept 335 → 337.
+
+**Doing next:** B (a bridge changes no board), A (AI-line reply with the phrase forms), then `repeatedAuthored` stops exempting cards.
+
+**Questions for main:** none.
+
 ## 2026-11-16 06:10 · `1811ca75` (H)
 
 **Done (gated: test:all 7244 pass; the only failures are the two worktree-only browser suites):** H — a Hindi request gets words she
