@@ -244,17 +244,27 @@ export const measureSurface = (p: { theta?: number }): string => `key:${Math.min
  * differ (server/play/levels.js nameOnRepeat):
  *   vertex-off, centre-on-arm  where her protractor's centre sat, as an offset from the vertex ON THE BOARD (what she did with
  *                              her finger, relative to the screen), and two offsets within the centre tolerance (a finger's
- *                              drop, tolPx) are one act. Not in the protractor's own frame: there the bottom edge on O is
- *                              the same offset on every level (PD along the normal), so the child who holds vertex-off would
- *                              repeat one value and never be named. On the board her offset turns with the arm she lays the
- *                              base on, while a habit of dropping the finger the same way stays where it was;
+ *                              drop, tolPx) are one act. vertex-off also carries (main's answer 1, 2026-11-16) the level's
+ *                              base direction and the offset in the protractor's own frame: a second sighting counts only
+ *                              when the base directions differ by 45° or more and the frame offset is the same, so the
+ *                              offset differs on the board (shared/play.ts discriminatingPair). The bottom edge on O is held
+ *                              in the protractor's frame; a habit of dropping the finger the same way is held on the board;
  *   wrong-scale                measure: the number she typed; draw: the rim mark she dotted;
  *   join-wrong-end             none: the pick is between two buttons, so her act has two values at most, and the join's spec
  *                              already asks for both button orders among its four (konLogic.chanceRepeat `cover`).
  */
-export function placeSighting(p: PlaceParamsLike, s: PlaceState | undefined, malRule: string): string | { xy: [number, number]; tol: number } | null {
+export function placeSighting(p: PlaceParamsLike, s: PlaceState | undefined, malRule: string): string | { xy: [number, number]; tol: number; base?: number; pf?: [number, number]; ptol?: number } | null {
   if (!s) return null;
-  if (malRule === "vertex-off" || malRule === "centre-on-arm") return { xy: [r1(s.pose.x - (p.vx ?? 0)), r1(s.pose.y - (p.vy ?? 0))], tol: p.tolPx ?? TOL_PX };
+  const dx = r1(s.pose.x - (p.vx ?? 0)), dy = r1(s.pose.y - (p.vy ?? 0)), tol = p.tolPx ?? TOL_PX;
+  if (malRule === "vertex-off") {
+    // gate 2, answer 1 (dc-r8-gate2-discriminating-level): the level's base direction and her offset in the protractor's frame
+    // (turned back by the base direction): a second sighting counts only on a level whose base direction differs by 45° or
+    // more, with the same offset in that frame (within the vertex-off band, VO_BAND) and so another on the board
+    // (shared/play.ts discriminatingPair)
+    const b = baseDir(p), [c, sn] = dir(-b);
+    return { xy: [dx, dy], tol, base: b, pf: [r1(dx * c - dy * sn), r1(dx * sn + dy * c)], ptol: Math.min(VO_BAND, tol) };
+  }
+  if (malRule === "centre-on-arm") return { xy: [dx, dy], tol };
   if (malRule === "wrong-scale") return p.goal === "measure" ? (s.read === null ? null : `n:${s.read}`) : s.mark === null ? null : `r:${s.mark}`;
   return null;
 }
@@ -522,8 +532,55 @@ export function poseFits(pose: Pose, rad = PR, m = 2): boolean {
 /** an arm's end with its letter (16 px, 24 board px beyond the end) on the board and above the resting protractor */
 const inBoard = ([x, y]: [number, number], lo = FIG_LO) => x >= 32 && x <= BW - 32 && y >= lo && y <= BH - 32;
 
-/** the generator's grid: θ every 5° (readable off 5° ticks), away from the landmarks; the figure fits the board */
-export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, rnd: () => number, fade: number): { params: PlaceParamsLike; sig: string }[] {
+/**
+ * Gate 2 (RULINGS-2026-11-16-gate2-answers.md, dc-r8-gate2-discriminating-level), the base direction of a measure or draw
+ * level: the heading of the protractor's base line as the solver places it (goodPose's rot, −180 … 180). A placement's offset
+ * held in the protractor's frame moves on the board when this turns. An angle opening the other way round on the same line
+ * has the same base direction (its OA points the other way, the protractor lies the same): only the tilt turns it.
+ */
+export const baseDir = (p: PlaceParamsLike): number => { const r = goodPose(p).rot; return r > 180 ? r - 360 : r; };
+/** two levels' base directions differ by DISCRIMINATING_TURN or more (shared/play.ts) */
+export const basesApart = (a: number, b: number, turn = 45) => diff(a, b) >= turn;
+/** answer 4: the kinds of angle a session of measure or draw must have met by its fourth level */
+export const isAcute = (p: { theta?: number }) => (p.theta ?? 0) < 90;
+export const opensAnticlockwise = (p: { mirror?: boolean }) => !p.mirror;
+/** a served level's signature (generatePlace's sig) read back: θ, OA's heading, mirror; null for any other */
+export function placeSigOf(sig: string): { goal: string; theta: number; start: number; mirror: boolean } | null {
+  const m = /^place:(measure|draw):(\d+):(\d+)(m?)$/.exec(String(sig));
+  return m ? { goal: m[1], theta: Number(m[2]), start: Number(m[3]), mirror: m[4] === "m" } : null;
+}
+/**
+ * What a measure or draw level must be, beyond the law's own checks (gate 2, the answers of 2026-11-16), from what the session
+ * has served and seen. → the predicates to try, strictest first (an empty list: no constraint).
+ *   the mix (answer 4)  by its fourth level (`n`, 0-based, ≥ NAMING_LEVELS − 1) a session has served at least one acute angle
+ *                       and at least one that opens anticlockwise: from the fourth on, while either is missing, a level is
+ *                       one that supplies what is missing (an acute angle opening anticlockwise supplies both);
+ *   the steer (answer 1) after a sighting of vertex-off (`bases`: the base directions of its levels), a level whose base
+ *                       direction differs by `turn` or more from every one of them (else from at least one), so the bottom
+ *                       edge on the vertex sits elsewhere on the board while it sits the same in the protractor's frame.
+ *                       Within the session's first NAMING_LEVELS levels only.
+ */
+export function placeNeeds(o: { n?: number; recent?: string[]; bases?: number[]; levels?: number; turn?: number }): { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] {
+  const levels = o.levels ?? 4, n = Number(o.n) || 0, turn = o.turn ?? 45;
+  const served = (o.recent ?? []).map(placeSigOf).filter((x): x is NonNullable<ReturnType<typeof placeSigOf>> => !!x);
+  const needAcute = n >= levels - 1 && !served.some(isAcute), needAcw = n >= levels - 1 && !served.some(opensAnticlockwise);
+  const mix = (p: PlaceParamsLike) => (!needAcute || isAcute(p)) && (!needAcw || opensAnticlockwise(p));
+  const bases = n < levels ? (o.bases ?? []).filter((b) => Number.isFinite(b)) : [];
+  const out: { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] = [];
+  if (bases.length) {
+    out.push({ id: "mix+steer-every", ok: (p) => mix(p) && bases.every((b) => basesApart(baseDir(p), b, turn)), steer: true });
+    if (bases.length > 1) out.push({ id: "mix+steer-one", ok: (p) => mix(p) && bases.some((b) => basesApart(baseDir(p), b, turn)), steer: true });
+  }
+  if (needAcute || needAcw) out.push({ id: "mix", ok: mix, steer: false });
+  return out;
+}
+
+/**
+ * The generator's grid: θ every 5° (readable off 5° ticks), away from the landmarks; the figure fits the board.
+ * `need` (gate 2, placeNeeds): only levels it passes are kept; `wide`: fade 1 takes any tilt too (a steered level: the base
+ * direction must turn by 45° or more, and fade 1's own tilts lie within 10°).
+ */
+export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number }, rnd: () => number, fade: number, o: { need?: (p: PlaceParamsLike) => boolean; wide?: boolean } = {}): { params: PlaceParamsLike; sig: string }[] {
   const out: { params: PlaceParamsLike; sig: string }[] = [], seen = new Set<string>();
   const scale: PlaceParamsLike["scale"] = fade === 1 ? "10" : fade === 2 ? "30" : "landmarks";
   const tol = g.tol ?? 3, tolPx = g.tolPx ?? TOL_PX;
@@ -553,24 +610,38 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
     // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
     // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
     const mirror = rnd() < 0.5;   // the two orientations equally (judging round 2: the outer scale is wrong on half)
-    const tilt = fade === 1 ? (rnd() < 0.5 ? 0 : 5 * Math.floor(rnd() * 5) - 10) : 5 * Math.floor(rnd() * 21) - 50;
+    const tilt = fade === 1 && !o.wide ? (rnd() < 0.5 ? 0 : 5 * Math.floor(rnd() * 5) - 10) : 5 * Math.floor(rnd() * 21) - 50;
     const a1 = norm(5 * Math.round(((mirror ? 180 : 0) + tilt) / 5));
     // the figure (O and the ends of both arms: draw's OA and the arm the solver draws) centred across the board, as low as
     // the resting protractor lets it sit, then nudged a little
     const hs = [a1, norm(a1 + (mirror ? -1 : 1) * theta)], ends = [[0, 0], ...hs.map((h) => dir(h).map((v) => v * ARM))];
     const xs = ends.map((e) => e[0]), ys = ends.map((e) => e[1]);
-    const vx = Math.round(BW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2 + (rnd() - 0.5) * 24);
+    const nudge = (rnd() - 0.5) * 24;
+    const vx0 = Math.round(BW / 2 - (Math.min(...xs) + Math.max(...xs)) / 2 + nudge);
     const vy = Math.round(Math.max(FIG_LO + 16, FIG_LO + 4 - Math.min(...ys)) + rnd() * 24);
     const x0 = 140 + Math.floor(rnd() * 41), r0 = norm(Math.floor(rnd() * 21) - 10);
-    const params: PlaceParamsLike = { goal, start: a1, theta, mirror, tol, scale, vx, vy, tolPx, x0, y0: REST_Y, r0 };
     const sig = `place:${goal}:${theta}:${a1}${mirror ? "m" : ""}`;
     if (seen.has(sig)) continue;
     // the figure fits: both arms and O's letter stay on the board, above the resting protractor; the placed protractor (and
     // the vertex-off one) and the resting one fit the board too
-    if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([vx + ARM * c, vy + ARM * s]); }) || !inBoard([vx, vy - 16])) continue;
-    const good = goodPose(params), vo = vertexOffPose(params), rest = initPlace(params).pose;
     // (the resting one wholly on the board, REST_MARGIN clear of its edges: gate 1, night rulings)
-    if (!poseFits(good) || !poseFits(vo) || !poseFits(rest, PR, REST_MARGIN) || rest.y + PR + 18 > FIG_LO) continue;
+    const fits = (q: PlaceParamsLike) => {
+      const x = q.vx ?? 0;
+      if (!hs.every((h) => { const [c, s] = dir(h); return inBoard([x + ARM * c, vy + ARM * s]); }) || !inBoard([x, vy - 16])) return false;
+      const rest = initPlace(q).pose;
+      return poseFits(goodPose(q)) && poseFits(vertexOffPose(q)) && poseFits(rest, PR, REST_MARGIN) && rest.y + PR + 18 <= FIG_LO;
+    };
+    // gate 2, answer 4: a figure centred across the board leaves an acute angle's vertex too near the side for the protractor
+    // (both arms run one way from O, the protractor's half-disc both ways), so a figure that does not fit centred is moved
+    // across, nearest the centre first (the same nudge), within 30 board px of the board's middle; no draw is spent on it
+    let params: PlaceParamsLike = { goal, start: a1, theta, mirror, tol, scale, vx: vx0, vy, tolPx, x0, y0: REST_Y, r0 };
+    if (!fits(params)) {
+      const mid = Math.round(BW / 2 + nudge), tries = Array.from({ length: 31 }, (_, i) => BW / 2 - 30 + 2 * i).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid) || a - b);
+      const x = tries.find((vx) => fits({ ...params, vx }));
+      if (x === undefined) continue;
+      params = { ...params, vx: x };
+    }
+    const good = goodPose(params), vo = vertexOffPose(params);
     // the rest pose is no placement, and the mal-rules show: vertex-off moves the reading (measure) or the made angle (draw)
     if (placement(params, initPlace(params).pose).ok) continue;
     if (goal === "measure") {
@@ -580,6 +651,7 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
       if (Math.abs(madeAngle(params, vo, markFor(params, vo, theta), "v") - theta) < 4) continue;
       if (Math.abs(madeAngle(params, good, markFor(params, good, theta), "e") - theta) < 3 * tol) continue;
     }
+    if (o.need && !o.need(params)) continue;
     seen.add(sig); out.push({ params, sig });
   }
   return out;

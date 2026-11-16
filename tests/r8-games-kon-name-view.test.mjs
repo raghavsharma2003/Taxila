@@ -45,7 +45,8 @@ function fakeCtx() {
   });
 }
 const req = (goal, seed, fade) => ({ family: "kon", mode: "name", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap: { "vertex-name": "k-vn" }, grammar: {}, recent: [], seed });
-const levels = (goal) => [1, 2, 3].flatMap((f) => [1, 7, 42, 99, 123, 2026].flatMap((sd) => konLogic.generate(req(goal, sd, f)).map((c) => konLogic.validate(c.level)).filter(Boolean)));
+// (say: and the levels a session is steered to once vertex-name is suspected: dc-r8-gate2-discriminating-level, the focus)
+const levels = (goal) => [1, 2, 3].flatMap((f) => [1, 7, 42, 99, 123, 2026].flatMap((sd) => [req(goal, sd, f), ...(goal === "say" ? [{ ...req(goal, sd, f), focus: "k-vn" }] : [])].flatMap((r) => konLogic.generate(r).map((c) => konLogic.validate(c.level)).filter(Boolean))));
 
 /** mount the view at w × h, play `acts`, and return the audit of a frame drawn 2 s after the last act (every play-out done) */
 function screen(level, acts, w, h, out = {}) {

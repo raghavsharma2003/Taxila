@@ -22,12 +22,12 @@
 // The rules the battery proves (dc-r8-gate2-habit-children H1, H3, H4) are on in the product; `legacy` (runBattery,
 // withRules) runs the same children under the rules from before them (shared/play.ts HABIT_RULES off inside one synchronous
 // run), so each mode's negative control keeps showing the failures those rules fix.
-import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, NAMING_LEVELS } from "../server/play/levels.js";
+import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, basesOf, NAMING_LEVELS } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { logicFor } from "../src/play/families/index.ts";
 import { mulberry32, hash32 } from "../src/play/core/rng.ts";
 import { TALLY_PAD, TALLY_PAD_COLS, four, tallyFourActs, numberLineEnd } from "../src/play/families/stambh/tally.logic.ts";
-import { PAD as KON_PAD, PAD_COLS as KON_PAD_COLS, padTake, goodPose, vertexOffPose, centreOnArmPose, initPlace, asPlaced, markFor, joinAFirst, PRINT_EVERY, norm, BW, BH } from "../src/play/families/kon/kon.place.ts";
+import { PAD as KON_PAD, PAD_COLS as KON_PAD_COLS, padTake, placeSigOf, isAcute, opensAnticlockwise, goodPose, vertexOffPose, centreOnArmPose, initPlace, asPlaced, markFor, joinAFirst, PRINT_EVERY, norm, BW, BH } from "../src/play/families/kon/kon.place.ts";
 import { asked, nameOf, corners, denotes, labelPoints, arcTargets, arcHit, angleSizes, LETTER_H, LETTER_W } from "../src/play/families/kon/kon.name.ts";
 import { HABIT_RULES } from "../shared/play.ts";
 
@@ -58,17 +58,21 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
 
 // ───────────────────────────── the served path, memoised ─────────────────────────────
 // currentLevel and nextBody are pure in the body; the session's chance memory and the reaction history are carried through
-// them untouched (nextBody spreads the body) and read by nothing that picks, so they are left out of the memo key.
+// them untouched (nextBody spreads the body) and read by nothing that picks, so they are left out of the memo key. One part
+// of the chance memory does pick (dc-r8-gate2-discriminating-level): nextBody copies the placement sightings' base
+// directions into the next body (basesOf), so the next body's memo key carries them.
 const LEVEL_MEMO = new Map(), NEXT_MEMO = new Map();
-const keyOf = (s, e) => { const { chance: _c, hist: _h, ...rest } = s; return `${entryKey(e)}#${JSON.stringify(rest)}`; };
+// (the rules in force are in every key: the steer of dc-r8-gate2-discriminating-level is one of the rules `legacy` turns off)
+const keyOf = (s, e) => { const { chance: _c, hist: _h, ...rest } = s; return `${HABIT_RULES.on ? 1 : 0}|${entryKey(e)}#${JSON.stringify(rest)}`; };
 function levelOf(s, e) {
   const k = keyOf(s, e);
   if (!LEVEL_MEMO.has(k)) LEVEL_MEMO.set(k, currentLevel(s, e));
   return LEVEL_MEMO.get(k);
 }
 function nextOf(s, e, door) {
-  const k = `${door}|${keyOf(s, e)}`;
-  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance: undefined, hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
+  const bases = basesOf(s.chance);
+  const k = `${door}|${keyOf(s, e)}|${JSON.stringify(bases)}`;
+  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance: bases.map(({ mis, base }) => ({ mis, act: { base } })), hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
   const b = { ...NEXT_MEMO.get(k), hist: s.hist ?? null };
   if (s.chance !== undefined) b.chance = s.chance;
   return b;
@@ -83,9 +87,10 @@ function gradeOf(lv, acts, final) {
 /**
  * The generator's candidates, memoised while the battery runs. The picker (pickLevels) calls the family's generate and then
  * scores what it returns, never changing it; generate reads, of the request, only the fields kept in the key here (stambh
- * tally and kon read neither recent, mis, pL, focus nor harder, except kon/name's "first name level" flag, from recent). The
- * picker still scores every candidate afresh for every body. The method is put back when the battery ends; the test
- * "the memo changes nothing" compares served sessions with and without it.
+ * tally reads neither recent, mis, pL, focus, harder nor n; kon reads recent (kon/name's "first name level" flag, kon/place's
+ * level mix), n, bases (kon/place) and focus (kon/name's steer), never mis, pL or harder). The picker still scores every
+ * candidate afresh for every body. The method is put back when the battery ends; the test "the memo changes nothing"
+ * compares served sessions with and without it.
  */
 const GEN_MEMO = new Map();
 export function withGenMemo(fn) {
@@ -95,8 +100,10 @@ export function withGenMemo(fn) {
     if (!lg || patched.some(([x]) => x === lg)) continue;
     const orig = lg.generate;
     lg.generate = (req) => {
-      const { recent, mis: _m, pL: _p, focus: _f, harder: _h, ...rest } = req;
-      const k = `${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}`;
+      const { recent, mis: _m, pL: _p, focus, harder: _h, n, ...rest } = req;
+      // (of recent, kon reads only whether a name level was played and whether an acute or an anticlockwise place level was)
+      const placed = (recent ?? []).map(placeSigOf).filter(Boolean);
+      const k = f === "kon" ? `${HABIT_RULES.on ? 1 : 0}|${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}|${placed.some(isAcute)}|${placed.some(opensAnticlockwise)}|${n ?? ""}|${focus ?? ""}` : `${f}|${JSON.stringify(rest)}`;
       if (!GEN_MEMO.has(k)) GEN_MEMO.set(k, orig(req));
       return GEN_MEMO.get(k);
     };
@@ -208,8 +215,10 @@ export async function runBattery(modeName, opts = {}) {
   out.ms = Math.round(performance.now() - t0);
   return out;
 }
+/** a cell at or over this share, for a child with no randomness in her acts, is listed in the packet (answer 3) */
+export const CELL_LIST = 0.5;
 function childRow({ entry, goal, kits, child, n, fades, pls, doors }) {
-  const byFade = new Map(), byCell = new Map(), tot = new Map();
+  const byFade = new Map(), byDoor = new Map(), byCell = new Map(), tot = new Map();
   let sessions = 0;
   const bump = (m, key, named) => { const r = m.get(key) ?? { n: 0, hit: {} }; r.n++; for (const kit of named) r.hit[kit] = (r.hit[kit] ?? 0) + 1; m.set(key, r); };
   for (const fade of fades) for (const pL of pls) for (const d of doors) {
@@ -217,7 +226,7 @@ function childRow({ entry, goal, kits, child, n, fades, pls, doors }) {
     for (let k = 0; k < n; k++) {
       const { named } = runSession({ entry, cell, child, sIdx: k });
       sessions++;
-      bump(byFade, fade, named); bump(byCell, ck, named); bump(tot, "all", named);
+      bump(byFade, fade, named); bump(byDoor, d.map((x) => x[0]).join(""), named); bump(byCell, ck, named); bump(tot, "all", named);
     }
   }
   const worst = (m) => {
@@ -225,8 +234,14 @@ function childRow({ entry, goal, kits, child, n, fades, pls, doors }) {
     for (const kit of Object.values(kits)) for (const [key, r] of m) { const sh = (r.hit[kit] ?? 0) / r.n; if (!w[kit] || sh > w[kit].share) w[kit] = { share: sh, at: key, n: r.n }; }
     return w;
   };
+  // answer 3: the cells at or over CELL_LIST, and the share of all her sessions they hold (how often such a cell is served
+  // in the sweep: every fade, pL and door sequence alike)
+  const listed = Object.fromEntries(Object.values(kits).map((kit) => {
+    const cells = [...byCell].filter(([, r]) => (r.hit[kit] ?? 0) / r.n >= CELL_LIST);
+    return [kit, { cells: cells.map(([key, r]) => `${key} (${(r.hit[kit] ?? 0)}/${r.n})`), served: cells.reduce((a, [, r]) => a + r.n, 0) / sessions }];
+  }));
   const all = Object.fromEntries(Object.values(kits).map((kit) => [kit, (tot.get("all").hit[kit] ?? 0) / tot.get("all").n]));
-  return { child: child.id, label: child.label, holds: child.holds ?? null, random: !!child.random, constant: !!child.constant, sessions, all, worstFade: worst(byFade), worstCell: worst(byCell) };
+  return { child: child.id, label: child.label, holds: child.holds ?? null, random: !!child.random, constant: !!child.constant, sessions, all, worstFade: worst(byFade), worstDoor: worst(byDoor), worstCell: worst(byCell), listed };
 }
 
 /** the rule name of a kit id in this goal's map */
@@ -236,15 +251,16 @@ const ruleOfKit = (kits, kit) => Object.keys(kits).find((r) => kits[r] === kit) 
  * holds; constant children are folded into one line per goal (the worst value, and how many values are named ≥ 1 in 10).
  */
 export function batteryTable(res) {
-  const lines = [`| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |`, `|---|---|---|---|---|---|---|`];
+  const lines = [`| goal | child | holds | mix-up | named (all sessions) | worst fade | worst door sequence | worst cell |`, `|---|---|---|---|---|---|---|---|`];
   const pct = (x) => (x === 0 ? "0" : x.toFixed(3));
+  const wd = (w) => `${pct(w.share)} (${w.at}, n ${w.n})`;
   for (const [goal, G] of Object.entries(res.goals)) {
     const consts = G.rows.filter((r) => r.constant);
     for (const r of G.rows.filter((x) => !x.constant)) {
       for (const [rule, kit] of Object.entries(G.kits)) {
         const holds = r.holds && r.holds[rule];
         if (!holds && r.worstFade[kit].share === 0) continue;
-        lines.push(`| ${goal} | ${r.label}${r.random ? " (random)" : ""} | ${holds ? "**holds**" : ""} | ${rule} | ${pct(r.all[kit])} (n ${r.sessions}) | ${pct(r.worstFade[kit].share)} (fade ${r.worstFade[kit].at}) | ${pct(r.worstCell[kit].share)} (${r.worstCell[kit].at}, n ${r.worstCell[kit].n}) |`);
+        lines.push(`| ${goal} | ${r.label}${r.random ? " (random)" : ""} | ${holds ? "**holds**" : ""} | ${rule} | ${pct(r.all[kit])} (n ${r.sessions}) | ${pct(r.worstFade[kit].share)} (fade ${r.worstFade[kit].at}) | ${wd(r.worstDoor[kit])} | ${pct(r.worstCell[kit].share)} (${r.worstCell[kit].at}, n ${r.worstCell[kit].n}) |`);
       }
     }
     for (const [rule, kit] of Object.entries(G.kits)) {
@@ -252,22 +268,50 @@ export function batteryTable(res) {
       const nonH = consts.filter((r) => !(r.holds && r.holds[rule]));
       const w = nonH.reduce((a, r) => (!a || r.worstFade[kit].share > a.worstFade[kit].share ? r : a), null);
       if (!w) continue;
-      const over = nonH.filter((r) => r.worstFade[kit].share >= LINE).map((r) => r.label.replace(/^constant /, ""));
-      lines.push(`| ${goal} | constant answer (${consts.length} values; worst: ${w.label}) | | ${rule} | ${pct(w.all[kit])} (n ${w.sessions}) | ${pct(w.worstFade[kit].share)} (fade ${w.worstFade[kit].at}) | ${pct(w.worstCell[kit].share)} (${w.worstCell[kit].at}, n ${w.worstCell[kit].n}) |`);
-      if (over.length) lines.push(`| ${goal} | constant values named ≥ 1 in 10 at some fade | | ${rule} | ${over.join(", ")} | | |`);
+      const wdoor = nonH.reduce((a, r) => (!a || r.worstDoor[kit].share > a.worstDoor[kit].share ? r : a), null);
+      const over = nonH.filter((r) => r.worstFade[kit].share >= LINE || r.worstDoor[kit].share >= LINE).map((r) => r.label.replace(/^constant /, ""));
+      lines.push(`| ${goal} | constant answer (${consts.length} values; worst: ${w.label}) | | ${rule} | ${pct(w.all[kit])} (n ${w.sessions}) | ${pct(w.worstFade[kit].share)} (fade ${w.worstFade[kit].at}) | ${wd(wdoor.worstDoor[kit])} (${wdoor.label}) | ${pct(w.worstCell[kit].share)} (${w.worstCell[kit].at}, n ${w.worstCell[kit].n}) |`);
+      if (over.length) lines.push(`| ${goal} | constant values named ≥ 1 in 10 at some fade or door sequence | | ${rule} | ${over.join(", ")} | | | |`);
     }
   }
+  const L = listedCells(res);
+  lines.push("", `Children with no randomness in their acts whose worst cell is named ${CELL_LIST} or more (answer 3), with the share of her sessions such cells hold:`, "");
+  if (!L.length) lines.push("none.");
+  else { lines.push(`| goal | child | mix-up | worst cell | cells at or over ${CELL_LIST} (named/n) | share of her sessions in them |`, `|---|---|---|---|---|---|`); for (const x of L) lines.push(`| ${x.goal} | ${x.label} | ${x.rule} | ${pct(x.worstCell.share)} (${x.worstCell.at}, n ${x.worstCell.n}) | ${x.cells.join("; ")} | ${x.served.toFixed(3)} |`); }
   return lines.join("\n");
 }
-/** the non-holder rows of a result whose worst fade is at or over the line: [{ goal, child, label, rule, share, fade }] */
+/**
+ * The non-holder rows of a result whose worst fade (pooled over pL, doors and seeds) or worst door sequence (pooled over
+ * fades, pL and seeds: answer 3, so one door cannot hide inside a fade) is at or over the line:
+ * [{ goal, child, label, rule, share, fade, by }]
+ */
 export function overLine(res, line = LINE) {
   const out = [];
   for (const [goal, G] of Object.entries(res.goals)) for (const r of G.rows) for (const [rule, kit] of Object.entries(G.kits)) {
     if (r.holds && r.holds[rule]) continue;
-    const w = r.worstFade[kit];
-    if (w.share >= line) out.push({ goal, child: r.child, label: r.label, rule, share: w.share, fade: w.at, all: r.all[kit] });
+    const w = r.worstFade[kit], d = r.worstDoor[kit];
+    if (w.share >= line) out.push({ goal, child: r.child, label: r.label, rule, share: w.share, fade: w.at, by: "fade", all: r.all[kit] });
+    if (d.share >= line) out.push({ goal, child: r.child, label: r.label, rule, share: d.share, fade: `doors ${d.at}`, by: "doors", all: r.all[kit] });
   }
   return out.sort((a, b) => b.share - a.share);
+}
+/** answer 3: the non-holder children with no randomness (not `random`) whose worst cell is at or over CELL_LIST */
+export function listedCells(res) {
+  const out = [];
+  for (const [goal, G] of Object.entries(res.goals)) for (const r of G.rows) for (const [rule, kit] of Object.entries(G.kits)) {
+    if (r.random || (r.holds && r.holds[rule]) || r.worstCell[kit].share < CELL_LIST) continue;
+    out.push({ goal, child: r.child, label: r.label, rule, worstCell: r.worstCell[kit], cells: r.listed[kit].cells, served: r.listed[kit].served });
+  }
+  return out;
+}
+/** the worst non-holder share for a goal, by fade and by door sequence: { fade: { share, label, rule, at }, door: … } */
+export function worstNonHolder(res, goal) {
+  const G = res.goals[goal], best = { fade: null, door: null };
+  for (const r of G.rows) for (const [rule, kit] of Object.entries(G.kits)) {
+    if (r.holds && r.holds[rule]) continue;
+    for (const [k, w] of [["fade", r.worstFade[kit]], ["door", r.worstDoor[kit]]]) if (!best[k] || w.share > best[k].share) best[k] = { share: w.share, label: r.label, rule, at: w.at };
+  }
+  return best;
 }
 /** the holder rows: [{ goal, child, label, rule, why, all, worstFade }] */
 export function holders(res) {
@@ -448,6 +492,14 @@ function placeChildren(goal) {
       const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy };
       return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
     }, { random: true });
+    // dc-r8-gate2-discriminating-level (answer 1): the fixed finger the ruling names: her centre held ON THE BOARD where the
+    // bottom edge on the vertex put it on her first level, the base along the arm, every level
+    add("fixed-vo", "the finger held on the board where the bottom edge sat on her first level (reads what it shows)", (lv, c) => {
+      const p = lv.params, g = goodPose(p);
+      c.mem.off ??= (() => { const q = vertexOffPose(p); return [q.x - p.vx, q.y - p.vy]; })();
+      const q = { ...g, x: g.x + c.mem.off[0], y: g.y + c.mem.off[1] };
+      return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
+    });
     for (const t of [-3, -2, -1, 1, 2, 3]) add(`turn${t}`, `same every level: the turn ${t}°`, (lv) => { const p = lv.params, g = goodPose(p); return [...head({ ...g, rot: g.rot + t }), readAct(measureRight(p))]; });
     for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant ${X}`, (lv) => at(lv.params, X), { constant: true });
     add("last-first", "what I typed last time (my first number)", (lv, c) => at(lv.params, c.prev ? c.prev.first.find((a) => a.kind === "read")?.n ?? measureRight(lv.params) : measureRight(lv.params)));
@@ -457,13 +509,13 @@ function placeChildren(goal) {
     add("smaller", "the smaller of the two printed numbers", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? Math.min(r.outer, r.inner) : measureRight(lv.params)); },
       { holds: { "wrong-scale": "on every obtuse angle she gives the acute reading: one scale chosen by how the angle looks, not by the 0 on the arm (kit sign: two readings for one angle add to 180)" } });
     add("larger", "the larger of the two printed numbers", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? Math.max(r.outer, r.inner) : measureRight(lv.params)); },
-      { holds: { "wrong-scale": "a reading over 90 for a narrow angle: the kit's first sign (the served levels seldom tell it: nearly all are obtuse angles opening clockwise, where this reading is the right one)" } });
+      { holds: { "wrong-scale": "a reading over 90 for a narrow angle: the kit's first sign (told only on some levels: an acute angle for the larger number, one opening anticlockwise for the inner scale; a session meets one of each by its fourth level, answer 4)" } });
     add("printed-near-outer", "the printed number nearest the outer scale's reading", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? near(r.outer, PRINT_EVERY[lv.params.scale]) : measureRight(lv.params)); });
     add("printed-near-inner", "the printed number nearest the inner scale's reading", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? near(r.inner, PRINT_EVERY[lv.params.scale]) : measureRight(lv.params)); });
     add("outer", "always the outer scale", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? r.outer : measureRight(lv.params)); },
       { holds: { "wrong-scale": "always reads the outer scale: the kit's second sign" } });
     add("inner", "always the inner scale", (lv) => { const r = measureReads(lv.params); return at(lv.params, r ? r.inner : measureRight(lv.params)); },
-      { holds: { "wrong-scale": "always one scale, whichever 0 is on the arm (the outer sign's mirror) (the served levels seldom tell it: nearly all are obtuse angles opening clockwise, where this reading is the right one)" } });
+      { holds: { "wrong-scale": "always one scale, whichever 0 is on the arm (the outer sign's mirror) (told only on some levels: an acute angle for the larger number, one opening anticlockwise for the inner scale; a session meets one of each by its fourth level, answer 4)" } });
     add("other", "the mix-up: the other scale's number", (lv) => at(lv.params, 180 - measureRight(lv.params)), { holds: { "wrong-scale": "the other scale's number on every level" } });
     add("vertex-off", "the mix-up: the bottom edge on the vertex, reads what it shows", (lv) => { const p = lv.params, q = vertexOffPose(p); return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))]; },
       { holds: { "vertex-off": "the bottom edge on the vertex: the kit's first sign" } });
@@ -490,6 +542,13 @@ function placeChildren(goal) {
   for (const t of [-1, 1, ...TICKS]) add(`dot${t}`, `same every level: the dot ${t > 0 ? "+" : ""}${t} on the rim`, (lv) => atD(lv.params, rightMark(lv.params) + t));
   for (const d of DROPS) add(`drop:${d.id}`, `same every level: ${d.id}`, (lv) => { const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy }; return atD(p, markFor(p, q, p.theta), "v", q); });
   for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id}`, (lv, c) => { const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy }; return atD(p, markFor(p, q, p.theta), "v", q); }, { random: true });
+  // dc-r8-gate2-discriminating-level (answer 1): the fixed finger (as in measure)
+  add("fixed-vo", "the finger held on the board where the bottom edge sat on her first level", (lv, c) => {
+    const p = lv.params, g = goodPose(p);
+    c.mem.off ??= (() => { const q = vertexOffPose(p); return [q.x - p.vx, q.y - p.vy]; })();
+    const q = { ...g, x: g.x + c.mem.off[0], y: g.y + c.mem.off[1] };
+    return atD(p, markFor(p, q, p.theta), "v", q);
+  });
   for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant dot ${X}`, (lv) => atD(lv.params, X), { constant: true });
   add("btn-first", "the first join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv)));
   add("btn-last", "the last join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv) === "e" ? "v" : "e"));
@@ -502,7 +561,7 @@ function placeChildren(goal) {
   add("printed-near", "the printed number nearest the asked size (right scale)", (lv) => atD(lv.params, markFor(lv.params, goodPose(lv.params), near(lv.params.theta, PRINT_EVERY[lv.params.scale]))));
   add("rest", "locks it where it rests, marks the asked size", (lv) => { const p = lv.params, q = initPlace(p).pose; return atD(p, markFor(p, q, p.theta), "v", q); });
   add("outer", "always the outer scale (dot where it reads the size)", (lv) => atD(lv.params, lv.params.theta), { holds: { "wrong-scale": "always reads the outer scale: the kit's second sign" } });
-  add("inner", "always the inner scale", (lv) => atD(lv.params, 180 - lv.params.theta), { holds: { "wrong-scale": "always one scale, whichever 0 is on the arm (the served levels seldom tell it: nearly all are obtuse angles opening clockwise, where this reading is the right one)" } });
+  add("inner", "always the inner scale", (lv) => atD(lv.params, 180 - lv.params.theta), { holds: { "wrong-scale": "always one scale, whichever 0 is on the arm (told only on some levels: an acute angle for the larger number, one opening anticlockwise for the inner scale; a session meets one of each by its fourth level, answer 4)" } });
   add("other", "the mix-up: the other scale's mark", (lv) => atD(lv.params, markFor(lv.params, goodPose(lv.params), 180 - lv.params.theta)), { holds: { "wrong-scale": "the other scale on every level" } });
   add("btn-A", "the mix-up: always 'A se jodo'", (lv) => atD(lv.params, rightMark(lv.params), "e"), { holds: { "join-wrong-end": "joins the far end on every level: the kit's first sign" } });
   add("vertex-off", "the mix-up: the bottom edge on the vertex", (lv) => { const p = lv.params, q = vertexOffPose(p); return atD(p, markFor(p, q, p.theta), "v", q); }, { holds: { "vertex-off": "the bottom edge on the vertex" } });

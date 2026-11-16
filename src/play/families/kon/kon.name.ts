@@ -17,7 +17,9 @@
 // two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
 // crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
-// (reading across the screen would pass it). find's key is drawn evenly over all five arcs, the wide one included, so no rule
+// (reading across the screen would pass it), unless EVERY such reading does (readsAcrossAll: gate 2, the discriminating
+// level, dc-r8-gate2-discriminating-level): there reading across is the right name, a vertex at an end is the mix-up's alone,
+// its solve is faint, and a session is steered to one after a first sighting. find's key is drawn evenly over all five arcs, the wide one included, so no rule
 // that ignores the name (a small arc, a corner, the widest) beats 1 in 5 (night ruling kon/name 2). No two of a figure's
 // angles are within 8° of each other in size (three different ray lengths; night ruling kon/name 1). The letters are drawn
 // at random, so the vertex is not always "O".
@@ -252,15 +254,31 @@ export function readsAcross(p: NameParamsLike): number[] | null {
   }
   return null;
 }
+/**
+ * Gate 2, dc-r8-gate2-discriminating-level (main's answer 2, 2026-11-16): a say level on which EVERY reading of the lit
+ * angle's letters across the screen (by rows or by columns, either way, by the points or by where their letters are drawn:
+ * all sixteen) puts the vertex in the middle. There a child who reads across gives the right name and a child who puts the
+ * vertex first or last still does not, so a name with the vertex at an end there is the mix-up's and no reading habit's: the
+ * discriminating level, served on purpose (shortcutName lets it through, its solve is faint: nameFaint) and steered to after
+ * a first sighting (konLogic generate). The vertex must lie between the arms' ends both across and up the screen, in rows
+ * and columns of their own: an angle over 90° facing a diagonal.
+ */
+export function readsAcrossAll(p: NameParamsLike): boolean {
+  const c = asked(p), three = new Set([c.a, c.v, c.b]);
+  for (const Q of [points(p), labelPoints(p)]) for (const o of readingOrders(Q)) if (o.filter((i) => three.has(i))[1] !== c.v) return false;
+  return true;
+}
 /** reading the asked angle's letters across the screen by rows or columns (both goals). find's key is no longer kept off
  *  the wide arc (night ruling kon/name 2: the keys are spread evenly over all five, so "the widest" wins 1 time in 5, as a
  *  blind tap does). The wide arc is the one key exempt from the reading check: it is over 90°, and the vertex of any angle
  *  over 90° lies between its arms' ends across the screen by rows or by columns, so no wide-arc level could pass it. Reading
- *  across then finds the key on those levels only: 1 time in 5, the rate find's first tap is weighted at */
+ *  across then finds the key on those levels only: 1 time in 5, the rate find's first tap is weighted at.
+ *  say (dc-r8-gate2-discriminating-level): a level where every reading puts the vertex in the middle (readsAcrossAll) is the
+ *  discriminating level and is served; a level where some readings do and some do not stays a shortcut, never served */
 export function shortcutName(p: NameParamsLike): NameAct[] | null {
   if (p.goal === "find") return (p.ask ?? 0) !== WIDE && readsAcross(p) ? [{ kind: "arc", at: p.ask ?? 0 }] : null;
   const across = readsAcross(p);
-  return across ? [...across.map((i): NameAct => ({ kind: "letter", at: i })), { kind: "commit" }] : null;
+  return across && !readsAcrossAll(p) ? [...across.map((i): NameAct => ({ kind: "letter", at: i })), { kind: "commit" }] : null;
 }
 
 /** where each angle's arc handle sits: on its bisector, nearer the vertex for the three at V's adjacent pairs */
@@ -427,6 +445,32 @@ export function sayMalSize(p: NameParamsLike): number | null {
   const c = asked(p), t = [c.v, c.a, c.b];
   return denotes(p, t) >= 0 ? null : sizeOf(p, t);
 }
+/**
+ * Gate 1, ruling 3 (2026-11-15), for the discriminating say levels (dc-r8-gate2-discriminating-level): the play-out of a name
+ * with the vertex first or last, when it is not one of the figure's angles, draws its two rays dashed; a ray that does not
+ * lie on a drawn line (the view sets those beside the line, away from the lit sector) must run outside the lit sector (the
+ * asked angle, filled to arcR). The wide angle's chord between its arms' ends runs through it, so such a level is not served.
+ */
+export function sayPlayoutClear(p: NameParamsLike): boolean {
+  const c = asked(p), P = points(p), segs = segments(p), lv = P[c.v], R0 = arcR(p, p.ask ?? 0);
+  const ha = headingOf(P[c.a][0] - lv[0], P[c.a][1] - lv[1]), hb = headingOf(P[c.b][0] - lv[0], P[c.b][1] - lv[1]);
+  let sw = norm(hb - ha); if (sw > 180) sw -= 360;
+  const inside = (x: number, y: number) => {
+    const d = Math.hypot(x - lv[0], y - lv[1]);
+    if (d >= R0 - 1 || d < 1) return false;
+    const rel = sw > 0 ? norm(headingOf(x - lv[0], y - lv[1]) - ha) : norm(ha - headingOf(x - lv[0], y - lv[1]));
+    return rel > 1 && rel < Math.abs(sw) - 1;
+  };
+  for (const t of [[c.v, c.a, c.b], [c.a, c.b, c.v]]) {
+    if (denotes(p, t) >= 0 || sizeOf(p, t) === null) continue;
+    for (const e of [t[0], t[2]]) {
+      if (segs.some(([i, j]) => (i === t[1] && j === e) || (j === t[1] && i === e))) continue;
+      const v = P[t[1]];
+      for (let i = 0; i <= 40; i++) if (inside(v[0] + ((P[e][0] - v[0]) * i) / 40, v[1] + ((P[e][1] - v[1]) * i) / 40)) return false;
+    }
+  }
+  return true;
+}
 /** the radius of the dashed play-out arc of an angle of `deg` degrees: ≥ 30 board px and long enough to run ≥ 24 board px
  *  (≥ 20 CSS px at 360, where 1 board px ≥ 1 CSS px) */
 export const dashR = (deg: number) => Math.min(72, Math.max(30, 24 / ((Math.max(deg, 1) * Math.PI) / 180)));
@@ -435,13 +479,13 @@ export const dashR = (deg: number) => Math.min(72, Math.max(30, 24 / ((Math.max(
 const KEY_MAX = 65;
 /** the first level a child meets at fade 1 has vertex O (as the book first does); every later one does not, so "O in the
  *  middle" cannot pass the fade */
-export function generateName(goal: NameGoal, rnd: () => number, fade: number, first = true): { params: NameParamsLike; sig: string }[] {
+export function generateName(goal: NameGoal, rnd: () => number, fade: number, first = true, o: { need?: (p: NameParamsLike) => boolean; tries?: number; disc?: boolean } = {}): { params: NameParamsLike; sig: string }[] {
   const out: { params: NameParamsLike; sig: string }[] = [], seen = new Set<string>();
   // (find: 8 figures are enough for the picker, and each passing figure costs a full touch-disc search; say: 20)
   const want = goal === "find" ? 8 : 20;
   // (find: more figures are tried, since the touch discs refuse many of them; the touch-disc search, the costly check, runs
   // last)
-  const tries = goal === "find" ? 1000 : 200;
+  const tries = o.tries ?? (goal === "find" ? 1000 : 200);
   // find (night ruling kon/name 2): one key arc per request, and one joined pair, drawn first: the key is each of the five
   // arcs 1 time in 5 (the wide one included), and the angle at the vertex inside the triangle as often as the one outside
   // it, so whatever the picker prefers among the figures, no rule that ignores the name (a small arc, an arc inside the
@@ -460,7 +504,7 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     for (let g = 0; g < 24 && !sizes; g++) {
       const cX = 25 + 5 * Math.floor(rnd() * 10), cY = 25 + 5 * Math.floor(rnd() * 10), gT = 180 - cX - cY, gO = 45 + 5 * Math.floor(rnd() * 12);
       const z = [gT, gO, gT + gO, cX, cY];
-      if (gT + gO > 165 || (keyAt !== null && z[keyAt] > KEY_MAX) || !z.every((x, i) => z.every((y, j) => j <= i || Math.abs(x - y) >= MIN_APART + 2))) continue;
+      if (gT + gO > 165 || (o.disc && gT < 100) || (keyAt !== null && z[keyAt] > KEY_MAX) || !z.every((x, i) => z.every((y, j) => j <= i || Math.abs(x - y) >= MIN_APART + 2))) continue;
       // the joined rays: the longer 110..150, the shorter (in proportion) at least 70
       const lo = Math.max(110, 70 / (Math.min(Math.sin(R(cX)), Math.sin(R(cY))) / Math.max(Math.sin(R(cX)), Math.sin(R(cY)))));
       if (lo > 150) continue;
@@ -482,6 +526,10 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     // clear of the vertex's row and column), so reading its letters across the screen does not put the vertex in the middle
     // and the figure is not refused for it (most were); say, and find's wide arc: any way
     let base = 5 * Math.floor(rnd() * 72);
+    // say, a discriminating level asked for (dc-r8-gate2-discriminating-level, `disc`): the angle at the vertex inside the
+    // triangle (100° or more: the sizes above), its bisector on a diagonal give or take 10°, so its arms' ends lie on either
+    // side of the vertex both across and up the screen (readsAcrossAll checks it below)
+    if (o.disc) { const bis = tri === 0 ? g1 / 2 : g1 + g2 / 2; base = norm(5 * Math.round((45 + 90 * Math.floor(rnd() * 4) - bis + (rnd() * 2 - 1) * 10) / 5)); }
     if (goal === "find" && findAsk !== WIDE) {
       const P0 = points({ goal, start: 0, tol: 3, scale: "10", vx: 0, vy: 0, h1: 0, h2: g1, h3: g1 + g2, ln1: ls[0], ln2: ls[1], ln3: ls[2], tri, ask: findAsk ?? 0 });
       const c = corners({ goal, start: 0, tol: 3, scale: "10", tri })[findAsk ?? 0], v = P0[c.v];
@@ -502,7 +550,7 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
       pick.push(ch);
     }
     if (pick.length < 4) continue;
-    const ask = findAsk ?? Math.floor(rnd() * 5), ord = rnd() < 0.5 ? 0 : 1;
+    const ask = findAsk ?? (o.disc ? tri : Math.floor(rnd() * 5)), ord = rnd() < 0.5 ? 0 : 1;
     // the figure centred on the board
     const place = (L: number[]): NameParamsLike => {
       const ends = [[0, 0], ...hs.map((h, i) => [L[i] * Math.cos(R(h)), L[i] * Math.sin(R(h))])];
@@ -545,12 +593,15 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     if (!anglesApart(params)) continue;
     if (!noCrossing(params)) continue;
     if (shortcutName(params)) continue;
+    // (a discriminating say level: its play-out's dashed rays clear of the lit sector, gate 1 ruling 3)
+    if (goal === "say" && readsAcrossAll(params) && !sayPlayoutClear(params)) continue;
     // say: the vertex-first name's dashed angle (when it is not one of the five) is ≥ 20°, so its arc can be seen
     if (goal === "say") { const m = sayMalSize(params); if (m !== null && m < 20) continue; }
     // (find: a key whose first- or last-letter reading is not one of the figure's angles (the wide one, the angle at the
     // vertex outside the triangle) is served all the same, night ruling kon/name 2; its miss is a plain miss)
     // find: every arc has a touch square of its own (≥ 48 board px, wholly in its own tap band)
     if (goal === "find" && !arcTargetsOk(params)) continue;
+    if (o.need && !o.need(params)) continue;
     seen.add(sig); out.push({ params, sig });
   }
   return out;
@@ -570,6 +621,8 @@ export const nameSurface = (p: NameParamsLike): string[] => [`${p.goal}:${p.h1}:
  */
 export function nameFaint(p: NameParamsLike, fade: number): boolean {
   if (fade === 1 && (p.lets ?? "")[0] === "O" && asked(p).v === 0) return true;
+  // (dc-r8-gate2-discriminating-level: a say level where reading across gives the right name says no more by its solve)
+  if (p.goal === "say" && readsAcrossAll(p)) return true;
   return p.goal === "find" && vertexNamePick(p) < 0;
 }
 export function nameDifficulty(p: NameParamsLike): number {
