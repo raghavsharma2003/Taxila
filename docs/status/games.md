@@ -2,6 +2,12 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+**idle: nothing unblocked** (2026-11-16, after law 4's open kinds, `f82c7dd97`, gate exit 0: 7450 pass, 0 fail). Every item on the order from `005-law4-kinds-and-shadow.md` is done; `CHECK_WAITS_OPEN` is empty. Parked, and why:
+- **The note on the 18 no-game / refused topics** an existing family could cover with a new level set: waits on judging passing (shadow now decides naming; say if you want it anyway).
+- **The kit re-pin** (`claude/r8-kit-repin2`): waits on Learning's fix for `r8-picture-turn` test 8.
+- **The font guard** for the scale numbers: deferred by you.
+Open questions for you are in the law-4 entry below (mark/file/sort as experiments; the experiment's set-up; picks greyed "until what it depends on changes").
+
 gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
