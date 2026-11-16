@@ -13,6 +13,8 @@
 //   node evals/hybrid-side-by-side/counts.mjs <run dir> --write    write it to counts-baseline.json (a dry run of the 4 pilots)
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
+import { QUIET_PICTURE_LINES } from "../../server/stagecraft/board-first.js";
+const QUIET = QUIET_PICTURE_LINES.map((x) => String(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim());
 
 const ROOT = new URL("../../", import.meta.url).pathname;
 export const BASELINE = join(ROOT, "evals/hybrid-side-by-side/counts-baseline.json");
@@ -31,7 +33,7 @@ function jointHeads(script) {
 
 /** The counts of one lesson's rows. */
 export function lessonCounts(rows, script) {
-  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, pictureRequests: 0, pictureViews: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
+  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
     cardsSaid: 0, cardsSaidAgainWithin2: 0, moves: {}, columns: {}, reads: {}, joints: {} };
   const heads = jointHeads(script), lastCards = [];
   for (const r of rows) {
@@ -44,6 +46,8 @@ export function lessonCounts(rows, script) {
     if (r.cell?.column) bump(c.columns, String(r.cell.column));
     const h = r.held ?? {};
     if (h.picture) { c.pictureRequests++; if (h.picture.view) c.pictureViews++; }
+    // (dc-r8-director23 C: her line that names nothing in the picture — the fallback when no caption is authored; the target is 0)
+    if (QUIET.some((q) => text.includes(q))) c.quietPictureLines++;
     if (h.changed) c.boardChanged++;
     if (h.kept) c.boardKept++;
     if (h.layout?.split) c.boardSplit++;

@@ -1249,6 +1249,29 @@ function seamsOf(out, { state, kit, ui = null }) {
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }
+/** dc-r8-director23 C: the authored caption of the board a picture request redraws — the `viewCaption` of the script object whose `board`
+ *  is the board up (the held unit's), in the lesson language. null when none is authored. */
+export function viewCaptionOf(kit, state, lang = "hinglish") {
+  const sc = scriptFor(kit)?.script;
+  if (!sc) return null;
+  const want = [state?.heldUp?.board, state?.lastMove?.cardBeat?.board, state?.lastMove?.scriptBeat?.board].filter(Boolean).map((b) => JSON.stringify(b));
+  if (!want.length) return null;
+  let hit = null;
+  const walk = (o) => {
+    if (hit || !o || typeof o !== "object") return;
+    if (Array.isArray(o)) return o.forEach(walk);
+    if (o.board && o.viewCaption && want.includes(JSON.stringify(o.board))) { hit = o.viewCaption; return; }
+    for (const v of Object.values(o)) walk(v);
+  };
+  walk(sc);
+  const t = hit ? (lang === "english" ? hit.en ?? hit.hi : hit.hi ?? hit.en) ?? (typeof hit === "string" ? hit : null) : null;
+  return t && String(t).trim() ? String(t).trim() : null;
+}
+/** The topic her AI-line question asked about ("Tumhe Virat ke baare mein …" → Virat), else the child's first interest. */
+function asideTopicOf(line, state) {
+  const m = /(?:tumhe|you)\s+(.{2,30}?)\s+(?:ke baare mein|about)\b/i.exec(String(line ?? ""));
+  return m ? m[1].trim() : (state?.ctx?.interests ?? [])[0] ?? "woh";
+}
 /** T4 (dc-r8-director22): one sentence about what this child did in the lesson, written by the reply model and checked by code — at
  *  most 18 words, every number in it one the lesson's rows say, no praise of the child's traits, one sentence. null when it fails. */
 export const TRAIT_PRAISE = /(?<![\p{L}])(?:smart|clever|intelligent|genius|brilliant|talented|gifted|hoshiyaar|hoshiyar|samajhdaar|tez|bright|natural|born)(?![\p{L}])/iu;
@@ -1260,13 +1283,33 @@ export function childSentenceOk(t, rowsText) {
   if ((x.match(/\d+(?:\/\d+)?/g) ?? []).some((n) => !said.includes(n))) return null;
   return /[.!।]$/.test(x) ? x : `${x}.`;
 }
-async function childSentence(state, L) {
+// (dc-r8-director23 T2: the sentence is said TO the child — in the second person — about the hardest thing she got right: the closing
+// question first when she got it right, else the card she got right after the most misses. Code picks it; the model only says it.)
+const SECOND_PERSON = /(?<![\p{L}])(?:tum|tumne|tumhe|tumhara|tumhari|tumhare|aapne|aap|you|your)(?![\p{L}])/iu;
+const THIRD_PERSON = /(?<![\p{L}])(?:bachch[ae]|bachchi|bachchon|child|student|usne|unhone|uska|uski|she|he|her|his|they)(?![\p{L}])/iu;
+export function childSentenceAddressed(t, name = null) {
+  const x = String(t ?? "");
+  if (!x || THIRD_PERSON.test(x) || !SECOND_PERSON.test(x)) return null;
+  if (name && new RegExp(`(?<![\\p{L}])${String(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\s+ne(?![\\p{L}])`, "iu").test(x)) return null;
+  return x;
+}
+export function hardestRight(state, kit) {
+  if (state?.teachbackPassed) { const q = scriptFor(kit)?.script?.teachback?.prompt; return q ? { card: (state?.ctx?.lang === "english" ? q.en : q.hi) ?? q.hi ?? q.en ?? String(q), closing: true } : null; }
+  // (the card she got right after the most misses; the later one on a tie)
+  const best = [...(state?.rightLog ?? [])].sort((a, b) => (b.misses - a.misses) || (b.turn - a.turn))[0];
+  const it = best ? findItem(state, kit, best.id) : null;
+  const q = it ? promptFor(it, state?.ctx?.lang === "english" ? "english" : "hinglish") : null;
+  return q ? { card: String(q).slice(0, 160), closing: false } : null;
+}
+async function childSentence(state, L, kit = null) {
   const rows = (state.recent ?? []).slice(-40).map((t) => `${t.who === "teacher" ? "T" : "C"}: ${String(t.text ?? "").slice(0, 160)}`).join("\n");
+  const focus = (() => { try { return hardestRight(state, kit); } catch { return null; } })();
+  const about = focus?.card ? (L === "english" ? `\nThe thing to name: ${focus.closing ? "the last question, which they got right" : "this question, which they got right after trying"}: ${focus.card}` : `\nIs baat ka naam lo: ${focus.closing ? "aakhri sawaal, jo sahi kiya" : "yeh sawaal, jo koshish ke baad sahi kiya"}: ${focus.card}`) : "";
   const sys = L === "english"
-    ? "From the lesson rows, name ONE thing this child did (a card they answered, a step they worked out, a mix-up they fixed). One sentence, at most 18 words, about what they did, never what they are. Only cards and numbers that appear in the rows."
-    : "Lesson rows se, is bachche ne jo EK kaam kiya uska naam lo (ek sawaal jo hal kiya, ek step, ek galti jo theek ki). Hinglish mein ek vaakya, 18 shabdon tak, usne kya kiya — woh kaisa hai, nahi. Sirf woh sawaal aur numbers jo rows mein hain.";
-  const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: sys }, { role: "user", content: rows }], { maxTokens: 60, effort: "none", timeoutMs: 5000 });
-  return childSentenceOk(r?.text, rows);
+    ? "Say ONE sentence TO this child, in the second person (\"You worked out …\"), naming the hardest thing they got right in the lesson rows. At most 18 words, about what they did, never what they are. Only cards and numbers that appear in the rows."
+    : "Is bachche se seedhe baat karo, \"tumne …\" se: lesson rows mein jo sabse mushkil cheez usne sahi ki, uska naam lo. Hinglish mein ek vaakya, 18 shabdon tak, tumne kya kiya — tum kaise ho, nahi. Sirf woh sawaal aur numbers jo rows mein hain.";
+  const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: sys }, { role: "user", content: rows + about }], { maxTokens: 60, effort: "none", timeoutMs: 5000 });
+  return childSentenceAddressed(childSentenceOk(r?.text, rows), state?.ctx?.firstName);
 }
 async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
@@ -1300,7 +1343,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
     let mine = null;
-    if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L).catch(() => null);
+    if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L, kit).catch(() => null);
     const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
     // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
     const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
@@ -2287,7 +2330,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // "pichhle sawaal" is only a card closed earlier) (v6.6 F1′: in forms, fresh)
     const gf = GAVE_FORMS[lang === "english" ? "english" : "hinglish"];
     // (dc-r8-director22 K: a yes-or-no key is said as a sentence — "Nahi, kyunki …", never "Is sawaal ka sahi jawab: nahi")
-    const ynSentence = gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null;
+    // (dc-r8-director23 K2, c4 stuck 42, 48; offtopic 60; steering 56: "Yeh jawab sahi nahi hai. Haan, kyunki …" — after a wrong answer to a
+    // yes-or-no card, one sentence that states the fact: the why, said as a statement, with no verdict and no "haan/nahi" before it)
+    const ynFact = gaveA && yesNo(gaveA) && gw && verdict === "not_yet" ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
+    if (ynFact) guard.ynFact = true;
+    const ynSentence = ynFact ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
@@ -2295,8 +2342,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.11 J2: her one sentence on their answer to the return, taken before any other reading of her draft; her other sentences
     // about the aside go (one sentence is the reply)
     let j2Line = null;
-    if (state.lastMove?.returnReply?.said) {
-      const rr0 = state.lastMove.returnReply;
+    // (dc-r8-director23 A2, c4 offtopic 20, c6 offtopic 24, 32: the child's answer to her AI-line question — "Dhoni" — got "Hmm, achha,
+    // theek hai."; it is replied to in the child's words, as an answer to her return is)
+    const herLastQ = String([...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
+    const aiAnswer = !state.lastMove?.returnReply?.said && state.lastMove?.asideAck && /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herLastQ) && /[?？]\s*$/.test(herLastQ.trim()) && String(childText ?? "").trim()
+      ? { said: String(childText).replace(/\s+/g, " ").trim().slice(0, 80), topic: asideTopicOf(herLastQ, state) } : null;
+    if (state.lastMove?.returnReply?.said || aiAnswer) {
+      const rr0 = state.lastMove?.returnReply?.said ? state.lastMove.returnReply : aiAnswer;
       // (dc-r8-director20 R1: the reply is Learning's, chosen by the aside's kind — one {word} of theirs from the word picker, a plain
       // form when none fits or they asked her back, the sad set when it is sad; her draft's sentences about the aside go)
       const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
@@ -2336,6 +2388,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (lead && verdict === "not_yet" && !guard.verdictCode) { const cv = codeVerdict(); if (norm(lead) !== norm(cv)) { lead = cv; guard.verdictCode = "notRight"; } }
     // v6.6 V1: a graded wrong answer always has code's verdict, her draft empty or not
     if (!lead && graded && verdict === "not_yet") { lead = codeVerdict(); guard.verdictCode = "notRight"; }
+    // (K2: the fact sentence is the whole close — no verdict before it)
+    if (guard.ynFact) lead = null;
     // v6.1 R11 (director9: a stray Devanagari switch mid-lesson): her lines are in the lesson's script, never a sudden Devanagari one
     { const n0 = ss.length; ss = ss.filter((x) => !/\p{Script=Devanagari}/u.test(x)); if (ss.length < n0) guard.scriptSwitch = n0 - ss.length; }
     const before = ss.length;
@@ -2563,7 +2617,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const heldPic = visualAsk && state.lastMove && Object.prototype.hasOwnProperty.call(state.lastMove, "altLine");
     const alt = visualAsk ? (heldPic ? (state.lastMove.altLine ? state.lastMove.altView ?? "held" : null) : state.lastMove?.altView ?? null) : null;
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"], round: ["gol", "a circle"] };
+    // (dc-r8-director23 C: Learning's authored caption for the view of the board the picture redraws — `viewCaption` beside that board in
+    // the script — is said in place of code's line when a view is drawn; code's line, then the quiet line, stay as the fallbacks)
+    const authoredCap = visualAsk && (heldPic ? !!state.lastMove.altLine : !!alt) ? viewCaptionOf(kit, state, lang) : null;
+    if (authoredCap) guard.viewCaption = true;
     const asked = !visualAsk ? null
+      : authoredCap ? authoredCap
       : heldPic ? (state.lastMove.altLine ? picLine(state.lastMove.altLine, lang) : null)
       : alt ? (() => { const w = ALT_WORD[alt.view ?? alt] ?? ALT_WORD.parts; const nums = [...new Set(Array.isArray(alt?.labels) && alt.labels.length ? alt.labels.map(String) : JSON.stringify(state.lastMove?.scriptBeat?.board ?? {}).match(/\d+\/\d+/g) ?? [])].filter((n) => !item?.answer || !String(item.answer).includes(n)).slice(0, 3);
         // (Studio: a bar card's second view is a number line: "0 se 1 ki sankhya rekha, 8 barabar gaps, nishaan 1/8 par")
@@ -2716,7 +2775,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // last turn was the AI line, between her reply and the lesson)
         // (dc-r8-director23 S: that joint is the seam pass's) 
         }
-      else if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
+      else if (!lead) {
+        const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
       if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
     }
@@ -2912,6 +2972,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         tail = null; guard.cardHeldForTry = true;
         body = body.map((x) => x.replace(/\s*[—–-]\s*$/, ".")).filter((x) => !REPOSE_FRAME.test(x));
       // (a Hindi request keeps S1 as it was: the question alone only after help said in Hindi; with none, the card in Hindi is its new words)
+      // (dc-r8-director23 C, settling 032's question: a picture turn says the caption, then the card's question alone — never the whole
+      // card; after the second miss the card is said whole)
+      } else if (cardSs.length >= 2 && q && rqNow === "visual" && !missedTwice && (saidIn2 || posedBefore)) {
+        tail = q; guard.cardQuestionOnly = true;
+        body = body.filter((x) => !REPOSE_FRAME.test(x));
       } else if (cardSs.length >= 2 && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));

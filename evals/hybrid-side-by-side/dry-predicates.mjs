@@ -290,21 +290,26 @@ export const PREDICATES = {
    *  After a point or a remediation it gets that part's simpler and then the card; after a key, the why again and the check-in. */
   giveUpCheckin(L, r, i, ctx) {
     const p = ctx.prevT;
+    // (dc-r8-director23 K2: a yes-or-no key is said as the fact — no "jawab hai", no "Haan, kyunki" — the row records it gave the key)
+    const keyed = (t) => !!t?.check?.gave || !!t?.keyFact || KEY_SAID.test(t?.text ?? "");
     if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)
     if (p.clarifyN === 2) return null;
+    // (dc-r8-director23 H2: no help says a sentence from her last two turns — the simpler she said on the turn just before is not said
+    // again; the card alone follows)
+    if ((p.pageParts ?? []).some((x) => x.part === "simpler")) return null;
     // (O4: the requests after a key stay on the closed card; once its key is said and no card has come since, a give-up may move on)
-    if (ctx.keyOpenBefore && !KEY_SAID.test(p.text)) return null;
+    if (ctx.keyOpenBefore && !keyed(p)) return null;
     if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
       if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
     // (C1, main on director21: after a key a give-up gets the why's second wording once, else the walk goes on — never the same why
     // again; repeatedAuthored holds the repeat)
-    if (KEY_SAID.test(p.text)) return null;
+    if (keyed(p)) return null;
     const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
     return simpler && cardIn(r) ? null : `a give-up at a check-in answered with ${simpler ? "no card" : cardIn(r) ? "the card and no simpler" : "neither the simpler nor the card"}`;
   },
@@ -593,26 +598,21 @@ export const ORDER_LAWS = {
   /** dc-r8-director22 R: the reader agrees with what the child meant. The rule-based child writes its intent on its row; the walk's
    *  reading of it (outcome, request, aside reply, flags) must be of the same kind. (Checked on the teacher row that answers it.) */
   readerAgrees(L, r, i, ctx) {
+    // (dc-r8-director23 R2: no equivalence table — the child's intent and the column the walk recorded on her next row match by name;
+    // the only other pairs allowed are these, each with its reason)
     const want = ctx.prevIntent;
     if (!want) return null;
-    const [out, ...tags] = String(ctx.prevRead ?? "").split(" · ");
-    const flags = new Set(ctx.prevFlags ?? []);
-    const rq = tags.find((x) => x !== "aside") ?? null, aside = tags.includes("aside");
-    const REQ = { clarify: ["clarify", "another", "confused"], hindi: ["language"], picture: ["visual"], try_first: ["selftry", "thinking"], repeat: ["repeat", "which"],
-      aside: ["uptake", "aside", "sidebar"], stop: ["stop", "goodbye", "end", "break"] };
-    const quiet = !rq && !aside && out === "no_evidence";
-    const ok = {
-      right: out === "correct" && !rq && !aside,
-      miss: ["incorrect", "partial", "misconception"].includes(out) && !aside,
-      give_up: quiet || flags.has("dontKnow"),
-      yes: quiet, ack: quiet, done: quiet, reason: quiet || out === "correct",
-      aside_reply: aside && !rq,
-      // (an aside is read when the walk takes it up: a request, the flag, or her next turn naming it — the walk's own aside reading)
-      // (state.js step0 reads a no-request line naming an aside of theirs as an aside — the same code, asideTopic, read here)
-      aside: REQ.aside.includes(rq) || (quiet && (flags.has("offTopic") || !!asideTopic(ctx.prevChild ?? "", ["cricket"]))),
-      stop: REQ.stop.includes(rq) || flags.has("wantsToStop"),
-    }[want] ?? (REQ[want] ?? []).includes(rq);
-    return ok ? null : `the child meant ${want}; the walk read "${ctx.prevRead}"${flags.size ? ` (${[...flags].join(", ")})` : ""}: "${String(ctx.prevChild).slice(0, 50)}"`;
+    const col = r.cell?.column ?? "none";
+    if (want === col) return null;
+    const ALLOWED = {
+      "miss>wrong": "a miss is a wrong answer: the column also says whether it matched a mix-up the card lists",
+      "miss>misconception": "a miss is a wrong answer: the column also says whether it matched a mix-up the card lists",
+      "yes>none": "a yes asks for nothing: the walk goes on, no column",
+      "ack>none": "an acknowledgement asks for nothing: the walk goes on, no column",
+      "done>none": "'done' asks for nothing: the walk goes on, no column",
+      "reason>none": "her reason after a key or a verdict is heard and not graded: no column",
+    };
+    return ALLOWED[`${want}>${col}`] ? null : `the child meant ${want}; the walk recorded ${col} ("${String(ctx.prevChild).slice(0, 50)}")`;
   },
   /** Main's 026: no turn says a teach-back's key while the teach-back's question board is up — the key turn shows its answerBoard,
    *  or a cleared board when the script has none. */
@@ -759,6 +759,25 @@ export const ORDER_LAWS = {
 };
 Object.assign(PREDICATES, ORDER_LAWS);
 
+/** dc-r8-director23 R2: the column is what the walk acted on this turn — an answer column (right, wrong, misconception) only on a line the
+ *  walk read as that answer (director23: 11 give-ups and clarifies after a key's check-in recorded as "misconception"). Gated. */
+PREDICATES.columnOfRead = (L, r, i, ctx) => {
+  const col = r.cell?.column, out = String(ctx.prevRead ?? "").split(" ")[0];
+  const want = { right: ["correct"], wrong: ["incorrect", "partial"], misconception: ["misconception"] }[col];
+  return want && ctx.prevRead != null && !want.includes(out) ? `column ${col} on a line read "${ctx.prevRead}"` : null;
+};
+/** dc-r8-director23 H2: no help says a sentence from her last two turns — on a turn answering a clarify, a give-up or a Hindi request,
+ *  a teaching sentence of five words or more (the card's own question and a check-in aside) already said in her last two turns. Gated. */
+PREDICATES.helpRepeats = (L, r, i, ctx) => {
+  if (!["clarify", "give_up", "hindi"].includes(String(r.cell?.column ?? ""))) return null;
+  const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
+  const card = key(r.card ?? "");
+  // (the card's question — its reask included — closes a card turn: it is the card, not help)
+  const ss = sentencesOf(r.text ?? "");
+  const q = r.card && /[?？]\s*$/.test(ss.at(-1) ?? "") ? key(ss.at(-1)) : null;
+  const hit = ss.map(key).find((x) => x.split(" ").length >= 5 && x !== q && !(card && card.includes(x)) && !CHECKIN.test(x) && last2.includes(x));
+  return hit ? `help says her last two turns' sentence again: "${hit.slice(0, 60)}"` : null;
+};
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;
@@ -789,7 +808,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -807,7 +826,7 @@ export function lessonFlags({ rows, script }) {
     ctx.keyOpenBefore = ctx.keyOpen;
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
-    ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!ctx.keyOpen;
+    ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
     (ctx.o.teacherTexts ??= []).push(r.text ?? "");
     ctx.prevPrevT = ctx.prevT;

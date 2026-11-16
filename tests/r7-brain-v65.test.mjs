@@ -53,10 +53,12 @@ describe("r7-brain-v65.test.mjs", () => {
       if (last.state.lastMove?.request !== "visual" && !last.state.lastMove?.visual) { bad.push(`${tag}: not a picture turn`); continue; }
       const card = String(last.p.r.ui?.ask?.text ?? "").replace(/\s+/g, " ").trim();
       const text = out.reply.replace(/\s+/g, " ").trim();
-      if (!text.endsWith(card)) { bad.push(`${tag}: the card is not the turn's last part | ${text.slice(-100)}`); continue; }
+      // (dc-r8-director23 C, settling 032: a picture turn says the caption, then the card's question alone — its last part)
+      const cardSaid = out.guard?.cardQuestionOnly ? String(out.guard.lineParts?.at(-1)?.text ?? card).replace(/\s+/g, " ").trim() : card;
+      if (!text.endsWith(cardSaid)) { bad.push(`${tag}: the card is not the turn's last part | ${text.slice(-100)}`); continue; }
       const segs = ask.intent.segments ?? [];
       if (segs.length !== 1) { bad.push(`${tag}: ${segs.length + 1} pages`); continue; }
-      if (segs[0].atChar !== text.lastIndexOf(card)) bad.push(`${tag}: the card's page does not start at the card`);
+      if (segs[0].atChar !== text.lastIndexOf(cardSaid)) bad.push(`${tag}: the card's page does not start at the card`);
       if (ask.intent.ofCard !== false || segs[0].ofCard !== true) bad.push(`${tag}: ofCard ${ask.intent.ofCard} / ${segs[0].ofCard}`);
       if (!ask.intent.request) bad.push(`${tag}: page 1 not asked as a picture`);
       const before = text.slice(0, segs[0].atChar);

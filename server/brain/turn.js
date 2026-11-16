@@ -2154,6 +2154,9 @@ export function readByAsked(state, cls, text, kit = null) {
   // (the teach-back's own answer: read against its key here, the same reading the walk acts on)
   const tbRead = teachbackReading(state, kit, t);
   if (tbRead) cls = { ...cls, outcome: tbRead, confidence: 1 };
+  // (dc-r8-director23 R2, c5-t02 steady 141: a line after the closing key's check-in was graded "incorrect" — with the key said there is
+  // nothing on the table to answer: never graded)
+  if ((state?.phase === "teachback" && state?.teachbackKeyed) || state?.phase === "done") cls = { ...cls, outcome: "no_evidence", confidence: 1, misconceptionId: undefined };
   if (state?.phase === "teachback" && cls.request && !["stop", "goodbye", "end", "break"].includes(cls.request.type)) { const { request: _r, ...rest } = cls; cls = rest; }
   return cls;
 }

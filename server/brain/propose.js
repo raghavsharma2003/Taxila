@@ -555,7 +555,10 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const unitOfBeat = (b) => { const u = unitOf(b); return u && /:bridge$/.test(u) ? firstUnitOf(kit, b.skillId) ?? u : u; };
   const curUnit = unitOfBeat(cardB) ?? unitOfBeat(move?.scriptBeat);
   if (!curUnit && !up) return null;
-  const cur = curUnit ? { unit: curUnit, board: unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
+  // (dc-r8-director23, c4 steady 98: a remediation said on its own turn is drawn on its own authored board before she describes it — the
+  // unit's board is its then-card's only once that card is posed)
+  const remOwn = move?.scriptBeat?.kind === "remediation" && move.scriptBeat.board && !(list ?? []).some((p) => p.part === "card" && String(p.text ?? "").trim()) ? move.scriptBeat.board : null;
+  const cur = curUnit ? { unit: curUnit, board: remOwn ?? unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;
   const close = closeB ? { unit: unitOf(closeB) ?? up?.unit ?? null, board: closeB.board } : null;
   // (v6.9 N1: a close is a unit part only when it closes something — a verdict graded this turn, a give-up, a worked answer, an
