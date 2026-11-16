@@ -2,6 +2,52 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+**Ready for director24: `cf60489e`, once Learning's `3e25c5c60` is merged with it (integration 72).** On Learning's scripts the dry matrix
+reads 0 on every gated predicate and `quietPictureLines` reads 0 of 16. On int/r6's current scripts, which have no captions yet, it reads 9.
+
+## 2026-11-16 · `cf60489e` (main's 034)
+
+**034 read.** `viewCaption` and `wrap.ack` stand.
+
+**Done (gated: test:all 7325 pass; the only failures are the two worktree-only browser suites):**
+- `quietPictureLines`, as asked: with Learning's `claude/r7-learning` scripts (3e25c5c60) on this commit it reads 0 of 16 picture turns,
+  and every gated predicate reads 0. The last quiet line was a picture after a key: the board up is the card's answer board, so the
+  caption is now found by `answerBoard` too. One false `authoredWhole` flag (a caption sharing words with a simpler) is fixed.
+- The two walk faults reproduce on a fixture: Learning's c4 script with e1's point cut to two sentences, so the point and card share a
+  turn (`tests/fixtures/scripts-point-card-one-turn`, run by `r8-main-034`). They are fixed there:
+  - stuck 48: a second clarify at a then-card's check-in stays on that card, with help not yet said, else the card's worked answer.
+  - steering 34: a give-up is not a wrong answer, and the walk's give-up-turned-repeat is not a request of hers, so the card's
+    question is asked alone.
+
+  Before the fix the fixture reads 3 flags (steering 34 `cardWholeAgain`, stuck 48 `clarifyCard` and `orderStays`); now 0.
+- Counts: none moved on the pilots.
+
+**Questions for main:** none.
+
+## 2026-11-16 · `fe602e6b` (harness) and `d90164b2` (A2 on a worked step)
+
+**Done (both gated: test:all 7301 pass; the only failures are the two worktree-only browser suites):**
+- Harness, item 8:
+  - `cardWholeAgain` reads a one-sentence card when a shorter question exists (a reask, or a question clause after its colon). It
+    flags director23's c5-t01 steady 10, stuck 14 and steering 10, and 0 on the dry matrix. The walk asks such a card by that clause.
+  - `hindiNewWords` reads a switch-and-card-only turn (c4 stuck 10, steering 8; c5-t02 steering 8). The walk now says new words there.
+  - A question's numbers are never a false key (c5-t02 steady 132).
+  - A close page is not counted against the next unit's board (`contradictionsV6`, c4 steady).
+- A2: asked her taste on a worked step, the AI line ends on its question. The step is held, the reply leads the next turn in the
+  child's words, then one step.
+
+**Where director24 stands:**
+- The seam predicates read 0 from `seams`.
+- `readerAgrees` reads 0 with no equivalence table.
+- Every gated predicate reads 0 on the dry matrix.
+- `quietPictureLines` reads 9. It reaches 0 only when Learning authors `viewCaption` for the c4, c5-t01 and c5-t02 boards, so this is
+  not yet "ready for director24".
+
+**Still open:** the reply to a repeated aside in the child's words (c6 offtopic 24, 32) needs a better word pick or authored forms.
+
+**Questions for main:** can Learning author `viewCaption` (and `wrap.ack`) on the four pilots? That is the last thing director24 waits on
+from me.
+
 ## 2026-11-16 · `cb21c01b` (dc-r8-director23 T2, C, H2, boards, K2, A2 in part)
 
 **Done (gated: test:all 7298 pass; the only failures are the two worktree-only browser suites):**
