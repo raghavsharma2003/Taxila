@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-pick-options-galti-tri",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Exact pickOptions for the computed default's first two families (RULINGS-2026-11-16-gate2-answers.md, answer 2 under 'a computed default'; branch claude/r8-pick-options from 44f997d83, code 902e6da9a). galti-pakdo (galtiPickOptions): the verdict is sab sahi or one of the working's n - 1 lines (neat-correct, right-answer: p 1/n); check-later's pick is the line weighed first, any of n (p (n - at)/n). nazariya/tri more (triPickOptions): every grid point above the base, (w + 1) x zb (p w / ((w + 1) zb), 0.103-0.308). galti sudhaaro, the same line pick before its fix, becomes a chance pick (chancePicks ['sudhaaro']; it named from one level). tri more gains H1 (sightingOf: the point) and H3's shape (confirmMore: a sighting counts only when her next corner after the play-out is again on A's top line; unconfirmed, a plain miss at GAME_WEIGHT); malActs carries the holder's confirmation. Nothing a child sees changes; served levels unchanged (64,800 bodies hash the same); NAMING_OFF untouched (both modes name). Reverse if: a judge finds a habit child named 1 in 10 or more in either battery (then naming off for that mode), or a level appears whose true options differ from the list (then the list is wrong, not the rule).",
+   "source": "inbox/r8-pick-options.json"
+  },
+  {
+   "id": "ms-r8-pick-options-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "p and k over every generated level (11,105: each entry x fades 1-3 x 20 seeds x focus), before -> after: galti pakdo:neat-correct 1/3 k4 -> 1/4-1/3 k3-4 (250 levels); pakdo:right-answer 1/2 k4 -> 1/4-1/3 k3-4 (741); pakdo:check-later 1/3 k4 -> 1/4-3/4 k3, 4 or never (250; never on 82); sudhaaro's three: named from one level -> as pakdo (833/501/833); tri more:shape-looks 1/2 k4 -> 0.103-0.308 k2 (1,389) or 3 (639). Habit battery (tests/r8-habit-battery-galti-pakdo.test.mjs, r8-habit-battery-nazariya-tri.test.mjs; tests/_habit-children.mjs with cellIds), worst non-holder worst fade / worst door, full sweep (HABIT_FULL=1): pakdo 0.025 / 0.033, sudhaaro 0.037 / 0.042 (the same slip every level, 'the option below'), tri more 0.004 / 0.008 (blind); gate 0.016/0.042, 0.031/0.042, 0.005/0.014. Before: sudhaaro blind verdict 0.375/0.458, the same slip 0.594/0.708; tri the same slip every level 1.0 (old k), one random slip 0.32/0.40 (exact k, no H1/H3). Holders (full): galti 0.001-0.068 (reported: the default asks 3-4 of four levels), tri 0.998-1.000. Times: gate 28 s and 18 s; full about 5 min and 2 min.",
+   "source": "inbox/r8-pick-options.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r8-pick-options-galti-tri", "rel": "part_of", "dst": "dc-r8-picks-default" },
+  { "src": "dc-r8-pick-options-galti-tri", "rel": "part_of", "dst": "dc-r8-gate2-habit-children" },
+  { "src": "dc-r8-pick-options-galti-tri", "rel": "measured_by", "dst": "ms-r8-pick-options-2026-11-16" }
+ ]
+}

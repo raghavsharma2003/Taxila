@@ -20,7 +20,7 @@ import { existsSync, readdirSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PD, ARM, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs, arms, farEnd, norm } from "../src/play/families/kon/kon.place.ts";
+import { BW, BH, PR, PD, ARM, PRINT_EVERY, SIZE_PRINT_EVERY, TOL_PX, initPlace, goodPose, vertexOffPose, centreOnArmPose, sizeFigs, arms, farEnd, norm, baseDir, diff } from "../src/play/families/kon/kon.place.ts";
 import { SCALE_GAP, INK_H, LETTER_PX, monoMeasure, scaleLabels, scaleOmit, scaleOmitFor, protractorLines, letterSpot, numberBox } from "../src/play/families/kon/kon.scale.ts";
 
 /** kon/name's world boxes (CSS px; tests/r8-games-kon-name-view.test.mjs lays the view out in these, headless) */
@@ -253,6 +253,47 @@ it("numberClashes: two numbers 3 px apart side by side clash, 6 px apart do not;
   assert.deepEqual(numberClashes(L), []);
 });
 
+/**
+ * Note 004 (main, 2026-11-16): the levels the level mix and the steers serve, which coverageLevels (a fresh child's first
+ * level, and the focus level) never reaches, for measure and draw each: an acute angle (fade 1); an acute angle tilted 25° or
+ * more (fade 2); a level steered after a vertex-off sighting on a level whose base lay at 0° and at 180°. Eight levels: the suite
+ * then runs 10.1 min in this container, one core (main measured 5-8 min before them; the four more tried, a clockwise tilted acute angle and a level
+ * steered after wrong-scale for each goal, showed no fault and took it to 12.6). Each is what the real picker serves
+ * (server/play/levels.js currentLevel) for a session body in that state (its place in the session, what it served, what it
+ * saw), the first child id that gives one; nothing is hand-made but the body. → [{ why, level }]
+ */
+export async function placeLayoutLevels() {
+  const { currentLevel, entryKey, seedOf, coverage } = await import("../server/play/levels.js");
+  const out = [];
+  const tilt = (p) => { const t = norm(p.start - (p.mirror ? 180 : 0)); return t > 180 ? t - 360 : t; };
+  for (const goal of ["measure", "draw"]) {
+    const e = coverage().entries.find((x) => x.family === "kon" && x.mode === "place" && x.goal === goal), key = entryKey(e);
+    const VO = e.misMap["vertex-off"];
+    const body = (k, o) => ({ childId: `lay-${k}`, key, skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
+      mis: {}, door: "garam", recent: [], hist: null, ...o, seed: seedOf(`lay-${k}`, key, o.n) });
+    const find = (why, o, ok) => {
+      for (let k = 0; k < 80; k++) {
+        const lv = currentLevel(body(k, o), e);
+        if (lv && ok(lv.params) && !out.some((x) => x.level.levelId === lv.levelId)) return out.push({ why: `${goal}: ${why}`, level: lv });
+      }
+      throw new Error(`${goal}: no level ${why}`);
+    };
+    // (the third level of a session that has met neither an acute angle nor one opening anticlockwise: the level mix)
+    find("acute", { n: 2 }, (p) => p.theta < 90);
+    find("acute, tilted 25° or more", { n: 2, fade: 2 }, (p) => p.theta < 90 && Math.abs(tilt(p)) >= 25);
+    find("steered after vertex-off from base 0", { n: 1, bases: [{ mis: VO, base: 0 }] }, (p) => diff(baseDir(p), 0) >= 45);
+    find("steered after vertex-off from base 180", { n: 1, bases: [{ mis: VO, base: 180 }] }, (p) => diff(baseDir(p), 180) >= 45);
+  }
+  return out;
+}
+
+it("note 004: the browser suite's extra kon/place levels are served by the real picker (acute, tilted, steered), headless", async (t) => {
+  const L = await placeLayoutLevels();
+  for (const { why, level } of L) t.diagnostic(`${why}: ${level.sig} (fade ${level.fade}, base ${baseDir(level.params)}°)`);
+  assert.equal(L.length, 8, L.map((x) => x.why).join("; "));
+  for (const { why, level } of L) assert.ok(level.levelId && level.sig && level.proof?.solvable, why);
+});
+
 describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1366 × 768", { skip: SKIP, timeout: 900_000 }, () => {
   let browser, served, levels = [];
   before(async () => {
@@ -262,6 +303,8 @@ describe("r8 kon boards: no overlap or cut-off on any screen at 360 × 640 and 1
     const { coverageLevels } = await import("../server/forge3/play-cert.js");
     const { coverage } = await import("../server/play/levels.js");
     for (const e of coverage().entries.filter((x) => KEYS.includes(`${x.family}/${x.mode}`))) for (const l of await coverageLevels(e, 2, { focus: true })) levels.push(l);
+    // note 004: the acute, tilted and steered levels the coverage's first levels never are
+    for (const { level } of await placeLayoutLevels()) if (!levels.some((l) => l.levelId === level.levelId)) levels.push(level);
     served = await serveHarness(await buildHarness(join(tmpdir(), `kon-layout-${process.pid}`)));
     browser = await launchLocal();
   });

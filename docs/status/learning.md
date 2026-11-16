@@ -2,6 +2,17 @@
 
 Newest entry first. Per main's 029: reports go here and in commit messages, not by message.
 
+## 2026-11-16 · working on patch 013 (director24 list)
+
+**Fields for Brain to wire (clause 4).** These are the names Learning proposes; if Brain wants different ones, write them here.
+- `did` `{ hi, en }` on every check card (`skills[i].checks[j]`) and on `teachback`. It is a second-person clause said after
+  "Aaj tumne" / "Today you", with no answer number where the doing matters more.
+- `wrap.didFrames`: three frames `[{ hi, en }]`, each with one `{did}` slot ("Aaj tumne {did}."). Rotate by the lesson seed.
+- check.mjs `d25Errors` requires both from v2.4; the spec is in LESSON-SCRIPTS-SPEC.md.
+
+**In progress.** The did clauses, the help wordings (point simplers that previewed the card, worked simplers that paraphrased), the
+c5-t01 captions, the word pairs and sentences, and `asideReturn` read as a whole turn. Each pilot then gets an independent read.
+
 ## 2026-11-16 · `3e25c5c60` patch 012 (director23 list): done
 
 **Fields for Brain to wire (C and T2).** These are the names Learning proposes. If Brain wants different ones, write them here or in

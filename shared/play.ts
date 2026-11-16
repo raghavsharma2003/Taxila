@@ -695,7 +695,12 @@ export interface GenRequest {
   /** gate 2 (dc-r8-gate2-discriminating-level): the base directions of the levels on which this session saw a placement
    *  pick (SightingValue.base), by kit misconception: a family steers the next level to one that tells it apart */
   bases?: { mis: string; base: number }[];
+  /** gate 2 (answer 1 of note 004, 2026-11-16): what of each sighting's level steers the next one (FamilyLogic.steerOf), by
+   *  kit misconception, oldest first: kon/place wrong-scale keeps the side the angle opens to and its key */
+  steers?: ({ mis: string } & SightingSteer)[];
 }
+/** gate 2: what of a sighting's level the session keeps to steer the next level (FamilyLogic.steerOf) */
+export type SightingSteer = Record<string, number | boolean>;
 /** A generated level before the picker scores it. `difficulty` 0..1 is the family's own estimate (size, steps, form). */
 export interface Candidate<P = unknown> { level: PlayLevel<P>; signature: string; difficulty: number }
 
@@ -758,6 +763,9 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  the act that showed it, and its moment. A sighting counts toward a repeat only when its value differs from every earlier
    *  sighting's (server/play/levels.js nameOnRepeat). null or absent: no value (the repeat rule alone) */
   sightingOf?(level: PlayLevel<P>, malRule: string, state: S, moment: Moment): SightingValue | null;
+  /** gate 2 (note 004, answer 1): what of this level a sighting of this mal-rule keeps, for the next level's steer (the
+   *  session's chance memory carries it; server/play/levels.js steersOf → GenRequest.steers). null or absent: nothing */
+  steerOf?(level: PlayLevel<P>, malRule: string): SightingSteer | null;
   /** gate 2 (H4): a moment whose mix-up is a pick although its goal and mal-rule are not (stambh/tally keep's `five`: one
    *  button pressed for every stroke), graded at chance weight as chanceMis (gradeLevel and the server's chancePick read this) */
   chanceAt?(level: PlayLevel<P>, moment: Moment): boolean;

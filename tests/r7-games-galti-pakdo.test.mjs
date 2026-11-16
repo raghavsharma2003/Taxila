@@ -226,8 +226,10 @@ for (const e of GP()) for (const fade of [1, 2, 3]) {
       assert.equal(rows[0].outcome, "correct"); assert.equal(rows[0].weight, e.goal === "pakdo" ? CHANCE_WEIGHT : GAME_WEIGHT); assert.ok(e.skillIds.includes(rows[0].skillId));
       for (const kitId of level.proof.discriminates) {
         const mal = Object.keys(level.mal).find((m) => level.mal[m] === kitId && L.malActs(level, m));
-        // round 8 law 3: a mix-up from the one pick of pakdo is at chance weight (unnamed); sudhaaro's keep the game weight
-        assert.equal(gradeActs(level, env(L.malActs(level, mal)), { final: true }).grade.evidence[0].weight, e.goal === "pakdo" ? CHANCE_WEIGHT : GAME_WEIGHT, "a miss keeps the game weight");
+        // round 8 law 3: a mix-up from the one pick of pakdo is at chance weight (unnamed); sudhaaro's too since gate 2's habit
+        // battery (galtiLogic.chancePicks: its verdict is the same line pick)
+        const mr = gradeActs(level, env(L.malActs(level, mal)), { final: true }).grade.evidence[0];
+        assert.equal(mr.weight, CHANCE_WEIGHT, "a mix-up from one pick is at chance weight"); assert.equal(mr.misconceptionId, undefined);
       }
       const forged = gradeActs(level, [{ seq: 1, t: 0, act: { kind: "sab", solved: true, correct: true, verdict: "solved" } }], { final: true });
       assert.notEqual(forged.grade.verdict, "solved");
