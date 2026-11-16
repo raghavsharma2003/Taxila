@@ -29182,6 +29182,34 @@
    "at": "2026-11-16",
    "title": "H5 and H7 measured (tests/r8-gate2-facts-row.test.mjs, r8-games-stambh-tally, r8-games-kon-place-gate2, r8-games-kon-name-gate2). H5 through POST /api/play/act (naming off, as served): gate 77 served levels, 467 level ends; H5_FULL=1 313 levels, 2,483 ends, 230 s; every seam row exactly game, verdict, first_try, checks, every miss 0.5, the signed trail the raw replay; naming on (the battery's path) gate 408 levels, 102 named with naming's own row. H7: keep 582 levels, fewest slips 3 (336), 4 (222), 5 (24), worst one slip in every row 1/16; kon/place 2,510 levels, every assertion holds, worst figures unchanged (vertex-off drop 0.0929 -> 0.0930); cross-check: 742,987 generated levels over 3,000 seeds, none outside the enumeration. kon/name wide sweep: find has levels where one slip off the key lands on the mix-up's arc 0.221 (the packet said 1 in 5 at worst): the third sighting is 0.036 a session (was 0.027), still under 1 in 10. Times: tally file 10 s, kon/place gate-2 6 -> 16 s, kon/name gate-2 3 s (90 s full), facts-row test ~42 s.",
    "source": "inbox/r8-gate2-h5h7.json"
+  },
+  {
+   "id": "dc-r8-gate2-shadow",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Game mix-up naming in stambh/tally, kon/place and kon/name runs in shadow: the rules as built write wouldName to the trail and trace, and nothing reaches the teacher's row, the seam or the learner model. No further judge reads a battery; real sittings decide: a mode is switched on with at least 30 shadow namings and at most 1 in 10 contradicted by the lesson's verified-key classification. Before shadow: the three 'blocks' fixes (Yahi naam waits until the name changes; tally read's discriminating row; draw wrong-scale against last level's right mark) and the judges' children added to the battery. New play law for every family: after a miss the check control waits until her act changes. Reverse: more than 3 in 10 contradicted after 30 namings drops repeat naming for that mode.",
+   "source": "inbox/r8-main-36.json"
+  },
+  {
+   "id": "ms-r8-gate2-second-reading",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Gate 2 second reading at integration 72 (46782fd15): three Opus judges, one per mode, each ran the battery (full sweep passes, tables reproduced) and wrote new children against the served path. All FAIL. stambh/tally: discriminating level not built for numbers (rows 25, 31, 37, 43, 49 counted for 'a bundle skipped'); worst single-habit non-holder 0.013; two habits at once 0.25. kon/place: draw wrong-scale has no discriminating check ('last time's right dot' 0.075, counted pair found); a finger inside the angle 0.075. kon/name: an unchanged second press of Yahi naam confirms (careful child with two slips 0.98; blind guesser 0.13); same swap then random letters 0.13; then another order of the same letters 0.84. Holders: vertex-off 0.92 to 0.93, other scale 1.00, vertex first/last 1.00, tally read 0.80, always inner 0.",
+   "source": "inbox/r8-main-36.json"
+  },
+  {
+   "id": "fd-imagined-children-never-close",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "Two readings of gate 2 had the same shape: a proof over children we listed, and a judge who listed more (first habits, then acts shared with the mix-up on some level and behaviours after a miss). Each repair held and each reading found the next list, because every child in the proof is one someone imagined. A line set against imagined children cannot close; what a child does after a miss has to be measured on real sittings.",
+   "source": "inbox/r8-main-36.json"
+  },
+  {
+   "id": "ms-release-1d2807e",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Released 1d2807e with scripts/release.mjs: web taxila-web--s1d2807e-8wxj (was taxila-web--s0c93788-w9wg), worker + canary/nightly jobs on taxila-worker:1d2807e (was 0c93788); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 1d2807e --rollback.",
+   "source": "inbox/release-1d2807e.json"
   }
  ],
  "edges": [
@@ -46629,6 +46657,26 @@
    "src": "dc-r8-gate2-h7-every-level",
    "rel": "measured_by",
    "dst": "ms-r8-gate2-h5h7-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-shadow",
+   "rel": "supersedes",
+   "dst": "dc-r8-gate2-habit-children"
+  },
+  {
+   "src": "dc-r8-gate2-shadow",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-second-reading"
+  },
+  {
+   "src": "fd-imagined-children-never-close",
+   "rel": "constrains",
+   "dst": "dc-r8-gate2-shadow"
+  },
+  {
+   "src": "dc-r8-gate2-discriminating-level",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-shadow"
   }
  ]
 }
