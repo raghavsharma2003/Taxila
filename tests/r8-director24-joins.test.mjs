@@ -64,8 +64,9 @@ test("the JOIN lines come off her draft; the note asks only for the joints the t
   assert.equal(takeJoins("Ek roti socho. JOIN backTo: Wapas chalte hain.", s2), "Ek roti socho.");
   assert.deepEqual(s2, { backTo: "Wapas chalte hain." });
   const state = { ctx: { lang: "hinglish" }, lastMove: { scriptBeat: { kind: "remediation" } }, lastGraded: { itemId: "a" } };
-  assert.deepEqual(joinsWanted({ state, kit, ui: { ask: { itemId: "b" } }, verdict: "not_yet" }), ["beforeRemediation", "backTo"]);
-  assert.deepEqual(joinsWanted({ state: { ctx: {}, lastMove: {} }, kit, verdict: "correct" }), []);
+  assert.deepEqual(joinsWanted({ state, kit, ui: { ask: { itemId: "b" } }, verdict: "not_yet" }), ["beforeRemediation", "backTo", "missVerdict"]);
+  assert.deepEqual(joinsWanted({ state: { ctx: {}, lastMove: {} }, kit, verdict: "correct" }), ["verdict"]);
+  assert.deepEqual(joinsWanted({ state: { ctx: {}, lastMove: {} }, kit, verdict: "ungraded" }), []);
   assert.equal(joinNoteOf([]), null);
   assert.match(joinNoteOf(["backTo"]), /JOIN <kind>: <words>.*backTo \(going back to the earlier question/);
 });
@@ -78,4 +79,28 @@ test("joinChecked (gated) rereads a model join; counts say joins written vs fell
   const c = lessonCounts([row([{ joint: "backTo", form: "a", by: "model" }, { joint: "afterAside", form: "b", by: "authored" }]), row([{ joint: "hindiSwitch", form: "c" }])], null);
   assert.equal(c.joinsWritten, 1);
   assert.equal(c.joinsFellBack, 1);
+});
+
+test("the verdict's opener in the model's words, when it passes and says the verdict it opens; else code's frame", () => {
+  const frames = ["Haan, bilkul theek", "Bilkul sahi", "Nahi, yeh jawab nahi hai."];
+  const right = (mj) => seamPass([{ part: "close", text: "Haan, bilkul theek, kyunki 4 tukde barabar hain." }, { part: "card", text: "Agla sawaal?" }], { kit, state: { ctx: { lessonKey: "L" } }, lang: "hinglish", info: { modelJoins: mj, verdictFrames: frames } });
+  const r1 = right({ verdict: "Wah, ekdum sahi pakda" });
+  assert.equal(r1.list[0].text, "Wah, ekdum sahi pakda, kyunki 4 tukde barabar hain.");
+  assert.deepEqual(r1.seams[0].opener, { by: "model", form: "Wah, ekdum sahi pakda" });
+  // (a right answer's opener with a miss word, or with no right word, is code's frame)
+  for (const [m, why] of [["Nahi, yeh sahi nahi", /not a right verdict/], ["Achha, dekho", /not a right verdict/], ["Sahi, 4 tukde", /a digit/]]) {
+    const r = right({ verdict: m });
+    assert.equal(r.list[0].text, "Haan, bilkul theek, kyunki 4 tukde barabar hain.", m);
+    assert.match(r.seams[0].opener.fellBack, why, m);
+  }
+  assert.equal(right(null).seams[0].opener.by, "authored");
+  // (a miss: the opener needs its miss word)
+  const miss = (mj) => seamPass([{ part: "close", text: "Nahi, yeh jawab nahi hai. Dekho, tukde barabar nahi." }], { kit, state: { ctx: { lessonKey: "L" } }, lang: "hinglish", info: { miss: true, modelJoins: mj, verdictFrames: frames } });
+  assert.equal(miss({ missVerdict: "Hmm, abhi yeh nahi bana" }).list[0].text, "Hmm, abhi yeh nahi bana. Dekho, tukde barabar nahi.");
+  assert.match(miss({ missVerdict: "Koshish achhi thi" }).seams[0].opener.fellBack, /no miss word/);
+  // (counted apart from the joins)
+  const c = lessonCounts([{ who: "teacher", text: "x", seams: [{ left: "start", right: "verdict", joint: null, opener: { by: "model", form: "Wah" } }, { left: "verdict", right: "card", joint: null, opener: { by: "authored", form: "Bilkul sahi" } }] }], null);
+  assert.equal(c.openersWritten, 1);
+  assert.equal(c.openersFellBack, 1);
+  assert.equal(c.joinsWritten + c.joinsFellBack, 0);
 });

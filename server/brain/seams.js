@@ -91,6 +91,23 @@ export function joinProblem(text, { kit = null, state = null, lang = "hinglish" 
   return null;
 }
 
+const RIGHT_WORD = /(?<![\p{L}])(?:sahi|theek|thik|bilkul|ekdum|haan|right|correct|exactly|yes|perfect)(?![\p{L}])/iu;
+/** The turn's verdict opener: { at, record } — the index of the verdict part and what its seam records — with the part's text swapped
+ *  in place when the model's opener passes; null when the verdict opens on no code frame. */
+function verdictOpener(parts, kinds, { kit, state, lang, info }) {
+  const at = kinds.findIndex((k) => k === "verdict" || k === "missVerdict");
+  if (at < 0) return null;
+  const t = norm(parts[at].text);
+  const frame = (info.verdictFrames ?? []).map((f) => norm(f).replace(/[.!?:]+$/, "")).filter(Boolean).sort((a, b) => b.length - a.length).find((f) => t.toLowerCase().startsWith(f.toLowerCase()));
+  if (!frame) return null;
+  const kind = kinds[at];
+  const mine = norm(info.modelJoins?.[kind] ?? "").replace(/[.!?:,]+$/, "");
+  let bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
+  if (mine && !bad) bad = kind === "verdict" ? (MISS_WORD.test(mine) || !RIGHT_WORD.test(mine) ? "not a right verdict" : null) : !MISS_WORD.test(mine) ? "no miss word" : null;
+  if (mine && !bad) parts[at] = { ...parts[at], text: `${mine}${t.slice(frame.length)}` };
+  return { at, record: { by: mine && !bad ? "model" : "authored", form: mine && !bad ? mine : frame, ...(bad ? { fellBack: bad } : {}) } };
+}
+
 /** Every form of the joints this pass owns, as sentence matchers (slots match anything). */
 function jointMatchers(kit, lang, kinds = SEAM_JOINTS) {
   const out = [];
@@ -151,6 +168,9 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // 2. the table, at each seam (and at the turn's start)
   const carriers = jointMatchers(kit, lang, ["asidePark", "asideReturn"]);
   const kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+  // (dc-r8-director24 M: the verdict's opener in the model's words — the code frame at the head of the turn's verdict is swapped for
+  // hers when it passes the join checks and says the verdict it opens: a right word on a right answer, a miss word on a miss)
+  const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
   const out = [], seams = [], said = {}, used = [];
   let prevKind = "start";
   stripped.forEach((p, i) => {
@@ -167,6 +187,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     const bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
     if (mine && !bad) form = /[.!।]$/.test(mine) ? mine : `${mine}.`;
     seams.push({ left: prevKind, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : "authored", ...(bad ? { fellBack: bad } : {}) } : {}) });
+    if (opener && i === opener.at) seams.at(-1).opener = opener.record;
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
     if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }

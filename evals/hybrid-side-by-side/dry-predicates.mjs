@@ -812,13 +812,18 @@ PREDICATES.partOnce = (L, r, i, ctx) => {
   }
   return why;
 };
-/** dc-r8-director24 M: a join said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
+/** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
   for (const s of r.seams ?? []) {
     if (s.by !== "model") continue;
     const why = joinProblem(s.form, { state: { recent: (ctx.o.teacherTexts ?? []).slice(-4).map((text) => ({ who: "teacher", text })) } });
     if (why) return `the model's ${s.joint} join said with ${why}: "${s.form}"`;
+  }
+  for (const s of r.seams ?? []) {
+    if (s.opener?.by !== "model") continue;
+    const why = joinProblem(s.opener.form, {});
+    if (why || !String(r.text ?? "").startsWith(s.opener.form)) return `the model's verdict opener ${why ? `said with ${why}` : "is not where it opens"}: "${s.opener.form}"`;
   }
   return null;
 };

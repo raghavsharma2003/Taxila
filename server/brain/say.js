@@ -1248,7 +1248,7 @@ function seamsOf(out, { state, kit, ui = null }) {
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
-    modelJoins: out.guard?.modelJoins ?? null,
+    modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out;
@@ -1274,7 +1274,8 @@ export function takeJoins(text, sink = {}) {
 }
 // (the aims are said to the model in English for every lesson language: a Hinglish aim is a line it would say back)
 const JOIN_AIM = { backTo: "going back to the earlier question you will ask again", beforeRemediation: "saying you will look at the same idea another way",
-  afterAside: "coming back to the lesson from the child's topic", afterAiLine: "coming back to learning after saying what you are", afterTryFirst: "handing over the question they offered to try" };
+  afterAside: "coming back to the lesson from the child's topic", afterAiLine: "coming back to learning after saying what you are", afterTryFirst: "handing over the question they offered to try",
+  verdict: "the first words telling them their answer is right, never the answer itself", missVerdict: "the first words telling them gently it is not right yet, never the answer" };
 export function joinsWanted({ state, kit, ui = null, verdict = null, history = [] }) {
   const lang = state?.ctx?.lang === "english" ? "english" : "hinglish";
   const has = (k) => (jointOf(kit, k, lang) ?? []).length > 0;
@@ -1287,7 +1288,10 @@ export function joinsWanted({ state, kit, ui = null, verdict = null, history = [
   if (lm.returnReply || lm.asideResume || (state?.later ?? []).some((p) => p.at === state?.turn)) out.push("afterAside");
   if (/(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev)) out.push("afterAiLine");
   if (lm.request === "selftry") out.push("afterTryFirst");
-  return out.filter(has);
+  // (the opener of the turn's verdict, on a graded card)
+  const v = String(verdict ?? state?.lastVerdict ?? "");
+  if (v === "correct") out.push("verdict"); else if (["not_yet", "incorrect"].includes(v)) out.push("missVerdict");
+  return out.filter((k) => k === "verdict" || k === "missVerdict" || has(k));
 }
 export function joinNoteOf(kinds, lang = "hinglish") {
   if (!kinds?.length) return null;
