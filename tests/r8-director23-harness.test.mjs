@@ -26,3 +26,11 @@ test("hindiNewWords: the switch line and the card only is a Hindi request with n
   const card = "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?";
   assert.match(PREDICATES.hindiNewWords("L", { who: "teacher", card, text: `Haan, Hindi mein samjhaati hoon. ${card}` }, 1, ctx) ?? "", /no new words/);
 });
+
+// (dc-r8-director24 item 8: "8/8 = 1" names a whole and "1/1 ka matlab hota poori roti" explains a term — no false key: c5-t01 steady 92,
+// c4 stuck 26)
+test("director24: a whole and an explained term are no false key", () => {
+  assert.deepEqual(falseAnswerNumbers("8/8 = 1, matlab 0 se 1 bhar gaya.", { keys: new Set(["7/6"]) }), []);
+  assert.deepEqual(falseAnswerNumbers("1/1 ka matlab hota poori roti, par rangin tukda toh roti ka sirf ek aadha hai.", { keys: new Set(["1/2"]) }), []);
+  assert.deepEqual(falseAnswerNumbers("Iska jawab 7/9 hai.", { keys: new Set(["5/6"]) }), ["7/9"]);
+});
