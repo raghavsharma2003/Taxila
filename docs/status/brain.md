@@ -2,6 +2,33 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `74de5c64` (H3 under 037) — ready for director25 on Brain's side
+
+**ready for director25** at `74de5c64` on Brain's side. The P, M, L and H3 predicates read 0 on the dry matrix, and the counts show 0
+turns over 60 words that hold a point and a card. Your third condition is not met yet: Learning's `did` clauses are not on int/r6.
+T3's code is in, and `didSentence` says them as soon as the scripts carry them.
+
+**Done (037):**
+- A second request for help on the same part gets the worked answer, on the card's answer board, and the card is closed. A clarify
+  or a give-up counts after either. A Hindi request is counted on its own, so a second Hindi request on the same part counts as the second.
+- A Hindi request with nothing unsaid left says the same part again in Hindi words, then the card. Her switch line: "Achha, isi ko
+  Hindi ke shabdon mein phir se kehti hoon." The worked example's step keeps the worked answer.
+- `hindiNewWords` reads 037: the same part again passes with a Hindi swap, or when the turn says it is the same line.
+- Pinned rows: v68 c4 stuck 8 and v64 K1 steering c4 hold.
+- **One row retired, against your 037, for you to overrule:** v610 alreadySaidKey stuck c5-t01 60. The second-request rule closes the
+  e1 card early, so in the live walk the card at 58 is one she answered wrong at 56. Her recorded "woh wala ho gaya" then claims nothing
+  she gave, and the key is the right turn. In the recording, her answer at 57 did answer the card at 58. It is the walk moving, not a
+  sentence H3 forbids. The note is in the test.
+- Counts moved in both stuck lessons only:
+  - c4: cardsSaid 11→9.
+  - c5-t02: teacherTurns 41→34, turnsOver60Words 1→3 (none holds a point and a card).
+
+**Checks I could not run:**
+- The two browser suites (engines-browser, dev-frame-mount-browser) fail in the worktree as always.
+- Anything that needs Learning's newest scripts: `did` and `didFrames` aren't on int/r6, so T3's sentence is tested on a fixture only.
+- M's joins and openers can only be read in a live run (the dry stub writes none).
+- The Hindi same-line switch is not reached by the dry matrix (no Hindi request there finds nothing unsaid); it is code-reviewed only.
+
 ## 2026-11-16 · `10bb4552` (A3)
 
 **Done:**

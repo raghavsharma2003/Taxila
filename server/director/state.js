@@ -2961,7 +2961,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["whyAltSaid", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+const ONE_TURN = ["whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -2978,6 +2978,16 @@ function workedAnswerOf(prev, kit) {
   const text = yn ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
     : `${en ? "The answer is" : "Iska jawab hai"} ${card.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
   return text ? { text, board: card.answerBoard ?? null, key: card.key, why } : null;
+}
+/** dc-r8-director24 H3: the worked answer said now, on its board, and the live card closed as a key closes it: left, its answer given,
+ *  the next turn goes on from its check-in (never the card's question after its answer). */
+function workedAnswerNow(out, wa, liveId) {
+  const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, helpNone: _h, ...rest } = out.state.lastMove;
+  out.state.lastMove = { ...rest, simpler: wa.text, smaller: true, helpNew: true, workedAnswerSaid: true, stayCheckin: true, checkinOk: true,
+    ...(rest.scriptBeat ? { simplerBeat: { ...rest.scriptBeat, ...(wa.board ? { board: wa.board } : {}) } } : {}) };
+  if (liveId) { out.state.skipped = [...new Set([...(out.state.skipped ?? []), liveId])]; out.state.lastMove = { ...out.state.lastMove, gave: { answer: wa.key, why: wa.why }, splitClose: true, gaveCheck: true }; }
+  if (out.move) out.move = { ...out.state.lastMove };
+  out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" }; out.ui = { status: "your_turn" };
 }
 /** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
 function whyAltOf(prev, kit) {
@@ -3158,10 +3168,22 @@ export function step(prev, input) {
     const add = lastT ? String(lastT).split(/(?<=[.!?\u0964])\s+/).map((x) => normLine(x).slice(0, 60)).filter((x) => x.split(" ").length >= 4) : [];
     out.state.saidKeys = [...new Set([...(prev?.saidKeys ?? []), ...add])].slice(-600);
   }
+  // (dc-r8-director24 H3, main's 035 and 037: a second request for help on the same part — a clarify or a give-up after either, or a
+  // second Hindi request (a Hindi request is no request for help and is counted on its own) — gets the worked answer with its board,
+  // and the card is closed as a key closes it. The count is per part: a new part starts at none)
+  let secondHelp = false;
+  if (cell && ["clarify", "give_up", "hindi"].includes(cell.column) && cell.part && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+    const kind = cell.column === "hindi" ? "hindi" : "help";
+    const had = prev?.helpAsked?.[cell.part]?.[kind] ?? 0;
+    out.state.helpAsked = { ...(prev?.helpAsked ?? {}), [cell.part]: { ...(prev?.helpAsked?.[cell.part] ?? {}), [kind]: had + 1 } };
+    const liveId = prev?.activeItemId ?? null;
+    const wa = had >= 1 && liveId && /:card$/.test(String(cell.part)) ? workedAnswerOf(out.state, input.kit) : null;
+    if (wa) { secondHelp = true; workedAnswerNow(out, wa, liveId); }
+  }
   // (dc-r8-director24 H3, main's 035 — c4 steering 32, c5-t01 stuck 6: a give-up on a card got its beat's simpler, a hint for the point,
   // not the card. A give-up on a live card says the card's own authored simpler — its give_up cell's first line — when the lesson has not
   // said it yet; else the help below picks as before)
-  if (cell?.column === "give_up" && /:card$/.test(String(cell.part ?? "")) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+  if (!secondHelp && cell?.column === "give_up" && /:card$/.test(String(cell.part ?? "")) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
     const liveId = prev?.activeItemId ?? null;
     const it = liveId ? findItem(prev, input.kit, liveId) : null;
@@ -3181,7 +3203,7 @@ export function step(prev, input) {
   // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose
   // authored lines are all there says the first help not there: the compiled cell's lines, else the card's simpler, its point's simpler
   // or the point's second wording; with none left, it stands — the give-up's key comes from giveUpSpent)
-  if (cell && ["clarify", "give_up", "hindi"].includes(cell.column) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+  if (!secondHelp && cell && ["clarify", "give_up", "hindi"].includes(cell.column) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
     const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? saidIn(x, lang) : null);
     const said = [lm.point, lm.simpler, ...(lm.rendered ?? []), ...(lm.sayFirst ?? [])].map(txt).filter((x) => x && String(x).trim());
@@ -3207,16 +3229,14 @@ export function step(prev, input) {
           ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(pick.board ? { board: pick.board } : {}) } } : {}) };
         if (out.move) out.move = { ...out.state.lastMove };
       } else if (cell.column === "hindi" && /:worked:yourStep$/.test(String(cell.part ?? "")) && (wa = workedAnswerOf(out.state, input.kit))) {
-        // (dc-r8-director24 H3: a Hindi request with no unsaid wording left gets the worked answer, on its board — c6 offtopic 34)
-        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, ...rest } = lm;
-        // (the answer said, the card is closed: a check-in follows, never the card's question after its answer)
-        out.state.lastMove = { ...rest, simpler: wa.text, smaller: true, helpNew: true, workedAnswerSaid: true, stayCheckin: true, checkinOk: true,
-          ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(wa.board ? { board: wa.board } : {}) } } : {}) };
+        // (dc-r8-director24 H3: a Hindi request with no unsaid wording left on the worked example's step gets the worked answer, on its
+        // board — c6 offtopic 34; main's 037 item 5 keeps it)
+        workedAnswerNow(out, wa, liveId);
+      } else if (cell.column === "hindi") {
+        // (main's 037 item 3: nothing unsaid left — the same part once more in Hindi words, then the card; her switch line says plainly
+        // that it is the same, in Hindi words, and promises nothing else)
+        out.state.lastMove = { ...lm, hindiSame: true };
         if (out.move) out.move = { ...out.state.lastMove };
-        // (the card is closed as a key closes it: left, its answer given, the next turn goes on from its check-in)
-        const liveId0 = liveId;
-        if (liveId0) { out.state.skipped = [...new Set([...(out.state.skipped ?? []), liveId0])]; out.state.lastMove = { ...out.state.lastMove, gave: { answer: wa.key, why: wa.why }, splitClose: true, gaveCheck: true }; if (out.move) out.move = { ...out.state.lastMove }; }
-        out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" }; out.ui = { status: "your_turn" };
       } else if (out.ui?.ask?.text && cell.column !== "hindi") {
         // (nothing new left and a card follows: the card alone — c5-t02 offtopic 64, the remediation's simpler said again before its card)
         const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;

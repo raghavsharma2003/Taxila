@@ -702,10 +702,14 @@ export const ORDER_LAWS = {
     if (!/·\s*language/.test(ctx.prevRead ?? "")) return null;
     const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
     const card = key(r.card ?? "");
-    const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x));
+    const SAME = /hindi ke shabdon mein/;
+    const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x) && !SAME.test(x));
     // (dc-r8-director23 harness, c4 stuck 10: the switch line and the card only — no new words at all — is the fault too)
     if (!ss.length) return "a Hindi request answered with no new words (the switch line and the card only)";
-    return ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
+    // (main's 037 item 3: with nothing unsaid left, the same part again is allowed when it differs by at least one Hindi swap — then it is
+    // not her last two turns' words — or the turn says plainly that it is the same line again)
+    if (sentencesOf(r.text ?? "").some((x) => SAME.test(key(x)))) return null;
+    return ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words, and not said to be the same: "${ss[0].slice(0, 60)}"` : null;
   },
   /** dc-r8-director23 S (on the seam pass's record): a miss verdict and its remediation always have their joint. Reads `seams` only. */
   missRemediationJoint(L, r) {
