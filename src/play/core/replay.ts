@@ -64,8 +64,11 @@ export function gradeLevel<P, S, A extends PlayActBody>(logic: FamilyLogic<P, S,
     } else if (first.kind === "near_miss") evidence.push({ ...base, outcome: "partial", actSeq: first.seq });
     else if (first.kind === "decisive_refusal") evidence.push({ ...base, outcome: "incorrect", actSeq: first.seq });
     else if (first.kind === "solved") {
-      const d = level.proof.discriminates[0];
-      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), ...(chance ? { weight: CHANCE_WEIGHT } : {}), actSeq: first.seq });
+      // gate 2: a faint solve (FamilyLogic.faintSolve) enters at chance weight and tells nothing against a mix-up
+      let faint = false;
+      try { faint = !!logic.faintSolve?.(level); } catch { faint = false; }
+      const d = faint ? undefined : level.proof.discriminates[0];
+      evidence.push({ ...base, outcome: "correct", ...(d ? { discriminates: d } : {}), ...(chance || faint ? { weight: CHANCE_WEIGHT } : {}), actSeq: first.seq });
     }
   } else if (opts.final && acts.length > 0 && !solved) {
     evidence.push({ ...base, outcome: opts.partial ? "partial" : "incorrect", actSeq: acts[acts.length - 1].seq });

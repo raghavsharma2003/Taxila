@@ -27,8 +27,8 @@
 import type { Candidate, FamilyLogic, Facts, GenRequest, KonAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
-import { NAME_MAL, generateName, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { NAME_MAL, generateName, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
+import { PLACE_MAL, drawSurface, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -177,7 +177,9 @@ const init = (l: PlayLevel<KonParams>): KonState => (isNameGoal(l.params.goal) ?
 function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: number): { state: KonState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
-  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
+  // (name, gate 2: "Wapas" takes back what she sees, her arc or her name, not that she checked: the checks keep counting, so
+  // the end line's "jaanch" and the pale tick still show a miss she took back; the grade and trail read the moments anyway)
+  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1, ...(isNameGoal(p.goal) ? { commits: s.commits } : {}) }, moments: [] };
   const bump = (st: KonState): KonState => ({ ...st, acts: s.acts + 1 });
   if (s.acts === 0) out.push(mom("first_act", seq, { act: act.kind }));
   if (isPlaceGoal(p.goal)) return applyPlace(level, s, act as unknown as PlaceAct, seq, out, bump);
@@ -436,8 +438,20 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   oneDecision: ["kind", "turn", "corr", "alt", "size", "find"],   // zone kind, turn, and cross (corr, alt): one dial or one pick (main 2026-11-10: turn and cross join the chance weight)
   // round 8 law 3: place/draw's join to A is one of two buttons (judging round 2, kon/place 4); ends' ray-two-ends is one stop
   // among a few (LAWS-AUDIT): both at chance weight, named on a repeat on another surface
-  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends"],
-  // name: a second first-letter pick counts on a level with other letters; the rest: the level's params
-  surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? `${l.params.goal}:${l.params.lets}` : JSON.stringify(l.params)),
+  // gate 2 (kon/name, night rulings 2026-11-11): say's built name is a pick as well: three random taps give a vertex-first or
+  // vertex-last name 1 time in 6 at worst (over law 3's 1 in 10), so it is named on its second occurrence, on a level whose
+  // figure and letters both differ (1/6 x 1/6 = 1 in 36; tests/r8-games-kon-name-gate2.test.mjs)
+  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends", "say:vertex-name"],
+  // gate 2 (night rulings 2026-11-11, kon/place): one join is 1 in 2 blind, so a pair of levels is still 1 in 4 (law 3's line
+  // is 1 in 10): join-wrong-end is named on its fourth sighting, on four different asked sizes with both button orders among
+  // them ((1/2)^4 = 1 in 16; a habit of pressing one place never makes it under both orders)
+  chanceRepeat: { "draw:join-wrong-end": { sightings: 4, apart: [0], cover: 1 } },
+  // name: two parts (the figure, the letters: nameSurface), so a second sighting counts on another figure with other letters;
+  // place/draw: two parts (the asked size, the join order: drawSurface); the rest: the level's params
+  surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? nameSurface(l.params)
+    : l.params.goal === "draw" ? drawSurface(l.params, l.seed) : JSON.stringify(l.params)),
+  // gate 2 (kon/name): the first fade-1 level with O at the vertex, and a find level where the mix-up's reading meets no other
+  // arc, solve at chance weight and discriminate nothing (nameFaint)
+  faintSolve: (l: PlayLevel<KonParams>) => isNameGoal(l.params.goal) && nameFaint(l.params, l.fade),
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

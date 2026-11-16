@@ -1,6 +1,6 @@
 # Judge packet: `kon/place`, placing the protractor (class 6 maths, "Measuring and drawing angles")
 
-This packet is meant to be read on its own: everything a judge needs is in this file and the 58 screenshots beside it. **Gate 1:** the night rulings' fixes are on branch `claude/r8-gate1-place-tally` (see "Gate 1 fixes (night rulings)" first; the screens they change were retaken there). **Round 3.** Code: branch `claude/r8-kon-place-r3` (the fixes after the evening judging, `RULINGS-2026-11-11-evening.md`, kon/place 1–6: see "Changes for round 3" first; before it, the fixes after `RULINGS-2026-11-11.md` and after main's hold of the same day). Every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.**
+This packet is meant to be read on its own: everything a judge needs is in this file and the 58 screenshots beside it. **Gate 1:** the night rulings' fixes are on branch `claude/r8-gate1-place-tally` (see "Gate 1 fixes (night rulings)" first; the screens they change were retaken there). **Round 3.** Code: branch `claude/r8-kon-place-r3` (the fixes after the evening judging, `RULINGS-2026-11-11-evening.md`, kon/place 1–6: see "Changes for round 3" first; before it, the fixes after `RULINGS-2026-11-11.md` and after main's hold of the same day). Every screenshot was retaken on it. **Not yet checked on a real phone, or with a child.** **Gate 2 (evidence) is the section "Gate 2: evidence" below, on branch `claude/r8-gate2-place`; a judge for gate 2 reads that section only.**
 
 **Topic:** c6-maths-ch02-t03, "Measuring and drawing angles". Class 6, age band 10–12. Three goals: `measure` (skill s2, also s1), `draw` (s3, s2, s1) and `size` (s2).
 
@@ -9,17 +9,119 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 **The three laws this packet is built to** (main's rulings, for every game):
 1. Green means right and only right. What she has selected but not yet committed is blue-violet (the focus colour). Her own wrong value is brown (the mix-up colour). The green-yellow action button keeps its colour.
 2. After a miss the screen never holds the key while a try remains: not the key, not a line she can trace, not readings that settle the next pick.
-3. A mix-up is named only by an act a guess rarely produces (a typed number, a placement, a mark). A mix-up from a pick among a few buttons is graded at chance weight and is not kept on her record; it is named when it repeats on a level whose surface differs.
+3. A mix-up is named only by an act a guess rarely produces (a typed number, a placement, a mark). A mix-up from a pick among a few buttons is graded at chance weight and is not kept on her record; it is named when it repeats on a level whose surface differs (gate 2: join-wrong-end on its fourth sighting, below).
 
 **The mix-ups it plays out** (kit ids `c6-maths-ch02-t03-m-*`):
 
-| Goal | Named (kept on her record) | At chance weight, named only on a repeat |
+| Goal | Named (kept on her record) | At chance weight, named only on a repeat (gate 2: four sightings) |
 |---|---|---|
 | measure | wrong-scale, vertex-off, centre-on-arm (*) | — |
 | draw | wrong-scale, vertex-off, centre-on-arm (*) | join-wrong-end (one of two join buttons) |
 | size | none (the kit's `tool-size` is not claimed: Goal 3) | — |
 
 (*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
+
+## Gate 2: evidence
+
+Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`), kon/place: "nothing reaches the teacher from one join press (the packet says the sign does; make the code and the packet agree with law 3), and give the tolerance that names vertex-off". **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself.
+
+Branch `claude/r8-gate2-place`. Every number below is computed by `tests/r8-games-kon-place-gate2.test.mjs` from the board, the protractor, the pad as the view lays it out and the law's own tests of a placement, and asserted on every generated level: 178 `measure` and 179 `draw` levels (fades 1–3, eight seeds, the kit map the server serves, centre-on-arm mapped as it will be at integration 49). Naming is still off for kon/place (`NAMING_OFF`); the last part says what switching it on changes.
+
+**What counts as what.**
+- A **pose** is the protractor's centre (any point, to half a board unit) and its turn (whole degrees: the law turns in 1° steps).
+- A **blind placement**: the centre anywhere on the 320 × 340 board, evenly, and any of the 360 turns, evenly. **Near the vertex**: the centre anywhere within the protractor's radius (105 units) of O, any turn.
+- An **ordinary slip** in placing: one press of ← ↑ ↓ → (one board unit), or one turn step (1°, about the protractor's own centre, so the centre does not move). In typing (measure): one key landing on a key that touches it (side or corner) on the pad as laid out (1 2 3 4 5 6 / 7 8 9 0 ⌫, six to a row), two neighbouring presses swapped, one press not registered, one press registered twice, each as the pad takes it (no fourth digit, nothing after a lone 0, nothing over 180). In reading the scale: one small tick (5°) or one long tick (10°) off. In draw's dot: one ↺ / ↻ press (1° along the rim).
+- **A drop that misses**: the turn right, the centre off O by up to r units in any direction, evenly over that disc (a finger that lands short or long). Not a single slip: it is how far off a whole drop may land, given for every r.
+- **A pick**: one of a few buttons. Its chance is 1 over the number of buttons, and a habit of pressing one place (the first button, the left one) is counted too.
+
+### The four mix-ups and size, at a glance
+
+| Mix-up | The act | Blind | One ordinary slip | Named from |
+|---|---|---|---|---|
+| vertex-off | a placement | 1 in 8,905 (board); 1 in 2,835 (near O) | 0 | one level |
+| centre-on-arm | a placement | measure 1 in 1,227, draw 1 in 2,453 (board); measure 1 in 390, draw 1 in 781 (near O) | 0 | one level (where a level maps it) |
+| wrong-scale, measure | a typed number | 5 in 181 = 1 in 36 | typing: 1 in 14 at worst (155); tick: 0 | one level |
+| wrong-scale, draw | a dot on the rim | 5 in 181 = 1 in 36 | dot nudge: 0; tick: 0 | one level |
+| join-wrong-end | one of two buttons | 1 in 2 one level; 1 in 4 two | a slip onto the other button makes it (below) | **the fourth sighting**, four asked sizes, both button orders: 1 in 16 |
+| size (`tool-size`) | one of three buttons | 1 in 3 | — | never: size names no mix-up |
+
+### vertex-off: the tolerance that names it
+
+**The band.** vertex-off is named when, at her first decision, the protractor is not placed and:
+- its base lies along an arm within ±3° (in `measure`, with the other arm crossing the half-disc), and
+- its centre is within **10 units** of the point 24 units (the strip's depth) from O along the normal into the half-disc: where the centre is when the bottom edge's middle is on O.
+
+So the centre lies **14 to 34 units from O, within 24.6° of the normal (asin 10/24), on the side the protractor opens**: at 360, about 12 to 29 CSS px off O; at 1366, about 32 to 77 px. The test checks on every level that this is exactly the band the law names (72 ways round, just inside names it, just outside does not; ±3° of turn names it, ±4° does not; the served vertex-off pose is in it).
+
+**Why 10 (it was 11).** At 11, a drop that misses landed in the band 1 time in 9.3 (r = 30: 0.108). At 10 the worst over every r is **1 in 10.8** (r = 30: 0.093). Real vertex-off placements are not lost: the served pose is the band's centre, and a child aiming the bottom edge at O lands within 10 units as she lands within the 11 of a placement.
+
+| vertex-off, every generated level (178 measure, 179 draw) | Result | Law 3's line |
+|---|---|---|
+| Turns the band takes, of 360 | 14: 7 turns (±3°) for each of two ways the base can lie (draw: either way along OA; measure: along OA or along OB, opening towards the other arm) | — |
+| A blind placement, board | 14 × π × 10² / (320 × 340 × 360) = **1 in 8,905** (an upper bound: the whole disc counted on the board) | under 1 in 10 |
+| A blind placement near O (within 105 units, any turn) | 14 × 10² / (105² × 360) = **1 in 2,835** | under 1 in 10 |
+| Locked where it rests (no move at all) | names nothing, on every level | — |
+| One slip from **any** placement (centre anywhere within 11 units of O, turn within ±3°): a nudge (4 ways) or a turn step (2 ways) | **0**: a placed centre is at most 11 units from O, one nudge makes it 12, the band starts at 14; a turn does not move the centre. Tried on every level: 72 points on the tolerance's edge × 7 turns × 6 slips = 3,024, none named | one slip names nothing |
+| A drop that misses, by its reach r (right turn) | 0 for r ≤ 13; 1 in 18.5 (r = 20); 1 in 12 (r = 25); **1 in 10.8 at worst (r = 30)**; 1 in 11.6 (r = 34); 1 in 16 (r = 40); 1 in 36 (r = 60) | under 1 in 10 for every r |
+
+### centre-on-arm
+
+**The band** (unchanged): the centre within 11 units of A (in `measure`, of B too) with the base along that arm within ±3°; or a bottom corner of the protractor within 11 units of O with the base along an arm. Its nearest point to O is 107.7 − 11 = 96.7 units away.
+
+| centre-on-arm, every generated level | Result | Law 3's line |
+|---|---|---|
+| Discs the band takes over the 360 turns | measure 84 (A, B and the two corners, for each arm's two directions within ±3°); draw 42 | — |
+| A blind placement, board (upper bound) | measure **1 in 1,227**; draw 1 in 2,453 | under 1 in 10 |
+| A blind placement near O | measure **1 in 390**; draw 1 in 781 | under 1 in 10 |
+| One slip from any placement | **0** (96.7 units away; the 3,024 slips above, none named) | one slip names nothing |
+| A drop that misses | at worst **1 in 54** (r = 138) | under 1 in 10 |
+| Locked where it rests | names nothing | — |
+
+### wrong-scale
+
+**The mix-up's numbers** on a level whose key is θ (what the protractor shows on the right placement): 180 − θ, ± 2, five numbers. Named only where the two scales differ by more than 4 (always here: the keys stay 15° or more from 90, so the mix-up's number is at least 30 from the key in `measure`, 50 in `draw`).
+
+| wrong-scale, measure (178 levels; keys 65, 70, 75, 105, 110, 115, 120, 125, 130, 135, 145, 150, 155, 160) | Result | Law 3's line |
+|---|---|---|
+| A blind number on the pad (0 to 180) | 5 / 181 = **1 in 36** | under 1 in 10 |
+| One typing slip on the key: the share of the pad's slips that land on the mix-up's numbers | 0 on twelve keys; 110: 1 of 16 ("710" → 71: the 1 one key off, and the pad will not take the 0 after 71); 155: 1 of 14 ("255" → 25) | **1 in 14 at worst** |
+| One tick off (5° or 10°, either way) | 0 (the mix-up's number is 30 or more away) | — |
+| **140 is no longer served** (it was at fades 2 and 3) | 2 of 18 slips land: "40" (the 1 not registered) and "41" (1 and 4 swapped, then the 0 not taken): **1 in 9** | over the line: refused |
+| A placement within the tolerance shows a reading a few degrees off the key; at a reading whose one typing slip passes 1 in 10 (16, 140, 141, 159, 164, 165, 166: every reading 0 to 180 is worked out) the law names no wrong-scale, and her number is an ordinary miss | asserted: the law's set is the one worked out in the test, and such a placement typed the other scale's number is not named | — |
+
+| wrong-scale, draw (179 levels; asked 115 to 160) | Result | Law 3's line |
+|---|---|---|
+| A blind dot on the rim (0 to 180) | 5 / 181 = **1 in 36** | under 1 in 10 |
+| One ↺ / ↻ press from the right mark | 0 (1°; the mix-up's mark is 50° or more away) | — |
+| A tap off on the rim | 1° of rim is 1.8 units; the mix-up's mark is about 92 units or more along the rim: no finger's slip | — |
+
+**Counting the wrong way is the mix-up, not a slip.** A child who counts ticks from the printed 90 the wrong way reads exactly the other scale's number (the other scale prints its own 90 at the same tick and its numbers run the other way): that is what reading the wrong scale is, and it repeats. It is not counted as a slip.
+
+### join-wrong-end: nothing from one press
+
+| join-wrong-end, draw (179 levels; "A se jodo" first on 96) | Chance | Law 3's line |
+|---|---|---|
+| One join, blind (her placement and dot right) | 1 in 2 | over: names nothing |
+| Two joins on two levels | 1/2 × 1/2 = 1 in 4 | **still over: a pair is not enough** |
+| Three | 1 in 8 | still over |
+| **Four, on four different asked sizes, with both button orders among them** | (1/2)^4 = **1 in 16** | under 1 in 10 |
+| A habit of pressing one place (the first button, or the left one) | A only where A comes first (54% of levels), never under both orders: **0** | — |
+
+**What one press sends now** (with naming on as well as off): the evidence row is an ordinary miss at chance weight with no mix-up and no `chanceMis`; nothing in the trail; no seam row mid-level (a pick's mix-up sends none); the level-end facts and facts row carry `placed`, `made` and `at` (as for any miss) and no `sign`, `mal` or `misconception`. The law no longer writes `sign=join-wrong-end` into the moment's facts at all (it had named the belief after one press). Her own play-out on the device is unchanged: her brown line from A, the arc at A, the chip "∠A".
+
+**How the server names it.** The session remembers each join-wrong-end at chance weight with its level's surface, in two parts: the asked size and the join order (`drawSurface`; the last six picks are kept). On a later level's join-wrong-end, it is named (at the game weight, `named: "repeat"`, then in the trail) only when this level and three remembered ones have **four different asked sizes** (different marks on the rim) and **both join orders** among them (`konLogic.chanceRepeat`, `server/play/levels.js` `repeatMet`). The shared rule for every other pick (one earlier sighting on a surface that differs) is unchanged.
+
+### What changes when main switches naming on
+
+(Main removes `kon/place` from `NAMING_OFF` in `shared/play.ts`; no screen changes.)
+- vertex-off, centre-on-arm (where mapped) and wrong-scale: named from her first decision of a level, as the game already grades them (the evidence row named at the game weight, the misconception seam, the trail).
+- join-wrong-end: one, two or three presses reach the lesson as ordinary misses; the session remembers them. The fourth, on the terms above, is named in that level's evidence row and trail.
+- size names nothing either way.
+- Until then nothing is named and nothing is remembered. Tested both ways: "gate 2, the server's rule with naming ON" (`gradeActs` → `lessonEvidence` → `nameOnRepeat` → `afterLevelBody`, the session token carrying what it remembers; and as served).
+
+**For main, not decided here.**
+1. **A finger slip onto the other join button.** If her one slip on a draw level is on the join press, it makes join-wrong-end every time (the only button beside "O se jodo" is "A se jodo"). With the tally rule's convention (a slip on every level, certain), no number of repeats gets under 1 in 10; with a mis-press rate s per join it is s^4. The four-sightings rule rests on mis-presses being rare on two 48 px buttons. Measured nowhere yet. If main wants it closed without that assumption, the join can become a constructed act: she draws the ruler line from the dot to an end point (a drag ending within some units of O or A, 130 units apart), which would name from one level. That is a change to the screen (gate 1 again).
+2. **Per pair or per session.** As for tally: four of k draw levels in a session grow more likely with k for a child who joins blind.
 
 ## The rule the game enforces (never stated on screen)
 
@@ -68,7 +170,7 @@ Everything after that is graded on what the protractor shows *as placed*:
 - **Kit belief:** "Reads the wrong scale on the protractor, e.g. gets 130° for a 50° angle". Signs: "Gives a reading over 90° for an obviously narrow angle", "Always reads the outer scale", "Two readings for the same angle add to 180°".
 - **What a child holding it does.** She places the protractor correctly and types the other scale's number: 180 − 150 = **30**. Shots: `measure-wrong-scale-typed-*`, `measure-wrong-scale-played-*`.
 - **What the screen then shows:** a dashed brown arm from O at 30° from OA, i.e. the arm her number means on the scale whose 0 is on OA, far from OB, **stopping inside the inner number ring** (gate 1: running on, it met the outer scale at 150, the key); a dashed brown arc between OB and that arm (no number on it); her "30°" chip in brown. The true size is never shown. **From her second miss on a placed protractor** her arm and arc are no longer drawn, only her brown chip (gate 1: miss after miss, the arm had become a too-high, too-low guide). Shot: `measure-second-miss-played-*` (30, then 140).
-- **When the game names it.** When her typed number is within ±2° of 180 minus the true reading, and the angle is not close to 90° (where the two scales would agree). Any other wrong number is an ordinary miss with the same arm drawn (first placed miss only) and no mix-up named; within 5° it is recorded as a near miss.
+- **When the game names it.** When her typed number is within ±2° of 180 minus the true reading, and the angle is not close to 90° (where the two scales would agree), and (gate 2) the protractor as placed does not show one of the readings whose other-scale number one typing slip reaches more than 1 time in 10 (140, 141, 159; and 16, 164–166, which no key is). Any other wrong number is an ordinary miss with the same arm drawn (first placed miss only) and no mix-up named; within 5° it is recorded as a near miss.
 - **What a first-try solve says.** Only on a level where the outer scale is the wrong one (as here) does a first-try solve count as evidence that she chose the right scale. On a level where OA points right, the outer scale is the right one, a child who always reads the outer scale solves it, and her solve says nothing about scales (it counts only as a correct placement).
 
 ## Goal 2: `draw` (draw an angle of a given size)
@@ -98,7 +200,7 @@ Everything after that is graded on what the protractor shows *as placed*:
 - **Kit belief:** "Believes the degree mark can be joined to either end of the first arm, so joins it to the far end instead of to the vertex where the protractor's centre was".
 - **What a child holding it does.** Places the protractor correctly, puts the dot at the right mark (130), then presses "A se jodo". Shot: `draw-join-wrong-end-played-*`.
 - **What the screen then shows:** her brown line from A (the far end of OA) through the dot; a small brown arc at A; a chip "∠A" (the line makes 22° there; no number on the chip).
-- **How it is graded.** Not right. It is the `join-wrong-end` signature only when the dot itself was at the right mark. Because the join is one of two buttons, a guess makes it half the time, so one join puts **nothing on her record**: the grade keeps it at chance weight (`chanceMis`), and the play server names it only if she makes it again on a level whose surface differs (the shared law-3 rule). The teacher also sees `sign=join-wrong-end`.
+- **How it is graded.** Not right. It is the `join-wrong-end` signature only when the dot itself was at the right mark. Because the join is one of two buttons, a guess makes it half the time, so one join puts **nothing on her record**: the grade keeps it at chance weight (`chanceMis`), and the play server names it only on her **fourth** such join, on four levels with four different asked sizes and both button orders among them (gate 2, below). Nothing about one join reaches the teacher: no mix-up, no `sign`, nothing in the facts, the seam or the trail (gate 2: the old `sign=join-wrong-end` fact is gone).
 
 ## Goal 3: `size` (which angle is more?)
 
@@ -122,9 +224,9 @@ The kit's `tool-size` belief ("Thinks a bigger protractor gives a bigger reading
   - After a miss the play-out shows where *her* number or arm landed, never the key. A persistent child can still compare her arm with OB (measure) or adjust her dot and join again (draw): that is reading the protractor again, which is the skill.
   - `size`: one pick among three, so a first-try solve enters the learner model at the "chance" weight. She can pick again after a miss and passes within three presses, but not first-try. Any of the three can be the key, so no fixed habit ("the bigger tool", "always Barabar") wins more than a third of the levels.
 - **End screens.** A first-try solve ends with a full green tick; a solve after a miss ends with a **pale** tick. The line under the board says what she did and how many checks it took, with no praise: "Tumne 150° likha · jaanch: 1" (measure), "Tumne ∠AOB = 130° banaya · jaanch: 2" (draw), and for size what she found: "∠P aur ∠Q barabar hain · jaanch: 1" or "∠Q zyada hai · jaanch: 2" ("jaanch" lowercase after the dot, as in kon/name). Shots: `*-end-*` (one check), `*-end-after-miss-*` (two checks, pale tick).
-- **What the teacher receives.** `placed` (ok or off, at her first decision), `centre_px`, `base_deg`, `read` (measure), `made` and `at` (draw), `pick` (size), the mix-up if named, and `sign=join-wrong-end` where it applies. The teacher is not told the measure reading before she gives it. The game never speaks.
-- **Sizes.** The board is a fixed 320 × 340 units scaled into the box. In `measure` and `draw` on a phone the buttons keep a band of three rows from the first screen, so the board has one size in every state: at 360 × 640, 1 unit is 0.84 CSS px and the protractor 177 px wide (first screen, placed, locked, typed, each miss, the end); at 1366 × 768 it is 474 px wide throughout. The turning handle's touch area is 64 px. **The centre tolerance is 11 units** (about 9 CSS px at 360; about 25 px at 1366); the bottom-edge placement sits 24 units off, outside it. The line under the board always keeps room for two lines on a phone, so the board does not move when the line changes.
-  - Measure and draw angles are every 5° from 20° to 160°, never within 10° of 0, 90 or 180, and never a printed number at fades 1 and 2. Half open clockwise (OA points left). At fade 1 the first arm lies flat or within 10° of flat; at higher fades it can tilt up to 50° either way.
+- **What the teacher receives.** `placed` (ok or off, at her first decision), `centre_px`, `base_deg`, `read` (measure), `made` and `at` (draw), `pick` (size), and the mix-up if named (join-wrong-end only on its fourth sighting, gate 2). The teacher is not told the measure reading before she gives it. The game never speaks.
+- **Sizes.** The board is a fixed 320 × 340 units scaled into the box. In `measure` and `draw` on a phone the buttons keep a band of three rows from the first screen, so the board has one size in every state: at 360 × 640, 1 unit is 0.84 CSS px and the protractor 177 px wide (first screen, placed, locked, typed, each miss, the end); at 1366 × 768 it is 474 px wide throughout. The turning handle's touch area is 64 px. **The centre tolerance is 11 units** (about 9 CSS px at 360; about 25 px at 1366); the bottom-edge placement sits 24 units off, outside it. **vertex-off is named within 10 units of that bottom-edge pose** (gate 2: 14 to 34 units from O; about 8 CSS px at 360, about 23 px at 1366). The line under the board always keeps room for two lines on a phone, so the board does not move when the line changes.
+  - Measure and draw angles are every 5° from 20° to 160°, never within 10° of 0, 90 or 180, and never a printed number at fades 1 and 2; a `measure` key is never 140 (gate 2: one typing slip reaches its other-scale number 1 time in 9). Half open clockwise (OA points left). At fade 1 the first arm lies flat or within 10° of flat; at higher fades it can tilt up to 50° either way.
   - Size angles run 20° to 150°, never within 10° of 90°.
 - **Not checked yet:** on a real phone, or with a child. The 11-unit tolerance stands until it is tried on a phone (reversal: more than about 30% placement misses with no belief named).
 
