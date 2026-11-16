@@ -4106,10 +4106,12 @@ function heldTurn(prev, input) {
     const s = structuredClone(prev);
     s.turn += 1;
     const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closed", "closeBeat", "closedBeat", "splitClose", "gaveCheck"]);
-    const again = { ...prevMove, ...(prevMove.gave ? { gave: { ...prevMove.gave, why: whyAlt.text } } : prevMove.closed ? { closed: { ...prevMove.closed, why: whyAlt.text } } : { kind: "reteach", simpler: whyAlt.text.charAt(0).toUpperCase() + whyAlt.text.slice(1), stayCheckin: true, scriptBeat: { ...prevMove.closeBeat } }), smaller: true, gaveCheck: true, whyAltSaid: true,
-      ...(whyAlt.board && prevMove.closeBeat ? { closeBeat: { ...prevMove.closeBeat, board: whyAlt.board } } : {}) };
-    // (a right answer's close: the second wording is said as the card's simpler, with the check-in — no verdict frame again)
-    if (!prevMove.gave && !prevMove.closed) { delete again.gaveCheck; delete again.splitClose; delete again.closeBeat; if (whyAlt.board) again.scriptBeat = { ...again.scriptBeat, board: whyAlt.board }; }
+    // (dc-r8-director22 K: a key is said once — the why's second wording never re-says it: after a give-up's key, a miss's key or a right
+    // answer's close alike, it is said as the card's simpler with the check-in, no verdict frame and no key again)
+    const { gave: _g, closed: _c, closeBeat: _cb, gaveCheck: _gc, splitClose: _sc2, cardBeat: _cd, bridgeBeat: _bb, ...rest0 } = prevMove;
+    // (the board the key was said over stays up: the second wording explains that same answer — unless Learning gave it its own board)
+    const again = { ...rest0, kind: "reteach", simpler: whyAlt.text.charAt(0).toUpperCase() + whyAlt.text.slice(1), stayCheckin: true, smaller: true, whyAltSaid: true, ...(whyAlt.board ? {} : { keepBoard: true }),
+      scriptBeat: { ...(prevMove.closeBeat ?? prevMove.scriptBeat ?? {}), ...(whyAlt.board ? { board: whyAlt.board } : {}) } };
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };

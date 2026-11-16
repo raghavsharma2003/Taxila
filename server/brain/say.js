@@ -2251,7 +2251,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (v6.5 F1, main on director13: the card just answered or given up is "is sawaal", even with the next card after it;
     // "pichhle sawaal" is only a card closed earlier) (v6.6 F1′: in forms, fresh)
     const gf = GAVE_FORMS[lang === "english" ? "english" : "hinglish"];
-    const gaveS = gaveA ? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
+    // (dc-r8-director22 K: a yes-or-no key is said as a sentence — "Nahi, kyunki …", never "Is sawaal ka sahi jawab: nahi")
+    const ynSentence = gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null;
+    const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
       .filter((x) => !isGave(x) && !(card && (cardSs.includes(x) || (x.length > 3 && card.includes(x.replace(/[.!?।]+$/, ""))))));
