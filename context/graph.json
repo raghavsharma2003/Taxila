@@ -29112,6 +29112,20 @@
    "at": "2026-11-16",
    "title": "Released e19c8da with scripts/release.mjs: web taxila-web--se19c8da-xtk0 (was taxila-web--s3bf359a-s374), worker + canary/nightly jobs on taxila-worker:e19c8da (was 3bf359a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e19c8da --rollback.",
    "source": "inbox/release-e19c8da.json"
+  },
+  {
+   "id": "dc-r8-gate2-discrim-built",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "dc-r8-gate2-discriminating-level built (branch claude/r8-gate2-discrim; NAMING_OFF unchanged; before a miss only the served levels change). Answer 4: kon/place measure and draw served no acute angle (centred, its vertex sat too near the side for the protractor); a figure that does not fit centred is moved across, and from a session's fourth level (body n >= 3), while it lacks an acute angle or one opening anticlockwise, the level supplies it (kon.place.ts placeNeeds; GenRequest.n). Answer 1: vertex-off's sighting value carries the level's base direction (the protractor's base line as the solver lays it, baseDir) and the offset in the protractor's frame; a second sighting counts only when the base directions differ by >= 45 degrees (DISCRIMINATING_TURN), the frame offset is the same within VO_BAND and the board offset differs (shared/play.ts discriminatingPair); after a first sighting nextBody copies the bases into the next body (levels.js basesOf; GenRequest.bases) and the generator steers to a level >= 45 degrees away (fade 1 may tilt to 50 for it); none within four levels: not named that day. An angle opening the other way has the same base direction, so the tilt, not answer 4's mix, gives the 45 degrees. Answer 2: kon/name say serves a level where every reading across the screen puts the vertex in the middle (kon.name.ts readsAcrossAll; no longer a shortcut; its solve faint; its vertex-first play-out clear of the lit sector, sayPlayoutClear), searched for directly once vertex-name is the focus (the angle inside the triangle >= 100 degrees facing a diagonal); say:vertex-name is named only with a sighting on such a level among them (firmSighting; chanceRepeat needFirm) and then on the second, each confirmed by H3. Answer 3: the battery asserts the worst door sequence pooled over fades as well as the worst fade, and lists any cell >= 0.5 of a child with no randomness. HABIT_RULES off (the negative control) also turns off the say steer and needFirm. Reverse if: a judge finds a battery child acting as vertex-off on two levels >= 45 degrees apart with one frame offset, or a reader across who does not solve a readsAcrossAll level; or real touch data show a held placement drifting more than VO_BAND in the protractor's frame between levels (then the frame tolerance widens).",
+   "source": "inbox/r8-gate2-discrim.json"
+  },
+  {
+   "id": "ms-r8-gate2-discrim-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "The habit battery after dc-r8-gate2-discriminating-level, full sweep (HABIT_FULL=1: 10 sessions a cell, 30 random, 4 per constant over every pL; kon/place 8.0 min, kon/name 2.7, tally 2.8). Worst child who does not hold the mix-up, worst fade before (after H1/H3/H4) -> after, and worst door sequence after: measure 0.006 -> 0.005, door 0.011; draw 0.021 -> 0.075 (last time's right dot, wrong-scale, fade 3), door 0.050; say 0 -> 0.007, door 0.008; find 0.005 -> 0.005, door 0.008; tally read 0.013 -> 0.013, door 0.008; keep 0. Cells >= 0.5 for children with no randomness: none. Holders: vertex-off 0.92 measure, 0.93 draw (were 0.46, 0.43); say any order 0.58 (was 0.23), vertex first and last 1.00; find first letter 0.50; larger number 0.06 and inner scale 0 (now served the levels that tell them; the wrong-scale steer goes to clockwise levels). Served levels changed (gate-sweep sessions): kon/place about 2 levels in 3 (careful 518/768 measure, 464/768 draw); kon/name say only after a first sighting (holder 505/768). Re-cert: kon/place 4480 and kon/name 4484 samples, all passing at every size. Not measured: real children, the browser layout suite on the new acute and tilted place levels.",
+   "source": "inbox/r8-gate2-discrim.json"
   }
  ],
  "edges": [
@@ -46504,6 +46518,21 @@
    "src": "dc-r8-gate2-habits",
    "rel": "part_of",
    "dst": "dc-r8-habit-battery"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-discriminating-level"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-discrim-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-discrim-built",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-habits"
   }
  ]
 }
