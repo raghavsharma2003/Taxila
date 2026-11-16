@@ -28,7 +28,7 @@ import { DISCRIMINATING_TURN, HABIT_RULES, type Candidate, type FamilyLogic, typ
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { focusMal } from "../../core/pick.ts";
 import { mulberry32 } from "../../core/rng.ts";
-import { NAME_MAL, generateName, readsAcrossAll, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
+import { NAME_MAL, builtSinceMiss, generateName, readsAcrossAll, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
 import { PLACE_MAL, placeNeeds, placeSteer, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
@@ -180,7 +180,11 @@ function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: numbe
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   // (name, gate 2: "Wapas" takes back what she sees, her arc or her name, not that she checked: the checks keep counting, so
   // the end line's "jaanch" and the pale tick still show a miss she took back; the grade and trail read the moments anyway)
-  if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1, ...(isNameGoal(p.goal) ? { commits: s.commits } : {}) }, moments: [] };
+  // (say, dc-r8-gate2-shadow S3: nor that her name missed: the check still waits for a letter or "Mita do" after a miss)
+  if (act.kind === "undo") {
+    const back = popUndo(s);
+    return { state: { ...back, acts: s.acts + 1, ...(isNameGoal(p.goal) ? { commits: s.commits, ...(back.nm && s.nm ? { nm: { ...back.nm, checks: s.nm.checks, waits: s.nm.waits } } : {}) } : {}) }, moments: [] };
+  }
   const bump = (st: KonState): KonState => ({ ...st, acts: s.acts + 1 });
   if (s.acts === 0) out.push(mom("first_act", seq, { act: act.kind }));
   if (isPlaceGoal(p.goal)) return applyPlace(level, s, act as unknown as PlaceAct, seq, out, bump);
@@ -461,7 +465,23 @@ function board(level: PlayLevel<KonParams>, s: KonState) {
 }
 function grade(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): PlayGrade {
   const g = gradeLevel(konLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
-  return level.params.goal === "say" && HABIT_RULES.on ? confirmSay(g) : g;
+  return level.params.goal === "say" && HABIT_RULES.on ? confirmSay(g, builtNames(level, acts)) : g;
+}
+/**
+ * say (dc-r8-gate2-shadow S3): the seqs of her accepted names that were built after her last miss (every letter tapped
+ * since it: builtSinceMiss), replayed from her acts as gradeLevel replays them.
+ */
+function builtNames(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): Set<number> {
+  const out = new Set<number>();
+  let s = init(level);
+  for (const e of acts) {
+    const fresh = e.act?.kind === "commit" && !!s.nm && builtSinceMiss(s.nm);
+    let r: Applied;
+    try { r = apply(level, s, e.act, e.seq); } catch { r = { state: s, moments: [] }; }
+    if (fresh && r.moments.some((m) => COMMIT_KINDS.has(m.kind))) out.add(e.seq);
+    s = r.state;
+  }
+  return out;
 }
 /** the moments a commit makes (say: every commit makes exactly one of these) */
 const COMMIT_KINDS = new Set(["solved", "misconception_consequence", "law_refused", "near_miss"]);
@@ -473,12 +493,15 @@ const COMMIT_KINDS = new Set(["solved", "misconception_consequence", "law_refuse
  * name, or she gives none), the row stays the miss it was, at the weight it had, and carries no mix-up: nothing is
  * remembered and nothing can be named from it. Nothing she sees changes: after a miss the level already waits for her
  * next name, and the play-out and every moment are as before.
+ * dc-r8-gate2-shadow S3: the confirming name counts only when it was built after the miss (`built`: every letter of it
+ * tapped since; builtNames). The same name pressed again cannot be a check (stepName's "unchanged"), and a name kept or
+ * brought back with "Wapas" and changed by one letter does not confirm.
  */
-function confirmSay(g: PlayGrade): PlayGrade {
+function confirmSay(g: PlayGrade, built: Set<number>): PlayGrade {
   const e = g.evidence[0];
   if (!e?.chanceMis) return g;
   const next = g.moments.find((m) => m.seq > e.actSeq && COMMIT_KINDS.has(m.kind));
-  if (next?.kind === "misconception_consequence" && next.misconceptionId === "vertex-name") return g;
+  if (next?.kind === "misconception_consequence" && next.misconceptionId === "vertex-name" && built.has(next.seq)) return g;
   const { chanceMis: _c, chanceAct: _a, ...rest } = e;
   return { ...g, evidence: [rest, ...g.evidence.slice(1)] };
 }
