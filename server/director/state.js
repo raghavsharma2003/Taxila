@@ -3073,6 +3073,20 @@ export function step(prev, input) {
     out.state.rightLog = [...(prev.rightLog ?? []), { id: prev.activeItemId, misses: (prev.misses?.[prev.activeItemId] ?? 0) + (prev.cardHelp?.id === prev.activeItemId ? prev.cardHelp.misses ?? 0 : 0), turn: prev.turn ?? 0 }].slice(-40);
   // (dc-r8-director23 R2, c4 offtopic 46: "samajh nahi aaya" after her reply turn got "Theek hai." and the after-aside joint — the move,
   // a copy of the last one, kept its asideAck. An aside is acknowledged on the turn that answers one, and only then)
+  // (dc-r8-director23 A2, c5-t01 offtopic 18, c6 steering 30: asked her taste on a worked step through the main path, the AI line ends on
+  // its question and the step is held for the turn after the reply — as heldTurn holds it)
+  if (input?.event === "turn" && out?.state?.lastMove?.tasteAsked && out.state.lastMove.kind === "worked_example" && !out.state.splitHold && scriptOn()) {
+    const held = { ...out.state.lastMove }; delete held.tasteAsked;
+    out.state.splitHold = { move: held, ui: out.ui ?? { status: "your_turn" }, activeItemId: out.state.activeItemId ?? null, lastContent: out.state.lastContent ?? [], moduleCommands: out.moduleCommands ?? [], teach: true };
+    const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), tasteAsked: out.state.lastMove.tasteAsked, ...(prev?.lastMove?.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
+    out.state.lastMove = ret; out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" };
+    out.move = ret; out.ui = { status: "your_turn" };
+  }
+  // (dc-r8-director23 A2: a reply to her question that comes through heldTurn is acknowledged as the main path acknowledges one)
+  if (input?.event === "turn" && input.cls?.asideReply && out?.state?.lastMove && !out.state.lastMove.asideAck && prev?.splitHold) {
+    out.state.lastMove = { ...out.state.lastMove, asideAck: true };
+    if (out.move) out.move = { ...out.move, asideAck: true };
+  }
   // (the second half of a split turn — heldTurn — returns early with the reply turn's returnAnswer still on the state)
   const isReply = !!input?.cls?.asideReply || (!!out?.state?.returnAnswer && !!prev?.returnAsked);
   if (input?.event === "turn" && out?.state && !isReply) {
@@ -4226,7 +4240,16 @@ function heldTurn(prev, input) {
     s.returnAsked = undefined;
     if (s.returnAnswer) { m.returnReply = s.returnAnswer; m.asideAck = true; }
     const topic0 = asideTopic(text, s.ctx?.interests);
-    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n }; }
+    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+      // (dc-r8-director23 A2, c6 stuck 38, steering 30: the AI line always ends with her question back — on a worked step the step is held
+      // for the turn after her reply, as a return holds its half; never two steps in one turn)
+      if (h.move?.kind === "worked_example") {
+        s.splitHold = h;
+        const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), tasteAsked: m.tasteAsked, ...(prev.lastMove?.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
+        const ui0 = { status: "your_turn" };
+        s.lastMove = ret; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+        return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+      } }
     else if (topic0 && !unsafeChildPhrase(topic0)) {
       s.later = parkGate(s, input.kit, input, { ...parkEntry({ topic: topic0, learning: false, turn: s.turn, itemOnTable: !!h.activeItemId }), share: true });
       // (an aside said again is returned now, once — v6.9 T1.10 — and that return ends her turn: the held half waits for the next one)
