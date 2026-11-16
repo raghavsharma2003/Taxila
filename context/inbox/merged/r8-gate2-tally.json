@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-tally-gate2-evidence-rule",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "stambh/tally gate 2 (claude/r8-gate2-tally; naming still off until main removes it from NAMING_OFF): the slip list (TALLY_SLIPS, slipsTo, MIN_SLIPS) is replaced by the ruled evidence rule. keep names tally-four from one level (its totals need 3+ ordinary slips on every generated level; blind guess at most 1 in 10,000). read is a chance pick (chancePicks ['read'], chanceMis, nothing in facts, seam or trail) and is named by the server only when the mix-up's number is typed on two levels whose bundles AND loose lines both differ: tallySurface gives two parts, server/play/levels.js surfacesDiffer requires every part to differ (one-key surfaces compare as before). The level law keeps no row with loose lines equal to bundles (a way of reading repeats, so no repeat separates it) and keep's bundles in two rows with a row of two; read's three-bundles-or-more, never-five and a-loose-line refusals are dropped (read now serves 20, 25-30, 35, 40, 45 at fades 2-3). Reverse if: a judge finds a servable read pair (both parts differing) where one way of reading plus one slip on each lands more than 1 time in 10, or a keep level two slips from the mix-up's totals; or main rules the 1 in 10 line per session rather than per pair.",
+   "source": "inbox/r8-gate2-tally.json"
+  },
+  {
+   "id": "ms-r8-tally-gate2-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "stambh/tally gate 2 proof, computed in tests/r8-games-stambh-tally.test.mjs (method: the tally's 8 ways of reading x counting slips and pad typing slips (keys touching side or corner on the 6-column pad, swap, a key lost, a key doubled), share of one kind's slips landing on the mix-up's number; blind guess 1 in 100 per box). read: 32 servable rows (16-49 less 18, 24), one level up to 1 in 4 (17, 19, 23, 25, 29, 31, 37, 43, 49); 350 pairs with both parts differing, worst 17 then 23 with the loose lines dropped 1/4 x 1/4 = 1 in 16; blind pair 1 in 10,000. keep: n = 269 generated levels (12 seeds x 3 fades), fewest slips 3 (189), 4 (72), 5 (8); blind 'counted' <= 1 in 10,000, 'five' <= 1 in 32,768; one slip in every row, worst way of reading, <= 1 in 16.",
+   "source": "inbox/r8-gate2-tally.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r8-tally-gate2-evidence-rule", "rel": "part_of", "dst": "dc-r8-game-gate-play-then-evidence" },
+  { "src": "dc-r8-tally-gate2-evidence-rule", "rel": "measured_by", "dst": "ms-r8-tally-gate2-2026-11-16" }
+ ]
+}

@@ -5,15 +5,19 @@
 // (depthTest false, high renderOrder) in the theme's reserved hues (O-G1). Every random number here is cosmetic and comes
 // from core.cosmeticRandom (the economy lint forbids Math.random in engines).
 import * as THREE from "three";
+import { ART, lawColor } from "../../core/styles.ts";
 
-export const VOLT = 0xcbff4d;   // the one "your move" hue: the reticle and the probe marks only
+/** her aim (the reticle, the bolt, the probe marks, her aim's label): the night art's focus token (law 1: her pick is focus,
+ *  never green and never the action hue; src/play/core/styles.ts lawColor, so a token change moves the 2D painter too) */
+export const NIGHT_FOCUS = parseInt(lawColor(ART.raat, "focus").slice(1), 16);
+export const VOLT = NIGHT_FOCUS;
 export interface Theme { bg: number; fog: number; line: number; glow: number; target: number; rock: number; planet: number; ring: number; neb: [number, number, number]; garam: number; teekha: number;
   /** the label palette over this world (pills and roles): art-pack colours, applied through core.labelColors */
-  labels: { ink: number; you: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number } }
+  labels: { ink: number; focus: number; good: number; look: number; q1: number; q2: number; pill: number; pillAlpha: number } }
 export const THEMES: Record<string, Theme> = {
-  "neela-nebula": { bg: 0x070a1c, fog: 0x0b1030, line: 0x7fe3ff, glow: 0x2a9dff, target: 0xff5a7a, rock: 0x5b5f86, planet: 0x6a4bd8, ring: 0xb9a6ff, neb: [0x1b2a8a, 0x6b2bd0, 0x0e7bb8], garam: 0x7fe3ff, teekha: 0xff8a3d, labels: { ink: 0xeef1ff, you: 0xcbff4d, good: 0x7ff0b8, look: 0xffd27a, q1: 0x7fe3ff, q2: 0xffad7a, pill: 0x05060d, pillAlpha: 0.66 } },
-  "laal-grah": { bg: 0x140707, fog: 0x2a0d0a, line: 0xffd27a, glow: 0xff7a2a, target: 0x7affd9, rock: 0x7a4b3a, planet: 0xd8572b, ring: 0xffb07a, neb: [0x7a1d10, 0xc2410c, 0x4a1340], garam: 0xffd27a, teekha: 0x7affd9, labels: { ink: 0xfff3ea, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0xffd27a, q2: 0x7affd9, pill: 0x140707, pillAlpha: 0.7 } },
-  "hara-toofan": { bg: 0x04110d, fog: 0x072019, line: 0x9dffd0, glow: 0x19c28a, target: 0xffc04d, rock: 0x3d6656, planet: 0x1f9d6b, ring: 0xa6ffd8, neb: [0x0d5c45, 0x136b8a, 0x1f3d14], garam: 0x9dffd0, teekha: 0xffc04d, labels: { ink: 0xeefff7, you: 0xcbff4d, good: 0x9dffd0, look: 0xffd27a, q1: 0x9dffd0, q2: 0xffc04d, pill: 0x04110d, pillAlpha: 0.7 } },
+  "neela-nebula": { bg: 0x070a1c, fog: 0x0b1030, line: 0x7fe3ff, glow: 0x2a9dff, target: 0xff5a7a, rock: 0x5b5f86, planet: 0x6a4bd8, ring: 0xb9a6ff, neb: [0x1b2a8a, 0x6b2bd0, 0x0e7bb8], garam: 0x7fe3ff, teekha: 0xff8a3d, labels: { ink: 0xeef1ff, focus: NIGHT_FOCUS, good: 0x7ff0b8, look: 0xffd27a, q1: 0x7fe3ff, q2: 0xffad7a, pill: 0x05060d, pillAlpha: 0.66 } },
+  "laal-grah": { bg: 0x140707, fog: 0x2a0d0a, line: 0xffd27a, glow: 0xff7a2a, target: 0x7affd9, rock: 0x7a4b3a, planet: 0xd8572b, ring: 0xffb07a, neb: [0x7a1d10, 0xc2410c, 0x4a1340], garam: 0xffd27a, teekha: 0x7affd9, labels: { ink: 0xfff3ea, focus: NIGHT_FOCUS, good: 0x9dffd0, look: 0xffd27a, q1: 0xffd27a, q2: 0x7affd9, pill: 0x140707, pillAlpha: 0.7 } },
+  "hara-toofan": { bg: 0x04110d, fog: 0x072019, line: 0x9dffd0, glow: 0x19c28a, target: 0xffc04d, rock: 0x3d6656, planet: 0x1f9d6b, ring: 0xa6ffd8, neb: [0x0d5c45, 0x136b8a, 0x1f3d14], garam: 0x9dffd0, teekha: 0xffc04d, labels: { ink: 0xeefff7, focus: NIGHT_FOCUS, good: 0x9dffd0, look: 0xffd27a, q1: 0x9dffd0, q2: 0xffc04d, pill: 0x04110d, pillAlpha: 0.7 } },
 };
 export const CAM = new THREE.Vector3(0, 3.0, 7.5), LOOK = new THREE.Vector3(0, 0.4, -12);
 export const LINE_Y = 0.7, LINE_Z = -6, SHIP_Z = 1.6, SHIP_Y = 0.55;

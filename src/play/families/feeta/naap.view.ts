@@ -109,7 +109,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as FeetaAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "dip") { colFrom = colShown(); colAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
     else if (last.kind === "mark") api.sfx("tick");
     else if (last.kind === "put" || last.kind === "slide") api.sfx("land");
@@ -120,7 +120,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     api.invalidate(); deps.changed();
   }
   /** 0..1 of the run on screen; 1 once it has played (the law answered when the act landed) */
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   function update(): void {
     if ((runAt >= 0 && runK() < 1) || (colAt >= 0 && api.t - colAt < SETTLE)) api.invalidate();
@@ -217,8 +217,8 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     cp.pts.forEach((q, i) => {
       const [x, y] = S(q), on = s.pins.includes(i), endDot = i === 0 || i === n;
       if (!s.done && !s.lifted && s.tool >= 0) api.target(`pin-${i}`, x - 22, y - 22, 44, 44);
-      P.circle(c, x, y, endDot ? 9 : 7, { role: on ? "you" : endDot ? "ink" : "ink3", fill: on || endDot, width: 2 });
-      if (on) P.circle(c, x, y, 13, { role: "you", width: 2 });
+      P.circle(c, x, y, endDot ? 9 : 7, { role: on ? "focus" : endDot ? "ink" : "ink3", fill: on || endDot, width: 2 });
+      if (on) P.circle(c, x, y, 13, { role: "focus", width: 2 });
     });
     // an end's label sits on the side the curve does not leave it by (above when the curve heads down from it, else below;
     // the ends are generated in the paper's middle band, so either side has room)
@@ -241,7 +241,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (s.lifted) {
       const len = shownMm(cp, s), y = scaleY - 7, xe = X(len);
       P.stroke(c, [[X(0), y], [xe, y]], { role: s.tool === 1 ? "q2" : s.tool === 2 ? "ink2" : "q1", width: s.tool === 2 ? 7 : 4 });
-      P.circle(c, X(0), y, 5, { role: "you", fill: true }); P.stroke(c, [[xe, y - 9], [xe, y + 7]], { role: "you", width: 3 });
+      P.circle(c, X(0), y, 5, { role: "focus", fill: true }); P.stroke(c, [[xe, y - 9], [xe, y + 7]], { role: "focus", width: 3 });
     }
     counter(c, cp.goal === "map" ? "km" : "cm", s.lifted);
     if (cp.goal === "map") P.chip(c, W("feeta.mapscale", { km: cp.perCm }), ox + CURVE_MAX * 10 * k + 6 - CHIP / 2, oy - LEGEND / 2 - 2, { size: 16 });
@@ -272,7 +272,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const tx = x + 6 + r + q * sp, ty = yy + hh - r - 6;
         P.circle(c, tx, ty, r, { role: "q2", fill: true }); P.text(c, String(lane + 1), tx, ty, { size: 16, weight: 800, on: "q2" });
       });
-      if (!here.length && (sel >= 0 || drag?.kind === "lane")) P.circle(c, x + binW / 2, yy + hh / 2 + 6, 15, { role: "you", width: 2 });
+      if (!here.length && (sel >= 0 || drag?.kind === "lane")) P.circle(c, x + binW / 2, yy + hh / 2 + 6, 15, { role: "focus", width: 2 });
       if (bad(j)) P.magnifier(c, x + binW - 14, yy + hh - 14, 16);
     }
     if (drag?.kind === "lane" && drag.moved) { P.circle(c, drag.x, drag.y, 16, { role: "q2", fill: true }); P.text(c, String(drag.lane + 1), drag.x, drag.y, { size: 16, weight: 800, on: "q2" }); }
@@ -465,7 +465,7 @@ export const makeNaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         P.circle(c, exX, eyeY, 6, { role: on ? "ink" : "ink3", fill: true });
         if (on) {
           const hitX = endX + sightShift(e) * pc;
-          P.stroke(c, [[exX, eyeY], [endX, cy], [hitX, rTop]], { role: "you", width: 2, dash: [5, 4] });
+          P.stroke(c, [[exX, eyeY], [endX, cy], [hitX, rTop]], { role: "focus", width: 2, dash: [5, 4] });
         }
       }
     }

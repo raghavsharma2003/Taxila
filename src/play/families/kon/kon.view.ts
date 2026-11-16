@@ -117,8 +117,8 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const apexX = ax + Math.cos(tA) * k, apexY = cy - Math.sin(tA) * k;
         if (k > 0 && apexY < cy - 8 && apexY > 0 && apexX > 0) {
           c.save(); c.beginPath(); c.moveTo(ax, cy); c.lineTo(cx, cy); c.lineTo(apexX, apexY); c.closePath();
-          c.fillStyle = P.color("you"); c.globalAlpha = 0.12; c.fill(); c.restore();
-          P.circle(c, apexX, apexY, 5, { role: "you", fill: true });
+          c.fillStyle = P.color("focus"); c.globalAlpha = 0.12; c.fill(); c.restore();
+          P.circle(c, apexX, apexY, 5, { role: "focus", fill: true });
           P.text(c, "C", apexX, apexY - 16, { size: 16, weight: 700, role: "ink2" });
         }
       }
@@ -126,7 +126,7 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (p.goal === "kind") {
       P.stroke(c, [[cx, cy], pt(p.start, R * 1.05)], { role: "ink", width: 4 });   // the base arm (any tilt)
       const cur0 = drag ? shown : st().heading;
-      if (cur0 !== null) arc(c, cx, cy, R * 0.32, p.start, norm(sign * (cur0 - p.start)), sign, "you", 3);
+      if (cur0 !== null) arc(c, cx, cy, R * 0.32, p.start, norm(sign * (cur0 - p.start)), sign, "focus", 3);
     }
     if (p.goal === "match") {
       // the reference: long arms and a big arc (neither makes it bigger)
@@ -136,7 +136,7 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.circle(c, refX, refY, 5, { role: "ink", fill: true });
       P.stroke(c, [[cx, cy], pt(p.start, R * armR)], { role: "ink", width: 4 });   // the child's base arm (short)
       const cur0 = drag ? shown : st().heading;
-      if (cur0 !== null) arc(c, cx, cy, R * 0.22, p.start, norm(cur0 - p.start), 1, "you", 2);
+      if (cur0 !== null) arc(c, cx, cy, R * 0.22, p.start, norm(cur0 - p.start), 1, "focus", 2);
     }
     if (protractor && !setGoal) {
       // one scale only, from the base arm
@@ -170,9 +170,9 @@ export const makeKonView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     const cur = drag ? shown : s.heading;
     if (cur !== null) {
-      P.stroke(c, [[cx, cy], pt(cur, R * armR)], { role: "you", width: 5 });
+      P.stroke(c, [[cx, cy], pt(cur, R * armR)], { role: "focus", width: 5 });
       const [kx, ky] = pt(cur, R * armR);
-      P.circle(c, kx, ky, 10, { role: "you", fill: true });
+      P.circle(c, kx, ky, 10, { role: "focus", fill: true });
     }
     P.circle(c, cx, cy, 6, { role: "ink", fill: true });
     // after a commit: the law's arm, and the turn between when it missed

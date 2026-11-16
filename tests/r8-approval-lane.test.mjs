@@ -225,8 +225,8 @@ test("no game target (main 2026-11-11 08:49): a topic whose engine cannot show i
   const { deriveTarget, noGameTarget, approvedFor } = await import("../server/studio/approved.js");
   const list = JSON.parse(fs.readFileSync(path.join(ROOT, "data/studio-approved/no-game-target.json"), "utf8")).topics;
   // (2026-11-15, main's go-ahead: c4-maths-ch14-t01 and c6-maths-ch02-t03 left the list when stambh/tally and kon/place
-  // passed gate 1; docs/patches/to-studio/010-no-game-gate1.md)
-  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch06-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t01", "c6-maths-ch02-t02", "c6-maths-ch02-t04"]);
+  // passed gate 1, and c6-maths-ch02-t02 when kon/name did; docs/patches/to-studio/010-no-game-gate1.md)
+  assert.deepEqual(list.map((t) => t.topicId).sort(), ["c4-maths-ch06-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t01", "c6-maths-ch02-t04"]);
   for (const t of list) {
     assert.ok(t.why && t.needs, `${t.topicId} says why and what an engine would need`);
     assert.ok(noGameTarget(t.topicId));

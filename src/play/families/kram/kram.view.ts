@@ -100,7 +100,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as KramAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "bag" || last.kind === "cell" || last.kind === "pick") api.sfx("land");
     else if (last.kind === "dial" || last.kind === "lay") api.sfx("tick");
     else api.sfx("tap");
@@ -108,7 +108,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     void ms;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {
@@ -273,7 +273,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const x = b.x + stages.length * (cw + gap);
       P.body(c, x, b.y, cw, b.h, { role: "panel", r: 10, state: "look" });
       P.textFit(c, extra.label, x + cw / 2, b.y + 13, cw - 8, 20, { size: 16, role: "ink", weight: 800 });
-      P.text(c, "?", x + cw / 2, b.y + b.h / 2 + 8, { size: 30, role: "you", weight: 800, font: "mono" });
+      P.text(c, "?", x + cw / 2, b.y + b.h / 2 + 8, { size: 30, role: "focus", weight: 800, font: "mono" });
     }
   }
   function bagRacks(c: CanvasRenderingContext2D, end: boolean): void {
@@ -355,8 +355,8 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function knob(c: CanvasRenderingContext2D, id: string, label: string, x: number, y: number, on = false): void {
     const P = api.P;
     if (!st().done) api.target(id, x, y, 46, 46);
-    P.body(c, x, y, 46, 46, { role: on ? "you" : "panel", r: 10 });
-    P.text(c, label, x + 23, y + 23, { size: 22, weight: 800, ...(on ? { on: "you" as Role } : { role: "ink" as Role }) });
+    P.body(c, x, y, 46, 46, { role: on ? "focus" : "panel", r: 10 });
+    P.text(c, label, x + 23, y + 23, { size: 22, weight: 800, ...(on ? { on: "focus" as Role } : { role: "ink" as Role }) });
   }
   function drawMachine(c: CanvasRenderingContext2D): void {
     const P = api.P, s = st(), end = shownEnd(), k = runK(), ran = runAt >= 0 && s.ended;
@@ -385,7 +385,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const fig = step && p.seq === "fig" ? FIG_OF[`${p.a}:${p.v}`] : undefined;
         if (fig && !blank && p.face < 3) drawSticks(c, fig, i + 1, { x: x + 6, y: y + 6, w: cw - 12, h: ch * 0.44 });
         const vy = fig ? y + ch * 0.66 : step ? y + ch * 0.4 : y + ch - 16;
-        P.textFit(c, shown !== null ? String(shown) : "?", x + cw / 2, vy, cw - 8, 30, { size: 22, role: blank ? "you" : "ink", weight: 800, font: "mono" });
+        P.textFit(c, shown !== null ? String(shown) : "?", x + cw / 2, vy, cw - 8, 30, { size: 22, role: blank ? "focus" : "ink", weight: 800, font: "mono" });
         if (ran && i < lit) {
           const o = Number.isInteger(out) ? String(out) : "…";
           P.textFit(c, o, x + cw / 2, fig ? y + ch * 0.88 : step ? y + ch * 0.78 : y + ch - 40, cw - 8, 24, { size: 18, role: bad ? "look" : "good", weight: 800, font: "mono" });
@@ -431,7 +431,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (d !== col) continue;
       if (i < p.n) P.text(c, String(given[i]), x + cw / 2, y + ch / 2, { size: 18, role: "ink", weight: 800, font: "mono" });
       else if (lit > i) P.text(c, String(made[i]), x + cw / 2, y + ch / 2, { size: 18, role: made[i] === listOf(p)[i] ? "good" : "look", weight: 800, font: "mono" });
-      else P.text(c, "?", x + cw / 2, y + ch / 2, { size: 18, role: "you", weight: 800 });
+      else P.text(c, "?", x + cw / 2, y + ch / 2, { size: 18, role: "focus", weight: 800 });
     }
   }
   function drawLay(c: CanvasRenderingContext2D): void {
@@ -446,7 +446,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const items = sh === p.n ? s.laid : rhythms(sh), touch = sh >= p.n - 2;
       const iw = sh * u + (touch ? 12 : 6), per = Math.max(1, Math.floor((top.w - 70) / (iw + 6)));
       const rows = Math.max(1, Math.ceil(items.length / per)), hh = lineH(sh);
-      P.textFit(c, `${sh}`, top.x + 16, y + hh / 2, 30, hh, { size: 16, role: sh === p.n ? "you" : "ink2", weight: 800, font: "mono" });
+      P.textFit(c, `${sh}`, top.x + 16, y + hh / 2, 30, hh, { size: 16, role: sh === p.n ? "focus" : "ink2", weight: 800, font: "mono" });
       if (sh === p.n) P.body(c, top.x + 34, y - 2, top.w - 34, rows * (hh + 4) + 2, { role: "panel", r: 8, state: end && !s.done ? "look" : "idle" });
       items.forEach((r, i) => {
         const x = top.x + 40 + (i % per) * (iw + 6), yy = y + Math.floor(i / per) * (hh + 4);
@@ -506,7 +506,7 @@ export const makeKramView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const x = bot.x + (i % cols) * (ts + 8), y = bot.y + Math.floor(i / cols) * (ts + 8), on = s.picked.includes(i);
       if (!s.done) api.target(`piece:${i}`, x, y, ts, ts);
       P.body(c, x, y, ts, ts, { role: "panel", r: 10, state: on ? "selected" : "idle" });
-      if (on) P.stroke(c, [[x + 2, y + 2], [x + ts - 2, y + 2], [x + ts - 2, y + ts - 2], [x + 2, y + ts - 2]], { role: "you", width: 3, closed: true });
+      if (on) P.stroke(c, [[x + 2, y + 2], [x + ts - 2, y + 2], [x + ts - 2, y + ts - 2], [x + 2, y + ts - 2]], { role: "focus", width: 3, closed: true });
       const pts: [number, number][] = [];
       if (goal === "odd") { const arm = i + 1; for (let t = 0; t < arm; t++) { pts.push([t, arm - 1]); if (t < arm - 1) pts.push([arm - 1, t]); } }
       else for (let r = 0; r <= i; r++) for (let t = 0; t <= r; t++) pts.push([t, r]);

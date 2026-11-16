@@ -82,7 +82,7 @@ export const makePaheliView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as PaheliAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "load" || last.kind === "put") api.sfx("land");
     else if (last.kind === "digit" || last.kind === "start") api.sfx("tick");
     else api.sfx("tap");
@@ -91,7 +91,7 @@ export const makePaheliView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     api.invalidate(); deps.changed();
   }
   /** 0..1 of the run on screen; 1 once it has played (the law answered when the act landed) */
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   const running = () => st().ended && runAt >= 0;
   let announced = -1;
@@ -222,7 +222,7 @@ export const makePaheliView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       if (!s.done && !given) api.target(`cell-${i}`, x + 2, y + 2, G - 4, G - 4);
       P.body(c, x + 2, y + 2, G - 4, G - 4, { role: given ? "q3" : "panel", r: 8, seed: i, state: sel !== null && sel === v && !given ? "selected" : "idle", fill: given ? 0.6 : 1 });
       if (v) P.text(c, String(v), x + G / 2, y + G / 2, { size: clamp(G * 0.36, 20, 34), role: "ink", weight: given ? 800 : 700, font: "mono" });
-      else if (typeof sel === "number") P.circle(c, x + G / 2, y + G / 2, 10, { role: "you", width: 2 });
+      else if (typeof sel === "number") P.circle(c, x + G / 2, y + G / 2, 10, { role: "focus", width: 2 });
     }
     // the run: the 8 lines lit one by one, each sum at its end
     if (run) {
@@ -297,7 +297,7 @@ export const makePaheliView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.body(c, x, keyY, keyW, 64, { role: kn ? "q3" : "q1", r: 8, seed: 90 + i, state: sel === l ? "selected" : kn ? "dim" : "idle", fill: kn ? 0.5 : 0.9 });
       P.text(c, l, x + keyW / 2, keyY + 18, { size: 18, on: kn ? "q3" : "q1", weight: 800 });
       P.text(c, d >= 0 ? String(d) : "?", x + keyW / 2, keyY + 45, { size: 20, on: kn ? "q3" : "q1", weight: 800, font: "mono" });
-      if (sel === l) P.circle(c, x + keyW / 2, keyY - 6, 4, { role: "you", fill: true });
+      if (sel === l) P.circle(c, x + keyW / 2, keyY - 6, 4, { role: "focus", fill: true });
     });
     const px0 = (w - (5 * padW + 4 * 8)) / 2;
     for (let d = 0; d <= 9; d++) {

@@ -677,8 +677,18 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  options; a mix-up seen there is reported at chance weight and not kept from one pick (gradeLevel) */
   chancePicks?: readonly string[];
   /** round 8 law 3: what a level shows (a second sighting of a chance-pick mix-up counts only on a level whose surface
-   *  differs); default: the level's params */
-  surfaceOf?(level: PlayLevel<P>): string;
+   *  differs); default: the level's params. Parts (an array): the surface differs only when EVERY part differs (gate 2,
+   *  stambh/tally read: its bundles and its loose lines) */
+  surfaceOf?(level: PlayLevel<P>): string | readonly string[];
+  /** gate 2: a chance pick (key `goal:mal-rule`) whose pair of sightings is still over law 3's 1 in 10 is named only on
+   *  `sightings` levels (default 2): `apart`, the surface parts that must differ between every two of them (default: every
+   *  part); `cover`, a part that must not be the same on all of them (kon/place draw's join order) */
+  chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number }>>;
+  /** gate 2: a level whose right answer says less than its goal's usual one (kon/name: the first fade-1 level with O at
+   *  the vertex, as the book's first figure; a find level where the mix-up's reading meets no other arc): its correct
+   *  enters at CHANCE_WEIGHT (the controllerEasy temper, the learner model's one step below a game's weight) and
+   *  discriminates nothing (gradeLevel reads this) */
+  faintSolve?(level: PlayLevel<P>): boolean;
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────
@@ -693,9 +703,13 @@ export interface ArtTokens {
   q1: string; q2: string; q3: string; q4: string;
   good: string;                        // "goal met": always with a tick shape
   look: string;                        // "look again": always with a magnifier shape; never red, never a cross
-  you: string;                         // the reserved "your move" hue (one element per state): the DOM action button only
-  /** round 8 law 1 (dc-r8-game-modes-three-laws): the picked thing (a selected row, box, card, her unchecked mark) is outlined
-   *  in the focus colour, a blue-violet that is never green; the canvas never paints "you" (Painter maps it here) */
+  /** the action hue: the one "your move" element per state (the DOM action button, play.css --pl-you), never on a figure and
+   *  never in the green family (Design's patch 002: marigold on kagaz; the dark arts' magenta). Not a painter role. */
+  you: string;
+  /** the action button's text on `you` */
+  youInk: string;
+  /** round 8 law 1 (dc-r8-game-modes-three-laws): the picked thing (a selected row, box, card, her unchecked mark, a 3D
+   *  engine's selection ring or cursor) is drawn in the focus colour, a blue-violet that is never green */
   focus: string;
   shadow: string;
   /** stroke character: 0 = machine-clean, 1 = chalk / hand */

@@ -96,7 +96,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as AankdeAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - SWEEP : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "mark") api.sfx(last.across ? "land" : "tick");
     else if (last.kind === "move" || last.kind === "crown") api.sfx("drop");
     else if (last.kind === "swap" || last.kind === "peg" || last.kind === "line") api.sfx("land");
@@ -107,7 +107,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     void ms;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt === null ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt === null ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced: number | null = null;
   function update(): void {
@@ -194,7 +194,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       P.textFit(c, catText(r), colX + 4 + labW / 2 + (crown ? 9 : 0), cy, labW - (crown ? 26 : 10), rowH - 18, { size: 18, weight: 800, on: role });
       if (crown) {
         const bx = colX + 9, by = cy - 9;
-        P.body(c, bx, by, 18, 18, { role: "you", r: 3 });
+        P.body(c, bx, by, 18, 18, { role: "focus", r: 3 });
         P.stroke(c, [[bx + 2, by + 2], [bx + 16, by + 16]], { role: "ink", width: 1.5 });
         P.stroke(c, [[bx + 16, by + 2], [bx + 2, by + 16]], { role: "ink", width: 1.5 });
         if (end && !s.done && s.crown !== modeRow(p)) P.magnifier(c, colX + labW, y + 10, 11);
@@ -214,7 +214,7 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const gx = markX + markW + 8;
         P.body(c, gx, y + 7, gateW, rowH - 14, { role: "panel", r: 8, seed: 70 + r });
         for (let i = 0; i < 4; i++) P.stroke(c, [[gx + 10 + i * 6, cy - 9], [gx + 10 + i * 6, cy + 9]], { role: "ink3", width: 1.6 });
-        P.stroke(c, [[gx + 6, cy + 9], [gx + gateW - 8, cy - 9]], { role: "you", width: 3 });
+        P.stroke(c, [[gx + 6, cy + 9], [gx + gateW - 8, cy - 9]], { role: "focus", width: 3 });
         api.target(`x-${r}`, gx - 2, y + 3, gateW + 4, rowH - 6);
       }
       // sort: the total cell she types into (her number; at the run a tick for a right row, the dashed box for a number
@@ -303,8 +303,8 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       else if (p.face < 3 || end) P.stroke(c, [[towX(i) + 3, lvY(j + 1) + 2], [towX(i) + towW - 3, lvY(j + 1) + 2], [towX(i) + towW - 3, lvY(j) - 1], [towX(i) + 3, lvY(j) - 1]], { role: end && !s.done ? "look" : "ink3", width: 1.5, dash: [3, 3], closed: true });
     });
     if (L >= 0) {
-      P.stroke(c, [[axisX - 4, lvY(L)], [colX + colW, lvY(L)]], { role: ran && end && s.done ? "good" : "you", width: 3 });
-      P.circle(c, colX + colW - 6, lvY(L), 6, { role: "you", fill: true });
+      P.stroke(c, [[axisX - 4, lvY(L)], [colX + colW, lvY(L)]], { role: ran && end && s.done ? "good" : "focus", width: 3 });
+      P.circle(c, colX + colW - 6, lvY(L), 6, { role: "focus", fill: true });
     }
     if (!s.done) for (let v = 0; v <= R; v++) api.target(`lv-${v}`, axisX - 22, lvY(v) - bh / 2, colX + colW - axisX + 22, bh);
     if (end) {
@@ -341,8 +341,8 @@ export const makeAankdeView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!s.done) for (let v = 1; v <= 2 * N - 2; v += 2) api.target(`slot-${v}`, slotX(v) - 11, pegY - 8, 22, 52);
     if (s.peg >= 0) {
       const x = slotX(s.peg), bad = end && !s.done && sorted;
-      P.stroke(c, [[x, pegY + 34], [x, cardY + cardH + 2]], { role: "you", width: 4 });
-      P.circle(c, x, pegY + 36, 8, { role: "you", fill: true });
+      P.stroke(c, [[x, pegY + 34], [x, cardY + cardH + 2]], { role: "focus", width: 4 });
+      P.circle(c, x, pegY + 36, 8, { role: "focus", fill: true });
       if (bad) P.magnifier(c, x + 16, pegY + 30, 12);
     }
     if (ran && k >= 0.85) {

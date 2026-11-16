@@ -69,6 +69,9 @@ for (const fam of FAMS) {
         // a recovery after the miss still solves, and its evidence is the miss's, at the game weight
         const back = gradeActs(level, env([...w, ...sol]), { final: true });
         if (back.grade.verdict === "solved") assert.equal(back.grade.evidence[0].weight, back.grade.evidence[0].chanceMis ? CHANCE_WEIGHT : GAME_WEIGHT);
+      } else if (logic.faintSolve?.(level)) {
+        // gate 2 (kon/name): a faint solve (the first fade-1 level with O at the vertex) enters at the chance weight, no discriminates
+        assert.equal(rows[0].weight, CHANCE_WEIGHT, `${level.levelId}: a faint solve`); assert.equal(rows[0].discriminates, undefined);
       } else { other++; assert.equal(rows[0].weight, GAME_WEIGHT, `${level.levelId} keeps the game weight`); }
     }
     assert.ok(one >= 6 && misses === one, `${fam}: ${one} one-decision levels, ${misses} misses`);

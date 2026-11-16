@@ -94,7 +94,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st();
     if (s.t !== lastT) { tFrom = shownT(); lastT = s.t; tickAt = api.reduced ? api.t - 10 : api.t; }
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "tick") api.sfx("tick");
     else if (last.kind === "put" || last.kind === "pick" || last.kind === "chalk") api.sfx("land");
     else api.sfx("tap");
@@ -103,7 +103,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     api.invalidate(); deps.changed();
   }
   /** 0..1 of the run on screen; 1 once it has played (the law answered when the act landed) */
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   /** the clock as shown: gliding from the last value to the law's over a short beat */
   function shownT(): number {
@@ -200,7 +200,7 @@ export const makeGatiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         const tx = x + 6 + r + q * sp, ty = binY + binH - r - 7;
         P.circle(c, tx, ty, r, { role: "q2", fill: true }); P.text(c, labelOf(lane), tx, ty, { size: 16, weight: 800, on: "q2" });
       });
-      if (!here.length && (sel >= 0 || drag)) P.circle(c, x + binW / 2, binY + binH - 18, 10, { role: "you", width: 2 });
+      if (!here.length && (sel >= 0 || drag)) P.circle(c, x + binW / 2, binY + binH - 18, 10, { role: "focus", width: 2 });
       if (bad(j)) P.magnifier(c, x + binW - 14, binY + 14, 14);
     }
     if (drag?.moved) { P.circle(c, drag.x, drag.y, 16, { role: "q2", fill: true }); P.text(c, labelOf(drag.lane), drag.x, drag.y, { size: 16, weight: 800, on: "q2" }); }

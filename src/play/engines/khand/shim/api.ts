@@ -122,7 +122,7 @@ export interface LabelSpec {
   at: Vec3 | { box: { x: number; y: number } };
   /** pixel offset after projection, and which point of the label sits on the anchor */
   dx?: number; dy?: number; align?: "center" | "top" | "bottom";
-  role?: "ink" | "you" | "good" | "look" | "q1" | "q2";
+  role?: "ink" | "focus" | "good" | "look" | "q1" | "q2";
   frac?: boolean;
   hidden?: boolean;
 }

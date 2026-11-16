@@ -93,8 +93,8 @@ export const makeBeamView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (const m of s.placed) {
       const cx = px(m.x + 0.5), cy = py(m.y + 0.5), hx = Math.cos(rad(m.rot)) * MIRROR_HALF * cs, hy = -Math.sin(rad(m.rot)) * MIRROR_HALF * cs;
       const on = sel === m.id && !s.done;
-      if (on) P.circle(c, cx, cy, cs * 0.48, { role: "you", width: 2, alpha: 0.8 });
-      P.stroke(c, [[cx - hx, cy - hy], [cx + hx, cy + hy]], { role: on ? "you" : "ink", width: 6 });
+      if (on) P.circle(c, cx, cy, cs * 0.48, { role: "focus", width: 2, alpha: 0.8 });
+      P.stroke(c, [[cx - hx, cy - hy], [cx + hx, cy + hy]], { role: on ? "focus" : "ink", width: 6 });
       P.circle(c, cx, cy, 3.5, { role: "ink", fill: true });
       if (on && level.fade === 1) P.text(c, `${norm(m.rot)}°`, cx, cy + cs * 0.5 + 2, { size: 14, weight: 700, font: "mono", role: "ink2", baseline: "top" });
       api.target(`mirror:${m.id}`, px(m.x), py(m.y), cs, cs);

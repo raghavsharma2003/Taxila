@@ -9,8 +9,10 @@
 // Mal-rule vertex-name: the vertex is not put in the middle (say: the right three letters with the vertex first or last; find:
 // the angle at the name's first or last letter is taken). The child sees a different corner light up than the one she meant.
 // Judging round 2 (dc-r8-game-modes-three-laws): find is one tap among five arcs, so its first-letter pick is graded at chance
-// weight as chanceMis (the central law-3 rule: find is a oneDecision goal), never on her record from one tap; only say (a
-// three-letter name she builds) names vertex-name from one act. Figures: the
+// weight as chanceMis (the central law-3 rule: find is a oneDecision goal), never on her record from one tap. Gate 2 (night
+// rulings 2026-11-11, rulings 2026-11-15): say's name is a pick too (three random taps give a vertex-first or vertex-last
+// name 1 time in 6), so it names vertex-name only on its second occurrence, on a level with another figure and other
+// letters (nameSurface); a faint solve (nameFaint) enters at chance weight and discriminates nothing. Figures: the
 // two arcs at the vertex between neighbouring rays sit at different radii (a gap where they meet), the joined pair never
 // crosses a ray, O and Q are never in one figure, and at fade 1 the vertex is O in the first level only.
 // Shortcut-free: a say level whose letters, read left to right or top to bottom, put the vertex in the middle is never served
@@ -161,7 +163,12 @@ export function stepName(p: NameParamsLike, s: NameState, a: NameAct, mal: Recor
   }
   return { refused: "unknown_act" };
 }
-const yn = (b: boolean) => (b ? "yes" : "no");
+/** say: is a name (three point indices) the vertex-name mix-up's: exactly the lit angle's three letters, the vertex not in
+ *  the middle (vertex first or last: four of the six orders) */
+export function isVertexNameSaid(p: NameParamsLike, t: number[]): boolean {
+  const c = asked(p);
+  return t.length === 3 && new Set(t).size === 3 && t.every((i) => i === c.v || i === c.a || i === c.b) && t[1] !== c.v;
+}
 function shownFacts(p: NameParamsLike, t: number[]): Facts {
   const k = denotes(p, t);
   return { shown: k >= 0 ? "figure" : sizeOf(p, t) === null ? "none" : "dashed" };
@@ -169,10 +176,12 @@ function shownFacts(p: NameParamsLike, t: number[]): Facts {
 function commitSay(p: NameParamsLike, s: NameState, mal: Record<string, string>): NameStep {
   const t = s.said as number[], c = asked(p);
   const vertexOk = t[1] === c.v, armsOk = new Set([t[0], t[2]]).size === 2 && [t[0], t[2]].every((i) => i === c.a || i === c.b);
-  const f: Facts = { name: spell(p, t), vertex_ok: yn(vertexOk), arms_ok: yn(armsOk) };
+  // gate 2 (night rulings 2026-11-11, rulings 2026-11-15 "kept for gate 2"): a say name is a pick too (konLogic.chancePicks
+  // "say:vertex-name": three random taps give a vertex-first or vertex-last name 1 time in 6 at worst), so like find's tap it
+  // reports the name she gave only: whether her vertex was in the middle is the mix-up's content (no vertex_ok / arms_ok)
+  const f: Facts = { name: spell(p, t) };
   if (vertexOk && armsOk) return { nm: s, commit: { kind: "solved", done: true, facts: f } };
-  const sameLetters = new Set(t).size === 3 && t.every((i) => i === c.v || i === c.a || i === c.b);
-  if ("vertex-name" in mal && sameLetters && !vertexOk) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, ...shownFacts(p, t) } } };
+  if ("vertex-name" in mal && isVertexNameSaid(p, t)) return { nm: s, commit: { kind: "misconception_consequence", mis: "vertex-name", facts: { ...f, ...shownFacts(p, t) } } };
   return { nm: s, commit: { kind: "law_refused", facts: { ...f, ...shownFacts(p, t), why: "other_angle" } } };
 }
 function commitFind(p: NameParamsLike, s: NameState, mal: Record<string, string>): NameStep {
@@ -367,10 +376,8 @@ export function nameFacts(p: NameParamsLike, s: NameState | undefined, base: Fac
   if (s?.said) f.said = spell(p, s.said);
   else if (s?.taps.length) f.taps = spell(p, s.taps);
   if (s?.picked !== null && s?.picked !== undefined) f.picked = spell(p, nameOf(corners(p)[s.picked]));
-  // the evidence: whether the vertex is in the middle, and the outer letters on its two arms (her latest decision); say
-  // only (a built name): a find tap is one pick among five and reports her arc alone (evening ruling kon/name 3)
-  const ev = nameEvidence(p, s);
-  if (ev.name !== null && p.goal === "say") { f.vertex_ok = ev.vertexOk ? "yes" : "no"; f.arms_ok = ev.armsOk ? "yes" : "no"; }
+  // (whether the vertex is in the middle is the mix-up's content: neither goal reports it, since a find tap and a say name
+  // are both picks (evening ruling kon/name 3; gate 2 for say); nameEvidence keeps it for the tests)
   return f;
 }
 export function nameEvidence(p: NameParamsLike, s: NameState | undefined): { name: string | null; vertexOk: boolean | null; armsOk: boolean | null } {
@@ -546,6 +553,23 @@ export function generateName(goal: NameGoal, rnd: () => number, fade: number, fi
     seen.add(sig); out.push({ params, sig });
   }
   return out;
+}
+/**
+ * Gate 2 (law 3): what a level shows, in two parts: the figure (the goal, the rays' headings, the joined pair, the asked
+ * angle) and its letters. A second sighting of vertex-name counts only on a level where BOTH differ (levels.js
+ * surfacesDiffer), so "differ" means another figure with other letters.
+ */
+export const nameSurface = (p: NameParamsLike): string[] => [`${p.goal}:${p.h1}:${p.h2}:${p.h3}:${p.tri}:${p.ask}`, `lets:${p.lets}`];
+/**
+ * Gate 2: a right answer on this level says less than the goal's usual one (konLogic.faintSolve: CHANCE_WEIGHT, no
+ * discriminates): the first fade-1 level with O at the vertex of the asked angle (the book's first figure: "O in the
+ * middle" passes it without the rule; rulings 2026-11-11 night and 2026-11-15), and a find level where no arc but the key
+ * has a named vertex with arms to the other two letters (the wide key, and the angle at the vertex outside the triangle: 2
+ * levels in 5; the any-order belief finds the key there too, rulings 2026-11-15).
+ */
+export function nameFaint(p: NameParamsLike, fade: number): boolean {
+  if (fade === 1 && (p.lets ?? "")[0] === "O" && asked(p).v === 0) return true;
+  return p.goal === "find" && vertexNamePick(p) < 0;
 }
 export function nameDifficulty(p: NameParamsLike): number {
   return Math.min(1, (p.goal === "find" ? 0.35 : 0.4) + ((p.ask ?? 0) >= 3 ? 0.15 : 0) + ((p.ask ?? 0) === 2 ? 0.1 : 0) + ((p.lets ?? "O")[0] !== "O" ? 0.1 : 0));

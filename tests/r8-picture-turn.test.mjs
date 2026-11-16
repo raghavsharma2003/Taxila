@@ -79,7 +79,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   // (round 4: the remediation boards a general say no longer speaks were removed — D12's held-board rule — so c4, c5-t01 and c6
   // each lose their own copies: parts 12 → 11, equal-groups 11 → 9, line 64 → 62, measured 25 → 21, shape 7 → 6)
   assert.deepEqual(got, {
-    "fraction-parts@1": "11/11", "wholes@1": "17/17", "shade-grid@1": "1/3", "equal-groups@1": "7/9", "compare@1": "1/3",
+    "fraction-parts@1": "11/11", "wholes@1": "17/17", "shade-grid@1": "1/5", "equal-groups@1": "6/8", "compare@1": "1/4",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -87,7 +87,12 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // how many marks, so it draws no view and no line), measured 21 → 22 (c6's teachback wire, with a view))
     // (main on director22: a view is no longer withheld because neither caption is clean — it is drawn with a line that names
     // nothing in it; bars 20 → 21)
-    "fraction-bars@1": "21/24", "fraction-line@1": "45/63", "measured@1": "21/22", "shape@1": "1/6" }, JSON.stringify(got));
+    // (director22 clause 8 rewrite, 2026-11-15: c4 s2 e1's point and card moved from 4 groups of 3 to 12 loose laddoos (equal-groups
+    // 9 → 7, shade-grid 3 → 5, neither with a view: the grid IS the question), c4 s2 rem0 got its own 5-bags board (equal-groups
+    // 7 → 8, with a view); four c5-t02 cards moved from a two-scale line to two unshaded strips (line 63 → 59 and 45 → 41 views,
+    // bars 24 → 28, every one with a view); c6 s2 c2 shows both cards on a compare board (measured 22 → 21, compare 3 → 4, no
+    // view); c6 s3 rem0's second wording draws its own outline (shape 6 → 7, no view))
+    "fraction-bars@1": "25/28", "fraction-line@1": "41/59", "measured@1": "20/21", "shape@1": "1/7" }, JSON.stringify(got));
   void none;
 });
 
@@ -185,7 +190,10 @@ const askWith = (ref, answers) => askOf({ T: "d20", path: "/x", ref, answers });
 
 test("director20 c4 steady 18: a picture line gives no key — \"1 rangin, yaani aadha\" over the card whose key is No (accepted as \"nahi, 1/2 hai\"), and over a sentence key \"No, it's ½\"", () => {
   const c = scriptCard("c4-maths-ch05-t01", 0, "e1");
-  assert.deepEqual(c.ref, { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } }, "the row's card");
+  // (director22 clause 8 rewrite, 2026-11-15: the card now asks "1/2 ya 1/1?" over this roti, so its board hides the 1/2 and
+  // names the coloured piece instead — hideResult, legend; the key is 1/2, and the picture line still states none of it)
+  assert.deepEqual(c.ref, { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti", hideResult: true, legend: true } }, "the row's card");
+  assert.ok(c.answers.includes("1/2") && c.answers.includes("aadha"), "the card's key is the half");
   for (const answers of [c.answers, ["No, it's ½"], ["No, it's 1/2"], ["nahi, aadha hai ya ½"]]) for (const variant of [0, 1]) {
     const pt = BF.pictureTurn(askWith(c.ref, answers), { variant });
     assert.ok(pt?.view && pt.line, `${answers[0]} v${variant}: the view stays`);

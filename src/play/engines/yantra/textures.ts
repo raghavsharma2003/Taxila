@@ -123,14 +123,14 @@ export function flareTexture(): Texture {
 }
 
 /** The selected mirror's turn ring: a circle with two arrowheads (drag round to turn), in the "your move" hue. */
-export function turnRingTexture(you: number): Texture {
+export function turnRingTexture(focus: number): Texture {
   const S = 256, { c, g } = canvas(S, S), m = S / 2, R = S * 0.42;
-  g.strokeStyle = css(you, 0.95); g.lineWidth = 9; g.lineCap = "round";
+  g.strokeStyle = css(focus, 0.95); g.lineWidth = 9; g.lineCap = "round";
   const arc = (a0: number, a1: number) => { g.beginPath(); g.arc(m, m, R, a0, a1); g.stroke(); };
   arc(0.25, Math.PI - 0.25); arc(Math.PI + 0.25, 2 * Math.PI - 0.25);
   const head = (a: number, dir: 1 | -1) => {
     const x = m + Math.cos(a) * R, y = m + Math.sin(a) * R, tx = -Math.sin(a) * dir, ty = Math.cos(a) * dir, nx = Math.cos(a), ny = Math.sin(a);
-    g.fillStyle = css(you, 0.95); g.beginPath(); g.moveTo(x + tx * 22, y + ty * 22); g.lineTo(x + nx * 15 - tx * 4, y + ny * 15 - ty * 4); g.lineTo(x - nx * 15 - tx * 4, y - ny * 15 - ty * 4); g.closePath(); g.fill();
+    g.fillStyle = css(focus, 0.95); g.beginPath(); g.moveTo(x + tx * 22, y + ty * 22); g.lineTo(x + nx * 15 - tx * 4, y + ny * 15 - ty * 4); g.lineTo(x - nx * 15 - tx * 4, y - ny * 15 - ty * 4); g.closePath(); g.fill();
   };
   head(Math.PI - 0.25, 1); head(2 * Math.PI - 0.25, 1);
   return tex(c);

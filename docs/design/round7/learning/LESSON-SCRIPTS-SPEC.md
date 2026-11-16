@@ -121,11 +121,22 @@ after.
   woh/yeh/it/that, or is five words or fewer, after earlier sentences): one self-contained question that names its givens. It is the
   re-ask after help; after the second miss the whole card is said.
 
+From director22 (dc-r8-director22, T2, T5 and clause 8), also required by `d22Errors`:
+- **`teachback.leadIn`** (T2): three forms `[{ hi, en }]`; Brain says one just before the teach-back's question. Each is one sentence that
+  says one last question is coming. It names no value, asks nothing and praises nothing, in at most 14 words. The three forms differ.
+- **`skills[i].covered`** (T5): `{ hi, en }`, one sentence on what that skill covered, never what the child did, no praise, no question.
+  The wrap says the covered sentences of the skills the lesson reached, in order, then `wrap.goodbye`. `wrap.covered` stays as the
+  fallback until Brain reads them.
+- **`skills[i].remediation[j].sayAlt`**: `{ hi, en, board? }`, the remediation's second wording, said when the same remediation would be
+  said again. It follows the second-wording rules above, and is true of its own board or else of its then-card's board.
+- Two more synonym sets: the drawn strip (bar / patti) and half a perimeter (aadha raasta / kinaara / chakkar / parimap). A two-word
+  name is told apart by its second word.
+
 Data rules from director21 (row 12), for every v2.3+ script: `friendVerbErrors` ({friend} with a gendered verb → {friendM}/{friendF},
 or "{friend} ka kehna hai"; "ne kaha" agrees with its object and is fine); `bridgeTrueErrors` (a bridge says what comes next, never a
 recap); `hookReuseErrors` (a hook's things come back in its skill); `allBoardsResolve` (every board and answerBoard, a remediation's own
 board included). From v2.4: `synonymErrors`, one word per idea across the synonym sets (a step along a line; a group of things; one
-piece of a cut whole), the `terms` glossary excepted.
+piece of a cut whole; from director22 the drawn strip and half a perimeter), the `terms` glossary excepted.
 
 Aside replies (R3, data/lesson-aside-replies.json): each kind's `phraseReplies[i]` answers `returns[i]` with one `{phrase}` slot,
 up to three of the child's own words, said back about the child; Brain turns first person into second and drops a final

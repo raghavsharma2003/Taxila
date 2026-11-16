@@ -13,19 +13,20 @@ const L = await import("../server/forge3/qa/laws.mjs");
 
 /** Breaks still open, by (family/mode) → laws, each listed in LAWS-AUDIT.md (kon: the kon stream's; the rest: main's). */
 const KNOWN = {
-  // the science families' after-a-miss line states the idea outright (authored lines in data/play/engine-words.json)
-  "aakash/chakkar": [2], "aakash/grahan": [2], "aakash/ritu": [2], "badlaav/aag": [2], "bhaap/hawa": [2], "chhaano/sukha": [2],
-  "jaanch/neela": [2], "rang/milao": [2], "rang/pehchaan": [2], "yantra/roshni": [2],
+  // the science families: none left (laws ruling 2026-11-15: each miss line says what her act did; the idea is the solved
+  // line's; laws.mjs IDEA_WORDS fails a miss line that states it; tests/r8-laws-idea-words.test.mjs)
   // kon: none left (round 8 kon round 2: ends' light is green only when solved and ray-two-ends is a chance pick; place/draw's
   // join-wrong-end is a chance pick; measure is typed)
 };
 
-describe("r8 play laws: every served level of every family", () => {
+// Every language the view can show (laws ruling 2026-11-15, late evening 2: "a law that holds in one language only is not
+// held"): the same seeds and levels in each, KNOWN empty in each.
+for (const lang of ["hinglish", "en", "hi"]) describe(`r8 play laws: every served level of every family (${lang})`, () => {
   it("no law break outside the listed ones; stambh/tally keeps all three", async () => {
-    const rows = await L.lawsOverCoverage({ seeds: 2, perGoal: 1 });
+    const rows = await L.lawsOverCoverage({ seeds: 2, perGoal: 1, lang });
     assert.ok(rows.length > 150, `levels checked: ${rows.length}`);
     const extra = [];
-    for (const r of rows) for (const b of r.breaks) if (!(KNOWN[r.key] ?? []).includes(b.law)) extra.push(`${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
+    for (const r of rows) for (const b of r.breaks) if (!(KNOWN[r.key] ?? []).includes(b.law)) extra.push(`${lang} ${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
     assert.deepEqual(extra, []);
     const tally = rows.filter((r) => r.key === "stambh/tally");
     assert.ok(tally.length >= 2, "tally levels checked");

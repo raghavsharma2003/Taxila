@@ -76,7 +76,7 @@ export const makeKoshtakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const last = ctl.acts[ctl.acts.length - 1]?.act as KoshtakAct | undefined;
     if (!last) return;
     if (refused && refused !== "missed") { api.sfx("refuse"); api.fx.shake(2); }
-    else if (last.kind === "run") { runAt = api.reduced ? api.t - 10 : api.t; api.sfx("slide"); }
+    else if (last.kind === "run") { runAt = api.t; api.sfx("slide"); }
     else if (last.kind === "wall" || last.kind === "lid") api.sfx("land");
     else if (last.kind === "flip") api.sfx("tick");
     else api.sfx("tap");
@@ -84,7 +84,7 @@ export const makeKoshtakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     void ms;
     api.invalidate(); deps.changed();
   }
-  const runK = () => (runAt < 0 ? 0 : clamp((api.t - runAt) / SWEEP, 0, 1));
+  const runK = () => (runAt < 0 ? 0 : api.reduced ? 1 : clamp((api.t - runAt) / SWEEP, 0, 1));   // reduced motion: the play-out shows its end at once (ruling 2026-11-15)
   const shownEnd = () => st().ended && runK() >= 1;
   let announced = -1;
   function update(): void {
@@ -159,8 +159,8 @@ export const makeKoshtakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       const wall = s.walls.includes(g), x = gapX(g);
       if (!s.done) api.target(`gap-${g}`, x - Math.max(22, gw / 2), rowY - 14, Math.max(44, gw), ch + 28);
       if (wall) {
-        P.stroke(c, [[x, rowY - 16], [x, rowY + 6]], { role: "you", width: 4 });
-        P.stroke(c, [[x, rowY + ch - 6], [x, rowY + ch + 16]], { role: "you", width: 4 });
+        P.stroke(c, [[x, rowY - 16], [x, rowY + 6]], { role: "focus", width: 4 });
+        P.stroke(c, [[x, rowY + ch - 6], [x, rowY + ch + 16]], { role: "focus", width: 4 });
       } else if (p.face < 3) {
         // an empty wall slot: where a wall can snap in
         P.stroke(c, [[x, rowY - 14], [x, rowY + 4]], { role: "ink3", width: 2, dash: [3, 3] });

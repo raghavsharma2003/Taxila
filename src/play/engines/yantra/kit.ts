@@ -55,7 +55,7 @@ export class KitScene {
   private halo: Sprite; private flares: Sprite[] = [];
   private lever: Group | null = null; private leverAng = 0.62; private leverTo = 0.62;
   private glassMat: MeshPhongMaterial; private filMat: MeshBasicMaterial;
-  private m: Record<"plate" | "brass" | "wire" | "short" | "knot" | "cell" | "band" | "metal" | "lever" | "knob" | "steel" | "rubber" | "sleeve" | "socket" | "base" | "you", MeshLambertMaterial | MeshPhongMaterial | MeshBasicMaterial>;
+  private m: Record<"plate" | "brass" | "wire" | "short" | "knot" | "cell" | "band" | "metal" | "lever" | "knob" | "steel" | "rubber" | "sleeve" | "socket" | "base" | "focus", MeshLambertMaterial | MeshPhongMaterial | MeshBasicMaterial>;
   private texs: Texture[] = [];
   private loop: Vector3[] | null = null; private loopLen: number[] = []; private loopTotal = 0;
   private lit = 0; private litTo = 0; private ranAt = -1;
@@ -71,7 +71,7 @@ export class KitScene {
       short: new MeshPhongMaterial({ shininess: 50 }), knot: new MeshPhongMaterial({ shininess: 60 }), cell: new MeshPhongMaterial({ shininess: 70, specular: 0x555555 }),
       band: new MeshPhongMaterial({ shininess: 70 }), metal: new MeshPhongMaterial({ shininess: 120, specular: 0xffffff }), lever: new MeshPhongMaterial({ shininess: 110, specular: 0xffffff }),
       knob: new MeshPhongMaterial({ shininess: 60 }), steel: new MeshPhongMaterial({ shininess: 140, specular: 0xffffff }), rubber: new MeshLambertMaterial(),
-      sleeve: new MeshLambertMaterial(), socket: new MeshPhongMaterial({ shininess: 40 }), base: new MeshLambertMaterial(), you: new MeshBasicMaterial({ transparent: true, opacity: 0.95, depthTest: false }),
+      sleeve: new MeshLambertMaterial(), socket: new MeshPhongMaterial({ shininess: 40 }), base: new MeshLambertMaterial(), focus: new MeshBasicMaterial({ transparent: true, opacity: 0.95, depthTest: false }),
     };
     this.glassMat = new MeshPhongMaterial({ transparent: true, opacity: 0.55, shininess: 160, specular: 0xffffff, depthWrite: false, side: DoubleSide });
     this.filMat = new MeshBasicMaterial({ toneMapped: false });
@@ -94,8 +94,8 @@ export class KitScene {
     }
     // ── wires' knots, the rubber band of a wire being drawn, the post rings, the current's beads, the bulb's halo, flares
     this.knots = new InstancedMesh(new SphereGeometry(0.11, 14, 10), this.m.knot, 16); this.knots.count = 0; R.add(this.knots);
-    this.band = new Mesh(new BufferGeometry(), this.m.you); this.band.visible = false; this.band.renderOrder = 7; R.add(this.band);
-    for (let i = 0; i < 2; i++) { const r = new Mesh(new TorusGeometry(0.26, 0.035, 8, 28).rotateX(Math.PI / 2), this.m.you); r.visible = false; r.renderOrder = 8; this.rings.push(r); R.add(r); }
+    this.band = new Mesh(new BufferGeometry(), this.m.focus); this.band.visible = false; this.band.renderOrder = 7; R.add(this.band);
+    for (let i = 0; i < 2; i++) { const r = new Mesh(new TorusGeometry(0.26, 0.035, 8, 28).rotateX(Math.PI / 2), this.m.focus); r.visible = false; r.renderOrder = 8; this.rings.push(r); R.add(r); }
     this.beads = new InstancedMesh(new SphereGeometry(0.075, 10, 8), new MeshBasicMaterial({ toneMapped: false }), BEADS); this.beads.count = 0; this.beads.renderOrder = 6; this.beads.frustumCulled = false; R.add(this.beads);
     const haloTex = spotTexture("rgba(255,255,255,0.95)", "rgba(255,255,255,0)"), flareTex = flareTexture(); this.texs.push(haloTex, flareTex);
     this.halo = new Sprite(new SpriteMaterial({ map: haloTex, blending: AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false })); this.halo.visible = false; this.halo.renderOrder = 9; R.add(this.halo);
@@ -200,7 +200,7 @@ export class KitScene {
     const col = (x: MeshLambertMaterial | MeshPhongMaterial | MeshBasicMaterial, c: number) => x.color.set(c);
     col(m.plate, k.plate); col(m.brass, k.brass); col(m.wire, k.wire); col(m.short, T.look); col(m.knot, shade(k.wire, 0.72));
     col(m.cell, k.cell); col(m.band, k.band); col(m.metal, 0xc8ccd2); col(m.lever, k.lever); col(m.knob, k.knob); col(m.steel, k.steel);
-    col(m.rubber, k.rubber); col(m.sleeve, shade(k.plate, 0.82)); col(m.socket, 0x2b2b2b); col(m.base, shade(k.plate, 0.72)); col(m.you, T.you);
+    col(m.rubber, k.rubber); col(m.sleeve, shade(k.plate, 0.82)); col(m.socket, 0x2b2b2b); col(m.base, shade(k.plate, 0.72)); col(m.focus, T.focus);
     (m.short as MeshPhongMaterial).emissive.set(T.look); (m.short as MeshPhongMaterial).emissiveIntensity = 0.5;
     this.glassMat.color.set(k.glass);
     (this.beads.material as MeshBasicMaterial).color.set(k.current);

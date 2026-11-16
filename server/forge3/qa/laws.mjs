@@ -6,10 +6,13 @@
 //   1. Green means right, and only right. Nothing is green before she acts. After a miss with a try left, green is only a
 //      tick (a part she got right), never the colour of a value, a line, a body or a chip; a miss screen that holds green
 //      and no "look" anywhere tells her she is right when she is not. Selection is the focus colour (the painter draws a
-//      selected body and every canvas "you" in focus; uses of "you" are reported, not failed).
+//      selected body in focus). The action hue ("you", Design's patch 002) is the DOM action button's only: any canvas use
+//      of "you", in any state, is a break (the action hue on a figure). The art's four role colours are Design's on kagaz
+//      and raat (DESIGN_ROLES), and the action hue is outside the green family in every art.
 //   2. After a miss the screen never holds the key while a try remains: no text drawn after the miss holds a value the
 //      family keeps hidden (server/play/react.js hiddenOf: what a line may not say before she produces it) unless that
-//      value was on screen before she acted (a given) or is her own value.
+//      value was on screen before she acted (a given) or is her own value. In the science families (IDEA_WORDS, laws ruling
+//      2026-11-15) a text new after the miss never holds a word of the idea the goal's solved line states.
 //   3. A mix-up is named only by an act a guess rarely produces: on a goal decided by one pick among a few
 //      (FamilyLogic.oneDecision, chancePicks) the grade never keeps the misconception (gradeLevel reports it at chance
 //      weight as `chanceMis`). Reported for review (not failed): a mal-rule fired by a single input act on a goal not so
@@ -59,6 +62,69 @@ export const ALLOWED = {
   "kaal/order": [{ law: 1, re: /\(stroke, chip, text/, why: "a stone she landed right flies its year in green; a miss is drawn in look" }, { law: 2, re: /the key "\d+"/, why: "each stone's year is its own task line when it comes up (a given of that step); the key is where it lies" }],
   "stambh/tally": [{ law: 2, re: /the key "\d+"/, why: "the count over each group runs 1..5 (a row's count can be one of those digits) and then fades: nothing stays over the tally while a try remains (evening ruling 2, 2026-11-11; tests/r8-games-stambh-tally asserts the faded screen)" }],
 };
+/**
+ * Law 2 for the science families (laws ruling 2026-11-15, RULINGS-2026-11-15.md row 1): while a try remains, the screen and
+ * the line say what her act did, never what is true; what is true is said once, on the solved screen. Per (family/mode) and
+ * goal: the words of the idea that goal's solved line states (whole words or phrases, the three languages the view can
+ * show). Any text drawn after a miss while a try remains that was not on the first screen (a given) and holds one fails
+ * law 2. tests/r8-laws-idea-words.test.mjs holds that each solved line states its idea (it moved, it did not vanish).
+ */
+export const IDEA_WORDS = {
+  "aakash/chakkar": {
+    din: ["ghoomti", "ghoomta", "ghumaya", "earth spins", "earth turns", "earth turned", "spins and carries", "west to east", "pashchim se poorab", "घूमती", "घुमाया", "पश्चिम से पूरब"],
+    saal: ["ek chakkar", "poora chakkar", "sooraj ka chakkar", "saal ki chaal", "a spin", "one spin", "once round", "year's movement", "एक चक्कर", "पूरा चक्कर", "साल की चाल"],
+  },
+  "aakash/ritu": {
+    jhuk: ["dhuri", "jhuka", "jhuki", "axis", "leaning", "tilted", "same way", "ek hi taraf", "seedhi", "tirchhi", "straight", "slants", "धुरी", "झुका", "झुकी", "एक ही ओर", "सीधी", "तिरछी"],
+    dhoop: ["seedhi", "tirchhi", "straight", "slant", "slanting", "slants", "spread", "spreads", "faili", "सीधी", "तिरछी", "फैली"],
+  },
+  "aakash/grahan": {
+    chaaya: ["ek line", "seedhi line", "in line", "straight line", "lined up", "line mein", "एक रेखा", "सीधी रेखा", "रेखा में"],
+    kab: ["ek line", "seedhi line", "in line", "straight line", "lined up", "line mein", "upar ya neeche", "above or below", "एक रेखा", "सीधी रेखा", "रेखा में"],
+  },
+  "badlaav/aag": {
+    trikon: ["oxygen", "hawa rokta", "keeps the air out", "sends air", "hawa bhejta", "not heat", "garmi nahi", "ऑक्सीजन", "हवा रोकता", "हवा भेजता", "गर्मी नहीं"],
+    raakh: ["nasht nahi", "not destroyed", "nothing was destroyed", "gas ban", "as gases", "hawa mein gaya", "went into the air", "नष्ट नहीं", "गैस बन", "हवा में गया"],
+    jang: ["nayi cheez", "new substance", "paani chahiye", "paani aur hawa", "needs water", "water and air", "oxygen", "नई चीज़", "पानी चाहिए", "पानी और हवा", "ऑक्सीजन"],
+  },
+  "bhaap/hawa": {
+    naav: ["samundar se zameen", "zameen se samundar", "from the sea", "from the land", "sea to the land", "land to the sea", "समुद्र से ज़मीन", "ज़मीन से समुद्र"],
+    kamra: ["hawa upar", "hawa neeche", "rises", "rose", "sinks", "sank", "stays down", "uthti", "uthi", "baithti", "baithi", "हवा ऊपर", "हवा नीचे", "उठती", "उठी", "बैठती", "बैठी"],
+  },
+  "chhaano/sukha": Object.fromEntries(["farak", "kram"].map((g) => [g,
+    ["bhaar", "bhaari", "halka", "halki", "weight", "heavy", "heavier", "size", "paas hi", "fell near", "भार", "भारी", "हल्का", "हल्की", "साइज़", "पास ही"]])),
+  "jaanch/neela": { iodine: ["starch dikhata", "iodine shows starch", "cheeni nahi", "not sugar", "does not show sugar", "starch only", "only starch", "स्टार्च दिखाता", "चीनी नहीं"] },
+  "rang/pehchaan": {
+    litmus: ["laal karta", "neela karta", "turns blue litmus red", "turns red litmus blue", "लाल करता", "नीला करता"],
+    desi: ["base par", "on a base", "haldi laal", "gudhal hara", "basic tha", "was basic", "क्षार पर", "हल्दी लाल", "क्षारीय था"],
+  },
+  "rang/milao": {
+    boond: ["khatam kiya", "cancelled", "zyada base", "extra base", "too much", "patla", "diluted", "dilutes", "ख़त्म किया", "ज़्यादा क्षार", "पतला"],
+    ilaaj: ["khatam kiya", "cancelled", "neutralisation", "ख़त्म किया", "उदासीनीकरण"],
+  },
+  "yantra/roshni": {
+    parda: ["roshni jaane", "roshni jaaye", "roshni jaati", "light pass", "light passes", "lets", "transparent", "translucent", "opaque", "रोशनी जाने", "रोशनी जाए", "रोशनी जाती"],
+    roshan: ["roshni pade", "roshni padi", "roshni nahi padi", "light falls", "falls on", "sunlight", "dhoop", "रोशनी पड़े", "रोशनी पड़ी", "रोशनी नहीं पड़ी", "धूप"],
+    dhak: ["apni roshni", "own light", "light of its own", "luminous", "अपनी रोशनी"],
+  },
+};
+/** the idea words of a level's (family/mode, goal) */
+export function ideaWordsOf(level) {
+  const goal = level?.goal ?? level?.params?.goal;
+  return IDEA_WORDS[`${level?.family}/${level?.mode}`]?.[goal] ?? [];
+}
+const NOT_WORD = "[^\\p{L}\\p{M}\\p{N}]";
+const ideaRe = new Map();
+/** the first idea word a text holds as a whole word or phrase (case and Unicode form ignored), or null */
+export function ideaIn(text, words) {
+  const t = String(text ?? "").normalize("NFC");
+  for (const w of words) {
+    let re = ideaRe.get(w);
+    if (!re) { re = new RegExp(`(?:^|${NOT_WORD})${w.normalize("NFC").replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?:$|${NOT_WORD})`, "iu"); ideaRe.set(w, re); }
+    if (re.test(t)) return w;
+  }
+  return null;
+}
 const GREEN_BAD = new Set(["text", "chip", "circle", "stroke", "body", "color"]);
 /** her own values: every number and string field of every act she made */
 function ownValues(acts) {
@@ -83,9 +149,40 @@ async function mods() {
   const [{ ART, Painter, newAudit, LAW_ROLES }, { VIEWS }, { logicFor }, { hiddenOf }] = await Promise.all([
     import("../../../src/play/core/styles.ts"), import("../../../src/play/families/views.ts"), import("../../../src/play/families/index.ts"), import("../../play/react.js"),
   ]);
-  MOD = { ART, Painter, newAudit, VIEWS, logicFor, hiddenOf };
+  MOD = { ART, Painter, newAudit, VIEWS, logicFor, hiddenOf, LAW_ROLES };
   ROLE = LAW_ROLES;
   return MOD;
+}
+
+/**
+ * Design's patch 002 (docs/patches/to-games/002-tx-roles/README.md §3): the four role colours on kagaz and raat, the same
+ * values as src/styles/tx-tokens.css themes A and B and Studio's board. Raat's action is null: the README keeps lime there,
+ * and the rulings of 2026-11-11 (night) and 2026-11-15 put the action outside the green family in both looks, so raat's
+ * action is held only to that (actionOutsideGreen). The painter role of each meaning is LAW_ROLES; "action" is ArtTokens.you.
+ */
+export const DESIGN_ROLES = {
+  kagaz: { focus: "#3B47B0", answer: "#0B736A", mixup: "#8A5A00", action: "#EFA52E", actionInk: "#1C1A16" },
+  raat: { focus: "#8F9BFF", answer: "#4FE0A2", mixup: "#FFB54A", action: null, actionInk: "#0F1218" },
+};
+/** a hex colour's hue in degrees (0..360), or -1 for a grey */
+export function hueOf(hex) {
+  const n = parseInt(hex.slice(1), 16), r = (n >> 16) / 255, g = ((n >> 8) & 255) / 255, b = (n & 255) / 255, mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  if (!d) return -1;
+  return ((mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4) * 60 + 360) % 360;
+}
+/** the green family (yellow-green lime through teal): the hues a child reads as "right" */
+export const GREEN_HUES = [65, 175];
+export const actionOutsideGreen = (hex) => { const h = hueOf(hex); return h < 0 || h < GREEN_HUES[0] || h > GREEN_HUES[1]; };
+/** law 1 on the art's tokens: Design's role values on kagaz and raat, and the action hue outside green in every art */
+export function tokenBreaks(art) {
+  const out = [];
+  if (!art) return out;
+  const want = DESIGN_ROLES[art.id], role = { ...ROLE };
+  if (want) for (const k of ["focus", "answer", "mixup"]) if (String(art[role[k]]).toUpperCase() !== want[k]) out.push({ law: 1, state: "tokens", what: `${art.id} ${k} ${art[role[k]]} is not Design's ${want[k]}` });
+  if (want?.action && art.you.toUpperCase() !== want.action) out.push({ law: 1, state: "tokens", what: `${art.id} action ${art.you} is not Design's ${want.action}` });
+  if (want && art.youInk.toUpperCase() !== want.actionInk) out.push({ law: 1, state: "tokens", what: `${art.id} action ink ${art.youInk} is not Design's ${want.actionInk}` });
+  if (!actionOutsideGreen(art.you)) out.push({ law: 1, state: "tokens", what: `${art.id} action ${art.you} is in the green family (hue ${Math.round(hueOf(art.you))})` });
+  return out;
 }
 
 /** Mount the family's view headless on `level`; drive acts through the law; draw it at a few ages after each act. */
@@ -159,6 +256,7 @@ export async function lawsFor(level, opts = {}) {
   if (!logic) return { breaks: [{ law: 0, state: "mount", what: "no logic" }], review, checked: 0 };
   let hidden = [];
   try { hidden = (M.hiddenOf(level) ?? []).filter((v) => v !== null && v !== undefined && v !== ""); } catch { hidden = []; }
+  const ideas = ideaWordsOf(level);
   const chanceFor = (mal) => !!level.goal && (!!logic.oneDecision?.includes(level.goal) || !!logic.chancePicks?.includes(level.goal) || !!logic.chancePicks?.includes(`${level.goal}:${mal}`));
   let checked = 0;
   // ── the first screen: nothing is green before she acts
@@ -170,6 +268,7 @@ export async function lawsFor(level, opts = {}) {
   const given = first.texts;
   for (const u of first.uses) if (u.role === ROLE.answer && u.op !== "particle") { breaks.push({ law: 1, state: "initial", what: `green before any act (${u.op})` }); break; }
   for (const u of first.uses) if (u.role === "you") uses.add(u.op);
+  breaks.push(...tokenBreaks(M.ART[opts.art ?? "kagaz"]));
   // ── each mal-rule's acts, step by step: the screen after the first miss while a try remains
   const mals = Object.keys(level.mal ?? {}).filter((id) => (logic.malRules ?? []).includes(id));
   for (const mal of mals) {
@@ -205,6 +304,12 @@ export async function lawsFor(level, opts = {}) {
       if (holds(given, v) || mine.has(String(v).toLowerCase()) || holds(rightParts, v)) continue;
       if (holds(s.texts, v)) { breaks.push({ law: 2, state: `mal:${mal}`, what: `the key "${v}" is on screen after a miss` }); break; }
     }
+    // law 2, the science families: a miss line says what her act did, never the idea (that is the solved line's)
+    if (ideas.length) for (const t of s.texts) {
+      if (given.includes(t)) continue;
+      const w = ideaIn(t, ideas);
+      if (w) { breaks.push({ law: 2, state: `mal:${mal}`, what: `a miss line states the idea ("${w}"): ${JSON.stringify(t).slice(0, 90)}` }); break; }
+    }
     // law 3: a mix-up the grade names was made by an act a guess rarely produces (never one pick among five or fewer)
     const g = logic.grade(level, m.ctl.acts);
     const named = (g.evidence ?? []).find((e) => e.misconceptionId);
@@ -226,7 +331,10 @@ export async function lawsFor(level, opts = {}) {
     const s = m.look();
     checked++;
     if (s.err) breaks.push({ law: 0, state: "solved", what: `view threw: ${s.err}` });
+    for (const u of s.uses) if (u.role === "you") uses.add(u.op);
   }
+  // the action hue is the DOM action button's only (patch 002): a canvas "you" in any state is a figure in the action hue
+  if (uses.size) breaks.push({ law: 1, state: "any", what: `the action hue ("you") on a figure (${[...uses].join(", ")}): draw her pick in focus` });
   const allow = ALLOWED[`${level.family}/${level.mode}`] ?? [];
   const allowed = breaks.filter((b) => allow.some((a) => a.law === b.law && a.re.test(b.what)));
   return { breaks: breaks.filter((b) => !allowed.includes(b)), allowed, review, checked, youOps: [...uses] };
@@ -261,7 +369,7 @@ export async function decisiveActs(level, opts = {}) {
  * the level the Director's focus on each mapped misconception serves), and the law result of each level.
  * → [{ key, goal, topicId, levelId, breaks, review, checked, youOps }]
  */
-export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } = {}) {
+export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1, lang = "hinglish" } = {}) {
   const { coverage } = await import("../../play/levels.js");
   const { coverageLevels } = await import("./cert-levels.mjs");
   const seen = new Map(), out = [];
@@ -272,7 +380,7 @@ export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } =
     if ((seen.get(gk) ?? 0) >= perGoal) continue;
     seen.set(gk, (seen.get(gk) ?? 0) + 1);
     for (const level of await coverageLevels(e, seeds, { focus: true })) {
-      const r = await lawsFor(level, { young: e.classLevel <= 5 });
+      const r = await lawsFor(level, { young: e.classLevel <= 5, lang });
       out.push({ key, goal: level.goal ?? e.goal, topicId: e.topicId, levelId: level.levelId, ...r });
     }
   }
@@ -281,7 +389,7 @@ export async function lawsOverCoverage({ only = null, seeds = 2, perGoal = 1 } =
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const argv = process.argv.slice(2), arg = (k, d) => { const i = argv.indexOf(`--${k}`); return i >= 0 ? argv[i + 1] : d; };
-  const rows = await lawsOverCoverage({ only: arg("only", null), seeds: Number(arg("seeds", 2)), perGoal: Number(arg("per-goal", 1)) });
+  const rows = await lawsOverCoverage({ only: arg("only", null), seeds: Number(arg("seeds", 2)), perGoal: Number(arg("per-goal", 1)), lang: arg("lang", "hinglish") });
   if (argv.includes("--json")) console.log(JSON.stringify(rows, null, 1));
   else for (const r of rows) console.log(`${r.key} ${r.goal} ${r.levelId}: ${r.breaks.length ? r.breaks.map((b) => `L${b.law} ${b.state} ${b.what}`).join(" | ") : "ok"}${r.review.length ? ` · review: ${r.review.map((b) => `${b.state} ${b.what}`).join(" | ")}` : ""}${r.youOps.length ? ` · you→focus: ${r.youOps.join(",")}` : ""}`);
   process.exit(0);

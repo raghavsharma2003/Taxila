@@ -162,7 +162,7 @@ export const makePendulumView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     P.circle(c, px, py, 4, { role: "ink", fill: true });
     P.circle(c, bx, by, bobR(mass), { role: "q1", fill: true, width: 2 });
     P.text(c, `${mass} g`, bx + bobR(mass) + 24, by, { size: 14, role: "ink2", font: "mono" });
-    if (drag || dragLen !== null) P.chip(c, `${len} cm`, bx, by - bobR(mass) - 22, { size: 16, role: "you" });
+    if (drag || dragLen !== null) P.chip(c, `${len} cm`, bx, by - bobR(mass) - 22, { size: 16, role: "focus" });
     if (match && !s.done) api.target("bob", bx - 26, by - 26, 52, 52);
     if (match && revealed() && outcome === "solved") P.tick(c, bx, by - bobR(mass) - 22, 22, clamp((api.t - revealAt) / 0.3, 0, 1));
   }

@@ -6797,3 +6797,36 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-dc63a6f` (2026-11-15): Released dc63a6f with scripts/release.mjs: web taxila-web--sdc63a6f-7nvq (was taxila-web--s2de94c3-bslc), worker + canary/nightly jobs on taxila-worker:dc63a6f (was 2de94c3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs dc63a6f --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-2fcc175` (2026-11-16): Released 2fcc175 with scripts/release.mjs: web taxila-web--s2fcc175-03ep (was taxila-web--sdc63a6f-7nvq), worker + canary/nightly jobs on taxila-worker:2fcc175 (was dc63a6f); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2fcc175 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-0d5baa1` (2026-11-16): Released 0d5baa1 with scripts/release.mjs: web taxila-web--s0d5baa1-uayv (was taxila-web--s2fcc175-03ep), worker + canary/nightly jobs on taxila-worker:0d5baa1 (was 2fcc175); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 0d5baa1 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-play-action-hue-2026-11-16` (2026-11-16): The action hue against the meaning roles (WCAG contrast; deuteranopia distance by Studio's tests/theme-palette.test.mjs measure, Viénot 1999 in linear RGB, floor 0.15), n = 4 arts, computed 2026-11-16. Magenta #FF6FD8 (hue 316): chalk on ground 6.02, vs focus 0.336 / answer 0.347 / mix-up 0.607; blueprint 5.50, 0.514 / 0.339 / 0.687; raat 7.93, 0.357 / 0.356 / 0.682; its ink #0F1218 on it 7.60. Kagaz marigold #EFA52E (Design's): on paper 1.74 (a filled button; its ink #1C1A16 on it 8.35), vs focus 0.775 / answer 0.576 / mix-up 0.526. Rejected for the dark arts: marigold #EFA52E and orange #FF9A3D (mix-up distance 0.13 to 0.15), coral #FF8A7A (chalk mix-up 0.176), pink #FF8FA3 (raat answer 0.093). 3D focus on the worlds: yantra lab tiles #F4F6F7 vs kagaz focus 7.14 (old olive 4.58), rooftop pavers 2.69 (old lime 2.46), bench mat #2F6B55 vs blueprint focus 4.46 (lime 5.35); khand grass 2.88 with kagaz focus (raat focus 1.06, old lime 2.29).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-29ab953` (2026-11-16): Released 29ab953 with scripts/release.mjs: web taxila-web--s29ab953-fx4c (was taxila-web--s0d5baa1-uayv), worker + canary/nightly jobs on taxila-worker:29ab953 (was 0d5baa1); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 29ab953 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-tally-gate2-2026-11-16` (2026-11-16): stambh/tally gate 2 proof, computed in tests/r8-games-stambh-tally.test.mjs (method: the tally's 8 ways of reading x counting slips and pad typing slips (keys touching side or corner on the 6-column pad, swap, a key lost, a key doubled), share of one kind's slips landing on the mix-up's number; blind guess 1 in 100 per box). read: 32 servable rows (16-49 less 18, 24), one level up to 1 in 4 (17, 19, 23, 25, 29, 31, 37, 43, 49); 350 pairs with both parts differing, worst 17 then 23 with the loose lines dropped 1/4 x 1/4 = 1 in 16; blind pair 1 in 10,000. keep: n = 269 generated levels (12 seeds x 3 fades), fewest slips 3 (189), 4 (72), 5 (8); blind 'counted' <= 1 in 10,000, 'five' <= 1 in 32,768; one slip in every row, worst way of reading, <= 1 in 16.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-6429dc7` (2026-11-16): Released 6429dc7 with scripts/release.mjs: web taxila-web--s6429dc7-kbo7 (was taxila-web--s29ab953-fx4c), worker + canary/nightly jobs on taxila-worker:6429dc7 (was 29ab953); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 6429dc7 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-name-gate2-2026-11-16` (2026-11-16): kon/name gate 2 proof, computed in tests/r8-games-kon-name-gate2.test.mjs over n = 621 say + 1,280 find generated levels (fades 1-3, first and later fade-1 levels, 8 say / 40 find seeds). Method: every three-tap name (64, and the 24 with three different letters) through konLogic.apply; slips = one tap on any other letter (18 per level) and one neighbouring swap; find blind = 1 of 5 arcs, blind rules = fixed arc / size rank / a corner; find slip = taps 8-32 board units past the key's touch disc in 72 directions, through arcHit. Results: say 1 in 6 (distinct) / 1 in 16 (repeats) on every level, letter slip 0, swap 1 in 1; find 1 in 5 on 672 levels with a mix-up arc, 0 on 608 (all 320 wide keys among them); worst blind rule 0.180; slip share on the mix-up arc worst 0.181, mean 0.014.
+- `ms-r8-place-gate2-2026-11-16` (2026-11-16): kon/place gate 2 proof, computed in tests/r8-games-kon-place-gate2.test.mjs over n = 178 measure + 179 draw generated levels (fades 1-3, 8 seeds). Method: bands checked against the law's predicates (72 directions in/out, turn +-3 in, +-4 out); blind = admitted turns x disc area / (board area x 360), an upper bound; slips = nudge (1 unit, 4 ways) and turn (1 degree) from 3,024 placements on the tolerance edge per level; drop curve = the right turn, centre evenly over a disc of radius r round O, 0.25-unit grid; typing = pad keys touching (6 columns), swap, missed, doubled, as the pad takes them. Results: vertex-off blind 1 in 8,905 (board) / 1 in 2,835 (near O), slips 0, drop worst 1 in 10.8 (r = 30; 1 in 9.3 at the old 11). centre-on-arm blind worst 1 in 390 (near O, measure), slips 0, drop worst 1 in 54. wrong-scale blind 1 in 36; typing worst 1 in 14 (key 155), 1 in 16 (110), else 0; 140 was 1 in 9 (refused). join-wrong-end 1 in 2 per level, 1 in 4 a pair, 1 in 16 on four.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-a50d690` (2026-11-16): Released a50d690 with scripts/release.mjs: web taxila-web--sa50d690-1tpz (was taxila-web--s6429dc7-kbo7), worker + canary/nightly jobs on taxila-worker:a50d690 (was 6429dc7); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs a50d690 --rollback.

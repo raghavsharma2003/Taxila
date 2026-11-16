@@ -2,6 +2,13 @@
 // them. The learning objects (the child's blocks, targets, the glow on a mismatch, the fence) take their hues from the
 // play art tokens (src/play/core/styles.ts ART) so every Taxila game says "your move", "goal met" and "look again" in
 // the same colours; the scenery here is kept muted and never sits on a learning object.
+/**
+ * Law 1 (green means right; her pick is the focus colour, as in the 2D painter): her cursor, her drag box and the flash
+ * where her blocks land sit on the daylit world (grass, stone, snow, paving), not on the chrome, so they read the focus
+ * token of the paper art, whose deep indigo stands off those grounds (#3B47B0: grass 2.88, stone 2.93, paving 3.71, snow
+ * 6.93 : 1; the night art's #8F9BFF is 1.06 on grass). One change of that ART token moves the 2D painter and this world.
+ */
+export const WORLD_FOCUS_ART = "kagaz" as const;
 export interface SkyPalette { top: number; horizon: number; fog: number; sun: number; hemiSky: number; hemiGround: number }
 export const SKY: Record<"day" | "dusk" | "night", SkyPalette> = {
   day: { top: 0x4f8fd6, horizon: 0xcfe6f2, fog: 0xcfe6f2, sun: 0xfff3dc, hemiSky: 0xd9ecff, hemiGround: 0x6b7a4a },
