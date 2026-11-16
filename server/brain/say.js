@@ -2680,8 +2680,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     }
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
-    else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
-    else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
+    // (J2: one joint per seam — a park or an aside line already leads into the card; backTo is not stacked on it)
+    else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
+    else if (card && !lead && !body.length && !aside.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
@@ -2793,8 +2794,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
-      if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
-        const back = !(herPrev && prevHas(card)) && cameBack ? jointsAt(kit, "backTo", lang, state) : null;
+      if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
+        const back = !(herPrev && prevHas(card)) && cameBack && !aside.length ? jointsAt(kit, "backTo", lang, state) : null;
         body = [freshOf(back ?? FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; if (back) guard.backTo = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
