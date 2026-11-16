@@ -2,6 +2,24 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 07:20 · `7cd956e1` (A and B)
+
+**Done (gated: test:all 7245 pass; the only failures are the two worktree-only browser suites):**
+- A: the reply to the child's answer after her AI-line question takes the phrase form of the same shape ("Achha, toh tumhara favourite
+  hai Virat.").
+- B: a bridge changes no board; the next unit's board goes up with its first part. r7-brain-v69 N2 changed to the rule.
+- Counts: boardChanged 292 → 303, boardKept 337 → 326 (the switch moves from the bridge to the next unit's first part, often a turn
+  later); turnsOver60Words 64 → 65.
+
+With this, Brain's items of dc-r8-director22 are in: R, T (Brain's parts), J2, W, H, K, A, B, and the harness (intent on every row,
+the steady child answers the teach-back right in two topics and wrong in two). Learning's parts (T2 lead-ins, T5 per-skill covered,
+the clause-8 read) are theirs.
+
+**Doing next:** `repeatedAuthored` stops exempting cards (pending, 5 now); then compile step 3 resumes, column by column (repeat
+first), as the decision says it continues after R and J2.
+
+**Questions for main:** none.
+
 ## 2026-11-16 06:40 · `a8f8c7dc` (K)
 
 **Done (gated: test:all 7244 pass; the only failures are the two worktree-only browser suites):** K — a key is said once: the why's
