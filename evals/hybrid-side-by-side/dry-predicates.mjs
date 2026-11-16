@@ -672,14 +672,21 @@ export const ORDER_LAWS = {
   /** J1 (main on director21: backTo fired 0 times in 33 returns to an earlier card): a card asked before, not on her last turn, comes
    *  back with the script's backTo joint — never bare, never code's "Phir se dekho:". */
   backToJoint(L, r, i, ctx) {
-    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40)) || low(ctx.prevT.text).includes(low(r.card).slice(0, 40))) return null;
-    // (the card re-asked by its question alone, S1: what comes before is the turn but its last sentence)
+    // (dc-r8-director22 J2, both directions: backTo is said when, and only when, a card said before comes back after another unit — the unit
+    // her last turn ended on (held.unit) is not the one this turn's card is held on)
+    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40))) return null;
+    const heads = ctx.jointHeads?.backTo ?? [];
+    if (!heads.some(Boolean)) return null;
     const at = norm(r.text).toLowerCase().lastIndexOf(low(r.card).slice(0, 30));
     const before = (at >= 0 ? norm(r.text).slice(0, at) : sentencesOf(r.text).slice(0, -1).join(" ")).trim();
-    const heads = ctx.jointHeads?.backTo ?? [];
-    if (!heads.some(Boolean) || heads.some((h) => h && low(before).includes(h))) return null;
-    return !before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)
-      ? `a card back from earlier ${before ? `with "${before}"` : "bare"}, no backTo` : null;
+    const said = heads.some((h) => h && low(before).includes(h));
+    const prevU = ctx.prevT.held?.unit ?? null, curU = r.held?.unit ?? null;
+    const inPrev = low(ctx.prevT.text).includes(low(r.card).slice(0, 40));
+    const returned = !!prevU && !!curU && prevU !== curU && !inPrev;
+    if (said && !returned) return `backTo with no return (last turn on ${prevU ?? "no unit"}, card on ${curU ?? "?"})`;
+    if (!said && returned && (!before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)))
+      return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
+    return null;
   },
   /** Main on director21 (c4 steering 66, c5-t02 offtopic 72): the screen's controls are never named aloud ("Buttons: aage badhein"). */
   uiWords(L, r) {

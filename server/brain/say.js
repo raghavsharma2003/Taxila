@@ -7,7 +7,7 @@ import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
 import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms } from "./asideReplies.js";
 import { responseShape } from "../director/requestTable.js";
-import { cardPageRefused } from "./propose.js";
+import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
@@ -2459,6 +2459,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const herPrev = norm([...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
     // (v6.10: the card was posed on an earlier turn of this lesson — state.js posedAt — so this pose is a re-pose)
     const posedBefore = !!ui?.ask?.itemId && state.posedAt?.[ui.ask.itemId] != null && state.posedAt[ui.ask.itemId] < (state.turn ?? 0);
+    // (dc-r8-director22 J2: backTo is said when, and only when, the card comes back after another unit came between — the board unit up
+    // on her last turn is not the card's own; a hint, a clarify or a break on the same card is no return)
+    const cardUnit = unitOf(state.lastMove?.cardBeat?.beatId ? state.lastMove.cardBeat : state.lastMove?.scriptBeat);
+    const cameBack = posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit;
     const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
@@ -2675,7 +2679,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     }
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
-    else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && posedBefore && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
+    else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
     else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
@@ -2789,7 +2793,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
       if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
-        const back = !(herPrev && prevHas(card)) && posedBefore ? jointsAt(kit, "backTo", lang, state) : null;
+        const back = !(herPrev && prevHas(card)) && cameBack ? jointsAt(kit, "backTo", lang, state) : null;
         body = [freshOf(back ?? FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; if (back) guard.backTo = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
