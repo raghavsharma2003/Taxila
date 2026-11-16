@@ -244,7 +244,10 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
   const pickRow = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId) ?? null;
   const pick = pickRow?.chanceMis ?? null;
-  if (pick) {
+  // (dc-r8-gate2-shadow S3: a sighting on a level where a habit gives the mix-up's act is not remembered; the next level
+  // still aims at the mix-up)
+  if (pick && !sightingCounts(level, pick, s)) { if (!seen) s2.nextFocus = pick; }
+  else if (pick) {
     // gate 2: a sighting no single ordinary slip could have made is kept as firm (the family's firmSighting)
     const firm = firmOf(level, pick);
     // the computed default's k on this level rides with the sighting (a family spec needs none: namingSpec)
@@ -431,6 +434,15 @@ function steerOfLevel(level, kit) {
   const rule = ruleOf(level, kit);
   try { const v = rule ? logicFor(level.family, level.mode)?.steerOf?.(level, rule) : null; return v && typeof v === "object" ? v : null; } catch { return null; }
 }
+/**
+ * gate 2 (dc-r8-gate2-shadow S3): may this level's sighting of the pick count at all (FamilyLogic.sightingCounts, with the
+ * session's served levels: `s.recent`, the last the level before this one)? A family that says no for a level where some
+ * habit that is not the mix-up gives its act: the sighting is neither remembered (afterLevelBody) nor counted (nameOnRepeat).
+ */
+export function sightingCounts(level, kit, s) {
+  const rule = ruleOf(level, kit);
+  try { const f = rule ? logicFor(level.family, level.mode)?.sightingCounts : null; return !f || f(level, rule, { recent: Array.isArray(s?.recent) ? s.recent : [] }) !== false; } catch { return true; }
+}
 /** gate 2: is this level's sighting of the pick firm (no single ordinary slip makes it: FamilyLogic.firmSighting)? */
 function firmOf(level, kit) {
   const rule = ruleOf(level, kit);
@@ -476,6 +488,8 @@ function nameOnRepeatRows(rows, s, level) {
   const named = (kit, act) => {
     const mine = prior.filter((p) => p?.mis === kit);
     if (!mine.length) return false;
+    // dc-r8-gate2-shadow S3: a sighting on a level where a habit that is not the mix-up gives its act does not count
+    if (!sightingCounts(level, kit, s)) return false;
     // H1: this sighting counts only when what she did differs from every earlier sighting's act, and of the earlier ones
     // only those that differed from every one before them count
     if (act !== undefined && act !== null && mine.some((p) => sameSighting(act, p?.act))) return false;

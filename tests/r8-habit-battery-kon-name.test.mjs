@@ -17,7 +17,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, reportedRows, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
@@ -61,7 +61,7 @@ test("the generator memo changes nothing (the same served sessions with and with
 test("children who hold the mix-up: listed with why, and how often each is named (fewer than half is reported, not failed)", (t) => {
   const H = holders(RES);
   for (const h of H) t.diagnostic(`${h.goal} · ${h.label}: named ${h.all.toFixed(3)} (${h.half}); holds it because ${h.why}`);
-  assert.deepEqual(H.map((h) => `${h.goal}:${h.child}`).sort(), ["find:first-letter", "find:last-letter", "say:v-any", "say:v-first", "say:v-last"]);
+  assert.deepEqual(H.map((h) => `${h.goal}:${h.child}`).sort(), ["find:first-letter", "find:last-letter", "say:abc-again", "say:v-any", "say:v-first", "say:v-last"]);
   // the positive control
   assert.ok(rowOf(RES, "say", "v-first").all[KIT] >= 0.9);
   assert.ok(rowOf(RES, "find", "first-letter").all[KIT] > 0);
@@ -77,6 +77,21 @@ test("negative control: under the rules from before H3 the judge's failure shows
   }
   // and the children the tables model are under the line, old rules and new
   for (const R of [OLD, RES]) for (const g of ["say", "find"]) assert.ok(rowOf(R, g, "blind").worstFade[KIT].share < LINE, `${g} blind`);
+});
+
+test("dc-r8-gate2-shadow S3: the second-reading judge's children are in the battery (after a miss she re-presses, repeats the slip, guesses or reshuffles; find's corners); every one is under the line but the ones marked reported, whose figures are printed (REPORTED FIGURES, not assertions: shadow goes on anyway, and real sittings measure them)", (t) => {
+  const ids = (g) => new Set(RES.goals[g].rows.map((r) => r.child));
+  for (const id of ["swap+repress", "miss-last+repress", "slip-random+repress", "blind+repress", "order-second+repress", "swap-2of4+repress", "swap-1of4+repress", "alternate+repress", "last+repress",
+    "swap+repeat", "swap+guess", "swap+reshuffle", "slip-random+guess", "slip-third", "read-again:0", "abc-again"]) assert.ok(ids("say").has(id), id);
+  for (const id of ["corner:larger", "corner:smaller", "corner:right", "corner:left", "corner:upper", "corner:lower", "corner:random", "corner:turn", "last"]) assert.ok(ids("find").has(id), id);
+  // the re-press children: "Yahi naam" waits after a miss now, so a second press is no check and confirms nothing; each is
+  // at most what the same child is without it
+  for (const b of ["swap", "miss-last", "alternate", "order-second", "last"]) {
+    const a = rowOf(RES, "say", `${b}+repress`).worstFade[KIT].share;
+    assert.ok(a < LINE, `${b}, re-pressed: ${a}`);
+  }
+  // the ones the battery cannot bring under the line: printed, listed in the packet
+  for (const x of reportedRows(RES)) t.diagnostic(`reported: ${x.goal} · ${x.label} (${x.rule}): named ${x.all.toFixed(3)}, worst fade ${x.worstFade.share.toFixed(3)} (fade ${x.worstFade.at}), worst door sequence ${x.worstDoor.share.toFixed(3)} (${x.worstDoor.at}); ${x.why}`);
 });
 
 test("say: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {

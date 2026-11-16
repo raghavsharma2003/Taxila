@@ -508,6 +508,29 @@ export function oneSlipFromMixup(n: number): boolean {
   });
 }
 
+/**
+ * Gate 2, read: the reading habits (dc-r8-gate2-shadow S3), the habit battery's "same every level" readers
+ * (tests/_habit-children.mjs, which checks its own list against this one): each way of reading (WAYS, the right one
+ * included) with each counting slip made on every level (none; a bundle skipped or counted twice; a loose line missed or
+ * counted twice; for a way that counts a bundle's strokes, a stroke missed or counted twice), but the right reading with no
+ * slip. A habit's number on a row of n: `of(n)`.
+ */
+export const READ_HABITS: readonly { id: string; of: (n: number) => number }[] = WAYS.flatMap((w, wi) => {
+  const slips: [string, (b: number, s: number) => number][] = [
+    ["none", (b, s) => w.of(b, s)], ["a bundle skipped", (b, s) => w.of(Math.max(0, b - 1), s)], ["a bundle twice", (b, s) => w.of(b + 1, s)],
+    ["a loose line missed", (b, s) => w.of(b, Math.max(0, s - 1))], ["a loose line twice", (b, s) => w.of(b, s + 1)],
+    ...(w.strokes ? ([["a stroke missed", (b, s) => w.of(b, s) - 1], ["a stroke twice", (b, s) => w.of(b, s) + 1]] as [string, (b: number, s: number) => number][]) : []),
+  ];
+  return slips.filter(([sn]) => wi !== 0 || sn !== "none").map(([sn, f]) => ({ id: `way ${wi}/${sn}`, of: (n: number) => f(Math.floor(n / 5), n % 5) }));
+});
+/**
+ * Gate 2, read (dc-r8-gate2-shadow S3, the discriminating level for numbers): a row of n tells the mix-up from every reading
+ * habit when no habit types the mix-up's number there (four(n)). On any other row (25, 31, 37, 43, 49: "bundles only, a
+ * bundle skipped" types 4 × bundles there too; 26 … 29 "a bundle skipped"; fade 1's 16, 17 and 19) a sighting does not
+ * count (sightingCounts).
+ */
+export const discriminatingRead = (n: number): boolean => { const m = four(n); return !READ_HABITS.some((h) => Math.max(0, Math.min(99, h.of(n))) === m); };
+
 export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
   family: "stambh", modes: ["tally"], malRules: TALLY_MAL,
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
@@ -520,6 +543,9 @@ export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
   // worst rows is named 13 in 256 at worst (the packet's table)
   chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 }, "keep:tally-four": { sightings: 2 } },
   firmSighting: (level: PlayLevel<TallyParams>, rule: string) => rule === "tally-four" && level.params.goal === "read" && !oneSlipFromMixup(level.params.counts[0]),
+  // dc-r8-gate2-shadow S3: read's sighting counts only on a row where no reading habit types the mix-up's number
+  // (discriminatingRead); keep is not a typed number (its rules: H4 and its own level law)
+  sightingCounts: (level: PlayLevel<TallyParams>, rule: string) => !HABIT_RULES.on || rule !== "tally-four" || level.params.goal !== "read" || discriminatingRead(level.params.counts[0]),
   // gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. read: the number she typed, so two rows
   // on which the mix-up gives the same number (19 and 20 both give 16; 34 and 35 both 28) are one sighting, and "16 every
   // time" or "what I typed last time" is seen once. keep's "five" (H4): her totals, so two levels count only with other totals

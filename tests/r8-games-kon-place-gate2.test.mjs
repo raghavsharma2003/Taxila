@@ -22,7 +22,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, PLACE_TILTS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, baseDir, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placeLevelOf, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
+import { COPY_NEAR, BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, PLACE_TILTS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, baseDir, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placeLevelOf, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
 import { env } from "../src/play/core/pick.ts";
 import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, repeatSpec, surfaceOf, surfacesDiffer, CHANCE_MEMORY, NAMING_LEVELS } from "../server/play/levels.js";
 import { atLeast, fromOne, oneIn } from "./_session-figure.mjs";
@@ -406,6 +406,31 @@ test("gate 2, per session: named from one level, vertex-off, wrong-scale (measur
 
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
+
+test("dc-r8-gate2-shadow S3, draw: a wrong-scale sighting does not count where the other scale's mark is within 2° of the level just played's right mark (the judge's pair: 120 opening anticlockwise, then 120 opening clockwise); it is neither remembered nor counted", () => {
+  const draws = LEVELS.draw, entry = coverage().entries.find((e) => e.family === "kon" && e.mode === "place" && e.goal === "draw"), WS = entry.misMap["wrong-scale"];
+  const sig = (p) => `place:draw:${p.theta}:0${p.mirror ? "m" : ""}`;
+  const right = (p) => (p.mirror ? 180 - p.theta : p.theta), other = (p) => 180 - right(p);
+  let near = 0, far = 0;
+  for (const a of draws.slice(0, 60)) for (const b of draws.slice(0, 60)) {
+    const counts = konLogic.sightingCounts(b, "wrong-scale", { recent: [sig(a.params)] });
+    assert.equal(counts, Math.abs(other(b.params) - right(a.params)) > COPY_NEAR, `${sig(a.params)} then ${sig(b.params)}`);
+    counts ? far++ : near++;
+    // measure, another rule, or a measure level just played: it counts
+    assert.equal(konLogic.sightingCounts(b, "wrong-scale", { recent: [`place:measure:${a.params.theta}:0${a.params.mirror ? "m" : ""}`] }), true);
+    assert.equal(konLogic.sightingCounts(b, "vertex-off", { recent: [sig(a.params)] }), true);
+  }
+  assert.ok(near > 0 && far > near, `${near} near, ${far} apart`);
+  // the judge's pair, as the server holds it: the second sighting is not remembered
+  const lv = draws.find((l) => l.params.mirror && l.params.theta === 120) ?? draws.find((l) => l.params.mirror);
+  const prev = { theta: other(lv.params), mirror: false };
+  assert.equal(other(lv.params), right(prev));
+  const g = { evidence: [{ outcome: "incorrect", chanceMis: WS, weight: CHANCE_WEIGHT, actSeq: 1 }] };
+  const lvK = { ...lv, mal: entry.misMap };
+  assert.equal(afterLevelBody(sessionOf(entry, { recent: [sig(prev)] }), { grade: g, level: lvK }).chance, undefined);
+  assert.equal(afterLevelBody(sessionOf(entry, { recent: [] }), { grade: g, level: lvK }).chance.length, 1);
+  assert.equal(nameOnRepeat(g.evidence, sessionOf(entry, { recent: [sig(prev)], chance: [{ mis: WS, surface: ["x", "y"], act: "r:1" }] }), lvK)[0].misconceptionId, undefined);
+});
 
 test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): one join press reaches nothing (rows, trail, facts, facts row, the moment); the fourth sighting on four sizes with both orders names it; as served (naming off) nothing", () => {
   const entry = PE("draw"), KIT = entry.misMap["join-wrong-end"];

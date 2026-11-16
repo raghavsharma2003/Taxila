@@ -219,8 +219,9 @@ export async function runBattery(modeName, opts = {}) {
       if (only && !only(child)) continue;
       const run = () => childRow({ entry, goal, kits, child, n: child.random ? randomSeeds : child.constant ? constSeeds : seeds, fades, pls: child.constant && constPls ? constPls : pls, doors, cellIds });
       rows.push(withRules(legacy, () => (genMemo ? withGenMemo(run) : run())));
-      // (the memos are pure; a sweep with `cellIds` meets far more bodies, so they are dropped when they grow large)
-      if (cellIds && memoSize() > MEMO_CAP) clearMemo();
+      // (the memos are pure; a sweep with `cellIds`, or the full sweep with the S3 children's wobbles, meets far more bodies
+      // and acts, so they are dropped when they grow large: kon/place's full sweep ran out of heap without this)
+      if (memoSize() > MEMO_CAP) clearMemo();
       await new Promise((r) => setImmediate(r));
     }
     out.goals[goal] = { kits, rows };
@@ -255,7 +256,23 @@ function childRow({ entry, goal, kits, child, n, fades, pls, doors, cellIds = fa
     return [kit, { cells: cells.map(([key, r]) => `${key} (${(r.hit[kit] ?? 0)}/${r.n})`), served: cells.reduce((a, [, r]) => a + r.n, 0) / sessions }];
   }));
   const all = Object.fromEntries(Object.values(kits).map((kit) => [kit, (tot.get("all").hit[kit] ?? 0) / tot.get("all").n]));
-  return { child: child.id, label: child.label, holds: child.holds ?? null, random: !!child.random, constant: !!child.constant, sessions, all, worstFade: worst(byFade), worstDoor: worst(byDoor), worstCell: worst(byCell), listed };
+  return { child: child.id, label: child.label, holds: child.holds ?? null, random: !!child.random, constant: !!child.constant, reported: child.reported ?? null, sessions, all, worstFade: worst(byFade), worstDoor: worst(byDoor), worstCell: worst(byCell), listed };
+}
+/**
+ * dc-r8-gate2-shadow S3: the children the battery cannot bring under the line. Each is marked `reported` (why, in her
+ * definition), left out of overLine and worstNonHolder, and printed with her figure (each PACKET.md lists her): shadow goes
+ * on anyway, and she is what real sittings measure. → [{ goal, child, label, rule, why, all, worstFade, worstDoor }]
+ */
+export function reportedRows(res) {
+  const out = [];
+  for (const [goal, G] of Object.entries(res.goals)) for (const r of G.rows) {
+    if (!r.reported) continue;
+    for (const [rule, kit] of Object.entries(G.kits)) {
+      if ((r.holds && r.holds[rule]) || (r.worstFade[kit].share === 0 && r.worstDoor[kit].share === 0)) continue;
+      out.push({ goal, child: r.child, label: r.label, rule, why: r.reported, all: r.all[kit], worstFade: r.worstFade[kit], worstDoor: r.worstDoor[kit] });
+    }
+  }
+  return out;
 }
 
 /** the rule name of a kit id in this goal's map */
@@ -274,7 +291,7 @@ export function batteryTable(res) {
       for (const [rule, kit] of Object.entries(G.kits)) {
         const holds = r.holds && r.holds[rule];
         if (!holds && r.worstFade[kit].share === 0) continue;
-        lines.push(`| ${goal} | ${r.label}${r.random ? " (random)" : ""} | ${holds ? "**holds**" : ""} | ${rule} | ${pct(r.all[kit])} (n ${r.sessions}) | ${pct(r.worstFade[kit].share)} (fade ${r.worstFade[kit].at}) | ${wd(r.worstDoor[kit])} | ${pct(r.worstCell[kit].share)} (${r.worstCell[kit].at}, n ${r.worstCell[kit].n}) |`);
+        lines.push(`| ${goal} | ${r.label}${r.random ? " (random)" : ""}${r.reported ? " (**reported**, not asserted)" : ""} | ${holds ? "**holds**" : ""} | ${rule} | ${pct(r.all[kit])} (n ${r.sessions}) | ${pct(r.worstFade[kit].share)} (fade ${r.worstFade[kit].at}) | ${wd(r.worstDoor[kit])} | ${pct(r.worstCell[kit].share)} (${r.worstCell[kit].at}, n ${r.worstCell[kit].n}) |`);
       }
     }
     for (const [rule, kit] of Object.entries(G.kits)) {
@@ -302,7 +319,8 @@ export function batteryTable(res) {
 export function overLine(res, line = LINE) {
   const out = [];
   for (const [goal, G] of Object.entries(res.goals)) for (const r of G.rows) for (const [rule, kit] of Object.entries(G.kits)) {
-    if (r.holds && r.holds[rule]) continue;
+    // (a reported child: her figure is printed, not asserted: reportedRows)
+    if ((r.holds && r.holds[rule]) || r.reported) continue;
     const w = r.worstFade[kit], d = r.worstDoor[kit];
     if (w.share >= line) out.push({ goal, child: r.child, label: r.label, rule, share: w.share, fade: w.at, by: "fade", all: r.all[kit] });
     if (d.share >= line) out.push({ goal, child: r.child, label: r.label, rule, share: d.share, fade: `doors ${d.at}`, by: "doors", all: r.all[kit] });
@@ -322,7 +340,7 @@ export function listedCells(res) {
 export function worstNonHolder(res, goal) {
   const G = res.goals[goal], best = { fade: null, door: null };
   for (const r of G.rows) for (const [rule, kit] of Object.entries(G.kits)) {
-    if (r.holds && r.holds[rule]) continue;
+    if ((r.holds && r.holds[rule]) || r.reported) continue;
     for (const [k, w] of [["fade", r.worstFade[kit]], ["door", r.worstDoor[kit]]]) if (!best[k] || w.share > best[k].share) best[k] = { share: w.share, label: r.label, rule, at: w.at };
   }
   return best;
@@ -374,7 +392,9 @@ const pickOf = (xs, rng) => xs[Math.floor(rng() * xs.length) % xs.length];
 /** the ways of reading a tally of b bundles and s loose lines (tally.logic.ts WAYS: the right one and seven others) */
 const TALLY_WAYS = { right: [(b, s) => 5 * b + s, 1], "bundles only": [(b) => 5 * b, 1], "loose twice": [(b, s) => 5 * b + 2 * s, 1], "bundle as six": [(b, s) => 6 * b + s, 1],
   "bundles as ones": [(b) => b, 0], "groups and loose": [(b, s) => b + s, 0], "bundle as ten": [(b, s) => 10 * b + s, 0], "loose only": [(_b, s) => s, 0] };
-const TALLY_COUNTING = (strokes) => ({ none: (f) => f, "a bundle skipped": (f, b, s) => f(Math.max(0, b - 1), s), "a bundle twice": (f, b, s) => f(b + 1, s),
+// (dc-r8-gate2-shadow S3: `none` was `(f) => f`, so the seven ways with no counting slip typed nothing on every level; the
+// check against the product's READ_HABITS found it)
+const TALLY_COUNTING = (strokes) => ({ none: (f, b, s) => f(b, s), "a bundle skipped": (f, b, s) => f(Math.max(0, b - 1), s), "a bundle twice": (f, b, s) => f(b + 1, s),
   "a loose line missed": (f, b, s) => f(b, Math.max(0, s - 1)), "a loose line twice": (f, b, s) => f(b, s + 1),
   ...(strokes ? { "a stroke missed": (f, b, s) => f(b, s) - 1, "a stroke twice": (f, b, s) => f(b, s) + 1 } : {}) });
 const readN = (lv) => lv.params.counts[0];
@@ -411,6 +431,36 @@ function tallyChildren(goal) {
     add("last-first", "what I typed last time (my first answer)", (lv, c) => readActs(c.prev ? c.prev.first.find((a) => a.kind === "total").n : readN(lv)));
     add("last-key", "last time's right number", (lv, c) => readActs(c.prev ? readN(c.prev.level) : readN(lv)));
     add("line-end", "the number line's end (printed after a miss)", (lv) => readActs(numberLineEnd(lv.params)));
+    // dc-r8-gate2-shadow S3: the second-reading judge's children (stambh-tally/judges/gate2b-judge-2026-11-16.md, C)
+    const wayOf = (wn) => TALLY_WAYS[wn][0], bsOf = (n) => [Math.floor(n / 5), n % 5];
+    const SIX = ["right", "bundles only", "loose twice", "bundle as six", "bundles as ones", "groups and loose"];
+    // "a bundle skipped" with a pad slip, the same every level, under the right reading and under bundles only (the judge's
+    // "2nd key one to the right" reached 0.253 and "one to the left" 0.119, two habits at once, before discriminatingRead)
+    for (const wn of ["right", "bundles only"]) for (const sl of TALLY_SLIPS) {
+      // (bundles only, a bundle skipped, the second key one right: full sweep 0.119 at fade 2, 0.158 by door (ttt); two habits
+      // at once, and her number is no reading habit's, so discriminatingRead does not see her: reported, not asserted)
+      const rep = wn === "bundles only" && sl.id === "key 2 right" ? { reported: "two habits at once (bundles only with a bundle skipped, and the second key one to the right): the pad's edge (0 has no key to its right) lands her on the mix-up's number on some rows no reading habit reaches" } : {};
+      add(`skip+typing:${wn}/${sl.id}`, `same every level: ${wn}, a bundle skipped, typed with ${sl.id}`, (lv) => { const [b, s] = bsOf(readN(lv)); return readActs(slipOr(sl, wayOf(wn)(Math.max(0, b - 1), s))); }, rep);
+    }
+    // a finger offset on every key (each digit one key in one direction, where there is a key), under the right reading and
+    // under bundles only
+    const keyAt = keyAtOf([...TALLY_PAD], TALLY_PAD_COLS), posAt = posOf([...TALLY_PAD], TALLY_PAD_COLS);
+    for (const wn of ["right", "bundles only"]) for (const d of DIRS) add(`finger:${wn}/${DIR_NAME(d)}`, `every key one ${DIR_NAME(d)} (where there is one), ${wn}`, (lv) => {
+      const [b, s] = bsOf(readN(lv)), k = [...String(wayOf(wn)(b, s))].map((x) => { const [r, c] = posAt(x); return keyAt(r + d[0], c + d[1]) ?? x; });
+      return readActs(tallyTake(k));
+    });
+    // one random slip a level under each of six ways of reading; two random slips in a session (else right); blind on the
+    // level after a miss (else one of six ways)
+    const slipOf = (n, f, c) => { const [b, s] = bsOf(n), v = f(b, s); const counting = Object.entries(TALLY_COUNTING(true)).filter(([k]) => k !== "none").map(([, g]) => g(f, b, s)); const typed = TALLY_SLIPS.map((sl) => sl.apply(v)).filter((x) => x !== null && x !== v); return c.rng() < 0.5 ? pickOf(counting, c.rng) : pickOf(typed.length ? typed : counting, c.rng); };
+    for (const wn of SIX) add(`slip-way:${wn}`, `one random slip a level, reading ${wn}`, (lv, c) => readActs(slipOf(readN(lv), wayOf(wn), c)), { random: true });
+    add("slip-two", "two random slips in a session (else right)", (lv, c) => { c.mem.at ??= (() => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs.slice(0, 2); })(); return readActs(c.mem.at.includes(c.i) ? slipOf(readN(lv), wayOf("right"), c) : readN(lv)); }, { random: true });
+    for (const wn of SIX) add(`blind-after-miss:${wn}`, `blind on the level after a miss, else reading ${wn}`, (lv, c) => { const [b, s] = bsOf(readN(lv)); return readActs(c.prev && !c.prev.firstTry ? Math.floor(c.rng() * 100) : wayOf(wn)(b, s)); }, { random: true });
+    // two ways of reading in turn (every ordered pair of six ways)
+    for (const w1 of SIX) for (const w2 of SIX) if (w1 !== w2) add(`alt:${w1}|${w2}`, `${w1} and ${w2} in turn`, (lv, c) => { const [b, s] = bsOf(readN(lv)); return readActs(wayOf(c.i % 2 ? w2 : w1)(b, s)); });
+    // last level's right number give or take; her own last number give or take; after a miss, the solve she was shown
+    for (const d of [-5, -4, -3, -1, 1, 3, 4, 5]) add(`last-key${d}`, `last time's right number ${d > 0 ? "+" : ""}${d}`, (lv, c) => readActs(c.prev ? readN(c.prev.level) + d : readN(lv)));
+    for (const d of [-5, -4, -1, 1, 4, 5]) add(`last-first${d}`, `what I typed last time ${d > 0 ? "+" : ""}${d}`, (lv, c) => readActs(c.prev ? c.prev.first.find((a) => a.kind === "total").n + d : readN(lv)));
+    add("shown-after-miss", "after a miss, the solve she was shown (else right)", (lv, c) => readActs(c.prev && !c.prev.firstTry ? readN(c.prev.level) : readN(lv)));
     // the mix-up itself
     add("holder", "the mix-up: each bundle read as four", (lv) => readActs(four(readN(lv))), { holds: { "tally-four": "a bundle read as its four standing lines: the kit's first sign" } });
     add("holder-half", "the mix-up on half her levels", (lv, c) => readActs(c.rng() < 0.5 ? four(readN(lv)) : readN(lv)), { random: true, holds: { "tally-four": "holds it, shows it on half her levels" } });
@@ -481,6 +531,50 @@ const JITTERED = DROPS.filter((d) => /^drop (20|24) (up|up-right)$/.test(d.id));
 const wobble = (d, rng) => { const a = 2 * Math.PI * rng(), r = JITTER * Math.sqrt(rng()); return { dx: d.dx + r * Math.cos(a), dy: d.dy + r * Math.sin(a) }; };
 const near = (v, every) => Math.round(v / every) * every;
 
+/**
+ * dc-r8-gate2-shadow S3: the second-reading judge's placement children, for measure and draw (`actsAt(p, pose)`: her acts
+ * with the protractor at that pose, reading or dotting what it shows). → [id, label, acts, opts] for add():
+ *   the finger that lands inside the angle along its bisector, 18 … 26 px from O;
+ *   a fixed drop of 16 … 28 px in each of eight directions, give or take 8 px (the battery's wobble was 4 px on two);
+ *   a drop of 30 px that misses on every level (eight directions);
+ *   a drag that stops 16 … 28 px short of O, coming from where the protractor rested;
+ *   one random slip a level until her first miss, then anything on every level after it;
+ *   careful with two random slips a session.
+ */
+function judgePlaceChildren(goal, actsAt, slip, blindAny) {
+  const out = [], rad = (d) => (d * Math.PI) / 180;
+  const off = (p, r, h) => { const g = goodPose(p); return { ...g, x: g.x + r * Math.cos(rad(h)), y: g.y + r * Math.sin(rad(h)) }; };
+  const bis = (p) => norm(p.start + ((p.mirror ? -1 : 1) * (p.theta ?? 0)) / 2);
+  // (reported, not asserted: the bisector turns with the angle, so on a wide angle it is close to the perpendicular from O on
+  // which the bottom edge on the vertex puts the centre, the same in the protractor's frame on every level; vertex-off's
+  // pairing cannot tell her from the mix-up there: the judge's fault 2. Full sweep: draw 0.109-0.128 at fade 2, measure
+  // under the line; the gate sweep's two seeds put measure's door ggg at 0.125)
+  for (const r of [18, 20, 22, 24, 26]) out.push([`bisector:${r}`, `the finger lands ${r} px inside the angle, along its bisector`, (lv) => actsAt(lv.params, off(lv.params, r, bis(lv.params))),
+    { reported: "a finger that lands inside the angle along its bisector: on a wide angle that is where the bottom edge on O puts the centre, in the protractor's frame, so vertex-off's discriminating pair does not tell her from the mix-up" }]);
+  const W = 8;
+  for (const r of [16, 20, 24, 28]) for (const d of DIRS) {
+    const L = Math.hypot(d[0], d[1]), dx = (r * d[1]) / L, dy = (-r * d[0]) / L;
+    out.push([`wobble8:drop ${r} ${DIR_NAME(d)}`, `same every level, give or take ${W} px: drop ${r} ${DIR_NAME(d)}`, (lv, c) => {
+      const p = lv.params, g = goodPose(p), a = 2 * Math.PI * c.rng(), rr = W * Math.sqrt(c.rng());
+      return actsAt(p, { ...g, x: g.x + dx + rr * Math.cos(a), y: g.y + dy + rr * Math.sin(a) });
+    }, { random: true }]);
+  }
+  for (const d of DIRS) { const L = Math.hypot(d[0], d[1]); out.push([`drop30:${DIR_NAME(d)}`, `same every level: drop 30 ${DIR_NAME(d)}`, (lv) => { const p = lv.params, g = goodPose(p); return actsAt(p, { ...g, x: g.x + (30 * d[1]) / L, y: g.y + (-30 * d[0]) / L }); }]); }
+  for (const r of [16, 20, 24, 28]) out.push([`undershoot:${r}`, `drags it from where it rested and stops ${r} px short of O`, (lv) => {
+    const p = lv.params, g = goodPose(p), q0 = initPlace(p).pose, L = Math.hypot(q0.x - g.x, q0.y - g.y) || 1;
+    return actsAt(p, { ...g, x: g.x + (r * (q0.x - g.x)) / L, y: g.y + (r * (q0.y - g.y)) / L });
+  }]);
+  out.push(["any-after-miss", `one random slip a level until her first miss, then any ${goal === "measure" ? "number" : "dot and button"} on every level`, (lv, c) => {
+    if (c.prev && !c.prev.firstTry) c.mem.missed = true;
+    return c.mem.missed ? blindAny(lv, c) : slip(lv, c);
+  }, { random: true }]);
+  out.push(["slip-two", "careful with two random slips a session", (lv, c) => {
+    c.mem.at ??= (() => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs.slice(0, 2); })();
+    return c.mem.at.includes(c.i) ? slip(lv, c) : null;
+  }, { random: true }]);
+  return out;
+}
+
 function placeChildren(goal) {
   const C = [];
   const add = (id, label, acts, o = {}) => C.push({ id, label, acts: { [goal]: acts }, ...o });
@@ -489,13 +583,20 @@ function placeChildren(goal) {
     add("careful", "careful (right every level)", (lv) => at(lv.params, measureRight(lv.params)));
     add("blind", "blind: any placement, any number", (_lv, c) => [{ kind: "move", x: c.rng() * BW, y: c.rng() * BH }, { kind: "spin", deg: Math.floor(c.rng() * 360) }, { kind: "lock" }, readAct(Math.floor(c.rng() * 181))], { random: true });
     add("blind-number", "placed right, any number (0-180)", (lv, c) => at(lv.params, Math.floor(c.rng() * 181)), { random: true });
-    add("slip-random", "one random slip a level (typing, a tick, a drop)", (lv, c) => {
+    const slipM = (lv, c) => {
       const p = lv.params, v = measureRight(p), kind = Math.floor(c.rng() * 3);
       if (kind === 0) { const xs = KON_SLIPS.map((s) => s.apply(v)).filter((x) => x !== null && x !== v); return at(p, xs.length ? pickOf(xs, c.rng) : v); }
       if (kind === 1) return at(p, v + pickOf(TICKS, c.rng));
       const d = pickOf(DROPS, c.rng), g = goodPose(p);
       return [...head({ ...g, x: g.x + d.dx, y: g.y + d.dy }), readAct(measureReads(p, { ...g, x: g.x + d.dx, y: g.y + d.dy })?.right ?? v)];
-    }, { random: true });
+    };
+    add("slip-random", "one random slip a level (typing, a tick, a drop)", slipM, { random: true });
+    // dc-r8-gate2-shadow S3: the second-reading judge's children (kon-place/judges/gate2b-judge-2026-11-16.md, C)
+    const reads = (p, q) => [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
+    for (const ch of judgePlaceChildren("measure", reads, slipM, (lv, c) => at(lv.params, Math.floor(c.rng() * 181)))) add(...ch);
+    add("last-solve", "last level's whole solve (its pose and its number)", (lv, c) => (c.prev && c.prev.level.params.goal === "measure" ? [...head(goodPose(c.prev.level.params)), readAct(measureRight(c.prev.level.params))] : at(lv.params, measureRight(lv.params))));
+    add("last-turn", "last level's turn, the centre on O (reads what it shows)", (lv, c) => { const p = lv.params; return reads(p, c.prev ? { ...goodPose(p), rot: goodPose(c.prev.level.params).rot } : goodPose(p)); });
+    add("last-other", "last level's other-scale number", (lv, c) => at(lv.params, c.prev && c.prev.level.params.goal === "measure" ? 180 - measureRight(c.prev.level.params) : measureRight(lv.params)));
     for (const sl of KON_SLIPS) add(`typing:${sl.id}`, `same typing slip every level: ${sl.id}`, (lv) => at(lv.params, slipOr(sl, measureRight(lv.params))));
     for (const t of TICKS) add(`tick${t}`, `same every level: a tick ${t > 0 ? "+" : ""}${t}`, (lv) => at(lv.params, measureRight(lv.params) + t));
     for (const d of DROPS) add(`drop:${d.id}`, `same every level: ${d.id} (reads what it shows)`, (lv) => {
@@ -545,14 +646,24 @@ function placeChildren(goal) {
   add("blind", "blind: any placement, any dot, either button", (_lv, c) => [{ kind: "move", x: c.rng() * BW, y: c.rng() * BH }, { kind: "spin", deg: Math.floor(c.rng() * 360) }, { kind: "lock" }, { kind: "mark", r: Math.floor(c.rng() * 181) }, { kind: "join", end: c.rng() < 0.5 ? "v" : "e" }], { random: true });
   add("blind-dot", "placed right, any dot, either button", (lv, c) => atD(lv.params, Math.floor(c.rng() * 181), c.rng() < 0.5 ? "v" : "e"), { random: true });
   add("blind-join", "placed right, the right dot, either button", (lv, c) => atD(lv.params, rightMark(lv.params), c.rng() < 0.5 ? "v" : "e"), { random: true });
-  add("slip-random", "one random slip a level (a nudge, a tick, the other button, a drop)", (lv, c) => {
+  const slipD = (lv, c) => {
     const p = lv.params, m = rightMark(p), kind = Math.floor(c.rng() * 4);
     if (kind === 0) return atD(p, m + (c.rng() < 0.5 ? -1 : 1));
     if (kind === 1) return atD(p, m + pickOf(TICKS, c.rng));
     if (kind === 2) return atD(p, m, "e");
     const d = pickOf(DROPS, c.rng), g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy };
     return atD(p, markFor(p, q, p.theta), "v", q);
-  }, { random: true });
+  };
+  add("slip-random", "one random slip a level (a nudge, a tick, the other button, a drop)", slipD, { random: true });
+  // dc-r8-gate2-shadow S3: the second-reading judge's children (kon-place/judges/gate2b-judge-2026-11-16.md, C)
+  for (const ch of judgePlaceChildren("draw", (p, q) => atD(p, markFor(p, q, p.theta), "v", q), slipD, (lv, c) => atD(lv.params, Math.floor(c.rng() * 181), c.rng() < 0.5 ? "v" : "e"))) add(...ch);
+  const prevDraw = (c) => (c.prev && c.prev.level.params.goal === "draw" ? c.prev : null);
+  add("last-solve", "last level's whole solve (its pose, its right dot, 'O se jodo')", (lv, c) => { const pr = prevDraw(c); return pr ? atD(lv.params, rightMark(pr.level.params), "v", goodPose(pr.level.params)) : atD(lv.params, rightMark(lv.params)); });
+  add("last-size", "last level's size on the right scale", (lv, c) => { const pr = prevDraw(c), p = lv.params; return atD(p, markFor(p, goodPose(p), pr ? pr.level.params.theta : p.theta)); });
+  // the join button in last time's place (first or second on screen), with the right dot; the two places in turn
+  const placeOf = (lv, end) => ((joinAFirst(lv.seed) ? "e" : "v") === end ? 0 : 1), endAt = (lv, k) => (k === 0 ? firstEnd(lv) : firstEnd(lv) === "e" ? "v" : "e");
+  add("btn-last-place", "the join button in last time's place, the right dot", (lv, c) => { const pr = prevDraw(c), e = pr?.first.find((a) => a.kind === "join")?.end; return atD(lv.params, rightMark(lv.params), pr && e ? endAt(lv, placeOf(pr.level, e)) : "v"); });
+  add("btn-turn", "the first join button, then the last, in turn", (lv, c) => atD(lv.params, rightMark(lv.params), endAt(lv, c.i % 2)));
   for (const t of [-1, 1, ...TICKS]) add(`dot${t}`, `same every level: the dot ${t > 0 ? "+" : ""}${t} on the rim`, (lv) => atD(lv.params, rightMark(lv.params) + t));
   for (const d of DROPS) add(`drop:${d.id}`, `same every level: ${d.id}`, (lv) => { const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy }; return atD(p, markFor(p, q, p.theta), "v", q); });
   for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id}`, (lv, c) => { const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy }; return atD(p, markFor(p, q, p.theta), "v", q); }, { random: true });
@@ -633,6 +744,63 @@ function nameChildren(goal) {
       const t = [o[idx], ...o.filter((i) => three.has(i) && i !== o[idx])].slice(0, 3);
       return sayActs(t);
     });
+    // dc-r8-gate2-shadow S3: the second-reading judge's children (kon-name/judges/gate2b-judge-2026-11-16.md, C): after a miss
+    // she re-presses "Yahi naam" (the product now refuses it: "unchanged"), repeats the slip, guesses, or reshuffles her
+    // three letters; then she does the solve, as every child does
+    const theirs = (acts) => acts.filter((x) => x.kind === "letter").map((x) => x.at);
+    const AFTER = {
+      repress: { label: "presses \"Yahi naam\" again", f: () => [{ kind: "commit" }] },
+      repeat: { label: "the same name again after the play-out", f: (_lv, c) => anew(c.mem.first) },
+      guess: { label: "three random letters after a miss", f: (_lv, c) => anew(blind3(c)) },
+      reshuffle: { label: "another order of her three letters after a miss", f: (_lv, c) => { const t = c.mem.first, o = [[0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]].map((ix) => ix.map((i) => t[i])).filter((x) => x.join() !== t.join()); return anew(pickOf(o, c.rng)); } },
+    };
+    // the bases (her first name on a level; c.mem.first keeps it for `again`)
+    const keep = (c, t) => { c.mem.first = t; return sayActs(t); };
+    const twoOf4 = (c) => (c.mem.at ??= (() => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs.slice(0, 2); })());
+    const swap = SAY_SLIPS.find((x) => x.id === "swap 1-2"), missLast = SAY_SLIPS.find((x) => x.id === "miss 1, added last");
+    const BASES = {
+      swap: { label: "same slip every level: swap 1-2", f: (lv, c) => keep(c, swap.f(right(lv.params))) },
+      "miss-last": { label: "same slip every level: miss 1, added last", f: (lv, c) => keep(c, missLast.f(right(lv.params))) },
+      "slip-random": { label: "one random slip a level", f: (lv, c) => keep(c, pickOf(SAY_SLIPS, c.rng).f(right(lv.params), lv.params)), random: true },
+      blind: { label: "blind: three different letters", f: (_lv, c) => keep(c, blind3(c)), random: true },
+      "order-second": { label: "starts at the second letter on screen", f: (lv, c) => { const p = lv.params, o = readingOrders(labelPoints(p))[0].o, k = asked(p), three = new Set([k.a, k.v, k.b]); return keep(c, [o[1], ...o.filter((i) => three.has(i) && i !== o[1])].slice(0, 3)); } },
+      "swap-2of4": { label: "careful, the swap slip on 2 of her 4 levels", f: (lv, c) => keep(c, twoOf4(c).includes(c.i) ? swap.f(right(lv.params)) : right(lv.params)), random: true },
+      "swap-1of4": { label: "careful, the swap slip on 1 of her 4 levels", f: (lv, c) => keep(c, twoOf4(c)[0] === c.i ? swap.f(right(lv.params)) : right(lv.params)), random: true },
+      alternate: { label: "right and the swap on alternate levels", f: (lv, c) => keep(c, c.i % 2 ? swap.f(right(lv.params)) : right(lv.params)) },
+      last: { label: "what I did last time (the same taps)", f: (lv, c) => keep(c, c.prev && c.prev.level.params.goal === "say" ? theirs(c.prev.first) : right(lv.params)) },
+    };
+    const OVER = {
+      // (the figures: kon-name/PACKET.md, "Gate 2 battery", S3)
+      "swap+repeat": "she gives the same order slip again after the play-out has shown her what it means: on a say level that is the mix-up's own act twice (H3 assumes a slip is corrected once seen)",
+      "swap+reshuffle": "trial and error with her three letters after a miss: 2 in 5 of the other orders put the vertex at an end again",
+      "swap+guess": "a habit slip on every level, then a blind guess after each miss: H3's 1 in 6 a level is too weak against a slip that is the mix-up's act every level (the judge's fault 2)",
+      "miss-last+repeat": "the same as the swap repeated: the slip is the mix-up's act on every level, given twice",
+      "miss-last+reshuffle": "the same as the swap reshuffled",
+      "miss-last+guess": "the same as the swap with a guess",
+      "alternate+repeat": "the swap repeated on half her levels",
+      "alternate+reshuffle": "the swap reshuffled on half her levels",
+      "slip-random+repeat": "a random slip, given again after the play-out: the slips that are the mix-up's act (the swaps, a tap added last) are seen twice on their level",
+      "slip-random+reshuffle": "a random slip, then trial and error with her three letters",
+    };
+    for (const [bn, B] of Object.entries(BASES)) for (const [an, A] of Object.entries(AFTER)) {
+      // (re-press for every base; repeat, guess and reshuffle for the slips the judge ran them on)
+      if (an !== "repress" && !["swap", "miss-last", "slip-random", "alternate"].includes(bn)) continue;
+      const id = `${bn}+${an}`;
+      add(id, `${B.label}; after a miss: ${A.label}`, B.f, { again: { say: A.f }, ...(B.random || an === "guess" || an === "reshuffle" ? { random: true } : {}), ...(OVER[id] ? { reported: OVER[id] } : {}) });
+    }
+    // a random slip on 1 in 3 of every name she builds (the one after a miss too)
+    const third = (lv, c) => (c.rng() < 1 / 3 ? pickOf(SAY_SLIPS, c.rng).f(right(lv.params), lv.params) : right(lv.params));
+    add("slip-third", "a random slip on 1 in 3 of every name she builds (after a miss too)", (lv, c) => sayActs(third(lv, c)), { random: true, again: { say: (lv, c) => anew(third(lv, c)) } });
+    // reads across, and again after the play-out
+    for (const [k, id] of READ_IDS.entries()) {
+      const readName = (lv) => { const p = lv.params, c = asked(p), three = new Set([c.a, c.v, c.b]); return readingOrders(labelPoints(p))[k].o.filter((i) => three.has(i)); };
+      add(`read-again:${k}`, `reads the three letters across the screen, and again after the play-out: ${id}`, (lv) => sayActs(readName(lv)), { again: { say: (lv) => anew(readName(lv)) } });
+    }
+    // the three letters in alphabetical order, and again after the play-out (the judge did not count her: an order that
+    // ignores the vertex is the belief itself)
+    const abc = (lv) => { const p = lv.params, c = asked(p), L = p.lets ?? "OABC"; return [c.a, c.v, c.b].sort((i, j) => (L[i] < L[j] ? -1 : 1)); };
+    add("abc-again", "the three letters in alphabetical order, and again after the play-out", (lv) => sayActs(abc(lv)),
+      { holds: { "vertex-name": "her order ignores where the vertex is: the belief itself (the judge did not count her as a non-holder)" }, again: { say: (lv) => anew(abc(lv)) } });
     // (after the play-out the holders name it their way again: the vertex first with the arms the other way round, the vertex
     // last likewise, any order afresh)
     add("v-first", "the mix-up: the vertex first", (lv) => { const c = asked(lv.params); return sayActs([c.v, c.a, c.b]); },
@@ -659,6 +827,18 @@ function nameChildren(goal) {
   add("pos:middle", "the middle arc, left to right", (lv) => { const o = byTarget(lv.params, (t) => t.x); return arc(o[Math.floor(o.length / 2)] ?? 0); });
   for (const [nm, f] of [["smallest", (z) => z.indexOf(Math.min(...z))], ["largest", (z) => z.indexOf(Math.max(...z))], ["middle-sized", (z) => z.indexOf([...z].sort((a, b) => a - b)[2])]]) add(`size:${nm}`, `the ${nm} angle`, (lv) => arc(f(angleSizes(lv.params))));
   add("inside-tri", "the arc at the vertex inside the triangle", (lv) => arc(lv.params.tri ?? 0));
+  // dc-r8-gate2-shadow S3: the second-reading judge's find children: one of the triangle's two corners (arcs 3 and 4) by its
+  // size or where it is, a random one, the two in turn
+  const corner = (p, key) => { const T = targets(p), z = angleSizes(p); return [3, 4].sort((a, b) => key(a, T, z) - key(b, T, z))[0]; };
+  for (const [nm, key] of [["larger", (k, T, z) => -z[k]], ["smaller", (k, T, z) => z[k]], ["right", (k, T) => -(T[k]?.x ?? 0)], ["left", (k, T) => T[k]?.x ?? 0], ["upper", (k, T) => -(T[k]?.y ?? 0)], ["lower", (k, T) => T[k]?.y ?? 0]]) {
+    // (the larger and the right corner: the mix-up's arc is one of the triangle's two corners, so a habit tied to the figure
+    // gives it on many levels, and find has no discriminating level; the gate sweep's two seeds put both over, the full
+    // sweep the larger one: reported, kon-name/PACKET.md)
+    const rep = nm === "larger" || nm === "right" ? { reported: "a corner chosen by the figure (its size or where it is): find's mix-up arc is always one of the triangle's two corners, and find has no discriminating level (S3 asks none)" } : {};
+    add(`corner:${nm}`, `the ${nm} of the triangle's two corners`, (lv) => arc(corner(lv.params, key)), rep);
+  }
+  add("corner:random", "either of the triangle's two corners, at random", (_lv, c) => arc(c.rng() < 0.5 ? 3 : 4), { random: true });
+  add("corner:turn", "the triangle's two corners in turn", (_lv, c) => arc(c.i % 2 ? 4 : 3));
   const atLetter = (p, which) => { const t = nameOf(asked(p), p.ord ?? 0); const k = which === "first" ? denotes(p, [t[1], t[0], t[2]]) : denotes(p, [t[0], t[2], t[1]]); return k >= 0 ? k : null; };
   add("first-letter", "the mix-up: the angle at the name's first letter", (lv) => { const k = atLetter(lv.params, "first"); return k === null ? null : arc(k); }, { holds: { "vertex-name": "puts the arc at the first letter: the kit's second sign" } });
   add("last-letter", "the mix-up: the angle at the name's last letter", (lv) => { const k = atLetter(lv.params, "last"); return k === null ? null : arc(k); }, { holds: { "vertex-name": "the vertex at the name's end" } });

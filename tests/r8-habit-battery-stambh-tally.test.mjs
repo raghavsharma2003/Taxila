@@ -18,9 +18,10 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, reportedRows, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
+import { READ_HABITS } from "../src/play/families/stambh/tally.logic.ts";
 
 const S = sweep();
 const KIT = coverage().entries.find((e) => e.family === "stambh" && e.mode === "tally" && e.goal === "read").misMap["tally-four"];
@@ -48,6 +49,16 @@ test("the battery: every child at every fade, pL and door sequence, through the 
   }
 });
 
+test("dc-r8-gate2-shadow S3: the product's reading habits (tally.logic.ts READ_HABITS, which discriminatingRead is computed from) are the battery's \"same every level\" readers, number for number on every row", () => {
+  const kids = childrenFor("stambh/tally", "read").filter((c) => c.id.startsWith("way:"));
+  assert.equal(kids.length, READ_HABITS.length);
+  for (let n = 5; n <= 54; n++) {
+    const lv = { params: { counts: [n] } };
+    const battery = kids.map((c) => c.acts.read(lv)[0].n).sort((a, b) => a - b), product = READ_HABITS.map((h) => Math.max(0, Math.min(99, h.of(n)))).sort((a, b) => a - b);
+    assert.deepEqual(battery, product, String(n));
+  }
+});
+
 test("the generator memo changes nothing (the same served sessions with and without it)", () => {
   for (const goal of ["read", "keep"]) { const m = memoAgrees("stambh/tally", goal); assert.ok(m.same, goal); assert.ok(m.sessions >= 50); }
 });
@@ -56,8 +67,14 @@ test("children who hold the mix-up: listed with why, and how often each is named
   const H = holders(RES);
   for (const h of H) t.diagnostic(`${h.goal} · ${h.label}: named ${h.all.toFixed(3)} (${h.half}); holds it because ${h.why}`);
   assert.deepEqual(H.map((h) => `${h.goal}:${h.child}`).sort(), ["keep:holder-counted", "keep:holder-five", "keep:holder-plain", "read:holder", "read:holder-half"]);
-  // the positive control: the battery sees naming at all (the mix-up's own act every level)
-  assert.ok(rowOf(RES, "read", "holder").all[KIT] >= 0.5, "read: the mix-up every level is named in most sessions");
+  // the positive control: the battery sees naming at all (the mix-up's own act every level). A REPORTED FIGURE, not the
+  // assertion it was (">= 0.5"): dc-r8-gate2-shadow S3 counts read's sightings only on rows no reading habit gives the
+  // mix-up's number on (discriminatingRead); fade 1 serves none (16, 17, 19) and the picker's band seldom serves the weak
+  // rows that are, so the holder was 0.797 and is now about 0.23 (the packet's "Gate 2 battery"; a question to main: steer
+  // read to such a row after a sighting). The line asserted is that she is still named at all.
+  const h = rowOf(RES, "read", "holder");
+  t.diagnostic(`read holder (reported): named ${h.all[KIT].toFixed(3)}, worst fade ${h.worstFade[KIT].share.toFixed(3)} (fade ${h.worstFade[KIT].at})`);
+  assert.ok(h.all[KIT] >= 0.1, "read: the mix-up every level is still named");
   assert.ok(rowOf(RES, "keep", "holder-counted").all[KIT] >= 0.99, "keep names from one level");
 });
 
@@ -71,6 +88,16 @@ test("negative control: under the rules from before H1 the judge's failure shows
   for (const c of ["const:16", "last-first"]) assert.ok(rowOf(RES, "read", c).worstFade[KIT].share < LINE, `${c} under H1`);
   // and the child the tables model is under the line, old rules and new: the blind guesser
   for (const R of [OLD, RES]) assert.ok(rowOf(R, "read", "blind").worstFade[KIT].share < LINE);
+});
+
+test("dc-r8-gate2-shadow S3: the second-reading judge's children are in the battery (\"a bundle skipped\" with a pad slip, a finger offset on every key, slips under six ways, two ways in turn, last numbers give or take); the judge's counted child is not named; any marked reported is printed (REPORTED FIGURES, not assertions)", (t) => {
+  const ids = new Set(RES.goals.read.rows.map((r) => r.child));
+  for (const id of ["skip+typing:right/key 2 right", "skip+typing:bundles only/key 2 left", "finger:right/left", "slip-way:bundles only", "slip-two", "blind-after-miss:right", "alt:right|bundles only", "last-key3", "last-first-4", "shown-after-miss"]) assert.ok(ids.has(id), id);
+  assert.equal(RES.goals.read.rows.filter((r) => r.child.startsWith("alt:")).length, 30);
+  // the judge's counted child (bundles only, a bundle skipped: rows 25, 31, 37, 43, 49): never named now (0.013 before)
+  assert.equal(rowOf(RES, "read", "way:bundles only/a bundle skipped").worstFade[KIT].share, 0);
+  assert.equal(rowOf(RES, "read", "way:bundles only/a bundle skipped").worstDoor[KIT].share, 0);
+  for (const x of reportedRows(RES)) t.diagnostic(`reported: ${x.goal} · ${x.label} (${x.rule}): named ${x.all.toFixed(3)}, worst fade ${x.worstFade.share.toFixed(3)} (fade ${x.worstFade.at}), worst door sequence ${x.worstDoor.share.toFixed(3)} (${x.worstDoor.at}); ${x.why}`);
 });
 
 test("read: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {

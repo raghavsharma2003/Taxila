@@ -6902,3 +6902,11 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-20ec92e` (2026-11-16): Released 20ec92e with scripts/release.mjs: web taxila-web--s20ec92e-t6vb (was taxila-web--s18762c2-yqf1), worker + canary/nightly jobs on taxila-worker:20ec92e (was 18762c2); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 20ec92e --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-gate2-s3-2026-11-16` (2026-11-16): Habit batteries after S3, full sweep (HABIT_FULL=1). kon/name (165 s): every re-press child 0 (judge: swap twice 1.000, careful 2-of-4 0.982, slip 0.475, blind 0.130, second letter 0.762, alternate 0.919, last taps 0.375); reported over the line: swap or tap-added-last given again 1.000, alternate again 0.906, swap reshuffled 0.817, tap-last reshuffled 0.803, random slip again 0.451, alternate reshuffled 0.348, random slip reshuffled 0.201, swap then guess 0.132 (worst fade 0.149, door 0.169), tap-last then guess 0.116 (0.125/0.147), find larger corner 0.074 (0.094/0.125), find right corner 0.037 (0.037/0.075); worst asserted say 0.039/0.042, find 0.025/0.036. stambh/tally (169 s): the judge's bundles-only-bundle-skipped 0.013 -> 0; worst asserted read 0/0, keep 0/0; reported: bundles only, bundle skipped, key 2 right 0.050 (0.119 fade 2, 0.158 door ttt); read holder 0.797 -> 0.182 (gate 0.234), half-holder 0.324 -> 0.081. kon/place (about 19 min with memo clearing): last time's right dot 0.075 -> 0; reported: bisector finger draw 0.109-0.128 at fade 2 (door 0.067), measure under (gate sweep door 0.125); +-8 px wobble worst 0.023/0.033; worst asserted measure 0.018/0.025, draw 0.036/0.050; draw inner holder 1.000 -> 0.965. Gate sweeps: kon/name 25 s, tally 22 s, kon/place 172 s (was 99 s).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-5dd9f07` (2026-11-16): Released 5dd9f07 with scripts/release.mjs: web taxila-web--s5dd9f07-z7ft (was taxila-web--s20ec92e-t6vb), worker + canary/nightly jobs on taxila-worker:5dd9f07 (was 20ec92e); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 5dd9f07 --rollback.

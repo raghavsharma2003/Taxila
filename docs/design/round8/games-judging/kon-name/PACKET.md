@@ -16,6 +16,52 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 | say | — | vertex-name (the right three letters, the vertex first or last) |
 | find | — | vertex-name (a first- or last-letter arc) |
 
+## Gate 2, S3 (2026-11-16, `dc-r8-gate2-shadow`: the "blocks" fix and the judges' children; branch `claude/r8-gate2-s3`)
+
+**What changed for the child (the only change she can see).** After a miss in `say`, "Yahi naam" is off until her name changes: a letter tapped or "Mita do" since the miss (`stepName` refuses the commit as `unchanged`; "Wapas" does not switch it back on). Before, a second press on the same wrong name played the miss out again and cost her a check. Nothing else on screen changed; the cert's sampled screens are first screens, so none changed.
+
+**The confirmation (H3).** `confirmSay` counts her next name only when every letter of it was tapped after the miss (`builtNames`, from her acts). A name brought back with "Wapas" and changed by one letter does not confirm.
+
+**The judge's children (gate2b judge, C), full sweep (`HABIT_FULL=1`, 165 s), worst fade / worst door sequence:**
+
+| child | judge (before) | now |
+|---|---|---|
+| same swap 1-2 every level, presses twice | 1.000 | 0 / 0 |
+| same missed tap added last, presses twice | 1.000 | 0 / 0 |
+| careful, swap on 2 of 4 levels, presses twice | 0.982 | 0 / 0 |
+| one random slip a level, presses twice | 0.475 | 0 / 0 |
+| blind guesser, presses twice | 0.130 (door 0.153) | 0 / 0 |
+| starts at the second letter, presses twice | 0.762 | 0 / 0 |
+| right and swap in turn, presses twice | 0.919 | 0 / 0 |
+| last time's taps, kept (presses twice) | 0.375 | 0 / 0 |
+| careful, swap on 1 of 4, presses twice | 0 | 0 / 0 |
+| one random slip, three random letters after a miss | 0.067 (0.072) | 0.026 / 0.025 |
+| a random slip on 1 in 3 of every name | 0.046 | 0.002 / 0.006 |
+| reads across, and again after the play-out (8) | 0 | 0 / 0 |
+| alphabetical order, again after the play-out | 0.819 (not counted) | listed as a holder: 0.792 |
+| find: the larger / the right corner | 0.039 / 0.027 | **reported** (below) |
+| find: smaller, left, upper, lower corner; corners in turn; last level's arc | 0 | 0 / 0 |
+| find: a random corner | 0.031 | 0.025 / 0.036 |
+
+**Children the battery cannot bring under the line: listed, not asserted** (each marked `reported` in `tests/_habit-children.mjs` with why; the test prints these figures; shadow goes on anyway, and real sittings measure them):
+
+| child | named (all) | worst fade | worst door | why |
+|---|---|---|---|---|
+| same swap 1-2, the same name again after the play-out | 1.000 | 1.000 | 1.000 | the slip is the mix-up's own act, given twice on one level |
+| same missed tap added last, the same again | 1.000 | 1.000 | 1.000 | as above |
+| right and swap in turn, the same again | 0.906 | 0.919 | 0.933 | as above, on half her levels |
+| same swap 1-2, another order of her three letters | 0.817 | 0.824 | 0.836 | trial and error: 2 of her 5 other orders put the vertex at an end |
+| same missed tap added last, another order | 0.803 | 0.811 | 0.836 | as above |
+| one random slip, the same again | 0.451 | 0.454 | 0.483 | her slips that are the mix-up's act are given twice |
+| right and swap in turn, another order | 0.348 | 0.366 | 0.389 | as above, on half her levels |
+| one random slip, another order | 0.201 | 0.210 | 0.228 | as above |
+| same swap 1-2, three random letters after a miss | 0.132 | 0.149 | 0.169 | the judge's fault 2: H3's 1 in 6 a level is weak against a slip that is the mix-up's act on every level |
+| same missed tap added last, three random letters | 0.116 | 0.125 | 0.147 | as above |
+| find: the larger of the triangle's two corners | 0.074 | 0.094 | 0.125 | the mix-up's arc is always one of the two corners; find has no discriminating level (S3 asks none) |
+| find: the right corner | 0.037 | 0.037 | 0.075 | under in the full sweep; the gate sweep's two seeds put her door figure at 0.375 |
+
+**Worst asserted non-holder, full sweep:** say 0.039 by fade (right and swap in turn, three random letters after a miss, fade 2), 0.042 by door; find 0.025 by fade (a random corner), 0.036 by door. Holders: vertex first 1.000, vertex last 1.000, any order 0.583, alphabetical 0.792; find first letter 0.500, last letter 0 (unchanged).
+
 ## Gate 2 battery (2026-11-16: H3 built; the discriminating level built; the battery passes)
 
 **Second pass (2026-11-16, `dc-r8-gate2-discriminating-level`, main's answer 2).**
