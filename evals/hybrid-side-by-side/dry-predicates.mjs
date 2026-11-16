@@ -645,7 +645,7 @@ export const ORDER_LAWS = {
     // (and the script's own wrap — what was covered, the goodbye — names the lesson's ideas, not a figure on the board: it is checked
     // only for pointing at one — "dekho", "look", "board")
     const w = ctx?.script?.wrap;
-    const authored = String(r.move) === "wrap" && w ? [w.covered?.hi, w.covered?.en, w.goodbye?.hi, w.goodbye?.en].filter(Boolean).flatMap((x) => sentencesOf(x)).map((x) => low(x)) : [];
+    const authored = String(r.move) === "wrap" && w ? [w.covered?.hi, w.covered?.en, w.goodbye?.hi, w.goodbye?.en, ...(ctx.script.skills ?? []).flatMap((k) => [k.covered?.hi, k.covered?.en])].filter(Boolean).flatMap((x) => sentencesOf(x)).map((x) => low(x)) : [];
     const said = String(r.move) === "wrap" ? sentencesOf(String(r.text ?? "")).filter((x) => !(tk && x.includes(tk)))
       .filter((x) => !authored.includes(low(x)) || /(?<![\p{L}])(?:dekho|look|board)(?![\p{L}])/iu.test(x)).join(" ") : String(r.text ?? "");
     const fig = FIGURE.exec(said)?.[0];
@@ -732,11 +732,17 @@ export const ORDER_LAWS = {
    *  of hers running — except the card the child is asked again. */
   repeatedAuthored(L, r, i, ctx) {
     if (!ctx.prevT) return null;
-    const prev = ` ${key(ctx.prevT.text)} `, cardK = r.card ? ` ${key(r.card)} ` : "";
+    const prev = ` ${key(ctx.prevT.text)} `;
     const strs = (ctx.o.allStr ??= (() => { const out = new Set(); const walk = (o) => { if (typeof o === "string") { for (const x of sentencesOf(o)) out.add(key(x)); return; }
       if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) if (!["id", "key", "accept", "targets", "board", "answerBoard", "params", "template", "ladder", "notes"].includes(k)) walk(v); };
       walk(ctx.script ?? {}); return [...out].filter((k) => k.split(" ").length >= 6 && !/\{/.test(k)); })());
-    const hit = strs.find((k) => ` ${key(r.text)} `.includes(` ${k} `) && prev.includes(` ${k} `) && !cardK.includes(` ${k} `));
+    // (main's 030: no longer exempts the card — dc-r8-director22 W, a card is not said again within two turns unless she was asked for it)
+    if (/·\s*(?:repeat|which)/.test(String(ctx.prevRead ?? ""))) return null;
+    // (a card's question said again after new help in the same turn is the help's ask; its set-up said again, or the question with
+    // nothing new before it, is a repeat)
+    const qs = r.card ? sentencesOf(String(r.card)).filter((x) => /[?？]\s*$/.test(x)).map((x) => key(x)) : [];
+    const fresh = sentencesOf(String(r.text ?? "")).some((x) => key(x).split(" ").length >= 4 && !prev.includes(` ${key(x)} `) && !qs.some((q) => q.includes(key(x)) || key(x).includes(q)));
+    const hit = strs.find((k) => ` ${key(r.text)} `.includes(` ${k} `) && prev.includes(` ${k} `) && !(fresh && qs.some((q) => q.includes(k))));
     return hit ? `said in two turns running: "${hit.slice(0, 60)}"` : null;
   },
   /** O7: her answer to the child's question about her comes first in its turn (the AI line before any teaching). */
@@ -750,6 +756,27 @@ export const ORDER_LAWS = {
 };
 Object.assign(PREDICATES, ORDER_LAWS);
 
+/** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
+PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
+  const tb = ctx.script?.teachback;
+  const leads = (tb?.leadIn ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map((x) => key3(x).slice(0, 30)).filter(Boolean);
+  if (!leads.length || ctx.o.tbPosed) return null;
+  const t = key3(r.text), q = [tb.prompt?.hi, tb.prompt?.en].filter(Boolean).map((x) => key3(x).slice(0, 40)).find((x) => x && t.includes(x));
+  if (!q) return null;
+  ctx.o.tbPosed = true;
+  const at = t.indexOf(q), n = leads.filter((l) => { const k = t.indexOf(l); return k >= 0 && k < at; }).length;
+  return n === 1 ? null : `the teach-back posed with ${n} lead-in forms before it`;
+};
+/** Main's 031 T5: the wrap says the covered sentence of no skill the lesson did not reach. Gated. */
+PREDICATES.coveredReached = (L, r, i, ctx) => {
+  if (String(r.move) !== "wrap") return null;
+  const reached = new Set(L.rows.slice(0, i).map((x) => /^s(\d+):/.exec(String(x.beat ?? ""))?.[1]).filter(Boolean).map(Number));
+  const t = key3(r.text);
+  const bad = (ctx.script?.skills ?? []).map((k, n) => ({ n: n + 1, c: [k.covered?.hi, k.covered?.en].filter(Boolean).map((x) => key3(x).slice(0, 40)) }))
+    .filter(({ n, c }) => !reached.has(n) && c.some((x) => x && t.includes(x))).map(({ n }) => `s${n}`);
+  return bad.length ? `the covered sentence of ${bad.join(", ")}, not reached` : null;
+};
+
 /** Main on director22 (10 of the run's 13 contradictions; the dry run showed all 10 and no predicate counted them): a picture
  *  request draws a view (the seam's `held.picture.view`), and she never tells the child a picture cannot be made. Gated. */
 PREDICATES.pictureDrawn = (L, r) => {
@@ -759,7 +786,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

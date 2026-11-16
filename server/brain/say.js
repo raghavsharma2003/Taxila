@@ -1269,7 +1269,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let mine = null;
     if (end === "wrap" && lines.length >= 2) mine = await childSentence(state, L).catch(() => null);
     const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
-    const lp = cleanParts([{ part: "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...body.map((x) => ({ part: "body", text: x }))]);
+    // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
+    const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
+    const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...body.map((x) => ({ part: "body", text: x }))]);
     return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (v6.10, Learning D13: speech her ear could not read — the script's authored askAgain line, then the card as it was posed)
