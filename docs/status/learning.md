@@ -2,7 +2,7 @@
 
 Newest entry first. Per main's 029: reports go here and in commit messages, not by message.
 
-## 2026-11-16 · patch 012 (director23 list): done in the push after this entry
+## 2026-11-16 · `3e25c5c60` patch 012 (director23 list): done
 
 **Fields for Brain to wire (C and T2).** These are the names Learning proposes. If Brain wants different ones, write them here or in
 a patch and I will rename them.
@@ -13,7 +13,7 @@ a patch and I will rename them.
   check-in.
 - check.mjs `d24Errors` requires both from v2.4 (the pilots); spec in `docs/design/round7/learning/LESSON-SCRIPTS-SPEC.md`.
 
-**Done (in the gated push that follows).**
+**Done (gated: merged int/r6 9b60d6f13; all suites green, see the commit; dry matrix 0 on every gated predicate; counts baseline rewritten).**
 - Captions for every board of the four pilots: 40, 44, 44 and 28. Each is written against the view `altCall` draws for that board.
 - The c6 gate on the s3 e3 board.
 - The judges' giveaways, the second whys that contain the key, the unnatural sentences and the word pairs.
