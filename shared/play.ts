@@ -680,6 +680,10 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  differs); default: the level's params. Parts (an array): the surface differs only when EVERY part differs (gate 2,
    *  stambh/tally read: its bundles and its loose lines) */
   surfaceOf?(level: PlayLevel<P>): string | readonly string[];
+  /** gate 2: a chance pick (key `goal:mal-rule`) whose pair of sightings is still over law 3's 1 in 10 is named only on
+   *  `sightings` levels (default 2): `apart`, the surface parts that must differ between every two of them (default: every
+   *  part); `cover`, a part that must not be the same on all of them (kon/place draw's join order) */
+  chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number }>>;
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────

@@ -48,6 +48,13 @@ export const PR = 105, PD = 24, ARM = 130;
 /** the centre tolerance (board px): a finger's drop: about 11 CSS px from the vertex at 360 (1 board px ≈ 1.03 CSS px in its 360 × 349 play box), about 25 at 1366. It stays
  *  under PD / 2, so the bottom-edge placement (PD off) is never a placement */
 export const TOL_PX = 11;
+/** gate 2 (night rulings 2026-11-11: "give the tolerance that names vertex-off"): the vertex-off band, board px. vertex-off is
+ *  named when the base lies along an arm (±BASE_TOL°) and the centre is within VO_BAND of the point PD along the inward
+ *  normal from O: 14 to 34 board px from O, within 24.6° of the normal, on the side the protractor opens. One nudge (1 board
+ *  px) or one turn (1°, about its own centre) from any placement (centre ≤ TOL_PX) stays ≤ TOL_PX + 1 = 12 < 14 from O, so no
+ *  single slip lands in it; at 11 a position-only drop spread evenly over a disc of 30 px round O landed in it 1 time in 9.3,
+ *  at 10 at most 1 in 10.8 for every radius (tests/r8-games-kon-place-gate2.test.mjs) */
+export const VO_BAND = 10;
 /** size: the two protractors' radii */
 export const R_BIG = 108, R_SMALL = 78;
 /** base within ±BASE_TOL° of an arm; a reading within READ_TOL of what the scale shows */
@@ -181,7 +188,7 @@ export function isVertexOff(p: PlaceParamsLike, pose: Pose): boolean {
   if (pl.baseErrDeg > BASE_TOL) return false;
   if (p.goal === "measure") { const hs = arms(p), rel = norm(hs[1 - pl.arm] - pose.rot); if (rel < 2 || rel > 178) return false; }
   const [nx, ny] = inward(pose), [vx, vy] = V(p);
-  return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= (p.tolPx ?? TOL_PX);
+  return Math.hypot(pose.x - (vx + PD * nx), pose.y - (vy + PD * ny)) <= Math.min(VO_BAND, p.tolPx ?? TOL_PX);
 }
 /** centre-on-arm: the centre mark on an arm's end point (A; B too in measure) with the base along that arm, or the protractor's
  *  bottom corner on O with the base along an arm (each within the centre tolerance and ±3°) */
@@ -215,6 +222,41 @@ export function centreRingShown(p: PlaceParamsLike, s: { commits: number; pl?: P
 }
 /** the level's join-button order (judging round 2): "A se jodo" first on about half the levels, fixed per level */
 export const joinAFirst = (seed: number) => ((Math.imul(seed | 0, 2654435761) >>> 16) & 1) === 1;
+/**
+ * Gate 2 (law 3): what a draw level shows for a join, in two parts: the asked size (where the right dot is) and the join
+ * buttons' order. The server names join-wrong-end only on four levels with four different sizes and both orders among them
+ * (konLogic.chanceRepeat): (1/2)^4 = 1 in 16 for blind joins, and a habit of pressing one place (the first button, the
+ * left one) never makes it under both orders.
+ */
+export const drawSurface = (p: { theta?: number }, seed: number): string[] => [`theta:${p.theta ?? 0}`, `join:${joinAFirst(seed) ? "A" : "O"}`];
+
+// ───────────────────────────── gate 2: the measure pad's slips ─────────────────────────────
+/** the measure pad as the view lays it out (kon.place.view.ts: 1 … 9, 0, ⌫, in play.css's six-column grid) */
+export const PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "⌫"] as const;
+export const PAD_COLS = 6;
+const padAt = (k: string) => { const i = (PAD as readonly string[]).indexOf(k); return [Math.floor(i / PAD_COLS), i % PAD_COLS]; };
+/** the digit keys touching a key (side or corner) */
+export const padNear = (d: string) => PAD.filter((k) => /^\d$/.test(k) && k !== d && Math.max(Math.abs(padAt(k)[0] - padAt(d)[0]), Math.abs(padAt(k)[1] - padAt(d)[1])) === 1) as string[];
+/** what the pad holds after these presses (the view's rule: no fourth digit, nothing after a lone 0, nothing over 180) */
+export const padTake = (keys: string[]): number | null => { let t = ""; for (const d of keys) { if (t.length >= 3 || t === "0" || Number(t + d) > 180) continue; t += d; } return t === "" ? null : Number(t); };
+/** one typing slip on the number she means to type: one key one off, two neighbouring presses swapped, one press not
+ *  registered, one press registered twice; each as the pad takes it, the ones that change nothing left out */
+export function typedSlips(v: number): number[] {
+  const k = [...String(v)], out: (number | null)[] = [];
+  for (let i = 0; i < k.length; i++) for (const n of padNear(k[i])) out.push(padTake([...k.slice(0, i), n, ...k.slice(i + 1)]));
+  for (let i = 0; i + 1 < k.length; i++) if (k[i] !== k[i + 1]) out.push(padTake([...k.slice(0, i), k[i + 1], k[i], ...k.slice(i + 2)]));
+  for (let i = 0; i < k.length; i++) out.push(padTake([...k.slice(0, i), ...k.slice(i + 1)]));
+  for (let i = 0; i < k.length; i++) out.push(padTake([...k.slice(0, i + 1), k[i], ...k.slice(i + 1)]));
+  return out.filter((x): x is number => x !== null && x !== v);
+}
+/** the share of one typing slip on reading v that lands on the other scale's number (180 − v, ±READ_TOL) */
+export const scaleSlipShare = (v: number) => { const xs = typedSlips(v); return xs.length ? xs.filter((x) => Math.abs(x - (180 - v)) <= READ_TOL).length / xs.length : 0; };
+/**
+ * Gate 2 (law 3): the readings whose other-scale number one typing slip reaches more than 1 time in 10 (140: "40" is 140
+ * with the 1 missed, "41" the 4 and 1 swapped; 141; 159: "19" twice; and 16, 164-166, which no key is). A measure level is never built on one, and a placement
+ * that shows one names no wrong-scale (her number is an ordinary miss there).
+ */
+export const SCALE_SLIP_READS: ReadonlySet<number> = new Set(Array.from({ length: 181 }, (_, v) => v).filter((v) => scaleSlipShare(v) > 0.1));
 
 /** size: the right answer: "a" (P is more), "b" (Q is more) or "same"; and the bigger tool's angle */
 export const sizeAnswer = (p: PlaceFields) => (p.thA === p.thB ? "same" : (p.thA ?? 0) > (p.thB ?? 0) ? "a" : "b");
@@ -306,7 +348,7 @@ function commitMeasure(p: PlaceParamsLike, s: PlaceState, mal: Record<string, st
   if (e <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
   // a miss on a placed protractor (counted: the view stops drawing her number's arm from the second)
   const missed = { ...next, placedMisses: (s.placedMisses ?? 0) + 1 };
-  if ("wrong-scale" in mal && Math.abs(n - (180 - ap.value)) <= READ_TOL && Math.abs(180 - 2 * ap.value) > 2 * READ_TOL)
+  if ("wrong-scale" in mal && Math.abs(n - (180 - ap.value)) <= READ_TOL && Math.abs(180 - 2 * ap.value) > 2 * READ_TOL && !SCALE_SLIP_READS.has(Math.round(ap.value)))
     return { pl: missed, commit: { kind: "misconception_consequence", mis: "wrong-scale", facts: { ...f, shown: "other_scale" } } };
   return { pl: missed, commit: { kind: e <= 2 * READ_TOL + 1 ? "near_miss" : "law_refused", facts: { ...f, gap: `${Math.round(e)}°`, why: "read_off" } } };
 }
@@ -324,10 +366,12 @@ function commitDraw(p: PlaceParamsLike, s: PlaceState, mal: Record<string, strin
   if (end === "v" && Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: { kind: "solved", done: true, facts: f } };
   if (end === "e") {
     // the right mark joined to A: join-wrong-end's signature; one of two join buttons, so the grade keeps it at chance weight
-    // as chanceMis (konLogic.chancePicks "draw:join-wrong-end"), never on her record from one join
+    // as chanceMis (konLogic.chancePicks "draw:join-wrong-end"), never on her record from one join. Gate 2 (law 3): no `sign`
+    // fact either (it had named the belief in the facts after one press); the server names it only on four levels
+    // (konLogic.chanceRepeat), and an unmapped level's A-join is the same plain refusal as any other
     if (Math.abs(mv - th) <= READ_TOL) return { pl: next, commit: "join-wrong-end" in mal
-      ? { kind: "misconception_consequence", mis: "join-wrong-end", facts: { ...f, shown: "far_end", sign: "join-wrong-end" } }
-      : { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end", sign: "join-wrong-end" } } };
+      ? { kind: "misconception_consequence", mis: "join-wrong-end", facts: { ...f, shown: "far_end" } }
+      : { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
     return { pl: next, commit: { kind: "law_refused", facts: { ...f, why: "far_end", shown: "far_end" } } };
   }
   if ("wrong-scale" in mal && Math.abs(mv - (180 - th)) <= READ_TOL && Math.abs(180 - 2 * th) > 2 * READ_TOL)
@@ -371,7 +415,7 @@ export function malPlace(p: PlaceParamsLike, mal: string): PlaceAct[] | null {
   }
   // wrong-scale is discriminated only where the outer scale is the wrong one (the angle opens clockwise): elsewhere the
   // "always the outer scale" reader solves, and her first-try solve says nothing about the scale
-  if (mal === "wrong-scale" && p.mirror && Math.abs(180 - 2 * th) > 2 * READ_TOL) return p.goal === "measure" ? [...at(g), { kind: "read", n: 180 - th }] : [...at(g), { kind: "mark", r: markFor(p, g, 180 - th) }, { kind: "join", end: "v" }];
+  if (mal === "wrong-scale" && p.mirror && Math.abs(180 - 2 * th) > 2 * READ_TOL && !(p.goal === "measure" && SCALE_SLIP_READS.has(th))) return p.goal === "measure" ? [...at(g), { kind: "read", n: 180 - th }] : [...at(g), { kind: "mark", r: markFor(p, g, 180 - th) }, { kind: "join", end: "v" }];
   if (mal === "join-wrong-end" && p.goal === "draw") return [...at(g), { kind: "mark", r: markFor(p, g, th) }, { kind: "join", end: "e" }];
   return null;
 }
@@ -475,6 +519,8 @@ export function generatePlace(goal: PlaceGoal, g: { tol?: number; tolPx?: number
     if ([0, 90, 180].some((l) => Math.abs(theta - l) <= Math.max(10, 2 * tol))) continue;
     // the key is never a printed number (on either scale: 180 − a printed number is printed too)
     if (printed(scale, theta)) continue;
+    // gate 2: never a key one typing slip takes to the other scale's number more than 1 time in 10 (measure: 140)
+    if (goal === "measure" && SCALE_SLIP_READS.has(theta)) continue;
     // the angle opens upward (its bisector 40° … 140°; the protractor rests below it). fade 1: the first arm lies flat or near
     // it; then any tilt (turning the protractor is part of the skill). mirror: the angle opens clockwise from OA
     const mirror = rnd() < 0.5;   // the two orientations equally (judging round 2: the outer scale is wrong on half)

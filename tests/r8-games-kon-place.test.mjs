@@ -368,14 +368,14 @@ test("kon/place: tool-size is not claimed by size; a wrong pick plays out her ow
   assert.doesNotMatch(src, /rad0 >= 90 \|\| a % 60/, "the small protractor prints fewer numbers");
 });
 
-test("judging round 2 (law 3): join-wrong-end is a sign at chance weight, never a named mix-up from one join; wrong-scale is told apart only where the outer scale is the wrong one", () => {
+test("judging round 2 (law 3): join-wrong-end is graded at chance weight, never a named mix-up from one join; wrong-scale is told apart only where the outer scale is the wrong one", () => {
   let joins = 0, mirror = 0, flat = 0;
   for (const level of levels("draw", [1, 2, 3])) {
     const acts = konLogic.malActs({ ...level, mal: { ...level.mal, "join-wrong-end": "k-je" } }, "join-wrong-end");
     if (acts) {
       joins++;
       const r = run({ ...level, mal: { ...level.mal, "join-wrong-end": "k-je" } }, acts), m = r.ms.at(-1);
-      assert.equal(m.kind, "misconception_consequence"); assert.equal(m.misconceptionId, "join-wrong-end"); assert.equal(m.facts.sign, "join-wrong-end"); assert.equal(m.facts.shown, "far_end");
+      assert.equal(m.kind, "misconception_consequence"); assert.equal(m.misconceptionId, "join-wrong-end"); assert.equal(m.facts.sign, undefined, "gate 2: no sign fact from one press"); assert.equal(m.facts.shown, "far_end");
       const g = konLogic.grade({ ...level, mal: { ...level.mal, "join-wrong-end": "k-je" } }, env(acts), { final: true });
       assert.equal(g.evidence[0].misconceptionId, undefined, "nothing on her record from one join");
       assert.equal(g.evidence[0].chanceMis, "k-je"); assert.equal(g.evidence[0].weight, CHANCE_WEIGHT);

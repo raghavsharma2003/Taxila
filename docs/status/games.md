@@ -2,6 +2,21 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+## 2026-11-16, gate 2 for kon/place: nothing from one join press, the tolerance that names vertex-off (branch `claude/r8-gate2-place`, from `5571e35df`)
+
+**Done (this push; naming is still off, `NAMING_OFF` untouched):** the evidence rule for kon/place, worked out and asserted over every generated level (178 measure, 179 draw) in the new `tests/r8-games-kon-place-gate2.test.mjs`. The packet's "Gate 2: evidence" holds the tables.
+- **join-wrong-end: nothing from one press.** The law no longer writes `sign=join-wrong-end` into the facts. One press leaves only an ordinary miss at chance weight (no mix-up, no `chanceMis`, nothing in the facts row, seam or trail), with naming on as well as off. A pair is still 1 in 4 (one of two buttons), so the server names it on the **fourth** sighting: four different asked sizes and both join orders among them. (1/2)^4 = 1 in 16, and a habit of pressing one place never qualifies. New `FamilyLogic.chanceRepeat` (`shared/play.ts`); `levels.js` `repeatMet` (the shared rule unchanged with no spec); kon/place draw's surface in two parts (`drawSurface`: the asked size, the join order); the session keeps the last six picks (was four).
+- **vertex-off's tolerance: 10 units** (`VO_BAND`, was the 11 of a placement). The base along an arm within ±3°, the centre within 10 of the bottom-edge pose: 14 to 34 units from O, within 24.6° of the normal. A blind placement gives 1 in 8,905 (board) or 1 in 2,835 (near O); one nudge or turn from any placement gives 0 (12 < 14). A drop that misses gives 1 in 10.8 at worst (r = 30); at 11 it was 1 in 9.3. centre-on-arm unchanged: blind 1 in 390 at worst, slips 0.
+- **wrong-scale:** blind 1 in 36. One typing slip on the pad (the view's keys, six columns) gives 1 in 14 at worst (155). Ticks and dot nudges give 0. Measure key 140 is refused (1 in 9: "40", "41"). The law names no wrong-scale at a placed reading over the line (16, 140, 141, 159, 164 to 166; `SCALE_SLIP_READS`).
+- size names nothing (one pick of three).
+- Re-certified `--only kon/place`: 16 samples, every size passing. The sampled levels are unchanged (fade 1), so only the stamp moved. Coverage rebuilt, `--check` ok.
+
+**Next:** gate 2 for kon/name.
+
+**Question for main:** switch naming on for kon/place? Two points are not decided here:
+1. A finger slip onto the other join button makes join-wrong-end every time. With tally's "slip on every level" convention, no number of repeats gets under 1 in 10. The four-sightings rule assumes mis-presses on two 48 px buttons are rare. To close it without that assumption, the join could become a drawn ruler line (a constructed act that names from one level), which changes the screen and needs gate 1 again.
+2. As for tally: is the line per pair or per session?
+
 ## 2026-11-16, gate 2 for stambh/tally: the evidence rule, proved (branch `claude/r8-gate2-tally`, from `1b0d3317a`)
 
 **Done (this push; naming is still off, `NAMING_OFF` untouched):** the slip list is gone and the ruled evidence rule is in (`RULINGS-2026-11-11-night.md`, stambh/tally "For gate 2").

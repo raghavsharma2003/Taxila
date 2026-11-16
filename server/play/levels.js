@@ -218,7 +218,7 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
   const pick = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId)?.chanceMis ?? null;
   if (pick) {
-    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level) }].slice(-4);
+    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level) }].slice(-CHANCE_MEMORY);
     if (!seen) s2.nextFocus = pick;
   }
   const step = adaptAfter({ grade, level, s, beliefOf });
@@ -255,6 +255,29 @@ export function surfacesDiffer(a, b) {
   if (Array.isArray(a) && Array.isArray(b) && a.length === b.length && a.length) return a.every((x, i) => x !== b[i]);
   return false;
 }
+/** the picks a session remembers (gate 2: kon/place's join needs three before the fourth) */
+export const CHANCE_MEMORY = 6;
+const differOn = (a, b, apart) => (!apart ? surfacesDiffer(a, b)
+  : Array.isArray(a) && Array.isArray(b) && a.length === b.length && apart.every((i) => typeof a[i] === "string" && a[i] !== b[i]));
+/**
+ * Gate 2: are the sightings enough to name a pick's mix-up? `prior` are the surfaces it was seen on before, `here` this
+ * level's. With no spec (or the family's chanceRepeat has none for this pick): one prior on a surface that differs (the
+ * shared law-3 rule, as before). With a spec: `sightings` levels in all (this one included) whose surfaces differ two by
+ * two on the `apart` parts (every part when absent), and, with `cover`, not all the same on that part. Pure.
+ */
+export function repeatMet(prior, here, spec = null) {
+  const need = Math.max(2, Number(spec?.sightings) || 2), apart = spec?.apart ?? null, cover = spec?.cover;
+  const part = (x) => (Array.isArray(x) ? x[cover] : x);
+  const pick = (from, chosen) => {
+    if (chosen.length === need - 1) return cover === undefined || new Set([...chosen, here].map(part)).size > 1;
+    for (let i = from; i < prior.length; i++) {
+      const c = prior[i];
+      if ([...chosen, here].every((x) => differOn(x, c, apart)) && pick(i + 1, [...chosen, c])) return true;
+    }
+    return false;
+  };
+  return pick(0, []);
+}
 /**
  * Round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up from one pick among a few is not kept from that pick
  * (gradeLevel reports it as `chanceMis` at chance weight). It is named here when the session saw the same mix-up from a
@@ -266,8 +289,13 @@ export function nameOnRepeat(rows, s, level) {
   // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening
   // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows
   const unnamed = (r) => { const { chanceMis: _c, ...rest } = r; return rest; };
+  // gate 2: a pick whose pair is still over 1 in 10 needs more sightings (the family's chanceRepeat, by goal and mal-rule)
+  const specOf = (kit) => {
+    const rule = Object.keys(level?.mal ?? {}).find((k) => level.mal[k] === kit);
+    try { return rule ? logicFor(level.family, level.mode)?.chanceRepeat?.[`${level.goal}:${rule}`] ?? null : null; } catch { return null; }
+  };
   return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? r
-    : prior.some((p) => p?.mis === r.chanceMis && surfacesDiffer(p?.surface, here)) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
+    : repeatMet(prior.filter((p) => p?.mis === r.chanceMis).map((p) => p.surface), here, specOf(r.chanceMis)) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });
