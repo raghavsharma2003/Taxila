@@ -119,7 +119,10 @@ test("H5, as served (naming off), through POST /api/play/act on every served lev
             });
             // the raw act stays in the trail: the server's replay, its mal-rules left out while naming is off
             assert.deepEqual(ev.trail, { ...raw.trail, mal: [] }, where);
-            assert.deepEqual(b.trail, ev.trail, where);
+            // (dc-r8-gate2-shadow S1: the route's trail adds the shadow's wouldName; the signed one never carries it)
+            const { wouldName: _w, ...shown } = b.trail;
+            assert.ok("wouldName" in b.trail, where);
+            assert.deepEqual(shown, ev.trail, where);
           }
           // an impasse post (mid-level, her first acts): game and the checks so far
           const first = playsOf(lv, modeName).find(([n]) => n.endsWith("-only"))?.[1] ?? (LOGIC[`${lv.family}/${lv.mode}`].solve(lv) ?? []).slice(0, 1);

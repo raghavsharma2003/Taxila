@@ -9,7 +9,100 @@ gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fai
 
 **Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
 
-## 2026-11-16, gate 2 S3 (`dc-r8-gate2-shadow`): the three "blocks" fixes and the judges' children (branch `claude/r8-gate2-s3`, from `a92b16a74` + `origin/int/r6`)
+## 2026-11-16, gate 2 S4 and S1 (`dc-r8-gate2-shadow`): law 4 over every family; naming in shadow (branch `claude/r8-gate2-shadow`, from `f8f1423e7`)
+
+**Done:**
+- **S4 (`c566d2b9f`): law 4, "after a miss, the check waits until her act changes."**
+  - **The law.** `server/forge3/qa/laws.mjs` `checkWaits` runs over every family/mode and served level, in three languages, as laws 1 to 3 do. The check is the act that missed. Its control is the one whose press dispatches that act. After the miss, while a try remains, the law presses it again on the same answer. It passes when the control is disabled or gone, or when the law refuses the press without playing the miss again and without raising a facts count of checks.
+  - **The fix.** `src/play/core/viewkit.ts` `missWait`. The view's `react` records the state a miss leaves. The check control is off while her state is still that one and the law, applied and dropped, would miss again. This is stambh/tally's Jaancho, made general. It is wired into 23 views.
+  - **What changes for her.** Only the screen after a miss: the check button greys until she changes something. First screens do not change.
+  - **The list is over the line (48 failed; the brief's stop is about 12).** I fixed the 28 that are only "the button waits", listed the 20 that need a design choice, and stopped there.
+- **S1 (this commit): naming in shadow.**
+  - **The switch.** `shared/play.ts` `NAMING_SHADOW` / `namingShadow`, on for stambh/tally, kon/place and kon/name. It is separate from `NAMING_OFF`, which is unchanged.
+  - **What it does.** `server/play/shadow.js` `shadowOf` runs at each level end of those modes. It runs the rules as built (the grade's own naming, then `nameOnRepeat` with H1 to H7 and the discriminating level) on the unstripped grade. It uses the session body's own `shadow` memory: the chance memory `afterLevelBody` would keep, each sighting with its level id. `nameOnRepeat` takes an optional `why` that hands back the sightings a naming rests on.
+  - **`wouldName`** is `null`, or `{ mis, rule, by: "repeat" | "act", sightings, levels }`. It is written to the `/act` response's `trail` and to the trace `play.outcome` row, both inside its `trail` and under its own key.
+  - **What does not change.** The rows, the evidence and seam tokens, the signed trail, the KT events, the home fold and the seam. They keep H5's row and an ordinary miss at 0.5.
+  - **Steering.** `nextBody` never reads the shadow memory, so nothing she sees changes. This also means shadow sightings come from unsteered levels only.
+- **S4 table** (check control; failed before; fix):
+
+  | family/mode | check control | failed before | now |
+  |---|---|---|---|
+  | aakash/grahan | done | yes | fixed (waits) |
+  | bhaap/avastha, bhaap/bhaapan | done | yes | fixed |
+  | galti-pakdo/kaapi | sab | yes | fixed |
+  | jaanch/thali | next | yes | fixed |
+  | kaal/order, kaal/place | run (act `check`) | yes | fixed |
+  | kon/close, cross, ends, lines, pair, turn, zone | commit | yes | fixed |
+  | kyun-lab/disha | run | yes | fixed |
+  | nazariya/mirror, views, solid, tri | done (act `check`) | yes | fixed |
+  | nishana/hop | commit | yes | fixed |
+  | stambh/bars, stambh/picto | done (act `check`) | yes | fixed |
+  | taraazu/fill, taraazu/weigh | run (act `weigh`) | yes | fixed |
+  | vakya/rail | run | yes | fixed |
+  | yantra/circuit, pendulum, roshni | run | yes | fixed |
+  | stambh/tally | done (Jaancho) | no | (S3's example) |
+  | kon/name | commit (Yahi naam) | no | (S3) |
+  | aakash/chakkar, aakash/ritu | done + the act `use` | yes | done waits; **open: experiment** |
+  | badlaav/aag | done + `use` | yes | done waits; **open: experiment** |
+  | badlaav/palat | `gone`, `put`, `file`, `mark` | yes | **open: experiment, pick** |
+  | bhaap/chakra, bhaap/hawa | `use` | yes | **open: experiment** |
+  | chhaano/geela, chhaano/sukha | done + `use`, `take` | yes | done waits; **open: experiment** |
+  | jaanch/daag, jaanch/neela | `mark` | yes | **open: experiment** |
+  | rang/pehchaan | `sort` | yes | **open: experiment** |
+  | rang/milao | done + `danger` | yes | done waits; **open: pick** |
+  | todo-jodo/strips | done + `choose-0/1/same` | yes | done waits; **open: pick** |
+  | todo-jodo/atoms | done + `name x`, `split` | yes | done waits; **open: typed, experiment** |
+  | nishana/place | commit + `round-N` | yes | commit waits; **open: pick** |
+  | kyun-lab/dhruv | run + `claim-N` | yes | run waits; **open: pick** |
+  | nazariya/floor | done + `name n` | yes | done waits; **open: typed** |
+  | nazariya/powers | `name n` | yes | **open: typed** |
+  | taraazu/equality | `drop n` | yes | **open: typed** |
+  | kon/place | `join-o/a` (draw), `read n` (measure) | yes | **open: pick, typed** |
+
+  Every other family/mode passes law 4 as it is. What each open kind needs is in `LAWS-AUDIT.md`, under "Law 4".
+- **Re-certs: none.**
+  - No served first screen changed: `missWait` waits only after a miss.
+  - No fixed family's law result changed: zero breaks before, zero now.
+  - `play.json` is untouched; `cert-item-hash` and `r7-games-cert-twin` pass.
+  - A re-cert of an open mode would now fail its cells at `laws:L4` (Question 1).
+- **What the shadow test asserts** (`tests/r8-gate2-shadow.test.mjs`, through `POST /api/play/level`, `/act` and `/next`):
+  - **The setup.** The battery's holders of each mode's mix-ups play sessions of 4 levels: fades 1 to 3, two door sequences, one session in four from the home.
+  - **The record.** Every level end in a shadow mode carries `wouldName` (null or a naming) in the response's trail and in the trace row (its trail and its own key). Each naming's rule is this level's for the mix-up, `sightings` equals the number of `levels`, and this level is the last of them.
+  - **Each mode names in shadow:**
+
+    | mode | sessions | levels | wouldName | by repeat |
+    |---|---|---|---|---|
+    | tally | 30 | 120 | 61 | 37 |
+    | place | 72 | 288 | 63 | 63 |
+    | name | 36 | 144 | 6 | 6 |
+
+  - **Nothing reaches the teacher or the learner model.** The seam is exactly `game verdict first_try checks`. None of these carries `misconceptionId`, `chanceMis` or `wouldName`: the seam and the evidence rows, the signed evidence and its trail (which equals the raw replay with `mal: []`), the KT events `playKtEvents` folds, and the home fold's written events. Every miss weighs 0.5.
+  - **Nothing she sees changes.** The same session with its shadow memory dropped after every level serves the same levels and the same rows, seams, moments, lines, doors and trail.
+  - **Outside the three modes.** A mode outside the switch writes no `wouldName` and no memory.
+  - Runs in about 56 s.
+- **Tests run (each on its own; not the full gate):**
+  - `tsc -b`, `vite build`, the prompt budget, `build-coverage --check`, `context.mjs --check`;
+  - `r8-play-laws`, `r8-laws-idea-words`, `r8-gate2-shadow`, `r8-gate2-facts-row`, `r8-naming-off`;
+  - the three batteries (gate sweep);
+  - `cert-item-hash`, `r7-games-cert-twin`, `test-isolation`, `r8-picks-default`;
+  - **for every family whose view changed:** `play-style-lint`, `play-logic`, `r4-games-core-engine`, `r4-games-core-kon`, `r7-games-aakash`, `-badlaav`, `-bhaap`, `-chhaano`, `-galti-pakdo`, `-jaanch`, `-kaal`, `-kon`, `-kon-angles`, `-kyun-chumbak`, `-nazariya`, `-nishana`, `-nishana-hop`, `-rang`, `-vakya`, `-yantra-roshni`, `-yantra-circuit`, `-yantra-pendulum`, `-stambh`, `-taraazu-weigh`, `-redraw-window`, `r8-games-kaal-miss`, `r8-reduced-motion-runs`, `r8-play-roles`;
+  - **the routes and gate-2 suites:** `pair-scope`, `r8-play-adapt`, `-follow`, `-phone-seam`, `-trail`, `-why`, `r8-games-kon-name`, `-kon-name-gate2`, `-kon-name-view`, `-kon-place`, `-kon-place-gate2`, `r8-games-stambh-tally`.
+  - `r8-gate2-facts-row` now takes the route's trail without `wouldName` against the signed one. `r8-naming-off`'s source check reads `const raw = gradeActs(…); const g = withNaming(level, raw);`.
+- **Browser suites:**
+  - **Ran:** `r8-games-kon-layout` (8 pass, 10 min). `kon.view.ts` changed, but only after its hand-off to the place and name views.
+  - **No browser suite mounts the other changed views.** A grep of `tests/*-browser.test.mjs` finds play families only in `r8-stambh-tally-layout-browser`, and tally's view is unchanged.
+  - **Not run:** `r8-stambh-tally-layout-browser` and the other `*-browser` suites (no view of theirs changed). The 23 changed views are covered headless by the laws and the family tests above.
+
+**Next:** the laws-audit list I had put aside (`LAWS-AUDIT.md`), then the 20 open law-4 modes once main rules on the three kinds.
+
+**Questions for main:**
+1. **Law 4's open kinds.**
+   - Pick: grey out the missed option until she changes something? That narrows the options, and on kon/place draw it changes the blind chance that gate 2 reads.
+   - Typed: refuse a number equal to the one that missed, as a logic refusal like kon/name's `unchanged`?
+   - Experiment: is doing the same experiment again a check?
+   - Until you rule, the 20 modes are in `CHECK_WAITS_OPEN`. A re-cert of any of them now fails its cells at `laws:L4`. Should the cert skip law 4 for those modes until then?
+2. **Shadow does not steer.** `nextBody` never reads the shadow memory, so the levels the rules use to tell a mix-up apart (kon/place's steer, `nextFocus`) are never served for it. Shadow namings will come in more slowly than naming on would give them (kon/name: 6 in 144 holder levels). Steer in shadow, which changes the levels served? Or keep it as is?
+3. **S2's count.** `wouldName` by `act`: stambh/tally's grade names some mix-ups from her act at once (24 of 61 here). Do those count toward S2's 30 shadow namings, or only `repeat`?: the three "blocks" fixes and the judges' children (branch `claude/r8-gate2-s3`, from `a92b16a74` + `origin/int/r6`)
 
 **Done (`NAMING_OFF` untouched; S4 and the shadow switch not started):**
 - **kon/name (`616552824`).**

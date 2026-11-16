@@ -467,13 +467,15 @@ export function distinctSightings(list) {
   });
   return out;
 }
-export function nameOnRepeat(rows, s, level) {
+export function nameOnRepeat(rows, s, level, why = null) {
   // gate 2, H5: in a mode under shared/play.ts FACTS_UNTIL_NAMED, a miss weighs GAME_WEIGHT whatever its form (a pick's miss
   // was CHANCE_WEIGHT, so its weight alone told the mix-up's form from any other miss); named rows are GAME_WEIGHT already
-  const out = nameOnRepeatRows(rows, s, level);
+  const out = nameOnRepeatRows(rows, s, level, why);
   return factsUntilNamed(level?.family, level?.mode) ? out.map((r) => (r && r.outcome !== "correct" && r.weight !== GAME_WEIGHT ? { ...r, weight: GAME_WEIGHT } : r)) : out;
 }
-function nameOnRepeatRows(rows, s, level) {
+/** `why` (optional, dc-r8-gate2-shadow S1): each mix-up named here is pushed as { kit, counted }, the earlier sightings
+ *  its naming rests on (server/play/shadow.js reads it) */
+function nameOnRepeatRows(rows, s, level, why = null) {
   const prior = Array.isArray(s?.chance) ? s.chance : [];
   const here = prior.length ? surfaceOf(level) : null;
   // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening
@@ -498,7 +500,9 @@ function nameOnRepeatRows(rows, s, level) {
     // offset in the protractor's frame, another on the board); a key counts as before
     const counted = distinctSightings(mine).filter((p) => discriminatingPair(act, p?.act));
     if (!counted.length) return false;
-    return repeatMet(counted, { surface: here, firm: firmOf(level, kit) }, namingSpec(level, kit, prior));
+    const met = repeatMet(counted, { surface: here, firm: firmOf(level, kit) }, namingSpec(level, kit, prior));
+    if (met && Array.isArray(why)) why.push({ kit, counted });
+    return met;
   };
   return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? bare(r)
     : named(r.chanceMis, r.chanceAct) ? { ...bare(r), misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));

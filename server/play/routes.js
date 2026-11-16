@@ -25,6 +25,7 @@ import { signSession, verifySession } from "./session.js";
 import { afterLevelBody, artFor, coverage, currentLevel, entryByKey, entryOfBody, nameOnRepeat, nextBody, play3dOff } from "./levels.js";
 import { recentFromPrev, startSession } from "./start.js";
 import { chancePick, gradeActs, lessonEvidence, withNaming } from "./grade.js";
+import { shadowOf } from "./shadow.js";
 import { reactionFor } from "./react.js";
 import { mapStateFrom, worldFamily } from "./world.js";
 import { signEvidence, signHomeEvidence, signSeam } from "./evidence.js";
@@ -152,7 +153,8 @@ export const routes = {
     const level = currentLevel(s, entry, child?.first_name);
     if (!level || level.levelId !== b.levelId) return send(res, 409, { error: "level_mismatch" });
     // a mode on gate 1 alone names no mix-up: everything below (rows, trail, seam, facts, the next level's focus) reads this
-    const g = withNaming(level, gradeActs(level, b.acts ?? [], { final: !!b.final }));
+    const raw = gradeActs(level, b.acts ?? [], { final: !!b.final });
+    const g = withNaming(level, raw);
     if (!g) throw bad("bad_level");
     // only the moments of the newest act decide her line (the client posts after every act)
     const lastSeq = Math.max(0, ...g.moments.map((m) => m.seq));
@@ -181,7 +183,11 @@ export const routes = {
     // the belief this level's first decision showed is the next level's focus (the current level's inputs never change);
     // round 8 P2: a clean first-try win steps the next level's band up, and each step's because rides to the next level
     const seen = ended ? rows.find((r) => r.misconceptionId)?.misconceptionId ?? null : null;
-    const s2 = afterLevelBody(s, { grade: ended ? g.grade : null, level, history });
+    // dc-r8-gate2-shadow S1: in a shadow mode the naming rules run on the unstripped grade against the session's shadow
+    // memory; `wouldName` goes to the trail this route returns and to the trace, never to the rows, the tokens or the seam
+    const sh = ended ? shadowOf(raw.grade, s, level) : null;
+    const s2 = { ...afterLevelBody(s, { grade: ended ? g.grade : null, level, history }), ...(sh ? { shadow: sh.shadow } : {}) };
+    const trailOut = sh && trail ? { ...trail, wouldName: sh.wouldName } : trail;
     // round 8 F (to-brain 023): a level_end row leads with the trail summary and the because kinds (this level's choice, the
     // next level's step), telegraphic and inside the 12-pair cap; the family's own facts follow
     // gate 2, H5: until a mix-up is named on this level, the seam carries right or wrong, first try and the checks (seamOut)
@@ -190,9 +196,9 @@ export const routes = {
     // release 12 flight recorder: every act's grade moment, and the level's outcome when it ends
     traceRecord(ended ? "play.outcome" : "play.act", { family: level.family, mode: level.mode, levelId: level.levelId, final: !!b.final, impasse: !!b.impasse,
       // (a mix-up from one pick is recorded as the ordinary miss it is graded as)
-      moments: fresh.map((m) => (m.kind === "misconception_consequence" && chancePick(level, m.misconceptionId, undefined, m) ? "law_refused" : m.kind)), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trail ? { trail } : {}) } : {}),
+      moments: fresh.map((m) => (m.kind === "misconception_consequence" && chancePick(level, m.misconceptionId, undefined, m) ? "law_refused" : m.kind)), ...(ended ? { verdict: g.grade.verdict ?? null, solved: !!g.solved, evidence: rows.length, misconceptionId: seen, home: !s.lessonId, ...(home ? { homeFolded: home.folded, homeCapped: home.capped } : {}), ...(trailOut ? { trail: trailOut } : {}), ...(sh ? { wouldName: sh.wouldName } : {}) } : {}),
       reaction: typeof reaction === "string" ? reaction : reaction?.text ?? null, engine: seenEngine }, { ...(typeof s.lessonId === "string" && s.lessonId.length === 36 ? { sid: s.lessonId } : {}) });
-    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trail ? { trail } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
+    const out = { levelId: level.levelId, moments: fresh, reaction, ...(seamToken ? { seamToken } : {}), ...(ended ? { grade: g.grade, doors: doorsFor(s2, entry, s.lang, child?.first_name), evidence: rows, ...(trailOut ? { trail: trailOut } : {}), ...(evidenceToken ? { evidenceToken } : {}), ...(homeToken ? { homeToken } : {}) } : {}),
       seam, sessionId: sessionOut(s2) };
     send(res, 200, out);
   },
