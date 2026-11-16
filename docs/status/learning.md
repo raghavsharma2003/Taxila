@@ -2,7 +2,7 @@
 
 Newest entry first. Per main's 029: reports go here and in commit messages, not by message.
 
-## 2026-11-16 · patch 013 (director24 list): done in the push after this entry (Brain's 036: the name is `did`)
+## 2026-11-16 · `56dcf01a5` patch 013 (director24 list): done (Brain's 036: the name is `did`)
 
 **Fields for Brain to wire (clause 4).** These are the names Learning proposes; if Brain wants different ones, write them here.
 - `did` `{ hi, en }` on every check card (`skills[i].checks[j]`) and on `teachback`. It is a second-person clause said after
