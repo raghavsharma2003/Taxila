@@ -12,7 +12,7 @@
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { GaltiAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -23,6 +23,8 @@ const MAXA = 0.13;   // rad: the beam's full tilt
 export const makeGaltiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<GaltiParams, GaltiState, GaltiAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -58,6 +60,7 @@ export const makeGaltiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   const act = (a: GaltiAct) => { ctl.dispatch(a); deps.changed(); };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const s = st(), k = keyOf(s), now = api.t;
     if (k.page !== shownPage) { shownPage = k.page; fixAt = now; }
     if (k.bal !== shownBal) {
@@ -263,7 +266,7 @@ export const makeGaltiView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
       // never "your move": the button must not hint which workings are all correct
-      { id: "sab", label: W("galti-pakdo.sab"), aria: W("galti-pakdo.sab"), kind: "primary", group: "go", onPress: () => act({ kind: "sab" }) },
+      { id: "sab", label: W("galti-pakdo.sab"), aria: W("galti-pakdo.sab"), kind: "primary", group: "go", disabled: wait.waits({ kind: "sab" }), onPress: () => act({ kind: "sab" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, dragging, goal, readouts, controls, react };

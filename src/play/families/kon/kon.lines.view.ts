@@ -11,7 +11,7 @@
 // Angle labels sit on the bisector of their arc, outside it, at 16 px (the class 4-5 floor, kept for classes 6-7 too).
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
@@ -24,6 +24,8 @@ const FAR = 6000;
 export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   const deps = depsIn as unknown as ViewDeps<KonParams, KonState, KonAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, g = p.goal;
   const lines = g === "parallel" || g === "perp", cross = g === "corr" || g === "alt", ends = g === "ends";
   const st = () => ctl.state;
@@ -67,6 +69,7 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
 
   function act(a: KonAct): void { ctl.dispatch(a); deps.changed(); }
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as KonAct | undefined;
     if ((last?.kind === "turn" || last?.kind === "stop") && !refused) api.sfx("slide");
     if (last?.kind === "commit" && refused !== "turn_first" && refused !== "stops_first") { truthAt = api.t; api.sfx("land"); }
@@ -330,13 +333,13 @@ export function makeLinesView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       const mv = (side: "lo" | "hi", by: -1 | 1, label: string, aria: string): ControlSpec => ({ id: `${side}-${by < 0 ? "left" : "right"}`, label, aria, kind: "pad", group: side,
         onPress: () => { const v = stepStop(side, by); if (v !== sp[side]) act({ kind: "stop", side, at: v }); } });
       return [mv("lo", -1, "◀ 1", "first stop left"), mv("lo", 1, "1 ▶", "first stop right"), mv("hi", -1, "◀ 2", "second stop left"), mv("hi", 1, "2 ▶", "second stop right"),
-        ...go, { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: ready, disabled: !ready, onPress: () => act({ kind: "commit" }) }];
+        ...go, { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: !wait.waits({ kind: "commit" }) && ready, disabled: wait.waits({ kind: "commit" }) || !ready, onPress: () => act({ kind: "commit" }) }];
     }
     const cur = s.heading;
     return [
       { id: "nudge-left", label: "↺", aria: "turn anticlockwise a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "turn", deg: norm(cur + 1) }) },
       { id: "nudge-right", label: "↻", aria: "turn clockwise a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "turn", deg: norm(cur - 1) }) },
-      ...go, { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: cur !== null, disabled: cur === null, onPress: () => act({ kind: "commit" }) },
+      ...go, { id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: !wait.waits({ kind: "commit" }) && cur !== null, disabled: wait.waits({ kind: "commit" }) || cur === null, onPress: () => act({ kind: "commit" }) },
     ];
   }
   return { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => drag || !!held };

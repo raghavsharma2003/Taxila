@@ -6,7 +6,7 @@
 // the 44 px target or the text floor.
 import type { AtomsAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { atomsView as A, stripOf, type AtomNode, type AtomsParams, type AtomsState, type AtomTree } from "./atoms.logic.ts";
@@ -19,6 +19,8 @@ interface Ghost { x: number; y: number; vy: number; a: number; text: string }
 export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<AtomsParams, AtomsState, AtomsAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params;
   const two = p.goal === "two-trees", pairMode = p.goal === "hcf" || p.goal === "lcm";
   let W = 1, H = 1, wide = false;
@@ -128,6 +130,7 @@ export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   // ── the law's answers
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     // every state change re-solves the layout first (acts may arrive from touch, voice or the harness)
     const last = ctl.acts[ctl.acts.length - 1]?.act as AtomsAct | undefined;
     const before = new Set(target.keys());
@@ -324,13 +327,13 @@ export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         onPress: () => { if (name) { act({ kind: "name", x: Number(pad) }); pad = ""; } else trySplit(); } });
       if (!name) {
         keys.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
-        keys.push({ id: "done", label: say(lang, "done"), kind: "secondary", group: "go", onPress: () => act({ kind: "done" }) });
+        keys.push({ id: "done", label: say(lang, "done"), kind: "secondary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
       }
       return keys;
     }
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
-      ...(pairMode ? [] : [{ id: "done", label: say(lang, "done"), kind: "primary" as const, group: "go", you: true, onPress: () => act({ kind: "done" }) }]),
+      ...(pairMode ? [] : [{ id: "done", label: say(lang, "done"), kind: "primary" as const, group: "go", you: !wait.waits({ kind: "done" }), disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) }]),
     ];
   }
   function demo(): void {

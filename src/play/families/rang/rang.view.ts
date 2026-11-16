@@ -13,7 +13,7 @@
 import type { Moment, RangAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -30,6 +30,8 @@ const MAT: Record<Colour, Material> = { red: "red", blue: "blue", yellow: "turme
 export const makeRangView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<RangParams, RangState, RangAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal, cupsMode = isCups(p);
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -48,6 +50,7 @@ export const makeRangView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const now = api.t;
     actAt = now;
     last.ok = !refused;
@@ -297,7 +300,7 @@ export const makeRangView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (!cupsMode) {
       out.push({ id: "danger", label: W("rang.danger"), aria: W("rang.danger"), kind: "secondary", group: "go", onPress: () => act({ kind: "use", m: "danger" }) });
       // never "your move": the button must not hint when the colour is right (the child decides it is)
-      out.push({ id: "done", label: W("rang.claim"), aria: W("rang.claim"), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) });
+      out.push({ id: "done", label: W("rang.claim"), aria: W("rang.claim"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     }
     return out;
   }

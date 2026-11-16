@@ -6,7 +6,7 @@
 // profiles beside the plot, with the child's own after a check. Same goal line, same control ids as the 3D engine.
 import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { goalOf } from "../../engines/khand/words.ts";
 import { built, frontView, sideView, topView, type NzState, type Plot } from "./grid.ts";
 import type { ViewsParams } from "./views.logic.ts";
@@ -18,6 +18,8 @@ import { mirrorMismatch, type MirrorParams } from "./mirror.logic.ts";
 export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<Plot, NzState, NazariyaAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params as Plot & Record<string, unknown>, mode = level.mode, goal = level.goal, fade = level.fade;
   const views = mode === "views" ? (p as unknown as ViewsParams) : null;
   let cell = 32, ox = 0, oy = 0, prof = { x: 0, y: 0, s: 16 };
@@ -124,16 +126,17 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       c.push({ id: "undo", label: "Undo", kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
       if (mode === "array" && goal === "fill") c.push({ id: "say", label: "Say how many", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
       else if (side) {
-        c.push({ id: "done", label: "Check", kind: "secondary", group: "go", onPress: () => act({ kind: "check" }) });
+        c.push({ id: "done", label: "Check", kind: "secondary", group: "go", disabled: wait.waits({ kind: "check" }), onPress: () => act({ kind: "check" }) });
         c.push({ id: "say", label: s.named === null ? "Say the side" : "Say again", kind: "primary", you: true, group: "go", onPress: () => { pad = true; deps.changed(); } });
       }
       else {
         if (mode === "powers") c.push({ id: "say", label: s.named === null ? "Say how many" : "Say again", kind: "secondary", group: "go", onPress: () => { pad = true; deps.changed(); } });
-        c.push({ id: "done", label: mode === "array" ? "Done" : "Check", kind: "primary", you: true, group: "go", onPress: () => act({ kind: "check" }) });
+        c.push({ id: "done", label: mode === "array" ? "Done" : "Check", kind: "primary", you: !wait.waits({ kind: "check" }), group: "go", disabled: wait.waits({ kind: "check" }), onPress: () => act({ kind: "check" }) });
       }
       return c;
     },
     react(ms: Moment[], refused: string | undefined): void {
+      wait.saw(ms, refused);
       const kinds = new Set(ms.map((m) => m.kind)), s = st();
       if (ms.some((m) => m.kind === "progress") || refused === undefined && !kinds.size) { reveal = false; glow = []; }
       if (kinds.has("solved")) { reveal = true; glow = []; api.sfx("good"); }

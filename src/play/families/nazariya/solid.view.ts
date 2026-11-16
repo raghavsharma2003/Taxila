@@ -6,7 +6,7 @@
 // "Done". Nothing is timed and nothing animates on a clock.
 import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import { anglesOf, elOf, geoOf, rotate, rotateBy, visibleAt, type El, type SolidParams, type SolidState, type V3 } from "./solid.logic.ts";
@@ -16,6 +16,8 @@ const TURN_TIME = 0.4;   // s: a turn is drawn turning (cosmetic: the law has al
 export const makeSolidView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<SolidParams, SolidState, NazariyaAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, g = geoOf(p), want = elOf(p.goal), fade = level.fade;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -156,10 +158,11 @@ export const makeSolidView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       out.push({ id: "turn-right", label: W("nazariya.solid.right"), kind: "secondary", group: "turn", onPress: () => act({ kind: "turn", dir: "right" }) });
       out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: s.depth === 0, onPress: () => act({ kind: "undo" }) });
       out.push({ id: "turn-over", label: W("nazariya.solid.over"), kind: "secondary", group: "go", onPress: () => act({ kind: "turn", dir: "over" }) });
-      out.push({ id: "done", label: W("nazariya.solid.done"), kind: "primary", you: true, group: "go", disabled: !(s.face.length + s.edge.length + s.corner.length), onPress: () => act({ kind: "check" }) });
+      out.push({ id: "done", label: W("nazariya.solid.done"), kind: "primary", you: !wait.waits({ kind: "check" }), group: "go", disabled: wait.waits({ kind: "check" }) || !(s.face.length + s.edge.length + s.corner.length), onPress: () => act({ kind: "check" }) });
       return out;
     },
     react(ms: Moment[], refused: string | undefined): void {
+      wait.saw(ms, refused);
       const kinds = new Set(ms.map((m) => m.kind));
       if (kinds.has("solved")) { reveal = true; api.sfx("good"); api.fx.burst(cx, cy, { n: 18, color: api.P.color("good"), speed: 110, life: 0.7, size: 3, kind: "spark" }); }
       else if (kinds.has("misconception_consequence") || kinds.has("near_miss") || refused === "mismatch") { reveal = true; xray = true; api.sfx("look"); }

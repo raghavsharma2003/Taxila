@@ -14,7 +14,7 @@
 import type { ChhaanoAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -41,6 +41,8 @@ const code = (s: string) => [...s].reduce((a, ch) => (a * 31 + ch.charCodeAt(0))
 export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<ChhaanoParams, ChhaanoState, ChhaanoAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, dry = isDry(p);
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const name = (x: string) => W(`chhaano.part.${x}`);
@@ -82,6 +84,7 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
   }
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const s = st(), now = api.t;
     last.why = s.why;
     actAt = now; aim = false;
@@ -473,7 +476,7 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) },
       // never "your move": the button must not hint when a mixture is separated (the child decides it is)
-      { id: "done", label: W("chhaano.done"), aria: W("chhaano.done"), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) },
+      { id: "done", label: W("chhaano.done"), aria: W("chhaano.done"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) },
     ];
   }
   void looksClear;

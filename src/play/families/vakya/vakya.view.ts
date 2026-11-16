@@ -10,7 +10,7 @@
 // direction's Devanagari face); every touch target is ≥ 44 px. All motion is a pure function of api.t.
 import type { Moment, VakyaAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
 import type { VakyaParams, VakyaState, VakyaWagon } from "./vakya.logic.ts";
@@ -28,6 +28,8 @@ type Box = { x: number; y: number; w: number; h: number };
 export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<VakyaParams, VakyaState, VakyaAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -125,6 +127,7 @@ export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
 
   const act = (a: VakyaAct) => { ctl.dispatch(a); deps.changed(); };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as VakyaAct | undefined;
     if (!last) return;
     if (last.kind === "couple") api.sfx(refused ? "refuse" : "land");
@@ -299,7 +302,7 @@ export const makeVakyaView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     return [
       { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", disabled: !ctl.acts.length, onPress: () => act({ kind: "undo" }) },
-      { id: "run", label: W("vakya.run"), kind: "primary", group: "go", you: s.train.length > 0, disabled: !s.train.length, onPress: () => act({ kind: "run" }) },
+      { id: "run", label: W("vakya.run"), kind: "primary", group: "go", you: !wait.waits({ kind: "run" }) && s.train.length > 0, disabled: wait.waits({ kind: "run" }) || !s.train.length, onPress: () => act({ kind: "run" }) },
     ];
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => !!drag };

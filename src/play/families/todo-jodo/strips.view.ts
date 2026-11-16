@@ -5,7 +5,7 @@
 // Fade 1: pieces only. Fade 2: the n/d label rides on each strip. Fade 3: the symbol is the controller (n/d pad).
 import type { Moment, StripsAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { withAlpha, roundRect, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
@@ -18,6 +18,8 @@ interface Knife { bar: number; xs: number[]; t0: number }
 export const makeStripsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<StripsParams, StripsState, StripsAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal;
   const cmpGoal = goal === "compare" || goal === "unit";
   const NAMES = ["A", "B", "C"];
@@ -53,6 +55,7 @@ export const makeStripsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function act(a: StripsAct): void { ctl.dispatch(a); deps.changed(); }
 
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as StripsAct | undefined;
     const now = api.t, cur = st().bars;
     if (last?.kind === "cut" && !refused) {
@@ -225,7 +228,7 @@ export const makeStripsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     }
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
     if (cmpGoal) out.push(...choose().map((c) => ({ ...c, group: "choose" })));
-    else out.push({ id: "done", label: say(lang, "done"), kind: "primary", group: "go", you: true, onPress: () => act({ kind: "done" }) });
+    else out.push({ id: "done", label: say(lang, "done"), kind: "primary", group: "go", you: !wait.waits({ kind: "done" }), disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     return out;
   }
   function demo(): void { /* class 4-5 first contact: the first cut of A is the demonstrated move */ const b = bars[0]; if (!b) return; sel = 0; deps.changed(); api.invalidate(); }

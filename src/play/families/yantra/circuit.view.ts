@@ -9,7 +9,7 @@
 // the bulb.
 import type { Moment, YantraAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { withAlpha } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -23,6 +23,8 @@ const SHOW_S = 10;         // s of moving dots after a glowing run, then they ho
 export const makeCircuitView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<CircuitParams, CircuitState, YantraAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, sym = p.sym;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -91,6 +93,7 @@ export const makeCircuitView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   }
 
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as YantraAct | undefined;
     if (last?.kind === "wire" || last?.kind === "unwire") api.sfx(refused ? "refuse" : last.kind === "wire" ? "tap" : "crack");
     if (last?.kind === "toggle") api.sfx(refused ? "refuse" : "open");
@@ -289,7 +292,7 @@ export const makeCircuitView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const out: ControlSpec[] = [];
     if (sw) out.push({ id: "toggle", label: W("yantra.circuit.toggle"), aria: s.sw ? "switch closed: open it" : "switch open: close it", kind: "pad", group: "board", pressed: s.sw, onPress: () => act({ kind: "toggle", id: "s" }) });
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
-    out.push({ id: "run", label: W("yantra.circuit.run"), kind: "primary", group: "go", you: s.wires.length > 0 && !showing(), disabled: !s.wires.length, onPress: () => act({ kind: "run" }) });
+    out.push({ id: "run", label: W("yantra.circuit.run"), kind: "primary", group: "go", you: !wait.waits({ kind: "run" }) && s.wires.length > 0 && !showing(), disabled: wait.waits({ kind: "run" }) || !s.wires.length, onPress: () => act({ kind: "run" }) });
     return out;
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => !!dragFrom };

@@ -14,7 +14,7 @@
 import type { JaanchAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -31,6 +31,8 @@ type Ctx = CanvasRenderingContext2D;
 export const makeJaanchView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<JaanchParams, JaanchState, JaanchAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -47,6 +49,7 @@ export const makeJaanchView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     actAt = api.t;
     last.ok = !refused;
     if (last.kind === "undo") last = { kind: "", m: "", ok: false, before: null };
@@ -367,7 +370,7 @@ export const makeJaanchView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [{ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) }];
     // never "your move": no button hints which act is right
-    if (goal === "dono") out.push({ id: "next", label: W("jaanch.next"), aria: W("jaanch.next"), kind: "primary", group: "go", onPress: () => act({ kind: "next" }) });
+    if (goal === "dono") out.push({ id: "next", label: W("jaanch.next"), aria: W("jaanch.next"), kind: "primary", group: "go", disabled: wait.waits({ kind: "next" }), onPress: () => act({ kind: "next" }) });
     return out;
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, dragging, goal: goalLine, readouts, controls, react };

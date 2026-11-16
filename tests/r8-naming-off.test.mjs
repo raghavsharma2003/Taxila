@@ -79,6 +79,7 @@ test("naming on: a mode outside the set is returned as graded", () => {
 
 test("naming off is applied where the act route grades, and the misconception seam checks it", () => {
   const src = readFileSync(new URL("../server/play/routes.js", import.meta.url), "utf8");
-  assert.match(src, /const g = withNaming\(level, gradeActs\(/);
+  // (dc-r8-gate2-shadow S1: the unstripped grade is kept as `raw` for the shadow run, server/play/shadow.js; what leaves is g)
+  assert.match(src, /const raw = gradeActs\(level, b\.acts \?\? \[\], \{ final: !!b\.final \}\);\n\s*const g = withNaming\(level, raw\);/);
   assert.match(src, /if \(mis && !namingOn\(level\.family, level\.mode\)\) return null;/);
 });

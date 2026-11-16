@@ -18,7 +18,7 @@
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { AakashAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -43,6 +43,8 @@ const PLACE_KEY: Record<string, string> = { A: "arunachal", G: "gujarat", H: "gh
 export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<AakashParams, AakashState, AakashAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, goal = p.goal;
   const W = (k: string, v: Record<string, string | number> = {}) => word(lang, k as WordKey, v);
   const st = () => ctl.state;
@@ -67,6 +69,7 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     ctl.dispatch(a); deps.changed();
   };
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const now = api.t;
     actAt = now;
     if (last.m === "undo") last = { m: "", before: null };
@@ -503,7 +506,7 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [{ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) }];
     // never "your move": the button must not hint when the moment has come (the child decides it has)
-    if (goal !== "dhoop") out.push({ id: "done", label: W(`aakash.claim.${goal}`), aria: W(`aakash.claim.${goal}`), kind: "primary", group: "go", onPress: () => act({ kind: "done" }) });
+    if (goal !== "dhoop") out.push({ id: "done", label: W(`aakash.claim.${goal}`), aria: W(`aakash.claim.${goal}`), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     return out;
   }
   void momentOf;

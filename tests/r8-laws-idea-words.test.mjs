@@ -105,14 +105,14 @@ describe("r8 laws, idea words (laws ruling 2026-11-15)", () => {
     }
   });
 
-  it("over every served level of these modes, in en and hi, no law breaks (hinglish: tests/r8-play-laws)", async () => {
+  it("over every served level of these modes, in en and hi, no law breaks (hinglish: tests/r8-play-laws; law 4 aside in CHECK_WAITS_OPEN)", async () => {
     for (const lang of ["en", "hi"]) {
       const extra = [];
       let n = 0;
       for (const key of Object.keys(MISS)) {
         const rows = await L.lawsOverCoverage({ only: key, seeds: 2, perGoal: 1, lang });
         n += rows.length;
-        for (const r of rows) for (const b of r.breaks) extra.push(`${lang} ${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
+        for (const r of rows) for (const b of r.breaks) if (!(b.law === 4 && L.CHECK_WAITS_OPEN[r.key])) extra.push(`${lang} ${r.key} ${r.goal} ${r.levelId}: L${b.law} ${b.state} ${b.what}`);
       }
       assert.ok(n >= 20, `${lang}: levels checked ${n}`);
       assert.deepEqual(extra, []);

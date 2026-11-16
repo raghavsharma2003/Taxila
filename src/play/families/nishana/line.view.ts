@@ -4,7 +4,7 @@
 // is smaller. No snapping (labelled ticks would become the answer), no timer.
 import type { LineAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { withAlpha, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
@@ -14,6 +14,8 @@ import { lineHelpers as H, type LineParams, type LineState } from "./line.logic.
 export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<LineParams, LineState, LineAct>;
   const { level, ctl, lang } = deps;
+  // law 4 (dc-r8-gate2-shadow S4): after a miss the check waits until her act changes
+  const wait = missWait(ctl);
   const p = level.params, n = p.values.length, cmpGoal = p.goal === "compare", roundGoal = p.goal === "round";
   const ROLE: Role[] = ["q2", "q3"];
   let W = 1, Hh = 1, x0 = 30, x1 = 330, ly = 300;
@@ -55,6 +57,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   function act(a: LineAct): void { ctl.dispatch(a); deps.changed(); }
 
   function react(ms: Moment[], refused: string | undefined): void {
+    wait.saw(ms, refused);
     const last = ctl.acts[ctl.acts.length - 1]?.act as LineAct | undefined;
     const now = api.t;
     if (last?.kind === "place" && !refused) api.sfx("slide");
@@ -309,7 +312,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       out.push({ id: "order-same", label: say(lang, "strips.same"), kind: "choice", group: "order", onPress: () => act({ kind: "order", first: -1 }) });
     }
     out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
-    if (!(cmpGoal && s.landed)) out.push({ id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: s.marks.every((m) => m !== null), disabled: s.marks.some((m) => m === null), onPress: () => act({ kind: "commit" }) });
+    if (!(cmpGoal && s.landed)) out.push({ id: "commit", label: say(lang, "line.here"), kind: "primary", group: "go", you: !wait.waits({ kind: "commit" }) && s.marks.every((m) => m !== null), disabled: wait.waits({ kind: "commit" }) || s.marks.some((m) => m === null), onPress: () => act({ kind: "commit" }) });
     return out;
   }
   const view: FamilyView = { layout, update, draw, pointer, busy, goal, readouts, controls, react, dragging: () => !!drag };

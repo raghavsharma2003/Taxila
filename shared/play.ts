@@ -130,6 +130,15 @@ export type GameWeight = typeof GAME_WEIGHT | typeof CHANCE_WEIGHT;
  */
 export const NAMING_OFF: ReadonlySet<string> = new Set(["stambh/tally", "kon/place", "kon/name"]);
 export const namingOn = (family: string, mode: string): boolean => !NAMING_OFF.has(`${family}/${mode}`);
+/**
+ * Gate 2, dc-r8-gate2-shadow S1: naming runs in shadow. In these modes the naming rules as built (H1 to H7, the
+ * discriminating level) decide on every level whether they would name a mix-up, over the session's own shadow memory of
+ * sightings, and that decision is written to the level's trail and its trace as `wouldName` (server/play/shadow.js). It
+ * reaches nothing else: not the teacher's facts row, not the seam, not the learner model (those stay NAMING_OFF's and
+ * H5's), and it steers no level. A separate switch from NAMING_OFF; real sittings decide when a mode's naming goes on (S2).
+ */
+export const NAMING_SHADOW: ReadonlySet<string> = new Set(["stambh/tally", "kon/place", "kon/name"]);
+export const namingShadow = (family: string, mode: string): boolean => NAMING_SHADOW.has(`${family}/${mode}`);
 /** the facts keys that carry a mix-up (what she did that matches one), dropped when naming is off */
 export const NAMING_FACT_KEYS: readonly string[] = ["mal", "sign", "misconception", "shown", "crossesMissing", "vertex_ok", "arms_ok"];
 /**
