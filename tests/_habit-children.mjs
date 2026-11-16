@@ -18,6 +18,10 @@
 // repeat), pooled over all her sessions, the worst fade (pooled over pL, doors and seeds) and the worst single cell.
 // The per-mode tests assert on the worst fade (enough sessions that a child at 1 in 20 is not flagged by chance) and use the
 // worst cell for the known failures.
+//
+// The rules the battery proves (dc-r8-gate2-habit-children H1, H3, H4) are on in the product; `legacy` (runBattery,
+// withRules) runs the same children under the rules from before them (shared/play.ts HABIT_RULES off inside one synchronous
+// run), so each mode's negative control keeps showing the failures those rules fix.
 import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, NAMING_LEVELS } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { logicFor } from "../src/play/families/index.ts";
@@ -25,6 +29,7 @@ import { mulberry32, hash32 } from "../src/play/core/rng.ts";
 import { TALLY_PAD, TALLY_PAD_COLS, four, tallyFourActs, numberLineEnd } from "../src/play/families/stambh/tally.logic.ts";
 import { PAD as KON_PAD, PAD_COLS as KON_PAD_COLS, padTake, goodPose, vertexOffPose, centreOnArmPose, initPlace, asPlaced, markFor, joinAFirst, PRINT_EVERY, norm, BW, BH } from "../src/play/families/kon/kon.place.ts";
 import { asked, nameOf, corners, denotes, labelPoints, arcTargets, arcHit, angleSizes, LETTER_H, LETTER_W } from "../src/play/families/kon/kon.name.ts";
+import { HABIT_RULES } from "../shared/play.ts";
 
 export const MODES = {
   "stambh/tally": { family: "stambh", mode: "tally", goals: ["read", "keep"] },
@@ -71,7 +76,7 @@ function nextOf(s, e, door) {
 // the grade is pure in (level, acts): many children make the same acts on the same served level
 const GRADE_MEMO = new Map();
 function gradeOf(lv, acts, final) {
-  const k = `${final ? 1 : 0}|${lv.levelId}|${lv.fade}|${JSON.stringify(acts)}`;
+  const k = `${HABIT_RULES.on ? 1 : 0}|${final ? 1 : 0}|${lv.levelId}|${lv.fade}|${JSON.stringify(acts)}`;
   if (!GRADE_MEMO.has(k)) GRADE_MEMO.set(k, gradeActs(lv, envOf(acts), { final }));
   return GRADE_MEMO.get(k);
 }
@@ -98,6 +103,16 @@ export function withGenMemo(fn) {
     patched.push([lg, orig]);
   }
   try { return fn(); } finally { for (const [lg, orig] of patched) lg.generate = orig; }
+}
+/**
+ * The rules from before dc-r8-gate2-habit-children's H1, H3 and H4 (the negative control): `legacy` runs fn with the product's
+ * HABIT_RULES switched off, synchronously, and puts it back (the switch is a test seam; nothing else writes it).
+ */
+export function withRules(legacy, fn) {
+  if (!legacy) return fn();
+  const was = HABIT_RULES.on;
+  HABIT_RULES.on = false;
+  try { return fn(); } finally { HABIT_RULES.on = was; }
 }
 export const memoSize = () => LEVEL_MEMO.size + NEXT_MEMO.size + GRADE_MEMO.size + GEN_MEMO.size;
 /** drop the memos (a test file's battery holds them only while it runs) */
@@ -145,9 +160,13 @@ export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS })
     ctx.i = i;
     const own = child.acts[lv.params?.goal];
     const logic = logicFor(lv.family, lv.mode);
-    const first = (lv.family === entry.family && lv.mode === entry.mode && own ? own(lv, ctx) : null) ?? logic.solve(lv);
+    const mine = lv.family === entry.family && lv.mode === entry.mode;
+    const first = (mine && own ? own(lv, ctx) : null) ?? logic.solve(lv);
     const g0 = gradeOf(lv, first, false);
-    const all = g0?.solved ? first : [...first, ...repairOf(lv)];
+    // after a miss: what she does once she has seen the play-out (a child who holds the mix-up may give it again: `again`),
+    // then the solve
+    const again = !g0?.solved && mine ? child.again?.[lv.params?.goal]?.(lv, ctx) ?? [] : [];
+    const all = g0?.solved ? first : [...first, ...again, ...repairOf(lv)];
     const g = gradeOf(lv, all, true);
     const rows = nameOnRepeat(lessonEvidence(g.grade, lv), s, lv);
     for (const r of rows) if (r.misconceptionId) named.add(r.misconceptionId);
@@ -166,10 +185,11 @@ export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS })
  *   ms }>. `seeds`: sessions per cell (random children get `randomSeeds`, constant answers `constSeeds` over `constPls`);
  * `pls`, `fades`, `doors`: the cells; `only`: a filter on the children; `goals`: some of the mode's goals.
  * Async: it yields between children, so in the one-process `npm test` other suites' timers keep running; the generator
- * memo is put on only while one child's sessions run (synchronously), so no other suite ever meets it.
+ * memo is put on only while one child's sessions run (synchronously), so no other suite ever meets it. `legacy`: the rules
+ * from before H1, H3 and H4 (withRules), the same way.
  */
 export async function runBattery(modeName, opts = {}) {
-  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true } = opts;
+  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true, legacy = false } = opts;
   const t0 = performance.now();
   const M = MODES[modeName], out = { mode: modeName, seeds, randomSeeds, constSeeds, constPls: constPls ?? pls, goals: {} };
   for (const goal of goals ?? M.goals) {
@@ -179,7 +199,7 @@ export async function runBattery(modeName, opts = {}) {
     for (const child of childrenFor(modeName, goal)) {
       if (only && !only(child)) continue;
       const run = () => childRow({ entry, goal, kits, child, n: child.random ? randomSeeds : child.constant ? constSeeds : seeds, fades, pls: child.constant && constPls ? constPls : pls, doors });
-      rows.push(genMemo ? withGenMemo(run) : run());
+      rows.push(withRules(legacy, () => (genMemo ? withGenMemo(run) : run())));
       await new Promise((r) => setImmediate(r));
     }
     out.goals[goal] = { kits, rows };
@@ -393,6 +413,12 @@ const readAct = (n) => ({ kind: "read", n: clamp(n, 0, 180) });
 /** the finger's drops that miss: the centre off by (dx, dy) board px, the turn right (eight ways × six distances) */
 const DROPS = DIRS.flatMap((d) => [12, 16, 20, 24, 28, 32].map((r) => { const L = Math.hypot(d[0], d[1]); return { id: `drop ${r} ${DIR_NAME(d)}`, dx: (r * d[1]) / L, dy: (-r * d[0]) / L }; }));
 const TICKS = [-10, -5, 5, 10];
+/** the same drop every level, give or take a finger's wobble: the centre within JITTER board px of the habit's spot, anywhere
+ *  in that disc, afresh each level (H1: a placement's value is its offset on the board, and offsets within a finger's drop
+ *  of each other are one act) */
+const JITTER = 4;
+const JITTERED = DROPS.filter((d) => /^drop (20|24) (up|up-right)$/.test(d.id));
+const wobble = (d, rng) => { const a = 2 * Math.PI * rng(), r = JITTER * Math.sqrt(rng()); return { dx: d.dx + r * Math.cos(a), dy: d.dy + r * Math.sin(a) }; };
 const near = (v, every) => Math.round(v / every) * every;
 
 function placeChildren(goal) {
@@ -416,6 +442,10 @@ function placeChildren(goal) {
       const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy };
       return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
     });
+    for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id} (reads what it shows)`, (lv, c) => {
+      const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy };
+      return [...head(q), readAct(measureReads(p, q)?.right ?? measureRight(p))];
+    }, { random: true });
     for (const t of [-3, -2, -1, 1, 2, 3]) add(`turn${t}`, `same every level: the turn ${t}°`, (lv) => { const p = lv.params, g = goodPose(p); return [...head({ ...g, rot: g.rot + t }), readAct(measureRight(p))]; });
     for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant ${X}`, (lv) => at(lv.params, X), { constant: true });
     add("last-first", "what I typed last time (my first number)", (lv, c) => at(lv.params, c.prev ? c.prev.first.find((a) => a.kind === "read")?.n ?? measureRight(lv.params) : measureRight(lv.params)));
@@ -457,6 +487,7 @@ function placeChildren(goal) {
   }, { random: true });
   for (const t of [-1, 1, ...TICKS]) add(`dot${t}`, `same every level: the dot ${t > 0 ? "+" : ""}${t} on the rim`, (lv) => atD(lv.params, rightMark(lv.params) + t));
   for (const d of DROPS) add(`drop:${d.id}`, `same every level: ${d.id}`, (lv) => { const p = lv.params, g = goodPose(p), q = { ...g, x: g.x + d.dx, y: g.y + d.dy }; return atD(p, markFor(p, q, p.theta), "v", q); });
+  for (const d of JITTERED) add(`wobble:${d.id}`, `same every level, give or take ${JITTER} px: ${d.id}`, (lv, c) => { const p = lv.params, g = goodPose(p), w = wobble(d, c.rng), q = { ...g, x: g.x + w.dx, y: g.y + w.dy }; return atD(p, markFor(p, q, p.theta), "v", q); }, { random: true });
   for (let X = 0; X <= 180; X++) add(`const:${X}`, `constant dot ${X}`, (lv) => atD(lv.params, X), { constant: true });
   add("btn-first", "the first join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv)));
   add("btn-last", "the last join button", (lv) => atD(lv.params, rightMark(lv.params), firstEnd(lv) === "e" ? "v" : "e"));

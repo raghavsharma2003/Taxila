@@ -416,9 +416,20 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
     });
   }
   // gate 2 per session: the placements and the scale are picks too. One vertex-off names nothing; a second on a draw level
-  // with another asked size names it; the same size again does not; past the session's fourth level nothing does
+  // with another asked size names it; the same size again does not; past the session's fourth level nothing does. Gate 2,
+  // H1: the second must also be another act, her centre more than a finger's drop (tolPx) from where it sat on the board, so
+  // the two levels' first arms lie far enough apart (the bottom edge on O sits PD along each arm's normal); another size on
+  // an arm a few degrees off is the same act, and names nothing
   const voOf = (lv) => gradeActs(lv, env(konLogic.malActs(lv, "vertex-off")), { final: true });
-  const [v1, v2] = [four[0], four.find((l) => l.params.theta !== four[0].params.theta)];
+  const armApart = (a, b) => { const d = Math.abs(((a.params.start - b.params.start) % 360 + 540) % 360 - 180); return Math.min(d, 180 - d); };
+  const v1 = four[0];
+  const v2 = served.find((l) => l.params.theta !== v1.params.theta && armApart(l, v1) >= 35);
+  const near = served.find((l) => l.params.theta !== v1.params.theta && armApart(l, v1) <= 5 && l.params.mirror === v1.params.mirror);
+  assert.ok(v2 && near, "served levels: another size on an arm far apart, and one on an arm close by");
+  {
+    const sv0 = { ...afterLevelBody(sessionOf(entry), { grade: voOf(v1).grade, level: v1 }), n: 1 };
+    assert.equal(nameOnRepeat(lessonEvidence(voOf(near).grade, near), sv0, near)[0].misconceptionId, undefined, "H1: another size, the same drop on the board: not named");
+  }
   const g1 = voOf(v1), r1 = nameOnRepeat(lessonEvidence(g1.grade, v1), sessionOf(entry), v1);
   assert.equal(r1[0].misconceptionId, undefined, "one vertex-off names nothing"); assert.equal(g1.grade.evidence[0].chanceMis, entry.misMap["vertex-off"]);
   assert.deepEqual(g1.trail.mal, []); assert.doesNotMatch(playFactsRow(g1.grade.facts), /mal=|misconception=|vertex|centre_off|sign=/);

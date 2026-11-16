@@ -132,6 +132,24 @@ export const NAMING_OFF: ReadonlySet<string> = new Set(["stambh/tally", "kon/pla
 export const namingOn = (family: string, mode: string): boolean => !NAMING_OFF.has(`${family}/${mode}`);
 /** the facts keys that carry a mix-up (what she did that matches one), dropped when naming is off */
 export const NAMING_FACT_KEYS: readonly string[] = ["mal", "sign", "misconception", "shown", "crossesMissing", "vertex_ok", "arms_ok"];
+/**
+ * Gate 2, dc-r8-gate2-habit-children (H1: two sightings are two different acts). On in the product. A TEST SEAM only: the habit battery
+ * (tests/_habit-children.mjs) turns it off inside one synchronous run, and puts it back, to show the failures those rules fix
+ * (its negative control). Nothing else writes it.
+ */
+export const HABIT_RULES: { on: boolean } = { on: true };
+/**
+ * Gate 2 (H1): what she did, as a value, at a pick's sighting (FamilyLogic.sightingOf): a key (a typed number, her totals,
+ * a rim mark), or a placement's offset from the vertex on the board with the distance within which two are one act.
+ */
+export type SightingValue = string | { xy: [number, number]; tol: number };
+/** two sightings' values are one act: the same key, or offsets on the board within either one's tolerance. Pure. */
+export function sameSighting(a: SightingValue | null | undefined, b: SightingValue | null | undefined): boolean {
+  if (a === null || a === undefined || b === null || b === undefined) return false;
+  if (typeof a === "string" || typeof b === "string") return a === b;
+  if (!Array.isArray(a.xy) || !Array.isArray(b.xy)) return false;
+  return Math.hypot(a.xy[0] - b.xy[0], a.xy[1] - b.xy[1]) <= Math.max(Number(a.tol) || 0, Number(b.tol) || 0);
+}
 
 // ───────────────────────────── levels ─────────────────────────────
 
@@ -604,6 +622,9 @@ export interface PlayEvidence {
    *  chance weight and NOT named (no misconceptionId); the server names it only when it repeats on a level whose surface
    *  differs (server/play/levels.js nameOnRepeat), and a constructed act (a typed number, a placement) names it itself */
   chanceMis?: string;
+  /** gate 2 (H1): what she did at that pick, as a value (FamilyLogic.sightingOf); the server counts two sightings only when
+   *  these differ (server/play/levels.js nameOnRepeat), and it never leaves the play server */
+  chanceAct?: SightingValue;
   via: "game"; weight: GameWeight;
   levelId: string; actSeq: number;
 }
@@ -695,6 +716,10 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   /** gate 2: is a sighting of this mal-rule on this level firm, i.e. one that no single ordinary slip makes (stambh/tally
    *  read: a row where no slip, read any way, lands on the mix-up's number)? */
   firmSighting?(level: PlayLevel<P>, malRule: string): boolean;
+  /** gate 2 (H1, dc-r8-gate2-habit-children): what she did at a sighting of this mal-rule, as a value: the state just after
+   *  the act that showed it, and its moment. A sighting counts toward a repeat only when its value differs from every earlier
+   *  sighting's (server/play/levels.js nameOnRepeat). null or absent: no value (the repeat rule alone) */
+  sightingOf?(level: PlayLevel<P>, malRule: string, state: S, moment: Moment): SightingValue | null;
   /** gate 2: a level whose right answer says less than its goal's usual one (kon/name: the first fade-1 level with O at
    *  the vertex, as the book's first figure; a find level where the mix-up's reading meets no other arc): its correct
    *  enters at CHANCE_WEIGHT (the controllerEasy temper, the learner model's one step below a game's weight) and

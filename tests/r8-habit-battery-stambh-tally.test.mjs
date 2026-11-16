@@ -2,13 +2,17 @@
 // sessions as the server serves them (tests/_habit-children.mjs), naming forced on inside the battery only (NAMING_OFF in
 // shared/play.ts is unchanged: nothing a child sees or the lesson receives changes).
 //
-// The battery is the negative control: no naming rule has changed yet (H1, H4 come next), so it must show the judge's
-// failure. The assertion every non-holder child must meet (named in fewer than 1 session in 10, at every fade) is marked
-// todo where it fails today (read); a separate test asserts that the known failure does show ("16 every time": the
-// mix-up's number on rows 19 and 20, the second a firm sighting). keep passes already: its only one-button habit that is
-// named ("|" only, five as five standing lines) is the kit's own second sign, so it is listed as holding the mix-up.
+// H1 (dc-r8-gate2-habit-children) is built: two sightings are two different acts. read's sighting counts only when the
+// number she typed differs from every earlier sighting's (tallyLogic.sightingOf), so two rows on which the mix-up gives the
+// same number (19 and 20 both give 16) are one sighting. Every non-holder child is asserted under 1 in 10 at every fade.
+// keep: its only one-button habit that is named ("|" only, five as five standing lines) is the kit's own second sign, so it
+// is listed as holding the mix-up.
 //
-// Run time (this container, one core): gate sweep 18 s; HABIT_FULL=1 97 s. HABIT_PRINT=<file> writes the table
+// The negative control runs always: the same children under the rules from before H1 (the battery's `legacy`) must still
+// show the judge's failure ("16 every time": the mix-up's number on rows 19 and 20, the second a firm sighting; "what I
+// typed last time").
+//
+// Run time (this container, one core): gate sweep about 20 s; HABIT_FULL=1 about 100 s. HABIT_PRINT=<file> writes the table
 // (the packet's "Gate 2 battery").
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
@@ -19,9 +23,12 @@ import { NAMING_OFF } from "../shared/play.ts";
 
 const S = sweep();
 const KIT = coverage().entries.find((e) => e.family === "stambh" && e.mode === "tally" && e.goal === "read").misMap["tally-four"];
-let RES = null, over = [];
+let RES = null, OLD = null, over = [];
+// the negative control's children, run under the rules from before H1
+const OLD_KIDS = new Set(["const:16", "last-first", "blind"]);
 before(async () => {
   RES = await runBattery("stambh/tally", S);
+  OLD = await runBattery("stambh/tally", { ...S, legacy: true, goals: ["read"], only: (c) => OLD_KIDS.has(c.id) });
   over = overLine(RES);
   if (process.env.HABIT_PRINT) writeFileSync(process.env.HABIT_PRINT, `${batteryTable(RES)}\n\nsweep: ${JSON.stringify(S)}; ${RES.ms} ms\n`);
 });
@@ -53,17 +60,19 @@ test("children who hold the mix-up: listed with why, and how often each is named
   assert.ok(rowOf(RES, "keep", "holder-counted").all[KIT] >= 0.99, "keep names from one level");
 });
 
-test("negative control: the judge's failure shows before any rule changes (16 every time; what I typed last time)", () => {
-  const c16 = rowOf(RES, "read", "const:16");
+test("negative control: under the rules from before H1 the judge's failure shows (16 every time; what I typed last time)", () => {
+  const c16 = rowOf(OLD, "read", "const:16");
   assert.ok(c16.worstCell[KIT].share >= 0.5, `16 every time, worst cell ${c16.worstCell[KIT].share} at ${c16.worstCell[KIT].at}`);
   assert.ok(c16.worstFade[KIT].share >= LINE, `16 every time, worst fade ${c16.worstFade[KIT].share}`);
-  const last = rowOf(RES, "read", "last-first");
+  const last = rowOf(OLD, "read", "last-first");
   assert.ok(last.worstFade[KIT].share >= LINE, `what I typed last time: ${last.worstFade[KIT].share}`);
-  // and the child the tables model is under the line: the blind guesser
-  assert.ok(rowOf(RES, "read", "blind").worstFade[KIT].share < LINE);
+  // under H1 the same two are under the line
+  for (const c of ["const:16", "last-first"]) assert.ok(rowOf(RES, "read", c).worstFade[KIT].share < LINE, `${c} under H1`);
+  // and the child the tables model is under the line, old rules and new: the blind guesser
+  for (const R of [OLD, RES]) assert.ok(rowOf(R, "read", "blind").worstFade[KIT].share < LINE);
 });
 
-test("read: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", { todo: "H1/H3/H4 not built: what I typed last time 0.17, 16 every time 0.13 (fade 1, gate sweep)" }, () => {
+test("read: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {
   const o = over.filter((x) => x.goal === "read");
   assert.deepEqual(o, [], o.map((x) => `${x.label}: ${x.share.toFixed(3)} at fade ${x.fade}`).join("\n"));
 });

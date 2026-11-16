@@ -24,11 +24,11 @@
 // (measure, draw, size); the law lives in kon.place.ts and every function below hands a place goal there first too.
 // r8: name (c6-maths-ch02-t02): three lettered rays from a vertex, two ends joined; say (tap three letters for the lit angle)
 // and find (tap the arc a shown name denotes); the law lives in kon.name.ts, handed over first like place.
-import type { Candidate, FamilyLogic, Facts, GenRequest, KonAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
+import { HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type KonAct, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { NAME_MAL, generateName, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, drawSurface, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { PLACE_MAL, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -461,9 +461,13 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
     // whose figures and letters differ two by two (say and find count together): at worst 1 in 37 a session
     "say:vertex-name": { sightings: 3 }, "find:vertex-name": { sightings: 3 } },
   // name: two parts (the figure, the letters: nameSurface), so a second sighting counts on another figure with other letters;
-  // place/draw: two parts (the asked size, the join order: drawSurface); the rest: the level's params
+  // place/draw: two parts (the asked size, the join order: drawSurface); place/measure (gate 2, H1): its key on both scales
+  // (measureSurface: another tilt of the same key is not another level); the rest: the level's params
   surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? nameSurface(l.params)
-    : l.params.goal === "draw" ? drawSurface(l.params, l.seed) : JSON.stringify(l.params)),
+    : l.params.goal === "draw" ? drawSurface(l.params, l.seed) : l.params.goal === "measure" && HABIT_RULES.on ? measureSurface(l.params) : JSON.stringify(l.params)),
+  // gate 2, H1 (dc-r8-gate2-habit-children): what she did at a place pick, as a value (placeSighting): a second sighting
+  // counts only when it differs from every earlier one
+  sightingOf: (l: PlayLevel<KonParams>, rule: string, s: KonState) => (isPlaceGoal(l.params.goal) ? placeSighting(l.params, s?.pl, rule) : null),
   // gate 2 (kon/name): the first fade-1 level with O at the vertex, and a find level where the mix-up's reading meets no other
   // arc, solve at chance weight and discriminate nothing (nameFaint)
   faintSolve: (l: PlayLevel<KonParams>) => isNameGoal(l.params.goal) && nameFaint(l.params, l.fade),

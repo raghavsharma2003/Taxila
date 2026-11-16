@@ -511,4 +511,8 @@ export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
   // worst rows is named 13 in 256 at worst (the packet's table)
   chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 } },
   firmSighting: (level: PlayLevel<TallyParams>, rule: string) => rule === "tally-four" && level.params.goal === "read" && !oneSlipFromMixup(level.params.counts[0]),
+  // gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. read: the number she typed, so two rows
+  // on which the mix-up gives the same number (19 and 20 both give 16; 34 and 35 both 28) are one sighting, and "16 every
+  // time" or "what I typed last time" is seen once
+  sightingOf: (level: PlayLevel<TallyParams>, rule: string, s: TallyState) => (rule === "tally-four" && level.params.goal === "read" && s?.totals?.[0] !== null && s?.totals?.[0] !== undefined ? `n:${s.totals[0]}` : null),
 };

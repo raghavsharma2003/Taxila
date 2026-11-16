@@ -54,7 +54,7 @@ export function withNaming(level, g) {
   if (!g || namingOn(level?.family, level?.mode)) return g;
   const facts = (f) => (f && typeof f === "object" ? Object.fromEntries(Object.entries(f).filter(([k]) => !NAMING_FACT_KEYS.includes(k))) : f);
   const row = (e) => {
-    const { misconceptionId: m, chanceMis: c, discriminates: _d, ...rest } = e;
+    const { misconceptionId: m, chanceMis: c, chanceAct: _a, discriminates: _d, ...rest } = e;
     return (m || c) && e.outcome !== "correct" ? { ...rest, weight: GAME_WEIGHT } : rest;
   };
   const grade = g.grade ? { ...g.grade, evidence: (g.grade.evidence ?? []).map(row), facts: facts(g.grade.facts) } : g.grade;
@@ -69,7 +69,7 @@ export function withNaming(level, g) {
 export function lessonEvidence(grade, level) {
   if (!grade?.evidence?.length) return [];
   return grade.evidence.map((e) => ({
-    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}), ...(e.chanceMis ? { chanceMis: e.chanceMis } : {}),
+    skillId: e.skillId, outcome: e.outcome, ...(e.misconceptionId ? { misconceptionId: e.misconceptionId } : {}), ...(e.chanceMis ? { chanceMis: e.chanceMis, ...(e.chanceAct !== undefined ? { chanceAct: e.chanceAct } : {}) } : {}),
     ...(e.discriminates ? { discriminates: e.discriminates } : {}), source: "game", itemId: `play:${level.levelId}`, probe: "P10", hintsUsed: 0, weight: e.weight,
   }));
 }
