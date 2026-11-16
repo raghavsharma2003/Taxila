@@ -54,6 +54,41 @@ export function seamForm(forms, state, kind) {
   return forms[(seamStart(lessonKeyOf(state), kind) + n) % forms.length];
 }
 
+/** dc-r8-director24 M (main's 035): the model writes the joins, in the turn's own reply call; code checks each and falls back to the
+ *  authored form. A join passes when it is one sentence of at most JOIN_MAX_WORDS words with no digit, no question, no screen word, no
+ *  script term of a card she has not yet answered, and is none of her last four turns' sentences. → null when it passes, else why. */
+export const JOIN_MAX_WORDS = 12;
+const SCREEN_WORD = /(?<![\p{L}])(?:buttons?|screen|click|clik|tap|scroll|swipe|page|app|neeche\s+dabao|upar\s+dabao)(?![\p{L}])/iu;
+export function joinProblem(text, { kit = null, state = null, lang = "hinglish" } = {}) {
+  const t = norm(text);
+  if (!t) return "empty";
+  if (sentencesOf(t).length > 1) return "two sentences";
+  if (t.split(" ").length > JOIN_MAX_WORDS) return "over 12 words";
+  if (/\d/.test(t)) return "a digit";
+  if (/[?？]/.test(t)) return "a question";
+  if (SCREEN_WORD.test(t)) return "a screen word";
+  const sc = scriptFor(kit)?.script;
+  if (sc) {
+    const answered = new Set((state?.rightLog ?? []).map((x) => String(x.id)));
+    const L = lang === "english" ? "en" : "hi";
+    const cards = [];
+    for (const sk of sc.skills ?? []) {
+      for (const b of sk.explain ?? []) if (b.ask?.prompt && !answered.has(`script:${sk.skillId}:ask:${b.id}`)) cards.push(b.ask.prompt);
+      for (const c of sk.checks ?? []) if (c.prompt && !answered.has(`script:${sk.skillId}:${c.id}`)) cards.push(c.prompt);
+      if (sk.workedExample?.problem && !answered.has(`script:${sk.skillId}:ask:worked`)) cards.push(sk.workedExample.problem);
+    }
+    const cardText = low(cards.map((p) => (typeof p === "string" ? p : `${p.hi ?? ""} ${p.en ?? ""}`)).join(" | "));
+    const word = (w) => new RegExp(`(?<![\\p{L}])${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(?![\\p{L}])`, "iu");
+    for (const term of sc.terms ?? []) for (const w of [term?.[L], term?.hi, term?.en]) {
+      const k = low(String(w ?? "").replace(/\s*\(.*\)\s*/g, " "));
+      if (k.length >= 3 && word(k).test(low(t)) && word(k).test(cardText)) return `the term "${k}" of a card not yet answered`;
+    }
+  }
+  const lastFour = (state?.recent ?? []).filter((x) => x.who === "teacher").slice(-4).flatMap((x) => sentencesOf(x.text ?? "")).map(low);
+  if (lastFour.includes(low(t))) return "one of her last four turns";
+  return null;
+}
+
 /** Every form of the joints this pass owns, as sentence matchers (slots match anything). */
 function jointMatchers(kit, lang, kinds = SEAM_JOINTS) {
   const out = [];
@@ -123,8 +158,13 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)
     if (j && used.includes(j)) j = null;
     const forms = j ? jointOf(kit, j, lang) : null;
-    const form = j && forms?.length ? seamForm(forms, state, j) : null;
-    seams.push({ left: prevKind, right: k, joint: form ? j : null, ...(form ? { form } : {}) });
+    let form = j && forms?.length ? seamForm(forms, state, j) : null;
+    // (dc-r8-director24 M: the model's join for this seam, when it wrote one and it passes; else the authored form. The seam records
+    // which was said, and why the model's fell back)
+    const mine = j && form ? norm(info.modelJoins?.[j] ?? "") : "";
+    const bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
+    if (mine && !bad) form = /[.!।]$/.test(mine) ? mine : `${mine}.`;
+    seams.push({ left: prevKind, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : "authored", ...(bad ? { fellBack: bad } : {}) } : {}) });
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
     if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }

@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, lessonKeyOf } from "./seams.js";
+import { applySeams, seamStart, lessonKeyOf, JOIN_MAX_WORDS } from "./seams.js";
 import { altCall } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
@@ -1192,7 +1192,9 @@ export const statementKey = (item) => !!item && (["why", "teachback"].includes(i
 export const REPLY_HEDGE_MS = () => { const v = Number(process.env.TAXILA_REPLY_HEDGE_MS ?? 2200); return Number.isFinite(v) && v > 0 ? v : 0; };
 /** v6.11 G2: every reply, whatever path wrote it (a neutral line, an early return), says no sentence twice; the parts follow. */
 export async function textReply(args) {
-  let out = await textReply0(args);
+  const joinSink = {};
+  let out = await textReply0({ ...args, joinSink });
+  if (out?.guard && Object.keys(joinSink).length) out = { ...out, guard: { ...out.guard, modelJoins: { ...joinSink } } };
   if (!out?.reply) return out;
   // v6.11 G2 (main on director19 c6 steady 34, 70, offtopic 34: a right answer on the worked example's card closed it without its final
   // answer — the why-probe turn carries no worked close): the worked answer is said with the verdict when her line does not say it
@@ -1246,12 +1248,50 @@ function seamsOf(out, { state, kit, ui = null }) {
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
+    modelJoins: out.guard?.modelJoins ?? null,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out;
   const g = { ...out.guard, seams: r.seams, jointsUsed: r.jointsUsed, ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
+}
+/** dc-r8-director24 M (main's 035): the model writes the joins in the turn's own reply call. Each joint the turn may need is asked for
+ *  as a line after her reply — `JOIN <kind>: <words>` — which code takes off the draft (takeJoins), and the seam pass checks (seams.js
+ *  joinProblem) and says, else the authored form. The kinds asked for are the ones code can see coming; one not used is dropped. */
+const JOIN_LINE = /^\s*JOIN\s+([A-Za-z]+)\s*:\s*(.*)$/;
+export function takeJoins(text, sink = {}) {
+  const kept = [];
+  for (const line of String(text ?? "").split(/\n/)) {
+    const m = JOIN_LINE.exec(line);
+    if (m) { if (m[2].trim() && !sink[m[1]]) sink[m[1]] = m[2].trim(); continue; }
+    // (a JOIN written on the reply's own line: the reply is what comes before it)
+    const at = line.search(/\bJOIN\s+[A-Za-z]+\s*:/);
+    if (at >= 0) { const m2 = JOIN_LINE.exec(line.slice(at)); if (m2?.[2].trim() && !sink[m2[1]]) sink[m2[1]] = m2[2].trim(); if (line.slice(0, at).trim()) kept.push(line.slice(0, at)); continue; }
+    kept.push(line);
+  }
+  return kept.join("\n").trim();
+}
+// (the aims are said to the model in English for every lesson language: a Hinglish aim is a line it would say back)
+const JOIN_AIM = { backTo: "going back to the earlier question you will ask again", beforeRemediation: "saying you will look at the same idea another way",
+  afterAside: "coming back to the lesson from the child's topic", afterAiLine: "coming back to learning after saying what you are", afterTryFirst: "handing over the question they offered to try" };
+export function joinsWanted({ state, kit, ui = null, verdict = null, history = [] }) {
+  const lang = state?.ctx?.lang === "english" ? "english" : "hinglish";
+  const has = (k) => (jointOf(kit, k, lang) ?? []).length > 0;
+  const lm = state?.lastMove ?? {};
+  const g0 = state?.lastGraded;
+  const herPrev = String([...(history ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
+  const out = [];
+  if (["not_yet", "incorrect"].includes(String(verdict ?? state?.lastVerdict ?? "")) && lm.scriptBeat?.kind === "remediation") out.push("beforeRemediation");
+  if (ui?.ask?.itemId && ((g0?.itemId && g0.itemId !== ui.ask.itemId) || lm.cameBack || lm.returnReply)) out.push("backTo");
+  if (lm.returnReply || lm.asideResume || (state?.later ?? []).some((p) => p.at === state?.turn)) out.push("afterAside");
+  if (/(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev)) out.push("afterAiLine");
+  if (lm.request === "selftry") out.push("afterTryFirst");
+  return out.filter(has);
+}
+export function joinNoteOf(kinds, lang = "hinglish") {
+  if (!kinds?.length) return null;
+  return `After your reply, on its own line for each: JOIN <kind>: <words>. Kinds: ${kinds.map((k) => `${k} (${JOIN_AIM[k]})`).join("; ")}. Each in ${lang === "english" ? "English" : "the lesson's Hinglish"}, your own words, at most ${JOIN_MAX_WORDS} words, one sentence, no numbers, no question, no word from a question still to come, not a sentence you have said before.`;
 }
 /** The kind of a second view ("parts", "line", "round", "wholes", "unrolled", "example" …): a call's or a hint's `view`; a bars call with
  *  none is "parts". null when it cannot be told. */
@@ -1353,7 +1393,7 @@ async function childSentence(state, L, kit = null) {
   const r = await replyDeps.chat(DEPLOY.reply, [{ role: "system", content: sys }, { role: "user", content: rows + about }], { maxTokens: 60, effort: "none", timeoutMs: 5000 });
   return childSentenceAddressed(childSentenceOk(r?.text, rows), state?.ctx?.firstName);
 }
-async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null }) {
+async function textReply0({ instructions, state, kit, childText, trace, history = state.recent.slice(0, -1), verdict = state.lastVerdict ?? "ungraded", ui = null, module = null, overflow = true, onClause = null, clauseFix = null, joinSink = null }) {
   const item = state.lastMove?.itemId ? findItem(state, kit, state.lastMove.itemId) : null;
   const next = !item && TEACHING_MOVES.has(state.lastMove?.kind) ? upcomingItem(state, kit) : null;
   const ahead = next && !statementKey(next) ? next : null;
@@ -1638,7 +1678,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // the real reply's hedge twin goes to the overflow account (azure.js chat twin, 14.4), a bet's never does
   // v6.6 V1: every draft the model wrote this turn (her own words, as against code's lines put in later)
   const modelSaid = [];
-  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => { const t = r.text.trim(); modelSaid.push(t); return t; });
+  // (dc-r8-director24 M: the joins she wrote after her reply are taken off it here, before any guard reads the draft)
+  const joinsDrafted = joinSink ?? {};
+  const ask = (msgs) => replyDeps.chat(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, trace, hedgeMs: REPLY_HEDGE_MS(), ...(overflow ? { twin: "overflow" } : { overflow: false }) }).then((r) => { const t = takeJoins(r.text, joinsDrafted); modelSaid.push(t); return t; });
   let reply;
   const guardSlot = {};
   // The content filter blocking the reply call (the child's words are in it) is a safety signal, not an
@@ -1713,7 +1755,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let tried = false;
     const onDelta = (_d, text) => {
       if (tried) return;
-      const s1 = firstClosedSentence(text);
+      const s1 = firstClosedSentence(takeJoins(text, {}));
       if (!s1) return;
       tried = true;
       const lock = lockFirstSentence({ reply: text, s1, askEnd: pinned ? askEnd : null, problems, spoken: true, confirmNeeded: G && verdict === "correct", t0: replyT0,
@@ -1725,8 +1767,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       try { onClause({ i: 0, text: lock.s1 }); } catch (e) { console.warn("[lesson] onClause threw:", e?.message); }
     };
     try {
-      return (await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
-        ...(overflow ? {} : { overflow: false }) })).text.trim();
+      return takeJoins((await replyDeps.chatStream(DEPLOY.reply, msgs, { maxTokens: 220, effort: "none", timeoutMs: 6000, stallMs: 3000, quotaLane: "hot", trace, onDelta,
+        ...(overflow ? {} : { overflow: false }) })).text, joinsDrafted);
     } catch (e) {
       // a content-filter block is the safeguarding path below, exactly as on the one-call path
       if (isContentFilter(e)) throw e;
@@ -1770,7 +1812,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
   const retSaid = state.lastMove?.returned?.said ?? null;
   const retNote = retSaid ? returnNoteOf(retSaid, state.lastMove.returned.topic, lang) : null;
-  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote].filter(Boolean).join(" ");
+  const joinNote = joinNoteOf(joinsWanted({ state, kit, ui, verdict, history }), lang);
+  const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote, joinNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
     if (reply) { guardSlot.used = true; slotState.on = true; }
