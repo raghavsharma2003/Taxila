@@ -108,7 +108,15 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
   // (phraseReplies[i] answers returns[i]: the return her line asked, the child's own phrase back)
-  const i = k?.phraseReplies?.length ? returnIndexOf(k, topic, asked, lang) : -1;
+  let i = k?.phraseReplies?.length ? returnIndexOf(k, topic, asked, lang) : -1;
+  // (dc-r8-director22 A: her question after the "Main AI teacher hoon" line is no return of the kind — its reply is the phrase form of the
+  // same shape: a favourite asked gets the favourite form, a liking asked the "achha lagta" form)
+  if (i < 0 && k?.phraseReplies?.length) {
+    const q = String(asked ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
+    const forms = k.phraseReplies.map((f) => formOf(f, lang).toLowerCase());
+    const want = /favou?rite|kaun\s+pasand/i.test(q) ? /favou?rite/ : /achha\s+(?:kya\s+)?lagta|like\s+(?:most|about|best)|pasand/i.test(q) ? /achha\s+lagta|like/ : null;
+    if (want) i = forms.findIndex((f) => want.test(f));
+  }
   const phrase = i >= 0 && k.phraseReplies[i] ? phraseOf(said) : null;
   if (phrase) return { line: cap(fill(formOf(k.phraseReplies[i], lang), { phrase })), form: "phrase" };
   const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);

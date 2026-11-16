@@ -20,7 +20,8 @@ const cardQ = (c) => sentencesOf(c).at(-1) ?? "";
 const cardIn = (r) => !!r?.card && (low(r.text).includes(low(r.card).slice(0, 30)) || (sentencesOf(r.card).length > 1 && low(r.text).endsWith(low(cardQ(r.card)))));
 
 const REPOSE = /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Look again|One more look)\s*:/i;
-const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab:?|the full answer/i;
+// (dc-r8-director22 K: a yes-or-no key is said as a sentence — "Nahi, kyunki …" — and is a key said)
+const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab:?|the full answer|(?:^|[.!?]\s+)(?:haan|nahi|yes|no), (?:kyunki|because)\b/i;
 const GIVE_UP = /\b(?:aap batao|aap hi batao|tum batao|batao na|nahi pata,? aap|pata nahi,? aap|give up|i give up|chhodo|nahi aata)\b/i;
 /** Any give-up: "pata nahi" bare, "mujhe nahi pata", "aap batao", "nahi aata"… (a request for the answer, or not knowing it). */
 const GIVE_UP_ANY = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
@@ -688,6 +689,12 @@ export const ORDER_LAWS = {
       return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
     return null;
   },
+  /** dc-r8-director22 K: a key is said once — never the same key in two of her turns running (only its opener changed). */
+  keyOnce(L, r, i, ctx) {
+    const keyOf = (t) => { const x = String(t ?? ""); const m = /(?:jawab(?: hai)?:?|answer (?:here )?(?:is|was))\s+([^,.;]+)/i.exec(x) ?? /(?:^|[.!?]\s+)(haan|nahi|yes|no), (?:kyunki|because)\b/i.exec(x); return m ? m[1].trim().toLowerCase() : null; };
+    const k = keyOf(r.text), p = ctx.prevT ? keyOf(ctx.prevT.text) : null;
+    return k && p && k === p ? `the key "${k}" said in two turns running` : null;
+  },
   /** dc-r8-director22 H: a Hindi request gets words she did not say in her last two turns — the part's second wording or an unspent
    *  simpler; every teaching sentence of the turn (four words or more, the card aside) said already is the fault. */
   hindiNewWords(L, r, i, ctx) {
@@ -752,7 +759,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

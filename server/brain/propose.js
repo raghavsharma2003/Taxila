@@ -542,6 +542,8 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // new is drawn, the walk's next unit is not shown)
   // (a move that clears the board — the teach-back's key turn with no answerBoard, a "board hatao" — holds none: nothing is up)
   if (move?.clear === "board") return null;
+  // (dc-r8-director22 K: the why's second wording after a key is said over the board the key was said over)
+  if (move?.keepBoard && up?.board) return { board: up.board, unit: up.unit };
   // (main's 026: the wrap that says a teach-back's key holds its answerBoard — a unit of its own, end:teachback:answer)
   const answerWrap = move?.kind === "wrap" && move?.scriptBeat?.beatId === "teachback:answer" && !!move.scriptBeat.board;
   const noUnitMove = (["break", "wrap", "safeguard"].includes(move?.kind) && !answerWrap) || !!move?.checkin || ["stop", "goodbye", "break", "end"].includes(move?.request);
@@ -570,7 +572,8 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const unitOfPart = (p) => {
     if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
     if (p.part === "aside") return null;
-    if (p.part === "bridge") pastBridge = true;
+    // (dc-r8-director22 B: a bridge changes no board — it rides on the board up; the next unit's board goes up with its first part)
+    if (p.part === "bridge") { pastBridge = true; return null; }
     return pastBridge && bridgeU?.board ? bridgeU : cur;
   };
   const spoken = offs.map((p) => ({ ...p, held: unitOfPart(p) })).filter((p) => p.held);

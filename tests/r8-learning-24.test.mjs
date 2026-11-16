@@ -40,3 +40,11 @@ test("026: a wrap that says the teach-back's key holds its answerBoard; a plain 
   const plain = heldOf({ move: { kind: "wrap" }, kit: null, up });
   assert.equal(plain?.unit, "end:teachback");
 });
+
+// (dc-r8-director22 A: the reply to her question after the AI line uses the phrase forms too, by the question's shape)
+test("A: the answer to her AI-line question gets a phrase reply of the same shape", () => {
+  assert.equal(asideReplyLine({ said: "Virat", topic: "cricket", asked: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?" }).form, "phrase");
+  const r = asideReplyLine({ said: "sixer maarna", topic: "cricket", asked: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe cricket ke baare mein sabse achha kya lagta hai?" });
+  assert.equal(r.form, "phrase");
+  assert.match(r.line, /sixer maarna/);
+});

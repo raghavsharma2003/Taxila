@@ -40,7 +40,9 @@ describe("r7-brain-v69.test.mjs", () => {
   });
 
   // N2: the bridge belongs to the next card's unit — after a give-up it switches at the bridge's first spoken part
-  describe("N2: a bridge after a give-up switches to the next skill's first unit where the bridge begins", () => {
+  // (dc-r8-director22 B: a bridge changes no board — the next skill's first unit goes up with its first part after the bridge; a turn
+  // that ends on the bridge keeps the board up. Was "where the bridge begins")
+  describe("N2: a bridge after a give-up switches to the next skill's first unit where that unit's first part begins", () => {
     // (v6.10: c4 stuck's live walk now stays in skill 1 until the child leaves — its give-up-then-bridge is steady's, row 74)
     // (main on director21, O6 and D: stuck c5-t02's live walk now stays in skill 1 until the child leaves — no bridge to switch at)
     for (const [persona, topic, n] of [["steady", "c4", 74], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
@@ -51,11 +53,14 @@ describe("r7-brain-v69.test.mjs", () => {
       assert.ok(t, "a bridge turn near the row");
       const sk = t.pl.state.lastMove.bridgeBeat?.skillId;
       assert.ok(sk, "a bridge into the next skill");
-      assert.match(String(t.held?.switchTo?.unit), new RegExp(`^${sk}:`), JSON.stringify(t.held));
       const parts = t.out.guard.lineParts;
       const text = norm(t.out.reply);
-      const at = text.indexOf(norm(parts.find((p) => p.part === "bridge").text));
-      assert.equal(t.held.switchTo.atChar, at, "the switch is where the bridge begins");
+      const bi = parts.findIndex((p) => p.part === "bridge");
+      const after = parts.slice(bi + 1).find((p) => !["aside", "close", "closed"].includes(p.part) && String(p.text ?? "").trim());
+      if (!after) { assert.ok(!t.held?.switchTo || !new RegExp(`^${sk}:`).test(String(t.held.switchTo.unit)), "a turn ending on the bridge draws no next board"); return; }
+      assert.match(String(t.held?.switchTo?.unit), new RegExp(`^${sk}:`), JSON.stringify(t.held));
+      const at = text.indexOf(norm(after.text));
+      assert.equal(t.held.switchTo.atChar, at, "the switch is where the next unit's first part begins");
       assert.ok(!/:bridge$/.test(t.held.switchTo.unit), "never a unit of its own");
     });
   });
