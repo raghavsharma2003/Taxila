@@ -91,12 +91,21 @@ const ASKS_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your favou?r
 // v6.6 A2 (main, director14: "Virat tumhari pasand hai" presumed their taste, and the line was said again on every ask): said on the
 // turn they ask, once per lesson in full; a later ask gets a short form. It never presumes their taste and ends on ONE question to
 // them, about the thing they asked
-export function honestTasteLine(topic, lang = "hinglish", n = 1) {
+// (dc-r8-director24 A3, main's 035 — c5-t01 offtopic 28: the third ask re-asked the first ask's question, which she had answered: a
+// later ask asks the first of its questions the lesson has not asked yet; with all asked, the honest line alone)
+const TASTE_QS = {
+  hinglish: [(t) => `Tumhara favourite kaun hai?`, (t) => `${capT(t)} ko tum kiske saath dekhte ho?`, (t) => `Tumne pehli baar ${t} ko kab dekha tha?`],
+  english: [(t) => `Who is your favourite?`, (t) => `Who do you watch ${t} with?`, (t) => `When did you first watch ${t}?`],
+};
+export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = []) {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
-  if (lang === "english") return n <= 1 ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?`
-    : [`I'm an AI, so no favourites for me. Who is your favourite?`, `No favourites for me, I'm an AI. What do you like about ${t}?`][(n - 2) % 2];
-  return n <= 1 ? `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`
-    : [`Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?`, `Meri apni pasand nahi hoti, main AI hoon. Tumhe ${t} ke baare mein kya achha lagta hai?`][(n - 2) % 2];
+  const L = lang === "english" ? "english" : "hinglish";
+  const first = L === "english" ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?` : `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`;
+  if (n <= 1) return first;
+  const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
+  const q = TASTE_QS[L].map((f) => f(t)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
+  const head = L === "english" ? (n % 2 ? "No favourites for me, I'm an AI." : "I'm an AI, so no favourites for me.") : (n % 2 ? "Meri apni pasand nahi hoti, main AI hoon." : "Main AI hoon, meri koi pasand nahi hoti.");
+  return q ? `${head} ${q}` : head;
 }
 /** v6.7 A3: a parked aside's return — one question about their thing, in code, naming only their topic (fresh within 4 turns). */
 const RETURN_Q = {
@@ -140,6 +149,7 @@ const ASIDE_AGAIN = {
 };
 export const asideAgainLine = (topic, lang = "hinglish", state = null) => freshForm(ASIDE_AGAIN[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim());
 /** v6.6 A2: how many times her honest line was said this lesson, plus this one (her recent turns). */
+const herLines = (state) => (state?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
 const honestN = (state) => 1 + [...(state?.recent ?? [])].filter((t) => t.who === "teacher" && /\b(?:main\s+ai|i'?m\s+an?\s+ai|meri\s+(?:apni\s+)?(?:koi\s+)?pasand\s+nahi|no\s+favourites)/i.test(String(t.text ?? ""))).length;
 /** v6.5 F1: praise or an aside's topic (never said beside a wrong verdict). */
 const PRAISE_OR_ASIDE = /(?<![\p{L}])(?:wah|waah|shabash|zabardast|kamaal|bahut\s+badhiya|great|awesome|cricket|sixer|virat|kohli|match)(?![\p{L}])/iu;
@@ -357,6 +367,16 @@ export function outsideAuthored(text, spans, fn) {
 const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favorite", "maine", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "sabse", "bahut", "achha", "achhi", "achhe", "accha",
   "acchi", "lagta", "lagti", "lagte", "seedha", "bahar", "andar", "jaati", "jaata", "jaate", "maarta", "maarti", "karta", "karti", "karte", "kyunki",
   "woh", "wala", "wali", "wale", "jab", "phir", "bhi", "aur", "kuch", "sach", "really", "very", "like", "when", "that", "this", "what", "with", "have"]);
+/** dc-r8-director24 A3: her reply to an aside said again after its return — the aside kind's reply form with a noun of the child's line
+ *  (a past verb — "maara", "khela", "dekha" — is no noun), rotated by how many asides she has answered; null when no word of theirs fits. */
+const VERBISH = /(?:aara|ela|ala|ila|kha|aya|iya|aaya|gaye|gayi)$/;
+export function againInHerWords(said, topic, lang = "hinglish", state = null) {
+  const words = j2WordsOf(said, topic).filter((w) => !VERBISH.test(w));
+  if (!words.length) return null;
+  const n = (state?.recent ?? []).filter((t) => t.who === "teacher").length;
+  const r = asideReplyLine({ said, topic, lang, n, words });
+  return r?.form === "word" && r.line ? r.line : null;
+}
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
     .filter((w) => !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !LESSON_SAID.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w));
@@ -2618,7 +2638,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // +calls per turn)
       // (R1 rule 3: a sad aside gets a sad line and no return question — the lesson goes on after it)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
@@ -2996,14 +3016,16 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state)) : null;
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state)) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
     const retQ = guard.returnLine && /[?？]/.test(guard.returnLine) && aside.includes(guard.returnLine) ? guard.returnLine : null;
     // v6.7 A3: an aside said again, already on the list, gets one line (no promise, nothing of hers)
     // (P1: an aside said again after its return was returned already — one plain line, no promise of a later talk)
-    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state)
+    // (dc-r8-director24 A3, main's 035 — c6 offtopic 24, 32, c5-t02 offtopic 32: a second or third aside, its return already had, got a
+    // bare "Achha." / "Theek hai."; it gets a reply in the child's words — the kind's reply form with a noun she said — else the plain ack)
+    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? (againInHerWords(childText, state.lastMove.asideAgain.topic, lang, state) ?? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state))
       : asideAgainLine(state.lastMove.asideAgain.topic, lang, state)) : null;
     if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
     // (dc-r8-director20 R1 rule 3: a sad aside gets one sad line of Learning's, no park and no question; the lesson goes on)
@@ -3232,7 +3254,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; if (sad) guard.returnSad = true; else guard.returnLine = line; } else guard.returnMissed = true;
     }
   }
