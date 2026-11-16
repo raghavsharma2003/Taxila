@@ -18,8 +18,10 @@
 //   keep names it from one level: her totals together are at least three ordinary slips from the truth, and a blind guess
 //        on the pad gives them far under 1 time in 10 (law 3's number);
 //   read names nothing from one level (a pick at chance weight: chancePicks, chanceMis); the server names it when the
-//        mix-up's number is typed on two levels whose bundles AND loose lines both differ (surfaceOf: one part each;
-//        server/play/levels.js nameOnRepeat). Two ordinary slips land on both levels' numbers at most 1 time in 16.
+//        mix-up's number is typed on three levels whose bundles AND loose lines differ two by two, or on two such levels
+//        when one of them is firm (no single ordinary slip gives its number: chanceRepeat, firmSighting; surfaceOf: one
+//        part each; server/play/levels.js nameOnRepeat), within the session's first four levels. Gate 2 read per session
+//        (2026-11-16): a child who slips on every level is named at most 13 times in 256 over a session.
 // The level law (tellsApart) no longer lists slips. It keeps what a slip-chance cannot cover: no row whose loose lines
 // equal its bundles (dropping the loose lines is a way of reading, the same on every level, and it gives the mix-up's
 // number there), and keep's three-slip structure (bundles in two rows, one row of two).
@@ -463,10 +465,50 @@ export const tallySurface = (level: PlayLevel<TallyParams>): string | readonly s
   return p.goal === "read" ? [`bundles:${Math.floor(p.counts[0] / 5)}`, `loose:${p.counts[0] % 5}`] : `keep:${p.counts.join(",")}`;
 };
 
+/** the answer pad as the view lays it out (typedtotal.ts totalPad, six keys a row in play.css: 1 2 3 4 5 6 / 7 8 9 0 ⌫);
+ *  the gate-2 test checks this copy against the view's own */
+export const TALLY_PAD = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"] as const;
+export const TALLY_PAD_COLS = 6;
+const padAt = (k: string): [number, number] => { const i = TALLY_PAD.indexOf(k as (typeof TALLY_PAD)[number]); return [Math.floor(i / TALLY_PAD_COLS), i % TALLY_PAD_COLS]; };
+const padNear = (d: string) => TALLY_PAD.filter((k) => k !== d && Math.max(Math.abs(padAt(k)[0] - padAt(d)[0]), Math.abs(padAt(k)[1] - padAt(d)[1])) === 1);
+/** one typing slip on the number she means (0..99): a key one off (side or corner), the two digits swapped, a key not
+ *  registered, a key pressed twice (the box takes two digits) */
+function typedSlips(v: number): number[] {
+  const t = String(v), out: number[] = [];
+  for (let i = 0; i < t.length; i++) for (const k of padNear(t[i])) out.push(Number(t.slice(0, i) + k + t.slice(i + 1)));
+  if (t.length === 2) { if (t[0] !== t[1]) out.push(Number(t[1] + t[0])); out.push(Number(t[0]), Number(t[1])); } else out.push(Number(t + t));
+  return out.filter((x) => x !== v && x <= 99);
+}
+/** the ways of reading a whole tally of b bundles and s loose lines (the right one and seven others); `strokes`: it counts
+ *  a bundle's strokes one by one, so one of them can be missed or counted again */
+const WAYS: readonly { of: (b: number, s: number) => number; strokes?: true }[] = [
+  { of: (b, s) => 5 * b + s, strokes: true }, { of: (b) => 5 * b, strokes: true }, { of: (b, s) => 5 * b + 2 * s, strokes: true },
+  { of: (b, s) => 6 * b + s, strokes: true }, { of: (b) => b }, { of: (b, s) => b + s }, { of: (b, s) => 10 * b + s }, { of: (_b, s) => s },
+];
+/**
+ * Gate 2, read: can ONE ordinary slip, under any way of reading, give the mix-up's number on a row of n? A counting slip (a
+ * bundle skipped or counted twice, a loose line missed or counted twice, a stroke of a bundle missed or counted again) or
+ * a typing slip on the pad. The proof (tests/r8-games-stambh-tally.test.mjs) works out each row's chance on its own and
+ * checks this answer on every row read can serve.
+ */
+export function oneSlipFromMixup(n: number): boolean {
+  const b = Math.floor(n / 5), s = n % 5, m = four(n);
+  return WAYS.some((w) => {
+    const v = w.of(b, s), counted = [w.of(b + 1, s), ...(b >= 1 ? [w.of(b - 1, s)] : []), ...(s >= 1 ? [w.of(b, s - 1), w.of(b, s + 1)] : []), ...(w.strokes && b >= 1 ? [v - 1, v + 1] : [])];
+    return v === m || counted.some((x) => x !== v && x === m) || typedSlips(v).includes(m);
+  });
+}
+
 export const tallyLogic: FamilyLogic<TallyParams, TallyState, StambhAct> = {
   family: "stambh", modes: ["tally"], malRules: TALLY_MAL,
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
   // gate 2: read's typed number is a pick at chance weight (named only on a repeat); keep names from one level
   chancePicks: ["read"],
   surfaceOf: tallySurface,
+  // gate 2, per session (RULINGS-2026-11-15, "To Games, 2026-11-16"): read names tally-four on three levels whose bundles and
+  // loose lines all differ two by two, or on two when one of them is firm (a row no single ordinary slip turns into the
+  // mix-up's number: oneSlipFromMixup). Over a session's NAMING_LEVELS (4) levels, a child who slips on every one at the
+  // worst rows is named 13 in 256 at worst (the packet's table)
+  chanceRepeat: { "read:tally-four": { sightings: 3, firm: 2 } },
+  firmSighting: (level: PlayLevel<TallyParams>, rule: string) => rule === "tally-four" && level.params.goal === "read" && !oneSlipFromMixup(level.params.counts[0]),
 };

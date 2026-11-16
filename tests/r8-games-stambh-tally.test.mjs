@@ -10,8 +10,10 @@
 //     acts a check is named ⇔ the signature written from the kit's signs;
 //   - gate 2, the evidence rule (night rulings 2026-11-11): keep names from one level, its totals three ordinary slips or
 //     more from the mix-up's on every generated level, a blind guess under 1 in 10; read names nothing from one level and
-//     is named on a repeat whose bundles and loose lines both differ, two slips landing ≤ 1 in 10 over every servable
-//     pair (the tables computed here, printed in the packet); the server's repeat rule with naming on;
+//     is named on three levels whose bundles and loose lines differ two by two, or two when one is firm (no single slip
+//     lands on its number), within a session's first NAMING_LEVELS levels: ≤ 1 in 10 per session for the child who slips
+//     on every level and for the blind guesser (2026-11-16, law 3 read per session; the tables computed here, printed in
+//     the packet); the server's repeat rule with naming on;
 //   - keep it again ("again") once the scene has passed; undo brings the old tally back;
 //   - tampered params are refused; a verdict field in an act never decides; the first check decides the evidence;
 //   - the server serves a proven level for every coverage entry at every fade, the solver's acts grade solved, the mal
@@ -22,9 +24,9 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
-import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, READ_RANGE, numberLineEnd, numberLineAt } from "../src/play/families/stambh/tally.logic.ts";
+import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, READ_RANGE, numberLineEnd, numberLineAt, oneSlipFromMixup, TALLY_PAD, TALLY_PAD_COLS } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
-import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor } from "../server/play/levels.js";
+import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor, NAMING_LEVELS, nameOnRepeat, repeatSpec } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
 import { playActOf } from "../server/director/play-verbs.js";
@@ -33,6 +35,7 @@ import { totalPad } from "../src/play/core/typedtotal.ts";
 import { LOGIC } from "../src/play/families/index.ts";
 import { pickLevels } from "../src/play/core/pick.ts";
 import { cpuNow } from "./_cpu-ms.mjs";
+import { sessionChance, oneIn } from "./_session-figure.mjs";
 
 const ROOT = new URL("../", import.meta.url).pathname;
 const MIS = { "tally-four": "k-tally-four" };
@@ -295,7 +298,75 @@ test("gate 2, read: one level names nothing (its one-slip chance can pass 1 in 1
   for (const c of [18, 24, 6, 12, 4]) assert.equal(L.validate({ ...read, params: { ...read.params, counts: [c] } }), null, String(c));
   // gate 2 serves again what the slip list refused: five bundles, bundles only
   for (const c of [25, 26, 27, 20, 40]) assert.ok(L.validate({ ...read, params: { ...read.params, counts: [c] } }), String(c));
-  if (process.env.TALLY_GATE2_PRINT) writeFileSync(process.env.TALLY_GATE2_PRINT, JSON.stringify({ servable: t.servable, servedRead: t.servedRead, one, worst, pairs, keep: t.keep }));
+  if (process.env.TALLY_GATE2_PRINT) writeFileSync(process.env.TALLY_GATE2_PRINT, JSON.stringify({ servable: t.servable, servedRead: t.servedRead, one, worst, pairs, keep: t.keep, session: sessionTable() }));
+});
+
+// ───────────────────────────── gate 2, read per session (2026-11-16) ─────────────────────────────
+// Law 3's line read per session: what must be rare is a child named tally-four she does not hold, over one sitting. A row is
+// FIRM when no single ordinary slip, read any of the eight ways, lands on the mix-up's number (only a blind guess does,
+// 1 in 100); else WEAK (one slip lands, at most the worst row's chance). The rule (tallyLogic.chanceRepeat, firmSighting):
+// three sightings, or two when one is firm, within the session's first NAMING_LEVELS levels. Every composition of firm
+// and weak rows over those levels is tried; the figure is the worst.
+function sessionTable() {
+  const { one } = gate2Tables().read;
+  const firmRows = one.filter((r) => Object.values(r.by).every((p) => p === 0)).map((r) => r.n);
+  const weakP = Math.max(...one.filter((r) => !firmRows.includes(r.n)).map((r) => r.p));
+  const n = NAMING_LEVELS;
+  // a level's chance for the child who slips on every level: its row's worst one-slip chance (a firm row: only a blind
+  // guess, 1 in 100); for the blind guesser: 1 in 100 on every row
+  const worstOver = (pWeak, pFirm, named) => {
+    let w = { p: 0, firm: 0 };
+    for (let c = 0; c <= n; c++) {
+      const ps = [...Array(c).fill(pFirm), ...Array(n - c).fill(pWeak)];
+      const p = sessionChance(ps, (h) => named(h, (i) => i < c));
+      if (p > w.p) w = { p, firm: c };
+    }
+    return w;
+  };
+  const rule = (h, isFirm) => { const k = h.filter(Boolean).length; return k >= 3 || (k >= 2 && h.some((x, i) => x && isFirm(i))); };
+  const pairRule = (h) => h.filter(Boolean).length >= 2;
+  return {
+    n, firmRows, weakP,
+    slip: worstOver(weakP, BLIND, rule), blind: worstOver(BLIND, BLIND, rule),
+    // the rule it replaces (any two levels whose parts differ): over 3 levels and over the n levels
+    before3: sessionChance(Array(3).fill(weakP), pairRule), before: sessionChance(Array(n).fill(weakP), pairRule),
+    // option (a) for comparison: a pair names only when one of the two is firm
+    optionA: worstOver(weakP, BLIND, (h, isFirm) => h.filter(Boolean).length >= 2 && h.some((x, i) => x && isFirm(i))),
+  };
+}
+test("gate 2, read per session: three sightings, or two with a firm one, within a session's first NAMING_LEVELS levels: the child who slips on every level and the blind guesser are each named ≤ 1 in 10 per session; the pair rule was over", async () => {
+  assert.equal(NAMING_LEVELS, 4);
+  const t = sessionTable(), { one, servable } = { one: gate2Tables().read.one, servable: gate2Tables().servable };
+  // the law's own firm test is the one worked out here, on every row read can serve
+  for (const r of one) assert.equal(!oneSlipFromMixup(r.n), t.firmRows.includes(r.n), `${r.n}: firm`);
+  assert.deepEqual(t.firmRows, [20, 22, 30, 33, 35, 36, 40, 41, 44, 45, 47]);
+  assert.ok(servable.length === one.length);
+  // the law's copy of the pad is the view's
+  assert.deepEqual([...TALLY_PAD], PAD_KEYS.filter((k) => /^\d$/.test(k))); assert.equal(TALLY_PAD_COLS, PAD_COLS);
+  // the worst weak row: 1 in 4 (17, 19, 23, 25, 29, 31, 37, 43, 49)
+  assert.equal(t.weakP, 1 / 4);
+  // the rule as the server holds it
+  assert.deepEqual(L.chanceRepeat["read:tally-four"], { sightings: 3, firm: 2 });
+  // the figures: the child who slips on every level, at the worst rows (4 weak levels: P(3 or more of 4) = 13/256)
+  assert.ok(Math.abs(t.slip.p - 13 / 256) < 1e-12 && t.slip.firm === 0, `slip ${t.slip.p} (${t.slip.firm} firm)`);
+  assert.ok(t.slip.p <= 0.1 && t.blind.p <= 0.1, `${oneIn(t.slip.p)} ${oneIn(t.blind.p)}`);
+  assert.ok(t.blind.p < 1e-3, `blind ${t.blind.p}`);
+  // the pair rule it replaces was over the line: 5 in 32 over three levels (main's figure), 67 in 256 over four
+  assert.ok(Math.abs(t.before3 - 5 / 32) < 1e-12 && Math.abs(t.before - 67 / 256) < 1e-12 && t.before > 0.1);
+  // one more level would put the rule over (so the cap is what holds it): 3 of 5 weak is 106 in 1024
+  assert.ok(sessionChance(Array(5).fill(t.weakP), (h) => h.filter(Boolean).length >= 3) > 0.1);
+  assert.ok(t.optionA.p <= 0.1);
+  // the server: a fifth level of the session names nothing, even on sightings that would name it on the fourth
+  const read = levels("read", [3])[0], at = (n, extra = {}) => ({ ...read, mal: { "tally-four": "k" }, params: { ...read.params, counts: [n] }, ...extra });
+  const { surfaceOf } = await import("../server/play/levels.js");
+  const row = [{ outcome: "incorrect", chanceMis: "k", weight: CHANCE_WEIGHT }];
+  const chance = [17, 23].map((n) => ({ mis: "k", surface: surfaceOf(at(n)) }));
+  assert.ok(repeatSpec(at(31), "k"));
+  assert.equal(nameOnRepeat(row, { chance, n: 3 }, at(31))[0].misconceptionId, "k", "three weak, parts apart, on the fourth level: named");
+  assert.equal(nameOnRepeat(row, { chance, n: 4 }, at(31))[0].misconceptionId, undefined, "on the fifth: not named");
+  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(31))[0].misconceptionId, undefined, "two weak: not named");
+  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(30))[0].misconceptionId, "k", "a weak and a firm (30: 6 + 0): named");
+  assert.equal(nameOnRepeat(row, { chance: [{ mis: "k", surface: surfaceOf(at(30)), firm: true }], n: 1 }, at(23))[0].misconceptionId, "k", "a firm one remembered, then a weak: named");
 });
 
 test("gate 2: the read surface has two parts (bundles, loose lines); a repeat counts only when both differ", async () => {
@@ -313,23 +384,29 @@ test("gate 2: the read surface has two parts (bundles, loose lines); a repeat co
   assert.deepEqual(surfaceOf({ ...at(17), params: { ...at(17).params, ctx: "traffic", cats: ["bus"] } }), S(17));
 });
 
-test("gate 2, the server's repeat rule with naming on: one read level names nothing; a second whose bundles and loose lines both differ names it; keep names from one level", async () => {
+test("gate 2, the server's repeat rule with naming on: one read level names nothing; a second apart from it names it when one of the two is firm, else a third; nothing past the session's first NAMING_LEVELS levels; keep names from one level", async () => {
   const { nameOnRepeat, afterLevelBody } = await import("../server/play/levels.js");
   const { withNaming } = await import("../server/play/grade.js");
   const { signSession, verifySession } = await import("../server/play/session.js");
   const [eKeep, eRead] = TE(), KIT = "c4-maths-ch14-t01-m-tally-four";
   // served read levels (the server's own generator, the kit's ids), one per row count
   const byN = new Map();
-  for (const fade of [1, 2, 3]) for (const child of ["a", "b", "c", "d", "e", "f", "g", "h"]) for (let k = 0; k < 4; k++) {
-    const lv = levelsFor(sessionOf(eRead, { fade, childId: child, seed: seedOf(child, entryKey(eRead), k) }), eRead)?.garam;
+  for (const fade of [1, 2, 3]) for (let child = 0; child < 24; child++) for (let k = 0; k < 6; k++) {
+    const lv = levelsFor(sessionOf(eRead, { fade, childId: `c${child}`, seed: seedOf(`c${child}`, entryKey(eRead), k) }), eRead)?.garam;
     if (lv && !byN.has(lv.params.counts[0])) byN.set(lv.params.counts[0], lv);
   }
   const bsOf = (lv) => [Math.floor(lv.params.counts[0] / 5), lv.params.counts[0] % 5];
-  const A = [...byN.values()][0], [ab, as] = bsOf(A);
-  const both = [...byN.values()].find((lv) => bsOf(lv)[0] !== ab && bsOf(lv)[1] !== as);
-  const sameB = [...byN.values()].find((lv) => lv !== A && bsOf(lv)[0] === ab);
-  const sameS = [...byN.values()].find((lv) => lv !== A && bsOf(lv)[1] === as);
-  assert.ok(both && (sameB || sameS), `levels served: ${[...byN.keys()]}`);
+  const apart = (x, y) => bsOf(x)[0] !== bsOf(y)[0] && bsOf(x)[1] !== bsOf(y)[1];
+  const firm = (lv) => !oneSlipFromMixup(lv.params.counts[0]);
+  const all = [...byN.values()];
+  // A weak (one slip can give its number); `both` firm, its bundles and loose lines both apart from A's; B and C weak, the
+  // three weak ones apart two by two
+  const A = all.find((lv) => !firm(lv) && all.some((x) => firm(x) && apart(x, lv))), [ab, as] = bsOf(A);
+  const both = all.find((lv) => firm(lv) && apart(lv, A));
+  const B = all.find((lv) => !firm(lv) && apart(lv, A)), C = all.find((lv) => !firm(lv) && apart(lv, A) && apart(lv, B));
+  const sameB = all.find((lv) => lv !== A && bsOf(lv)[0] === ab && firm(lv)) ?? all.find((lv) => lv !== A && bsOf(lv)[0] === ab);
+  const sameS = all.find((lv) => lv !== A && bsOf(lv)[1] === as && firm(lv)) ?? all.find((lv) => lv !== A && bsOf(lv)[1] === as);
+  assert.ok(A && both && B && C && (sameB || sameS), `levels served: ${[...byN.keys()]}`);
   // the server path with naming ON for stambh/tally: gradeActs → lessonEvidence → nameOnRepeat, and afterLevelBody
   // remembers the pick (routes.js; withNaming is the flag's only reader, and with naming on it returns the grade unchanged)
   const mal = (lv) => gradeActs(lv, env(L.malActs(lv, "tally-four")), { final: true });
@@ -338,14 +415,24 @@ test("gate 2, the server's repeat rule with naming on: one read level names noth
   assert.equal(rowsA[0].outcome, "incorrect");
   assert.equal(rowsA[0].misconceptionId, undefined, "one read level names nothing"); assert.equal(rowsA[0].chanceMis, undefined, "nor carries the pick");
   assert.equal(gA.trail.mal.length, 0, "nor is it in the trail"); assert.equal(gA.grade.facts.mal, undefined);
-  const s1 = afterLevelBody(s0, { grade: gA.grade, level: A });
-  assert.equal(s1.chance.at(-1).mis, KIT); assert.ok(Array.isArray(s1.chance.at(-1).surface));
+  const s1 = { ...afterLevelBody(s0, { grade: gA.grade, level: A }), n: 1 };
+  assert.equal(s1.chance.at(-1).mis, KIT); assert.ok(Array.isArray(s1.chance.at(-1).surface)); assert.equal(s1.chance.at(-1).firm, undefined, "a weak sighting");
   // the session token carries the remembered parts
   const key = Buffer.alloc(32, 7), s1b = verifySession(signSession(s1, { key }), { key });
   assert.deepEqual(s1b.chance, s1.chance);
   const named = nameOnRepeat(lessonEvidence(mal(both).grade, both), s1b, both);
-  assert.equal(named[0].misconceptionId, KIT, `${A.params.counts[0]} then ${both.params.counts[0]}: named on the repeat`);
+  assert.equal(named[0].misconceptionId, KIT, `${A.params.counts[0]} then ${both.params.counts[0]} (firm): named on the second`);
   assert.equal(named[0].named, "repeat"); assert.equal(named[0].weight, GAME_WEIGHT);
+  // two weak ones are not enough; a third weak one, apart from both, names it
+  assert.equal(nameOnRepeat(lessonEvidence(mal(B).grade, B), s1b, B)[0].misconceptionId, undefined, `${A.params.counts[0]} then ${B.params.counts[0]}: two weak, not named`);
+  const s2 = { ...afterLevelBody(s1b, { grade: mal(B).grade, level: B }), n: 2 };
+  assert.equal(nameOnRepeat(lessonEvidence(mal(C).grade, C), s2, C)[0].misconceptionId, KIT, `${A.params.counts[0]}, ${B.params.counts[0]}, ${C.params.counts[0]}: three weak, named`);
+  // past the session's first NAMING_LEVELS levels nothing is named
+  assert.equal(nameOnRepeat(lessonEvidence(mal(C).grade, C), { ...s2, n: NAMING_LEVELS }, C)[0].misconceptionId, undefined, "a level past the cap names nothing");
+  // a firm one remembered first: the weak one after it names (the memory keeps `firm`)
+  const sF = afterLevelBody(s0, { grade: mal(both).grade, level: both });
+  assert.equal(sF.chance.at(-1).firm, true);
+  assert.equal(nameOnRepeat(lessonEvidence(mal(A).grade, A), { ...sF, n: 1 }, A)[0].misconceptionId, KIT);
   for (const lv of [sameB, sameS, A].filter(Boolean)) {
     const r = nameOnRepeat(lessonEvidence(mal(lv).grade, lv), s1b, lv);
     assert.equal(r[0].misconceptionId, undefined, `${A.params.counts[0]} then ${lv.params.counts[0]}: one part the same, not named`);
