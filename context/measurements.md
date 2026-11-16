@@ -6809,3 +6809,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-r8-play-action-hue-2026-11-16` (2026-11-16): The action hue against the meaning roles (WCAG contrast; deuteranopia distance by Studio's tests/theme-palette.test.mjs measure, Viénot 1999 in linear RGB, floor 0.15), n = 4 arts, computed 2026-11-16. Magenta #FF6FD8 (hue 316): chalk on ground 6.02, vs focus 0.336 / answer 0.347 / mix-up 0.607; blueprint 5.50, 0.514 / 0.339 / 0.687; raat 7.93, 0.357 / 0.356 / 0.682; its ink #0F1218 on it 7.60. Kagaz marigold #EFA52E (Design's): on paper 1.74 (a filled button; its ink #1C1A16 on it 8.35), vs focus 0.775 / answer 0.576 / mix-up 0.526. Rejected for the dark arts: marigold #EFA52E and orange #FF9A3D (mix-up distance 0.13 to 0.15), coral #FF8A7A (chalk mix-up 0.176), pink #FF8FA3 (raat answer 0.093). 3D focus on the worlds: yantra lab tiles #F4F6F7 vs kagaz focus 7.14 (old olive 4.58), rooftop pavers 2.69 (old lime 2.46), bench mat #2F6B55 vs blueprint focus 4.46 (lime 5.35); khand grass 2.88 with kagaz focus (raat focus 1.06, old lime 2.29).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-29ab953` (2026-11-16): Released 29ab953 with scripts/release.mjs: web taxila-web--s29ab953-fx4c (was taxila-web--s0d5baa1-uayv), worker + canary/nightly jobs on taxila-worker:29ab953 (was 0d5baa1); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 29ab953 --rollback.
