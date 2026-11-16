@@ -7,20 +7,25 @@
 // the law's own predicates (isVertexOff / isCentreOnArm / placement), and asserted. With KON_GATE2_PRINT=<file> the tables
 // are written to that file as JSON (the packet is printed from them).
 //
-//   vertex-off      a placement (constructed): named from one level. Its band, the slips, a blind placement.
-//   centre-on-arm   a placement (constructed): named from one level (where a level maps it). The same three.
-//   wrong-scale     a typed number (measure) or a dot on the rim (draw), constructed: named from one level. Blind, typing
-//                   slips on the pad, tick slips, dot nudges.
-//   join-wrong-end  a pick of one of two buttons: one level names nothing (chanceMis); the server names it on the fourth
-//                   sighting, four different asked sizes with both button orders among them (konLogic.chanceRepeat).
+//   vertex-off      a placement (constructed). Its band, the slips, a blind placement, a drop that misses.
+//   centre-on-arm   a placement (constructed), where a level maps it. The same four.
+//   wrong-scale     a typed number (measure) or a dot on the rim (draw), constructed. Blind, typing slips on the pad, tick
+//                   slips, dot nudges.
+//   join-wrong-end  a pick of one of two buttons: the server names it on the fourth sighting, four different asked sizes
+//                   with both button orders among them (konLogic.chanceRepeat).
 //   size            one pick among three; names no mix-up (the kit's tool-size is not claimed).
+// Law 3 read per session (2026-11-16): each mix-up's chance a level (the worst of a blind act, one slip, a drop that
+// misses) over the NAMING_LEVELS levels a session names from. Named from one level, vertex-off, wrong-scale and draw's
+// wrong-scale were over 1 in 10 a session, so every kon/place mix-up is now a pick: one level names nothing (chanceMis),
+// the server names it on a second level that differs (the join: on the fourth). The session table is computed and asserted.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
 import { BW, BH, PR, PD, ARM, TOL_PX, VO_BAND, BASE_TOL, READ_TOL, SCALE_SLIP_READS, typedSlips, PAD, PAD_COLS as LAW_PAD_COLS, arms, asPlaced, dir, drawSurface, farEnd, goodPose, initPlace, inward, isCentreOnArm, isVertexOff, joinAFirst, markFor, norm, placement, vertexOffPose } from "../src/play/families/kon/kon.place.ts";
 import { env } from "../src/play/core/pick.ts";
-import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, surfaceOf, surfacesDiffer, CHANCE_MEMORY } from "../server/play/levels.js";
+import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, repeatSpec, surfaceOf, surfacesDiffer, CHANCE_MEMORY, NAMING_LEVELS } from "../server/play/levels.js";
+import { atLeast, fromOne, oneIn } from "./_session-figure.mjs";
 import { gradeActs, lessonEvidence, chancePick, withNaming } from "../server/play/grade.js";
 import { signSession, verifySession } from "../server/play/session.js";
 import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn, playFactsRow } from "../shared/play.ts";
@@ -180,11 +185,41 @@ function joinTable() {
   };
 }
 
+// ───────────────────────────── per session (law 3 read per session, 2026-11-16) ─────────────────────────────
+// Each mix-up's chance on one level, for a child who does not hold it: the worst of a blind act, one ordinary slip and a
+// drop that misses, over every generated level (and, for wrong-scale in measure, over every reading the law names at: a
+// placement within the tolerance shows a few degrees off the key). Over the n = NAMING_LEVELS levels a session names
+// from: named from one level, 1 - (1 - p)^n; named on the k-th, P(k or more of n).
+function sessionTable(place, scale, curve) {
+  const max = (xs) => Math.max(0, ...xs);
+  const n = NAMING_LEVELS;
+  const drop = (k) => max(Object.values(curve).flatMap((c) => c.map((x) => x[k])));
+  const inT = (v) => (x) => Math.abs(x - (180 - v)) <= READ_TOL;
+  const namedReadings = Array.from({ length: 181 }, (_, v) => v).filter((v) => !SCALE_SLIP_READS.has(v) && Math.abs(180 - 2 * v) > 2 * READ_TOL);
+  const of = (goal) => scale.filter((t) => t.goal === goal);
+  const per = {
+    "vertex-off": { blind: max(place.flatMap((t) => [t.voBoard, t.voNear])), slip: max(place.map((t) => t.slipHits / t.slipTries)), drop: drop("vo") },
+    "centre-on-arm": { blind: max(place.flatMap((t) => [t.coaBoard, t.coaNear])), slip: max(place.map((t) => t.slipHits / t.slipTries)), drop: drop("coa") },
+    "wrong-scale, measure": { blind: max(of("measure").map((t) => t.blind)), slip: max([...of("measure").flatMap((t) => [t.typing, t.ticks]), ...namedReadings.map((v) => share(typos(v), inT(v)))]), drop: 0 },
+    "wrong-scale, draw": { blind: max(of("draw").map((t) => t.blind)), slip: max(of("draw").flatMap((t) => [t.nudge, t.ticks])), drop: 0 },
+    "join-wrong-end": { blind: 0.5, slip: 0, drop: 0 },
+  };
+  const spec = { "vertex-off": ["measure:vertex-off", "draw:vertex-off"], "centre-on-arm": ["measure:centre-on-arm", "draw:centre-on-arm"],
+    "wrong-scale, measure": ["measure:wrong-scale"], "wrong-scale, draw": ["draw:wrong-scale"], "join-wrong-end": ["draw:join-wrong-end"] };
+  const rows = Object.entries(per).map(([mix, c]) => {
+    const p = Math.max(c.blind, c.slip, c.drop), ks = spec[mix].map((k) => konLogic.chanceRepeat[k]?.sightings ?? 1), k = Math.min(...ks);
+    return { mix, ...c, p, k, before: mix === "join-wrong-end" ? atLeast(n, p, 4) : fromOne(n, p), after: atLeast(n, p, k),
+      // the join before the cap: four of six levels (the session kept six picks and had no level count)
+      ...(mix === "join-wrong-end" ? { beforeSix: atLeast(6, p, 4) } : {}) };
+  });
+  return { n, rows };
+}
+
 export function gate2Tables() {
   const place = [...LEVELS.measure, ...LEVELS.draw].map((l) => placementTable(l.params));
   const scale = [...LEVELS.measure, ...LEVELS.draw].map((l) => scaleTable(l.params));
   const curve = { measure: dropCurve(LEVELS.measure.find((l) => l.params.mirror).params), draw: dropCurve(LEVELS.draw.find((l) => !l.params.mirror).params) };
-  return { place, scale, curve, join: joinTable() };
+  return { place, scale, curve, join: joinTable(), session: sessionTable(place, scale, curve) };
 }
 let TABLES = null;
 const tables = () => (TABLES ??= gate2Tables());
@@ -206,7 +241,7 @@ test("gate 2, the pieces the proof stands on: the pad as the view lays it out; t
   assert.ok(Math.hypot(PR, PD) - TOL_PX > TOL_PX + 1);
 });
 
-test("gate 2, vertex-off and centre-on-arm (placements, named from one level): on EVERY generated level the band is the disc it is said to be; no single slip from a placement lands in it; a blind placement lands in it far under 1 in 10", () => {
+test("gate 2, vertex-off and centre-on-arm (placements): on EVERY generated level the band is the disc it is said to be; no single slip from a placement lands in it; a blind placement lands in it far under 1 in 10", () => {
   const { place } = tables();
   assert.ok(place.length >= 300, `${place.length} levels`);
   for (const t of place) {
@@ -238,7 +273,7 @@ test("gate 2, a drop that misses (the right turn, the centre off by up to r any 
   assert.ok(disc(11, 30) > LAW3 && disc(10, 30) <= LAW3, `${disc(11, 30)} ${disc(10, 30)}`);
 });
 
-test("gate 2, wrong-scale (a typed number in measure, a dot in draw; named from one level): a blind number or dot, one typing slip on the pad, one tick off, one dot nudge each land on the other scale's number at most 1 in 10, on EVERY generated level", () => {
+test("gate 2, wrong-scale (a typed number in measure, a dot in draw): a blind number or dot, one typing slip on the pad, one tick off, one dot nudge each land on the other scale's number at most 1 in 10, on EVERY generated level", () => {
   const { scale } = tables();
   assert.ok(scale.length >= 300);
   for (const t of scale) {
@@ -305,6 +340,30 @@ test("gate 2, join-wrong-end (one of two buttons): one press names nothing; two 
   assert.ok(CHANCE_MEMORY >= SPEC.sightings - 1);
 });
 
+test("gate 2, per session: named from one level, vertex-off, wrong-scale (measure and draw) were over 1 in 10 a session; as picks named on a second level that differs, every kon/place mix-up is under it over the session's NAMING_LEVELS levels", () => {
+  const { session } = tables(), by = Object.fromEntries(session.rows.map((r) => [r.mix, r]));
+  assert.equal(session.n, 4);
+  for (const r of session.rows) assert.ok(r.after <= LAW3, `${r.mix}: ${oneIn(r.after)} a session (p ${r.p}, named on the ${r.k}th of ${session.n})`);
+  // why the rule changed: from one level they were over the line (centre-on-arm was under it at four levels, but a
+  // from-one-level rule is not held to the session's first four, and it passes 1 in 10 at six: 1 - (53/54)^6)
+  for (const m of ["vertex-off", "wrong-scale, measure", "wrong-scale, draw"]) assert.ok(by[m].before > LAW3, `${m}: ${by[m].before}`);
+  assert.ok(by["centre-on-arm"].before <= LAW3 && fromOne(6, by["centre-on-arm"].p) > LAW3);
+  // each mix-up's worst act on one level, as the packet prints it
+  assert.ok(by["vertex-off"].p === by["vertex-off"].drop && by["vertex-off"].p > 0.09 && by["vertex-off"].p < 0.1);
+  assert.equal(by["vertex-off"].slip, 0); assert.equal(by["centre-on-arm"].slip, 0);
+  assert.ok(by["wrong-scale, measure"].p <= LAW3 && by["wrong-scale, measure"].p > 1 / 14);
+  assert.ok(Math.abs(by["wrong-scale, draw"].p - 5 / 181) < 1e-12);
+  // the join: four of four, 1 in 16 (as before, now held to four levels; before, four of six was 11 in 32)
+  assert.equal(by["join-wrong-end"].k, 4); assert.ok(Math.abs(by["join-wrong-end"].after - 1 / 16) < 1e-12 && by["join-wrong-end"].beforeSix > LAW3);
+  // the rule as the law and the server hold it
+  for (const g of ["measure", "draw"]) for (const m of ["vertex-off", "centre-on-arm", "wrong-scale"]) {
+    assert.ok(chancePick({ goal: g, family: "kon", mode: "place" }, m), `${g}:${m} is a pick`);
+    assert.equal(konLogic.chanceRepeat[`${g}:${m}`].sightings, 2);
+    assert.deepEqual(konLogic.chanceRepeat[`${g}:${m}`].apart, g === "draw" ? [0] : undefined);
+  }
+  assert.ok(CHANCE_MEMORY >= session.n - 1);
+});
+
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
   mis: {}, pL: undefined, n: 0, seed: seedOf("c1", entryKey(entry), 0), door: "garam", recent: [], hist: null, ...over });
 
@@ -356,9 +415,19 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
       t = afterLevelBody(t, { grade: g.grade, level: lv });
     });
   }
-  // the constructed acts still name from one level with naming on (the grade's own row)
-  const vo = four[0], gv = gradeActs(vo, env(konLogic.malActs(vo, "vertex-off")), { final: true });
-  assert.equal(nameOnRepeat(lessonEvidence(gv.grade, vo), sessionOf(entry), vo)[0].misconceptionId, entry.misMap["vertex-off"]);
+  // gate 2 per session: the placements and the scale are picks too. One vertex-off names nothing; a second on a draw level
+  // with another asked size names it; the same size again does not; past the session's fourth level nothing does
+  const voOf = (lv) => gradeActs(lv, env(konLogic.malActs(lv, "vertex-off")), { final: true });
+  const [v1, v2] = [four[0], four.find((l) => l.params.theta !== four[0].params.theta)];
+  const g1 = voOf(v1), r1 = nameOnRepeat(lessonEvidence(g1.grade, v1), sessionOf(entry), v1);
+  assert.equal(r1[0].misconceptionId, undefined, "one vertex-off names nothing"); assert.equal(g1.grade.evidence[0].chanceMis, entry.misMap["vertex-off"]);
+  assert.deepEqual(g1.trail.mal, []); assert.doesNotMatch(playFactsRow(g1.grade.facts), /mal=|misconception=|vertex|centre_off|sign=/);
+  const sv = { ...afterLevelBody(sessionOf(entry), { grade: g1.grade, level: v1 }), n: 1 };
+  const r2 = nameOnRepeat(lessonEvidence(voOf(v2).grade, v2), sv, v2);
+  assert.equal(r2[0].misconceptionId, entry.misMap["vertex-off"], "the second, another size: named"); assert.equal(r2[0].named, "repeat");
+  assert.equal(nameOnRepeat(lessonEvidence(voOf(v1).grade, v1), sv, v1)[0].misconceptionId, undefined, "the same size again: not named");
+  assert.equal(nameOnRepeat(lessonEvidence(voOf(v2).grade, v2), { ...sv, n: NAMING_LEVELS }, v2)[0].misconceptionId, undefined, "past the fourth level: not named");
+  assert.ok(repeatSpec(v2, entry.misMap["vertex-off"]) && repeatSpec(v2, entry.misMap["wrong-scale"]));
   // as served today: the flag main switches (shared/play.ts NAMING_OFF)
   let u = sessionOf(entry), last = null;
   for (const lv of four) { const g = withNaming(lv, press(lv)); last = nameOnRepeat(lessonEvidence(g.grade, lv), u, lv); u = afterLevelBody(u, { grade: g.grade, level: lv }); }

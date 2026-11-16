@@ -26,6 +26,10 @@
 //   join-wrong-end  draw: the dot at the right mark, joined to A (the far end of OA): the law shows the angle made at A
 //                   ("far_end"). Judging round 2 (law 3): the join is a pick between two buttons, so a guess makes it half
 //                   the time: graded at chance weight as chanceMis (konLogic.chancePicks), never named from one join
+// Gate 2, law 3 read per session (2026-11-16): none of the four is named from one level. Each is a pick (chanceMis at chance
+// weight; konLogic.chancePicks, chanceRepeat): vertex-off, centre-on-arm and wrong-scale on a second level that differs,
+// join-wrong-end on its fourth, within the session's first four levels (server/play/levels.js NAMING_LEVELS). The moments
+// and the play-out are unchanged.
 // size names no mix-up (main 2026-11-11): the kit's tool-size belief is about the READING one angle gives under two tools, and
 // this goal asks which of two angles is more, never for a reading. Judging round 2 (law 2): a miss shows only her own pick,
 // never the readings (they would settle the next pick); any of the three answers can be the key.

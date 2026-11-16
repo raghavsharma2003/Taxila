@@ -121,9 +121,10 @@ for (const goal of ["measure", "draw", "size"]) {
         assert.equal(named[0].facts.shown, SHOWN[mal], `${mal} signature`);
         (sigs[mal] ??= new Set()).add(named[0].facts.shown);
         const g = konLogic.grade(level, env(acts), { final: true });
-        // (join-wrong-end: one of two buttons, kept at chance weight as chanceMis, not on her record: law 3)
-        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, mal === "join-wrong-end" ? undefined : MIS[goal][mal]);
-        if (mal === "join-wrong-end") assert.equal(g.evidence[0].chanceMis, MIS[goal][mal]);
+        // (gate 2, law 3 read per session: every kon/place mix-up is kept at chance weight as chanceMis from one level and
+        // named by the server on a repeat: tests/r8-games-kon-place-gate2.test.mjs)
+        assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, undefined);
+        assert.equal(g.evidence[0].chanceMis, MIS[goal][mal]); assert.equal(g.evidence[0].weight, CHANCE_WEIGHT);
         if (goal !== "size") {
           const last = lastState(level, acts);
           assert.equal(indepPlaced(level.params, last.pose), mal !== "vertex-off", `${mal}: the checker's placement`);
@@ -163,7 +164,8 @@ test("main's condition: a misplaced protractor read CORRECTLY (the number it sho
     const g = konLogic.grade(level, env(acts), { final: true });
     assert.equal(g.verdict, "not_yet");
     assert.equal(g.evidence[0].outcome, "incorrect");
-    assert.equal(g.evidence[0].misconceptionId, "k-vo");
+    // (gate 2 per session: a pick from one level, named by the server on a second)
+    assert.equal(g.evidence[0].misconceptionId, undefined); assert.equal(g.evidence[0].chanceMis, "k-vo");
     // and with vertex-off NOT mapped, the same acts are still not right (a refusal, no belief named)
     const bare = { ...level, mal: {} };
     const rb = run(bare, acts);
@@ -275,11 +277,12 @@ test("kon/place evidence: the placement at her first decision and her reading ri
   const fixed = [...wrong, { kind: "free" }, ...konLogic.solve(level)];
   const gw = gradeActs(level, env(fixed), { final: true });
   assert.equal(gw.grade.verdict, "solved");
-  assert.equal(gw.grade.evidence[0].misconceptionId, "k-vo");
+  assert.equal(gw.grade.evidence[0].chanceMis, "k-vo", "her first decision's placement stays the evidence (a pick: gate 2)");
   assert.equal(gw.grade.facts.placed, "off");
   const rowW = playFactsRow({ game: "kon/place", ...seamLead({ facts: { ...gw.grade.facts, verdict: "solved" } }, gw.trail, {}, null), verdict: "solved", ...gw.grade.facts });
   assert.match(rowW, /(^| )placed=off( |$)/);
-  assert.equal(gw.trail.firstTry, false); assert.deepEqual(gw.trail.mal[0], { rule: "vertex-off", mis: "k-vo" });
+  // (one level's pick is not in the trail; the server adds it when a second level names it)
+  assert.equal(gw.trail.firstTry, false); assert.deepEqual(gw.trail.mal, []);
 });
 
 test("kon/place: the reading she measures is never said first; draw and size give nothing away; no goal line states the answer or the rule", () => {
@@ -464,7 +467,7 @@ test("centre-on-arm (Learning's split of vertex-off): the centre mark on an arm'
     assert.ok(!isCentreOnArm(p, goodPose(p)) && !isCentreOnArm(p, vertexOffPose(p)), "the two placements stay apart");
     const r = run(level, acts), m = r.ms.at(-1);
     assert.equal(m.kind, "misconception_consequence"); assert.equal(m.misconceptionId, "centre-on-arm"); assert.equal(m.facts.shown, "centre_on_arm");
-    assert.equal(konLogic.grade(level, env(acts), { final: true }).evidence[0].misconceptionId, "k-coa");
+    assert.equal(konLogic.grade(level, env(acts), { final: true }).evidence[0].chanceMis, "k-coa", "a pick from one level (gate 2 per session)");
     // the play-out shows where her centre is (the ring on O and the join to her centre) only where the level names it
     assert.equal(centreRingShown(p, r.s, true, level.mal), true);
     assert.equal(centreRingShown(p, run(level0, acts).s, true, level0.mal), false);

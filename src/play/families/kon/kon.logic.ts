@@ -441,11 +441,21 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
   // gate 2 (kon/name, night rulings 2026-11-11): say's built name is a pick as well: three random taps give a vertex-first or
   // vertex-last name 1 time in 6 at worst (over law 3's 1 in 10), so it is named on its second occurrence, on a level whose
   // figure and letters both differ (1/6 x 1/6 = 1 in 36; tests/r8-games-kon-name-gate2.test.mjs)
-  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends", "say:vertex-name"],
+  // gate 2, law 3 read per session (2026-11-16, kon/place): a placement or a scale reading named from one level is named on
+  // every level a session serves, so its session figure is 1 - (1 - p)^n: over four levels a drop that misses (vertex-off,
+  // 1 in 10.8 a level) is 1 in 3.1, a typing slip (wrong-scale, 1 in 10 at worst) 1 in 2.9, a blind dot (draw, 1 in 36)
+  // 1 in 9.4. So these are picks too, named on a second level (tests/r8-games-kon-place-gate2.test.mjs, the session table)
+  chancePicks: ["draw:join-wrong-end", "ends:ray-two-ends", "say:vertex-name",
+    "measure:vertex-off", "draw:vertex-off", "measure:centre-on-arm", "draw:centre-on-arm", "measure:wrong-scale", "draw:wrong-scale"],
   // gate 2 (night rulings 2026-11-11, kon/place): one join is 1 in 2 blind, so a pair of levels is still 1 in 4 (law 3's line
   // is 1 in 10): join-wrong-end is named on its fourth sighting, on four different asked sizes with both button orders among
-  // them ((1/2)^4 = 1 in 16; a habit of pressing one place never makes it under both orders)
-  chanceRepeat: { "draw:join-wrong-end": { sightings: 4, apart: [0], cover: 1 } },
+  // them ((1/2)^4 = 1 in 16; a habit of pressing one place never makes it under both orders). Per session (2026-11-16):
+  // every spec here is named only on the session's first four levels (NAMING_LEVELS), so the join's four are all four.
+  // vertex-off, centre-on-arm and wrong-scale: two levels that differ (draw: two asked sizes), at worst 1 in 19 a session
+  chanceRepeat: { "draw:join-wrong-end": { sightings: 4, apart: [0], cover: 1 },
+    "measure:vertex-off": { sightings: 2 }, "draw:vertex-off": { sightings: 2, apart: [0] },
+    "measure:centre-on-arm": { sightings: 2 }, "draw:centre-on-arm": { sightings: 2, apart: [0] },
+    "measure:wrong-scale": { sightings: 2 }, "draw:wrong-scale": { sightings: 2, apart: [0] } },
   // name: two parts (the figure, the letters: nameSurface), so a second sighting counts on another figure with other letters;
   // place/draw: two parts (the asked size, the join order: drawSurface); the rest: the level's params
   surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? nameSurface(l.params)
