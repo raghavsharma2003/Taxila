@@ -29238,6 +29238,34 @@
    "at": "2026-11-16",
    "title": "The rule 'no help says a sentence from her last two turns' (H2) was met by its letter and failed in 15 help turns across four topics: help said again what she had said three or more turns earlier, or a simpler that paraphrases the line just said. A window over recent turns is the wrong measure for repetition in a lesson; the memory has to be the lesson.",
    "source": "inbox/r8-main-37.json"
+  },
+  {
+   "id": "dc-r8-pick-options-galti-tri",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Exact pickOptions for the computed default's first two families (RULINGS-2026-11-16-gate2-answers.md, answer 2 under 'a computed default'; branch claude/r8-pick-options from 44f997d83, code 902e6da9a). galti-pakdo (galtiPickOptions): the verdict is sab sahi or one of the working's n - 1 lines (neat-correct, right-answer: p 1/n); check-later's pick is the line weighed first, any of n (p (n - at)/n). nazariya/tri more (triPickOptions): every grid point above the base, (w + 1) x zb (p w / ((w + 1) zb), 0.103-0.308). galti sudhaaro, the same line pick before its fix, becomes a chance pick (chancePicks ['sudhaaro']; it named from one level). tri more gains H1 (sightingOf: the point) and H3's shape (confirmMore: a sighting counts only when her next corner after the play-out is again on A's top line; unconfirmed, a plain miss at GAME_WEIGHT); malActs carries the holder's confirmation. Nothing a child sees changes; served levels unchanged (64,800 bodies hash the same); NAMING_OFF untouched (both modes name). Reverse if: a judge finds a habit child named 1 in 10 or more in either battery (then naming off for that mode), or a level appears whose true options differ from the list (then the list is wrong, not the rule).",
+   "source": "inbox/r8-pick-options.json"
+  },
+  {
+   "id": "ms-r8-pick-options-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "p and k over every generated level (11,105: each entry x fades 1-3 x 20 seeds x focus), before -> after: galti pakdo:neat-correct 1/3 k4 -> 1/4-1/3 k3-4 (250 levels); pakdo:right-answer 1/2 k4 -> 1/4-1/3 k3-4 (741); pakdo:check-later 1/3 k4 -> 1/4-3/4 k3, 4 or never (250; never on 82); sudhaaro's three: named from one level -> as pakdo (833/501/833); tri more:shape-looks 1/2 k4 -> 0.103-0.308 k2 (1,389) or 3 (639). Habit battery (tests/r8-habit-battery-galti-pakdo.test.mjs, r8-habit-battery-nazariya-tri.test.mjs; tests/_habit-children.mjs with cellIds), worst non-holder worst fade / worst door, full sweep (HABIT_FULL=1): pakdo 0.025 / 0.033, sudhaaro 0.037 / 0.042 (the same slip every level, 'the option below'), tri more 0.004 / 0.008 (blind); gate 0.016/0.042, 0.031/0.042, 0.005/0.014. Before: sudhaaro blind verdict 0.375/0.458, the same slip 0.594/0.708; tri the same slip every level 1.0 (old k), one random slip 0.32/0.40 (exact k, no H1/H3). Holders (full): galti 0.001-0.068 (reported: the default asks 3-4 of four levels), tri 0.998-1.000. Times: gate 28 s and 18 s; full about 5 min and 2 min.",
+   "source": "inbox/r8-pick-options.json"
+  },
+  {
+   "id": "dc-r8-steer-dir",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "kon/place wrong-scale steer, note 004 answer 1 (branch claude/r8-steer-dir; NAMING_OFF unchanged). After a wrong-scale sighting the next level opens the same way as the sighting's level (cw after cw, acw after acw), with a key no sighting had (measure: on both scales; draw: the asked size), the same kind (acute or not) tried first. The sign each pattern carries: always the inner scale is wrong exactly on acw angles, always the outer on cw, always the larger number on acute, always the smaller on obtuse. Plumbing: FamilyLogic.steerOf (new, optional) -> chance memory `steer` -> levels.js steersOf -> body.steers -> GenRequest.steers; kon.place.ts placeSteer and placeNeeds `scale`. Draw (note 004 item 4, the dot differs): while the steer is on, a draw level's mix-up dot is never the right dot of the level just played (the steer alone put 'last time's right dot' at 0.125 by door, gate sweep). The level mix of answer 4 is asked from the third level (still by the fourth), so a one-side or one-kind reader's second sighting fits within the four (separate commit). Reverse if: a battery child who does not hold wrong-scale is named over 1 in 10 under the steer; or main rules the mix stays at the fourth level (revert that commit; inner and larger then fall to 0.17 and 0.19 in the gate sweep).",
+   "source": "inbox/r8-steer-dir.json"
+  },
+  {
+   "id": "ms-r8-steer-dir-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "kon/place habit battery after dc-r8-steer-dir, full sweep (HABIT_FULL=1, 503 s) and gate sweep. Holders before -> after (gate / full): measure inner 0/0 -> 1.00/1.00; draw inner 0/0 -> 1.00/1.00; measure larger 0.031/0.063 -> 1.00/1.00; smaller 1.00/0.92 -> 1.00/1.00; outer 1.00/0.96-0.98 -> 1.00/1.00; vertex-off 0.924/0.932 -> 0.909/0.961; always A 0.60 -> 0.62. Worst non-holder full, by fade before -> after: measure 0.005 -> 0.007, draw 0.075 (last time's right dot) -> 0.036 (right dot either button, join-wrong-end); by door: measure 0.011 -> 0.008, draw 0.050 -> 0.050. Last time's right dot: 0.075 -> not named. Steer asserted 10476/10476 steps (4588 more under the level mix); draw dot rule 6032/6032. Served levels changed (gate sweep, careful child): measure 348/768, draw 338/768. Re-cert kon/place 4484 samples all pass, no sample changed (play.json unchanged). r8-games-kon-layout now also plays 8 picker-served acute, tilted and steered levels: passes, 10.1 min (one core).",
+   "source": "inbox/r8-steer-dir.json"
   }
  ],
  "edges": [
@@ -46730,6 +46758,31 @@
    "src": "fd-two-turn-window-met-by-letter",
    "rel": "constrains",
    "dst": "dc-r8-director24"
+  },
+  {
+   "src": "dc-r8-pick-options-galti-tri",
+   "rel": "part_of",
+   "dst": "dc-r8-picks-default"
+  },
+  {
+   "src": "dc-r8-pick-options-galti-tri",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-habit-children"
+  },
+  {
+   "src": "dc-r8-pick-options-galti-tri",
+   "rel": "measured_by",
+   "dst": "ms-r8-pick-options-2026-11-16"
+  },
+  {
+   "src": "dc-r8-steer-dir",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-discriminating-level"
+  },
+  {
+   "src": "dc-r8-steer-dir",
+   "rel": "measured_by",
+   "dst": "ms-r8-steer-dir-2026-11-16"
   }
  ]
 }
