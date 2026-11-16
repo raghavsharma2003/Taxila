@@ -2361,7 +2361,12 @@ function enterTeachback(s, prefix, kit) {
     const q = saidIn(tb.prompt, s.ctx.lang ?? "hinglish");
     if (q && String(q).trim()) {
       s.teachbackScript = true;
-      return plan("teachback", join(prefix, SH.teachback({ protege: null })), { probe: "P1", format: "F7", rendered: [endLine(q)], authoredEnd: "teachback",
+      // (dc-r8-director22 T2, main's 031: one of Learning's teachback.leadIn forms before the question, the form picked by a rotation
+      // seeded by the lesson, as the joints are)
+      const leads = (Array.isArray(tb.leadIn) ? tb.leadIn : []).map((f) => saidIn(f, s.ctx.lang ?? "hinglish")).filter((x) => x && String(x).trim());
+      const seedK = [...String(kit?.topicId ?? "")].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
+      const lead = leads.length ? leads[(Math.imul(((s.seed ?? 0) >>> 0) ^ seedK, 2654435761) >>> 0) % leads.length] : null;
+      return plan("teachback", join(prefix, SH.teachback({ protege: null })), { probe: "P1", format: "F7", rendered: [...(lead ? [endLine(lead)] : []), endLine(q)], authoredEnd: "teachback",
         ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
     }
   }
@@ -2401,7 +2406,8 @@ function teachback(s, input) {
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
     const hit = teachbackHit(tb, input.text);
-    if (hit) s.teachbackPassed = true;
+    // (main's 031: a right answer gets no check-in — the verdict leads the wrap in the same turn, over the answer board from its first word)
+    if (hit) { s.teachbackPassed = true; return { ...toWrap(s, { kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct" }; }
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
     const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
@@ -2446,7 +2452,14 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null }) {
   // (2.4: the script's wrap — what was covered, in two sentences, and the goodbye — is said as written; on her stop, the goodbye alone)
   const w = authoredEnd(kit)?.wrap;
   const lang = s.ctx.lang ?? "hinglish";
-  const covered = w?.covered && !stopping ? saidIn(w.covered, lang) : null, bye = w?.goodbye ? saidIn(w.goodbye, lang) : null;
+  // (dc-r8-director22 T5, main's 031: the covered sentence of each skill the lesson reached, in order; wrap.covered only for a script with
+  // no per-skill sentences)
+  const sc = authoredEnd(kit);
+  const reached = new Set(s.introduced ?? []);
+  const bySkill = (sc?.skills ?? []).filter((k) => reached.has(k.skillId) && k.covered).map((k) => saidIn(k.covered, lang)).filter((x) => x && String(x).trim());
+  const hasPerSkill = (sc?.skills ?? []).some((k) => k.covered);
+  const covered = stopping ? null : hasPerSkill ? (bySkill.length ? bySkill.join(" ") : null) : w?.covered ? saidIn(w.covered, lang) : null;
+  const bye = w?.goodbye ? saidIn(w.goodbye, lang) : null;
   if (bye && String(bye).trim()) {
     const lines = [covered, bye].filter((x) => x && String(x).trim()).map(endLine);
     return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { ...(stopping ? { stopping: true } : {}), rendered: lines, authoredEnd: "wrap",
