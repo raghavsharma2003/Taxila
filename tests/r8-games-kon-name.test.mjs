@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, labelPoints, corners, nameOf, nameEvidence, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
+import { points, labelPoints, corners, nameOf, nameEvidence, nameFaint, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -82,7 +82,8 @@ for (const goal of ["say", "find"]) {
         assert.equal(k, p.ask);
         // (the widest arc may be the answer: night ruling kon/name 2 spreads the keys over all five)
       }
-      assert.equal(konLogic.grade(level, env(sol)).evidence[0].weight, goal === "find" ? CHANCE_WEIGHT : GAME_WEIGHT);
+      // (gate 2: a faint solve, the first fade-1 level with O at the vertex, enters at chance weight too)
+      assert.equal(konLogic.grade(level, env(sol)).evidence[0].weight, goal === "find" || nameFaint(p, level.fade) ? CHANCE_WEIGHT : GAME_WEIGHT);
       const m = konLogic.malActs(level, "vertex-name");
       if (!m) continue;
       mals++;
@@ -106,18 +107,18 @@ for (const goal of ["say", "find"]) {
       }
       const named = mr.ms.filter((x) => x.kind === "misconception_consequence");
       assert.equal(named.length, 1); assert.equal(named[0].misconceptionId, "vertex-name");
-      assert.equal(named[0].facts.vertex_ok, "no");
+      // (gate 2: a say name is a pick too: the moment says nothing about the vertex)
+      for (const k of ["sign", "vertex_ok", "arms_ok"]) assert.equal(named[0].facts[k], undefined, k);
       if (goal === "say") {
         // the name she gave denotes the angle at its middle letter: drawn (solid) or not one of the five (dashed)
         const t = m.slice(0, 3).map((a) => a.at), isDrawn = D.some((d) => names(t, d));
         assert.equal(named[0].facts.shown, isDrawn ? "figure" : "dashed");
         if (!isDrawn) dashed++;
-        assert.equal(named[0].facts.arms_ok, "no");
       }
       const g = konLogic.grade(level, env(m), { final: true });
-      // round 8 law 3 (ruling kon/name 2): in find one tap among the corners names nothing (kept at chance weight as chanceMis); a
-      // three-tap name in say names it
-      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, goal === "say" ? "k-vn" : undefined); assert.equal(g.evidence[0].chanceMis, goal === "say" ? undefined : "k-vn");
+      // round 8 law 3: one pick names nothing (kept at chance weight as chanceMis): find's tap among five arcs, and (gate 2)
+      // say's three-tap name, which three random taps give 1 time in 6
+      assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, undefined); assert.equal(g.evidence[0].chanceMis, "k-vn");
     }
     assert.ok(n >= 20, `only ${n} levels`);
     assert.ok(mals >= n / 2, `vertex-name applied on ${mals} of ${n}`);
@@ -167,7 +168,7 @@ test("kon/name: taps out of turn are refused; tampered params are refused", () =
     assert.equal(konLogic.validate({ ...base, goal: params.goal, params }), null, JSON.stringify(params));
 });
 
-test("kon/name evidence: the name she gave, vertexOk, armsOk; the grade's facts carry them", () => {
+test("kon/name evidence: the name she gave, vertexOk, armsOk; the grade's facts carry her name only (gate 2: a say name is a pick)", () => {
   const level = levels("say", [2], [7])[0], p = level.params, c = corners(p)[p.ask];
   const wrong = say([c.v, c.a, c.b]);
   const r = run(level, wrong);
@@ -176,12 +177,12 @@ test("kon/name evidence: the name she gave, vertexOk, armsOk; the grade's facts 
   assert.deepEqual(nameEvidence(p, right.s.nm), { name: [c.b, c.v, c.a].map((i) => p.lets[i]).join(""), vertexOk: true, armsOk: true });
   const g = gradeActs(level, env([...wrong, { kind: "clear" }, ...say([c.a, c.v, c.b])]), { final: true });
   assert.equal(g.grade.verdict, "solved");
-  assert.equal(g.grade.evidence[0].misconceptionId, "k-vn");
+  assert.equal(g.grade.evidence[0].misconceptionId, undefined); assert.equal(g.grade.evidence[0].chanceMis, "k-vn");
   assert.equal(g.trail.firstTry, false);
   assert.equal(g.grade.facts.said, [c.a, c.v, c.b].map((i) => p.lets[i]).join(""));
-  assert.equal(g.grade.facts.vertex_ok, "yes"); assert.equal(g.grade.facts.arms_ok, "yes");
   const gw = gradeActs(level, env(wrong), { final: true });
-  assert.equal(gw.grade.facts.vertex_ok, "no"); assert.equal(gw.grade.facts.arms_ok, "no");
+  for (const x of [g, gw]) for (const k of ["vertex_ok", "arms_ok"]) assert.equal(x.grade.facts[k], undefined, k);
+  assert.equal(gw.grade.facts.said, [c.v, c.a, c.b].map((i) => p.lets[i]).join(""));
 });
 
 test("kon/name: no goal line or button states the answer or the rule (where the vertex goes); every language has every line", () => {

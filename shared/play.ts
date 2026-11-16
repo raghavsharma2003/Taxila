@@ -684,6 +684,11 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
    *  `sightings` levels (default 2): `apart`, the surface parts that must differ between every two of them (default: every
    *  part); `cover`, a part that must not be the same on all of them (kon/place draw's join order) */
   chanceRepeat?: Readonly<Record<string, { sightings: number; apart?: readonly number[]; cover?: number }>>;
+  /** gate 2: a level whose right answer says less than its goal's usual one (kon/name: the first fade-1 level with O at
+   *  the vertex, as the book's first figure; a find level where the mix-up's reading meets no other arc): its correct
+   *  enters at CHANCE_WEIGHT (the controllerEasy temper, the learner model's one step below a game's weight) and
+   *  discriminates nothing (gradeLevel reads this) */
+  faintSolve?(level: PlayLevel<P>): boolean;
 }
 
 // ───────────────────────────── art direction (DESIGN.md §4) ─────────────────────────────

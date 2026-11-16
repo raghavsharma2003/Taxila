@@ -2,6 +2,23 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+## 2026-11-16, gate 2 for kon/name: say and find each name on the second occurrence, faint solves, Wapas (branch `claude/r8-gate2-name`, from `db0ac72d1`)
+
+**Done (this push; naming is still off, `NAMING_OFF` untouched):** the evidence rule for kon/name, worked out and asserted over every generated level (621 say, 1,280 find) in the new `tests/r8-games-kon-name-gate2.test.mjs`. The packet's "Gate 2: evidence" holds the tables and answers the five "kept for gate 2" items.
+- **say names nothing from one name.** Three random taps give a vertex-first or vertex-last name 1 in 6 at worst (4 of 24 orders of three different letters; 4 of 64 if a letter may be tapped again), on every level. One tap on another letter never makes it (0 of 18); a swap of two neighbouring taps always does (the mix-up's own act). `say:vertex-name` is now a chance pick: `chanceMis` at chance weight, nothing in rows, trail, seam or facts (say's facts no longer carry `vertex_ok` / `arms_ok`). Named on the second occurrence: 1/6 × 1/6 = 1 in 36.
+- **find**: one tap among five arcs, the mix-up's arc 1 in 5 blind; the worst blind rule (a fixed arc, a size rank, a corner) 0.180 of levels; a pair 1 in 25 (1 in 31 for the worst rule; 1 in 30 for one say name and one find tap). Two sightings are enough for both goals (no `chanceRepeat` entry).
+- **Surface in two parts** (`nameSurface`: the figure, the letters): a second sighting counts only when both differ.
+- **Faint solves** (new `FamilyLogic.faintSolve`, read by `gradeLevel`): the first fade-1 level with O at the asked angle's vertex, and every find level with no mix-up arc (the wide key and the outside vertex angle; 608 of 1,280), solve at CHANCE_WEIGHT with no `discriminates`.
+- **Wapas** takes back what she sees, not the check: the miss stays the level's first decision in the grade and the trail (it always did), and now the on-screen count keeps it too (`commits` survives an undo in kon/name; a wrong tap, Wapas, the right tap now ends "jaanch: 2" with the pale tick, not "jaanch: 1" with a full tick). This is a small screen change on that path only.
+- Re-certified `--only kon/name`: every sample passing at every size; the sampled levels are unchanged, only the stamp moved (order restored to the base file). Coverage rebuilt, `--check` ok.
+
+**Next:** carry on with the laws-audit list.
+
+**Questions for main:**
+1. Switch naming on for kon/name?
+2. "A right first tap on a wide level counts for less": every find tap is already at CHANCE_WEIGHT, the learner model's lowest step for a game. The wide level's right tap now carries no `discriminates` and names nothing, but weighs the same 0.25 in the model. A lower weight needs a new temper in `kt/bktr.js` (for example the leak halving, applied when the screen can be read for the key). Want it?
+3. The Wapas count change (above) is a screen change on one path. Look at it, or take it on the test?
+
 ## 2026-11-16, gate 2 for kon/place: nothing from one join press, the tolerance that names vertex-off (branch `claude/r8-gate2-place`, from `5571e35df`)
 
 **Done (this push; naming is still off, `NAMING_OFF` untouched):** the evidence rule for kon/place, worked out and asserted over every generated level (178 measure, 179 draw) in the new `tests/r8-games-kon-place-gate2.test.mjs`. The packet's "Gate 2: evidence" holds the tables.
