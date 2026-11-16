@@ -2729,7 +2729,10 @@ function decide(s, input, item) {
     // stop check-in first, like "bas ho gaya"; a second stop within two turns, "stop for today" (the stop chip) or Pause → End
     // ends it. TAXILA_R7_BYE_CHECKIN=off: a goodbye ends at once, as before.
     // (never inside or after a safeguarding episode: there a goodbye is let go at once, the frozen safety behaviour)
-    const goodbyeNow = (!byeCheckInOn() || !!s.safeguard || s.safeguardedAt != null || (s.checkReleased != null && s.turn - s.checkReleased <= 3) || !!prevSafe) && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye");
+    const goodbyeNow = (!byeCheckInOn() || !!s.safeguard || s.safeguardedAt != null || (s.checkReleased != null && s.turn - s.checkReleased <= 3) || !!prevSafe) && (cls?.relRelease || cls?.source === "relational" || stopKind(input.text) === "leaving" || cls?.request?.type === "goodbye")
+      // (dc-r8-director24 A3, main's 035, c5-t02 offtopic 70, c4 stuck 66, c6 stuck 66: after "bye" a goodbye, never the stop menu — a
+      // goodbye or leaving in so many words is let go at once; "bas" and the other stop phrases keep the one check-in)
+      || (scriptOn() && (stopKind(input.text) === "leaving" || /(?<![\p{L}])(?:bye|bye-bye|alvida|tata|goodbye)(?![\p{L}])/iu.test(String(input.text ?? ""))));
     if (!checkIn && (goodbyeNow || (s.stopAsked != null && s.turn - s.stopAsked <= 2))) return toWrap(s, { stopping: true, kit: input.kit });
     if (s.stopAsked != null && checkIn) return toWrap(s, { stopping: true, kit: input.kit });      // the check-in was given: let them go
     s.stopAsked = s.turn;
@@ -3119,7 +3122,7 @@ export function step(prev, input) {
   const lmNow = out?.state?.lastMove ?? {};
   const acted = input?.event !== "turn" ? null
     : (out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0) || lmNow.asideAck && !input.cls?.asideReply ? "aside"
-      : lmNow.kind === "break" || lmNow.stopping || (lmNow.kind === "wrap" && lmNow.stopping) ? "stop"
+      : lmNow.kind === "break" || lmNow.stopping || out?.move?.stopping || (["wrap", "done"].includes(String(lmNow.kind ?? out?.move?.kind ?? "")) && out?.state?.stoppedEarly && !prev?.stoppedEarly) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
   const cell = acted ? { part: cell0?.part ?? null, column: acted, help: cell0?.help ?? null } : cell0;
   // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose

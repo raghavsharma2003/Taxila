@@ -2348,7 +2348,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director22 K: a yes-or-no key is said as a sentence — "Nahi, kyunki …", never "Is sawaal ka sahi jawab: nahi")
     // (dc-r8-director23 K2, c4 stuck 42, 48; offtopic 60; steering 56: "Yeh jawab sahi nahi hai. Haan, kyunki …" — after a wrong answer to a
     // yes-or-no card, one sentence that states the fact: the why, said as a statement, with no verdict and no "haan/nahi" before it)
-    const ynFact = gaveA && yesNo(gaveA) && gw && verdict === "not_yet" ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
+    const ynFact = gaveA && yesNo(gaveA) && gw && verdict === "not_yet" ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${lang === "english" ? "No" : "Nahi"}, ${joinable(w, { lower: true })}.` : null; })() : null;
     if (ynFact) guard.ynFact = true;
     const ynSentence = ynFact ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
@@ -2404,7 +2404,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (lead && verdict === "not_yet" && !guard.verdictCode) { const cv = codeVerdict(); if (norm(lead) !== norm(cv)) { lead = cv; guard.verdictCode = "notRight"; } }
     // v6.6 V1: a graded wrong answer always has code's verdict, her draft empty or not
     if (!lead && graded && verdict === "not_yet") { lead = codeVerdict(); guard.verdictCode = "notRight"; }
-    // (K2: the fact sentence is the whole close — no verdict before it)
+    // (K2, K3 — main's 035: "Nahi," then the fact is the whole close — no verdict frame before it)
     if (guard.ynFact) lead = null;
     // v6.1 R11 (director9: a stray Devanagari switch mid-lesson): her lines are in the lesson's script, never a sudden Devanagari one
     { const n0 = ss.length; ss = ss.filter((x) => !/\p{Script=Devanagari}/u.test(x)); if (ss.length < n0) guard.scriptSwitch = n0 - ss.length; }

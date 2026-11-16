@@ -811,6 +811,14 @@ PREDICATES.partOnce = (L, r, i, ctx) => {
   }
   return why;
 };
+/** dc-r8-director24 A3: after "bye" (a goodbye or leaving in the child's words) a goodbye — never the stop menu, never the buttons
+ *  by name (c5-t02 offtopic 70, c4 stuck 66, c6 stuck 66). Gated. */
+PREDICATES.goodbyeNoMenu = (L, r, i, ctx) => {
+  if (!/(?<![\p{L}])(?:bye|alvida|tata|goodbye|jaati\s+hoon|jaata\s+hoon)(?![\p{L}])/iu.test(String(ctx.prevChild ?? ""))) return null;
+  return String(r.move ?? "") === "break" || /break le sakte|stop kar sakte|tum batao/i.test(String(r.text ?? "")) ? "the stop menu after a goodbye" : null;
+};
+/** dc-r8-director24 K3: a wrong answer to a yes-or-no card gets "Nahi," then the fact — never the fact with no miss word. Gated. */
+PREDICATES.ynNahi = (L, r, i, ctx) => r.keyFact && !/^(?:nahi|no)\b/i.test(String(r.text ?? "").trim()) ? "a yes-or-no miss's fact with no 'Nahi'" : null;
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;
