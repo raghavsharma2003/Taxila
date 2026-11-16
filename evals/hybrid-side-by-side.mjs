@@ -471,9 +471,13 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           const pk = preselect(a, { kit });
           let scr = pk?.screen ?? null;
           try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
-          const n = scr ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
+          // (main on director23, c4 steady 32, 68, 74, 102, 128: the close of the card just answered was checked against the next unit's
+          // board — the board up while a close is said is the closed card's (heldOf's close), so a close page is checked against that one)
+          const closeHere = i === 0 && (tGuard?.parts?.list ?? []).find((q) => String(q.text ?? "").trim())?.part === "close" && !!next?.lastMove?.closeBeat?.board
+            && JSON.stringify(next.lastMove.closeBeat.board) !== JSON.stringify(pt.boardRef);
+          const n = scr && !closeHere ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
           // v6 checker (a): a value the board shows as "?" that this part states
-          const wh = scr ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
+          const wh = scr && !closeHere ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
           // v6 harness: each part's own board and when it starts (its clause; ~380 ms a word before it, the S2 timing check)
           const before = text.slice(0, pt.atChar).split(/\s+/).filter(Boolean).length;
           const pic = visualNow ? pictureMismatch(segText, pt.boardRef, screen?.altView ?? null).length : 0;

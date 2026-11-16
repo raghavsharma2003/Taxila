@@ -1267,8 +1267,10 @@ export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = 
   const walk = (o) => {
     if (hit || !o || typeof o !== "object") return;
     if (Array.isArray(o)) return o.forEach(walk);
-    if (o.board && o.viewCaption && want.includes(JSON.stringify(o.board))) {
-      const own = drawn ? viewKindOf(altCall(o.board)) : null;
+    // (after a key the board up is the card's answer board: its caption is the card's)
+    if (o.viewCaption && [o.board, o.answerBoard].some((b) => b && want.includes(JSON.stringify(b)))) {
+      // (main, integration 72: the caption is written against the board's own second view; another kind of view drawn gets none)
+      const own = drawn ? viewKindOf(altCall(o.board ?? o.answerBoard)) : null;
       if (drawn && own && own !== drawn) return;
       hit = o.viewCaption; return;
     }
@@ -2971,13 +2973,21 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // alone; after the second miss the whole card is said)
       const askMark = rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
       // (a reask's {friend} slot is filled as the card's is — state.js friendly)
-      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : cardSs.at(-1);
-      const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2;
+      // (dc-r8-director23 harness: a one-sentence card with no reask is asked by the clause after its colon when that clause is a question
+      // of its own — "…ruka: woh 0 se kitne kilometre par hai?")
+      const tailQ = (() => { if (askMark || cardSs.length >= 2) return null; const c0 = norm(card); const m = c0.split(/[:;]\s+/).at(-1) ?? ""; return m !== c0 && /[?？]$/.test(m) && m.split(/\s+/).length >= 3 ? m.charAt(0).toUpperCase() + m.slice(1) : null; })();
+      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : tailQ ?? cardSs.at(-1);
+      // (main's 034, c4 steering 34: two give-ups at a check-in got the hint, then the hint again with the whole card — a give-up is no wrong
+      // answer: "after the second miss the whole card" reads wrong answers only)
+      const giveUpNow = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know)(?![\p{L}])/iu.test(String(childText ?? ""));
+      const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2 && !giveUpNow;
       const saidIn2 = last2.some((t) => t.includes(norm(card).toLowerCase()));
       // (dc-r8-director22 W: a card said in her last two turns is not said again unless the child asks for it — "phir se bolo", "sawaal kya
       // hai?" — or it is a picture turn (its card keeps its own page, P3), or the second miss is past: the question alone, after any turn)
       const rqNow = String(state.lastMove?.request ?? "");
-      const askedForIt = ["repeat", "which"].includes(rqNow);
+      // (main's 034, c4 steering 34: a give-up at a check-in is turned into a "repeat" by the walk to bring the card — the child asked for
+      // nothing; she asks for the card only in her own words)
+      const askedForIt = ["repeat", "which"].includes(rqNow) && /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu.test(String(childText ?? ""));
       if (saidIn2 && rqNow === "selftry" && !missedTwice) {
         // (W: "ruko, main khud karti hoon" — a short go-ahead, and she waits; the card stays live, unsaid)
         tail = null; guard.cardHeldForTry = true;
@@ -2985,10 +2995,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (a Hindi request keeps S1 as it was: the question alone only after help said in Hindi; with none, the card in Hindi is its new words)
       // (dc-r8-director23 C, settling 032's question: a picture turn says the caption, then the card's question alone — never the whole
       // card; after the second miss the card is said whole)
-      } else if (cardSs.length >= 2 && q && rqNow === "visual" && !missedTwice && (saidIn2 || posedBefore)) {
+      } else if ((cardSs.length >= 2 || ((askMark || tailQ) && norm(q) !== norm(card))) && q && rqNow === "visual" && !missedTwice && (saidIn2 || posedBefore)) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
-      } else if (cardSs.length >= 2 && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
+      // (dc-r8-director23 harness, c5-t01 steady 10, stuck 14, steering 10: a one-sentence card with Learning's reask is asked by its reask too)
+      } else if ((cardSs.length >= 2 || ((askMark || tailQ) && norm(q) !== norm(card))) && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (giveUpNow && body.length > 0) || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
       }

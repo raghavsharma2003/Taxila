@@ -126,6 +126,9 @@ export function falseAnswerNumbers(text, { keys = new Set(), given = "" } = {}) 
   add(given);
   const out = [];
   for (const s of sentencesOf(text)) {
+    // (main on director23, c5-t02 steady 132: "… ribbon ka 5/12 hai aur Imran ke paas 5/6, toh kiska ribbon lamba hai?" — a question
+    // states no answer; its numbers are the question's givens)
+    if (/[?？]\s*$/.test(s)) continue;
     if (!/(?:\bjawab\b|\banswer\b|\bisliye\b|\btoh\b[^.!?]*\b(?:hoga|hogi|hai|hain)\b|=|\byaani\b|\bso\b[^.!?]*\bis\b)/i.test(s)) continue;
     // (a working shown from its own numbers, "8 + 3 = 11", is arithmetic, not a stated key)
     const shown = new Set([...s.matchAll(/(\d+)\s*([+\-×x*])\s*(\d+)\s*=\s*(\d+)/g)].filter((m) => { const [a, op, b, c] = [Number(m[1]), m[2], Number(m[3]), Number(m[4])]; return (op === "+" && a + b === c) || (op === "-" && a - b === c) || ("×x*".includes(op) && a * b === c); }).map((m) => m[4]));
