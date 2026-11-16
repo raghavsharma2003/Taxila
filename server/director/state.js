@@ -2401,7 +2401,8 @@ function teachback(s, input) {
   if (tb) {
     // (dc-r8-director22 T3: the verdict is a turn of its own — her reply to it, whatever it is, gets the wrap)
     // (026: the wrap is said over the teach-back's answer board and holds it)
-    if (s.teachbackKeyed) { s.teachbackKeyed = undefined; return { ...toWrap(s, { kit }), ...(tb.answerBoard ? { holdBoard: true } : {}) }; }
+    // (dc-r8-director23 T2: when the child says something after the key's check-in, the wrap opens with one short authored acknowledgement)
+    if (s.teachbackKeyed) { s.teachbackKeyed = undefined; return { ...toWrap(s, { kit, afterKey: String(input.text ?? "").trim().length > 0 }), ...(tb.answerBoard ? { holdBoard: true } : {}) }; }
     // (2.4: a right answer — the key or a form Learning accepts — is told so; anything else gets the key and its why, once)
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
@@ -2416,7 +2417,8 @@ function teachback(s, input) {
     // its question board; the wrap that follows holds it)
     const board = tb.answerBoard ?? null;
     return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }),
-      ...(hit ? { endVerdict: "correct" } : {}),
+      // (dc-r8-director23 T2, c6 steady 114: a miss on the closing question gets a miss verdict before the key)
+      endVerdict: hit ? "correct" : "not_yet",
       ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
   }
   s.teachbackTries += 1;
@@ -2428,7 +2430,7 @@ function teachback(s, input) {
   return plan("teachback", SH.teachbackFollowup({ protege: scriptIdOf(kit) ? null : s.ctx.protege, missing }), { probe: "P1", format: "F7" });
 }
 
-function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null }) {
+function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afterKey = false }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
   // round 4: a wrap the lesson reaches by itself (time, the plan) keeps the promise to come back to what they shared or asked;
   // never on a child's stop or goodbye (letting them go is quick: NEVER MANIPULATE)
@@ -2461,7 +2463,10 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null }) {
   const covered = stopping ? null : hasPerSkill ? (bySkill.length ? bySkill.join(" ") : null) : w?.covered ? saidIn(w.covered, lang) : null;
   const bye = w?.goodbye ? saidIn(w.goodbye, lang) : null;
   if (bye && String(bye).trim()) {
-    const lines = [covered, bye].filter((x) => x && String(x).trim()).map(endLine);
+    // (Learning's `wrap.ack` forms: one, rotated by the lesson's seed, when the child spoke after the closing key's check-in)
+    const acks = afterKey && !stopping ? (Array.isArray(w?.ack) ? w.ack : []).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim()) : [];
+    const ack = acks.length ? acks[(Math.imul(((s.seed ?? 0) >>> 0) ^ [...String(s.ctx?.lessonKey ?? s.ctx?.sessionId ?? "")].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261), 2654435761) >>> 0) % acks.length] : null;
+    const lines = [ack, covered, bye].filter((x) => x && String(x).trim()).map(endLine);
     return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { ...(stopping ? { stopping: true } : {}), rendered: lines, authoredEnd: "wrap",
       ...(keyFirst?.line ? { endKey: keyFirst.line } : {}),
       ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board: keyFirst.board, mode: "fresh" } } : {}) });
@@ -2979,9 +2984,20 @@ function cellLines(prev, input, column) {
   if (!cell || cell.hole || cell.notApplicable) return null;
   const at = (path) => { let v = script; for (const seg of String(path).split(".")) { const m = /^(\w+)(?:\[(\d+)\])?$/.exec(seg); if (!m || v == null) return undefined; v = v[m[1]]; if (m[2] != null) v = Array.isArray(v) ? v[+m[2]] : undefined; } return v; };
   const lang = cell.lang === "hi" ? "hinglish" : prev?.ctx?.lang ?? "hinglish";
-  const lines = (cell.say ?? []).map((p) => at(p)).map((v) => (v == null ? null : saidIn(v, lang))).filter((x) => x && String(x).trim()).map((x) => String(x).trim());
+  let say = cell.say ?? [];
+  let lines = say.map((p) => at(p)).map((v) => (v == null ? null : saidIn(v, lang))).filter((x) => x && String(x).trim()).map((x) => String(x).trim());
+  // (dc-r8-director23 H2: no help says a sentence from her last two turns — when every line of the cell is there, the cell's second
+  // wording (its `alt`, the first one written) is said in their place)
+  const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
+  if (lines.length && cell.alt && lines.every((x) => last2.includes(normLine(x).slice(0, 50)))) {
+    const alts = (Array.isArray(cell.alt) ? cell.alt : [cell.alt]).map((p) => String(p).replace(/^@/, ""));
+    const ap = alts.find((p) => { const v = at(p.replace(/^point\./, `${addr.part.split(":").slice(0, 2).join(":")}.`)) ?? at(p); return v != null && saidIn(v, lang); });
+    const av = ap ? at(ap) : null;
+    const t = av ? saidIn(av, lang) : null;
+    if (t && String(t).trim() && !last2.includes(normLine(t).slice(0, 50))) { lines = [String(t).trim()]; say = [ap]; }
+  }
   // (a second wording may carry its own board — {hi, en, board} — shown in place of the part's)
-  const altBoard = (cell.say ?? []).map((p) => (/Alt$/.test(p) ? at(p)?.board : null)).find((b) => b && typeof b === "object") ?? null;
+  const altBoard = say.map((p) => (/Alt$/.test(p) ? at(p)?.board : null)).find((b) => b && typeof b === "object") ?? null;
   return { cell, addr, lines, show: altBoard ?? (cell.show ? at(cell.show) ?? null : null) };
 }
 const carried = (lm, keep = []) => Object.fromEntries(Object.entries(lm ?? {}).filter(([k]) => keep.includes(k) || !ONE_TURN.includes(k)));
@@ -3052,6 +3068,9 @@ export function step(prev, input) {
   // (dc-r8-director23 R2: the column is what the walk read on THIS turn — a move built from the last one (K's second wording) never keeps
   // that turn's cell; a column with no part the walk is on is still recorded, with no part)
   const cell0 = (() => { try { return cellAddressOf(prev, input) ?? (input?.event === "turn" ? columnOf(input, prev) : null); } catch { return null; } })();
+  // (dc-r8-director23 T2: each card she got right, with the misses it took — the wrap's sentence about her names the hardest)
+  if (input?.event === "turn" && out?.state && prev?.activeItemId && input.cls?.outcome === "correct" && prev.phase !== "teachback")
+    out.state.rightLog = [...(prev.rightLog ?? []), { id: prev.activeItemId, misses: (prev.misses?.[prev.activeItemId] ?? 0) + (prev.cardHelp?.id === prev.activeItemId ? prev.cardHelp.misses ?? 0 : 0), turn: prev.turn ?? 0 }].slice(-40);
   // (dc-r8-director23 R2, c4 offtopic 46: "samajh nahi aaya" after her reply turn got "Theek hai." and the after-aside joint — the move,
   // a copy of the last one, kept its asideAck. An aside is acknowledged on the turn that answers one, and only then)
   // (the second half of a split turn — heldTurn — returns early with the reply turn's returnAnswer still on the state)
@@ -3069,6 +3088,37 @@ export function step(prev, input) {
       : lmNow.kind === "break" || lmNow.stopping || (lmNow.kind === "wrap" && lmNow.stopping) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
   const cell = acted ? { part: cell0?.part ?? null, column: acted, help: cell0?.help ?? null } : cell0;
+  // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose
+  // authored lines are all there says the first help not there: the compiled cell's lines, else the card's simpler, its point's simpler
+  // or the point's second wording; with none left, it stands — the give-up's key comes from giveUpSpent)
+  if (cell && ["clarify", "give_up", "hindi"].includes(cell.column) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+    const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
+    const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? saidIn(x, lang) : null);
+    const said = [lm.point, lm.simpler, ...(lm.rendered ?? []), ...(lm.sayFirst ?? [])].map(txt).filter((x) => x && String(x).trim());
+    const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
+    const inLast2 = (x) => last2.includes(normLine(x).slice(0, 50));
+    if (said.length && said.every(inLast2)) {
+      const cl = cellLines(prev, input, cell.column);
+      const it = prev?.activeItemId ? findItem(prev, input.kit, prev.activeItemId) : null;
+      const sk = it?.skillId ? skillScriptOf(input.kit, it.skillId) : null;
+      const beat = it?.scriptAsk && it.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === it.scriptAsk.beatId) : null;
+      const cardS = beat ? beat.ask : it?.scriptCheck ? sk?.checks?.find((c) => c.id === it.scriptCheck.checkId) : null;
+      const cands = [...(cl?.lines?.length ? [{ t: cl.lines.join(" "), board: cl.show ?? null }] : []),
+        ...[cardS?.simpler, beat?.simpler, beat?.pointAlt].filter(Boolean).map((x) => ({ t: saidIn(x, lang), board: x.board ?? null }))];
+      const pick = cands.find((c) => c.t && String(c.t).trim() && !inLast2(c.t));
+      if (pick) {
+        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, ...rest } = lm;
+        out.state.lastMove = { ...rest, simpler: String(pick.t).trim(), smaller: true, helpNew: true,
+          ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(pick.board ? { board: pick.board } : {}) } } : {}) };
+        if (out.move) out.move = { ...out.state.lastMove };
+      } else if (out.ui?.ask?.text && cell.column !== "hindi") {
+        // (nothing new left and a card follows: the card alone — c5-t02 offtopic 64, the remediation's simpler said again before its card)
+        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;
+        out.state.lastMove = { ...rest, helpNone: true };
+        if (out.move) out.move = { ...out.state.lastMove };
+      }
+    }
+  }
   if (out?.state?.lastMove && input?.event === "turn") {
     const { cell: _c0, ...lm1 } = out.state.lastMove;
     out.state.lastMove = cell ? { ...lm1, cell } : lm1;

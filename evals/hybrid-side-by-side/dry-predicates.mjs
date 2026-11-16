@@ -290,21 +290,26 @@ export const PREDICATES = {
    *  After a point or a remediation it gets that part's simpler and then the card; after a key, the why again and the check-in. */
   giveUpCheckin(L, r, i, ctx) {
     const p = ctx.prevT;
+    // (dc-r8-director23 K2: a yes-or-no key is said as the fact — no "jawab hai", no "Haan, kyunki" — the row records it gave the key)
+    const keyed = (t) => !!t?.check?.gave || !!t?.keyFact || KEY_SAID.test(t?.text ?? "");
     if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)
     if (p.clarifyN === 2) return null;
+    // (dc-r8-director23 H2: no help says a sentence from her last two turns — the simpler she said on the turn just before is not said
+    // again; the card alone follows)
+    if ((p.pageParts ?? []).some((x) => x.part === "simpler")) return null;
     // (O4: the requests after a key stay on the closed card; once its key is said and no card has come since, a give-up may move on)
-    if (ctx.keyOpenBefore && !KEY_SAID.test(p.text)) return null;
+    if (ctx.keyOpenBefore && !keyed(p)) return null;
     if (/worked:(?:step|problem)/.test(String(p.beat ?? ""))) {
       if (ctx.prevPrevT && /worked:(?:step|problem)/.test(String(ctx.prevPrevT.beat ?? "")) && ctx.prevPrevT.beat === p.beat) return null;
       return (r.pageParts ?? []).some((x) => x.part === "simpler" || x.part === "body") && r.beat === p.beat ? null : "a give-up at a worked step's check-in moved on";
     }
     // (C1, main on director21: after a key a give-up gets the why's second wording once, else the walk goes on — never the same why
     // again; repeatedAuthored holds the repeat)
-    if (KEY_SAID.test(p.text)) return null;
+    if (keyed(p)) return null;
     const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
     return simpler && cardIn(r) ? null : `a give-up at a check-in answered with ${simpler ? "no card" : cardIn(r) ? "the card and no simpler" : "neither the simpler nor the card"}`;
   },
@@ -761,6 +766,18 @@ PREDICATES.columnOfRead = (L, r, i, ctx) => {
   const want = { right: ["correct"], wrong: ["incorrect", "partial"], misconception: ["misconception"] }[col];
   return want && ctx.prevRead != null && !want.includes(out) ? `column ${col} on a line read "${ctx.prevRead}"` : null;
 };
+/** dc-r8-director23 H2: no help says a sentence from her last two turns — on a turn answering a clarify, a give-up or a Hindi request,
+ *  a teaching sentence of five words or more (the card's own question and a check-in aside) already said in her last two turns. Gated. */
+PREDICATES.helpRepeats = (L, r, i, ctx) => {
+  if (!["clarify", "give_up", "hindi"].includes(String(r.cell?.column ?? ""))) return null;
+  const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
+  const card = key(r.card ?? "");
+  // (the card's question — its reask included — closes a card turn: it is the card, not help)
+  const ss = sentencesOf(r.text ?? "");
+  const q = r.card && /[?？]\s*$/.test(ss.at(-1) ?? "") ? key(ss.at(-1)) : null;
+  const hit = ss.map(key).find((x) => x.split(" ").length >= 5 && x !== q && !(card && card.includes(x)) && !CHECKIN.test(x) && last2.includes(x));
+  return hit ? `help says her last two turns' sentence again: "${hit.slice(0, 60)}"` : null;
+};
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;
@@ -791,7 +808,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -809,7 +826,7 @@ export function lessonFlags({ rows, script }) {
     ctx.keyOpenBefore = ctx.keyOpen;
     for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
-    ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!ctx.keyOpen;
+    ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
     (ctx.o.teacherTexts ??= []).push(r.text ?? "");
     ctx.prevPrevT = ctx.prevT;
