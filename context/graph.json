@@ -29280,6 +29280,20 @@
    "at": "2026-11-16",
    "title": "Released 20ec92e with scripts/release.mjs: web taxila-web--s20ec92e-t6vb (was taxila-web--s18762c2-yqf1), worker + canary/nightly jobs on taxila-worker:20ec92e (was 18762c2); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 20ec92e --rollback.",
    "source": "inbox/release-20ec92e.json"
+  },
+  {
+   "id": "dc-r8-gate2-s3",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Gate 2 S3 built (dc-r8-gate2-shadow, branch claude/r8-gate2-s3; NAMING_OFF unchanged, S4 and the shadow switch not done). kon/name say: after a miss 'Yahi naam' waits until her name changes (a letter or Mita do since; stepName refuses 'unchanged'; Wapas keeps the wait; the view's check control is off meanwhile: the only change a child sees), and confirmSay counts the next name only when every letter of it was tapped after the miss. stambh/tally read: a sighting counts only on a row where no reading habit (READ_HABITS: every way of reading with every counting slip) types the mix-up's number (discriminatingRead); rows 16, 17, 19, 21, 23, 25-29, 31, 37, 43, 49 no longer count. kon/place draw: a wrong-scale sighting does not count where the other scale's mark is within 2 degrees of the level just played's right mark (drawSightingCounts). Plumbing: new optional FamilyLogic.sightingCounts(level, rule, {recent}), read by server/play/levels.js (not remembered, not counted). The battery gains the second-reading judges' children; those it cannot bring under the line are marked reported (figure printed and listed in each packet, not asserted). Reverse if: real sittings (S2) show the waiting check control confuses children (presses on a disabled control after a miss), or main rules tally read must be steered to a counting row (the read holder fell from 0.797 to 0.182).",
+   "source": "inbox/r8-gate2-s3.json"
+  },
+  {
+   "id": "ms-r8-gate2-s3-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Habit batteries after S3, full sweep (HABIT_FULL=1). kon/name (165 s): every re-press child 0 (judge: swap twice 1.000, careful 2-of-4 0.982, slip 0.475, blind 0.130, second letter 0.762, alternate 0.919, last taps 0.375); reported over the line: swap or tap-added-last given again 1.000, alternate again 0.906, swap reshuffled 0.817, tap-last reshuffled 0.803, random slip again 0.451, alternate reshuffled 0.348, random slip reshuffled 0.201, swap then guess 0.132 (worst fade 0.149, door 0.169), tap-last then guess 0.116 (0.125/0.147), find larger corner 0.074 (0.094/0.125), find right corner 0.037 (0.037/0.075); worst asserted say 0.039/0.042, find 0.025/0.036. stambh/tally (169 s): the judge's bundles-only-bundle-skipped 0.013 -> 0; worst asserted read 0/0, keep 0/0; reported: bundles only, bundle skipped, key 2 right 0.050 (0.119 fade 2, 0.158 door ttt); read holder 0.797 -> 0.182 (gate 0.234), half-holder 0.324 -> 0.081. kon/place (about 19 min with memo clearing): last time's right dot 0.075 -> 0; reported: bisector finger draw 0.109-0.128 at fade 2 (door 0.067), measure under (gate sweep door 0.125); +-8 px wobble worst 0.023/0.033; worst asserted measure 0.018/0.025, draw 0.036/0.050; draw inner holder 1.000 -> 0.965. Gate sweeps: kon/name 25 s, tally 22 s, kon/place 172 s (was 99 s).",
+   "source": "inbox/r8-gate2-s3.json"
   }
  ],
  "edges": [
@@ -46797,6 +46811,16 @@
    "src": "dc-r8-steer-dir",
    "rel": "measured_by",
    "dst": "ms-r8-steer-dir-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-s3",
+   "rel": "part_of",
+   "dst": "dc-r8-gate2-shadow"
+  },
+  {
+   "src": "dc-r8-gate2-s3",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-s3-2026-11-16"
   }
  ]
 }
