@@ -688,6 +688,15 @@ export const ORDER_LAWS = {
       return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
     return null;
   },
+  /** dc-r8-director22 H: a Hindi request gets words she did not say in her last two turns — the part's second wording or an unspent
+   *  simpler; every teaching sentence of the turn (four words or more, the card aside) said already is the fault. */
+  hindiNewWords(L, r, i, ctx) {
+    if (!/·\s*language/.test(ctx.prevRead ?? "")) return null;
+    const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
+    const card = key(r.card ?? "");
+    const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x));
+    return ss.length && ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
+  },
   /** dc-r8-director22 J2: a miss verdict and its remediation always have their joint — a remediation said on the turn after a wrong
    *  answer carries one of the script's beforeRemediation forms. */
   missRemediationJoint(L, r, i, ctx) {
@@ -743,7 +752,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -763,6 +772,7 @@ export function lessonFlags({ rows, script }) {
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;
+    (ctx.o.teacherTexts ??= []).push(r.text ?? "");
     ctx.prevPrevT = ctx.prevT;
     ctx.prevT = r;
   });

@@ -3528,8 +3528,18 @@ function step0(prev, input) {
     const it = findItem(s, input.kit, s.activeItemId);
     const bid = it?.scriptAsk?.beatId;
     const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
+    const lang0 = s.ctx?.lang ?? "hinglish";
     const sm0 = b ? (b.ask?.simpler ?? b.simpler) : null;
-    const sm = sm0 ? saidIn(sm0, s.ctx?.lang ?? "hinglish") : null;
+    let sm = sm0 ? saidIn(sm0, lang0) : null;
+    // (dc-r8-director22 H: never words from her last two turns — the simpler when it is unspent, else the part's second wording
+    // (pointAlt), else its point; the simpler again only when nothing else is written)
+    const last2 = [...(prev?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
+    const recent = (x) => !!x && last2.includes(normLine(x).slice(0, 40));
+    if (sm && recent(sm)) {
+      const alt = b?.pointAlt ? saidIn(b.pointAlt, lang0) : null, pt = b?.point ? saidIn(b.point, lang0) : null;
+      const other = [alt, pt].find((x) => x && String(x).trim() && !recent(x));
+      if (other) { sm = other; move.hindiNew = true; if (other === alt && b.pointAlt?.board) move.altBoard = b.pointAlt.board; }
+    }
     if (sm && String(sm).trim()) {
       move.simpler = String(sm).trim(); move.smaller = true; delete move.simplerBeat;
       const lastT = normLine([...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
