@@ -1,0 +1,25 @@
+You are the one judge of an evidence rule for a children's maths game. Be strict and do the arithmetic yourself. You cannot write files; return your whole verdict as your final message. Everything is read-only. You did not build this.
+
+**What is being decided.** The game mode `kon/name` (class 6, naming an angle with three letters, the vertex in the middle (mix-up: vertex-name)) is already shown to children. It records right or wrong, first try or not, and the number of checks. It does NOT yet tell the teacher or the learner model that a child holds a particular mix-up ("naming"). Naming is switched on only if you pass this evidence rule. The harm to prevent: a child who does NOT hold the mix-up being recorded as holding it, because of a blind guess, an ordinary slip (a miscount, a mistyped digit, a finger landing beside its target, a misread number), or a strategy that has nothing to do with the mix-up.
+
+**The law.** An act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. The line is read per session: over the levels of one sitting on which naming can happen, the chance that a child who does not hold the mix-up is named must be under 1 in 10, for a blind guesser AND for a careful child who makes one ordinary slip per level.
+
+Read, in this order:
+1. The rulings that set the gate: <packet root>/docs/design/round8/games-judging/RULINGS-2026-11-11-night.md (the section "dc-r8-game-gate-play-then-evidence" and this mode's "For gate 2" lines).
+2. The packet's proof: <packet root>/docs/design/round8/games-judging/kon-name/PACKET.md, the section "Gate 2: evidence" in full (and whatever else in the packet you need to understand the game's goals and acts).
+3. The assertions: <packet root>/tests/r8-games-kon-name-gate2.test.mjs and <packet root>/tests/_session-figure.mjs (how the per-session figure is computed), and <packet root>/server/play/levels.js and <packet root>/shared/play.ts where the packet points at them (the rule as the server applies it: what counts as a sighting, when two levels' surfaces differ, the cap on the number of levels).
+
+Judge each of these, pass or fail, with your working:
+A. **The rule as stated.** Say in two or three sentences exactly when this mode would name each mix-up. Is it the rule the code applies (levels.js, play.ts, the mode's logic as quoted in the packet and exercised in the test)? Name any gap between the packet's words and the code you can see.
+B. **The arithmetic.** Recompute every per-level chance and every per-session figure the table gives, from the game's own numbers (options on screen, digits typed, tolerance, number of levels). You may run small calculations with node or python. Give your figure beside the packet's for each row. A figure you cannot reproduce is a fail unless the difference is rounding.
+C. **Is the slip list complete?** The table rests on a list of the ways a child can reach the mix-up's act without the mix-up. Work out for yourself, from the game's acts, every single ordinary slip and every blind or lazy strategy a class-6 child might really use ("always the bigger number", "the first option", "tap the middle", "type what I typed last time", "copy the number printed on the screen", repeating the same wrong act on every level). For each one the table does not cover, compute its per-session chance of naming. Any such route over 1 in 10 is a fail. Pay special attention to a child who makes the SAME slip or uses the SAME strategy on every level: the rule names on repeats, so a consistent non-mix-up habit is the dangerous case. Does "the two levels' surfaces differ" actually stop a consistent habit from repeating?
+D. **The assertion.** Does the test assert the rule over every generated level (not a sample), and would it fail if the level generator changed so that a single slip reached the naming act? Quote the lines.
+E. **The other direction.** A child who DOES hold the mix-up: how many levels until she is named, and can she go a whole session unnamed? This is not a reason to fail, but say it plainly; a rule that never names is safe and useless.
+F. **What reaches the teacher before naming.** After one sighting (before the rule fires), does anything about the mix-up reach the facts row, the trail, the seam to the teacher, or the learner model, other than an ordinary miss at chance weight? Say what the packet and the code show.
+
+Then give:
+- VERDICT: PASS or FAIL (one word on its own line). FAIL if any route in B or C names a child without the mix-up more than 1 time in 10 per session, if a figure cannot be reproduced, if the code does not apply the stated rule, or if the assertion does not cover every generated level.
+- A table: route (blind guess, each slip, each strategy) | per-level chance | per-session chance of naming | under 1 in 10?
+- Faults, each with how severe (blocks / should fix / minor).
+- One paragraph: if you pass it, what would you still watch once real children play?
+Keep it under 700 words.
