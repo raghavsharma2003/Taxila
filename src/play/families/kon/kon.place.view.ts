@@ -277,7 +277,7 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     // night ruling 3: her arm lies across the placed protractor and she reads it herself)
     if (goal === "draw" && run && !S0.done && P0.mark !== null && P0.joined && api.t - truthAt > 0.4) {
       // (in the face the board's point letters use: in the mono face O read like a zero; gate 1, by the main loop's look)
-      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"}`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 15, role: ROLE.mixup, font: "ui" });
+      chips.push({ s: `∠${P0.joined === "v" ? "O" : "A"}`, at: S(BW / 2, q.y > BH / 2 - 30 ? 22 : BH - 16), size: 18, role: ROLE.mixup, font: "ui" });
     }
     for (const ch of chips) { const z = P.chipSize(c, ch.s, { size: ch.size, font: ch.font }); frame.boxes.push({ x: ch.at[0] - z.w / 2, y: ch.at[1] - z.h / 2, w: z.w, h: z.h }); }
     // the letters on top of everything, so they stay readable where the protractor lies: the arm letters well past the arm

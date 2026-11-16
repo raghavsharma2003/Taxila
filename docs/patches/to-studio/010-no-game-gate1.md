@@ -13,7 +13,7 @@ Removed from `data/studio-approved/no-game-target.json`:
 Both modes run with naming off (`NAMING_OFF` in `shared/play.ts`) until gate 2: they record right or wrong, first try and
 checks, and name no mix-up to the learner model or the teacher.
 
-`c6-maths-ch02-t02` (`vertex-name`) stays on the list until `kon/name` passes gate 1. `tests/r8-approval-lane.test.mjs`
+**Added later on 2026-11-15:** `c6-maths-ch02-t02` (`vertex-name`, refused because `angle-cannon@1` has no lettered points) leaves the list too. `kon/name` passed gate 1 by the main loop's look at the retaken shots; she names and finds angles by their letters on a figure with lettered points, and the mode runs with naming off as the other two do. `tests/r8-approval-lane.test.mjs`
 holds the list as it now stands.
 
 For Studio, when it next runs: the two topics now get a regeneration target again (`deriveTarget`). The play family is
