@@ -28958,6 +28958,20 @@
    "at": "2026-11-16",
    "title": "Released a50d690 with scripts/release.mjs: web taxila-web--sa50d690-1tpz (was taxila-web--s6429dc7-kbo7), worker + canary/nightly jobs on taxila-worker:a50d690 (was 6429dc7); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs a50d690 --rollback.",
    "source": "inbox/release-a50d690.json"
+  },
+  {
+   "id": "dc-r8-gate2-per-session",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Gate 2 read per session (RULINGS-2026-11-15 'To Games, 2026-11-16'; branch claude/r8-gate2-session; naming still off). A session has no level count of its own (/api/play/next always serves, every act re-signs the token), so the server sets one: NAMING_LEVELS = 4 in server/play/levels.js; a pick with a gate-2 spec (FamilyLogic.chanceRepeat) is named only on the session's first four levels (body n). Every spec's session figure is proved over those four. stambh/tally read: main's way (b), three sightings whose bundles and loose lines differ two by two, or two when one is firm (FamilyLogic.firmSighting: no single ordinary slip, read any of eight ways, gives the mix-up's number; rows 20 22 30 33 35 36 40 41 44 45 47); (a) also passes (1 in 114) but never names a child whose rows were all weak. kon/place: vertex-off, centre-on-arm, wrong-scale (measure and draw) become chance picks named on a second level that differs (draw: another asked size); join-wrong-end keeps four sightings, now four of four levels. kon/name: say and find vertex-name named on the third sighting. tally keep unchanged (accepted). Reverse if: sessions are measured to serve far fewer naming-eligible levels than four (then the sightings can fall), or children are shown to need more than four levels of one game before a real mix-up shows (then raise NAMING_LEVELS and the sightings with it, re-proving each figure); or a judge shows a per-level chance above the one each figure assumes.",
+   "source": "inbox/r8-gate2-session.json"
+  },
+  {
+   "id": "ms-r8-gate2-per-session-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Gate 2 per-session figures, n = 4 levels a session (NAMING_LEVELS), computed exactly over all 2^4 outcomes (tests/_session-figure.mjs) from each mode's per-level worst chance as computed over every generated level in its gate-2 test; surfaces left out (upper bounds). Before -> now. stambh/tally read (w = 1/4 weak row, f = 1/100 firm row, every firm/weak split): pair rule 67/256 (5/32 over three levels) -> 13/256 = 1 in 19.7 for the one-slip child; blind guesser 1 in 1,689. kon/place (from one level 1-(1-p)^4 -> P(>=2 of 4)): vertex-off p 0.0929 (drop, r = 30) 1 in 3.1 -> 1 in 21.9; centre-on-arm p 0.0185 1 in 13.9 -> 1 in 499; wrong-scale measure p 0.1 (typing at a named reading) 1 in 2.9 -> 1 in 19.1; wrong-scale draw p 5/181 1 in 9.4 -> 1 in 227; join-wrong-end p 1/2, four of four 1 in 16 (11 in 32 over six with no cap). kon/name (P(>=2 of 4) -> P(>=3 of 4)): say p 1/6 1 in 7.6 -> 1 in 61.7; find and mixed p 1/5 1 in 5.5 -> 1 in 36.8.",
+   "source": "inbox/r8-gate2-session.json"
   }
  ],
  "edges": [
@@ -46240,6 +46254,16 @@
    "src": "dc-r8-place-gate2-evidence-rule",
    "rel": "measured_by",
    "dst": "ms-r8-place-gate2-2026-11-16"
+  },
+  {
+   "src": "dc-r8-gate2-per-session",
+   "rel": "part_of",
+   "dst": "dc-r8-game-gate-play-then-evidence"
+  },
+  {
+   "src": "dc-r8-gate2-per-session",
+   "rel": "measured_by",
+   "dst": "ms-r8-gate2-per-session-2026-11-16"
   }
  ]
 }
