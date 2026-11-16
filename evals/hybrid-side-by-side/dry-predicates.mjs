@@ -819,6 +819,13 @@ PREDICATES.goodbyeNoMenu = (L, r, i, ctx) => {
 };
 /** dc-r8-director24 K3: a wrong answer to a yes-or-no card gets "Nahi," then the fact — never the fact with no miss word. Gated. */
 PREDICATES.ynNahi = (L, r, i, ctx) => r.keyFact && !/^(?:nahi|no)\b/i.test(String(r.text ?? "").trim()) ? "a yes-or-no miss's fact with no 'Nahi'" : null;
+/** dc-r8-director24 L: one new thing a turn — no turn over 60 words holds an explain point and a card (the verdict, its why and the next
+ *  point end on the point's check-in; the card comes next turn). Gated. */
+PREDICATES.longPointCard = (L, r) => {
+  const n = String(r.text ?? "").trim().split(/\s+/).filter(Boolean).length;
+  const pp = r.pageParts ?? [];
+  return n > 60 && pp.some((p) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? ""))) && pp.some((p) => p.part === "card") ? `${n} words holding a point and a card` : null;
+};
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
   const tb = ctx.script?.teachback;

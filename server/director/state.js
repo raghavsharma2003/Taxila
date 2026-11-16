@@ -2969,14 +2969,15 @@ function workedAnswerOf(prev, kit) {
   const sk = cb?.skillId ? skillScriptOf(kit, cb.skillId) : null;
   if (!sk) return null;
   const b = String(cb.beatId ?? "");
-  const card = b.startsWith("then:") ? sk.remediation?.find((r) => r.targets === b.slice(5))?.then : sk.checks?.find((c) => c.id === b) ?? sk.explain?.find((e) => e.id === b)?.ask ?? null;
+  const card = b === "worked" || b.startsWith("worked:") ? sk.workedExample?.yourStep ?? null
+    : b.startsWith("then:") ? sk.remediation?.find((r) => r.targets === b.slice(5))?.then : sk.checks?.find((c) => c.id === b) ?? sk.explain?.find((e) => e.id === b)?.ask ?? null;
   if (!card?.key) return null;
   const lang = prev?.ctx?.lang ?? "hinglish", en = lang === "english";
   const why = card.why ? String(saidIn(card.why, lang) ?? "").trim().replace(/[.!?\u0964]+$/, "") : "";
   const yn = /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(card.key).trim());
   const text = yn ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
     : `${en ? "The answer is" : "Iska jawab hai"} ${card.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
-  return text ? { text, board: card.answerBoard ?? null } : null;
+  return text ? { text, board: card.answerBoard ?? null, key: card.key, why } : null;
 }
 /** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
 function whyAltOf(prev, kit) {
@@ -3070,7 +3071,7 @@ export function cellAddressOf(prev, input) {
   return { part, column, help: spent ? "spent" : heard ? "heard" : "fresh" };
 }
 export function step(prev, input) {
-  const out = stepCells(prev, input);
+  let out = stepCells(prev, input);
   // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
   // ones that return a copy of the last state before step0's own clearing)
   if (input?.event === "turn" && out?.state && out.state.asideReplyDue) out.state.asideReplyDue = undefined;
@@ -3082,6 +3083,32 @@ export function step(prev, input) {
     const add = { sayFirst: [...held, ...(lm0.sayFirst ?? [])], heldSaid: held, ...(prev.lastMove?.scriptBeat?.board ? { heldBeat: { ...prev.lastMove.scriptBeat } } : {}) };
     out.state.lastMove = { ...lm0, ...add };
     if (out.move) out.move = { ...out.move, ...add };
+  }
+  // (dc-r8-director24 L: one new thing a turn — the held part said first after her reply, and the card with it, over 60 words: the held
+  // part ends on its check-in and the card comes on the next turn, as a split's teaching half holds it)
+  if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && out?.state?.lastMove?.heldSaid?.length && out.ui?.ask?.text && out.state.lastMove.itemId && !out.state.splitHold) {
+    const lm = out.state.lastMove;
+    const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length + 16;
+    if (w > (out.state.ctx?.plainWords ? 45 : 60)) {
+      const hadPoint = lm.point != null;
+      const sp = splitTeach({ ...out, move: { ...lm, ...(hadPoint ? {} : { point: lm.sayFirst.join(" ") }) } }, input, 0, 0);
+      if (sp !== out && sp?.state?.splitHold) {
+        if (!hadPoint) { delete sp.state.lastMove.point; delete sp.move.point; }
+        // (the card's own sentences belong to the card, said whole on the next turn — never one of them left in the held part)
+        const cardKs = String(out.ui.ask.text).split(/(?<=[.!?\u0964])\s+/).map((x) => normLine(x)).filter((x) => x.length > 8);
+        const strip = (t) => String(t).split(/(?<=[.!?\u0964])\s+/).filter((x) => !cardKs.includes(normLine(x))).join(" ").trim();
+        const sf = (sp.state.lastMove.sayFirst ?? []).map(strip).filter(Boolean);
+        const rd = (sp.state.lastMove.rendered ?? []).map(strip).filter(Boolean);
+        sp.state.lastMove = { ...sp.state.lastMove, sayFirst: sf, heldSaid: (sp.state.lastMove.heldSaid ?? []).map(strip).filter(Boolean), ...(sp.state.lastMove.rendered ? { rendered: rd } : {}),
+          ...(sp.state.lastMove.cardPoint ? { cardPoint: strip(sp.state.lastMove.cardPoint) || undefined } : {}) };
+        sp.move = { ...sp.state.lastMove };
+        // (the card is held, not posed: its posing this turn is undone — the next turn poses it fresh, never "Phir se dekho:")
+        const id = sp.state.splitHold?.move?.itemId ?? lm.itemId;
+        if (id && sp.state.posedAt?.[id] === sp.state.turn) { const { [id]: _p, ...rest } = sp.state.posedAt; sp.state.posedAt = rest; }
+        if (id && sp.state.cardSaidN?.[id]) sp.state.cardSaidN = { ...sp.state.cardSaidN, [id]: sp.state.cardSaidN[id] - 1 };
+        out = sp;
+      }
+    }
   }
   // (dc-r8-director24 P, c5-t02 steering 38: a held part said once is said — the second half of a split turn returns early with the held
   // parts still on the state, and the turn after said them again)
@@ -3145,11 +3172,23 @@ export function step(prev, input) {
       const cands = [...(cl?.lines?.length ? [{ t: cl.lines.join(" "), board: cl.show ?? null }] : []),
         ...[cardS?.simpler, beat?.simpler, beat?.pointAlt].filter(Boolean).map((x) => ({ t: saidIn(x, lang), board: x.board ?? null }))];
       const pick = cands.find((c) => c.t && String(c.t).trim() && !inLast2(c.t));
+      let wa = null;
       if (pick) {
         const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, ...rest } = lm;
         out.state.lastMove = { ...rest, simpler: String(pick.t).trim(), smaller: true, helpNew: true,
           ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(pick.board ? { board: pick.board } : {}) } } : {}) };
         if (out.move) out.move = { ...out.state.lastMove };
+      } else if (cell.column === "hindi" && /:worked:yourStep$/.test(String(cell.part ?? "")) && (wa = workedAnswerOf(out.state, input.kit))) {
+        // (dc-r8-director24 H3: a Hindi request with no unsaid wording left gets the worked answer, on its board — c6 offtopic 34)
+        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, ...rest } = lm;
+        // (the answer said, the card is closed: a check-in follows, never the card's question after its answer)
+        out.state.lastMove = { ...rest, simpler: wa.text, smaller: true, helpNew: true, workedAnswerSaid: true, stayCheckin: true, checkinOk: true,
+          ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(wa.board ? { board: wa.board } : {}) } } : {}) };
+        if (out.move) out.move = { ...out.state.lastMove };
+        // (the card is closed as a key closes it: left, its answer given, the next turn goes on from its check-in)
+        const liveId0 = liveId;
+        if (liveId0) { out.state.skipped = [...new Set([...(out.state.skipped ?? []), liveId0])]; out.state.lastMove = { ...out.state.lastMove, gave: { answer: wa.key, why: wa.why }, splitClose: true, gaveCheck: true }; if (out.move) out.move = { ...out.state.lastMove }; }
+        out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" }; out.ui = { status: "your_turn" };
       } else if (out.ui?.ask?.text && cell.column !== "hindi") {
         // (nothing new left and a card follows: the card alone — c5-t02 offtopic 64, the remediation's simpler said again before its card)
         const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;
@@ -3996,7 +4035,14 @@ export function splitLong(out, input) {
   const closeB = move.closeBeat?.board ?? null, nextB = (bridgeTurn ? bridgeB ?? move.bridgeBeat?.board : null) ?? (move.cardBeat ?? move.scriptBeat)?.board ?? null;
   const hasClose = closing.some(Boolean) || (!!move.closeBeat && (!!move.verdict || ["correct", "incorrect", "partial", "misconception"].includes(input.cls?.outcome)));
   const unfit = hasClose && !!closeB && !!nextB && !scriptFor(input.kit)?.script?.recordedRun && !switchFits(closeB, nextB);
-  if (!bridgeTurn && !gaveTurn && !unfit && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap);
+  // (dc-r8-director24 L, main's 035: one new thing a turn — a verdict, its why, the next point and its card in one breath of 60 to 80 words.
+  // The close's words count: over the cap, the turn ends on the point's check-in and the card comes next turn)
+  const closedCardWhy = (() => { try { const cb = move.closeBeat; return cb ? workedAnswerOf({ ...s, lastMove: { scriptBeat: cb } }, input.kit)?.why ?? null : null; } catch { return null; } })();
+  const recorded = !!scriptFor(input.kit)?.script?.recordedRun;
+  const closeWords = hasClose && !recorded ? 6 + String([s.lastGraded?.why ?? closedCardWhy, move.closed?.why, move.workedDone?.why].filter(Boolean).map((x) => (typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "")).join(" ")).split(/\s+/).filter(Boolean).length + 4 : 0;
+  if (!bridgeTurn && !gaveTurn && !unfit && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap, closeWords);
+  // (L: a bridge said with the next unit's first point and card counts its words too)
+  if (bridgeTurn && !gaveTurn && !unfit && !recorded && process.env.TAXILA_R7_SPLIT_CLOSE !== "on") { const bw = String(move.bridgeSaid ?? "").split(/\s+/).filter(Boolean).length + closeWords; const sp = splitTeach(out, input, cap, bw); if (sp !== out) return sp; }
   // (her verdict and the joins are about a dozen words beside the authored ones)
   if (!bridgeTurn && !gaveTurn && !unfit && wordsIn(closing, teaching) + 12 <= cap) return out;
   // (a bridge whose board cannot follow the close's in one turn waits with the next unit)
@@ -4027,13 +4073,15 @@ export function splitLong(out, input) {
  * board, no point said again). A "pata nahi" / "samajh nahi aaya" to the check-in lets the card go: the walk then re-teaches
  * the same beat smaller with the card live, as it would have.
  */
-function splitTeach(out, input, cap) {
+function splitTeach(out, input, cap, extra = 0) {
   const { state: s, move, ui } = out;
   const card = ui?.ask?.text;
   // (v6.5 K2, main on director13 c4 steady 8, offtopic 26, steering 30: a smaller re-teach speaks the beat's short simpler, not its
   // point — measured by what is said, it re-poses the card in the same turn, never "Ab isi par ek sawaal" and a wait)
   const body = move.smaller && move.simpler && !scriptFor(input.kit)?.script?.recordedRun ? [move.simpler, ...(move.rendered ?? [])] : [move.point, ...(move.rendered ?? [])];
-  if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 <= cap) return out;
+  // (L: what the turn says first — a bridge, a held part — counts toward the turn's words)
+  const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length;
+  if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 + extra + first <= cap) return out;
   const teach = { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) };
   const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,
     ...(move.cardBeat ?? move.scriptBeat ? { scriptBeat: move.cardBeat ?? move.scriptBeat } : {}), ...(move.cardBeat ? { cardBeat: move.cardBeat } : {}),

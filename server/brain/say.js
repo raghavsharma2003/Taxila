@@ -2945,6 +2945,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // rule dropped it — the next turn began at step 1. A held part is said whole, its question with it)
     // (already counted once while it stood first: added as it is, never dropped as its own copy)
     body = [...heldNow, ...once(noQ(body.filter((x) => !heldNow.includes(x))))];
+    // (dc-r8-director24 L: a card held for the next turn is said whole there — none of its sentences is said on this one)
+    { const heldCard = state.splitHold?.ui?.ask?.text ? sentences(String(state.splitHold.ui.ask.text)).map((x) => norm(x).toLowerCase()) : [];
+      if (heldCard.length && !card) { const n0 = body.length; body = body.map((x) => sentences(x).filter((y) => !heldCard.includes(norm(y).toLowerCase())).join(" ")).filter((x) => norm(x)); if (body.length !== n0) guard.heldCardLeadDropped = true; } }
     // v6.7 A3 (main, director15: the honest line buried by the next card in the same breath): an aside question ends her turn — it is
     // said last, and the card waits (still live, re-posed on the next turn)
     // (v6.10 T2, main on director18 c6 offtopic 18: an aside during a worked step was answered AFTER the step — the aside comes first; on a
