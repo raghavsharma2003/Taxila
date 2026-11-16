@@ -137,6 +137,13 @@ test("stambh/tally: tally-four's signature is the belief, and no other wrong ans
     const five = run(level, tallyFourActs(p, "five")), m5 = five.ms.find((m) => m.kind === "misconception_consequence");
     assert.equal(m5?.facts.sign, "five"); assert.equal(m5.facts.crossesMissing, B); assert.equal(m5.facts.bundles, 0); assert.equal(m5.facts.gap, B);
     p.counts.forEach((c, k) => assert.equal(groupsOf(five.s.marks[k]).filter((g) => g.kind === "five").length, Math.floor(c / 5)));
+    // gate 2, H4: "five" is one button for every stroke, a pick: chanceMis at chance weight, nothing in her facts (named
+    // only on a second keep level with other totals); "counted" names from this level
+    const g5 = L.grade(level, env(tallyFourActs(p, "five")));
+    assert.equal(g5.evidence[0].misconceptionId, undefined); assert.equal(g5.evidence[0].chanceMis, "k-tally-four"); assert.equal(g5.evidence[0].weight, CHANCE_WEIGHT);
+    assert.equal(g5.evidence[0].chanceAct, `t:${p.counts.join(",")}`, "what she did: her totals");
+    assert.equal(L.facts(level, five.s).mal, undefined); assert.equal(L.facts(level, five.s).sign, undefined);
+    assert.equal(L.grade(level, env(L.malActs(level, "tally-four"))).evidence[0].misconceptionId, "k-tally-four");
     // every one-bundle slip (one total 5 short, 5 over, 1 off; the strokes right, or with one line across missing): never named
     const right = L.solve(level).filter((a) => a.kind === "mark");
     let firstCross = right.findIndex((a) => a.across);

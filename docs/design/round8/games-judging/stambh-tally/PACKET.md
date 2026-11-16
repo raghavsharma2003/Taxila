@@ -13,6 +13,44 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 A bundle is four standing lines with one line across them, and it is worth 5. A row's count is 5 × bundles + loose lines. The child makes every mark herself, and every stroke is legal: a cross after fewer than four lines is allowed. If such a cross were refused, a child could learn the rule by trying "╱" and falling back to "|" when it bounced. When the child presses Check, the game regroups each row by fives, and only then plays out what each group is worth.
 
+## Gate 2 battery (2026-11-16: H1 and H4 built; the battery passes)
+
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-stambh-tally.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
+
+**What was built.**
+- **H1, two sightings are two different acts.** A read sighting counts only when the number she typed differs from every earlier sighting's (`tallyLogic.sightingOf`). 19 and 20 both give 16 under the mix-up, so they are one sighting.
+- **H4, keep's `five` needs two levels.** No line across anywhere (one button for every stroke) is now a pick (`tallyLogic.chanceAt`). It is named on a second keep level whose rows' counts differ and on which her totals differ (`chanceRepeat "keep:tally-four"`: two). Until then nothing is in her facts. `counted` still names from one level.
+
+**Before → after (worst child who does not hold the mix-up, worst fade).**
+
+| goal | sweep | before | after |
+|---|---|---|---|
+| read | gate | 0.172 (what I typed last time; 16 every time 0.125) | 0 (no such child named at all) |
+| read | full | 0.234 (what I typed last time; 16 every time 0.188) | 0.013 (bundles only, a bundle skipped, fade 2) |
+| keep | gate and full | 0 | 0 |
+
+The negative control still runs every time: the same children under the rules from before H1 and H4 (the battery's `legacy`) show the judge's failure. Under those rules `five` is named from the first level of every session; under H4 it is never named from the first, and is named on a later level in 90% or more.
+
+**Holders, named.**
+- read, each bundle read as four: 0.80.
+- read, the mix-up on half her levels: 0.32 (fewer than half, reported).
+- keep, counted: 1.00.
+- keep, five: 1.00, from the second keep level.
+- keep, five and each group read as four: 1.00, from the second keep level.
+
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
+|---|---|---|---|---|---|---|
+| read | same every level: bundles only, a bundle skipped |  | tally-four | 0.004 (n 960) | 0.013 (fade 2) | 0.100 (f2 pL0.9 tgg, n 10) |
+| read | the mix-up: each bundle read as four | **holds** | tally-four | 0.797 (n 960) | 0.931 (fade 2) | 1.000 (f1 pL- tgg, n 10) |
+| read | the mix-up on half her levels (random) | **holds** | tally-four | 0.324 (n 2880) | 0.402 (fade 2) | 0.667 (f2 pL0.3 ggt, n 30) |
+| read | constant answer (100 values; worst: constant 0) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| keep | the mix-up: bundles drawn, each counted as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| keep | only the first button, the standing line (five as five standing lines), totals right | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| keep | five standing lines, each group read as four | **holds** | tally-four | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| keep | constant answer (100 values; worst: constant 0 (every total)) | | tally-four | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 106833 ms
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`): "stop listing slips. `keep` may name from one level (its two totals together need three slips). `read` names tally-four only when the mix-up's number is typed on two levels whose bundles and loose lines both differ." **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): what must be rare is a child named a mix-up she does not hold over one sitting, so the 1 in 10 is the chance over a whole session, not per pair. The pair rule was over that line (5 in 32 over three levels); read now names on three levels, or on two when one of them is *firm*, within the session's first four levels (below, "Read: per session").
@@ -26,6 +64,8 @@ Branch `claude/r8-gate2-tally`; the per-session rule on `claude/r8-gate2-session
 - **A blind guess** is any number 0 to 99 on the pad: 1 in 100 per box.
 
 ### Keep: named from one level
+
+(2026-11-16, H4: this holds for `counted`. `five`, no line across anywhere, is now a pick named on a second keep level with other totals; see "Gate 2 battery". H1: a read sighting counts only with a number she has not typed at an earlier sighting.)
 
 The mix-up's totals in keep are every row short by its own bundles. Keep rows hold up to 14 things, so a row has at most two bundles.
 
@@ -102,6 +142,8 @@ Why both must differ (the ruling): a level with the same bundles or the same loo
 #### Read: per session
 
 **How many read levels a session serves.** A session has no end of its own: `/api/play/next` serves another level whenever it is asked, and every act signs the session token afresh, so nothing in how a session serves levels bounds the count. The bound is therefore set: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4` in `server/play/levels.js`, read from the session body's level count `n`, which only the server sets). Later levels of the session still grade right or wrong and still play out; they name no pick. Every figure below is over n = 4 read levels (a session that serves another game first has fewer).
+
+**The gap: the day, not the session** (`RULINGS-2026-11-15.md`, "the per-session reading" 3): the ruling's unit is the child's day (per child, per mode, per day; IST, `server/learner/kt/ledger.js` `dayOf`), but the four levels and the sightings are still counted per session, since no play table holds them (an unnamed sighting lives only in the signed session token), so three sessions in a day are three counts until a per-day play table lands (a migration; the status file says what it takes).
 
 **The rule** (`tallyLogic.chanceRepeat` `read:tally-four`: three sightings, or two when one is firm; `firmSighting`): tally-four is named when the mix-up's number has been typed on **three** read levels whose bundles and loose lines differ two by two, or on **two** such levels when **one of them is a firm row**. Of main's two ways this is (b), "two one-slip levels need a third". (a), "a one-slip level counts only beside one that is not", is also under the line (1 in 114 at worst), but it names strictly less: it never names a child whose levels were all weak rows (every fade-1 row is weak), while (b) names everything (a) names and three weak sightings too. Firm rows: 20, 22, 30, 33, 35, 36, 40, 41, 44, 45, 47 (fades 2 and 3); the law's own test (`oneSlipFromMixup`) is checked against this table on every servable row.
 

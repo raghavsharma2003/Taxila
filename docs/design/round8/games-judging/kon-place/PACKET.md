@@ -21,6 +21,71 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 
 (*) `centre-on-arm` is Learning's new kit entry (the old `vertex-off` split in two on 2026-11-11: `vertex-off` is now only the bottom edge on O). The game names it already; the coverage rule maps it to the kit id when that id reaches the integration branch (integration 49). Until then a centre-on-arm placement is an ordinary refusal with no mix-up recorded.
 
+## Gate 2 battery (2026-11-16: H1 built; the battery passes)
+
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-place.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
+
+**What was built (H1, two sightings are two different acts).**
+- **measure's surface is its key on both scales** (`measureSurface`). θ and 180 − θ are one key, and another tilt of the same key is not another level.
+- **A sighting counts only when what she did differs from every earlier one** (`placeSighting`):
+  - the number she typed (measure wrong-scale);
+  - the rim mark she dotted (draw wrong-scale);
+  - for vertex-off and centre-on-arm, where her protractor's centre sat, as an offset from the vertex **on the board**. Two offsets within the centre tolerance (`tolPx`, a finger's drop, 11) are one act.
+- **join-wrong-end has no value.** It is a pick between two buttons, and its spec already asks for both button orders among its four.
+
+**The frame for a placement (main's open question 1).** The offset is taken on the board, not in the protractor's own frame. In the protractor's frame the bottom edge on O sits PD along the normal on every level, so the child who holds vertex-off would repeat one value and could never be named. On the board her offset turns with the arm she lays the base on. A habit of dropping the finger the same way stays where it was.
+
+The cost: two of her levels count as two acts only when their first arms lie more than about 27° apart. At fade 1 (tilts within 10°) she is seldom named. That is reported below, and is under half.
+
+New children: the same drop every level with a finger's wobble (4 px), in measure and draw. Under the old rules they are named 0.97 and 0.92. Under H1 they are named 0.
+
+**Before → after (worst child who does not hold the mix-up, worst fade).**
+
+| goal | sweep | before | after |
+|---|---|---|---|
+| measure | gate | 0.938 (the same drop every level, 20 up, vertex-off; with a wobble 0.974) | 0.016 (one random slip a level, vertex-off) |
+| measure | full | 0.956 (drop 20 up-right; with a wobble 0.967) | 0.006 (placed right, any number, wrong-scale) |
+| draw | gate | 0.891 (drop 20 up; with a wobble 0.911) | 0.026 (the right dot, either button, join-wrong-end) |
+| draw | full | 0.906 (drop 20 up; with a wobble 0.920) | 0.021 (the same) |
+
+The negative control still runs every time: the same children under the rules from before H1 (`legacy`). Under those rules, typing 75 every level, the same pad slip and the same drop are named, and every naming of a constant number or a pad slip comes on a second sighting of the same key.
+
+**Holders, named (full sweep).**
+- The other scale's number: 1.00.
+- The smaller number: 1.00.
+- Always the outer scale: 1.00 in measure, 0.99 in draw.
+- The other scale's mark in draw: 1.00.
+- vertex-off: 0.46 in measure, 0.43 in draw. It was 1.00. Fewer than half: reported.
+- Always 'A se jodo': 0.45 (unchanged).
+- "Always the larger number" and "always the inner scale" are still never told apart by the served levels: 0 and 0.003.
+
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
+|---|---|---|---|---|---|---|
+| measure | placed right, any number (0-180) (random) |  | wrong-scale | 0.004 (n 2880) | 0.006 (fade 1) | 0.033 (f1 pL- tgt, n 30) |
+| measure | one random slip a level (typing, a tick, a drop) (random) |  | vertex-off | 0.004 (n 2880) | 0.005 (fade 1) | 0.067 (f1 pL- tgt, n 30) |
+| measure | the smaller of the two printed numbers | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| measure | the larger of the two printed numbers | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
+| measure | always the outer scale | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| measure | always the inner scale | **holds** | wrong-scale | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
+| measure | the mix-up: the other scale's number | **holds** | wrong-scale | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| measure | the mix-up: the bottom edge on the vertex, reads what it shows | **holds** | vertex-off | 0.455 (n 960) | 0.556 (fade 3) | 1.000 (f3 pL- ggg, n 10) |
+| measure | constant answer (181 values; worst: constant 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| measure | constant answer (181 values; worst: constant 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| draw | placed right, any dot, either button (random) |  | wrong-scale | 0.001 (n 2880) | 0.002 (fade 2) | 0.033 (f2 pL- ggt, n 30) |
+| draw | placed right, the right dot, either button (random) |  | join-wrong-end | 0.019 (n 2880) | 0.021 (fade 2) | 0.133 (f2 pL- gtg, n 30) |
+| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | vertex-off | 0.001 (n 2880) | 0.002 (fade 3) | 0.033 (f1 pL0.6 tgg, n 30) |
+| draw | one random slip a level (a nudge, a tick, the other button, a drop) (random) |  | join-wrong-end | 0.001 (n 2880) | 0.003 (fade 1) | 0.033 (f1 pL- ttg, n 30) |
+| draw | always the outer scale (dot where it reads the size) | **holds** | wrong-scale | 0.993 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| draw | always the inner scale | **holds** | wrong-scale | 0.003 (n 960) | 0.009 (fade 2) | 0.100 (f2 pL- ggg, n 10) |
+| draw | the mix-up: the other scale's mark | **holds** | wrong-scale | 0.999 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| draw | the mix-up: always 'A se jodo' | **holds** | join-wrong-end | 0.446 (n 960) | 0.531 (fade 2) | 0.900 (f2 pL- gtg, n 10) |
+| draw | the mix-up: the bottom edge on the vertex | **holds** | vertex-off | 0.427 (n 960) | 0.572 (fade 2) | 0.800 (f1 pL0.9 ttg, n 10) |
+| draw | constant answer (181 values; worst: constant dot 0) | | wrong-scale | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| draw | constant answer (181 values; worst: constant dot 0) | | vertex-off | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| draw | constant answer (181 values; worst: constant dot 0) | | join-wrong-end | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 77724 ms
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`), kon/place: "nothing reaches the teacher from one join press (the packet says the sign does; make the code and the packet agree with law 3), and give the tolerance that names vertex-off". **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named from one level, vertex-off (1 in 3.1), wrong-scale in `measure` (1 in 2.9) and in `draw` (1 in 9.4) were over it over four levels; every kon/place mix-up is now named on a repeat ("Per session", below). Computed in the same test ("gate 2, per session"); the rule on branch `claude/r8-gate2-session`.
@@ -47,7 +112,11 @@ Branch `claude/r8-gate2-place`. Every number below is computed by `tests/r8-game
 
 ### Per session: how many levels, and the arithmetic
 
+(2026-11-16, H1: a second sighting also needs another act. In measure, another key on both scales. For a placement, her centre more than a finger's drop (`tolPx`) from where it sat, on the board. See "Gate 2 battery". The figures below are for levels that differ, so they are upper bounds now.)
+
 **How many levels a session serves.** None is set by how a session serves levels: `/api/play/next` serves another whenever it is asked, and each act signs the session token afresh. So the figure needs a bound, and the server sets one: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4`, `server/play/levels.js`, from the session body's level count, which only the server sets). Later levels still grade right or wrong and play out; they name no pick. The same cap holds for `stambh/tally` and `kon/name`.
+
+**The gap: the day, not the session** (`RULINGS-2026-11-15.md`, "the per-session reading" 3): the ruling's unit is the child's day (per child, per mode, per day; IST, `server/learner/kt/ledger.js` `dayOf`), but the four levels and the sightings are still counted per session, since no play table holds them (an unnamed sighting lives only in the signed session token), so three sessions in a day are three counts until a per-day play table lands (a migration; the status file says what it takes).
 
 **The chance on one level, p** (for a child who does not hold the mix-up): the worst of a blind act, one ordinary slip and a drop that misses, over every generated level; for wrong-scale in `measure` also over every reading the law names at (a placement within the tolerance shows a few degrees off the key: 1 in 10 at worst there, which is over the keys' own 1 in 14). Each level is independent, so over n = 4 levels:
 - named from one level: 1 − (1 − p)⁴;

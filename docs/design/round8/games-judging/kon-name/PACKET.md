@@ -16,6 +16,46 @@ This packet is meant to be read on its own: everything a judge needs is in this 
 | say | — | vertex-name (the right three letters, the vertex first or last) |
 | find | — | vertex-name (a first- or last-letter arc) |
 
+## Gate 2 battery (2026-11-16: H3 built; the battery passes)
+
+`tests/_habit-children.mjs` runs every habit child of `RULINGS-2026-11-16-gate2.md` H2 through whole served sessions. That is the real path: `gradeActs` → `nameOnRepeat` → `afterLevelBody` → `nextBody`, at every fade, pL and door sequence, with naming forced on inside the battery only (`NAMING_OFF` is unchanged). Its test is `tests/r8-habit-battery-kon-name.test.mjs`. The table below is the full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for a random child, 4 for each constant over every pL), after the rules were built. For each child and mix-up it shows the share of her sessions in which she is named. Only children named at all, or who hold the mix-up, are listed. The asserted figure is the worst fade (pooled over pL, doors and seeds). The worst single cell is reported.
+
+**What was built (H3, an order act is confirmed on the same level).**
+- In `say`, a name with the vertex first or last is a sighting only when her next name, the one after the play-out, is again a name with the vertex at an end (`kon.logic.ts` `confirmSay`).
+- If it is not confirmed, the row stays the miss it was, at the weight it had (H5 is not this change), and carries no mix-up. Nothing is remembered.
+- **Nothing the child sees changes.** After a miss the level already waits for her next name. The moments and the play-out are as before, and the level does not ask again.
+- In the battery, the holders name it their way again after the play-out, the blind guessers guess again, and every other child does the solve: a slip is corrected once she has seen which angle her name means.
+
+**Before → after (worst child who does not hold the mix-up, worst fade).**
+
+| goal | sweep | before | after |
+|---|---|---|---|
+| say | gate | 1.000 (the same swap, the missed tap added last, reading across in each of the 8 directions) | 0 (no such child named at all) |
+| say | full | 1.000 (the same) | 0 |
+| find | gate / full | 0 / 0.005 (blind tap) | 0 / 0.005 (unchanged) |
+
+The negative control still runs every time: the same children under the rules from before H3 (`legacy`) are named in 0.9 or more of their sessions, and under H3 they are under the line.
+
+**Holders, named (full sweep).**
+- Vertex first: 1.00.
+- Vertex last: 1.00.
+- Any order of the three letters: 0.23, down from 0.58. Each of her levels now confirms 4 times in 9, and the spec still asks for three sightings. Fewer than half: reported.
+- find, first letter: 0.50.
+- find, last letter: 0. The law names only the first-letter pick.
+
+| goal | child | holds | mix-up | named (all sessions) | worst fade | worst cell |
+|---|---|---|---|---|---|---|
+| say | the mix-up: the vertex first | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: the vertex last | **holds** | vertex-name | 1.000 (n 960) | 1.000 (fade 1) | 1.000 (f1 pL- ggg, n 10) |
+| say | the mix-up: any order of the three letters (random) | **holds** | vertex-name | 0.226 (n 2880) | 0.233 (fade 1) | 0.400 (f1 pL- ttg, n 30) |
+| say | constant answer (64 values; worst: constant taps 000) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+| find | blind tap (random) |  | vertex-name | 0.005 (n 2880) | 0.005 (fade 2) | 0.033 (f1 pL0.3 ttg, n 30) |
+| find | the mix-up: the angle at the name's first letter | **holds** | vertex-name | 0.500 (n 960) | 0.500 (fade 1) | 0.500 (f1 pL- ggg, n 10) |
+| find | the mix-up: the angle at the name's last letter | **holds** | vertex-name | 0 (n 960) | 0 (fade 1) | 0 (f1 pL- ggg, n 10) |
+| find | constant answer (5 values; worst: constant arc 0) | | vertex-name | 0 (n 384) | 0 (fade 1) | 0 (f1 pL- ggg, n 4) |
+
+sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 79161 ms
+
 ## Gate 2: evidence
 
 Rulings: `RULINGS-2026-11-11-night.md` (kon/name, "For gate 2": "in `say`, a vertex-first or vertex-last name is named on its second occurrence (three random taps produce it 1 time in 6, over the 1 in 10 line); a first fade-1 solve with O at the vertex is fade-weighted") and `RULINGS-2026-11-15.md` ("Kept for gate 2", five items, answered one by one below; and "a wide-key level names nothing from one solve"). Decision `dc-r8-game-gate-play-then-evidence`. **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named on its second occurrence, vertex-name was over it (1 in 7.6 a session for `say`, 1 in 5.5 for `find`); it is now named on the **third** ("Per session", below; branch `claude/r8-gate2-session`).
@@ -28,6 +68,8 @@ Branch `claude/r8-gate2-name`. Every number below is computed by `tests/r8-games
 - **An ordinary slip** (`say`): one of her three taps lands on another letter (any of the other three, so every neighbouring letter is counted), from the right name either way round; and, separately, two neighbouring taps swapped. (`find`): a tap meant for the key that leaves its touch disc by 8, 16, 24 or 32 board units, in any of 72 directions, and lands on another arc.
 
 ### `say`: one name is 1 in 6 at worst; named on the third (per session)
+
+(2026-11-16, H3: a say name is a sighting only when her next name, after the play-out, again puts the vertex at an end; see "Gate 2 battery". The figures below are for one name, so they are upper bounds now.)
 
 | On every one of the 621 levels | vertex-name | of | chance |
 |---|---|---|---|
@@ -57,6 +99,8 @@ A child who reads the lit angle's three letters across the screen (by rows or by
 ### Per session: how many levels, and the arithmetic
 
 **How many levels a session serves.** Nothing in how a session serves levels bounds the count: `/api/play/next` serves another whenever it is asked, and every act signs the session token afresh. The server sets the bound: **a pick with a gate-2 rule is named only on the session's first four levels** (`NAMING_LEVELS = 4`, `server/play/levels.js`, from the session body's level count, which only the server sets). Later levels still grade right or wrong and play out, and name nothing. The same cap holds for `stambh/tally` and `kon/place`.
+
+**The gap: the day, not the session** (`RULINGS-2026-11-15.md`, "the per-session reading" 3): the ruling's unit is the child's day (per child, per mode, per day; IST, `server/learner/kt/ledger.js` `dayOf`), but the four levels and the sightings are still counted per session, since no play table holds them (an unnamed sighting lives only in the signed session token), so three sessions in a day are three counts until a per-day play table lands (a migration; the status file says what it takes).
 
 **The chance on one level, p**, for a child who does not hold the mix-up: `say` 1/6 (three different letters at random, the worse blind model; a letter slip never makes it); `find` 1/5 (a blind tap; the worst blind rule is 0.180 and the worst slip off the key 0.181, both under it); a session of `say` and `find` levels together: the worse, 1/5. Each level is independent; over n = 4 levels, named on the k-th sighting = P(k or more of 4). The surfaces (figures and letters that must differ) are left out, so these are upper bounds.
 

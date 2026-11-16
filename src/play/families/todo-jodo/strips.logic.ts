@@ -290,11 +290,13 @@ function solve(level: PlayLevel<StripsParams>): StripsAct[] | null {
   return null;
 }
 
+/** the compare / unit choice: A more (0), B more (1), the same (-1): the view's three buttons */
+const CHOICES = [0, 1, -1] as const;
 /** The goal never accepts a state the concept did not build: probe the act grammar's short non-conceptual routes. */
 function shortcut(level: PlayLevel<StripsParams>): StripsAct[] | null {
   const p = level.params;
   const tries: StripsAct[][] = [[{ kind: "done" }]];
-  if (p.goal === "compare" || p.goal === "unit") for (const c of [0, 1, -1]) tries.push([{ kind: "choose", bar: c }, { kind: "choose", bar: c }]);
+  if (p.goal === "compare" || p.goal === "unit") for (const c of CHOICES) tries.push([{ kind: "choose", bar: c }, { kind: "choose", bar: c }]);
   if (p.goal === "add") tries.push([{ kind: "pour", from: 0, to: 2 }, { kind: "pour", from: 1, to: 2 }, { kind: "done" }]);
   if (p.goal === "equal") tries.push([...range(p.bars[0].shaded.length).map((i) => ({ kind: "shade", bar: 1, part: i }) as StripsAct), { kind: "done" }]);
   for (const t of tries) {
@@ -308,7 +310,7 @@ function shortcut(level: PlayLevel<StripsParams>): StripsAct[] | null {
 function malActs(level: PlayLevel<StripsParams>, mal: string): StripsAct[] | null {
   const p = level.params;
   if (p.goal === "compare" || p.goal === "unit") {
-    for (const c of [0, 1, -1]) if (compareMal(p, c) === mal) return [{ kind: "choose", bar: c }];
+    for (const c of CHOICES) if (compareMal(p, c) === mal) return [{ kind: "choose", bar: c }];
     return null;
   }
   if (p.goal === "equal") {
@@ -414,6 +416,8 @@ export const stripsLogic: FamilyLogic<StripsParams, StripsState, StripsAct> = {
   // round 8 law 3 (dc-r8-game-modes-three-laws): mix-ups these goals see from ONE pick among five or fewer (a tool, a
   // bin, a lane, a claim; server/forge3/qa/laws.mjs found each): reported at chance weight, named only on a repeat
   chancePicks: ["compare:bigger-denominator", "compare:gap", "compare:only-num-den", "compare:more-pieces-more", "unit:bigger-denominator"],
+  // gate 2, the default (rulings 2026-11-16): the first choice is one of the three buttons (A more, the same, B more)
+  pickOptions: (level: PlayLevel<StripsParams>) => (level.params.goal === "compare" || level.params.goal === "unit" ? CHOICES.map((bar): StripsAct[] => [{ kind: "choose", bar }]) : null),
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };
 export const stripsHelpers = { amountOf, barStr, cutsTo, truthCompare };

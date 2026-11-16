@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-picks-default",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "Gate 2, a computed default for every family's picks (RULINGS-2026-11-15 'the per-session reading' 2; branch claude/r8-picks-default; naming still off for the three gate-2 modes, NAMING_OFF untouched). A pick (a oneDecision goal or a chancePicks entry) whose blind chance on a level is p is named on the k-th sighting, k the smallest >= 2 with P(k or more of NAMING_LEVELS = 4) < 1/10: 4 for p 1/2 or 1/3, 3 for 1/4 to 1/7, 2 from 1/8 down, never above about 0.56 (server/play/levels.js defaultSightings, namingSpec). p is read per level through the family's own grade (blindChance): the share of the pick's options that show the mix-up. The options are the family's own list where it gives one (FamilyLogic.pickOptions: todo-jodo/strips' three buttons, kyun-lab's three predictions), else read from the family's acts for that level (where malActs first part from the solve: the mix-up's act, the solve's and every other mal-rule's act there, and the act with the solve's value), a floor on the options, so p is never read below the true one for a pick one option shows; a pick read nowhere (or where every option shows it) is taken at 1/2. Every pick is named only on the session's first four levels; each remembered sighting carries its level's k and the server asks for the most any sighted level calls for. chanceRepeat (stambh/tally, kon/place, kon/name) overrides. 78 (family/mode, goal:mal-rule) pairs changed from 2 sightings: 75 to 4, 3 to 3 or 4 by level (chhaano/geela namak clear-pure and salt-gone, parkar/drop alt median). The child sees nothing new. Reverse if: a family's exact option list shows a pick among four or more (then give it pickOptions and its k falls to 3), or real sittings show more or fewer than four levels of one mode a day (then NAMING_LEVELS moves and every k is recomputed), or the ledger gains a per-child per-mode per-day count (then the day replaces the session, as ruled).",
+   "source": "inbox/r8-picks-default.json"
+  },
+  {
+   "id": "ms-r8-picks-default-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "tests/r8-picks-default.test.mjs over every coverage entry x fades 1-3 x 2 seeds x (no focus and each mapped mix-up as focus), every generated candidate: 16,970 levels, 10,960 (level, declared pick) checks, 86 pairs (8 overridden by a proved chanceRepeat). On every level k equals the default for its read p (or the family spec), and the per-day figure on that p is under 1 in 10; per pair, the worst mix of four levels from the pair's p values (an unread level at 1/2), under the most-sightings rule, is at most 0.0625 (p 1/2, k 4); 1/3 at k 4 gives 0.0123; the 3-or-4 pairs 0.0508. Not measured: the exact option lists of the families read from their acts (most read 2 or 3 options, so k 4; a true pick among four or more would get 3), a real sitting.",
+   "source": "inbox/r8-picks-default.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r8-picks-default", "rel": "part_of", "dst": "dc-r8-game-gate-play-then-evidence" },
+  { "src": "dc-r8-picks-default", "rel": "part_of", "dst": "dc-r8-gate2-per-session" },
+  { "src": "dc-r8-picks-default", "rel": "measured_by", "dst": "ms-r8-picks-default-2026-11-16" }
+ ]
+}

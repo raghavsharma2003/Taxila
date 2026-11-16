@@ -2,6 +2,95 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
+gate 2 battery passes: stambh/tally (sha: <placeholder>)
+gate 2 battery passes: kon/place (sha: <placeholder>)
+gate 2 battery passes: kon/name (sha: <placeholder>)
+
+## 2026-11-16, gate 2 H1, H3, H4: the habit battery passes on all three modes (branch `claude/r8-gate2-habits`, from `claude/r7-games` `3731cca54`)
+
+**Done (`NAMING_OFF` untouched; nothing a child sees changes; no served level or drawing changed, so no re-cert):** H1, H3 and H4 of `RULINGS-2026-11-16-gate2.md`, one commit each. Every battery `todo` is now a hard assertion. Each negative control still runs every time: the battery's `legacy` runs the same children under the old rules (`shared/play.ts` `HABIT_RULES`, a test seam, off inside one synchronous run) and still finds them named.
+- **H1, two sightings are two different acts.** New `FamilyLogic.sightingOf` gives what she did at the sighting as a value. The grade carries it as `chanceAct` on the pick's row, the session remembers it, and `nameOnRepeat` counts only sightings whose value differs from every earlier one. The value never leaves the play server.
+  - tally read: the number she typed.
+  - kon/place measure: the surface is the key on both scales (`measureSurface`), and the value is the typed number.
+  - draw wrong-scale: the rim mark she dotted.
+  - vertex-off and centre-on-arm: the protractor centre's offset from the vertex on the board, offsets within `tolPx` being one act.
+  - join-wrong-end: no value. It is a pick between two buttons, and its spec already needs both orders.
+- **H3** (kon/name say): an order act is a sighting only when her next name, after the play-out, again puts the vertex at an end (`confirmSay`). Unconfirmed, the row keeps its outcome and weight and loses `chanceMis`. **Nothing shown changes.** After a miss the level already waits for her next name, so it does not ask again.
+- **H4** (tally keep): `five` is a pick (new `FamilyLogic.chanceAt`, read by the grade and by the server's `chancePick` for trail, seam and trace). It is named on a second keep level with other counts and other totals. `counted` still names from one level. `five` no longer puts `mal`/`sign` in her facts from one level (teacher-side only).
+- **Battery additions:**
+  - the same drop every level with a 4 px wobble (place). Under the old rules: 0.97 measure, 0.92 draw.
+  - say's holders name it their way again after the play-out, and the blind guessers guess again (`again`).
+  - a tally test showing `five` is named from the first level under the old rules and never under H4.
+- **Worst child who does not hold the mix-up, worst fade, before → after.**
+
+| Goal | Gate sweep | Full sweep |
+|---|---|---|
+| tally read | 0.172 → 0 | 0.234 → 0.013 |
+| keep | 0 → 0 | 0 → 0 |
+| measure | 0.938 (0.974 with a wobble) → 0.016 | 0.967 → 0.006 |
+| draw | 0.891 (0.911) → 0.026 | 0.920 → 0.021 |
+| say | 1.000 → 0 | 1.000 → 0 |
+| find | 0 → 0 | 0.005 → 0.005 |
+
+  Full-sweep run times: 102 s, 77 s, 79 s. The tables are in each packet's "Gate 2 battery".
+- **Holders (full sweep):**
+  - tally read 0.80 (half her levels: 0.32);
+  - keep 1.00 each (`five` from the second keep level);
+  - measure other scale, smaller and outer 1.00;
+  - **vertex-off 0.46 measure, 0.43 draw (were 1.00);**
+  - draw always A 0.45;
+  - say vertex first and last 1.00, **any order 0.23 (was 0.58)**;
+  - find first letter 0.50.
+- **Tests run (each file on its own):**
+  - the three battery files, gate sweep and `HABIT_FULL=1`;
+  - `r8-games-{stambh-tally,kon-place,kon-place-gate2,kon-name,kon-name-gate2}`, `r7-games-{kon,stambh}`, `r4-games-core-kon`, `r7-games-kon-angles`;
+  - `r8-picks-default`, `r8-play-laws`, `r8-naming-off`, `play-evidence`;
+  - `r8-play-{trail,pick,adapt,follow,phone-seam}`, `r7-games-friend-fill`, `round3-integration`, `test-isolation`;
+  - `tsc -b`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+  - Not the full gate.
+
+**Next:** H5 (the facts row), H7 (the full sweep of every generated level), and the count per child per day; then one judge per mode on "is a child missing from the battery?".
+
+**Questions for main:**
+1. **The placement frame (your open question 1): I took the board.** In the protractor's frame the holder repeats one value and is never named. On the board, offsets within `tolPx` (11, a finger's drop) are one act, so a drop habit with a finger's wobble is caught. The cost is that the vertex-off holder is named only when two of her levels' arms lie more than about 27° apart. Fade 1 tilts lie within 10°, so she is seldom named there: 0.46 and 0.43 overall. A smaller tolerance would name her more often, and would also let a wobbling drop habit through. Keep `tolPx`?
+2. **Say's three sightings under H3.** Confirmation makes a blind child about 1 in 36 a level. At two sightings, "any order" would be named 0.57 (not 0.23), with every non-holder still under 0.011 in the gate sweep. I left it at three. Lower it to two?
+3. **find and H1.** I gave find no act value: it passes without one, and an arc index means nothing across figures. Is "a different pressed target" meant for find too (for example, the arc's place on the screen)?
+4. **A child who repeats her slip on the name after the play-out** (the same swap twice on one level) is named, as H3 intends: by her acts she cannot be told from the belief. Accept?
+
+## 2026-11-16, gate 2 H2: the habit battery, the negative control (branch `claude/r8-habit-battery`, from `cbd958e59` + `origin/int/r6`)
+
+**Done (no naming rule changed; `NAMING_OFF` untouched; nothing a child sees changes):** H2 of `RULINGS-2026-11-16-gate2.md`.
+- **The tool** `tests/_habit-children.mjs`: whole sessions through the real path as served (`currentLevel` → her acts → `gradeActs` → `nameOnRepeat(lessonEvidence)` → `afterLevelBody` → `nextBody`), naming forced on inside the tool only (the grade skips `withNaming`). Cells: every fade × pL (none, 0.3, 0.6, 0.9) × all 8 door sequences, the session's four levels. After a miss she does the solve. The children are the ruling's list for each goal; the holders are listed with why (the kit's own signs). For each child and mix-up it returns the share of sessions named, over all sessions, at the worst fade, and in the worst cell.
+- **Tests:** `tests/r8-habit-battery-{stambh-tally,kon-place,kon-name}.test.mjs`. The "every non-holder child under 1 in 10 at every fade" assertion is `todo` where it fails today: tally read, place measure and draw, name say. tally keep and name find pass and are asserted. Separate tests always run and assert that the known failures show, that holders are reported, and that the generator memo changes no served session. Gate sweep: 11–18 s a file. `HABIT_FULL=1`: about 1–3 min a file. `HABIT_PRINT=<file>` writes the table.
+- **Reproduced:** tally "16 every time" (1.0 in single cells, 0.13 at fade 1) and "what I typed last time" (0.17). kon/place: a key served twice. About 65% of measure sessions repeat a key within four levels, and every naming of a constant number or a fixed pad slip was a second sighting on the same key. "75 every level" is 0.5 at fade 2. kon/name: the same swap 1.0, the missed tap added last 1.0, reading across 1.0.
+- **Full sweep (`HABIT_FULL=1`: 10 sessions a cell, 30 for random children, 4 for each constant over every pL; 1.6 min, 55 s and 1.2 min):** the same verdicts. tally: "what I typed last time" 0.23, "16 every time" 0.19, both at fade 1. measure: "first key one row low" 0.22 at fade 2 (the judge's 0.19). The gate sweep shows only 0.06 for it, so it shows there only in single cells. Constants 48–62 and 68–77 are named. say: one random slip 0.15, constant taps 021 0.29.
+- **Not reproduced as the judge had it:** The judge's tally 0.95 at fade 2 came from a model that typed n−1 as the miss, so the picker was not steered. Through the real path the figure is lower, but it is still over the line. keep's "| only" is named 1.0, but it is the kit's second sign, so it is listed as a holder.
+- **New:** the same drop every level, the finger 16–32 board px up or up-right of the vertex, is named vertex-off 0.94 (measure) and 0.89 (draw). Nearly every served level opens clockwise, so that offset is where vertex-off's band lies. One random slip a level in say (swaps and missed taps among the slips): 0.15. Constant taps 012/210 in say: 0.5.
+
+**Next:** H1, H3, H4, H5, H7 and the per-day count, each turning its todo into an assertion; then "gate 2 battery passes: <mode>".
+
+**Questions for main:**
+1. **A fixed drop (kon/place).** A finger always 20 px above the vertex is named vertex-off in nearly every session. Is she a holder (on these levels it is the bottom edge on the vertex) or a slip habit H1 must stop? For a placement, what is "a different value" under H1: the offset on the board, or the offset in the protractor's own frame? In the protractor's frame, the true holder would also repeat one value and never be named.
+2. **Reading across (say).** The generator never serves a say level where reading across puts the vertex in the middle, so this child gives the mix-up's name on every level. No rule that reads only her acts can tell her from vertex-first. Only H3 (the same level, after the play-out) can. Is H3 the route?
+3. **The statistic.** The tests assert on the worst fade, pooled over pL, doors and seeds (64 sessions, 192 for a random child). A single cell holds 1–6 sessions, which is too few for a random child, so the worst cell is reported but not asserted. Is that the reading of "at every fade and door" you want?
+4. **Holders the served levels never test.** Measure and draw serve almost only obtuse angles that open clockwise, so "always the larger number" and "always the inner scale" are never named. find's last-letter reader is never named either: the law names only the first-letter pick. Are both acceptable?
+
+## 2026-11-16, a computed default for every family's picks; the day is still the session (branch `claude/r8-picks-default`, from `8bbabd1d6`)
+
+**Done (`NAMING_OFF` untouched; nothing the child sees changed, so no re-cert):** main's ruling 2 of "the per-session reading".
+- **The rule** (`server/play/levels.js`): a pick whose blind chance on a level is p is named on the k-th sighting, k the smallest (at least 2) with P(k or more of 4) < 1/10 (`defaultSightings`; 4 for 1/2 and 1/3, 3 for 1/4 to 1/7, 2 from 1/8 down, never above about 0.56). Every pick (oneDecision goals, chancePicks) now goes through it (`namingSpec`); `chanceRepeat` (stambh/tally, kon/place, kon/name) overrides. Every pick is named only on the session's first four levels. Each remembered sighting carries its level's k, and the server asks for the most any sighted level calls for.
+- **p, from the level:** `blindChance` replays each of the pick's options through the family's own grade and takes the share that shows the mix-up. The options are the family's list where it gives one (new optional `FamilyLogic.pickOptions`: strips' three buttons, the lab's three predictions); otherwise they are read from the family's acts for that level (where `malActs` first parts from the solve: the mix-up's act, what the solve and every other mal-rule do there, the act with the solve's value). That read is a floor on the options, so k is never below the true default. A pick that cannot be read is taken at 1/2.
+- **What changed: 78 (family/mode, goal:mal-rule) pairs, all from 2 sightings:** 75 now need 4, and 3 need 3 or 4 depending on the level (`chhaano/geela` namak clear-pure and salt-gone, `parkar/drop` alt median: 3 options on some levels, 4 on others). The 8 proved pairs keep their own k. Per pair, the worst day (four levels mixed from the pair's p values) is at most 1 in 16.
+- **Asserted centrally** in `tests/r8-picks-default.test.mjs`: 16,970 generated levels (every coverage entry × fades 1–3 × 2 seeds × each focus), 10,960 (level, pick) checks. `tests/r8-play-laws.test.mjs`'s law-3 case now expects four sightings.
+- **The day (ruling 3): not done, a gap.** The play ledger cannot give it in one query. No table holds a level count per child per mode, and an unnamed sighting is stored only in the signed session token (its row leaves without `chanceMis`). `kt_evidence` holds only folded home rows (`home:<child>:<day>`), with no mode and no picks. Each of the three packets now says this in one line. **What it would take:** one migration (a number from main), e.g. `play_day (child_id, day, family_mode, levels int, chance jsonb, primary key (child_id, day, family_mode))`, where day is IST (`kt/ledger.js dayOf`, the codebase's day). `/api/play/act` would upsert it at each level end, and `/start` and `/next` would read it into the body's `n` and `chance` with one keyed select, through `playDeps.q`. A failed read would fall back to the session, so the tests still pass with an empty `DATABASE_URL`.
+
+**Next:** the judges' verdicts on the three tables; then the laws-audit list.
+
+**Questions for main:**
+1. **1/7.** Your ruling says "2 only from one in seven down", but the rule itself gives 3 at 1/7: two or more of four is 241/2401 = 0.1004, just over the line. 2 starts at 1/8 (0.079). I followed the rule. Is that right?
+2. **Exact option lists.** Most families read 2 or 3 options from their own acts, so they need 4 sightings. A pick that is truly among four or more (`galti-pakdo` lines, `nazariya/tri` apex cells, `naksha` steps, the tool strips) would need only 3 (or 2) once its family gives `pickOptions`. Should I add those family by family, or leave the floor (rarer naming, never over the line)?
+3. **The day table.** Do you want the migration above now (allot a number), or keep the session until real sittings exist?
+
 ## 2026-11-16, gate 2 read per session: stambh/tally, kon/place, kon/name (on `claude/r7-games`: `6fc3d0cee` tally, `87c7bbe3d` place, `2817ad776` name, plus this entry; Hindi key words `09f7c8369` before them)
 
 **Done (naming is still off, `NAMING_OFF` untouched):** law 3's line read per session, as ruled (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16").

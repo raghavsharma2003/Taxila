@@ -233,6 +233,31 @@ export const joinAFirst = (seed: number) => ((Math.imul(seed | 0, 2654435761) >>
  * left one) never makes it under both orders.
  */
 export const drawSurface = (p: { theta?: number }, seed: number): string[] => [`theta:${p.theta ?? 0}`, `join:${joinAFirst(seed) ? "A" : "O"}`];
+/**
+ * Gate 2, H1 (dc-r8-gate2-habit-children): what a measure level shows is its key on both scales. θ and 180 − θ are one key
+ * (the other scale's number of one is the other's reading), so a second sighting counts only on a key that differs on both
+ * scales, as draw asks for another asked size. The tilt, the start pose and the side it opens to are not a different key.
+ */
+export const measureSurface = (p: { theta?: number }): string => `key:${Math.min(p.theta ?? 0, 180 - (p.theta ?? 0))}`;
+/**
+ * Gate 2, H1: what she did at a sighting, as a value (FamilyLogic.sightingOf). Two sightings count as two only when these
+ * differ (server/play/levels.js nameOnRepeat):
+ *   vertex-off, centre-on-arm  where her protractor's centre sat, as an offset from the vertex ON THE BOARD (what she did with
+ *                              her finger, relative to the screen), and two offsets within the centre tolerance (a finger's
+ *                              drop, tolPx) are one act. Not in the protractor's own frame: there the bottom edge on O is
+ *                              the same offset on every level (PD along the normal), so the child who holds vertex-off would
+ *                              repeat one value and never be named. On the board her offset turns with the arm she lays the
+ *                              base on, while a habit of dropping the finger the same way stays where it was;
+ *   wrong-scale                measure: the number she typed; draw: the rim mark she dotted;
+ *   join-wrong-end             none: the pick is between two buttons, so her act has two values at most, and the join's spec
+ *                              already asks for both button orders among its four (konLogic.chanceRepeat `cover`).
+ */
+export function placeSighting(p: PlaceParamsLike, s: PlaceState | undefined, malRule: string): string | { xy: [number, number]; tol: number } | null {
+  if (!s) return null;
+  if (malRule === "vertex-off" || malRule === "centre-on-arm") return { xy: [r1(s.pose.x - (p.vx ?? 0)), r1(s.pose.y - (p.vy ?? 0))], tol: p.tolPx ?? TOL_PX };
+  if (malRule === "wrong-scale") return p.goal === "measure" ? (s.read === null ? null : `n:${s.read}`) : s.mark === null ? null : `r:${s.mark}`;
+  return null;
+}
 
 // ───────────────────────────── gate 2: the measure pad's slips ─────────────────────────────
 /** the measure pad as the view lays it out (kon.place.view.ts: 1 … 9, 0, ⌫, in play.css's six-column grid) */

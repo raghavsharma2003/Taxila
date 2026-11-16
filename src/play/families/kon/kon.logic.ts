@@ -24,11 +24,11 @@
 // (measure, draw, size); the law lives in kon.place.ts and every function below hands a place goal there first too.
 // r8: name (c6-maths-ch02-t02): three lettered rays from a vertex, two ends joined; say (tap three letters for the lit angle)
 // and find (tap the arc a shown name denotes); the law lives in kon.name.ts, handed over first like place.
-import type { Candidate, FamilyLogic, Facts, GenRequest, KonAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
+import { HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type KonAct, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { NAME_MAL, generateName, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, drawSurface, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { PLACE_MAL, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -427,7 +427,27 @@ function board(level: PlayLevel<KonParams>, s: KonState) {
   return { title: p.goal === "turn" ? "Turn" : "Angle", lines: [what, ...(s.heading !== null ? [`now: ${Math.round(s.heading)}°`] : [])] };
 }
 function grade(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): PlayGrade {
-  return gradeLevel(konLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
+  const g = gradeLevel(konLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
+  return level.params.goal === "say" && HABIT_RULES.on ? confirmSay(g) : g;
+}
+/** the moments a commit makes (say: every commit makes exactly one of these) */
+const COMMIT_KINDS = new Set(["solved", "misconception_consequence", "law_refused", "near_miss"]);
+/**
+ * Gate 2, H3 (dc-r8-gate2-habit-children): in say, an order error is a sighting only when it is confirmed on the same level:
+ * her next name, the one she gives after the play-out has shown her which angle her first name means, is again a name with
+ * the vertex at an end (the lit angle's three letters, the vertex first or last). A slip is corrected once she has seen
+ * which angle her name means; a belief is not. Unconfirmed (the next name puts the vertex in the middle or is any other
+ * name, or she gives none), the row stays the miss it was, at the weight it had, and carries no mix-up: nothing is
+ * remembered and nothing can be named from it. Nothing she sees changes: after a miss the level already waits for her
+ * next name, and the play-out and every moment are as before.
+ */
+function confirmSay(g: PlayGrade): PlayGrade {
+  const e = g.evidence[0];
+  if (!e?.chanceMis) return g;
+  const next = g.moments.find((m) => m.seq > e.actSeq && COMMIT_KINDS.has(m.kind));
+  if (next?.kind === "misconception_consequence" && next.misconceptionId === "vertex-name") return g;
+  const { chanceMis: _c, chanceAct: _a, ...rest } = e;
+  return { ...g, evidence: [rest, ...g.evidence.slice(1)] };
 }
 
 export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
@@ -461,9 +481,13 @@ export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
     // whose figures and letters differ two by two (say and find count together): at worst 1 in 37 a session
     "say:vertex-name": { sightings: 3 }, "find:vertex-name": { sightings: 3 } },
   // name: two parts (the figure, the letters: nameSurface), so a second sighting counts on another figure with other letters;
-  // place/draw: two parts (the asked size, the join order: drawSurface); the rest: the level's params
+  // place/draw: two parts (the asked size, the join order: drawSurface); place/measure (gate 2, H1): its key on both scales
+  // (measureSurface: another tilt of the same key is not another level); the rest: the level's params
   surfaceOf: (l: PlayLevel<KonParams>) => (isNameGoal(l.params.goal) ? nameSurface(l.params)
-    : l.params.goal === "draw" ? drawSurface(l.params, l.seed) : JSON.stringify(l.params)),
+    : l.params.goal === "draw" ? drawSurface(l.params, l.seed) : l.params.goal === "measure" && HABIT_RULES.on ? measureSurface(l.params) : JSON.stringify(l.params)),
+  // gate 2, H1 (dc-r8-gate2-habit-children): what she did at a place pick, as a value (placeSighting): a second sighting
+  // counts only when it differs from every earlier one
+  sightingOf: (l: PlayLevel<KonParams>, rule: string, s: KonState) => (isPlaceGoal(l.params.goal) ? placeSighting(l.params, s?.pl, rule) : null),
   // gate 2 (kon/name): the first fade-1 level with O at the vertex, and a find level where the mix-up's reading meets no other
   // arc, solve at chance weight and discriminate nothing (nameFaint)
   faintSolve: (l: PlayLevel<KonParams>) => isNameGoal(l.params.goal) && nameFaint(l.params, l.fade),

@@ -5,7 +5,7 @@
 //   - stambh/tally keeps all three laws on every served level;
 //   - law 1 in the painter: a selected body and every canvas "you" are drawn in the focus colour, never green;
 //   - law 3 in the grade: a mix-up from one pick among a few is at chance weight and unnamed, and the server names it only
-//     when it repeats on a level whose surface differs.
+//     when it repeats on as many levels whose surfaces differ as its blind chance needs (tests/r8-picks-default.test.mjs).
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 
@@ -80,21 +80,28 @@ describe("r8 play laws: law 3 in the grade and on the server", () => {
     }
     assert.ok(seen >= 1, `chance-pick mix-ups graded: ${seen}`);
   });
-  it("nameOnRepeat names a chance-pick mix-up only on a second level whose surface differs; afterLevelBody remembers it", async () => {
+  it("nameOnRepeat names a chance-pick mix-up only on as many levels as its blind chance needs, surfaces apart; afterLevelBody remembers it", async () => {
+    // (rulings 2026-11-16, "the per-session reading" 2: the computed default; a pick whose options cannot be read is taken
+    // at one in two, which needs four sightings within the session's first four levels: tests/r8-picks-default.test.mjs)
     const { nameOnRepeat, afterLevelBody, surfaceOf } = await import("../server/play/levels.js");
     const { GAME_WEIGHT, CHANCE_WEIGHT } = await import("../shared/play.ts");
-    const A = { family: "todo-jodo", mode: "strips", levelId: "a", params: { a: 1 } }, B = { family: "todo-jodo", mode: "strips", levelId: "b", params: { a: 2 } };
+    const lv = (id, a) => ({ family: "todo-jodo", mode: "strips", levelId: id, params: { a } });
+    const [A, B, C, D] = [lv("a", 1), lv("b", 2), lv("c", 3), lv("d", 4)];
     assert.notEqual(surfaceOf(A), surfaceOf(B));
     const row = { skillId: "s", outcome: "incorrect", chanceMis: "kit-x", weight: CHANCE_WEIGHT };
     // (an unnamed row leaves without its chanceMis: nothing about a one-pick mix-up reaches the lesson; evening ruling kon/name 3)
     const { chanceMis: _c, ...plain } = row;
     assert.deepEqual(nameOnRepeat([row], {}, A), [plain], "a first sighting is not named");
     const s1 = afterLevelBody({}, { grade: { evidence: [row] }, level: A });
-    assert.deepEqual(s1.chance, [{ mis: "kit-x", surface: surfaceOf(A) }]);
+    assert.deepEqual(s1.chance, [{ mis: "kit-x", surface: surfaceOf(A), k: 4 }]);
     assert.equal(s1.nextFocus, "kit-x", "the next level aims at it");
     assert.deepEqual(nameOnRepeat([row], s1, A), [plain], "the same surface again names nothing");
-    const named = nameOnRepeat([row], s1, B)[0];
+    assert.deepEqual(nameOnRepeat([row], { ...s1, n: 1 }, B), [plain], "a second sighting is not enough at one in two");
+    const s3 = afterLevelBody(afterLevelBody(s1, { grade: { evidence: [row] }, level: B }), { grade: { evidence: [row] }, level: C });
+    assert.deepEqual(nameOnRepeat([row], { ...s3, n: 3 }, C), [plain], "three sightings, one surface twice: not named");
+    const named = nameOnRepeat([row], { ...s3, n: 3 }, D)[0];
     assert.equal(named.misconceptionId, "kit-x"); assert.equal(named.weight, GAME_WEIGHT);
-    assert.deepEqual(nameOnRepeat([{ ...row, chanceMis: "kit-y" }], s1, B)[0].misconceptionId, undefined, "another mix-up is not named by this one");
+    assert.deepEqual(nameOnRepeat([row], { ...s3, n: 4 }, D), [plain], "past the session's first four levels: named on none");
+    assert.deepEqual(nameOnRepeat([{ ...row, chanceMis: "kit-y" }], { ...s3, n: 3 }, D)[0].misconceptionId, undefined, "another mix-up is not named by this one");
   });
 });

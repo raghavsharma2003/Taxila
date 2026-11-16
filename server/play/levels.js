@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
-import { GAME_WEIGHT, pickArt } from "../../shared/play.ts";
+import { GAME_WEIGHT, pickArt, sameSighting } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
 import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
@@ -216,11 +216,14 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   if (seen) s2.nextFocus = seen;
   // round 8 law 3: a mix-up seen from one pick is remembered (not named) with the surface it was seen on; the next level
   // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
-  const pick = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId)?.chanceMis ?? null;
+  const pickRow = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId) ?? null;
+  const pick = pickRow?.chanceMis ?? null;
   if (pick) {
     // gate 2: a sighting no single ordinary slip could have made is kept as firm (the family's firmSighting)
     const firm = firmOf(level, pick);
-    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level), ...(firm ? { firm: true } : {}) }].slice(-CHANCE_MEMORY);
+    // the computed default's k on this level rides with the sighting (a family spec needs none: namingSpec)
+    const k = defaultK(level, pick);
+    s2.chance = [...(Array.isArray(s.chance) ? s.chance : []), { mis: pick, surface: surfaceOf(level), ...(firm ? { firm: true } : {}), ...(k !== null ? { k: Number.isFinite(k) ? k : 0 } : {}), ...(pickRow.chanceAct !== undefined ? { act: pickRow.chanceAct } : {}) }].slice(-CHANCE_MEMORY);
     if (!seen) s2.nextFocus = pick;
   }
   const step = adaptAfter({ grade, level, s, beliefOf });
@@ -262,10 +265,11 @@ export const CHANCE_MEMORY = 6;
 /**
  * Gate 2, the per-session reading of law 3 (RULINGS-2026-11-15, "To Games, 2026-11-16"): what must be rare is a child named
  * a mix-up she does not hold over one sitting. A session has no end of its own (/api/play/next can always be asked again,
- * and every act signs the token afresh), so the session figure needs a count of levels: a pick whose family gives it a
- * gate-2 spec (FamilyLogic.chanceRepeat) is named only on the session's first NAMING_LEVELS levels (its body's n, 0-based,
- * set by the server). Every spec's session figure is proved over this many levels (the gate-2 tests); later levels of the
- * session still grade right or wrong, and name no such pick.
+ * and every act signs the token afresh), so the session figure needs a count of levels: every pick (a family's gate-2
+ * spec, FamilyLogic.chanceRepeat, or the computed default, namingSpec) is named only on the session's first NAMING_LEVELS
+ * levels (its body's n, 0-based, set by the server). Every figure is proved over this many levels (the gate-2 tests,
+ * tests/r8-picks-default.test.mjs); later levels of the session still grade right or wrong, and name no pick. The ruling's
+ * unit is the child's day (per child, per mode, per day); the count is still the session's (the gap: each gate-2 PACKET.md).
  */
 export const NAMING_LEVELS = 4;
 const differOn = (a, b, apart) => (!apart ? surfacesDiffer(a, b)
@@ -274,8 +278,8 @@ const differOn = (a, b, apart) => (!apart ? surfacesDiffer(a, b)
 const sighting = (x) => (x && typeof x === "object" && !Array.isArray(x) && "surface" in x ? { surface: x.surface, firm: !!x.firm } : { surface: x, firm: false });
 /**
  * Gate 2: are the sightings enough to name a pick's mix-up? `prior` are the sightings before (surfaces, or { surface, firm }),
- * `here` this level's. With no spec (or the family's chanceRepeat has none for this pick): one prior on a surface that
- * differs (the shared law-3 rule, as before). With a spec: `sightings` levels in all (this one included) whose surfaces
+ * `here` this level's. With no spec: one prior on a surface that differs (nameOnRepeat always passes one: namingSpec). With a
+ * spec: `sightings` levels in all (this one included) whose surfaces
  * differ two by two on the `apart` parts (every part when absent), and, with `cover`, not all the same on that part; with
  * `firm`, that many are enough when one of them is firm (a sighting no single ordinary slip makes: the family's
  * firmSighting). Pure.
@@ -308,6 +312,90 @@ export function repeatSpec(level, kit) {
   const rule = ruleOf(level, kit);
   try { return rule ? logicFor(level.family, level.mode)?.chanceRepeat?.[`${level.goal}:${rule}`] ?? null : null; } catch { return null; }
 }
+/**
+ * The default for every other pick (RULINGS-2026-11-15, "the per-session reading" 2): a pick whose blind chance on a level
+ * is p is named on the k-th sighting, k the smallest for which the chance of k or more in NAMING_LEVELS levels is under
+ * LAW3_LINE (never fewer than 2: law 3 names nothing from one pick). 1/2 and 1/3 give 4, 1/4 to 1/7 give 3, 1/8 and below
+ * give 2; a pick likelier than about 0.56 is never named (Infinity). A family's chanceRepeat overrides it.
+ */
+export const LAW3_LINE = 0.1;
+/** P(k or more of n levels land), each at chance p (binomial) */
+export function atLeastOf(n, p, k) {
+  let total = 0, c = 1;
+  for (let j = 0; j <= n; j++) { if (j >= k) total += c * p ** j * (1 - p) ** (n - j); c = (c * (n - j)) / (j + 1); }
+  return total;
+}
+export function defaultSightings(p, n = NAMING_LEVELS) {
+  for (let k = 2; k <= n; k++) if (atLeastOf(n, p, k) < LAW3_LINE) return k;
+  return Infinity;
+}
+/** a pick whose options could not be read is taken at the worst a pick among a few can be (one in two) */
+export const UNREAD_PICK = 1 / 2;
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const tryOr = (f, d = null) => { try { return f(); } catch { return d; } };
+/**
+ * The options of the pick that shows mal-rule `rule` on this level: act sequences, one per option, the same lead-in and the
+ * same acts after. The family's own pickOptions when it has one (FamilyLogic.pickOptions); otherwise read from the family's
+ * own acts for the level: where the mix-up's acts (malActs) first part from the solve, the options are its act, what the
+ * solve and every other mal-rule's acts do at that point after the same lead-in, and its act with the value the solve picks
+ * there. That is a FLOOR on the options (a wrong option no rule spells out is not seen), so the chance it gives is never
+ * below the pick's true one. null: the level has no such pick. Pure.
+ */
+export function pickOptions(level, rule, logic = tryOr(() => logicFor(level.family, level.mode))) {
+  if (!logic || !rule) return null;
+  if (typeof logic.pickOptions === "function") { const o = tryOr(() => logic.pickOptions(level, rule)); return Array.isArray(o) && o.length ? o : null; }
+  const acts = tryOr(() => logic.malActs(level, rule));
+  if (!Array.isArray(acts) || !acts.length) return null;
+  const sol = tryOr(() => logic.solve(level)) ?? [];
+  const seqs = [sol, ...(logic.malRules ?? []).filter((r) => r !== rule).map((r) => tryOr(() => logic.malActs(level, r)))].filter((x) => Array.isArray(x) && x.length);
+  let i = acts.findIndex((a, k) => !same(a, sol[k]));
+  if (i < 0) i = acts.length - 1;
+  const lead = acts.slice(0, i), here = acts[i], opts = [here];
+  const add = (a) => { if (a && typeof a === "object" && !opts.some((o) => same(o, a))) opts.push(a); };
+  for (const s of seqs) if (s.length > i && lead.every((a, k) => same(a, s[k]))) add(s[i]);
+  // the same act with the solve's choice in it (the fields where the two differ), when the solve makes that act here
+  const r = sol[i];
+  if (r && r.kind === here.kind) {
+    const diff = Object.keys(here).filter((f) => f !== "kind" && f in r && !same(here[f], r[f]));
+    if (diff.length) add({ ...here, ...Object.fromEntries(diff.map((f) => [f, r[f]])) });
+  }
+  return opts.map((a) => [...lead, a, ...acts.slice(i + 1)]);
+}
+/** does this act sequence show the kit mix-up on the level (the grade's first decision: chanceMis or misconceptionId)? */
+function shows(logic, level, acts, kit) {
+  const g = tryOr(() => logic.grade(level, acts.map((act, i) => ({ seq: i + 1, t: i, via: "touch", act }))));
+  const r = g?.evidence?.[0];
+  return !!r && (r.chanceMis === kit || r.misconceptionId === kit);
+}
+/**
+ * The blind chance of a pick on this level: the share of its options (pickOptions) that show the mix-up, replayed through
+ * the family's own grade. → { p, options } or null (no pick here, or none of its options shows it). Pure.
+ */
+export function blindChance(level, kit) {
+  const rule = ruleOf(level, kit), logic = tryOr(() => logicFor(level.family, level.mode));
+  const opts = rule && logic ? pickOptions(level, rule, logic) : null;
+  if (!opts) return null;
+  const hits = opts.filter((acts) => shows(logic, level, acts, kit)).length;
+  // every option showing it means the split read is not where she picks: unread (UNREAD_PICK)
+  return hits && hits < opts.length ? { p: hits / opts.length, options: opts.length } : null;
+}
+/** gate 2, the default: the sightings a pick needs on this level's blind chance (defaultSightings), or null with a family spec */
+export function defaultK(level, kit) {
+  if (repeatSpec(level, kit)) return null;
+  const b = blindChance(level, kit);
+  return defaultSightings(b ? b.p : UNREAD_PICK);
+}
+/**
+ * gate 2: the sightings a pick needs (the family's chanceRepeat spec, else the computed default). The default is the most
+ * that this level or any remembered sighting of the same mix-up calls for (`prior`: the session's chance memory, each with
+ * the k of its own level; 0 is never), so a level where a guess is likelier never lets the pick through on fewer sightings.
+ */
+export function namingSpec(level, kit, prior = []) {
+  const own = repeatSpec(level, kit);
+  if (own) return own;
+  const ks = [defaultK(level, kit), ...prior.filter((x) => x?.mis === kit).map((x) => (x?.k === 0 ? Infinity : x?.k))].filter((k) => k === Infinity || (Number.isInteger(k) && k >= 2));
+  return { sightings: Math.max(...ks), byDefault: true };
+}
 /** gate 2: is this level's sighting of the pick firm (no single ordinary slip makes it: FamilyLogic.firmSighting)? */
 function firmOf(level, kit) {
   const rule = ruleOf(level, kit);
@@ -315,25 +403,47 @@ function firmOf(level, kit) {
 }
 /**
  * Round 8 law 3 (dc-r8-game-modes-three-laws): a mix-up from one pick among a few is not kept from that pick
- * (gradeLevel reports it as `chanceMis` at chance weight). It is named here when the session saw the same mix-up from a
- * pick on a level whose surface differs: the row then carries misconceptionId at the game weight. Pure.
+ * (gradeLevel reports it as `chanceMis` at chance weight). It is named here when the session saw it from as many picks as
+ * its blind chance calls for (namingSpec: the family's chanceRepeat, else the computed default), on levels whose surfaces
+ * differ, within the session's first NAMING_LEVELS levels: the row then carries misconceptionId at the game weight. Pure.
  */
+/**
+ * Gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. Of a pick's sightings in order (each with
+ * what she did, `act`: FamilyLogic.sightingOf), only those whose act differs from EVERY earlier one count; a sighting with
+ * no act (a family that gives none) always counts. → the sightings that count. Pure.
+ */
+export function distinctSightings(list) {
+  const out = [];
+  list.forEach((x, i) => {
+    const a = x && typeof x === "object" ? x.act : undefined;
+    if (a === undefined || a === null || !list.slice(0, i).some((y) => sameSighting(a, y?.act))) out.push(x);
+  });
+  return out;
+}
 export function nameOnRepeat(rows, s, level) {
   const prior = Array.isArray(s?.chance) ? s.chance : [];
   const here = prior.length ? surfaceOf(level) : null;
   // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening
-  // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows
-  const unnamed = (r) => { const { chanceMis: _c, ...rest } = r; return rest; };
-  // gate 2: a pick whose pair is still over 1 in 10 needs more sightings (the family's chanceRepeat, by goal and mal-rule),
-  // and is named only on the session's first NAMING_LEVELS levels (the count its session figure is proved over)
-  const late = !((Number(s?.n) || 0) < NAMING_LEVELS);
-  const named = (kit) => {
-    const spec = repeatSpec(level, kit);
-    if (spec && late) return false;
-    return repeatMet(prior.filter((p) => p?.mis === kit), { surface: here, firm: firmOf(level, kit) }, spec);
+  // ruling kon/name 3); the session remembers it from the grade (afterLevelBody), not from these rows. What she did at the
+  // pick (chanceAct, H1) never leaves the play server, named or not
+  const bare = (r) => { if (!r || !("chanceAct" in r)) return r; const { chanceAct: _a, ...rest } = r; return rest; };
+  const unnamed = (r) => { const { chanceMis: _c, chanceAct: _a, ...rest } = r; return rest; };
+  // gate 2: every pick needs the sightings its blind chance calls for (the family's chanceRepeat, by goal and mal-rule, else
+  // the computed default: namingSpec), and is named only on the session's first NAMING_LEVELS levels (the count its figure
+  // is proved over)
+  if (!((Number(s?.n) || 0) < NAMING_LEVELS)) return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? bare(r) : unnamed(r)));
+  const named = (kit, act) => {
+    const mine = prior.filter((p) => p?.mis === kit);
+    if (!mine.length) return false;
+    // H1: this sighting counts only when what she did differs from every earlier sighting's act, and of the earlier ones
+    // only those that differed from every one before them count
+    if (act !== undefined && act !== null && mine.some((p) => sameSighting(act, p?.act))) return false;
+    const counted = distinctSightings(mine);
+    if (!counted.length) return false;
+    return repeatMet(counted, { surface: here, firm: firmOf(level, kit) }, namingSpec(level, kit, prior));
   };
-  return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? r
-    : named(r.chanceMis) ? { ...r, misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
+  return rows.map((r) => (!r?.chanceMis || r.misconceptionId ? bare(r)
+    : named(r.chanceMis, r.chanceAct) ? { ...bare(r), misconceptionId: r.chanceMis, weight: GAME_WEIGHT, named: "repeat" } : unnamed(r)));
 }
 export function artFor(s, entry) {
   return pickArt({ family: entry.family, subject: entry.subject === "maths" ? "maths" : "science", topicId: entry.topicId, classLevel: s.classLevel, topicArts: entry.arts, childArt: s.childArt ?? null, lastArt: s.lastArt ?? null });
