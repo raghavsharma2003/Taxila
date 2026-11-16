@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {"id": "ms-r8-model-joins-first-live-read", "kind": "measurement", "at": "2026-11-16", "title": "First live read of dc-r8-director24 M (the model writes the joins) before release: c6 x 4 rule-based children on integration 77's merged tree, 420 calls, $0.29, every seam read by main. 40 joins and openers drafted by the model; 23 fell back to the authored form (a term of a card not yet answered 14 or more, a fraction word 3, not a right verdict 3, no miss word 1); 17 said; 1 false: 'Ab pitch ke chaaron kinaaron ka kul naap nikaalo' before a triangular flower bed (a word of the child's aside, a number word, an order to the child; joinProblem passed it). T3's code-picked sentence read well ('Aaj tumne pehle khet ka parimap naapa, phir taar ka kharcha nikala.')."},
+  {"id": "dc-r8-model-joins-off-until-second-read", "kind": "decision", "at": "2026-11-16", "title": "The model's joins are asked for only with TAXILA_MODEL_JOINS=on; production runs with it off and says the seam pass's authored forms. They go on when a second live read (one topic x 4 children, run by main) shows at most 1 drafted join in 5 falling back and no join said that names a thing, a number or a task; Brain tightens joinProblem and the prompt first (a join names nothing of the lesson or of the child's aside). Reverse: the second read fails either measure, and M is dropped: joins stay authored, Learning writes two more forms per joint kind, and dc-r8-director24's M clause is recorded as fired. director25 does not wait for M."},
+  {"id": "fd-live-read-before-release-of-model-text", "kind": "finding", "at": "2026-11-16", "title": "Text a model writes at run time does not appear on the dry matrix, so the gate, the counts table and every predicate passed integration 77 with a false join in it. A one-topic live read (about $0.30) before release found it. Any change that adds model-written words to what a child hears gets a live read by main before it is released."}
+ ],
+ "edges": [
+  {"src": "dc-r8-model-joins-off-until-second-read", "rel": "part_of", "dst": "dc-r8-director24"},
+  {"src": "dc-r8-model-joins-off-until-second-read", "rel": "measured_by", "dst": "ms-r8-model-joins-first-live-read"},
+  {"src": "fd-live-read-before-release-of-model-text", "rel": "constrains", "dst": "dc-r8-model-joins-off-until-second-read"},
+  {"src": "fd-live-read-before-release-of-model-text", "rel": "measured_by", "dst": "ms-r8-model-joins-first-live-read"}
+ ]
+}

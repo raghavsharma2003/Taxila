@@ -647,3 +647,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-full-disk-crashes-browser-suite` (2026-11-16): Integration 76's pre-gate stopped on the kon layout browser suite with 'page.evaluate: Target crashed' after 581 s. Memory was free (15 GB); the disk allowance was 99% used (695 MB free), mostly two read-only judge checkouts of 4 GB each and 347 temporary test folders. With 6.5 GB freed the same suite passed. A browser crash in a layout suite is a disk signal first; judge checkouts are removed when their judges finish.
 - `fd-worker-restart-kills-local-jobs` (2026-11-16): A worker restart of the main session killed integration 76's background chain (started with nohup setsid) partway through. The restart followed a get_session call on another session. Remote session calls (get_session, list_sessions, send_message) are not made while a gate, a release, a paid run or judges are running locally.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-live-read-before-release-of-model-text` (2026-11-16): Text a model writes at run time does not appear on the dry matrix, so the gate, the counts table and every predicate passed integration 77 with a false join in it. A one-topic live read (about $0.30) before release found it. Any change that adds model-written words to what a child hears gets a live read by main before it is released.
