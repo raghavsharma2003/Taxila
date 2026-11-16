@@ -766,6 +766,12 @@ export interface FamilyLogic<P = unknown, S = unknown, A extends PlayActBody = P
   /** gate 2 (note 004, answer 1): what of this level a sighting of this mal-rule keeps, for the next level's steer (the
    *  session's chance memory carries it; server/play/levels.js steersOf → GenRequest.steers). null or absent: nothing */
   steerOf?(level: PlayLevel<P>, malRule: string): SightingSteer | null;
+  /** gate 2 (dc-r8-gate2-shadow S3, the discriminating level for keys): may a sighting of this mal-rule on this level count
+   *  at all? false where a habit that is not the mix-up gives the mix-up's own act on this level (stambh/tally read: a row
+   *  on which some reading habit types the mix-up's number; kon/place draw: the other scale's mark within 2° of the level
+   *  just played's right mark). `recent`: the session's served level signatures, the last the level before this one. Such
+   *  a sighting is neither remembered nor counted (server/play/levels.js). Absent: it counts */
+  sightingCounts?(level: PlayLevel<P>, malRule: string, ctx: { recent: readonly string[] }): boolean;
   /** gate 2 (H4): a moment whose mix-up is a pick although its goal and mal-rule are not (stambh/tally keep's `five`: one
    *  button pressed for every stroke), graded at chance weight as chanceMis (gradeLevel and the server's chancePick read this) */
   chanceAt?(level: PlayLevel<P>, moment: Moment): boolean;

@@ -24,7 +24,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
-import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, KEEP_SCENE, keepRowsAt, tellsApart, READ_RANGE, numberLineEnd, numberLineAt, oneSlipFromMixup, TALLY_PAD, TALLY_PAD_COLS } from "../src/play/families/stambh/tally.logic.ts";
+import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, KEEP_SCENE, keepRowsAt, tellsApart, READ_RANGE, numberLineEnd, numberLineAt, oneSlipFromMixup, TALLY_PAD, TALLY_PAD_COLS, READ_HABITS, discriminatingRead } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor, NAMING_LEVELS, nameOnRepeat, repeatSpec } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
@@ -401,13 +401,39 @@ test("gate 2, read per session: three sightings, or two with a firm one, within 
   const read = levels("read", [3])[0], at = (n, extra = {}) => ({ ...read, mal: { "tally-four": "k" }, params: { ...read.params, counts: [n] }, ...extra });
   const { surfaceOf } = await import("../server/play/levels.js");
   const row = [{ outcome: "incorrect", chanceMis: "k", weight: CHANCE_WEIGHT }];
-  const chance = [17, 23].map((n) => ({ mis: "k", surface: surfaceOf(at(n)) }));
-  assert.ok(repeatSpec(at(31), "k"));
-  assert.equal(nameOnRepeat(row, { chance, n: 3 }, at(31))[0].misconceptionId, "k", "three weak, parts apart, on the fourth level: named");
-  assert.equal(nameOnRepeat(row, { chance, n: 4 }, at(31))[0].misconceptionId, undefined, "on the fifth: not named");
-  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(31))[0].misconceptionId, undefined, "two weak: not named");
-  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(30))[0].misconceptionId, "k", "a weak and a firm (30: 6 + 0): named");
-  assert.equal(nameOnRepeat(row, { chance: [{ mis: "k", surface: surfaceOf(at(30)), firm: true }], n: 1 }, at(23))[0].misconceptionId, "k", "a firm one remembered, then a weak: named");
+  // (weak rows on which no reading habit types the mix-up's number: dc-r8-gate2-shadow S3, discriminatingRead)
+  const chance = [32, 38].map((n) => ({ mis: "k", surface: surfaceOf(at(n)) }));
+  assert.ok(repeatSpec(at(46), "k"));
+  assert.equal(nameOnRepeat(row, { chance, n: 3 }, at(46))[0].misconceptionId, "k", "three weak, parts apart, on the fourth level: named");
+  assert.equal(nameOnRepeat(row, { chance, n: 4 }, at(46))[0].misconceptionId, undefined, "on the fifth: not named");
+  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(46))[0].misconceptionId, undefined, "two weak: not named");
+  assert.equal(nameOnRepeat(row, { chance: chance.slice(0, 1), n: 1 }, at(40))[0].misconceptionId, "k", "a weak and a firm (40: 8 + 0): named");
+  assert.equal(nameOnRepeat(row, { chance: [{ mis: "k", surface: surfaceOf(at(30)), firm: true }], n: 1 }, at(38))[0].misconceptionId, "k", "a firm one remembered, then a weak: named");
+  // dc-r8-gate2-shadow S3: on a row where a reading habit types the mix-up's number (31, 43: "bundles only, a bundle
+  // skipped"; 27: "a bundle skipped"), the sighting does not count
+  for (const n of [31, 43, 27]) assert.equal(nameOnRepeat(row, { chance, n: 3 }, at(n))[0].misconceptionId, undefined, `${n}: a habit's number, not counted`);
+});
+
+test("dc-r8-gate2-shadow S3, read: a sighting counts only on a row where no reading habit of the battery types the mix-up's number (computed from the habits); 25, 31, 37, 43 and 49 are not such rows, and a sighting there is neither counted nor remembered", async () => {
+  const { afterLevelBody, sightingCounts } = await import("../server/play/levels.js");
+  const read = levels("read", [3])[0], at = (n) => ({ ...read, mal: { "tally-four": "k" }, params: { ...read.params, counts: [n] } });
+  // the rule is the habits': a row discriminates iff no habit's number is the mix-up's there
+  for (let n = 5; n <= 54; n++) assert.equal(discriminatingRead(n), !READ_HABITS.some((h) => h.of(n) === Math.floor(n / 5) * 4 + (n % 5)), String(n));
+  for (const n of [25, 31, 37, 43, 49]) {
+    assert.equal(discriminatingRead(n), false, `${n}: the judge's rows`);
+    assert.ok(READ_HABITS.some((h) => h.id === "way 1/a bundle skipped" && h.of(n) === 4 * Math.floor(n / 5) + (n % 5)), `${n}: bundles only, a bundle skipped`);
+  }
+  // every firm row discriminates (no slip gives it, so no habit does); fade 1's rows (16, 17, 19) none
+  for (let n = 5; n <= 54; n++) if (tellsApart([n]) && !oneSlipFromMixup(n)) assert.ok(discriminatingRead(n), `${n} firm`);
+  for (const n of [16, 17, 19]) assert.equal(discriminatingRead(n), false);
+  assert.ok([32, 34, 38, 46].every(discriminatingRead));
+  // the server: a sighting on 31 is not remembered and does not count; on 32 it is remembered
+  const g = (n) => ({ evidence: [{ outcome: "incorrect", chanceMis: "k", weight: CHANCE_WEIGHT, actSeq: 1 }] });
+  const s0 = { childId: "c", mis: {}, n: 0 };
+  assert.equal(sightingCounts(at(31), "k", s0), false); assert.equal(sightingCounts(at(32), "k", s0), true);
+  assert.equal(afterLevelBody(s0, { grade: g(31), level: at(31) }).chance, undefined, "31: not remembered");
+  assert.equal(afterLevelBody(s0, { grade: g(31), level: at(31) }).nextFocus, "k", "the next level still aims at the mix-up");
+  assert.equal(afterLevelBody(s0, { grade: g(32), level: at(32) }).chance.length, 1, "32: remembered");
 });
 
 test("gate 2: the read surface has two parts (bundles, loose lines); a repeat counts only when both differ", async () => {
@@ -439,7 +465,12 @@ test("gate 2, the server's repeat rule with naming on: one read level names noth
   const bsOf = (lv) => [Math.floor(lv.params.counts[0] / 5), lv.params.counts[0] % 5];
   const apart = (x, y) => bsOf(x)[0] !== bsOf(y)[0] && bsOf(x)[1] !== bsOf(y)[1];
   const firm = (lv) => !oneSlipFromMixup(lv.params.counts[0]);
-  const all = [...byN.values()];
+  // (dc-r8-gate2-shadow S3: a sighting counts only on a row where no reading habit types the mix-up's number)
+  // (dc-r8-gate2-shadow S3: served sessions meet few weak rows a habit leaves alone, so the rows read can serve are made on a
+  // served level's template, each one the law takes)
+  const T = [...byN.values()][0];
+  const all = Array.from({ length: 50 }, (_, i) => i + 5).filter((n) => n >= READ_RANGE[1][0] && n <= READ_RANGE[3][1] && discriminatingRead(n))
+    .map((n) => L.validate({ ...T, levelId: `${T.levelId}-${n}`, params: { ...T.params, counts: [n] } })).filter(Boolean);
   // A weak (one slip can give its number); `both` firm, its bundles and loose lines both apart from A's; B and C weak, the
   // three weak ones apart two by two
   const A = all.find((lv) => !firm(lv) && all.some((x) => firm(x) && apart(x, lv))), [ab, as] = bsOf(A);

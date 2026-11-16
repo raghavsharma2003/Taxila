@@ -374,7 +374,9 @@ const pickOf = (xs, rng) => xs[Math.floor(rng() * xs.length) % xs.length];
 /** the ways of reading a tally of b bundles and s loose lines (tally.logic.ts WAYS: the right one and seven others) */
 const TALLY_WAYS = { right: [(b, s) => 5 * b + s, 1], "bundles only": [(b) => 5 * b, 1], "loose twice": [(b, s) => 5 * b + 2 * s, 1], "bundle as six": [(b, s) => 6 * b + s, 1],
   "bundles as ones": [(b) => b, 0], "groups and loose": [(b, s) => b + s, 0], "bundle as ten": [(b, s) => 10 * b + s, 0], "loose only": [(_b, s) => s, 0] };
-const TALLY_COUNTING = (strokes) => ({ none: (f) => f, "a bundle skipped": (f, b, s) => f(Math.max(0, b - 1), s), "a bundle twice": (f, b, s) => f(b + 1, s),
+// (dc-r8-gate2-shadow S3: `none` was `(f) => f`, so the seven ways with no counting slip typed nothing on every level; the
+// check against the product's READ_HABITS found it)
+const TALLY_COUNTING = (strokes) => ({ none: (f, b, s) => f(b, s), "a bundle skipped": (f, b, s) => f(Math.max(0, b - 1), s), "a bundle twice": (f, b, s) => f(b + 1, s),
   "a loose line missed": (f, b, s) => f(b, Math.max(0, s - 1)), "a loose line twice": (f, b, s) => f(b, s + 1),
   ...(strokes ? { "a stroke missed": (f, b, s) => f(b, s) - 1, "a stroke twice": (f, b, s) => f(b, s) + 1 } : {}) });
 const readN = (lv) => lv.params.counts[0];
