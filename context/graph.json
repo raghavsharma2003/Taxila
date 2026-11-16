@@ -29371,6 +29371,55 @@
    "at": "2026-11-16",
    "title": "Released cd6eb6d with scripts/release.mjs: web taxila-web--scd6eb6d-2jzr (was taxila-web--s06864c4-p3fg), worker + canary/nightly jobs on taxila-worker:cd6eb6d (was 06864c4); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs cd6eb6d --rollback.",
    "source": "inbox/release-cd6eb6d.json"
+  },
+  {
+   "id": "ms-r8-director25",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "director25: 16 lessons (4 pilots x 4 rule-based children) on integration 78 (cd6eb6d61, release 45), model joins off, 1,672 calls, $1.18, four Opus judges by hand. Gate: c6 passes (second run running); c4, c5-t01, c5-t02 fail. Contradictions 2, 1, 0, 0 (director24: 0, 0, 1, 0), all made by help paths; 0 unsaid boards; 0 misgrades in 280 verdicts; 0 false keys. Axes d24 to d25: listening 3.5, 3, 3, 3.5 (was 3.5 x4); register 3, 3, 3, 3.5 (unchanged); promises 3.5, 3, 3.5, 3.5; screen and speech 3.5, 3.5, 4, 4.5. Help turns with nothing new 3, 5, 5, 1 = 14 (d24 15). Turns over 60 words 62 of 690 (d24 69 of 671). Steady rows 133, 137, 121, 129; check-ins tedious 0 of 4 judges. Sentence about the child present and true 4 of 4, unnatural 2. Reader 0 wrong kinds; captions 16 of 16 true. Register rows by cause: fixed forms 16, script 3, verdict and why 4, turn shape 28, help 18, other 11. Safety turn on 'no place' 3 of 3. The run's own 56 predicates read 0 on every gated one.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "dc-r8-director25",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "After director25. H4: every request for help goes through one function given the part, the request and the said set (every authored sentence she has said this lesson); it returns the wording (first rung of the part's authored ladder with no sentence in the set; same after normalising or 8 words in 10 shared counts as said), the board that wording belongs to, and the card's fate; the key comes only when the ladder is empty, over the answer board; a Hindi request never gets a key and is promised easier words, not Hindi; after a key's check-in a give-up gets the why's other wording or one authored going-on line; the compile table's help rows and the walk's overrides are removed. L2: the aside's return question is its own turn in an authored form; the wrap is two turns; a turn of more than one part over 45 words breaks at a seam and every break ends on a check-in. No model sentence on a guard's rewrite path. Predicates reread from the said set and each tested to read non-zero on the director25 rows the judges named. Reverse: H4 if more than 2 nothing-new help turns in a topic remain (picker picked a said sentence: fix the set from that row; else every point and card gets a third wording); L2 if a steady lesson passes 170 rows or two judges find check-ins tedious (back to 60 words, return turn and two-turn wrap stay); register below 3.5 in two topics after both: the cause with most rows in director26 gets the round (fixed forms: two more forms each and the model joins' second live read); a contradiction made by help on any row: the board is chosen outside the function, that path is removed before another run.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "fd-help-decided-in-three-places",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "Why help kept failing across director22 to director25 (H1, H2, H3 each 'not held'): the wording, the board and whether the card closes are decided in different places. The compile table's help rows (server/director/compile.js) pick a field by a three-state counter written before second wordings existed (a card whose help is 'heard' gets its point again, with pointAlt only as an alternative); the walk (server/director/state.js, two override sites) changes some rows; the memory added for H3 compares strings on some paths only. Each run's patch fixed the rows the judges named and moved the fault: director25's three contradictions are all help said over a board picked elsewhere.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "rj-r8-second-request-worked-answer",
+   "kind": "rejection",
+   "at": "2026-11-16",
+   "title": "Rejected after director25: 'a second request for help on the same part gets the worked answer' (dc-r8-director24 H3, from director24's clause 6). What broke: counting requests does not know what has been said, so the worked answer came where a hint was unsaid (4 rows) and was withheld where the rule called for it (5 rows); a Hindi request after a give-up counted as the second request and handed over the answer with no answer board (c5-t01 and c6 offtopic 34: one of the run's 3 contradictions); help turns with nothing new stayed at 14 (15 before). Replaced by the ladder: the answer comes when no authored wording is left unsaid.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "fd-predicate-must-fail-on-judges-rows",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "Fourth run in which gated predicates read 0 on rows judges counted (director25: helpRepeats, hindiNewWords, partOnce, returnAlone; returnAlone's own definition allowed a verdict before the return, which the decision forbade). A predicate is trusted only after a test shows it reads non-zero on the recorded rows it was written for; the judged runs are filed under tests/fixtures/eval-results for exactly this.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "fd-l-built-one-part-of-three",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "dc-r8-director24's L had three parts (a point and card over 60 words break at the check-in; the aside's return question is its own turn; the wrap is two turns). The stream built the first, reported 'L' done with its predicate at 0, and the main loop integrated on that report. The other two were found by four judges. A decision with several parts is integrated against a list of its parts, each with its own predicate or test, not against its letter.",
+   "source": "inbox/r8-main-40.json"
+  },
+  {
+   "id": "fd-send-message-needs-approval",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "From 21:40 UTC on 2026-11-16 the main loop's send_message to a stream session stopped on an approval prompt; with no owner present the session sat until the watchdog fired (an hour, twice) and the worker restarted. Messages to streams are not sent while the owner is away; notes go in the repo and the round's work is built by agents run from the main loop.",
+   "source": "inbox/r8-main-40.json"
   }
  ],
  "edges": [
@@ -46953,6 +47002,46 @@
    "src": "fd-live-read-before-release-of-model-text",
    "rel": "measured_by",
    "dst": "ms-r8-model-joins-first-live-read"
+  },
+  {
+   "src": "dc-r8-director25",
+   "rel": "supersedes",
+   "dst": "dc-r8-director24"
+  },
+  {
+   "src": "dc-r8-director25",
+   "rel": "measured_by",
+   "dst": "ms-r8-director25"
+  },
+  {
+   "src": "dc-r8-director25",
+   "rel": "caused_by",
+   "dst": "fd-help-decided-in-three-places"
+  },
+  {
+   "src": "rj-r8-second-request-worked-answer",
+   "rel": "measured_by",
+   "dst": "ms-r8-director25"
+  },
+  {
+   "src": "rj-r8-second-request-worked-answer",
+   "rel": "constrains",
+   "dst": "dc-r8-director25"
+  },
+  {
+   "src": "fd-predicate-must-fail-on-judges-rows",
+   "rel": "constrains",
+   "dst": "dc-r8-director25"
+  },
+  {
+   "src": "fd-l-built-one-part-of-three",
+   "rel": "constrains",
+   "dst": "dc-r8-director25"
+  },
+  {
+   "src": "fd-help-decided-in-three-places",
+   "rel": "measured_by",
+   "dst": "ms-r8-director25"
   }
  ]
 }

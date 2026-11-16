@@ -3040,3 +3040,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-joints-as-rules` (2026-11-16): J2 built as rules inside the existing code paths (accepted on a condition in to-brain 030 instead of the single seam pass dc-r8-director22 ruled): it removed every backTo said with nothing to go back to (9 to 0) and left 49 joint faults in 16 lessons (9 to 18 a topic), because a rule fires only where its code path runs: a return inside a turn, an aside reply into the lesson and an AI line into the lesson had no path. Register stayed 3 in all four topics. Replaced by the seam pass (dc-r8-director23 S).
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-second-request-worked-answer` (2026-11-16): Rejected after director25: 'a second request for help on the same part gets the worked answer' (dc-r8-director24 H3, from director24's clause 6). What broke: counting requests does not know what has been said, so the worked answer came where a hint was unsaid (4 rows) and was withheld where the rule called for it (5 rows); a Hindi request after a give-up counted as the second request and handed over the answer with no answer board (c5-t01 and c6 offtopic 34: one of the run's 3 contradictions); help turns with nothing new stayed at 14 (15 before). Replaced by the ladder: the answer comes when no authored wording is left unsaid.

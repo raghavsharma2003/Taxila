@@ -6923,3 +6923,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-cd6eb6d` (2026-11-16): Released cd6eb6d with scripts/release.mjs: web taxila-web--scd6eb6d-2jzr (was taxila-web--s06864c4-p3fg), worker + canary/nightly jobs on taxila-worker:cd6eb6d (was 06864c4); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs cd6eb6d --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-director25` (2026-11-16): director25: 16 lessons (4 pilots x 4 rule-based children) on integration 78 (cd6eb6d61, release 45), model joins off, 1,672 calls, $1.18, four Opus judges by hand. Gate: c6 passes (second run running); c4, c5-t01, c5-t02 fail. Contradictions 2, 1, 0, 0 (director24: 0, 0, 1, 0), all made by help paths; 0 unsaid boards; 0 misgrades in 280 verdicts; 0 false keys. Axes d24 to d25: listening 3.5, 3, 3, 3.5 (was 3.5 x4); register 3, 3, 3, 3.5 (unchanged); promises 3.5, 3, 3.5, 3.5; screen and speech 3.5, 3.5, 4, 4.5. Help turns with nothing new 3, 5, 5, 1 = 14 (d24 15). Turns over 60 words 62 of 690 (d24 69 of 671). Steady rows 133, 137, 121, 129; check-ins tedious 0 of 4 judges. Sentence about the child present and true 4 of 4, unnatural 2. Reader 0 wrong kinds; captions 16 of 16 true. Register rows by cause: fixed forms 16, script 3, verdict and why 4, turn shape 28, help 18, other 11. Safety turn on 'no place' 3 of 3. The run's own 56 predicates read 0 on every gated one.
