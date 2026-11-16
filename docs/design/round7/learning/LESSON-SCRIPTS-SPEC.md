@@ -138,6 +138,14 @@ recap); `hookReuseErrors` (a hook's things come back in its skill); `allBoardsRe
 board included). From v2.4: `synonymErrors`, one word per idea across the synonym sets (a step along a line; a group of things; one
 piece of a cut whole; from director22 the drawn strip and half a perimeter), the `terms` glossary excepted.
 
+From director23 (dc-r8-director23 C and T2), required by `d24Errors`:
+- **`viewCaption`** `{ hi, en }` beside every `board` in the skills (cards, explain beats, worked examples, remediations). She says it
+  when a picture request redraws that board's second view, then the card's question alone. It is one or two sentences on what to
+  look at in that view, true of what the view draws, in the script's words. It asks nothing and names no key of its own card or of
+  any card after it. The code's quiet line ("isi cheez ki ek aur tasveer") stays only as the fallback.
+- **`wrap.ack`**: three forms `[{ hi, en }]`, one sentence of at most 8 words. The wrap opens with one when the child said something
+  after the closing key's check-in. It neither grades nor praises.
+
 Aside replies (R3, data/lesson-aside-replies.json): each kind's `phraseReplies[i]` answers `returns[i]` with one `{phrase}` slot,
 up to three of the child's own words, said back about the child; Brain turns first person into second and drops a final
 postposition. `replies` ({word}) stays until Brain reads `phraseReplies`.

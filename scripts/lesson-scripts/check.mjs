@@ -893,7 +893,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...voiceTextErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...voiceTextErrors(s));
   return e;
 }
 
@@ -1603,6 +1603,59 @@ export function d22Errors(s) {
     (k.remediation ?? []).forEach((r, i) => { if (r.then) e.push(...card(r.then, `${S}/remediation[${i}].then`)); });
   }
   return [...e, ...synonymErrors(s)];
+}
+/** director23 (dc-r8-director23 C, T2): an authored caption for every board's picture view, and the wrap's acknowledgement forms.
+ *  `viewCaption` { hi, en } sits beside each `board` a card, beat, worked example or remediation carries: one or two sentences that
+ *  say what to look at in the picture, asking nothing and naming no key of its own card or of any card after it (the picture is
+ *  drawn while the card is still open). `wrap.ack`: three forms, one short sentence each, said when the child spoke after the
+ *  closing key's check-in; it grades nothing and praises nothing. */
+export function d24Errors(s) {
+  if (!isV24(s)) return [];
+  const e = [];
+  const items = [];
+  const walk = (x, p) => {
+    if (Array.isArray(x)) return x.forEach((y, i) => walk(y, `${p}[${i}]`));
+    if (!x || typeof x !== "object") return;
+    if (x.board?.template) items.push({ at: p, x });
+    else if (x.key != null && x.prompt) items.push({ at: p, x });
+    for (const [k, v] of Object.entries(x)) if (k !== "board" && k !== "answerBoard" && k !== "viewCaption") walk(v, p ? `${p}.${k}` : k);
+  };
+  (s.skills ?? []).forEach((k, i) => walk(k, `skills[${i}]`));
+  const keyHit = (text, key) => {
+    const k = String(key ?? "").toLowerCase().trim();
+    if (!k || !/\d/.test(k)) return false;
+    return new RegExp(`(^|[^\\w/])${esc(k)}([^\\w/]|$)`).test(String(text).toLowerCase());
+  };
+  items.forEach(({ at, x }, i) => {
+    if (!x.board?.template) return;
+    const c = x.viewCaption;
+    if (!c) { e.push(`${at}.viewCaption: what to look at in this board's picture view (director23 C)`); return; }
+    for (const l of ["hi", "en"]) {
+      const t = String(c[l] ?? "").trim(), a = `${at}.viewCaption${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${a}: empty`); continue; }
+      const n = sentencesOf(t).length;
+      if (n < 1 || n > 2) e.push(`${a}: one or two sentences (got ${n})`);
+      if (/[?？]/.test(t)) e.push(`${a}: asks nothing (the card asks)`);
+      for (const later of items.slice(i)) if (later.x.key != null && keyHit(t, later.x.key)) { e.push(`${a}: names ${later.at === at ? "its own card's" : `${later.at}'s`} key "${later.x.key}"`); break; }
+    }
+  });
+  const ack = s.wrap?.ack;
+  if (!Array.isArray(ack) || ack.length !== 3) e.push("wrap.ack: three forms [{ hi, en }] (director23 T2: said when the child spoke after the closing key's check-in)");
+  else {
+    const seen = new Set();
+    ack.forEach((f, i) => {
+      for (const l of ["hi", "en"]) {
+        const t = String(f?.[l] ?? "").trim(), a = `wrap.ack[${i}]${l === "en" ? " (en)" : ""}`;
+        if (!t) { e.push(`${a}: empty`); continue; }
+        if (sentencesOf(t).length !== 1) e.push(`${a}: one sentence`);
+        if (t.split(/\s+/).length > 8) e.push(`${a}: at most 8 words`);
+        if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
+        if (/\b(sahi|galat|theek nahi|right|wrong|correct|shabaash|bahut badhiya|great|well done|good job|excellent)\b/i.test(t)) e.push(`${a}: grades and praises nothing`);
+        if (l === "hi") { const k = t.toLowerCase(); if (seen.has(k)) e.push(`${a}: the same as another form`); seen.add(k); }
+      }
+    });
+  }
+  return e;
 }
 /** Every board and answerBoard in a script resolves (a remediation's own board is held under its then-card's when its say does
  *  not speak it, so the unit gate never resolves it: c5-ch13-t02's 1 × 20 shade-grid went past cols 10 unseen). */
