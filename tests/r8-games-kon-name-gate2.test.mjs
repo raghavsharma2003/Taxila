@@ -39,7 +39,13 @@ const KIT = NE("say").misMap["vertex-name"];
 const req = (goal, seed, fade, recent = []) => ({ family: "kon", mode: "name", goal, topicId: "c6-maths-ch02-t02", skillId: NE(goal).skillId, classLevel: 6, fade, mis: {},
   misMap: NE(goal).misMap, grammar: NE(goal).grammar, recent, seed });
 // (find draws one key arc per request, so it takes more requests than say to meet every key often)
-const SEEDS = { say: [1, 7, 42, 99, 123, 512, 777, 2024], find: Array.from({ length: 40 }, (_, i) => 1 + 37 * i) };
+// Gate 2, H7: the generator's space here cannot be enumerated (a figure is five angle sizes on a 5° grid, three ray lengths,
+// a turn, four letters, the asked angle and the reading order: tens of millions of figures before its checks), so the gate
+// keeps its sample and KON_NAME_GATE2_FULL=1 runs a wide one: 400 say seeds and 2,000 find seeds per request (measured
+// 2026-11-16, see the mode's PACKET.md "H7"). Every table below is a share or a bound per level, asserted on every level drawn.
+const FULL = process.env.KON_NAME_GATE2_FULL === "1";
+const SEEDS = FULL ? { say: Array.from({ length: 400 }, (_, i) => 1 + 13 * i), find: Array.from({ length: 2000 }, (_, i) => 1 + 37 * i) }
+  : { say: [1, 7, 42, 99, 123, 512, 777, 2024], find: Array.from({ length: 40 }, (_, i) => 1 + 37 * i) };
 function all(goal) {
   // (say: and the levels a session is steered to once vertex-name is suspected: dc-r8-gate2-discriminating-level, the focus)
   const seen = new Set(), out = [];
@@ -176,9 +182,11 @@ test("gate 2, per session: named on the second sighting, a session's four levels
   }
   // the arithmetic, as the packet prints it: say 1/6: 1 - (5/6)^4 - 4(1/6)(5/6)^3 = 171/1296; the third: 21/1296
   assert.ok(Math.abs(session.say.before - 171 / 1296) < 1e-12 && Math.abs(session.say.after - 21 / 1296) < 1e-12);
-  // find's worst on one level is the blind tap, 1 in 5: the second 0.1808, the third 4(1/5)^3(4/5) + (1/5)^4 = 0.0272
-  assert.equal(session.find.p, 0.2); assert.ok(Math.abs(session.find.after - 0.0272) < 1e-12);
-  assert.equal(session.mixed.p, 0.2);
+  // find's worst on one level is the blind tap, 1 in 5: the second 0.1808, the third 4(1/5)^3(4/5) + (1/5)^4 = 0.0272.
+  // (H7: on the gate's sample. The wide sweep, KON_NAME_GATE2_FULL=1, 63,948 find levels, meets levels where one slip off the
+  // key lands on the mix-up's arc 0.221 of the time: the third sighting is then 0.036 a session, still under the line)
+  if (FULL) { assert.ok(session.find.p >= 0.2 && session.find.p <= 0.25, `${session.find.p}`); assert.ok(session.find.after <= LAW3 / 2, `${session.find.after}`); }
+  else { assert.equal(session.find.p, 0.2); assert.ok(Math.abs(session.find.after - 0.0272) < 1e-12); assert.equal(session.mixed.p, 0.2); }
   // two would still be over even at three levels: 1 - (4/5)^3 - 3(1/5)(4/5)^2 = 0.104
   assert.ok(atLeast(3, 0.2, 2) > LAW3);
   assert.ok(CHANCE_MEMORY >= session.n - 1);

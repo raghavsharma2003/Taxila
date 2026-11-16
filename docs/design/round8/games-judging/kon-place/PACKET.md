@@ -107,6 +107,21 @@ none.
 
 sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 329113 ms
 
+## Gate 2, H5 and H7 (2026-11-16, branch `claude/r8-gate2-h5h7`)
+
+- **H5, the facts row.** Until a level names a mix-up, the row the teacher gets for a measure, draw or size level is `game=kon/place verdict=… first_try=0|1 checks=n` (`checks` is the level's commits), and an impasse row is `game=… checks=n` (`server/play/routes.js` `seamOut`). Gone from it: `read`, `made`, `pick`, `placed`, `centre_px`, `base_deg`, `locked`, `measure`/`angle`/`compare`, `goal`, `shown`, and the lead's `misses`, `extra`, `chose`, `next`. The trail keeps the raw act. A level that names a mix-up keeps naming's own row: the lead with `placed=ok|off`, and the family's facts.
+- **H5, the weight.** A miss in a mix-up's form (vertex-off, centre-on-arm, wrong-scale, join-wrong-end) was CHANCE_WEIGHT (0.25), and any other miss GAME_WEIGHT (0.5). Every miss now leaves at 0.5 (`nameOnRepeat`). The reason is the same as in the other modes: a miss is not luck, and naming-off and named rows are already 0.5.
+- Asserted in `tests/r8-gate2-facts-row.test.mjs`. Through the route: 35 served levels and 263 level ends in the gate (147 levels and 1,355 ends in the full sweep). Naming on: 192 levels, 44 named.
+- **H7.** The gate-2 tables now run over **every level the generator can make: 2,510** (1,496 measure, 1,014 draw). `kon.place.ts` `placeLevelOf` is the function `generatePlace` calls; the generator was refactored around it, and the served levels are byte-identical over 120,866 generated levels. The test calls it over every key θ, both orientations, every tilt any fade draws (a steered fade-1 level takes fade 2's tilts) and every fade. For each one it takes the first accepted point on a grid of the continuous draws.
+  - Every table depends on the key, the tilt, the orientation and the tolerances, not on where the figure sits on the board, so this covers every level the tables can see.
+  - Every sampled level is among them. A check over 742,987 generated levels (3,000 seeds × every fade, both steers) found none outside the set.
+  - The old 8 seeds reached 719 of these, as 1,014 param sets.
+  - Measure keys: 20–75, 105–135, 145–160 (60, 65, 70 and 160 are now in). Draw keys: 20–40, 60, 65, 115–160.
+  - "Measure never serves 140" is now checked over every measure level.
+  - The join's order comes from the level's seed (a coin), not its key, so the join table stays on the sampled levels.
+  - Every assertion holds. The worst figures are unchanged, except that vertex-off's worst drop moves from 0.0929 to 0.0930.
+  - Time: 6 s → 16 s for the file.
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`), kon/place: "nothing reaches the teacher from one join press (the packet says the sign does; make the code and the packet agree with law 3), and give the tolerance that names vertex-off". **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named from one level, vertex-off (1 in 3.1), wrong-scale in `measure` (1 in 2.9) and in `draw` (1 in 9.4) were over it over four levels; every kon/place mix-up is now named on a repeat ("Per session", below). Computed in the same test ("gate 2, per session"); the rule on branch `claude/r8-gate2-session`.

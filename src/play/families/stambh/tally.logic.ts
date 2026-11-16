@@ -77,6 +77,11 @@ const MAX_SCENE = 30;
 /** the largest cases the generator serves (the layout test and the packet's largest screens use them): a read row of
  *  READ_MAX strokes; a keep scene of KEEP_SCENE_MAX things across three rows, one row at KEEP_ROW_MAX */
 export const READ_MAX = 49, KEEP_ROW_MAX = 14, KEEP_SCENE_MAX = 28;
+/** keep: the scene's size (things in all) the generator serves at each fade (gate 2, H7: the tests enumerate every keep
+ *  level from these, each row 2 … KEEP_ROW_MAX, keepRowsAt rows, tellsApart) */
+export const KEEP_SCENE: Record<1 | 2 | 3, [number, number]> = { 1: [15, 18], 2: [17, 23], 3: [20, KEEP_SCENE_MAX] };
+/** keep: the rows a scene of this context has at a fade (two at fade 1, else three, as many as the context has) */
+export const keepRowsAt = (labels: 1 | 2 | 3, cats: readonly string[]): number => (labels === 1 ? 2 : Math.min(3, cats.length));
 /** read: the rows the generator serves at each fade (three to nine bundles; the last fade up to READ_MAX) */
 export const READ_RANGE: Record<1 | 2 | 3, [number, number]> = { 1: [16, 19], 2: [16, 34], 3: [21, READ_MAX] };
 /**
@@ -405,7 +410,7 @@ function generate(req: GenRequest): Candidate<TallyParams>[] {
   // Served only where the level law holds (tellsApart): no row with as many loose lines as bundles; keep with bundles in
   // at least two rows and a row of two
   const RANGE = READ_RANGE[labels];
-  const SCENE = { 1: [15, 18], 2: [17, 23], 3: [20, KEEP_SCENE_MAX] }[labels] as [number, number];
+  const SCENE = KEEP_SCENE[labels];
   for (let k = 0; k < 400 && out.length < 16; k++) {
     const ctx = ctxIds[Math.floor(rnd() * ctxIds.length)], all = TALLY_CONTEXTS[ctx];
     if (goal === "read") {
@@ -418,7 +423,7 @@ function generate(req: GenRequest): Candidate<TallyParams>[] {
       seen.add(sig); out.push(mk(params, sig));
       continue;
     }
-    const nc = labels === 1 ? 2 : Math.min(3, all.length);
+    const nc = keepRowsAt(labels, all);
     const start = Math.floor(rnd() * (all.length - nc + 1)), cats = all.slice(start, start + nc);
     // each row 2..KEEP_ROW_MAX things; the scene's size by fade; the law decides (tellsApart)
     const counts = cats.map(() => int(2, KEEP_ROW_MAX)), total = counts.reduce((a, c) => a + c, 0);

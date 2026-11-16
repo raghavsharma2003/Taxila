@@ -255,7 +255,7 @@ test("kon/place/size: neither the bigger tool, nor 'always the same', nor 'alway
   }
 });
 
-test("kon/place evidence: the placement at her first decision and her reading ride the grade's facts, and the facts row says placed=ok|off", () => {
+test("kon/place evidence: the placement at her first decision and her reading ride the grade's facts; naming's row says placed=ok|off, the row before naming (H5) does not", async () => {
   const level = levels("measure", [1], [7])[0], p = level.params;
   // a slightly-off but acceptable placement (centre 5 px off, base 2° off) read as it shows
   const g0 = goodPose(p), pose = { x: g0.x + 3, y: g0.y + 4, rot: g0.rot + 2 };
@@ -283,6 +283,12 @@ test("kon/place evidence: the placement at her first decision and her reading ri
   assert.match(rowW, /(^| )placed=off( |$)/);
   // (one level's pick is not in the trail; the server adds it when a second level names it)
   assert.equal(gw.trail.firstTry, false); assert.deepEqual(gw.trail.mal, []);
+  // gate 2, H5: that lead is naming's own row (a level that names a mix-up). Until one is named, the row the route signs is
+  // right or wrong, first try and the checks only: no placed=, no read=, no shown=
+  const { seamOut } = await import("../server/play/routes.js");
+  const before = seamOut(level, { kind: "level_end", facts: { ...gw.grade.facts, verdict: "solved" } }, { named: false, trail: gw.trail }).row;
+  assert.equal(before, `game=kon/place verdict=solved first_try=0 checks=${gw.grade.facts.commits}`);
+  assert.match(seamOut(level, { kind: "level_end", facts: { ...gw.grade.facts, verdict: "solved" } }, { named: true, trail: gw.trail }).row, /(^| )placed=off( |$)/, "named: naming's own row");
 });
 
 test("kon/place: the reading she measures is never said first; draw and size give nothing away; no goal line states the answer or the rule", () => {

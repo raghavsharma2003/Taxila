@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
-import { GAME_WEIGHT, discriminatingPair, pickArt, sameSighting } from "../../shared/play.ts";
+import { GAME_WEIGHT, discriminatingPair, factsUntilNamed, pickArt, sameSighting } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
 import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
@@ -438,6 +438,12 @@ export function distinctSightings(list) {
   return out;
 }
 export function nameOnRepeat(rows, s, level) {
+  // gate 2, H5: in a mode under shared/play.ts FACTS_UNTIL_NAMED, a miss weighs GAME_WEIGHT whatever its form (a pick's miss
+  // was CHANCE_WEIGHT, so its weight alone told the mix-up's form from any other miss); named rows are GAME_WEIGHT already
+  const out = nameOnRepeatRows(rows, s, level);
+  return factsUntilNamed(level?.family, level?.mode) ? out.map((r) => (r && r.outcome !== "correct" && r.weight !== GAME_WEIGHT ? { ...r, weight: GAME_WEIGHT } : r)) : out;
+}
+function nameOnRepeatRows(rows, s, level) {
   const prior = Array.isArray(s?.chance) ? s.chance : [];
   const here = prior.length ? surfaceOf(level) : null;
   // a row not named here leaves without its chanceMis: nothing about a mix-up from one pick reaches the lesson (evening

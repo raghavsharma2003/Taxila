@@ -24,11 +24,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, writeFileSync } from "node:fs";
-import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, READ_RANGE, numberLineEnd, numberLineAt, oneSlipFromMixup, TALLY_PAD, TALLY_PAD_COLS } from "../src/play/families/stambh/tally.logic.ts";
+import { tallyLogic as L, TALLY_MAL, TALLY_CONTEXTS, tallyFlow, tallyOf, groupsOf, idleWays, tallyFourActs, READ_MAX, KEEP_ROW_MAX, KEEP_SCENE, keepRowsAt, tellsApart, READ_RANGE, numberLineEnd, numberLineAt, oneSlipFromMixup, TALLY_PAD, TALLY_PAD_COLS } from "../src/play/families/stambh/tally.logic.ts";
 import { stambhLogic } from "../src/play/families/stambh/stambh.logic.ts";
 import { coverage, entryKey, levelsFor, currentLevel, seedOf, hasPlay, entryFor, NAMING_LEVELS, nameOnRepeat, repeatSpec } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { hiddenOf } from "../server/play/react.js";
+import { seamOut } from "../server/play/routes.js";
 import { playActOf } from "../server/director/play-verbs.js";
 import { CHANCE_WEIGHT, GAME_WEIGHT, MODES, namingOn, playFactsRow, sanitizeActs } from "../shared/play.ts";
 import { totalPad } from "../src/play/core/typedtotal.ts";
@@ -253,10 +254,32 @@ function keepRow(counts, things) {
     // the two buttons at random (the rows' lengths right is a further chance, left out: the bound only grows)
     blindCounted: BLIND ** counts.length, fiveSlips: groups, blindFive: 0.5 ** things };
 }
+/**
+ * Gate 2, H7: every keep level the generator can make, as its rows' counts: at each fade, every context's row count
+ * (keepRowsAt), every row 2 … KEEP_ROW_MAX, the scene's size in KEEP_SCENE, and the level law (tellsApart). Each is one the
+ * law serves (validate), and every level the generator makes over many seeds is among them.
+ */
+function keepSpace() {
+  const out = new Map();
+  for (const labels of [1, 2, 3]) for (const cats of Object.values(TALLY_CONTEXTS)) {
+    const k = keepRowsAt(labels, cats), [lo, hi] = KEEP_SCENE[labels];
+    const rec = (pre) => {
+      if (pre.length === k) { const t = pre.reduce((a, b) => a + b, 0); if (t >= lo && t <= hi && tellsApart(pre)) out.set(pre.join(","), pre); return; }
+      for (let x = 2; x <= KEEP_ROW_MAX; x++) rec([...pre, x]);
+    };
+    rec([]);
+  }
+  return [...out.values()];
+}
 function gate2Tables() {
   const servedRead = new Set(), keep = new Map();
-  for (const lv of levels("read", [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) servedRead.add(lv.params.counts[0]);
-  for (const lv of levels("keep", [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) keep.set(lv.params.counts.join(","), keepRow(lv.params.counts, lv.params.seq.length));
+  // (H7: every read row the generator can make: each fade's READ_RANGE, the level law; the proof below runs on every row the
+  // law serves, a superset, as before)
+  for (const f of [1, 2, 3]) for (let n = READ_RANGE[f][0]; n <= READ_RANGE[f][1]; n++) if (tellsApart([n])) servedRead.add(n);
+  for (const lv of levels("read", [1, 2, 3, 5, 7, 11, 42, 99, 123, 512, 777, 2024])) assert.ok(servedRead.has(lv.params.counts[0]), `${lv.params.counts[0]}: generated, not enumerated`);
+  // gate 2, H7: keep over every level the generator can make (keepSpace: 582), not the 269 twelve seeds reach. A keep
+  // level's table depends on its counts alone (the scene's things are their sum)
+  for (const counts of keepSpace()) keep.set(counts.join(","), keepRow(counts, counts.reduce((a, c) => a + c, 0)));
   // every row the law can serve in read: each n in the fades' ranges that the level law takes
   const lo = Math.min(...Object.values(READ_RANGE).map((r) => r[0])), hi = Math.max(...Object.values(READ_RANGE).map((r) => r[1]));
   const read = levels("read", [3])[0], servable = [];
@@ -266,7 +289,18 @@ function gate2Tables() {
 
 test("gate 2, keep: on EVERY generated level her totals need three ordinary slips or more to come out as the mix-up's, and a blind guess gives them under 1 in 10 (law 3)", () => {
   const { keep } = gate2Tables();
-  assert.ok(keep.length >= 60, `${keep.length} keep levels`);
+  // H7: every keep level the generator can make (the judge's 582), each one the law serves, and every level the generator
+  // makes over 300 seeds at every fade among them (12 seeds reached 269)
+  assert.equal(keep.length, 582, `${keep.length} keep levels`);
+  const space = new Set(keep.map((k) => k.counts.join(",")));
+  const kt = levels("keep", [3]).find((lv) => lv.params.cats.length === 3);
+  for (const k of keep) {
+    const cats = k.counts.length === 3 ? kt.params.cats : kt.params.cats.slice(0, 2);
+    assert.ok(L.validate({ ...kt, params: { ...kt.params, cats, counts: k.counts, seq: k.counts.flatMap((c, r) => Array(c).fill(r)), labels: k.counts.length === 2 ? 1 : 2 } }), `${k.counts}: the law serves it`);
+  }
+  const reached = new Set();
+  for (const lv of levels("keep", Array.from({ length: 300 }, (_, i) => 1 + 17 * i))) { assert.ok(space.has(lv.params.counts.join(",")), `${lv.params.counts}: generated, not enumerated`); reached.add(lv.params.counts.join(",")); }
+  assert.ok(reached.size > 269 && reached.size <= 582, `300 seeds reach ${reached.size}`);
   for (const k of keep) {
     const id = k.counts.join(",");
     assert.ok(k.fewest >= 3, `${id}: the mix-up's totals ${k.mixup} are ${k.fewest} slips away (${k.fewestWay})`);
@@ -673,7 +707,7 @@ test("stambh/tally coverage: keep and read on c4-maths-ch14-t01 s1, mapped to th
 });
 
 for (const e of TE()) for (const fade of [1, 2, 3]) {
-  test(`stambh/tally server ${e.goal} fade ${fade}: a proven level; solve grades solved; tally-four folds its kit id; the facts row says bundles`, () => {
+  test(`stambh/tally server ${e.goal} fade ${fade}: a proven level; solve grades solved; tally-four folds its kit id; naming's facts row says bundles, the row before naming (H5) does not`, () => {
     const seen = new Set();
     for (const child of ["c1", "c2", "c3", "c4"]) {
       const s = sessionOf(e, { fade, childId: child, seed: seedOf(child, entryKey(e), 0) });
@@ -701,6 +735,10 @@ for (const e of TE()) for (const fade of [1, 2, 3]) {
         assert.doesNotMatch(mrow, /mal=|sign=/, mrow);
       }
       assert.match(mrow, / answer=[\d,]+/, mrow);
+      // gate 2, H5: those rows are naming's own (a level that names a mix-up). Until one is named, the route signs right or
+      // wrong, first try and the checks only (no bundles, no answer, no mal or sign)
+      const before = seamOut(level, { kind: "level_end", facts: { ...mg.grade.facts, verdict: mg.grade.verdict } }, { named: false, trail: mg.trail }).row;
+      assert.equal(before, `game=stambh/tally verdict=${mg.grade.verdict} first_try=0 checks=${mg.grade.facts.checks ?? 0}`);
     }
     assert.ok(seen.size >= 2, `${seen.size} distinct levels over 4 children`);
   });
