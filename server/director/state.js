@@ -2959,6 +2959,22 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
 const ONE_TURN = ["whyAltSaid", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+/** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
+ *  K2), on its answer board. null when the card is not found. */
+function workedAnswerOf(prev, kit) {
+  const cb = prev?.lastMove?.scriptBeat ?? prev?.lastMove?.closeBeat;
+  const sk = cb?.skillId ? skillScriptOf(kit, cb.skillId) : null;
+  if (!sk) return null;
+  const b = String(cb.beatId ?? "");
+  const card = b.startsWith("then:") ? sk.remediation?.find((r) => r.targets === b.slice(5))?.then : sk.checks?.find((c) => c.id === b) ?? sk.explain?.find((e) => e.id === b)?.ask ?? null;
+  if (!card?.key) return null;
+  const lang = prev?.ctx?.lang ?? "hinglish", en = lang === "english";
+  const why = card.why ? String(saidIn(card.why, lang) ?? "").trim().replace(/[.!?\u0964]+$/, "") : "";
+  const yn = /^(?:haan|ha|nahi|nahin|yes|no)$/i.test(String(card.key).trim());
+  const text = yn ? (why ? `${why.charAt(0).toUpperCase()}${why.slice(1)}.` : null)
+    : `${en ? "The answer is" : "Iska jawab hai"} ${card.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
+  return text ? { text, board: card.answerBoard ?? null } : null;
+}
 /** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
 function whyAltOf(prev, kit) {
   const id = prev?.lastMove?.itemId ?? prev?.activeItemId ?? null;
@@ -4227,6 +4243,23 @@ function heldTurn(prev, input) {
     const ui0 = { status: "your_turn" };
     s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
     return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
+  // (dc-r8-director23 H2, main's 034 on Learning's dry run, c4 stuck 48: a second "samajh nahi aaya" after the why's second wording — at a
+  // then-card's check-in — was answered with an earlier card. With nothing unsaid left, a clarify gets the worked answer — the card's key
+  // and its why, on its answer board — then the check-in; the walk stays. A clarify after that goes on.)
+  if (!h.teach && prev.lastMove?.whyAltSaid && !prev.lastMove?.workedAnswerSaid && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
+    && (c?.request?.type === "clarify" || c?.request?.type === "another" || SAYS_CLARIFY.test(String(input.text ?? "")))) {
+    const wa = workedAnswerOf(prev, input.kit);
+    if (wa) {
+      const s = structuredClone(prev);
+      s.turn += 1;
+      const { secondClarify: _sc, clarifyN: _cn, ...rest0 } = carried(prev.lastMove, []);
+      const again = { ...rest0, kind: "reteach", simpler: wa.text, stayCheckin: true, smaller: true, whyAltSaid: true, workedAnswerSaid: true,
+        ...(wa.board ? {} : { keepBoard: true }), scriptBeat: { ...(prev.lastMove.scriptBeat ?? {}), ...(wa.board ? { board: wa.board } : {}) } };
+      const ui0 = { status: "your_turn" };
+      s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+      return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+    }
   }
   const retAns = prev.returnAsked && c?.asideReply && !c?.help;
   if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {

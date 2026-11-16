@@ -200,6 +200,10 @@ export const PREDICATES = {
    *  line put inside it. Frames before a sentence ("Phir se dekho: …") are allowed; the unit's own words are not touched. */
   authoredWhole(L, r, i, ctx) {
     const units = (ctx.units ??= authoredUnits(ctx.script));
+    // (dc-r8-director23 C: Learning's viewCaption is a part of its own — words it shares with a simpler, "pehle 4 cm, phir 5 cm, phir 6 cm",
+    // are the caption's, not half of that simpler)
+    const caps = (ctx.o.caps ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.viewCaption) for (const v of [o.viewCaption.hi, o.viewCaption.en]) if (typeof v === "string") out.push(v); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
+    if (caps.length) { const t0 = norm(r.text); const cap = caps.find((c) => t0.includes(norm(c))); if (cap) r = { ...r, text: t0.replace(norm(cap), " ").replace(/\s+/g, " ").trim() }; }
     const T = ` ${key(r.text)} `;
     // (a unit sentence is said when a sentence of hers is it — or ends with it after a frame's ":" or "—", "Phir se dekho: …"; never as
     // the tail of a longer sentence of hers, "… aur upar ka woh ek hissa 1/4 hai")
