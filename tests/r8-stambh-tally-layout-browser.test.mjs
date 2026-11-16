@@ -148,7 +148,9 @@ describe("stambh/tally layout: no overlap or cut-off at 360 x 640 and 1366 x 768
           assert.equal(r.st.checks, 1); assert.ok(!r.st.done); assert.equal(r.st.mal, null);
         }
         if (phase === "mal-five") {
-          assert.equal(r.st.mal, "tally-four"); assert.equal(r.st.sign, "five");
+          // gate 2, H4: "five" is a habit of one button, a pick: it plays out but names nothing from one level (no mal, no
+          // sign in her state); the server names it on a second keep level with other totals
+          assert.equal(r.st.mal ?? null, null); assert.notEqual(r.st.sign, "five");
           // round 2, ruling 1: the line points only at keeping the tally again; Jaancho waits until something changes
           assert.match(r.goalLine, /^Tally phir se rakho$/, r.goalLine);
           assert.ok(r.controls.some((c) => c.id === "done" && c.disabled), "Jaancho waits");
