@@ -7,7 +7,7 @@ import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
 import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms } from "./asideReplies.js";
 import { responseShape } from "../director/requestTable.js";
-import { cardPageRefused } from "./propose.js";
+import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
@@ -2459,6 +2459,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const herPrev = norm([...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
     // (v6.10: the card was posed on an earlier turn of this lesson — state.js posedAt — so this pose is a re-pose)
     const posedBefore = !!ui?.ask?.itemId && state.posedAt?.[ui.ask.itemId] != null && state.posedAt[ui.ask.itemId] < (state.turn ?? 0);
+    // (dc-r8-director22 J2: backTo is said when, and only when, the card comes back after another unit came between — the board unit up
+    // on her last turn is not the card's own; a hint, a clarify or a break on the same card is no return)
+    const cardUnit = unitOf(state.lastMove?.cardBeat?.beatId ? state.lastMove.cardBeat : state.lastMove?.scriptBeat);
+    const cameBack = posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit;
     const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
@@ -2553,7 +2557,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
       // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
-      if (state.lastMove?.scriptBeat?.kind === "remediation" && lead && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
+      // (dc-r8-director22 J2: always after a miss verdict — hers or code's frame — never only when her own verdict sentence led)
+      if (state.lastMove?.scriptBeat?.kind === "remediation" && (lead || (graded && verdict === "not_yet")) && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
     } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
       // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
       // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
@@ -2675,8 +2680,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     }
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
-    else if (card && !lead && !body.length && !(herPrev && prevHas(card)) && posedBefore && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
-    else if (card && !lead && !body.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
+    // (J2: one joint per seam — a park or an aside line already leads into the card; backTo is not stacked on it)
+    else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
+    else if (card && !lead && !body.length && !aside.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
@@ -2788,8 +2794,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
-      if (card && !lead && !body.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
-        const back = !(herPrev && prevHas(card)) && posedBefore ? jointsAt(kit, "backTo", lang, state) : null;
+      if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
+        const back = !(herPrev && prevHas(card)) && cameBack && !aside.length ? jointsAt(kit, "backTo", lang, state) : null;
         body = [freshOf(back ?? FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; if (back) guard.backTo = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
@@ -2873,6 +2879,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         if (bridgeK0) first.splice(0, first.length, ...first.filter((x) => x !== bridgeK0));
       }
     }
+    // (dc-r8-director22 J2: the seam between a miss verdict and its remediation always has its joint — placed here, after every pass that
+    // filters the body, so none of them can drop it)
+    if (guard.beforeRemediation && state.lastMove?.scriptBeat?.kind === "remediation" && body.length && !body.some((x) => norm(x) === norm(guard.beforeRemediation))) body = [guard.beforeRemediation, ...body];
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
