@@ -260,7 +260,8 @@ describe("r7-brain-v63.test.mjs", () => {
       const card = "Rahul ka tukda 1/6 hai, Sana ka tukda 1/3.";
       const before = out.reply.slice(0, Math.max(0, out.reply.indexOf(card)));
       assert.doesNotMatch(before, /bada hoga|se bada|Sana/i, `${persona} row ${n}: ${out.reply}`);
-      assert.ok(out.reply.includes(card), out.reply);
+      // (dc-r8-director22 W: a card said in her last two turns is asked by its question alone — never the whole card again)
+      assert.ok(out.reply.includes(card) || out.guard?.cardQuestionOnly, out.reply);
     }
   });
   test("R1: a right answer's verdict on a single page draws the card's answerBoard (c5-t02 steady T7, T63; stuck T17; offtopic T13)", async () => {

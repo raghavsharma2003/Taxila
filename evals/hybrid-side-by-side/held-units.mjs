@@ -1,3 +1,4 @@
+import { TRY_FIRST } from "../../server/brain/say.js";
 // v6.8 H5 (main's dc-r7-held-board, director16 judgement): the held-board counter. On every teacher turn — single-page turns too —
 // each SPOKEN part's unit is checked against the board the child saw while it was said (the take: the row's screen, else its
 // pages), and a picture part's words against the view Studio drew. A unit is point+ask, worked+yourStep, remediation+then-card,
@@ -50,6 +51,7 @@ export const unitOfRowBeat = (beat) => unitOfBeat(String(beat ?? "").split(":").
  * - a picture part that says "yahi numbers" over a view that shows none of the card's numbers, or whose numbers were not the
  *   board up before it.
  */
+const TRY_FIRST_GO = [...TRY_FIRST.hinglish, ...TRY_FIRST.english];
 export function heldFlags(row, script, prev = null) {
   const parts = row?.pageParts ?? [];
   const text = String(row?.text ?? "");
@@ -57,7 +59,10 @@ export function heldFlags(row, script, prev = null) {
   const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
   // (dc-r8-director20 S1: a card re-asked by its question alone — its last sentence — is said)
   const cq = row?.card ? String(row.card).replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/).at(-1) ?? "" : "";
-  if (row?.card && !norm(text).includes(norm(row.card).slice(0, 30)) && !(cq && norm(text).endsWith(norm(cq)))) flags.push({ part: "card", from: null, why: "an unsaid card on screen" });
+  // (dc-r8-director22 W: after "main khud karti hoon" she says a short go-ahead and waits — the card she said in her last two turns stays
+  // on screen, live, unsaid; a turn that is only that go-ahead is no silent pin)
+  const tryOnly = TRY_FIRST_GO.some((f) => norm(text) === norm(f).replace(/\s*[—–-]\s*$/, "."));
+  if (row?.card && !tryOnly && !row?.cardQ && !norm(text).includes(norm(row.card).slice(0, 30)) && !(cq && norm(text).endsWith(norm(cq)))) flags.push({ part: "card", from: null, why: "an unsaid card on screen" });
   if (!parts.length) return flags;
   // (a held run records its held unit and switch: those are the pages; units are compared without the skill prefix)
   const loc = (u) => (u ? String(u).replace(/^[^:]*-s\d+:/, "") : null);
