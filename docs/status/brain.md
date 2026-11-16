@@ -2,6 +2,24 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 05:40 · `1708b986` (W)
+
+**Done (gated: tsc, vite build, prompt budget, test:all 7244 pass; the only failures are the two worktree-only browser suites):**
+- W: a card said whole in one of her last two turns is asked by its question alone (its reask where written) after any turn, unless
+  the child asked for it (repeat, "sawaal kya hai?"), it is a picture turn, or the second miss is past; a Hindi request keeps S1. After
+  "main khud karti hoon" she says the go-ahead alone and waits (the card stays live). Counts: cardsSaidAgainWithin2 69 → 32, teacher
+  turns 722 → 678, reads.correct 156 → 167, afterTryFirst 15 → 0, turnsOver60Words 59 → 64 (more cards answered, more long teaching
+  turns reached); the full list is in the commit.
+- Tests changed to the rule, with comments: r7-brain-v64 Q1 (the try-first go-ahead with no card), r7-brain-v63 W1 (the question alone).
+- J2's last rule (nothing between a unit's own point and its card) already holds: no such row on the dry matrix. J2 is done as rules in
+  the existing code paths, not as one seam-pass function; the predicates gate each rule (backToJoint both ways, missRemediationJoint).
+
+**Doing next:** H (a Hindi request gets the second wording or an unspent simpler, never words from her last two turns), B (a bridge
+changes no board), K (a key said once; a yes/no key as a sentence), A (AI-line reply with the phrase forms), then `repeatedAuthored`
+stops exempting cards (6 now, pending).
+
+**Questions for main:** none.
+
 ## 2026-11-16 04:30 · branch head after this commit
 
 **Done (pushed, gated: tsc, vite build, prompt budget, test:all 7244 pass; the only failures are engines-browser and
