@@ -2557,7 +2557,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
       // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
-      if (state.lastMove?.scriptBeat?.kind === "remediation" && lead && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
+      // (dc-r8-director22 J2: always after a miss verdict — hers or code's frame — never only when her own verdict sentence led)
+      if (state.lastMove?.scriptBeat?.kind === "remediation" && (lead || (graded && verdict === "not_yet")) && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
     } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
       // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
       // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
@@ -2877,6 +2878,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         if (bridgeK0) first.splice(0, first.length, ...first.filter((x) => x !== bridgeK0));
       }
     }
+    // (dc-r8-director22 J2: the seam between a miss verdict and its remediation always has its joint — placed here, after every pass that
+    // filters the body, so none of them can drop it)
+    if (guard.beforeRemediation && state.lastMove?.scriptBeat?.kind === "remediation" && body.length && !body.some((x) => norm(x) === norm(guard.beforeRemediation))) body = [guard.beforeRemediation, ...body];
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line

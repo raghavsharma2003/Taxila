@@ -688,6 +688,16 @@ export const ORDER_LAWS = {
       return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
     return null;
   },
+  /** dc-r8-director22 J2: a miss verdict and its remediation always have their joint — a remediation said on the turn after a wrong
+   *  answer carries one of the script's beforeRemediation forms. */
+  missRemediationJoint(L, r, i, ctx) {
+    if (!["incorrect", "partial", "misconception"].includes(ctx.prevCls)) return null;
+    if (!(r.pageParts ?? []).some((p) => p.part === "body" && /^rem:/.test(String(p.beat ?? "")))) return null;
+    const forms = (ctx.script?.joints?.beforeRemediation ?? []).flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean);
+    if (!forms.length) return null;
+    const t = key(r.text);
+    return forms.some((f) => t.includes(key(f).replace(/^achha /, "").slice(0, 18))) ? null : `a remediation after a miss with no joint: "${String(r.text).slice(0, 60)}"`;
+  },
   /** Main on director21 (c4 steering 66, c5-t02 offtopic 72): the screen's controls are never named aloud ("Buttons: aage badhein"). */
   uiWords(L, r) {
     return /(?<![\p{L}])buttons?(?![\p{L}])/iu.test(String(r.text ?? "")) ? "the buttons named aloud" : null;
@@ -733,7 +743,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
