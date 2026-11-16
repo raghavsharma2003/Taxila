@@ -48,7 +48,7 @@ The cost incident behind (2) and (3) is in §6.
 | What | Where |
 |---|---|
 | Code, context, research, evals | GitHub `raghavsharma2003/Taxila`, this branch |
-| Live production | Azure Container Apps `taxila-web` (eastus2), revision `taxila-web--s2fcc175-03ep` = **release 31 (commit 2fcc175, int/r6 integration 62)**, live since 2026-11-16 00:39 UTC, with `taxila-worker` and its canary and nightly jobs on the same commit. Database: every migration through 050 (applied 2026-11-10 through the Neon connector for release 16; backup branch `pre-release-e807f07`); releases 17 to 31 needed none. Previous web revision is release 30 (`taxila-web--sdc63a6f-7nvq`); roll back with `node scripts/release.mjs 2fcc175 --rollback`. |
+| Live production | Azure Container Apps `taxila-web` (eastus2), revision `taxila-web--s0d5baa1-uayv` = **release 32 (commit 0d5baa1, int/r6 integration 64)**, live since 2026-11-16 02:26 UTC, with `taxila-worker` and its canary and nightly jobs on the same commit. Database: every migration through 050 (applied 2026-11-10 through the Neon connector for release 16; backup branch `pre-release-e807f07`); releases 17 to 32 needed none. Previous web revision is release 31 (`taxila-web--s2fcc175-03ep`); roll back with `node scripts/release.mjs 0d5baa1 --rollback`. |
 | Next release in progress | **14.4.3** = this branch's code (`d770a1f6` + handoff docs). Gate not yet passed on it; not deployed. |
 | Production DB | Neon (us-east-1), `DATABASE_URL`. Test branch: `TEST_DATABASE_URL` / `CONDUCTOR_TEST_DATABASE_URL`. |
 | Secrets | **Not in git.** See §4 and `docs/handoff/ENV-KEYS.md`. |
