@@ -572,7 +572,8 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const unitOfPart = (p) => {
     if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
     if (p.part === "aside") return null;
-    if (p.part === "bridge") pastBridge = true;
+    // (dc-r8-director22 B: a bridge changes no board — it rides on the board up; the next unit's board goes up with its first part)
+    if (p.part === "bridge") { pastBridge = true; return null; }
     return pastBridge && bridgeU?.board ? bridgeU : cur;
   };
   const spoken = offs.map((p) => ({ ...p, held: unitOfPart(p) })).filter((p) => p.held);
