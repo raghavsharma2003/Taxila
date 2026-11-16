@@ -9,6 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
+import { applySeams, seamStart, lessonKeyOf } from "./seams.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -685,7 +686,11 @@ const IGNORED_LEAD = { english: [(n) => `You said ${n}. Let's check it together.
 export const pickOf = (xs, state) => xs[(((state?.seed ?? 0) >>> 0) + (state?.turn ?? 0)) % xs.length];
 /** v6.5 F1 (main, director13: "Nahi, yeh jawab nahi hai" ×11 in c4, "Phir se dekho" ×15): a code frame's first form that is not in
  *  her last 4 turns (state.recent), so no form is said twice within 4 turns; the first form when all were. */
-export function freshOf(xs, state) {
+export function freshOf(xs0, state) {
+  // (dc-r8-director23 S: the verdict openers start where the lesson's seed puts them, as the joints do — two lessons do not open their
+  // verdicts on the same form)
+  const vk = VERDICT_LISTS.get(xs0);
+  const xs = vk && Array.isArray(xs0) && xs0.length ? xs0.map((_, i, a) => a[(seamStart(lessonKeyOf(state), vk) + i) % a.length]) : xs0;
   const said = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? "").toLowerCase());
   const head = (x) => String(x).toLowerCase().replace(/[.!?:]+$/, "");
   return xs.find((x) => !said.some((t) => t.includes(head(x)))) ?? xs[0];
@@ -748,11 +753,9 @@ export const GAVE_FORMS = {
 /** 2.4 J1 (main on director21: "Haan, pehle tum try karo —" and a card, no join): the invitation, then Learning's afterTryFirst joint when the
  *  script has one ("Yeh raha sawaal."), the dash becoming a full stop; else the invitation alone. */
 function tryFirstLead(kit, lang, state, guard = null) {
+  // (dc-r8-director23 S: the afterTryFirst joint is the seam pass's — server/brain/seams.js)
   const inv = freshOf(TRY_FIRST[lang === "english" ? "english" : "hinglish"], state);
-  const jf = jointsAt(kit, "afterTryFirst", lang, state);
-  const j = jf ? freshOf(jf, state) : null;
-  if (j && guard) { (guard.jointsUsed ??= []).push("afterTryFirst"); guard.afterTryFirst = j; }
-  return j ? [inv.replace(/\s*[—–-]\s*$/, "."), j] : [inv];
+  return [jointOf(kit, "afterTryFirst", lang) ? inv.replace(/\s*[—–-]\s*$/, ".") : inv];
 }
 /** v6.6 F1′ (main, director14: try-first got "Phir se dekho"): asked to try first, an invitation, then the card. */
 export const TRY_FIRST = { hinglish: ["Haan, pehle tum try karo —", "Theek hai, khud karke dekho —", "Bilkul, pehle tumhari koshish —"], english: ["Sure, you try first —", "Okay, have a go yourself —", "Go ahead, your try first —"] };
@@ -767,6 +770,7 @@ export const FRAMES = {
   again: { hinglish: ["Phir se dekho:", "Ek baar aur dekho:", "Sawaal yeh hai:", "Dhyan se dekho:"], english: ["Here it is again:", "Once more:", "The question is:", "Look again:"] },
   right: { hinglish: ["Haan, sahi hai", "Bilkul sahi", "Haan, bilkul theek", "Sahi jawab"], english: ["Yes, that's right", "Exactly right", "Yes, correct", "That's right"] },
 };
+const VERDICT_LISTS = new Map([[FRAMES.right.hinglish, "verdictRight"], [FRAMES.right.english, "verdictRight"], [FRAMES.notRight.hinglish, "verdictNotRight"], [FRAMES.notRight.english, "verdictNotRight"]]);
 export const ignoredLead = (n, lang, state = null) => pickOf(IGNORED_LEAD[lang === "english" ? "english" : "hinglish"], state)(n);
 /** round 7 (director2 c6: "tumne 160 ko 3 se multiply karne ke bajay 3 plus 3 kiya" on a plain "6"): HOW they went wrong, said
  * when no misconception was matched, is a guess about the child: those sentences go. */
@@ -1207,6 +1211,7 @@ export async function textReply(args) {
         out = { ...out, reply, guard: g2 };
       }
     } }
+  out = seamsOf(out, args);
   const ss = sentences(out.reply).map((x) => String(x ?? "").replace(/\s+/g, " ").trim()).filter(Boolean);
   const seen = new Set();
   const kept = ss.filter((x) => { const k = x.toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim(); if (k.split(" ").length >= 3 && seen.has(k)) return false; seen.add(k); return true; });
@@ -1215,6 +1220,34 @@ export async function textReply(args) {
   const g = { ...(out.guard ?? {}), doubleDropped: (out.guard?.doubleDropped ?? 0) + ss.length - kept.length };
   if (g.lineParts) { g.lineParts = alignParts(g.lineParts, reply); if (g.parts) g.parts = { ...g.parts, list: g.lineParts }; }
   return { ...out, reply, guard: g };
+}
+/** dc-r8-director23 S: the one seam pass over the finished turn (server/brain/seams.js) — the only place a joint is added. */
+function seamsOf(out, { state, kit, ui = null }) {
+  const list0 = out.guard?.parts?.list ?? out.guard?.lineParts;
+  // (a turn with no parts — a break's offer, a stop — is one part of code's: its seam record says so)
+  const whole = !list0?.length || joinParts(list0) !== String(out.reply ?? "").replace(/\s+/g, " ").trim();
+  if (whole) return { ...out, guard: { ...(out.guard ?? {}), seams: [{ left: "start", right: "whole", joint: null }] } };
+  const list = list0;
+  const lang = state?.ctx?.lang === "english" ? "english" : "hinglish";
+  const si = out.guard?.seamInfo ?? {};
+  const g0 = state?.lastGraded;
+  const hasClose = list.some((p) => p.part === "close" || p.part === "closed");
+  const otherCard = !!g0?.itemId && !!ui?.ask?.itemId && g0.itemId !== ui.ask.itemId;
+  const herPrev = String([...(state?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
+  const info = {
+    miss: ["not_yet", "incorrect"].includes(String(state?.lastVerdict ?? "")),
+    returnCard: !!si.posedBefore && !si.onLastTurn && state?.lastMove?.request !== "selftry" && (si.cameBack || (hasClose && otherCard)),
+    remediation: state?.lastMove?.scriptBeat?.kind === "remediation",
+    returnLine: out.guard?.returnLine ?? null,
+    replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
+    tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
+    afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
+  };
+  const r = applySeams(out.reply, list, { kit, state, lang, info });
+  if (!r) return out;
+  const g = { ...out.guard, seams: r.seams, jointsUsed: r.jointsUsed, ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
+  for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
+  return { ...out, reply: r.reply, guard: g };
 }
 /** T4 (dc-r8-director22): one sentence about what this child did in the lesson, written by the reply model and checked by code — at
  *  most 18 words, every number in it one the lesson's rows say, no praise of the child's traits, one sentence. null when it fails. */
@@ -2374,7 +2407,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const w = joinable(why, { lower: true });
         const joints = [`${fr}, kyunki ${w}`, `${fr}. Dekho, ${w}`, `${fr}: ${w}`];
         const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. Dekho, /.test(t) : /^[^.:]{3,25}: /.test(t));
-        const k = [0, 1, 2].find((j) => !used(j)) ?? 0;
+        // (dc-r8-director23 S: the why's opener rotates from the lesson's seed too)
+        const k0 = seamStart(lessonKeyOf(state), "whyOpener") % 3;
+        // ("Sahi jawab: <why>" reads as a key being given: that frame never takes the colon)
+        const ok = (j) => !(j === 2 && /jawab$/i.test(fr));
+        const k = [0, 1, 2].map((j) => (k0 + j) % 3).find((j) => ok(j) && !used(j)) ?? [0, 1, 2].map((j) => (k0 + j) % 3).find(ok);
         lead = dot(joints[k]);
       }
       guard.rightWhy = why ? "authored" : "none";
@@ -2467,6 +2504,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // on her last turn is not the card's own; a hint, a clarify or a break on the same card is no return)
     const cardUnit = unitOf(state.lastMove?.cardBeat?.beatId ? state.lastMove.cardBeat : state.lastMove?.scriptBeat);
     const cameBack = posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit;
+    // (dc-r8-director23 S: what the seam pass needs to know of the card — server/brain/seams.js)
+    guard.seamInfo = { posedBefore, cameBack, onLastTurn: !!(herPrev && card && herPrev.includes(norm(card).toLowerCase().slice(0, 40))) };
     const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
@@ -2562,7 +2601,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
       // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
       // (dc-r8-director22 J2: always after a miss verdict — hers or code's frame — never only when her own verdict sentence led)
-      if (state.lastMove?.scriptBeat?.kind === "remediation" && (lead || (graded && verdict === "not_yet")) && !frame) { const jf = jointsAt(kit, "beforeRemediation", lang, state); if (jf) { const a = freshOf(jf, state); body = [a, ...body]; guard.beforeRemediation = a; (guard.jointsUsed ??= []).push("beforeRemediation"); } }
+      // (dc-r8-director23 S: the miss → remediation joint is the seam pass's)
     } else if (point && kindNow === "explain" && state.lastMove?.smaller) {
       // v6 R3 (director8: "pata nahi" / "samajh nahi aaya" got the same beat in the same words, 0/4 in c6): the SAME idea
       // smaller: her own new short lines (never her last turn's), else ONE sentence of the authored point, not all of it
@@ -2675,9 +2714,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (j2Line) { aside.unshift(j2Line); guard.returnReplyLine = j2Line;
         // (2.4 J1, main on director21: the aside reply set against a card with no join — Learning's afterAside joint, or afterAiLine when her
         // last turn was the AI line, between her reply and the lesson)
-        const kindJ = /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) ? "afterAiLine" : "afterAside";
-        const jf = (body.length || card) ? jointsAt(kit, kindJ, lang, state) : null;
-        if (jf) { const a = freshOf(jf, state); body = [a, ...body]; codeLines.push(a); guard[kindJ] = a; (guard.jointsUsed ??= []).push(kindJ); } }
+        // (dc-r8-director23 S: that joint is the seam pass's) 
+        }
       else if (!lead) { const a = freshOf(jointOf(kit, "asideResume", lang) ?? ASIDE_RESUME[lang === "english" ? "english" : "hinglish"], state); body = [a, ...body]; codeLines.push(a); guard.asideResumeLine = a; }
       if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
@@ -2685,7 +2723,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
     // (J2: one joint per seam — a park or an aside line already leads into the card; backTo is not stacked on it)
-    else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointsAt(kit, "backTo", lang, state)) { body = [freshOf(jointsAt(kit, "backTo", lang, state), state)]; codeLines.push(body[0]); guard.reposeFrame = true; guard.backTo = true; }
+    else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointOf(kit, "backTo", lang)) { guard.reposeFrame = true; /* (dc-r8-director23 S: backTo is the seam pass's) */ }
     else if (card && !lead && !body.length && !aside.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
@@ -2799,8 +2837,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
       if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
-        const back = !(herPrev && prevHas(card)) && cameBack && !aside.length ? jointsAt(kit, "backTo", lang, state) : null;
-        body = [freshOf(back ?? FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; if (back) guard.backTo = true; }
+        const back = !(herPrev && prevHas(card)) && cameBack && !aside.length ? jointOf(kit, "backTo", lang) : null;
+        // (dc-r8-director23 S: a return's backTo is the seam pass's; code's "again" frame only when there is none)
+        body = back ? [] : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
     }
     const doneApart = !!d2 && state.lastMove?.closedBeat?.beatId === "worked" && state.lastMove?.closeBeat?.beatId !== "worked";
     const prevPart = once([lead, ...noQ([ack, missS, g2, doneApart ? null : d2].filter(Boolean))]);
@@ -2871,7 +2910,6 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (saidIn2 && rqNow === "selftry" && !missedTwice) {
         // (W: "ruko, main khud karti hoon" — a short go-ahead, and she waits; the card stays live, unsaid)
         tail = null; guard.cardHeldForTry = true;
-        if (guard.afterTryFirst) body = body.filter((x) => norm(x) !== norm(guard.afterTryFirst));
         body = body.map((x) => x.replace(/\s*[—–-]\s*$/, ".")).filter((x) => !REPOSE_FRAME.test(x));
       // (a Hindi request keeps S1 as it was: the question alone only after help said in Hindi; with none, the card in Hindi is its new words)
       } else if (cardSs.length >= 2 && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
@@ -2896,7 +2934,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     }
     // (dc-r8-director22 J2: the seam between a miss verdict and its remediation always has its joint — placed here, after every pass that
     // filters the body, so none of them can drop it)
-    if (guard.beforeRemediation && state.lastMove?.scriptBeat?.kind === "remediation" && body.length && !body.some((x) => norm(x) === norm(guard.beforeRemediation))) body = [guard.beforeRemediation, ...body];
+
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line

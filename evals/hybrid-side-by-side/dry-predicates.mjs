@@ -8,6 +8,7 @@
 import { readFileSync } from "node:fs";
 import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
+import { seamJoint } from "../../server/brain/seams.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -670,23 +671,13 @@ export const ORDER_LAWS = {
     const asked = returnOf(ctx.prevT, ctx) || AI_LINE.test(String(ctx.prevT.text ?? "")) || /[?？]\s*$/.test(norm(ctx.prevT.text)) && !cardIn(ctx.prevT) && /·\s*uptake/.test(ctx.prevRead ?? "");
     return asked ? null : `her aside reply on a turn after no question of hers about it: "${hit.slice(0, 60)}"`;
   },
-  /** J1 (main on director21: backTo fired 0 times in 33 returns to an earlier card): a card asked before, not on her last turn, comes
-   *  back with the script's backTo joint — never bare, never code's "Phir se dekho:". */
-  backToJoint(L, r, i, ctx) {
-    // (dc-r8-director22 J2, both directions: backTo is said when, and only when, a card said before comes back after another unit — the unit
-    // her last turn ended on (held.unit) is not the one this turn's card is held on)
-    if (!cardIn(r) || !ctx.prevT || !ctx.saidCards.has(low(r.card).slice(0, 40))) return null;
-    const heads = ctx.jointHeads?.backTo ?? [];
-    if (!heads.some(Boolean)) return null;
-    const at = norm(r.text).toLowerCase().lastIndexOf(low(r.card).slice(0, 30));
-    const before = (at >= 0 ? norm(r.text).slice(0, at) : sentencesOf(r.text).slice(0, -1).join(" ")).trim();
-    const said = heads.some((h) => h && low(before).includes(h));
-    const prevU = ctx.prevT.held?.unit ?? null, curU = r.held?.unit ?? null;
-    const inPrev = low(ctx.prevT.text).includes(low(r.card).slice(0, 40));
-    const returned = !!prevU && !!curU && prevU !== curU && !inPrev;
-    if (said && !returned) return `backTo with no return (last turn on ${prevU ?? "no unit"}, card on ${curU ?? "?"})`;
-    if (!said && returned && (!before || /^(?:Phir se dekho|Ek baar aur dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again)\s*:?$/i.test(before)))
-      return `a card back from ${prevU} ${before ? `with "${before}"` : "bare"}, no backTo`;
+  /** dc-r8-director23 S (rewritten on the seam pass's record): a seam into a return to an earlier card has its joint — backTo, or the one
+   *  joint the seam already took out of an aside reply or a try-first — and backTo is said at no other seam. Reads `seams` only. */
+  backToJoint(L, r) {
+    for (const s of r.seams ?? []) {
+      if (s.right === "returnCard" && !s.joint && seamJoint(s.left, s.right)) return `a return to an earlier card after ${s.left}, no joint`;
+      if (s.joint === "backTo" && s.right !== "returnCard") return `backTo at ${s.left} → ${s.right}, no return`;
+    }
     return null;
   },
   /** dc-r8-director22 K: a key is said once — never the same key in two of her turns running (only its opener changed). */
@@ -704,15 +695,27 @@ export const ORDER_LAWS = {
     const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x));
     return ss.length && ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
   },
-  /** dc-r8-director22 J2: a miss verdict and its remediation always have their joint — a remediation said on the turn after a wrong
-   *  answer carries one of the script's beforeRemediation forms. */
-  missRemediationJoint(L, r, i, ctx) {
-    if (!["incorrect", "partial", "misconception"].includes(ctx.prevCls)) return null;
-    if (!(r.pageParts ?? []).some((p) => p.part === "body" && /^rem:/.test(String(p.beat ?? "")))) return null;
-    const forms = (ctx.script?.joints?.beforeRemediation ?? []).flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean);
-    if (!forms.length) return null;
-    const t = key(r.text);
-    return forms.some((f) => t.includes(key(f).replace(/^achha /, "").slice(0, 18))) ? null : `a remediation after a miss with no joint: "${String(r.text).slice(0, 60)}"`;
+  /** dc-r8-director23 S (on the seam pass's record): a miss verdict and its remediation always have their joint. Reads `seams` only. */
+  missRemediationJoint(L, r) {
+    const s = (r.seams ?? []).find((x) => x.left === "missVerdict" && x.right === "remediation");
+    return s && s.joint !== "beforeRemediation" ? "a miss verdict into its remediation with no joint" : null;
+  },
+  /** dc-r8-director23 S: every seam the table says takes a joint has one (when the script has its forms), and no seam the table says
+   *  takes none has one; the joint's form is in the line, said once. Reads `seams` only. */
+  seamJoints(L, r, i, ctx) {
+    if (r.who !== "teacher" || !String(r.text ?? "").trim()) return null;
+    // (the lesson's opening is the agent's first line, before any turn of the walk)
+    if (!Array.isArray(r.seams) && !ctx.prevT) return null;
+    if (!Array.isArray(r.seams)) return ctx.o.noSeamsReported ? null : ((ctx.o.noSeamsReported = true), "a turn with no seams record");
+    const t = norm(r.text);
+    for (const s of r.seams) {
+      const want = seamJoint(s.left, s.right);
+      const forms = want ? (ctx.script?.joints?.[want] ?? []).length : 0;
+      if (want && forms && !s.joint && !r.seams.some((x) => x !== s && x.joint === want)) return `${s.left} → ${s.right} takes ${want}, none said`;
+      if (s.joint && s.joint !== want) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
+    }
+    return null;
   },
   /** Main on director21 (c4 steering 66, c5-t02 offtopic 72): the screen's controls are never named aloud ("Buttons: aage badhein"). */
   uiWords(L, r) {
@@ -786,7 +789,7 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

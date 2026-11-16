@@ -15,8 +15,10 @@ test("R2: her aside reply is said once — the re-renders on c4 offtopic 38, c5-
   assert.ok(!rowsOf("asideReplyOnce").includes("offtopic-c4-ch05-t01 36"));
 });
 
-test("J1: a card back from earlier with code's frame, never the script's backTo, is flagged", () => {
-  assert.ok(rowsOf("backToJoint").includes("steering-c5-ch02-t01 22"));
+// (dc-r8-director23 S: the joint predicates read the seam pass's record only; director21's rows have none, and the run is flagged for it)
+test("J1: rows with no seams record — director21's — are flagged; the joints are read from the seams list", () => {
+  assert.ok(rowsOf("seamJoints").length >= 1);
+  assert.deepEqual(rowsOf("backToJoint"), []);
 });
 
 test("the screen's buttons are never named aloud (c4 steering 66, c5-t02 offtopic 72)", () => {
