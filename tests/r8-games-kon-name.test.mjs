@@ -115,9 +115,12 @@ for (const goal of ["say", "find"]) {
         assert.equal(named[0].facts.shown, isDrawn ? "figure" : "dashed");
         if (!isDrawn) dashed++;
       }
-      const g = konLogic.grade(level, env(m), { final: true });
-      // round 8 law 3: one pick names nothing (kept at chance weight as chanceMis): find's tap among five arcs, and (gate 2)
-      // say's three-tap name, which three random taps give 1 time in 6
+      // gate 2, H3: the order act is a sighting only when her name after the play-out puts the vertex at an end again. One
+      // name alone, or a right name after it, is a miss with no mix-up; confirmed, it is kept at chance weight as chanceMis
+      // (round 8 law 3: one pick names nothing; say's three-tap name, which three random taps give 1 time in 6)
+      const g0 = konLogic.grade(level, env(m), { final: true });
+      assert.equal(g0.evidence[0].outcome, "incorrect"); assert.equal(g0.evidence[0].chanceMis, undefined, "H3: one name, not confirmed");
+      const g = konLogic.grade(level, env([...m, { kind: "clear" }, ...m]), { final: true });
       assert.equal(g.evidence[0].outcome, "incorrect"); assert.equal(g.evidence[0].misconceptionId, undefined); assert.equal(g.evidence[0].chanceMis, "k-vn");
     }
     assert.ok(n >= 20, `only ${n} levels`);
@@ -177,7 +180,18 @@ test("kon/name evidence: the name she gave, vertexOk, armsOk; the grade's facts 
   assert.deepEqual(nameEvidence(p, right.s.nm), { name: [c.b, c.v, c.a].map((i) => p.lets[i]).join(""), vertexOk: true, armsOk: true });
   const g = gradeActs(level, env([...wrong, { kind: "clear" }, ...say([c.a, c.v, c.b])]), { final: true });
   assert.equal(g.grade.verdict, "solved");
-  assert.equal(g.grade.evidence[0].misconceptionId, undefined); assert.equal(g.grade.evidence[0].chanceMis, "k-vn");
+  // gate 2, H3: corrected after the play-out (her next name puts the vertex in the middle): a miss, no mix-up
+  assert.equal(g.grade.evidence[0].outcome, "incorrect"); assert.equal(g.grade.evidence[0].misconceptionId, undefined); assert.equal(g.grade.evidence[0].chanceMis, undefined);
+  assert.equal(g.grade.evidence[0].weight, CHANCE_WEIGHT, "the weight it had (H5 is not this change)");
+  // confirmed (her next name puts the vertex at an end again, the vertex last this time): a sighting, at chance weight
+  const gc = gradeActs(level, env([...wrong, { kind: "clear" }, ...say([c.a, c.b, c.v]), { kind: "clear" }, ...say([c.a, c.v, c.b])]), { final: true });
+  assert.equal(gc.grade.verdict, "solved"); assert.equal(gc.grade.evidence[0].misconceptionId, undefined); assert.equal(gc.grade.evidence[0].chanceMis, "k-vn");
+  // any other second name (another wrong name, the vertex in the middle of the wrong arms) does not confirm it
+  const others = [0, 1, 2, 3].filter((i) => i !== c.v && i !== c.a && i !== c.b);
+  if (others.length) {
+    const go = gradeActs(level, env([...wrong, { kind: "clear" }, ...say([others[0], c.v, c.a])]), { final: true });
+    assert.equal(go.grade.evidence[0].chanceMis, undefined);
+  }
   assert.equal(g.trail.firstTry, false);
   assert.equal(g.grade.facts.said, [c.a, c.v, c.b].map((i) => p.lets[i]).join(""));
   const gw = gradeActs(level, env(wrong), { final: true });

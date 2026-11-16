@@ -281,7 +281,9 @@ export function holders(res) {
 export const rowOf = (res, goal, child) => res.goals[goal]?.rows.find((r) => r.child === child) ?? null;
 
 // ───────────────────────────── the children ─────────────────────────────
-// A child: { id, label, acts: { [goal]: (level, ctx) => acts | null }, holds?: { [rule]: why }, random?, constant? }.
+// A child: { id, label, acts: { [goal]: (level, ctx) => acts | null }, holds?: { [rule]: why }, random?, constant?,
+//   again?: { [goal]: (level, ctx) => acts } } (what she does after a miss, once she has seen the play-out, before the solve;
+//   kon/name say, H3: the holders name it their way again, the blind guessers guess again; absent: the solve).
 // ctx: { rng (seeded per session), prev: { level, first, firstTry } | null (her previous level), i (0-based), mem }.
 // null from an act function: she does the solve on that level (the habit has nothing to do there).
 
@@ -537,8 +539,14 @@ function nameChildren(goal) {
   if (goal === "say") {
     const right = (p) => nameOf(asked(p));
     add("careful", "careful (right every level)", (lv) => sayActs(right(lv.params)));
-    add("blind", "blind: three different letters", (_lv, c) => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return sayActs(xs.slice(0, 3)); }, { random: true });
-    add("blind-any", "blind: any three taps (repeats allowed)", (_lv, c) => sayActs([0, 1, 2].map(() => Math.floor(c.rng() * 4))), { random: true });
+    // H3: her name after the play-out (`again`, before the solve). The blind guessers guess again; a slip or a habit that is
+    // not the belief is corrected once she has seen which angle her name means (the solve); the holders give the belief again
+    const blind3 = (c) => { const xs = [0, 1, 2, 3]; for (let i = 3; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs.slice(0, 3); };
+    const anyOrder = (k, c) => { const xs = [k.a, k.v, k.b]; for (let i = 2; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return xs; };
+    const anew = (taps) => [{ kind: "clear" }, ...sayActs(taps)];
+    add("blind", "blind: three different letters (and again after a miss)", (_lv, c) => sayActs(blind3(c)), { random: true, again: { say: (_lv, c) => anew(blind3(c)) } });
+    const blindAny = (c) => [0, 1, 2].map(() => Math.floor(c.rng() * 4));
+    add("blind-any", "blind: any three taps, repeats allowed (and again after a miss)", (_lv, c) => sayActs(blindAny(c)), { random: true, again: { say: (_lv, c) => anew(blindAny(c)) } });
     add("slip-random", "one random slip a level", (lv, c) => sayActs(pickOf(SAY_SLIPS, c.rng).f(right(lv.params), lv.params)), { random: true });
     for (const sl of SAY_SLIPS) add(`slip:${sl.id}`, `same slip every level: ${sl.id}`, (lv) => sayActs(sl.f(right(lv.params), lv.params)));
     for (let a = 0; a < 4; a++) for (let b = 0; b < 4; b++) for (let d = 0; d < 4; d++) add(`const:${a}${b}${d}`, `constant taps ${a}${b}${d}`, () => sayActs([a, b, d]), { constant: true });
@@ -552,10 +560,14 @@ function nameChildren(goal) {
       const t = [o[idx], ...o.filter((i) => three.has(i) && i !== o[idx])].slice(0, 3);
       return sayActs(t);
     });
-    add("v-first", "the mix-up: the vertex first", (lv) => { const c = asked(lv.params); return sayActs([c.v, c.a, c.b]); }, { holds: { "vertex-name": "the vertex first: the kit's first sign" } });
-    add("v-last", "the mix-up: the vertex last", (lv) => { const c = asked(lv.params); return sayActs([c.a, c.b, c.v]); }, { holds: { "vertex-name": "the vertex last" } });
-    add("v-any", "the mix-up: any order of the three letters", (lv, c) => { const k = asked(lv.params), xs = [k.a, k.v, k.b]; for (let i = 2; i > 0; i--) { const j = Math.floor(c.rng() * (i + 1)); [xs[i], xs[j]] = [xs[j], xs[i]]; } return sayActs(xs); },
-      { random: true, holds: { "vertex-name": "any order is as good: the belief itself (2 in 3 of her names put the vertex at an end)" } });
+    // (after the play-out the holders name it their way again: the vertex first with the arms the other way round, the vertex
+    // last likewise, any order afresh)
+    add("v-first", "the mix-up: the vertex first", (lv) => { const c = asked(lv.params); return sayActs([c.v, c.a, c.b]); },
+      { holds: { "vertex-name": "the vertex first: the kit's first sign" }, again: { say: (lv) => { const c = asked(lv.params); return anew([c.v, c.b, c.a]); } } });
+    add("v-last", "the mix-up: the vertex last", (lv) => { const c = asked(lv.params); return sayActs([c.a, c.b, c.v]); },
+      { holds: { "vertex-name": "the vertex last" }, again: { say: (lv) => { const c = asked(lv.params); return anew([c.b, c.a, c.v]); } } });
+    add("v-any", "the mix-up: any order of the three letters", (lv, c) => sayActs(anyOrder(asked(lv.params), c)),
+      { random: true, holds: { "vertex-name": "any order is as good: the belief itself (2 in 3 of her names put the vertex at an end, the one after the play-out too)" }, again: { say: (lv, c) => anew(anyOrder(asked(lv.params), c)) } });
     return C;
   }
   // find

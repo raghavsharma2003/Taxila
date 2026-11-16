@@ -427,7 +427,27 @@ function board(level: PlayLevel<KonParams>, s: KonState) {
   return { title: p.goal === "turn" ? "Turn" : "Angle", lines: [what, ...(s.heading !== null ? [`now: ${Math.round(s.heading)}°`] : [])] };
 }
 function grade(level: PlayLevel<KonParams>, acts: PlayActEnvelope<KonAct>[]): PlayGrade {
-  return gradeLevel(konLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
+  const g = gradeLevel(konLogic, level, acts, { decisiveRefusals: ["missed"], final: true });
+  return level.params.goal === "say" && HABIT_RULES.on ? confirmSay(g) : g;
+}
+/** the moments a commit makes (say: every commit makes exactly one of these) */
+const COMMIT_KINDS = new Set(["solved", "misconception_consequence", "law_refused", "near_miss"]);
+/**
+ * Gate 2, H3 (dc-r8-gate2-habit-children): in say, an order error is a sighting only when it is confirmed on the same level:
+ * her next name, the one she gives after the play-out has shown her which angle her first name means, is again a name with
+ * the vertex at an end (the lit angle's three letters, the vertex first or last). A slip is corrected once she has seen
+ * which angle her name means; a belief is not. Unconfirmed (the next name puts the vertex in the middle or is any other
+ * name, or she gives none), the row stays the miss it was, at the weight it had, and carries no mix-up: nothing is
+ * remembered and nothing can be named from it. Nothing she sees changes: after a miss the level already waits for her
+ * next name, and the play-out and every moment are as before.
+ */
+function confirmSay(g: PlayGrade): PlayGrade {
+  const e = g.evidence[0];
+  if (!e?.chanceMis) return g;
+  const next = g.moments.find((m) => m.seq > e.actSeq && COMMIT_KINDS.has(m.kind));
+  if (next?.kind === "misconception_consequence" && next.misconceptionId === "vertex-name") return g;
+  const { chanceMis: _c, chanceAct: _a, ...rest } = e;
+  return { ...g, evidence: [rest, ...g.evidence.slice(1)] };
 }
 
 export const konLogic: FamilyLogic<KonParams, KonState, KonAct> = {
