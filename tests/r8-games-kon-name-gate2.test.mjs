@@ -338,6 +338,38 @@ test("gate 2, Wapas after a wrong find tap: the miss stays her first decision (g
   if (process.env.KON_NAME_GATE2_PRINT) writeFileSync(process.env.KON_NAME_GATE2_PRINT, JSON.stringify(tables(), null, 1));
 });
 
+test("dc-r8-gate2-shadow S3, say: after a miss the check waits until her name changes (a letter or Mita do), Wapas does not open it, and only a name built after the miss confirms the sighting", () => {
+  const sl = served("say").find((l) => konLogic.malActs(l, "vertex-name")), m = konLogic.malActs(sl, "vertex-name"), right = konLogic.solve(sl);
+  const letters = m.filter((a) => a.kind === "letter"), c = asked(sl.params);
+  // pressed twice on the same wrong name: the second is refused ("unchanged"), costs no check and plays nothing out
+  {
+    const r = run(sl, [...m, { kind: "commit" }]);
+    assert.equal(r.s.commits, 1, "the second press is no check"); assert.equal(r.s.nm.waits, true);
+    const g = gradeActs(sl, env([...m, { kind: "commit" }]), { final: true });
+    assert.equal(g.moments.filter((x) => x.kind === "misconception_consequence").length, 1, "the miss plays out once");
+    // and the double press confirms nothing: unconfirmed, no sighting
+    const g2 = gradeActs(sl, env([...m, { kind: "commit" }, { kind: "clear" }, ...right]), { final: true });
+    assert.equal(g2.grade.evidence[0].chanceMis, undefined);
+  }
+  // Wapas after the miss: still waits; a letter or Mita do opens it
+  {
+    const r = run(sl, [...m, { kind: "undo" }, { kind: "commit" }]);
+    assert.equal(r.s.commits, 1); assert.equal(r.s.nm.waits, true);
+    assert.equal(run(sl, [...m, { kind: "clear" }]).s.nm.waits, false);
+    assert.equal(run(sl, [...m, { kind: "undo" }, { kind: "undo" }, letters[2]]).s.nm.waits, false);
+  }
+  // the same vertex-first name built afresh after the miss confirms it (H3 as before)
+  const again = [...m, { kind: "clear" }, ...m];
+  assert.equal(gradeActs(sl, env([...again, { kind: "clear" }, ...right]), { final: true }).grade.evidence[0].chanceMis, KIT);
+  // a name brought back with Wapas and changed by one letter does not confirm (two of its letters were tapped before the miss)
+  const back = [...m, { kind: "undo" }, { kind: "undo" }, letters[2], { kind: "commit" }];
+  const gb = gradeActs(sl, env([...back, { kind: "clear" }, ...right]), { final: true });
+  assert.equal(gb.moments.filter((x) => x.kind === "misconception_consequence").length, 2, "her second name is the mix-up's again");
+  assert.equal(gb.grade.evidence[0].chanceMis, undefined, "but not built after the miss: unconfirmed");
+  assert.ok(isVertexNameSaid(sl.params, [c.v, c.a, c.b]));
+  // (the view's "Yahi naam" while it waits: tests/r8-games-kon-name-view.test.mjs)
+});
+
 test("gate 2: the tables print (fractions)", () => {
   const t = tables();
   assert.match(fr(t.pair.say), /^1 in 36/); assert.match(fr(t.pair.find), /^1 in 25/); assert.match(fr(t.pair.mixed), /^1 in 30/);

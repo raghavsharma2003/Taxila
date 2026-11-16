@@ -307,7 +307,9 @@ export function makeNameView(api: ViewApi, depsIn: ViewDeps): FamilyView {
       { id: "clear", label: word(lang, "kon.clear"), kind: "secondary", group: "go", disabled: !N.taps.length, onPress: () => act({ kind: "clear" }) },
       // one step back (her last letter): beside "Mita do", which clears all three
       undo,
-      { id: "commit", label: word(lang, "kon.name"), kind: "primary", group: "go", you: N.taps.length === 3, disabled: N.taps.length !== 3, onPress: () => act({ kind: "commit" }) },
+      // (dc-r8-gate2-shadow S3: after a miss it waits until her name has changed, a letter or "Mita do" since: stepName's
+      // "unchanged")
+      { id: "commit", label: word(lang, "kon.name"), kind: "primary", group: "go", you: N.taps.length === 3 && !N.waits, disabled: N.taps.length !== 3 || !!N.waits, onPress: () => act({ kind: "commit" }) },
     ];
   }
   return { layout, update, draw, pointer, busy, goal: goalLine, readouts, controls, react };

@@ -56,6 +56,7 @@ function screen(level, acts, w, h, out = {}) {
   const ctl = { state: konLogic.init(level), acts: [], finger() {}, dispatch() {} };
   const view = makeNameView(api, { level, ctl, lang: "hinglish", changed() {} });
   view.layout(w, h);
+  out.view = view;
   acts.forEach((a, i) => {
     const r = konLogic.apply(level, ctl.state, a, i + 1);
     ctl.state = r.state; ctl.acts.push({ seq: i + 1, t: 0, via: "touch", act: a });
@@ -264,4 +265,23 @@ test("gate 1, ruling 3: say's play-out arc for an angle not drawn is one stroke 
   }
   assert.ok(n >= 20, `${n} play-outs with dashed rays`);
   assert.deepEqual(faults.slice(0, 20), [], `${faults.length} faults`);
+});
+
+test("dc-r8-gate2-shadow S3, say: after a miss \"Yahi naam\" is off until her name changes (a letter or Mita do); Wapas does not switch it on; before any miss it is on with three letters", () => {
+  let n = 0;
+  for (const level of levels("say")) {
+    const m = konLogic.malActs(level, "vertex-name");
+    if (!m) continue;
+    n++;
+    const commitOf = (acts) => { const out = {}; screen(level, acts, 360, 399, out); return out.view.controls().find((c) => c.id === "commit"); };
+    const letters = m.filter((a) => a.kind === "letter");
+    const before = commitOf(letters);
+    assert.equal(before.disabled, false); assert.equal(before.you, true);
+    for (const acts of [m, [...m, { kind: "undo" }]]) { const c = commitOf(acts); assert.equal(c.disabled, true, `${level.levelId}: waits after the miss`); assert.equal(c.you, false); }
+    // Mita do and three letters again (the same name, built afresh): on
+    assert.equal(commitOf([...m, { kind: "clear" }, ...letters]).disabled, false);
+    // Wapas twice (her last letter gone) and a letter: on
+    assert.equal(commitOf([...m, { kind: "undo" }, { kind: "undo" }, letters[2]]).disabled, false);
+  }
+  assert.ok(n >= 10, `${n} say levels`);
 });
