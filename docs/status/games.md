@@ -2,9 +2,9 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
-gate 2 battery passes: stambh/tally (sha: <placeholder>)
-gate 2 battery passes: kon/place (sha: <placeholder>)
-gate 2 battery passes: kon/name (sha: <placeholder>)
+gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
+gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
+gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 
 ## 2026-11-16, gate 2: a sighting counts only on a discriminating level (branch `claude/r8-gate2-discrim`, from `e608271c9` + `origin/int/r6`)
 
