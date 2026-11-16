@@ -141,7 +141,12 @@ describe("stambh/tally layout: no overlap or cut-off at 360 x 640 and 1366 x 768
         const r = await state(level, size, steps);
         await shoot(`${goal}-${phase}`, size);
         for (const f of faults(r)) bad.push(`${phase}: ${f}`);
-        if (phase === "mal") { assert.equal(r.st.mal, "tally-four", "the mal state is the one played out"); assert.equal(r.st.sign, "counted"); }
+        if (phase === "mal" && goal === "keep") { assert.equal(r.st.mal, "tally-four", "the mal state is the one played out"); assert.equal(r.st.sign, "counted"); }
+        // gate 2: read plays the mix-up's number out but names nothing from one level (the server names it on a repeat)
+        if (phase === "mal" && goal === "read") {
+          assert.equal(r.st.totals[0], level.params.counts[0] - Math.floor(level.params.counts[0] / 5), "the mix-up's number is the one played out");
+          assert.equal(r.st.checks, 1); assert.ok(!r.st.done); assert.equal(r.st.mal, null);
+        }
         if (phase === "mal-five") {
           assert.equal(r.st.mal, "tally-four"); assert.equal(r.st.sign, "five");
           // round 2, ruling 1: the line points only at keeping the tally again; Jaancho waits until something changes
