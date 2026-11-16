@@ -151,13 +151,18 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
   function letter(c: CanvasRenderingContext2D, t: string, at: Pt, away: number, off = 14): void {
     const P = api.P, o = S(...at);
     c.save(); c.font = `700 ${Math.max(LETTER_PX, P.minText)}px ${api.art.font.ui}`; const w = c.measureText(t).width; c.restore();
-    const h = Math.max(LETTER_PX, P.minText) * INK_H;
+    const px = Math.max(LETTER_PX, P.minText), h = px * INK_H;
+    // the board's edge as the layout check reads a text (its em box: 0.6 em above and below the baseline's middle), not the ink
+    const ey = Math.max(0, 0.6 * px - h / 2) + 2;
     const avoid: Avoid = {
       segs: [...P.audit.segs.map((g): [Pt, Pt] => [[g.x0, g.y0], [g.x1, g.y1]]), ...frame.lines],
       boxes: [...frame.nums.map(numberBox), ...frame.boxes],
     };
-    const [dx, dy] = dir(away), def = S(at[0] + dx * off, at[1] + dy * off);
-    const spot = letterSpot(o, -rad(away), [off, off + 8, off + 16, off + 26, off + 38].map((r) => r * s), w, h, avoid, { x: 2, y: 2, w: api.w - 4, h: api.h - 4 }) ?? def;
+    // the fallback (no clear spot: a vertex-off protractor can cover every one near an arm's end) stays inside the board, so a
+    // letter is never cut by its edge (gate 2026-11-16: "B" past the top on a figure moved across for an acute-or-tilted mix)
+    const [dx, dy] = dir(away), d0 = S(at[0] + dx * off, at[1] + dy * off);
+    const def: Pt = [Math.min(Math.max(d0[0], 2 + w / 2), api.w - 2 - w / 2), Math.min(Math.max(d0[1], ey + h / 2), api.h - ey - h / 2)];
+    const spot = letterSpot(o, -rad(away), [off, off + 8, off + 16, off + 26, off + 38].map((r) => r * s), w, h, avoid, { x: 2, y: ey, w: api.w - 4, h: api.h - 2 * ey }) ?? def;
     P.text(c, t, spot[0], spot[1], { size: LETTER_PX, weight: 700, role: "ink2" });
     frame.boxes.push({ x: spot[0] - w / 2, y: spot[1] - h / 2, w, h });
   }

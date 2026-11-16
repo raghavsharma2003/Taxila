@@ -2,9 +2,32 @@
 
 Per `docs/patches/to-brain/029-report-by-push.md`: Games reports here and in its commit messages, not by message.
 
-gate 2 battery passes: stambh/tally (sha: <placeholder>)
-gate 2 battery passes: kon/place (sha: <placeholder>)
-gate 2 battery passes: kon/name (sha: <placeholder>)
+gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
+gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
+gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
+
+## 2026-11-16, gate 2: a sighting counts only on a discriminating level (branch `claude/r8-gate2-discrim`, from `e608271c9` + `origin/int/r6`)
+
+**Done (`dc-r8-gate2-discriminating-level`, `RULINGS-2026-11-16-gate2-answers.md`; `NAMING_OFF` untouched; before a miss nothing a child sees changes except which levels are served; every battery assertion is real, no todo):**
+- **Answer 4, the level mix (kon/place measure, draw).** No acute angle had ever been served: centred, its vertex sat too near the side for the protractor, and the generator refused every one. A figure that does not fit centred is now moved across. From a session's fourth level, while it lacks an acute angle or one opening anticlockwise, the level supplies it (`placeNeeds`). Asserted over every served session in the battery test.
+- **Answer 1, vertex-off.** Her sighting carries the level's base direction and her offset in the protractor's frame. A second one counts only on a level 45° or more away with the same frame offset (so another board offset) (`discriminatingPair`). After a first sighting the session is steered there (`basesOf` → `GenRequest.bases`; fade 1 may tilt for it). New child: the finger held on the board where the bottom edge sat on her first level: named 0.
+- **Answer 2, kon/name say.** A level where every reading across puts the vertex in the middle (`readsAcrossAll`) is served (its solve is faint; its play-out clear of the lit sector). It is found directly after a first sighting (the angle inside the triangle, ≥ 100°, facing a diagonal). `say:vertex-name` is named only with a sighting on such a level among them, then on the second; H3 confirms each.
+- **Answer 3.** The battery also asserts the worst door sequence pooled over fades, and lists any cell ≥ 0.5 of a child with no randomness (none, in any mode, full sweep).
+- **Q1 wording:** 2 sightings start at 1/8 (one test comment said otherwise).
+- **Served levels changed** (gate-sweep sessions of the battery): kon/place about two levels in three (careful child 518/768 measure, 464/768 draw; distinct levels 35 → 49 and 42 → 53); kon/name say only after a first sighting (holder 505/768; careful and slip children unchanged); find, tally none. **Re-certified** kon/place (4480 samples) and kon/name (4484): all pass at every size; base sample and pieces order restored (4 first levels of kon/place and 1 focus level of kon/name differ).
+- **Worst child who does not hold the mix-up (full sweep), worst fade before → after; worst door now:** measure 0.006 → 0.005, door 0.011; draw 0.021 → **0.075** ("last time's right dot", wrong-scale, fade 3), door 0.050; say 0 → 0.007, door 0.008; find 0.005 → 0.005, door 0.008; tally read 0.013 → 0.013, door 0.008; keep 0.
+- **Holders (full sweep):** **vertex-off 0.92 measure, 0.93 draw (were 0.46, 0.43)**; say any order 0.58 (was 0.23); vertex first/last 1.00; find first letter 0.50; other scale 1.00; smaller 0.92; outer 0.96/0.98; always A 0.60; **"always the larger number" 0.06, "always the inner scale" 0 (both goals): now tested, not named**; tally as before.
+- **Mix-ups with no discriminating level (main's reverse-if): none.** Every one has a level that tells it apart; centre-on-arm is not mapped by the coverage.
+- **Tests run (each on its own; not the full gate, not the browser suites, not `r8-games-kon-layout`):** the three battery files (gate sweep and `HABIT_FULL=1`: 8, 5.4 and 2.8 min), `r8-games-kon-place{,-gate2}`, `r8-games-kon-name{,-gate2,-view}`, `r7-games-kon`, `r7-games-kon-angles`, `r4-games-core-kon`, `r8-games-stambh-tally`, `r7-games-stambh`, `r8-picks-default`, `r8-play-laws`, `r8-naming-off`, `play-evidence`, `r8-play-{trail,pick,adapt,follow,phone-seam}`, `cert-item-hash`, `r7-games-cert-twin`, `play-server`, `r4-games-core-server`, `r4-khand-server`, `r7-audit-beliefs`, `r7-games-friend-fill`, `round3-integration`, `test-isolation`; `tsc -b`, `vite build`, prompt budget, `build-coverage --check`, `context.mjs --check`.
+
+**Next:** H5 (the facts row), H7 (every generated level), the per-day count; one judge per mode.
+
+**Questions for main:**
+1. **The inner-scale and larger-number holders are tested now and named 0 and 0.06.** The picker's steer toward wrong-scale goes to levels opening clockwise, because only there is a solve evidence on the scale (judging round 2). On those levels the inner reading is right. Steer wrong-scale, after a sighting on an anticlockwise level, to another anticlockwise one too?
+2. **Base direction.** I took it as the protractor's base line as the solver lays it. An angle opening the other way has the same one (OA reversed, the protractor lies the same), so the mix does not give question 1 its 45°: tilt does, and a steered fade-1 level may tilt up to 50°. Accept the tilt at fade 1 after a sighting?
+3. **say's discriminating levels are faint solves** (a reader across gives the right name there). Accept?
+4. **draw's worst non-holder rose to 0.075** ("last time's right dot", fade 3): the new acute levels give that habit sightings. Under the line; watch it, or add a rule?
+5. `tests/r8-games-kon-layout.test.mjs` (browser) was not run: acute and tilted place levels are new to it.
 
 ## 2026-11-16, gate 2 H1, H3, H4: the habit battery passes on all three modes (branch `claude/r8-gate2-habits`, from `claude/r7-games` `3731cca54`)
 

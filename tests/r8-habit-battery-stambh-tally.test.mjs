@@ -18,7 +18,7 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
 
@@ -107,4 +107,14 @@ test("H4: keep's \"five\" needs two levels with different totals (old rules: nam
   }
   // "counted" (the totals short by their bundles, lines across drawn) still names from the first level
   assert.ok(firstNamed("holder-counted", false).every((i) => i === 0));
+});
+
+test("answer 3 (dc-r8-gate2-discriminating-level): the worst door sequence pooled over fades is asserted with the worst fade (overLine); a child with no randomness is reported by her worst cell, and a cell named half her sessions or more is listed with how much of the sweep it is", (t) => {
+  for (const goal of Object.keys(RES.goals)) {
+    const w = worstNonHolder(RES, goal);
+    t.diagnostic(`${goal}: worst non-holder by fade ${w.fade.share.toFixed(3)} (${w.fade.label}, ${w.fade.rule}, fade ${w.fade.at}); by door sequence ${w.door.share.toFixed(3)} (${w.door.label}, ${w.door.rule}, ${w.door.at})`);
+    assert.ok(w.fade.share < LINE && w.door.share < LINE, goal);
+  }
+  for (const x of listedCells(RES)) t.diagnostic(`listed: ${x.goal} · ${x.label} (${x.rule}): worst cell ${x.worstCell.share.toFixed(3)} at ${x.worstCell.at}; cells ${x.cells.join("; ")}; ${x.served.toFixed(3)} of her sessions`);
+  assert.ok(over.every((x) => x.by === "fade" || x.by === "doors"));
 });

@@ -13,7 +13,10 @@
 //         reading meets no other arc).
 //   per session (law 3 read per session, 2026-11-16): named on the second occurrence, a session's four levels
 //         (NAMING_LEVELS) give 1 in 7.6 (say) and 1 in 5.5 (find): over. The server names it on the THIRD, on levels whose
-//         figures and letters differ two by two (konLogic.chanceRepeat): at worst 1 in 37 a session.
+//         figures and letters differ two by two (konLogic.chanceRepeat): at worst 1 in 37 a session. say since
+//         dc-r8-gate2-discriminating-level (main's answer 2, 2026-11-16): never without a sighting on a discriminating
+//         level (every reading across the screen gives the right name there: readsAcrossAll), and then on the second, each
+//         confirmed on its own level (H3): at worst 1 in 223 a session.
 //   faint solves  the first fade-1 level with O at the vertex, and a find level whose mix-up reading meets no other arc
 //         (the wide key among them): the right answer enters at CHANCE_WEIGHT and discriminates nothing.
 //   Wapas  after a wrong find tap: the miss stays the level's first decision (grade, trail, the session's memory), the checks
@@ -22,7 +25,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { WIDE, angleSizes, arcHit, arcTargets, asked, corners, isVertexNameSaid, nameFaint, nameOf, nameSurface, vertexNamePick } from "../src/play/families/kon/kon.name.ts";
+import { WIDE, readsAcrossAll, angleSizes, arcHit, arcTargets, asked, corners, isVertexNameSaid, nameFaint, nameOf, nameSurface, vertexNamePick } from "../src/play/families/kon/kon.name.ts";
 import { env, proveLevel } from "../src/play/core/pick.ts";
 import { coverage, entryKey, levelsFor, seedOf, nameOnRepeat, afterLevelBody, repeatMet, surfaceOf, surfacesDiffer, CHANCE_MEMORY, NAMING_LEVELS } from "../server/play/levels.js";
 import { atLeast, oneIn } from "./_session-figure.mjs";
@@ -38,8 +41,9 @@ const req = (goal, seed, fade, recent = []) => ({ family: "kon", mode: "name", g
 // (find draws one key arc per request, so it takes more requests than say to meet every key often)
 const SEEDS = { say: [1, 7, 42, 99, 123, 512, 777, 2024], find: Array.from({ length: 40 }, (_, i) => 1 + 37 * i) };
 function all(goal) {
+  // (say: and the levels a session is steered to once vertex-name is suspected: dc-r8-gate2-discriminating-level, the focus)
   const seen = new Set(), out = [];
-  for (const fade of [1, 2, 3]) for (const recent of fade === 1 ? [[], ["name:say:0:50:50:0:0"]] : [[]]) for (const sd of SEEDS[goal]) for (const c of konLogic.generate(req(goal, sd, fade, recent))) {
+  for (const fade of [1, 2, 3]) for (const recent of fade === 1 ? [[], ["name:say:0:50:50:0:0"]] : [[]]) for (const sd of SEEDS[goal]) for (const r of [req(goal, sd, fade, recent), ...(goal === "say" ? [{ ...req(goal, sd, fade, recent), focus: KIT }] : [])]) for (const c of konLogic.generate(r)) {
     const v = konLogic.validate(c.level), k = JSON.stringify(v.params);
     if (seen.has(k)) continue;
     // (the picker's proof, as a served level carries it: which mix-ups the level shows)
@@ -143,7 +147,10 @@ test("gate 2, say (a name of three taps): three random taps give vertex-name at 
   // too, and a pair needs a second act on another level
   assert.equal(say.swap.mix, say.swap.of);
   assert.ok(chancePick({ goal: "say", family: "kon", mode: "name" }, "vertex-name"), "say:vertex-name is a chance pick");
-  assert.deepEqual(konLogic.chanceRepeat["say:vertex-name"], { sightings: 3 }, "per session: the third sighting");
+  // dc-r8-gate2-discriminating-level (main's answer 2): never named without a sighting on a discriminating level (every reading
+  // across gives the right name there: readsAcrossAll, firmSighting), and then on the second
+  assert.deepEqual(konLogic.chanceRepeat["say:vertex-name"], { sightings: 3, firm: 2, needFirm: true }, "per session: two, one on a discriminating level");
+  for (const lv of LEVELS.say) assert.equal(konLogic.firmSighting(lv, "vertex-name"), readsAcrossAll(lv.params), lv.levelId);
 });
 
 test("gate 2, find (one tap among five arcs): the mix-up's arc is 1 in 5 blind and at most 1 in 5 for a rule that ignores the name; one tap names nothing; a pair is 1 in 25 (1 in 30 with a say name)", () => {
@@ -175,6 +182,10 @@ test("gate 2, per session: named on the second sighting, a session's four levels
   // two would still be over even at three levels: 1 - (4/5)^3 - 3(1/5)(4/5)^2 = 0.104
   assert.ok(atLeast(3, 0.2, 2) > LAW3);
   assert.ok(CHANCE_MEMORY >= session.n - 1);
+  // say by dc-r8-gate2-discriminating-level: named on the second sighting, one of them on a discriminating level, each
+  // confirmed on its own level by her name after the play-out (H3): a blind name is a sighting (1/6)^2 = 1 in 36 a level, so
+  // at worst (every level discriminating) two in a session of four is 1 in 223
+  assert.ok(atLeast(session.n, session.say.p ** 2, 2) <= LAW3 / 10, `${oneIn(atLeast(session.n, session.say.p ** 2, 2))}`);
 });
 
 test("gate 2, surfaces: a second sighting counts only on another figure with other letters (both parts differ); the shared one-prior rule", () => {
@@ -200,7 +211,8 @@ test("gate 2, faint solves: the first fade-1 level with O at the vertex, and eve
     const p = lv.params, row = konLogic.grade(lv, env(konLogic.solve(lv)), { final: true }).evidence[0];
     assert.equal(row.outcome, "correct");
     const faint = nameFaint(p, lv.fade);
-    assert.equal(faint, (lv.fade === 1 && p.lets[0] === "O" && asked(p).v === 0) || (goal === "find" && vertexNamePick(p) < 0), lv.levelId);
+    // (dc-r8-gate2-discriminating-level: a say level where every reading across gives the right name is faint too)
+    assert.equal(faint, (lv.fade === 1 && p.lets[0] === "O" && asked(p).v === 0) || (goal === "find" && vertexNamePick(p) < 0) || (goal === "say" && readsAcrossAll(p)), lv.levelId);
     if (lv.fade === 1 && p.lets[0] === "O" && asked(p).v === 0) firstO++;
     if (faint) { assert.equal(row.weight, CHANCE_WEIGHT, lv.levelId); assert.equal(row.discriminates, undefined, lv.levelId); continue; }
     later++;
@@ -212,7 +224,7 @@ test("gate 2, faint solves: the first fade-1 level with O at the vertex, and eve
   // a find level with no mix-up arc: the proof claims nothing either (the 2 levels in 5)
   assert.equal(find.discriminatesOnNoPick, 0);
   // at fade 1 a later level never has O at the vertex: only the first is faint for that reason
-  for (const lv of LEVELS.say.filter((l) => l.fade === 1 && l.params.lets[0] !== "O")) assert.ok(!nameFaint(lv.params, 1));
+  for (const lv of LEVELS.say.filter((l) => l.fade === 1 && l.params.lets[0] !== "O" && !readsAcrossAll(l.params))) assert.ok(!nameFaint(lv.params, 1));
 });
 
 const sessionOf = (entry, over = {}) => ({ childId: "c1", key: entryKey(entry), skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
@@ -228,11 +240,13 @@ function served(goal) {
 const about = /vertex|sign=|mal=|misconception=|chance/i;
 
 test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): one say name or one find tap reaches nothing, nor does a second; the third on other figures with other letters names it; the same letters again do not; nothing past the session's fourth level; as served (naming off) nothing", () => {
-  const S = served("say"), F = served("find");
+  const S = served("say").filter((l) => !readsAcrossAll(l.params)), F = served("find");
   assert.ok(S.length >= 4 && F.length >= 4, `${S.length} say, ${F.length} find`);
   const apart = (x, ...ys) => ys.every((y) => surfacesDiffer(surfaceOf(x), surfaceOf(y)));
   const a = S[0], b = S.find((l) => apart(l, a)), f = F.find((l) => apart(l, a, b)), c = S.find((l) => apart(l, a, b, f));
-  assert.ok(b && f && c);
+  // dc-r8-gate2-discriminating-level (answer 2): a say level on which every reading across gives the right name
+  const d = LEVELS.say.find((l) => readsAcrossAll(l.params) && konLogic.malActs(l, "vertex-name") && apart(l, a, b, c, f));
+  assert.ok(b && f && c && d);
   // (gate 2, H3: a say name is a sighting when her name after the play-out is again the vertex at an end: she names it so twice)
   const malSeq = (lv) => { const m = konLogic.malActs(lv, "vertex-name"); return lv.params.goal === "say" ? [...m, { kind: "clear" }, ...m] : m; };
   const mal = (lv) => gradeActs(lv, env(malSeq(lv)), { final: true });
@@ -253,7 +267,14 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
     }
     return { s, out };
   };
-  for (const seq of [[a, b, c], [a, f, b], [f, a, c]]) {
+  // say (dc-r8-gate2-discriminating-level): no level among them tells the mix-up from reading across, so three sightings on
+  // other figures with other letters name nothing; with a discriminating level among two, the second names it. find alone:
+  // the third, as before
+  const F2 = F.filter((l) => apart(l, a, b, c, f, d)), f2 = F2[0], f3 = F2.find((l) => apart(l, f2));
+  assert.ok(f2 && f3);
+  for (const seq of [[a, b, c], [a, f, b], [f, a, c]]) assert.equal(play(seq).out[2].rows[0].misconceptionId, undefined, "no discriminating level: not named");
+  for (const seq of [[a, d], [d, a], [f, d]]) assert.equal(play(seq).out[1].rows[0].misconceptionId, KIT, "a discriminating level among two: named on the second");
+  for (const seq of [[a, d, b], [d, a, b], [f, d, a], [f, f2, f3]]) {
     const { s, out } = play(seq);
     out.forEach(({ g, rows }, i) => {
       // the moment plays out her name or her arc (the device), but nothing about the vertex is in it, the facts, the facts row or the trail
@@ -263,20 +284,22 @@ test("gate 2, the server's rule with naming ON (levels.js / grade.js directly): 
       assert.equal(g.grade.evidence[0].chanceMis, KIT); assert.equal(g.grade.evidence[0].weight, CHANCE_WEIGHT); assert.equal(g.grade.evidence[0].misconceptionId, undefined);
       assert.deepEqual(g.trail.mal, [], "never in the level's own trail");
       assert.doesNotMatch(playFactsRow(g.grade.facts), about); assert.doesNotMatch(playFactsRow(g.facts), about);
-      if (i < 2) { assert.equal(rows[0].misconceptionId, undefined, `sighting ${i + 1} names nothing`); assert.equal(rows[0].chanceMis, undefined, "nor carries the pick"); }
-      else { assert.equal(rows[0].misconceptionId, KIT, "the third sighting names it"); assert.equal(rows[0].named, "repeat"); assert.equal(rows[0].weight, GAME_WEIGHT); }
+      const at = seq.includes(d) ? 1 : 2;
+      if (i < at) { assert.equal(rows[0].misconceptionId, undefined, `sighting ${i + 1} names nothing`); assert.equal(rows[0].chanceMis, undefined, "nor carries the pick"); }
+      else { assert.equal(rows[0].misconceptionId, KIT, `sighting ${i + 1} names it`); assert.equal(rows[0].named, "repeat"); assert.equal(rows[0].weight, GAME_WEIGHT); }
     });
     assert.equal(s.chance.length, 3); assert.ok(s.chance.every((x) => x.mis === KIT && Array.isArray(x.surface) && x.surface.length === 2));
   }
-  // the same letters on another figure, or the same level twice: the third names nothing
-  const sameLets = { ...c, params: { ...c.params, lets: a.params.lets } };
-  for (const seq of [[a, b, a], [a, b, sameLets]]) assert.equal(play(seq).out[2].rows[0].misconceptionId, undefined);
-  // past the session's fourth level: the third sighting names nothing
-  assert.equal(play([a, b, c], NAMING_LEVELS - 2).out[2].rows[0].misconceptionId, undefined);
-  assert.equal(play([a, b, c], NAMING_LEVELS - 3).out[2].rows[0].misconceptionId, KIT, "the third on the fourth level: named");
+  // the same letters on the discriminating figure, or the same level twice: the second names nothing
+  const sameLets = { ...d, params: { ...d.params, lets: a.params.lets } };
+  assert.ok(readsAcrossAll(sameLets.params));
+  for (const seq of [[a, sameLets], [d, d]]) assert.equal(play(seq).out[1].rows[0].misconceptionId, undefined);
+  // past the session's fourth level: the second sighting names nothing
+  assert.equal(play([a, d], NAMING_LEVELS - 1).out[1].rows[0].misconceptionId, undefined);
+  assert.equal(play([a, d], NAMING_LEVELS - 2).out[1].rows[0].misconceptionId, KIT, "the second on the fourth level: named");
   // as served today: the flag main switches (shared/play.ts NAMING_OFF)
   let u = sessionOf(NE("say")), last = null;
-  for (const lv of [a, b, c]) { const g = withNaming(lv, mal(lv)); last = nameOnRepeat(lessonEvidence(g.grade, lv), u, lv); u = afterLevelBody(u, { grade: g.grade, level: lv }); }
+  for (const lv of [a, d, b]) { const g = withNaming(lv, mal(lv)); last = nameOnRepeat(lessonEvidence(g.grade, lv), u, lv); u = afterLevelBody(u, { grade: g.grade, level: lv }); }
   if (namingOn("kon", "name")) assert.equal(last[0].misconceptionId, KIT);
   else { assert.equal(u.chance, undefined, "naming off: nothing remembered"); assert.equal(last[0].misconceptionId, undefined); assert.equal(last[0].chanceMis, undefined); assert.equal(last[0].weight, GAME_WEIGHT); }
 });

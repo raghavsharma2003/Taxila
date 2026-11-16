@@ -8,7 +8,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { konLogic } from "../src/play/families/kon/kon.logic.ts";
-import { points, labelPoints, corners, nameOf, nameEvidence, nameFaint, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
+import { points, labelPoints, corners, nameOf, nameEvidence, nameFaint, segments, arcHit, arcTargets, ARC_R, DRAW_R, drawR, dashR, sayMalSize, noCrossing, generateName, readsAcrossAll, WIDE, TRI_PAIRS } from "../src/play/families/kon/kon.name.ts";
 import { pickLevels, env } from "../src/play/core/pick.ts";
 import { CHANCE_WEIGHT, GAME_WEIGHT, namingOn } from "../shared/play.ts";
 import { gradeActs } from "../server/play/grade.js";
@@ -18,7 +18,8 @@ import { cpuNow } from "./_cpu-ms.mjs";
 
 const MIS = { "vertex-name": "k-vn" };
 const req = (goal, seed, fade = 1, recent = []) => ({ family: "kon", mode: "name", goal, topicId: "t", skillId: "t-s1", classLevel: 6, fade, mis: {}, misMap: MIS, grammar: {}, recent, seed });
-const levels = (goal, fades = [1, 2, 3], seeds = [1, 7, 42, 99]) => fades.flatMap((f) => seeds.flatMap((sd) => konLogic.generate(req(goal, sd, f)).map((c) => konLogic.validate(c.level))));
+// (say: and the levels a session is steered to once vertex-name is suspected, dc-r8-gate2-discriminating-level: the focus)
+const levels = (goal, fades = [1, 2, 3], seeds = [1, 7, 42, 99]) => fades.flatMap((f) => seeds.flatMap((sd) => [req(goal, sd, f), ...(goal === "say" ? [{ ...req(goal, sd, f), focus: "k-vn" }] : [])].flatMap((r) => konLogic.generate(r).map((c) => konLogic.validate(c.level)))));
 const run = (level, acts) => { let s = konLogic.init(level); const ms = []; acts.forEach((a, i) => { const r = konLogic.apply(level, s, a, i + 1); s = r.state; ms.push(...r.moments); }); return { s, ms }; };
 const say = (t) => [...t.map((at) => ({ kind: "letter", at })), { kind: "commit" }];
 
@@ -55,7 +56,7 @@ function readings(three, Q) {
 
 for (const goal of ["say", "find"]) {
   test(`kon/name/${goal}: every generated level validates, solves, is shortcut-free; the checker agrees; vertex-name shows on its own`, () => {
-    let n = 0, mals = 0, dashed = 0;
+    let n = 0, mals = 0, dashed = 0, disc = 0;
     for (const level of levels(goal)) {
       assert.ok(level, "validates"); assert.equal(level.mode, "name");
       n++;
@@ -71,7 +72,14 @@ for (const goal of ["say", "find"]) {
       // the vertex in the middle, by the points or by where the letters are drawn
       // (night ruling kon/name 2: find's wide arc is a key too, and the one key exempt: it is over 90°, and the vertex of any
       // angle over 90° lies between its arms' ends by rows or by columns; reading across finds the key there, 1 level in 5)
-      if (!(goal === "find" && p.ask === WIDE)) for (const Q of [points(p), labelPoints(p)]) for (const o of readings([want.a, want.v, want.b], Q)) assert.notEqual(o[1], want.v, `${level.levelId}: read across as ${o.map((i) => p.lets[i]).join("")}`);
+      // gate 2 (dc-r8-gate2-discriminating-level, main's answer 2): a say level on which EVERY such reading puts the vertex in
+      // the middle is the discriminating level, served on purpose (reading across is the right name there; a vertex at an
+      // end is the mix-up's alone): checked here by this file's own reading model, and its solve is faint
+      if (goal === "say" && readsAcrossAll(p)) {
+        disc++;
+        for (const Q of [points(p), labelPoints(p)]) for (const o of readings([want.a, want.v, want.b], Q)) assert.equal(o[1], want.v, `${level.levelId}: a discriminating level read across as ${o.map((i) => p.lets[i]).join("")}`);
+        assert.ok(nameFaint(p, level.fade), `${level.levelId}: its solve is faint`);
+      } else if (!(goal === "find" && p.ask === WIDE)) for (const Q of [points(p), labelPoints(p)]) for (const o of readings([want.a, want.v, want.b], Q)) assert.notEqual(o[1], want.v, `${level.levelId}: read across as ${o.map((i) => p.lets[i]).join("")}`);
       if (goal === "say") {
         const t = sol.slice(0, 3).map((a) => a.at);
         assert.ok(names(t, { v: want.v, set: new Set([want.a, want.b]) }), "the checker: the solver's name names the lit angle");
@@ -126,6 +134,7 @@ for (const goal of ["say", "find"]) {
     assert.ok(n >= 20, `only ${n} levels`);
     assert.ok(mals >= n / 2, `vertex-name applied on ${mals} of ${n}`);
     if (goal === "say") assert.ok(dashed > 0, "some vertex-first names denote an angle the figure does not draw (dashed)");
+    if (goal === "say") assert.ok(disc > 0, "some say levels are discriminating levels (every reading across gives the right name)");
   });
 }
 

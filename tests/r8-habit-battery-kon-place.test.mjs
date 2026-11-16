@@ -17,9 +17,10 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, withRules, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
-import { NAMING_OFF } from "../shared/play.ts";
+import { DISCRIMINATING_TURN, NAMING_OFF } from "../shared/play.ts";
+import { baseDir } from "../src/play/families/kon/kon.place.ts";
 
 const S = sweep();
 let RES = null, OLD = null, over = [];
@@ -60,12 +61,54 @@ test("children who hold the mix-up: listed with why, and how often each is named
   // the positive control: the battery sees naming at all
   assert.ok(rowOf(RES, "measure", "other").all[kit("measure", "wrong-scale")] >= 0.9);
   assert.ok(rowOf(RES, "draw", "other").all[kit("draw", "wrong-scale")] >= 0.9);
-  // H1's offset on the board: the bottom edge on the vertex is two acts only on two levels whose first arms lie more than
-  // about 27° apart (the centre then sits more than a finger's drop from where it sat), so fade 1 (tilts within 10°) seldom
-  // names her: reported (gate sweep 2026-11-16: 0.35 measure, 0.44 draw), and never nameless
-  assert.ok(rowOf(RES, "measure", "vertex-off").all[kit("measure", "vertex-off")] > 0.2);
-  assert.ok(rowOf(RES, "draw", "vertex-off").all[kit("draw", "vertex-off")] > 0.2);
+  // dc-r8-gate2-discriminating-level (answer 1): the bottom edge on the vertex is named on a second level whose base direction
+  // differs by 45° or more (the same offset in the protractor's frame, another on the board), and after her first sighting
+  // the session is steered to one (fade 1 too: a steered level may tilt). Under H1's board offset alone she was named 0.35
+  // (measure) and 0.44 (draw) in the gate sweep; now (2026-11-16) 0.94 and 0.88
+  assert.ok(rowOf(RES, "measure", "vertex-off").all[kit("measure", "vertex-off")] >= 0.75);
+  assert.ok(rowOf(RES, "draw", "vertex-off").all[kit("draw", "vertex-off")] >= 0.75);
   assert.ok(rowOf(RES, "draw", "btn-A").all[kit("draw", "join-wrong-end")] > 0);
+  // answer 4 lets the battery say whether "always the larger number" and "always the inner scale" are named: reported
+  for (const [g, c] of [["measure", "larger"], ["measure", "inner"], ["draw", "inner"]]) t.diagnostic(`answer 4: ${g} · ${rowOf(RES, g, c).label}: named ${rowOf(RES, g, c).all[kit(g, "wrong-scale")].toFixed(3)}`);
+});
+
+test("answer 4 (dc-r8-gate2-discriminating-level): by its fourth level every served session of measure and draw has met an acute angle and an angle that opens anticlockwise", () => {
+  let sessions = 0;
+  withGenMemo(() => {
+    for (const goal of ["measure", "draw"]) {
+      const entry = coverage().entries.find((e) => e.family === "kon" && e.mode === "place" && e.goal === goal);
+      for (const cid of ["careful", "blind", "slip-random", "vertex-off", "other", "inner", "fixed-vo", ...(goal === "measure" ? ["larger"] : [])]) {
+        const child = childrenFor("kon/place", goal).find((c) => c.id === cid);
+        for (const fade of FADES) for (const pL of PLS) for (const doors of DOOR_SEQS) for (let k = 0; k < S.seeds; k++) {
+          const { trace } = runSession({ entry, cell: { goal, fade, pL, doors }, child, sIdx: k });
+          sessions++;
+          assert.equal(trace.length, 4, `${goal} ${cid}: four levels`);
+          assert.ok(trace.some((x) => x.params.theta < 90), `${goal} ${cid} f${fade} ${doors}: an acute angle by the fourth level (${trace.map((x) => x.params.theta)})`);
+          assert.ok(trace.some((x) => !x.params.mirror), `${goal} ${cid} f${fade} ${doors}: an angle opening anticlockwise by the fourth level`);
+        }
+      }
+    }
+  });
+  assert.ok(sessions >= 1000, `${sessions} sessions`);
+});
+
+test("answer 1 (dc-r8-gate2-discriminating-level): after a first sighting of vertex-off the next level's base direction differs by 45° or more; the finger held on the board is never named", () => {
+  let steps = 0, apart = 0;
+  withGenMemo(() => {
+    for (const goal of ["measure", "draw"]) {
+      const entry = coverage().entries.find((e) => e.family === "kon" && e.mode === "place" && e.goal === goal), VO = entry.misMap["vertex-off"];
+      const child = childrenFor("kon/place", goal).find((c) => c.id === "vertex-off");
+      for (const fade of FADES) for (const pL of PLS) for (const doors of DOOR_SEQS) for (let k = 0; k < S.seeds; k++) {
+        const { trace } = runSession({ entry, cell: { goal, fade, pL, doors }, child, sIdx: k });
+        const i = trace.findIndex((x) => x.pick === VO);
+        if (i < 0 || i >= trace.length - 1) continue;
+        steps++;
+        if (Math.abs(((baseDir(trace[i + 1].params) - baseDir(trace[i].params)) % 360 + 540) % 360 - 180) >= DISCRIMINATING_TURN) apart++;
+      }
+    }
+  });
+  assert.ok(steps >= 300 && apart / steps >= 0.95, `steered ${apart} of ${steps}`);
+  for (const g of ["measure", "draw"]) assert.equal(rowOf(RES, g, "fixed-vo").all[kit(g, "vertex-off")], 0, `${g}: the fixed finger`);
 });
 
 test("negative control: under the rules from before H1 the judge's failure shows (measure: a habit tied to the key is named on the same key served twice)", () => {
@@ -118,4 +161,14 @@ test("measure: every child who does not hold the mix-up is named in fewer than 1
 test("draw: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {
   const o = over.filter((x) => x.goal === "draw");
   assert.deepEqual(o, [], o.map((x) => `${x.label} ${x.rule}: ${x.share.toFixed(3)} at fade ${x.fade}`).join("\n"));
+});
+
+test("answer 3 (dc-r8-gate2-discriminating-level): the worst door sequence pooled over fades is asserted with the worst fade (overLine); a child with no randomness is reported by her worst cell, and a cell named half her sessions or more is listed with how much of the sweep it is", (t) => {
+  for (const goal of Object.keys(RES.goals)) {
+    const w = worstNonHolder(RES, goal);
+    t.diagnostic(`${goal}: worst non-holder by fade ${w.fade.share.toFixed(3)} (${w.fade.label}, ${w.fade.rule}, fade ${w.fade.at}); by door sequence ${w.door.share.toFixed(3)} (${w.door.label}, ${w.door.rule}, ${w.door.at})`);
+    assert.ok(w.fade.share < LINE && w.door.share < LINE, goal);
+  }
+  for (const x of listedCells(RES)) t.diagnostic(`listed: ${x.goal} · ${x.label} (${x.rule}): worst cell ${x.worstCell.share.toFixed(3)} at ${x.worstCell.at}; cells ${x.cells.join("; ")}; ${x.served.toFixed(3)} of her sessions`);
+  assert.ok(over.every((x) => x.by === "fade" || x.by === "doors"));
 });

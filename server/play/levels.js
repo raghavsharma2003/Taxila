@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import { logicFor } from "../../src/play/families/index.ts";
 import { pickLevels } from "../../src/play/core/pick.ts";
-import { GAME_WEIGHT, pickArt, sameSighting } from "../../shared/play.ts";
+import { GAME_WEIGHT, discriminatingPair, pickArt, sameSighting } from "../../shared/play.ts";
 import { registerKaalEvents } from "../../src/play/families/kaal/kaal.logic.ts";
 import { fillFriendDeep } from "../director/friend.js";
 import { adaptAfter, chooseEntry, liftedPL, settleBecause } from "./choose.js";
@@ -107,7 +107,19 @@ export function genRequest(s, entry) {
     // round 8 P2: her pL plus the session's between-level lift (a clean first-try win steps the band up); no lift = s.pL
     ...(typeof liftedPL(s) === "number" ? { pL: liftedPL(s) } : {}),
     ...(s.focus ? { focus: s.focus } : {}),
+    // gate 2 (dc-r8-gate2-discriminating-level): the level's place in the session (kon/place's level mix by the fourth), and
+    // the base directions of the placement sightings this session remembered when the level was chosen (nextBody: the body
+    // keeps them, so the level a body points at never changes after its own acts)
+    ...(Number.isInteger(s.n) ? { n: s.n } : {}),
+    ...(Array.isArray(s.bases) && s.bases.length ? { bases: s.bases } : {}),
   };
+}
+/**
+ * Gate 2 (answer 1): the base directions of the placement sightings in a session's chance memory ({ mis, base } for each
+ * sighting whose act carries a base: FamilyLogic.sightingOf), by which the next level is steered. Pure.
+ */
+export function basesOf(chance) {
+  return (Array.isArray(chance) ? chance : []).filter((x) => x?.act && typeof x.act === "object" && Number.isFinite(x.act.base)).map((x) => ({ mis: x.mis, base: x.act.base }));
 }
 /** → { garam, teekha, ms, considered, served } or null. */
 export function levelsFor(s, entry) {
@@ -150,6 +162,9 @@ export function nextBody(s, entry, door) {
   const key = to === entry ? s.key : entryKey(to);
   const sw = to !== entry ? s.nextSwitch ?? null : null;
   let body = { ...s, key, n, seed: seedOf(s.childId, key, n), door, harder: false, recent, ...(focus ? { focus } : {}) };
+  // gate 2 (answer 1): the placement sightings so far steer the next level (genRequest's bases), fixed with the level
+  const bases = n < NAMING_LEVELS ? basesOf(s.chance) : [];
+  if (bases.length) body.bases = bases; else delete body.bases;
   if (lift > 0) body.lift = lift; else delete body.lift;
   if (to !== entry) body.switched = { from: s.key, n };
   delete body.nextFocus; delete body.nextLift; delete body.nextBecause; delete body.nextKey; delete body.nextSwitch;
@@ -291,6 +306,8 @@ export function repeatMet(prior, here, spec = null) {
   const part = (x) => (Array.isArray(x) ? x[cover] : x);
   const enough = (chosen) => {
     const set = [...chosen, h];
+    // (dc-r8-gate2-discriminating-level: a spec with needFirm is never met without a firm sighting among them)
+    if (spec?.needFirm && !set.some((x) => x.firm)) return false;
     if (set.length < (set.some((x) => x.firm) ? needFirm : need)) return false;
     return cover === undefined || new Set(set.map((x) => part(x.surface))).size > 1;
   };
@@ -438,7 +455,10 @@ export function nameOnRepeat(rows, s, level) {
     // H1: this sighting counts only when what she did differs from every earlier sighting's act, and of the earlier ones
     // only those that differed from every one before them count
     if (act !== undefined && act !== null && mine.some((p) => sameSighting(act, p?.act))) return false;
-    const counted = distinctSightings(mine);
+    // dc-r8-gate2-discriminating-level (answer 1): of those, a placement counts with this one only on a level that tells the
+    // held placement from a fixed finger (shared/play.ts discriminatingPair: base directions 45° or more apart, the same
+    // offset in the protractor's frame, another on the board); a key counts as before
+    const counted = distinctSightings(mine).filter((p) => discriminatingPair(act, p?.act));
     if (!counted.length) return false;
     return repeatMet(counted, { surface: here, firm: firmOf(level, kit) }, namingSpec(level, kit, prior));
   };

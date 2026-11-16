@@ -17,12 +17,17 @@
 import { test, before } from "node:test";
 import assert from "node:assert/strict";
 import { writeFileSync } from "node:fs";
-import { runBattery, batteryTable, overLine, holders, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
+import { runBattery, runSession, withGenMemo, childrenFor, batteryTable, overLine, holders, listedCells, worstNonHolder, rowOf, sweep, memoAgrees, LINE, DOOR_SEQS, FADES, PLS } from "./_habit-children.mjs";
 import { coverage } from "../server/play/levels.js";
 import { NAMING_OFF } from "../shared/play.ts";
+import { konLogic } from "../src/play/families/kon/kon.logic.ts";
+import { readsAcrossAll } from "../src/play/families/kon/kon.name.ts";
 
 const S = sweep();
 const KIT = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say").misMap["vertex-name"];
+// (discriminating say levels, as a session steered to one is served them: dc-r8-gate2-discriminating-level, answer 2)
+const SAY = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say");
+const LEVELS_D = [1, 2, 3].flatMap((fade) => [1, 7, 42, 99].flatMap((seed) => konLogic.generate({ family: "kon", mode: "name", goal: "say", topicId: SAY.topicId, skillId: SAY.skillId, classLevel: 6, fade, mis: {}, misMap: SAY.misMap, grammar: SAY.grammar, recent: ["name:say:0:50:50:0:0"], seed, focus: KIT }).map((c) => konLogic.validate(c.level)).filter((l) => l && readsAcrossAll(l.params))));
 let RES = null, OLD = null, over = [];
 // the negative control's children, run under the rules from before H3
 const OLD_KIDS = new Set(["slip:swap 1-2", "slip:swap 2-3", "slip:miss 1, added last", "slip:miss 2, added last", "blind", ...Array.from({ length: 8 }, (_, k) => `read:${k}`)]);
@@ -81,4 +86,40 @@ test("say: every child who does not hold the mix-up is named in fewer than 1 ses
 test("find: every child who does not hold the mix-up is named in fewer than 1 session in 10, at every fade", () => {
   const o = over.filter((x) => x.goal === "find");
   assert.deepEqual(o, [], o.map((x) => `${x.label}: ${x.share.toFixed(3)} at fade ${x.fade}`).join("\n"));
+});
+
+test("answer 3 (dc-r8-gate2-discriminating-level): the worst door sequence pooled over fades is asserted with the worst fade (overLine); a child with no randomness is reported by her worst cell, and a cell named half her sessions or more is listed with how much of the sweep it is", (t) => {
+  for (const goal of Object.keys(RES.goals)) {
+    const w = worstNonHolder(RES, goal);
+    t.diagnostic(`${goal}: worst non-holder by fade ${w.fade.share.toFixed(3)} (${w.fade.label}, ${w.fade.rule}, fade ${w.fade.at}); by door sequence ${w.door.share.toFixed(3)} (${w.door.label}, ${w.door.rule}, ${w.door.at})`);
+    assert.ok(w.fade.share < LINE && w.door.share < LINE, goal);
+  }
+  for (const x of listedCells(RES)) t.diagnostic(`listed: ${x.goal} · ${x.label} (${x.rule}): worst cell ${x.worstCell.share.toFixed(3)} at ${x.worstCell.at}; cells ${x.cells.join("; ")}; ${x.served.toFixed(3)} of her sessions`);
+  assert.ok(over.every((x) => x.by === "fade" || x.by === "doors"));
+});
+
+test("answer 2 (dc-r8-gate2-discriminating-level): after a first sighting of vertex-name the next say level is a discriminating level (every reading across gives the right name), the readers across solve it, and the holders are named on it", () => {
+  const entry = coverage().entries.find((e) => e.family === "kon" && e.mode === "name" && e.goal === "say");
+  let steps = 0, disc = 0, readSolved = 0, readDisc = 0;
+  withGenMemo(() => {
+    for (const cid of ["v-first", "v-last"]) {
+      const child = childrenFor("kon/name", "say").find((c) => c.id === cid);
+      for (const fade of FADES) for (const pL of PLS) for (const doors of DOOR_SEQS) for (let k = 0; k < S.seeds; k++) {
+        const { trace } = runSession({ entry, cell: { goal: "say", fade, pL, doors }, child, sIdx: k });
+        const i = trace.findIndex((x) => x.pick === KIT);
+        if (i < 0 || i >= trace.length - 1) continue;
+        steps++;
+        if (readsAcrossAll(trace[i + 1].params)) disc++;
+      }
+    }
+    // a reader across on a discriminating level gives the right name
+    for (const lv of LEVELS_D) for (let k = 0; k < 8; k++) {
+      const child = childrenFor("kon/name", "say").find((c) => c.id === `read:${k}`);
+      readDisc++;
+      if (konLogic.grade(lv, child.acts.say(lv, { rng: () => 0.5, prev: null, i: 0, mem: {} }).map((act, j) => ({ seq: j + 1, t: j, via: "touch", act })), { final: true }).verdict === "solved") readSolved++;
+    }
+  });
+  assert.ok(steps >= 100 && disc / steps >= 0.9, `steered to a discriminating level ${disc} of ${steps}`);
+  assert.ok(readDisc >= 40 && readSolved === readDisc, `readers across solve the discriminating levels: ${readSolved} of ${readDisc}`);
+  for (let k = 0; k < 8; k++) assert.equal(rowOf(RES, "say", `read:${k}`).all[KIT], 0, `read:${k}`);
 });

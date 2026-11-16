@@ -27,8 +27,8 @@ test("the computed default: k from p over four levels, under 1 in 10", () => {
   assert.equal(NAMING_LEVELS, 4); assert.equal(LAW3_LINE, 0.1);
   const want = [[1 / 2, 4], [1 / 3, 4], [1 / 4, 3], [1 / 5, 3], [1 / 6, 3], [1 / 7, 3], [1 / 8, 2], [1 / 20, 2], [0.6, Infinity]];
   for (const [p, k] of want) assert.equal(defaultSightings(p), k, `p = ${p}`);
-  // (one in seven: 2 of 4 land 241 times in 2401, just over the line; the ruling's "2 from one in seven down" is read by the
-  // rule itself, which gives 3 there)
+  // (one in seven: 2 of 4 land 241 times in 2401, just over the line, so 3 there; 2 starts at 1/8: main's answer "computed default" 1,
+  // RULINGS-2026-11-16-gate2-answers.md)
   assert.ok(atLeastOf(4, 1 / 7, 2) > 0.1 && atLeastOf(4, 1 / 8, 2) < 0.1);
   for (const p of [0.5, 1 / 3, 0.25, 0.2, 0.1]) for (let k = 1; k <= 4; k++) assert.ok(Math.abs(atLeastOf(4, p, k) - atLeast(4, p, k)) < 1e-12);
   assert.equal(UNREAD_PICK, 1 / 2, "a pick whose options cannot be read is taken at one in two");
