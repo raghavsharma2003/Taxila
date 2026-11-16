@@ -99,16 +99,19 @@ With these, `KNOWN` in `tests/r8-play-laws.test.mjs` is empty in every language:
 
 **Update (kon stream, branch `claude/r8-kon-round2`):** every kon row above is now closed and `tests/r8-play-laws.test.mjs` lists no kon break. `kon/name` find: her wrong arc is the mix-up colour, the miss shows "asked ≠ her arc's two names", a later solve has a pale tick and the checks. `kon/ends`: the open-end light is green only on a solved figure, the asked figure is no longer drawn dashed after a miss (it was the key: law 2, not seen by the text check), and `ray-two-ends` is a chance pick (`chancePicks` "ends:ray-two-ends"). `kon/place` draw: `join-wrong-end` is a chance pick ("draw:join-wrong-end"). `kon/place` measure: she types the reading.
 
-## Law 4: after a miss, the check waits until her act changes (2026-11-16, `dc-r8-gate2-shadow` S4)
+## Law 4: after a miss, the check waits until her act changes (2026-11-16, `dc-r8-gate2-shadow` S4; main's ruling 005)
 
-**The check (`checkWaits` in laws.mjs).** The check is the act that missed. Its control, where a control made it, is the one whose press dispatches that act. After the miss, while a try remains, the law presses it again on the same answer. It passes when:
+**The check (`checkWaits` in laws.mjs).** The check is the act that missed. Its control, where a control made it, is the one whose press dispatches that act. After the miss, while a try remains, the law presses it again on the same answer. It passes in one of three forms (`law4Forms` reports which):
 
-- the control is disabled or gone; or
-- the law refuses the press without playing the miss again and without raising a facts count of checks or tries.
+- **off**: the control is disabled or gone (a check button waits; a pick's missed option is greyed);
+- **refused**: the law refuses the press without playing the miss again and without raising a facts count of checks or tries (a typed number equal to one that missed: `unchanged`; a greyed pick pressed anyway: `missed_option`);
+- **a look** (the third form, ruling 005): an experiment act done again on the same set-up shows its result as a result, plays no miss moment and raises no count of checks.
 
 It runs over every served level, in all three languages, through every mal-rule's acts, as laws 1 to 3 do.
 
-**The fix (`missWait` in `src/play/core/viewkit.ts`).** The view's `react` records the state a miss leaves. The check control is off while the state is still that one and the law, applied and dropped, would miss again. Before any miss, nothing changes, so no first screen changes and no re-cert is needed. The two earlier examples are stambh/tally's Jaancho (a view snapshot) and kon/name's Yahi naam (a logic refusal, `unchanged`).
+**A sighting is a level's first check only** (ruling 005). A pick made after a miss on the same level is never a sighting and never counts toward a repeat. `gradeLevel` (`src/play/core/replay.ts`) keeps a pick's `chanceMis` only when its moment is the level's first check (`firstCheckSeq`), so `afterLevelBody`, `nameOnRepeat` and the shadow reading never see a later one (`tests/r8-play-laws`, "a sighting is a level's first check only"). Greying a missed option therefore changes no blind chance gate 2 reads: kon/place draw's join chance is read on first joins. The five gate-2 batteries print the same figures before and after.
+
+**The fixes.** `missWait` in `src/play/core/viewkit.ts` (the check buttons, S4). `src/play/core/law4.ts` for the rest: `withPicks` (pick and typed: the key of an option or number that missed, with what its rightness rests on, is kept in the state's `missedPicks`; the view greys its control with `greyed`) and `withLooks` (experiment: the act and its set-up are kept in `looked`; a repeat keeps its result and refusal code, which the view draws, and drops its miss moments). Both are pure and in the logic, so the server's replay agrees. Undo keeps both lists. Before any miss nothing changes: 2,808 first screens (12 families, every served level, three languages, kagaz and raat) are the same before and after, so there is no re-cert.
 
 **Failed before (48 modes), fixed by "the button waits" (28 modes).** Each check button is now off after a miss until her answer changes:
 
@@ -122,15 +125,33 @@ It runs over every served level, in all three languages, through every mal-rule'
 
 The same buttons now wait in modes that stay open for another act: aakash, badlaav, chhaano and rang/milao `done`; todo-jodo `done`; nishana/place `commit`; kyun-lab/dhruv `run`; nazariya/floor `done`.
 
-**Still open (20 modes; `CHECK_WAITS_OPEN`, `KNOWN` law 4 in `tests/r8-play-laws`).** In these modes the act that missed is her answer itself, so "the button waits" does not say what to do. Each needs main's choice.
+**Fixed by ruling 005 (the 20 S4 left open; `CHECK_WAITS_OPEN` is now empty).** The play cert skips law 4 for a mode in `CHECK_WAITS_OPEN`, and `tests/r8-play-laws` pins the list (`CHECK_WAITS_MAX`, now empty), so it only shrinks.
 
-| Kind | Modes (the act) | What it needs |
-|---|---|---|
-| pick | todo-jodo/strips (`choose-0/1/same`), nishana/place round (`round-N`), kyun-lab/dhruv (`claim-N`), kon/place draw (`join-o/a`), rang/milao (`danger`), badlaav/palat ghol (`gone`) | Grey out the missed option until she changes something? That narrows the options (elimination). On kon/place draw it also changes the blind chance that gate 2 reads. |
-| typed | todo-jodo/atoms hcf/lcm (`name x`), nazariya/floor and nazariya/powers (`name n`), taraazu/equality (`drop n`), kon/place measure (`read n`) | Refuse a typed number that equals the one that missed (a logic refusal, as kon/name's `unchanged`, so the server's replay agrees), or let it count? |
-| experiment | aakash/chakkar and aakash/ritu (`use`), badlaav/aag (`use`), badlaav/palat (`file`, `mark`, `put`), bhaap/chakra and bhaap/hawa (`use`), chhaano/geela (`use`, `take`), chhaano/sukha (`use`), jaanch/daag and jaanch/neela (`mark`), rang/pehchaan (`sort`), todo-jodo/atoms (`split`) | The miss is an experiment. Doing it again plays its consequence again. Is a repeated experiment a check? |
+| Mode | Act that missed | Kind | Form now | What changed |
+|---|---|---|---|---|
+| todo-jodo/strips | `choose` (A more / same / B more) | pick | off | a choice shown wrong (a wrong prediction, or a wrong confirmation once both bars are cut alike) is greyed until the level ends; one refused only because the bars are not cut alike yet is not |
+| nishana/place round | `round` (↓ / ↑) | pick | off | the end shown wrong is greyed; the other end is hers to press (two options, as kon/place draw) |
+| kyun-lab/dhruv pakka, taakat | `claim` | pick | off | a claim shown wrong is greyed on the same tests (pakka: that bar's tests; taakat: the magnets dipped): a claim made on pulls alone may stand once she sees a push |
+| kon/place draw | `join` (O / A) | pick | off | a join that missed is greyed at the same placement and dot; with one join left, the other solves as before |
+| kon/place size | `pick` (P / same / Q) | pick | off | a pick that missed is greyed until the level ends |
+| rang/milao | `danger` ("Harmful!") | pick | off | greyed until the level ends |
+| badlaav/palat ghol | `gone` ("Gone!") | pick | off | greyed until the level ends |
+| kon/place measure | `read n` | typed | refused (`unchanged`) | a reading that missed at the same placement is refused; "Yahi hai" off while the pad holds it |
+| todo-jodo/atoms hcf, lcm | `name x` | typed | refused (`unchanged`) | a value that missed as a value is refused; the pad's HCF/LCM button off while it holds it (the right value named before its pairs is not greyed) |
+| nazariya/floor side, nazariya/powers | `name n` | typed | refused (`unchanged`) | a number that missed as a count is refused; "Say" off while the pad holds it |
+| taraazu/equality fill | `drop n` (and `name x`) | typed | refused (`unchanged`) | a number that tipped the pans (or a wrong x) is refused; the pour / x = button off while the pad holds it |
+| todo-jodo/atoms | `split` | experiment | a look | the same split on the same tree shows its result again, no miss |
+| aakash/chakkar, aakash/ritu | `use` (sun, round, tilt, shine) | experiment | a look | |
+| badlaav/aag | `use` (fan, wipe) | experiment | a look | |
+| badlaav/palat nishaan, ulta, ghol | `mark`, `file`, `put` | experiment (closest rule; see below) | a look | |
+| bhaap/chakra, bhaap/hawa | `use` (rain, pump, sail, wait) | experiment | a look | |
+| chhaano/geela, chhaano/sukha | `use` (drain, winnow, sieve), `take` | experiment | a look | |
+| jaanch/daag, jaanch/neela | `mark` | experiment (closest rule; see below) | a look | |
+| rang/pehchaan | `sort` | experiment (closest rule; see below) | a look | |
 
-**The cert.** A re-cert of any open mode would now fail its cells at `laws:L4`. None was re-certified, and `play.json` is unchanged.
+In every experiment family the repeat's refusal code and state stay (the view draws the result as before); the view now plays a refusal that carries no miss as the soft refusal sound, without the miss's look and shake.
+
+**Kinds that do not fit cleanly.** `mark` (jaanch, badlaav/palat nishaan), `file` (badlaav/palat ulta) and `sort` (rang/pehchaan) record what she saw: they are closer to a pick than to an experiment. They are fixed by the experiment form, as ruling 005 lists them: a repeat on the same set-up (the same food, change or cup with the same tests) plays no miss and counts no check, and nothing is greyed. A greyed option would have been wrong where the miss was about a step not yet done ("not dry yet", "not sure yet": greying would tell her the answer). `put` (badlaav/palat ghol, sugar on the tawa) is an experiment as listed. kyun-lab/dhruv's claim is a pick whose rightness rests on her tests, so its key carries them.
 
 ## Reviewed and allowed (`ALLOWED` in laws.mjs)
 

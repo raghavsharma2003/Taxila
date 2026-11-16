@@ -10,6 +10,59 @@ gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fai
 **Browser suites (main's note 003):** the games gate here runs every `tests/*-browser.test.mjs` and `r8-games-kon-layout` in the full gate (test-shard runs them with the container's Chromium). Gate at `5f4144afc` (galti-pakdo and nazariya/tri): all browser suites ran and passed, `exit=0`, 7394 pass, 0 fail. When a run cannot reach a browser I will name the suites here.
 
 
+## 2026-11-16, law 4's open kinds (main's ruling 005, section 1; branch `claude/r8-law4-open`, from `e2d4664dc`)
+
+**Done:** the 20 modes S4 left open keep law 4 by their kind's form. `CHECK_WAITS_OPEN` is empty, and law 4 (with laws 1 to 3) holds over every served level in hinglish, en and hi: 473 levels each, 0 breaks (60 law-4 break lines in 20 modes before).
+
+- **The law** (`server/forge3/qa/laws.mjs`). `checkWaits` passes in three forms. **Off**: the control is disabled or gone. **Refused**: `unchanged` or `missed_option`, with no miss and no check counted; the count is now read on a refusal too. **A look**: this is law 4's third form. An experiment act repeated on the same set-up plays no miss moment and raises no check count. `law4Forms` reports the form for each mal-rule.
+- **The logic** (`src/play/core/law4.ts`, pure, so the server's replay agrees). `withPicks` covers picks and typed numbers: a key that missed goes into the state's `missedPicks`, and the view greys its control with `greyed`. `withLooks` covers experiments: a repeat keeps its result and refusal code and drops its miss moments. Undo keeps both lists.
+- **A sighting is a level's first check only.**
+  - **Before:** `gradeLevel` read the level's first *decisive* moment. That already held for every kon commit, because a miss there is the decisive refusal `missed`. The gap was a plain `law_refused` miss followed by a pick: the pick could still give a sighting.
+  - **Now:** `gradeLevel` keeps a pick's `chanceMis` only when the pick is the level's first check (`firstCheckSeq` in `src/play/core/replay.ts`). The rule is stated in `server/play/levels.js` (`afterLevelBody`, `nameOnRepeat`) and in the Gate 2 sections of the five packets. A unit test in `tests/r8-play-laws` covers it.
+- **The cert and the record.** `play-cert.js` skips law 4 for a mode in `CHECK_WAITS_OPEN`. `tests/r8-play-laws` pins `CHECK_WAITS_MAX` (the 20 modes in the first commit, empty now) and asserts the open list stays within it, so it only shrinks.
+- **Per mode** (form as `law4Forms` reads it on every mal-rule's miss):
+
+  | mode | act | kind | form | what she sees differently |
+  |---|---|---|---|---|
+  | todo-jodo/strips compare, unit | `choose` | pick | off | a choice shown wrong is greyed until the level ends (not one refused only for "cut them alike first") |
+  | nishana/place round | `round` | pick | off | the wrong end is greyed; she presses the other |
+  | kyun-lab/dhruv pakka, taakat | `claim` | pick | off | a wrong claim is greyed until she tests again (pakka: that bar; taakat: a dip) |
+  | kon/place draw | `join` | pick | off | the join that missed is greyed at that placement and dot; the other solves as before |
+  | kon/place size | `pick` | pick | off | a wrong pick is greyed until the level ends |
+  | rang/milao | `danger` | pick | off | "Harmful!" greyed after its miss |
+  | badlaav/palat ghol | `gone` | pick | off | "Gone!" greyed after its miss |
+  | kon/place measure | `read n` | typed | refused | "Yahi hai" is off while the pad holds a reading that missed at this placement |
+  | todo-jodo/atoms hcf, lcm | `name x` | typed | refused | the HCF/LCM button is off while the pad holds a value that missed |
+  | nazariya/floor side, powers | `name n` | typed | refused | "Say" is off while the pad holds a count that missed |
+  | taraazu/equality fill | `drop n` (and `name x`) | typed | refused | the pour button is off while the pad holds a number that tipped the pans |
+  | todo-jodo/atoms | `split` | experiment | a look | the same split again shows its result: no miss sound, no check |
+  | aakash/chakkar, aakash/ritu | `use` (sun, round, tilt, shine) | experiment | a look | the same |
+  | badlaav/aag | `use` (fan, wipe) | experiment | a look | the same |
+  | badlaav/palat nishaan, ulta, ghol | `mark`, `file`, `put` | experiment (closest rule) | a look | the same |
+  | bhaap/chakra, bhaap/hawa | `use` (rain, pump, sail, wait) | experiment | a look | the same |
+  | chhaano/geela, chhaano/sukha | `use` (drain, winnow, sieve), `take` | experiment | a look | the same |
+  | jaanch/daag, jaanch/neela | `mark` | experiment (closest rule) | a look | the same |
+  | rang/pehchaan | `sort` | experiment (closest rule) | a look | the same |
+
+  Experiment views (aakash, badlaav, bhaap, chhaano, jaanch, rang) play a refusal that carries no miss as the soft refusal sound, without the look and shake. Before, a refusal with no moment (for example bhaap's "calm") also shook. Nothing else they draw changes.
+- **Batteries: no figure moved.** All five gate-2 batteries were run at `e2d4664dc` and after (`tests/r8-habit-battery-*`). Every printed line is the same, timings aside, and that includes kon/place draw's blind-chance lines. Each passes: stambh/tally 10, kon/place 11, kon/name 9, galti-pakdo 7, nazariya/tri 6.
+- **Re-certs: none.**
+  - 2,808 first screens hash the same before and after: 12 families, every served level at 3 seeds, three languages, kagaz and raat; the hash covers texts, painter uses, marks, and controls with their disabled state.
+  - The changes show only after a miss, which the cert's screens do not reach.
+  - The cert's law part now passes law 4 everywhere.
+  - `play.json` is untouched; `cert-item-hash` and `r7-games-cert-twin` pass.
+- **Tests run, each separately:**
+  - Builds and checks: `npx tsc -b`, `npx vite build`, `check-prompt-budget`, `build-coverage --check`, `context.mjs --check`.
+  - Law and gate-2 suites: `r8-play-laws` (12), `r8-laws-idea-words`, the five batteries, `r8-gate2-shadow`, `r8-gate2-facts-row`, `r8-naming-off`, `cert-item-hash`, `r7-games-cert-twin`, `test-isolation`.
+  - Family suites: `r7-games-{aakash,badlaav,bhaap,chhaano,jaanch,rang,kon,kon-angles,kyun-chumbak,nazariya,nishana,nishana-hop,taraazu-weigh}`, `r8-games-kon-{place,place-gate2,name,name-gate2,name-view}`, `r4-games-core-*`, `r4-khand-law`.
+  - Play suites: `play-{logic,evidence,react,server,turn-seam}`, `r7-audit-beliefs`, `r8-play-{pick,trail}`, `r8-picks-default`.
+- **Browser suites.** No `tests/*-browser.test.mjs` names a family changed here (a grep for "rang" matched only "range" in `r8-font-match-browser`). `r8-games-kon-layout` (kon/place's view changed) ran with the container's Chromium and passed (8 pass, 0 fail, 0 skipped).
+
+**Questions for main:**
+1. `mark`, `file` and `sort` are closer to a pick than to an experiment: each records what she saw. I fixed them by the experiment form, as your list has them, so a repeat on the same set-up is a look and nothing is greyed. Greying would be wrong where the miss was about a step not yet done ("not dry yet", "not sure yet"), because it would tell her the answer. Keep this?
+2. An experiment's set-up is the world as it is (the act and the state it runs on), so the same act after the world has changed is a new experiment and can miss again. For example, dragging the Sun after a spin. Should the set-up be narrower (the card's item only)?
+3. The pick keys carry what a pick's rightness rests on: kon/place draw's placement and dot, and kyun-lab/dhruv's tests. So "greyed until the level ends" reads "until what it rests on changes" there. Agreed?
+
 ## 2026-11-16, after S4 and S1 (`7868f983b`, gate exit 0: 7434 pass, 0 fail; PR #140)
 
 **The laws-audit list (the item after S4 and S1 in the second reading's order): nothing open but law 4's 20.** `LAWS-AUDIT.md` "Still breaking" is empty, every kon row is closed, and `KNOWN` in `tests/r8-play-laws.test.mjs` is empty in hinglish, en and hi. The only open rows are law 4's `CHECK_WAITS_OPEN` (20 family/modes: a pick, a typed number, an experiment), which wait on your ruling (Questions 1 and 2 of the S4/S1 entry below).
