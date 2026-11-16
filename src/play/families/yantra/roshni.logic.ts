@@ -501,9 +501,9 @@ function generate(req: GenRequest): Candidate<RoshniParams>[] {
 // ───────────────────────────── hidden, facts, board, grade ─────────────────────────────
 /** the words that would give the idea away are never said first (the teacher's line waits for the child's act) */
 const HIDDEN: Record<RoshniGoal, string[]> = {
-  parda: ["transparent", "translucent", "opaque", "not clearly", "saaf nahi"],
-  roshan: ["sunlight", "reflect", "the Sun", "suraj", "chamakta hai"],
-  dhak: ["own light", "luminous", "apni roshni", "the Sun", "suraj"],
+  parda: ["transparent", "translucent", "opaque", "not clearly", "saaf nahi", "पारदर्शी", "पारभासी", "अपारदर्शी", "साफ़ नहीं", "साफ नहीं"],
+  roshan: ["sunlight", "reflect", "the Sun", "suraj", "chamakta hai", "धूप", "सूरज", "सूर्य", "चमकता है"],
+  dhak: ["own light", "luminous", "apni roshni", "the Sun", "suraj", "अपनी रोशनी", "दीप्त", "सूरज", "सूर्य"],
 };
 export function roshniHidden(level: PlayLevel<unknown>): string[] {
   try { const v = validate(level); return v ? [...HIDDEN[v.params.goal]] : []; } catch { return []; }

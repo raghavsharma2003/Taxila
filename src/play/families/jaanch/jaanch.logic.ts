@@ -420,9 +420,9 @@ function generate(req: GenRequest): Candidate<JaanchParams>[] {
 // ───────────────────────────── hidden, facts, board, grade ─────────────────────────────
 /** the words that would give the idea away are never said first (the teacher's line waits for the child's act) */
 const HIDDEN: Record<JaanchGoal, string[]> = {
-  iodine: ["not sugar", "cheeni nahi", "starch only", "only starch"],
-  kaagaz: ["dries away", "sookh jaata", "only water", "sirf paani", "stays"],
-  dono: ["more than one", "ek se zyada", "several nutrients", "kai poshak"],
+  iodine: ["not sugar", "cheeni nahi", "starch only", "only starch", "चीनी नहीं", "सिर्फ़ स्टार्च", "सिर्फ स्टार्च"],
+  kaagaz: ["dries away", "sookh jaata", "only water", "sirf paani", "stays", "सूख जाता", "सूख जाती", "सिर्फ़ पानी", "सिर्फ पानी"],
+  dono: ["more than one", "ek se zyada", "several nutrients", "kai poshak", "एक से ज़्यादा", "एक से ज्यादा", "कई पोषक"],
 };
 export function jaanchHidden(level: PlayLevel<unknown>): string[] {
   try { const v = validate(level); return v ? [...HIDDEN[v.params.goal]] : []; } catch { return []; }
