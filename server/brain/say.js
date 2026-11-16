@@ -1313,6 +1313,8 @@ export function joinsWanted({ state, kit, ui = null, verdict = null, history = [
   if (v === "correct") out.push("verdict"); else if (["not_yet", "incorrect"].includes(v)) out.push("missVerdict");
   return out.filter((k) => k === "verdict" || k === "missVerdict" || has(k));
 }
+/** Whether the reply call is asked for joins (dc-r8-director24 M): only with TAXILA_MODEL_JOINS=on. */
+export const modelJoinsOn = () => String(process.env.TAXILA_MODEL_JOINS ?? "").toLowerCase() === "on";
 export function joinNoteOf(kinds, lang = "hinglish") {
   if (!kinds?.length) return null;
   return `After your reply, on its own line for each: JOIN <kind>: <words>. Kinds: ${kinds.map((k) => `${k} (${JOIN_AIM[k]})`).join("; ")}. Each in ${lang === "english" ? "English" : "the lesson's Hinglish"}, your own words, at most ${JOIN_MAX_WORDS} words, one sentence, no numbers, no question, no word from a question still to come, not a sentence you have said before.`;
@@ -1836,7 +1838,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
   const retSaid = state.lastMove?.returned?.said ?? null;
   const retNote = retSaid ? returnNoteOf(retSaid, state.lastMove.returned.topic, lang) : null;
-  const joinNote = joinNoteOf(joinsWanted({ state, kit, ui, verdict, history }), lang);
+  // (main, integration 77: the model's joins are OFF unless TAXILA_MODEL_JOINS=on. A live read of c6 × 4 children on the merged tree:
+  // of 40 joins and openers the model drafted, 23 fell back (it writes the lesson's terms into them), and of the 17 said one was false
+  // content — "Ab pitch ke chaaron kinaaron ka kul naap nikaalo" before a triangular flower bed. With the switch off no JOIN line is
+  // asked for, and the seam pass says its authored forms, as before M. Brain turns it on for a run once the prompt and joinProblem hold
+  // a join to words that name nothing of the lesson: to-brain 038.)
+  const joinNote = modelJoinsOn() ? joinNoteOf(joinsWanted({ state, kit, ui, verdict, history }), lang) : null;
   const lastNotes = [reqNote, shapeNote, cardNote, repeatNote, ownQNote, workedNote, retNote, joinNote].filter(Boolean).join(" ");
   try {
     reply = slot ? (await leadCall()) : null;
