@@ -6898,3 +6898,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-18762c2` (2026-11-16): Released 18762c2 with scripts/release.mjs: web taxila-web--s18762c2-yqf1 (was taxila-web--s1d2807e-8wxj), worker + canary/nightly jobs on taxila-worker:18762c2 (was 1d2807e); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 18762c2 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-release-20ec92e` (2026-11-16): Released 20ec92e with scripts/release.mjs: web taxila-web--s20ec92e-t6vb (was taxila-web--s18762c2-yqf1), worker + canary/nightly jobs on taxila-worker:20ec92e (was 18762c2); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 20ec92e --rollback.
