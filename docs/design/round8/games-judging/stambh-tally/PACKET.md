@@ -60,6 +60,13 @@ none.
 
 sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 149471 ms
 
+## Gate 2, H5 and H7 (2026-11-16, branch `claude/r8-gate2-h5h7`)
+
+- **H5, the facts row.** Until a level names a mix-up (naming off, or on but not yet named), the row the teacher gets for a tally level is `game=stambh/tally verdict=… first_try=0|1 checks=n`, and an impasse row is `game=… checks=n` (`server/play/routes.js` `seamOut`). Gone from it: `bundles`, `answer`, `mal`, `sign`, `crossesMissing`, `left`, `goal`, and the lead's `misses`, `extra`, `chose` and `next`. The trail still carries the raw act (misses, acts, extra, undos). A level that names `tally-four` (keep's `counted` from one level, or read on its repeat, naming on) keeps naming's own row unchanged.
+- **H5, the weight.** A read miss in the mix-up's form was CHANCE_WEIGHT (0.25) and any other miss GAME_WEIGHT (0.5). Now every miss leaves the play server at 0.5 (`nameOnRepeat`, for the three modes in `FACTS_UNTIL_NAMED`). 0.5 because a miss is not luck (`shared/play.ts`: an incorrect outcome keeps GAME_WEIGHT). It is also the weight naming-off already gave (`withNaming`) and the weight a named row has. Inside the play server the grade keeps 0.25 and `chanceMis`, so the session still remembers the sighting.
+- Asserted in `tests/r8-gate2-facts-row.test.mjs`. Through `POST /api/play/act`, on every served level of read and keep: 22 levels and 110 level ends in the gate (88 levels and 616 ends with `H5_FULL=1`). On the battery's naming-on path: 108 levels, 37 of them named.
+- **H7.** "gate 2, keep" now runs over **all 582 keep levels the generator can make**. They are enumerated from the generator's own bounds (`KEEP_SCENE`, `keepRowsAt`, rows 2 to 14, `tellsApart`). Each one is served by the law, and every level from 300 seeds lies among them. Before, it ran over the 269 that 12 seeds reach. The fewest slips are 3 on 336, 4 on 222 and 5 on 24. The worst one-slip-in-every-row is still 1 in 16, the blind "counted" 1 in 10,000 and "five" 1 in 32,768. The read proof already ran over every row the law serves. The served-read check now enumerates each fade's range as well. Time: 4 s for the gate-2 tests, 10 s for the whole file.
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`): "stop listing slips. `keep` may name from one level (its two totals together need three slips). `read` names tally-four only when the mix-up's number is typed on two levels whose bundles and loose lines both differ." **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): what must be rare is a child named a mix-up she does not hold over one sitting, so the 1 in 10 is the chance over a whole session, not per pair. The pair rule was over that line (5 in 32 over three levels); read now names on three levels, or on two when one of them is *firm*, within the session's first four levels (below, "Read: per session").
@@ -87,9 +94,9 @@ The mix-up's totals in keep are every row short by its own bundles. Keep rows ho
 
 The level law serves keep only with bundles in at least two rows and one row of two bundles, so **her totals together need at least 3 ordinary slips** to come out as the mix-up's. With any other way of reading (counted as one step, once for the level) the fewest is also 3 or more.
 
-| Keep, over all 269 generated levels | Result | Law 3's line |
+| Keep, over all 582 levels the generator can make (H7; was 269 from 12 seeds) | Result | Law 3's line |
 |---|---|---|
-| Fewest ordinary slips to the mix-up's totals ("counted") | 3 on 189 levels, 4 on 72, 5 on 8; never under 3 | one slip names nothing: it never gives them |
+| Fewest ordinary slips to the mix-up's totals ("counted") | 3 on 336 levels, 4 on 222, 5 on 24; never under 3 (was 189, 72, 8 of 269) | one slip names nothing: it never gives them |
 | A blind guess, "counted" (every total typed at random) | (1/100)^rows: 1 in 10,000 (2 rows), 1 in 1,000,000 (3 rows) | under 1 in 10 |
 | "five" (no line across anywhere): the slips | one per missing line across: at least 3 (every level has three groups of five) | — |
 | A blind guess, "five" (each stroke one of the two buttons at random) | at most (1/2)^15 = 1 in 32,768 (the smallest scene is 15 things) | under 1 in 10 |

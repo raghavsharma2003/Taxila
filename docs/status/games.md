@@ -6,6 +6,52 @@ gate 2 battery passes: stambh/tally (sha: `493262853`, gate exit 0: 7376 pass, 0
 gate 2 battery passes: kon/place (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 gate 2 battery passes: kon/name (sha: `493262853`, gate exit 0: 7376 pass, 0 fail)
 
+## 2026-11-16, gate 2 H5 (the facts row) and H7 (every generated level) (branch `claude/r8-gate2-h5h7`, from `8f5412387`)
+
+**Done (`NAMING_OFF` untouched; nothing a child sees changes; no served level or drawing changed: generatePlace's output is byte-identical over 120,866 levels, so no re-cert):**
+- **H5, the facts row.** In stambh/tally, kon/place and kon/name (`shared/play.ts` `FACTS_UNTIL_NAMED`), until a level names a mix-up, the seam row the teacher gets is exactly `game verdict first_try checks`. `checks` is the family's checks, or its commits. An impasse row is `game checks` (`server/play/routes.js` `seamOut`).
+
+  | Mode | The row before | The row now |
+  |---|---|---|
+  | tally | the lead, then `bundles`, `answer`, `goal`, `left`, `checks` (`mal`/`sign` once named) | `game verdict first_try checks` |
+  | place | the lead and `placed`, `centre_px`, `base_deg`, `read`/`made`/`pick`, `locked`, `commits` | `game verdict first_try checks` |
+  | name | the lead, then `said`/`taps`/`picked`, `name`/`lit`, `commits` | `game verdict first_try checks` |
+
+  The lead was `verdict first_try misses extra chose next`. The trail keeps the raw act. A level that names a mix-up keeps naming's own row, unchanged.
+- **H5, the weight.** A pick's miss in the mix-up's form was CHANCE_WEIGHT 0.25 (say, find, tally read, kon/place's four picks; and say's unconfirmed sighting under H3). Any other miss was GAME_WEIGHT 0.5. Every miss now leaves the play server at **0.5** (`nameOnRepeat`). A miss is not luck, and 0.5 is what naming off (`withNaming`) and a named row already give. The grade inside the server keeps 0.25 and `chanceMis`, so the session still remembers the sighting.
+- **H5 test:** `tests/r8-gate2-facts-row.test.mjs`.
+  - Through `POST /api/play/act` on every served level for 2 children × 3 fades × 2 pL: solve, each mal-rule (then the solve, and alone), blind and random-slip children, and an impasse. 77 levels and 467 level ends; with `H5_FULL=1`, 313 levels and 2,483 ends in 230 s.
+  - On the battery's naming-on path: 408 levels, 102 of them named.
+  - About 42 s.
+- **H7:**
+
+| Test | Levels before → after | Time |
+|---|---|---|
+| tally "gate 2, keep" | 269 (12 seeds) → **582** (enumerated: `KEEP_SCENE`, `keepRowsAt`, rows 2–14, `tellsApart`; every level from 300 seeds among them) | file 13 → 10 s |
+| tally "gate 2, read" (served ⊆ servable) | 12 seeds → every row of each fade's range (the proof was already over every servable row) | (same) |
+| kon/place gate-2 tables (bands, slips, scale, session, "never 140") | 1,014 param sets / 719 keys×tilt×fade (8 seeds) → **2,510** (`placeLevelOf` swept over key, orientation, tilt, fade; 742,987 generated levels checked, none outside) | 6 → 16 s |
+| kon/place join table | sampled (the join order is the seed's coin, not the key): unchanged | — |
+| kon/name gate-2 tables | 621 say / 1,280 find (gate, unchanged) → `KON_NAME_GATE2_FULL=1`: 36,475 / 63,948 (a sample still: the space is tens of millions of figures) | 3 s / 91 s |
+| kon/name battery, discriminating say levels | 4 seeds a fade → 200 under `HABIT_FULL=1` | (with the full battery) |
+| the three batteries | served sessions by design (gate sweep / `HABIT_FULL=1`, times as before) | unchanged |
+
+- **Found by the wide kon/name sweep:** on some find levels, one slip off the key lands on the mix-up's arc 0.221 of the time; the packet said 1 in 5 was the worst. The third sighting is then 0.036 a session (was 0.027): still under the line. The full sweep asserts the bound.
+- **Tests run (each on its own; not the full gate, not the browser suites):**
+  - `r8-gate2-facts-row`;
+  - the three battery files (gate sweep);
+  - `r8-games-{stambh-tally,kon-place,kon-place-gate2,kon-name,kon-name-gate2}`, the last also with `KON_NAME_GATE2_FULL=1`;
+  - `r7-games-{kon,kon-angles,stambh}`, `r4-games-core-kon`;
+  - `r8-naming-off`, `r8-play-laws`, `r8-picks-default`, `play-evidence`, `r8-play-{trail,pick,adapt,follow,phone-seam}`, `play-server`, `round3-integration`, `test-isolation`;
+  - `tsc -b`, the prompt budget, `build-coverage --check`, `context.mjs --check`.
+
+**Next:** the per-day count (H6, the design kept for the first real cohort), then one judge per mode.
+
+**Questions for main:**
+1. **The equal weight is scoped to the three modes.** Every other family's picks still send a mix-up-form miss at 0.25 before naming, and the weight tells the form there too. Extend `FACTS_UNTIL_NAMED`'s weight rule to every family's picks (`nameOnRepeat`)?
+2. **`chose` and `next` left the row too.** They are the picker's, not her act. Before naming they could only be `pick_fit`, `fade_*`, `step_up` or `step_down`, but the ruling's "nothing else" was read strictly. Put them back?
+3. **The trail still carries `misses`, and it reaches the lesson (`playTrail`).** Under H3 a confirmed say sighting has two misses where a slip has one. The ruling keeps the raw act in the trail; should the teacher's prompt read only `firstTry` from it before naming?
+4. **kon/name cannot be enumerated.** Accept the wide sweep (100k levels behind a flag) as H7 for kon/name, and the find slip bound of 0.221 (third sighting 0.036 a session)?
+
 ## 2026-11-16, gate 2: a sighting counts only on a discriminating level (branch `claude/r8-gate2-discrim`, from `e608271c9` + `origin/int/r6`)
 
 **Done (`dc-r8-gate2-discriminating-level`, `RULINGS-2026-11-16-gate2-answers.md`; `NAMING_OFF` untouched; before a miss nothing a child sees changes except which levels are served; every battery assertion is real, no todo):**

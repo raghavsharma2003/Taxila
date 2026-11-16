@@ -78,6 +78,17 @@ none.
 
 sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null}; 101638 ms
 
+## Gate 2, H5 and H7 (2026-11-16, branch `claude/r8-gate2-h5h7`)
+
+- **H5, the facts row.** Until a level names `vertex-name`, the row the teacher gets for say and find is `game=kon/name verdict=… first_try=0|1 checks=n` (`checks` is the level's commits), and an impasse row is `game=… checks=n` (`server/play/routes.js` `seamOut`). Gone from it: `said`, `taps`, `picked`, `name`/`lit`, `goal`, `shown`, and the lead's `misses`, `extra`, `chose`, `next`. `misses` mattered most here: under H3 a confirmed say sighting has two misses and a slip has one. The trail keeps the raw act. A named level keeps naming's own row.
+- **H5, the weight: "say: 0.25 against 0.5 tells them apart".** A say or find miss in the mix-up's form was CHANCE_WEIGHT (0.25). So was an unconfirmed say sighting (H3 strips `chanceMis`, and the weight stayed). Any other miss was GAME_WEIGHT (0.5). Now every miss leaves the play server at **0.5** (`nameOnRepeat`). A miss is not luck. 0.5 is also what naming-off (`withNaming`) and a named row already give. The grade inside the server keeps 0.25 and `chanceMis` for the session's memory. A correct row keeps its weight: a find solve and a faint solve stay at 0.25.
+- Asserted in `tests/r8-gate2-facts-row.test.mjs`. Through the route: 20 served levels and 94 level ends in the gate (78 levels and 512 ends in the full sweep). Naming on: 108 levels, 21 named.
+- **H7.** The generator's space here cannot be enumerated. A figure is five angle sizes on a 5° grid, the joined pair, three ray lengths, a turn, four letters, the asked angle and the reading order: tens of millions of figures before its checks.
+  - The gate keeps its sample of 621 say and 1,280 find levels.
+  - `KON_NAME_GATE2_FULL=1` runs a wide one: 400 say seeds and 2,000 find seeds per request, **36,475 say and 63,948 find levels, 90 s**.
+  - `HABIT_FULL=1` draws the battery's discriminating say levels from 200 seeds instead of 4.
+  - **Found by the wide sweep:** on some find levels, one slip off the key lands on the mix-up's arc 0.221 of the time. That is over the 1 in 5 the packet gave as the worst. The third sighting is then 0.036 a session (was 0.027), still under the line. The test asserts the bound there and keeps the exact 1 in 5 on the gate's sample.
+
 ## Gate 2: evidence
 
 Rulings: `RULINGS-2026-11-11-night.md` (kon/name, "For gate 2": "in `say`, a vertex-first or vertex-last name is named on its second occurrence (three random taps produce it 1 time in 6, over the 1 in 10 line); a first fade-1 solve with O at the vertex is fade-weighted") and `RULINGS-2026-11-15.md` ("Kept for gate 2", five items, answered one by one below; and "a wide-key level names nothing from one solve"). Decision `dc-r8-game-gate-play-then-evidence`. **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named on its second occurrence, vertex-name was over it (1 in 7.6 a session for `say`, 1 in 5.5 for `find`); it is now named on the **third** ("Per session", below; branch `claude/r8-gate2-session`).
