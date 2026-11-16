@@ -345,7 +345,13 @@ export const PREDICATES = {
     // (a right answer's close is no hint: the card after it — a parent card coming back — is posed whole)
     if (ctx.prevCls === "correct" && !(r.pageParts ?? []).some((x) => x.part === "simpler")) return null;
     const c = low(r.card ?? "");
-    if (sentencesOf(r.card ?? "").length < 2) return null;
+    // (dc-r8-director23 harness: a one-sentence card with an authored reask — c5-t01 steady 10, stuck 14, steering 10 — counts too)
+    const hasReask = (() => { let hit = false; const walk = (o) => { if (hit || !o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);
+      if (o.reask && o.prompt && [o.prompt.hi, o.prompt.en, o.prompt].some((p) => typeof p === "string" && low(p) === c)) { hit = true; return; } for (const v of Object.values(o)) walk(v); }; walk(ctx.script ?? {}); return hit; })();
+    // (one-sentence cards count too, main on director23, when a shorter question exists: an authored reask, or a clause after its colon
+    // that is a question of its own; a card that is only its question is said as its question)
+    const clauseQ = (() => { const c0 = norm(r.card ?? ""); const m = c0.split(/[:;]\s+/).at(-1) ?? ""; return m !== c0 && /[?？]$/.test(m) && m.split(/\s+/).length >= 3; })();
+    if (sentencesOf(r.card ?? "").length < 2 && !hasReask && !clauseQ) return null;
     const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));
     return said && low(r.text).includes(c) ? "the whole card said again after a hint, said whole in her last two turns" : null;
   },
@@ -693,7 +699,9 @@ export const ORDER_LAWS = {
     const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
     const card = key(r.card ?? "");
     const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x));
-    return ss.length && ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
+    // (dc-r8-director23 harness, c4 stuck 10: the switch line and the card only — no new words at all — is the fault too)
+    if (!ss.length) return "a Hindi request answered with no new words (the switch line and the card only)";
+    return ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words: "${ss[0].slice(0, 60)}"` : null;
   },
   /** dc-r8-director23 S (on the seam pass's record): a miss verdict and its remediation always have their joint. Reads `seams` only. */
   missRemediationJoint(L, r) {

@@ -3097,9 +3097,11 @@ export function step(prev, input) {
     const said = [lm.point, lm.simpler, ...(lm.rendered ?? []), ...(lm.sayFirst ?? [])].map(txt).filter((x) => x && String(x).trim());
     const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
     const inLast2 = (x) => last2.includes(normLine(x).slice(0, 50));
-    if (said.length && said.every(inLast2)) {
+    // (a Hindi request answered with nothing but the switch line and the card — c4 stuck 10 — has no new words either)
+    if (said.length ? said.every(inLast2) : cell.column === "hindi") {
       const cl = cellLines(prev, input, cell.column);
-      const it = prev?.activeItemId ? findItem(prev, input.kit, prev.activeItemId) : null;
+      const liveId = prev?.activeItemId ?? prev?.splitHold?.activeItemId ?? out.state.activeItemId ?? null;
+      const it = liveId ? findItem(prev, input.kit, liveId) : null;
       const sk = it?.skillId ? skillScriptOf(input.kit, it.skillId) : null;
       const beat = it?.scriptAsk && it.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === it.scriptAsk.beatId) : null;
       const cardS = beat ? beat.ask : it?.scriptCheck ? sk?.checks?.find((c) => c.id === it.scriptCheck.checkId) : null;

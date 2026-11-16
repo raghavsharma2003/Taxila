@@ -2960,7 +2960,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // alone; after the second miss the whole card is said)
       const askMark = rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
       // (a reask's {friend} slot is filled as the card's is — state.js friendly)
-      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : cardSs.at(-1);
+      // (dc-r8-director23 harness: a one-sentence card with no reask is asked by the clause after its colon when that clause is a question
+      // of its own — "…ruka: woh 0 se kitne kilometre par hai?")
+      const tailQ = (() => { if (askMark || cardSs.length >= 2) return null; const c0 = norm(card); const m = c0.split(/[:;]\s+/).at(-1) ?? ""; return m !== c0 && /[?？]$/.test(m) && m.split(/\s+/).length >= 3 ? m.charAt(0).toUpperCase() + m.slice(1) : null; })();
+      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : tailQ ?? cardSs.at(-1);
       const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2;
       const saidIn2 = last2.some((t) => t.includes(norm(card).toLowerCase()));
       // (dc-r8-director22 W: a card said in her last two turns is not said again unless the child asks for it — "phir se bolo", "sawaal kya
@@ -2974,10 +2977,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (a Hindi request keeps S1 as it was: the question alone only after help said in Hindi; with none, the card in Hindi is its new words)
       // (dc-r8-director23 C, settling 032's question: a picture turn says the caption, then the card's question alone — never the whole
       // card; after the second miss the card is said whole)
-      } else if (cardSs.length >= 2 && q && rqNow === "visual" && !missedTwice && (saidIn2 || posedBefore)) {
+      } else if ((cardSs.length >= 2 || ((askMark || tailQ) && norm(q) !== norm(card))) && q && rqNow === "visual" && !missedTwice && (saidIn2 || posedBefore)) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
-      } else if (cardSs.length >= 2 && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
+      // (dc-r8-director23 harness, c5-t01 steady 10, stuck 14, steering 10: a one-sentence card with Learning's reask is asked by its reask too)
+      } else if ((cardSs.length >= 2 || ((askMark || tailQ) && norm(q) !== norm(card))) && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
       }
