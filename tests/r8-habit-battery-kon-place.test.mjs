@@ -27,7 +27,7 @@ let RES = null, OLD = null, over = [];
 const kit = (goal, rule) => RES.goals[goal].kits[rule];
 // answer 4's level mix: from this level (0-based) a session that has not met an acute angle or one opening anticlockwise
 // is served one (kon.place.ts placeNeeds)
-const MIX_FROM = 3;
+const MIX_FROM = 2;
 // the negative control's children, run under the rules from before H1
 const OLD_KIDS = new Set(["const:75", "typing:key 1 down", "drop:drop 20 up", "drop:drop 24 up", "blind"]);
 before(async () => {
@@ -71,11 +71,17 @@ test("children who hold the mix-up: listed with why, and how often each is named
   assert.ok(rowOf(RES, "measure", "vertex-off").all[kit("measure", "vertex-off")] >= 0.75);
   assert.ok(rowOf(RES, "draw", "vertex-off").all[kit("draw", "vertex-off")] >= 0.75);
   assert.ok(rowOf(RES, "draw", "btn-A").all[kit("draw", "join-wrong-end")] > 0);
-  // answer 4 lets the battery say whether "always the larger number" and "always the inner scale" are named: reported
-  for (const [g, c] of [["measure", "larger"], ["measure", "inner"], ["draw", "inner"]]) t.diagnostic(`answer 4: ${g} · ${rowOf(RES, g, c).label}: named ${rowOf(RES, g, c).all[kit(g, "wrong-scale")].toFixed(3)}`);
+  // note 004, answer 1: a one-scale or one-number reader is wrong on one side or one kind of angle only ("always the inner
+  // scale": where it opens anticlockwise; "always the larger number": an acute angle). After her first sighting the next
+  // level is of that side and kind, and the level mix comes by the third level, so a second fits in the four. Before: 0 and
+  // 0.031 (gate sweep), 0 and 0.063 (full); now named in every session of the gate sweep
+  for (const [g, c] of [["measure", "larger"], ["measure", "inner"], ["draw", "inner"]]) {
+    t.diagnostic(`note 004: ${g} · ${rowOf(RES, g, c).label}: named ${rowOf(RES, g, c).all[kit(g, "wrong-scale")].toFixed(3)}`);
+    assert.ok(rowOf(RES, g, c).all[kit(g, "wrong-scale")] >= 0.75, `${g} ${c}`);
+  }
 });
 
-test("answer 4 (dc-r8-gate2-discriminating-level): by its fourth level every served session of measure and draw has met an acute angle and an angle that opens anticlockwise", () => {
+test("answer 4 (dc-r8-gate2-discriminating-level): by its fourth level (now its third: note 004) every served session of measure and draw has met an acute angle and an angle that opens anticlockwise", () => {
   let sessions = 0;
   withGenMemo(() => {
     for (const goal of ["measure", "draw"]) {
@@ -86,8 +92,9 @@ test("answer 4 (dc-r8-gate2-discriminating-level): by its fourth level every ser
           const { trace } = runSession({ entry, cell: { goal, fade, pL, doors }, child, sIdx: k });
           sessions++;
           assert.equal(trace.length, 4, `${goal} ${cid}: four levels`);
-          assert.ok(trace.some((x) => x.params.theta < 90), `${goal} ${cid} f${fade} ${doors}: an acute angle by the fourth level (${trace.map((x) => x.params.theta)})`);
-          assert.ok(trace.some((x) => !x.params.mirror), `${goal} ${cid} f${fade} ${doors}: an angle opening anticlockwise by the fourth level`);
+          const by = trace.slice(0, MIX_FROM + 1);
+          assert.ok(by.some((x) => x.params.theta < 90), `${goal} ${cid} f${fade} ${doors}: an acute angle by the third level (${trace.map((x) => x.params.theta)})`);
+          assert.ok(by.some((x) => !x.params.mirror), `${goal} ${cid} f${fade} ${doors}: an angle opening anticlockwise by the third level`);
         }
       }
     }

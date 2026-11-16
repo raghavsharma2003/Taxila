@@ -564,9 +564,12 @@ export function placeSigOf(sig: string): { goal: string; theta: number; start: n
 /**
  * What a measure or draw level must be, beyond the law's own checks (gate 2, the answers of 2026-11-16), from what the session
  * has served and seen. → the predicates to try, strictest first (an empty list: no constraint).
- *   the mix (answer 4)  by its fourth level (`n`, 0-based, ≥ NAMING_LEVELS − 1) a session has served at least one acute angle
- *                       and at least one that opens anticlockwise: from the fourth on, while either is missing, a level is
- *                       one that supplies what is missing (an acute angle opening anticlockwise supplies both);
+ *   the mix (answer 4)  by its third level (`n`, 0-based, ≥ NAMING_LEVELS − 2) a session has served at least one acute angle
+ *                       and at least one that opens anticlockwise: from the third on, while either is missing, a level is
+ *                       one that supplies what is missing (an acute angle opening anticlockwise supplies both). The ruling
+ *                       asks it by the fourth; by the third leaves the fourth for a second level of the same side and kind
+ *                       after a sighting on it (note 004: a one-scale or one-number reader is wrong on one side or kind
+ *                       only, and met it first on the fourth level, too late for a second sighting);
  *   the steer (answer 1) after a sighting of vertex-off (`bases`: the base directions of its levels), a level whose base
  *                       direction differs by `turn` or more from every one of them (else from at least one), so the bottom
  *                       edge on the vertex sits elsewhere on the board while it sits the same in the protractor's frame.
@@ -580,7 +583,7 @@ export function placeSigOf(sig: string): { goal: string; theta: number; start: n
 export function placeNeeds(o: { n?: number; recent?: string[]; bases?: number[]; scale?: { cw: boolean; keys: number[]; acute?: boolean } | null; levels?: number; turn?: number }): { id: string; ok: (p: PlaceParamsLike) => boolean; steer: boolean }[] {
   const levels = o.levels ?? 4, n = Number(o.n) || 0, turn = o.turn ?? 45;
   const served = (o.recent ?? []).map(placeSigOf).filter((x): x is NonNullable<ReturnType<typeof placeSigOf>> => !!x);
-  const needAcute = n >= levels - 1 && !served.some(isAcute), needAcw = n >= levels - 1 && !served.some(opensAnticlockwise);
+  const needAcute = n >= levels - 2 && !served.some(isAcute), needAcw = n >= levels - 2 && !served.some(opensAnticlockwise);
   const mix = (p: PlaceParamsLike) => (!needAcute || isAcute(p)) && (!needAcw || opensAnticlockwise(p));
   const bases = n < levels ? (o.bases ?? []).filter((b) => Number.isFinite(b)) : [];
   const sc = n < levels && o.scale ? o.scale : null;
