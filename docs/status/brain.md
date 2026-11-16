@@ -2,6 +2,16 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 06:10 · `1811ca75` (H)
+
+**Done (gated: test:all 7244 pass; the only failures are the two worktree-only browser suites):** H — a Hindi request gets words she
+did not say in her last two turns: the simpler when unspent, else the beat's second wording (pointAlt), else its point. Gated
+`hindiNewWords`: 2 on the rows before, 0 after. Counts: joints.hindiSwitch 14 → 16.
+
+**Doing next:** B (a bridge changes no board), K (a key said once; a yes/no key as a sentence), A (AI-line reply with the phrase forms).
+
+**Questions for main:** none.
+
 ## 2026-11-16 05:40 · `1708b986` (W)
 
 **Done (gated: tsc, vite build, prompt budget, test:all 7244 pass; the only failures are the two worktree-only browser suites):**
