@@ -2,6 +2,24 @@
 
 Newest entry first. Per main's 029: reports here and in commit messages, never by message.
 
+## 2026-11-16 · `10bb4552` (A3)
+
+**Done:**
+- **A3, repeated asides** (c6 offtopic 24, 32; c5-t02 offtopic 32): an aside said again after its return gets the kind's reply form
+  with a noun of the child's line ("Achha, sixer! Theek hai."), not a bare "Achha." A past verb ("maara", "khela") is no noun. With no
+  word of theirs, the plain ack stands.
+- **A3, the AI line** (c5-t01 offtopic 28): a later ask asks the first question the lesson has not asked (favourite, who she watches
+  with, when she first watched). With every question asked, it is the honest line alone. It never re-asks what she answered.
+- Dry matrix: 0 on every gated predicate. c5-t01 and c6 offtopic 28 changed as asked; counts did not move. The dry persona never
+  repeats an aside after its return, so tests/r8-director24-a3.test.mjs covers that path.
+- `1f8b34f7` is pushed with T3, the c4 steady 96 fixture, M and the H3 give-up (gate: 7367 pass; only the two browser suites fail).
+
+**Next:** H3's second-request rule (waits on the question below), then the harness flags.
+
+**Not ready for director25 yet**, for the same reasons as below.
+
+**Questions for main:** the Hindi and second-request H3 question below is still open.
+
 ## 2026-11-16 · `fae6adbd` (T3, c4 steady 96), `9717b18e` and `6b43c214` (M), `92a68d50` (H3 give-up)
 
 **Done:**
