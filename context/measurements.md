@@ -6910,3 +6910,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-5dd9f07` (2026-11-16): Released 5dd9f07 with scripts/release.mjs: web taxila-web--s5dd9f07-z7ft (was taxila-web--s20ec92e-t6vb), worker + canary/nightly jobs on taxila-worker:5dd9f07 (was 20ec92e); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 5dd9f07 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-gate2-shadow-2026-11-16` (2026-11-16): Method: S4, laws.mjs law 4 over coverage, 2 seeds, 1 per goal, hinglish (then all three languages in r8-play-laws). Before the fix, 48 family/modes broke law 4. After it, 20 do, all listed in CHECK_WAITS_OPEN; the other 28 break no law. Method: S1, tests/r8-gate2-shadow through the real routes, n = holder sessions of 4 levels (fades 1-3, two door sequences, 1 in 4 from the home). stambh/tally: 30 sessions, 120 tally levels, wouldName on 61 (37 by repeat, 24 by act). kon/place: 72 sessions, 288 levels, 63 (all by repeat). kon/name: 36 sessions, 144 levels, 6 (all by repeat). The seam row, evidence, tokens, KT events and home fold carried no misconceptionId, chanceMis or wouldName. A session with its shadow memory dropped after every level served the same levels, rows, seams, moments, lines and doors.
