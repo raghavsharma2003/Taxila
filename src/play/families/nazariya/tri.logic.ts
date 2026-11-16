@@ -14,7 +14,7 @@
 // shape-looks (more: B's corner slid along A's top line, "the middle one looks bigger").
 // Not here: an obtuse triangle's outside height is not in the kit's skills, so no level asks for it (a corner B moves past
 // the end of the base still holds base × height ÷ 2, and the law says so).
-import type { Candidate, Facts, FamilyLogic, GenRequest, Moment, NazariyaAct, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
+import { GAME_WEIGHT, HABIT_RULES, type Candidate, type Facts, type FamilyLogic, type GenRequest, type Moment, type NazariyaAct, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { gradeLevel, popUndo, pushUndo } from "../../core/replay.ts";
 import { boxActs, built, connected, DECISIVE_REFUSALS, inside, lvl, mom, plotOf, rectCells, solidBox, zeros, type NzState, type Plot } from "./grid.ts";
@@ -224,8 +224,11 @@ function malActs(level: PlayLevel<TriParams>, mal: string): NazariyaAct[] | null
   const p = level.params, t = p.tri;
   if (p.goal === "more") {
     if (mal !== "shape-looks") return null;
-    const mid = Math.round((t.x0 + t.x1) / 2);
-    return mid === t.xa ? null : [{ kind: "apex", x: mid, z: t.za }, { kind: "check" }];
+    const mid = Math.round((t.x0 + t.x1) / 2), far = t.xa === t.x0 ? t.x1 : t.x0;
+    // after the play-out (the cloths the same) she slides it along A's top line again, to the base's other end: the
+    // confirmation the grade asks for (confirmMore)
+    // (the base is 2 or more, so the middle is never an end)
+    return mid === t.xa ? null : [{ kind: "apex", x: mid, z: t.za }, { kind: "check" }, { kind: "apex", x: far, z: t.za }, { kind: "check" }];
   }
   if (p.goal === "box") {
     const r = boxMal(p, mal);
@@ -233,6 +236,42 @@ function malActs(level: PlayLevel<TriParams>, mal: string): NazariyaAct[] | null
   }
   const n = matchMal(t, mal);
   return n !== null && n <= p.w * p.d ? [...floorActs(p, n), { kind: "check" }] : null;
+}
+
+/**
+ * Gate 2, the computed default (FamilyLogic.pickOptions): more's one pick is the grid point tent B's top corner is put on,
+ * then the check. Every point the law takes (0 ≤ x ≤ w, above the base: 0 ≤ z < zb) is an option, (w + 1) × zb of them;
+ * shape-looks shows on the w points of A's top line other than A's own corner. The same acts after every option: the
+ * corner put on A's top line over the base's other end and checked again (the confirmation the grade asks for: confirmMore),
+ * so an option is read as showing the mix-up exactly when the pick itself does. null outside more.
+ */
+export function triPickOptions(p: TriParams, mal: string): NazariyaAct[][] | null {
+  if (p.goal !== "more" || mal !== "shape-looks") return null;
+  const t = p.tri, after: NazariyaAct[] = [{ kind: "apex", x: t.xa === t.x0 ? t.x1 : t.x0, z: t.za }, { kind: "check" }];
+  const out: NazariyaAct[][] = [];
+  for (let z = 0; z < t.zb; z++) for (let x = 0; x <= p.w; x++) out.push([{ kind: "apex", x, z }, { kind: "check" }, ...after]);
+  return out;
+}
+
+/** the check's own answers in more (an apex act's refusal is not one) */
+const MORE_ANSWERS = new Set(["same_cloth", "less_cloth"]);
+/**
+ * Gate 2 (the habit battery, tests/r8-habit-battery-nazariya-tri.test.mjs; kon/name say's H3 shape, dc-r8-gate2-habit-children):
+ * in more, B's corner on A's top line is a sighting only when it is confirmed on the same level: the next corner she checks,
+ * after the play-out has shown the two cloths the same, is again on A's top line off A's corner. The point one row above A's
+ * top line, the one a careful child takes, has three neighbours on that line, so a slip of the finger (once, or the same one
+ * every level) gives the mix-up's act; a slip is corrected once she has seen the cloths come out the same, a belief is not.
+ * Unconfirmed (the next check wins, is less, or never comes), the row is a plain miss: no mix-up, at the game weight (a miss
+ * is not luck: tests/r7-games-chance-weight.test.mjs; H5, a miss in the mix-up's form weighs as any other). Nothing she sees
+ * changes: after a miss the level already waits for her next corner.
+ */
+function confirmMore(g: PlayGrade): PlayGrade {
+  const e = g.evidence[0];
+  if (!e?.chanceMis) return g;
+  const next = g.moments.find((m) => m.seq > e.actSeq && (m.kind === "solved" || m.kind === "misconception_consequence" || (m.kind === "law_refused" && MORE_ANSWERS.has(String(m.facts.why)))));
+  if (next?.kind === "misconception_consequence" && next.misconceptionId === "shape-looks") return g;
+  const { chanceMis: _c, chanceAct: _a, ...rest } = e;
+  return { ...g, evidence: [{ ...rest, weight: GAME_WEIGHT }, ...g.evidence.slice(1)] };
 }
 
 const JITTER = 0.35;
@@ -287,6 +326,11 @@ export const triLogic: FamilyLogic<TriParams, TriState, NazariyaAct> = {
   family: "nazariya", modes: ["tri"], malRules: TRI_MAL,
   // more: one corner placed above A's top line wins (a lucky tap 26 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
   oneDecision: ["more"],
+  // gate 2, the default (rulings 2026-11-16, answer 2 under "a computed default"): the exact options of the apex pick
+  pickOptions: (level: PlayLevel<TriParams>, mal: string) => triPickOptions(level.params, mal),
+  // gate 2 (H1): what she did at more's pick, as a value: the grid point she put B's corner on (the same point on two levels
+  // is one act: a child who puts it on one point every level, or where she put it last time, is not named on a repeat)
+  sightingOf: (level: PlayLevel<TriParams>, mal: string, s: TriState) => (level.params.goal === "more" && mal === "shape-looks" && s.pt ? `${s.pt[0]},${s.pt[1]}` : null),
   validate(level) {
     if (!level || level.family !== "nazariya" || level.mode !== "tri") return null;
     const p = validate(level.params);
@@ -296,7 +340,8 @@ export const triLogic: FamilyLogic<TriParams, TriState, NazariyaAct> = {
   apply, goalMet: (_l, s) => s.done,
   generate, solve, shortcut, malActs,
   grade(level: PlayLevel<TriParams>, acts: PlayActEnvelope<NazariyaAct>[]): PlayGrade {
-    return gradeLevel(triLogic, level, acts, { decisiveRefusals: DECISIVE_REFUSALS, final: true });
+    const g = gradeLevel(triLogic, level, acts, { decisiveRefusals: DECISIVE_REFUSALS, final: true });
+    return level.params.goal === "more" && HABIT_RULES.on ? confirmMore(g) : g;
   },
   facts, board,
 };

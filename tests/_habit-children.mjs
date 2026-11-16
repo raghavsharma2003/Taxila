@@ -22,7 +22,7 @@
 // The rules the battery proves (dc-r8-gate2-habit-children H1, H3, H4) are on in the product; `legacy` (runBattery,
 // withRules) runs the same children under the rules from before them (shared/play.ts HABIT_RULES off inside one synchronous
 // run), so each mode's negative control keeps showing the failures those rules fix.
-import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, basesOf, NAMING_LEVELS } from "../server/play/levels.js";
+import { coverage, entryKey, seedOf, currentLevel, nextBody, afterLevelBody, nameOnRepeat, entryOfBody, basesOf, steersOf, NAMING_LEVELS } from "../server/play/levels.js";
 import { gradeActs, lessonEvidence } from "../server/play/grade.js";
 import { logicFor } from "../src/play/families/index.ts";
 import { mulberry32, hash32 } from "../src/play/core/rng.ts";
@@ -30,11 +30,16 @@ import { TALLY_PAD, TALLY_PAD_COLS, four, tallyFourActs, numberLineEnd } from ".
 import { PAD as KON_PAD, PAD_COLS as KON_PAD_COLS, padTake, placeSigOf, isAcute, opensAnticlockwise, goodPose, vertexOffPose, centreOnArmPose, initPlace, asPlaced, markFor, joinAFirst, PRINT_EVERY, norm, BW, BH } from "../src/play/families/kon/kon.place.ts";
 import { asked, nameOf, corners, denotes, labelPoints, arcTargets, arcHit, angleSizes, LETTER_H, LETTER_W } from "../src/play/families/kon/kon.name.ts";
 import { HABIT_RULES } from "../shared/play.ts";
+import { workingOf, laterLine } from "../src/play/families/galti-pakdo/galti.logic.ts";
 
 export const MODES = {
   "stambh/tally": { family: "stambh", mode: "tally", goals: ["read", "keep"] },
   "kon/place": { family: "kon", mode: "place", goals: ["measure", "draw"] },
   "kon/name": { family: "kon", mode: "name", goals: ["say", "find"] },
+  // the computed default's families, as each gets exact pickOptions (RULINGS-2026-11-16-gate2-answers.md, answer 2 under "a
+  // computed default"): galti-pakdo's line pick (pakdo; sudhaaro makes the same verdict before its fix), nazariya/tri's apex
+  "galti-pakdo/kaapi": { family: "galti-pakdo", mode: "kaapi", goals: ["pakdo", "sudhaaro"] },
+  "nazariya/tri": { family: "nazariya", mode: "tri", goals: ["more"] },
 };
 export const FADES = [1, 2, 3];
 /** pL: none (the class default), and low, middle, high (the band the picker serves moves with it) */
@@ -60,7 +65,8 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, Math.round(v)));
 // currentLevel and nextBody are pure in the body; the session's chance memory and the reaction history are carried through
 // them untouched (nextBody spreads the body) and read by nothing that picks, so they are left out of the memo key. One part
 // of the chance memory does pick (dc-r8-gate2-discriminating-level): nextBody copies the placement sightings' base
-// directions into the next body (basesOf), so the next body's memo key carries them.
+// directions into the next body (basesOf), and (note 004, answer 1) what of each sighting's level steers the next
+// (steersOf: kon/place wrong-scale's side and key), so the next body's memo key carries both.
 const LEVEL_MEMO = new Map(), NEXT_MEMO = new Map();
 // (the rules in force are in every key: the steer of dc-r8-gate2-discriminating-level is one of the rules `legacy` turns off)
 const keyOf = (s, e) => { const { chance: _c, hist: _h, ...rest } = s; return `${HABIT_RULES.on ? 1 : 0}|${entryKey(e)}#${JSON.stringify(rest)}`; };
@@ -70,9 +76,10 @@ function levelOf(s, e) {
   return LEVEL_MEMO.get(k);
 }
 function nextOf(s, e, door) {
-  const bases = basesOf(s.chance);
-  const k = `${door}|${keyOf(s, e)}|${JSON.stringify(bases)}`;
-  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance: bases.map(({ mis, base }) => ({ mis, act: { base } })), hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
+  const bases = basesOf(s.chance), steers = steersOf(s.chance);
+  const k = `${door}|${keyOf(s, e)}|${JSON.stringify(bases)}|${JSON.stringify(steers)}`;
+  const chance = [...bases.map(({ mis, base }) => ({ mis, act: { base } })), ...steers.map(({ mis, ...steer }) => ({ mis, steer }))];
+  if (!NEXT_MEMO.has(k)) { const b = nextBody({ ...s, chance, hist: null }, e, door); delete b.up; delete b.chance; delete b.hist; NEXT_MEMO.set(k, b); }
   const b = { ...NEXT_MEMO.get(k), hist: s.hist ?? null };
   if (s.chance !== undefined) b.chance = s.chance;
   return b;
@@ -88,22 +95,24 @@ function gradeOf(lv, acts, final) {
  * The generator's candidates, memoised while the battery runs. The picker (pickLevels) calls the family's generate and then
  * scores what it returns, never changing it; generate reads, of the request, only the fields kept in the key here (stambh
  * tally reads neither recent, mis, pL, focus, harder nor n; kon reads recent (kon/name's "first name level" flag, kon/place's
- * level mix), n, bases (kon/place) and focus (kon/name's steer), never mis, pL or harder). The picker still scores every
+ * level mix), n, bases and steers (kon/place) and focus (kon/name's steer), never mis, pL or harder). The picker still scores every
  * candidate afresh for every body. The method is put back when the battery ends; the test "the memo changes nothing"
  * compares served sessions with and without it.
  */
 const GEN_MEMO = new Map();
 export function withGenMemo(fn) {
   const patched = [];
-  for (const [f, m] of [["stambh", "tally"], ["kon", "place"], ["kon", "name"]]) {
+  // (galti-pakdo and nazariya/tri read, of the request, neither recent, mis, pL, focus, harder nor n: keyed as stambh is)
+  for (const [f, m] of [["stambh", "tally"], ["kon", "place"], ["kon", "name"], ["galti-pakdo", "kaapi"], ["nazariya", "tri"]]) {
     const lg = logicFor(f, m);
     if (!lg || patched.some(([x]) => x === lg)) continue;
     const orig = lg.generate;
     lg.generate = (req) => {
       const { recent, mis: _m, pL: _p, focus, harder: _h, n, ...rest } = req;
-      // (of recent, kon reads only whether a name level was played and whether an acute or an anticlockwise place level was)
+      // (of recent, kon reads only whether a name level was played and whether an acute or an anticlockwise place level was,
+      // and, with a steer of wrong-scale (note 004), the level just played: draw's dot differs from its right dot)
       const placed = (recent ?? []).map(placeSigOf).filter(Boolean);
-      const k = f === "kon" ? `${HABIT_RULES.on ? 1 : 0}|${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}|${placed.some(isAcute)}|${placed.some(opensAnticlockwise)}|${n ?? ""}|${focus ?? ""}` : `${f}|${JSON.stringify(rest)}`;
+      const k = f === "kon" ? `${HABIT_RULES.on ? 1 : 0}|${f}|${JSON.stringify(rest)}|${(recent ?? []).some((r) => String(r).startsWith("name:"))}|${placed.some(isAcute)}|${placed.some(opensAnticlockwise)}|${n ?? ""}|${focus ?? ""}|${rest.steers ? (recent ?? []).slice(-1)[0] ?? "" : ""}` : `${f}|${JSON.stringify(rest)}`;
       if (!GEN_MEMO.has(k)) GEN_MEMO.set(k, orig(req));
       return GEN_MEMO.get(k);
     };
@@ -122,6 +131,7 @@ export function withRules(legacy, fn) {
   try { return fn(); } finally { HABIT_RULES.on = was; }
 }
 export const memoSize = () => LEVEL_MEMO.size + NEXT_MEMO.size + GRADE_MEMO.size + GEN_MEMO.size;
+const MEMO_CAP = 150_000;
 /** drop the memos (a test file's battery holds them only while it runs) */
 export function clearMemo() { LEVEL_MEMO.clear(); NEXT_MEMO.clear(); GRADE_MEMO.clear(); GEN_MEMO.clear(); }
 /**
@@ -153,9 +163,11 @@ export function repairOf(lv) {
 
 /**
  * One served session for one habit child. → { named: Set(kit id), levels: [{ goal, levelId, first, verdict, rows }] }
+ * `cellIds`: the child id carries the cell too (hb<cell>-<k>), so each cell meets other served rows (a family whose levels
+ * hang on the child's seed alone, galti-pakdo's kind of working, would otherwise meet `seeds` sequences in the whole sweep)
  */
-export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS }) {
-  const childId = `hb${sIdx}`;
+export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS, cellIds = false }) {
+  const childId = cellIds ? `hb${cell.fade}${cell.pL ?? "-"}${cell.doors.map((x) => x[0]).join("")}-${sIdx}` : `hb${sIdx}`;
   let e = entry;
   let s = { childId, key: entryKey(e), skillId: e.skillId, lessonId: null, classLevel: e.classLevel, fade: cell.fade, lang: "hinglish", childArt: null, lastArt: null,
     mis: {}, ...(cell.pL !== undefined ? { pL: cell.pL } : {}), n: 0, seed: seedOf(childId, entryKey(e), 0), door: "garam", recent: [], hist: null };
@@ -196,7 +208,7 @@ export function runSession({ entry, cell, child, sIdx, levels = NAMING_LEVELS })
  * from before H1, H3 and H4 (withRules), the same way.
  */
 export async function runBattery(modeName, opts = {}) {
-  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true, legacy = false } = opts;
+  const { seeds = 2, randomSeeds = seeds * 3, constSeeds = seeds, constPls = null, fades = FADES, pls = PLS, doors = DOOR_SEQS, only = null, goals = null, genMemo = true, legacy = false, cellIds = false } = opts;
   const t0 = performance.now();
   const M = MODES[modeName], out = { mode: modeName, seeds, randomSeeds, constSeeds, constPls: constPls ?? pls, goals: {} };
   for (const goal of goals ?? M.goals) {
@@ -205,8 +217,10 @@ export async function runBattery(modeName, opts = {}) {
     const rows = [];
     for (const child of childrenFor(modeName, goal)) {
       if (only && !only(child)) continue;
-      const run = () => childRow({ entry, goal, kits, child, n: child.random ? randomSeeds : child.constant ? constSeeds : seeds, fades, pls: child.constant && constPls ? constPls : pls, doors });
+      const run = () => childRow({ entry, goal, kits, child, n: child.random ? randomSeeds : child.constant ? constSeeds : seeds, fades, pls: child.constant && constPls ? constPls : pls, doors, cellIds });
       rows.push(withRules(legacy, () => (genMemo ? withGenMemo(run) : run())));
+      // (the memos are pure; a sweep with `cellIds` meets far more bodies, so they are dropped when they grow large)
+      if (cellIds && memoSize() > MEMO_CAP) clearMemo();
       await new Promise((r) => setImmediate(r));
     }
     out.goals[goal] = { kits, rows };
@@ -217,14 +231,14 @@ export async function runBattery(modeName, opts = {}) {
 }
 /** a cell at or over this share, for a child with no randomness in her acts, is listed in the packet (answer 3) */
 export const CELL_LIST = 0.5;
-function childRow({ entry, goal, kits, child, n, fades, pls, doors }) {
+function childRow({ entry, goal, kits, child, n, fades, pls, doors, cellIds = false }) {
   const byFade = new Map(), byDoor = new Map(), byCell = new Map(), tot = new Map();
   let sessions = 0;
   const bump = (m, key, named) => { const r = m.get(key) ?? { n: 0, hit: {} }; r.n++; for (const kit of named) r.hit[kit] = (r.hit[kit] ?? 0) + 1; m.set(key, r); };
   for (const fade of fades) for (const pL of pls) for (const d of doors) {
     const cell = { goal, fade, pL, doors: d }, ck = `f${fade} pL${pL ?? "-"} ${d.map((x) => x[0]).join("")}`;
     for (let k = 0; k < n; k++) {
-      const { named } = runSession({ entry, cell, child, sIdx: k });
+      const { named } = runSession({ entry, cell, child, sIdx: k, cellIds });
       sessions++;
       bump(byFade, fade, named); bump(byDoor, d.map((x) => x[0]).join(""), named); bump(byCell, ck, named); bump(tot, "all", named);
     }
@@ -652,10 +666,132 @@ function nameChildren(goal) {
   return C;
 }
 
+// galti-pakdo/kaapi ──────────────────────────────────────────────────────────────
+// The line pick (galti.logic.ts galtiPickOptions): the verdict, "sab sahi" or the first line that breaks (one of n − 1), and
+// where the claim is weighed first (any of the n lines). On screen the lines run top to bottom and "sab sahi" is under them,
+// so the verdict's options in order are line 1 … line n − 1, then sab. In sudhaaro the verdict is the same pick; once the
+// right line is flagged she picks its fix (the careful children the law's line, the blind ones any of the three).
+const linesOf = (lv) => workingOf(lv.params)?.lines.length ?? 3;
+/** the verdict's options in screen order: 1 … n − 1, then "sab" */
+const verdictOpts = (lv) => [...Array.from({ length: linesOf(lv) - 1 }, (_, i) => i + 1), "sab"];
+const rightVerdict = (lv) => (lv.params.kind === "sahi" ? "sab" : lv.params.at);
+/** her verdict as acts (after `lead`): sab, or that line flagged; in sudhaaro, the right line flagged, then a fix */
+const verdictActs = (lv, v, lead = [], fix = () => lv.params.fixes.indexOf("ok")) => {
+  const acts = [...lead, v === "sab" ? { kind: "sab" } : { kind: "flag", line: v }];
+  if (lv.params.goal === "sudhaaro" && v === lv.params.at && lv.params.kind !== "sahi") acts.push({ kind: "fix", i: fix() });
+  return acts;
+};
+const weighFirst = (lv, j, v = rightVerdict(lv)) => verdictActs(lv, v, [{ kind: "check", line: j }]);
+function galtiChildren(goal) {
+  const C = [];
+  const add = (id, label, acts, o = {}) => C.push({ id, label, acts: { [goal]: acts }, ...o });
+  const rndFix = (c) => () => Math.floor(c.rng() * 3);
+  add("careful", "careful (right every level)", () => null);
+  add("careful-weigh", "careful, weighs the question first", (lv) => weighFirst(lv, 0));
+  add("blind", "blind: any verdict (sab or any line), any fix", (lv, c) => verdictActs(lv, pickOf(verdictOpts(lv), c.rng), [], rndFix(c)), { random: true });
+  add("blind-any", "blind: any six taps (weigh any line, flag any line, sab, any fix)", (lv, c) => {
+    const n = linesOf(lv), acts = [];
+    for (let k = 0; k < 6; k++) {
+      const r = Math.floor(c.rng() * (2 * n + (goal === "sudhaaro" ? 3 : 0)));
+      acts.push(r < n ? { kind: "check", line: r } : r < 2 * n - 1 ? { kind: "flag", line: r - n + 1 } : r === 2 * n - 1 ? { kind: "sab" } : { kind: "fix", i: r - 2 * n });
+    }
+    return acts;
+  }, { random: true });
+  // her slips: the verdict option above or below the one she means (screen order: a line's neighbour row; "sab" sits under
+  // the last line), or the question weighed as the line under it
+  const SLIPS = [
+    { id: "the option above", f: (lv) => { const o = verdictOpts(lv), i = o.indexOf(rightVerdict(lv)); return i > 0 ? weighFirst(lv, 0, o[i - 1]) : null; } },
+    { id: "the option below", f: (lv) => { const o = verdictOpts(lv), i = o.indexOf(rightVerdict(lv)); return i + 1 < o.length ? weighFirst(lv, 0, o[i + 1]) : null; } },
+    { id: "the question weighed as the line under it", f: (lv) => weighFirst(lv, 1) },
+  ];
+  add("slip-random", "one random slip a level", (lv, c) => pickOf(SLIPS, c.rng).f(lv) ?? weighFirst(lv, 0), { random: true });
+  for (const sl of SLIPS.slice(0, 2)) add(`slip:${sl.id}`, `same slip every level: ${sl.id}`, (lv) => sl.f(lv));
+  // every value she could give: each verdict (sab, line 1-3) every level, each line weighed first every level (then the right
+  // verdict), the question weighed and then sab every level
+  const trusts = { "neat-correct": "she says the working is right whatever it is: on a neat working that is the mix-up's own act (no level tells \"always all right\" from it)", "right-answer": "she says the working is right whatever it is: on a lucky working that is the mix-up's own act (no level tells \"always all right\" from it)" };
+  add("const:sab", "constant: sab sahi (no weighing) every level (the last option)", (lv) => verdictActs(lv, "sab"), { constant: true, holds: trusts });
+  for (const j of [1, 2, 3]) add(`const:flag${j}`, `constant: line ${j} flagged every level`, (lv) => (j < linesOf(lv) ? verdictActs(lv, j) : null), { constant: true });
+  for (const j of [0, 1, 2, 3]) add(`const:weigh${j}`, `constant: line ${j} weighed first every level, then the right verdict`, (lv) => (j < linesOf(lv) ? weighFirst(lv, j) : null),
+    { constant: true, ...(j ? { holds: { "check-later": "she weighs a line below the question before the question, every level: the mix-up's own act (no level tells a fixed later line from it)" } } : {}) });
+  add("const:weigh0-sab", "constant: the question weighed, then sab sahi every level", (lv) => weighFirst(lv, 0, "sab"), { constant: true, holds: trusts });
+  add("last-first", "what I did last time (the same taps)", (lv, c) => {
+    if (!c.prev) return null;
+    const n = linesOf(lv), ok = c.prev.first.filter((a) => (a.kind === "check" ? a.line < n : a.kind === "flag" ? a.line < n : a.kind === "fix" ? lv.params.goal === "sudhaaro" : true));
+    return ok.length ? ok : null;
+  });
+  add("last-key", "last time's right line", (lv, c) => {
+    if (!c.prev) return null;
+    const v = rightVerdict(c.prev.level);
+    return v === "sab" || v < linesOf(lv) ? weighFirst(lv, 0, v) : null;
+  });
+  add("opt-first", "the first option (line 1) every level", (lv) => verdictActs(lv, verdictOpts(lv)[0]));
+  add("opt-last-line", "the last line every level", (lv) => verdictActs(lv, linesOf(lv) - 1));
+  add("opt-middle", "the middle option every level", (lv) => { const o = verdictOpts(lv); return verdictActs(lv, o[Math.floor(o.length / 2)]); });
+  // the mix-ups
+  add("holder-neat", "the mix-up: a neat working is right (sab sahi on it, unweighed)", (lv) => (lv.params.kind === "neat" ? verdictActs(lv, "sab") : null),
+    { holds: { "neat-correct": "sab sahi on a neat working without weighing it: the kit's sign" } });
+  add("holder-right", "the mix-up: the question balances, so every step is right", (lv) => weighFirst(lv, 0, lv.params.kind === "lucky" ? "sab" : rightVerdict(lv)),
+    { holds: { "right-answer": "weighs the question, it balances, says sab sahi on a lucky working: the kit's sign" } });
+  add("holder-later", "the mix-up: weighs the claim in the last line first", (lv) => weighFirst(lv, linesOf(lv) - 1),
+    { holds: { "check-later": "the claim weighed in a later line before the question: the kit's sign" } });
+  add("holder-later-friend", "the mix-up: weighs where the friend's working settles (laterLine) first", (lv) => (lv.params.kind === "neat" ? weighFirst(lv, laterLine(lv.params)) : weighFirst(lv, linesOf(lv) - 1)),
+    { holds: { "check-later": "the claim weighed in a later line before the question: the kit's sign" } });
+  add("holder-later-any", "the mix-up: weighs any later line first", (lv, c) => weighFirst(lv, 1 + Math.floor(c.rng() * (linesOf(lv) - 1))),
+    { random: true, holds: { "check-later": "the claim weighed in a later line before the question, a different one each time" } });
+  return C;
+}
+
+// nazariya/tri ──────────────────────────────────────────────────────────────
+// more's one pick (tri.logic.ts triPickOptions): the grid point tent B's top corner is put on, any of (w + 1) × zb above
+// the base. On A's top line other than A's corner the cloth stays the same: the mix-up's act (shape-looks). A sighting is
+// confirmed on the same level by her next corner after the play-out (tri.logic.ts confirmMore): the holders put it on A's
+// top line again (another point of it), the blind guessers guess again (`again`); every other child then does the solve.
+const apexActs = (x, z) => [{ kind: "apex", x, z }, { kind: "check" }];
+const otherEnd = (t) => (t.xa === t.x0 ? t.x1 : t.x0);
+/** a point of A's top line other than A's corner and other than x (her first corner) */
+const lineAgain = (lv, x, rng = null) => { const t = lv.params.tri, xs = []; for (let i = 0; i <= lv.params.w; i++) if (i !== t.xa && i !== x) xs.push(i); return apexActs(rng ? pickOf(xs, rng) : xs.includes(otherEnd(t)) ? otherEnd(t) : xs[0], t.za); };
+const triMid = (t) => Math.round((t.x0 + t.x1) / 2);
+function triChildren(goal) {
+  const C = [];
+  const add = (id, label, acts, o = {}) => C.push({ id, label, acts: { [goal]: acts }, ...o });
+  if (goal !== "more") return C;
+  const T = (lv) => lv.params.tri;
+  add("careful", "careful (one row above A's top, over the base's middle)", () => null);
+  add("careful-above-a", "careful: straight above A's corner, one row higher", (lv) => apexActs(T(lv).xa, T(lv).za - 1));
+  add("careful-any", "careful: any point above A's top line", (lv, c) => apexActs(Math.floor(c.rng() * (lv.params.w + 1)), Math.floor(c.rng() * T(lv).za)), { random: true });
+  const above = (lv, c) => apexActs(Math.floor(c.rng() * (lv.params.w + 1)), Math.floor(c.rng() * T(lv).zb));
+  const anywhere = (lv, c) => apexActs(Math.floor(c.rng() * (lv.params.w + 1)), Math.floor(c.rng() * (lv.params.d + 1)));
+  add("blind", "blind: any point above the base (and again after a miss)", above, { random: true, again: { more: above } });
+  add("blind-any", "blind: any point on the plot, below the base refused (and again after a miss)", anywhere, { random: true, again: { more: anywhere } });
+  add("slip-random", "one random slip a level (a neighbouring point of the careful one)", (lv, c) => { const d = pickOf(DIRS, c.rng); return apexActs(triMid(T(lv)) + d[1], T(lv).za - 1 + d[0]); }, { random: true });
+  for (const d of DIRS) add(`slip:${DIR_NAME(d)}`, `same slip every level: the point ${DIR_NAME(d)} of the careful one`, (lv) => apexActs(triMid(T(lv)) + d[1], T(lv).za - 1 + d[0]));
+  for (const d of DIRS) add(`slip-any:${DIR_NAME(d)}`, `aims anywhere above A's top line, the point ${DIR_NAME(d)} of it every level`, (lv, c) => apexActs(Math.floor(c.rng() * (lv.params.w + 1)) + d[1], Math.floor(c.rng() * T(lv).za) + d[0]), { random: true });
+  // every point she could put it on (the plot is 12 × 9 tiles: points 0-12 across, 0-8 down above the lowest base)
+  for (let z = 0; z <= 8; z++) for (let x = 0; x <= 12; x++) add(`const:${x},${z}`, `constant point (${x}, ${z})`, () => apexActs(x, z), { constant: true });
+  add("last-first", "what I did last time (the same point)", (_lv, c) => (c.prev ? c.prev.first : null));
+  add("last-key", "last time's right point", (_lv, c) => (c.prev ? apexActs(triMid(c.prev.level.params.tri), c.prev.level.params.tri.za - 1) : null));
+  const opts = (lv) => { const o = []; for (let z = 0; z < T(lv).zb; z++) for (let x = 0; x <= lv.params.w; x++) o.push([x, z]); return o; };
+  add("opt-first", "the first option (the top-left point)", (lv) => apexActs(...opts(lv)[0]));
+  add("opt-last", "the last option (the right end, one row above the base)", (lv) => { const o = opts(lv); return apexActs(...o[o.length - 1]); });
+  add("opt-middle", "the middle option", (lv) => { const o = opts(lv); return apexActs(...o[Math.floor(o.length / 2)]); });
+  add("top-middle", "the base's middle, as high as the plot goes", (lv) => apexActs(triMid(T(lv)), 0));
+  // the mix-up
+  // (after the play-out the holders put it on A's top line again: the base's other end, or another point of the line)
+  add("holder-mid", "the mix-up: B's corner on A's top line, over the base's middle", (lv) => apexActs(triMid(T(lv)), T(lv).za),
+    { holds: { "shape-looks": "the middle one looks bigger: the kit's sign (and the remediation's slide)" }, again: { more: (lv) => lineAgain(lv, triMid(T(lv))) } });
+  add("holder-far", "the mix-up: B's corner on A's top line, over the base's other end", (lv) => apexActs(otherEnd(T(lv)), T(lv).za),
+    { holds: { "shape-looks": "a slanted cloth of the same height looks bigger" }, again: { more: (lv) => apexActs(triMid(T(lv)), T(lv).za) } });
+  add("holder-slide", "the mix-up: slides the corner along A's top line, anywhere off A's corner", (lv, c) => { const t = T(lv); let x = Math.floor(c.rng() * lv.params.w); if (x >= t.xa) x++; c.mem.x = x; return apexActs(x, t.za); },
+    { random: true, holds: { "shape-looks": "any point of A's top line but A's corner" }, again: { more: (lv, c) => lineAgain(lv, c.mem.x, c.rng) } });
+  return C;
+}
+
 /** the battery's children for a mode's goal */
 export function childrenFor(modeName, goal) {
   if (modeName === "stambh/tally") return tallyChildren(goal);
   if (modeName === "kon/place") return placeChildren(goal);
   if (modeName === "kon/name") return nameChildren(goal);
+  if (modeName === "galti-pakdo/kaapi") return galtiChildren(goal);
+  if (modeName === "nazariya/tri") return triChildren(goal);
   return [];
 }

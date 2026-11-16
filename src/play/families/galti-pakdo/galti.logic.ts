@@ -559,6 +559,25 @@ function board(level: PlayLevel<GaltiParams>, s: GaltiState) {
   if (s.on >= 0) lines.push(`x = ${w.answer} in ${s.on === 0 ? "?" : s.on}: ${subText(w.lines[s.on].L, w.answer)} ${balances(w.lines[s.on], w.answer) ? "=" : "≠"} ${subText(w.lines[s.on].R, w.answer)}`);
   return { title: "Galti Pakdo", lines };
 }
+/**
+ * Gate 2, the computed default (FamilyLogic.pickOptions): the options of the line pick where each mix-up shows, one act
+ * sequence per option. A working of n lines (the question and n − 1 working lines):
+ *   neat-correct  the verdict: "sab sahi" or one of the n − 1 lines flagged as the first that breaks (n options; "sab" shows it)
+ *   right-answer  the same verdict after the question weighed (it balances): n options, "sab" shows it
+ *   check-later   the line the claim is weighed in first: any of the n lines (each line from the bug down balances, so on a
+ *                 neat working n − at of them show it)
+ * null: the mix-up has no pick on this working (neat-correct and check-later only on a neat one, right-answer on a lucky one).
+ */
+export function galtiPickOptions(p: GaltiParams, mal: string): GaltiAct[][] | null {
+  const w = workingOf(p);
+  if (!w) return null;
+  const n = w.lines.length, lines = [...Array(n).keys()];
+  const verdict = (lead: GaltiAct[]): GaltiAct[][] => [[...lead, { kind: "sab" }], ...lines.slice(1).map((line): GaltiAct[] => [...lead, { kind: "flag", line }])];
+  if (mal === "neat-correct") return p.kind === "neat" ? verdict([]) : null;
+  if (mal === "right-answer") return p.kind === "lucky" ? verdict([{ kind: "check", line: 0 }]) : null;
+  if (mal === "check-later") return p.kind === "neat" ? lines.map((line): GaltiAct[] => [{ kind: "check", line }]) : null;
+  return null;
+}
 function grade(level: PlayLevel<GaltiParams>, acts: PlayActEnvelope<GaltiAct>[]): PlayGrade {
   return gradeLevel(galtiLogic, level, acts, { decisiveRefusals: ["not_all", "follows", "tips"], final: true });
 }
@@ -567,5 +586,13 @@ export const galtiLogic: FamilyLogic<GaltiParams, GaltiState, GaltiAct> = {
   family: "galti-pakdo", modes: ["kaapi"], malRules: GALTI_MAL,
   // pakdo: one line flagged (or "sab sahi") wins (a lucky tap 41 %, games audit GAMES-03): its correct enters at CHANCE_WEIGHT
   oneDecision: ["pakdo"],
+  // round 8 law 3 / gate 2 (the habit battery, tests/r8-habit-battery-galti-pakdo.test.mjs): sudhaaro's mix-ups come from
+  // the same line pick as pakdo's (sab sahi or a line, before any fix), one pick among three or four. Named from one pick, a
+  // blind verdict was named in 0.38 of sessions and the same slip every level in 0.75: reported at chance weight now and
+  // named on a repeat, as pakdo's (its correct still needs the fix after the flag, so it is not oneDecision)
+  chancePicks: ["sudhaaro"],
+  // gate 2, the default (rulings 2026-11-16, answer 2 under "a computed default"): the exact options of each mix-up's line
+  // pick, so p is 1 in the true number of options (the replay of the family's own acts saw only two or three of them)
+  pickOptions: (level: PlayLevel<GaltiParams>, mal: string) => galtiPickOptions(level.params, mal),
   validate, init, apply, goalMet, generate, solve, shortcut, malActs, grade, facts, board,
 };

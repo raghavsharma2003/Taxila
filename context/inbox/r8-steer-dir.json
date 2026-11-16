@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r8-steer-dir",
+   "kind": "decision",
+   "at": "2026-11-16",
+   "title": "kon/place wrong-scale steer, note 004 answer 1 (branch claude/r8-steer-dir; NAMING_OFF unchanged). After a wrong-scale sighting the next level opens the same way as the sighting's level (cw after cw, acw after acw), with a key no sighting had (measure: on both scales; draw: the asked size), the same kind (acute or not) tried first. The sign each pattern carries: always the inner scale is wrong exactly on acw angles, always the outer on cw, always the larger number on acute, always the smaller on obtuse. Plumbing: FamilyLogic.steerOf (new, optional) -> chance memory `steer` -> levels.js steersOf -> body.steers -> GenRequest.steers; kon.place.ts placeSteer and placeNeeds `scale`. Draw (note 004 item 4, the dot differs): while the steer is on, a draw level's mix-up dot is never the right dot of the level just played (the steer alone put 'last time's right dot' at 0.125 by door, gate sweep). The level mix of answer 4 is asked from the third level (still by the fourth), so a one-side or one-kind reader's second sighting fits within the four (separate commit). Reverse if: a battery child who does not hold wrong-scale is named over 1 in 10 under the steer; or main rules the mix stays at the fourth level (revert that commit; inner and larger then fall to 0.17 and 0.19 in the gate sweep).",
+   "source": "inbox/r8-steer-dir.json"
+  },
+  {
+   "id": "ms-r8-steer-dir-2026-11-16",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "kon/place habit battery after dc-r8-steer-dir, full sweep (HABIT_FULL=1, 503 s) and gate sweep. Holders before -> after (gate / full): measure inner 0/0 -> 1.00/1.00; draw inner 0/0 -> 1.00/1.00; measure larger 0.031/0.063 -> 1.00/1.00; smaller 1.00/0.92 -> 1.00/1.00; outer 1.00/0.96-0.98 -> 1.00/1.00; vertex-off 0.924/0.932 -> 0.909/0.961; always A 0.60 -> 0.62. Worst non-holder full, by fade before -> after: measure 0.005 -> 0.007, draw 0.075 (last time's right dot) -> 0.036 (right dot either button, join-wrong-end); by door: measure 0.011 -> 0.008, draw 0.050 -> 0.050. Last time's right dot: 0.075 -> not named. Steer asserted 10476/10476 steps (4588 more under the level mix); draw dot rule 6032/6032. Served levels changed (gate sweep, careful child): measure 348/768, draw 338/768. Re-cert kon/place 4484 samples all pass, no sample changed (play.json unchanged). r8-games-kon-layout now also plays 8 picker-served acute, tilted and steered levels: passes, 10.1 min (one core).",
+   "source": "inbox/r8-steer-dir.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r8-steer-dir", "rel": "part_of", "dst": "dc-r8-gate2-discriminating-level" },
+  { "src": "dc-r8-steer-dir", "rel": "measured_by", "dst": "ms-r8-steer-dir-2026-11-16" }
+ ]
+}
