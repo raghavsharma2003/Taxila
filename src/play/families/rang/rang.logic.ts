@@ -36,6 +36,7 @@
 // every number here is a scene value with no fact claimed.
 import type { Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, RangAct } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const RANG_MODES = ["pehchaan", "milao"] as const;
@@ -201,7 +202,7 @@ export interface RangW {
   /** milao: the card's next glass, and in it the drops of base, of plain water and of lemon juice so far */
   next: number; k: number; wd: number; a: number;
 }
-export interface RangState extends Undoable<RangState> {
+export interface RangState extends Undoable<RangState>, Law4Marks {
   w: RangW;
   /** the law's last answer for the view ("" when the last act just happened) */
   why: string;
@@ -288,7 +289,7 @@ const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Mom
 
 // ───────────────────────────── apply (THE LAW) ─────────────────────────────
 type Out = { state: RangState; moments: Moment[]; refused?: string };
-function apply(level: PlayLevel<RangParams>, s: RangState, act: RangAct, seq: number): Out {
+function applyLaw(level: PlayLevel<RangParams>, s: RangState, act: RangAct, seq: number): Out {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -373,6 +374,8 @@ function apply(level: PlayLevel<RangParams>, s: RangState, act: RangAct, seq: nu
   if (now === "green") return no("too_much", mal("too-much", f, "too_much"));
   return no("no_green", mom("law_refused", seq, { ...f, why: "no_green" }));
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check (and a pick that missed is greyed) */
+const apply = withLooks<PlayLevel<RangParams>, RangState, RangAct>(withPicks(applyLaw, (_l, _s, a) => (a.kind === "use" && a.m === "danger" ? "danger" : null)), (_l, a) => a.kind === "drop" || a.kind === "sort" || (a.kind === "use" && a.m !== "danger"), (s) => s.w);
 const goalMet = (_l: PlayLevel<RangParams>, s: RangState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

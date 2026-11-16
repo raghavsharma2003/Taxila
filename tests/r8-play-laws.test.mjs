@@ -17,8 +17,7 @@ const KNOWN = {
   // line's; laws.mjs IDEA_WORDS fails a miss line that states it; tests/r8-laws-idea-words.test.mjs)
   // kon: none left (round 8 kon round 2: ends' light is green only when solved and ray-two-ends is a chance pick; place/draw's
   // join-wrong-end is a chance pick; measure is typed)
-  // law 4 (dc-r8-gate2-shadow S4): the modes whose missed act is her answer itself (a pick, a typed number, an experiment),
-  // each waiting on main's choice (laws.mjs CHECK_WAITS_OPEN; LAWS-AUDIT.md "Law 4")
+  // law 4 (dc-r8-gate2-shadow S4; ruling 005): none left (laws.mjs CHECK_WAITS_OPEN is empty; LAWS-AUDIT.md "Law 4")
   ...Object.fromEntries(Object.keys(L.CHECK_WAITS_OPEN).map((k) => [k, [4]])),
 };
 
@@ -114,15 +113,48 @@ describe("r8 play laws: law 3 in the grade and on the server", () => {
  * is a subset of this pinned list, and a mode taken off it is taken off here too, so it cannot come back.
  */
 const CHECK_WAITS_MAX = [
-  "todo-jodo/strips", "nishana/place", "kyun-lab/dhruv", "kon/place", "rang/milao", "todo-jodo/atoms", "nazariya/floor", "nazariya/powers",
-  "taraazu/equality", "aakash/chakkar", "aakash/ritu", "badlaav/aag", "badlaav/palat", "bhaap/chakra", "bhaap/hawa", "chhaano/geela",
-  "chhaano/sukha", "jaanch/daag", "jaanch/neela", "rang/pehchaan",
+  // empty (claude/r8-law4-open, 2026-11-16): the 20 pinned at S4 (todo-jodo/strips, nishana/place, kyun-lab/dhruv, kon/place,
+  // rang/milao, todo-jodo/atoms, nazariya/floor, nazariya/powers, taraazu/equality, aakash/chakkar, aakash/ritu, badlaav/aag,
+  // badlaav/palat, bhaap/chakra, bhaap/hawa, chhaano/geela, chhaano/sukha, jaanch/daag, jaanch/neela, rang/pehchaan) are fixed;
+  // law 4 holds in every mode and nothing may be opened again
 ];
 
 describe("r8 play laws: law 4, the check waits after a miss (dc-r8-gate2-shadow S4)", () => {
-  it("the open list only shrinks: CHECK_WAITS_OPEN is within the pinned list", () => {
+  it("the open list only shrinks: CHECK_WAITS_OPEN is within the pinned list (now empty)", () => {
+    assert.deepEqual(Object.keys(L.CHECK_WAITS_OPEN), [], "law 4 holds in every mode");
     const grown = Object.keys(L.CHECK_WAITS_OPEN).filter((k) => !CHECK_WAITS_MAX.includes(k));
     assert.deepEqual(grown, [], "a mode added to CHECK_WAITS_OPEN: law 4's open list only shrinks");
+  });
+  it("a sighting is a level's first check only: a pick after a miss on the same level carries no chanceMis (gradeLevel)", async () => {
+    const { gradeLevel, firstCheckSeq } = await import("../src/play/core/replay.ts");
+    const { CHANCE_WEIGHT } = await import("../shared/play.ts");
+    // a one-pick goal: "miss" is a plain law_refused (not decisive), "pick" the mix-up's signature, "ok" a solve
+    const logic = { chancePicks: ["g"], init: () => ({ done: false }), goalMet: (_l, s) => s.done, facts: () => ({}),
+      apply(_l, s, a, seq) {
+        if (a.kind === "miss") return { state: s, moments: [{ kind: "law_refused", seq, facts: {} }], refused: "look_again" };
+        if (a.kind === "pick") return { state: s, moments: [{ kind: "misconception_consequence", seq, facts: {}, misconceptionId: "m" }], refused: "wrong" };
+        return { state: { done: true }, moments: [{ kind: "solved", seq, facts: {} }] };
+      } };
+    const level = { levelId: "x", skillId: "s", goal: "g", mal: { m: "kit-m" }, proof: { discriminates: [] } };
+    const env = (as) => as.map((kind, i) => ({ seq: i + 1, t: i, via: "touch", act: { kind } }));
+    const first = gradeLevel(logic, level, env(["pick", "ok"])).evidence[0];
+    assert.equal(first.chanceMis, "kit-m", "the level's first check is a sighting");
+    const after = gradeLevel(logic, level, env(["miss", "pick", "ok"])).evidence[0];
+    assert.equal(after.chanceMis, undefined, "a pick after a miss is no sighting");
+    assert.equal(after.weight, CHANCE_WEIGHT); assert.equal(after.outcome, "incorrect");
+    assert.equal(firstCheckSeq({ moments: [{ kind: "progress", seq: 1 }, { kind: "law_refused", seq: 2 }], refusals: [] }), 2);
+    assert.equal(firstCheckSeq({ moments: [], refusals: [{ seq: 3, code: "missed" }] }), 3);
+    assert.equal(firstCheckSeq({ moments: [{ kind: "progress", seq: 1 }], refusals: [{ seq: 1, code: "bad_act" }] }), Infinity);
+  });
+  it("law 4's forms in the logic: a pick that missed is greyed, a typed number refused unchanged, an experiment repeat a look", async () => {
+    const forms = new Map();
+    const { coverage } = await import("../server/play/levels.js");
+    const { coverageLevels } = await import("../server/forge3/qa/cert-levels.mjs");
+    const want = { "todo-jodo/strips": "off", "kon/place": "off", "nazariya/powers": "refused", "aakash/chakkar": "look", "rang/pehchaan": "look", "badlaav/palat": "look" };
+    for (const e of coverage().entries.filter((x) => want[`${x.family}/${x.mode}`])) for (const lv of await coverageLevels(e, 1)) {
+      for (const f of await L.law4Forms(lv, {})) { assert.equal(f.break, undefined, `${lv.levelId} ${f.mal}: ${f.break}`); (forms.get(`${e.family}/${e.mode}`) ?? forms.set(`${e.family}/${e.mode}`, new Set()).get(`${e.family}/${e.mode}`)).add(f.form); }
+    }
+    for (const [k, form] of Object.entries(want)) assert.ok(forms.get(k)?.has(form), `${k}: ${[...(forms.get(k) ?? [])].join(",")}`);
   });
   it("the play cert skips law 4 for an open mode only", async () => {
     const src = (await import("node:fs")).readFileSync(new URL("../server/forge3/play-cert.js", import.meta.url), "utf8");

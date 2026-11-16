@@ -8,13 +8,14 @@
 // PURE: no clock, no RNG after generation (generators take a seeded mulberry32), runs in node and the browser.
 import type { Facts, FamilyLogic, GenRequest, Candidate, Moment, NazariyaAct, PlayActEnvelope, PlayGrade, PlayLevel, PlayMode } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 
 export const MAX_SIDE = 16;
 export const MAX_H = 6;
 
 /** The plot every mode carries in its params. `base` = the starting heights; `lock[i] = 1` = column i is scenery. */
 export interface Plot { w: number; d: number; hmax: number; base: number[]; lock: number[] }
-export interface NzState extends Undoable<NzState> {
+export interface NzState extends Undoable<NzState>, Law4Marks {
   h: number[];
   /** the last number the child named (array count, a square / cube number) */
   named: number | null;
@@ -151,8 +152,13 @@ export function rectCells(p: Plot, x0: number, z0: number, x1: number, z1: numbe
   return out;
 }
 
+/** law 4, typed (ruling 005): the key of a named number; a number that missed as a count is refused "unchanged" */
+export const namedKey = (n: number) => `name:${Math.round(Number(n))}`;
 export function makeLogic<P extends Plot>(spec: ModeSpec<P>): FamilyLogic<P, NzState, NazariyaAct> {
-  function apply(level: PlayLevel<P>, s: NzState, act: NazariyaAct, seq: number): Applied {
+  // law 4 (typed; src/play/core/law4.ts): a named number that missed as a count ("wrong_count", never a name refused for a
+  // step left undone) is refused "unchanged" when named again; the view's "Say" is off while the pad holds it
+  const apply = withPicks<PlayLevel<P>, NzState, NazariyaAct>(applyLaw, (_l, _s, a) => (a?.kind === "name" ? namedKey(a.n) : null), { code: "unchanged", when: (r) => r.refused === "wrong_count" });
+  function applyLaw(level: PlayLevel<P>, s: NzState, act: NazariyaAct, seq: number): Applied {
     const p = level.params, out: Moment[] = [];
     if (s.done) return { state: s, moments: [], refused: "level_over" };
     const bump = bumpOf(s);

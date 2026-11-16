@@ -31,6 +31,7 @@
 // every number here is a scene value with no fact claimed.
 import type { Candidate, Facts, FamilyLogic, GenRequest, JaanchAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const JAANCH_MODES = ["neela", "daag", "thali"] as const;
@@ -165,7 +166,7 @@ export interface JW {
   /** what the child has said of the food in front ("" not yet, "yes", "no") */
   said: { starch: string; fat: string };
 }
-export interface JaanchState extends Undoable<JaanchState> {
+export interface JaanchState extends Undoable<JaanchState>, Law4Marks {
   w: JW;
   /** the law's last answer for the view ("" when the last act just happened) */
   why: string;
@@ -238,7 +239,7 @@ function toolOf(a: JaanchAct): string {
     default: return a.kind;
   }
 }
-function apply(level: PlayLevel<JaanchParams>, s: JaanchState, act: JaanchAct, seq: number): Out {
+function applyLaw(level: PlayLevel<JaanchParams>, s: JaanchState, act: JaanchAct, seq: number): Out {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -321,6 +322,8 @@ function apply(level: PlayLevel<JaanchParams>, s: JaanchState, act: JaanchAct, s
   }
   return no("unknown_act");
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check */
+const apply = withLooks<PlayLevel<JaanchParams>, JaanchState, JaanchAct>(applyLaw, (_l, a) => a.kind === "drop" || a.kind === "use" || a.kind === "mark", (s) => s.w);
 const goalMet = (_l: PlayLevel<JaanchParams>, s: JaanchState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

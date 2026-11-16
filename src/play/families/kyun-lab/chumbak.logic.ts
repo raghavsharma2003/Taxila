@@ -42,6 +42,7 @@
 // teacher's (server/play/tools/rules/kyun-lab.mjs says why).
 import type { Candidate, ChumbakAct, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const CHUMBAK_MODES = ["dhruv", "disha"] as const;
@@ -109,7 +110,7 @@ export interface ChumbakParams {
   rot?: number; twist?: number; map?: number; face?: number; box?: number; target?: number; iron?: number;
 }
 export interface Test { i: number; end: number; p: "N" | "S"; r: "pull" | "push" }
-export interface ChumbakState extends Undoable<ChumbakState> {
+export interface ChumbakState extends Undoable<ChumbakState>, Law4Marks {
   /** sira: pins clinging per spot (−1 = not touched yet) */
   probes: number[];
   /** sira: the spots flagged as poles */
@@ -272,7 +273,7 @@ function init(level: PlayLevel<ChumbakParams>): ChumbakState {
 const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Moment => ({ kind, seq, facts, ...(mis ? { misconceptionId: mis } : {}) });
 
 // ───────────────────────────── apply (THE LAW) ─────────────────────────────
-function apply(level: PlayLevel<ChumbakParams>, s: ChumbakState, act: ChumbakAct, seq: number): { state: ChumbakState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<ChumbakParams>, s: ChumbakState, act: ChumbakAct, seq: number): { state: ChumbakState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -423,6 +424,15 @@ function apply(level: PlayLevel<ChumbakParams>, s: ChumbakState, act: ChumbakAct
   }
   return no("unknown_act");
 }
+/**
+ * Law 4, pick (ruling 005): the key of a claim (pakka: "this bar is the magnet"; taakat: "this one is stronger"), with what
+ * her claim rests on: the tests she has made on that bar (pakka) or the magnets she has dipped (taakat). A claim shown wrong
+ * is greyed until the level ends or until she tests again (a claim made on pulls alone may stand once a push is seen).
+ */
+export const claimKey = (p: ChumbakParams, s: ChumbakState, i: number): string =>
+  `claim:${i}|${p.goal === "pakka" ? JSON.stringify(s.tests.filter((t) => t.i === i).map((t) => [t.end, t.p, t.r])) : JSON.stringify(s.dipped)}`;
+/** law 4 (pick; src/play/core/law4.ts): a claim shown wrong is greyed on the same tests */
+const apply = withPicks<PlayLevel<ChumbakParams>, ChumbakState, ChumbakAct>(applyLaw, (l, s2, a) => (a.kind === "claim" && (l.params.goal === "pakka" || l.params.goal === "taakat") ? claimKey(l.params, s2, Number((a as { i?: number }).i)) : null));
 const goalMet = (_l: PlayLevel<ChumbakParams>, s: ChumbakState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

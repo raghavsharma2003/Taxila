@@ -14,7 +14,7 @@
 import type { JaanchAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -56,6 +56,8 @@ export const makeJaanchView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (const m of ms) if (m.kind === "solved") { doneAt = api.t + 0.5; cheered = false; }
     const mc = ms.some((m) => m.kind === "misconception_consequence");
     if (refused === "level_over" || refused === "said_already" || refused === "rubbed" || refused === "lit") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again, a greyed pick) is a soft thup
+    else if (refused && !mc && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused || mc) { api.sfx("look"); if (!mc) api.fx.shake(2); }
     else api.sfx(last.kind === "drop" || last.kind === "use" ? "drop" : last.kind === "mark" ? "land" : "tap");
     api.invalidate(); deps.changed();

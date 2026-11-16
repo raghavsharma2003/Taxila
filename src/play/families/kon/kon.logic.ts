@@ -26,10 +26,11 @@
 // and find (tap the arc a shown name denotes); the law lives in kon.name.ts, handed over first like place.
 import { DISCRIMINATING_TURN, HABIT_RULES, type Candidate, type FamilyLogic, type Facts, type GenRequest, type KonAct, type Moment, type PlayActEnvelope, type PlayGrade, type PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 import { focusMal } from "../../core/pick.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { NAME_MAL, builtSinceMiss, generateName, readsAcrossAll, initName, isNameGoal, malName, nameDifficulty, nameFacts, nameFaint, nameSurface, nameValueFacts, shortcutName, solveName, stepName, validateName, type NameAct, type NameFields, type NameGoal, type NameState } from "./kon.name.ts";
-import { PLACE_MAL, drawSightingCounts, placeNeeds, placeSteer, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
+import { PLACE_MAL, drawSightingCounts, placeNeeds, placeSteer, drawSurface, measureSurface, placeSighting, generatePlace, initPlace, isPlaceGoal, malPlace, placeDifficulty, placeFacts, placePickKey, placeReadKey, placeValueFacts, shortcutPlace, solvePlace, stepPlace, validatePlace, type PlaceAct, type PlaceFields, type PlaceGoal, type PlaceState } from "./kon.place.ts";
 import { LINE_MAL, endsMal, endsTarget, generateLine, isLineGoal, ldiff, lineDifficulty, lineMalHeading, lineMeets, lineTarget, lineValueFacts, sameStops, stopsOk, validateLine, type Fig, type LineGoal, type LineParams, type Stops } from "./kon.lines.ts";
 
 export type KonGoal = "turn" | "set" | "kind" | "match" | "linear" | "tri" | "iso" | LineGoal | PlaceGoal | NameGoal;
@@ -56,7 +57,7 @@ export interface KonParams extends Omit<LineParams, "goal">, PlaceFields, NameFi
   /** what the dial shows (fade): every 10°, every 30°, or only 0 / 90 / 180 */
   scale: "10" | "30" | "landmarks";
 }
-export interface KonState extends Undoable<KonState> { heading: number | null; commits: number; done: boolean; acts: number; stops?: Stops; pl?: PlaceState; nm?: NameState }
+export interface KonState extends Undoable<KonState>, Law4Marks { heading: number | null; commits: number; done: boolean; acts: number; stops?: Stops; pl?: PlaceState; nm?: NameState }
 export const KON_MAL = ["cw-confuse", "half-is-quarter", "wrong-scale", "orientation", "reflex-missing", "linear-90", "wrong-pair", ...LINE_MAL, ...PLACE_MAL, ...NAME_MAL] as const;
 /** the goals each mode plays */
 export const KON_GOALS: Record<string, readonly KonGoal[]> = { turn: ["turn"], set: ["set"], zone: ["kind", "match"], pair: ["linear"], close: ["tri", "iso"],
@@ -175,7 +176,7 @@ const init = (l: PlayLevel<KonParams>): KonState => (isNameGoal(l.params.goal) ?
   ? { heading: null, commits: 0, done: false, acts: 0, prev: null, depth: 0, stops: { lo: -2, hi: -2 } }
   : { heading: null, commits: 0, done: false, acts: 0, prev: null, depth: 0 });
 
-function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: number): { state: KonState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: number): { state: KonState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   // (name, gate 2: "Wapas" takes back what she sees, her arc or her name, not that she checked: the checks keep counting, so
@@ -220,6 +221,12 @@ function apply(level: PlayLevel<KonParams>, s: KonState, act: KonAct, seq: numbe
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+/** law 4 (ruling 005; src/play/core/law4.ts) on kon/place: a join or a size pick that missed is greyed at the same placement
+ *  and dot (pick); a reading that missed is refused "unchanged" at the same placement (typed) */
+const placeOf = (l: PlayLevel<KonParams>, s: KonState) => (isPlaceGoal(l.params.goal) ? s.pl ?? initPlace(l.params) : null);
+const apply = withPicks<PlayLevel<KonParams>, KonState, KonAct>(
+  withPicks<PlayLevel<KonParams>, KonState, KonAct>(applyLaw, (l, s2, a) => { const pl = placeOf(l, s2); return pl ? placePickKey(pl, a as PlaceAct) : null; }),
+  (l, s2, a) => { const pl = placeOf(l, s2); return pl && a.kind === "read" ? placeReadKey(pl, Number((a as { n?: number }).n)) : null; }, { code: "unchanged" });
 type Bump = (st: KonState) => KonState;
 type Applied = { state: KonState; moments: Moment[]; refused?: string };
 /** name: letters tapped (say) or an arc (find); the commit / the arc is the decision */

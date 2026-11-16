@@ -31,10 +31,11 @@
 import type { KonAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
 import type { KonParams, KonState } from "./kon.logic.ts";
-import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, rimAngleOf, rimPoint, sizeAnswer, sizeFigs, type Pose } from "./kon.place.ts";
+import { ARM, BH, BW, KNOB_AT, PD, PR, PRINT_EVERY, SIZE_PRINT_EVERY, arms, centreRingShown, dir, farEnd, initPlace, joinAFirst, madeAngle, norm, placement, placePickKey, placeReadKey, rimAngleOf, rimPoint, sizeAnswer, sizeFigs, type Pose } from "./kon.place.ts";
 import { ROLE, around, freeSpot, type Avoid, type Box } from "./kon.spot.ts";
 import { INK_H, LETTER_PX, innerReach, letterSpot, numberBox, onBoard, protractorLines, scaleLabels, scaleOmitFor, type Measure, type ScaleLabel, type ScaleOpts } from "./kon.scale.ts";
 
@@ -431,9 +432,9 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
     const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) };
     if (goal === "size") {
       return [
-        { id: "pick-a", label: "∠P", kind: "choice", group: "pick", onPress: () => act({ kind: "pick", which: "a" }) },
-        { id: "pick-same", label: word(lang, "kon.same"), kind: "choice", group: "pick", onPress: () => act({ kind: "pick", which: "same" }) },
-        { id: "pick-b", label: "∠Q", kind: "choice", group: "pick", onPress: () => act({ kind: "pick", which: "b" }) },
+        { id: "pick-a", label: "∠P", kind: "choice", group: "pick", disabled: greyed(st(), placePickKey(P0, { kind: "pick", which: "a" })), onPress: () => act({ kind: "pick", which: "a" }) },
+        { id: "pick-same", label: word(lang, "kon.same"), kind: "choice", group: "pick", disabled: greyed(st(), placePickKey(P0, { kind: "pick", which: "same" })), onPress: () => act({ kind: "pick", which: "same" }) },
+        { id: "pick-b", label: "∠Q", kind: "choice", group: "pick", disabled: greyed(st(), placePickKey(P0, { kind: "pick", which: "b" })), onPress: () => act({ kind: "pick", which: "b" }) },
       ];
     }
     const { x, y, rot } = P0.pose;
@@ -458,14 +459,15 @@ export function makePlaceView(api: ViewApi, depsIn: ViewDeps): FamilyView {
         { id: "kdel", label: "⌫", aria: word(lang, "kon.aria.del"), kind: "pad", group: "pad", disabled: !typed, onPress: () => { typed = typed.slice(0, -1); api.invalidate(); deps.changed(); } },
         // "Wapas" after the lock too: one step back (the lock, or her last decision)
         free, undo,
-        { id: "commit", label: word(lang, "kon.this"), kind: "primary", group: "go", you: !!typed, disabled: !typed, onPress: () => { if (!typed) return; const n = Number(typed); typed = ""; act({ kind: "read", n }); } },
+        // law 4 (typed): a reading that missed at this placement stays off until the number (or the placement) changes
+        { id: "commit", label: word(lang, "kon.this"), kind: "primary", group: "go", you: !!typed && !greyed(st(), placeReadKey(P0, Number(typed))), disabled: !typed || greyed(st(), placeReadKey(P0, Number(typed))), onPress: () => { if (!typed) return; const n = Number(typed); typed = ""; act({ kind: "read", n }); } },
       ];
     }
     const m = P0.mark, mv = (d: number) => () => { if (m !== null) act({ kind: "mark", r: clamp(m + d, 0, 180) }); };
     // the two join buttons in an order that varies by level (judging round 2: "O se jodo" was always first)
     const joins: ControlSpec[] = [
-      { id: "join-o", label: word(lang, "kon.join", { p: "O" }), kind: "choice", group: "join", disabled: m === null, onPress: () => act({ kind: "join", end: "v" }) },
-      { id: "join-a", label: word(lang, "kon.join", { p: "A" }), kind: "choice", group: "join", disabled: m === null, onPress: () => act({ kind: "join", end: "e" }) },
+      { id: "join-o", label: word(lang, "kon.join", { p: "O" }), kind: "choice", group: "join", disabled: m === null || greyed(st(), placePickKey(P0, { kind: "join", end: "v" })), onPress: () => act({ kind: "join", end: "v" }) },
+      { id: "join-a", label: word(lang, "kon.join", { p: "A" }), kind: "choice", group: "join", disabled: m === null || greyed(st(), placePickKey(P0, { kind: "join", end: "e" })), onPress: () => act({ kind: "join", end: "e" }) },
     ];
     if (joinAFirst(level.seed)) joins.reverse();
     return [

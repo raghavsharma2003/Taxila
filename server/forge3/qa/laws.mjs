@@ -267,11 +267,8 @@ function howMade(acts, solve, at, frames) {
  * The play cert skips law 4 for the modes listed here, and the list only shrinks (tests/r8-play-laws CHECK_WAITS_MAX).
  */
 export const CHECK_WAITS_OPEN = {
-  "todo-jodo/strips": "pick", "nishana/place": "pick", "kyun-lab/dhruv": "pick", "kon/place": "pick, typed", "rang/milao": "pick",
-  "todo-jodo/atoms": "typed, experiment", "nazariya/floor": "typed", "nazariya/powers": "typed", "taraazu/equality": "typed",
-  "aakash/chakkar": "experiment", "aakash/ritu": "experiment", "badlaav/aag": "experiment", "badlaav/palat": "experiment, pick",
-  "bhaap/chakra": "experiment", "bhaap/hawa": "experiment", "chhaano/geela": "experiment", "chhaano/sukha": "experiment",
-  "jaanch/daag": "experiment", "jaanch/neela": "experiment", "rang/pehchaan": "experiment",
+  // empty since claude/r8-law4-open (2026-11-16): the 20 modes S4 left open keep law 4 by their kind's form (LAWS-AUDIT.md,
+  // "Law 4": pick greyed, typed refused "unchanged", experiment a look; src/play/core/law4.ts)
 };
 const MISSED = (r) => !!r && (r.refused === "missed" || (r.moments ?? []).some((x) => x.kind === "misconception_consequence" || x.kind === "near_miss" || x.kind === "law_refused"));
 /** the control on screen whose press dispatches `act` (each control's press caught, nothing applied), or null */
@@ -319,7 +316,8 @@ async function checkWaitsForm(level, opts, acts, missAt, m) {
   const now = new Map(checkCounts(m.ctl.facts()));
   const cost = was.find(([k, v]) => (now.get(k) ?? v) > v);
   if (cost) return { break: `after a miss, ${how} on the same answer counts a check (${cost[0]})` };
-  return { form: r?.refused ? "refused" : "look" };
+  // refused by law 4 itself (a typed number or a greyed pick pressed anyway); anything else that plays no miss is a look
+  return { form: r?.refused === "unchanged" || r?.refused === "missed_option" ? "refused" : "look" };
 }
 async function checkWaits(level, opts, acts, missAt, m) { return (await checkWaitsForm(level, opts, acts, missAt, m)).break ?? null; }
 /** law 4's form on each mal-rule's miss of a level (the audit's per-mode table): [{ mal, act, form | break }] */

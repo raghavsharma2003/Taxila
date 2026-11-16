@@ -7,6 +7,7 @@
 import type { AtomsAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { atomsView as A, stripOf, type AtomNode, type AtomsParams, type AtomsState, type AtomTree } from "./atoms.logic.ts";
@@ -323,7 +324,9 @@ export const makeAtomsView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       for (const dgt of ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]) keys.push({ id: `k${dgt}`, label: dgt, kind: "pad", group: "pad", onPress: () => { if (pad.length < 3) pad += dgt; deps.changed(); } });
       keys.push({ id: "kdel", label: "⌫", kind: "pad", group: "pad", aria: "delete", onPress: () => { pad = pad.slice(0, -1); deps.changed(); } });
       const name = pairMode && allAtoms;
-      keys.push({ id: name ? "name" : "split", label: name ? `${p.goal.toUpperCase()} = ${pad || "?"}` : `${findNode(selected!)?.v ?? ""} ÷ ${pad || "?"} · ${say(lang, "atoms.split")}`, kind: "primary", group: "go", you: true, disabled: !pad,
+      keys.push({ id: name ? "name" : "split", label: name ? `${p.goal.toUpperCase()} = ${pad || "?"}` : `${findNode(selected!)?.v ?? ""} ÷ ${pad || "?"} · ${say(lang, "atoms.split")}`, kind: "primary", group: "go", you: true,
+        // law 4 (typed): a value that missed stays off until she types another (the logic refuses it "unchanged")
+        disabled: !pad || (name && greyed(st(), A.namedKey(Number(pad)))),
         onPress: () => { if (name) { act({ kind: "name", x: Number(pad) }); pad = ""; } else trySplit(); } });
       if (!name) {
         keys.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
