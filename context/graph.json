@@ -28860,6 +28860,20 @@
    "at": "2026-11-15",
    "title": "Released dc63a6f with scripts/release.mjs: web taxila-web--sdc63a6f-7nvq (was taxila-web--s2de94c3-bslc), worker + canary/nightly jobs on taxila-worker:dc63a6f (was 2de94c3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs dc63a6f --rollback.",
    "source": "inbox/release-dc63a6f.json"
+  },
+  {
+   "id": "fd-engines-draw-once-on-first-play",
+   "kind": "finding",
+   "at": "2026-11-16",
+   "title": "The second-play colour difference (fd-second-play-changes-colours-p412) is a first-play extra: an engine makes one or two more colour draws on its first play in a process (angle-cannon p412 279,234 then 279,233), something built once and kept. The colour-trace test now runs in its own process and passes in any order; the leak check is usable again. What is built once is still to be named by Studio",
+   "source": "inbox/r8-main-31.json"
+  },
+  {
+   "id": "ms-release-2fcc175",
+   "kind": "measurement",
+   "at": "2026-11-16",
+   "title": "Released 2fcc175 with scripts/release.mjs: web taxila-web--s2fcc175-03ep (was taxila-web--sdc63a6f-7nvq), worker + canary/nightly jobs on taxila-worker:2fcc175 (was dc63a6f); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 2fcc175 --rollback.",
+   "source": "inbox/release-2fcc175.json"
   }
  ],
  "edges": [
@@ -46097,6 +46111,11 @@
    "src": "dc-r8-kon-name-gate1-pass",
    "rel": "part_of",
    "dst": "dc-r8-game-gate-play-then-evidence"
+  },
+  {
+   "src": "fd-engines-draw-once-on-first-play",
+   "rel": "caused_by",
+   "dst": "fd-second-play-changes-colours-p412"
   }
  ]
 }

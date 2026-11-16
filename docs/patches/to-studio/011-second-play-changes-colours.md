@@ -23,3 +23,9 @@ Something survives a play, in the engines, the kit, or the probe's fake `documen
 - If it is not meant, a child's second game in a session is drawn differently from her first, and that is a product fault to find: which module-level value, and why only at p412.
 
 Either way `tests/theme-palette.test.mjs` should pass after any other file. Until then the leak check fails on any day whose seed puts an engine-playing file before it; that failure is this note, not a new leak.
+
+## Update, 2026-11-16 (main)
+
+Found and fixed for the test. An engine draws one or two more things on its first play in a process than on later plays (angle-cannon at p412: 279,234 colour draws, then 279,233; area-claim: 186,753, then 186,751): something it builds once and keeps. The fixture was recorded from first plays. `tests/theme-palette.test.mjs` now runs the trace in a process of its own (`node src/studio-v2/tools/colour-trace.mjs`, and `--theme paper`), so it passes after any file, and the later test in that file asks for the stylesheet hook itself.
+
+Still open for Studio, low priority: name what is built once (so it is known to be a cache and not a first-play picture a child sees), and say so in the trace tool's header.

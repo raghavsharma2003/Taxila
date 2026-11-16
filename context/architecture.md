@@ -610,3 +610,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-second-play-changes-colours-p412` (2026-11-15): Playing the Studio v2 engines a second time in one process draws 23 of 160 runs (all p412) with different colours; the colour-trace test therefore fails after any engine-playing test file (leak check, seed 20261115, integration 60; bisected to studio-v2-layout.test.mjs, reproduced with traceAll twice). Open whether it is first-play state by design or a carry-over between a child's games. docs/patches/to-studio/011
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-engines-draw-once-on-first-play` (2026-11-16): The second-play colour difference (fd-second-play-changes-colours-p412) is a first-play extra: an engine makes one or two more colour draws on its first play in a process (angle-cannon p412 279,234 then 279,233), something built once and kept. The colour-trace test now runs in its own process and passes in any order; the leak check is usable again. What is built once is still to be named by Studio

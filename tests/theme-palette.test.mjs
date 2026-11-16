@@ -64,16 +64,23 @@ test("night is today's look: the board palettes equal the tables they replaced",
 });
 
 test("night is today's look: every engine run draws the same colours in the same order (colour trace), and paper plays clean", { timeout: 600_000 }, async () => {
-  const { traceAll, TRACE_FILE } = await import("../src/studio-v2/tools/colour-trace.mjs");
-  const want = JSON.parse(fs.readFileSync(TRACE_FILE, "utf8")).hashes;
-  const night = await traceAll("night");
-  const diff = Object.keys({ ...want, ...night.hashes }).filter((k) => want[k] !== night.hashes[k]);
-  assert.deepEqual(diff, [], "a night colour changed (a live pixel): if it is meant, re-record with node src/studio-v2/tools/colour-trace.mjs --write");
-  assert.deepEqual(night.errors, []);
-  const paper = await traceAll("paper");
-  assert.deepEqual(paper.errors, [], "every engine plays under paper");
-  const { C } = await import("../src/studio-v2/core/tokens.ts");
-  assert.equal(C.ink, "#F2F4F8", "the probe puts night back after a paper run");
+  // (main, 2026-11-16: the trace runs in a process of its own. An engine draws one or two more things on its FIRST play in a
+  // process than on later ones (a cache it fills once: 279,234 colour draws against 279,233 for angle-cannon at p412), and the
+  // fixture was recorded from first plays. In a shared process, after any file that had played the engines, 23 of the 160 runs
+  // hashed differently and this test failed: the leak check of 2026-11-15 and 2026-11-16, bisected to studio-v2-layout.test.mjs,
+  // docs/patches/to-studio/011. Nothing of the probe's theme or fake document can leak out of a child process either.)
+  const { execFileSync } = await import("node:child_process");
+  const tool = path.join(ROOT, "src/studio-v2/tools/colour-trace.mjs");
+  const run = (args) => {
+    try { return { code: 0, out: execFileSync(process.execPath, [tool, ...args], { cwd: ROOT, encoding: "utf8", env: { ...process.env, DATABASE_URL: "" }, stdio: ["ignore", "pipe", "pipe"], timeout: 280_000, maxBuffer: 64 * 1024 * 1024 }) }; }
+    catch (e) { return { code: e.status ?? 1, out: `${e.stdout ?? ""}${e.stderr ?? ""}` }; }
+  };
+  const night = run([]);
+  assert.equal(night.code, 0, `a night colour changed (a live pixel): if it is meant, re-record with node src/studio-v2/tools/colour-trace.mjs --write\n${night.out.slice(0, 2000)}`);
+  assert.match(night.out, /night unchanged: \d+ runs/);
+  assert.doesNotMatch(night.out, /errors under night/);
+  const paper = run(["--theme", "paper"]);
+  assert.match(paper.out, /paper: \d+ runs, 0 errors/, `every engine plays under paper\n${paper.out.slice(0, 2000)}`);
 });
 
 // ── contrast (WCAG 2.x relative luminance) ──────────────────────────────────────────────────────────────────────────
@@ -121,6 +128,9 @@ test("contrast on both themes: text 4.5:1, marks and lines 3:1, and focus / answ
 });
 
 test("a lesson's theme reaches the board and the engines by data-board-theme on an ancestor; none, or an unknown one, is night", async () => {
+  // (the engines' kit imports a stylesheet; the probe's loadModules registers the hook that loads one as an empty module.
+  // This test used to get the hook from the colour trace running before it in this process; it now asks for it itself.)
+  await (await import("../src/studio-v2/tools/layout-probe.mjs")).loadModules();
   const { themeAt, THEME_ATTR } = await import("../src/theme/theme-attr.ts");
   const el = (attr) => ({ closest: (sel) => (attr === undefined ? null : { getAttribute: (k) => (k === THEME_ATTR && sel.includes(THEME_ATTR) ? attr : null) }) });
   assert.equal(themeAt(el("paper")), "paper");
