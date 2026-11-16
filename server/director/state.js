@@ -3158,6 +3158,26 @@ export function step(prev, input) {
     const add = lastT ? String(lastT).split(/(?<=[.!?\u0964])\s+/).map((x) => normLine(x).slice(0, 60)).filter((x) => x.split(" ").length >= 4) : [];
     out.state.saidKeys = [...new Set([...(prev?.saidKeys ?? []), ...add])].slice(-600);
   }
+  // (dc-r8-director24 H3, main's 035 — c4 steering 32, c5-t01 stuck 6: a give-up on a card got its beat's simpler, a hint for the point,
+  // not the card. A give-up on a live card says the card's own authored simpler — its give_up cell's first line — when the lesson has not
+  // said it yet; else the help below picks as before)
+  if (cell?.column === "give_up" && /:card$/.test(String(cell.part ?? "")) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+    const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
+    const liveId = prev?.activeItemId ?? null;
+    const it = liveId ? findItem(prev, input.kit, liveId) : null;
+    const sk = it?.skillId ? skillScriptOf(input.kit, it.skillId) : null;
+    const cardS = it?.scriptAsk && it.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === it.scriptAsk.beatId)?.ask : it?.scriptCheck ? sk?.checks?.find((c) => c.id === it.scriptCheck.checkId) : null;
+    const own = cardS?.simpler ? String(saidIn(cardS.simpler, lang) ?? "").trim() : "";
+    const said0 = out.state.saidKeys ?? [];
+    const spent = (x) => String(x).split(/(?<=[.!?।])\s+/).map((y) => normLine(y).slice(0, 60)).filter((y) => y.split(" ").length >= 4).every((y) => said0.includes(y));
+    if (own && normLine(lm.simpler ?? "") !== normLine(own) && !spent(own) && out.ui?.ask?.itemId === liveId) {
+      const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;
+      out.state.lastMove = { ...rest, simpler: own, smaller: true, helpNew: true, ...(lm.scriptBeat && cardS.board ? { simplerBeat: { ...lm.scriptBeat, board: cardS.board } } : {}) };
+      if (out.move) out.move = { ...out.state.lastMove };
+      const help = out.state.cardHelp?.id === liveId ? out.state.cardHelp : { id: liveId, said: [], misses: 0 };
+      out.state.cardHelp = { ...help, said: [...new Set([...(help.said ?? []), normLine(own)])], counted: out.state.turn };
+    }
+  }
   // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose
   // authored lines are all there says the first help not there: the compiled cell's lines, else the card's simpler, its point's simpler
   // or the point's second wording; with none left, it stands — the give-up's key comes from giveUpSpent)

@@ -59,12 +59,14 @@ export function seamForm(forms, state, kind) {
  *  script term of a card she has not yet answered, and is none of her last four turns' sentences. → null when it passes, else why. */
 export const JOIN_MAX_WORDS = 12;
 const SCREEN_WORD = /(?<![\p{L}])(?:buttons?|screen|click|clik|tap|scroll|swipe|page|app|neeche\s+dabao|upar\s+dabao)(?![\p{L}])/iu;
+const FRACTION_WORD = /(?<![\p{L}])(?:aadha|aadhi|aadhe|tihaai|chauthaai|bhinn|ansh|half|halves|third|thirds|quarter|quarters|fraction|fractions|numerator|denominator)(?![\p{L}])/iu;
 export function joinProblem(text, { kit = null, state = null, lang = "hinglish" } = {}) {
   const t = norm(text);
   if (!t) return "empty";
   if (sentencesOf(t).length > 1) return "two sentences";
   if (t.split(" ").length > JOIN_MAX_WORDS) return "over 12 words";
   if (/\d/.test(t)) return "a digit";
+  if (FRACTION_WORD.test(t)) return "a fraction word";
   if (/[?？]/.test(t)) return "a question";
   if (SCREEN_WORD.test(t)) return "a screen word";
   const sc = scriptFor(kit)?.script;

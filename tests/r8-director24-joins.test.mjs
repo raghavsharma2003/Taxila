@@ -27,6 +27,7 @@ test("a join that fails any check falls back to the authored form, with the reas
   const cases = [
     ["Chalo ab hum is baat ko ek bilkul hi naye aur alag tareeke se dekhte hain", /over 12 words/],
     ["Ab 3 tukdon se dekhte hain.", /a digit/],
+    ["Ab aadha wala hissa alag tarah dekhte hain.", /a fraction word/],
     ["Kya ek naye tareeke se dekhein?", /a question/],
     ["Screen par neeche wala hissa dekho.", /a screen word/],
     ["Pehla vaakya. Doosra vaakya.", /two sentences/],
@@ -45,13 +46,13 @@ test("a join that fails any check falls back to the authored form, with the reas
   assert.equal(joint(run(null)).fellBack, undefined);
 });
 
-test("a script term of a card she has not yet answered is no join's word (c4's ek-tihaai)", () => {
+test("a script term of a card she has not yet answered is no join's word (c4's barabar tukde)", () => {
   const K = kitFromFile(getTopic("c4-maths-ch05-t01"));
   const sc = scriptFor(K).script;
-  assert.match(joinProblem("Ab ek-tihaai ko alag tarah se dekhte hain.", { kit: K, state: {} }) ?? "", /ek-tihaai/);
+  assert.match(joinProblem("Ab barabar tukde alag tarah se dekhte hain.", { kit: K, state: {} }) ?? "", /barabar tukde/);
   // (every card answered: the term is hers to use)
   const all = sc.skills.flatMap((k) => [...(k.explain ?? []).filter((b) => b.ask).map((b) => `script:${k.skillId}:ask:${b.id}`), ...(k.checks ?? []).map((c) => `script:${k.skillId}:${c.id}`), `script:${k.skillId}:ask:worked`]);
-  assert.equal(joinProblem("Ab ek-tihaai ko alag tarah se dekhte hain.", { kit: K, state: { rightLog: all.map((id) => ({ id, misses: 0 })) } }), null);
+  assert.equal(joinProblem("Ab barabar tukde alag tarah se dekhte hain.", { kit: K, state: { rightLog: all.map((id) => ({ id, misses: 0 })) } }), null);
 });
 
 test("the JOIN lines come off her draft; the note asks only for the joints the turn may need", () => {
