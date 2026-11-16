@@ -39,13 +39,6 @@ Family tests that asserted `misconceptionId` from those picks now accept `chance
 
 | Family / mode | Law | Concrete screen | Why it is not a mechanical fix |
 |---|---|---|---|
-| `aakash` chakkar, grahan, ritu | 2 | After a miss the line states the idea: "Sooraj wahin rehta hai. Prithvi ghoomti hai." (din, after the sun tool). Also "ek chakkar" (saal), "upar/neeche" (kab), "seedhi" (dhoop). | The why lines are authored content (`data/play/engine-words.json`). They need rewriting as what her act did, not what is true. |
-| `badlaav/aag` jang | 2 | "... paani chahiye" after just-dirt. | Same: authored why line. |
-| `bhaap/hawa` kamra | 2 | "Thandi hawa neeche farsh par hi rehti hai: upar kamra garam rehta hai." | Same. |
-| `chhaano/sukha` farak, kram | 2 | "Bori mein Bhoosa aa gaya! Bajra paas hi gira": the line names where the grain falls (the key spot). | Same. |
-| `jaanch/neela` iodine | 2 | "Bhoora hi raha: iodine starch dikhata hai, cheeni nahi." | Same. |
-| `rang` milao, pehchaan | 2 | "Ab hara: zyada base se yeh basic ho gaya." / desi "hara". | Same. |
-| `yantra/roshni` dhak, parda | 2 | "Abhi bhi roshni: Chaand ki apni roshni nahi hoti", "saaf nahi". | Same. |
 | 3D engines (`yantra` kit and scene palette, `khand` scene) | 1 | The selected mirror's turn ring and the khand selection use `art.you` lime. | Outside the 2D painter. The engine palettes need the focus hex. |
 
 ### Resolved under the rulings of 2026-11-15 (`RULINGS-2026-11-15.md`)
@@ -59,7 +52,32 @@ Family tests that asserted `misconceptionId` from those picks now accept `chance
 | `feeta/thermo` fever | The healthy band is drawn on the solved screen only; the task line gives the normal range as numbers (36.8 to 37.2 °C). | `tests/r8-games-naap-fever-band.test.mjs`, every served fever level |
 | `aankde/tally` sort | Counting the tally is the skill: she types each row's total into its cell with stambh/tally's typed total (`src/play/core/typedtotal.ts`, now shared: the cell and its pad), and "Gino" waits until every total is typed. Solved only when the tally is right AND every typed total is the row's count; a wrong total is a miss. A run prints no count while a try remains: each cell gets a tick (row right) or the dashed box (her number not the row's), the total row stays "of N". The counts and the survey's total appear on the solved screen. The law's solver and mal-rules type the totals (tally-five: the strokes counted one by one; total-mismatch: her rows as they read). | `tests/r8-games-aankde-typed.test.mjs`, every served sort level; `laws.mjs` law 2 over every served level (row left `KNOWN`) |
 
-After the fixes, 92 of the 107 modes the coverage serves show no break; 15 still do (the rows above and two kon modes; aankde/tally left the list with the typed totals).
+**The seven science families' why lines** (ruling row 1). Each miss line is cut to what her act did on the screen; the clause that stated the idea is now the solved line's, said whether or not she missed first. Lines are shown in hinglish; `en` and `hi` say the same (`data/play/engine-words.json`). Held by `laws.mjs` `IDEA_WORDS` (per family/mode and goal, the words of the idea its solved line states, in all three languages): any text drawn after a miss while a try remains, not on the first screen, holding one fails law 2, over every served level (`tests/r8-play-laws.test.mjs` in hinglish, rows left `KNOWN`; `tests/r8-laws-idea-words.test.mjs` in en and hi, the old lines as fixtures, every miss line of these goals in all three languages, and each solved line stating its idea).
+
+| Family / mode (goal) | Old miss line → new miss line | Solved line (states the idea) |
+|---|---|---|
+| `aakash/chakkar` (din) | "Sooraj wahin rehta hai. Prithvi ghoomti hai." → "Sooraj hila nahi." | "Sooraj wahin raha; Prithvi ne har jagah ko roshni mein ghumaya." (unchanged) |
+| `aakash/chakkar` (saal) | "Yeh ek chakkar apne upar tha: ek din. Jagah wahi hai." → "Prithvi apne upar ghoomi, par raaste par wahin rahi."; "Sooraj ka chakkar saal ki chaal hai, din ki nahi." → "Prithvi aage nahi chali: card par ek din hai."; "Abhi saal nahi: Sooraj ka poora chakkar nahi hua." → "Prithvi abhi wahan nahi lauti jahan se chali thi."; "Wahin wapas aa gayi: poora ek chakkar." → "Prithvi wahin laut aayi jahan se chali thi." | "Ek chakkar: din, lagbhag 24 ghante. Sooraj ka: lagbhag 365¼ din." (unchanged) |
+| `aakash/ritu` (jhuk) | "Dhuri poore raaste ek hi taraf rehti hai." → "Kuch nahi badla: Prithvi jaisi thi, waisi rahi."; "Sooraj ke sabse paas, par uttar mein dhoop tirchhi: sardi." → "Yahan uttar mein sardi hai." | "Dhuri kabhi nahi ghoomi: Sooraj ki taraf jhuka hissa garmi." (unchanged) |
+| `aakash/ritu` (dhoop) | "Wahi roshni zyada khaanon par faili: barf rahi." → "Barf nahi pighli."; "Roshni thodi faili: barf thodi hi pighli." → "Barf thodi hi pighli." The patch labels ("Seedhi: chhota, tez", "Tirchhi: faili hui") are drawn on the solved screen only (jhuk too); while a try remains the lit squares show it. | "Seedhi dhoop, chhota tez dhabba, barf pighli: garmi." (unchanged) |
+| `aakash/grahan` (chaaya, kab) | "Is mahine Chaand line ke upar se guzra: grahan nahi." → "Is mahine grahan nahi hua." (and the side strip's "line ke upar / neeche" label is gone: the Moon drawn off the line shows it); "Prithvi ki chhaaya door hai: roshan hissa thoda dikhta hai." → "Chaand ka roshan hissa waisa hi raha."; en "Not lined up for that eclipse here." → "That eclipse does not happen here." | "Sooraj, Chaand aur Prithvi ek seedhi line mein: grahan." / "Teenon ek line mein hon tabhi: zyadatar mahine bina grahan." (unchanged) |
+| `badlaav/aag` (trikon) | "Dhakkan hawa rokta hai: pankha hawa bhejta hai, garmi nahi." → "Pankha jhala, par aag waisi hi rahi." | "Indhan, oxygen, garmi: ek hatao to aag bujhti hai." (unchanged) |
+| `badlaav/aag` (raakh) | "Nasht nahi hua: zyada hissa gas ban kar hawa mein gaya." → "Indhan kam ho gaya. Woh kahan gaya? Aag ko dhyaan se dekho." | "Kuch nasht nahi hua: hawa mein gaya, ya peeche bacha." (unchanged) |
+| `badlaav/aag` (jang) | "Mitti nahi: jang nayi cheez hai. Ise oxygen aur paani chahiye." → "Ponchha, par jang nahi utri." | "Jang ko paani aur hawa chahiye: dheere, bina lau." → "Jang nayi cheez: ise paani aur hawa chahiye, dheere, bina lau." |
+| `bhaap/hawa` (kamra) | "Thandi hawa neeche farsh par hi rehti hai: upar kamra garam rehta hai." → "Kamra garam hi raha." | "Garam hawa upar uthi, thandi neeche baithi, aur poora kamra badal gaya." (unchanged) |
+| `bhaap/hawa` (naav) | "Hawa samundar se zameen ki taraf chal rahi hai: naav kinaare par hi rehti hai." → "Naav kinaare par hi rahi."; "Hawa naav ko samundar ki taraf dhakelti hai, aur naav pehle se wahin hai." → "Naav pehle se samundar mein hai." | "Hawa naav ko wahin le gayi jahan jaana tha." → "Din: samundar se zameen ki hawa. Raat: zameen se samundar ki." |
+| `chhaano/sukha` (farak, kram) | "Bori mein {light} aa gaya! {heavy} paas hi gira" → "Bori mein {light} aa gaya!" (the key spot dropped; the play-out shows where the grain fell); "{parts} sab chalni par ruk gaye: ek hi size ke hain" → "{parts} sab chalni par ruk gaye" (and "... neeche gir gaye"); "{parts}: itne chhote tukde haath se nahi chune jaate" → "{parts}: haath se nahi chune gaye" | "Har cheez apni dheri mein!" → "Sab alag: har tareeke ne ek farak dekha, bhaar, size ya rang." |
+| `jaanch/neela` (iodine) | "Bhoora hi raha: iodine starch dikhata hai, cheeni nahi." → "Bhoora hi raha." The carbohydrate tree (iodine pointing only at starch) is no longer drawn after the miss. | "Neela-kaala ne starch dikhaya; cheeni ka ghol bhoora raha." → "Neela-kaala ne starch dikhaya. Iodine cheeni nahi dikhata." |
+| `rang/pehchaan` (litmus) | "Laal litmus pehle se laal tha. Neela bhi neela raha." (kept: what her drop did) | "Sab litmus ke rangon se alag ho gaye." → "Acid neele litmus ko laal karta hai, base laal ko neela." |
+| `rang/pehchaan` (desi) | "{liquid} se gudhal bhi hara: woh pehle se basic tha." → "{liquid} acidic mein nahi gaya. Gudhal par bhi dekho." (the key colour dropped) | "Sab haldi aur gudhal ke rangon se alag ho gaye." → "Base par haldi laal, gudhal hara: rang batata hai, badalta nahi." |
+| `rang/milao` (boond, ilaaj) | "Ab hara: zyada base se yeh basic ho gaya." → "Gulaabi gaya, par rang wahin nahi ruka."; "Paani sirf patla karta hai: gulaabi hai, acidic hai." → "Paani daala: abhi bhi gulaabi."; "Abhi bhi gulaabi: abhi bhi acidic. Rang dekho." → "Abhi bhi gulaabi. Rang dekho."; "Gulaabi nahi, hara bhi nahi: abhi neutral hai." → "Gulaabi chala gaya. Card dekho." (green was the next try's answer); "Isse namak aur paani bante hain; garmi nikalti hai." → "Label dekho: kya bana?" | boond: "Acid aur base ne ek doosre ka asar khatam kiya." → "Base ne acid khatam kiya. Zyada base: basic. Paani: bas patla."; ilaaj: "Har base ne apna acid khatam kiya: neutralisation." (unchanged) |
+| `yantra/roshni` (parda) | "Dikha, par saaf nahi: {mat} thodi hi roshni jaane deta" (and too_clear, some_light, no_light) → "{mat}: aankh ne jo dekha, card se nahi mila" (the eye's view shows how) | "Aankh har roshni ko waise hi dekhti hai jaise card mein" → "Sab roshni jaaye: saaf. Thodi: dhundhla. Kuch nahi: andhera." |
+| `yantra/roshni` (roshan) | "Chaand andhera hi raha: us par dhoop nahi padi" → "Chaand andhera hi raha"; "Koi roshni nahi: aankh kitna bhi dekhe, kuch nahi dikhta" → "Aankh ko kuch nahi dikha"; "{thing} par roshni nahi padi: aankh use nahi dekh paati" → "{thing} nahi dikha"; "Nahi dikha: {mat} roshni nahi jaane deta" → "Nahi dikha: beech mein {mat} hai"; "{mat} se thodi roshni ab bhi aati hai: aankh dekh leti" → "Aankh ko {mat} ke paar roshni dikhi"; "{thing} par roshni padi, to dikha: card mein nahi hai" → "{thing} dikha: card mein nahi hai" | "Aankh ko theek wahi dikhta hai jo card mein hai" → "Jis par roshni pade, wahi dikhe: Chaand bhi Sooraj ki roshni se." |
+| `yantra/roshni` (dhak) | "Abhi bhi roshni: Chaand ki apni roshni nahi hoti" / "... steel ki plate apni roshni nahi deti" / "... {thing} apni roshni deta hai" → "Abhi bhi roshni" | "Andhera: koi roshni nahi deta, aankh ko kuch nahi dikhta" → "Andhera: apni roshni wale sab dhake; Chaand ki apni roshni nahi." |
+
+Seen in passing (not these rows, not fixed here): in `en`, three other science modes still show a hidden value after a miss (`badlaav/palat` ghol "still there", `jaanch/daag` "stays", `jaanch/thali` "more than one"); `tests/r8-play-laws.test.mjs` runs in hinglish, where they do not appear.
+
+With these, `KNOWN` in `tests/r8-play-laws.test.mjs` is empty: no served level of any family breaks a law in the hinglish run.
 
 ## kon (the kon stream fixes these; not edited here)
 
@@ -93,12 +111,12 @@ Each item is green on a part she got right, drawn beside her wrong parts in the 
 
 | Family | Modes: result |
 |---|---|
-| aakash | chakkar L2, grahan L2, ritu L2; F3 (7 picks) |
+| aakash | chakkar F2, grahan F2, ritu F2 (why lines, ruling 2026-11-15); F3 (7 picks) |
 | aankde | line -, stack -, tally F2 (typed totals, ruling 2026-11-15) |
 | arena | pick - |
-| badlaav | aag L2, palat -; F3 (3 picks) |
-| bhaap | avastha -, bhaapan -, chakra -, hawa L2; F3 (5 picks) |
-| chhaano | geela -, sukha L2; F3 (7 picks) |
+| badlaav | aag F2 (why lines), palat -; F3 (3 picks) |
+| bhaap | avastha -, bhaapan -, chakra -, hawa F2 (why lines); F3 (5 picks) |
+| chhaano | geela -, sukha F2 (why lines); F3 (7 picks) |
 | darpan | mirror A1, tile -, turn A1 |
 | feeta | compare -, fence -, measure -, scale -, thermo F1 (L2 question), thread -, touch -, trip -; F3 (3 picks) |
 | galti-pakdo | kaapi L2, A1, F1; pakdo F3 (central) |
@@ -106,7 +124,7 @@ Each item is green on a part she got right, drawn beside her wrong parts in the 
 | ghadi | calendar -, race -, run -, set - |
 | guna | field -, pack -, story -, yard - |
 | hissa | fold -, grid F3 (shift, central), pour -, story - |
-| jaanch | daag -, neela L2, thali -; F3 (2 picks) |
+| jaanch | daag -, neela F2 (why lines), thali -; F3 (2 picks) |
 | kaal | order A1/A2 (and the "saal door" reading, listed), place - |
 | kila | divisibility -, factors -, lcm -, multiples - |
 | kon | see above |
@@ -118,9 +136,9 @@ Each item is green on a part she got right, drawn beside her wrong parts in the 
 | nishana | compare A1, hop -, place A1 |
 | paheli | cipher A1, magic A1, mirror -, pairs - |
 | parkar | bisect -, build F3 (ssa), drop F3 (alt) |
-| rang | milao L2, pehchaan L2; F3 (3 picks) |
+| rang | milao F2, pehchaan F2 (why lines); F3 (3 picks) |
 | stambh | bars -, picto -, tally A2 (ruling), with the round-2 fixes in the next commit |
 | taraazu | equality F1, equation F1, fill -, weigh - |
 | todo-jodo | atoms A2, F3, bundles -, strips F3 (5 picks) |
 | vakya | rail - |
-| yantra | beam -, circuit -, pendulum -, roshni L2, A1 |
+| yantra | beam -, circuit -, pendulum -, roshni F2 (why lines), A1 |
