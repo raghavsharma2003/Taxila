@@ -6813,3 +6813,7 @@ Full write-up: docs/design/round7/judgements/director19-2026-11-10.md.
 
 ## Merged inbox entries (write-up from the entry text)
 - `ms-release-29ab953` (2026-11-16): Released 29ab953 with scripts/release.mjs: web taxila-web--s29ab953-fx4c (was taxila-web--s0d5baa1-uayv), worker + canary/nightly jobs on taxila-worker:29ab953 (was 0d5baa1); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 29ab953 --rollback.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `ms-r8-tally-gate2-2026-11-16` (2026-11-16): stambh/tally gate 2 proof, computed in tests/r8-games-stambh-tally.test.mjs (method: the tally's 8 ways of reading x counting slips and pad typing slips (keys touching side or corner on the 6-column pad, swap, a key lost, a key doubled), share of one kind's slips landing on the mix-up's number; blind guess 1 in 100 per box). read: 32 servable rows (16-49 less 18, 24), one level up to 1 in 4 (17, 19, 23, 25, 29, 31, 37, 43, 49); 350 pairs with both parts differing, worst 17 then 23 with the loose lines dropped 1/4 x 1/4 = 1 in 16; blind pair 1 in 10,000. keep: n = 269 generated levels (12 seeds x 3 fades), fewest slips 3 (189), 4 (72), 5 (8); blind 'counted' <= 1 in 10,000, 'five' <= 1 in 32,768; one slip in every row, worst way of reading, <= 1 in 16.
