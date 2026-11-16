@@ -782,7 +782,8 @@ PREDICATES.columnOfRead = (L, r, i, ctx) => {
  *  a teaching sentence of five words or more (the card's own question and a check-in aside) already said in her last two turns. Gated. */
 PREDICATES.helpRepeats = (L, r, i, ctx) => {
   if (!["clarify", "give_up", "hindi"].includes(String(r.cell?.column ?? ""))) return null;
-  const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
+  // (dc-r8-director24 H3: help remembers the lesson — no sentence she has said anywhere in it)
+  const last2 = (String(r.cell?.column) === "hindi" ? (ctx.o.teacherTexts ?? []).slice(-2) : (ctx.o.teacherTexts ?? [])).map(key).join(" | ");
   const card = key(r.card ?? "");
   // (the card's question — its reask included — closes a card turn: it is the card, not help)
   const ss = sentencesOf(r.text ?? "");

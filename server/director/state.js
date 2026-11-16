@@ -3152,6 +3152,12 @@ export function step(prev, input) {
       : lmNow.kind === "break" || lmNow.stopping || out?.move?.stopping || (["wrap", "done"].includes(String(lmNow.kind ?? out?.move?.kind ?? "")) && out?.state?.stoppedEarly && !prev?.stoppedEarly) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
   const cell = acted ? { part: cell0?.part ?? null, column: acted, help: cell0?.help ?? null } : cell0;
+  // (dc-r8-director24 H3: help remembers the lesson — every sentence she has said, kept as keys; her last turn is added each turn)
+  if (input?.event === "turn" && out?.state) {
+    const lastT = [...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text;
+    const add = lastT ? String(lastT).split(/(?<=[.!?\u0964])\s+/).map((x) => normLine(x).slice(0, 60)).filter((x) => x.split(" ").length >= 4) : [];
+    out.state.saidKeys = [...new Set([...(prev?.saidKeys ?? []), ...add])].slice(-600);
+  }
   // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose
   // authored lines are all there says the first help not there: the compiled cell's lines, else the card's simpler, its point's simpler
   // or the point's second wording; with none left, it stands — the give-up's key comes from giveUpSpent)
@@ -3160,7 +3166,9 @@ export function step(prev, input) {
     const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? saidIn(x, lang) : null);
     const said = [lm.point, lm.simpler, ...(lm.rendered ?? []), ...(lm.sayFirst ?? [])].map(txt).filter((x) => x && String(x).trim());
     const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
-    const inLast2 = (x) => last2.includes(normLine(x).slice(0, 50));
+    const said0 = out.state.saidKeys ?? [];
+    // (lesson-wide for a clarify or a give-up; a Hindi request keeps her last two turns — see the status file's question to main)
+    const inLast2 = (x) => last2.includes(normLine(x).slice(0, 50)) || cell.column !== "hindi" && String(x).split(/(?<=[.!?\u0964])\s+/).map((y) => normLine(y).slice(0, 60)).filter((y) => y.split(" ").length >= 4).every((y) => said0.includes(y));
     // (a Hindi request answered with nothing but the switch line and the card — c4 stuck 10 — has no new words either)
     if (said.length ? said.every(inLast2) : cell.column === "hindi") {
       const cl = cellLines(prev, input, cell.column);
