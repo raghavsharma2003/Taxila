@@ -133,6 +133,15 @@ export const PREDICATES = {
     // re-says, ends on its check-in, and the card waits)
     // (dc-r8-second-clarify-shows-not-rewords: the key and its why said twice after the first — a third ask may move on)
     if (KEY_SAID.test(ctx.prevT.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
+    // (main's R3 on the merged H4 + L2 tree: a clarify at the hook's check-in is answered by the first point, and its card with it)
+    if (String(ctx.prevT.move ?? "") === "hook") return null;
+    // (main's R3: a clarify at a keyed card's check-in — the check-in L2 puts after a right answer's verdict when the next part waits
+    // included — is help on the card just answered (H4 item 6): the why's other wording if unsaid, else one afterKeyGoOn form and the lesson
+    // goes on, its next card with it. Exempt exactly as giveUpCheckin exempts it: the turn the walk recorded as keyed help, and a card in it
+    // only after the go-on line. The same go-on line leads a worked step's turn whose wordings are all said: the lesson goes on, said so)
+    const goOn = (ctx.script?.joints?.afterKeyGoOn ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
+    if (goOn.some((g) => key(r.text).startsWith(g))) return null;
+    if (r.cell?.keyed && !cardIn(r)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },
   /** A planned in-turn board change the record does not draw; a board change under a joint word. */

@@ -69,3 +69,52 @@ test("keyEarly: a card's key given to a give-up or a wrong answer while its ladd
   // row, given the key with e1's pointAlt unsaid; the others are the second-request rule's and the second miss's keys)
   readsOn("keyEarly", [["c5-t02", "stuck", 12], ["c5-t02", "offtopic", 24], ["c4", "stuck", 36], ["c4", "offtopic", 30], ["c6", "steering", 16], ["c5-t01", "steering", 16]]);
 });
+
+// ───────────── main's rulings on the merged H4 + L2 tree (2026-11-17) ─────────────
+const pilot = (id) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${id}.json`), "utf8"));
+
+// R6 (dry c6 stuck 20): a give-up at the check-in of a picture of the worked problem had no part recorded — the picture's move is on the
+// worked example's own beat, "worked" — so help was not picked and the walk went on to step 1 unhelped
+test("R6: a request after a picture of the worked problem is help on the worked problem, whose ladder starts at problemAlt", async () => {
+  const { cellAddressOf } = await import("../server/director/state.js");
+  const { pickHelp } = await import("../server/director/help.js");
+  const S = "c6-maths-ch06-t01-s1";
+  const prev = { turn: 9, lastMove: { kind: "reteach", request: "visual", scriptBeat: { skillId: S, beatId: "worked", kind: "worked" } }, lastUi: { status: "your_turn" } };
+  const input = { event: "turn", text: "pata nahi", kit: {}, cls: { outcome: "no_evidence", flags: { dontKnow: true } } };
+  assert.deepEqual(cellAddressOf(prev, input), { part: `${S}:worked:problem`, column: "give_up" });
+  // (a close on that beat — the your-step card answered — is no worked problem)
+  assert.equal(cellAddressOf({ ...prev, lastMove: { ...prev.lastMove, verdict: "correct", closed: { answer: "x" } } }, input), null);
+  const d = pickHelp({ script: pilot("c6-maths-ch06-t01"), part: `${S}:worked:problem`, request: "give_up", said: [] });
+  assert.equal(d.rung.field, "problemAlt");
+  assert.equal(d.card, "wait");
+});
+
+// R3 (dry c5-t01 stuck 44, c5-t02 stuck 64): a second "samajh nahi aaya" on a worked step whose one wording was said got the your-step
+// card bare. A step's ladder is its own simpler, then the worked problem's (problemAlt, simpler); with all said, a go-on line, never nothing
+test("R3: a worked step's ladder runs on to the problem's wordings, and ends on a go-on line", async () => {
+  const { pickHelp } = await import("../server/director/help.js");
+  const { addSaid } = await import("../server/director/help.js");
+  const script = pilot("c5-maths-ch02-t02"), S = "c5-maths-ch02-t02-s1", w = script.skills[0].workedExample;
+  let said = [];
+  const fields = [];
+  for (let n = 0; n < 4; n++) {
+    const d = pickHelp({ script, part: `${S}:worked:step2`, request: "clarify", said, lessonKey: "t" });
+    if (!d.rung) { assert.equal(d.card, "goOn"); assert.equal(d.joint?.kind, "afterKeyGoOn"); break; }
+    fields.push(d.rung.path.replace(/^skills\[0\]\.workedExample\./, ""));
+    said = addSaid(said, d.rung.text, n);
+  }
+  assert.deepEqual(fields, ["steps[1].simpler", "problemAlt", "simpler"]);
+  assert.ok(w.problemAlt && w.simpler);
+});
+
+test("R3: clarifyCard does not flag a clarify at the hook's check-in answered by the first point, nor keyed help, nor a go-on line", () => {
+  const script = pilot("c4-maths-ch05-t01");
+  const card = "Is circle ke 3 barabar tukde hain. Ek tukda kitna hai?";
+  const run = (prevT, r) => lessonFlags({ script, rows: [prevT, { who: "child", text: "samajh nahi aaya" }, r] }).filter((f) => f.predicate === "clarifyCard");
+  const point = { who: "teacher", text: `Ek circle lo. ${card}`, card, move: "explain" };
+  assert.deepEqual(run({ who: "teacher", text: "Aaj fractions dekhenge. Ab tak samajh aaya?", move: "hook" }, point), []);
+  const checkin = { who: "teacher", text: "Is sawaal ka jawab 1/3 hai. Ab tak samajh aaya?", move: "repair" };
+  assert.deepEqual(run(checkin, { ...point, text: `${script.joints.afterKeyGoOn[1].hi} ${card}`, cell: { keyed: true } }), []);
+  // (a plain point's check-in answered with the card is still flagged)
+  assert.equal(run({ who: "teacher", text: "Ek circle lo. Ab tak samajh aaya?", move: "explain" }, { ...point, text: card }).length, 1);
+});

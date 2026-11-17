@@ -2994,6 +2994,10 @@ export function cellAddressOf(prev, input) {
     const S = sb.skillId, b = String(sb.beatId ?? "");
     if (sb.kind === "explain") part = lm.checkinOk || lm.splitTeach ? `${S}:${b}:checkin` : `${S}:${b}:point`;
     else if (/^worked:(?:problem|step\d+)$/.test(b)) part = `${S}:${b}`;
+    // (main's R6 on the merged tree, c6 stuck 20: a picture of the worked problem is said over the worked example's own beat, "worked";
+    // a give-up at its check-in had no part recorded, so help was not picked and the walk went on to step 1 unhelped. With no card live
+    // and nothing closed on that turn, the part is the worked problem)
+    else if (b === "worked" && !lm.closed && !lm.gave && !lm.workedDone && !lm.verdict && !lm.splitClose) part = `${S}:worked:problem`;
     else if (sb.kind === "remediation") { const i = (skillScriptOf(kit, S)?.remediation ?? []).findIndex((r) => `rem:${r.targets}` === b); part = i >= 0 ? `${S}:rem:${i}` : null; }
     else if (sb.kind === "hook") part = `${S}:hook`;
   }

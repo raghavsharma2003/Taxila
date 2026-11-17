@@ -154,7 +154,10 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
       break;
     }
     case "check": case "then_card": case "your_step": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
-    case "worked_step": rungs = part.step ? [rung("simpler", `${part.path}.simpler`, part.board)] : [rung("problemAlt", `${part.worked}.problemAlt`, part.board), rung("simpler", `${part.worked}.simpler`, part.board)]; break;
+    // (a worked step: its own simpler, then the worked problem's ladder — problemAlt, simpler (Brain 039 A2: "a worked problem or step:
+    // problemAlt, simpler"). Main's R3 on the merged tree, c5-t01 stuck 44: a step's ladder of one rung left a second "samajh nahi aaya"
+    // on the step with nothing — the walk went on to the your-step card unhelped while the problem's two other wordings were unsaid)
+    case "worked_step": rungs = [...(part.step ? [rung("simpler", `${part.path}.simpler`, part.board)] : []), rung("problemAlt", `${part.worked}.problemAlt`, part.board), rung("simpler", `${part.worked}.simpler`, part.board)]; break;
     case "remediation": rungs = [rung("sayAlt", `${part.path}.sayAlt`, part.board), rung("simpler", `${part.path}.simpler`, part.board)]; break;
     case "bridge": rungs = [rung("simpler", `${part.path}.simpler`, null)]; break;
     default: rungs = [];
@@ -163,7 +166,7 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
@@ -261,6 +264,10 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
     // (a card with no key written is let go as the walk lets it go: the lesson goes on)
     return key ? { ...base, rung: null, board: key.board, card: "close", key, joint: null } : { ...base, rung: null, board: null, card: "goOn", key: null, joint: null };
   }
-  // (a point or a remediation with nothing unsaid: its card is asked; a worked step or a bridge: the lesson goes on)
-  return { ...base, rung: null, board: part.board ?? null, card: part.card ? "ask" : "goOn", key: null, joint: null };
+  // (a point or a remediation with nothing unsaid: its card is asked; a worked step or a bridge: the lesson goes on — never with nothing:
+  // main's R3 on the merged tree, c5-t02 stuck 64, a second "samajh nahi aaya" on a step whose wordings were all said got the your-step
+  // card bare. She says one afterKeyGoOn form — they will meet this again — and the lesson goes on, as after a key's spent why)
+  if (part.card) return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: null };
+  const joint = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
+  return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint };
 }
