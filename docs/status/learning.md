@@ -1071,3 +1071,7 @@ Read from the dry run's steady lessons. Six sentences changed; everything else i
 | c6 | s3 worked step 3 `ask.right` | Haan, 160 m, kyunki do aadhe chakkar milke ek poora chakkar. | Haan, 160 m: yeh ek poora chakkar hua. | the step's own prompt has just said "Poora chakkar aadhe ka do guna hai" |
 | c5-t01 | s1 e1 `whyShort` | 0 se 1 ke 3 gaps; pehla isi line par | 0 se 1 ke 3 gaps; 1/3 isi line par | "pehla" had no noun |
 | c5-t02 | s2 c0 `whyShort` | 4/6 mein se 1/6 hatao, 3 hisse bachte | 4/6 mein se 1/6 hatao, 3 hisse bachte hain | clipped |
+
+## c5-t01 skill 1 check 3: the mix-up's answer reworded (main loop, 2026-11-17)
+
+`wrongIfMis` "no place" → "koi mark nahi". The card asks "kaunsa mark hai?", so a child with the mix-up answers about marks. The old token, said by the rule-based child, was read as a safety disclosure by the safety turn's model read (once in director28a's steady and stuck lessons, three times in director28's steady lesson: rows 40, 48, 56). Nothing in the safety code was changed or measured; a real child who answers a maths question with "no place" can still get a safety turn, and that stays on the list for the safety phase. The staged script `data/lesson-scripts-staged/` has one card with the same token; it is read when the staged scripts are.
