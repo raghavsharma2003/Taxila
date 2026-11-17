@@ -48,7 +48,10 @@ const hasJoint = (text, script, kinds) => { const ss = sentencesOf(text).map(nor
 export function partsOf(r) {
   const t = String(r.text ?? "");
   const pp = r.pageParts ?? [];
-  const forms = new Set((r.seams ?? []).map((s) => s.form).filter(Boolean).map(low));
+  // (a seam's joint — back-to, before a remediation, before a worked problem, after an aside, after the AI line, after a key's return — leads
+  // into the part after it; help's own joints — helpSpent, helpToCard, the go-on line, the Hindi switch — are help's words)
+  const LEADS = new Set(["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn"]);
+  const forms = new Set((r.seams ?? []).filter((s) => LEADS.has(s.joint)).map((s) => s.form).filter(Boolean).map(low));
   const out = pp.map((p, n) => {
     const end = pp[n + 1]?.from ?? t.length;
     const text = t.slice(p.from ?? 0, end).trim();
@@ -233,7 +236,7 @@ export const D27_PREDICATES = {
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);
-    const isSpent = id ? spent(ctx.script, id, a.keyed, st.sents) : true;
+    const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents) : true;
     if (hasJoint(r.text, ctx.script, ["helpSpent", "helpToCard"]) || (a.keyed && hasJoint(r.text, ctx.script, ["afterKeyReturn", "afterKeyGoOn"]))) {
       return isSpent ? null : `a ${req} on ${a.beat} answered with a help joint while its help is unsaid`;
     }

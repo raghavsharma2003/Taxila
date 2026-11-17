@@ -176,10 +176,13 @@ describe("r7-brain-v68.test.mjs", () => {
         return { out, last, kit, sc };
       } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
     };
-    for (const persona of ["steady", "stuck", "offtopic", "steering"]) test(`c4 ${persona} row 4: after the hook, e1 is taught — never its simpler first`, async () => {
-      const { last } = await at(persona, "c4", 4);
+    // (dc-r8-director27 P6.1: after a request at the greeting the hook is said with the first point, as on the ordinary path — e1 is taught
+    // at row 2 now, with the hook; never its simpler first)
+    for (const persona of ["steady", "stuck", "offtopic", "steering"]) test(`c4 ${persona} row 2: after the greeting's request, the hook and e1 are taught — never its simpler first`, async () => {
+      const { last } = await at(persona, "c4", 2);
       assert.equal(last.state.lastMove.kind, "explain");
       assert.equal(last.state.lastMove.scriptBeat?.beatId, "e1");
+      assert.ok(last.state.lastMove.hookSaid, "the hook is said with it");
       assert.ok(!last.state.lastMove.simpler && !last.state.lastMove.beatless);
     });
     test("c4 stuck 8: 'ab Hindi mein' is followed by the live part (e1) in words her last turn did not use, then the card", async () => {
@@ -195,6 +198,16 @@ describe("r7-brain-v68.test.mjs", () => {
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
       // (dc-r8-director26 C1, main's ruling change 2: e1's point and its card are one turn now, so the run's "haan" at row 7 answers the card
       // and its remediation's follow-up card is the live part at row 8 — that card's own simpler is the live part's words)
+      // (dc-r8-director27 P2: a remediation and its follow-up card are separate turns again — the request at the remediation's own check-in is
+      // help on the remediation: its unsaid wording, then its card)
+      const remP = /:rem:(\d+)$/.exec(String(last.state.lastMove.help?.part ?? ""));
+      if (remP) {
+        const w = norm(String(last.state.lastMove.simpler ?? ""));
+        assert.ok(w && !lastT.includes(w.slice(0, 40)), out.reply);
+        assert.ok(norm(out.reply).includes(w.split(" ").slice(0, 5).join(" ")), out.reply);
+        assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply);
+        return;
+      }
       const then = /:then:(.+)$/.exec(String(last.p.r.ui?.ask?.itemId ?? ""));
       const sim = norm(said(then ? sc.skills[0].remediation.find((r) => r.targets === then[1])?.then?.simpler : e1.ask?.simpler ?? e1.simpler));
       assert.ok(!lastT.includes(sim.slice(0, 40)));

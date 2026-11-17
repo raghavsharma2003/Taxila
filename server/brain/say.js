@@ -10,7 +10,7 @@ import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { applySeams, seamStart, lessonKeyOf, JOIN_MAX_WORDS } from "./seams.js";
-import { inSaid as helpInSaid, normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
+import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
 import { altCall } from "../stagecraft/board-first.js";
@@ -2792,7 +2792,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // earlier turn — its question in the said set — and not on her last one is a return)
     const onLastTurn = !!(herPrev && card && herPrev.includes(norm(card).toLowerCase().slice(0, 40)));
     const cardQ0 = card ? helpSentences(String(card)).at(-1) ?? "" : "";
-    const saidBeforeNow = !!cardQ0 && helpNorm(cardQ0).split(" ").length >= 4 && helpInSaid(cardQ0, state.said ?? []);
+    // (exactly: two cards' questions share most words — "0 ke baad pehla mark …", "0 ke baad chautha mark …" — and are not one card)
+    const cardK0 = cardQ0 ? helpNorm(cardQ0) : "";
+    const saidBeforeNow = cardK0.split(" ").length >= 4 && (state.said ?? []).some((x) => (typeof x === "string" ? x : x?.k) === cardK0);
     const cameBack = (posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit) || (saidBeforeNow && !onLastTurn);
     // (dc-r8-director23 S: what the seam pass needs to know of the card — server/brain/seams.js)
     guard.seamInfo = { posedBefore: posedBefore || saidBeforeNow, cameBack, onLastTurn };

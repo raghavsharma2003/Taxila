@@ -3104,10 +3104,11 @@ export function cellAddressOf(prev, input) {
     if (m[2]) part = m[2] === "worked" ? `${S}:worked:yourStep` : `${S}:${m[2]}:card`;
     else if (m[3]) { const i = (sk?.remediation ?? []).findIndex((r) => r.targets === m[3]); part = i >= 0 ? `${S}:rem:${i}:then` : null; }
     else part = `${S}:check:${m[4]}`;
-  } else if (sb?.kind === "bridge" || (lm.simplerBeat?.beatId === "bridge" && sb?.beatId === "bridge")) {
+  } else if (sb?.kind === "bridge" || (lm.bridgeSaid && lm.bridgeBeat?.skillId) || lm.simplerBeat?.beatId === "bridge") {
     // (dc-r8-director27 P3, fd-bridge-address-is-previous-card: after a bridge the address is the bridge — a request at its check-in gets the
-    // bridge's own second wording, never the card before it's; c5-t01 steady 80, 82; c6 stuck 58, offtopic 54)
-    part = bridgePartOf(kit, sb?.skillId ?? lm.simplerBeat?.skillId);
+    // bridge's own second wording, never the card before it's; c5-t01 steady 80, 82; c6 stuck 58, offtopic 54. A key and the bridge in one
+    // turn: the bridge, said last; the bridge's own help turn stays on it)
+    part = lm.simplerBeat?.beatId === "bridge" && lm.simplerBeat.skillId ? `${lm.simplerBeat.skillId}:bridge` : bridgePartOf(kit, sb?.kind === "bridge" ? sb.skillId : lm.bridgeBeat?.skillId);
   } else if (lm.simplerBeat?.kind === "remediation" || sb?.kind === "remediation") {
     const rb = lm.simplerBeat?.kind === "remediation" ? lm.simplerBeat : sb;
     const i = (skillScriptOf(kit, rb.skillId)?.remediation ?? []).findIndex((r) => `rem:${r.targets}` === String(rb.beatId));
@@ -3181,11 +3182,14 @@ function helpRequestOf(prev, input) {
  *  else the walk's record (cellAddressOf). → { part, keyed } | null — with no part recorded, help is not picked. */
 function helpPartOf(prev, input) {
   const lmB = prev?.lastMove ?? {};
-  if (!prev?.lastUi?.ask?.itemId && (lmB.scriptBeat?.kind === "bridge" || lmB.bridgeSaid)) {
+  if (!prev?.lastUi?.ask?.itemId && (lmB.scriptBeat?.kind === "bridge" || lmB.bridgeSaid || lmB.simplerBeat?.beatId === "bridge")) {
     const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
     if (a?.part && /:bridge$/.test(a.part)) return { part: a.part, keyed: false };
   }
   if (prev?.keyedPart && !prev.lastUi?.ask?.itemId) return { part: prev.keyedPart, keyed: true };
+  // (dc-r8-director27 P3: a card answered right, its verdict and why said, no card posed since — a request there is help on that card, its
+  // why's other wording first, but no key was said as help: it is not keyed, and nothing left is helpSpent, never the go-on line)
+  if (prev?.closedPart && !prev.lastUi?.ask?.itemId) return { part: prev.closedPart, keyed: false, closed: true };
   const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
   // (dc-r8-director26 N1: with no part recorded, the part is the last she said — a card her last turn closed, with no card posed since,
   // is the card just keyed)
@@ -3202,7 +3206,7 @@ function helpDecision(prev, input, request, said) {
   const where = helpPartOf(prev, input);
   if (!where) return null;
   const script = scriptFor(input.kit)?.script;
-  const d = pickHelp({ script, part: where.part, keyed: where.keyed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
+  const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
     lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
   return d ? { ...d, friend: friendOf } : null;
 }
@@ -3236,6 +3240,8 @@ const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delet
 function noteHelp(s, d) {
   if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
+  // (a closed card's help that moves the lesson on — its card asked, the lesson going on, a key — leaves it)
+  if (d.card !== "wait" && d.card !== "keep") s.closedPart = undefined;
 }
 /** The move fields that carry a decision's words: the wording (or the key, or the joint) as the turn's simpler, over its board. */
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
@@ -3506,6 +3512,9 @@ export function step(prev, input) {
         && columnName(input, prev) !== "right" && !lmK.bridgeSaid && lmK.scriptBeat?.kind !== "bridge";
       if (keyedNow) out.state.keyedPart = cardPartOf(input.kit, { itemId: prev?.activeItemId ?? lmK.itemId ?? null, beat: lmK.closedBeat ?? lmK.closeBeat }) ?? undefined;
       else if (out.ui?.ask?.itemId || lmK.point || lmK.rendered?.length || lmK.bridgeSaid || lmK.kind === "worked_example") out.state.keyedPart = undefined;
+      // (dc-r8-director27 P3: a card closed by a right answer, with nothing posed or taught after it — help's part, not keyed)
+      const closedRight = !out.ui?.ask?.itemId && !!lmK.closeBeat && columnName(input, prev) === "right" && !lmK.bridgeSaid && lmK.scriptBeat?.kind !== "bridge" && !lmK.point && !lmK.rendered?.length;
+      out.state.closedPart = closedRight ? cardPartOf(input.kit, { itemId: prev?.activeItemId ?? lmK.itemId ?? null, beat: lmK.closedBeat ?? lmK.closeBeat }) ?? undefined : undefined;
     }
   }
   if (out?.state?.lastMove && input?.event === "turn") {

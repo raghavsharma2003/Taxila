@@ -108,7 +108,9 @@ export const PREDICATES = {
   },
   /** A turn holding a key, a new point and a new card. */
   keyPointCard(L, r, i, ctx) {
-    if (!KEY_SAID.test(r.text) || !cardIn(r) || !(r.pageParts ?? []).some((p) => p.part === "body")) return null;
+    // (dc-r8-director27 P5: a seam's joint — the back-to line before a card asked again — is no point)
+    const jf = new Set((r.seams ?? []).map((x) => key(x.form ?? "")).filter(Boolean));
+    if (!KEY_SAID.test(r.text) || !cardIn(r) || !partsWithText(r).some((p) => p.part === "body" && !jf.has(key(p.text)))) return null;
     const newCard = !ctx.prevT?.card || low(ctx.prevT.card) !== low(r.card);
     return newCard && !/bridge/.test(JSON.stringify(r.pageParts)) ? "a key, a new point and a new card in one turn" : null;
   },
@@ -150,6 +152,9 @@ export const PREDICATES = {
     if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? "")) && !r.cell?.keyed) return null;
     // (dc-r8-director26 N1: a point whose wordings are all said asks its card, after the helpToCard word — H4's own answer)
     if ((r.seams ?? []).some((x) => x.joint === "helpToCard")) return null;
+    // (dc-r8-director27 P3: after a key with nothing left on it, one authored form — this will come again, now back to the earlier question —
+    // and the earlier card: that is the request's answer)
+    if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn")) return null;
     if (r.cell?.keyed && !cardIn(r)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },
@@ -194,7 +199,9 @@ export const PREDICATES = {
     const ss = sentencesOf(t);
     // (dc-r8-director25 L2: the card her reply leads back to is the card's — "… ya baad mein?" — never a promise)
     const cardK = low(r.card ?? "");
-    const park = ss.filter((x) => !(cardK && cardK.includes(low(x).replace(/[.!?]+$/, "")))).find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
+    // (a seam's joint — "Aao, agla sawaal main aur tum saath mein karenge." before a worked problem, dc-r8-director27 P5 — is no park)
+    const jfR = new Set((r.seams ?? []).map((x) => key(x.form ?? "")).filter(Boolean));
+    const park = ss.filter((x) => !(cardK && cardK.includes(low(x).replace(/[.!?]+$/, ""))) && !jfR.has(key(x))).find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
     if (park) return `their answer to the return parked again: "${park.slice(0, 70)}"`;
     const F = (ctx.replyForms ??= asideReplyForms());
     const fixed = [...F.plain, ...F.sad].map(norm).find((f) => low(t).startsWith(low(f)));
@@ -639,6 +646,8 @@ export const ORDER_LAWS = {
     // (dc-r8-director25 H4 item 6: after a key's check-in, with the why's other wording said, help says "we'll meet this again" and the
     // lesson goes on)
     if (helpGoOnSaid(r, ctx)) return null;
+    // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
+    if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
@@ -680,6 +689,8 @@ export const ORDER_LAWS = {
     // (the turn that asks the teach-back may name the key among its options: the check starts on the turn after it)
     const q = [tb.prompt?.hi, tb.prompt?.en].filter(Boolean).map((x) => key3(x));
     if (!ctx.o.tbAsked) { if (q.some((x) => x && key3(r.text).includes(x.slice(0, 40)))) ctx.o.tbAsked = true; return null; }
+    // (dc-r8-director27 P4: the question asked again after its hint may name the key among its options, as its first asking does)
+    if (q.some((x) => x && key3(r.text).includes(x.slice(0, 40)))) return null;
     const esc = key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     if (!new RegExp(`(?<![\\p{L}\\p{N}/])${esc}(?![\\p{L}\\p{N}/])`, "iu").test(String(r.text ?? ""))) return null;
     // (director22 T1: read from the pages drawn — the answer board from the first page, or the board cleared)
@@ -773,7 +784,8 @@ export const ORDER_LAWS = {
       const want = seamJoint(s.left, s.right);
       const forms = want ? (ctx.script?.joints?.[want] ?? []).length : 0;
       if (want && forms && !s.joint && !r.seams.some((x) => x !== s && x.joint === want)) return `${s.left} → ${s.right} takes ${want}, none said`;
-      if (s.joint && s.joint !== want) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      // (dc-r8-director27 P3: after a key with nothing left, the back-to seam takes the after-key return form — one joint, both things)
+      if (s.joint && s.joint !== want && !(s.joint === "afterKeyReturn" && want === "backTo")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }
     return null;

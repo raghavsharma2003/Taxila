@@ -254,7 +254,7 @@ export function keyLine(part, lang = "hinglish") {
  *   key:   { key, why, text, board } when the card closes
  *   joint: { kind, text, by } — helpSpent or afterKeyGoOn, said first
  */
-export function pickHelp({ script, part: partId, keyed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {} }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {} }) {
   if (!HELP_REQUESTS.includes(request)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -263,7 +263,8 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
   const isCard = CARD_KINDS.has(part.kind);
   // (a hint is a wrong answer's help: on a live card only)
   if (request === "hint" && !isCard) return null;
-  const ladder = ladderOf(script, part, { keyed });
+  // (dc-r8-director27 P3: a card closed by a right answer — its why's other wording first, as after a key; it is not keyed)
+  const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request };
   if (unsaid) {
@@ -272,7 +273,7 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
     // (what happens to the card with a wording said: a posed card stays; a point's or a remediation's card is asked after a give-up or
     // a Hindi request, and waits after a clarify; a worked step and a key's check-in end on the check-in; a bridge goes on)
     // (dc-r8-director27 P3: a bridge's second wording is said and she waits on its check-in, as a point's — the lesson goes on from there)
-    const card = keyed ? "wait" : isCard ? "keep" : part.kind === "bridge" ? "wait" : part.kind === "worked_step" ? "wait"
+    const card = keyed || closed ? "wait" : isCard ? "keep" : part.kind === "bridge" ? "wait" : part.kind === "worked_step" ? "wait"
       : part.card && request !== "clarify" ? "ask" : "wait";
     return { ...base, rung, board: rung.board, card, key: null, joint: null };
   }
@@ -283,6 +284,8 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
     const card = keyed || part.kind === "bridge" ? "goOn" : isCard ? "keep" : part.card ? "ask" : "wait";
     return { ...base, rung: null, board: part.board ?? null, card, key: null, joint };
   }
+  // (a closed card with nothing left: the helpSpent line, and the lesson goes on — the go-on line is a key's)
+  if (closed && !keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
   if (keyed) {
     const joint = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
     return { ...base, rung: null, board: null, card: "goOn", key: null, joint };

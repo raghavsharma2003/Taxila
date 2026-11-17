@@ -228,6 +228,8 @@ export const HELP_PREDICATES = {
     // (dc-r8-director26: after a key's go-on line the lesson goes on — what follows it is the next part, not help: dry c5-t01 steady 80,
     // the next point's "Yeh rahi 0 se 2 tak ki line." is 8 words in 10 of the first point's "Yeh rahi 0 se 1 tak ki line.")
     if (h.keyed && helpGoOnSaid(r, ctx)) return null;
+    // (dc-r8-director27 P3: with nothing left the helpSpent line is said and the lesson goes on — what follows it is the next part, not help)
+    if ((r.seams ?? []).some((x) => x.joint === "helpSpent") && !/·\s*language/.test(String(ctx.prevRead ?? "")) && r.cell?.column !== "hindi") return null;
     const ix = helpIndex(ctx);
     const said = saidBefore(L, i);
     // (a key closes a card: its why may have been heard in the card's own help — the key is the close, not help)

@@ -2,7 +2,7 @@
 // question of the lesson instead of a check-in. Walked on today's scripts (data/lesson-scripts), the model never called.
 //  1. the hook shares the first point's turn when the two fit in 75 words (else, with greetSimpler said first, it keeps its own);
 //  2. a bare point and its own card share a turn of up to 75 words; after a close or a bridge the card waits past 60 (director24's rule);
-//  3. a remediation and its follow-up card share a turn of up to 75 words, each on its own board;
+//  3. a remediation and its follow-up card share a turn of up to 60 words (dc-r8-director27 P2; 75 before), each on its own board;
 //  4. the worked problem and its first told step share a turn when they fit; the last told step comes with the child's own step.
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
@@ -58,14 +58,15 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     assert.equal(unitTurn({ ...out({}), state: { ctx: { lang: "hinglish", plainWords: true }, turn: 4 } }, { text: "haan", cls: cls("no_evidence") }), null, "plain words keep 45");
   });
 
-  test("3. a remediation and its follow-up card: one turn up to 75 words, the remediation on its board, the card's board at the card's first word", () => {
+  test("3. a remediation and its follow-up card: one turn up to 60 words (dc-r8-director27 P2), the remediation on its board, the card's board at the card's first word", () => {
     const K = kitFromFile(getTopic("c6-maths-ch06-t01"));
     const rem = { scriptId: "c6@2.3", skillId: "c6-maths-ch06-t01-s1", beatId: "rem:m", kind: "remediation", board: { template: "shape@1", params: { shape: "hexagon" } } };
     const then = { scriptId: "c6@2.3", skillId: "c6-maths-ch06-t01-s1", beatId: "then:m", kind: "then", board: { template: "measured@1", params: { shape: "rect", w: 14, h: 9 } } };
     const o = { state: { ctx: { lang: "hinglish" }, turn: 9, later: [] }, move: { kind: "reteach", rendered: ["r"], scriptBeat: rem, cardBeat: then }, ui: { ask: { itemId: "script:c6-maths-ch06-t01-s1:then:m", text: "q" } } };
     const u = unitTurn(o, { kit: K, cls: cls("misconception") });
     const j = Math.max(...scriptFor(K).script.joints.beforeRemediation.map((x) => words(x.hi)));
-    assert.deepEqual(u, { margin: 5 + j }, "her miss verdict and the longest beforeRemediation form beside the authored words");
+    // (dc-r8-director27 P2: two judges found the two too much in one breath at 68 to 74 words — the card joins within 60, REM_CARD_CAP)
+    assert.deepEqual(u, { margin: 5 + j, cap: 60 }, "her miss verdict and the longest beforeRemediation form beside the authored words, under 60");
     // (an aside's return due at the follow-up card's held half keeps the remediation on a turn of its own, as before the ruling)
     const due = { ...o, state: { ...o.state, later: [{ topic: "cricket", at: 3, share: true, parkSaid: true, onItem: "script:c6-maths-ch06-t01-s1:ask:e3" }] } };
     assert.equal(unitTurn(due, { kit: K, cls: cls("misconception") }), null);

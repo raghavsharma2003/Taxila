@@ -45,15 +45,18 @@ test("B2: 'bas aaj ke liye itna hi' (c4 stuck 68) gets the authored stop line, w
   assert.doesNotMatch(out.reply, /button/i);
 });
 
-test("N1: a clarify at the opening's check-in (c5-t02 steering 4) is one authored word, the first point and its check-in — no model call", async () => {
-  let called = 0;
-  const draft = async () => { called++; return { text: "Koi baat nahi. Yeh patti ek poora hai: 4 barabar hisse, aur ek mein rang bhara hai. Woh ek hissa 1/4 hai. 1/4 ka 4 batata hai ki patti ke 4 barabar hisse hain. Neeche wali patti bhi utni hi lambi hai. Kya tum bata sakti ho?" }; };
-  const { st, out } = await lineAt("steering", "c5-maths-ch02-t02", 5, { model: draft });
-  assert.equal(called, 0, "no model call");
-  assert.equal(st.lastMove.hookHelp, "clarify");
-  const parts = (out.guard.parts?.list ?? []).map((p) => p.part);
-  assert.deepEqual(parts.slice(0, 2), ["aside", "body"], "a word to her, then the point");
-  assert.ok(out.reply.includes(String(st.lastMove.point).trim()), "the point whole");
+// (dc-r8-director27 P6.1: after a request at the greeting the hook is said with the first point, as on the ordinary path — c5-t02 steering's
+// "samajh nahi aaya" at the greeting gets greetSimpler, the hook and e1 at row 2, so there is no opening check-in left; the clarify at row 4
+// is at e1's check-in, and gets e1's help)
+test("N1/P6.1: a request at the greeting gets the hook with the first point; the next clarify (c5-t02 steering 4) is help on that point", async () => {
+  const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t02", 3);
+  const at2 = plans.at(-1).state.lastMove;
+  assert.equal(at2.kind, "explain");
+  assert.equal(at2.scriptBeat?.beatId, "e1");
+  assert.ok(at2.hookSaid, "the hook is said with the first point");
+  const { st, out } = await lineAt("steering", "c5-maths-ch02-t02", 5, { model: async () => ({ text: "" }) });
+  assert.equal(st.lastMove.help?.part, "c5-maths-ch02-t02-s1:e1:checkin");
+  assert.ok((out.guard.parts?.list ?? []).some((p) => p.part === "simpler"), out.reply);
   assert.match(out.reply, /\?\s*$/, "ends on a question");
 });
 
@@ -109,11 +112,13 @@ test("J1: the go-on line is not said where the back-to joint follows (the seam p
 
 // (dc-r8-director26 C1, main's ruling change 4: c6 stuck's last told step and the child's own step are one turn now, so its clarifies at
 // row 36 are on that card, not on step 1; c5-t01 stuck 44, the work order's other row for this, still reaches step 1's empty ladder)
-test("J1: a worked step whose ladder is empty (c5-t01 stuck 44; c6 stuck 44 before the ruling) goes on to the next step with no go-on promise", async () => {
+// (dc-r8-director27 P3, c5-t01 stuck 44 in director27: the next step with nothing to the child — with nothing left for the part, the turn says
+// the helpSpent line, then goes on; still never the go-on line's promise, which is a key's)
+test("J1/P3: a worked step whose ladder is empty (c5-t01 stuck 44) says helpSpent and goes on to the next step, with no go-on promise", async () => {
   const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t01", 45);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.help?.card, "goOn");
-  assert.ok(!m.help?.joint, "no joint: the next step opens on its own frame");
+  assert.equal(m.help?.joint, "helpSpent", "the helpSpent line answers her");
   assert.ok(!(m.sayFirst ?? []).some((x) => /phir aay|dobara/i.test(x)), "no promise");
 });
 
@@ -166,8 +171,14 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
     const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: tb.key, history: [], ui: right.r.ui, module: null });
     assert.match(out.reply.split(/(?<=[.!?])\s+/)[0], /kyunki/, out.reply);
   } finally { replyDeps.chat = chat; replyDeps.chatStream = chatStream; }
-  // (a miss: the key turn, then "mujhe laga aisa hi hoga" — the wrap's first turn opens on a wrap.ack form)
-  const miss = await planAt(asked.state, "5/9", kit);
+  // (dc-r8-director27 P4: a first miss gets the closing question's hint and the question again; the second, the key turn; then "mujhe laga
+  // aisa hi hoga" — the wrap's first turn opens on a wrap.ack form)
+  const miss1 = await planAt(asked.state, "5/9", kit);
+  assert.equal(miss1.r.state.lastMove.kind, "teachback");
+  assert.equal(miss1.r.state.lastMove.authoredEnd, "teachback", "the hint and the question again, not the key");
+  assert.equal(miss1.r.state.lastMove.renderedKinds?.[0], "help");
+  const miss = await planAt({ ...miss1.r.state, recent: [...(miss1.r.state.recent ?? []), { who: "teacher", text: (miss1.r.state.lastMove.rendered ?? []).join(" ") }] }, "5/9", kit);
+  assert.equal(miss.r.state.lastMove.authoredEnd, "teachbackKey", "the second miss gets the key");
   const after = await planAt(miss.r.state, "mujhe laga aisa hi hoga", kit);
   const w = after.r.state.lastMove;
   assert.equal(w.kind, "wrap");

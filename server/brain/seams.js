@@ -5,7 +5,7 @@
 // the joint kind or none, the form) and the seam predicates read that list and nothing else.
 import { jointOf, scriptFor } from "../director/script.js";
 import { joinParts } from "./lineParts.js";
-import { FALLBACK_JOINTS } from "../director/help.js";
+import { FALLBACK_JOINTS, helpJoint } from "../director/help.js";
 
 const norm = (x) => String(x ?? "").replace(/\s+/g, " ").trim();
 const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
@@ -21,20 +21,24 @@ export const CODE_SEAM_FORMS = Object.freeze({
     english: ["Now let's do one together.", "Let's work one out together.", "Now let's solve one together."] },
   // (dc-r8-director27 P3: code's after-key return for a script without joints.afterKeyReturn — help.js FALLBACK_JOINTS; the compile report
   // lists the hole)
-  afterKeyReturn: { hinglish: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.hi), english: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.en) },
+  // (a getter: help.js and this module import each other through compile.js — read at use, never at load)
+  get afterKeyReturn() { return { hinglish: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.hi), english: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.en) }; },
 });
 const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain.", "Achha, ab wapas apne sawaal par.", "Theek hai, ab aage badhte hain.", "Okay, back to where we were.", "Right, let's pick up where we left off."],
   beforeWorked: [...CODE_SEAM_FORMS.beforeWorked.hinglish, ...CODE_SEAM_FORMS.beforeWorked.english],
-  afterKeyReturn: [...CODE_SEAM_FORMS.afterKeyReturn.hinglish, ...CODE_SEAM_FORMS.afterKeyReturn.english] };
+  get afterKeyReturn() { return [...CODE_SEAM_FORMS.afterKeyReturn.hinglish, ...CODE_SEAM_FORMS.afterKeyReturn.english]; } };
 
 /** The seam table: [left kind, right kind] → the joint that seam takes. Anything not listed takes none — a point and its own card, a
  *  verdict and its own why, a bridge and the unit it opens, a park and the card it leads into. */
 export const SEAM_TABLE = [
   // (her reply to the child's aside or to her return's question, into the lesson)
-  ["asideReply", "point", "afterAside"], ["asideReply", "help", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "afterAside"], ["asideReply", "remediation", "afterAside"],
+  // (dc-r8-director27 P5: the back-to line on every return to an earlier card, whatever led there — her reply to an aside too: c4 offtopic 32,
+  // c5-t01 steady 46, c4 stuck 36. One joint at the seam: the back-to, which takes her back from the aside as well)
+  ["asideReply", "point", "afterAside"], ["asideReply", "help", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "backTo"], ["asideReply", "remediation", "afterAside"],
+  ["aside", "returnCard", "backTo"],
   // (her AI line, or her reply after it, into the lesson)
-  ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "afterAiLine"], ["aiLine", "remediation", "afterAiLine"],
-  ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "afterAiLine"], ["aiReply", "remediation", "afterAiLine"],
+  ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "backTo"], ["aiLine", "remediation", "afterAiLine"],
+  ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "backTo"], ["aiReply", "remediation", "afterAiLine"],
   // (a miss verdict into its remediation)
   ["missVerdict", "remediation", "beforeRemediation"],
   // (a return to an earlier card: after a then-card's verdict in the same turn, or opening a turn after another unit)
@@ -222,8 +226,12 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => goK.includes(low(x))));
     if (at >= 0 && at < kinds.indexOf(intoReturn)) {
       const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
-      if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
-      info = { ...info, helpJoint: null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
+      // (before the aside's return the go-on line's "we go on" contradicts the return — c6 steering 32, its judge: "abhi aage badhte hain. Ab
+      // cricket ki baat karte hain". The request is still answered: the helpSpent line, then the return)
+      const spentJ = intoReturn === "return" ? helpJoint(scriptFor(kit)?.script, "helpSpent", { lang, lessonKey: lessonKeyOf(state), n: state?.helpJointN?.helpSpent ?? 0 }) : null;
+      if (spentJ?.text) stripped[at] = { ...stripped[at], text: [spentJ.text, ...rest].join(" ") };
+      else if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
+      info = { ...info, helpJoint: spentJ?.text ? { kind: "helpSpent", form: spentJ.text, by: spentJ.by } : null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
       kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
     }
   }
