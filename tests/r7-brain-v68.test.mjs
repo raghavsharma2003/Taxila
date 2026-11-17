@@ -100,7 +100,9 @@ describe("r7-brain-v68.test.mjs", () => {
     });
     test("an authored point's own question is said (c5-t02 stuck 8: 'Neeche ka 4?' was dropped with the point), her own question is not", async () => {
       for (const d of [(t) => t, (t) => `${t} Tumhe kya lagta hai, kitne tukde?`]) {
-        const { out } = await reply("stuck", "c5-t02", 8, d);
+        // (dc-r8-director25 H4: row 8 is a Hindi request on e1's card, whose ladder this run's script has said — help's line and the
+        // question; the point is said where the walk teaches it, row 4, whose recorded line had dropped it)
+        const { out } = await reply("stuck", "c5-t02", 4, d);
         assert.match(out.reply, /Neeche ka 4\? Patti ke 4 barabar tukde\./);
         assert.doesNotMatch(out.reply, /Tumhe kya lagta hai/);
       }
@@ -179,6 +181,9 @@ describe("r7-brain-v68.test.mjs", () => {
       if (last.state.lastMove.gave?.answer) { assert.match(out.reply, /jawab/i); return; }
       // (v6.10 T2.5: a request never spends help — with nothing fresh and the card's help unspent by a miss, no key: the card again)
       if (!last.state.lastMove.simpler) { assert.doesNotMatch(out.reply, /jawab/i); assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply); return; }
+      // (dc-r8-director25 H4 item 4: the run said e1's simpler at row 4, and this run's script has no ask.simpler or pointAlt — nothing
+      // unsaid on the card's ladder: a Hindi request never gets a key; one helpSpent line, then the question alone)
+      if (last.state.lastMove.help?.joint === "helpSpent") { assert.doesNotMatch(out.reply, /jawab/i); assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply); return; }
       const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
       const sim = norm(said(e1.ask?.simpler ?? e1.simpler));
@@ -205,10 +210,14 @@ describe("r7-brain-v68.test.mjs", () => {
     });
     // (O6, main on director21 reverses v6.8 B1‴ here: a Hindi request spends no help, and the first miss on a card never gets the key —
     // the miss gets the card's help, and the key waits for a second miss)
-    test("c6 steering 10: a first miss after a Hindi request gets the card's help, never the key", async () => {
+    // (dc-r8-director25 H4 items 4 and 7 supersede O6: the count of misses decides nothing — a miss gets the card's first unsaid rung, and the
+    // key when its ladder has nothing unsaid. Row 8 of this run said the then-card's simpler, its one rung, so row 10's miss gets the key)
+    test("c6 steering 10: a first miss on the remediation's card gets its unsaid rung, else the key (H4: never a count of misses)", async () => {
       const { out, last } = await at("steering", "c6", 10);
-      assert.ok(!last.state.lastMove.gave, `the key given on a first miss: ${out.reply.slice(0, 120)}`);
-      assert.doesNotMatch(out.reply, /Is sawaal ka (?:sahi )?jawab/);
+      const h = last.state.lastMove.help;
+      assert.equal(h?.part, "c6-maths-ch06-t01-s1:rem:0:then", JSON.stringify(h));
+      if (last.state.lastMove.gave) { assert.equal(h.card, "close"); assert.match(out.reply, /Is sawaal ka (?:sahi )?jawab/); }
+      else { assert.equal(h.card, "keep"); assert.doesNotMatch(out.reply, /Is sawaal ka (?:sahi )?jawab/); }
     });
     for (const topic of ["c6", "c5-t01"]) test(`steady ${topic} 38: a closed card (answered, its why pending) is never reopened by a Hindi request`, async () => {
       const { out, last } = await at("steady", topic, 38);
@@ -279,7 +288,10 @@ describe("r7-brain-v68.test.mjs", () => {
         const p = await planTurn(pl.before, { outcome: "no_evidence", confidence: 0.9, source: "model", flags: { wantsToStop: true } }, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: pl.child, childText: pl.child, leaked: false, live: Promise.resolve({ state: pl.p.learner.after, maxSeq: 0 }), carried: [], now: 9e6 });
         assert.ok(!p.r.move.checkin && p.r.move.kind !== "break", `${p.r.move.kind} ${p.r.move.checkin}`);
         // (v6.10 T2: right after a card is posed, "woh wala ho gaya" is asked for once more first — still never a stop menu)
-        assert.ok(["move_on", "ask_again"].includes(p.r.move.request), p.r.move.request);
+        // (dc-r8-director25 H4: row 62's miss on s2 e1, with nothing unsaid on its ladder, now closes the card with its key — no card is live
+        // at 64, so "aage chalo" is the walk going on to its next part, with no request to read)
+        if (!pl.before.activeItemId) assert.ok(["explain", "practice", "worked_example", "bridge"].includes(p.r.move.kind), p.r.move.kind);
+        else assert.ok(["move_on", "ask_again"].includes(p.r.move.request), p.r.move.request);
       } finally { setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
     });
   });
