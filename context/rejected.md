@@ -3044,3 +3044,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-second-request-worked-answer` (2026-11-16): Rejected after director25: 'a second request for help on the same part gets the worked answer' (dc-r8-director24 H3, from director24's clause 6). What broke: counting requests does not know what has been said, so the worked answer came where a hint was unsaid (4 rows) and was withheld where the rule called for it (5 rows); a Hindi request after a give-up counted as the second request and handed over the answer with no answer board (c5-t01 and c6 offtopic 34: one of the run's 3 contradictions); help turns with nothing new stayed at 14 (15 before). Replaced by the ladder: the answer comes when no authored wording is left unsaid.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-break-at-45` (2026-11-17): Rejected before release: breaking every turn of parts at 45 words (dc-r8-director25 L2 as first written, from clause 6's pre-set remedy). What broke, on the dry matrix: every steady lesson 185 to 203 rows (the decision's own limit was 170), 54 to 58 check-ins a lesson where there were 13, half of them back to back; a verdict alone with a check-in 22 to 26 times a lesson. A remedy fixed in a clause before a run is still measured before it ships.
