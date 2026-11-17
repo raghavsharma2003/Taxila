@@ -40,7 +40,7 @@ import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
 import { pickHelp, addSaid, TEACHBACK_PART } from "./help.js";
-import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
+import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -725,8 +725,15 @@ function walkNextV2(s, input, prefix, sk) {
       // (dc-r8-director27 P6.1: after a request at the greeting the hook is said with the first point as on the ordinary path — greetSimpler
       // first, its words counted — c4 row 2 in all four lessons; c5-t01 stuck 2, steering 2; c6 stuck 2, steering 2: the hook alone)
       const gsDue = greetSimplerDue(s.lastMove, input) ? saidIn(scriptFor(kit)?.script?.greetSimpler, lang) : null;
+      // (dc-r8-director27 Brain 042: where the first point's card would not fit with the hook and the point, the turn ends on the point's quick
+      // question in the check-in's place — it fits in 75 words with them, or the hook is said on its own turn and the point comes with its card;
+      // never the hook and the point ending on a check-in before the waiting card)
+      const q1 = b1?.quick?.prompt ? saidIn(b1.quick.prompt, lang) : null;
+      const it1w = it1 ? wordsIn(saidIn(b1.ask?.prompt, lang) ?? "") : 0;
+      const lead1 = (gsDue ? wordsIn(gsDue) : 0) + walkLeadWords(input, lang, s.lastMove);
+      const endW = q1 && wordsIn(use, p1) + it1w + lead1 > L2_CAP ? wordsIn(q1) : 4;
       if (!bridge && use && p1 && it1 && !gone(it1.id) && w.smaller !== b1.id && !scriptFor(kit)?.script?.recordedRun
-        && wordsIn(use, p1) + (gsDue ? wordsIn(gsDue) : 0) + walkLeadWords(input, lang, s.lastMove) + 4 <= L2_CAP) { hookLead = [use]; continue; }
+        && wordsIn(use, p1) + lead1 + endW <= L2_CAP) { hookLead = [use]; continue; }
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
     }
@@ -3053,7 +3060,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
+const ONE_TURN = ["quick", "quickReply", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3104,6 +3111,12 @@ export function cellAddressOf(prev, input) {
     if (m[2]) part = m[2] === "worked" ? `${S}:worked:yourStep` : `${S}:${m[2]}:card`;
     else if (m[3]) { const i = (sk?.remediation ?? []).findIndex((r) => r.targets === m[3]); part = i >= 0 ? `${S}:rem:${i}:then` : null; }
     else part = `${S}:check:${m[4]}`;
+  } else if (lm.quick?.skillId && lm.quick.beatId) {
+    // (Brain 042: the child answers the point's quick question — recorded as its own part; help's part for it is the point, helpPartOf)
+    part = `${lm.quick.skillId}:${lm.quick.beatId}:quick`;
+  } else if (lm.stepAsk?.skillId && Number.isInteger(lm.stepAsk.step)) {
+    // (Brain 042: the child answers an asked step — its own part; help's part for it is the step, helpPartOf)
+    part = `${lm.stepAsk.skillId}:worked:step${lm.stepAsk.step + 1}:ask`;
   } else if (sb?.kind === "bridge" || (lm.bridgeSaid && lm.bridgeBeat?.skillId) || lm.simplerBeat?.beatId === "bridge") {
     // (dc-r8-director27 P3, fd-bridge-address-is-previous-card: after a bridge the address is the bridge — a request at its check-in gets the
     // bridge's own second wording, never the card before it's; c5-t01 steady 80, 82; c6 stuck 58, offtopic 54. A key and the bridge in one
@@ -3176,6 +3189,9 @@ function helpRequestOf(prev, input) {
   // (v6.8 B1‴ stands: a card answered right, its why-probe pending, is closed — a request there is no help on it; the walk goes on)
   if (prev.pendingWhy && prev.pendingWhy === (prev.lastUi?.ask?.itemId ?? prev.activeItemId)) return null;
   const col = columnName(input, prev);
+  // (Brain 042: a give-up on a quick question or an asked step is an answer that is not right — quick.say then the card, or the step told —
+  // never help: no hint ladder there)
+  if (col === "give_up" && (prev.lastMove?.quick || prev.lastMove?.stepAsk)) return null;
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
@@ -3199,7 +3215,9 @@ function helpPartOf(prev, input) {
     const k = cb && !prev.lastUi?.ask?.itemId ? cardPartOf(input.kit, { beat: cb }) : null;
     return k ? { part: k, keyed: true } : null;
   }
-  return a?.part && !/:(?:greet|hook)$/.test(a.part) ? { part: a.part, keyed: false } : null;
+  // (Brain 042: a request on a quick question is help on its point — the picker's part is the point's check-in; on an asked step, the step)
+  const p0 = a?.part ? String(a.part).replace(/:quick$/, ":checkin").replace(/(:worked:step\d+):ask$/, "$1") : null;
+  return p0 && !/:(?:greet|hook)$/.test(p0) ? { part: p0, keyed: false } : null;
 }
 /** pickHelp for this turn. → the decision with its request and part, or null. */
 function helpDecision(prev, input, request, said) {
@@ -3229,7 +3247,7 @@ function helpBeat(kit, d, board) {
 /** The words of a decision, said first: the wording, else the key, else the joint (friend slots filled). */
 const helpWords = (d) => fillFriend(String(d.rung?.text ?? d.key?.text ?? d.joint?.text ?? ""), d.friend ?? "").trim();
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
-const HELP_STRIP = ["request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
+const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
@@ -3392,6 +3410,9 @@ function helpAfter(prev, input, out, pre) {
   return out;
 }
 export function step(prev, input) {
+  // (Brain 042: a quick question or an asked step was what the child's line was read against — no card: it leaves the table before anything
+  // else reads it; the walk acts on the reading — heldTurn's quickAnswer, the worked example's stepAsk)
+  if (isQuickId(prev?.activeItemId)) prev = { ...prev, activeItemId: undefined, quickItem: undefined };
   // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
   // after it for a hint, a card asked or a turn that goes on)
   const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
@@ -4110,6 +4131,62 @@ function holdCardForCheckin(out) {
   s.lastUi = teachUi;
   return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
 }
+// ───────────── dc-r8-director27, Brain 042 Q1: a quick question where a card waits ─────────────
+// Where a point is said and its card does not fit in the turn, the turn ends on the point's quick question (`explain[].quick.prompt`), not
+// on a check-in. It is said over the point's board and never moves it. The child's answer is read against `quick.key` and `accept` by the
+// card's reader (the item is pinned as the state's quickItem); a right answer gets a short yes from the verdict forms and the card, anything
+// else that is an answer or a give-up gets `quick.say` and the card — no hint, no remediation, no second try, no miss verdict. A request on
+// it is handled as on its point (helpPartOf), and the walk then goes to the card. It is not a card: no verdict, no card evidence.
+/** The quick question of the explain beat a scriptBeat names, or null. */
+function quickOfBeat(kit, sb) {
+  if (sb?.kind !== "explain" || !sb.skillId) return null;
+  const b = skillScriptOf(kit, sb.skillId)?.explain?.find((x) => x.id === sb.beatId);
+  const q = b?.quick;
+  return q && q.prompt && q.key != null && String(q.key).trim() ? { beat: b, quick: q } : null;
+}
+/** The teaching half of a point split from its card, with the point's quick question where it has one and it fits (else as it was). */
+function quickTeach(out, input, teach, closeWords = 0) {
+  const { state: s, move } = out;
+  if (!scriptOn() || scriptFor(input.kit)?.script?.recordedRun || input?.event !== "turn") return teach;
+  if (move.kind !== "explain" || move.smaller || move.simpler || move.help || move.splitClose || !move.point) return teach;
+  const sb = move.scriptBeat;
+  const qb = quickOfBeat(input.kit, sb);
+  if (!qb || String(move.itemId ?? "") !== `script:${sb.skillId}:ask:${sb.beatId}`) return teach;
+  const lang = s.ctx?.lang ?? "hinglish";
+  // (only after the beat's own point: a held part said in its place is not what the quick question asks about)
+  if (normLine(move.point) !== normLine(saidIn(qb.beat.point, lang))) return teach;
+  const prompt = String(saidIn(qb.quick.prompt, lang) ?? "").replace(/\s+/g, " ").trim();
+  if (!prompt) return teach;
+  // (the turn's parts before the card, and the quick question in the check-in's place: within 75 words, else the check-in as before)
+  const before = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).filter((p) => p.k !== "card").reduce((a, p) => a + p.n, 0);
+  if (before + wordsIn(prompt) > L2_CAP) return { ...teach, quickNoRoom: true };
+  const item = friendly(scriptQuickItem(sb.skillId, sb.beatId, qb.quick));
+  const { checkinOk: _c, ...rest } = teach;
+  return { ...rest, quick: { skillId: sb.skillId, beatId: sb.beatId, prompt: fillFriend(prompt, friendOf), item } };
+}
+/** The child's line on a quick question: the short yes (right) or `quick.say`, then the held card, in one turn. null: a request or an aside
+ *  (help on the point, or the walk, answers it — and the card comes after). */
+function quickAnswer(prev, input, h) {
+  const q = prev.lastMove?.quick;
+  if (!q || !h?.teach || !scriptOn()) return null;
+  const c = input.cls ?? {};
+  const text = String(input.text ?? "");
+  const answered = ["correct", "incorrect", "partial", "misconception"].includes(c.outcome);
+  const col = columnName(input, prev);
+  if (!answered && col !== "give_up" && (c.request || c.help || c.asideReply || ["clarify", "hindi", "picture", "repeat", "aside", "try_first", "move_on"].includes(col))) return null;
+  const right = c.outcome === "correct";
+  const lang = prev.ctx?.lang ?? "hinglish";
+  const qb = quickOfBeat(input.kit, { kind: "explain", skillId: q.skillId, beatId: q.beatId });
+  const say = right ? null : fillFriend(String(saidIn(qb?.quick?.say, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf);
+  const s = structuredClone(prev);
+  s.turn += 1;
+  s.splitHold = undefined;
+  const m = { ...h.move, quickReply: { skillId: q.skillId, beatId: q.beatId, right, ...(say ? { say } : {}) } };
+  // (the answer is recorded on the beat as its own kind of evidence — never a card's verdict, never the learner model's card evidence)
+  s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "quick", skillId: q.skillId, beatId: q.beatId, said: text.replace(/\s+/g, " ").trim().slice(0, 80), right, read: c.outcome ?? null, turn: s.turn }].slice(-60);
+  s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId ?? undefined; s.quickItem = undefined;
+  return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
 /** v6.11 G2: can Studio draw a switch from one board to another inside one turn (its own heldBoard, on a line long enough to hold both)? */
 function switchFits(from, to) {
   try {
@@ -4302,28 +4379,28 @@ function returnApart(out, input = null) {
 /** L2 on a turn with a close, a bridge or a held part: the parts before the break now, ending on a check-in; the rest held for the
  *  next turn (heldTurn says it, broken again if it still runs over). null: not this function's turn (no close, bridge or held part —
  *  splitTeach breaks a point from its card). */
-function breakL2(out, input, closeWords = 0) {
+function breakL2(out, input, closeWords = 0, forceAt = -1) {
   const { state: s, move, ui } = out;
   // (help — a hint after a miss, a simpler — is one answer with its card's question: Brain 039 Part A's, never broken here)
   if (move.simpler || move.kind === "hint") return null;
   const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
   if (!parts.some((p) => ["close", "bridge", "held"].includes(p.k))) return null;
   // (dc-r8-director26: a turn with no card ends on her check-in — four words the parts do not hold: dry c5-t01 steady 50 ran 79 words)
-  let at = breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
+  let at = forceAt > 0 ? forceAt : breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
   // (and a turn whose card is held ends on the check-in in its place)
-  if (at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
+  if (forceAt <= 0 && at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
   // (the parts fit in 75 words: the point and its card still never go in one turn over 60 — the point's own split, its close counted)
   if (at < 0) return splitTeach(out, input, pointCardCap(s), closeWords);
   const now = new Set(parts.slice(0, at).map((p) => p.k));
   // (the card alone is held, after a point: the point's own split — its check-in, then the card)
-  if (!now.has("card") && parts[at].k === "card" && now.has("body")) return splitTeach(out, input, -1, 0);
+  if (!now.has("card") && parts[at].k === "card" && now.has("body")) return splitTeach(out, input, -1, closeWords);
   const bridgeNow = now.has("bridge"), heldNow = now.has("held"), bodyNow = now.has("body");
   const bridge = move.bridgeSaid ? String(move.bridgeSaid).trim() : null;
   const isBridge = (x) => !!bridge && String(x).trim() === bridge;
   const sayNow = (move.sayFirst ?? []).filter((x) => (isBridge(x) ? bridgeNow : heldNow));
   const sayLater = (move.sayFirst ?? []).filter((x) => !sayNow.includes(x));
   // (a close with the body said now and the card held is the point's split with its close: splitTeach's own shape)
-  if (bodyNow) return splitTeach(out, input, -1, 0);
+  if (bodyNow) return splitTeach(out, input, -1, closeWords);
   const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "methods", "prefs", ...NOW_LINES, ...(bridgeNow ? ["bridgeSaid", "bridgeBeat"] : [])];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])),
@@ -4409,7 +4486,16 @@ function splitTeach(out, input, cap, extra = 0) {
   // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
   const u = cap < 0 || scriptFor(input.kit)?.script?.recordedRun ? null : unitTurn(out, input, extra, first);
   if (u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + 8 + extra + first <= cap) return out;
-  const teach = { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) };
+  const teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
+  // (Brain 042 Q1: a verdict, its why and a new point leave no room for the point's quick question in 75 words — the break falls after the
+  // why, as Q2 says for a worked problem: the close ends its turn on its check-in, and the point comes next with its card or its quick
+  // question; never a check-in before the waiting card)
+  if (teach.quickNoRoom) {
+    const parts = partsOfTurn(out, extra, input?.helpLeadWords ?? 0);
+    const b = parts.findIndex((p) => p.k === "body");
+    if (b > 0 && l2On() && parts.slice(0, b).some((p) => p.k === "close")) { const br = breakL2(out, input, extra, b); if (br) return br; }
+    delete teach.quickNoRoom;
+  }
   // (dc-r8-director26 C1: told steps that could not keep the child's own step are a step's turn again — the last step said is its beat, so
   // a "pata nahi" to its check-in is that step's help, as before)
   const lastStep = move.kind === "worked_example" && move.stepFrom && move.rendered?.length ? move.stepFrom + move.rendered.length - (move.problemLines ?? 0) - 1 : 0;
@@ -4419,6 +4505,8 @@ function splitTeach(out, input, cap, extra = 0) {
     ...(move.probe ? { probe: move.probe } : {}), ...(move.format ? { format: move.format } : {}), ...(move.methods ? { methods: move.methods } : {}), ...(move.prefs ? { prefs: move.prefs } : {}) };
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: [], teach: true };
   s.activeItemId = undefined;
+  // (Brain 042 Q1: the quick question is what the child's next line is read against — by the card's reader, against its own key)
+  if (teach.quick) { s.quickItem = teach.quick.item; s.activeItemId = teach.quick.item.id; teach.quick = { ...teach.quick, item: undefined }; delete teach.quick.item; }
   s.lastMove = teach;
   const teachUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
   s.lastUi = teachUi;
@@ -4487,6 +4575,8 @@ function heldTurn(prev, input) {
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
+  // (Brain 042 Q1: the child's line on the point's quick question)
+  { const qa = quickAnswer(prev, input, h); if (qa) return qa; }
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
   // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
   // following it is such a request too)
@@ -4922,6 +5012,8 @@ export function evidenceFrom(s, cls, kit, { leaked = false, discount = 1 } = {})
   }
   const item = findItem(s, kit, s.activeItemId);
   if (!item || s.hintLevel >= 4) return [];
+  // (Brain 042: a quick question's or an asked step's answer is no card evidence — the walk records it on the beat, state.beatEvidence)
+  if (item.quick) return [];
   const why = s.pendingWhy === item.id;
   const probe = why ? "P2" : probeFor(item);
   const kitFactor = (item.kitVerified ?? kit.verified) ? 1 : 0.5;

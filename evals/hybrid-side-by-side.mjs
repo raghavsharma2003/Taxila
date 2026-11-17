@@ -526,7 +526,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (v6.7 H4: her line's parts and the beat each belongs on — the counter checks each part against the page drawn under it)
     const lmB = next.lastMove ?? {};
     const partBeat = { close: lmB.closeBeat?.beatId, closed: (lmB.closedBeat ?? lmB.closeBeat)?.beatId, bridge: lmB.bridgeBeat?.beatId, simpler: (lmB.simplerBeat ?? lmB.scriptBeat)?.beatId,
-      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId, held: (lmB.heldBeat ?? lmB.scriptBeat)?.beatId };
+      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId, held: (lmB.heldBeat ?? lmB.scriptBeat)?.beatId,
+      // (Brain 042: the point's quick question and its answer line; an asked step's question)
+      quick: lmB.scriptBeat?.beatId, quickReply: (lmB.cardBeat ?? lmB.scriptBeat)?.beatId, stepAsk: lmB.scriptBeat?.beatId };
     let atP = 0;
     // (dc-r8-director26: each part also carries the boards its beat may be said over — partOffBeat compares boards, not beat names: the
     // beat name of a page is its held unit's, and 38 of director26's 41 c6 flags were a part of one beat on the same figure under another
@@ -535,7 +537,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const bOf = (b) => (b?.board ? [b.board] : []);
     const helpB = lmB.help && Object.prototype.hasOwnProperty.call(lmB.help, "board") ? (lmB.help.board ? [lmB.help.board] : []) : null;
     const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: bOf(lmB.bridgeBeat), simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
-      alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: [...bOf(lmB.scriptBeat), ...(lmB.scriptBeat?.kind === "remediation" ? bOf(lmB.cardBeat) : [])], held: bOf(lmB.heldBeat ?? lmB.scriptBeat) };
+      alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: [...bOf(lmB.scriptBeat), ...(lmB.scriptBeat?.kind === "remediation" ? bOf(lmB.cardBeat) : [])], held: bOf(lmB.heldBeat ?? lmB.scriptBeat),
+      quick: bOf(lmB.scriptBeat), quickReply: [], stepAsk: bOf(lmB.scriptBeat) };
     // (dc-r8-director26 C1: two told steps on one turn — each step's own line is recorded under its own step, the first under stepFrom)
     const stepLines = lmB.stepFrom ? (lmB.rendered ?? []).map((x) => String(x).replace(/\s+/g, " ").trim()) : [];
     // (a frame part — "Pehla kadam dekho." — is the step it opens: the last step matched so far, else the first)
@@ -575,7 +578,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (O5: a turn whose move clears the board — the teach-back, the wrap — records the board taken down, and nothing is held up after it)
     if (!heldRec && lane === "director" && reply && next.lastMove?.clear === "board") { heldRec = { unit: null, changed: true, kept: false, drawn: "cleared", pages: [], intent: { unit: null, noUnit: true }, layout: { split: false } }; next = { ...next, heldUp: undefined }; }
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
-    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: tGuard.seams } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}),
+      // (Brain 042: the child's answer to a quick question or an asked step, as the walk read it — its own kind of evidence, no verdict)
+      ...(next.lastMove?.quickReply ? { quickAnswer: { beat: `${next.lastMove.quickReply.skillId}:${next.lastMove.quickReply.beatId}`, right: !!next.lastMove.quickReply.right } } : {}),
+      ...(next.lastMove?.stepReply ? { stepAnswer: { beat: `${next.lastMove.stepReply.skillId}:worked:step${next.lastMove.stepReply.step + 1}`, right: !!next.lastMove.stepReply.right, told: next.lastMove.stepReply.told ?? null } } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: tGuard.seams } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
       // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)

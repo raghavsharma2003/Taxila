@@ -1650,7 +1650,10 @@ export function noteDid(next, { cls, target, activeItem, kit, childText, tapped,
   const lang = next.ctx?.lang;
   const answer = String(childText || tapped || "").replace(/\s+/g, " ").trim().slice(0, 80);
   let entry = null;
-  if (target.mode === "item" && activeItem && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) {
+  // (dc-r8-director27 Brain 042: a quick question's or an asked step's answer is its own kind, never in the verdict log)
+  if (target.mode === "item" && activeItem?.quick && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) {
+    entry = { kind: activeItem.quick.kind ?? "quick", itemId: activeItem.id, answer, right: cls.outcome === "correct", seq, turn: next.turn };
+  } else if (target.mode === "item" && activeItem && ["correct", "incorrect", "partial", "misconception"].includes(cls.outcome)) {
     entry = { kind: "item", itemId: activeItem.id, ask: activeItem.scriptAsk || activeItem.scriptCheck || activeItem.scriptThen ? String(promptFor(activeItem, lang) ?? "").replace(/\s+/g, " ").trim() : askText(promptFor(activeItem, lang)), answer, verdict: uiVerdict(cls, target),
       withHelp: hintLevel > 0, verified: (activeItem.kitVerified ?? kit.verified) !== false && !leaked && !next.spoiled?.includes(activeItem.id), seq, turn: next.turn };
   } else if (target.mode === "teachback" && answer && cls.outcome !== "no_evidence") {
@@ -1787,7 +1790,7 @@ export async function planTurn(base, cls, c) {
   if (k1On() && next.lastVerdict === "not_yet" && repeatOfLastRight(state, activeItem, said)) next.lastVerdict = "ungraded";
   next.lastAnswerSaid = gradedTarget?.mode === "item" ? said : state.lastAnswerSaid;
   // v6 (main, director8 false keys): the card this turn graded, so her line's numbers can be held to it (brain/say.js)
-  if (gradedTarget?.mode === "item" && activeItem) next.lastGraded = { itemId: activeItem.id, key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
+  if (gradedTarget?.mode === "item" && activeItem && !activeItem.quick) next.lastGraded = { itemId: activeItem.id, key: String(activeItem.answer ?? ""), accept: (activeItem.acceptable ?? []).map(String).slice(0, 12),
     prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
     // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
     // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception

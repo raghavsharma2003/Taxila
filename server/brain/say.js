@@ -2951,6 +2951,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (v6.4 Q1, main on director12: "Yaad karo: …" recited over the live card ×9: a live card is never under a recital; a bare card
       // turn is the card, framed below when it is said again)
     }
+    // (dc-r8-director27 Brain 042 Q1: the child's answer to the point's quick question — a short yes from the verdict forms, or the quick
+    // question's authored `say`; then the card. Nothing of hers rides with it: no why, no hint, no miss verdict naming the answer)
+    const quickR = state.lastMove?.quickReply ?? null;
+    const quickS = quickR ? (quickR.right ? `${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?]+$/, "")}.` : quickR.say ? dot(norm(quickR.say)) : null) : null;
+    if (quickR && body.length) { guard.quickBodyDropped = body.length; body = []; }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
     const closedW = whyS(state.lastMove?.closed?.why);
     const wd = state.lastMove?.workedDone;
@@ -3004,6 +3009,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
+      : state.lastMove?.splitTeach && state.lastMove?.quick?.prompt ? (guard.quickAsk = dot(norm(state.lastMove.quick.prompt)))
       : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
@@ -3282,7 +3288,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastS = [...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
       if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state); guard.l2Checkin = true; }
     }
-    const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
     // (else her sentences that ask nothing and carry no number)
@@ -3303,10 +3309,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         { part: "closed", text: closedP.join(" ") },
         ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
         ...(asideQ ? [] : [{ part: "aside", text: asideP.join(" ") }]),
+        // (Brain 042 Q1: the answer to the quick question — no board of its own: the point's stays up until the card's first word)
+        ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "" },
+        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);

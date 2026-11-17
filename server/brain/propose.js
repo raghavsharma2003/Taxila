@@ -322,6 +322,9 @@ export function pagesOfParts(move, list, line) {
       case "alt": case "card": return move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "body": return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : null;
       case "aside": return null;
+      // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up
+      // until the card's first word)
+      case "quickReply": return null;
       default: return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
     }
   };
@@ -594,6 +597,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
     if (CHECKIN_ONLY.test(t)) return null;
     switch (p.part) {
       case "aside": return null;
+      // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up
+      // until the card's first word)
+      case "quickReply": return null;
       // (dc-r8-director22 B: a bridge changes no board — the next unit's board goes up with its first part)
       case "bridge": pastBridge = true; return null;
       case "close": case "closed": {

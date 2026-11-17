@@ -767,7 +767,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // right (also by value: "1/10" = "2/20" is NOT taken, the form must be the key's or a listed one), the script's listed wrong
   // answer is that misconception, and any other answer-shaped reply (a number, a fraction, a word or two) is wrong. A don't-know,
   // a request or a longer reply still goes to the model (its distress read stays). TAXILA_R7_SCRIPT_GRADE=off: as before.
-  const sg = target.mode === "item" && !other && scriptGradeOn() ? target.item?.scriptAsk ?? target.item?.scriptCheck ?? target.item?.scriptThen ?? null : null;
+  // (dc-r8-director27 Brain 042: a point's quick question and a worked step's asked question are read by this same reader against their own
+  // key and accept forms — they name no listed wrong answer, so a miss is never a misconception)
+  const sg = target.mode === "item" && !other && scriptGradeOn() ? target.item?.scriptAsk ?? target.item?.scriptCheck ?? target.item?.scriptThen ?? (target.item?.quick ? {} : null) : null;
   if (sg && !flags.dontKnow && !request) {
     // (Hindi number words, "bees" = 20, "ek bata chaar" = 1/4: the reactive child's and a real child's forms)
     const st = hindiNumbers(text);

@@ -169,6 +169,9 @@ function findItem0(s, kit, id) {
   if (id.startsWith("check:")) return addressed(s?.stepCheck?.id === id ? s.stepCheck : null, address);
   // round 7 T2: a lesson script's check (or a remediation's follow-up), pinned in the state while it is the card
   if (id.startsWith("script:")) return addressed(s?.scriptCard?.id === id ? s.scriptCard : null, address);
+  // dc-r8-director27 Brain 042: a point's quick question or a worked example's asked step — read against its own key by the card's reader,
+  // never a card (no verdict, no evidence on the learner model; state.js quickItemOf), pinned in the state while it is asked
+  if (id.startsWith("quick:") || id.startsWith("stepask:")) return addressed(s?.quickItem?.id === id ? s.quickItem : null, address);
   return addressed(kit.items.find((i) => i.id === id) ?? s.warmup?.find((w) => w.id === id) ?? null, address);
 }
 

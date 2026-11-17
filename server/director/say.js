@@ -85,6 +85,8 @@ const DENY_OPEN = lead(["galat", "wrong", "not\\s+quite", "not\\s+right", "incor
 export const k1On = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_K1 ?? ""));
 export function verdictFor(cls, target, { moduleOnly = false, childText = "" } = {}) {
   if (!cls || !target || moduleOnly) return "ungraded";
+  // (dc-r8-director27 Brain 042: a quick question or an asked step is no card — read against its key, never a verdict)
+  if (target.item?.quick) return "ungraded";
   // no keyed item, but the child wrote an answer-shaped reply (F5): "attempt" — no "you got it right" for it
   if (target.mode === "none") return childText && !childAsks(childText) && !cls.request && String(childText).trim().split(/\s+/).length >= 3 ? "attempt" : "ungraded";
   // dc-r7-script-walk-v3 K1 (director5: >= 14 right answers called wrong): a probe ("kaise jaana?") or a teach-back is unkeyed; a

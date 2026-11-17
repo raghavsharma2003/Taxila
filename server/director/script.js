@@ -391,6 +391,13 @@ const whyField = (a) => (a?.why && typeof a.why === "object" && (a.why.hi || a.w
 /** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
 export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
   { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a), ...simplerField(a), ...answerBoardField(a) } });
+/** dc-r8-director27 Brain 042: an explain beat's quick question (`explain[].quick`) and a worked step's asked question (`steps[].ask`) as
+ *  keyed items the card's reader reads against their own key. They are no cards: `quick` marks them, and no verdict, no learner evidence
+ *  and no verdict count is taken from them (state.js evidenceFrom, director/say.js verdictFor, brain/turn.js noteDid). */
+export const scriptQuickItem = (skillId, beatId, q) => keyed(`quick:${skillId}:${beatId}`, skillId, q.prompt, q.key, q.accept, { quick: { kind: "quick", beatId } });
+export const scriptStepAskItem = (skillId, k, a) => keyed(`stepask:${skillId}:${k}`, skillId, a.prompt, a.key, a.accept, { quick: { kind: "stepAsk", step: k } });
+/** Whether an item id is a quick question's or an asked step's (no card). */
+export const isQuickId = (id) => /^(?:quick|stepask):/.test(String(id ?? ""));
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
   { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c), ...simplerField(c), ...answerBoardField(c) } });
