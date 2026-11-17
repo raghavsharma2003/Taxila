@@ -739,7 +739,7 @@ export function v22Errors(s) {
       if (weNums && numsOf(t.prompt?.hi) === weNums) e.push(at(`remediation[${i}].then: repeats the worked problem's numbers (${weNums})`));
     });
     for (const [i, st] of (we.steps ?? []).entries()) {
-      if (/[a-z]/i.test(String(st.result)) && EN_WORDS.test(String(st.result))) e.push(at(`workedExample.steps[${i}].result: '${st.result}' is spoken; write it in Hinglish`));
+      if (/[a-z]/i.test(String(st.result)) && EN_WORDS.test(String(st.result)) && !(isD27(s) && HINGLISH.test(String(st.result)))) e.push(at(`workedExample.steps[${i}].result: '${st.result}' is spoken; write it in Hinglish`));
       if (/^\s*kyunki\b/i.test(st.why?.hi ?? "")) e.push(at(`workedExample.steps[${i}].why: starts with "kyunki" (the runtime adds it)`));
     }
     if (/^\s*kyunki\b/i.test(we.why?.hi ?? "")) e.push(at(`workedExample.why: starts with "kyunki" (the runtime adds it)`));
@@ -922,8 +922,18 @@ export function unitsOf(s) {
     for (const c of k.checks) out.push({ id: `${k.skillId}/${c.id}`, board: c.board ?? fb, withhold: vals(c), parts: [["prompt", c.prompt], ["simpler", c.simpler]] });
     // (a remediation's say is posed with its then-card in one move, over the then-card's board — director16 D11.1: its own picture
     // is no longer drawn; only a help re-teach after a check draws r.board — so the say is judged against the then-card's board)
-    k.remediation.forEach((r, i) => out.push({ id: `${k.skillId}/remediation[${i}]`, board: r.then?.board ?? r.board, withhold: vals(r.then),
-      parts: [["say", r.say], ["simpler", r.simpler], ["then.prompt", r.then?.prompt], ["then.simpler", r.then?.simpler]] }));
+    // (dc-r8-director27 P1, on the scripts that carry its fields: a remediation with a board of its own pages it at its own first
+    // word and its then-card's board at the card's — so the say and its simpler are judged against the remediation's board, the
+    // card against its own)
+    k.remediation.forEach((r, i) => {
+      if (isD27(s) && r.board && r.then?.board && JSON.stringify(r.board) !== JSON.stringify(r.then.board)) {
+        out.push({ id: `${k.skillId}/remediation[${i}]`, board: r.board, withhold: vals(r.then), parts: [["say", r.say], ["simpler", r.simpler]], own: true });
+        out.push({ id: `${k.skillId}/remediation[${i}].then`, board: r.then.board, withhold: vals(r.then), parts: [["then.prompt", r.then.prompt], ["then.simpler", r.then.simpler]] });
+        return;
+      }
+      out.push({ id: `${k.skillId}/remediation[${i}]`, board: r.then?.board ?? r.board, withhold: vals(r.then),
+        parts: [["say", r.say], ["simpler", r.simpler], ["then.prompt", r.then?.prompt], ["then.simpler", r.then?.simpler]] });
+    });
     const next = s.skills[si + 1];
     if (k.bridgeToNext && next) out.push({ id: `${k.skillId}/bridge`, board: firstBoard(next), withhold: vals(next.explain?.[0]?.ask),
       parts: [["bridgeToNext", k.bridgeToNext], ["next.point", next.explain?.[0]?.point]] });
@@ -931,6 +941,21 @@ export function unitsOf(s) {
   return out.map((u) => ({ ...u, parts: u.parts.filter(([, t]) => t && (typeof t === "string" ? t.trim() : t.hi || t.en)) }));
 }
 
+let ownTakeN = 0;
+/** dc-r8-director27: whether a remediation's own board is drawn under a line of hers, as the walk draws it (board-first's preselect,
+ *  then takePreselected re-gating it on her real line). */
+export async function ownBoardTaken(s, kit, board, text, { spoken = true } = {}) {
+  const BF = await import("../../server/stagecraft/board-first.js");
+  const { gateCtxFor } = await import("../../server/stagecraft/board-sync.js");
+  const id = `chk-own-${ownTakeN++}`;
+  const ask = { intent: { intentId: `${id}:wb:1`, lessonId: id, kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: board, scriptBeat: { scriptId: "s", beatId: "remediation", kind: "remediation" } },
+    line: { lessonId: id, text: "" }, mode: "continue", kit: { topicId: s.topicId, content: [] } };
+  const p = BF.preselect(ask, { kit });
+  if (p?.by !== "script") return false;
+  const real = { ...ask, line: { lessonId: id, text } };
+  // (the say draws it, so the say speaks it; a simpler is said over it once it is up, so its words need only pass its gate)
+  return !!BF.takePreselected(real, gateCtxFor(real, { kit, redact: [], prior: [] })) && (!spoken || BF.scriptBoardSpoken(real));
+}
 export async function boardErrors(s, kit) {
   const [{ resolveBoardRef }, { expand, BOARD_WORDS = [] }, { gateWhiteboard }, { retimeToLine, refWholes }] = await Promise.all([
     import("../../server/forge/explainer/board-ref.js"), import("../../server/forge/explainer/templates.js"),
@@ -940,7 +965,14 @@ export async function boardErrors(s, kit) {
   // keeps its answerBoard, said under her verdict and the card's why)
   const said = (x) => (x && typeof x === "object" ? [x.hi, x.en].filter(Boolean).join(" ") : String(x ?? ""));
   const held = (s.version ?? 1) >= 2.3;
-  const units = held ? unitsOf(s).filter((u) => u.board).map((u) => ({ skillId: u.id.split("/")[0], b: { id: u.id.split("/").slice(1).join("/"), board: u.board, line: u.parts.map(([, t]) => said(t)).join(" "), withhold: u.withhold } })) : [];
+  const all = held ? unitsOf(s).filter((u) => u.board) : [];
+  // (dc-r8-director27 P1: a remediation's own board is taken as the walk takes it — preselected as the script's and re-gated on each
+  // line said over it, the say and its simpler, as tests/r7-board-ref does — not through the unit stand-in)
+  for (const u of all.filter((x) => x.own)) for (const [field, t] of u.parts) {
+    const text = typeof t === "string" ? t : t?.hi;
+    if (text && !(await ownBoardTaken(s, kit, u.board, text, { spoken: field === "say" }))) errors.push(`${u.id} ${field}: its own board is not taken under its words (the walk would keep what is up)`);
+  }
+  const units = all.filter((u) => !u.own).map((u) => ({ skillId: u.id.split("/")[0], b: { id: u.id.split("/").slice(1).join("/"), board: u.board, line: u.parts.map(([, t]) => said(t)).join(" "), withhold: u.withhold } }));
   const beats = held ? [...units, ...s.skills.flatMap((k) => beatsOf(k, s.version ?? 1).filter((b) => /\.answer$/.test(b.id)).map((b) => ({ skillId: k.skillId, b })))]
     : s.skills.flatMap((k) => beatsOf(k, s.version ?? 1).map((b) => ({ skillId: k.skillId, b })));
   for (const { skillId, b } of beats) { const k = { skillId };
@@ -1744,7 +1776,9 @@ export function d24Errors(s) {
     if (x.board?.template) items.push({ at: p, x });
     else if (x.key != null && x.prompt) items.push({ at: p, x });
     // (dc-r8-director27: a quick question's key is read off its own point's board by design; it is no later card's answer)
-    for (const [k, v] of Object.entries(x)) if (k !== "board" && k !== "answerBoard" && k !== "viewCaption" && k !== "quick") walk(v, p ? `${p}.${k}` : k);
+    // (and a worked step's ask is held against its own worked example's captions below, not every later caption: "1" or "4" as a
+    // step's count is not given away by a caption of another board that names the same small number)
+    for (const [k, v] of Object.entries(x)) if (k !== "board" && k !== "answerBoard" && k !== "viewCaption" && k !== "quick" && !(k === "ask" && /\.steps\[\d+\]$/.test(p))) walk(v, p ? `${p}.${k}` : k);
   };
   (s.skills ?? []).forEach((k, i) => walk(k, `skills[${i}]`));
   const keyHit = (text, key) => {
@@ -1752,6 +1786,9 @@ export function d24Errors(s) {
     if (!k || !/\d/.test(k)) return false;
     return new RegExp(`(^|[^\\w/])${esc(k)}([^\\w/]|$)`).test(String(text).toLowerCase());
   };
+  (s.skills ?? []).forEach((k, i) => { const we = k.workedExample; if (!we) return;
+    for (const [at, c] of [[`skills[${i}].workedExample.viewCaption`, we.viewCaption], [`skills[${i}].workedExample.yourStep.viewCaption`, we.yourStep?.viewCaption]])
+      for (const l of ["hi", "en"]) for (const [j, st] of (we.steps ?? []).entries()) if (st.ask && c?.[l] && keyHit(c[l], st.ask.key)) e.push(`${at}${l === "en" ? " (en)" : ""}: names steps[${j}].ask's key "${st.ask.key}"`); });
   items.forEach(({ at, x }, i) => {
     if (!x.board?.template) return;
     const c = x.viewCaption;
@@ -1969,8 +2006,12 @@ export function sayBoardNumberErrors(s) {
     // (the two-page turn, director7 + board-first scriptBoardSpoken: a remediation's own board is drawn under its say when the say
     // speaks every number on it — then the say is judged against THAT board; otherwise it plays over the then-card's)
     const sayNums = new Set(nums(`${txt(r.say)}`));
-    if (r.board) { const own = nums(JSON.stringify(r.board.params ?? {})).filter((n) => n !== "0" && n !== "1");
-      if (own.length && own.every((n) => sayNums.has(n))) { for (const n of own) onBoard.add(n); for (const n of nums(JSON.stringify(r.board.params ?? {}))) onBoard.add(n); } }
+    // (dc-r8-director27: the params read with a space after each comma, so [2,12] is not read as the number 212)
+    if (r.board) { const own = nums(isD27(s) ? JSON.stringify(r.board.params ?? {}).replace(/,/g, ", ") : JSON.stringify(r.board.params ?? {})).filter((n) => n !== "0" && n !== "1");
+      if (own.length && own.every((n) => sayNums.has(n))) { for (const n of own) onBoard.add(n); for (const n of nums(JSON.stringify(r.board.params ?? {}))) onBoard.add(n);
+        // (dc-r8-director27: its own line's fractions too, as the then-card's: [1, 9] marks and dens [3, 9] draw 1/9 and 1/3)
+        if (isD27(s)) { const q = r.board.params ?? {}; JSON.stringify(q, (key, v) => { if (Array.isArray(v) && v.length === 2 && v.every((x) => typeof x === "number")) onBoard.add(`${v[0]}/${v[1]}`); return v; });
+          for (const d of [q.den, ...(q.dens ?? [])].filter(Boolean)) for (let n = 0; n <= 3 * d; n++) onBoard.add(`${n}/${d}`); } } }
     const missing = [...new Set(nums(`${txt(r.say)} ${txt(r.simpler)}`))].filter((n) => !onBoard.has(n) && !taught.has(n) && !(Number(n) <= 10 && !n.includes("/")));
     if (missing.length) e.push(`${k.skillId}/remediation[${i}]: its say names ${missing.join(", ")}, not on its then-card's board (the say is spoken over it): say the method, or what that board shows`);
   });
