@@ -2426,15 +2426,14 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const remedy = kindNow === "reteach";
     // v6.1 R11 (director9: "Pehla kadam dekho" introduced step 2): a scripted worked step is framed by code with ITS step's
     // label (R7: never her words about which step it is)
-    // (dc-r8-director26 C1: two told steps on one turn — the frame is the first step's, and the second step, when its own line does not open
-    // on a step word, gets its own label)
+    // (dc-r8-director26 C1: two told steps on one turn — no step label: the turn's frames are moved to its front, so a label for the second
+    // step was heard before the first; the steps' own words carry them)
     const stepN = Number(state.lastMove?.stepFrom) || Number(/^worked:step(\d+)$/.exec(String(state.lastMove?.scriptBeat?.beatId ?? ""))?.[1]) || null;
-    if (state.lastMove?.stepFrom && workedLines.length === 2 && !STEP_OPENER.test(String(workedLines[1]).trim())) workedLines = [workedLines[0], `${stepLabel(stepN + 1, lang)} ${workedLines[1]}`];
     // (v6.8 R5, main on director16 ×9: "Pehla kadam dekho. Pehle …": a step that opens on its own "Pehle / First" gets a bare pointer)
     // (v6.9 R6, main on director17: "Ab doosra kadam. Ab upar ka number … Ab agla kadam": one step opener a turn — a step whose own line
     // opens on one gets no label)
     const opensFirst = STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
-    // (two told steps: no frame before the first — the step's own words open the turn; the second carries its own label when it needs one)
+    // (two told steps: no frame — the steps' own words open the turn)
     const stepFrame = state.lastMove?.stepFrom ? null : scripted && stepN && !remedy ? (opensFirst ? (stepN === 1 && /^(?:pehle|first)\b/i.test(String(workedLines?.[0] ?? "").trim()) ? (lang === "english" ? "Look." : "Dekho.") : null) : stepLabel(stepN, lang)) : null;
     // (v6.10 R7, main on director18: "Pehla kadam dekho." said on step two, and two openers in one turn — a scripted step's opener names
     // its own step number (stepLabel) or is omitted; the generic part frames are never said on a scripted step)

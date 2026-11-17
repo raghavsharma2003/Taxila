@@ -308,7 +308,9 @@ export const HELP_PREDICATES = {
       const hit = ix.rungs.get(normSentence(s));
       if (!hit) continue;
       const rem = /^(.*\.remediation\[\d+\])\.(?:sayAlt|simpler)$/.exec(hit.path);
-      const own = rem ? at(ctx.script, `${rem[1]}.board`) : hit.board;
+      // (the rung's own board — a wording Learning drew a board for — else its part's; a remediation's part board is its own `board`, else
+      // none: the board up)
+      const own = hit.board ?? (rem ? at(ctx.script, `${rem[1]}.board`) : null);
       const want = own && typeof own === "object" ? own : rem ? boardUpBefore(L, i) : null;
       if (!want) continue;
       const b = boardAt(r, t.indexOf(s));

@@ -150,8 +150,9 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   const tb = kit && (await import("../server/director/script.js")).scriptFor(kit).script.teachback;
   const right = await planAt(asked.state, tb.key, kit);
   const st = { ...right.r.state, recent: [...(right.r.state.recent ?? [])] };
-  assert.equal(st.lastMove.kind, "wrap");
-  assert.ok(st.lastMove.endWhy, "the why rides on the wrap");
+  // (the verdict and its why lead the wrap, or — when with what was covered they run over 75 words — are a turn of their own before it)
+  assert.ok(["wrap", "teachback"].includes(st.lastMove.kind), st.lastMove.kind);
+  assert.ok(st.lastMove.endWhy, "the why rides on the verdict");
   replyDeps.chat = noModel; replyDeps.chatStream = noModel;
   try {
     const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: tb.key, history: [], ui: right.r.ui, module: null });

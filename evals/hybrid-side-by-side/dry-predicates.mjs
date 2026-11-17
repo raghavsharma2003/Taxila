@@ -148,6 +148,8 @@ export const PREDICATES = {
     // (dc-r8-director26 J1 item 1: a worked step whose ladder is empty goes on to the next step — the child's own step, its card — with no
     // promise; helpLadder and giveUpAnswered hold that the ladder was spent)
     if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? "")) && !r.cell?.keyed) return null;
+    // (dc-r8-director26 N1: a point whose wordings are all said asks its card, after the helpToCard word — H4's own answer)
+    if ((r.seams ?? []).some((x) => x.joint === "helpToCard")) return null;
     if (r.cell?.keyed && !cardIn(r)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },

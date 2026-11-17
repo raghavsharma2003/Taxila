@@ -2380,7 +2380,24 @@ function teachback(s, input) {
     const hit = teachbackHit(tb, input.text);
     // (main's 031: a right answer gets no check-in — the verdict leads the wrap in the same turn, over the answer board from its first word)
     // (dc-r8-director26 W1: the closing verdict says its why — c4 steady 128, c5-t01 steady 130 said "Haan, sahi hai." and went on)
-    if (hit) { s.teachbackPassed = true; return { ...toWrap(s, { kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct", ...(tb.why ? { endWhy: tb.why } : {}) }; }
+    if (hit) {
+      s.teachbackPassed = true;
+      const s0 = structuredClone(s);
+      const w = { ...toWrap(s, { kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct", ...(tb.why ? { endWhy: tb.why } : {}) };
+      // (the verdict, its why, what was covered and the closing question over 75 words: the verdict and its why are a turn of their own, as a
+      // miss's key is — then the wrap. Learning shortens the covered sentences; until then the turn is not a monologue)
+      const wc = (x) => String(x ?? "").split(/\s+/).filter(Boolean).length;
+      const why0 = tb.why ? saidIn(tb.why, s.ctx.lang ?? "hinglish") : "";
+      if (l2On() && w.authoredEnd === "wrapCovered" && 4 + wc(why0) + wc((w.rendered ?? []).join(" ")) + wc(w.wrapAsk) > L2_CAP) {
+        for (const k of Object.keys(s)) if (!(k in s0)) delete s[k];
+        Object.assign(s, s0);
+        s.teachbackPassed = true; s.teachbackKeyed = true;
+        const board = tb.answerBoard ?? null;
+        return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }), endVerdict: "correct", ...(tb.why ? { endWhy: tb.why } : {}),
+          ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
+      }
+      return w;
+    }
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
     const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
@@ -4037,12 +4054,12 @@ export function splitLong(out, input) {
   // The close's words count: over the cap, the turn ends on the point's check-in and the card comes next turn)
   const closedCardWhy = (() => { try { const cb = move.closeBeat; return cb ? workedAnswerOf({ ...s, lastMove: { scriptBeat: cb } }, input.kit)?.why ?? null : null; } catch { return null; } })();
   const recorded = !!scriptFor(input.kit)?.script?.recordedRun;
-  // (dc-r8-director26 C1 item 2: the words she will say — a verdict frame and its "Dekho," (4), each why once (the card's graded why and the
+  // (dc-r8-director26 C1 item 2: the words she will say — a verdict frame and its "Dekho," with a joint's margin (6), each why once (the card's graded why and the
   // worked example's why are one sentence on a worked close: c4 steady 86 counted 44 words for a close of 31, and broke a turn of 56), and
   // "Toh poora jawab:" before a worked answer (3). It was 6 + every why + 4)
   const whyTexts = [...new Set([move.workedDone?.why ? null : s.lastGraded?.why ?? closedCardWhy, move.closed?.why, move.workedDone?.why].filter(Boolean)
     .map((x) => String(typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim()).filter(Boolean))];
-  const closeWords = hasClose && !recorded ? 4 + whyTexts.join(" ").split(/\s+/).filter(Boolean).length + (move.workedDone?.answer ? 3 : 0) : 0;
+  const closeWords = hasClose && !recorded ? 6 + whyTexts.join(" ").split(/\s+/).filter(Boolean).length + (move.workedDone?.answer ? 3 : 0) : 0;
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
   if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out, input);
@@ -4171,7 +4188,10 @@ function breakL2(out, input, closeWords = 0) {
   if (move.simpler || move.kind === "hint") return null;
   const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
   if (!parts.some((p) => ["close", "bridge", "held"].includes(p.k))) return null;
-  const at = breakAt(parts);
+  // (dc-r8-director26: a turn with no card ends on her check-in — four words the parts do not hold: dry c5-t01 steady 50 ran 79 words)
+  let at = breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
+  // (and a turn whose card is held ends on the check-in in its place)
+  if (at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
   // (the parts fit in 75 words: the point and its card still never go in one turn over 60 — the point's own split, its close counted)
   if (at < 0) return splitTeach(out, input, pointCardCap(s), closeWords);
   const now = new Set(parts.slice(0, at).map((p) => p.k));
