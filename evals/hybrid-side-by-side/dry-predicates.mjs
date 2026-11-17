@@ -10,6 +10,8 @@ import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
 import { seamJoint, joinProblem } from "../../server/brain/seams.js";
 import { FALLBACK } from "../../server/brain/say.js";
+import { FALLBACK_JOINTS } from "../../server/director/help.js";
+const GO_ON_FALLBACK = FALLBACK_JOINTS.afterKeyGoOn ?? [];
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -139,7 +141,7 @@ export const PREDICATES = {
     // included — is help on the card just answered (H4 item 6): the why's other wording if unsaid, else one afterKeyGoOn form and the lesson
     // goes on, its next card with it. Exempt exactly as giveUpCheckin exempts it: the turn the walk recorded as keyed help, and a card in it
     // only after the go-on line. The same go-on line leads a worked step's turn whose wordings are all said: the lesson goes on, said so)
-    const goOn = (ctx.script?.joints?.afterKeyGoOn ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
+    const goOn = [...GO_ON_FALLBACK, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
     if (goOn.some((g) => key(r.text).startsWith(g))) return null;
     if (r.cell?.keyed && !cardIn(r)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
@@ -289,7 +291,8 @@ export const PREDICATES = {
     const own = (x, n) => (ctx.retRes ?? []).some((re) => re.test(x)) || (ai >= 0 && (n === ai || n === ai + 1));
     // (main's R2 on the merged tree: H4's go-on line after a key — joints.afterKeyGoOn — is a joint, not a part: it may lead the return's
     // turn, before the return question and nothing else; a verdict, a key, a why or any teaching part in the return's turn is still flagged)
-    const goOn = new Set((ctx.script?.joints?.afterKeyGoOn ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key));
+    // (a script written before Learning 014 has no afterKeyGoOn forms: code's fallback forms are said, and are the same joint)
+    const goOn = new Set([...GO_ON_FALLBACK, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key));
     let lead = 0;
     for (let n = 1; n <= ss.length; n++) if (goOn.has(key(ss.slice(0, n).join(" ")))) { lead = n; break; }
     const rest = ss.filter((x, n) => n >= lead && !own(x, n));
