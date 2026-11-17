@@ -778,7 +778,7 @@ PREDICATES.columnOfRead = (L, r, i, ctx) => {
 };
 // ───────────── dc-r8-director25 H4: the help predicates (help-predicates.mjs), read against the said set ─────────────
 // helpRepeats, hindiNewWords and partOnce are rewritten there (they read 0 on the director25 rows judges counted); helpLadder, helpBoard,
-// keyAnswerBoard, hindiNoKey, giveUpAnswered and giveUpVerdict are new. All gated; tests/r8-director25-help-predicates.test.mjs.
+// keyAnswerBoard, hindiNoKey, giveUpAnswered, giveUpVerdict and keyEarly are new. All gated; tests/r8-director25-help-predicates.test.mjs.
 import { HELP_PREDICATES, helpFirstUnsaid, helpPartOfItem, helpGoOnSaid } from "./help-predicates.mjs";
 Object.assign(PREDICATES, HELP_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no

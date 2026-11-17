@@ -2855,6 +2855,9 @@ function capPlan(s, input, p) {
   // (scripted cards only, where letting go says the key; never on the model's guessed request, a note)
   { const rq = input.cls?.request?.type ?? readIntent(String(input?.text ?? ""))?.type ?? null;
     if (scriptOn() && scriptCardOf(item) && !noteGuess && ["selftry", "repeat", "clarify", "confused"].includes(rq)) return p; }
+  // (dc-r8-director25 H4 items 4 and 7: a wrong answer on a card whose help ladder still has an unsaid rung keeps the card — help said
+  // that rung; the count of misses never lets it go with its key: c5-t02 stuck 22, offtopic 28 gave e2's key with its point's simpler unsaid)
+  if (input.helpKeep && input.helpKeep === item.id && scriptCardOf(item)) return p;
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
   // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
@@ -3114,6 +3117,8 @@ function helpInput(input, d, liveId) {
   // (the walk goes on from a check-in on a plain yes: that is what it is given — the record keeps the child's own words)
   if (d.card === "goOn") return { ...input, text: "haan", helpGoOn: true, cls: { ...rest, outcome: "no_evidence", flags, asideReply: false } };
   if (d.card === "ask") return { ...input, cls: { ...rest, outcome: "no_evidence", flags, request: { type: "repeat", src: "help_card" } } };
+  // (a hint that keeps the card: the walk grades the miss, and capPlan does not let the card go on a count of misses)
+  if (d.card === "keep" && d.request === "hint" && liveId && !recordedWalk(input)) return { ...input, helpKeep: liveId };
   return input;
 }
 /** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help gives its wording where the turn stays on

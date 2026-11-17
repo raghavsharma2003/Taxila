@@ -64,3 +64,8 @@ test("giveUpAnswered: nothing said to a give-up after a key", () => {
 test("giveUpVerdict: a give-up given a verdict word (c4 offtopic 24, \"Haan, kyunki\")", () => {
   readsOn("giveUpVerdict", [["c4", "offtopic", 24]]);
 });
+test("keyEarly: a card's key given to a give-up or a wrong answer while its ladder has a rung unsaid (items 4 and 7: no count decides)", () => {
+  // (director25's rows where a count of requests or misses gave the key: stuck c5-t02 12 is the work order's key-not-over-the-answer-board
+  // row, given the key with e1's pointAlt unsaid; the others are the second-request rule's and the second miss's keys)
+  readsOn("keyEarly", [["c5-t02", "stuck", 12], ["c5-t02", "offtopic", 24], ["c4", "stuck", 36], ["c4", "offtopic", 30], ["c6", "steering", 16], ["c5-t01", "steering", 16]]);
+});

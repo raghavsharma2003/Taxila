@@ -331,4 +331,15 @@ export const HELP_PREDICATES = {
     if (r.who !== "teacher" || !GIVE_UP_ANY.test(ctx.prevChild ?? "") || CLARIFY.test(ctx.prevChild ?? "") || !/^no_evidence/.test(String(ctx.prevRead ?? "")) || /·/.test(String(ctx.prevRead ?? ""))) return null;
     return /^(?:haan|nahi|yes|no|bilkul|sahi|correct|right)\b[,!.]/i.test(norm(r.text)) ? `a give-up given a verdict word: "${norm(r.text).slice(0, 40)}"` : null;
   },
+  /** H4 items 4 and 7: a card's key comes when its ladder has nothing unsaid, never on a count of requests or misses — a give-up, a
+   *  clarify or a wrong answer's hint answered with the key while a rung of the card's ladder is unsaid (H4 dry, c5-t02 stuck 22 and
+   *  offtopic 28: the second miss on e2 got the key with e2's simpler unsaid; director25: the second-request rule's keys). */
+  keyEarly(L, r, i, ctx) {
+    const h = helpTurnOf(L, r, i, ctx);
+    if (!h || h.keyed || h.request === "hindi") return null;
+    const part = helpPart(ctx.script, h.part);
+    if (!part || part.key == null || !keySays(r, h, ctx)) return null;
+    const left = helpFirstUnsaid(L, i, ctx, h.part);
+    return left ? `the key of ${h.part} given to a ${h.request} with "${String(left).slice(0, 50)}" unsaid` : null;
+  },
 };
