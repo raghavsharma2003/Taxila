@@ -12,6 +12,8 @@
 //                  point's check-in, the row says so (noFit), and this counts it. Pending (counted, not gated) until Learning 017's cuts are
 //                  merged; it should read 0 on the pilots then
 //   stepTryFirst   T7: "let me try" at an asked step gets that step's question again — no step skipped, no other card in its place
+//   hookAlone      T1: the hook never ends a turn — no turn's last part before its check-in is the hook
+//   switchFirst    T1: the switch line ("easier words") is never said before a first telling — no turn says it and then a point not said before
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -91,5 +93,22 @@ export const D29_PREDICATES = {
     const t = String(ctx.prevT.text ?? "");
     const q = norm(t.slice(ask.from ?? 0, pp[pp.indexOf(ask) + 1]?.from ?? t.length));
     return q && norm(r.text).includes(q) ? null : `"let me try" at the asked ${ask.beat} answered without its question`;
+  },
+  /** T1: the hook never ends a turn (c6 row 2 in all four lessons: "Yahi chakkar ab ek triangle par. Ab tak samajh aaya?"). */
+  hookAlone(L, r) {
+    if (r.who !== "teacher") return null;
+    const last = [...(r.seams ?? [])].reverse().find((x) => x.right !== "checkin");
+    return last?.right === "hook" && CHECKIN_END.test(norm(r.text)) ? "the hook ends the turn on a check-in" : null;
+  },
+  /** T1: the switch line is never said before a first telling (row 4 in 11 of the 16 director28 lessons). */
+  switchFirst(L, r, i, ctx) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.joint === "hindiSwitch")) return null;
+    const said = new Set((ctx.o.teacherTexts ?? []).flatMap((t) => String(t).split(/(?<=[.!?\u0964])\s+/)).map((x) => norm(x).toLowerCase()));
+    const t = String(r.text ?? "");
+    const pt = (r.pageParts ?? []).find((p) => p.part === "body" && /^e\d+$/.test(String(p.beat ?? "")));
+    if (!pt) return null;
+    const pp = r.pageParts; const at = pp.indexOf(pt);
+    const ss = t.slice(pt.from, pp[at + 1]?.from ?? t.length).split(/(?<=[.!?\u0964])\s+/).map((x) => norm(x).toLowerCase()).filter(Boolean);
+    return ss.length && ss.every((x) => !said.has(x)) ? `the switch line before the ${pt.beat} point's first telling` : null;
   },
 };

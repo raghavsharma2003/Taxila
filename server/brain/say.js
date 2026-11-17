@@ -3123,7 +3123,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state)
       : afterRem ? freshOf(beatAsk(kit)[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
-    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
+    // (dc-r8-director28 Brain 044 T1: the greeting's simpler wording ends on the greeting's own question, asked again)
+    let tail = state.lastMove?.greetAsk ? dot(norm(state.lastMove.greetAsk)) : state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       // (Brain 043 R2: a right verdict, or her reply to an aside, said alone before a worked problem ends on an invitation to do it
@@ -3454,7 +3455,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (assembled) {
       const bridgeK = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const simplerK0 = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
-      const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).map((x) => keyS(norm(dot(x))))) : null;
+      const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).filter((x) => !state.lastMove.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => keyS(norm(dot(x))))) : null;
       guard.lineParts = cleanParts([
         // (d28 fix F1: her reply to the child's answer to a return leads the turn — an aside part, the board waits for her first unit part)
         { part: "aside", text: replyP.join(" ") },

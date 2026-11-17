@@ -744,8 +744,17 @@ function walkNextV2(s, input, prefix, sk) {
       const it1w = it1 ? wordsIn(saidIn(b1.ask?.prompt, lang) ?? "") : 0;
       const lead1 = (gsDue ? wordsIn(gsDue) : 0) + walkLeadWords(input, lang, s.lastMove);
       const endW = q1 && wordsIn(use, p1) + it1w + lead1 > L2_CAP ? wordsIn(q1) : 4;
-      if (!bridge && use && p1 && it1 && !gone(it1.id) && w.smaller !== b1.id && !scriptFor(kit)?.script?.recordedRun
-        && wordsIn(use, p1) + lead1 + endW <= L2_CAP) { hookLead = [use]; continue; }
+      // (dc-r8-director28 Brain 044 T1: after a request at the greeting, the greeting's simpler wording is its own turn and ends on its check-in;
+      // the hook waits for the next turn)
+      if (gsDue && String(gsDue).trim() && !scriptFor(kit)?.script?.recordedRun) {
+        w.i -= 1;
+        // (it ends on the greeting's own question, asked again — the last question of her greeting)
+        const greetQ = String([...(s.recent ?? [])].find((t) => t.who === "teacher")?.text ?? "").split(/(?<=[.!?\u0964])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? null;
+        return plan("hook", join(prefix, SH.scriptHook({ bridge: false })), { format: "F4", content: [`today: ${gsDue}`], sayFirst: [String(gsDue).trim()], greetHelp: true, ...(greetQ ? { greetAsk: greetQ } : { stayCheckin: true, checkinOk: true }), ...ref("hook", "hook") });
+      }
+      // (Brain 044 T1: the hook never ends a turn — the hook, the first point and its card are one turn; where they do not fit, the point's quick
+      // question or its check-in ends it, counted as not fitting)
+      if (!bridge && use && p1 && it1 && !gone(it1.id) && w.smaller !== b1.id && !scriptFor(kit)?.script?.recordedRun) { hookLead = [use]; continue; }
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
     }
@@ -3463,16 +3472,14 @@ export function requestUnhelped(prev, input, out) {
   const h = lm.help ?? null;
   if (h && (h.rung || h.card === "close" || h.joint === "helpSpent")) return null;
   if (lm.gave?.answer || lm.quickReply || lm.stepReply) return null;
-  // (the greeting's own simpler wording answers a request at the greeting)
-  if (String(prev?.lastMove?.kind ?? "") === "greet") return null;
-  // (T5, until T1: a hook said alone ends on a check-in and a request there gets the switch line and the first point — T1 makes the hook never
-  // end a turn)
-  if (lm.hookHelp) return null;
+  // (the greeting's own simpler wording answers a request at the greeting; after it, the hook, the first point and its card are the next turn
+  // whatever the child says — the greeting has no other wording)
+  if (String(prev?.lastMove?.kind ?? "") === "greet" || prev?.lastMove?.greetHelp) return null;
   return `a ${request} answered with ${h ? `help ${JSON.stringify({ card: h.card, joint: h.joint ?? null })}` : lm.kind ?? "nothing"} (${lm.scriptBeat?.beatId ?? "?"})`;
 }
 function requestHelpedOrThrow(prev, input, out) {
   const why = requestUnhelped(prev, input, out);
-  if (why) throw new Error(`T5: a request's turn with no help: ${why} | the child: ${String(input?.text ?? "").slice(0, 60)}`);
+  if (why) throw new Error(`T5: a request's turn with no help: ${why} | the child: ${String(input?.text ?? "").slice(0, 60)} | turn ${prev?.turn} after ${prev?.lastMove?.kind} [${Object.keys(prev?.lastMove ?? {}).join(",")}]${prev?.lastMove?.hookSaid ? " (hook)" : ""}${prev?.lastMove?.splitClose ? " (splitClose)" : ""}${prev?.lastMove?.checkin ? " (checkin)" : ""}`);
 }
 /** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help is not picked in it (helpRequestOf). */
 const recordedWalk = (input) => !!scriptFor(input?.kit)?.script?.recordedRun;
@@ -3589,6 +3596,12 @@ function stepTryAgain(prev, input) {
   return { state: s, move: m, moduleCommands: [], ui, end: false, proposal: directorProposal(m, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
 }
 export function step(prev, input) {
+  // (dc-r8-director28 Brain 044 T1: after the greeting's simpler wording, the next turn is the hook, the first point and its card — a second
+  // request there is answered by the teaching it asks for; the greeting has no other wording)
+  const input0 = input;
+  const greetAgain = !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
+  if (greetAgain)
+    input = { ...input, text: "haan", cls: { ...(input.cls ?? {}), outcome: "no_evidence", request: undefined, flags: { ...(input.cls?.flags ?? {}), dontKnow: false, confused: false } } };
   const tryAgain = stepTryAgain(prev, input);
   leadBeatOf = prev?.lastMove?.closeBeat ?? prev?.lastMove?.scriptBeat ?? null;
   // (Brain 042: a quick question or an asked step was what the child's line was read against — no card: it leaves the table before anything
@@ -3604,6 +3617,30 @@ export function step(prev, input) {
   const pre = helpBefore(prev, input, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
+  // (Brain 044: a picture asked for at an asked step is the step's picture — its caption, then the step's question again, the step still asked;
+  // never a check-in inside the worked example: dry steady c6 18 once T1 moved the lesson there)
+  if (input?.event === "turn" && scriptOn() && prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose && columnName(input0, prev) === "picture"
+    && out?.state?.lastMove && !out.state.lastMove.stepAsk && !out.ui?.ask?.itemId && !["safeguard", "wrap", "break"].includes(String(out.state.lastMove.kind ?? ""))) {
+    const sa = prev.lastMove.stepAsk;
+    const a = skillScriptOf(input.kit, sa.skillId)?.workedExample?.steps?.[sa.step]?.ask;
+    if (a) {
+      const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
+      out.state.quickItem = qi; out.state.activeItemId = qi.id;
+      const { stayCheckin: _s, checkinOk: _c, ...lmP } = out.state.lastMove;
+      out.state.lastMove = { ...lmP, stepAsk: { ...sa } };
+      if (out.move) out.move = { ...out.state.lastMove };
+    }
+  }
+  // (Brain 044 T1/T5: a second request after the greeting's simpler wording — there is no easier wording of the greeting: the "nothing easier"
+  // line, then the lesson starts with the hook, the first point and its card)
+  if (greetAgain && out?.state?.lastMove && !["safeguard", "wrap", "break"].includes(String(out.state.lastMove.kind ?? ""))) {
+    const j = helpJoint(scriptFor(input.kit)?.script, "helpSpent", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.helpSpent ?? 0 });
+    if (j?.text) {
+      out.state.helpJointN = { ...(out.state.helpJointN ?? {}), helpSpent: (prev.helpJointN?.helpSpent ?? 0) + 1 };
+      out.state.lastMove = { ...out.state.lastMove, sayFirst: [j.text, ...(out.state.lastMove.sayFirst ?? [])], helpJoint: { kind: "helpSpent", form: j.text, by: j.by }, help: { part: "greet", request: columnName(input0, prev), rung: null, card: "goOn", joint: "helpSpent", board: null } };
+      if (out.move) out.move = { ...out.state.lastMove };
+    }
+  }
   // (help's wording is said on its own turn: a walk move built from the last one never carries it into a turn help did not decide)
   if (input?.event === "turn" && out?.state?.lastMove && !out.state.lastMove.help && prev?.lastMove?.help && out.state.lastMove.simpler && out.state.lastMove.simpler === prev.lastMove.simpler) {
     const { simpler: _s, simplerBeat: _b, smaller: _m, helpNew: _n, ...lm } = out.state.lastMove;
@@ -3677,7 +3714,7 @@ export function step(prev, input) {
   // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
   // (dc-r8-director23 R2: the column is what the walk read on THIS turn — a move built from the last one (K's second wording) never keeps
   // that turn's cell; a column with no part the walk is on is still recorded, with no part)
-  const cell0 = (() => { try { return cellAddressOf(prev, input) ?? (input?.event === "turn" ? columnOf(input, prev) : null); } catch { return null; } })();
+  const cell0 = (() => { try { return cellAddressOf(prev, input0) ?? (input0?.event === "turn" ? columnOf(input0, prev) : null); } catch { return null; } })();
   // (dc-r8-director23 T2: each card she got right, with the misses it took — the wrap's sentence about her names the hardest)
   if (input?.event === "turn" && out?.state && prev?.activeItemId && input.cls?.outcome === "correct" && prev.phase !== "teachback")
     out.state.rightLog = [...(prev.rightLog ?? []), { id: prev.activeItemId, misses: (prev.misses?.[prev.activeItemId] ?? 0) + (prev.cardHelp?.id === prev.activeItemId ? prev.cardHelp.misses ?? 0 : 0), turn: prev.turn ?? 0 }].slice(-40);
@@ -4066,6 +4103,9 @@ function step0(prev, input) {
   // v6.1 R7/R8: the beat's or card's AUTHORED simpler (format 2.3), said instead of anything model-written
   if (p.simpler) move.simpler = String(p.simpler);
   if (p.stayCheckin) { move.checkinOk = true; move.stayCheckin = true; }
+  // (Brain 044 T1: the greeting's simpler wording said on its own turn; the hook comes next)
+  if (p.greetHelp) move.greetHelp = true;
+  if (p.greetAsk) move.greetAsk = String(p.greetAsk);
   // v6.1 R9: a worked step's own turn (new teaching, no card) may end on a check-in, once per beat
   if (scriptOn() && move.kind === "worked_example" && move.rendered?.length && !item && /^worked:step\d+$/.test(String(move.scriptBeat?.beatId ?? "")) && checkinFor(s, move)) move.checkinOk = true;
   // v6.1 R8 (main, director9: "samajh nahi aaya" / "pata nahi" got a real smaller re-explanation 16 times in 58): on a live
@@ -4111,7 +4151,7 @@ function step0(prev, input) {
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // (dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler says what today is about in
   // plainer words, then the hook)
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (move.kind === "hook" || move.hookSaid) && greetSimplerDue(prev?.lastMove, input)) {
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (move.kind === "hook" || move.hookSaid) && !move.greetHelp && greetSimplerDue(prev?.lastMove, input)) {
     const g = scriptFor(input.kit)?.script?.greetSimpler;
     const gs = g ? saidIn(g, s.ctx?.lang ?? "hinglish") : null;
     if (gs && String(gs).trim()) move.sayFirst = [String(gs).trim(), ...(move.sayFirst ?? [])];
@@ -4452,6 +4492,17 @@ function switchFits(from, to) {
     return !r || (r.screens?.length ?? 1) >= 2;
   } catch { return true; }
 }
+/** Brain 044 T1: can Studio draw these boards one after another in one turn (its own heldBoard: the first up, each next a switch)? */
+function switchesFit(boards) {
+  try {
+    const bs = boards.filter((b) => b?.template).filter((b, k, a) => k === 0 || JSON.stringify(b) !== JSON.stringify(a[k - 1]));
+    if (bs.length < 3) return bs.length < 2 || switchFits(bs[0], bs[1]);
+    const text = bs.map((_, k) => `${"abcdefgh"[k]} `.repeat(50)).join("");
+    const sws = bs.slice(1).map((b, k) => ({ board: b, unit: `u${k + 1}`, atChar: (k + 1) * 100 }));
+    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: bs[0], unit: "u0", switchTo: sws.at(-1), switches: sws }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, {});
+    return !r || (r.screens?.length ?? 1) >= bs.length;
+  } catch { return true; }
+}
 // ───────────── dc-r8-director27 Brain 043 R1: a right answer goes on ─────────────
 // A right verdict's why and what the walk adds next that do not fit in one turn, where the verdict with the card's `whyShort` and the same
 // do: the short form is said in the why's place (the move carries whyShort; brain/turn.js puts it in lastGraded.why, which brain/say.js
@@ -4615,7 +4666,9 @@ export const REM_CARD_CAP = 60;
 const NOW_LINES = ["asideAgain", "tasteAsked", "sadAside"];
 /** dc-r8-director24 L, kept by main's R1 on the merged tree: the most words a turn holding a new point and its card may run to (45 where
  *  the child's words are plain). splitTeach's limit; L2_CAP is breakL2's. */
-export const pointCardCap = (s) => (s?.ctx?.plainWords ? 45 : 60);
+// (dc-r8-director28 Brain 044 T1: the 60-word cap on a point after a verdict goes — a point and its card share a turn to 75 whatever comes
+// before them (c6: a quick question was asked in 12 of 14 places where the point and its card fit 75); 45 where the child's words are plain)
+export const pointCardCap = (s) => (s?.ctx?.plainWords ? 45 : L2_CAP);
 export const l2On = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_L2 ?? ""));
 /** The parts of a turn in the order she says them, with their words: close (a verdict and its why, a key, a missed card's close),
  *  bridge, held (parts a return held), body (the point, a remediation's say, worked lines), card. Joints and her reply to an aside ride
@@ -4699,8 +4752,11 @@ function breakL2(out, input, closeWords = 0, forceAt = -1) {
   if (!parts.some((p) => ["close", "bridge", "held"].includes(p.k)) && forceAt !== 0) return null;
   // (dc-r8-director26: a turn with no card ends on her check-in — four words the parts do not hold: dry c5-t01 steady 50 ran 79 words)
   let at = forceAt >= 0 ? forceAt : breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
+  // (dc-r8-director28 Brain 044 T1: the hook never ends a turn — it is said with the first point; where the two and the card do not fit, the
+  // point ends the turn on its quick question or its check-in, counted as not fitting)
   // (and a turn whose card is held ends on the check-in in its place)
   if (forceAt < 0 && at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
+  if (move.hookSaid && forceAt < 0 && at >= 0 && parts.findIndex((p) => p.k === "body") >= at) return splitTeach(out, input, -1, closeWords);
   // (the parts fit in 75 words: the point and its card still never go in one turn over 60 — the point's own split, its close counted)
   if (at < 0) return splitTeach(out, input, pointCardCap(s), closeWords);
   const now = new Set(parts.slice(0, at).map((p) => p.k));
@@ -4805,7 +4861,10 @@ function splitTeach(out, input, cap, extra = 0) {
   // (dc-r8-director26 C1, main's ruling changes 2-4: three turns share their card up to 75 words — a worked step with the child's own step,
   // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
   const u = cap < 0 || scriptFor(input.kit)?.script?.recordedRun ? null : unitTurn(out, input, extra, first);
-  if (u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + 8 + extra + first <= cap) return out;
+  // (Brain 044 T1: a point and its card that fit in words share the turn only where Studio can draw every board change in it — the board up,
+  // the point's, the card's; dry steady c4 94: a bridge, the point and its card on three boards drew one page)
+  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || switchesFit([s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
+  if ((u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + 8 + extra + first <= cap) && drawable()) return out;
   let teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
   // (dc-r8-director28 Brain 044 T1: a point split from its card with no quick question in its place — the two do not fit and the script keeps no
   // quick question that fits — ends on its check-in, and the row says so: counted, 0 on the pilots once Learning 017's cuts are in)

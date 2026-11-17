@@ -694,6 +694,8 @@ export const ORDER_LAWS = {
     if ((r.seams ?? []).some((x) => x.joint === "helpSpent") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
+    // (Brain 044 T1: after the greeting's simpler wording, a request gets the "nothing easier" line and the lesson starts — hook, point, card)
+    if ((ctx.prevT.seams ?? []).some((x) => x.right === "greetSimpler") && (r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
@@ -943,6 +945,9 @@ PREDICATES.longPointCard = (L, r) => {
   const at = pp.findIndex((p, k) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? "")) && !forms.includes(textOf(p, k)));
   if (at < 0 || !pp.some((p) => p.part === "card")) return null;
   if (n > 75) return `${n} words holding a point and a card`;
+  // (dc-r8-director28 Brain 044 T1: the 60-word limit on a point with a part before it goes — a verdict, its reason, the point and its card
+  // share a turn to 75)
+  return null;
   // (a part before the point: a verdict, its why, a key, a bridge, a held part, help's words — anything said before it that is not a
   // seam's joint; or words the record has no part for, an aside's reply or the hook, before the point's own first part)
   const before = pp.slice(0, at).some((p, k) => !forms.includes(textOf(p, k))) || (pp[at]?.from ?? 0) > 0;

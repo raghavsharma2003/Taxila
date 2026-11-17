@@ -199,3 +199,23 @@ describe("T7: \"let me try\" at an asked step", () => {
     assert.deepEqual([helpJoint(own, "stepMiss").text, helpJoint(own, "stepMiss").by], ["Woh nahi.", "authored"]);
   });
 });
+
+import { pointCardCap, L2_CAP } from "../server/director/state.js";
+describe("T1: a point and its card share a turn", () => {
+  test("the 60-word cap on a point after a verdict goes: a point and its card share a turn to 75 (45 where the child's words are plain)", () => {
+    assert.equal(pointCardCap({ ctx: {} }), L2_CAP);
+    assert.equal(L2_CAP, 75);
+    assert.equal(pointCardCap({ ctx: { plainWords: true } }), 45);
+  });
+  test("hookAlone reads the hook said alone on a check-in (row 2 in 14 of the 16 director28 lessons)", () => {
+    for (const p of ["steady", "stuck", "offtopic", "steering"]) assert.ok(flagged(p, "c6", "hookAlone").has(2), `c6 ${p}`);
+  });
+  test("switchFirst reads the switch line said before a first telling (row 4)", () => {
+    for (const [p, t] of [["stuck", "c6"], ["offtopic", "c6"], ["steering", "c6"], ["steady", "c6"], ["stuck", "c4"], ["steering", "c5t02"]]) assert.ok(flagged(p, t, "switchFirst").has(4), `${p} ${t}`);
+  });
+  test("pointNoFit counts a point that ends on its check-in because it and its card do not fit (pending until Learning 017; noFit on the row)", () => {
+    const r = { who: "teacher", text: "Point. Yahan tak theek hai?", noFit: "point" };
+    assert.ok(D29_PREDICATES.pointNoFit({ rows: [r] }, r));
+    assert.equal(D29_PREDICATES.pointNoFit({ rows: [r] }, { ...r, noFit: undefined }), null);
+  });
+});
