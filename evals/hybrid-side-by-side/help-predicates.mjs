@@ -131,7 +131,10 @@ function keyedBefore(L, i, ctx) {
     // (a new unit's teaching — a point, a worked step, a bridge — ends the key's check-in; help said on the key does not)
     if ((r.pageParts ?? []).some((p) => ["body", "held", "bridge"].includes(p.part) && p.beat)) {
       const ix = helpIndex(ctx);
-      if (!sentencesOf(r.text).some((s) => ix.rungs.has(normSentence(s)) || ix.joints.has(normSentence(s)))) st.val = null;
+      // (main's R3 on the merged tree, c4 stuck 48: the go-on line after a spent why, then the next point — the lesson went on; a turn
+      // ends the key's check-in when it says teaching beside help's own sentences, not only when it says none of them)
+      const own = (s) => ix.rungs.has(normSentence(s)) || ix.joints.has(normSentence(s)) || CHECKIN.test(s) || s.split(/\s+/).length < 4;
+      if (!sentencesOf(r.text).every(own)) st.val = null;
     }
   }
   return st.val;
