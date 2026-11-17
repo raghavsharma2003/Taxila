@@ -723,7 +723,7 @@ function walkNextV2(s, input, prefix, sk) {
       const it1 = b1 ? friendly(scriptAskItem(skillId, b1.id, b1.ask)) : null;
       const p1 = b1 ? saidIn(b1.point, lang) : null;
       if (!bridge && use && p1 && it1 && !gone(it1.id) && w.smaller !== b1.id && !scriptFor(kit)?.script?.recordedRun && !greetSimplerDue(s.lastMove, input)
-        && wordsIn(use, p1) + goOnLeadWords(input, lang) + 4 <= L2_CAP) { hookLead = [use]; continue; }
+        && wordsIn(use, p1) + walkLeadWords(input, lang, s.lastMove) + 4 <= L2_CAP) { hookLead = [use]; continue; }
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
     }
@@ -762,7 +762,7 @@ function walkNextV2(s, input, prefix, sk) {
         const steps0 = recital ? [] : (we.steps ?? []).map((st) => scriptWorkedStepLine(st, lang)).filter(Boolean);
         const card0 = saidIn(we.yourStep?.prompt, lang);
         // (help's go-on line said before this turn counts: input.helpLeadWords)
-        const lead0 = goOnLeadWords(input, lang);
+        const lead0 = walkLeadWords(input, lang, s.lastMove);
         if (steps0.length === 1 && card0 && wordsIn(problem, steps0[0], card0) + lead0 + 3 <= L2_CAP) {
           w.workedStep = 1;
           s.scriptCard = item; s.phase = "practice";
@@ -798,19 +798,21 @@ function walkNextV2(s, input, prefix, sk) {
         const recorded = !!scriptFor(kit)?.script?.recordedRun;
         let two = !small && k + 1 < steps.length && w.smallerStep !== k + 1 && !recorded && wc(steps[k]) + wc(steps[k + 1]) + 3 + 3 + 4 <= L2_CAP;
         // (dc-r8-director26 C1, main's ruling change 4: the turn that holds the last told step holds the child's own step too, so it ends on a
-        // real question, not a check-in — when the step(s) and that card fit in 75 words. When two steps and the card do not fit, the
-        // step before the last is said alone and the last comes with the card. A step said again smaller is help: said alone, as before)
+        // real question, not a check-in — when the step or two left and that card fit in 75 words (her line adds no frame: the steps' own
+        // words open it). When two steps and the card do not fit, the step before the last is said alone and the last comes with the card.
+        // A step said again smaller is help: said alone, as before)
         const card1 = saidIn(we.yourStep?.prompt, lang);
-        const lead1 = goOnLeadWords(input, lang);
-        const withCard = (n) => !small && !recorded && !!card1 && k + n === steps.length && wc(steps.slice(k, k + n).join(" ")) + wc(card1) + lead1 + 3 <= L2_CAP;
-        if (two && k + 2 === steps.length && !withCard(2) && !!card1 && wc(steps[k + 1]) + wc(card1) + 3 <= L2_CAP) two = false;
-        if (withCard(two ? 2 : 1)) {
-          const n = two ? 2 : 1;
+        const lead1 = walkLeadWords(input, lang, s.lastMove);
+        const rest = steps.length - k;
+        const fitsCard = (n) => !small && !recorded && !!card1 && wc(steps.slice(k, k + n).join(" ")) + wc(card1) + lead1 + 2 <= L2_CAP;
+        const n = rest <= 2 && fitsCard(rest) ? rest : 0;
+        if (!n && two && rest === 2 && !!card1 && wc(steps[k + 1]) + wc(card1) + lead1 + 2 <= L2_CAP) two = false;
+        if (n) {
           w.workedStep = k + n;
           s.scriptCard = item; s.phase = "practice";
           activate(s, item);
           return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { item, probe: probeFor(item), skillId, format: "F2",
-            content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, n === 2 ? `steps ${k + 1} and ${k + 2} of ${steps.length}` : `step ${k + 1} of ${steps.length}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
+            content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, n > 1 ? `steps ${k + 1} to ${k + n} of ${steps.length}` : `step ${k + 1} of ${steps.length}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
             whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, rendered: steps.slice(k, k + n), stepFrom: k + 1, ...ref("worked", "worked", we.board) });
         }
         if (two) w.workedStep = k + 2;
@@ -3909,7 +3911,8 @@ function step0(prev, input) {
     const live = s.activeItemId ?? null;
     const boundary = move.kind === "break" || !(live && live === prev.activeItemId) && !String(live ?? "").includes(":then:") && !s.splitHold
       // (v6.4 H2″, director12 c5-t02 steering 23→40: the worked example's opening is a boundary, its steps and card are not)
-      && !/^worked(?::step|$)/.test(move.scriptBeat?.beatId ?? "") && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type
+      // (dc-r8-director26 C1: the problem said with its first step is the opening too)
+      && (!/^worked(?::step|$)/.test(move.scriptBeat?.beatId ?? "") || !!move.problemLines) && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type
       // (v6.5 F1, main on director13 c6 offtopic 40: no aside return beside a wrong verdict — it waits for the next boundary)
       && !(prev.activeItemId && ["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")))
       // (v6.9 T1, director17 c5-t01 steady 42: asked to go on, the walk moves on first; the aside waits for the next boundary)
@@ -4118,6 +4121,13 @@ export function splitLong(out, input) {
   const whyTexts = [...new Set([move.workedDone?.why ? null : s.lastGraded?.why ?? closedCardWhy, move.closed?.why, move.workedDone?.why].filter(Boolean)
     .map((x) => String(typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim()).filter(Boolean))];
   const closeWords = hasClose && !recorded ? 6 + whyTexts.join(" ").split(/\s+/).filter(Boolean).length + (move.workedDone?.answer ? 3 : 0) : 0;
+  // (dc-r8-director26 C1, main's ruling change 4: the problem and its first step share a turn after a verdict, the beforeWorked joint, a
+  // bridge or a held part only when all of it fits in 75 words with her check-in; when it does not, the verdict, the joint and the problem
+  // are said as they were before the ruling — one turn, its own break rules — and the first step goes back to the walk)
+  if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
+    const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
+    if (p0.some((x) => ["close", "bridge", "held"].includes(x.k)) && p0.reduce((a, x) => a + x.n, 0) + 4 > L2_CAP) return splitLong(withoutFirstStep(out), input);
+  }
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
   if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out, input);
@@ -4305,15 +4315,23 @@ export function goOnLeadWords(input, lang = "hinglish") {
   if (!input?.helpGoOn) return 0;
   return Math.max(0, ...(jointOf(input?.kit, "afterKeyGoOn", lang) ?? []).map((x) => wordsIn(x))) || 12;
 }
+/** What leads a walk's turn before its authored parts: help's go-on line, and her reply to an aside — or to her question after the AI line
+ *  or a return (brain/say.js answers it in the child's words) — with the joint back, about sixteen words. The walk counts it when it puts
+ *  parts together (dc-r8-director26 C1). lastMove: her last turn's move. */
+const walkLeadWords = (input, lang, lastMove = null) => goOnLeadWords(input, lang) + (input?.cls?.asideReply || lastMove?.tasteAsked || lastMove?.returned ? 16 : 0);
 export function unitTurn(out, input = null, extra = 0, first = 0) {
   const { state: s, move, ui } = out;
   // (help's go-on line before the turn, when the decision did not count it)
-  const goOn = input?.helpLeadWords ? 0 : goOnLeadWords(input, s?.ctx?.lang ?? "hinglish");
+  // (and her reply to an aside with the joint back to the lesson before it: about sixteen words)
+  const goOn = (input?.helpLeadWords ? 0 : goOnLeadWords(input, s?.ctx?.lang ?? "hinglish")) + (move.asideAck || move.returnReply || input?.cls?.asideReply ? 16 : 0);
   if (move.help || move.request || move.simpler || move.smaller) return null;
   const askId = String(ui?.ask?.itemId ?? "");
   if (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(askId)) return { margin: 3 + extra + first + goOn };
   // (her miss verdict, "<answer> sahi nahi hai." or "Nahi, yeh theek nahi hai.", five words or fewer, and the longest beforeRemediation form)
-  if (move.kind === "reteach" && move.scriptBeat?.kind === "remediation" && move.rendered?.length && /:then:/.test(askId)) {
+  // (an aside parked on another card is due at the follow-up card's held half — the aside's return turn stays where it was: the remediation
+  // keeps its own turn then)
+  const parkDue = (s?.later ?? []).some((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && e.onItem !== askId && Number.isFinite(e.at) && e.at < (s?.turn ?? 0));
+  if (move.kind === "reteach" && move.scriptBeat?.kind === "remediation" && move.rendered?.length && /:then:/.test(askId) && !parkDue) {
     const j = Math.max(0, ...(jointOf(input?.kit, "beforeRemediation", s?.ctx?.lang ?? "hinglish") ?? []).map((x) => wordsIn(x)));
     // (a close said before the miss verdict — a worked answer, a key — counts as its words)
     return { margin: 5 + (j || 8) + first + goOn + (move.workedDone || move.gave || move.closed ? extra : 0) };
@@ -4375,6 +4393,18 @@ function simplerOfBeat(s, kit, move) {
   const t = b?.simpler ? saidIn(b.simpler, s.ctx?.lang ?? "hinglish") : null;
   return t && String(t).trim() ? String(t).trim() : null;
 }
+/** dc-r8-director26 C1: told steps held whole with the child's own step (her AI line or a return took the turn they were planned on) come
+ *  after her reply to the child: they keep the card only while they still fit in 75 words with that reply (unitTurn counts it). */
+/** The card of such a turn, held again by the split, was never said: its posing is undone, so the next turn poses it fresh (never "Phir se
+ *  dekho:"). */
+function heldCardFresh(before, after) {
+  const id = before.ui?.ask?.itemId;
+  if (after === before || !id || after.state?.posedAt?.[id] == null) return after;
+  const { [id]: _p, ...rest } = after.state.posedAt;
+  after.state.posedAt = rest;
+  return after;
+}
+const workedWithCard = (out, input) => !!l2On() && !scriptFor(input.kit)?.script?.recordedRun && out.move?.kind === "worked_example" && !!out.move?.stepFrom && /:ask:worked$/.test(String(out.ui?.ask?.itemId ?? ""));
 /** dc-r8-director26 C1 (main's ruling change 4): the worked problem and its first step were held behind a verdict, and now come after
  *  help's go-on line or her reply to an aside: when they no longer fit in 75 words with it, the problem is said alone and the first step
  *  goes back to the walk (said next, as before the ruling). */
@@ -4384,6 +4414,13 @@ function problemAlone(out, input) {
   if (!pL || out.ui?.ask?.itemId || !move.rendered?.length) return out;
   const lead = goOnLeadWords(input, s.ctx?.lang ?? "hinglish") + (move.asideAck || move.returnReply ? 12 : 0) + wordsIn(move.sayFirst ?? []);
   if (wordsIn(move.rendered) + lead + 4 <= L2_CAP) return out;
+  return withoutFirstStep(out);
+}
+/** The worked problem said with its first step, said without it: the problem alone (its own beat, as before the ruling); the first step goes
+ *  back to the walk, said next. */
+function withoutFirstStep(out) {
+  const { state: s, move } = out;
+  const pL = Number(move?.problemLines) || 0;
   const m = { ...move, rendered: move.rendered.slice(0, pL), ...(move.scriptBeat ? { scriptBeat: { ...move.scriptBeat, beatId: "worked:problem" } } : {}) };
   delete m.problemLines; delete m.stepFrom;
   if (s.walk && s.walk.skillId === move.skillId && s.walk.workedStep === 1) s.walk.workedStep = 0;
@@ -4418,7 +4455,7 @@ function heldTurn(prev, input) {
     s.turn += 1;
     // (dc-r8-director25 L2 item 1: lost after a close whose return was due — the held half is a boundary: the return comes now, on a turn
     // of its own, and the held half after her reply, as the due path below)
-    if (l2On() && !retAns && !h.teach && lost && !scriptFor(input.kit)?.script?.recordedRun && !/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? ""))) {
+    if (l2On() && !retAns && !h.teach && lost && !scriptFor(input.kit)?.script?.recordedRun && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
       const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
       if (due) {
         s.later = serveLater(s.later, due.id, s.turn);
@@ -4469,6 +4506,7 @@ function heldTurn(prev, input) {
     const outR = problemAlone({ state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) }, input);
     // (dc-r8-director25 L2: the held half said after an aside — her reply, the joint back, the part — breaks as any turn does)
     if (l2On() && !h.teach && !scriptFor(input.kit)?.script?.recordedRun) { const b = breakL2(outR, input, 0); if (b) return b; return splitTeach(outR, input, pointCardCap(s)); }
+    if (h.teach && workedWithCard(outR, input)) return heldCardFresh(outR, splitTeach(outR, input, pointCardCap(s)));
     return outR;
   }
   if (c?.help || c?.request || (h.teach && (c?.flags?.dontKnow || readIntent(String(input.text ?? ""))?.type === "confused"))) return null;
@@ -4488,7 +4526,8 @@ function heldTurn(prev, input) {
   s.turn += 1;
   // P1 (dc-r8-director20, c4 offtopic: a park on a card that ended in a key was never returned while the key's split held the next
   // part): the held half is a boundary too — an aside due now is returned on a turn of its own, and the held half waits for the next
-  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && !/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? ""))) {
+  // (dc-r8-director26 C1: the worked problem held with its first step is the problem — a return due comes before it, as before it)
+  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
     const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
     if (due) {
       s.later = serveLater(s.later, due.id, s.turn);
@@ -4505,7 +4544,7 @@ function heldTurn(prev, input) {
   const out = problemAlone({ state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
     proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) }, input);
   // (the beat a closing half held may itself be too long: its teaching, then its card)
-  if (h.teach) return out;
+  if (h.teach) return workedWithCard(out, input) ? heldCardFresh(out, splitTeach(out, input, pointCardCap(s))) : out;
   // (dc-r8-director25 L2: the held half breaks as any turn does)
   // (a held move that says a return: brain/say.js says the return alone and holds the rest for the turn after her reply)
   if (l2On() && !scriptFor(input.kit)?.script?.recordedRun && h.move?.returned?.topic) return out;
