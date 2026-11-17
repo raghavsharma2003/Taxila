@@ -8,6 +8,21 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { replay } from "./fixtures/replay.mjs";
 
 const RUN = "2026-11-17-director26";
+/** One child line planned on a state, as tests/fixtures/replay.mjs plans each recorded line. */
+async function planAt(state, text, kit) {
+  const { classifyFast, targetFor } = await import("../server/director/classify.js");
+  const { findItem } = await import("../server/director/items.js");
+  const { planTurn } = await import("../server/brain/turn.js");
+  const { newLearnerState } = await import("../server/comprehension/fuse.js");
+  const classLevel = Number(/^c(\d)/.exec(kit.topicId)[1]);
+  const CHILD = { id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: classLevel }, LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
+  const s = { ...state, seq: (state.seq ?? 0) + 1, recent: [...(state.recent ?? []), { who: "teacher", text: "" }, { who: "child", text }] };
+  const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+  const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel, typed: true });
+  const c = fast.result ?? { outcome: "no_evidence", confidence: 0.9, source: "test", flags: { ...fast.flags } };
+  return planTurn(s, c, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: text, childText: text, leaked: false,
+    live: Promise.resolve({ state: newLearnerState({ childId: CHILD.id, classLevel }), maxSeq: 0 }), carried: [], now: 9_000_000 });
+}
 const noModel = async () => { throw new Error("the model was called"); };
 async function lineAt(persona, T, row1, { model = noModel } = {}) {
   const { kit, plans } = await replay(RUN, persona, T, row1);
@@ -49,8 +64,17 @@ test("N1: a give-up at the hook's check-in (c6 steady 4) opens on a word to her,
 });
 
 test("N1: 'pata nahi, aap batao' at the check-in on the last card's why (c5-t01 steady 128) gets the why's other wording or the go-on line", async () => {
-  const { plans } = await replay(RUN, "steady", "c5-maths-ch02-t01", 129);
-  const m = plans.at(-1).p.r.state.lastMove;
+  // (the walk is found where the run's row 126 left it — the last card's close and why, its check-in, the phase already the teach-back's —
+  // wherever today's walk reaches it; the child's line there is the run's)
+  // (today's walk says that close with the teach-back's lead in one turn — the close's words are counted as said, C1 — so the run's state is
+  // built: the last card c3 closed with its why, its check-in, no card live, the phase the teach-back's, as row 126 of the run left it)
+  const { kit, plans } = await replay(RUN, "steady", "c5-maths-ch02-t01", 126);
+  const S = "c5-maths-ch02-t01-s3";
+  const before = plans.at(-1).state;
+  const cb = { scriptId: "c5-maths-ch02-t01@2.3", skillId: S, beatId: "c3", kind: "check" };
+  const st = { ...before, phase: "teachback", keyedPart: `${S}:check:c3`, activeItemId: undefined, lastUi: { status: "your_turn" },
+    lastMove: { kind: "repair", splitClose: true, gaveCheck: true, closeBeat: cb, scriptBeat: cb } };
+  const m = (await planAt(st, "pata nahi, aap batao", kit)).r.state.lastMove;
   assert.ok(m.help?.keyed, "help on the card just keyed");
   assert.ok(m.help.rung === "whyAlt" || m.help.joint === "afterKeyGoOn", JSON.stringify(m.help));
   assert.notEqual(m.kind, "teachback", "not straight to the closing question");
