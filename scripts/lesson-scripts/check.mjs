@@ -1787,7 +1787,8 @@ export function d24Errors(s) {
     return new RegExp(`(^|[^\\w/])${esc(k)}([^\\w/]|$)`).test(String(text).toLowerCase());
   };
   (s.skills ?? []).forEach((k, i) => { const we = k.workedExample; if (!we) return;
-    for (const [at, c] of [[`skills[${i}].workedExample.viewCaption`, we.viewCaption], [`skills[${i}].workedExample.yourStep.viewCaption`, we.yourStep?.viewCaption]])
+    // (the worked board is up while the steps are asked; the child's own step's board comes after them)
+    for (const [at, c] of [[`skills[${i}].workedExample.viewCaption`, we.viewCaption]])
       for (const l of ["hi", "en"]) for (const [j, st] of (we.steps ?? []).entries()) if (st.ask && c?.[l] && keyHit(c[l], st.ask.key)) e.push(`${at}${l === "en" ? " (en)" : ""}: names steps[${j}].ask's key "${st.ask.key}"`); });
   items.forEach(({ at, x }, i) => {
     if (!x.board?.template) return;
