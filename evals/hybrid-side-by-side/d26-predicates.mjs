@@ -194,5 +194,13 @@ D26_PREDICATES.pictureAfterKey = function pictureAfterKey(L, r, i, ctx) {
   const answered = segs.at(-1)?.board ?? ctx.prevT.boardRef ?? null;
   const drawn = r.boardRef ?? (r.segments ?? []).find((g) => g?.board)?.board ?? null;
   if (!answered || !drawn) return null;
-  return JSON.stringify(answered) === JSON.stringify(drawn) ? null : `a picture after the key drawn on ${drawn.template} ${JSON.stringify(drawn.params ?? {}).slice(0, 50)}, not the answered board`;
+  // (dc-r8-director27 Brain 042 E3: the answered card's own posing board — drawn as its second view, under its authored caption — is the
+  // picture after a key too: the card whose answerBoard was up)
+  const same = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+  let posing = false;
+  const walk = (o, up = null) => { if (posing || !o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach((x) => walk(x, up));
+    if (o.answerBoard && same(o.answerBoard, answered) && same(o.board ?? up, drawn)) { posing = true; return; }
+    for (const v of Object.values(o)) walk(v, o.board ?? up); };
+  walk(ctx.script);
+  return same(answered, drawn) || posing ? null : `a picture after the key drawn on ${drawn.template} ${JSON.stringify(drawn.params ?? {}).slice(0, 50)}, not the answered board`;
 };

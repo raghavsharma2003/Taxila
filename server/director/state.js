@@ -3942,7 +3942,10 @@ function step0(prev, input) {
     // with no board sends none, and Studio picks for the live item)
     const live = s.activeItemId ? findItem(s, input.kit, s.activeItemId) ?? s.scriptCard ?? null : null;
     const card = live && (live.scriptAsk || live.scriptCheck || live.scriptThen) ? cardBeatRef(s, input.kit, live) : null;
-    if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) move.scriptBeat = { ...s.stayOn.beat };
+    // (dc-r8-director27, Brain 042 E3 — director27 c5-t01 steering 14, c6 steering 14, c5-t02 steady 18: a picture asked for after a key drew
+    // the answer board with a code-written caption; the card's own second view is drawn — its posing board's — and its authored viewCaption
+    // is said)
+    if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) { const { posingBoard: pb, answerBoard: _ab, ...b0 } = s.stayOn.beat; move.scriptBeat = pb ? { ...b0, board: pb } : { ...s.stayOn.beat }; }
     else if (card) move.scriptBeat = card;
     else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
   }
@@ -4135,7 +4138,7 @@ function step0(prev, input) {
     // v2.3 (director9 item 4): the card just answered right, or let go, shows its authored answer-state board over its close
     const was = prev?.activeItemId ? findItem(prev, input.kit, prev.activeItemId) ?? null : null;
     const ab = answerBoardOf(was);
-    if (ab && (move.gave || input.cls?.outcome === "correct")) move.closeBeat = { ...(end ?? cardBeatRef(prev, input.kit, was) ?? {}), board: ab, answerBoard: true };
+    if (ab && (move.gave || input.cls?.outcome === "correct")) { const cb0 = end ?? cardBeatRef(prev, input.kit, was) ?? {}; move.closeBeat = { ...cb0, board: ab, answerBoard: true, ...(cb0.board && JSON.stringify(cb0.board) !== JSON.stringify(ab) ? { posingBoard: cb0.board } : {}) }; }
   }
   s.lastMove = move;
   s.moveVoiced = false;
@@ -4704,9 +4707,6 @@ function heldTurn(prev, input) {
   const h = prev.splitHold;
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
-  if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
-  // (Brain 042 Q1: the child's line on the point's quick question)
-  { const qa = quickAnswer(prev, input, h); if (qa) return qa; }
   // (Brain 042: a request for Hindi after her reply said alone before a worked segment — the language from now on, and the segment)
   if (prev.lastMove?.leadAlone && c?.request?.type === "language" && !c.flags?.distress && scriptOn()) {
     const s = structuredClone(prev);
@@ -4717,6 +4717,9 @@ function heldTurn(prev, input) {
     if (h.activeItemId) s.activeItemId = h.activeItemId;
     return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
   }
+  if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
+  // (Brain 042 Q1: the child's line on the point's quick question)
+  { const qa = quickAnswer(prev, input, h); if (qa) return qa; }
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
   // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
   // following it is such a request too)
@@ -4750,6 +4753,20 @@ function heldTurn(prev, input) {
         return { state: s, move: ret, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(ret, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
       }
     }
+    // (dc-r8-director27 Brain 042 E1, dry offtopic c5-t02 24 on 041: the child's AI question took the turn a parked aside's return was due
+    // on, and this path never looked again — the return came never. Her reply to the child's answer is said now, alone; the return comes on
+    // the next turn, on its own (the due path below), and the held half after her reply to it)
+    if (l2On() && retAns && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
+      const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
+      if (due) {
+        const ans = { topic: prev.returnAsked.topic, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) };
+        s.returnAnswer = ans; s.returnAsked = undefined;
+        const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, leadAlone: true, returnReply: ans, asideAck: true, ...(prev.lastMove?.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
+        const ui0 = { status: "your_turn" };
+        s.lastMove = close; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
+        return { state: s, move: close, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(close, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+      }
+    }
     s.splitHold = undefined;
     const text = String(input.text ?? "");
     const m = { ...h.move };
@@ -4772,7 +4789,9 @@ function heldTurn(prev, input) {
       s.later = parkGate(s, input.kit, input, { ...parkEntry({ topic: topic0, learning: false, turn: s.turn, itemOnTable: !!h.activeItemId }), share: true });
       // (dc-r8-director25 L2: a park said on a held half promises the card that half poses — step's stamping never runs on this path, and
       // an aside parked here was never due: c5-t02 steady, 24 turns)
-      if (l2On() && h.activeItemId) s.later = (s.later ?? []).map((e) => (e.at === s.turn && e.share && e.servedAt == null && e.onItem === undefined ? { ...e, onItem: h.activeItemId, parkSaid: true, said: e.said ?? text.replace(/\s+/g, " ").trim().slice(0, 80) } : e));
+      // (Brain 042: a park said on a held worked segment promises the worked example's own card — an asked step is no card)
+      const onIt = /^stepask:(.+):\d+$/.exec(String(h.activeItemId ?? ""))?.[1];
+      if (l2On() && h.activeItemId) s.later = (s.later ?? []).map((e) => (e.at === s.turn && e.share && e.servedAt == null && e.onItem === undefined ? { ...e, onItem: onIt ? `script:${onIt}:ask:worked` : h.activeItemId, parkSaid: true, said: e.said ?? text.replace(/\s+/g, " ").trim().slice(0, 80) } : e));
       // (an aside said again is returned now, once — v6.9 T1.10 — and that return ends her turn: the held half waits for the next one)
       if (s.servedNow) {
         const r = s.servedNow; s.servedNow = undefined;

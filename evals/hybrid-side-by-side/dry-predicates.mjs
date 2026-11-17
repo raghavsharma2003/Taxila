@@ -645,6 +645,9 @@ export const ORDER_LAWS = {
   orderStays(L, r, i, ctx) {
     const rq = /·\s*(visual|language|repeat|another|clarify|confused|which)/.exec(ctx.prevRead ?? "")?.[1] ?? (SAYS_CLARIFY_C.test(ctx.prevChild ?? "") ? "clarify" : null);
     if (!rq || !ctx.prevT) return null;
+    // (dc-r8-director27 Brain 042: her reply said alone before a worked segment is on no part — a request there takes the segment, in Hindi
+    // when asked)
+    if (ctx.prevT.leadAlone) return null;
     // (C1: a clarify after a key, the answer said plainly, may go on — picture, Hindi and repeat stay)
     if (["another", "clarify", "confused"].includes(rq) && KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) return null;
     // (dc-r8-director25 H4 item 6: after a key's check-in, with the why's other wording said, help says "we'll meet this again" and the
