@@ -1280,9 +1280,9 @@ function seamsOf(out, { state, kit, ui = null }) {
     caption: out.guard?.captionLine ?? null,
     greetSimpler: (() => { if (String(state?.lastMove?.kind ?? "") !== "hook") return null; const g = scriptFor(kit)?.script?.greetSimpler; const t = g ? saidIn(g, lang) : null;
       return t && (state.lastMove.sayFirst ?? []).some((x) => String(x).trim() === String(t).trim()) ? String(t).trim() : null; })(),
-    hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
+    hindiSwitch: out.guard?.hookJoint ?? (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
-    hindiSwitchBy: (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
+    hindiSwitchBy: out.guard?.hookJointBy ?? (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
     helpJoint: state?.lastMove?.helpJoint ?? null,
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
@@ -1457,6 +1457,22 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const r0 = own ? freshOf(own, state) : fallbackReply(state, null);
     const lp = cleanParts([{ part: "aside", text: r0 }]);
     return { reply: r0, guard: { authoredStop: own ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
+  }
+  // (dc-r8-director26 N1 item 2: a clarify or a give-up at the opening's check-in is answered through the authored path, with no model
+  // call — one authored line to the child (the script's hindiSwitch form: other, easier words), the first point, then its card when the
+  // card is on this turn, else its check-in. c5-t02 steering 4: a turn the model drafted from the point, cut by the length guard, ending
+  // on no question; c6 row 4 in all four lessons: the point with no word to her)
+  if (state.lastMove?.hookHelp && state.lastMove?.point && scriptFor(kit)?.script) {
+    const L = lang === "english" ? "english" : "hinglish";
+    // (a give-up is never given a verdict word: a form that opens on "Haan," or "Bilkul," is not said to "pata nahi")
+    // (the form keeps its place in the rotation; its leading verdict word is left off)
+    const j0 = freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? (L === "english" ? ["Okay, let me put it more simply."] : ["Theek hai, ise aasaan shabdon mein kehti hoon."]), state);
+    const j1 = state.lastMove.hookHelp === "give_up" ? String(j0).replace(/^\s*(?:haan|bilkul|sahi|yes|sure|of course)\s*[,!.]\s*/i, L === "english" ? "That's okay, " : "Koi baat nahi, ") : String(j0);
+    const j = j1.charAt(0).toUpperCase() + j1.slice(1);
+    const card = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
+    const lp = cleanParts([{ part: "aside", text: j }, ...(state.lastMove.sayFirst ?? []).map((x) => ({ part: "held", text: String(x) })), { part: "body", text: String(state.lastMove.point) },
+      card ? { part: "card", text: card } : { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
+    return { reply: joinParts(lp), guard: { hookHelp: state.lastMove.hookHelp, hookJoint: j, hookJointBy: jointsAt(kit, "hindiSwitch", lang, state) ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
   }
   // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
   // as written, after the close of her last answer; no model call)

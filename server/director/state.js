@@ -3053,7 +3053,11 @@ function helpRequestOf(prev, input) {
   if (input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !prev) return null;
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop || prev.safeguard || ["stop", "end", "break", "goodbye"].includes(c.request?.type)) return null;
-  if (["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
+  // (dc-r8-director26 N1, c5-t01 steady 128: the last card's close and its why, with its check-in, is said while the phase is already the
+  // teach-back's — "pata nahi, aap batao" there went straight to the closing question. A request at that check-in is help on the card
+  // just keyed: the why's other wording, or the go-on line, then the teach-back)
+  const keyCheckin = String(prev.phase ?? "") === "teachback" && !!prev.keyedPart && !prev.lastUi?.ask?.itemId && !["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""));
+  if ((["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) && !keyCheckin) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
   // (v6.8 B1‴ stands: a card answered right, its why-probe pending, is closed — a request there is no help on it; the walk goes on)
   if (prev.pendingWhy && prev.pendingWhy === (prev.lastUi?.ask?.itemId ?? prev.activeItemId)) return null;
   const col = columnName(input, prev);
@@ -3064,6 +3068,14 @@ function helpRequestOf(prev, input) {
 function helpPartOf(prev, input) {
   if (prev?.keyedPart && !prev.lastUi?.ask?.itemId) return { part: prev.keyedPart, keyed: true };
   const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+  // (dc-r8-director26 N1: with no part recorded, the part is the last she said — a card her last turn closed, with no card posed since,
+  // is the card just keyed)
+  if (!a?.part) {
+    const lm = prev?.lastMove ?? {};
+    const cb = lm.closedBeat ?? lm.closeBeat ?? null;
+    const k = cb && !prev.lastUi?.ask?.itemId ? cardPartOf(input.kit, { beat: cb }) : null;
+    return k ? { part: k, keyed: true } : null;
+  }
   return a?.part && !/:(?:greet|hook)$/.test(a.part) ? { part: a.part, keyed: false } : null;
 }
 /** pickHelp for this turn. → the decision with its request and part, or null. */
@@ -3265,6 +3277,19 @@ export function step(prev, input) {
     const { simpler: _s, simplerBeat: _b, smaller: _m, helpNew: _n, ...lm } = out.state.lastMove;
     out.state.lastMove = lm;
     if (out.move) out.move = { ...lm };
+  }
+  // (dc-r8-director26 N1 item 2: a clarify or a give-up at the opening's check-in — the hook, which help does not cover — is answered through
+  // the authored path: one authored line to the child, the first point, its check-in (or its card). brain/say.js says it with no model
+  // call: c5-t02 steering 4 got a turn the model drafted from the first point, cut by the length guard and ending on no question; c6 row
+  // 4 in all four lessons got the first point with no word to her)
+  if (input?.event === "turn" && scriptOn() && !recordedWalk(input) && !pre && out?.state?.lastMove?.point && !out.state.lastMove.help && ["clarify", "give_up"].includes(columnName(input, prev))) {
+    const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+    if (/:hook$/.test(String(a?.part ?? ""))) {
+      out.state.lastMove = { ...out.state.lastMove, hookHelp: columnName(input, prev) };
+      if (out.move) out.move = { ...out.move, hookHelp: out.state.lastMove.hookHelp };
+      // (her word is a Hindi-switch form: its rotation counts it, as a language request's does)
+      out.state.langN = (out.state.langN ?? 0) + 1;
+    }
   }
   const helped = out?.state?.lastMove?.help ?? null;
   // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the

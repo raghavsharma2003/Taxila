@@ -22,3 +22,40 @@ export const D26_PREDICATES = {
     return stopLines(ctx.script).has(normSentence(norm(r.text))) ? null : `the stop turn is not the authored line: "${norm(r.text).slice(0, 70)}"`;
   },
 };
+
+// ───────────── N1: no request gets nothing ─────────────
+import { helpSentenceOf, KEY_SAID_RE } from "./help-predicates.mjs";
+const ENDS_N1 = /^(?:wrap|safeguard|break|teachback|done|greet)$/;
+/** Every joint form the script has (and code's help joints), by key. */
+function jointKeys(ctx) {
+  if (ctx.o.d26Joints) return ctx.o.d26Joints;
+  const out = new Set();
+  for (const fs of Object.values(ctx.script?.joints ?? {})) for (const t of formsOf(fs)) for (const x of sentencesOf(t.replace(/\{\w+\}/g, ""))) out.add(normSentence(x));
+  for (const t of formsOf([ctx.script?.greetSimpler])) for (const x of sentencesOf(t)) out.add(normSentence(x));
+  return (ctx.o.d26Joints = out);
+}
+D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
+  /** N1 (c5-t01 steady 128: "pata nahi, aap batao" after the check-in on c3's why went straight to the closing question; c5-t02 stuck 28: a
+   *  bare card after "mujhe nahi pata"; c5-t02 steering 4 and c6 row 4: the first point with no word to her): a give-up or a clarify is
+   *  answered first — her turn opens on a wording of help, a joint (a word to the child), or the key — never straight on the next
+   *  teaching, the next card or the closing question. */
+  if (!ctx.script || r.who !== "teacher" || ENDS_N1.test(String(r.move?.kind ?? r.move ?? "")) && String(r.move?.kind ?? r.move ?? "") !== "teachback") return null;
+  const col = String(r.cell?.column ?? "");
+  if (col !== "give_up" && col !== "clarify") return null;
+  const first = sentencesOf(norm(r.text))[0] ?? "";
+  if (!first) return "a request answered with nothing";
+  if (helpSentenceOf(ctx, first) || jointKeys(ctx).has(normSentence(first)) || KEY_SAID_RE.test(first) || r.check?.gave || r.keyFact) return null;
+  // (the seam record names a joint said at the turn's start: a word to the child)
+  if ((r.seams ?? []).some((x) => x.left === "start" && x.joint && x.form && normSentence(first).startsWith(normSentence(x.form).slice(0, 16)))) return null;
+  // (a joint form with a slot, or a help rung said in part: the first sentence's first words are a joint's)
+  const f = normSentence(first);
+  for (const k of jointKeys(ctx)) if (k.length >= 16 && f.startsWith(k.slice(0, 24))) return null;
+  return `a ${col === "give_up" ? "give-up" : "clarify"} answered with no word to the child: "${first.slice(0, 60)}"`;
+};
+/** N1 item 3: a teaching turn of a scripted lesson is said in parts (her line's parts, each on its unit's board) — a turn the model drafted
+ *  whole (the seam record: one "whole" seam) is the fault (c5-t02 steering 4: cut by the length guard, ending on no question). */
+D26_PREDICATES.teachingParts = function teachingParts(L, r, i, ctx) {
+  if (!ctx.script || r.who !== "teacher" || /^(?:wrap|safeguard|break|teachback|done|greet)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+  const sm = r.seams ?? [];
+  return sm.length === 1 && sm[0].right === "whole" ? `a ${r.move?.kind ?? r.move} turn with no parts (drafted whole): "${norm(r.text).slice(0, 60)}"` : null;
+};

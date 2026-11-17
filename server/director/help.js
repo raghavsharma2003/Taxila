@@ -19,7 +19,7 @@ import { saidIn, joinable } from "./script.js";
 /** The requests help answers. A "hint" is a wrong answer's (or an unremedied mix-up's) help on a live card. */
 export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint"]);
 /** The joints help may say (Learning 014). Each script carries them as `joints.<kind>: [{hi, en}, …]`. */
-export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn"]);
+export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn", "helpToCard"]);
 /** Code's forms for a joint a script has not authored yet: shapes a teacher says, few and plain. The script's own forms win. */
 export const FALLBACK_JOINTS = Object.freeze({
   // (a Hindi request with nothing unsaid on the part: a true line — there are no easier words — then the question alone)
@@ -28,6 +28,10 @@ export const FALLBACK_JOINTS = Object.freeze({
   // (a give-up or a clarify after a key's check-in with the why's other wording said: they will meet it again; the lesson goes on)
   afterKeyGoOn: Object.freeze([{ hi: "Koi baat nahi, yeh hum aage phir dekhenge.", en: "That's okay, we'll see this again soon." },
     { hi: "Theek hai, is par hum baad mein phir aayenge.", en: "That's fine, we'll come back to this later." }]),
+  // (dc-r8-director26 N1: a give-up or a clarify on a point whose wordings are all said gets its card — with one word to the child first,
+  // never the bare card: c5-t02 stuck 28, "mujhe nahi pata" answered with the card alone)
+  helpToCard: Object.freeze([{ hi: "Koi baat nahi, ise ek sawaal se dekhte hain.", en: "That's okay, let's look at it through a question." },
+    { hi: "Theek hai, chalo ek sawaal karke dekhte hain.", en: "All right, let's try it with a question." }]),
 });
 
 const CARD_KINDS = new Set(["card", "check", "then_card", "your_step"]);
@@ -264,7 +268,7 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
   // (a point or a remediation with nothing unsaid: its card is asked; a worked step or a bridge: the lesson goes on — never with nothing:
   // main's R3 on the merged tree, c5-t02 stuck 64, a second "samajh nahi aaya" on a step whose wordings were all said got the your-step
   // card bare. She says one afterKeyGoOn form — they will meet this again — and the lesson goes on, as after a key's spent why)
-  if (part.card) return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: null };
+  if (part.card) return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: helpJoint(script, "helpToCard", { lang: L, lessonKey, n: jointN.helpToCard ?? 0 }) };
   const joint = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
   return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint };
 }

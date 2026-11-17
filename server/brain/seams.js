@@ -30,7 +30,7 @@ export const SEAM_TABLE = [
   // (the Hindi switch opens the turn it is asked on — said by the language pass, recorded here)
   ["start", "hindiSwitch", "hindiSwitch"],
   // (dc-r8-director25 H4: help's joints open the turn help says them on — the decision's, recorded here)
-  ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"],
+  ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"], ["start", "helpToCard", "helpToCard"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
   // (dc-r8-director25 L2 item 5: a picture's caption takes the seams a point takes; a key, the ones the verdict it follows takes)

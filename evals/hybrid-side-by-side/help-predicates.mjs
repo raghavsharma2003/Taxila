@@ -45,7 +45,7 @@ function helpIndex(ctx) {
   const walkC = (o) => { if (Array.isArray(o)) return o.forEach(walkC); if (o && typeof o === "object") { for (const f of ["prompt", "reask"]) { const v = o[f];
     for (const t of typeof v === "string" ? [v] : [v?.hi, v?.en]) for (const x of sentencesOf(t)) cardSents.add(normSentence(x)); } for (const v of Object.values(o)) walkC(v); } };
   walkC(script.skills ?? []);
-  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn"].flatMap((k) => script.joints?.[k] ?? [])]
+  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn", "helpToCard"].flatMap((k) => script.joints?.[k] ?? [])]
     .flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence));
   return (ctx.o.helpIx = { rungs, cards, authored, joints, parts, cardSents });
 }
@@ -189,6 +189,13 @@ export function helpGoOnSaid(r, ctx) {
   const forms = [...FALLBACK_JOINTS.afterKeyGoOn, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence);
   return !!first && forms.includes(first);
 }
+/** dc-r8-director26 N1: whether a sentence is help's own — a rung of any ladder, or a help joint (exported for d26-predicates.mjs). */
+export function helpSentenceOf(ctx, sentence) {
+  const ix = helpIndex(ctx);
+  const k = normSentence(sentence);
+  return ix.rungs.has(k) || ix.joints.has(k);
+}
+export const KEY_SAID_RE = KEY_SAID;
 /** A walk item id as a compile part id (exported for the order laws). */
 export const helpPartOfItem = (id, ctx) => partOfItem(id, ctx);
 /** Whether a turn says the key of the help turn's card: a "jawab" key, the walk's gave, or a yes-or-no key said as its why. */

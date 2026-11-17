@@ -37,3 +37,10 @@ test("B1 helpBoard: a remediation's help said over another card's board (the six
 test("B2 stopAuthored: the stop turn is the authored line, never the model's menu", () => {
   readsOn("stopAuthored", [["c4", "stuck", 68], ["c5-t01", "stuck", 74], ["c6", "stuck", 72], ["c6", "steering", 50]]);
 });
+
+test("N1 requestAnswered: a give-up or a clarify never gets nothing (no part recorded, the hook, a point's spent wordings)", () => {
+  readsOn("requestAnswered", [["c5-t01", "steady", 128], ["c5-t02", "stuck", 28], ["c5-t02", "steering", 4], ["c6", "steady", 4], ["c6", "stuck", 4], ["c6", "offtopic", 4], ["c6", "steering", 4]]);
+});
+test("N1 teachingParts: a teaching turn has parts (c5-t02 steering 4, the model's draft cut by the length guard)", () => {
+  readsOn("teachingParts", [["c5-t02", "steering", 4]]);
+});
