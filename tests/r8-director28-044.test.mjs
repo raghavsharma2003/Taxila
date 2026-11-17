@@ -106,3 +106,80 @@ describe("T4: a joint keeps what is up", () => {
     assert.equal(r2.screens.length, 1);
   });
 });
+
+import { pickHelp, helpPart, ladderOf, addSaid, FALLBACK_JOINTS } from "../server/director/help.js";
+import { requestUnhelped } from "../server/director/state.js";
+import { saidIn } from "../server/director/script.js";
+const pilot = (t) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC[t]}.json`), "utf8"));
+
+describe("T5: help is a hard precondition", () => {
+  test("requestHelped reads every T5 row of director28: the after-key return or the go-on line alone, and the worked problem after an aside reply", () => {
+    const rows = [["stuck", "c5t01", 30], ["steering", "c5t01", 18], ["offtopic", "c5t01", 62], ["stuck", "c5t02", 30], ["steering", "c5t02", 58],
+      ["stuck", "c5t01", 44], ["steering", "c5t01", 40], ["stuck", "c5t02", 44], ["stuck", "c6", 46], ["offtopic", "c6", 36]];
+    for (const [p, t, i] of rows) assert.ok(flagged(p, t, "requestHelped").has(i), `${p} ${t} row ${i}`);
+  });
+  test("quickHelpCard reads the request at a quick question answered with a check-in, the card waiting (c5-t01 steady 8; c6 steady 8)", () => {
+    assert.ok(flagged("steady", "c5t01", "quickHelpCard").has(8));
+    assert.ok(flagged("steady", "c6", "quickHelpCard").has(8));
+  });
+  test("pickHelp after a key with nothing unsaid: the \"nothing easier\" line, then the go-on line — never the go-on line alone", () => {
+    const script = pilot("c4");
+    const id = "c4-maths-ch05-t01-s1:check:c1";
+    const part = helpPart(script, id);
+    let said = [];
+    for (const r of ladderOf(script, part, { keyed: true })) said = addSaid(said, saidIn(r.value, "hinglish"), 1);
+    const d = pickHelp({ script, part: id, keyed: true, request: "give_up", said });
+    assert.equal(d.joint.kind, "helpSpent");
+    assert.equal(d.then?.kind, "afterKeyGoOn");
+    assert.equal(d.card, "goOn");
+    // (with the why's other wording unsaid, it is said first, as before)
+    const d2 = pickHelp({ script, part: id, keyed: true, request: "give_up", said: [] });
+    assert.equal(d2.rung?.field, "whyAlt");
+  });
+  test("pickHelp on a point with nothing unsaid: the \"nothing easier\" line, then helpToCard and the card", () => {
+    const script = pilot("c4");
+    const id = "c4-maths-ch05-t01-s1:e1:point";
+    const part = helpPart(script, id);
+    let said = [];
+    for (const r of ladderOf(script, part)) said = addSaid(said, saidIn(r.value, "hinglish"), 1);
+    const d = pickHelp({ script, part: id, request: "give_up", said });
+    assert.equal(d.card, "ask");
+    assert.equal(d.joint.kind, "helpSpent");
+    assert.equal(d.then?.kind, "helpToCard");
+  });
+  test("the walk's precondition: a request's turn with no unsaid wording, key or \"nothing easier\" line is unhelped (thrown under tests)", () => {
+    const prev = { turn: 4, phase: "practice", ctx: { lang: "hinglish" }, lastMove: { kind: "explain", scriptBeat: beat("e1", B(5)) }, lastUi: { status: "your_turn" } };
+    const input = { event: "turn", text: "pata nahi, aap batao", cls: { outcome: "no_evidence", flags: { dontKnow: true } } };
+    assert.match(String(requestUnhelped(prev, input, { state: { lastMove: { kind: "worked_example", scriptBeat: beat("worked:problem", B(5)) } } })), /give_up answered with worked_example/);
+    assert.equal(requestUnhelped(prev, input, { state: { lastMove: { kind: "reteach", help: { rung: "pointAlt", card: "wait" } } } }), null, "an unsaid wording");
+    assert.equal(requestUnhelped(prev, input, { state: { lastMove: { kind: "practice", help: { rung: null, card: "goOn", joint: "helpSpent", then: "afterKeyGoOn" } } } }), null, "the nothing-easier line");
+    assert.match(String(requestUnhelped(prev, input, { state: { lastMove: { kind: "practice", help: { rung: null, card: "goOn", joint: "afterKeyGoOn" } } } })), /give_up/, "the go-on line alone is no help");
+    assert.equal(requestUnhelped(prev, { ...input, text: "haan", cls: { outcome: "no_evidence" } }, { state: { lastMove: { kind: "explain" } } }), null, "no request");
+    void FALLBACK_JOINTS;
+  });
+});
+
+describe("T6: an aside reply or a park never ends on a check-in", () => {
+  test("asideCheckin reads every T6 aside row of director28", () => {
+    const rows = [["stuck", "c5t01", 42], ["steering", "c5t01", 34], ["steering", "c5t01", 38], ["stuck", "c5t02", 42], ["stuck", "c6", 44],
+      ["offtopic", "c6", 30], ["offtopic", "c6", 34], ["steering", "c6", 34], ["steering", "c6", 38]];
+    for (const [p, t, i] of rows) assert.ok(flagged(p, t, "asideCheckin").has(i), `${p} ${t} row ${i}`);
+  });
+  test("asideCheckin reads 0 on her reply that goes on into the live part with its joint", () => {
+    const r = { who: "teacher", text: "Achha, toh tumhe batting pasand hai. Ab apne sawaal par. Is patti mein kitne hisse hain?", seams: [{ right: "asideReply" }, { right: "card", joint: "afterAside", form: "Ab apne sawaal par." }] };
+    assert.equal(D29_PREDICATES.asideCheckin({ rows: [r] }, r), null);
+    const r2 = { ...r, text: "Achha, toh tumhe batting pasand hai. Yahan tak theek hai?", seams: [{ right: "asideReply" }, { right: "checkin" }] };
+    assert.ok(D29_PREDICATES.asideCheckin({ rows: [r2] }, r2));
+  });
+  test("the turn's word limit does not count her reply and its joint (15 words at most): longTwoPart", async () => {
+    const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    const reply = "Achha, toh tumhe batting sabse achha lagta hai. Aao, agla sawaal hum dono mil ke hal karenge.";
+    const problem = Array.from({ length: 40 }, (_, k) => `w${k}`).join(" ") + ".";
+    const step = Array.from({ length: 28 }, (_, k) => `s${k}`).join(" ") + "?";
+    const text = `${reply} ${problem} ${step}`;
+    const at = (x) => text.indexOf(x);
+    const r = { who: "teacher", move: "worked_example", text, seams: [{ right: "aiReply" }, { right: "workedProblem", joint: "beforeWorked" }, { right: "point" }],
+      pageParts: [{ part: "body", from: at("Aao"), beat: "worked:problem", lead: "beforeWorked" }, { part: "body", from: at("w0"), beat: "worked:problem" }, { part: "body", from: at("s0"), beat: "worked:step1" }] };
+    assert.equal(PREDICATES.longTwoPart({ rows: [r] }, r), null, "85 words with a 17-word reply and joint: 70 counted");
+  });
+});

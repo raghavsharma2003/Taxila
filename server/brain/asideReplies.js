@@ -133,6 +133,8 @@ export function asideReplyLine(args = {}) {
 }
 /** The shape of a phrase form: what it asks of the slot (a "last time", a liking, a favourite), else its own text. */
 const formShape = (f) => (/pichhli\s+baar|last\s+time|aisa\s+hua/i.test(f) ? "past" : /favou?rite/i.test(f) ? "fav" : /achha\s+lagta|like/i.test(f) ? "like" : f);
+/** The child's phrase from the last clause that names something ("fielding karna, catch pakadna" → "catch pakadna"), or null. */
+const saidPhrase = (said) => String(said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? null;
 function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0 } = {}) {
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
@@ -152,13 +154,16 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
     // (and something that happened — "sixer maara" — gets the kind's "last time" form)
     const PAST_A = /(?:aara|ela|kiya|dekha|gaya|gayi|liya|khaya|jeeta|haara)(?![\p{L}])/iu;
     const want = /favou?rite|kaun\s+pasand/i.test(q) ? /favou?rite/ : LIKING_Q.test(q) ? /achha\s+lagta|like/
-      : /favou?rite/i.test(String(said)) ? /favou?rite/ : LIKING_A.test(String(said)) ? /achha\s+lagta|like/ : PAST_A.test(String(said)) ? /pichhli\s+baar|last\s+time|aisa\s+hua/ : null;
+      : /favou?rite/i.test(String(said)) ? /favou?rite/ : LIKING_A.test(String(said)) ? /achha\s+lagta|like/ : PAST_A.test(String(said)) ? /pichhli\s+baar|last\s+time|aisa\s+hua/
+        // (Brain 044, dry offtopic c4 on a path T6 reshaped: "fielding karna, catch pakadna" to "uske baare mein thoda aur batao na?" got "Oh,
+        // catch. Achha." — an answer of no shape to a question of no shape, with a phrase of theirs, is said back as what they like)
+        : saidPhrase(said) ? /achha\s+lagta|like/ : null;
     // (dc-r8-director23 A2, c4 offtopic 20: "Dhoni" to "Tumhara favourite kaun hai?" after a question about Virat — an aside of no kind —
     // got the plain line; the favourite and liking forms name nothing of a kind, so another kind's form of that shape is used)
     const pool = [k, ...Object.values(KINDS).filter((x) => x !== k)].filter((x) => x?.phraseReplies?.length);
     for (const x of want ? pool : []) { const j = x.phraseReplies.findIndex((f) => want.test(formOf(f, lang).toLowerCase())); if (j >= 0) { kp = x; i = j; break; } }
   }
-  const phrase = i >= 0 && kp?.phraseReplies?.[i] ? phraseOf(said) : null;
+  const phrase = i >= 0 && kp?.phraseReplies?.[i] ? saidPhrase(said) ?? phraseOf(said) : null;
   // (skip: the forms after the first, in order — the phrase form's siblings of the same shape, then the word forms, then the plain ones)
   const sibs = phrase ? kp.phraseReplies.map((f, j) => ({ f, j })).filter(({ f, j }) => j !== i && formShape(formOf(f, lang)) === formShape(formOf(kp.phraseReplies[i], lang))).map(({ f }) => f) : [];
   if (phrase && skip === 0) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };

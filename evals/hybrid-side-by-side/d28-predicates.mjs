@@ -48,6 +48,9 @@ export const D28_PREDICATES = {
    *  next thing she says is that point's card. A help part (her other wording, a told step's simpler) in the turn makes it help's check-in. */
   quickBeforeCard(L, r, i, ctx) {
     if (r.who !== "teacher" || !endsOnCheckin(r)) return null;
+    // (Brain 044 T1: a point and its card that do not fit, with no quick question that fits, end on the point's check-in — the row says so and
+    // d29's pointNoFit counts it)
+    if (r.noFit) return null;
     const pp = parts(r);
     if (pp.some((p) => p.part === "simpler")) return null;
     const last = [...pp].reverse().find((p) => ["body", "held"].includes(p.part) && /^e\d+$/.test(String(p.beat ?? "")));

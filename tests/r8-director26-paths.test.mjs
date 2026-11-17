@@ -105,7 +105,9 @@ test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28
   const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t02", 29);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.help?.card, "ask");
-  assert.equal(m.help?.joint, "helpToCard");
+  // (Brain 044 T5: the "nothing easier" line is the help, then helpToCard leads the card)
+  assert.equal(m.help?.joint, "helpSpent");
+  assert.equal(m.help?.then, "helpToCard");
   assert.ok(String(m.simpler ?? "").trim().length > 0, "the word is said");
 }));
 
@@ -126,13 +128,21 @@ test("J1: the go-on line is not said where the back-to joint follows (the seam p
 // row 36 are on that card, not on step 1; c5-t01 stuck 44, the work order's other row for this, still reaches step 1's empty ladder)
 // (dc-r8-director27 P3, c5-t01 stuck 44 in director27: the next step with nothing to the child — with nothing left for the part, the turn says
 // the helpSpent line, then goes on; still never the go-on line's promise, which is a key's)
-test("J1/P3: a worked step whose ladder is empty (c5-t01 stuck 44) says helpSpent and goes on to the next step, with no go-on promise", async () => on041("c5-maths-ch02-t01", async () => {
-  const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t01", 45);
-  const m = plans.at(-1).p.r.state.lastMove;
-  assert.equal(m.help?.card, "goOn");
-  assert.equal(m.help?.joint, "helpSpent", "the helpSpent line answers her");
-  assert.ok(!(m.sayFirst ?? []).some((x) => /phir aay|dobara/i.test(x)), "no promise");
-}));
+// (Brain 044 T6: her park line no longer counts in the turn's 75, so director26's row 44 now reaches the child's own step with the park — the
+// rule is pinned on the picker: a worked step whose ladder is empty says helpSpent and goes on, with no go-on promise)
+test("J1/P3: a worked step whose ladder is empty says helpSpent and goes on to the next step, with no go-on promise", async () => {
+  const { pickHelp, helpPart, ladderOf, addSaid } = await import("../server/director/help.js");
+  const { saidIn } = await import("../server/director/script.js");
+  const script = without042("c5-maths-ch02-t01");
+  const id = "c5-maths-ch02-t01-s1:worked:step1";
+  let said = [];
+  for (const r of ladderOf(script, helpPart(script, id))) said = addSaid(said, saidIn(r.value, "hinglish"), 1);
+  const d = pickHelp({ script, part: id, request: "clarify", said });
+  assert.equal(d.card, "goOn");
+  assert.equal(d.joint?.kind, "helpSpent", "the helpSpent line answers her");
+  assert.ok(!d.then, "no go-on promise");
+  assert.ok(!/phir aay|dobara/i.test(d.joint.text), "no promise");
+});
 
 test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWorked (code's form while the script has none)", async () => on041("c6-maths-ch06-t01", async () => {
   const { out } = await lineAt("steady", "c6-maths-ch06-t01", 17, { model: async () => ({ text: "Sahi jawab." }) });

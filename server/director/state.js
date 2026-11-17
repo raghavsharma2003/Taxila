@@ -937,10 +937,10 @@ function segmentTurn(out, input, closeWords = 0) {
   const b = p0.findIndex((x) => x.k === "body");
   const qW = move.stepAsk ? wordsIn(move.stepAsk.prompt) : 0;
   // (her park line on an aside said this turn; the lead-in before a worked problem after her reply to an aside — partsOfTurn counts the reply)
-  const lead = (input?.event === "turn" && input.cls?.request?.type === "uptake" && !move.asideAck && !move.returnReply ? 12 : 0)
-    + ((move.asideAck || move.returnReply || input?.cls?.asideReply) && move.problemLines ? 10 : 0);
-  if (p0.reduce((a, x) => a + x.n, 0) + qW + lead <= L2_CAP || b < 0) return out;
-  if (b > 0 || lead > 0 || move.asideAck || move.returnReply) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
+  // (dc-r8-director28 Brain 044 T6: her reply to an aside, her park line and the joint after them are not counted in the turn's 75 and are never
+  // said alone — the segment comes with them, in the same turn: c5-t01 stuck 42, steering 34, 38; c5-t02 stuck 42, steady 56; c6 stuck 44)
+  if (p0.reduce((a, x) => a + x.n, 0) + qW <= L2_CAP || b < 0) return out;
+  if (b > 0) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
   return out;
 }
 /** dc-r8-director27 Brain 043 R2: a right verdict that stands alone because a worked problem follows (an asked example's first segment, or
@@ -3452,6 +3452,8 @@ const STRICT_REQUEST = () => !!process.env.NODE_TEST_CONTEXT || process.env.TAXI
 export function requestUnhelped(prev, input, out) {
   const request = helpRequestOf(prev, input);
   if (!request) return null;
+  // (a request to speak English is a language for the lesson, not a request for easier words)
+  if (request === "hindi" && input?.cls?.request?.lang && !/^(?:hindi|hinglish)$/i.test(String(input.cls.request.lang))) return null;
   const lm = out?.state?.lastMove ?? {};
   if (["safeguard", "break", "wrap"].includes(String(lm.kind ?? "")) || out?.end) return null;
   const h = lm.help ?? null;
@@ -3615,8 +3617,12 @@ export function step(prev, input) {
   // (dc-r8-director25: and a split's held half said now — a point and its card after an aside or a return's reply — is held to it too)
   if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (out?.state?.lastMove?.heldSaid?.length || (prev?.splitHold && !prev.splitHold.teach && out?.state?.lastMove?.point)) && out.ui?.ask?.text && out.state.lastMove.itemId && !out.state.splitHold) {
     const lm = out.state.lastMove;
-    const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length + 16;
-    if (w > pointCardCap(out.state)) {
+    // (Brain 044 T6: her reply to the aside that leads it is not counted; T1: a point and its card share a turn to 75, with no 60-word cap)
+    const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length;
+    // (a park whose return is due waits for no card: the held part ends its turn and the return comes at the boundary after it, as before —
+    // r8-main-034's offtopic lesson, where the card would have kept the return off for twenty turns)
+    const parkDue = (out.state.later ?? []).some((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && out.state.turn > e.at && e.onItem !== out.state.lastMove?.itemId);
+    if (w > L2_CAP || parkDue) {
       const hadPoint = lm.point != null;
       const sp = splitTeach({ ...out, move: { ...lm, ...(hadPoint ? {} : { point: lm.sayFirst.join(" ") }) } }, input, 0, 0);
       if (sp !== out && sp?.state?.splitHold) {
@@ -4598,7 +4604,8 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   const body = move.smaller && move.simpler ? [move.simpler, ...(move.rendered ?? [])] : [move.point, ...(move.rendered ?? [])];
   // (her line on an aside, and the joint back to the lesson, lead the first part: about a dozen words)
   // (dc-r8-director26: help's joint said before a turn the walk goes on to — the go-on line — leads it too: input.helpLeadWords)
-  const lead = (move.asideAck || move.returnReply ? 12 : 0) + lead0;
+  // (Brain 044 T6: her reply to an aside and its joint back are not counted in the turn's 75 — help's go-on line is)
+  const lead = lead0;
   // (dc-r8-director26 C1, main's ruling change 4: the problem said with its first step after a verdict takes the beforeWorked joint, about
   // ten words, before it: they count)
   const joint = move.problemLines && C > 0 ? 10 : 0;
@@ -4727,12 +4734,13 @@ export function goOnLeadWords(input, lang = "hinglish") {
  *  parts together (dc-r8-director26 C1). lastMove: her last turn's move. */
 // (dc-r8-director27, dry c5-t01 stuck 36 on Learning 016's steps: a park of the child's aside leads the turn too — "Cricket ki baat bhi hogi, bas
 // yeh … khatam ho jaaye." — and two told steps with the child's own step ran to 86 words beside it)
-const walkLeadWords = (input, lang, lastMove = null) => goOnLeadWords(input, lang) + (input?.cls?.asideReply || lastMove?.tasteAsked || lastMove?.returned || (input?.event === "turn" && columnName(input, null) === "aside") ? 16 : 0);
+// (Brain 044 T6: her reply to an aside, her park line and their joint are not counted in the turn's 75 — 15 words at most, never said alone)
+const walkLeadWords = (input, lang, lastMove = null) => goOnLeadWords(input, lang);
 export function unitTurn(out, input = null, extra = 0, first = 0) {
   const { state: s, move, ui } = out;
   // (help's go-on line before the turn, when the decision did not count it)
   // (and her reply to an aside with the joint back to the lesson before it: about sixteen words)
-  const goOn = (input?.helpLeadWords ? 0 : goOnLeadWords(input, s?.ctx?.lang ?? "hinglish")) + (move.asideAck || move.returnReply || input?.cls?.asideReply ? 16 : 0);
+  const goOn = input?.helpLeadWords ? 0 : goOnLeadWords(input, s?.ctx?.lang ?? "hinglish");
   if (move.help || move.request || move.simpler || move.smaller) return null;
   const askId = String(ui?.ask?.itemId ?? "");
   if (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(askId)) return { margin: 3 + extra + first + goOn };
@@ -4763,14 +4771,18 @@ function splitTeach(out, input, cap, extra = 0) {
   // (L: what the turn says first — a bridge, a held part — counts toward the turn's words)
   // (d28: her park line on an aside said on this turn — "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye." — leads the turn too: dry c6
   // steady 36, a park, a point and its card in 61 words)
-  const parkLead = input?.event === "turn" && input.cls?.request?.type === "uptake" && !move.asideAck && !move.returnReply ? 12 : 0;
+  // (Brain 044 T6: the park line is not counted in the turn's 75)
+  const parkLead = 0;
   const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0) + parkLead;
   if (!card || !body.some(Boolean) || !move.itemId) return out;
   // (dc-r8-director26 C1, main's ruling changes 2-4: three turns share their card up to 75 words — a worked step with the child's own step,
   // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
   const u = cap < 0 || scriptFor(input.kit)?.script?.recordedRun ? null : unitTurn(out, input, extra, first);
   if (u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + 8 + extra + first <= cap) return out;
-  const teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
+  let teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
+  // (dc-r8-director28 Brain 044 T1: a point split from its card with no quick question in its place — the two do not fit and the script keeps no
+  // quick question that fits — ends on its check-in, and the row says so: counted, 0 on the pilots once Learning 017's cuts are in)
+  const noFitNow = () => !teach.quick && move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && !move.help && !move.request;
   // (Brain 042 Q1: a verdict, its why and a new point leave no room for the point's quick question in 75 words — the break falls after the
   // why, as Q2 says for a worked problem: the close ends its turn on its check-in, and the point comes next with its card or its quick
   // question; never a check-in before the waiting card)
@@ -4780,6 +4792,7 @@ function splitTeach(out, input, cap, extra = 0) {
     if (b > 0 && l2On() && parts.slice(0, b).some((p) => p.k === "close")) { const br = breakL2(out, input, extra, b); if (br) return br; }
     delete teach.quickNoRoom;
   }
+  if (noFitNow()) teach = { ...teach, noFit: "point" };
   // (dc-r8-director26 C1: told steps that could not keep the child's own step are a step's turn again — the last step said is its beat, so
   // a "pata nahi" to its check-in is that step's help, as before)
   const lastStep = move.kind === "worked_example" && move.stepFrom && move.rendered?.length ? move.stepFrom + move.rendered.length - (move.problemLines ?? 0) - 1 : 0;
@@ -4838,7 +4851,7 @@ function problemAlone(out, input) {
   const { state: s, move } = out;
   const pL = Number(move?.problemLines) || 0;
   if (!pL || out.ui?.ask?.itemId || !move.rendered?.length || move.stepAsk) return out;
-  const lead = goOnLeadWords(input, s.ctx?.lang ?? "hinglish") + (move.asideAck || move.returnReply ? 12 : 0) + wordsIn(move.sayFirst ?? []);
+  const lead = goOnLeadWords(input, s.ctx?.lang ?? "hinglish") + wordsIn(move.sayFirst ?? []);
   if (wordsIn(move.rendered) + lead + 4 <= L2_CAP) return out;
   return withoutFirstStep(out);
 }

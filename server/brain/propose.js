@@ -623,7 +623,10 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
         const b = answerB ?? (move?.cardBeat?.board ? move.cardBeat : null);
         return on(b?.board ?? unitBoardOf(kit, curUnit), curUnit);
       }
-      case "held": { const b = move?.heldBeat?.board ? move.heldBeat : sb; return b?.board ? on(b.board, unitOfBeat(b)) : null; }
+      case "held": {
+        // (Brain 044 T4: a bridge held through a return and said first now is still a bridge — it owns no page)
+        if (move?.bridgeSaid && norm1(p.text).replace(/[.!?\u0964]+$/, "") === norm1(move.bridgeSaid).replace(/[.!?\u0964]+$/, "")) { pastBridge = true; return null; }
+        const b = move?.heldBeat?.board ? move.heldBeat : sb; return b?.board ? on(b.board, unitOfBeat(b)) : null; }
       default: {
         if (pastBridge && bridgeU?.board) return on(bridgeU.board, bridgeU.unit);
         if (answerB) return on(answerB.board, curUnit);

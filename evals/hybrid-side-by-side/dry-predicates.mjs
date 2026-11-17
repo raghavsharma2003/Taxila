@@ -934,7 +934,7 @@ PREDICATES.ynNahi = (L, r, i, ctx) => r.keyFact && !/^(?:nahi|no)\b/i.test(Strin
  *  ruling change 2: a bare point and its own card — nothing before them — share a turn of up to 75 words; over 75 a point and a card in
  *  one turn are always a fault. Gated. */
 PREDICATES.longPointCard = (L, r) => {
-  const n = String(r.text ?? "").trim().split(/\s+/).filter(Boolean).length;
+  const n = String(r.text ?? "").trim().split(/\s+/).filter(Boolean).length - asideLeadWords(r);
   if (n <= 60) return null;
   const pp = r.pageParts ?? [];
   // (dc-r8-director25: a seam's joint — "Ab pehle wale sawaal ko phir se dekhte hain." before a card asked again — is no point)
@@ -979,7 +979,8 @@ PREDICATES.pictureDrawn = (L, r) => {
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 // (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+// (Brain 044: pointNoFit and workedNoFit count what does not fit on today's scripts — gated once Learning 017's cuts are merged)
+export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -1034,9 +1035,21 @@ const isRemBeat = (b) => /(?:^|:)rem:/.test(b);
  *  worked step or a card begins after another part): such a turn breaks at the last seam before 75 words, on a check-in. A single
  *  authored part over 45 words is Learning's to shorten (scripts/lesson-scripts/compile-report.mjs lists them). Gated. */
 export const TWO_PART_CAP = 75;
+/** Brain 044 T6: the words of her reply to an aside, her park line or her AI line's reply that lead a turn, with the joint after them — 15 at
+ *  most — are not counted in the turn's 75 (nor in a point and its card's limit). */
+export const ASIDE_LEAD_MAX = 15;
+export function asideLeadWords(r) {
+  const sm = r.seams ?? [];
+  const LEAD = new Set(["asideReply", "aiReply", "park"]);
+  if (!sm.length || !LEAD.has(sm[0].right)) return 0;
+  const t = norm(r.text), pp = r.pageParts ?? [];
+  // (the lead runs to the first part the record pages — the joint after her reply rides with it)
+  const firstAt = pp.find((p) => !p.lead && p.part !== "aside")?.from ?? t.length;
+  return Math.min(ASIDE_LEAD_MAX, words(t.slice(0, firstAt)));
+}
 PREDICATES.longTwoPart = (L, r) => {
   if (/^(?:wrap|safeguard|break|greet)$/.test(String(r.move ?? ""))) return null;
-  const n = wordsNoCheckin(r.text);
+  const n = wordsNoCheckin(r.text) - asideLeadWords(r);
   // (dc-r8-l2-break-at-75: the break is at 75 words, server/director/state.js L2_CAP)
   if (n <= TWO_PART_CAP) return null;
   // (a joint — "Ab us sawaal par lautte hain …" — is the seam's, not a part)

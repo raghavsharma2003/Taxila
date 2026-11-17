@@ -60,7 +60,9 @@ describe("r8-director24-second-help (H4)", () => {
     assert.equal(w.state.lastMove.help?.keyed, true);
     assert.equal(w.state.lastMove.help?.rung, "whyAlt");
     const g = say(K, w, "mujhe nahi pata", cls("no_evidence"));
-    assert.equal(g.state.lastMove.help?.joint, "afterKeyGoOn");
+    // (Brain 044 T5: with nothing unsaid after a key, the "nothing easier" line is the help, then the go-on line — the go-on line alone is no help)
+    assert.equal(g.state.lastMove.help?.joint, "helpSpent");
+    assert.equal(g.state.lastMove.help?.then, "afterKeyGoOn");
     assert.ok((g.state.lastMove.sayFirst ?? [])[0], "the joint is said first");
   });
 

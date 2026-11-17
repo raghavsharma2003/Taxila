@@ -6,6 +6,11 @@
 //   pageStart      T4: every page in a turn starts at the first character of the part that owns it. A joint, a lead-in, an opener, a
 //                  bridge and a hook own no page — they are said over what is up (nothing, if nothing is up); a part of the record that
 //                  is one of them and lists a board drawn in the turn claims a page it does not own
+//   asideCheckin   T6: a turn whose last teaching part is her reply to an aside (or to the child's answer after her AI line), a park or a
+//                  return never ends on a comprehension check-in — it goes on into the live part with its joint
+//   pointNoFit     T1: a point and its card that do not fit in one turn (and no quick question of the script's fits): the turn ends on the
+//                  point's check-in, the row says so (noFit), and this counts it. Pending (counted, not gated) until Learning 017's cuts are
+//                  merged; it should read 0 on the pilots then
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -63,5 +68,16 @@ export const D29_PREDICATES = {
     const req = REQUESTS.has(String(ctx.prevIntent ?? "")) ? ctx.prevIntent : REQUESTS.has(String(r.cell?.column ?? "")) ? r.cell.column : null;
     if (!req || !CHECKIN_END.test(norm(r.text))) return null;
     return `a ${req} at the quick question answered with a check-in, its card waiting`;
+  },
+  /** T6: an aside reply, a park or a return never ends on a check-in (c5-t01 stuck 42, steering 34, 38; c5-t02 stuck 42; c6 stuck 44, offtopic
+   *  30, 34, steering 34, 38): read from the record's seams — the last part said before the check-in. */
+  asideCheckin(L, r) {
+    if (r.who !== "teacher" || !CHECKIN_END.test(norm(r.text))) return null;
+    const last = [...(r.seams ?? [])].reverse().find((x) => x.right !== "checkin");
+    return last && ["asideReply", "aiReply", "park", "return"].includes(last.right) ? `her ${last.right} ends on a check-in` : null;
+  },
+  /** T1: a point's turn that ends on its check-in because the point and its card do not fit (the walk's noFit). */
+  pointNoFit(L, r) {
+    return r.who === "teacher" && r.noFit === "point" ? "a point and its card that do not fit: the point ends on its check-in" : null;
   },
 };
