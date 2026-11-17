@@ -42,6 +42,8 @@ D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
   if (!ctx.script || r.who !== "teacher" || ENDS_N1.test(String(r.move?.kind ?? r.move ?? "")) && String(r.move?.kind ?? r.move ?? "") !== "teachback") return null;
   const col = String(r.cell?.column ?? "");
   if (col !== "give_up" && col !== "clarify") return null;
+  // (a worked step's request with its wordings spent goes on to the next step, on that step's own frame — J1: no promise there)
+  if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? ""))) return null;
   const first = sentencesOf(norm(r.text))[0] ?? "";
   if (!first) return "a request answered with nothing";
   if (helpSentenceOf(ctx, first) || jointKeys(ctx).has(normSentence(first)) || KEY_SAID_RE.test(first) || r.check?.gave || r.keyFact) return null;
@@ -58,4 +60,29 @@ D26_PREDICATES.teachingParts = function teachingParts(L, r, i, ctx) {
   if (!ctx.script || r.who !== "teacher" || /^(?:wrap|safeguard|break|teachback|done|greet)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
   const sm = r.seams ?? [];
   return sm.length === 1 && sm[0].right === "whole" ? `a ${r.move?.kind ?? r.move} turn with no parts (drafted whole): "${norm(r.text).slice(0, 60)}"` : null;
+};
+
+// ───────────── J1: one joint at a seam; the go-on line in its place ─────────────
+const GO_ON_KINDS = new Set(["afterKeyGoOn"]);
+/** J1 item 2 (c5-t01 stuck 30, steering 18; c5-t02 stuck 46; c6 stuck 30, steering 18): the go-on line and the back-to joint in one turn —
+ *  "we'll meet this again; now we go on", then "now back to the earlier question" — two joints that contradict each other. */
+D26_PREDICATES.goOnStacked = function goOnStacked(L, r) {
+  const sm = r.seams ?? [];
+  return sm.some((x) => GO_ON_KINDS.has(x.joint)) && sm.some((x) => x.joint === "backTo") ? "the go-on line and the back-to joint in one turn" : null;
+};
+/** J1 item 1 (c5-t02 stuck 58, 64; c5-t01 stuck 44; c6 stuck 44): the go-on line ("such a question will come again; now we go on") is
+ *  said only after a key — at a worked step whose ladder is empty she goes to the next step, with no promise. */
+D26_PREDICATES.goOnAfterKey = function goOnAfterKey(L, r) {
+  const sm = r.seams ?? [];
+  if (!sm.some((x) => x.joint === "afterKeyGoOn")) return null;
+  return r.cell?.keyed ? null : `the go-on line with no key given (${r.cell?.part ?? "no part"}, ${r.cell?.column ?? "no column"})`;
+};
+/** J1 item 3 (c6 steady 16, 58, 86, stuck 34, offtopic 42, steering 40; c5-t02 steady 20, 72, 132, steering 42): a verdict runs into a
+ *  worked problem with nothing between — the seam takes beforeWorked (the script's forms, else code's). */
+D26_PREDICATES.beforeWorked = function beforeWorked(L, r) {
+  const pp = r.pageParts ?? [];
+  const at = pp.findIndex((p) => String(p.beat ?? "") === "worked:problem" && ["body", "held"].includes(p.part));
+  if (at <= 0) return null;
+  if (!pp.slice(0, at).some((p) => p.part === "close" || p.part === "closed")) return null;
+  return (r.seams ?? []).some((x) => x.joint === "beforeWorked") ? null : "a verdict into the worked problem with no lead-in (beforeWorked)";
 };

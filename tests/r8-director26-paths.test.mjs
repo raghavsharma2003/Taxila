@@ -63,3 +63,31 @@ test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28
   assert.equal(m.help?.joint, "helpToCard");
   assert.ok(String(m.simpler ?? "").trim().length > 0, "the word is said");
 });
+
+test("J1: the go-on line is not said where the back-to joint follows (the seam pass drops it)", async () => {
+  const { seamPass } = await import("../server/brain/seams.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const kit = kitFromFile(getTopic("c6-maths-ch06-t01"));
+  const go = "Koi baat nahi, parimap ke aise sawaal aage phir aayenge; abhi aage badhte hain.";
+  const list = [{ part: "close", text: go }, { part: "body", text: "Kinaare par ek baar dhaaga lapetna hai." }, { part: "card", text: "Kitna dhaaga lagega?" }];
+  const r = seamPass(list, { kit, state: { ctx: { lang: "hinglish" } }, lang: "hinglish", info: { returnCard: true, helpJoint: { kind: "afterKeyGoOn", form: go, by: "authored" } } });
+  const text = r.list.map((p) => p.text).join(" ");
+  assert.ok(!text.includes("abhi aage badhte hain"), text);
+  assert.ok(!r.seams.some((x) => x.joint === "afterKeyGoOn") || !r.seams.some((x) => x.joint === "backTo"), JSON.stringify(r.seams));
+});
+
+test("J1: a worked step whose ladder is empty (c6 stuck 44) goes on to the next step with no go-on promise", async () => {
+  const { plans } = await replay(RUN, "stuck", "c6-maths-ch06-t01", 45);
+  const m = plans.at(-1).p.r.state.lastMove;
+  assert.equal(m.help?.card, "goOn");
+  assert.ok(!m.help?.joint, "no joint: the next step opens on its own frame");
+  assert.ok(!(m.sayFirst ?? []).some((x) => /phir aay|dobara/i.test(x)), "no promise");
+});
+
+test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWorked (code's form while the script has none)", async () => {
+  const { out } = await lineAt("steady", "c6-maths-ch06-t01", 17, { model: async () => ({ text: "Sahi jawab." }) });
+  const s = (out.guard.seams ?? []).find((x) => x.joint === "beforeWorked");
+  assert.ok(s, JSON.stringify(out.guard.seams));
+  assert.ok(out.reply.indexOf(s.form) < out.reply.indexOf("Phoolon"), out.reply);
+});

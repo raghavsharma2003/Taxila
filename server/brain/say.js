@@ -1284,6 +1284,9 @@ function seamsOf(out, { state, kit, ui = null }) {
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     hindiSwitchBy: out.guard?.hookJointBy ?? (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
     helpJoint: state?.lastMove?.helpJoint ?? null,
+    // (dc-r8-director26 J1 item 3: the worked problem said on this turn — the seam before it takes beforeWorked)
+    workedProblem: (() => { const sb = state?.lastMove?.scriptBeat; if (sb?.beatId !== "worked:problem") return null;
+      const we = (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === sb.skillId)?.workedExample; const t = we?.problem ? saidIn(we.problem, lang) : null; return t ? String(t).trim() : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],

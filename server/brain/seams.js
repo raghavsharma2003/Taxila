@@ -11,9 +11,16 @@ const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+/).filter(Boolean);
 
 /** The joints this pass owns (a park and a return carry the aside: they are parts of their own, not joints). */
-export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst"];
+export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked"];
 // (code's own neutral after-aside line, before the scripts had afterAside)
-const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain.", "Achha, ab wapas apne sawaal par.", "Theek hai, ab aage badhte hain.", "Okay, back to where we were.", "Right, let's pick up where we left off."] };
+// (dc-r8-director26 J1 item 3: code's lead into a worked problem, for a script without joints.beforeWorked — the compile report lists the
+// hole; a problem done together, never a question to the child)
+export const CODE_SEAM_FORMS = Object.freeze({
+  beforeWorked: { hinglish: ["Ab ek sawaal saath mein karte hain.", "Chalo, ab ek sawaal milkar hal karte hain.", "Ab isi tarah ka ek sawaal saath mein dekhte hain."],
+    english: ["Now let's do one together.", "Let's work one out together.", "Now let's solve one together."] },
+});
+const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain.", "Achha, ab wapas apne sawaal par.", "Theek hai, ab aage badhte hain.", "Okay, back to where we were.", "Right, let's pick up where we left off."],
+  beforeWorked: [...CODE_SEAM_FORMS.beforeWorked.hinglish, ...CODE_SEAM_FORMS.beforeWorked.english] };
 
 /** The seam table: [left kind, right kind] → the joint that seam takes. Anything not listed takes none — a point and its own card, a
  *  verdict and its own why, a bridge and the unit it opens, a park and the card it leads into. */
@@ -36,6 +43,9 @@ export const SEAM_TABLE = [
   // (dc-r8-director25 L2 item 5: a picture's caption takes the seams a point takes; a key, the ones the verdict it follows takes)
   ["asideReply", "caption", "afterAside"], ["aiLine", "caption", "afterAiLine"], ["aiReply", "caption", "afterAiLine"],
   ["key", "returnCard", "backTo"], ["key", "remediation", "beforeRemediation"],
+  // (dc-r8-director26 J1 item 3: a verdict, a key or a closed card into a worked problem — c6 steady 16, 58, 86, stuck 34, offtopic 42,
+  // steering 40; c5-t02 steady 20, 72, 132, steering 42: "Bilkul sahi, kyunki … Phoolon ki ek kyari …" with nothing between)
+  ["verdict", "workedProblem", "beforeWorked"], ["missVerdict", "workedProblem", "beforeWorked"], ["key", "workedProblem", "beforeWorked"], ["closed", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 export const seamJoint = (left, right) => TABLE.get(`${left}>${right}`) ?? null;
@@ -141,6 +151,7 @@ function kindOf(p, i, list, info) {
   // (a key said on its own — a give-up's, or the worked answer said as help — is a key, not a verdict or a point)
   if (["close", "body", "simpler"].includes(p.part) && KEY_HEAD.test(t)) return "key";
   if (info.greet && (p.part === "close" || p.part === "closed")) return "hook";
+  if (info.workedProblem && ["body", "held"].includes(p.part) && low(t).startsWith(low(info.workedProblem).slice(0, 30))) return "workedProblem";
   switch (p.part) {
     case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
@@ -181,7 +192,20 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   }
   // 2. the table, at each seam (and at the turn's start)
   const carriers = jointMatchers(kit, lang, ["asidePark", "asideReturn"]);
-  const kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+  let kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+  // (dc-r8-director26 J1 item 2: the go-on line is a joint of this table — where the back-to joint follows, it is not said. c5-t01 stuck 30,
+  // steering 18; c5-t02 stuck 46; c6 stuck 30, steering 18: "…abhi aage badhte hain. Achha, ab pehle wale sawaal ko phir se dekhte hain." —
+  // two joints that contradict each other)
+  if (info.helpJoint?.kind === "afterKeyGoOn" && info.helpJoint.form && info.returnCard && kinds.includes("returnCard")) {
+    const goK = sentencesOf(info.helpJoint.form).map(low);
+    const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => goK.includes(low(x))));
+    if (at >= 0 && at < kinds.indexOf("returnCard")) {
+      const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
+      if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
+      info = { ...info, helpJoint: null, goOnDropped: info.helpJoint.form };
+      kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+    }
+  }
   // (dc-r8-director24 M: the verdict's opener in the model's words — the code frame at the head of the turn's verdict is swapped for
   // hers when it passes the join checks and says the verdict it opens: a right word on a right answer, a miss word on a miss)
   const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
@@ -196,15 +220,18 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     let j = seamJoint(prevKind, k);
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)
     if (j && used.includes(j)) j = null;
-    const forms = j ? jointOf(kit, j, lang) : null;
+    const own = j ? jointOf(kit, j, lang) : null;
+    const forms = own?.length ? own : j ? CODE_SEAM_FORMS[j]?.[lang === "english" ? "english" : "hinglish"] ?? null : null;
     let form = j && forms?.length ? seamForm(forms, state, j) : null;
     // (dc-r8-director24 M: the model's join for this seam, when it wrote one and it passes; else the authored form. The seam records
     // which was said, and why the model's fell back)
     const mine = j && form ? norm(info.modelJoins?.[j] ?? "") : "";
     const bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
     if (mine && !bad) form = /[.!।]$/.test(mine) ? mine : `${mine}.`;
-    seams.push({ left: recLeft, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : "authored", ...(bad ? { fellBack: bad } : {}) } : {}) });
+    seams.push({ left: recLeft, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : own?.length ? "authored" : "code", ...(bad ? { fellBack: bad } : {}) } : {}) });
     if (opener && i === opener.at) seams.at(-1).opener = opener.record;
+    // (dc-r8-director26 J1: the back-to joint said where the go-on line was dropped carries the lesson on — its record says so)
+    if (form && j === "backTo" && info.goOnDropped) seams.at(-1).goOn = true;
     recLeft = k;
     if ((k === "verdict" || k === "missVerdict") && sentencesOf(p.text).slice(1).some((x) => KEY_HEAD.test(x))) { seams.push({ left: k, right: "key", joint: null }); recLeft = "key"; }
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own

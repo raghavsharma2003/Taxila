@@ -91,7 +91,9 @@ test("R6: a request after a picture of the worked problem is help on the worked 
 
 // R3 (dry c5-t01 stuck 44, c5-t02 stuck 64): a second "samajh nahi aaya" on a worked step whose one wording was said got the your-step
 // card bare. A step's ladder is its own simpler, then the worked problem's (problemAlt, simpler); with all said, a go-on line, never nothing
-test("R3: a worked step's ladder runs on to the problem's wordings, and ends on a go-on line", async () => {
+// (dc-r8-director26 J1 item 1 moves this pin: the go-on line is said only after a key — a worked step whose ladder is empty goes on to the
+// next step with no joint of help's; the step opens on its own frame. It ended on afterKeyGoOn before)
+test("R3: a worked step's ladder runs on to the problem's wordings, and then goes on with no go-on line (dc-r8-director26 J1)", async () => {
   const { pickHelp } = await import("../server/director/help.js");
   const { addSaid } = await import("../server/director/help.js");
   const script = pilot("c5-maths-ch02-t02"), S = "c5-maths-ch02-t02-s1", w = script.skills[0].workedExample;
@@ -99,7 +101,7 @@ test("R3: a worked step's ladder runs on to the problem's wordings, and ends on 
   const fields = [];
   for (let n = 0; n < 4; n++) {
     const d = pickHelp({ script, part: `${S}:worked:step2`, request: "clarify", said, lessonKey: "t" });
-    if (!d.rung) { assert.equal(d.card, "goOn"); assert.equal(d.joint?.kind, "afterKeyGoOn"); break; }
+    if (!d.rung) { assert.equal(d.card, "goOn"); assert.equal(d.joint, null); break; }
     fields.push(d.rung.path.replace(/^skills\[0\]\.workedExample\./, ""));
     said = addSaid(said, d.rung.text, n);
   }

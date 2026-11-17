@@ -143,6 +143,11 @@ export const PREDICATES = {
     // only after the go-on line. The same go-on line leads a worked step's turn whose wordings are all said: the lesson goes on, said so)
     const goOn = [...GO_ON_FALLBACK, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
     if (goOn.some((g) => key(r.text).startsWith(g))) return null;
+    // (dc-r8-director26 J1: the back-to joint in the go-on line's place)
+    if (r.cell?.keyed && helpGoOnSaid(r, ctx)) return null;
+    // (dc-r8-director26 J1 item 1: a worked step whose ladder is empty goes on to the next step — the child's own step, its card — with no
+    // promise; helpLadder and giveUpAnswered hold that the ladder was spent)
+    if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? "")) && !r.cell?.keyed) return null;
     if (r.cell?.keyed && !cardIn(r)) return null;
     return atCheckin && cardIn(r) ? "clarify at a check-in answered with a card" : null;
   },

@@ -184,7 +184,8 @@ export function helpFirstUnsaid(L, i, ctx, partId, { keyed = false } = {}) {
 }
 /** Whether a turn opens on help's go-on after a key (afterKeyGoOn: the seams record, else one of its forms). */
 export function helpGoOnSaid(r, ctx) {
-  if ((r.seams ?? []).some((x) => x.joint === "afterKeyGoOn")) return true;
+  // (dc-r8-director26 J1: where the back-to joint follows, it is the go-on — the seam pass drops the go-on line and marks the back-to)
+  if ((r.seams ?? []).some((x) => x.joint === "afterKeyGoOn" || (x.joint === "backTo" && x.goOn))) return true;
   const first = normSentence(sentencesOf(r.text)[0] ?? "");
   const forms = [...FALLBACK_JOINTS.afterKeyGoOn, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence);
   return !!first && forms.includes(first);
@@ -346,6 +347,7 @@ export const HELP_PREDICATES = {
     const ix = helpIndex(ctx);
     const ss = sentencesOf(r.text).map(normSentence);
     if (ss.some((k) => ix.rungs.has(k) || ix.joints.has(k))) return null;
+    if (h.keyed && helpGoOnSaid(r, ctx)) return null;
     if (keySays(r, h, ctx)) return null;
     // (a point's give-up with nothing unsaid left asks the point's own card: that is its answer)
     const part = helpPart(ctx.script, h.part);

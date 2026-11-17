@@ -172,7 +172,8 @@ export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], che
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
 export function helpJointHoles(script) {
   const out = [];
-  for (const k of HELP_JOINTS) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  // (dc-r8-director26 J1: beforeWorked, the seam pass's lead into a worked problem — brain/seams.js CODE_SEAM_FORMS when the script has none)
+  for (const k of [...HELP_JOINTS, "beforeWorked"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
   const hs = script?.joints?.hindiSwitch;
   if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
   return out;
@@ -267,8 +268,10 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
   }
   // (a point or a remediation with nothing unsaid: its card is asked; a worked step or a bridge: the lesson goes on — never with nothing:
   // main's R3 on the merged tree, c5-t02 stuck 64, a second "samajh nahi aaya" on a step whose wordings were all said got the your-step
-  // card bare. She says one afterKeyGoOn form — they will meet this again — and the lesson goes on, as after a key's spent why)
+  // card bare. The lesson goes on to the next step — dc-r8-director26 J1: never with the go-on line's promise, which is a key's)
   if (part.card) return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: helpJoint(script, "helpToCard", { lang: L, lessonKey, n: jointN.helpToCard ?? 0 }) };
-  const joint = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
-  return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint };
+  // (dc-r8-director26 J1 item 1: the go-on line, "aisa sawaal aage phir aayega", is said only after a key — c5-t02 stuck 58, 64; c5-t01
+  // stuck 44; c6 stuck 44 said it at a worked step and then worked the same problem. A step goes on to the next step, which opens on its
+  // own step frame ("Pehle …", "Ab doosra kadam."); no promise)
+  return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint: null };
 }

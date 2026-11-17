@@ -44,3 +44,14 @@ test("N1 requestAnswered: a give-up or a clarify never gets nothing (no part rec
 test("N1 teachingParts: a teaching turn has parts (c5-t02 steering 4, the model's draft cut by the length guard)", () => {
   readsOn("teachingParts", [["c5-t02", "steering", 4]]);
 });
+
+test("J1 goOnAfterKey: the go-on line only after a key (a worked step whose ladder is empty goes on with no promise)", () => {
+  readsOn("goOnAfterKey", [["c5-t02", "stuck", 58], ["c5-t02", "stuck", 64], ["c5-t01", "stuck", 44], ["c6", "stuck", 44]]);
+});
+test("J1 goOnStacked: no go-on line where the back-to joint follows", () => {
+  readsOn("goOnStacked", [["c5-t01", "stuck", 30], ["c5-t01", "steering", 18], ["c5-t02", "stuck", 46], ["c6", "stuck", 30], ["c6", "steering", 18]]);
+});
+test("J1 beforeWorked: a verdict into a worked problem takes the beforeWorked joint", () => {
+  readsOn("beforeWorked", [["c6", "steady", 16], ["c6", "steady", 58], ["c6", "steady", 86], ["c6", "stuck", 34], ["c6", "offtopic", 42], ["c6", "steering", 40],
+    ["c5-t02", "steady", 20], ["c5-t02", "steady", 72], ["c5-t02", "steady", 132], ["c5-t02", "steering", 42]]);
+});
