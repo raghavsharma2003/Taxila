@@ -31,6 +31,12 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     const L = run("c6-maths-ch06-t01");
     L.t("haan");
     const m = L.r.state.lastMove;
+    // (Learning 016 lengthened c6's hook — its last sentence leads into the first point — to 41 words: with e1's 37 and her check-in it runs
+    // over 75, so the hook is said on its own turn, as c4's is. The rule is what is held: shared when they fit, else the hook alone)
+    const sk0 = scriptFor(L.K).script.skills[0];
+    const hookW = words(sk0.hook.interestSlots.find((x) => x.interest === "cricket")?.use?.hi);
+    if (hookW + words(sk0.explain[0].point.hi) + 4 > L2_CAP) { assert.equal(m.kind, "hook"); assert.ok(!m.hookSaid); }
+    else {
     assert.equal(m.hookSaid, true);
     assert.equal(m.scriptBeat?.beatId, "e1");
     const sk = scriptFor(L.K).script.skills[0];
@@ -39,6 +45,7 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     // (the hook before them is a part: the point and its card keep director24's 60 — here they run over it, so the card waits)
     assert.equal(L.r.ui?.ask, undefined);
     assert.equal(L.r.move.splitTeach, true);
+    }
     // c4: "pata nahi" to the greeting — greetSimpler, then the hook, on a turn of their own (with e1 they run over 75)
     const C = run("c4-maths-ch05-t01");
     C.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } });
