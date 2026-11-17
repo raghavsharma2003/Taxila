@@ -58,6 +58,9 @@ export const SEAM_TABLE = [
   // (dc-r8-director27 P5, c4 steady 46: her reply to an aside straight into a worked problem — the lead-in on that path too; one joint, the
   // problem's)
   ["asideReply", "workedProblem", "beforeWorked"], ["aiReply", "workedProblem", "beforeWorked"], ["aiLine", "workedProblem", "beforeWorked"],
+  // (dc-r8-director27 Brain 042 Q2: the lead-in, the problem and what follows it up to the first question are one turn — after a verdict whose
+  // why left no room, the problem opens its own turn, and its lead-in with it)
+  ["start", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard"]);

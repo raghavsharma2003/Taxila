@@ -6,6 +6,7 @@
 //  4. the worked problem and its first told step share a turn when they fit; the last told step comes with the child's own step.
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { initLessonState, step, unitTurn, L2_CAP } from "../server/director/state.js";
 import { setScriptForTest, scriptFor } from "../server/director/script.js";
 import { kitFromFile } from "../server/content/kits.js";
@@ -33,9 +34,14 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     const m = L.r.state.lastMove;
     // (Learning 016 lengthened c6's hook — its last sentence leads into the first point — to 41 words: with e1's 37 and her check-in it runs
     // over 75, so the hook is said on its own turn, as c4's is. The rule is what is held: shared when they fit, else the hook alone)
+    // (dc-r8-director27 Brain 042, E5: the hook and the point share a turn when they fit in 75 words with what ends it — the point's quick
+    // question in the check-in's place where its card does not fit with them. Learning 016's c6 hook is 34 words: hook, point and the quick
+    // question are 84, so the hook keeps its own turn and the point comes with its card — never a check-in before the waiting card)
     const sk0 = scriptFor(L.K).script.skills[0];
     const hookW = words(sk0.hook.interestSlots.find((x) => x.interest === "cricket")?.use?.hi);
-    if (hookW + words(sk0.explain[0].point.hi) + 4 > L2_CAP) { assert.equal(m.kind, "hook"); assert.ok(!m.hookSaid); }
+    const e1 = sk0.explain[0];
+    const endW = hookW + words(e1.point.hi) + words(e1.ask.prompt.hi) > L2_CAP ? words(e1.quick?.prompt?.hi ?? "x x x x") : 4;
+    if (hookW + words(e1.point.hi) + endW > L2_CAP) { assert.equal(m.kind, "hook"); assert.ok(!m.hookSaid); }
     else {
     assert.equal(m.hookSaid, true);
     assert.equal(m.scriptBeat?.beatId, "e1");
@@ -85,7 +91,12 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     assert.deepEqual(pages.segments.map((x) => [x.atChar, x.boardRef]), [[line.indexOf(card), then.board]], "the card's board at the card's first word");
   });
 
+  // (dc-r8-director27 Brain 042: a worked example that asks a step is done in segments — tests/r8-director27-042.test.mjs. One that asks
+  // none — the 30 staged scripts — walks as this ruling made it: here today's c5-t02 script with its asked steps and quick questions taken off)
   test("4. the worked example: the problem with its first step where they fit; the last told step with the child's own step", () => {
+    const sc = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t02.json", import.meta.url), "utf8"));
+    for (const k of sc.skills) { for (const e of k.explain) delete e.quick; for (const st of k.workedExample?.steps ?? []) delete st.ask; }
+    setScriptForTest("c5-maths-ch02-t02", sc);
     const L = run("c5-maths-ch02-t02");
     const sk = scriptFor(L.K).script.skills[0];
     // walk skill 1's points, every card right, to the worked example

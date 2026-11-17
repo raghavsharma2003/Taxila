@@ -77,8 +77,18 @@ test("Record helpRecorded: a help wording is recorded as help, not as a point", 
   // (the six B1 rows are help wordings; every help wording of the run was recorded as a point or a remediation)
   readsOn("helpRecorded", [["c4", "steering", 12], ["c6", "steady", 48], ["c5-t02", "steering", 12]]);
 });
-test("Record pictureAfterKey: a picture asked for after a key draws the answered board (c5-t01 steering 14)", () => {
-  readsOn("pictureAfterKey", [["c5-t01", "steering", 14]]);
+// (dc-r8-director27 Brain 042 E3: the card's own posing board — its second view, under its authored caption — is the picture after a key too;
+// director26's c5-t01 steering 14 drew it there. pictureAfterKey still reads a picture after a key on any other board; E3's pictureCaption
+// reads its caption, tests/r8-director27-042.test.mjs)
+test("Record pictureAfterKey: a picture after a key draws the answered board or the card's posing board — never another", () => {
+  const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c5-maths-ch02-t01.json"), "utf8"));
+  const then = sc.skills[0].remediation.find((r) => r.then?.answerBoard && r.then?.board)?.then;
+  assert.ok(then, "a then-card with an answer board");
+  const prevT = { who: "teacher", text: "Is sawaal ka jawab 1/6 hai, kyunki x. Ab tak samajh aaya?", boardRef: then.answerBoard, pageParts: [{ part: "close", from: 0, beat: "then:x" }] };
+  const at = (board) => lessonFlags({ rows: [prevT, { who: "child", text: "drawing karke samjhao", read: "no_evidence · visual" }, { who: "teacher", text: "x", boardRef: board }], script: sc }).filter((f) => f.predicate === "pictureAfterKey").length;
+  assert.equal(at(then.answerBoard), 0);
+  assert.equal(at(then.board), 0, "the posing board (E3)");
+  assert.equal(at({ template: "shape@1", params: { shape: "hexagon" } }), 1, "another board");
 });
 
 // dc-r8-director26 C1, main's ruling change 2: longPointCard reads a point and its card in one turn over 60 words as a fault only when

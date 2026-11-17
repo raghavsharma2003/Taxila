@@ -8,6 +8,18 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { replay } from "./fixtures/replay.mjs";
 
 const RUN = "2026-11-17-director26";
+// (dc-r8-director27 Brain 042: these tests replay director26's child lines, row by row, through today's walk. Today's scripts carry Learning
+// 016's quick questions and asked steps, which change the turn shapes the rows were written against; the walk on a script without those two
+// fields is the walk these rows test — each replay that depends on the old turn shapes runs on today's script with the two fields taken off)
+import { readFileSync } from "node:fs";
+import { setScriptForTest } from "../server/director/script.js";
+function without042(T) {
+  const s = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+  for (const k of s.skills ?? []) { for (const e of k.explain ?? []) delete e.quick; for (const st of k.workedExample?.steps ?? []) delete st.ask; }
+  return s;
+}
+/** Run fn with T's script without 042's fields. */
+async function on041(T, fn) { setScriptForTest(T, without042(T)); try { return await fn(); } finally { setScriptForTest(); } }
 /** One child line planned on a state, as tests/fixtures/replay.mjs plans each recorded line. */
 async function planAt(state, text, kit) {
   const { classifyFast, targetFor } = await import("../server/director/classify.js");
@@ -48,7 +60,7 @@ test("B2: 'bas aaj ke liye itna hi' (c4 stuck 68) gets the authored stop line, w
 // (dc-r8-director27 P6.1: after a request at the greeting the hook is said with the first point, as on the ordinary path — c5-t02 steering's
 // "samajh nahi aaya" at the greeting gets greetSimpler, the hook and e1 at row 2, so there is no opening check-in left; the clarify at row 4
 // is at e1's check-in, and gets e1's help)
-test("N1/P6.1: a request at the greeting gets the hook with the first point; the next clarify (c5-t02 steering 4) is help on that point", async () => {
+test("N1/P6.1: a request at the greeting gets the hook with the first point; the next clarify (c5-t02 steering 4) is help on that point", async () => on041("c5-maths-ch02-t02", async () => {
   const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t02", 3);
   const at2 = plans.at(-1).state.lastMove;
   assert.equal(at2.kind, "explain");
@@ -58,7 +70,7 @@ test("N1/P6.1: a request at the greeting gets the hook with the first point; the
   assert.equal(st.lastMove.help?.part, "c5-maths-ch02-t02-s1:e1:checkin");
   assert.ok((out.guard.parts?.list ?? []).some((p) => p.part === "simpler"), out.reply);
   assert.match(out.reply, /\?\s*$/, "ends on a question");
-});
+}));
 
 // (dc-r8-director26 C1, main's ruling change 1: c6's hook is said on e1's turn now — it has no check-in of its own for steady's give-up at
 // row 3. c4's hook still has one, after greetSimpler (the two run over 75 words with e1): offtopic c4 4, the same give-up there. Its word,
@@ -89,13 +101,13 @@ test("N1: 'pata nahi, aap batao' at the check-in on the last card's why (c5-t01 
   assert.notEqual(m.kind, "teachback", "not straight to the closing question");
 });
 
-test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28) gets a word before the card", async () => {
+test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28) gets a word before the card", async () => on041("c5-maths-ch02-t02", async () => {
   const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t02", 29);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.help?.card, "ask");
   assert.equal(m.help?.joint, "helpToCard");
   assert.ok(String(m.simpler ?? "").trim().length > 0, "the word is said");
-});
+}));
 
 test("J1: the go-on line is not said where the back-to joint follows (the seam pass drops it)", async () => {
   const { seamPass } = await import("../server/brain/seams.js");
@@ -114,29 +126,29 @@ test("J1: the go-on line is not said where the back-to joint follows (the seam p
 // row 36 are on that card, not on step 1; c5-t01 stuck 44, the work order's other row for this, still reaches step 1's empty ladder)
 // (dc-r8-director27 P3, c5-t01 stuck 44 in director27: the next step with nothing to the child — with nothing left for the part, the turn says
 // the helpSpent line, then goes on; still never the go-on line's promise, which is a key's)
-test("J1/P3: a worked step whose ladder is empty (c5-t01 stuck 44) says helpSpent and goes on to the next step, with no go-on promise", async () => {
+test("J1/P3: a worked step whose ladder is empty (c5-t01 stuck 44) says helpSpent and goes on to the next step, with no go-on promise", async () => on041("c5-maths-ch02-t01", async () => {
   const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t01", 45);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.help?.card, "goOn");
   assert.equal(m.help?.joint, "helpSpent", "the helpSpent line answers her");
   assert.ok(!(m.sayFirst ?? []).some((x) => /phir aay|dobara/i.test(x)), "no promise");
-});
+}));
 
-test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWorked (code's form while the script has none)", async () => {
+test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWorked (code's form while the script has none)", async () => on041("c6-maths-ch06-t01", async () => {
   const { out } = await lineAt("steady", "c6-maths-ch06-t01", 17, { model: async () => ({ text: "Sahi jawab." }) });
   const s = (out.guard.seams ?? []).find((x) => x.joint === "beforeWorked");
   assert.ok(s, JSON.stringify(out.guard.seams));
   assert.ok(out.reply.indexOf(s.form) < out.reply.indexOf("Phoolon"), out.reply);
-});
+}));
 
-test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met again in the third, gets the third skill's remediation", async () => {
+test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met again in the third, gets the third skill's remediation", async () => on041("c5-maths-ch02-t02", async () => {
   const { plans } = await replay(RUN, "steady", "c5-maths-ch02-t02", 119);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.scriptBeat?.kind, "remediation", JSON.stringify(m.scriptBeat));
   assert.equal(m.scriptBeat.skillId, "c5-maths-ch02-t02-s3");
   // (and the said-once record names the remediation, its skill and its mix-up)
   assert.ok((plans.at(-1).p.r.state.remedied ?? []).includes("c5-maths-ch02-t02-s3|c5-maths-ch02-t02-m-tops-only"));
-});
+}));
 
 test("A4: an aside said again is replied to in the child's own words; the reply is never cut to a bare 'Achha.'", async () => {
   const { againInHerWords } = await import("../server/brain/say.js");
@@ -150,12 +162,16 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
     "Achha, toh tumhe batting sabse achha lagta hai.");
 });
 
-test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering 14) is drawn on the answered board", async () => {
+// (dc-r8-director27 Brain 042 E3 supersedes this row's rule: a picture asked for after a key draws the card's own second view — its posing
+// board's — under the card's authored viewCaption; director27 c5-t01 steering 14, c6 steering 14, c5-t02 steady 18 drew the answer board
+// with a code-written caption)
+test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering 14) is drawn on the card's own posing board (E3)", async () => {
   const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t01", 15);
   const m = plans.at(-1).p.r.state.lastMove;
   const prev = plans.at(-2).p.r.state.lastMove;
   assert.ok(prev.gave?.answer, "the key was said on the turn before");
-  assert.deepEqual(m.scriptBeat?.board, prev.closeBeat?.board, "the picture is on the board the key was said over");
+  if (prev.closeBeat?.posingBoard) assert.deepEqual(m.scriptBeat?.board, prev.closeBeat.posingBoard, "the picture is on the card's posing board");
+  else assert.deepEqual(m.scriptBeat?.board, prev.closeBeat?.board, "a card with no answer board: the board the key was said over");
 });
 
 test("W1: the closing question answered right — the wrap opens on the verdict and its why; a line after the closing key gets the acknowledgement", async () => {
