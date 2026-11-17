@@ -47,15 +47,19 @@ test("P1: the promise predicates flag director20's broken parks and the ignored 
     assert.ok(flags.includes(f), `${f} in ${flags.filter((x) => /park|return|aiAsk/.test(x)).join(", ")}`);
 });
 
-test("P1: a return is a turn of its own, after a park; a close may lead it", async () => {
+test("P1: a return is a turn of its own, after a park (dc-r8-director25 L2: no close leads it)", async () => {
   const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
   const script = { joints: { asidePark: [{ hi: "{aside} ki baat bhi hogi, bas yeh kaam khatam ho jaaye." }], asideReturn: [{ hi: "{aside} wali baat batao na?" }] } };
   const T = (text, extra = {}) => ({ who: "teacher", text, ...extra }), C = (text) => ({ who: "child", text, read: "no_evidence" });
   const of = (rows) => lessonFlags({ rows, script }).filter((x) => /park|return/i.test(x.predicate)).map((x) => `${x.row} ${x.predicate}`);
   assert.deepEqual(of([T("Cricket ki baat bhi hogi, bas yeh kaam khatam ho jaaye. Kitna hua?", { card: "Kitna hua?" }), C("3"),
-    T("Haan, sahi hai. Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "close" }] })]), []);
+    T("Haan, sahi hai. Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "close" }] })]), ["2 returnAlone"]);
+  assert.deepEqual(of([T("Cricket ki baat bhi hogi, bas yeh kaam khatam ho jaaye. Kitna hua?", { card: "Kitna hua?" }), C("3"),
+    T("Haan, sahi hai. Yahan tak theek hai?", { pageParts: [{ part: "close" }] }), C("haan"), T("Cricket wali baat batao na?", { returnSaid: true })]), []);
   assert.deepEqual(of([T("Cricket ki baat bhi hogi, bas yeh kaam khatam ho jaaye."), C("haan")]), ["0 parkGoesOn"]);
-  assert.deepEqual(of([C("x"), T("Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "body" }] })]), ["1 returnNoPark", "1 returnAlone"]);
+  // (dc-r8-director25 L2: returnAlone reads the turn's words — the return form and nothing else)
+  assert.deepEqual(of([C("x"), T("Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "body" }] })]), ["1 returnNoPark"]);
+  assert.deepEqual(of([C("x"), T("Yeh patti 4 hisson mein hai. Cricket wali baat batao na?", { returnSaid: true, pageParts: [{ part: "body" }] })]), ["1 returnNoPark", "1 returnAlone"]);
 });
 
 // L1 to L4 (dc-r8-director20): each listening cell's predicate fails on director20's rows — a give-up at a check-in moving on

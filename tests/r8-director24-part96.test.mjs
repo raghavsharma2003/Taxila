@@ -51,14 +51,20 @@ test("c4 steady 96: after her right answer to e1, e2's point is said before its 
     };
     const a = await turn(r.state, cls(FX.read), FX.child, FX.verdict);
     const e2 = SCRIPT.skills.find((k) => k.skillId === "c4-maths-ch05-t01-s3").explain.find((b) => b.id === "e2");
-    assert.ok(a.out.reply.includes(e2.point.hi.split(/(?<=[.!?])\s+/)[0]), a.out.reply);
     assert.doesNotMatch(a.out.reply, /bada tukda kaunsa fraction/);
     const c1 = pctx();
     assert.equal(PREDICATES.partOnce("L", { who: "teacher", text: a.out.reply, card: null }, 96, c1), null);
-    // (her "haan" at the check-in: the card, said once, after its point)
-    const b = await turn(a.st, cls("no_evidence"), "haan", "Achha.");
-    assert.match(b.out.reply, /bada tukda kaunsa fraction/);
-    assert.equal(PREDICATES.partOnce("L", { who: "teacher", text: b.out.reply, card: e2.ask.prompt.hi }, 98, { ...c1, prevRead: "no_evidence", prevChild: "haan" }), null);
+    // (dc-r8-director25 L2: the verdict, its why and e2's point run over 45 words — the verdict ends its turn on a check-in, and her "haan"
+    // brings the point; the point is said before the card, each turn read by partOnce)
+    let said = a.out.reply, at = a, row = 98;
+    for (let k = 0; k < 3 && !/bada tukda kaunsa fraction/.test(at.out.reply); k++) {
+      at = await turn(at.st, cls("no_evidence"), "haan", "Achha.");
+      assert.equal(PREDICATES.partOnce("L", { who: "teacher", text: at.out.reply, card: at.st.lastUi?.ask?.text ?? null }, row, { ...c1, prevRead: "no_evidence", prevChild: "haan" }), null, at.out.reply);
+      if (!/bada tukda kaunsa fraction/.test(at.out.reply)) said += ` ${at.out.reply}`;
+      row += 2;
+    }
+    assert.ok(said.includes(e2.point.hi.split(/(?<=[.!?])\s+/)[0]), `e2's point before its card: ${said}`);
+    assert.match(at.out.reply, /bada tukda kaunsa fraction/);
   } finally {
     replyDeps.chat = chat; setScriptForTest();
     if (KEEP === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP;

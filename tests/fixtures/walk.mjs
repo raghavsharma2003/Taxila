@@ -23,11 +23,14 @@ export const TOPIC = { c4: "c4-maths-ch05-t01", "c5-t01": "c5-maths-ch02-t01", "
  *  run's recorded read), planned by turn.js planTurn, her line from textReply on the run's own words, and HER LIVE LINE kept in the
  *  history (never the recorded one), the held board carried as turn.js carries it (next.heldUp), A4's unsaid card as turn.js marks
  *  it. → [{ n, out, pl, held, up, kit, rows }] for every teacher row walked. */
-export async function walk(persona, topic, upto, { run = RUN, onTurn = null } = {}) {
+// (dc-r8-director25 L2: `l2: false` walks under the turn rules the run was made with — its child lines fall on its own 60-word turns;
+// with L2's shorter turns a recorded child runs out of lines before the later skills)
+export async function walk(persona, topic, upto, { run = RUN, onTurn = null, l2 = true } = {}) {
   const T = TOPIC[topic];
   const sc = runScriptOf(run, T); delete sc.recordedRun;
   setScriptForTest(T, sc);
   const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+  const KEEP_L2 = process.env.TAXILA_L2; if (!l2) process.env.TAXILA_L2 = "off";
   const turns = [];
   try {
     const rows = rowsOf(run, persona, T);
@@ -80,7 +83,7 @@ export async function walk(persona, topic, upto, { run = RUN, onTurn = null } = 
       if (out.guard?.cardHeld && s.activeItemId) s.cardUnsaid = s.activeItemId;
       if (out.guard?.asideEnd) s.asideReplyDue = true;
     }
-  } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+  } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; if (KEEP_L2 === undefined) delete process.env.TAXILA_L2; else process.env.TAXILA_L2 = KEEP_L2; }
   return turns;
 }
 

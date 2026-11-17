@@ -95,7 +95,10 @@ describe("r7-brain-v68.test.mjs", () => {
       for (const d of DRAFTS) {
         const { out, last } = await reply(persona, topic, 2, d);
         assert.equal(last.state.lastMove?.kind, "hook");
-        assert.equal(norm(out.reply), norm(last.state.lastMove.sayFirst.join(" ")), `draft ${d("x")}`);
+        // (dc-r8-director25 L2: no turn ends with nothing for the child to answer — the hook ends on one check-in, code's form)
+        const ask = BEAT_ASK.hinglish.find((q) => norm(out.reply).endsWith(q));
+        assert.ok(ask, `the hook ends on a check-in: ${out.reply}`);
+        assert.equal(norm(out.reply).slice(0, -ask.length).trim(), norm(last.state.lastMove.sayFirst.join(" ")), `draft ${d("x")}`);
       }
     });
     test("an authored point's own question is said (c5-t02 stuck 8: 'Neeche ka 4?' was dropped with the point), her own question is not", async () => {
@@ -280,6 +283,8 @@ describe("r7-brain-v68.test.mjs", () => {
       const T = TOPIC["c5-t02"];
       const sc = runScriptOf(RUN, T); delete sc.recordedRun; setScriptForTest(T, sc);
       const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+      // (dc-r8-director25 L2 breaks turns at 45 words: the run's child lines fall on its own 60-word turns only under the rules it was made with)
+      const KEEP_L2 = process.env.TAXILA_L2; process.env.TAXILA_L2 = "off";
       try {
         const { kit, plans } = await replay(RUN, "steady", T, 65);
         const pl = plans.at(-1);
@@ -292,7 +297,7 @@ describe("r7-brain-v68.test.mjs", () => {
         // at 64, so "aage chalo" is the walk going on to its next part, with no request to read)
         if (!pl.before.activeItemId) assert.ok(["explain", "practice", "worked_example", "bridge"].includes(p.r.move.kind), p.r.move.kind);
         else assert.ok(["move_on", "ask_again"].includes(p.r.move.request), p.r.move.request);
-      } finally { setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+      } finally { setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; if (KEEP_L2 === undefined) delete process.env.TAXILA_L2; else process.env.TAXILA_L2 = KEEP_L2; }
     });
   });
 

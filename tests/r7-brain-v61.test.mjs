@@ -240,9 +240,20 @@ describe("r7-brain-v61.test.mjs", () => {
     const { splitLong } = await import("../server/director/state.js");
     const s = { ctx: {}, lastMove: null };
     const out = { state: s, move: { kind: "explain", itemId: "x", point: "Ek chhota point.", closed: { answer: "30 m", why: "bahut lamba kaaran ".repeat(12) } }, ui: { ask: { text: "Kitna?" } } };
-    const r = splitLong(out, { event: "turn" });
-    assert.equal(r.move.splitClose, undefined, "no closing split");
-    assert.equal(r.move.kind, "explain");
+    // (dc-r8-director25 L2 reverses policy B over 45 words: a close and the next point that run over 45 break after the close, on a
+    // check-in; a short close beside the same teaching stays one turn. TAXILA_L2=off keeps policy B)
+    const r = splitLong(structuredClone(out), { event: "turn" });
+    assert.equal(r.move.splitClose, true, "the close alone, then the point");
+    assert.equal(r.move.gaveCheck, true, "ending on a check-in");
+    assert.equal(r.state.splitHold?.move?.point, "Ek chhota point.");
+    const short = splitLong({ ...structuredClone(out), move: { ...out.move, closed: { answer: "30 m", why: "kaaran" } } }, { event: "turn" });
+    assert.equal(short.move.splitClose, undefined, "a short close and a point that fit: one turn");
+    const KEEP_L2 = process.env.TAXILA_L2; process.env.TAXILA_L2 = "off";
+    try {
+      const b = splitLong(structuredClone(out), { event: "turn" });
+      assert.equal(b.move.splitClose, undefined, "no closing split");
+      assert.equal(b.move.kind, "explain");
+    } finally { if (KEEP_L2 === undefined) delete process.env.TAXILA_L2; else process.env.TAXILA_L2 = KEEP_L2; }
     // (v6.10 R7, main on director18: after a GIVE-UP the turn is the key and its why, then a check-in; the next point on the next turn)
     const g = splitLong({ state: { ctx: {}, lastMove: null }, move: { ...out.move, gave: { answer: "5", why: "kaaran" } }, ui: { ask: { text: "Kitna?" } } }, { event: "turn" });
     assert.equal(g.move.splitClose, true);

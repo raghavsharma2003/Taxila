@@ -33,6 +33,9 @@ export const SEAM_TABLE = [
   ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
+  // (dc-r8-director25 L2 item 5: a picture's caption takes the seams a point takes; a key, the ones the verdict it follows takes)
+  ["asideReply", "caption", "afterAside"], ["aiLine", "caption", "afterAiLine"], ["aiReply", "caption", "afterAiLine"],
+  ["key", "returnCard", "backTo"], ["key", "remediation", "beforeRemediation"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 export const seamJoint = (left, right) => TABLE.get(`${left}>${right}`) ?? null;
@@ -126,8 +129,17 @@ function jointMatchers(kit, lang, kinds = SEAM_JOINTS) {
 const MISS_WORD = /(?<![\p{L}])(?:nahi|nahin|galat|not\s+(?:quite|yet|it|this)|that's\s+not)(?![\p{L}])/iu;
 const VERDICT_HEAD = /^(?:nahi,|nahin,|yeh jawab|abhi yeh|haan, sahi|haan, bilkul|bilkul sahi|bilkul theek|sahi jawab|not quite|not yet|yes, that|exactly right|that's right|(?:\S+\s){1,3}(?:sahi\s)?nahi(?:\s+hai)?[,.]|(?:\S+\s){1,3}sahi nahi)/iu;
 const CHECKIN_Q = /(?:theek hai|saaf hua|saaf hai|samajh aaya|samjhe|clear|make sense|got it)\s*[?？]\s*$/iu;
+/** dc-r8-director25 L2 item 5: the head of a key sentence (brain/say.js GAVE_FORMS, and the worked answer's "Iska jawab hai …"). */
+const KEY_HEAD = /^(?:is\s+sawaal\s+ka\s+(?:sahi\s+)?jawab|iska\s+(?:sahi\s+)?jawab|yahan\s+(?:sahi\s+)?jawab|this\s+question's\s+(?:right\s+)?answer|the\s+(?:right\s+)?answer\s+here|here\s+the\s+(?:right\s+)?answer)(?![\p{L}])/iu;
 function kindOf(p, i, list, info) {
   const t = norm(p.text);
+  // (dc-r8-director25 L2 item 5: a part that brain/say.js named — what was covered, the wrap's acknowledgement, the sentence to her, the
+  // goodbye, greetSimpler, a picture's caption, a key — is recorded as what it is)
+  if (p.kind) return p.kind;
+  if (info.greetSimpler && low(t).startsWith(low(info.greetSimpler).slice(0, 30))) return "greetSimpler";
+  if (p.part === "alt" || (info.caption && low(t).startsWith(low(info.caption).slice(0, 30)))) return "caption";
+  // (a key said on its own — a give-up's, or the worked answer said as help — is a key, not a verdict or a point)
+  if (["close", "body", "simpler"].includes(p.part) && KEY_HEAD.test(t)) return "key";
   if (info.greet && (p.part === "close" || p.part === "closed")) return "hook";
   switch (p.part) {
     case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
@@ -175,6 +187,9 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
   const out = [], seams = [], said = {}, used = [];
   let prevKind = "start";
+  // (dc-r8-director25 L2 item 5: the record's left kind — a key said inside a verdict's part is recorded as its own part, after the
+  // verdict; the joint is still decided by the part's kind, so what is said does not change)
+  let recLeft = "start";
   stripped.forEach((p, i) => {
     const k = kinds[i];
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
@@ -188,8 +203,10 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     const mine = j && form ? norm(info.modelJoins?.[j] ?? "") : "";
     const bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
     if (mine && !bad) form = /[.!।]$/.test(mine) ? mine : `${mine}.`;
-    seams.push({ left: prevKind, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : "authored", ...(bad ? { fellBack: bad } : {}) } : {}) });
+    seams.push({ left: recLeft, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : "authored", ...(bad ? { fellBack: bad } : {}) } : {}) });
     if (opener && i === opener.at) seams.at(-1).opener = opener.record;
+    recLeft = k;
+    if ((k === "verdict" || k === "missVerdict") && sentencesOf(p.text).slice(1).some((x) => KEY_HEAD.test(x))) { seams.push({ left: k, right: "key", joint: null }); recLeft = "key"; }
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
     if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }

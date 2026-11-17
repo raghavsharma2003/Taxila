@@ -215,7 +215,11 @@ describe("r7-brain-v65.test.mjs", () => {
     const T = TOPIC[topic];
     const sc = runScriptOf(RUN, T); delete sc.recordedRun;
     setScriptForTest(T, sc);
-    const { kit, rows, last, plans } = await replay(RUN, persona, T, n + 1);
+    // (dc-r8-director25 L2: the run's child lines fall on its own 60-word turns only under the rules it was made with)
+    const KEEP_L2 = process.env.TAXILA_L2; process.env.TAXILA_L2 = "off";
+    let rp;
+    try { rp = await replay(RUN, persona, T, n + 1); } finally { if (KEEP_L2 === undefined) delete process.env.TAXILA_L2; else process.env.TAXILA_L2 = KEEP_L2; }
+    const { kit, rows, last, plans } = rp;
     const state = opts.lastMove ? { ...last.state, lastMove: { ...last.state.lastMove, ...opts.lastMove } } : last.state;
     replyDeps.chat = async () => ({ text: rows[n].text });
     const out = await textReply({ instructions: instructionsFor(state, kit), state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null, ...(opts.verdict ? { verdict: opts.verdict } : {}) });

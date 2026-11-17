@@ -14,7 +14,7 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { QUIET_PICTURE_LINES } from "../../server/stagecraft/board-first.js";
-import { lessonFlags } from "./dry-predicates.mjs";
+import { PREDICATES, lessonFlags } from "./dry-predicates.mjs";
 import { helpTurnOf } from "./help-predicates.mjs";
 /** The context helpTurnOf reads at row i (the child's line before it), as dry-predicates' lessonFlags keeps it. */
 const helpCtx = (rows, i, script) => { const ch = [...rows.slice(0, i)].reverse().find((x) => x.who !== "teacher"); return { o: {}, script, prevChild: ch?.text ?? "", prevRead: String(ch?.read ?? "") }; };
@@ -37,7 +37,7 @@ function jointHeads(script) {
 
 /** The counts of one lesson's rows. */
 export function lessonCounts(rows, script) {
-  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, longPointAndCard: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
+  const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, turnsOver45Words: 0, turnsOver75Words: 0, twoPartTurnsOver75Words: 0, longPointAndCard: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
     cardsSaid: 0, cardsSaidAgainWithin2: 0, joinsWritten: 0, joinsFellBack: 0, openersWritten: 0, openersFellBack: 0, moves: {}, columns: {}, reads: {}, joints: {} };
   const heads = jointHeads(script), lastCards = [];
   for (const r of rows) {
@@ -46,6 +46,11 @@ export function lessonCounts(rows, script) {
     const text = norm(r.text), n = text ? text.split(" ").length : 0;
     // (her word total is left out: it moves with every wording edit and would bury the counts that mean something)
     if (n > 60) c.turnsOver60Words++;
+    // (dc-r8-director25 L2: turns over 45 words in all, and those that hold two parts with a seam the rule breaks at — the target is 0;
+    // the predicate longTwoPart is the definition)
+    if (n > 45) c.turnsOver45Words++;
+    if (n > 75) c.turnsOver75Words++;
+    if (PREDICATES.longTwoPart({ rows }, r)) c.twoPartTurnsOver75Words++;
     // (dc-r8-director24 L: one new thing a turn — a turn over 60 words that holds a point and a card; the target is 0)
     // (dc-r8-director25: as the predicate reads it — a seam's joint before a card asked again is no point)
     const jf = (r.seams ?? []).map((x) => norm(x.form ?? "")).filter(Boolean), pp = r.pageParts ?? [];

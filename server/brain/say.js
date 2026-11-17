@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { boardWords } from "./board-words.js";
 import { inHindiWords } from "./register.js";
-import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms } from "./asideReplies.js";
+import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyForms, asideReturnForms, asideInHerVoice } from "./asideReplies.js";
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
@@ -14,14 +14,15 @@ import { altCall } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
-import { upcomingItem, hintShapeWords } from "../director/state.js";
+import { upcomingItem, hintShapeWords, l2On } from "../director/state.js";
+import { characterForState } from "../compiler/characters/index.js";
 import { findItem, promptFor, revealsAnswer, posesItem, handsBack, asksWhy, stripRungLabel } from "../director/items.js";
 import { TURN_WORDS, FLOOR_FIX } from "../compiler/compile.js";
 import { HELPLINES } from "../compiler/floor.js";
 import { registerBroken, toAap } from "../director/register.js";
 // round 3 fix (experience B6): arithmetic she states, and her own closed sums, checked in code
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
-import { saidMust, joinable, scriptFor, jointOf, saidIn } from "../director/script.js";
+import { saidMust, joinable, scriptFor, jointOf, saidIn, scriptIdOf } from "../director/script.js";
 import { fillFriend } from "../director/friend.js";
 import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
@@ -136,13 +137,17 @@ export const returnQuestion = (topic, lang = "hinglish", state = null, { said = 
   void said;
   // (dc-r8-director20 R1: the return question is Learning's, by the aside's kind — data/lesson-aside-replies.json; the script's own
   // asideReturn joints, then code's, only when the library has none)
-  const lib = asideReturnLine(t, { lang, n: jointCount(state, "asideReturn") });
-  if (lib) return lib;
+  // (dc-r8-director25 L2 item 1: the return question is one of the script's own `joints.asideReturn` forms, rotated by the lesson —
+  // director25 heard code's library line, "Cricket mein tumhe kya karna sabse achha lagta hai?", in every topic. The library's line by
+  // the aside's kind, then code's, only for a script with none)
   const raw = kit ? scriptFor(kit)?.script?.joints?.asideReturn : null;
   const noSaid = Array.isArray(raw) ? raw.filter((f) => !/\{said\}/.test(JSON.stringify(f))) : [];
-  const j = noSaid.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: noSaid } }, "asideReturn", lang, { topic: t, aside: t }), jointCount(state, "asideReturn")) : null;
+  const j = noSaid.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: noSaid } }, "asideReturn", lang, { topic: asideInHerVoice(t), aside: asideInHerVoice(t) }), jointCount(state, "asideReturn")) : null;
   const ok = j?.filter((x) => !/\{\w+\}/.test(x));
-  return ok?.length ? freshOf(ok, state) : rotated(RETURN_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(t))[0];
+  if (ok?.length) return ok[0];
+  const lib = asideReturnLine(t, { lang, n: jointCount(state, "asideReturn") });
+  if (lib) return lib;
+  return rotated(RETURN_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(t))[0];
 };
 /** v6.7 A3: an aside said again, already on the list: one line, no new promise. */
 const ASIDE_AGAIN = {
@@ -971,6 +976,10 @@ export const FALLBACK = {
     checkinRel: "Theek hai, rukna bilkul theek hai. Kya tum abhi theek ho, aur koi bada paas hai?",
     forgetSafety: "Isse bhoolna theek nahi hoga, kyunki tumhari safety zaroori hai. Tumne batakar bilkul sahi kiya. Kisi bade ko zaroor batao jis par tumhe bharosa ho, taaki woh tumhari madad kar sakein." },
 };
+/** dc-r8-director25 L2: the keys of the fixed carry-on lines (a failed draft's stand-in: "heard", "stuck", "other") — never said on a
+ *  scripted turn in place of her draft. The safeguard and check-in lines are not these. */
+const REWRITE_KEYS = ["heard", "stuck", "other"].flatMap((k) => [FALLBACK.hinglish[k], FALLBACK.english[k]]).flatMap((t) => sentences(t))
+  .map((x) => String(x).replace(/\s+/g, " ").trim().toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim()).filter((k) => k.split(" ").length >= 3);
 // round 2 safety floor (adversarial B2, 2026-10-07): a stop check-in is an OFFER to stop, never a teaching turn. Before
 // this it was guarded as one: her honest "aaj ke liye yahin rok dete hain" tripped the goodbye check ("wrap"), the rewrite
 // note said "the lesson goes on … end with one question about the same thing", stripWrap cut the stop option, and the child
@@ -1267,6 +1276,10 @@ function seamsOf(out, { state, kit, ui = null }) {
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
     greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")), authoredEnd: !!out.guard?.authoredEnd,
+    // (dc-r8-director25 L2 item 5: the picture's line, and the script's greetSimpler said before the hook, are recorded as what they are)
+    caption: out.guard?.captionLine ?? null,
+    greetSimpler: (() => { if (String(state?.lastMove?.kind ?? "") !== "hook") return null; const g = scriptFor(kit)?.script?.greetSimpler; const t = g ? saidIn(g, lang) : null;
+      return t && (state.lastMove.sayFirst ?? []).some((x) => String(x).trim() === String(t).trim()) ? String(t).trim() : null; })(),
     hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     hindiSwitchBy: (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
@@ -1457,12 +1470,43 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
     let mine = null;
     // (dc-r8-director24 T3: code picks the card and says Learning's `did` clause for it in an authored frame — no model call)
-    if (end === "wrap" && lines.length >= 2) mine = didSentence(state, kit, L);
+    // (dc-r8-director25 L2 item 2: the wrap's second turn — the acknowledgement, the sentence to her, the goodbye — has it before the goodbye)
+    const part2 = state.lastMove.wrapPart === 2;
+    if (end === "wrap" && (lines.length >= 2 || part2)) mine = didSentence(state, kit, L);
     const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
     // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
     const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
-    const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") }, ...body.map((x) => ({ part: "body", text: x }))]);
+    // (dc-r8-director25 L2 item 5: the seam record names each part as what it is — what was covered, the acknowledgement, the sentence to
+    // her, the goodbye)
+    const ackL = state.lastMove.wrapAck ? d(state.lastMove.wrapAck) : null;
+    const kindOfLine = (x, n) => (end === "wrapCovered" ? "covered" : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
+    // (turn one ends on something she can answer: a check-in, its form rotated)
+    const tail1 = end === "wrapCovered" ? rotateOf(BEAT_ASK[L], state) : null;
+    const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
+      ...body.map((x, n) => ({ part: "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1 }] : [])]);
     return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
+  }
+  // (dc-r8-director25 L2 item 4, c6 offtopic 0: "Aaj cricket ground jaise rectangles ka perimeter dekhenge" — the greeting said the model's
+  // words about the world. A scripted greeting is said by code: who she is and one question about the child — the warm-up card when the
+  // greet poses one. What today is about is the script's hook, said on the next turn ("Aaj hum …"); greetSimpler stays the answer to a
+  // clarify at the greeting. No model call)
+  {
+    const sc0 = scriptFor(kit)?.script;
+    if (state.lastMove?.kind === "greet" && l2On() && sc0 && !sc0.recordedRun && scriptIdOf(kit)) {
+      const L = lang === "english" ? "english" : "hinglish";
+      const he = characterForState(state)?.pronouns?.subject === "he";
+      const who = String(state.ctx?.teacherName ?? "").trim(), name = String(state.ctx?.firstName ?? "").trim();
+      const intro0 = L === "english" ? `${name ? `${name}, ` : ""}I'm ${who || "your teacher"}, your AI teacher.` : `${name ? `${name}, ` : ""}main ${who || "tumhari teacher"} hoon, ${he ? "tumhara" : "tumhari"} AI teacher.`;
+      const intro = intro0.charAt(0).toUpperCase() + intro0.slice(1);
+      // (one question she will listen to: the warm-up card, else whether to begin — a question about their interest would be answered by a
+      // hook that does not hear it)
+      const card = ui?.ask?.text ? String(ui.ask.text).trim() : null;
+      const q = card ?? (L === "english" ? "Shall we start?" : "Chalo, shuru karein?");
+      const aap = state.ctx?.address === "aap" && L !== "english";
+      const lp = cleanParts([{ part: "aside", text: aap ? toAap(intro) : intro, kind: "greetIntro" },
+        { part: card ? "card" : "aside", text: aap && !card ? toAap(q) : q, ...(card ? {} : { kind: "greetQuestion" }) }]);
+      return { reply: joinParts(lp), guard: { greetAuthored: true, lineParts: lp, parts: { list: lp } } };
+    }
   }
   // (v6.10, Learning D13: speech her ear could not read — the script's authored askAgain line, then the card as it was posed)
   if (state.lastMove?.request === "unheard" && jointOf(kit, "askAgain", lang)) {
@@ -2771,12 +2815,18 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
           : `Dekho, yahi 0 se 1 ki sankhya rekha par${alt.gaps ? `, ${alt.gaps} barabar gaps` : ""}${nums.length ? `, nishaan ${nums.join(" aur ")} par` : ""}.`;
         return lang === "english" ? `Look, ${nums.length ? `the same ${nums.join(" and ")}` : "the same numbers"}, now as ${w[1]}.` : `Dekho, ${nums.length ? `yahi ${nums.join(" aur ")}` : "yahi numbers"} ab ${w[0]} par.`; })()
       : boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) ?? (lang === "english" ? "Let's see it in a picture." : "Chalo, ise picture mein dekhte hain.");
+    // (dc-r8-director25 L2 item 5: the picture's line is recorded as a caption in the seam record)
+    if (asked) guard.captionLine = asked;
     if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }
     else if (heldPic) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see|picture|tasveer|chitra)/i.test(x)); guard.noPicture = true; }
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
     // v6.6 V1: her sentences as they stand here — on a scripted turn none of them is said outside the aside reply
     const herK = new Set(modelSaid.flatMap((t) => sentences(t)).map((x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim()));
+    // (dc-r8-director25 L2, c5-t01 steady 110, stuck 62, c5-t02 offtopic 42: a guard's rewrite put the fixed carry-on line of a failed
+    // draft — "Accha, batane ke liye thanks!" — where her draft was, and it was said as a framing of hers. On a scripted turn those lines
+    // are hers too: what is said is the authored parts)
+    for (const k of REWRITE_KEYS) herK.add(k);
     let body;
     if (workedLines?.length) {
       // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
@@ -3041,7 +3091,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (P1: an aside said again after its return was returned already — one plain line, no promise of a later talk)
     // (dc-r8-director24 A3, main's 035 — c6 offtopic 24, 32, c5-t02 offtopic 32: a second or third aside, its return already had, got a
     // bare "Achha." / "Theek hai."; it gets a reply in the child's words — the kind's reply form with a noun she said — else the plain ack)
-    const againLine = !honestLine && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? (againInHerWords(childText, state.lastMove.asideAgain.topic, lang, state) ?? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state))
+    // (dc-r8-director25 L2: a return said on this turn is the turn — no "noted" line beside it)
+    const againLine = !honestLine && !(ret?.topic && guard.returnLine) && state.lastMove?.asideAgain?.topic ? (state.lastMove.asideAgain.returned ? (againInHerWords(childText, state.lastMove.asideAgain.topic, lang, state) ?? freshOf(NEUTRAL_ACK[lang === "english" ? "english" : "hinglish"], state))
       : asideAgainLine(state.lastMove.asideAgain.topic, lang, state)) : null;
     if (againLine) { guard.asideAgain = true; guard.againLine = againLine; }
     // (dc-r8-director20 R1 rule 3: a sad aside gets one sad line of Learning's, no park and no question; the lesson goes on)
@@ -3141,6 +3192,16 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director22 J2: the seam between a miss verdict and its remediation always has its joint — placed here, after every pass that
     // filters the body, so none of them can drop it)
 
+    // (dc-r8-director25 L2: no turn ends with nothing for the child to answer while the lesson goes on — a turn with no card, no
+    // question and no aside question to end on ends on a check-in, its form rotated; a card left for them to try is theirs to answer)
+    // (a "go on" frame — "Ab agla kadam dekhte hain." — asks nothing: the check-in takes its place; a replay of a recorded run says what
+    // that run's turn shape was)
+    const l2Live = l2On() && !!scriptFor(kit)?.script && !scriptFor(kit)?.script?.recordedRun;
+    if (l2Live && tail && tail !== card && !guard.cardQuestionOnly && !/[?？]\s*$/.test(norm(tail)) && !asideQ && scriptFor(kit)?.script && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) tail = null;
+    if (l2Live && !tail && !asideQ && !guard.cardHeldForTry && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
+      const lastS = [...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
+      if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state); guard.l2Checkin = true; }
+    }
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
@@ -3165,7 +3226,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : state.lastMove?.splitClose ? "aside" : "body", text: tail ?? "" },
+        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "" },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
@@ -3175,7 +3236,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const keepW = (state.lastMove?.mustSay ?? []).flatMap((m) => (typeof m === "object" && m ? [m.hi, m.en] : [m]));
     // (Studio's patch 025, director20 c6: "Is triangle ki …" turned into "tribhuj" where the script says "triangle" — the script's own word for
     // a term is never swapped, Studio's picture line included)
-    const keepAll = [...keepW, ...scriptOwnTerms(kit)];
+    // (dc-r8-director25 L2, c5-t01 steady: "Is sawaal ka sahi jawab: ek nishaan, kyunki … wahi ek mark" — a key said in Hindi mode keeps the
+    // card's own words, as its authored why does)
+    const keyW = [state.lastMove?.gave?.answer, state.lastMove?.closed?.answer, state.lastMove?.workedDone?.answer].filter((x) => typeof x === "string" && x.trim());
+    const keepAll = [...keepW, ...keyW, ...scriptOwnTerms(kit)];
     const hw0 = (x) => (hindiOn && x ? inHindiWords(x, { keep: keepAll, card }) : x);
     // (main on integration 51: no word pass over authored text — the page parts and the card's copy are kept as the spoken line is)
     const spansNow = hindiOn ? authoredSpans(state, card, kit) : null;

@@ -50,7 +50,8 @@ describe("r7-brain-v69.test.mjs", () => {
     for (const [persona, topic, n] of [["steady", "c4", 74], ["offtopic", "c6", 40]]) test(`${persona} ${topic} ${n}`, async () => {
       // (the walk is live: the give-up-then-bridge turn is the one nearest the director17 row)
       // (v6.10: a give-up now ends on a check-in, and the live walk can reach its bridge elsewhere — the nearest bridge in the lesson)
-      const turns = await walk(persona, topic, 200);
+      // (dc-r8-director25 L2: walked under the run's own 60-word rules — under L2 the recorded child's lines run out before skill 2)
+      const turns = await walk(persona, topic, 200, { l2: false });
       const t = turns.filter((x) => x.pl.state.lastMove?.bridgeBeat && (x.out.guard?.lineParts ?? []).some((p) => p.part === "bridge")).sort((a, b) => Math.abs(a.n - n) - Math.abs(b.n - n))[0];
       assert.ok(t, "a bridge turn near the row");
       const sk = t.pl.state.lastMove.bridgeBeat?.skillId;
@@ -70,7 +71,9 @@ describe("r7-brain-v69.test.mjs", () => {
   // T1: the request table — one test per row, each replaying its director17 rows (live: her own lines are the history)
   describe("T1: the request table", () => {
     const sents = (t) => (norm(t).match(/[^.!?।]+[.!?।]+/g) ?? []).map((x) => norm(x).toLowerCase()).filter((x) => x.split(" ").length >= 5);
-    const at = async (spec) => { const [persona, topic, n] = spec.split(" "); const turns = await walk(persona, topic, Number(n)); return { t: turns.find((x) => x.n === Number(n)), turns }; };
+    // (dc-r8-director25 L2: each row is the director17 row its child line answered — walked under the run's own 60-word turns, where the
+    // child's lines fall on the turns they answered; L2's turn shapes are the dry matrix's)
+    const at = async (spec) => { const [persona, topic, n] = spec.split(" "); const turns = await walk(persona, topic, Number(n), { l2: false }); return { t: turns.find((x) => x.n === Number(n)), turns }; };
     /** Her sentences this turn that one of her last four turns already said (the card itself, re-posed, aside). */
     const repeats = (t, turns, win = 4) => {
       const card = norm(t.pl.p.r.ui?.ask?.text ?? "").toLowerCase();
@@ -203,7 +206,9 @@ describe("r7-brain-v69.test.mjs", () => {
         const turns = await walk(p, topic, 200);
         for (const t of turns) {
           const r = t.out.reply;
-          if (/\b(?:Ab (?:doosra|teesra|agla) kadam|Pehla kadam)\b/.test(r) && (r.match(/(?:^|[.!?]\s+)(?:Ab|Phir|Pehle)\b/g) ?? []).length > 1) bad.push(`${p} ${topic} ${t.n}: ${r.slice(0, 100)}`);
+          // (dc-r8-director25 L2: a step with no card ends on a check-in — "Ab tak samajh aaya?" opens on "Ab" and is no step opener)
+          const r1 = r.replace(/\s*(?:Ab tak samajh aaya|Yahan tak theek hai|Yeh kadam saaf hai|Yeh kadam samajh aaya)\?$/, "");
+          if (/\b(?:Ab (?:doosra|teesra|agla) kadam|Pehla kadam)\b/.test(r1) && (r1.match(/(?:^|[.!?]\s+)(?:Ab|Phir|Pehle)\b/g) ?? []).length > 1) bad.push(`${p} ${topic} ${t.n}: ${r.slice(0, 100)}`);
           if (t.pl.state.lastMove?.scriptBeat?.beatId === "worked:problem" && /Pehle yeh hissa|shuruaati hissa|Pehla kadam/.test(r)) bad.push(`${p} ${topic} ${t.n} (problem): ${r.slice(0, 100)}`);
         }
       }

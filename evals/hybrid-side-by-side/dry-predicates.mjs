@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
 import { seamJoint, joinProblem } from "../../server/brain/seams.js";
+import { FALLBACK } from "../../server/brain/say.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -171,7 +172,9 @@ export const PREDICATES = {
     if (!ctx.prevT?.returnSaid || !ctx.prevChild || /^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const t = norm(r.text);
     const ss = sentencesOf(t);
-    const park = ss.find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
+    // (dc-r8-director25 L2: the card her reply leads back to is the card's — "… ya baad mein?" — never a promise)
+    const cardK = low(r.card ?? "");
+    const park = ss.filter((x) => !(cardK && cardK.includes(low(x).replace(/[.!?]+$/, "")))).find((x) => /(?<![\p{L}])(?:karenge|karungi|baad\s+mein|thodi\s+der|yaad\s+rahega|likh\s+li|later|come\s+back)(?![\p{L}])/iu.test(x));
     if (park) return `their answer to the return parked again: "${park.slice(0, 70)}"`;
     const F = (ctx.replyForms ??= asideReplyForms());
     const fixed = [...F.plain, ...F.sad].map(norm).find((f) => low(t).startsWith(low(f)));
@@ -266,11 +269,18 @@ export const PREDICATES = {
     if ((ctx.openParks ?? 0) > 0) { ctx.openParks--; return null; }
     return "a return with no park before it";
   },
-  /** P1: a return is a turn of its own: the verdict on the card just answered may come first, and nothing of the lesson after. */
+  /** dc-r8-director25 L2 (rewritten from director25: the old reading let the verdict come first, and read 0 on nine rows where four
+   *  judges heard the return question said with a verdict or a key): a return is a turn of its own — one of the script's asideReturn
+   *  forms and nothing else. (Her honest line to a question about her taste, and the sad line, are the return's own.) */
   returnAlone(L, r, i, ctx) {
     if (!returnOf(r, ctx)) return null;
-    const unit = (r.pageParts ?? []).find((p) => UNIT_PART.has(p.part));
-    return unit || cardIn(r) ? `a return said with the lesson's ${unit?.part ?? "card"}` : null;
+    const ss = sentencesOf(r.text);
+    if (ss.some((x) => SAD_LINES.has(key(x)))) return null;
+    const ai = ss.findIndex((x) => AI_LINE.test(x));
+    const own = (x, n) => (ctx.retRes ?? []).some((re) => re.test(x)) || (ai >= 0 && (n === ai || n === ai + 1));
+    const rest = ss.filter((x, n) => !own(x, n));
+    if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
+    return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
   },
   /** P1: a park's turn goes on into the live part (a park alone leaves the child nothing to do: c4 offtopic 22, c6 36). */
   parkGoesOn(L, r, i, ctx) {
@@ -298,6 +308,9 @@ export const PREDICATES = {
     const keyed = (t) => !!t?.check?.gave || !!t?.keyFact || KEY_SAID.test(t?.text ?? "");
     if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (dc-r8-director25 L2: a check-in that ends a hook, or a verdict whose next part waits for the next turn, is no part's check-in —
+    // the next part comes, and teaches)
+    if (String(p.move ?? "") === "hook" || ((p.pageParts ?? []).length && (p.pageParts ?? []).every((x) => ["close", "closed", "aside", "bridge"].includes(x.part)) && !keyed(p))) return null;
     // (dc-r8-director25 H4 item 6: help on the card just keyed — a right answer's close too — gets the why's other wording, not the card)
     if (r.cell?.keyed) return null;
     // (a second give-up after the key and its why were said again may move on)
@@ -606,6 +619,8 @@ export const ORDER_LAWS = {
     // (a turn that teaches nothing — the break offer — is asked about the unit it held)
     // (the unit's local name after its skill — "rem:<mix-up>", not the mix-up alone; a help wording's own page is its unit's)
     if (!asked.size && ctx.prevT.held?.unit) asked.add(unitOf(String(ctx.prevT.held.unit).replace(/#help$/, "").replace(/^.+?-s\d+:/, "")));
+    // (dc-r8-director25 L2: a hook ends on a check-in now; it is no unit — a request there is answered by the first point)
+    if (!asked.size && String(ctx.prevT.move ?? "") === "hook") return null;
     const moved = (r.pageParts ?? []).find((p) => p.part !== "close" && p.part !== "bridge" && beatOfPart(p) && !asked.has(unitOf(beatOfPart(p))));
     return moved ? `a ${rq} request moved from ${[...asked].join("/") || "?"} to ${unitOf(beatOfPart(moved))}` : null;
   },
@@ -663,6 +678,11 @@ export const ORDER_LAWS = {
     // only for pointing at one — "dekho", "look", "board")
     const w = ctx?.script?.wrap;
     const authored = String(r.move) === "wrap" && w ? [w.covered?.hi, w.covered?.en, w.goodbye?.hi, w.goodbye?.en, ...(ctx.script.skills ?? []).flatMap((k) => [k.covered?.hi, k.covered?.en])].filter(Boolean).flatMap((x) => sentencesOf(x)).map((x) => low(x)) : [];
+    // (dc-r8-director25 L2: the sentence to her is authored too — a check card's `did` in one of the wrap's didFrames — and names what she
+    // did, not a figure on the board)
+    if (String(r.move) === "wrap" && w) for (const sk of ctx.script.skills ?? []) for (const c of sk.checks ?? []) for (const L of ["hi", "en"]) for (const f of [...(w.didFrames ?? []).map((x) => x?.[L]), L === "hi" ? "Aaj tumne {did}." : "Today you {did}."]) {
+      if (c.did?.[L] && f && f.includes("{did}")) authored.push(low(f.replace("{did}", String(c.did[L]).trim().replace(/[.!?\u0964]+$/, "")).replace(/([^.!?\u0964])$/, "$1.")));
+    }
     const said = String(r.move) === "wrap" ? sentencesOf(String(r.text ?? "")).filter((x) => !(tk && x.includes(tk)))
       .filter((x) => !authored.includes(low(x)) || /(?<![\p{L}])(?:dekho|look|board)(?![\p{L}])/iu.test(x)).join(" ") : String(r.text ?? "");
     const fig = FIGURE.exec(said)?.[0];
@@ -877,3 +897,90 @@ export function matrixCounts(lessons) {
   for (const L of lessons) for (const f of lessonFlags(L)) c[f.predicate]++;
   return c;
 }
+
+// ───────────── dc-r8-director25 L2 (Brain 039 Part B): turn shape — each read non-zero on the director25 rows the judges named first
+// (tests/r8-director25-l2-predicates.test.mjs), then gated at 0 on the dry matrix ─────────────
+const ASIDE_DATA = JSON.parse(readFileSync(new URL("../../data/lesson-aside-replies.json", import.meta.url), "utf8"));
+/** Learning's sad lines (a sad aside's return says one and asks nothing): their keys. */
+const SAD_LINES = new Set((ASIDE_DATA.sad?.replies ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).flatMap((x) => sentencesOf(x)).map(key));
+const LEAVING = /(?<![\p{L}])(?:bye|alvida|tata|goodbye|jaati\s+hoon|jaata\s+hoon|stop|bas\s+karo|band\s+karo|khatam\s+karo|aaj\s+ke\s+liye\s+bas)(?![\p{L}])/iu;
+/** The words of a turn without its closing check-in (the check-in is the break's, not a part). */
+const wordsNoCheckin = (t) => { const ss = sentencesOf(t); return words((CHECKIN.test(ss.at(-1) ?? "") ? ss.slice(0, -1) : ss).join(" ")); };
+/** A turn's pageParts with their texts (each part runs to the next one's start). */
+const partsWithText = (r) => { const pp = r.pageParts ?? [], t = String(r.text ?? ""); return pp.map((p, n) => ({ ...p, text: t.slice(p.from ?? 0, pp[n + 1]?.from ?? t.length).trim() })); };
+/** A part a long turn may break before: a point, a bridge, a worked step, a remediation's say, a card (never a verdict, an aside, a wrap). */
+const BREAKS_BEFORE = new Set(["bridge", "body", "held", "card"]);
+const unitBeat = (p) => String(p.beat ?? "");
+const isTeachBeat = (b) => /(?:^|:)(?:e\d+|bridge|worked(?::(?:problem|step\d+|yourStep))?|rem:.+|then:.+|c\d+)$/.test(b) || /^(?:worked|rem|then)/.test(b);
+/** A remediation's say: led into by the miss verdict it remedies, with no seam between them (the order law). */
+const isRemBeat = (b) => /(?:^|:)rem:/.test(b);
+
+/** dc-r8-director25 L2: no turn over 45 words holds two parts with a seam between them where the rule breaks (a point, a bridge, a
+ *  worked step or a card begins after another part): such a turn breaks at the last seam before 45 words, on a check-in. A single
+ *  authored part over 45 words is Learning's to shorten (scripts/lesson-scripts/compile-report.mjs lists them). Gated. */
+export const TWO_PART_CAP = 75;
+PREDICATES.longTwoPart = (L, r) => {
+  if (/^(?:wrap|safeguard|break|greet)$/.test(String(r.move ?? ""))) return null;
+  const n = wordsNoCheckin(r.text);
+  // (dc-r8-l2-break-at-75: the break is at 75 words, server/director/state.js L2_CAP)
+  if (n <= TWO_PART_CAP) return null;
+  // (a joint — "Ab us sawaal par lautte hain …" — is the seam's, not a part)
+  const forms = new Set((r.seams ?? []).map((x) => x.form).filter(Boolean).map(key));
+  const pp = partsWithText(r).filter((p) => p.text && !(CHECKIN.test(p.text) && sentencesOf(p.text).length === 1) && !forms.has(key(p.text)));
+  // (help is Part A's: a help wording and its card's question, or a miss verdict and its help, are one answer — no seam between them;
+  // a card is a seam after a point or after the close of another card)
+  const seam = pp.findIndex((p, k) => {
+    const q = pp[k - 1];
+    if (!q || !BREAKS_BEFORE.has(p.part) || !isTeachBeat(unitBeat(p))) return false;
+    if (p.part === "simpler" || ["simpler", "alt"].includes(q.part)) return false;
+    if (p.part === "card") return ["body", "held", "bridge"].includes(q.part) || (["close", "closed"].includes(q.part) && unitBeat(q) !== unitBeat(p));
+    if (isRemBeat(unitBeat(p)) && ["close", "closed"].includes(q.part)) return false;
+    return unitBeat(p) !== unitBeat(q) || p.part !== q.part;
+  });
+  return seam > 0 ? `${n} words holding ${pp[seam - 1].part}@${unitBeat(pp[seam - 1])} and ${pp[seam].part}@${unitBeat(pp[seam])}` : null;
+};
+/** dc-r8-director25 L2: no turn ends with nothing for the child to answer while the lesson goes on — it ends on a question (a card, a
+ *  check-in, her return or aside question) or on the card's own words. The wrap's goodbye, a break and the safety turn are not this
+ *  rule's. Gated. */
+PREDICATES.endsOnQuestion = (L, r, i) => {
+  if (/^(?:wrap|safeguard|break)$/.test(String(r.move ?? ""))) return null;
+  if (!(L.rows ?? []).slice(i + 1).some((x) => x.who === "child")) return null;
+  const t = String(r.text ?? "").trim();
+  if (!t || /[?？]\s*$/.test(t)) return null;
+  // (a card left live for the child to try — "Haan, pehle tum try karo." — is theirs to answer)
+  if (r.check?.itemId && !r.check?.gave) return null;
+  if (r.card && cardIn(r) && low(t).endsWith(low(sentencesOf(r.card).at(-1) ?? "").replace(/[.!?।]+$/, "").slice(-30)) ) return null;
+  if (r.card && low(t).endsWith(low(String(r.card).trim()))) return null;
+  return `the turn ends on "${sentencesOf(t).at(-1)?.slice(0, 50)}"`;
+};
+/** dc-r8-director25 L2: the wrap is two turns while the child is still there — what was covered, ending on something to answer; then
+ *  (after the reply) the acknowledgement, the sentence to her and the goodbye. A wrap after the child leaves is the goodbye alone. Gated. */
+PREDICATES.wrapTwoTurns = (L, r, i, ctx) => {
+  if (String(r.move ?? "") !== "wrap") return null;
+  const sc = ctx.script;
+  const covered = [...(sc?.skills ?? []).map((k) => k.covered), sc?.wrap?.covered].filter(Boolean).flatMap((c) => [c.hi, c.en]).filter(Boolean).map((x) => key3(x).slice(0, 40));
+  const bye = [sc?.wrap?.goodbye?.hi, sc?.wrap?.goodbye?.en].filter(Boolean).map((x) => key3(x).slice(0, 30));
+  const t = key3(r.text);
+  if (!covered.some((c) => c && t.includes(c))) return null;
+  // (turn one, what was covered, ends on something she can answer)
+  if (!bye.some((b) => b && t.includes(b))) return /[?？]\s*$/.test(String(r.text ?? "").trim()) ? null : "the wrap's first turn ends with nothing for the child to answer";
+  return LEAVING.test(String(ctx.prevChild ?? "")) ? null : "what was covered and the goodbye in one turn";
+};
+/** dc-r8-director25 L2: when a guard rejects her draft, what is said is the authored parts — never the fixed carry-on lines of a
+ *  failed draft ("Accha, batane ke liye thanks!", heard on three director25 rows) on a scripted lesson's turn. Gated. */
+const REWRITE_LINES = [FALLBACK.hinglish.heard, FALLBACK.english.heard, FALLBACK.hinglish.stuck, FALLBACK.english.stuck].flatMap((x) => sentencesOf(x)).map(key).filter((k) => k.split(" ").length >= 3);
+PREDICATES.rewriteSentence = (L, r, i, ctx) => {
+  if (!ctx.script || /^(?:safeguard)$/.test(String(r.move ?? ""))) return null;
+  const hit = sentencesOf(r.text).find((x) => REWRITE_LINES.includes(key(x)));
+  return hit ? `a failed draft's fixed line said: "${hit}"` : null;
+};
+/** dc-r8-director25 L2: the greeting of a scripted lesson says nothing of the model's about the world: her name and what she is, the
+ *  script's line on today (greetSimpler), and one question about the child. A sentence beside those — "Aaj cricket ground jaise
+ *  rectangles ka perimeter dekhenge" — is the model's. Gated. */
+PREDICATES.greetAuthored = (L, r, i, ctx) => {
+  if (i !== 0 || String(r.move ?? "") !== "greet" || !ctx.script?.greetSimpler) return null;
+  const g = [ctx.script.greetSimpler.hi, ctx.script.greetSimpler.en].filter(Boolean).map(key);
+  const ss = sentencesOf(r.text);
+  const other = ss.filter((x, n) => !g.includes(key(x)) && !(/(?<![\p{L}])ai(?![\p{L}])/iu.test(x)) && !(n === ss.length - 1 && /[?？]\s*$/.test(x)));
+  return other.length ? `the greeting says "${other[0].slice(0, 60)}"` : null;
+};

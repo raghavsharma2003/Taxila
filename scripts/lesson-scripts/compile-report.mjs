@@ -54,6 +54,31 @@ out.push("", "## Help's joints (dc-r8-director25 H4, Learning 014)", "", "A scri
 for (const r of rows) for (const j of r.c.helpJoints ?? []) out.push(`| ${r.s.topicId} | ${r.where} | ${j.joint} | ${j.why} |`);
 const dbl = rows.flatMap((r) => r.c.doubles.map((d) => `${r.s.topicId}: ${d.part} (${d.why})`));
 out.push("", "## Doubles", "", ...(dbl.length ? dbl.map((x) => `- ${x}`) : ["None."]), "");
+// dc-r8-director25 L2 item 6: every single authored part over 45 words, for Learning — a turn of more than one part breaks at 45 words
+// (server/director/state.js breakL2), but a part is never broken inside: one part over 45 is said whole, and is Learning's to shorten.
+// Every spoken field ({hi, en}) of the script, by its path; words are the spoken text's, split on spaces, as the break counts them.
+export const LONG_PART = 45;
+export function longParts(script, cap = LONG_PART) {
+  const found = [];
+  const walk = (v, path) => {
+    if (Array.isArray(v)) { v.forEach((x, i) => walk(x, `${path}[${x?.id ? x.id : i}]`)); return; }
+    if (!v || typeof v !== "object") return;
+    if (typeof v.hi === "string" || typeof v.en === "string") {
+      const n = (t) => String(t ?? "").split(/\s+/).filter(Boolean).length;
+      const hi = n(v.hi), en = n(v.en);
+      if (hi > cap || en > cap) found.push({ path, hi, en, text: String(v.hi ?? v.en) });
+      return;
+    }
+    for (const [k, x] of Object.entries(v)) walk(x, path ? `${path}.${k}` : k);
+  };
+  walk(script, "");
+  return found;
+}
+const longs = rows.flatMap((r) => longParts(r.s).map((x) => ({ ...x, topicId: r.s.topicId, where: r.where })));
+out.push("## Authored parts over 45 words (dc-r8-director25 L2: Learning's to shorten)", "",
+  `A turn of more than one part breaks at the last seam before ${LONG_PART} words; a single part is never broken inside, so each of these is said whole, as one turn of its own. ${longs.length} parts in ${new Set(longs.map((x) => x.topicId)).size} scripts (words: Hinglish / English).`, "",
+  "| Script | Where | Part | Words | Opens |", "|---|---|---|---|---|",
+  ...longs.map((x) => `| ${x.topicId} | ${x.where} | ${x.path} | ${x.hi} / ${x.en} | ${x.text.split(/\s+/).slice(0, 8).join(" ").replace(/\|/g, "/")} … |`), "");
 const text = out.join("\n");
 if (process.argv.includes("--print")) process.stdout.write(text);
 else { writeFileSync(new URL("docs/design/round7/brain/COMPILE-HOLES.md", ROOT), text); console.log(`COMPILE-HOLES.md: ${rows.length} scripts`); }
