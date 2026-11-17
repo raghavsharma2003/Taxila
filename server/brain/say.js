@@ -1449,6 +1449,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const lp = cleanParts([{ part: "aside", text: r0 }]);
     return { reply: r0, guard: { askAgain: true, lineParts: lp, parts: { list: lp } } };
   }
+  // (dc-r8-director26 B2: a child who wants to stop gets the authored line — the script's `joints.checkinStop`, else code's checkinStop —
+  // and nothing the model wrote: no draft, no buttons named, no gendered verb of hers. director26 c4 stuck 68, c5-t01 stuck 74, c6 stuck
+  // 72, steering 50 said the model's menu; the guard flagged it and the rewrite kept a draft. No model call on this turn)
+  if (state.lastMove?.checkin === "stop" && scriptFor(kit)?.script) {
+    const own = jointsAt(kit, "checkinStop", lang, state);
+    const r0 = own ? freshOf(own, state) : fallbackReply(state, null);
+    const lp = cleanParts([{ part: "aside", text: r0 }]);
+    return { reply: r0, guard: { authoredStop: own ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
+  }
   // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
   // as written, after the close of her last answer; no model call)
   if (state.lastMove?.authoredEnd && (state.lastMove?.rendered?.length || state.lastMove.authoredEnd === "teachbackKey")) {

@@ -33,3 +33,7 @@ test("B1 helpBoard: a remediation's help said over another card's board (the six
   readsOn("helpBoard", [["c4", "steering", 12], ["c6", "steady", 48], ["c6", "stuck", 58], ["c6", "steering", 8], ["c5-t02", "steady", 82], ["c5-t02", "steering", 12],
     ["d25", "c4", "steady", 124], ["d25", "c4", "stuck", 30]]);
 });
+
+test("B2 stopAuthored: the stop turn is the authored line, never the model's menu", () => {
+  readsOn("stopAuthored", [["c4", "stuck", 68], ["c5-t01", "stuck", 74], ["c6", "stuck", 72], ["c6", "steering", 50]]);
+});
