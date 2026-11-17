@@ -595,6 +595,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const ownOf = (p) => {
     const t = String(p.text ?? "").trim();
     if (CHECKIN_ONLY.test(t)) return null;
+    // (dc-r8-director28 Brain 044 T4: a joint, a lead-in, an opener, a bridge and a hook own no page — they are said over what is up, nothing if
+    // nothing is up; the page of the part they lead into starts at that part's first word, on every path)
+    if (p.joint || LEAD_KINDS.has(p.kind)) return null;
     switch (p.part) {
       case "aside": return null;
       // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up
@@ -631,8 +634,6 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
     }
   };
   const owns = offs.map(ownOf);
-  // (a seam's joint is said over the board of the part it leads into)
-  for (let k = offs.length - 2; k >= 0; k--) if (offs[k].joint && offs[k].part !== "aside") owns[k] = owns[k + 1];
   const spoken = offs.map((p, k) => ({ ...p, own: owns[k] }));
   // with no line yet (a preselect — her parts are not known; the final line pages from them): the close's page when the move closes a
   // card, else the turn's card's
@@ -655,10 +656,10 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
     if (h && STRICT_PAGES()) pagePredicates(h, spoken, text, { up });
     return h;
   }
-  // (the first page is from the turn's first word when its part starts the turn, or when nothing is up: an empty screen takes the first
-  // board at once)
+  // (the first page is from the turn's first word when its part starts the turn; with nothing up, the screen stays empty until the first
+  // part that owns a board — Brain 044 T4: `from`, that part's first word; else the board up stays until the first page)
   const first = pages[0].atChar === 0 || !up?.board ? pages.shift() : { board: up.board, unit: up.unit };
-  const out = { board: first.board, unit: first.unit };
+  const out = { board: first.board, unit: first.unit, ...(!up?.board && first.atChar > 0 && first.atChar < text.length ? { from: first.atChar } : {}) };
   const sws = pages.filter((p) => p.atChar > 0 && p.atChar < text.length).map((p) => ({ board: p.board, unit: p.unit, atChar: p.atChar, atClause: clauseAt(text, p.atChar) }));
   if (sws.length) { out.switchTo = sws.at(-1); if (sws.length > 1) out.switches = sws; }
   const endUnit = sws.at(-1)?.unit ?? first.unit;
@@ -672,7 +673,7 @@ const sameBoard = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? nu
 export function heldPagesOf(h) {
   if (!h?.board) return [];
   const sws = h.switches ?? (h.switchTo ? [h.switchTo] : []);
-  return [{ atChar: 0, board: h.board, unit: h.unit }, ...sws.map((s) => ({ atChar: s.atChar, board: s.board, unit: s.unit }))];
+  return [{ atChar: h.from ?? 0, board: h.board, unit: h.unit }, ...sws.map((s) => ({ atChar: s.atChar, board: s.board, unit: s.unit }))];
 }
 /** The board up at character `at` of a held turn. */
 export function heldBoardAt(h, at) {
@@ -712,7 +713,7 @@ export function firstUnitOf(kit, skillId) {
  *  is said over the board that was up before it (on an empty screen, the first board may come up early). `spoken`: [{ part, start, own }]. */
 export function pagePredicates(h, spoken, text, { up = null } = {}) {
   const pages = heldPagesOf(h);
-  for (const pg of pages.slice(1)) {
+  for (const pg of pages.filter((p, k) => k > 0 || p.atChar > 0)) {
     const at = spoken.find((p) => p.start === pg.atChar);
     if (!at || !at.own || !sameBoard(at.own.board, pg.board)) throw new Error(`P1: a board change at ${pg.atChar} that is not a part's own board (${at ? at.part : "no part"})`);
   }
@@ -727,6 +728,9 @@ export function pagePredicates(h, spoken, text, { up = null } = {}) {
 /** The held board a turn ends on (the switch's when it switched), as the next turn's `up`. */
 // (dc-r8-director25 H4: a help wording's own page belongs to its part's unit — the board it leaves up is that unit's, by its plain name)
 /** A part that is only a check-in (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
+/** Brain 044 T4: the kinds of part that lead into another and own no page (a closing question's lead-in, a hook said before its first point,
+ *  an opener, the switch line). */
+const LEAD_KINDS = new Set(["leadIn", "hook", "opener", "hindiSwitch"]);
 const CHECKIN_ONLY = /^(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
 const unitUp = (u) => (u == null ? u : String(u).replace(/#help$/, ""));
 export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: unitUp(h.unitAfter && h.unitAfter.atChar >= h.switchTo.atChar ? h.unitAfter.unit : h.switchTo.unit) } : { board: h.board, unit: unitUp(h.unitAfter?.unit ?? h.unit) }) : null);

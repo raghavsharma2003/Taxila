@@ -903,6 +903,9 @@ Object.assign(PREDICATES, D27_PREDICATES);
 // (dc-r8-director27, Brain 042: quick questions, worked examples done with the child, E3's captions)
 import { D28_PREDICATES } from "./d28-predicates.mjs";
 Object.assign(PREDICATES, D28_PREDICATES);
+// (dc-r8-director28, Brain 044: a joint keeps what is up, help as a hard precondition, fewer kinds of turn — d29-predicates.mjs)
+import { D29_PREDICATES } from "./d29-predicates.mjs";
+Object.assign(PREDICATES, D29_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

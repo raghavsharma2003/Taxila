@@ -452,7 +452,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (dc-r7-held-board: a held turn is the held board, then at most one switch — as Studio's heldBoard draws it, kept when up)
       const H = askF.intent.held ?? null;
       // (dc-r8-director27 P1: every change of board her parts make — `switches`, else the one `switchTo`)
-      const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switches ?? (H.switchTo ? [H.switchTo] : [])).map((w) => ({ atChar: w.atChar, boardRef: w.board, scriptBeat: askF.intent.scriptBeat }))]
+      const parts = H ? [{ atChar: H.from ?? 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switches ?? (H.switchTo ? [H.switchTo] : [])).map((w) => ({ atChar: w.atChar, boardRef: w.board, scriptBeat: askF.intent.scriptBeat }))]
         : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (H) {
         let hb = null;
@@ -564,8 +564,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // said over its then-card's board, its unit's once the card is posed)
     const bOf = (b) => (b?.board ? [b.board] : []);
     const helpB = lmB.help && Object.prototype.hasOwnProperty.call(lmB.help, "board") ? (lmB.help.board ? [lmB.help.board] : []) : null;
-    const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: bOf(lmB.bridgeBeat), simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
-      alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: [...bOf(lmB.scriptBeat), ...(lmB.scriptBeat?.kind === "remediation" ? bOf(lmB.cardBeat) : [])], held: bOf(lmB.heldBeat ?? lmB.scriptBeat),
+    // (Brain 044 T8: a bridge or a remediation that owns no board in the script lists none — a bridge's board is the script's bridgeBoard, never
+    // the board of the unit it leads into; a remediation's is its own `board`, never its follow-up card's)
+    const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: lmB.bridgeBeat?.scriptBoard ? bOf(lmB.bridgeBeat) : [], simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
+      alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: bOf(lmB.scriptBeat), held: bOf(lmB.heldBeat ?? lmB.scriptBeat),
       quick: bOf(lmB.scriptBeat), quickReply: [], stepAsk: bOf(lmB.scriptBeat) };
     // (dc-r8-director26 C1: two told steps on one turn — each step's own line is recorded under its own step, the first under stepFrom)
     const stepLines = lmB.stepFrom ? (lmB.rendered ?? []).map((x) => String(x).replace(/\s+/g, " ").trim()) : [];
@@ -574,7 +576,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (main's C1 ruling: the problem said with its first step — the first problemLines lines are the problem's)
     const pL = Number(lmB.problemLines) || 0;
     const stepBeat = (t) => { if (!stepLines.length) return null; const n = stepLines.findIndex((x) => x && String(t ?? "").replace(/\s+/g, " ").includes(x.slice(0, 40))); if (n >= 0) stepAt = n; return stepAt < pL ? "worked:problem" : `worked:step${lmB.stepFrom + stepAt - pL}`; };
-    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !(lmB.gave || lmB.workedDone || lmB.closed || lmB.keyFact || tGuard?.ynFact) && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+    // (Brain 044 T4: a joint, a lead-in, a hook and the switch line own no board: they list none, and `own` says so)
+    const LEAD_KINDS = new Set(["leadIn", "hook", "opener", "hindiSwitch"]);
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const lead = !!pp.joint || LEAD_KINDS.has(pp.kind); const bs = lead ? [] : partBoards[pp.part] ?? []; const o = { part: pp.part, from: atP, beat: pp.part === "close" && !(lmB.gave || lmB.workedDone || lmB.closed || lmB.keyFact || tGuard?.ynFact) && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: bs, own: lead || ["bridge", "aside", "quickReply"].includes(pp.part) && !bs.length ? null : bs[0] ?? null, ...(lead ? { lead: pp.joint ?? pp.kind } : {}) }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);
     const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
       ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };

@@ -715,7 +715,8 @@ function walkNextV2(s, input, prefix, sk) {
     const intoBoard = kind === "hook" ? sk.hook?.board ?? sk.explain?.[0]?.board ?? null : kind === "explain" ? sk.explain?.find((x) => x.id === id)?.board ?? null
       : kind === "worked" ? sk.workedExample?.board ?? null : null;
     const bridgeBoard = w.bridgeBoard ?? intoBoard;
-    const bridgeBeat = bridge && bridgeBoard ? { bridgeBeat: { scriptId: scriptIdOf(kit), skillId, beatId: "bridge", kind: "bridge", board: bridgeBoard } } : {};
+    // (Brain 044 T8: scriptBoard — the board is the script's own bridgeBoard, not the board of the unit the bridge leads into)
+    const bridgeBeat = bridge && bridgeBoard ? { bridgeBeat: { scriptId: scriptIdOf(kit), skillId, beatId: "bridge", kind: "bridge", board: bridgeBoard, ...(w.bridgeBoard ? { scriptBoard: true } : {}) } } : {};
     if (bridge) { delete w.bridge; delete w.bridgeBoard; }
     const bridgeLine = bridge ? [`bridge from what they just did: ${bridge}`] : [];
     const sayFirst = bridge ? { sayFirst: [bridge], bridgeSaid: bridge, ...bridgeBeat } : {};

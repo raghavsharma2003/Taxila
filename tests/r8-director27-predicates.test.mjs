@@ -61,12 +61,13 @@ test("P5 returnLed: a card said again after other parts is led by the back-to jo
     ["c5-t02", "steering", 20], ["c6", "offtopic", 12]]);
 });
 
-test("the predicates' readers: a remediation's own board is its first recorded board; a joint is said over the part it leads into", () => {
+test("the predicates' readers: a remediation's own board is its first recorded board; a joint owns no board (Brain 044 T4: it keeps what is up)", () => {
   const j = JSON.parse(readFileSync(join(DIR, "steady-c5-ch02-t02.json"), "utf8"));
   const parts = partsOf(j.director[24]);
   const rem = parts.find((p) => p.part === "body" && /^rem:/.test(p.beat) && !p.joint);
   assert.equal(rem.own.template, "wholes@1", "the remediation's own board, not its then-card's");
-  assert.equal(parts.find((p) => p.joint)?.own?.template, "wholes@1", "beforeRemediation is said over the remediation's board");
+  // (Brain 044 T4 reverses director27's "a joint is said over the part it leads into": beforeRemediation is said over what is up)
+  assert.equal(parts.find((p) => p.joint)?.own, null, "beforeRemediation owns no board");
   // (a remediation with no board in the script owns none: it keeps what is up)
   const c4 = JSON.parse(readFileSync(join(DIR, "steady-c4-ch05-t01.json"), "utf8"));
   assert.equal(partsOf(c4.director[58]).find((p) => /^rem:/.test(p.beat) && !p.joint && !p.checkin)?.own, null);

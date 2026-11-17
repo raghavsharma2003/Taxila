@@ -17,6 +17,7 @@
 //   returnLed        a card said again after other parts were said since its last telling (a return) is led by the back-to joint or the
 //                    after-key return form
 import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
+import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -46,7 +47,28 @@ const hasJoint = (text, script, kinds) => { const ss = sentencesOf(text).map(nor
  * the part it leads into. The record's `own` is that board when the run wrote it; an older record's `boards` list names a remediation's own
  * board first and its then-card's after it (a remediation with no board lists only the card's).
  */
-export function partsOf(r) {
+/** Brain 044 T4: every joint sentence a turn may say that owns no board — the script's joints (every kind), the closing question's lead-ins,
+ *  the skills' hooks (their interest lines) and bridges, code's fallback joints and seam forms. Normalised sentences. */
+export function leadSentencesOf(script) {
+  const out = new Set();
+  const add = (t) => { if (typeof t !== "string") return; for (const x of sentencesOf(t.replace(/\{\w+\}/g, " "))) { const k = normSentence(x); if (k.split(" ").length >= 2) out.add(k); } };
+  for (const forms of Object.values(script?.joints ?? {})) for (const f of Array.isArray(forms) ? forms : []) { add(typeof f === "string" ? f : f?.hi); add(f?.en); }
+  for (const f of script?.teachback?.leadIn ?? []) { add(f?.hi); add(f?.en); }
+  for (const sk of script?.skills ?? []) { add(sk.bridgeToNext?.hi); add(sk.bridgeToNext?.en); for (const sl of sk.hook?.interestSlots ?? []) { add(sl?.use?.hi); add(sl?.use?.en); } }
+  for (const forms of Object.values(FALLBACK_JOINTS)) for (const f of forms) { add(f.hi); add(f.en); }
+  for (const k of ["beforeWorked", "workedInvite"]) for (const f of [...CODE_SEAM_FORMS[k].hinglish, ...CODE_SEAM_FORMS[k].english]) add(f);
+  return out;
+}
+const LEADS_CACHE = new WeakMap();
+/** Whether a part's words are all lead sentences (a joint, a lead-in, a hook, a bridge, a seam's form on this row). */
+export function isLeadText(text, r, script) {
+  let J = script && typeof script === "object" ? LEADS_CACHE.get(script) : null;
+  if (!J) { J = leadSentencesOf(script); if (script && typeof script === "object") LEADS_CACHE.set(script, J); }
+  const seamForms = new Set((r.seams ?? []).flatMap((s) => [s.form, s.opener?.joint ? s.opener.form : null]).filter(Boolean).flatMap((f) => sentencesOf(f)).map(normSentence));
+  const ss = sentencesOf(text).map(normSentence).filter(Boolean);
+  return ss.length > 0 && ss.every((x) => J.has(x) || seamForms.has(x));
+}
+export function partsOf(r, script = null) {
   const t = String(r.text ?? "");
   const pp = r.pageParts ?? [];
   // (a seam's joint — back-to, before a remediation, before a worked problem, after an aside, after the AI line, after a key's return — leads
@@ -56,9 +78,10 @@ export function partsOf(r) {
   const out = pp.map((p, n) => {
     const end = pp[n + 1]?.from ?? t.length;
     const text = t.slice(p.from ?? 0, end).trim();
-    const joint = forms.has(low(text));
+    const joint = forms.has(low(text)) || isLeadText(text, r, script);
     let own;
-    if (CHECKIN_ONLY.test(text)) own = null;
+    // (Brain 044 T4: a joint, a lead-in, a hook and a bridge own no board — they are said over what is up)
+    if (CHECKIN_ONLY.test(text) || joint) own = null;
     else if (Object.prototype.hasOwnProperty.call(p, "own")) own = p.own ?? null;
     else {
       const b = p.boards ?? [];
@@ -66,8 +89,6 @@ export function partsOf(r) {
     }
     return { part: p.part, beat: String(p.beat ?? ""), from: p.from ?? 0, end, text, joint, checkin: CHECKIN_ONLY.test(text), own };
   });
-  // (a joint leads into the next part: it is said over that part's board)
-  for (let k = out.length - 2; k >= 0; k--) if (out[k].joint) out[k] = { ...out[k], own: out[k + 1].own };
   return out;
 }
 
@@ -87,6 +108,8 @@ export function pagesOf(r, up) {
   // (Studio keeps the board up through her leading joints and brings the held board in at her first unit part: one page more, the first
   // the board up)
   if (hp.length === intent.length + 1 && up && hp[0].template === up.template) pages = [{ from: 0, board: up }, ...intent.map((p, k) => ({ ...p, from: hp[k + 1].from ?? p.from }))];
+  // (Brain 044 T4: with nothing up, the screen is empty until the first part that owns a board — an empty first page, then the intent's)
+  else if (hp.length === intent.length + 1 && !up && hp[0].template == null) pages = intent.map((p, k) => ({ ...p, from: hp[k + 1].from ?? p.from }));
   else if (hp.length === intent.length) pages = intent.map((p, k) => ({ ...p, from: hp[k].from ?? p.from }));
   return { pages, end: pages.at(-1)?.board ?? up ?? null };
 }
@@ -133,7 +156,7 @@ function stateAt(L, r, i, ctx) {
   if (st.at > i) { ctx.o.d27 = null; return stateAt(L, r, i, ctx); }
   if (st.at === i) return st;
   if (st.cur) commit(st, st.cur.r, ctx);
-  const parts = partsOf(r);
+  const parts = partsOf(r, ctx.script);
   const { pages, end } = pagesOf(r, st.up);
   st.cur = { r, parts, pages, end, boardAt: boardAtOf(pages, st.up), boardBefore: boardBeforeOf(pages, st.up), prevIntent: ctx.prevIntent ?? null };
   st.at = i;

@@ -3452,17 +3452,19 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (assembled) {
       const bridgeK = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const simplerK0 = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
+      const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).map((x) => keyS(norm(dot(x))))) : null;
       guard.lineParts = cleanParts([
         // (d28 fix F1: her reply to the child's answer to a return leads the turn — an aside part, the board waits for her first unit part)
         { part: "aside", text: replyP.join(" ") },
         { part: "close", text: prevPart.join(" ") },
         { part: "closed", text: closedP.join(" ") },
-        ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),
+        // (Brain 044 T4: the hook said before its first point leads into it — it owns no page, kind "hook")
+        ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x, ...(hookK?.has(keyS(x)) ? { kind: "hook" } : {}) })),
         ...(asideQ ? [] : [{ part: "aside", text: asideP.join(" ") }]),
         // (Brain 042 Q1: the answer to the quick question — no board of its own: the point's stays up until the card's first word)
         ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
-        ...body.map((x) => ({ part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : {}), part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
         { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),

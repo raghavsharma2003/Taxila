@@ -1285,14 +1285,19 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
         if (sws.length && at <= sws.at(-1).atChar) sws[sws.length - 1] = { ...sw1, atChar: sws.at(-1).atChar }; else sws.push(sw1);
       }
     }
+    // (Brain 044 T4, with nothing up: the screen stays empty until the first word of the part that owns the held board — `from` — never under
+    // a hook, a switch line or a joint before it; an empty first page, then the held board as a switch)
+    const from0 = !keepRef && !pic && Number.isInteger(h.from) && h.from > 0 && h.from < text.length && !(sws.length && sws[0].atChar <= h.from) ? h.from : 0;
+    if (from0) sws.unshift({ board: h.board, unit: h.unit, atChar: from0 });
     const sw = sws.at(-1) ?? null;
     // the held board: the page up when it is this board (its split, too, when no new picture is asked), else drawn new. A turn
     // with a view is never kept (P6): its split is drawn, the held panel still when it was already the page up
-    const base = pic ? pic.board : upKept ?? (same ? { script: keepPage, template: h.board.template, facts: keepPage.facts ?? null, kept: true } : drawRef(h.board, { band, lang }));
-    if (!base?.script) return null;
+    const drawn0 = pic ? pic.board : upKept ?? (same ? { script: keepPage, template: h.board.template, facts: keepPage.facts ?? null, kept: true } : drawRef(h.board, { band, lang }));
+    if (!drawn0?.script) return null;
+    const base = from0 ? { script: { ...drawn0.script, ops: [], facts: null }, template: null, facts: null, blank: true } : drawn0;
     let page0 = base.script, altView = null, altLine = null, panels = null, split = false, altFacts = null;
     if (pic) { page0 = pic.script; split = true; altView = pic.view.view; altLine = pic.line; altFacts = pic.view.facts; panels = [pic.board.script, pic.view.script]; heldCounts.split++; }
-    const screen0 = screenOf({ template: base.template, facts: base.facts ?? {} }, base.facts ?? page0.facts, base.script);
+    const screen0 = base.blank ? { template: null } : screenOf({ template: base.template, facts: base.facts ?? {} }, base.facts ?? page0.facts, base.script);
     const screenA = split ? screenOf({ template: pic.view.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
     if (!sw && base.kept && !split) { heldCounts.kept++;
       // (a held board stands: shown at its end state at once, never drawn again)
@@ -1311,10 +1316,12 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
         }
       }
     }
+    // (an empty first page that could not be joined: the held board from the first word, as before)
+    if (base.blank && script === page0) { script = drawn0.script; lastPage = drawn0.script; lastRef = refKey(h.board); template = drawn0.template; screens = [{ from: 0, ...screenOf({ template: drawn0.template, facts: drawn0.facts ?? {} }, drawn0.facts ?? drawn0.script.facts, drawn0.script) }]; }
     if (!base.kept) heldCounts.drawn++;
     // (main v6.9, recording: the judges could not confirm "beside" — the layout as one field: split or not, and which panels)
     const layout = split ? pic.layout : { split: false };
-    return { ok: true, script, source: "held", by: "script", template, facts: base.facts ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), layout, screen: screens.at(-1), screens,
+    return { ok: true, script, source: "held", by: "script", template, facts: (base.blank ? drawn0.facts : base.facts) ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), layout, screen: screens.at(-1), screens,
       lastRef, lastPage, held: { unit: lastRef === refKey(h.board) ? h.unit ?? null : sw?.unit ?? null, changed: lastRef !== keepRef } };
   } catch { return null; }
 }
