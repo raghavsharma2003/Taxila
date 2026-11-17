@@ -83,7 +83,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // words speak the board; twelve boards a general say did not speak were dropped or moved to the wording that speaks them (the
     // D12 rule, tests/r7-board-ref) — parts 11 → 12, wholes 17 → 20, equal-groups 8 → 9, bars 28 → 35 (25 → 32 views), shape 7 → 8.
     // The new equal-groups and shape boards have no second view: a picture asked for on them redraws the held board with no line)
-    "fraction-parts@1": "12/12", "wholes@1": "20/20", "shade-grid@1": "1/5", "equal-groups@1": "6/9", "compare@1": "1/4",
+    "fraction-parts@1": "12/12", "wholes@1": "21/21", "shade-grid@1": "1/5", "equal-groups@1": "6/9", "compare@1": "1/4",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -96,7 +96,11 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // 7 → 8, with a view); four c5-t02 cards moved from a two-scale line to two unshaded strips (line 63 → 59 and 45 → 41 views,
     // bars 24 → 28, every one with a view); c6 s2 c2 shows both cards on a compare board (measured 22 → 21, compare 3 → 4, no
     // view); c6 s3 rem0's second wording draws its own outline (shape 6 → 7, no view))
-    "fraction-bars@1": "32/35", "fraction-line@1": "41/59", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    // (Learning 016, dc-r8-director27 C, 2026-11-17: c4 s1's rope-and-paper remediation gets its own board, spoken (wholes 20 → 21,
+    // with a view); c5-t01 s1's whole-number-bias remediation gets its own halves-and-fifths line (line 59 → 60, with a view) and its
+    // count-marks remediation's line is the sevenths only, no longer the then-card's two scales (still one line, with a view). The
+    // c5-t02 gap-thinking boards moved from a second wording or a hint to the remediation itself: bars unchanged)
+    "fraction-bars@1": "32/35", "fraction-line@1": "42/60", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 
