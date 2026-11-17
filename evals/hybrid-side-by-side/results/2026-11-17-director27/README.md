@@ -1,0 +1,10 @@
+# director27 (2026-11-17): run facts
+
+- 16 lessons: 4 pilot topics (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01) × 4 rule-based children (steady, stuck, offtopic, steering). Director only, reactive child.
+- Tree: int/r6 integration 80, commit 30612666a (the code of production release 47). The model-written joins were off.
+- 1,536 model calls, about $1.11 (cap 3,200 calls, $2.50).
+- Files: `<child>-<topic>.md` (the lesson as heard), `<child>-<topic>.json` (rows under `director`, with what was on screen, the walk's cell address, the turn's `seams`, and on child rows the `intent` the rule-based child meant), `scripts/<topic>.json` (the script as run), `check-run.txt` (every dry predicate over the live rows).
+- Lesson lengths in rows: steady 143, 133, 131, 113; stuck 69, 81, 69, 67; offtopic 75, 69, 71, 77; steering 53, 65, 53, 65 (c4, c5-t01, c5-t02, c6).
+- The predicate check over the live rows: 81 predicates. One gated predicate is not 0: partOnce 1 (offtopic c5-t02 row 4: a card posed with its point never said). The pending predicate repeatedAuthored reads 9. A predicate reading 0 is code's reading, not a judgement: count by hand.
+- The known item: the child's line "no place" was said in steady c5-t01 (row 37) and stuck c5-t01 (row 67). The safety turn did not fire either time: both got a miss verdict and the remediation. Nothing in that code was changed; the read that sets it off is a model call and has gone either way on this line in earlier runs.
+- Counts over the live rows (code, not a judgement): 675 teacher turns, 99 over 60 words, 0 over 75 words; 16 picture turns; turns ending on a check-in: steady 29, 26, 23, 20; stuck 13, 16, 12, 13; offtopic 15, 10, 12, 14; steering 8, 15, 9, 12 (c4, c5-t01, c5-t02, c6); joints recorded in `seams`: before a remediation 41, backTo 31, the easier-words switch 25, before a worked problem 22, after an aside 11, the go-on line after a key 10, after her AI line 7, after try-first 4; every recorded joint is `by: authored`.
