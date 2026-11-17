@@ -915,8 +915,8 @@ const isTeachBeat = (b) => /(?:^|:)(?:e\d+|bridge|worked(?::(?:problem|step\d+|y
 /** A remediation's say: led into by the miss verdict it remedies, with no seam between them (the order law). */
 const isRemBeat = (b) => /(?:^|:)rem:/.test(b);
 
-/** dc-r8-director25 L2: no turn over 45 words holds two parts with a seam between them where the rule breaks (a point, a bridge, a
- *  worked step or a card begins after another part): such a turn breaks at the last seam before 45 words, on a check-in. A single
+/** dc-r8-director25 L2: no turn over 75 words holds two parts with a seam between them where the rule breaks (a point, a bridge, a
+ *  worked step or a card begins after another part): such a turn breaks at the last seam before 75 words, on a check-in. A single
  *  authored part over 45 words is Learning's to shorten (scripts/lesson-scripts/compile-report.mjs lists them). Gated. */
 export const TWO_PART_CAP = 75;
 PREDICATES.longTwoPart = (L, r) => {
