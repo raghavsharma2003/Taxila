@@ -689,7 +689,7 @@ export function jointErrors(s) {
   // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
   // written before them still passes) (dc-r8-director26 J1: beforeWorked, the lead into a worked problem; optional likewise)
   // (dc-r8-director26 N1, B2: helpToCard, a point's card after its wordings are spent; checkinStop, the stop menu; optional likewise)
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop"].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -896,7 +896,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s));
   return e;
 }
 
@@ -1017,6 +1017,128 @@ export function blindPacket(topicId) {
     examples.push({ id: `${k.skillId}/we`, classLevel: s.classLevel, ...we });
   }
   return { questions, keys, examples };
+}
+
+/** dc-r8-director27, Learning 016 A and D (the walk uses them in Brain 042): where the child said "haan" to a check-in, she now does
+ *  one small thing.
+ *  - `explain[].quick` { prompt, key, accept, say } on every explain beat: a question of 14 words or fewer that the point just said
+ *    or its board shows answers in a word or two; its key is not its card's key (and neither is accepted for the other); `say`
+ *    states the answer in one line of 12 words or fewer, asking nothing.
+ *  - `workedExample.steps[].ask` { prompt, key, accept, right } on at least one step of every worked example of two or more steps:
+ *    the question whose answer is that step's result (14 words or fewer); `right` confirms it with its reason (15 words or fewer);
+ *    its key is not the child's own step's key.
+ *  - Lengths the walk relies on: a worked `problem` 30 words or fewer; a told step ("do: result, kyunki why") 30 or fewer; the
+ *    longest lead-in, the problem, the told steps before the first question and that question 75 or fewer; `wrap.covered` 20 per
+ *    sentence (wrap.ack's 8 is d24's).
+ *  - joints.afterKeyReturn (three forms: after a key, one sentence that says this will come again and that they go back to the
+ *    earlier question) and joints.tiredBye (two forms: one sentence to a child who says she is tired, before the goodbye; no taste
+ *    claim, no promise).
+ *  The rules apply to the four pilots and to any script that declares one of the fields, so the 30 staged scripts are not failed
+ *  for lacking them. */
+export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
+export const D27_JOINTS = ["afterKeyReturn", "tiredBye"];
+export const QUICK_PROMPT_MAX = 14, QUICK_SAY_MAX = 12, ASK_PROMPT_MAX = 14, ASK_RIGHT_MAX = 15, WORKED_PROBLEM_MAX = 30, TOLD_STEP_MAX = 30, WORKED_OPEN_MAX = 75, COVERED_MAX = 20;
+export function isD27(s) {
+  if (D27_PILOTS.includes(s?.topicId)) return true;
+  return (s?.skills ?? []).some((k) => (k.explain ?? []).some((b) => b.quick) || (k.workedExample?.steps ?? []).some((x) => x.ask))
+    || D27_JOINTS.some((j) => s?.joints?.[j]);
+}
+const d27Words = (t) => String(t ?? "").replace(/\{[a-zA-Z]+\}/g, "X").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+const d27Norm = (t) => String(t ?? "").toLowerCase().replace(/[‐–—-]/g, " ").replace(/[^\p{L}\p{N}/.₹ ]+/gu, " ").replace(/\s+/g, " ").trim();
+/** a told step as the walk says it: "do: result, kyunki why" */
+export const toldStepText = (x, l = "hi") => `${x?.do?.[l] ?? ""}: ${x?.result ?? ""}, ${l === "hi" ? "kyunki" : "because"} ${x?.why?.[l] ?? ""}`;
+export function d27Errors(s) {
+  if (!isD27(s)) return [];
+  const e = [];
+  const has = (t, forms) => { const n = ` ${d27Norm(t)} `; return forms.some((f) => { const x = d27Norm(f); return x && n.includes(` ${x} `); }); };
+  const keyed = (q, at, { promptMax, lineField, lineMax }) => {
+    if (!q || typeof q !== "object") { e.push(`${at}: missing`); return false; }
+    for (const l of ["hi", "en"]) {
+      const p = String(q.prompt?.[l] ?? "").trim(), a = `${at}.prompt${l === "en" ? " (en)" : ""}`;
+      if (!p) { e.push(`${a}: empty`); continue; }
+      if (d27Words(p) > promptMax) e.push(`${a}: ${d27Words(p)} words > ${promptMax}`);
+      if (!/[?？]\s*$/.test(p) || (p.match(/[?？]/g) ?? []).length !== 1) e.push(`${a}: one question, ending on it`);
+      const t = String(q[lineField]?.[l] ?? "").trim(), b = `${at}.${lineField}${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${b}: empty`); continue; }
+      if (d27Words(t) > lineMax) e.push(`${b}: ${d27Words(t)} words > ${lineMax}`);
+      if (/[?？]/.test(t)) e.push(`${b}: asks nothing`);
+      if (sentencesOf(t).length !== 1) e.push(`${b}: one sentence`);
+    }
+    if (typeof q.key !== "string" || !q.key.trim()) e.push(`${at}.key: a key`);
+    if (!Array.isArray(q.accept) || !q.accept.length || q.accept.some((x) => typeof x !== "string" || !x.trim())) e.push(`${at}.accept: a list of the ways a child says it`);
+    // (the line said after it states the answer: its key or an accepted form, in either language)
+    const forms = [q.key, ...(q.accept ?? [])];
+    if (q.key && !has(`${q[lineField]?.hi ?? ""}`, forms) && !has(`${q[lineField]?.en ?? ""}`, forms)) e.push(`${at}.${lineField}: states the answer (its key or an accepted form)`);
+    return true;
+  };
+  const same = (a, b) => d27Norm(a) && d27Norm(a) === d27Norm(b);
+  for (const k of s.skills ?? []) {
+    for (const b of k.explain ?? []) {
+      const at = `${k.skillId}/${b.id}.quick`;
+      if (!b.quick) { e.push(`${at}: every explain beat has a quick question { prompt, key, accept, say } (dc-r8-director27)`); continue; }
+      if (!keyed(b.quick, at, { promptMax: QUICK_PROMPT_MAX, lineField: "say", lineMax: QUICK_SAY_MAX })) continue;
+      const card = b.ask;
+      if (card) {
+        const cf = [card.key, ...(card.accept ?? [])], qf = [b.quick.key, ...(b.quick.accept ?? [])];
+        if (cf.some((x) => qf.some((y) => same(x, y)))) e.push(`${at}: its key or an accepted form is the card's (${card.key}): after it the card must still need its own thinking`);
+        for (const l of ["hi", "en"]) if (leaks(b.quick.prompt?.[l] ?? "", card.key) || has(b.quick.say?.[l] ?? "", [card.key])) e.push(`${at}${l === "en" ? " (en)" : ""}: names the card's key ${card.key}`);
+      }
+    }
+    const we = k.workedExample;
+    if (!we) continue;
+    const S = `${k.skillId}/workedExample`;
+    for (const l of ["hi", "en"]) { const n = d27Words(we.problem?.[l]); if (n > WORKED_PROBLEM_MAX) e.push(`${S}.problem${l === "en" ? " (en)" : ""}: ${n} words > ${WORKED_PROBLEM_MAX}`); }
+    const steps = we.steps ?? [];
+    steps.forEach((x, j) => { const n = d27Words(toldStepText(x)); if (n > TOLD_STEP_MAX) e.push(`${S}.steps[${j}]: told, ${n} words > ${TOLD_STEP_MAX}`); });
+    if (steps.length >= 2 && !steps.some((x) => x.ask)) e.push(`${S}: a worked example of ${steps.length} steps asks the child at least one step (steps[].ask, dc-r8-director27)`);
+    steps.forEach((x, j) => {
+      if (!x.ask) return;
+      const at = `${S}.steps[${j}].ask`;
+      if (!keyed(x.ask, at, { promptMax: ASK_PROMPT_MAX, lineField: "right", lineMax: ASK_RIGHT_MAX })) return;
+      const y = we.yourStep;
+      if (y && [x.ask.key, ...(x.ask.accept ?? [])].some((a) => [y.key, ...(y.accept ?? [])].some((b) => same(a, b)))) e.push(`${at}: its key is the child's own step's (${y.key}): ask another step`);
+      if (y) for (const l of ["hi", "en"]) if (has(x.ask.right?.[l] ?? "", [y.key])) e.push(`${at}.right${l === "en" ? " (en)" : ""}: gives the child's own step's answer ${y.key}`);
+      // (its answer is this step's result)
+      if (!has(String(x.result), [x.ask.key, ...(x.ask.accept ?? [])])) e.push(`${at}: its key is not this step's result ("${x.result}")`);
+    });
+    // (the problem is said with what follows it up to the first question: a step's ask, else the child's own step)
+    const first = steps.findIndex((x) => x.ask);
+    const lead = Math.max(0, ...(s.joints?.beforeWorked ?? []).map((f) => d27Words(f?.hi)));
+    const told = (first < 0 ? steps : steps.slice(0, first)).reduce((n, x) => n + d27Words(toldStepText(x)), 0);
+    const q = first < 0 ? we.yourStep?.prompt?.hi : steps[first].ask?.prompt?.hi;
+    const open = lead + d27Words(we.problem?.hi) + told + d27Words(q);
+    if (open > WORKED_OPEN_MAX) e.push(`${S}: the lead-in, the problem${told ? ", the told steps" : ""} and the first question are ${open} words > ${WORKED_OPEN_MAX}`);
+  }
+  for (const l of ["hi", "en"]) for (const c of sentencesOf(s.wrap?.covered?.[l])) if (d27Words(c) > COVERED_MAX) e.push(`wrap.covered${l === "en" ? " (en)" : ""}: "${c.slice(0, 30)}…" ${d27Words(c)} words > ${COVERED_MAX}`);
+  for (const k of s.skills ?? []) for (const l of ["hi", "en"]) if (k.covered && d27Words(k.covered[l]) > COVERED_MAX) e.push(`${k.skillId}.covered${l === "en" ? " (en)" : ""}: ${d27Words(k.covered[l])} words > ${COVERED_MAX}`);
+  const j = s.joints ?? {};
+  const TASTE = /\b(mujhe|mera|meri|mere|achha laga|achha lagta|maza aaya|pasand|i like|i loved|i enjoyed|i feel|i'm (?:happy|sad|glad|proud))\b/i;
+  const PROMISE = /\b(zaroor|pakka|promise|wada|vaada|kal|tomorrow|surely|i will|main\s+\w+\s+(?:dungi|karungi|aaungi))\b/i;
+  for (const [kind, n] of [["afterKeyReturn", 3], ["tiredBye", 2]]) {
+    const forms = j[kind];
+    if (!Array.isArray(forms) || forms.length < n) { e.push(`joints.${kind}: ${n} forms (got ${Array.isArray(forms) ? forms.length : 0}; dc-r8-director27)`); continue; }
+    const seen = new Set();
+    forms.forEach((f, i) => { for (const l of ["hi", "en"]) {
+      const t = String(f?.[l] ?? "").trim(), at = `joints.${kind}[${i}]${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${at}: empty`); continue; }
+      if (sentencesOf(t).length !== 1) e.push(`${at}: one sentence`);
+      if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+      if (d27Words(t) > JOINT_MAX_WORDS) e.push(`${at}: ${d27Words(t)} words > ${JOINT_MAX_WORDS}`);
+      if (/\{[^}]*\}/.test(t)) e.push(`${at}: no slot`);
+      if (TASTE.test(t)) e.push(`${at}: no claim of taste or feeling ("${t.match(TASTE)[0]}")`);
+      if (l === "hi") { const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x); }
+      if (kind === "afterKeyReturn") {
+        if (!/\b(phir|dobara|fir|again)\b/i.test(t)) e.push(`${at}: says this will come again`);
+        if (!/\b(pichhl\w*|pehle wal\w*|wapas|earlier|back)\b/i.test(t)) e.push(`${at}: says they go back to the earlier question`);
+      }
+      if (kind === "tiredBye") {
+        if (PROMISE.test(t)) e.push(`${at}: promises nothing ("${t.match(PROMISE)[0]}")`);
+        if (!/\b(thak|thaka|thaki|thakaan|thakna|tired|aaram|rest)\w*/i.test(t)) e.push(`${at}: speaks to her being tired`);
+        if (/\b(bye|alvida|phir milenge|phir milte|goodbye|see you)\b/i.test(t)) e.push(`${at}: the goodbye is its own line; this one comes before it`);
+      }
+    } });
+  }
+  return e;
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
@@ -1621,7 +1743,8 @@ export function d24Errors(s) {
     if (!x || typeof x !== "object") return;
     if (x.board?.template) items.push({ at: p, x });
     else if (x.key != null && x.prompt) items.push({ at: p, x });
-    for (const [k, v] of Object.entries(x)) if (k !== "board" && k !== "answerBoard" && k !== "viewCaption") walk(v, p ? `${p}.${k}` : k);
+    // (dc-r8-director27: a quick question's key is read off its own point's board by design; it is no later card's answer)
+    for (const [k, v] of Object.entries(x)) if (k !== "board" && k !== "answerBoard" && k !== "viewCaption" && k !== "quick") walk(v, p ? `${p}.${k}` : k);
   };
   (s.skills ?? []).forEach((k, i) => walk(k, `skills[${i}]`));
   const keyHit = (text, key) => {
@@ -1865,3 +1988,4 @@ export function negatedClaimErrors(s) {
   }
   return e;
 }
+
