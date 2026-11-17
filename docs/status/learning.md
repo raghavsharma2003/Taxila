@@ -1058,3 +1058,16 @@ mein se apna barabar ka bhaag leti hai."); c4's rope-and-paper remediation says 
 
 D3: `data/lesson-aside-replies.json` gains `kinds.*.againReplies` (two forms a kind, slot `{phrase}`): her answer when the child
 says the same aside or the same reply a second time in a lesson. Brain reads it in its next order; until then nothing uses it.
+
+## Main loop's read of patch 043 and the worked steps (2026-11-17)
+
+Read from the dry run's steady lessons. Six sentences changed; everything else in 043's list stands as written.
+
+| script | field | old | new | why |
+|---|---|---|---|---|
+| c6 | s1 worked step 2 `ask.right` | Haan, 7 + 9 = 16 m; do bhujayein judi, teesri abhi baaki hai. | Haan, 7 + 9 = 16 m; do bhujayein jud gayi. | the child's own step opens "Teesri bhuja bachi": said twice running |
+| c6 | s2 worked step 2 `ask.right` | Haan, 42 cm: ek lambai aur ek chaudai, yaani aadha chakkar. | Haan, 42 cm: ek lambai aur ek chaudai. | the child's own step opens "Yeh toh aadha chakkar tha" |
+| c6 | s3 worked step 2 `ask.right` | Haan, 80 m: ek lambai aur ek chaudai milkar aadha chakkar. | Haan, 80 m: yeh aadha chakkar hua. | the step's own prompt has just said "Aadha chakkar matlab ek lambai aur ek chaudai" |
+| c6 | s3 worked step 3 `ask.right` | Haan, 160 m, kyunki do aadhe chakkar milke ek poora chakkar. | Haan, 160 m: yeh ek poora chakkar hua. | the step's own prompt has just said "Poora chakkar aadhe ka do guna hai" |
+| c5-t01 | s1 e1 `whyShort` | 0 se 1 ke 3 gaps; pehla isi line par | 0 se 1 ke 3 gaps; 1/3 isi line par | "pehla" had no noun |
+| c5-t02 | s2 c0 `whyShort` | 4/6 mein se 1/6 hatao, 3 hisse bachte | 4/6 mein se 1/6 hatao, 3 hisse bachte hain | clipped |
