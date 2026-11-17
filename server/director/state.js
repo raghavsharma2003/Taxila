@@ -40,7 +40,7 @@ import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
 import { pickHelp, addSaid } from "./help.js";
-import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable } from "./script.js";
+import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
 /** round 7 S3: one live item (TAXILA_R7_ONE_LIVE=off: the 3-turn card cap as before). */
@@ -690,6 +690,7 @@ function walkNextV2(s, input, prefix, sk) {
     const answer = saidIn(we.answer, lang), why = saidIn(we.why, lang);
     return answer ? { workedDone: { answer, why: why ?? "" } } : {};
   };
+  let hookLead = null;
   while (w.i < w.beats.length) {
     const [kind, id] = w.beats[w.i].split(":");
     if (!s.introduced.includes(skillId)) s.introduced.push(skillId);
@@ -712,6 +713,17 @@ function walkNextV2(s, input, prefix, sk) {
       const ks = knowsHookSlot(s, sk); // round 8 K6: the plan's slot (undefined: no plan)
       const slot = ks !== undefined ? ks : hookSlot(sk, s.ctx.interests);
       const use = saidIn(slot?.use, lang);
+      // (dc-r8-director26 C1, main's ruling change 1: the hook never ends on a comprehension check-in. The hook and the first point share a
+      // turn when the two fit in 75 words — with the script's greetSimpler when it is due, and her check-in or the point's card at the end;
+      // the explain branch below says the hook first. When they do not fit the hook ends on its check-in as before: no script gives the
+      // first point a lead-in the child could answer. A request at the greeting is answered by greetSimpler and the hook, on the hook's own
+      // turn, as before — the request's answer stays on its part)
+      const [k1, id1] = String(w.beats[w.i] ?? "").split(":");
+      const b1 = k1 === "explain" ? sk.explain.find((x) => x.id === id1) : null;
+      const it1 = b1 ? friendly(scriptAskItem(skillId, b1.id, b1.ask)) : null;
+      const p1 = b1 ? saidIn(b1.point, lang) : null;
+      if (!bridge && use && p1 && it1 && !gone(it1.id) && w.smaller !== b1.id && !scriptFor(kit)?.script?.recordedRun && !greetSimplerDue(s.lastMove, input)
+        && wordsIn(use, p1) + goOnLeadWords(input, lang) + 4 <= L2_CAP) { hookLead = [use]; continue; }
       return plan("hook", join(prefix, SH.scriptHook({ bridge: !!bridge })), { format: "F4", content: [...bridgeLine, `hook: ${sk.hook.convey}`, ...(use ? [`their world: ${use}`] : [])], ...ref("hook", "hook"),
         ...([bridge, use].some(Boolean) ? { sayFirst: [bridge, use].filter(Boolean) } : {}), ...(bridge ? { bridgeSaid: bridge, ...bridgeBeat } : {}) });
     }
@@ -726,7 +738,8 @@ function walkNextV2(s, input, prefix, sk) {
       activate(s, item);
       return plan("explain", join(prefix, SH.scriptExplainV2({ bridge: !!bridge, board: !!b.board, smaller })), { item, probe: probeFor(item), skillId, format: formatFor(s, kit, skillId),
         content: [...bridgeLine, `the idea: ${b.convey}`, ...(must.length ? [`say these words as they are: ${must.join(", ")}`] : []), ...(point ? [`on the board, point at: ${point}`] : [])],
-        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board, item), ...gaveWorked(), ...sayFirst });
+        mustSay: must, ...(point ? { point } : {}), ...(smaller && s.lastMove?.scriptBeat?.beatId === b.id ? { smaller: true, ...(saidIn(b.simpler, lang) ? { simpler: saidIn(b.simpler, lang) } : {}) } : {}), ...ref("explain", b.id, b.board, item), ...gaveWorked(), ...sayFirst,
+        ...(hookLead ? { sayFirst: hookLead, hookSaid: true } : {}) });
     }
     if (kind === "worked") {
       const we = sk.workedExample;
@@ -742,6 +755,28 @@ function walkNextV2(s, input, prefix, sk) {
         const recital = !!scriptFor(kit)?.script?.recordedRun;
         const problem = [saidIn(we.problem, lang), recital && (we.givens ?? []).length ? `${lang === "english" ? "Given" : "Diya hai"}: ${(we.givens ?? []).map((g) => saidIn(g, lang)).filter(Boolean).join(", ")}` : null,
           recital && saidIn(we.find, lang) ? `${lang === "english" ? "We find" : "Dhoondhna hai"}: ${saidIn(we.find, lang)}` : null].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
+        // (dc-r8-director26 C1, main's ruling change 4: the problem and the first told step share a turn when the two fit in 75 words with
+        // her check-in; a verdict and the beforeWorked joint before them stay when all of it fits, else breakL2 ends them on their own turn.
+        // A worked example of one told step: that step is also the last, so the problem, the step and the child's own step share the turn
+        // when they fit — else the problem alone, and the step with the child's step next)
+        const steps0 = recital ? [] : (we.steps ?? []).map((st) => scriptWorkedStepLine(st, lang)).filter(Boolean);
+        const card0 = saidIn(we.yourStep?.prompt, lang);
+        // (help's go-on line said before this turn counts: input.helpLeadWords)
+        const lead0 = goOnLeadWords(input, lang);
+        if (steps0.length === 1 && card0 && wordsIn(problem, steps0[0], card0) + lead0 + 3 <= L2_CAP) {
+          w.workedStep = 1;
+          s.scriptCard = item; s.phase = "practice";
+          activate(s, item);
+          return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { item, probe: probeFor(item), skillId, format: "F2",
+            content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
+            whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, rendered: [...problem, steps0[0]], problemLines: problem.length, stepFrom: 1, ...ref("worked", "worked", we.board), ...sayFirst });
+        }
+        if (steps0.length > 1 && wordsIn(problem, steps0[0]) + lead0 + 4 <= L2_CAP) {
+          w.workedStep = 1;
+          return plan("worked_example", join(prefix, SH.scriptWorkedProblem()), { skillId, format: "F2", stuck: true,
+            content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, `step 1 of ${steps0.length}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
+            rendered: [...problem, steps0[0]], problemLines: problem.length, stepFrom: 1, ...ref("worked", "worked:step1", we.board), ...sayFirst });
+        }
         return plan("worked_example", join(prefix, SH.scriptWorkedProblem()), { skillId, format: "F2", stuck: true,
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`], whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") },
           rendered: problem, ...ref("worked", "worked:problem", we.board), ...sayFirst });
@@ -760,7 +795,24 @@ function walkNextV2(s, input, prefix, sk) {
         // (dc-r8-director26 C1 item 1: two told steps a turn where the two fit in 75 words with her step frame and the check-in — one
         // check-in at the end of the turn, not one per step. A step said again smaller is said alone; a recorded run walks as it walked)
         const wc = (t) => String(t ?? "").split(/\s+/).filter(Boolean).length;
-        const two = !small && k + 1 < steps.length && w.smallerStep !== k + 1 && !scriptFor(kit)?.script?.recordedRun && wc(steps[k]) + wc(steps[k + 1]) + 3 + 3 + 4 <= L2_CAP;
+        const recorded = !!scriptFor(kit)?.script?.recordedRun;
+        let two = !small && k + 1 < steps.length && w.smallerStep !== k + 1 && !recorded && wc(steps[k]) + wc(steps[k + 1]) + 3 + 3 + 4 <= L2_CAP;
+        // (dc-r8-director26 C1, main's ruling change 4: the turn that holds the last told step holds the child's own step too, so it ends on a
+        // real question, not a check-in — when the step(s) and that card fit in 75 words. When two steps and the card do not fit, the
+        // step before the last is said alone and the last comes with the card. A step said again smaller is help: said alone, as before)
+        const card1 = saidIn(we.yourStep?.prompt, lang);
+        const lead1 = goOnLeadWords(input, lang);
+        const withCard = (n) => !small && !recorded && !!card1 && k + n === steps.length && wc(steps.slice(k, k + n).join(" ")) + wc(card1) + lead1 + 3 <= L2_CAP;
+        if (two && k + 2 === steps.length && !withCard(2) && !!card1 && wc(steps[k + 1]) + wc(card1) + 3 <= L2_CAP) two = false;
+        if (withCard(two ? 2 : 1)) {
+          const n = two ? 2 : 1;
+          w.workedStep = k + n;
+          s.scriptCard = item; s.phase = "practice";
+          activate(s, item);
+          return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { item, probe: probeFor(item), skillId, format: "F2",
+            content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, n === 2 ? `steps ${k + 1} and ${k + 2} of ${steps.length}` : `step ${k + 1} of ${steps.length}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
+            whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, rendered: steps.slice(k, k + n), stepFrom: k + 1, ...ref("worked", "worked", we.board) });
+        }
         if (two) w.workedStep = k + 2;
         return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { skillId, format: "F2", stuck: true,
           content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, two ? `steps ${k + 1} and ${k + 2} of ${steps.length}` : `step ${k + 1} of ${steps.length}`],
@@ -2977,12 +3029,15 @@ function keySaidNoCard(prev) {
 const partOf = (st, mv) => { const b = mv?.scriptBeat; return `${st?.activeItemId ?? st?.splitHold?.activeItemId ?? ""}|${b ? `${b.skillId}:${b.beatId}` : ""}`; };
 /** A give-up: not knowing the answer, or asking for it (dc-r8-director20 G3; "hindi mein batao na" is a request, not one). */
 const GIVE_UP_WORDS = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
+/** dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler is said before the hook. */
+const greetSimplerDue = (lastMove, input) => lastMove?.kind === "greet"
+  && (SAYS_CLARIFY.test(String(input?.text ?? "")) || GIVE_UP_WORDS.test(String(input?.text ?? "")) || ["clarify", "another", "confused"].includes(input?.cls?.request?.type));
 /** "Samajh nahi aaya" and its kin: a clarify, whatever request the reader named. */
 const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu;
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom"];
+const ONE_TURN = ["help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3138,7 +3193,7 @@ function helpBeat(kit, d, board) {
 const helpWords = (d) => fillFriend(String(d.rung?.text ?? d.key?.text ?? d.joint?.text ?? ""), d.friend ?? "").trim();
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
-  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom",
+  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
   // over the help. A picture is that turn's; help says its own wording)
@@ -3675,6 +3730,10 @@ function step0(prev, input) {
   if (p.rendered?.length) move.rendered = [...p.rendered];
   // (dc-r8-director26 C1: two told steps on one turn — the first's number; the beat is the second's)
   if (p.stepFrom) move.stepFrom = p.stepFrom;
+  // (dc-r8-director26 C1, main's ruling: the worked problem said with its first step — its lines lead the rendered ones; the hook said
+  // before the first point, on that point's turn)
+  if (p.problemLines) move.problemLines = p.problemLines;
+  if (p.hookSaid) move.hookSaid = true;
   if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
   if (p.endVerdict) move.endVerdict = p.endVerdict;
   if (p.endKey) move.endKey = p.endKey;
@@ -3760,8 +3819,7 @@ function step0(prev, input) {
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
   // (dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler says what today is about in
   // plainer words, then the hook)
-  if (prev?.lastMove?.kind === "greet" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && move.kind === "hook"
-    && (SAYS_CLARIFY.test(String(input.text ?? "")) || GIVE_UP_WORDS.test(String(input.text ?? "")) || ["clarify", "another", "confused"].includes(input.cls?.request?.type))) {
+  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (move.kind === "hook" || move.hookSaid) && greetSimplerDue(prev?.lastMove, input)) {
     const g = scriptFor(input.kit)?.script?.greetSimpler;
     const gs = g ? saidIn(g, s.ctx?.lang ?? "hinglish") : null;
     if (gs && String(gs).trim()) move.sayFirst = [String(gs).trim(), ...(move.sayFirst ?? [])];
@@ -4128,7 +4186,10 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   // (her line on an aside, and the joint back to the lesson, lead the first part: about a dozen words)
   // (dc-r8-director26: help's joint said before a turn the walk goes on to — the go-on line — leads it too: input.helpLeadWords)
   const lead = (move.asideAck || move.returnReply ? 12 : 0) + lead0;
-  const parts = [{ k: "close", n: C }, { k: "bridge", n: bridge ? wordsIn(bridge) : 0 }, { k: "held", n: wordsIn(held) }, { k: "body", n: wordsIn(body.filter(Boolean)) },
+  // (dc-r8-director26 C1, main's ruling change 4: the problem said with its first step after a verdict takes the beforeWorked joint, about
+  // ten words, before it: they count)
+  const joint = move.problemLines && C > 0 ? 10 : 0;
+  const parts = [{ k: "close", n: C }, { k: "bridge", n: bridge ? wordsIn(bridge) : 0 }, { k: "held", n: wordsIn(held) }, { k: "body", n: wordsIn(body.filter(Boolean)) + joint },
     // (a card asked before comes back with its joint or frame: about seven words)
     { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + (s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn ? 7 : 0) : 0 }].filter((p) => p.n > 0);
   if (parts.length && lead) parts[0] = { ...parts[0], n: parts[0].n + lead };
@@ -4229,6 +4290,40 @@ function breakL2(out, input, closeWords = 0) {
  * board, no point said again). A "pata nahi" / "samajh nahi aaya" to the check-in lets the card go: the walk then re-teaches
  * the same beat smaller with the card live, as it would have.
  */
+/** dc-r8-director26 C1 (main's ruling, changes 2-4): a turn whose teaching and card are one unit, said together up to L2_CAP (75) words —
+ *  { margin }: the words she says beside the authored ones — or null (the turn keeps the cap splitTeach was given).
+ *  - a told worked step (or the problem and its one step) with the child's own step: the card is the step's question;
+ *  - a remediation with its follow-up card: the remediation answers her mistake and the card is its question (its verdict and the
+ *    beforeRemediation joint, about a dozen words, ride before it);
+ *  - a bare point with its own card: nothing else in the turn before them — no verdict, why, key, bridge, held part, hook or reply to an
+ *    aside, no help, and the child's words are not plain (plainWords keeps 45). A point after a close or a bridge keeps 60
+ *    (dc-r8-director24 L; longPointCard). */
+/** The words help's go-on line leads a walk's turn with: the decision's joint when it named one (input.helpLeadWords), else the longest
+ *  afterKeyGoOn form the seam pass may say (12 when the script has none). 0 on a turn help did not lead. */
+export function goOnLeadWords(input, lang = "hinglish") {
+  if (input?.helpLeadWords) return input.helpLeadWords;
+  if (!input?.helpGoOn) return 0;
+  return Math.max(0, ...(jointOf(input?.kit, "afterKeyGoOn", lang) ?? []).map((x) => wordsIn(x))) || 12;
+}
+export function unitTurn(out, input = null, extra = 0, first = 0) {
+  const { state: s, move, ui } = out;
+  // (help's go-on line before the turn, when the decision did not count it)
+  const goOn = input?.helpLeadWords ? 0 : goOnLeadWords(input, s?.ctx?.lang ?? "hinglish");
+  if (move.help || move.request || move.simpler || move.smaller) return null;
+  const askId = String(ui?.ask?.itemId ?? "");
+  if (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(askId)) return { margin: 3 + extra + first + goOn };
+  // (her miss verdict, "<answer> sahi nahi hai." or "Nahi, yeh theek nahi hai.", five words or fewer, and the longest beforeRemediation form)
+  if (move.kind === "reteach" && move.scriptBeat?.kind === "remediation" && move.rendered?.length && /:then:/.test(askId)) {
+    const j = Math.max(0, ...(jointOf(input?.kit, "beforeRemediation", s?.ctx?.lang ?? "hinglish") ?? []).map((x) => wordsIn(x)));
+    // (a close said before the miss verdict — a worked answer, a key — counts as its words)
+    return { margin: 5 + (j || 8) + first + goOn + (move.workedDone || move.gave || move.closed ? extra : 0) };
+  }
+  // (a point said in answer to a request — a give-up or a clarify at the hook, help's go-on line — is help's turn: it keeps its cap)
+  const asked = !!input?.cls?.request?.type || !!input?.helpGoOn || GIVE_UP_WORDS.test(String(input?.text ?? "")) || SAYS_CLARIFY.test(String(input?.text ?? ""));
+  const preceded = asked || extra > 0 || first > 0 || move.asideAck || move.returnReply || move.heldSaid?.length || move.bridgeSaid || move.verdict || move.gave || move.closed || move.workedDone || move.hookSaid;
+  if (move.kind === "explain" && move.point && !move.rendered?.length && !preceded && !s?.ctx?.plainWords) return { margin: 8 };
+  return null;
+}
 function splitTeach(out, input, cap, extra = 0) {
   const { state: s, move, ui } = out;
   const card = ui?.ask?.text;
@@ -4237,8 +4332,16 @@ function splitTeach(out, input, cap, extra = 0) {
   const body = move.smaller && move.simpler && !scriptFor(input.kit)?.script?.recordedRun ? [move.simpler, ...(move.rendered ?? [])] : [move.point, ...(move.rendered ?? [])];
   // (L: what the turn says first — a bridge, a held part — counts toward the turn's words)
   const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0);
-  if (!card || !body.some(Boolean) || !move.itemId || wordsIn(body, card) + 8 + extra + first <= cap) return out;
+  if (!card || !body.some(Boolean) || !move.itemId) return out;
+  // (dc-r8-director26 C1, main's ruling changes 2-4: three turns share their card up to 75 words — a worked step with the child's own step,
+  // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
+  const u = cap < 0 || scriptFor(input.kit)?.script?.recordedRun ? null : unitTurn(out, input, extra, first);
+  if (u ? wordsIn(body, card) + u.margin <= L2_CAP : wordsIn(body, card) + 8 + extra + first <= cap) return out;
   const teach = { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) };
+  // (dc-r8-director26 C1: told steps that could not keep the child's own step are a step's turn again — the last step said is its beat, so
+  // a "pata nahi" to its check-in is that step's help, as before)
+  const lastStep = move.kind === "worked_example" && move.stepFrom && move.rendered?.length ? move.stepFrom + move.rendered.length - (move.problemLines ?? 0) - 1 : 0;
+  if (lastStep > 0 && move.scriptBeat?.beatId === "worked") teach.scriptBeat = { ...move.scriptBeat, beatId: `worked:step${lastStep}` };
   const held = { kind: "practice", shape: SH.splitCard(), itemId: move.itemId, skillId: move.skillId, hintLevel: move.hintLevel,
     ...(move.cardBeat ?? move.scriptBeat ? { scriptBeat: move.cardBeat ?? move.scriptBeat } : {}), ...(move.cardBeat ? { cardBeat: move.cardBeat } : {}),
     ...(move.probe ? { probe: move.probe } : {}), ...(move.format ? { format: move.format } : {}), ...(move.methods ? { methods: move.methods } : {}), ...(move.prefs ? { prefs: move.prefs } : {}) };
@@ -4271,6 +4374,21 @@ function simplerOfBeat(s, kit, move) {
   const b = sk?.explain?.find((x) => x.id === sb.beatId);
   const t = b?.simpler ? saidIn(b.simpler, s.ctx?.lang ?? "hinglish") : null;
   return t && String(t).trim() ? String(t).trim() : null;
+}
+/** dc-r8-director26 C1 (main's ruling change 4): the worked problem and its first step were held behind a verdict, and now come after
+ *  help's go-on line or her reply to an aside: when they no longer fit in 75 words with it, the problem is said alone and the first step
+ *  goes back to the walk (said next, as before the ruling). */
+function problemAlone(out, input) {
+  const { state: s, move } = out;
+  const pL = Number(move?.problemLines) || 0;
+  if (!pL || out.ui?.ask?.itemId || !move.rendered?.length) return out;
+  const lead = goOnLeadWords(input, s.ctx?.lang ?? "hinglish") + (move.asideAck || move.returnReply ? 12 : 0) + wordsIn(move.sayFirst ?? []);
+  if (wordsIn(move.rendered) + lead + 4 <= L2_CAP) return out;
+  const m = { ...move, rendered: move.rendered.slice(0, pL), ...(move.scriptBeat ? { scriptBeat: { ...move.scriptBeat, beatId: "worked:problem" } } : {}) };
+  delete m.problemLines; delete m.stepFrom;
+  if (s.walk && s.walk.skillId === move.skillId && s.walk.workedStep === 1) s.walk.workedStep = 0;
+  s.lastMove = m;
+  return { ...out, move: m, state: s, proposal: directorProposal(m, { ui: out.ui, guidance: s.guidance, purpose: s.purpose }) };
 }
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
@@ -4348,7 +4466,7 @@ function heldTurn(prev, input) {
       if (s.asideAgain?.turn === s.turn) m.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
     }
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
-    const outR = { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+    const outR = problemAlone({ state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) }, input);
     // (dc-r8-director25 L2: the held half said after an aside — her reply, the joint back, the part — breaks as any turn does)
     if (l2On() && !h.teach && !scriptFor(input.kit)?.script?.recordedRun) { const b = breakL2(outR, input, 0); if (b) return b; return splitTeach(outR, input, pointCardCap(s)); }
     return outR;
@@ -4384,8 +4502,8 @@ function heldTurn(prev, input) {
   s.splitHold = undefined;
   s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
   if (h.activeItemId) s.activeItemId = h.activeItemId;
-  const out = { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
-    proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  const out = problemAlone({ state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false,
+    proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) }, input);
   // (the beat a closing half held may itself be too long: its teaching, then its card)
   if (h.teach) return out;
   // (dc-r8-director25 L2: the held half breaks as any turn does)

@@ -1280,17 +1280,18 @@ function seamsOf(out, { state, kit, ui = null }) {
     remediation: state?.lastMove?.scriptBeat?.kind === "remediation",
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
-    greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")), authoredEnd: !!out.guard?.authoredEnd,
+    greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")) || !!state?.lastMove?.hookSaid, authoredEnd: !!out.guard?.authoredEnd,
     // (dc-r8-director25 L2 item 5: the picture's line, and the script's greetSimpler said before the hook, are recorded as what they are)
     caption: out.guard?.captionLine ?? null,
-    greetSimpler: (() => { if (String(state?.lastMove?.kind ?? "") !== "hook") return null; const g = scriptFor(kit)?.script?.greetSimpler; const t = g ? saidIn(g, lang) : null;
+    greetSimpler: (() => { if (String(state?.lastMove?.kind ?? "") !== "hook" && !state?.lastMove?.hookSaid) return null; const g = scriptFor(kit)?.script?.greetSimpler; const t = g ? saidIn(g, lang) : null;
       return t && (state.lastMove.sayFirst ?? []).some((x) => String(x).trim() === String(t).trim()) ? String(t).trim() : null; })(),
     hindiSwitch: out.guard?.hookJoint ?? (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
     hindiSwitchBy: out.guard?.hookJointBy ?? (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
     helpJoint: state?.lastMove?.helpJoint ?? null,
     // (dc-r8-director26 J1 item 3: the worked problem said on this turn — the seam before it takes beforeWorked)
-    workedProblem: (() => { const sb = state?.lastMove?.scriptBeat; if (sb?.beatId !== "worked:problem") return null;
+    // (dc-r8-director26 C1: the problem said with its first step — problemLines — is the worked problem said on this turn too)
+    workedProblem: (() => { const sb = state?.lastMove?.scriptBeat; if (sb?.beatId !== "worked:problem" && !state?.lastMove?.problemLines) return null;
       const we = (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === sb.skillId)?.workedExample; const t = we?.problem ? saidIn(we.problem, lang) : null; return t ? String(t).trim() : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
@@ -2450,7 +2451,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       : notRightLead(key0 && saidNow.includes(key0) ? "" : saidNow, lang)) : null;
     // (v6.9 R6, main on director17 c5-t02 steady 68, c6 steady 66: "Pehle yeh hissa." / "Iska shuruaati hissa dekhte hain." before the
     // problem — the problem is said with no step opener before it)
-    const isProblem = scripted && state.lastMove?.scriptBeat?.beatId === "worked:problem";
+    const isProblem = scripted && (state.lastMove?.scriptBeat?.beatId === "worked:problem" || !!state.lastMove?.problemLines);
     reply = [lead ?? (isProblem && !stepFrame ? null : framing), ...workedLines, ask].filter(Boolean).join(" ").replace(/\s+/g, " ").trim();
     if (problems(reply).includes("bracket")) reply = sayBrackets(reply, state.lastContent ?? [], lang); // spoken: "50 plus 30, that is 80, times 2"
     if (problems(reply).includes("ignored") && bareNumberSaid != null) reply = `${ignoredLead(bareNumberSaid, lang, state)} ${reply}`;

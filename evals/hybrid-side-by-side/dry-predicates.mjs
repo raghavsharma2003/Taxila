@@ -180,7 +180,9 @@ export const PREDICATES = {
     const b = String(r.beat ?? "");
     const m = /^(s\d+):worked:worked:(problem|step\d+)/.exec(b);
     if (!m) return null;
-    if (m[2] === "problem") { ctx.problemSaid.add(m[1]); return null; }
+    // (dc-r8-director26 C1, main's ruling change 4: the problem said with its first step — the turn's beat is the step's, and the problem
+    // is a part of it)
+    if (m[2] === "problem" || (r.pageParts ?? []).some((p) => p.beat === "worked:problem")) { ctx.problemSaid.add(m[1]); return null; }
     return ctx.problemSaid.has(m[1]) ? null : `a worked ${m[2]} before its problem`;
   },
   /** R1 (dc-r8-director20, was J2): the turn after the child answered her return question (or her question after the AI line) opens

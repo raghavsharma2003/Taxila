@@ -539,7 +539,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const stepLines = lmB.stepFrom ? (lmB.rendered ?? []).map((x) => String(x).replace(/\s+/g, " ").trim()) : [];
     // (a frame part — "Pehla kadam dekho." — is the step it opens: the last step matched so far, else the first)
     let stepAt = 0;
-    const stepBeat = (t) => { if (!stepLines.length) return null; const n = stepLines.findIndex((x) => x && String(t ?? "").replace(/\s+/g, " ").includes(x.slice(0, 40))); if (n >= 0) stepAt = n; return `worked:step${lmB.stepFrom + stepAt}`; };
+    // (main's C1 ruling: the problem said with its first step — the first problemLines lines are the problem's)
+    const pL = Number(lmB.problemLines) || 0;
+    const stepBeat = (t) => { if (!stepLines.length) return null; const n = stepLines.findIndex((x) => x && String(t ?? "").replace(/\s+/g, " ").includes(x.slice(0, 40))); if (n >= 0) stepAt = n; return stepAt < pL ? "worked:problem" : `worked:step${lmB.stepFrom + stepAt - pL}`; };
     const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);
     const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
