@@ -21,6 +21,7 @@ test("pickHelp: a remediation with no board of its own returns board null (the b
   const i = sk.remediation.findIndex((r) => sk.checks.some((c) => c.targets === r.targets && c.board));
   assert.ok(i >= 0, "a remediation whose mix-up a check card targets");
   delete sk.remediation[i].board;
+  for (const f of ["sayAlt", "simpler"]) if (sk.remediation[i][f] && typeof sk.remediation[i][f] === "object") delete sk.remediation[i][f].board;
   const part = `${sk.skillId}:rem:${i}`;
   assert.equal(helpPart(s, part).board, null, "no borrowed board");
   const d = pickHelp({ script: s, part, request: "give_up", said: [] });
@@ -34,6 +35,8 @@ test("pickHelp: a remediation with a board of its own (Learning 015) returns tha
   const sk = s.skills[0];
   const own = { template: "fraction-bars@1", params: { bars: [{ parts: 5, shade: 2, label: "" }] } };
   sk.remediation[1].board = own;
+  // (a wording with no board of its own is said over its remediation's)
+  for (const f of ["sayAlt", "simpler"]) if (sk.remediation[1][f] && typeof sk.remediation[1][f] === "object") delete sk.remediation[1][f].board;
   const d = pickHelp({ script: s, part: `${sk.skillId}:rem:1`, request: "clarify", said: [] });
   assert.deepEqual(d.board, own);
 });
@@ -46,14 +49,16 @@ test("director26 c4 steering 12, walked live: the give-up on rem:1 is said over 
   const sk = scriptFor(kit).script.skills[0];
   const rem = sk.remediation[1];
   const c2 = sk.checks.find((c) => c.targets === rem.targets);
-  assert.deepEqual(move.help.board ?? null, rem.board ?? null, "the move carries the decision's board");
+  const rungB = rem[move.help.rung]?.board ?? null;
+  assert.deepEqual(move.help.board ?? null, rungB ?? rem.board ?? null, "the move carries the decision's board (the wording's, else the remediation's)");
   // (the board up: the then-card's, as row 10 ended)
   const up = { board: rem.then.board, unit: `${sk.skillId}:rem:${rem.targets}` };
   const ask = last.p.r.ui?.ask?.text ?? "";
   const list = [{ part: "simpler", text: move.simpler }, ...(ask ? [{ part: "card", text: ask }] : [])];
   const line = list.map((p) => p.text).join(" ");
   const h = heldOf({ move, list, line, kit, up });
-  assert.deepEqual(h.board, rem.board ?? up.board, "her first words are over the remediation's board, or the board up");
+  const wantB = rungB ?? rem.board ?? up.board;
+  assert.deepEqual(h.switchTo && 0 >= h.switchTo.atChar ? h.switchTo.board : h.board, wantB, "her first words are over the wording's or remediation's board, or the board up");
   assert.notDeepEqual(h.board, c2.board, "never the check card's board");
 });
 
