@@ -907,3 +907,21 @@ giveaway) so the gate stays at 0, but the faults are there:
 
 Merge of int/r6 e55b5d936, answering patch 028: c6 gate card `wrongIfMis` "₹400"; five long points cut; counts baseline rewritten.
 Gate EXIT 0.
+
+### Main loop's read of patch 016 (2026-11-17)
+
+Read every quick question and asked step against its point, board and card. Four quick questions asked for something a child knew
+before the lesson, so they tested nothing; rewritten to ask for the point's own idea, each with a number or two-option key:
+
+| Where | Old | New | Key (solved from the point and board) |
+|---|---|---|---|
+| c6 s1 e1 | "Is triangle ki kitni bhujayein hain?" | "Parimap mein kitni bhujaon ki lambai aati hai, do ki ya teeno ki?" | teeno ki: the finger passes all three sides |
+| c6 s2 e3 | "Square ki kitni bhujayein barabar hoti hain?" | "Is square ke kinaare mein 6 cm ki bhuja kitni baar aati hai?" | 4: four equal sides of 6 cm |
+| c6 s3 e1 | "Is square ki bhujayein kaisi hain, barabar ya alag-alag?" | "60 m ka poora kinaara kitni barabar bhujaon se bana hai?" | 4: the point says four, not two |
+| c4 s3 e1 | "Yeh patti kitne barabar tukdon mein bati hai?" | "Rangin tukda is patti ka kaunsa fraction hai?" | 1/2: one of two equal pieces is coloured |
+
+Sentences: c6 s3 e1's point ends "Chaaron bhujayein barabar hain, toh 60 m chaaron mein barabar bat-ta hai." (was "Har bhuja us 60 m
+mein se apna barabar ka bhaag leti hai."); c4's rope-and-paper remediation says "fraction ka naam" where it said "naam" (43 words).
+
+D3: `data/lesson-aside-replies.json` gains `kinds.*.againReplies` (two forms a kind, slot `{phrase}`): her answer when the child
+says the same aside or the same reply a second time in a lesson. Brain reads it in its next order; until then nothing uses it.
