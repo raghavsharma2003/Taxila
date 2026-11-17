@@ -666,9 +666,9 @@ export function jointErrors(s) {
         if (kind === "hindiSwitch") {
           if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
           if (sents.length !== 1) e.push(`${at}: one plain sentence`);
-          if (lang === "hi" && !/\bhindi\b/i.test(t)) e.push(`${at}: says plainly she will say it in Hindi`);
-          // (director20: .en is the English of the same line, "I'll say it in Hindi"; it never promises English)
-          if (lang === "en" && (!/\bhindi\b/i.test(t) || /\benglish\b/i.test(t))) e.push(`${at}: the en is the same line in English: "I'll say it in Hindi"`);
+          // (dc-r8-director25: the switch promises what follows, other and easier words, not "Hindi": the scripts have no Hindi-only
+          // text. The en is the same line in English; it never promises English)
+          if (lang === "en" && /\benglish\b/i.test(t)) e.push(`${at}: the en is the same line in English; it never promises English`);
           if (/\b(baant|milaa|chal|naap|gin)\w*/i.test(t) && lang === "hi") e.push(`${at}: an odd verb for switching language ("${t.match(/\b(baant|milaa|chal|naap|gin)\w*/i)[0]}"): say she will say it in Hindi`);
           if (/\bab se\b|\baage se\b|\bhamesha\b|from now on|\bfrom now\b|from here on/i.test(t)) e.push(`${at}: a switch promises nothing beyond this turn (no "ab se" / "from now on")`);
         }
@@ -686,7 +686,9 @@ export function jointErrors(s) {
       });
     }
   }
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
+  // written before them still passes)
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn"].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
