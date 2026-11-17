@@ -40,6 +40,7 @@ import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
 import { compiledFor } from "./compile.js";
+import { pickHelp, addSaid } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -2961,7 +2962,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
+const ONE_TURN = ["help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3080,8 +3081,237 @@ export function cellAddressOf(prev, input) {
   const heard = (!!live && prev.cardHelp?.id === live && (prev.cardHelp.said ?? []).length > 0) || (lm.clarifyN ?? 0) >= 1;
   return { part, column, help: spent ? "spent" : heard ? "heard" : "fresh" };
 }
+// ───────────── dc-r8-director25 H4: help is one function (server/director/help.js pickHelp) ─────────────
+// Every request for help — a clarify, a give-up, a request for Hindi, a hint after a wrong answer — reaches pickHelp here, once a turn,
+// and nothing else in the walk picks help: it decides the wording, the board that wording is said over and what happens to the card,
+// from the part she is on and the said set (state.said: every sentence she has said in this lesson, with its row, built as turns are
+// said). The count of requests decides nothing. This section only carries the decision out as a move.
+/** The said set with her last turn added (the turn the child is answering now): what she said, as the lesson's own record. */
+function saidNowOf(prev) {
+  let said = prev?.said ?? [];
+  for (const t of prev?.recent ?? []) if (t.who === "teacher" && t.text) said = addSaid(said, t.text, prev?.turn ?? 0);
+  return said.length > 1200 ? said.slice(-1200) : said;
+}
+/** A walk item id ("script:<skill>:ask:e1", "…:then:<mix-up>", "…:c2") or a closed card's beat as a compile part id. */
+function cardPartOf(kit, { itemId = null, beat = null } = {}) {
+  const m = /^script:(.+?):(?:ask:(.+)|then:(.+)|([^:]+))$/.exec(String(itemId ?? ""));
+  const S = m?.[1] ?? beat?.skillId ?? null;
+  if (!S) return null;
+  const b = m ? (m[2] ? (m[2] === "worked" ? "worked" : m[2]) : m[3] ? `then:${m[3]}` : m[4]) : String(beat?.beatId ?? "").replace(/^explain:/, "");
+  if (b === "worked" || /^worked:/.test(b)) return `${S}:worked:yourStep`;
+  const t = /^then:(.+)$/.exec(b);
+  if (t) { const i = (skillScriptOf(kit, S)?.remediation ?? []).findIndex((r) => r.targets === t[1]); return i >= 0 ? `${S}:rem:${i}:then` : null; }
+  if (/^e\d+$/.test(b) && (m?.[2] || beat?.kind === "explain")) return `${S}:${b}:card`;
+  return b ? `${S}:check:${b}` : null;
+}
+/** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk
+ *  graded the answer). null: no help asked. A safety read, a stop or a goodbye is never help (the safety paths are frozen). */
+function helpRequestOf(prev, input) {
+  if (input?.event !== "turn" || input.branch || !scriptOn() || scriptFor(input.kit)?.script?.recordedRun || !prev) return null;
+  const c = input.cls ?? {};
+  if (c.flags?.distress || c.flags?.wantsToStop || prev.safeguard || ["stop", "end", "break", "goodbye"].includes(c.request?.type)) return null;
+  if (["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
+  const col = columnName(input, prev);
+  return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
+}
+/** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
+ *  else the walk's record (cellAddressOf). → { part, keyed } | null — with no part recorded, help is not picked. */
+function helpPartOf(prev, input) {
+  if (prev?.keyedPart && !prev.lastUi?.ask?.itemId) return { part: prev.keyedPart, keyed: true };
+  const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
+  return a?.part && !/:(?:greet|hook)$/.test(a.part) ? { part: a.part, keyed: false } : null;
+}
+/** pickHelp for this turn. → the decision with its request and part, or null. */
+function helpDecision(prev, input, request, said) {
+  const where = helpPartOf(prev, input);
+  if (!where) return null;
+  const script = scriptFor(input.kit)?.script;
+  const d = pickHelp({ script, part: where.part, keyed: where.keyed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
+    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
+  return d ? { ...d, friend: friendOf } : null;
+}
+/** The beat a wording belongs to (its part's), with the board the decision gives it: the move's simplerBeat. */
+function helpBeat(kit, d, board) {
+  const S = String(d.part).split(":")[0];
+  const sk = skillScriptOf(kit, S);
+  const rest = String(d.part).slice(S.length + 1);
+  const base = { scriptId: scriptIdOf(kit), skillId: S };
+  let beat;
+  if (/^e\d+:(?:point|checkin|card)$/.test(rest)) beat = { beatId: rest.split(":")[0], kind: "explain" };
+  else if (/^check:/.test(rest)) beat = { beatId: rest.slice(6), kind: "check" };
+  else if (/^rem:\d+:then$/.test(rest)) beat = { beatId: `then:${sk?.remediation?.[Number(rest.split(":")[1])]?.targets ?? ""}`, kind: "check" };
+  else if (/^rem:\d+$/.test(rest)) beat = { beatId: `rem:${sk?.remediation?.[Number(rest.split(":")[1])]?.targets ?? ""}`, kind: "remediation" };
+  else if (rest === "worked:yourStep") beat = { beatId: "worked", kind: "worked" };
+  else if (/^worked:/.test(rest)) beat = { beatId: rest, kind: "worked" };
+  else beat = { beatId: rest, kind: "explain" };
+  return { ...base, ...beat, ...(board ? { board } : {}) };
+}
+/** The words of a decision, said first: the wording, else the key, else the joint (friend slots filled). */
+const helpWords = (d) => fillFriend(String(d.rung?.text ?? d.key?.text ?? d.joint?.text ?? ""), d.friend ?? "").trim();
+/** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
+const HELP_STRIP = ["point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
+  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame"];
+const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delete o[k]; if (o.sayFirst && !o.heldSaid) delete o.sayFirst; return o; };
+/** Count a help joint said (forms rotate by it), and record the decision on the state. */
+function noteHelp(s, d) {
+  if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
+  s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
+}
+/** The move fields that carry a decision's words: the wording (or the key, or the joint) as the turn's simpler, over its board. */
+function helpFields(kit, d) {
+  const words = helpWords(d);
+  const board = d.key ? d.key.board ?? d.board : d.board;
+  return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: { part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}) },
+    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}) };
+}
+/**
+ * A help turn that stays on the part (the card stays live, or no card is asked yet, or the card is closed with its key): built from the
+ * last state, as the part was left — the walk does not move. The wording is said over its part's board; a key over the answer board,
+ * from its first word; a Hindi request's language is the lesson's from now on, as the walk's language request sets it.
+ */
+function helpStay(prev, input, d) {
+  const s = structuredClone(prev);
+  s.turn += 1;
+  s.cardUnsaid = undefined; s.asideReplyDue = undefined; s.returnAsked = undefined; s.returnAnswer = undefined; s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
+  const req = input.cls?.request;
+  if (d.request === "hindi" && req?.type === "language") {
+    s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true, plainWords: /\b(?:simple|aasan|asaan|easy|saral|seedhi|sidhi)\b/i.test(String(input.text ?? "")) || (s.ctx.plainWords && req.lang === s.ctx.lang) };
+    if (!d.joint) s.langN = (s.langN ?? 0) + 1;
+  }
+  const base = stripHelp(carried(prev.lastMove));
+  const f = helpFields(input.kit, d);
+  const liveId = prev.lastUi?.ask?.itemId ?? null;
+  let move, ui;
+  if (d.card === "keep" && liveId) {
+    move = { ...base, kind: "hint", itemId: liveId, ...f };
+    ui = prev.lastUi;
+    s.activeItemId = liveId;
+  } else if (d.card === "close") {
+    const { cardBeat: _cb, itemId: _i, ...rest } = base;
+    move = { ...rest, kind: "reteach", ...f, stayCheckin: true, checkinOk: true, splitClose: true };
+    ui = { status: "your_turn" };
+    const id = liveId ?? prev.activeItemId ?? null;
+    if (id && !s.skipped.includes(id)) s.skipped.push(id);
+    s.activeItemId = undefined;
+  } else {
+    // (wait: no card is asked — a point's or a remediation's clarify, a worked step, a key's check-in; she ends on the check-in, and a
+    // card held for the turn after stays held)
+    const { itemId: _i, ...rest } = base;
+    move = { ...rest, kind: "reteach", ...f, stayCheckin: true, checkinOk: true };
+    ui = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
+    if (d.keyed) s.activeItemId = undefined;
+  }
+  if (d.request === "hindi") move = { ...move, request: "language", ...(d.joint ? { noLangAck: true } : {}) };
+  else if (d.request === "clarify") move = { ...move, request: "clarify" };
+  noteHelp(s, d);
+  s.lastMove = move; s.moveVoiced = false; s.lastUi = ui;
+  return { state: s, move, moduleCommands: [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
+/**
+ * The help turn, before the walk: a request that stays on its part is answered here (helpStay); one that asks the part's card puts the
+ * card on the table through the walk; one that goes on lets the walk go on. → { out } when answered here, else { decision, input } for
+ * helpAfter to finish on the walk's turn, or null (no help asked, or no part recorded).
+ */
+function helpBefore(prev, input, said) {
+  const request = helpRequestOf(prev, input);
+  if (!request) return null;
+  const d = helpDecision(prev, input, request, said);
+  if (!d) return null;
+  if (d.card === "keep" && !prev.lastUi?.ask?.itemId) return { decision: { ...d, card: "wait" }, stay: true };
+  if (["keep", "wait", "close"].includes(d.card)) return { decision: d, stay: true };
+  if (d.card === "ask") {
+    // (the part's card: held by the point's split, it comes now; not yet on the table, the walk poses it — a repeat of the part's
+    // question, never its point again)
+    if (prev.splitHold?.activeItemId && prev.splitHold.ui?.ask) return { decision: d, held: true };
+    const { request: _rq, ...rest } = input.cls ?? {};
+    return { decision: d, input: { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false, confused: false }, request: { type: "repeat", src: "help_card" } } } };
+  }
+  return { decision: d };
+}
+/** A held card asked now, after the decision's words (a point's or a remediation's give-up or Hindi request): the split's held half. */
+function helpHeld(prev, input, d) {
+  const h = prev.splitHold;
+  const s = structuredClone(prev);
+  s.turn += 1;
+  s.splitHold = undefined; s.cardUnsaid = undefined; s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
+  const req = input.cls?.request;
+  if (d.request === "hindi" && req?.type === "language") { s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true }; if (!d.joint) s.langN = (s.langN ?? 0) + 1; }
+  const f = d.rung || d.joint ? helpFields(input.kit, d) : {};
+  let move = { ...stripHelp(h.move), ...f, ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
+  noteHelp(s, d);
+  s.lastMove = move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
+  return { state: s, move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
+/**
+ * After the walk: a wrong answer's (or an unremedied mix-up's) hint on a live card — the decision's wording before the card's question,
+ * or the key and its why over the answer board with the card closed; a card the walk asked for a request gets the decision's words
+ * first; a request that goes on gets its joint first. The walk's grading and its bookkeeping stand.
+ */
+function helpAfter(prev, input, out, pre, said) {
+  if (!out?.state?.lastMove || input?.event !== "turn") return out;
+  let d = pre?.decision ?? null;
+  const lm = out.state.lastMove;
+  if (!d) {
+    // the hint: a wrong answer on a live script card that the walk did not answer with its remediation
+    const liveId = prev.lastUi?.ask?.itemId ?? null;
+    const col = columnName(input, prev);
+    if (!liveId || !["wrong", "misconception"].includes(col) || !scriptOn() || scriptFor(input.kit)?.script?.recordedRun || input.cls?.flags?.distress || prev.safeguard) return out;
+    if (["safeguard", "wrap", "break", "teachback"].includes(String(lm.kind ?? "")) || lm.scriptBeat?.kind === "remediation" || (out.state.later?.length ?? 0) > (prev.later?.length ?? 0)) return out;
+    // (a card the walk let go on this answer — a compressed skill's opening check, which branches on a miss — gets no help)
+    if (out.ui?.ask?.itemId !== liveId && out.state.activeItemId !== liveId) return out;
+    const part = cardPartOf(input.kit, { itemId: liveId });
+    if (!part) return out;
+    const script = scriptFor(input.kit)?.script;
+    d = pickHelp({ script, part, request: "hint", said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
+    if (!d) return out;
+    d = { ...d, friend: friendOf };
+    const f = helpFields(input.kit, d);
+    const { gave: _g, closed: _c, closedBeat: _cb2, splitClose: _sc, gaveCheck: _gc, ...rest } = stripHelp(lm);
+    if (d.card === "close") {
+      out.state.lastMove = { ...rest, kind: "reteach", ...f, stayCheckin: true, checkinOk: true, splitClose: true,
+        // (the miss verdict is said over the answer board too: the key's board is up from the first word)
+        ...(rest.closeBeat ? { closeBeat: { ...rest.closeBeat, board: f.simplerBeat.board ?? rest.closeBeat.board, answerBoard: true } } : {}) };
+      delete out.state.lastMove.itemId;
+      if (!out.state.skipped.includes(liveId)) out.state.skipped.push(liveId);
+      out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" }; out.ui = { status: "your_turn" };
+      // (the walk does not go on past the key this turn: what it moved on to waits for the next turn)
+      if (out.state.splitHold && !prev.splitHold) out.state.splitHold = undefined;
+    } else {
+      out.state.lastMove = { ...rest, kind: "hint", itemId: liveId, ...f };
+      if (out.ui?.ask?.itemId !== liveId) {
+        out.state.activeItemId = liveId; out.state.lastUi = prev.lastUi; out.ui = prev.lastUi;
+        out.state.skipped = (out.state.skipped ?? []).filter((x) => x !== liveId); out.state.itemsDone = (out.state.itemsDone ?? []).filter((x) => x !== liveId);
+      }
+    }
+    noteHelp(out.state, d);
+    if (out.move) out.move = { ...out.state.lastMove };
+    return out;
+  }
+  // a card the walk asked for a request (the point's or the remediation's): the decision's words, then the card
+  if (pre.input) {
+    const f = d.rung || d.joint ? helpFields(input.kit, d) : {};
+    out.state.lastMove = { ...stripHelp(lm), ...f, ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
+    noteHelp(out.state, d);
+    if (out.move) out.move = { ...out.state.lastMove };
+    return out;
+  }
+  // the lesson goes on (a key's check-in with nothing unsaid, a worked step or a bridge with nothing left): the joint first, never nothing
+  if (d.joint) {
+    const j = fillFriend(d.joint.text, friendOf);
+    out.state.lastMove = { ...lm, sayFirst: [j, ...(lm.sayFirst ?? [])], helpJoint: { kind: d.joint.kind, form: j, by: d.joint.by }, help: { part: d.part, request: d.request, rung: null, card: d.card, ...(d.keyed ? { keyed: true } : {}), joint: d.joint.kind } };
+    if (out.move) out.move = { ...out.state.lastMove };
+  }
+  noteHelp(out.state, d);
+  return out;
+}
 export function step(prev, input) {
-  let out = stepCells(prev, input);
+  // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
+  // after it for a hint, a card asked or a turn that goes on)
+  const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
+  const pre = helpBefore(prev, input, said);
+  let out = pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input);
+  if (!pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre, said);
+  const helped = out?.state?.lastMove?.help ?? null;
   // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
   // ones that return a copy of the last state before step0's own clearing)
   if (input?.event === "turn" && out?.state && out.state.asideReplyDue) out.state.asideReplyDue = undefined;
@@ -3161,88 +3391,16 @@ export function step(prev, input) {
     : (out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0) || lmNow.asideAck && !input.cls?.asideReply ? "aside"
       : lmNow.kind === "break" || lmNow.stopping || out?.move?.stopping || (["wrap", "done"].includes(String(lmNow.kind ?? out?.move?.kind ?? "")) && out?.state?.stoppedEarly && !prev?.stoppedEarly) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
-  const cell = acted ? { part: cell0?.part ?? null, column: acted, help: cell0?.help ?? null } : cell0;
-  // (dc-r8-director24 H3: help remembers the lesson — every sentence she has said, kept as keys; her last turn is added each turn)
+  const cell0h = helped && cell0 ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}) } : cell0;
+  const cell = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
   if (input?.event === "turn" && out?.state) {
-    const lastT = [...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text;
-    const add = lastT ? String(lastT).split(/(?<=[.!?\u0964])\s+/).map((x) => normLine(x).slice(0, 60)).filter((x) => x.split(" ").length >= 4) : [];
-    out.state.saidKeys = [...new Set([...(prev?.saidKeys ?? []), ...add])].slice(-600);
-  }
-  // (dc-r8-director24 H3, main's 035 and 037: a second request for help on the same part — a clarify or a give-up after either, or a
-  // second Hindi request (a Hindi request is no request for help and is counted on its own) — gets the worked answer with its board,
-  // and the card is closed as a key closes it. The count is per part: a new part starts at none)
-  let secondHelp = false;
-  if (cell && ["clarify", "give_up", "hindi"].includes(cell.column) && cell.part && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
-    const kind = cell.column === "hindi" ? "hindi" : "help";
-    const had = prev?.helpAsked?.[cell.part]?.[kind] ?? 0;
-    out.state.helpAsked = { ...(prev?.helpAsked ?? {}), [cell.part]: { ...(prev?.helpAsked?.[cell.part] ?? {}), [kind]: had + 1 } };
-    const liveId = prev?.activeItemId ?? null;
-    const wa = had >= 1 && liveId && /:card$/.test(String(cell.part)) ? workedAnswerOf(out.state, input.kit) : null;
-    if (wa) { secondHelp = true; workedAnswerNow(out, wa, liveId); }
-  }
-  // (dc-r8-director24 H3, main's 035 — c4 steering 32, c5-t01 stuck 6: a give-up on a card got its beat's simpler, a hint for the point,
-  // not the card. A give-up on a live card says the card's own authored simpler — its give_up cell's first line — when the lesson has not
-  // said it yet; else the help below picks as before)
-  if (!secondHelp && cell?.column === "give_up" && /:card$/.test(String(cell.part ?? "")) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
-    const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
-    const liveId = prev?.activeItemId ?? null;
-    const it = liveId ? findItem(prev, input.kit, liveId) : null;
-    const sk = it?.skillId ? skillScriptOf(input.kit, it.skillId) : null;
-    const cardS = it?.scriptAsk && it.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === it.scriptAsk.beatId)?.ask : it?.scriptCheck ? sk?.checks?.find((c) => c.id === it.scriptCheck.checkId) : null;
-    const own = cardS?.simpler ? String(saidIn(cardS.simpler, lang) ?? "").trim() : "";
-    const said0 = out.state.saidKeys ?? [];
-    const spent = (x) => String(x).split(/(?<=[.!?।])\s+/).map((y) => normLine(y).slice(0, 60)).filter((y) => y.split(" ").length >= 4).every((y) => said0.includes(y));
-    if (own && normLine(lm.simpler ?? "") !== normLine(own) && !spent(own) && out.ui?.ask?.itemId === liveId) {
-      const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;
-      out.state.lastMove = { ...rest, simpler: own, smaller: true, helpNew: true, ...(lm.scriptBeat && cardS.board ? { simplerBeat: { ...lm.scriptBeat, board: cardS.board } } : {}) };
-      if (out.move) out.move = { ...out.state.lastMove };
-      const help = out.state.cardHelp?.id === liveId ? out.state.cardHelp : { id: liveId, said: [], misses: 0 };
-      out.state.cardHelp = { ...help, said: [...new Set([...(help.said ?? []), normLine(own)])], counted: out.state.turn };
-    }
-  }
-  // (dc-r8-director23 H2: no help says a sentence from her last two turns. A help turn — a clarify, a give-up, a Hindi request — whose
-  // authored lines are all there says the first help not there: the compiled cell's lines, else the card's simpler, its point's simpler
-  // or the point's second wording; with none left, it stands — the give-up's key comes from giveUpSpent)
-  if (!secondHelp && cell && ["clarify", "give_up", "hindi"].includes(cell.column) && out?.state?.lastMove && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
-    const lm = out.state.lastMove, lang = prev?.ctx?.lang ?? "hinglish";
-    const txt = (x) => (typeof x === "string" ? x : x && typeof x === "object" ? saidIn(x, lang) : null);
-    const said = [lm.point, lm.simpler, ...(lm.rendered ?? []), ...(lm.sayFirst ?? [])].map(txt).filter((x) => x && String(x).trim());
-    const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
-    const said0 = out.state.saidKeys ?? [];
-    // (lesson-wide for a clarify or a give-up; a Hindi request keeps her last two turns — see the status file's question to main)
-    const inLast2 = (x) => last2.includes(normLine(x).slice(0, 50)) || cell.column !== "hindi" && String(x).split(/(?<=[.!?\u0964])\s+/).map((y) => normLine(y).slice(0, 60)).filter((y) => y.split(" ").length >= 4).every((y) => said0.includes(y));
-    // (a Hindi request answered with nothing but the switch line and the card — c4 stuck 10 — has no new words either)
-    if (said.length ? said.every(inLast2) : cell.column === "hindi") {
-      const cl = cellLines(prev, input, cell.column);
-      const liveId = prev?.activeItemId ?? prev?.splitHold?.activeItemId ?? out.state.activeItemId ?? null;
-      const it = liveId ? findItem(prev, input.kit, liveId) : null;
-      const sk = it?.skillId ? skillScriptOf(input.kit, it.skillId) : null;
-      const beat = it?.scriptAsk && it.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === it.scriptAsk.beatId) : null;
-      const cardS = beat ? beat.ask : it?.scriptCheck ? sk?.checks?.find((c) => c.id === it.scriptCheck.checkId) : null;
-      const cands = [...(cl?.lines?.length ? [{ t: cl.lines.join(" "), board: cl.show ?? null }] : []),
-        ...[cardS?.simpler, beat?.simpler, beat?.pointAlt].filter(Boolean).map((x) => ({ t: saidIn(x, lang), board: x.board ?? null }))];
-      const pick = cands.find((c) => c.t && String(c.t).trim() && !inLast2(c.t));
-      let wa = null;
-      if (pick) {
-        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, ...rest } = lm;
-        out.state.lastMove = { ...rest, simpler: String(pick.t).trim(), smaller: true, helpNew: true,
-          ...(lm.scriptBeat ? { simplerBeat: { ...lm.scriptBeat, ...(pick.board ? { board: pick.board } : {}) } } : {}) };
-        if (out.move) out.move = { ...out.state.lastMove };
-      } else if (cell.column === "hindi" && /:worked:yourStep$/.test(String(cell.part ?? "")) && (wa = workedAnswerOf(out.state, input.kit))) {
-        // (dc-r8-director24 H3: a Hindi request with no unsaid wording left on the worked example's step gets the worked answer, on its
-        // board — c6 offtopic 34; main's 037 item 5 keeps it)
-        workedAnswerNow(out, wa, liveId);
-      } else if (cell.column === "hindi") {
-        // (main's 037 item 3: nothing unsaid left — the same part once more in Hindi words, then the card; her switch line says plainly
-        // that it is the same, in Hindi words, and promises nothing else)
-        out.state.lastMove = { ...lm, hindiSame: true };
-        if (out.move) out.move = { ...out.state.lastMove };
-      } else if (out.ui?.ask?.text && cell.column !== "hindi") {
-        // (nothing new left and a card follows: the card alone — c5-t02 offtopic 64, the remediation's simpler said again before its card)
-        const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, ...rest } = lm;
-        out.state.lastMove = { ...rest, helpNone: true };
-        if (out.move) out.move = { ...out.state.lastMove };
-      }
+    out.state.said = said;
+    // (the card just keyed: a give-up or a clarify after its check-in is help on it — the record help reads; a help turn sets it itself)
+    if (!helped) {
+      const lmK = out.state.lastMove ?? {};
+      const keyedNow = !out.ui?.ask?.itemId && !!lmK.closeBeat && !!(lmK.gave?.answer || lmK.closed?.answer || lmK.splitClose || lmK.gaveCheck);
+      if (keyedNow) out.state.keyedPart = cardPartOf(input.kit, { itemId: prev?.activeItemId ?? lmK.itemId ?? null, beat: lmK.closedBeat ?? lmK.closeBeat }) ?? undefined;
+      else if (out.ui?.ask?.itemId || lmK.point || lmK.rendered?.length || lmK.bridgeSaid || lmK.kind === "worked_example") out.state.keyedPart = undefined;
     }
   }
   if (out?.state?.lastMove && input?.event === "turn") {

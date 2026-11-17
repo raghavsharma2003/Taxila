@@ -572,7 +572,11 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const bridgeSk = move?.bridgeBeat?.skillId ?? null;
   const bridgeU = bridgeSk && String(curUnit ?? "").split(":")[0] !== bridgeSk ? (() => { const u = firstUnitOf(kit, bridgeSk); return u ? { unit: u, board: unitBoardOf(kit, u) } : null; })() : null;
   let pastBridge = false;
+  // (dc-r8-director25 H4 item 5: a help wording is said over the board of the part it belongs to — the remediation's, not its then-card's;
+  // a key over its answer board — drawn first, before the card's own board comes back for its question: its own page)
+  const helpU = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board } : null;
   const unitOfPart = (p) => {
+    if (helpU && p.part === "simpler") return helpU;
     if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
     if (p.part === "aside") return null;
     // (dc-r8-director22 B: a bridge changes no board — it rides on the board up; the next unit's board goes up with its first part)
