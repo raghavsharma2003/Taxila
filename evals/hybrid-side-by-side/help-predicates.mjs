@@ -359,6 +359,11 @@ export const HELP_PREDICATES = {
   giveUpAnswered(L, r, i, ctx) {
     const h = helpTurnOf(L, r, i, ctx);
     if (!h || !["give_up", "clarify"].includes(h.request)) return null;
+    // (dc-r8-director27 Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes; a
+    // give-up on a quick question gets its `say` and the card, on an asked step the step told)
+    if (ctx.prevT?.leadAlone) return null;
+    if (h.request === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;
+    if (h.request === "give_up" && /:worked:step\d+:ask$/.test(String(r.cell?.part ?? ""))) return null;
     const ix = helpIndex(ctx);
     const ss = sentencesOf(r.text).map(normSentence);
     if (ss.some((k) => ix.rungs.has(k) || ix.joints.has(k))) return null;

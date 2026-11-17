@@ -4369,6 +4369,7 @@ export function splitLong(out, input) {
   // (dc-r8-director27 Brain 042 Q2: a segment of an asked worked example is said whole with its question — the problem never alone; where a
   // verdict, its why, a bridge or a held part before it make the turn run over 75 words, the break falls after them and that turn ends on
   // its check-in)
+  if (l2On() && !recorded && segmentMove(move, ui, input.kit) && move.returned?.topic && hasClose) return returnApart(out, input);
   if (l2On() && !recorded) { const sg = segmentTurn(out, input, closeWords); if (sg) return sg; }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
     const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
@@ -4706,6 +4707,16 @@ function heldTurn(prev, input) {
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
   // (Brain 042 Q1: the child's line on the point's quick question)
   { const qa = quickAnswer(prev, input, h); if (qa) return qa; }
+  // (Brain 042: a request for Hindi after her reply said alone before a worked segment — the language from now on, and the segment)
+  if (prev.lastMove?.leadAlone && c?.request?.type === "language" && !c.flags?.distress && scriptOn()) {
+    const s = structuredClone(prev);
+    s.turn += 1;
+    s.ctx = { ...s.ctx, lang: c.request.lang ?? "hindi", langPinned: true };
+    s.splitHold = undefined;
+    s.lastMove = h.move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent;
+    if (h.activeItemId) s.activeItemId = h.activeItemId;
+    return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  }
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
   // the held half: director9 c5-t02, a picture asked after "aage badhein?" got the next beat; and on the teaching half not
   // following it is such a request too)

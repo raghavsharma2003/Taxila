@@ -650,6 +650,8 @@ export const ORDER_LAWS = {
     // (dc-r8-director25 H4 item 6: after a key's check-in, with the why's other wording said, help says "we'll meet this again" and the
     // lesson goes on)
     if (helpGoOnSaid(r, ctx)) return null;
+    // (dc-r8-director27 P3: a bridge's help all said — the helpSpent line, then the lesson goes on from the bridge, as help decides)
+    if ((r.seams ?? []).some((x) => x.joint === "helpSpent") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
