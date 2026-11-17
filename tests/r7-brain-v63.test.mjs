@@ -182,23 +182,42 @@ describe("r7-brain-v63.test.mjs", () => {
   };
   const P1_REM = [["stuck", "c6", 46], ["stuck", "c6", 60], ["offtopic", "c6", 56], ["stuck", "c5-t01", 21], ["offtopic", "c5-t01", 6], ["steering", "c5-t01", 7],
     ["stuck", "c5-t02", 13], ["stuck", "c4", 12]];
+  // (dc-r8-director25 H4: a remediation's simpler after a miss was the removed help path's; help is not picked on a recorded run's replay.
+  // The rows are walked live on the run's script: where the live walk's turn is help on a remediation (its ladder: sayAlt, simpler), its
+  // words are on the remediation's board and the card on its own page — item 5, read by helpBoard on the director25 rows)
+  const atLive = async (persona, topic, t) => {
+    const T = TOPIC[topic];
+    const n = rowOf(topic, t);
+    const sc = runScriptOf(RUN, T); delete sc.recordedRun;
+    setScriptForTest(T, sc);
+    const { kit, rows, last } = await replay(RUN, persona, T, n + 1);
+    replyDeps.chat = async () => ({ text: rows[n].text });
+    const out = await textReply({ instructions: instructionsFor(last.state, kit), state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
+    return { out, rows, last, n };
+  };
   test("P1 predicate: a remediation's words on the remediation's board, then the card on its own page (judges' 8 rows)", async () => {
     const bad = [];
+    let read = 0;
     for (const [persona, topic, t] of P1_REM) {
-      const { out, last } = await at(persona, topic, t);
-      const kit = kitOf(topic);
-      const ps = pagesOf(last, out, kit);
-      const lm = last.state.lastMove;
-      const sm0 = String(lm.simpler ?? "").split(/(?<=[.!?])\s/)[0];
-      // (dc-r8-director20 W1: an authored simpler is said as written, in the Hindi mode too — v6.4 L1's rewrite applies to her own words only)
-      const sm = sm0;
-      const onRem = ps.find((p) => sm && p.text.includes(sm.slice(0, 30)));
-      const rem = (kit && last.state.lastMove?.simplerBeat?.board) ?? null;
-      if (!onRem || !String(onRem.scriptBeat?.beatId ?? "").startsWith("rem:")) bad.push(`${persona} ${topic} T${t}: remediation words on ${onRem?.scriptBeat?.beatId} | ${onRem?.text?.slice(0, 80)}`);
-      if (!rem) bad.push(`${persona} ${topic} T${t}: no remediation board`);
-      // (v6.5 P2′: or, when Studio would refuse the card's own page, the card is not said on this turn at all — logged)
-      if (JSON.stringify(ps.at(-1).boardRef) !== JSON.stringify(lm.cardBeat?.board) && !out.guard.cardPageDropped) bad.push(`${persona} ${topic} T${t}: the card is not on its own board`);
+      const { out, last } = await atLive(persona, topic, t);
+      if (!/:rem:\d+$/.test(String(last.state.lastMove?.help?.part ?? "")) || !last.state.lastMove?.simpler) continue;
+      read++;
+      // (a script turn's pages are the held board Brain sends — its first board, and the switch to the card's at the card's first word)
+      const a = whiteboardIntentOf({ lessonId: "v63", turn: last.state.turn, beat: { id: "visual", type: "explain" }, next: last.state, kit: kitOf(topic), item: boardItemOf(last.state, kitOf(topic), findItem), line: { text: out.reply, parts: out.guard.parts } });
+      const h = a.intent.held, lm = last.state.lastMove;
+      const text = out.reply.replace(/\s+/g, " ").trim();
+      const sm = String(lm.simpler).split(/(?<=[.!?])\s/)[0];
+      const at = text.indexOf(sm.slice(0, 30));
+      const pages = h ? [{ from: 0, board: h.board }, ...(h.switchTo ? [{ from: h.switchTo.atChar, board: h.switchTo.board }] : [])] : [];
+      const boardAt = (ch) => [...pages].reverse().find((p) => p.from <= ch)?.board ?? null;
+      if (!h) { bad.push(`${persona} ${topic} T${t}: no held board`); continue; }
+      if (at < 0 || JSON.stringify(boardAt(at)) !== JSON.stringify(lm.simplerBeat?.board)) bad.push(`${persona} ${topic} T${t}: remediation words not on its board | ${JSON.stringify(boardAt(at))}`);
+      if (!/^rem:/.test(String(lm.simplerBeat?.beatId ?? ""))) bad.push(`${persona} ${topic} T${t}: no remediation beat`);
+      const card = String(last.p.r.ui?.ask?.text ?? "").replace(/\s+/g, " ").trim();
+      const ca = card ? text.lastIndexOf(card.slice(0, 30)) : -1;
+      if (ca >= 0 && JSON.stringify(boardAt(ca)) !== JSON.stringify(lm.cardBeat?.board) && !out.guard.cardPageDropped) bad.push(`${persona} ${topic} T${t}: the card is not on its own board`);
     }
+    assert.ok(read >= 2, `${read} of the rows walked live are help on a remediation`);
     assert.deepEqual(bad, []);
   });
 

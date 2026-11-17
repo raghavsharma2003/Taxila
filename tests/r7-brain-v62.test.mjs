@@ -3,7 +3,7 @@
 import { describe, test, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { replay, runScriptOf } from "./fixtures/replay.mjs";
+import { replay, runScriptOf, rowsOf } from "./fixtures/replay.mjs";
 import { textReply, replyDeps } from "../server/brain/say.js";
 import { chat } from "../server/azure.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -31,10 +31,19 @@ describe("r7-brain-v62.test.mjs", () => {
   };
 
   test("H1 replay director10 c4 stuck T23: a wrong answer's hint is the authored simpler, never her hint", async () => {
-    const { out, rows } = await at("stuck", "c4-maths-ch05-t01", 23);
-    assert.match(out.reply, /^2\/1 sahi nahi hai\. /, out.reply);
-    assert.doesNotMatch(out.reply, /Tumne 2 ko upar rakha/, "her hint goes");
-    assert.ok(out.reply.includes("Circle ke 3 barabar hisse hain"), out.reply);
+    // (dc-r8-director25 H4: help is not picked on a recorded run's replay, and walked live this run's walk leaves e3 before row 22 — so the
+    // pin reads the one help function on the run's own script and said set at row 22: the wrong answer's hint is e3's authored simpler,
+    // which the run never said, over e3's board, the card kept; never her hint)
+    const { pickHelp, addSaid } = await import("../server/director/help.js");
+    const T = "c4-maths-ch05-t01";
+    const rows = rowsOf(RUN, "stuck", T);
+    let said = [];
+    for (let i = 0; i < 22; i++) if (rows[i].who === "teacher") said = addSaid(said, rows[i].text, i);
+    const d = pickHelp({ script: runScript(T), part: `${T}-s1:e3:card`, request: "hint", said });
+    assert.equal(d?.card, "keep", JSON.stringify(d));
+    assert.ok(d.rung.text.includes("Circle ke 3 barabar hisse hain"), d.rung.text);
+    assert.doesNotMatch(d.rung.text, /Tumne 2 ko upar rakha/, "her hint goes");
+    assert.deepEqual(d.board?.params, { parts: 3, shade: 1, whole: "circle" });
     assert.ok(!rows[22].text.includes("Circle ke 3 barabar hisse hain"), "(the run said hers)");
   });
 
@@ -115,7 +124,8 @@ describe("r7-brain-v62.test.mjs", () => {
 
   test("Learning (director10 item 1) replay c5-t01 steering T13: 'samajh nahi aaya' straight after a remediation's say gets that remediation's own simpler", async () => {
     const T = "c5-maths-ch02-t01";
-    const sc = runScript(T);
+    // (dc-r8-director25 H4: walked live — help is not picked on a recorded run's replay; the remediation's ladder is sayAlt, simpler)
+    const sc = runScript(T); delete sc.recordedRun;
     const rem = sc.skills[0].remediation.find((r) => r.targets.endsWith("m-not-numbers"));
     rem.simpler = { hi: "Ghar se dukaan tak ki sadak ko barabar tukdon mein socho. Har tukda ek hissa hai.", en: "Think of the road as equal pieces. Each piece is one part." };
     setScriptForTest(T, sc);

@@ -3009,8 +3009,9 @@ function cardPartOf(kit, { itemId = null, beat = null } = {}) {
 /** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk
  *  graded the answer). null: no help asked. A safety read, a stop or a goodbye is never help (the safety paths are frozen). */
 function helpRequestOf(prev, input) {
-  // (a replay of a recorded run is helped too: help is pure, over the run's own script — the old paths that served it are gone)
-  if (input?.event !== "turn" || input.branch || !scriptOn() || !prev) return null;
+  // (a replay of a recorded run walks what that run walked, as heldOf pages it: help is not picked there — its said set is the run's text,
+  // not what the replay says, and every turn help moved would part the replay from the run; a test of help walks the run's script live)
+  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !prev) return null;
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop || prev.safeguard || ["stop", "end", "break", "goodbye"].includes(c.request?.type)) return null;
   if (["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
@@ -3121,8 +3122,7 @@ function helpInput(input, d, liveId) {
   if (d.card === "keep" && d.request === "hint" && liveId && !recordedWalk(input)) return { ...input, helpKeep: liveId };
   return input;
 }
-/** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help gives its wording where the turn stays on
- *  its part, and never moves the replayed walk — no close, no go-on, no card asked by help. */
+/** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help is not picked in it (helpRequestOf). */
 const recordedWalk = (input) => !!scriptFor(input?.kit)?.script?.recordedRun;
 /**
  * The help turn, before the walk. A request that stays on its part is answered here (helpStay). Anything that moves the walk — a card
@@ -3135,7 +3135,7 @@ function helpBefore(prev, input, said) {
   if (!request) {
     // the hint: a wrong answer (or a mix-up) on a live script card — the walk grades it and gives its remediation first, if it has one
     const liveId = prev?.lastUi?.ask?.itemId ?? null;
-    if (!liveId || input?.event !== "turn" || !scriptOn() || input.cls?.flags?.distress || prev.safeguard || !String(liveId).startsWith("script:")) return null;
+    if (!liveId || input?.event !== "turn" || !scriptOn() || recordedWalk(input) || input.cls?.flags?.distress || prev.safeguard || !String(liveId).startsWith("script:")) return null;
     if (!["wrong", "misconception"].includes(columnName(input, prev))) return null;
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
@@ -3143,14 +3143,12 @@ function helpBefore(prev, input, said) {
       lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
     if (!d0) return null;
     const d = { ...d0, friend: friendOf, liveId };
-    if (recordedWalk(input) && d.card !== "keep") return null;
     return { decision: d, input: helpInput(input, d, liveId), hint: true };
   }
   const d0 = helpDecision(prev, input, request, said);
   if (!d0) return null;
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   const d = { ...d0, liveId };
-  if (recordedWalk(input) && !["keep", "wait"].includes(d.card)) return null;
   if (d.card === "keep" && !liveId) return { decision: { ...d, card: "wait" }, stay: true };
   if (d.card === "keep" || d.card === "wait") return { decision: d, stay: true };
   // (the part's card: held by the point's split, it comes now; not yet on the table, the walk poses it — never its point again)
