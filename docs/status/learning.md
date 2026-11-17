@@ -1301,7 +1301,7 @@ were read for the same and left: each is a plainer picture of the same point.
 ### Tests
 
 Run: `tests/r7-board-ref`, `tests/r8-learning-*` (with the new `r8-learning-director28`), `tests/r7-learning-*`, `tests/r8-picture-turn`,
-`tests/r7-compile`: 270 tests, 266 pass, 4 fail. Repinned where 017 changed what they pin, each keeping its rule: `r8-learning-director27`
+`tests/r7-compile`: 277 tests, 273 pass, 4 fail. Repinned where 017 changed what they pin, each keeping its rule: `r8-learning-director27`
 016 A1 → 017 B (a quick only on a pair that does not fit; none kept), 016 A2 (c4: the pieces left are the child's; c6: one asked step,
 no sum asked); `r7-learning-d10` (c6's sides 8, 9, 14); `r7-learning-d11` (the count-marks card shares the ribbon's line; s1 rem2 now
 has its own board); `r7-learning-d12` D12.2 (the worked problem is unmarked now, so the rule is tested by putting the shaded board back);
