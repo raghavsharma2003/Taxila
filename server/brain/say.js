@@ -1356,9 +1356,9 @@ export async function textReply(args) {
  *  turn (after every guard, the assembly, the seam pass and the last drops) is read against the turn's authored plan (say.js assembly,
  *  guard[PLAN]); a part not said whole is a thrown error under tests and the dry harness (TAXILA_STRICT_AUTHORED), and is put back in
  *  its place in production (guard.authoredRestored names it). Order is read too: out of order throws under strict, is counted live.
- *  A safety turn never builds a plan (its own path replaces the whole turn); a turn with no plan is passed through. */
-function holdAuthored(out, args) {
-  const plan = out?.guard?.[PLAN];
+ *  A safety turn never builds a plan (its own path replaces the whole turn); a turn with no plan is passed through. (`plan` is
+ *  passed only by tests.) */
+export function holdAuthored(out, args, plan = out?.guard?.[PLAN]) {
   if (!plan?.length || !out.reply) return out;
   const { missing, order } = authoredLostOf(out.reply, plan);
   if (!missing.length && order) return out;
