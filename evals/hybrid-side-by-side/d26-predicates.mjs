@@ -127,12 +127,18 @@ D26_PREDICATES.asideReplied = function asideReplied(L, r, i, ctx) {
   if (col === "aside") ctx.o.asideSaid.add(said.trim().toLowerCase());
   if (col !== "aside_reply" && !again) return null;
   const clause = said.split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
-  if (!phraseOf(said) && !phraseOf(clause)) return null;
+  // (dc-r8-director27: a phrase that names something — "…, woh" gives the phrase "woh", which says nothing of theirs; the word form with their
+  // word, "Oh, chauka.", is the reply then)
+  const named = (x) => !!x && /\p{L}{4,}/u.test(x);
+  if (!named(phraseOf(said)) && !named(phraseOf(clause))) return null;
   const ss = sentencesOf(norm(r.text));
   const F = (ctx.o.d26ReplyForms ??= asideReplyForms());
   const first = ss[0] ?? "";
   if (BARE_ACK.test(first)) return `a bare "${first}" to "${said.slice(0, 40)}"`;
   const two = ss.slice(0, 2).join(" ");
+  // (a phrase form, or Learning 016's said-again form — "Achha, phir se sixer maara. Theek hai." — is their words said back, whatever word form
+  // its shape also fits)
+  if (F.phrase.some((re) => re.test(first) || re.test(two))) return null;
   if (F.word.some((re) => re.test(first) || re.test(two))) return `the word form "${two.slice(0, 40)}" to "${said.slice(0, 40)}"`;
   return null;
 };

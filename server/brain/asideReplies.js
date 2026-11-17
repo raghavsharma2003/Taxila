@@ -110,15 +110,24 @@ function returnIndexOf(k, topic, asked, lang) {
 const avoidKey = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 export function asideReplyLine(args = {}) {
   const avoid = new Set((args.avoid ?? []).map((x) => avoidKey(typeof x === "string" ? x : x?.k)).filter(Boolean));
-  if (!avoid.size) return asideReplyLine0(args);
   const fresh = (line) => !!line && !String(line).split(/(?<=[.!?\u0964])\s+/).map(avoidKey).filter(Boolean).every((k) => avoid.has(k));
+  // (Learning 016: the kind's againReplies — "Haan, {phrase}, yeh tumne bataya tha." — for an aside or a reply said a second time; `again`:
+  // the caller knows it is said again, so they come first)
+  const againLine = () => {
+    const k = KINDS[asideKindOf(`${args.topic ?? ""} ${args.said ?? ""}`)] ?? KINDS.other;
+    // (the last clause that says something — "…, woh" names nothing)
+    const phrase = String(args.said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? phraseOf(args.said ?? "")
+      // (no phrase of theirs: the word of theirs the word forms would say — "Haan, chauka, yeh tumne bataya tha.")
+      ?? (ASKS_HER.test(String(args.said ?? "")) ? null : replyWordOf(args.words ?? [], args.said ?? ""));
+    const forms = phrase ? (k?.againReplies ?? []) : [];
+    for (let t = 0; t < forms.length; t++) { const f = pickN(forms, (args.n ?? 0) + t); const line = f ? cap(fill(formOf(f, args.lang ?? "hinglish"), { phrase })) : null; if (line && fresh(line)) return { line, form: "again" }; }
+    return null;
+  };
+  if (args.again && !isSadAside(args.said) && !isSadAside(args.topic)) { const a = againLine(); if (a) return a; }
+  if (!avoid.size) return asideReplyLine0(args);
   const first = asideReplyLine0(args);
   if (!first?.line || fresh(first.line) || first.form === "sad") return first;
-  // (Learning 016: the kind's againReplies — "Haan, {phrase}, yeh tumne bataya tha." — for an aside or a reply said a second time)
-  const k = KINDS[asideKindOf(`${args.topic ?? ""} ${args.said ?? ""}`)] ?? KINDS.other;
-  const phrase = phraseOf(String(args.said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? args.said ?? "") ?? phraseOf(args.said ?? "");
-  const again = phrase ? (k?.againReplies ?? []) : [];
-  for (let t = 0; t < again.length; t++) { const f = pickN(again, (args.n ?? 0) + t); const line = f ? cap(fill(formOf(f, args.lang ?? "hinglish"), { phrase })) : null; if (line && fresh(line)) return { line, form: "again" }; }
+  { const a = againLine(); if (a) return a; }
   for (let t = 1; t <= 12; t++) { const r = asideReplyLine0({ ...args, skip: t }); if (r?.line && fresh(r.line)) return r; }
   return first;
 }

@@ -141,7 +141,9 @@ test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met ag
 test("A4: an aside said again is replied to in the child's own words; the reply is never cut to a bare 'Achha.'", async () => {
   const { againInHerWords } = await import("../server/brain/say.js");
   const { asideReplyLine } = await import("../server/brain/asideReplies.js");
-  assert.equal(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [] }), "Achha, pichhli baar sixer maara.");
+  // (dc-r8-director27 P6.3, Learning 016: an aside said again gets the said-again form with the child's own words — c4 offtopic 20 and 32 said
+  // "Achha, pichhli baar sixer maara." twice, word for word)
+  assert.equal(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [] }), "Haan, sixer maara, yeh tumne bataya tha.");
   // (her return in the script's own form — "usmein sabse mazedaar kya hai?" — is a liking question: the phrase form answers it)
   assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, "Achha, toh tumhe chauka sabse achha lagta hai.");
   assert.equal(asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", asked: "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", words: ["batting"] }).line,

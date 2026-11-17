@@ -392,6 +392,9 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const clause = String(said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
   // (dc-r8-director27 P6.3: a reply she has said in this lesson is not said again — the next form)
   const avoid = saidLinesOf(state);
+  // (an aside said again: Learning 016's againReplies first, with the child's own words — never the bare word form)
+  const a = asideReplyLine({ said, topic, lang, n, words, avoid, again: true });
+  if (a?.form === "again" && a.line) return a.line;
   const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid }) : null;
   if (["phrase", "again"].includes(p?.form) && p.line) return p.line;
   const r = asideReplyLine({ said, topic, lang, n, words, avoid });
@@ -2584,7 +2587,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // form when none fits or they asked her back, the sad set when it is sad; her draft's sentences about the aside go)
       const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
       const asked = [...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
-      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state) });
+      // (dc-r8-director27 P6.3: the child's answer is a line they already said in this lesson — the same aside again — Learning 016's againReplies)
+      const kidSaid = (state.recent ?? []).filter((t) => t.who === "child").slice(0, -1).map((t) => String(t.text ?? "").replace(/\s+/g, " ").trim().toLowerCase());
+      const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
+      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), again: againNow });
       j2Line = pick.line ?? null;
       guard.j2 = { said: rr0.said, line: j2Line, form: pick.form };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
