@@ -1910,7 +1910,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   const ownQNote = ownQAnswered ? `They answered your last question with "${saidNow.replace(/"/g, "'").slice(0, 60)}": respond to that answer FIRST (what fits, what does not, the right one if it is not), never skip it and never just echo it back ("you said …"); then the move.` : null;
   // round 7 S2: a worked part code renders (state.lastMove.rendered): her words are one framing sentence, code says the rest
   // (dc-r7-script-walk-v3 V1: a scripted remediation's authored explanation is spoken by code the same way)
-  const workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && ["remediation", "explain"].includes(state.lastMove?.scriptBeat?.kind))) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
+  let workedLines = (kindNow === "worked_example" || (kindNow === "reteach" && ["remediation", "explain"].includes(state.lastMove?.scriptBeat?.kind))) && state.lastMove?.rendered?.length ? state.lastMove.rendered : null;
   const workedNote = workedLines ? "Right after your words, code says what is given, each calculation and the result: write ONE short sentence in the lesson's language that states the problem (who, what, the numbers it gives, what we want to find), with no question." : null;
   // v6.4 H2″: an aside returned to now: her ONE line answering what they said (returnLineOk holds it)
   const retSaid = state.lastMove?.returned?.said ?? null;
@@ -2416,7 +2416,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const remedy = kindNow === "reteach";
     // v6.1 R11 (director9: "Pehla kadam dekho" introduced step 2): a scripted worked step is framed by code with ITS step's
     // label (R7: never her words about which step it is)
-    const stepN = Number(/^worked:step(\d+)$/.exec(String(state.lastMove?.scriptBeat?.beatId ?? ""))?.[1]) || null;
+    // (dc-r8-director26 C1: two told steps on one turn — the frame is the first step's, and the second step, when its own line does not open
+    // on a step word, gets its own label)
+    const stepN = Number(state.lastMove?.stepFrom) || Number(/^worked:step(\d+)$/.exec(String(state.lastMove?.scriptBeat?.beatId ?? ""))?.[1]) || null;
+    if (state.lastMove?.stepFrom && workedLines.length === 2 && !STEP_OPENER.test(String(workedLines[1]).trim())) workedLines = [workedLines[0], `${stepLabel(stepN + 1, lang)} ${workedLines[1]}`];
     // (v6.8 R5, main on director16 ×9: "Pehla kadam dekho. Pehle …": a step that opens on its own "Pehle / First" gets a bare pointer)
     // (v6.9 R6, main on director17: "Ab doosra kadam. Ab upar ka number … Ab agla kadam": one step opener a turn — a step whose own line
     // opens on one gets no label)

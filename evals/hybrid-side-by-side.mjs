@@ -535,7 +535,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const helpB = lmB.help && Object.prototype.hasOwnProperty.call(lmB.help, "board") ? (lmB.help.board ? [lmB.help.board] : []) : null;
     const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: bOf(lmB.bridgeBeat), simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
       alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: [...bOf(lmB.scriptBeat), ...(lmB.scriptBeat?.kind === "remediation" ? bOf(lmB.cardBeat) : [])], held: bOf(lmB.heldBeat ?? lmB.scriptBeat) };
-    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+    // (dc-r8-director26 C1: two told steps on one turn — each step's own line is recorded under its own step, the first under stepFrom)
+    const stepLines = lmB.stepFrom ? (lmB.rendered ?? []).map((x) => String(x).replace(/\s+/g, " ").trim()) : [];
+    // (a frame part — "Pehla kadam dekho." — is the step it opens: the last step matched so far, else the first)
+    let stepAt = 0;
+    const stepBeat = (t) => { if (!stepLines.length) return null; const n = stepLines.findIndex((x) => x && String(t ?? "").replace(/\s+/g, " ").includes(x.slice(0, 40))); if (n >= 0) stepAt = n; return `worked:step${lmB.stepFrom + stepAt}`; };
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);
     const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
       ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };

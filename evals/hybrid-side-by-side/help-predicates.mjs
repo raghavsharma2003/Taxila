@@ -225,6 +225,9 @@ export const HELP_PREDICATES = {
   helpRepeats(L, r, i, ctx) {
     const h = helpTurnOf(L, r, i, ctx);
     if (!h) return null;
+    // (dc-r8-director26: after a key's go-on line the lesson goes on — what follows it is the next part, not help: dry c5-t01 steady 80,
+    // the next point's "Yeh rahi 0 se 2 tak ki line." is 8 words in 10 of the first point's "Yeh rahi 0 se 1 tak ki line.")
+    if (h.keyed && helpGoOnSaid(r, ctx)) return null;
     const ix = helpIndex(ctx);
     const said = saidBefore(L, i);
     // (a key closes a card: its why may have been heard in the card's own help — the key is the close, not help)

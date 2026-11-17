@@ -44,6 +44,12 @@ export function lessonCounts(rows, script) {
   // (main's R8 on the merged H4 + L2 tree: turns that end on a check-in, and check-ins back to back — a check-in turn directly after a
   // check-in turn — so the next judged run's length can be compared with this one)
   c.checkinTurns = 0; c.checkinsBackToBack = 0;
+  // (dc-r8-director26 C1: the longest run of check-in turns back to back, and the longest that no request of the child's drives — a
+  // check-in turn answering her clarify, give-up, Hindi, repeat or picture request breaks the run. The measure: every steady lesson at
+  // most 22 check-in turns and no undriven run over 2)
+  c.checkinRunMax = 0; c.checkinRunUndriven = 0;
+  let run = 0, runU = 0;
+  const REQUESTS = new Set(["clarify", "give_up", "hindi", "repeat", "picture", "try_first"]);
   let lastCheckin = false;
   const heads = jointHeads(script), lastCards = [];
   for (const r of rows) {
@@ -53,6 +59,9 @@ export function lessonCounts(rows, script) {
     const ci = CHECKIN_END.test(String(r.text ?? "").trim());
     if (ci) { c.checkinTurns++; if (lastCheckin) c.checkinsBackToBack++; }
     lastCheckin = ci;
+    const driven = REQUESTS.has(String(r.cell?.column ?? ""));
+    run = ci ? run + 1 : 0; runU = ci && !driven ? runU + 1 : 0;
+    c.checkinRunMax = Math.max(c.checkinRunMax, run); c.checkinRunUndriven = Math.max(c.checkinRunUndriven, runU);
     // (her word total is left out: it moves with every wording edit and would bury the counts that mean something)
     if (n > 60) c.turnsOver60Words++;
     // (dc-r8-director25 L2: turns over 45 words in all, and those that hold two parts with a seam the rule breaks at — the target is 0;
