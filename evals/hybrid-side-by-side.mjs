@@ -223,7 +223,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     let childIntent = null;
     if (child) {
       const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
-      const card = live ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
+      // (Brain 042: a point's quick question or a worked step's asked question is no card — the child answers it from its key by persona)
+      const quick = live?.quick ? { itemId: live.id, kind: live.quick.kind ?? "quick", key: String(live.answer), accept: live.acceptable ?? [] } : null;
+      const card = live && !quick ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
       const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: live.scriptAsk.wrongIfMis ?? null }
         : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null }
         : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: live.scriptThen.wrongIfMis ?? null } : null;
@@ -241,7 +243,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) || (!!qOf(lastT.card) && nrm(lastT.text).endsWith(qOf(lastT.card))) || !!lastT.cardQ
         : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
-        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
+        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, ...(quick && cardSaid ? { quick } : {}), boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
         // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
         ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
         // (dc-r8-director22 harness: the script's teach-back question is on the table — its key, for the steady child)

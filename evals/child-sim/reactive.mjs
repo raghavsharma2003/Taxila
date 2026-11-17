@@ -107,6 +107,8 @@ const LINES = {
   returnedWhat: ["maine do sixer maare the", "hum match jeet gaye the", "maine ek catch pakda tha"],
   returnedDoing: ["batting karna", "bowling karna", "catch pakadna"],
   returnedWho: ["Virat", "Rohit", "Dhoni"],
+  // (d28: "Virat ko tum kiske saath dekhte ho?" — with whom — was answered "fielding karna, catch pakadna")
+  returnedWith: ["papa ke saath dekhta hoon", "bhaiya ke saath dekhta hoon", "dost ke saath dekhta hoon"],
   returnedLike: ["sixer", "batting", "chauka"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
@@ -221,6 +223,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
     return true;
   };
   const misses = new Map();
+  let quickN = 0;                                 // Brain 042: quick questions and asked steps answered so far
   let returnN = 0;
   let clarifyAgain = false;                       // a clarify was said: the next reply says it again                                // v6.11 J2: the n-th answer to her return question in this lesson
   const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
@@ -253,12 +256,12 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         // (the answer fits what she asked: what happened, what they like doing, who, what they like most; else the old lines)
         const q = String(input.teacher ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
         const pool = /kya\s+hua|what\s+happened|kya\s+kiya/i.test(q) ? LINES.returnedWhat : /kya\s+karna|doing/i.test(q) ? LINES.returnedDoing
-          : /\bkaun\b|\bwho\b/i.test(q) ? LINES.returnedWho : /sabse\s+achha\s+kya|sabse\s+mazedaar|achhi\s+baat|like\s+most|best\s+thing|kya\s+lagta/i.test(q) ? LINES.returnedLike : LINES.returned;
+          : /kiske\s+saath|kis\s+ke\s+saath|with\s+whom|who\s+with/i.test(q) ? LINES.returnedWith : /\bkaun\b|\bwho\b/i.test(q) ? LINES.returnedWho : /sabse\s+achha\s+kya|sabse\s+mazedaar|achhi\s+baat|like\s+most|best\s+thing|kya\s+lagta/i.test(q) ? LINES.returnedLike : LINES.returned;
         const k = (h + returnN++) % pool.length;
         return say({ text: pool[k], kind: "event", event: "returned" });
       }
       if (pending.length) {
-        const c0 = input.card ?? input.ask ?? null;
+        const c0 = input.card ?? input.ask ?? input.quick ?? null;
         const cid = input.card?.itemId ?? `${input.beat?.skillId ?? ""}/${input.beat?.beatId ?? ""}`;
         const ctx = { kind: input.beat?.kind ?? null, keyed: !!(c0 && c0.key != null && String(c0.key).trim()), asks: posed(input.teacher),
           howWhy: PROBE_RE.test(String(input.teacher ?? "")), done: !!c0 && answered.has(cid),
@@ -287,6 +290,15 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         const context = `${input.teacher ?? ""} ${kit?.title ?? ""} ${kit?.topicId ?? ""} ${(kit?.skills ?? []).map((k) => k.title ?? "").join(" ")}`;
         const pool = REASONS[sure ? "right" : "unsure"].filter((r) => fitsReason(r, context));
         return say({ text: pick(rng, pool.length ? pool : ["jo aapne dikhaya tha, usse socha"]), kind: "reason" });
+      }
+      // (dc-r8-director27 Brain 042: a point's quick question or a worked step's asked question, answered from its key — the steady child
+      // right; the stuck child a near value or "pata nahi" in turn; the others by their card odds. It is no card: no misses are kept)
+      if (input.quick?.key != null && String(input.quick.key).trim()) {
+        const qk = input.quick;
+        const right = persona === "steady" ? true : persona === "stuck" ? (quickN++ % 2 === 1 && rng() < P.right.card + 0.3) : rng() < P.right.card;
+        if (right) return say({ text: pick(rng, rightForms(qk.key, qk.accept)), kind: "right" });
+        const miss = nearMiss(qk.key, rng);
+        return /pata nahi/.test(miss) || (persona === "stuck" && quickN % 3 === 0) ? say({ text: pick(rng, LINES.dontknow.filter((x) => !/samajh/.test(x))), kind: "dontknow" }) : say({ text: miss, kind: "wrong" });
       }
       const q = input.card ?? input.ask ?? null;
       if (q && q.key != null && String(q.key).trim()) {

@@ -1498,8 +1498,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const card = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
     // (dc-r8-director27 P7: the opener before the first point is recorded as its own kind, not an aside)
     const lp = cleanParts([{ part: "aside", text: j, kind: "opener" }, ...(state.lastMove.sayFirst ?? []).map((x) => ({ part: "held", text: String(x) })), { part: "body", text: String(state.lastMove.point) },
-      card ? { part: "card", text: card } : { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
-    return { reply: joinParts(lp), guard: { hookHelp: state.lastMove.hookHelp, hookJoint: j, hookJointBy: jointsAt(kit, "hindiSwitch", lang, state) ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
+      card ? { part: "card", text: card } : state.lastMove.quick?.prompt ? { part: "quick", text: String(state.lastMove.quick.prompt).replace(/\s+/g, " ").trim(), kind: "quickAsk" } : { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
+    return { reply: joinParts(lp), guard: { hookHelp: state.lastMove.hookHelp, ...(!card && state.lastMove.quick?.prompt ? { quickAsk: String(state.lastMove.quick.prompt).replace(/\s+/g, " ").trim() } : {}), hookJoint: j, hookJointBy: jointsAt(kit, "hindiSwitch", lang, state) ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
   }
   // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
   // as written, after the close of her last answer; no model call)

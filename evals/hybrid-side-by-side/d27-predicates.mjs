@@ -230,6 +230,10 @@ export const D27_PREDICATES = {
     const intent = ctx.prevIntent ?? null;
     const req = ["clarify", "give_up", "hindi"].includes(intent) ? intent : ["clarify", "give_up", "hindi"].includes(col) ? col : null;
     if (!req || /^(?:wrap|safeguard|break|greet|done|hook)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (dc-r8-director27 Brain 042: a give-up on a quick question gets its authored `say` and the card; on an asked step, the step told —
+    // the work order's answer; a clarify or a Hindi request there is help on the point or the step, read below)
+    if (req === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;
+    if (req === "give_up" && /:worked:step\d+:ask$/.test(String(r.cell?.part ?? "")) && /^worked:step\d+$/.test(String((r.pageParts ?? [])[0]?.beat ?? ""))) return null;
     const a = st.addr;
     if (!a || !ctx.script) return null;
     const { parts } = st.cur;

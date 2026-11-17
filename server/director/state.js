@@ -4480,7 +4480,10 @@ function splitTeach(out, input, cap, extra = 0) {
   // point — measured by what is said, it re-poses the card in the same turn, never "Ab isi par ek sawaal" and a wait)
   const body = move.smaller && move.simpler && !scriptFor(input.kit)?.script?.recordedRun ? [move.simpler, ...(move.rendered ?? [])] : [move.point, ...(move.rendered ?? [])];
   // (L: what the turn says first — a bridge, a held part — counts toward the turn's words)
-  const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0);
+  // (d28: her park line on an aside said on this turn — "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye." — leads the turn too: dry c6
+  // steady 36, a park, a point and its card in 61 words)
+  const parkLead = input?.event === "turn" && input.cls?.request?.type === "uptake" && !move.asideAck && !move.returnReply ? 12 : 0;
+  const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0) + parkLead;
   if (!card || !body.some(Boolean) || !move.itemId) return out;
   // (dc-r8-director26 C1, main's ruling changes 2-4: three turns share their card up to 75 words — a worked step with the child's own step,
   // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
