@@ -3006,7 +3006,8 @@ function cardPartOf(kit, { itemId = null, beat = null } = {}) {
 /** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk
  *  graded the answer). null: no help asked. A safety read, a stop or a goodbye is never help (the safety paths are frozen). */
 function helpRequestOf(prev, input) {
-  if (input?.event !== "turn" || input.branch || !scriptOn() || scriptFor(input.kit)?.script?.recordedRun || !prev) return null;
+  // (a replay of a recorded run is helped too: help is pure, over the run's own script — the old paths that served it are gone)
+  if (input?.event !== "turn" || input.branch || !scriptOn() || !prev) return null;
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop || prev.safeguard || ["stop", "end", "break", "goodbye"].includes(c.request?.type)) return null;
   if (["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
@@ -3115,6 +3116,9 @@ function helpInput(input, d, liveId) {
   if (d.card === "ask") return { ...input, cls: { ...rest, outcome: "no_evidence", flags, request: { type: "repeat", src: "help_card" } } };
   return input;
 }
+/** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help gives its wording where the turn stays on
+ *  its part, and never moves the replayed walk — no close, no go-on, no card asked by help. */
+const recordedWalk = (input) => !!scriptFor(input?.kit)?.script?.recordedRun;
 /**
  * The help turn, before the walk. A request that stays on its part is answered here (helpStay). Anything that moves the walk — a card
  * closed with its key, a card asked, the lesson going on — is carried out by the walk on the input helpInput gives it, and helpAfter
@@ -3126,7 +3130,7 @@ function helpBefore(prev, input, said) {
   if (!request) {
     // the hint: a wrong answer (or a mix-up) on a live script card — the walk grades it and gives its remediation first, if it has one
     const liveId = prev?.lastUi?.ask?.itemId ?? null;
-    if (!liveId || input?.event !== "turn" || !scriptOn() || scriptFor(input.kit)?.script?.recordedRun || input.cls?.flags?.distress || prev.safeguard || !String(liveId).startsWith("script:")) return null;
+    if (!liveId || input?.event !== "turn" || !scriptOn() || input.cls?.flags?.distress || prev.safeguard || !String(liveId).startsWith("script:")) return null;
     if (!["wrong", "misconception"].includes(columnName(input, prev))) return null;
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
@@ -3134,12 +3138,14 @@ function helpBefore(prev, input, said) {
       lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
     if (!d0) return null;
     const d = { ...d0, friend: friendOf, liveId };
+    if (recordedWalk(input) && d.card !== "keep") return null;
     return { decision: d, input: helpInput(input, d, liveId), hint: true };
   }
   const d0 = helpDecision(prev, input, request, said);
   if (!d0) return null;
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   const d = { ...d0, liveId };
+  if (recordedWalk(input) && !["keep", "wait"].includes(d.card)) return null;
   if (d.card === "keep" && !liveId) return { decision: { ...d, card: "wait" }, stay: true };
   if (d.card === "keep" || d.card === "wait") return { decision: d, stay: true };
   // (the part's card: held by the point's split, it comes now; not yet on the table, the walk poses it — never its point again)
@@ -3287,7 +3293,8 @@ export function step(prev, input) {
   const cell0h = helped && cell0 ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}) } : cell0;
   const cell = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
   if (input?.event === "turn" && out?.state) {
-    out.state.said = said;
+    // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
+    out.state.said = helped && out.state.lastMove?.simpler ? addSaid(said, out.state.lastMove.simpler, out.state.turn ?? 0) : said;
     // (the card just keyed: a give-up or a clarify after its check-in is help on it — the record help reads; a help turn sets it itself)
     if (!helped) {
       const lmK = out.state.lastMove ?? {};

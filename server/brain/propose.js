@@ -574,9 +574,13 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   let pastBridge = false;
   // (dc-r8-director25 H4 item 5: a help wording is said over the board of the part it belongs to — the remediation's, not its then-card's;
   // a key over its answer board — drawn first, before the card's own board comes back for its question: its own page)
-  const helpU = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board } : null;
+  // (its own page only when its board is not the card's unit's — the board changes once a turn: a verdict before it rides on it, bare, as
+  // say.js says it when the boards differ; the card's board comes back for its question)
+  const helpU0 = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board } : null;
+  const helpU = helpU0 && !(cur?.board && JSON.stringify(cur.board) === JSON.stringify(helpU0.board)) ? helpU0 : null;
   const unitOfPart = (p) => {
     if (helpU && p.part === "simpler") return helpU;
+    if (helpU && HELD_CLOSE.has(p.part) && closing) return helpU;
     if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
     if (p.part === "aside") return null;
     // (dc-r8-director22 B: a bridge changes no board — it rides on the board up; the next unit's board goes up with its first part)
@@ -632,4 +636,6 @@ export function heldPredicates(h, spoken, text, { up = null, noUnit = false } = 
   }
 }
 /** The held board a turn ends on (the switch's when it switched), as the next turn's `up`. */
-export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: h.switchTo.unit } : { board: h.board, unit: h.unitAfter?.unit ?? h.unit }) : null);
+// (dc-r8-director25 H4: a help wording's own page belongs to its part's unit — the board it leaves up is that unit's, by its plain name)
+const unitUp = (u) => (u == null ? u : String(u).replace(/#help$/, ""));
+export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: unitUp(h.switchTo.unit) } : { board: h.board, unit: unitUp(h.unitAfter?.unit ?? h.unit) }) : null);
