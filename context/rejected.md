@@ -3048,3 +3048,7 @@ Tried (round 8, first build): naming keep's tally-four only when no line across 
 
 ## Merged inbox entries (write-up from the entry text)
 - `rj-r8-break-at-45` (2026-11-17): Rejected before release: breaking every turn of parts at 45 words (dc-r8-director25 L2 as first written, from clause 6's pre-set remedy). What broke, on the dry matrix: every steady lesson 185 to 203 rows (the decision's own limit was 170), 54 to 58 check-ins a lesson where there were 13, half of them back to back; a verdict alone with a check-in 22 to 26 times a lesson. A remedy fixed in a clause before a run is still measured before it ships.
+
+
+## Merged inbox entries (write-up from the entry text)
+- `rj-r8-drop-the-break-for-checkins` (2026-11-17): Rejected on measurement before it shipped: dropping the 75-word break of turns without a card to reduce check-ins (the fallback written into dc-r8-director26 clause 4 and its reverse-if). What it did on the dry matrix: check-in turns in the steady lessons 27, 27, 32, 29 to 26, 25, 31, 27, and 15 turns of over 75 words came back. The check-ins come from told steps, help, lone closes and the point-and-card split, not from the break. Second time in two rounds that a remedy written into a clause before a run failed its own measurement (rj-r8-break-at-45 was the first).

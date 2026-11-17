@@ -13,12 +13,15 @@ export function eventsOf({ script, kit, moves, plan, states = null }) {
     const id = m.item?.id ?? m.itemId ?? null;
     if (id && id === plan?.firstCard && !out.some((e) => e.kind === "first")) out.push({ kind: "first", itemId: id });
     else if (id && /^c\d+-/.test(String(id)) && !String(id).startsWith(kit.topicId)) out.push({ kind: "prereq", topicId: String(id).replace(/-(i|rl-)[\w-]*$/, "") });
-    if (b?.kind === "hook") {
+    // (dc-r8-checkins-by-source: the hook is said first on the first point's turn when the two fit — move.hookSaid; the hook is
+    // still a beat of the walk, said before that point)
+    if (b?.kind === "hook" || (b?.kind === "explain" && m.hookSaid)) {
       const sk = script.skills.find((x) => x.skillId === b.skillId);
       const said = [...(m.sayFirst ?? []), ...(m.content ?? [])].join(" ");
       const index = (sk.hook.interestSlots ?? []).findIndex((x) => x.use && said.includes(x.use.hi ?? x.use));
       out.push({ kind: "hook", skillId: b.skillId, index: Math.max(0, index) });
       out.push({ kind: "beat", skillId: b.skillId, beat: "hook" });
+      if (b.kind === "explain") out.push({ kind: "beat", skillId: b.skillId, beat: `explain:${b.beatId}` });
     } else if (b?.kind === "explain") out.push({ kind: "beat", skillId: b.skillId, beat: `explain:${b.beatId}` });
     else if (b?.kind === "worked") out.push({ kind: "beat", skillId: b.skillId, beat: "worked" });
     else if (b?.kind === "check" && !String(b.beatId).startsWith("then:")) out.push({ kind: "beat", skillId: b.skillId, beat: `check:${b.beatId}` });

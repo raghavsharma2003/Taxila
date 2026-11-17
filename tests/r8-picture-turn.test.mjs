@@ -41,6 +41,9 @@ const NO_VIEW = {
   "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question)",
   "equal-groups@1": "unequal sizes [6, 3, 3] (no equal grid)",
   "measured@1": "(none today: the six-sided strip lays out since v6.11)",
+  // (Learning 015, dc-r8-director26 B1: every remediation has its own board; c6 s1's area-and-perimeter remediation shows the unit
+  // squares inside a 4 by 3 rectangle with the total hidden)
+  "area-grid@1": "a grid of unit squares with its total hidden: the squares inside ARE the remediation's point, and no second layout of them exists",
 };
 
 test("P6: pictureTurn — every pilot card and worked board gets its view, with a line naming only what the view draws, or no view and no line (never a line without a view)", () => {
@@ -79,7 +82,11 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
   // (round 4: the remediation boards a general say no longer speaks were removed — D12's held-board rule — so c4, c5-t01 and c6
   // each lose their own copies: parts 12 → 11, equal-groups 11 → 9, line 64 → 62, measured 25 → 21, shape 7 → 6)
   assert.deepEqual(got, {
-    "fraction-parts@1": "11/11", "wholes@1": "17/17", "shade-grid@1": "1/5", "equal-groups@1": "6/8", "compare@1": "1/4",
+    // (Learning 015, dc-r8-director26 B1, 2026-11-17: every remediation in the four pilots has a board of its own, and six second
+    // wordings one more — parts 11 → 13, wholes 17 → 21, equal-groups 8 → 10 (6 → 7 views), bars 28 → 35 (25 → 32), line 59 → 61
+    // (41 → 42), measured 21 → 24 (20 → 23), shape 7 → 9 (still 1 view), area-grid 0 → 1 (no view). Five of the new boards have
+    // no second view: a picture asked for on them redraws the held board with no line. Studio to say which should get one)
+    "fraction-parts@1": "13/13", "wholes@1": "21/21", "shade-grid@1": "1/5", "equal-groups@1": "7/10", "compare@1": "1/4", "area-grid@1": "0/1",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -92,7 +99,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // 7 → 8, with a view); four c5-t02 cards moved from a two-scale line to two unshaded strips (line 63 → 59 and 45 → 41 views,
     // bars 24 → 28, every one with a view); c6 s2 c2 shows both cards on a compare board (measured 22 → 21, compare 3 → 4, no
     // view); c6 s3 rem0's second wording draws its own outline (shape 6 → 7, no view))
-    "fraction-bars@1": "25/28", "fraction-line@1": "41/59", "measured@1": "20/21", "shape@1": "1/7" }, JSON.stringify(got));
+    "fraction-bars@1": "32/35", "fraction-line@1": "42/61", "measured@1": "23/24", "shape@1": "1/9" }, JSON.stringify(got));
   void none;
 });
 

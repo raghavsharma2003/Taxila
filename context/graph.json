@@ -29504,6 +29504,34 @@
    "at": "2026-11-17",
    "title": "Open teaching question after director26: worked examples are told to the child, who does one step at the end; judges in director24, 25 and 26 list it under what a parent would still find wrong, and the step turns' check-ins are where the tedium is. Candidate: each told step ends on a small question of its own with a verified key, so the check-in becomes work. Changes the script format and the walk; waits until four topics pass the gate as it stands.",
    "source": "inbox/r8-main-42.json"
+  },
+  {
+   "id": "ms-r8-checkins-by-source",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "Check-in turns measured on the dry matrix before director27 (a check-in turn is a teacher turn ending on a check-in form). Steady lessons (c4, c5-t01, c5-t02, c6): the code director25 ran 14, 12, 13, 13 (54 in all); the run judged tedious (director26, live) 25, 29, 32, 24; dc-r8-director26 C1 as built 27, 27, 32, 29 with a run of four in c6; C1 with the 75-word break dropped 26, 25, 31, 27 and 15 turns over 75 words back; as integrated after four source-aimed changes 29, 26, 23, 20 with one undriven run of three. By what the turn holds, four steady lessons, director25's code to C1 as built: told steps 9 to 26, help or re-teach 14 to 28, a close or remediation alone 4 to 16, a point alone 6 to 14, a verdict with a new point 21 to 27, the hook 0 to 4. 16 lessons as integrated: 675 teacher turns, 247 ending on a check-in (297 before), 100 over 60 words (65 before), 0 over 75. The scripted child's draws shift with turn shape, so one lesson's count moves by a few.",
+   "source": "inbox/r8-main-43.json"
+  },
+  {
+   "id": "dc-r8-checkins-by-source",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "dc-r8-director26's C1 measure (at most 22 check-in turns in a steady lesson) was not met, and its fallback (drop the break of turns without a card) was measured and does not act on the measure, so it is not applied. Instead four changes aimed at the counted sources: the hook is said with the first point; a bare point and its card share a turn up to 75 words (60 stays after a close or bridge); a remediation and its follow-up card share a turn up to 75; a worked example's problem goes with its first told step and its last told step with the child's own step. Integrated with the measure still unmet in three lessons (29, 26, 23, 20); director27's judges decide. Reverse: two judges still find the check-ins tedious, then the comprehension check-in is replaced where they name it by small authored questions with keys (script format change); two judges find a point with its card or a remediation with its card too much in one breath at 61 to 75 words, then those two go back to 60.",
+   "source": "inbox/r8-main-43.json"
+  },
+  {
+   "id": "rj-r8-drop-the-break-for-checkins",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "Rejected on measurement before it shipped: dropping the 75-word break of turns without a card to reduce check-ins (the fallback written into dc-r8-director26 clause 4 and its reverse-if). What it did on the dry matrix: check-in turns in the steady lessons 27, 27, 32, 29 to 26, 25, 31, 27, and 15 turns of over 75 words came back. The check-ins come from told steps, help, lone closes and the point-and-card split, not from the break. Second time in two rounds that a remedy written into a clause before a run failed its own measurement (rj-r8-break-at-45 was the first).",
+   "source": "inbox/r8-main-43.json"
+  },
+  {
+   "id": "ms-r8-integration-80-dry",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "Integration 80 (dc-r8-director26 built: help's board from the help function on every path with a throw in test and dry runs; the authored stop line; no request met with nothing; one joint at a seam; a skill's own remediation; the check-in changes; Learning 015: 17 remediation boards, 31 hints rewritten, second wordings, told steps of 30 words, wrap forms) on the dry matrix: 81 predicates, every gated one 0; repeatedAuthored (pending) 9. Each new or rewritten predicate reads non-zero on the director26 rows the judges named (helpBoard 6 of 6; stopAuthored 4 of 4; goOnStacked 5 of 5; and the rest in tests/r8-director26-predicates.test.mjs). Dry only.",
+   "source": "inbox/r8-main-43.json"
   }
  ],
  "edges": [
@@ -47189,6 +47217,31 @@
   },
   {
    "src": "op-r8-guided-worked-steps",
+   "rel": "part_of",
+   "dst": "dc-r8-director26"
+  },
+  {
+   "src": "dc-r8-checkins-by-source",
+   "rel": "part_of",
+   "dst": "dc-r8-director26"
+  },
+  {
+   "src": "dc-r8-checkins-by-source",
+   "rel": "measured_by",
+   "dst": "ms-r8-checkins-by-source"
+  },
+  {
+   "src": "rj-r8-drop-the-break-for-checkins",
+   "rel": "measured_by",
+   "dst": "ms-r8-checkins-by-source"
+  },
+  {
+   "src": "rj-r8-drop-the-break-for-checkins",
+   "rel": "constrains",
+   "dst": "dc-r8-checkins-by-source"
+  },
+  {
+   "src": "ms-r8-integration-80-dry",
    "rel": "part_of",
    "dst": "dc-r8-director26"
   }
