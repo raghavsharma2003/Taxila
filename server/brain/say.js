@@ -121,7 +121,9 @@ export const saidSlotOf = (said) => { const w = String(said ?? "").replace(/[?�
 // the same form 1 and every lesson started its rotation there. Each lesson starts each kind at its own place, from the lesson seed)
 const jointStart = (state, kind) => { const k = [...String(kind)].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
   return Number.isFinite(state?.seed) ? (Math.imul((state.seed >>> 0) ^ k, 2654435761) >>> 0) % 997 : 0; };
-export const jointCount = (state, kind) => jointStart(state, kind) + (kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
+// (dc-r8-director25 item 8: the Hindi switch's forms rotate by lesson, as the seam joints do — from the lesson's own start, not the seed
+// every eval lesson shares)
+export const jointCount = (state, kind) => (kind === "hindiSwitch" && lessonKeyOf(state) != null ? seamStart(lessonKeyOf(state), kind) : jointStart(state, kind)) + (kind === "asidePark" ? Math.max(0, (state?.later ?? []).length - 1)
   : kind === "asideReturn" ? Math.max(0, (state?.later ?? []).filter((e) => e.servedAt != null).length - 1)
   : kind === "hindiSwitch" ? Math.max(0, (state?.langN ?? 1) - 1) : kind === "askAgain" ? Math.max(0, (state?.askAgainN ?? 1) - 1)
   : kind === "backTo" ? (state?.backToN ?? 0) : (state?.jointN?.[kind] ?? 0));
@@ -1267,6 +1269,8 @@ function seamsOf(out, { state, kit, ui = null }) {
     greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")), authoredEnd: !!out.guard?.authoredEnd,
     hindiSwitch: (() => { const first = String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? ""; const forms = [...(jointOf(kit, "hindiSwitch", lang) ?? []), ...LANG_ACK.hindi, ...LANG_ACK.english, HINDI_SAME];
       return first && forms.some((f) => String(f).trim().toLowerCase() === first.toLowerCase()) ? first : null; })(),
+    hindiSwitchBy: (jointOf(kit, "hindiSwitch", lang) ?? []).some((f) => String(f).trim().toLowerCase() === (String(out.reply ?? "").split(/(?<=[.!?\u0964])\s+/)[0]?.trim() ?? "").toLowerCase()) ? "authored" : "code",
+    helpJoint: state?.lastMove?.helpJoint ?? null,
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
@@ -2452,7 +2456,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // yes-or-no card, one sentence that states the fact: the why, said as a statement, with no verdict and no "haan/nahi" before it)
     const ynFact = gaveA && yesNo(gaveA) && gw && verdict === "not_yet" ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${lang === "english" ? "No" : "Nahi"}, ${joinable(w, { lower: true })}.` : null; })() : null;
     if (ynFact) guard.ynFact = true;
-    const ynSentence = ynFact ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
+    // (dc-r8-director25 H4 item 9, c4 offtopic 24: "mujhe nahi pata" got "Haan, kyunki …" — a give-up, a clarify or a Hindi request is no
+    // answer: its yes-or-no key is said as the fact, its why alone, with no verdict word before it)
+    const helpYn = gaveA && yesNo(gaveA) && gw && !ynFact && state.lastMove?.help && state.lastMove.help.request !== "hint"
+      ? (() => { const w = joinable(spokenMarks(String(state.lastMove?.gave?.why ?? ""), lang)).replace(/[.!?।]+$/, ""); return w ? `${w.charAt(0).toUpperCase()}${w.slice(1)}.` : null; })() : null;
+    const ynSentence = ynFact ?? helpYn ?? (gaveA && yesNo(gaveA) && gw ? `${gaveA.charAt(0).toUpperCase()}${gaveA.slice(1).toLowerCase()}${gw}.` : null);
     const gaveS = gaveA ? ynSentence ?? freshForm(yesNo(gaveA) || wordAnswer(gaveA) ? gf.yesNo : nextCard ? gf.next : gf.now, state, gaveA, gw) : null;
     const isGave = (x) => !!gaveA && /^(?:pichhle sawaal|pichhla sawaal|is sawaal ka|woh wala|the last|this question|that one)/i.test(x);
     let ss = sentences(reply).map(norm).filter(Boolean)
@@ -3090,7 +3098,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (main's 034, c4 steering 34: two give-ups at a check-in got the hint, then the hint again with the whole card — a give-up is no wrong
       // answer: "after the second miss the whole card" reads wrong answers only)
       const giveUpNow = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know)(?![\p{L}])/iu.test(String(childText ?? ""));
-      const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2 && !giveUpNow;
+      // (dc-r8-director25 H4: help's turn asks the question alone however many misses came before — the count decides nothing)
+      const missedTwice = (state.misses?.[item?.id] ?? 0) >= 2 && !giveUpNow && !state.lastMove?.help;
       const saidIn2 = last2.some((t) => t.includes(norm(card).toLowerCase()));
       // (dc-r8-director22 W: a card said in her last two turns is not said again unless the child asks for it — "phir se bolo", "sawaal kya
       // hai?" — or it is a picture turn (its card keeps its own page, P3), or the second miss is past: the question alone, after any turn)

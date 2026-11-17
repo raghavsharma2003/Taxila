@@ -151,7 +151,48 @@ function helpSentences(r, ctx) {
     .filter(({ s, k }) => k.split(" ").length >= 4 && !(card && card.includes(k)) && !ix.cardSents.has(k) && !CHECKIN.test(s) && !HINDI_LINE.test(s) && !ix.joints.has(k));
 }
 
+/** The first unsaid wording of a part's ladder before row i (its text), or null when the ladder has nothing unsaid. */
+export function helpFirstUnsaid(L, i, ctx, partId, { keyed = false } = {}) {
+  const part = helpPart(ctx.script, partId);
+  if (!part) return null;
+  const said = saidBefore(L, i);
+  for (const x of ladderOf(ctx.script, part, { keyed })) {
+    const t = typeof x.value === "string" ? x.value : x.value?.hi ?? x.value?.en;
+    const ss = sentencesOf(t).map(normSentence);
+    if (ss.length && !ss.some((k) => inSet(k, said))) return t;
+  }
+  return null;
+}
+/** Whether a turn opens on help's go-on after a key (afterKeyGoOn: the seams record, else one of its forms). */
+export function helpGoOnSaid(r, ctx) {
+  if ((r.seams ?? []).some((x) => x.joint === "afterKeyGoOn")) return true;
+  const first = normSentence(sentencesOf(r.text)[0] ?? "");
+  const forms = [...FALLBACK_JOINTS.afterKeyGoOn, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence);
+  return !!first && forms.includes(first);
+}
+/** A walk item id as a compile part id (exported for the order laws). */
+export const helpPartOfItem = (id, ctx) => partOfItem(id, ctx);
+/** Whether a turn says the key of the help turn's card: a "jawab" key, the walk's gave, or a yes-or-no key said as its why. */
+function keySays(r, h, ctx) {
+  if (KEY_SAID.test(String(r.text ?? "")) || r.keyFact || r.check?.gave) return true;
+  const p = h ? helpPart(ctx.script, h.part) : null;
+  const k = p ? keyLine(p) : null;
+  const T = normSentence(r.text);
+  return !!k && sentencesOf(k.text).map(normSentence).filter((x) => x.split(" ").length >= 4).some((x) => T.includes(x.slice(0, 60)));
+}
 export const HELP_PREDICATES = {
+  /** dc-r8-director20 G3, rewritten for H4 (the count of misses decides nothing): a give-up on a card whose ladder has nothing unsaid
+   *  gets its key and why — never the card again with nothing for it. */
+  giveUpNoKey(L, r, i, ctx) {
+    const h = helpTurnOf(L, r, i, ctx);
+    if (!h || h.request !== "give_up" || h.keyed) return null;
+    const part = helpPart(ctx.script, h.part);
+    if (!part || part.key == null) return null;
+    const said = saidBefore(L, i);
+    const left = ladderOf(ctx.script, part).some((x) => { const ss = (typeof x.value === "string" ? [x.value] : [x.value?.hi, x.value?.en]).filter(Boolean).flatMap(sentencesOf).map(normSentence); return ss.length && !ss.some((k) => inSet(k, said)); });
+    if (left) return null;
+    return keySays(r, h, ctx) ? null : `a give-up on ${h.part} with nothing unsaid on its ladder, answered without the key`;
+  },
   /** H4: no help turn says a sentence of the script she has already said in this lesson (the said set: equal, or 8 words in 10), on a
    *  clarify, a give-up, a Hindi request or a wrong answer's hint. The card's own sentences, a check-in and a joint are not help. */
   helpRepeats(L, r, i, ctx) {
@@ -271,7 +312,7 @@ export const HELP_PREDICATES = {
     const ix = helpIndex(ctx);
     const ss = sentencesOf(r.text).map(normSentence);
     if (ss.some((k) => ix.rungs.has(k) || ix.joints.has(k))) return null;
-    if (KEY_SAID.test(String(r.text ?? "")) || r.keyFact || r.check?.gave) return null;
+    if (keySays(r, h, ctx)) return null;
     // (a point's give-up with nothing unsaid left asks the point's own card: that is its answer)
     const part = helpPart(ctx.script, h.part);
     if (!h.keyed && part?.card && r.card) {
