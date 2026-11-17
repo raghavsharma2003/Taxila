@@ -44,7 +44,10 @@ test("R1: a return question of the aside's kind, {aside} in her voice, rotated",
 
 test("R1 rules 1 and 4: {word} is a word the child said and no yes, no or time word; asked back, a plain form", () => {
   const r = asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", words: ["batting"] });
-  assert.equal(r.form, "word"); assert.match(r.line, /batting/i); assert.doesNotMatch(r.line, /\{|\?/);
+  // (dc-r8-director26 A4: where the child's own clause fits a phrase form it is said back — "phrase"; else her word in a word form)
+  assert.ok(["word", "phrase"].includes(r.form), r.form); assert.match(r.line, /batting/i); assert.doesNotMatch(r.line, /\{|\?/);
+  const w = asideReplyLine({ said: "sixer", topic: "cricket", words: ["sixer"] });
+  assert.ok(["word", "phrase"].includes(w.form), w.form); assert.match(w.line, /sixer/i); assert.doesNotMatch(w.line, /\{|\?/);
   assert.equal(asideReplyLine({ said: "haan", topic: "cricket", words: ["haan"] }).form, "plain");
   assert.equal(asideReplyLine({ said: "kal", topic: "cricket", words: ["kal"] }).form, "plain");
   assert.equal(asideReplyLine({ said: "aapko kaun pasand hai?", topic: "cricket", words: ["kaun"] }).form, "plain");

@@ -6,11 +6,11 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (4 live, 30 staged). Missing fields: 1600. Rule holes: 15544. Doubles: 0.
+**Scripts:** 34 (4 live, 30 staged). Missing fields: 1612. Rule holes: 15580. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
-**Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: board_up 345. Cells left as holes with no fallback: 0.
+**Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: board_up 381. Cells left as holes with no fallback: 0.
 
 **Not applicable:** 375 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
@@ -22,7 +22,7 @@
 | card whyAlt | 248 | the why's second wording, said after a key's check-in |
 | check whyAlt | 235 | the why's second wording, said after a key's check-in |
 | point pointAlt | 248 | a point's second wording: the first rung of a point's help ladder |
-| remediation board | 115 |  |
+| remediation board | 127 |  |
 | remediation sayAlt | 148 | a remediation's second wording: the first rung of its help ladder |
 | then_card whyAlt | 148 | the why's second wording, said after a key's check-in |
 | worked_step problemAlt | 90 | the worked problem's second telling: the first rung of its help ladder |
@@ -33,10 +33,10 @@
 
 | Script | Where | Parts | Cells | Missing | card ask.simpler | card whyAlt | check whyAlt | point pointAlt | remediation board | remediation sayAlt | then_card whyAlt | worked_step problemAlt | wrap ask | your_step whyAlt | Doubles |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch05-t01 | live | 65 | 1989 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t01 | live | 72 | 2214 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t02 | live | 74 | 2268 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c6-maths-ch06-t01 | live | 68 | 2070 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch05-t01 | live | 65 | 1989 | 3 | 0 | 0 | 0 | 0 | 3 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t01 | live | 72 | 2214 | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t02 | live | 74 | 2268 | 2 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c6-maths-ch06-t01 | live | 68 | 2070 | 5 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch01-t02 | staged | 60 | 1836 | 52 | 9 | 9 | 9 | 9 | 3 | 3 | 3 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 51 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t02 | staged | 57 | 1746 | 51 | 7 | 7 | 8 | 7 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
@@ -123,9 +123,9 @@
 | remediation/hindi/heard | 148 |
 | remediation/hindi/spent | 148 |
 | then_card/after_key | 148 |
-| remediation/picture/fresh | 115 |
-| remediation/picture/heard | 115 |
-| remediation/picture/spent | 115 |
+| remediation/picture/fresh | 127 |
+| remediation/picture/heard | 127 |
+| remediation/picture/spent | 127 |
 | your_step/after_key | 90 |
 | wrap/ask | 30 |
 
