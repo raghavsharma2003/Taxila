@@ -26,9 +26,9 @@ const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain."
  *  verdict and its own why, a bridge and the unit it opens, a park and the card it leads into. */
 export const SEAM_TABLE = [
   // (her reply to the child's aside or to her return's question, into the lesson)
-  ["asideReply", "point", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "afterAside"], ["asideReply", "remediation", "afterAside"],
+  ["asideReply", "point", "afterAside"], ["asideReply", "help", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "afterAside"], ["asideReply", "remediation", "afterAside"],
   // (her AI line, or her reply after it, into the lesson)
-  ["aiLine", "point", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "afterAiLine"], ["aiLine", "remediation", "afterAiLine"],
+  ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "afterAiLine"], ["aiLine", "remediation", "afterAiLine"],
   ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "afterAiLine"], ["aiReply", "remediation", "afterAiLine"],
   // (a miss verdict into its remediation)
   ["missVerdict", "remediation", "beforeRemediation"],
@@ -48,6 +48,7 @@ export const SEAM_TABLE = [
   ["verdict", "workedProblem", "beforeWorked"], ["missVerdict", "workedProblem", "beforeWorked"], ["key", "workedProblem", "beforeWorked"], ["closed", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
+const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard"]);
 export const seamJoint = (left, right) => TABLE.get(`${left}>${right}`) ?? null;
 
 const FILLER = /^(achha|acha|theek hai|thik hai|chalo|toh|haan|okay|ok|so|right|alright)\s*[,!.]\s*/i;
@@ -152,6 +153,10 @@ function kindOf(p, i, list, info) {
   if (["close", "body", "simpler"].includes(p.part) && KEY_HEAD.test(t)) return "key";
   if (info.greet && (p.part === "close" || p.part === "closed")) return "hook";
   if (info.workedProblem && ["body", "held"].includes(p.part) && low(t).startsWith(low(info.workedProblem).slice(0, 30))) return "workedProblem";
+  // (dc-r8-director26, the record: help's joint — the go-on line, helpSpent, helpToCard — is recorded as what it is, never as a verdict; a
+  // help wording is recorded as help, never as a point)
+  if (info.helpJoint?.form && i === 0 && low(t).startsWith(low(info.helpJoint.form).slice(0, 20))) return info.helpJoint.kind;
+  if (p.part === "simpler") return "help";
   switch (p.part) {
     case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
@@ -217,7 +222,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   stripped.forEach((p, i) => {
     const k = kinds[i];
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
-    let j = seamJoint(prevKind, k);
+    // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
+    let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)
     if (j && used.includes(j)) j = null;
     const own = j ? jointOf(kit, j, lang) : null;
@@ -256,7 +262,11 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // (dc-r8-director25 item 8: with who wrote the form — the script's, or code's own when the script has none)
   if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
   // (dc-r8-director25 H4: help's joint — helpSpent, afterKeyGoOn — the form the decision picked, and who wrote it)
-  if (info.helpJoint?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20))) seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
+  if (info.helpJoint?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20))) {
+    const at = seams.find((x) => x.right === info.helpJoint.kind && !x.joint);
+    if (at) Object.assign(at, { joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
+    else seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
+  }
   return { list: out.map(({ joint, ...p }) => p), seams, jointsUsed: used, said };
 }
 

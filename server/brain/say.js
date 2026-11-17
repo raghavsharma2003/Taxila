@@ -382,6 +382,11 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const words = j2WordsOf(said, topic).filter((w) => !VERBISH.test(w));
   if (!words.length) return null;
   const n = (state?.recent ?? []).filter((t) => t.who === "teacher").length;
+  // (dc-r8-director26 A4: what they said said back in a phrase form — its last clause, "sixer maara": "Achha, pichhli baar sixer maara." —
+  // before the word form; the judges heard "Oh, chauka. Achha." as no reply)
+  const clause = String(said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
+  const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words }) : null;
+  if (p?.form === "phrase" && p.line) return p.line;
   const r = asideReplyLine({ said, topic, lang, n, words });
   return r?.form === "word" && r.line ? r.line : null;
 }
@@ -1383,17 +1388,22 @@ export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = 
   const walk = (o) => {
     if (hit || !o || typeof o !== "object") return;
     if (Array.isArray(o)) return o.forEach(walk);
-    // (after a key the board up is the card's answer board: its caption is the card's)
-    if (o.viewCaption && [o.board, o.answerBoard].some((b) => b && want.includes(JSON.stringify(b)))) {
+    // (after a key the board up is the card's answer board. dc-r8-director26, the record — c5-t01 steering 14: the posing board's caption,
+    // "abhi bina rang ke", is not true of the answer board: an answer board's caption is its own `answerViewCaption`, else none)
+    const onBoard = o.board && want.includes(JSON.stringify(o.board));
+    const onAnswer = !onBoard && o.answerBoard && want.includes(JSON.stringify(o.answerBoard)) && JSON.stringify(o.answerBoard) !== JSON.stringify(o.board);
+    const cap = onBoard ? o.viewCaption : onAnswer ? o.answerViewCaption ?? (o.answerBoard && !o.board ? o.viewCaption : null) : null;
+    if (cap) {
       // (main, integration 72: the caption is written against the board's own second view; another kind of view drawn gets none)
-      const own = drawn ? viewKindOf(altCall(o.board ?? o.answerBoard)) : null;
+      const own = drawn ? viewKindOf(altCall(onBoard ? o.board : o.answerBoard)) : null;
       if (drawn && own && own !== drawn) return;
-      hit = o.viewCaption; return;
+      hit = cap; return;
     }
+    if (onAnswer && o.viewCaption) { hit = { none: true }; return; }
     for (const v of Object.values(o)) walk(v);
   };
   walk(sc);
-  const t = hit ? (lang === "english" ? hit.en ?? hit.hi : hit.hi ?? hit.en) ?? (typeof hit === "string" ? hit : null) : null;
+  const t = hit && !hit.none ? (lang === "english" ? hit.en ?? hit.hi : hit.hi ?? hit.en) ?? (typeof hit === "string" ? hit : null) : null;
   return t && String(t).trim() ? String(t).trim() : null;
 }
 /** The topic her AI-line question asked about ("Tumhe Virat ke baare mein …" → Virat), else the child's first interest. */
@@ -1485,7 +1495,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
     const end = state.lastMove.authoredEnd;
     const v = state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
-    const close = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${state.lastMove.endVerdict ? "" : why(state.lastGraded?.why)}`)
+    const close = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${state.lastMove.endVerdict ? (state.lastMove.endWhy ? why(saidIn(state.lastMove.endWhy, L)) : "") : why(state.lastGraded?.why)}`)
       : v === "not_yet" ? notRightLead(String(childText ?? "").trim(), L, state) : null;
     const lines = (state.lastMove.rendered ?? []).map((x) => d(spokenMarks(x, L)));
     // (dc-r8-director22 T3: the teach-back's verdict is a turn of its own — the verdict, the key and its why on a miss, then a check-in)
@@ -1507,7 +1517,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director25 L2 item 5: the seam record names each part as what it is — what was covered, the acknowledgement, the sentence to
     // her, the goodbye)
     const ackL = state.lastMove.wrapAck ? d(state.lastMove.wrapAck) : null;
-    const kindOfLine = (x, n) => (end === "wrapCovered" ? "covered" : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
+    const kindOfLine = (x, n) => (end === "wrapCovered" ? (ackL && n === 0 && x === ackL ? "wrapAck" : "covered") : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
     // (turn one ends on something she can answer: the wrap's closing question — main's R7, `wrap.ask` — never a comprehension check-in)
     const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(BEAT_ASK[L], state)) : null;
     const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
@@ -3384,7 +3394,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (their own word said back is no exemption — "Virat ke cover drive … mashhoor" answered "aapko Virat pasand hai?"; the park's
       // promise is kept, and so is a line spoken to them)
       const nm = (y) => String(y ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
-      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && nm(x) === nm(guard.againLine)) || (!!guard.returnReplyLine && (nm(x) === nm(guard.returnReplyLine) || nm(guard.returnReplyLine).includes(nm(x))));
+      // (dc-r8-director26 A4, c4 offtopic 20, 32: her reply to an aside said again is two sentences — "Oh, sixer. Achha." — and its first,
+      // naming the aside's word, went as a fact about the aside, leaving a bare "Achha."; each sentence of her reply line is hers)
+      const isRet = (!!guard.returnLine && nm(x) === nm(guard.returnLine)) || (!!guard.againLine && (nm(x) === nm(guard.againLine) || sentences(guard.againLine).some((y) => nm(y) === nm(x)))) || (!!guard.returnReplyLine && (nm(x) === nm(guard.returnReplyLine) || nm(guard.returnReplyLine).includes(nm(x))));
       return !!w && !isRet && !PROMISE_SAID.test(x) && !/(?<![\p{L}])(?:ke\s+baad|baad\s+mein|karenge|yaad\s+rahega|later)(?![\p{L}])/iu.test(x)
         && !/(?<![\p{L}])(?:tum|tumne|tumhe|tumhari|tumhara|tumko|you|your|ai)(?![\p{L}])/iu.test(x) && !LESSON_SAID.test(x) && !/\d/.test(x); };
     const ssc = sentences(reply).map((x) => String(x).trim()).filter(Boolean);

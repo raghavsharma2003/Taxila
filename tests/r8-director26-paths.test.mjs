@@ -124,3 +124,44 @@ test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met ag
   // (and the said-once record names the remediation, its skill and its mix-up)
   assert.ok((plans.at(-1).p.r.state.remedied ?? []).includes("c5-maths-ch02-t02-s3|c5-maths-ch02-t02-m-tops-only"));
 });
+
+test("A4: an aside said again is replied to in the child's own words; the reply is never cut to a bare 'Achha.'", async () => {
+  const { againInHerWords } = await import("../server/brain/say.js");
+  const { asideReplyLine } = await import("../server/brain/asideReplies.js");
+  assert.equal(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [] }), "Achha, pichhli baar sixer maara.");
+  // (her return in the script's own form — "usmein sabse mazedaar kya hai?" — is a liking question: the phrase form answers it)
+  assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, "Achha, toh tumhe chauka sabse achha lagta hai.");
+  assert.equal(asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", asked: "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", words: ["batting"] }).line,
+    "Achha, toh tumhe batting sabse achha lagta hai.");
+});
+
+test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering 14) is drawn on the answered board", async () => {
+  const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t01", 15);
+  const m = plans.at(-1).p.r.state.lastMove;
+  const prev = plans.at(-2).p.r.state.lastMove;
+  assert.ok(prev.gave?.answer, "the key was said on the turn before");
+  assert.deepEqual(m.scriptBeat?.board, prev.closeBeat?.board, "the picture is on the board the key was said over");
+});
+
+test("W1: the closing question answered right — the wrap opens on the verdict and its why; a line after the closing key gets the acknowledgement", async () => {
+  const { kit, plans } = await replay(RUN, "steady", "c4-maths-ch05-t01", 400);
+  const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");
+  assert.ok(asked, "the walk reaches the closing question");
+  const tb = kit && (await import("../server/director/script.js")).scriptFor(kit).script.teachback;
+  const right = await planAt(asked.state, tb.key, kit);
+  const st = { ...right.r.state, recent: [...(right.r.state.recent ?? [])] };
+  assert.equal(st.lastMove.kind, "wrap");
+  assert.ok(st.lastMove.endWhy, "the why rides on the wrap");
+  replyDeps.chat = noModel; replyDeps.chatStream = noModel;
+  try {
+    const out = await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: tb.key, history: [], ui: right.r.ui, module: null });
+    assert.match(out.reply.split(/(?<=[.!?])\s+/)[0], /kyunki/, out.reply);
+  } finally { replyDeps.chat = chat; replyDeps.chatStream = chatStream; }
+  // (a miss: the key turn, then "mujhe laga aisa hi hoga" — the wrap's first turn opens on a wrap.ack form)
+  const miss = await planAt(asked.state, "5/9", kit);
+  const after = await planAt(miss.r.state, "mujhe laga aisa hi hoga", kit);
+  const w = after.r.state.lastMove;
+  assert.equal(w.kind, "wrap");
+  const acks = tb && (await import("../server/director/script.js")).scriptFor(kit).script.wrap.ack.map((f) => f.hi);
+  assert.ok(w.wrapAck && acks.some((a) => String(w.rendered?.[0] ?? "").startsWith(String(a).slice(0, 12))), JSON.stringify(w.rendered));
+});

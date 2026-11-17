@@ -730,7 +730,11 @@ export const ORDER_LAWS = {
     const hit = F.map((re) => norm(r.text).match(re)?.[0]).find(Boolean);
     if (!hit || !ctx.prevT) return null;
     const asked = returnOf(ctx.prevT, ctx) || AI_LINE.test(String(ctx.prevT.text ?? "")) || /[?？]\s*$/.test(norm(ctx.prevT.text)) && !cardIn(ctx.prevT) && /·\s*uptake/.test(ctx.prevRead ?? "");
-    return asked ? null : `her aside reply on a turn after no question of hers about it: "${hit.slice(0, 60)}"`;
+    // (dc-r8-director26 A4: an aside said again gets her reply in the child's words — dc-r8-director24 A3's rule; this predicate read 0 on it
+    // only because the reply's first sentence was being dropped as a fact about the aside, leaving a bare "Achha.")
+    const said = String(ctx.prevChild ?? "").trim().toLowerCase();
+    const again = String(r.cell?.column ?? "") === "aside" && !!said && (L.rows ?? []).slice(0, Math.max(0, i - 1)).some((x, j) => x.who === "child" && String(x.text ?? "").trim().toLowerCase() === said && String(L.rows[j + 1]?.cell?.column ?? "") === "aside");
+    return asked || again ? null : `her aside reply on a turn after no question of hers about it: "${hit.slice(0, 60)}"`;
   },
   /** dc-r8-director23 S (rewritten on the seam pass's record): a seam into a return to an earlier card has its joint — backTo, or the one
    *  joint the seam already took out of an aside reply or a try-first — and backTo is said at no other seam. Reads `seams` only. */

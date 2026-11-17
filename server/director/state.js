@@ -2379,7 +2379,8 @@ function teachback(s, input) {
     const lang = s.ctx.lang ?? "hinglish";
     const hit = teachbackHit(tb, input.text);
     // (main's 031: a right answer gets no check-in — the verdict leads the wrap in the same turn, over the answer board from its first word)
-    if (hit) { s.teachbackPassed = true; return { ...toWrap(s, { kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct" }; }
+    // (dc-r8-director26 W1: the closing verdict says its why — c4 steady 128, c5-t01 steady 130 said "Haan, sahi hai." and went on)
+    if (hit) { s.teachbackPassed = true; return { ...toWrap(s, { kit, keyFirst: { line: null, board: tb.answerBoard ?? null } }), endVerdict: "correct", ...(tb.why ? { endWhy: tb.why } : {}) }; }
     const why = tb.why ? saidIn(tb.why, lang) : null;
     const en = lang === "english";
     const keyLine = hit ? null : `${en ? "The answer is" : "Iska jawab hai"} ${tb.key}${why && String(why).trim() ? `, ${en ? "because" : "kyunki"} ${joinable(String(why).trim().replace(/[.!?\u0964]+$/, ""), { lower: true })}` : ""}.`;
@@ -2465,7 +2466,10 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
       s.wrapTwo = { ack: null, board: keyFirst?.board ?? null };
       const asks = (Array.isArray(w?.ask) && w.ask.length ? w.ask : [WRAP_ASK_FALLBACK]).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
       const wrapAsk = lessonPick(s, asks, "wrapAsk") ?? saidIn(WRAP_ASK_FALLBACK, lang);
-      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: [endLine(covered)], authoredEnd: "wrapCovered", wrapPart: 1, wrapAsk: String(wrapAsk).trim(),
+      // (dc-r8-director26 W1: what the child said after the closing key's check-in is answered by the acknowledgement first — c5-t02 steady
+      // 157 "mujhe laga aisa hi hoga", c6 steady 113 "shayad gin ke" were dropped)
+      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: [...(ack ? [endLine(ack)] : []), endLine(covered)], authoredEnd: "wrapCovered", wrapPart: 1, wrapAsk: String(wrapAsk).trim(),
+        ...(ack ? { wrapAck: endLine(ack) } : {}),
         ...(keyFirst?.line ? { endKey: keyFirst.line } : {}),
         ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board: keyFirst.board, mode: "fresh" } } : {}) });
     }
@@ -3487,7 +3491,9 @@ function step0(prev, input) {
   const keepWorked = !!s.splitHold && !s.splitHold.teach && prev.lastMove?.splitClose && stayRq && !input.cls?.flags?.distress;
   if (keepWorked && prev.lastMove?.closeBeat) s.stayOn = { beat: { ...prev.lastMove.closeBeat }, turn: s.turn + 1 };
   // (dc-r8-director25 H4: after help's own key — the walk did not move on — a picture or a repeat stays on the card just closed too)
-  else if (!keepWorked && stayRq && prev.lastMove?.help?.card === "close" && prev.lastMove?.closeBeat?.board && !input.cls?.flags?.distress) s.stayOn = { beat: { ...prev.lastMove.closeBeat }, turn: s.turn + 1 };
+  // (dc-r8-director26, the record — c5-t01 steering 14: "drawing karke samjhao" after the walk's own key on a then-card redrew the question's
+  // board and its caption; any key said, by help or by the walk, keeps a picture on the answered board)
+  else if (!keepWorked && stayRq && (prev.lastMove?.help?.card === "close" || prev.lastMove?.gave?.answer) && !prev.lastUi?.ask?.itemId && prev.lastMove?.closeBeat?.board && !input.cls?.flags?.distress) s.stayOn = { beat: { ...prev.lastMove.closeBeat }, turn: s.turn + 1 };
   if (s.splitHold && !keepWorked) { if (s.splitHold.activeItemId && !s.activeItemId) s.activeItemId = s.splitHold.activeItemId; s.splitHold = undefined; }
   // QA 14.4.1 (brain/say.js selfPosedVerdict): was a kit item on the table when the child spoke? null: her own words were
   // (a worked step, an explain), so a sum she asked there is checked in code even when this move poses the next card
@@ -3655,6 +3661,7 @@ function step0(prev, input) {
   if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
   if (p.endVerdict) move.endVerdict = p.endVerdict;
   if (p.endKey) move.endKey = p.endKey;
+  if (p.endWhy) move.endWhy = p.endWhy;
   // (dc-r8-director25 L2 item 2: which turn of the wrap this is, and its acknowledgement, for brain/say.js and the seam record)
   if (p.wrapPart) move.wrapPart = p.wrapPart;
   if (p.wrapAck) move.wrapAck = p.wrapAck;

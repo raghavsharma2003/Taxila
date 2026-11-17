@@ -59,3 +59,24 @@ test("J1 beforeWorked: a verdict into a worked problem takes the beforeWorked jo
 test("R1 skillRemediation: a mix-up met again in a later skill gets that skill's own remediation", () => {
   readsOn("skillRemediation", [["c5-t02", "steady", 118], ["c5-t02", "steady", 120], ["c5-t02", "steady", 126], ["c5-t02", "steady", 146]]);
 });
+
+test("A4 asideReplied: an aside said again, or the child's answer about it, is replied to in a phrase of theirs — not 'Achha.' nor 'Oh, chauka. Achha.'", () => {
+  readsOn("asideReplied", [["c4", "offtopic", 20], ["c4", "offtopic", 32], ["c6", "stuck", 54], ["c5-t02", "steady", 42], ["c5-t02", "offtopic", 40]]);
+});
+test("W1 closingWhy: the closing verdict says its why", () => {
+  readsOn("closingWhy", [["c4", "steady", 128], ["c5-t01", "steady", 130]]);
+});
+test("W1 wrapAckFirst: what the child says before the wrap is answered by the acknowledgement", () => {
+  readsOn("wrapAckFirst", [["c5-t02", "steady", 158], ["c6", "steady", 114]]);
+});
+test("Record verdictRecorded: no verdict recorded on a go-on turn where none was said", () => {
+  readsOn("verdictRecorded", [["c5-t01", "stuck", 30], ["c5-t01", "stuck", 44], ["c5-t01", "steering", 18], ["c5-t02", "stuck", 46], ["c5-t02", "stuck", 58], ["c5-t02", "stuck", 64],
+    ["c6", "stuck", 30], ["c6", "stuck", 44], ["c6", "offtopic", 56], ["c6", "steering", 18], ["c6", "steering", 32]]);
+});
+test("Record helpRecorded: a help wording is recorded as help, not as a point", () => {
+  // (the six B1 rows are help wordings; every help wording of the run was recorded as a point or a remediation)
+  readsOn("helpRecorded", [["c4", "steering", 12], ["c6", "steady", 48], ["c5-t02", "steering", 12]]);
+});
+test("Record pictureAfterKey: a picture asked for after a key draws the answered board (c5-t01 steering 14)", () => {
+  readsOn("pictureAfterKey", [["c5-t01", "steering", 14]]);
+});

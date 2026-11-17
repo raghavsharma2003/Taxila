@@ -75,7 +75,7 @@ const ASKS_HER = /(?:aapko|aap|tumhe|tum)\b.*\b(?:pasand|favourite|favorite|kaun
 // something about the child — first person turned to second, a postposition at its end dropped; never a bare yes/no, a don't-know,
 // "sab", or a question back to her)
 const FILLER_HEAD = /^(?:(?:hmm+|umm*|achha|acha|accha|haan|han|ha|toh|to|woh|wo|vo|mujhe|mere\s+ko|mujhko|sabse\s+(?:achha|accha|acha|zyada)|mera\s+favou?rite|favou?rite)\s+)+/iu;
-const FILLER_TAIL = /(?:\s+(?:lagta|lagti|lage|laga|lagi|hai|hain|tha|thi|the|pasand|hota|hoti|wala|wali|wale|sabse|achha|accha|acha|zyada|bahut))+$/iu;
+const FILLER_TAIL = /(?:\s+(?:lagta|lagti|lage|laga|lagi|hai|hain|tha|thi|the|pasand|hota|hoti|wala|wali|wale|sabse|achha|achhi|achhe|accha|acha|zyada|bahut))+$/iu;
 const POSTPOSITION = /\s+(?:ke\s+saath|ke\s+sath|ke\s+baare\s+mein|mein|me|se|par|pe|ko|ka|ki|ke|tak)$/iu;
 const PERSON = [[/(?<![\p{L}])mera(?![\p{L}])/giu, "tumhara"], [/(?<![\p{L}])meri(?![\p{L}])/giu, "tumhari"], [/(?<![\p{L}])mere(?![\p{L}])/giu, "tumhare"],
   [/(?<![\p{L}])(?:humara|hamara)(?![\p{L}])/giu, "tumhara"], [/(?<![\p{L}])(?:humari|hamari)(?![\p{L}])/giu, "tumhari"], [/(?<![\p{L}])(?:humare|hamare)(?![\p{L}])/giu, "tumhare"],
@@ -114,7 +114,16 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
   let kp = k;
   if (i < 0) {
     const q = String(asked ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
-    const want = /favou?rite|kaun\s+pasand/i.test(q) ? /favou?rite/ : /achha\s+(?:kya\s+)?lagta|like\s+(?:most|about|best)|pasand/i.test(q) ? /achha\s+lagta|like/ : null;
+    // (dc-r8-director26 A4: since director25 the return is the script's own form — "usmein sabse mazedaar kya hai?", "uske baare mein thoda aur
+    // batao na?" — which is no kind's return: a "best" question is a liking one, and a question of no shape reads its shape from the child's
+    // answer ("batting sabse achhi lagti hai"). c6 stuck 54, c4 offtopic 12: "Oh, chauka. Achha." where "Achha, toh tumhe chauka sabse achha
+    // lagta hai." was meant)
+    const LIKING_Q = /achha\s+(?:kya\s+)?lagta|like\s+(?:most|about|best)|pasand|sabse\s+(?:achh|mazedaar|mazedar|badhiya|maza)|achhi\s+baat|best\s+(?:part|thing)|most\s+fun/i;
+    const LIKING_A = /achh[aie]\s+lag|pasand|mazedaar|maza\s+aata|(?<![\p{L}])like/iu;
+    // (and something that happened — "sixer maara" — gets the kind's "last time" form)
+    const PAST_A = /(?:aara|ela|kiya|dekha|gaya|gayi|liya|khaya|jeeta|haara)(?![\p{L}])/iu;
+    const want = /favou?rite|kaun\s+pasand/i.test(q) ? /favou?rite/ : LIKING_Q.test(q) ? /achha\s+lagta|like/
+      : /favou?rite/i.test(String(said)) ? /favou?rite/ : LIKING_A.test(String(said)) ? /achha\s+lagta|like/ : PAST_A.test(String(said)) ? /pichhli\s+baar|last\s+time|aisa\s+hua/ : null;
     // (dc-r8-director23 A2, c4 offtopic 20: "Dhoni" to "Tumhara favourite kaun hai?" after a question about Virat — an aside of no kind —
     // got the plain line; the favourite and liking forms name nothing of a kind, so another kind's form of that shape is used)
     const pool = [k, ...Object.values(KINDS).filter((x) => x !== k)].filter((x) => x?.phraseReplies?.length);

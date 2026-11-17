@@ -107,3 +107,75 @@ D26_PREDICATES.skillRemediation = function skillRemediation(L, r, i, ctx) {
   if (!t || !(sk?.remediation ?? []).some((x) => x.targets === t) || before.has(`${S}|${t}`)) return null;
   return `the mix-up ${t} on ${part} without ${S}'s own remediation for it (never said in this lesson)`;
 };
+
+// ───────────── A4: replies ─────────────
+import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
+const BARE_ACK = /^(?:achha|theek hai|hmm,? achha|okay|alright|right)\.?$/i;
+/** A4 (c4 offtopic 20, 32: "Achha." to an aside said again; c6 stuck 54, c5-t02 steady 42, offtopic 40, c4 offtopic 12: "Oh, chauka.
+ *  Achha." to the child's answer to her return): her reply to an aside said again, or to the child's answer about their aside, says back
+ *  what they said in a phrase form when a phrase of theirs fits — never a bare acknowledgement nor the word form "Oh, {word}. Achha.". */
+D26_PREDICATES.asideReplied = function asideReplied(L, r, i, ctx) {
+  if (!ctx.script || r.who !== "teacher") return null;
+  const col = String(r.cell?.column ?? "");
+  const said = String(ctx.prevChild ?? "");
+  const again = col === "aside" && (ctx.o.asideSaid ??= new Set()).has(said.trim().toLowerCase());
+  if (col === "aside") ctx.o.asideSaid.add(said.trim().toLowerCase());
+  if (col !== "aside_reply" && !again) return null;
+  const clause = said.split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
+  if (!phraseOf(said) && !phraseOf(clause)) return null;
+  const ss = sentencesOf(norm(r.text));
+  const F = (ctx.o.d26ReplyForms ??= asideReplyForms());
+  const first = ss[0] ?? "";
+  if (BARE_ACK.test(first)) return `a bare "${first}" to "${said.slice(0, 40)}"`;
+  const two = ss.slice(0, 2).join(" ");
+  if (F.word.some((re) => re.test(first) || re.test(two))) return `the word form "${two.slice(0, 40)}" to "${said.slice(0, 40)}"`;
+  return null;
+};
+
+// ───────────── W1: the wrap ─────────────
+/** W1 (c4 steady 128; c5-t01 steady 130): the closing question answered right — the wrap opens on the verdict and its why ("kyunki …"),
+ *  never the bare "Haan, sahi hai." */
+D26_PREDICATES.closingWhy = function closingWhy(L, r, i, ctx) {
+  if (String(r.move?.kind ?? r.move ?? "") !== "wrap" || !ctx.script?.teachback?.why || String(ctx.prevT?.move?.kind ?? ctx.prevT?.move ?? "") !== "teachback") return null;
+  if (!/^correct/.test(String(ctx.prevRead ?? ""))) return null;
+  const first = sentencesOf(norm(r.text))[0] ?? "";
+  return /^(?:haan|bilkul|sahi|yes|exactly|that's right|right)\b/i.test(first) && !/(?<![\p{L}])(?:kyunki|because)(?![\p{L}])/iu.test(first) ? `the closing verdict without its why: "${first}"` : null;
+};
+/** W1 (c5-t02 steady 158 after "mujhe laga aisa hi hoga"; c6 steady 114 after "shayad gin ke"): what the child said after the closing key's
+ *  check-in is answered — the wrap's first turn opens on an acknowledgement (wrap.ack), never straight on what was covered. */
+D26_PREDICATES.wrapAckFirst = function wrapAckFirst(L, r, i, ctx) {
+  if (String(r.move?.kind ?? r.move ?? "") !== "wrap" || String(ctx.prevT?.move?.kind ?? ctx.prevT?.move ?? "") !== "teachback") return null;
+  if (!/(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua)\?\s*$/.test(norm(ctx.prevT.text)) || !String(ctx.prevChild ?? "").trim()) return null;
+  const acks = new Set(formsOf(ctx.script?.wrap?.ack).map((x) => normSentence(x)));
+  const first = sentencesOf(norm(r.text))[0] ?? "";
+  if (!acks.size) return null;
+  return [...acks].some((a) => normSentence(first).startsWith(a.slice(0, 20))) ? null : `"${String(ctx.prevChild).slice(0, 40)}" after the closing key, and the wrap opens on "${first.slice(0, 40)}"`;
+};
+
+// ───────────── The record ─────────────
+const VERDICT_SAID = /^(?:haan|bilkul|sahi|nahi|nahin|yeh jawab|abhi yeh|not quite|not yet|yes|exactly|that's right|\S+\s+(?:sahi\s+)?nahi)\b/i;
+/** The record (c5-t01 stuck 30, 44, steering 18; c5-t02 stuck 46, 58, 64; c6 stuck 30, 44, offtopic 56, steering 18, 32): no verdict is
+ *  recorded on a turn where none was said — a go-on line, help's joint, is no verdict. */
+D26_PREDICATES.verdictRecorded = function verdictRecorded(L, r) {
+  if (!["give_up", "clarify", "hindi"].includes(String(r.cell?.column ?? ""))) return null;
+  if (!(r.seams ?? []).some((x) => x.right === "verdict" || x.right === "missVerdict")) return null;
+  return sentencesOf(norm(r.text)).some((x) => VERDICT_SAID.test(x)) ? null : "a verdict recorded where none was said";
+};
+/** The record: a help wording is recorded as help, not as a point (the seam record's kind of a help part). */
+D26_PREDICATES.helpRecorded = function helpRecorded(L, r) {
+  const pp = r.pageParts ?? [];
+  if (!pp.some((p) => p.part === "simpler")) return null;
+  const sm = r.seams ?? [];
+  return sm.some((x) => ["help", "helpSpent", "afterKeyGoOn", "helpToCard"].includes(x.right)) ? null : sm.length ? "a help wording recorded as another kind" : null;
+};
+/** The record (c5-t01 steering 14): a picture asked for right after a key draws the answered board — the board the key was said over — never
+ *  the question's posing board. */
+const KEY_LINE = /(?:is sawaal ka|iska) (?:sahi )?jawab|the answer (?:here )?(?:is|was)/i;
+D26_PREDICATES.pictureAfterKey = function pictureAfterKey(L, r, i, ctx) {
+  if (!/·\s*visual/.test(String(ctx.prevRead ?? "")) || !ctx.prevT || ctx.prevT.card || !KEY_LINE.test(String(ctx.prevT.text ?? ""))) return null;
+  const segs = (ctx.prevT.segments ?? []).filter((g) => g?.board);
+  const answered = segs.at(-1)?.board ?? ctx.prevT.boardRef ?? null;
+  const drawn = r.boardRef ?? (r.segments ?? []).find((g) => g?.board)?.board ?? null;
+  if (!answered || !drawn) return null;
+  return JSON.stringify(answered) === JSON.stringify(drawn) ? null : `a picture after the key drawn on ${drawn.template} ${JSON.stringify(drawn.params ?? {}).slice(0, 50)}, not the answered board`;
+};
