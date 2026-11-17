@@ -90,7 +90,6 @@ export function helpPart(script, partId) {
 /** helpPart from a compile.js part object itself (compile.js reads ladders while it compiles, before any part map exists). */
 export function helpPartFrom(script, p) {
   if (!script || !p) return null;
-  const skillPath = p.path.replace(/^(skills\[\d+\]).*$/, "$1");
   const out = { id: p.id, kind: p.kind, path: p.path };
   if (p.kind === "point" || p.kind === "checkin") {
     const P = p.point ?? p.path;
@@ -113,14 +112,11 @@ export function helpPartFrom(script, p) {
     out.board = boardAt(script, `${w}.board`);
   } else if (p.kind === "remediation") {
     const r = at(script, p.path);
-    // (a remediation with no board of its own is said over the board of the card it remedies — compile.js's rule)
-    let b = boardAt(script, `${p.path}.board`);
-    if (!b) {
-      const sk = at(script, skillPath);
-      const c = (sk?.checks ?? []).find((x) => x.targets === r?.targets) ?? (sk?.explain ?? []).find((x) => x.ask?.targets === r?.targets);
-      b = c?.board && typeof c.board === "object" ? c.board : null;
-    }
-    out.board = b;
+    // (dc-r8-director26 B1: a remediation's board is its own `board` and nothing else. With none, its wording is said over the board that
+    // is up (board null: "keep"); it never borrows a card's. director26's six rows — c4 steering 12; c6 steady 48, stuck 58, steering 8;
+    // c5-t02 steady 82, steering 12 — said a remediation's other wording over the skill's first check card for the same mix-up, which
+    // this function lent it)
+    out.board = boardAt(script, `${p.path}.board`);
     if (r?.then) out.card = `${p.id}:then`;
   } else if (p.kind === "bridge") {
     out.board = null;
@@ -221,7 +217,8 @@ export function keyLine(part, lang = "hinglish") {
  * @param {object} [a.jointN]   how many of each help joint she has said
  * @returns {null | { part, kind, keyed, request, rung, board, card, key, joint }}
  *   rung:  { field, path, text, board } — the wording, or null when the ladder has nothing unsaid
- *   board: the board the turn's first words are said over (the rung's, the answer board for a key)
+ *   board: the board the turn's first words are said over (the rung's, the answer board for a key); null: the board that is up stays
+ *          (a remediation with no board of its own) — the page builder takes it from here and nowhere else (dc-r8-director26 B1)
  *   card:  "keep" (the posed card stays live, its question asked again), "wait" (no card yet: she ends on a check-in), "ask" (the
  *          part's card is asked now), "close" (the key and its why; the card is closed), "goOn" (the lesson goes on to its next part)
  *   key:   { key, why, text, board } when the card closes

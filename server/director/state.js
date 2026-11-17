@@ -3107,10 +3107,15 @@ function noteHelp(s, d) {
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
 }
 /** The move fields that carry a decision's words: the wording (or the key, or the joint) as the turn's simpler, over its board. */
+/** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
+ *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
+const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}),
+  board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
-  const board = d.key ? d.key.board ?? d.board : d.board;
-  return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: { part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}) },
+  const board = helpBoardOf(d);
+  return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: helpMark(d),
     simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}) };
 }
 /**
@@ -3221,7 +3226,7 @@ function helpAfter(prev, input, out, pre) {
   const d = pre?.decision ?? null;
   if (!d || !out?.state?.lastMove || input?.event !== "turn") return out;
   const lm = out.state.lastMove;
-  const mark = { part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}) };
+  const mark = helpMark(d);
   if (pre.hint) {
     // (the walk answered a mix-up with its remediation, or let the card go some other way: that turn stands)
     if (["safeguard", "wrap", "break", "teachback"].includes(String(lm.kind ?? "")) || lm.scriptBeat?.kind === "remediation") return out;

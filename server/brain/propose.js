@@ -576,7 +576,11 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // a key over its answer board — drawn first, before the card's own board comes back for its question: its own page)
   // (its own page only when its board is not the card's unit's — the board changes once a turn: a verdict before it rides on it, bare, as
   // say.js says it when the boards differ; the card's board comes back for its question)
-  const helpU0 = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board } : null;
+  // (dc-r8-director26 B1: the board is the help decision's (move.help.board, as pickHelp returned it) and nowhere else's; null — a
+  // remediation with no board of its own — keeps the board that is up, never a card's)
+  const helpOwn = helpBoardOfMove(move);
+  const helpU0 = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board }
+    : helpOwn === null && up?.board ? { unit: `${unitOf(move.simplerBeat) ?? up.unit ?? curUnit}#help`, board: up.board } : null;
   const helpU = helpU0 && !(cur?.board && JSON.stringify(cur.board) === JSON.stringify(helpU0.board)) ? helpU0 : null;
   const unitOfPart = (p) => {
     if (helpU && p.part === "simpler") return helpU;
@@ -609,7 +613,28 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
     out.unitAfter = { unit: next.held.unit, atChar: next.start };
   }
   if (STRICT_PAGES()) heldPredicates(out, spoken, text, { up, noUnit: noUnitLine });
+  if (STRICT_HELP()) helpBoardPredicate(out, move, offs, { up, text });
   return out;
+}
+/** The board a help move's words go over, as the help decision gave it: a board, null (the board up stays), or undefined (no help, or a
+ *  move recorded before the decision carried its board). */
+function helpBoardOfMove(move) {
+  return move?.help && Object.prototype.hasOwnProperty.call(move.help, "board") ? move.help.board ?? null : undefined;
+}
+/** dc-r8-director26 B1 (thrown in tests and dry runs, never in serving): a help page's board is the one pickHelp returned. Her help
+ *  words (the simpler part; a key closed by help: its close) are said over move.help.board, or with none, over the board that was up. */
+const STRICT_HELP = () => STRICT_PAGES() || process.env.TAXILA_STRICT_HELP === "1";
+export function helpBoardPredicate(h, move, offs, { up = null, text = "" } = {}) {
+  const own = helpBoardOfMove(move);
+  if (own === undefined || !h) return;
+  const want = own ?? up?.board ?? null;
+  if (!want) return;
+  const p = offs.find((x) => x.part === "simpler") ?? (move.help.card === "close" ? offs.find((x) => x.part === "close") : null);
+  if (!p) return;
+  const b = h.switchTo && p.start >= h.switchTo.atChar ? h.switchTo.board : h.board;
+  if (JSON.stringify(b) !== JSON.stringify(want)) {
+    throw new Error(`B1: help (${move.help.part}, ${move.help.request}) said over ${b?.template} ${JSON.stringify(b?.params ?? {}).slice(0, 60)}, not ${own ? "the board help returned" : "the board up"} | ${String(text).slice(p.start, p.start + 60)}`);
+  }
 }
 /** The first unit of a skill (its first explain beat's, else its worked example's): where a bridge into it belongs (v6.9 N2). */
 export function firstUnitOf(kit, skillId) {

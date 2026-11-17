@@ -105,7 +105,11 @@ export function drawnContradictions(row, cardRow, prevChild, { answerBoard = nul
       if (pp.part === "close" && !/\d|(?<![\p{L}])(?:kyunki|because|jawab\s+(?!nahi\b|sahi\s+nahi\b|theek\s+nahi\b).{1,30}?\s+(?:tha|hai)\b)/iu.test(seg) && /(?<![\p{L}])(?:nahi|not)(?![\p{L}])/iu.test(seg)) continue;
       if (seg.split(/\s+/).filter(Boolean).length < 5) continue;
       const pg = pageAt(pp.from ?? 0);
-      if (pp.beat && pg.beat && String(pp.beat).replace(/^explain:/, "") !== String(pg.beat).replace(/^explain:/, "")) { out.partOffBeat = 1; break; }
+      // (dc-r8-director26: a part said over a board that is not its beat's — the boards the harness recorded for the part; a part with
+      // none recorded, or a recorded run before director27 that names only beats, raises nothing: the beat-name compare raised 41 c6
+      // rows in director26 of which 3 were real)
+      if (!Array.isArray(pp.boards) || !pp.boards.length || !pg.board) continue;
+      if (!pp.boards.some((b) => sameFigure(b, pg.board) || contains(pg.board, b))) { out.partOffBeat = 1; break; }
     }
   } else if (prevChild && /\blanguage\b/.test(String(prevChild.read ?? "")) && /^rem:/.test(String(pages[0].beat ?? ""))
     && /:then:/.test(String(row.check?.itemId ?? "")) && String(row.check.itemId).endsWith(String(pages[0].beat).slice(4))) out.partOffBeat = 1;

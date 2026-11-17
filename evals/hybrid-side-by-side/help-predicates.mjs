@@ -143,10 +143,24 @@ function keyedBefore(L, i, ctx) {
 function boardAt(r, ch) {
   const pages = Array.isArray(r.screen?.pages) && r.screen.pages.length ? r.screen.pages : null;
   if (pages) return [...pages].reverse().find((p) => (p.from ?? 0) <= ch)?.board ?? pages[0].board ?? null;
+  // (dc-r8-director26 B1: a recorded row's pages carry their boards in its segments — the held pages only name templates, so a two-page
+  // help turn read no board at all and helpBoard read 0 on all six of the run's rows)
+  const segs = Array.isArray(r.segments) && r.segments.some((g) => g?.board) ? r.segments.filter((g) => g?.board) : null;
+  if (segs) return [...segs].reverse().find((g) => (g.from ?? 0) <= ch)?.board ?? segs[0].board ?? null;
   const held = r.held?.pages ?? [];
   // (pages with no boards recorded: only a one-page turn is known — its board is the row's)
   if (held.length > 1) return null;
   return r.boardRef ?? r.screen?.boardRef ?? null;
+}
+/** The board up when row i begins: the board her last turn ended on (its last page). */
+function boardUpBefore(L, i) {
+  for (let j = i - 1; j >= 0; j--) {
+    const r = L?.rows?.[j];
+    if (r?.who !== "teacher") continue;
+    const b = boardAt(r, Number.MAX_SAFE_INTEGER);
+    if (b) return b;
+  }
+  return null;
 }
 /** The teaching sentences of a help turn: four words or more, not the card's own, not a check-in, a switch line or a help joint. */
 function helpSentences(r, ctx) {
@@ -271,15 +285,23 @@ export const HELP_PREDICATES = {
   },
   /** H4 item 5: a help wording is said over the board of the part it belongs to (the rung's own board) — never the follow-up card's
    *  (c4 steady 124) nor another unit's (c4 stuck 30). */
+  // (dc-r8-director26 B1: a remediation's own board is its `board` field and nothing else — with none, its help is said over the board
+  // that is up, never a card's. director26's six rows (c4 steering 12; c6 steady 48, stuck 58, steering 8; c5-t02 steady 82, steering 12)
+  // said a remediation's other wording over the skill's first check card for the same mix-up; help.js had lent it that card's board, and
+  // this predicate compared against the lent board)
   helpBoard(L, r, i, ctx) {
     if (!helpTurnOf(L, r, i, ctx)) return null;
     const ix = helpIndex(ctx);
     const t = norm(r.text);
     for (const s of sentencesOf(t)) {
       const hit = ix.rungs.get(normSentence(s));
-      if (!hit?.board) continue;
+      if (!hit) continue;
+      const rem = /^(.*\.remediation\[\d+\])\.(?:sayAlt|simpler)$/.exec(hit.path);
+      const own = rem ? at(ctx.script, `${rem[1]}.board`) : hit.board;
+      const want = own && typeof own === "object" ? own : rem ? boardUpBefore(L, i) : null;
+      if (!want) continue;
       const b = boardAt(r, t.indexOf(s));
-      if (b && !sameBoard(b, hit.board)) return `${hit.path} said over ${b.template} ${JSON.stringify(b.params ?? {}).slice(0, 60)}, not its own board`;
+      if (b && !sameBoard(b, want)) return `${hit.path} said over ${b.template} ${JSON.stringify(b.params ?? {}).slice(0, 60)}, not ${own ? "its own board" : "the board up"}`;
     }
     return null;
   },

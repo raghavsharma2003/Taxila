@@ -191,17 +191,11 @@ export function compileScript(script, plan = null) {
     const own = { path: `${p.path}.${f}`, v: at(script, `${p.path}.${f}`) };
     if (own.v != null) return own;
     // (as the walk does today: an explain card's help and board are its point's (liveBeatSimpler); a worked step's board is the worked
-    // example's; a remediation is said over the board of the card it remedies)
+    // example's)
     if (p.point && ["simpler", "alts[0]", "board"].includes(f)) return { path: `${p.point}.${f}`, v: at(script, `${p.point}.${f}`) };
     if ((p.kind === "worked_step" || p.kind === "your_step") && f === "board") { const w = p.worked ?? p.path.replace(/\.steps\[\d+\]$/, ""); return { path: `${w}.board`, v: at(script, `${w}.board`) }; }
-    if (p.kind === "remediation" && f === "board") {
-      const sk = script.skills.find((x) => p.id.startsWith(`${x.skillId}:`));
-      const n = script.skills.indexOf(sk);
-      const i = (sk?.checks ?? []).findIndex((c) => c.targets === p.targets);
-      if (i >= 0) return { path: `skills[${n}].checks[${i}].board`, v: sk.checks[i].board };
-      const j = (sk?.explain ?? []).findIndex((b) => b.ask?.targets === p.targets);
-      if (j >= 0) return { path: `skills[${n}].explain[${j}].board`, v: sk.explain[j].board };
-    }
+    // (dc-r8-director26 B1: a remediation's board is its own or none — with none it is said over the board that is up; it never borrows
+    // the board of the card it remedies)
     return own;
   };
   for (const p of parts) {

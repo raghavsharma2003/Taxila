@@ -47,6 +47,9 @@ import { seedLearner } from "./knows-her/seed.mjs";
 const { planTurn } = __test;
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 const DRY = process.argv.includes("--dry");
+// (dc-r8-director26 B1: a dry run throws where a help page's board is not the one the help function returned — brain/propose.js
+// helpBoardPredicate; serving never throws)
+if (DRY) process.env.TAXILA_STRICT_HELP = "1";
 
 /** The scripted children: the same lines, in the same order, for both lanes. */
 export const SCENARIOS = {
@@ -524,7 +527,15 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const partBeat = { close: lmB.closeBeat?.beatId, closed: (lmB.closedBeat ?? lmB.closeBeat)?.beatId, bridge: lmB.bridgeBeat?.beatId, simpler: (lmB.simplerBeat ?? lmB.scriptBeat)?.beatId,
       alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId, held: (lmB.heldBeat ?? lmB.scriptBeat)?.beatId };
     let atP = 0;
-    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+    // (dc-r8-director26: each part also carries the boards its beat may be said over — partOffBeat compares boards, not beat names: the
+    // beat name of a page is its held unit's, and 38 of director26's 41 c6 flags were a part of one beat on the same figure under another
+    // beat's name. A help wording's board is the help decision's (null: the board up — no board to check); a remediation's body may be
+    // said over its then-card's board, its unit's once the card is posed)
+    const bOf = (b) => (b?.board ? [b.board] : []);
+    const helpB = lmB.help && Object.prototype.hasOwnProperty.call(lmB.help, "board") ? (lmB.help.board ? [lmB.help.board] : []) : null;
+    const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: bOf(lmB.bridgeBeat), simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
+      alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: [...bOf(lmB.scriptBeat), ...(lmB.scriptBeat?.kind === "remediation" ? bOf(lmB.cardBeat) : [])], held: bOf(lmB.heldBeat ?? lmB.scriptBeat) };
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);
     const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
       ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };
