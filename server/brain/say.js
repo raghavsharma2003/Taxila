@@ -2956,6 +2956,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const quickR = state.lastMove?.quickReply ?? null;
     const quickS = quickR ? (quickR.right ? `${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?]+$/, "")}.` : quickR.say ? dot(norm(quickR.say)) : null) : null;
     if (quickR && body.length) { guard.quickBodyDropped = body.length; body = []; }
+    // (Brain 042 Q2: an asked step's question said again — "phir se bolo" — is code's frame and the question, nothing of hers)
+    if (state.lastMove?.stepAsk?.prompt && !workedLines?.length && !state.lastMove?.splitClose && !state.lastMove?.help) { body = state.lastMove.request === "repeat" ? [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)] : []; }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
     const closedW = whyS(state.lastMove?.closed?.why);
     const wd = state.lastMove?.workedDone;

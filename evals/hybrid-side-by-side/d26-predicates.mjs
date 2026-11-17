@@ -44,6 +44,8 @@ D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
   if (col !== "give_up" && col !== "clarify") return null;
   // (a worked step's request with its wordings spent goes on to the next step, on that step's own frame — J1: no promise there)
   if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? ""))) return null;
+  // (dc-r8-director27 Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes)
+  if (ctx.prevT?.leadAlone) return null;
   // (dc-r8-director27 Brain 042: a give-up on a quick question is answered by its authored `say`, then the card; on an asked step, by the
   // step told — the work order's answer to it, no hint ladder there)
   if (col === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;

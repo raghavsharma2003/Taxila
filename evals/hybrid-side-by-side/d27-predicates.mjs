@@ -29,7 +29,8 @@ const brief = (b) => (b ? `${String(b.template).replace(/@\d+$/, "")} ${JSON.str
 const CHECKIN_ONLY = /^(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
 const KEY_SAID = /(?:is sawaal ka|iska|yahan|pichhle sawaal ka|woh wala:?) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab:?|the full answer|(?:^|[.!?]\s+)(?:haan|nahi|yes|no), (?:kyunki|because)\b/i;
 const CARDISH = new Set(["card", "alt"]);
-const TEACH = new Set(["body", "simpler", "card", "alt", "bridge", "held", "close", "closed"]);
+// (Brain 042: a quick question is its point's, an asked step is its step: the address moves to them)
+const TEACH = new Set(["body", "simpler", "card", "alt", "bridge", "held", "close", "closed", "quick", "stepAsk"]);
 
 /** The forms of a joint kind, as normalised sentences: the script's own and code's fallback. */
 function jointSentences(script, kind) {
@@ -230,6 +231,8 @@ export const D27_PREDICATES = {
     const intent = ctx.prevIntent ?? null;
     const req = ["clarify", "give_up", "hindi"].includes(intent) ? intent : ["clarify", "give_up", "hindi"].includes(col) ? col : null;
     if (!req || /^(?:wrap|safeguard|break|greet|done|hook)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes)
+    if (ctx.prevT?.leadAlone) return null;
     // (dc-r8-director27 Brain 042: a give-up on a quick question gets its authored `say` and the card; on an asked step, the step told —
     // the work order's answer; a clarify or a Hindi request there is help on the point or the step, read below)
     if (req === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;

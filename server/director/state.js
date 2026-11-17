@@ -912,6 +912,25 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
   activate(s, item);
   return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, item, probe: probeFor(item), ...ref("worked", "worked", we.board) });
 }
+/** Whether a move is a segment of an asked worked example (its told lines and its question: an asked step, or the child's own step). */
+const segmentMove = (move, ui, kit) => !!move?.stepAsk || (move?.kind === "worked_example" && !!move.rendered?.length && /:ask:worked$/.test(String(ui?.ask?.itemId ?? ""))
+  && asksSteps(skillScriptOf(kit, move.skillId)?.workedExample));
+/** A segment's turn: said whole with its question. Where what leads it — a verdict and its why, a bridge, a held part, her reply to an aside or
+ *  her park line, the lead-in before the problem — makes the turn run over 75 words, the break falls before the segment and that turn ends on
+ *  its check-in (counted); the segment is said whole on the next turn. null: not a segment. */
+function segmentTurn(out, input, closeWords = 0) {
+  const { move, ui } = out;
+  if (!segmentMove(move, ui, input.kit) || move.splitClose) return null;
+  const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
+  const b = p0.findIndex((x) => x.k === "body");
+  const qW = move.stepAsk ? wordsIn(move.stepAsk.prompt) : 0;
+  // (her park line on an aside said this turn; the lead-in before a worked problem after her reply to an aside — partsOfTurn counts the reply)
+  const lead = (input?.event === "turn" && input.cls?.request?.type === "uptake" && !move.asideAck && !move.returnReply ? 12 : 0)
+    + ((move.asideAck || move.returnReply || input?.cls?.asideReply) && move.problemLines ? 10 : 0);
+  if (p0.reduce((a, x) => a + x.n, 0) + qW + lead <= L2_CAP || b < 0) return out;
+  if (b > 0 || lead > 0 || move.asideAck || move.returnReply) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
+  return out;
+}
 /** The walk's current beat as a scriptBeat ref (with its board), or null. */
 function currentBeatRef(s, kit) {
   const w = s.walk;
@@ -3252,6 +3271,8 @@ function helpRequestOf(prev, input) {
   // (Brain 042: a give-up on a quick question or an asked step is an answer that is not right — quick.say then the card, or the step told —
   // never help: no hint ladder there)
   if (col === "give_up" && (prev.lastMove?.quick || prev.lastMove?.stepAsk)) return null;
+  // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn)
+  if (prev.lastMove?.leadAlone && prev.splitHold) return null;
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
@@ -3469,7 +3490,11 @@ function helpAfter(prev, input, out, pre) {
   if (out.move) out.move = { ...out.state.lastMove };
   return out;
 }
+/** Brain 042: the part her last turn was on (its beat), for a reply said alone before a worked segment (breakL2's forceAt 0). Set per step:
+ *  the walk is synchronous. */
+let leadBeatOf = null;
 export function step(prev, input) {
+  leadBeatOf = prev?.lastMove?.closeBeat ?? prev?.lastMove?.scriptBeat ?? null;
   // (Brain 042: a quick question or an asked step was what the child's line was read against — no card: it leaves the table before anything
   // else reads it; the walk acts on the reading — heldTurn's quickAnswer, the worked example's stepAsk)
   if (isQuickId(prev?.activeItemId)) {
@@ -3681,6 +3706,23 @@ function step0(prev, input) {
     const col = columnName(input, prev);
     const req = !!(c.request || c.help || c.asideReply) || ["clarify", "hindi", "picture", "repeat", "aside", "try_first", "move_on"].includes(col);
     if (!c.flags?.distress && !c.flags?.wantsToStop && (!req || col === "give_up")) input = { ...input, stepAnswer: true, cls: { ...c, outcome: "no_evidence", request: undefined, flags: { ...(c.flags ?? {}), dontKnow: false, minimal: false, confused: false } } };
+    // ("phir se bolo", "sawaal kya hai?" on an asked step: its question again, with code's frame — the step stays asked)
+    else if (!c.flags?.distress && !c.flags?.wantsToStop && col === "repeat" && !prev.splitHold) {
+      const sa = prev.lastMove.stepAsk;
+      const a = skillScriptOf(input.kit, sa.skillId)?.workedExample?.steps?.[sa.step]?.ask;
+      if (a) {
+        const s = structuredClone(prev);
+        s.turn += 1; s.stepRead = undefined;
+        friendOf = s.ctx?.firstName ?? "";
+        const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
+        s.quickItem = qi; s.activeItemId = qi.id;
+        const m = { kind: "worked_example", shape: prev.lastMove.shape, skillId: prev.lastMove.skillId, format: prev.lastMove.format, stuck: true, request: "repeat", stepAsk: { ...sa },
+          ...(prev.lastMove.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
+        const ui0 = { status: "your_turn" };
+        s.lastMove = m; s.moveVoiced = false; s.lastUi = ui0;
+        return { state: s, move: m, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(m, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+      }
+    }
   }
   // v6 R5: the second half of a split turn (splitLong) comes first
   const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
@@ -4327,13 +4369,7 @@ export function splitLong(out, input) {
   // (dc-r8-director27 Brain 042 Q2: a segment of an asked worked example is said whole with its question — the problem never alone; where a
   // verdict, its why, a bridge or a held part before it make the turn run over 75 words, the break falls after them and that turn ends on
   // its check-in)
-  if (l2On() && !recorded && (move.stepAsk || (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(String(ui?.ask?.itemId ?? "")) && asksSteps(skillScriptOf(input.kit, move.skillId)?.workedExample)))) {
-    const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
-    const qW = move.stepAsk ? wordsIn(move.stepAsk.prompt) : 0;
-    const b = p0.findIndex((x) => x.k === "body");
-    if (b > 0 && p0.reduce((a, x) => a + x.n, 0) + qW + (move.problemLines && b > 0 ? 0 : 0) > L2_CAP) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
-    return out;
-  }
+  if (l2On() && !recorded) { const sg = segmentTurn(out, input, closeWords); if (sg) return sg; }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
     const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
     if (p0.some((x) => ["close", "bridge", "held"].includes(x.k)) && p0.reduce((a, x) => a + x.n, 0) + 4 > L2_CAP) return splitLong(withoutFirstStep(out), input);
@@ -4470,11 +4506,12 @@ function breakL2(out, input, closeWords = 0, forceAt = -1) {
   // (help — a hint after a miss, a simpler — is one answer with its card's question: Brain 039 Part A's, never broken here)
   if (move.simpler || move.kind === "hint") return null;
   const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
-  if (!parts.some((p) => ["close", "bridge", "held"].includes(p.k))) return null;
+  // (forceAt 0, Brain 042: what leads a worked segment — her reply to an aside, her park line — is said alone, the segment held)
+  if (!parts.some((p) => ["close", "bridge", "held"].includes(p.k)) && forceAt !== 0) return null;
   // (dc-r8-director26: a turn with no card ends on her check-in — four words the parts do not hold: dry c5-t01 steady 50 ran 79 words)
-  let at = forceAt > 0 ? forceAt : breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
+  let at = forceAt >= 0 ? forceAt : breakAt(parts, L2_CAP - (parts.some((p) => p.k === "card") ? 0 : 4));
   // (and a turn whose card is held ends on the check-in in its place)
-  if (forceAt <= 0 && at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
+  if (forceAt < 0 && at > 1 && parts.slice(0, at).reduce((a, p) => a + p.n, 0) + 4 > L2_CAP) at -= 1;
   // (the parts fit in 75 words: the point and its card still never go in one turn over 60 — the point's own split, its close counted)
   if (at < 0) return splitTeach(out, input, pointCardCap(s), closeWords);
   const now = new Set(parts.slice(0, at).map((p) => p.k));
@@ -4493,7 +4530,10 @@ function breakL2(out, input, closeWords = 0, forceAt = -1) {
     ...(sayNow.length ? { sayFirst: sayNow } : {}), ...(heldNow && move.heldSaid ? { heldSaid: move.heldSaid } : {}), ...(heldNow && move.heldBeat ? { heldBeat: move.heldBeat } : {}),
     ...(move.asideAck ? { asideAck: true } : {}), ...(move.returnReply ? { returnReply: move.returnReply } : {}),
     // (said over the board of what it closes; a turn that closes nothing and says the bridge is on the bridge's board)
-    ...((move.gave || move.closed || move.workedDone || move.verdict || !bridgeNow) && move.closeBeat ? { scriptBeat: move.closeBeat } : bridgeNow && move.bridgeBeat ? { scriptBeat: move.bridgeBeat } : move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
+    ...((move.gave || move.closed || move.workedDone || move.verdict || !bridgeNow) && move.closeBeat ? { scriptBeat: move.closeBeat } : bridgeNow && move.bridgeBeat ? { scriptBeat: move.bridgeBeat } : move.closeBeat ? { scriptBeat: move.closeBeat }
+      // (Brain 042: her reply or park line said alone before a worked segment — leadAlone — is said on the part she was on, the board up
+      // staying; whatever the child says next, the segment comes, whole: helpRequestOf)
+      : forceAt === 0 && leadBeatOf ? { scriptBeat: leadBeatOf } : {}), ...(forceAt === 0 ? { leadAlone: true } : {}) };
   const held = { ...move };
   for (const k of [...closeKeys, "sayFirst", "heldSaid", "heldBeat", "probeAck", "asideAck", "returnReply", "verdict"]) delete held[k];
   if (sayLater.length) held.sayFirst = sayLater;
@@ -4738,6 +4778,7 @@ function heldTurn(prev, input) {
     s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
     const outR = problemAlone({ state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) }, input);
     // (dc-r8-director25 L2: the held half said after an aside — her reply, the joint back, the part — breaks as any turn does)
+    if (l2On() && !scriptFor(input.kit)?.script?.recordedRun) { const sg = segmentTurn(outR, input, 0); if (sg) return sg; }
     if (l2On() && !h.teach && !scriptFor(input.kit)?.script?.recordedRun) { const b = breakL2(outR, input, 0); if (b) return b; return splitTeach(outR, input, pointCardCap(s)); }
     if (h.teach && workedWithCard(outR, input)) return heldCardFresh(outR, splitTeach(outR, input, pointCardCap(s)));
     return outR;
@@ -4781,6 +4822,7 @@ function heldTurn(prev, input) {
   // (dc-r8-director25 L2: the held half breaks as any turn does)
   // (a held move that says a return: brain/say.js says the return alone and holds the rest for the turn after her reply)
   if (l2On() && !scriptFor(input.kit)?.script?.recordedRun && h.move?.returned?.topic) return out;
+  if (l2On() && !scriptFor(input.kit)?.script?.recordedRun) { const sg = segmentTurn(out, input, 0); if (sg) return sg; }
   if (l2On() && !scriptFor(input.kit)?.script?.recordedRun) { const b = breakL2(out, input, 0); if (b) return b; return splitTeach(out, input, pointCardCap(s)); }
   return splitTeach(out, input, s.ctx?.plainWords ? 45 : 60);
 }

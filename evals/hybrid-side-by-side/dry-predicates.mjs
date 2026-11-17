@@ -343,6 +343,8 @@ export const PREDICATES = {
     const keyed = (t) => !!t?.check?.gave || !!t?.keyFact || KEY_SAID.test(t?.text ?? "");
     if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (dc-r8-director27 Brain 042: a check-in after her reply said alone before a worked segment is no part's — the segment comes, and teaches)
+    if (p.leadAlone) return null;
     // (dc-r8-director25 L2: a check-in that ends a hook, or a verdict whose next part waits for the next turn, is no part's check-in —
     // the next part comes, and teaches)
     if (String(p.move ?? "") === "hook" || ((p.pageParts ?? []).length && (p.pageParts ?? []).every((x) => ["close", "closed", "aside", "bridge"].includes(x.part)) && !keyed(p))) return null;
@@ -707,6 +709,9 @@ export const ORDER_LAWS = {
   orderNoUnit(L, r, i, ctx) {
     const noUnit = !!r.held?.intent?.noUnit || (r.beat == null && /^(?:teachback|wrap|break)$/.test(String(r.move ?? "")));
     if (!noUnit) return null;
+    // (dc-r8-director27 Brain 042: her reply to an aside said alone before a worked segment leaves the board where it was, as the break's offer
+    // does; its words still name no figure)
+    if (r.leadAlone) { const f0 = FIGURE.exec(String(r.text ?? ""))?.[0]; return f0 ? `a reply said alone names a figure ("${f0}")` : null; }
     // (the break's offer to go on leaves the lesson's board where it was; its words still name no figure)
     // (main's 026: the wrap after a teach-back's key is said over its answer board and holds it)
     const up = String(r.move) !== "break" && r.held?.unit !== "end:teachback:answer" && (r.boardUp === true || (!!r.held?.unit && r.held?.drawn === "kept" && r.held?.kept));
