@@ -308,7 +308,9 @@ export const PREDICATES = {
     // (main's R2 on the merged tree: H4's go-on line after a key — joints.afterKeyGoOn — is a joint, not a part: it may lead the return's
     // turn, before the return question and nothing else; a verdict, a key, a why or any teaching part in the return's turn is still flagged)
     // (a script written before Learning 014 has no afterKeyGoOn forms: code's fallback forms are said, and are the same joint)
-    const goOn = new Set([...GO_ON_FALLBACK, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key));
+    // (dc-r8-director27 P3/P5: after a key with nothing left, the helpSpent line answers her request before a due return — the go-on line's
+    // "we go on" contradicts the return; the helpSpent line is the same kind of joint)
+    const goOn = new Set([...GO_ON_FALLBACK, ...(ctx.script?.joints?.afterKeyGoOn ?? []), ...(FALLBACK_JOINTS.helpSpent ?? []), ...(ctx.script?.joints?.helpSpent ?? [])].flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key));
     let lead = 0;
     for (let n = 1; n <= ss.length; n++) if (goOn.has(key(ss.slice(0, n).join(" ")))) { lead = n; break; }
     const rest = ss.filter((x, n) => n >= lead && !own(x, n));

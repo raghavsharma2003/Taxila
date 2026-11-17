@@ -393,8 +393,9 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   // (dc-r8-director27 P6.3: a reply she has said in this lesson is not said again — the next form)
   const avoid = saidLinesOf(state);
   const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid }) : null;
-  if (p?.form === "phrase" && p.line) return p.line;
+  if (["phrase", "again"].includes(p?.form) && p.line) return p.line;
   const r = asideReplyLine({ said, topic, lang, n, words, avoid });
+  if (r?.form === "again" && r.line) return r.line;
   return r?.form === "word" && r.line ? r.line : null;
 }
 export function j2WordsOf(said, topic = null) {

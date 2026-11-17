@@ -800,7 +800,7 @@ function walkNextV2(s, input, prefix, sk) {
         // check-in at the end of the turn, not one per step. A step said again smaller is said alone; a recorded run walks as it walked)
         const wc = (t) => String(t ?? "").split(/\s+/).filter(Boolean).length;
         const recorded = !!scriptFor(kit)?.script?.recordedRun;
-        let two = !small && k + 1 < steps.length && w.smallerStep !== k + 1 && !recorded && wc(steps[k]) + wc(steps[k + 1]) + 3 + 3 + 4 <= L2_CAP;
+        let two = !small && k + 1 < steps.length && w.smallerStep !== k + 1 && !recorded && wc(steps[k]) + wc(steps[k + 1]) + 3 + 3 + 4 + walkLeadWords(input, lang, s.lastMove) <= L2_CAP;
         // (dc-r8-director26 C1, main's ruling change 4: the turn that holds the last told step holds the child's own step too, so it ends on a
         // real question, not a check-in — when the step or two left and that card fit in 75 words (her line adds no frame: the steps' own
         // words open it). When two steps and the card do not fit, the step before the last is said alone and the last comes with the card.
@@ -3247,7 +3247,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
@@ -3498,7 +3498,7 @@ export function step(prev, input) {
     : (out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0) || lmNow.asideAck && !input.cls?.asideReply ? "aside"
       : lmNow.kind === "break" || lmNow.stopping || out?.move?.stopping || (["wrap", "done"].includes(String(lmNow.kind ?? out?.move?.kind ?? "")) && out?.state?.stoppedEarly && !prev?.stoppedEarly) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
-  const cell0h = helped && cell0 ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}) } : cell0;
+  const cell0h = helped && cell0 ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
   const cell = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
@@ -3959,6 +3959,8 @@ function step0(prev, input) {
       // (dc-r8-director26 C1: the problem said with its first step is the opening too)
       && (!/^worked(?::step|$)/.test(move.scriptBeat?.beatId ?? "") || !!move.problemLines) && move.scriptBeat?.kind !== "remediation" && !move.request && !input.cls?.request?.type
       // (v6.5 F1, main on director13 c6 offtopic 40: no aside return beside a wrong verdict — it waits for the next boundary)
+      // (dc-r8-director27, dry c5-t02 offtopic 24: an overdue park comes due at a key that closes the card after a wrong answer — the key ends
+      // its turn and the return is said alone on the next, returnApart; one card's long help kept the boundary away for 13 turns)
       && !(prev.activeItemId && ["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")))
       // (v6.9 T1, director17 c5-t01 steady 42: asked to go on, the walk moves on first; the aside waits for the next boundary)
       && !(GO_ON.test(String(input.text ?? "")) && responseShape("move_on", "aside_pending") === "move_on");
@@ -4365,7 +4367,9 @@ export function goOnLeadWords(input, lang = "hinglish") {
 /** What leads a walk's turn before its authored parts: help's go-on line, and her reply to an aside — or to her question after the AI line
  *  or a return (brain/say.js answers it in the child's words) — with the joint back, about sixteen words. The walk counts it when it puts
  *  parts together (dc-r8-director26 C1). lastMove: her last turn's move. */
-const walkLeadWords = (input, lang, lastMove = null) => goOnLeadWords(input, lang) + (input?.cls?.asideReply || lastMove?.tasteAsked || lastMove?.returned ? 16 : 0);
+// (dc-r8-director27, dry c5-t01 stuck 36 on Learning 016's steps: a park of the child's aside leads the turn too — "Cricket ki baat bhi hogi, bas
+// yeh … khatam ho jaaye." — and two told steps with the child's own step ran to 86 words beside it)
+const walkLeadWords = (input, lang, lastMove = null) => goOnLeadWords(input, lang) + (input?.cls?.asideReply || lastMove?.tasteAsked || lastMove?.returned || (input?.event === "turn" && columnName(input, null) === "aside") ? 16 : 0);
 export function unitTurn(out, input = null, extra = 0, first = 0) {
   const { state: s, move, ui } = out;
   // (help's go-on line before the turn, when the decision did not count it)

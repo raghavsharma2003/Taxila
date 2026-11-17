@@ -266,7 +266,7 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (dc-r8-director27 P3: a card closed by a right answer — its why's other wording first, as after a key; it is not keyed)
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
-  const base = { part: part.id, kind: part.kind, keyed: !!keyed, request };
+  const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(closed && !keyed ? { closed: true } : {}) };
   if (unsaid) {
     const t0 = String(unsaid.text).trim();
     const rung = { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null };

@@ -114,6 +114,11 @@ export function asideReplyLine(args = {}) {
   const fresh = (line) => !!line && !String(line).split(/(?<=[.!?\u0964])\s+/).map(avoidKey).filter(Boolean).every((k) => avoid.has(k));
   const first = asideReplyLine0(args);
   if (!first?.line || fresh(first.line) || first.form === "sad") return first;
+  // (Learning 016: the kind's againReplies — "Haan, {phrase}, yeh tumne bataya tha." — for an aside or a reply said a second time)
+  const k = KINDS[asideKindOf(`${args.topic ?? ""} ${args.said ?? ""}`)] ?? KINDS.other;
+  const phrase = phraseOf(String(args.said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? args.said ?? "") ?? phraseOf(args.said ?? "");
+  const again = phrase ? (k?.againReplies ?? []) : [];
+  for (let t = 0; t < again.length; t++) { const f = pickN(again, (args.n ?? 0) + t); const line = f ? cap(fill(formOf(f, args.lang ?? "hinglish"), { phrase })) : null; if (line && fresh(line)) return { line, form: "again" }; }
   for (let t = 1; t <= 12; t++) { const r = asideReplyLine0({ ...args, skip: t }); if (r?.line && fresh(r.line)) return r; }
   return first;
 }
@@ -168,7 +173,8 @@ export function asideReplyForms() {
   return {
     word: all.flatMap((k) => (k.replies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map(re),
     // (a {phrase} form is checked as a {word} form: one slot of the child's own words)
-    phrase: all.flatMap((k) => (k.phraseReplies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map((f) => re(f.replace(/\{phrase\}/g, "{word}"))),
+    // (Learning 016's againReplies, for an aside or a reply said a second time, are phrase forms too)
+    phrase: all.flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? [])].flatMap((f) => [f.hi, f.en])).filter(Boolean).map((f) => re(f.replace(/\{phrase\}/g, "{word}"))),
     plain: all.flatMap((k) => (k.plain ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean),
     sad: (DATA.sad?.replies ?? []).flatMap((f) => [f.hi, f.en]).filter(Boolean),
   };

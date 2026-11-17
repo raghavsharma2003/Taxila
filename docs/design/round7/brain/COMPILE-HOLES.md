@@ -6,7 +6,7 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (4 live, 30 staged). Missing fields: 1608. Rule holes: 15568. Doubles: 0.
+**Scripts:** 34 (4 live, 30 staged). Missing fields: 1608. Rule holes: 17234. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
@@ -72,6 +72,7 @@
 
 | Rule (kind/column/help) | Cells naming a missing field |
 |---|---|
+| card/after_key | 744 |
 | card/clarify/fresh | 496 |
 | card/clarify/heard | 496 |
 | card/clarify/spent | 496 |
@@ -93,7 +94,6 @@
 | worked_step/hindi/fresh | 300 |
 | worked_step/hindi/heard | 300 |
 | worked_step/hindi/spent | 300 |
-| card/after_key | 248 |
 | checkin/clarify/fresh | 248 |
 | checkin/clarify/heard | 248 |
 | checkin/clarify/spent | 248 |
@@ -113,6 +113,7 @@
 | point/hindi/heard | 248 |
 | point/hindi/spent | 248 |
 | check/after_key | 235 |
+| your_step/after_key | 180 |
 | remediation/clarify/fresh | 148 |
 | remediation/clarify/heard | 148 |
 | remediation/clarify/spent | 148 |
@@ -126,7 +127,18 @@
 | remediation/picture/fresh | 123 |
 | remediation/picture/heard | 123 |
 | remediation/picture/spent | 123 |
-| your_step/after_key | 90 |
+| your_step/clarify/fresh | 90 |
+| your_step/clarify/heard | 90 |
+| your_step/clarify/spent | 90 |
+| your_step/give_up/fresh | 90 |
+| your_step/give_up/heard | 90 |
+| your_step/give_up/spent | 90 |
+| your_step/hindi/fresh | 90 |
+| your_step/hindi/heard | 90 |
+| your_step/hindi/spent | 90 |
+| your_step/wrong/fresh | 90 |
+| your_step/wrong/heard | 90 |
+| your_step/wrong/spent | 90 |
 | wrap/ask | 30 |
 
 ## Help's joints (dc-r8-director25 H4, Learning 014)
@@ -142,152 +154,212 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch01-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch01-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch01-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch03-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch03-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch03-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch03-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch04-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch04-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch04-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch04-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch04-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch04-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch06-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch06-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch06-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch07-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch07-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch07-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch09-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch09-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch09-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch14-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch14-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c4-maths-ch14-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch01-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch01-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch01-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch02-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch02-t03 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch02-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch03-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch03-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch03-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch03-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch05-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch13-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch13-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch13-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch13-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch13-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c5-maths-ch13-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch02-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch02-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch02-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch02-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch02-t03 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch02-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t04 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch02-t04 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch02-t04 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch05-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch07-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch07-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch07-t03 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch07-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t04 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch07-t04 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch07-t04 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t05 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch07-t05 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch07-t05 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch08-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch08-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c6-maths-ch08-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch02-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c7-maths-ch02-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c7-maths-ch02-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c7-maths-ch03-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c7-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | helpToCard | missing (code's fallback forms are said) |
+| c7-maths-ch05-t01 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c7-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch05-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | helpToCard | missing (code's fallback forms are said) |
+| c7-maths-ch05-t02 | staged | afterKeyReturn | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
+| c7-maths-ch05-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 
 ## Doubles

@@ -45,9 +45,13 @@ function helpIndex(ctx) {
   const walkC = (o) => { if (Array.isArray(o)) return o.forEach(walkC); if (o && typeof o === "object") { for (const f of ["prompt", "reask"]) { const v = o[f];
     for (const t of typeof v === "string" ? [v] : [v?.hi, v?.en]) for (const x of sentencesOf(t)) cardSents.add(normSentence(x)); } for (const v of Object.values(o)) walkC(v); } };
   walkC(script.skills ?? []);
-  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn", "helpToCard"].flatMap((k) => script.joints?.[k] ?? [])]
+  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn"].flatMap((k) => script.joints?.[k] ?? [])]
     .flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence));
-  return (ctx.o.helpIx = { rungs, cards, authored, joints, parts, cardSents });
+  // (Learning 016: a rung may name the child's friend — "{friend} galat hai" — which she says with the name filled: a slot sentence matches
+  // any one or two words in the slot's place)
+  const slotted = [...rungs.entries()].filter(([k]) => /(?:^| )friend(?: |$)/.test(k)).map(([k, v]) => ({ re: new RegExp(`^${k.split(/(?:^| )friend(?= |$)/).map((x) => x.trim().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(" \\S+(?: \\S+)? ").trim()}$`), v }));
+  const rungsAll = Object.assign(new Map(rungs), { get(k) { return Map.prototype.get.call(this, k) ?? slotted.find((x) => x.re.test(k))?.v; }, has(k) { return this.get(k) !== undefined; } });
+  return (ctx.o.helpIx = { rungs: rungsAll, cards, authored, joints, parts, cardSents });
 }
 /** The said set before this row: every sentence of her earlier turns, with its row. */
 function saidBefore(L, i) {
@@ -105,6 +109,8 @@ export function helpTurnOf(L, r, i, ctx) {
   // (a part help does not cover — the greeting, the hook — is answered by its own law, greetSimpler)
   const covered = (id) => !!helpPart(ctx.script, id);
   if (r.cell?.keyed && r.cell?.part) return covered(r.cell.part) ? { request, part: r.cell.part, keyed: true } : null;
+  // (dc-r8-director27 P3: a card answered right — its help reads its why's other wording first, as after a key; it is no key)
+  if (r.cell?.closed && r.cell?.part) return covered(r.cell.part) ? { request, part: r.cell.part, keyed: true, closed: true } : null;
   if (keyedPart && request !== "hint" && !/:(?:greet|hook)$/.test(String(r.cell?.part ?? ""))) return covered(keyedPart) ? { request, part: keyedPart, keyed: true } : null;
   return r.cell?.part && covered(r.cell.part) ? { request, part: r.cell.part, keyed: false } : null;
 }
@@ -127,6 +133,8 @@ function keyedBefore(L, i, ctx) {
     if (r.who !== "teacher") continue;
     if (cardIn(r)) { st.val = null; st.card = partOfItem(r.check?.itemId, ctx) ?? st.card; continue; }
     // (a key with no close part on the record — a yes-or-no key said as the fact — keys the card last posed)
+    // (dc-r8-director27 P3: a key and a bridge in one turn — the bridge is said last, and the address is the bridge's, not the keyed card's)
+    if (keyedTurn(r) && (r.pageParts ?? []).some((p) => p.part === "bridge")) { st.val = null; continue; }
     if (keyedTurn(r)) { const k = keyedCardOf(r, ctx) ?? st.card; if (k) { st.val = k; continue; } }
     // (a new unit's teaching — a point, a worked step, a bridge — ends the key's check-in; help said on the key does not)
     if ((r.pageParts ?? []).some((p) => ["body", "held", "bridge"].includes(p.part) && p.beat)) {
