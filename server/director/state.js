@@ -39,7 +39,6 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { compiledFor } from "./compile.js";
 import { pickHelp, addSaid } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
@@ -1921,14 +1920,7 @@ function requestMove(s, input, item, req, labels) {
       if (item && s.pendingWhy === item.id && scriptOn() && isScriptCard(item) && !scriptFor(kit)?.script?.recordedRun) return { ...afterWhy(s, { ...input, cls: { outcome: "no_evidence", confidence: 1, source: "help", flags: {} } }, item), request: "language" };
       // (dc-r8-director25 H4: a Hindi request never gets a key — help's decision, state.js helpBefore)
       if (item) return plan(moveKindFor(item), p5Flag("STEER") ? SH.languageAskedP5({ lang: req.lang }) : SH.pose({ item, prefix: SH.languageAsked({ lang: req.lang }) }), { item, probe: probeFor(item), chips: optionChips(item), request: "language" });
-      // (O4, main on director21: Hindi asked at a key's check-in moved on to the next beat's simpler — it stays on the card just closed:
-      // that card's compiled hindi cell, its simpler, on its board, and the check-in; the next part waits)
-      // (only after a turn that closed and taught nothing new: a close that went on into a worked step leaves that step the live part)
-      if (!item && scriptOn() && s.lastMove?.gave && s.lastMove?.closeBeat?.board && !s.lastMove.rendered?.length && !s.lastMove.point && !scriptFor(kit)?.script?.recordedRun) {
-        const cl = cellLines(s, input, "hindi");
-        const line = cl?.lines?.[0] ?? null;
-        if (line) return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language", simpler: line, smaller: true, scriptBeat: { ...s.lastMove.closeBeat }, stayCheckin: true });
-      }
+      // (dc-r8-director25 H4: Hindi asked at a key's check-in is help on the card just keyed, decided before the walk)
       return plan("reteach", SH.languageAsked({ lang: req.lang, teaching: true }), { skillId: currentSkillId(s, kit, item), request: "language" });
     }
     case "another": case "example": case "story": case "slower": {
@@ -2939,57 +2931,6 @@ function workedAnswerOf(prev, kit) {
     : `${en ? "The answer is" : "Iska jawab hai"} ${card.key}${why ? `, ${en ? "because" : "kyunki"} ${joinable(why, { lower: true })}` : ""}.`;
   return text ? { text, board: card.answerBoard ?? null, key: card.key, why } : null;
 }
-/** dc-r8-director24 H3: the worked answer said now, on its board, and the live card closed as a key closes it: left, its answer given,
- *  the next turn goes on from its check-in (never the card's question after its answer). */
-function workedAnswerNow(out, wa, liveId) {
-  const { point: _p, rendered: _r, sayFirst: _f, simpler: _s, simplerBeat: _sb, helpNone: _h, ...rest } = out.state.lastMove;
-  out.state.lastMove = { ...rest, simpler: wa.text, smaller: true, helpNew: true, workedAnswerSaid: true, stayCheckin: true, checkinOk: true,
-    ...(rest.scriptBeat ? { simplerBeat: { ...rest.scriptBeat, ...(wa.board ? { board: wa.board } : {}) } } : {}) };
-  if (liveId) { out.state.skipped = [...new Set([...(out.state.skipped ?? []), liveId])]; out.state.lastMove = { ...out.state.lastMove, gave: { answer: wa.key, why: wa.why }, splitClose: true, gaveCheck: true }; }
-  if (out.move) out.move = { ...out.state.lastMove };
-  out.state.activeItemId = undefined; out.state.lastUi = { status: "your_turn" }; out.ui = { status: "your_turn" };
-}
-/** C1: the second wording of the why of the card a key just closed — its whyAlt ({hi, en, board?}) — in the lesson language, or null. */
-function whyAltOf(prev, kit) {
-  const id = prev?.lastMove?.itemId ?? prev?.activeItemId ?? null;
-  // (a right answer's close carries no item: the card it closed is its closeBeat — {skillId, beatId, kind})
-  const cb = prev?.lastMove?.closeBeat;
-  const item = id ? findItem(prev, kit, id) : cb?.skillId && cb.beatId ? (cb.kind === "check" && String(cb.beatId).startsWith("then:") ? { skillId: cb.skillId, scriptThen: { targets: String(cb.beatId).slice(5) } }
-    : cb.kind === "check" ? { skillId: cb.skillId, scriptCheck: { checkId: cb.beatId } } : { skillId: cb.skillId, scriptAsk: { beatId: cb.beatId } }) : null;
-  if (!item?.skillId) return null;
-  const sk = skillScriptOf(kit, item.skillId);
-  const card = item.scriptAsk ? (item.scriptAsk.beatId === "worked" ? sk?.workedExample?.yourStep : sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.ask)
-    : item.scriptCheck ? sk?.checks?.find((c) => c.id === item.scriptCheck.checkId) : item.scriptThen ? sk?.remediation?.find((r) => r.targets === item.scriptThen.targets)?.then : null;
-  const w = card?.whyAlt;
-  const t = w ? saidIn(w, prev?.ctx?.lang ?? "hinglish") : null;
-  return t && String(t).trim() ? { text: String(t).trim().replace(/[.!?\u0964]+$/, ""), board: w.board ?? null } : null;
-}
-/** C1 step 3: a compiled cell's lines for this turn — { cell, lines, show } in the lesson language, or null (no script, no cell, a hole).
- *  The walk reads what to say from the cell; the walk's own code says when. */
-function cellLines(prev, input, column) {
-  const script = scriptFor(input?.kit)?.script;
-  const addr = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
-  if (!script || !addr) return null;
-  const cell = compiledFor(script, { kitHash: input.kit?.hash ?? null }).cells?.[addr.part]?.[column]?.[addr.help];
-  if (!cell || cell.hole || cell.notApplicable) return null;
-  const at = (path) => { let v = script; for (const seg of String(path).split(".")) { const m = /^(\w+)(?:\[(\d+)\])?$/.exec(seg); if (!m || v == null) return undefined; v = v[m[1]]; if (m[2] != null) v = Array.isArray(v) ? v[+m[2]] : undefined; } return v; };
-  const lang = cell.lang === "hi" ? "hinglish" : prev?.ctx?.lang ?? "hinglish";
-  let say = cell.say ?? [];
-  let lines = say.map((p) => at(p)).map((v) => (v == null ? null : saidIn(v, lang))).filter((x) => x && String(x).trim()).map((x) => String(x).trim());
-  // (dc-r8-director23 H2: no help says a sentence from her last two turns — when every line of the cell is there, the cell's second
-  // wording (its `alt`, the first one written) is said in their place)
-  const last2 = (prev?.recent ?? []).filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
-  if (lines.length && cell.alt && lines.every((x) => last2.includes(normLine(x).slice(0, 50)))) {
-    const alts = (Array.isArray(cell.alt) ? cell.alt : [cell.alt]).map((p) => String(p).replace(/^@/, ""));
-    const ap = alts.find((p) => { const v = at(p.replace(/^point\./, `${addr.part.split(":").slice(0, 2).join(":")}.`)) ?? at(p); return v != null && saidIn(v, lang); });
-    const av = ap ? at(ap) : null;
-    const t = av ? saidIn(av, lang) : null;
-    if (t && String(t).trim() && !last2.includes(normLine(t).slice(0, 50))) { lines = [String(t).trim()]; say = [ap]; }
-  }
-  // (a second wording may carry its own board — {hi, en, board} — shown in place of the part's)
-  const altBoard = say.map((p) => (/Alt$/.test(p) ? at(p)?.board : null)).find((b) => b && typeof b === "object") ?? null;
-  return { cell, addr, lines, show: altBoard ?? (cell.show ? at(cell.show) ?? null : null) };
-}
 const carried = (lm, keep = []) => Object.fromEntries(Object.entries(lm ?? {}).filter(([k]) => keep.includes(k) || !ONE_TURN.includes(k)));
 /**
  * C1 step 2 (main, 2026-11-11: "the walk's own cell address on every teacher row"): the (part, column, help) a turn read — the part her
@@ -3013,7 +2954,7 @@ export function cellAddressOf(prev, input) {
   const column = columnName(input, prev);
   if (!column) return null;
   const script = scriptFor(kit)?.script ?? null;
-  if (lm.kind === "greet") return script?.greetSimpler ? { part: `${script.topicId ?? "lesson"}:greet`, column, help: "fresh" } : null;
+  if (lm.kind === "greet") return script?.greetSimpler ? { part: `${script.topicId ?? "lesson"}:greet`, column } : null;
   const cardId = prev.lastUi?.ask?.itemId ?? null;
   const live = cardId ?? (lm.gave?.answer ? prev.activeItemId ?? lm.itemId ?? null : null);
   let part = null;
@@ -3035,10 +2976,9 @@ export function cellAddressOf(prev, input) {
     else if (sb.kind === "hook") part = `${S}:hook`;
   }
   if (!part) return null;
-  // (help as the walk keeps it: a miss on the card or its key said is spent; a simpler said on it, or a clarify on this part, is heard)
-  const spent = !!live && ((prev.misses?.[live] ?? 0) >= 1 || (prev.cardHelp?.id === live && (prev.cardHelp.misses ?? 0) >= 1) || !!lm.gave?.answer);
-  const heard = (!!live && prev.cardHelp?.id === live && (prev.cardHelp.said ?? []).length > 0) || (lm.clarifyN ?? 0) >= 1;
-  return { part, column, help: spent ? "spent" : heard ? "heard" : "fresh" };
+  // (dc-r8-director25 H4: no help state — the fresh / heard / spent counter decided which wording a help request got; the count of requests
+  // decides nothing now, and the record is the part and the column)
+  return { part, column };
 }
 // ───────────── dc-r8-director25 H4: help is one function (server/director/help.js pickHelp) ─────────────
 // Every request for help — a clarify, a give-up, a request for Hindi, a hint after a wrong answer — reaches pickHelp here, once a turn,
@@ -3364,71 +3304,9 @@ function stepCells(prev, input) {
   if (input?.event === "turn" && input.cls?.request?.type === "another" && SAYS_CLARIFY.test(String(input.text ?? "")) && !input.cls.flags?.distress
     && keySaidNoCard(prev))
     input = { ...input, cls: { ...input.cls, request: { ...input.cls.request, type: "clarify", src: "says_clarify" } } };
-  // (dc-r8-director20 L1: "pata nahi, aap batao" at a worked step's check-in is never a yes to it — the step is re-said in its simpler
-  // words, as a clarify is, and the check-in comes again)
-  if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""))
-    && !input.cls?.flags?.distress && /^worked:step/.test(String(prev?.lastMove?.scriptBeat?.beatId ?? "")) && !prev?.lastUi?.ask && !prev?.lastMove?.smaller)
-    input = { ...input, cls: { ...(input.cls ?? {}), outcome: "no_evidence", flags: { ...(input.cls?.flags ?? {}), dontKnow: false }, request: { type: "another", src: "giveup_step" } } };
-  // (dc-r8-second-clarify-shows-not-rewords, made a cell for director21: "phir bhi samajh nahi aaya" straight after her answer to a clarify
-  // on the same part gets that same line again — its board up — and then a check-in; never the card, never the next part)
-  const clar0 = input?.event === "turn" && (input.cls?.request?.type === "clarify" || input.cls?.request?.type === "another" || SAYS_CLARIFY.test(String(input.text ?? "")))
-    && !input.cls?.flags?.distress && !GIVE_UP_WORDS.test(String(input.text ?? "").replace(SAYS_CLARIFY, ""));
-  if (clar0 && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev?.lastMove?.clarifyN === 1 && !prev.lastMove.secondClarify
-    && prev.clarifyRun?.key === partOf(prev, prev.lastMove)) {
-    const s = structuredClone(prev);
-    s.turn += 1;
-    // (main on director21: after a key close the second clarify said only its check-in, once the close was no longer carried over. Its
-    // words are the compiled cell's — the part's own line, on its board (point/clarify/heard: the point) — never the why a third time)
-    // (C1, main on director21: "a second clarify only repeats", 8 of 8 — the cell's line for a second ask, the part's own words — alts[0]
-    // when Learning writes one — on its board, in place of the same simpler again)
-    const cl = cellLines(prev, input, "clarify");
-    const base = { ...carried(prev.lastMove) };
-    if (cl?.lines?.length) { delete base.point; delete base.rendered; delete base.simpler; delete base.simplerBeat; }
-    const again = { ...base, secondClarify: true, clarifyN: 2, checkinOk: true,
-      ...(cl?.lines?.length ? { simpler: cl.lines.join(" "), smaller: true, ...(prev.lastMove.scriptBeat ? { simplerBeat: { ...prev.lastMove.scriptBeat, ...(cl.show ? { board: cl.show } : {}) } } : {}) } : {}) };
-    const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
-    s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0;
-    s.clarifyRun = { key: prev.clarifyRun.key, n: 2 };
-    // (the card waits: held for the turn after, as a split's teaching half holds it)
-    return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-  }
-  // (O4, main on director21 c4 stuck 18→20: "samajh nahi aaya" after a picture that stayed on the card just closed moved the lesson on —
-  // it stays there too: the compiled clarify cell's lines for that part, on its board, then a check-in; the next part still waits)
-  if (clar0 && input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev?.stayOn?.turn === prev?.turn && prev?.splitHold && prev.stayOn.beat?.board) {
-    const cl = cellLines(prev, input, "clarify");
-    if (cl?.lines?.length) {
-      const s = structuredClone(prev);
-      s.turn += 1;
-      const move = { kind: "reteach", shape: prev.lastMove?.shape, scriptBeat: { ...prev.stayOn.beat }, simpler: cl.lines.join(" "), smaller: true, checkinOk: true, request: "clarify", clarifyN: 1, stayCheckin: true };
-      const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
-      s.lastMove = move; s.moveVoiced = false; s.lastUi = ui0; s.stayOn = { beat: { ...prev.stayOn.beat }, turn: s.turn };
-      s.clarifyRun = { key: partOf(prev, prev.lastMove), n: 1 };
-      return { state: s, move, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(move, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-    }
-  }
-  // (main on the shadow, 2026-11-11: a clarify on a worked problem moved on to step 1 and a clarify on a step re-said the step. The cell:
-  // a clarify — or a give-up — on the worked problem says the problem's simpler, a clarify on a step says that step's simpler, then the
-  // check-in; the walk stays where it is, and the next reply goes on to the next step)
-  {
-    const wm = /^worked:(problem|step(\d+))$/.exec(String(prev?.lastMove?.scriptBeat?.beatId ?? ""));
-    const giveUp = GIVE_UP_WORDS.test(String(input?.text ?? "")) && !SAYS_CLARIFY.test(String(input?.text ?? ""));
-    if (wm && clar0 && !giveUp || (wm && wm[1] === "problem" && giveUp && !input?.cls?.flags?.distress)) {
-      const we = scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && prev.lastMove.kind === "worked_example" && !prev.lastMove.secondClarify && !prev.lastMove.workedSimpler
-        ? skillScriptOf(input.kit, prev.lastMove.scriptBeat.skillId)?.workedExample : null;
-      const sm0 = we ? (wm[1] === "problem" ? we.simpler : we.steps?.[Number(wm[2]) - 1]?.simpler) : null;
-      const sm = sm0 ? saidIn(sm0, prev.ctx?.lang ?? "hinglish") : null;
-      if (sm && String(sm).trim() && input?.event === "turn") {
-        const s = structuredClone(prev);
-        s.turn += 1;
-        const { rendered: _r, point: _p, ...rest } = carried(prev.lastMove);
-        const move = { ...rest, simpler: String(sm).trim(), smaller: true, checkinOk: true, workedSimpler: true, ...(giveUp ? {} : { clarifyN: 1, request: "clarify" }) };
-        const ui0 = { status: "your_turn", ...(prev.lastUi?.whiteboard ? { whiteboard: prev.lastUi.whiteboard } : {}) };
-        s.lastMove = move; s.moveVoiced = false; s.lastUi = ui0;
-        if (!giveUp) s.clarifyRun = { key: partOf(prev, prev.lastMove), n: 1 };
-        return { state: s, move, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(move, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-      }
-    }
-  }
+  // (dc-r8-director25 H4: a give-up at a worked step's check-in, a second clarify, a clarify after a picture on a closed card, a clarify or a
+  // give-up on a worked problem or step — each had its own path here, picking its wording from a counter; they are help, and help is
+  // decided once, before the walk: step()'s helpBefore)
   const out = step0(prev, input);
   // (dc-r8-second-clarify-shows-not-rewords, main's reversal clause: the judges count second-clarify rows. A clarify on the same live
   // part as the clarify before it is the n-th, recorded on the move, on every path (a held half included); any other turn ends the run)
@@ -3482,28 +3360,8 @@ function step0(prev, input) {
     const { request: _ra, ...restA } = input.cls;
     input = { ...input, cls: { ...restA, outcome: "no_evidence", flags: { ...(restA.flags ?? {}), wantsToStop: false, dontKnow: false }, request: { type: "ask_again" } } };
   }
-  // v6.9 T1 (main on director17 c5-t01 steady 6, stuck 6, steering 6): "pata nahi" / "samajh nahi aaya" at the check-in after a point,
-  // the point's card not yet asked — the card is posed first; its simpler comes only after a miss on it
-  if (input.event === "turn" && scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && input.cls && !input.cls.flags?.distress
-    && (prev?.lastMove?.kind === "explain" || prev?.lastMove?.splitTeach) && (prev.activeItemId || prev.splitHold?.activeItemId) && (input.cls.flags?.dontKnow || GIVE_UP_WORDS.test(String(input.text ?? "")) || ["another", "clarify", "confused"].includes(input.cls.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused")) {
-    const it = findItem(prev, input.kit, prev.activeItemId ?? prev.splitHold.activeItemId);
-    const rq = input.cls.flags?.dontKnow || GIVE_UP_WORDS.test(String(input.text ?? "")) ? "dont_know" : input.cls.request?.type ?? "dont_know";
-    // (the card not yet asked: the point's turn held it back for its check-in — a split hold — or put no card on the table)
-    const unasked = !!prev.splitHold?.activeItemId || (!!prev.lastMove?.checkinOk && !prev.lastUi?.ask);
-    // (v6.10 T2, main on director18 c4 steering 6, 44, c5-t01 steering 6: "samajh nahi aaya" there is a clarify of the POINT — it is
-    // re-said in other authored words; only "pata nahi" gets the card first)
-    // (v6.11 G2: "samajh nahi aaya" is a clarify whatever flag the reader set — only "pata nahi" is a don't-know)
-    const saysClarify = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|didn'?t\s+understand|don'?t\s+understand|kya\s+matlab)(?![\p{L}])/iu.test(String(input.text ?? ""));
-    const rq2 = rq === "dont_know" && !saysClarify ? "dont_know" : "clarify";
-    const shape = it && isScriptCard(it) && unasked ? responseShape(rq2, "checkin_after_point") : null;
-    if (shape === "card_first" || shape === "simpler_then_card") {
-      const { request: _rq, ...rest } = input.cls;
-      input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false }, request: { type: "repeat", src: shape } } };
-    } else if (shape === "live_fresh_else_key" && liveRun) {
-      const { request: _rq, ...rest } = input.cls;
-      input = { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: false, confused: false }, request: { type: "clarify", src: "checkin_point" } } };
-    }
-  }
+  // (dc-r8-director25 H4: "pata nahi" / "samajh nahi aaya" at a point's check-in is help on the point, decided in step()'s helpBefore —
+  // v6.9 T1's re-route to the card by the request table is gone)
   // v6 R5: the second half of a split turn (splitLong) comes first
   const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
   if (heldOut) return heldOut;
@@ -3753,91 +3611,15 @@ function step0(prev, input) {
       break;
     }
   }
-  if (scriptOn() && move.scriptBeat?.kind === "remediation" && move.rendered?.length && s.activeItemId) s.cardHelp = { id: s.activeItemId, said: move.rendered.map((x) => normLine(x)), misses: 0 };
-  if (!move.simpler && scriptOn() && item && isScriptCard(item) && item.id === prev.activeItemId && ["hint", "reteach", "repair", "practice"].includes(move.kind)
-    && (stuckTurn(input?.cls) || readIntent(String(input?.text ?? ""))?.type === "confused"
-      // v6.2 H1 (main, director10: 12 model-written hints in c4, 4 of them giving the live answer): a wrong answer's hint is the
-      // card's authored simpler too
-      || (["incorrect", "misconception", "partial"].includes(input?.cls?.outcome) && move.kind !== "reteach"))) {
-    const lang = s.ctx?.lang ?? "hinglish";
-    const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
-    const sk = skillScriptOf(input.kit, item.skillId);
-    // (Learning, director10 item 1: still lost straight after a remediation's say — its follow-up card up — the remediation's own
-    // simpler, a plainer restatement of that say, comes first)
-    const remBeat = String(prev?.lastMove?.scriptBeat?.beatId ?? "");
-    const remSimpler = remBeat.startsWith("rem:") && item.scriptThen && !["incorrect", "misconception", "partial"].includes(input?.cls?.outcome)
-      ? sk?.remediation?.find((r) => `rem:${r.targets}` === remBeat)?.simpler ?? null : null;
-    // (an explain beat's card with no simpler of its own: its beat's simpler — Learning's v2.3 pilots put it on the beat)
-    const beatSimpler = !meta?.simpler && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
-      ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.simpler ?? null : null;
-    const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
-    const remOf = (r) => (r?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: `rem:${r.targets}`, kind: "remediation", board: r.board } : null);
-    const remJust = remBeat.startsWith("rem:") ? sk?.remediation?.find((r) => `rem:${r.targets}` === remBeat) ?? null : null;
-    // (v6.3 P1: a rung that is a remediation's words is drawn on that remediation's board, never over the card's)
-    // (v6.4 P2, director12 c5-t02 steady 50, offtopic 56: a beat's simpler describes the BEAT's board; on a card with its own ask
-    // board it is said on the beat's board, the card after it on its own)
-    const beatOf = (bid) => { const b = sk?.explain?.find((x) => x.id === bid); return b?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: `explain:${bid}`, kind: "explain", board: b.board } : null; };
-    const own = remSimpler ? { text: remSimpler, beat: remOf(remJust) } : meta?.simpler ? { text: meta.simpler, beat: null } : { text: beatSimpler ?? null, beat: beatSimpler ? beatOf(item.scriptAsk.beatId) : null };
-    const help = s.cardHelp?.id === item.id ? s.cardHelp : { id: item.id, said: [], misses: 0 };
-    // (O6, main on director21 c5-t01 offtopic 22→30: a give-up at the remediation's check-in — its then-card held, not yet asked — was
-    // counted as a miss on that card, and the card's first answer got the key: a miss counts on a card once it has been asked)
-    // (and a clarify is no miss: only a wrong answer, or a give-up on the card she asked, counts — O6)
+  // (dc-r8-director25 H4: which help a live card gets — its ladder's first unsaid wording, or its key — is help's decision (state.js
+  // helpBefore/helpAfter); v6.3 H1′'s rung ladder by miss count and the said-helper replacement after it are gone. What stays here is
+  // the count of misses on the card, which the wrap's sentence about the child reads (rightLog))
+  if (scriptOn() && item && isScriptCard(item) && item.id === prev.activeItemId) {
     const gaveUp = GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""));
-    if (verdict(input.cls) === "wrong" || (gaveUp && prev?.lastUi?.ask?.itemId === item.id && prev?.cardUnsaid !== item.id)) help.misses += 1;
-    // v6.5 K2 (main, director13): a remediation already said in the lesson is never said again on another card; and "pata nahi" (no
-    // wrong answer) gets the card's own simpler, else its beat's point — never a remediation (c4 stuck 10, 16)
-    // (a replay of a recorded run walks what that run walked: tests/fixtures/replay.mjs runScriptOf marks it recordedRun)
-    const k2 = !scriptFor(input.kit)?.script?.recordedRun;
-    const remDone = k2 && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
-    // (O3: a remediation's words are help only after its misconception's answer — never after a plain miss or a give-up)
-    const wrongNow = !k2 || input?.cls?.outcome === "misconception";
-    const remRungs = remDone || !wrongNow ? [] : [{ text: rem?.say, beat: remOf(rem) }, { text: rem?.simpler, beat: remOf(rem) }];
-    const pointRung = k2 && !wrongNow && item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked"
-      ? { text: sk?.explain?.find((b) => b.id === item.scriptAsk.beatId)?.point ?? null, beat: beatOf(item.scriptAsk.beatId) } : { text: null };
-    const rungs = (help.misses >= 2 ? [...remRungs, own, pointRung] : [own, pointRung, ...remRungs]).map((x) => ({ ...x, text: x.text ? saidIn(x.text, lang) : null })).filter((x) => x.text && String(x.text).trim());
-    // (v6.7 K4, main on director15 c5-t01 stuck 12, steady 88, c6 stuck 72: "pata nahi, aap batao" and a first miss got the bare card:
-    // with no new rung, the card's own simpler is said again — never the bare re-pose)
-    // (v6.10 T2: a line heard on a language or clarify request is not spent — the miss may still use it, after any line not heard)
-    const heard = new Set(help.heard ?? []);
-    const lastHer = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-1).map((t) => normLine(t.text ?? "")).join(" ");
-    const notLast = (x) => !lastHer.includes(normLine(x.text).slice(0, 60));
-    const sm = rungs.find((x) => !help.said.includes(normLine(x.text)) && !heard.has(normLine(x.text))) ?? rungs.find((x) => !help.said.includes(normLine(x.text)) && notLast(x))
-      // (C1, main on director21: never the line her last turn said — with every rung heard, a first miss gets the verdict and the card)
-      ?? (k2 ? rungs.find((x) => x.text && x.beat?.kind !== "remediation" && !(s.recent ?? []).filter((t) => t.who === "teacher").slice(-1).some((t) => normLine(t.text ?? "").includes(normLine(x.text).slice(0, 60)))) ?? null : null);
-    if (sm) { move.simpler = String(sm.text).trim(); if (sm.beat) move.simplerBeat = sm.beat; help.said = [...help.said, normLine(sm.text)]; help.counted = s.turn;
-      if (sm.beat?.kind === "remediation") s.remSaid = [...(s.remSaid ?? []), normLine(sm.text)]; }
-    s.cardHelp = help;
-  }
-  // (whichever path chose it — a request's smaller re-teach, a beat's simpler — a helper line already said on this live card is
-  // replaced by the next rung not yet said, else left out)
-  // (v6.10 T2, main on director18 c4 offtopic 32→34, c6 stuck 8: a language or clarify request never spends a card's simpler or
-  // remediation — what it re-says is noted as heard, and the next miss still gets its help before the key)
-  const asksAgain = ["language", "clarify"].includes(p.request);
-  if (scriptOn() && move.simpler && s.activeItemId && move.scriptBeat?.kind !== "remediation" && asksAgain) {
-    const help = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
-    s.cardHelp = { ...help, heard: [...new Set([...(help.heard ?? []), normLine(move.simpler)])] };
-  } else if (scriptOn() && move.simpler && s.activeItemId && move.scriptBeat?.kind !== "remediation") {
-    const help = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
-    if (help.counted !== s.turn && help.said.includes(normLine(move.simpler))) {
-      const live = findItem(s, input.kit, s.activeItemId);
-      const meta = live?.scriptAsk ?? live?.scriptCheck ?? live?.scriptThen;
-      const sk = live ? skillScriptOf(input.kit, live.skillId) : null;
-      const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
-      const beat = live?.scriptAsk?.beatId && live.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === live.scriptAsk.beatId) : null;
-      const lang = s.ctx?.lang ?? "hinglish";
-      const rb = rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `rem:${rem.targets}`, kind: "remediation", board: rem.board } : null;
-      const bb = beat?.board ? { scriptId: scriptIdOf(input.kit), skillId: live.skillId, beatId: `explain:${beat.id}`, kind: "explain", board: beat.board } : null;
-      const remDone = !scriptFor(input.kit)?.script?.recordedRun && !!rem && ((s.remedied ?? []).includes(rem.targets) || (s.remSaid ?? []).includes(normLine(saidIn(rem.say ?? "", lang) ?? "")));
-      // (O3, main on director21 c4 stuck 8, c5-t02 steady 8: a give-up or a clarify on a card got its remediation's say over the card's
-      // board — the remediation is not the next rung unless the answer showed its misconception)
-      const misNow = input?.cls?.outcome === "misconception";
-      const next = [{ t: meta?.simpler }, { t: beat?.simpler, b: bb }, ...(remDone || !misNow ? [] : [{ t: rem?.say, b: rb }, { t: rem?.simpler, b: rb }])].map((x) => ({ ...x, t: x.t ? saidIn(x.t, lang) : null }))
-        .filter((x) => x.t && String(x.t).trim()).find((x) => !help.said.includes(normLine(x.t)));
-      delete move.simplerBeat;
-      if (next) { move.simpler = String(next.t).trim(); if (next.b) move.simplerBeat = next.b; } else delete move.simpler;
+    if (verdict(input.cls) === "wrong" || (gaveUp && prev?.lastUi?.ask?.itemId === item.id && prev?.cardUnsaid !== item.id)) {
+      const help = s.cardHelp?.id === item.id ? s.cardHelp : { id: item.id, misses: 0 };
+      s.cardHelp = { ...help, misses: (help.misses ?? 0) + 1 };
     }
-    if (move.simpler && !help.said.includes(normLine(move.simpler))) help.said = [...help.said, normLine(move.simpler)];
-    s.cardHelp = help;
   }
   if (p.probeAck) move.probeAck = true;
   if (p.sayFirst?.length) move.sayFirst = p.sayFirst.map(String);
@@ -3849,39 +3631,8 @@ function step0(prev, input) {
     const gs = g ? saidIn(g, s.ctx?.lang ?? "hinglish") : null;
     if (gs && String(gs).trim()) move.sayFirst = [String(gs).trim(), ...(move.sayFirst ?? [])];
   }
-  // (dc-r8-director20 L4: a Hindi request on an explain card — the card's own ask.simpler where Learning wrote one, else the point's
-  // simpler, then the card. Said whole even when said before; then she makes no "Hindi mein bolti hoon" promise)
-  if (input.cls?.request?.type === "language" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && s.activeItemId && prev?.lastUi?.ask?.itemId === s.activeItemId && !["safeguard", "wrap", "break"].includes(move.kind)) {
-    const it = findItem(s, input.kit, s.activeItemId);
-    const bid = it?.scriptAsk?.beatId;
-    const b = bid && bid !== "worked" ? skillScriptOf(input.kit, it.skillId)?.explain?.find((x) => x.id === bid) : null;
-    const lang0 = s.ctx?.lang ?? "hinglish";
-    const sm0 = b ? (b.ask?.simpler ?? b.simpler) : null;
-    let sm = sm0 ? saidIn(sm0, lang0) : null;
-    // (dc-r8-director22 H: never words from her last two turns — the simpler when it is unspent, else the part's second wording
-    // (pointAlt), else its point; the simpler again only when nothing else is written)
-    const last2 = [...(prev?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => normLine(t.text ?? "")).join(" | ");
-    const recent = (x) => !!x && last2.includes(normLine(x).slice(0, 40));
-    if (sm && recent(sm)) {
-      const alt = b?.pointAlt ? saidIn(b.pointAlt, lang0) : null, pt = b?.point ? saidIn(b.point, lang0) : null;
-      const other = [alt, pt].find((x) => x && String(x).trim() && !recent(x));
-      if (other) { sm = other; move.hindiNew = true; if (other === alt && b.pointAlt?.board) move.altBoard = b.pointAlt.board; }
-    }
-    if (sm && String(sm).trim()) {
-      move.simpler = String(sm).trim(); move.smaller = true; delete move.simplerBeat;
-      const lastT = normLine([...(prev?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "");
-      if (lastT.includes(normLine(sm).slice(0, 40))) move.noLangAck = true;
-    }
-  }
-  // (dc-r8-director20 L1: a give-up at the check-in after a point — the point's authored simpler, then the card it held)
-  if (input.cls?.request?.src === "simpler_then_card" && !move.simpler) {
-    const sm = simplerOfBeat(s, input.kit, prev?.lastMove);
-    if (sm) {
-      move.simpler = sm; move.smaller = true;
-      // (said on this card: its help has used it, so a give-up or a miss next climbs past it — T1.6, never the same simpler again)
-      if (s.activeItemId) { const hp = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 }; s.cardHelp = { ...hp, said: [...hp.said, normLine(sm)] }; }
-    }
-  }
+  // (dc-r8-director25 H4: a Hindi request's wording, and a give-up's at a point's check-in, are help's decision — the L4 and L1 blocks here
+  // are gone)
   // P1 (dc-r8-director20): the authored parts a return's turn held back (brain/say.js guard.bodyHeld) are said first now
   if (prev?.bodyUnsaid?.length && !["safeguard", "wrap", "break"].includes(move.kind)) { move.sayFirst = [...prev.bodyUnsaid.map(String), ...(move.sayFirst ?? [])]; move.heldSaid = prev.bodyUnsaid.map(String);
     // (O1/O2, main on director21: the held part is said on its own board — the beat of the turn that held it — never on the next part's)
@@ -4016,40 +3767,7 @@ function step0(prev, input) {
   // stream 2 R2 root cause: planModule reads move.visual (modules.js interactiveDefault), so it is set BEFORE planModule
   if (p.visual) move.visual = p.visual;
   const moduleCommands = reacting ? [] : planModule(s, { kit: input.kit, item, move, lang: s.ctx.lang, band: s.probeSess?.band ?? bandOf(s.ctx.classLevel), representation: p.representation });
-  // v6.6 B1′ (main, director14: c4 and c6 served e4's simpler to a Hindi request on another card): a language or clarify request
-  // re-says the LIVE beat's own authored simpler — the live card's beat (its ask's explain beat, its check, its remediation; the
-  // worked step during a worked example), else the walk's current beat — in their language, on that beat's board; the card is
-  // then re-posed. Never a closed card's or another beat's. (After the help ladder: a Hindi request re-says the beat, it
-  // climbs no rung)
-  // (v6.7 B1″, main on director15 c4 stuck 24: "samajh nahi aaya" on a live then-card taught e4, a point not yet reached: a "didn't
-  // understand" on a live card whose move teaches another beat gets the live beat's simpler too)
-  const liveCardBeat = s.activeItemId ? (() => { const it = findItem(s, input.kit, s.activeItemId); return it && isScriptCard(it) ? cardBeatRef(s, input.kit, it) : null; })() : null;
-  const offBeat = p.request === "another" && liveCardBeat && move.scriptBeat?.beatId && String(move.scriptBeat.beatId).replace(/^explain:/, "") !== String(liveCardBeat.beatId);
-  if (scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (["language", "clarify"].includes(p.request) || offBeat) && !p.stayCheckin) {
-    // (v6.9 T1, main's request table on director17: Hindi or clarify re-says the LIVE part — the remediation just said, else the live
-    // beat — in authored words none of her last four turns used; a card posed on this very turn is not the live part, unless a
-    // remediation leads into it; with nothing fresh left, requestMove gave the key)
-    let lb;
-    if (offBeat && !["language", "clarify"].includes(p.request)) lb = liveBeatSimpler(s, input.kit, { prevMove: prev?.lastMove });
-    else {
-      const remLive = prev?.lastMove?.scriptBeat?.kind === "remediation";
-      // (v6.10 T2.1: the card a point's check-in held back — prev.splitHold — is the same live card)
-      const prevCard = prev?.activeItemId ?? prev?.splitHold?.activeItemId ?? null;
-      const f = s.activeItemId && s.activeItemId !== prevCard && !remLive ? null : freshLivePart(s, input.kit, prev?.lastMove);
-      lb = f && !f.none ? f : null;
-    }
-    if (lb) { move.simpler = lb.text; move.simplerBeat = lb.beat; move.smaller = true; }
-    // (a move between cards whose beat was the fallback's guess: the live part's beat is its beat — a worked step's on the worked board)
-    if (lb && move.beatless && !s.activeItemId) move.scriptBeat = { ...lb.beat };
-    // (v6.8 B1‴, main on director16 c6 steering 10: the then-card's simpler said for Hindi was said again on the next miss) a simpler
-    // said on a live card counts as spent: the next miss climbs past it
-    // (v6.10 T2: on a language or clarify request it is HEARD, not spent — the next miss still gets its help before the key)
-    if (lb && s.activeItemId) { const hp = s.cardHelp?.id === s.activeItemId ? s.cardHelp : { id: s.activeItemId, said: [], misses: 0 };
-      if (["language", "clarify"].includes(p.request)) s.cardHelp = { ...hp, heard: [...new Set([...(hp.heard ?? []), normLine(lb.text)])] };
-      else if (!hp.said.includes(normLine(lb.text))) s.cardHelp = { ...hp, said: [...hp.said, normLine(lb.text)] }; }
-    // (off the live card's beat: the other beat's teaching is not said — the live beat's simpler is the turn, on its board)
-    if (lb && offBeat) { move.scriptBeat = { ...lb.beat }; delete move.rendered; delete move.point; delete move.mustSay; }
-  }
+  // (dc-r8-director25 H4: v6.6 B1′'s re-say of the live beat on a language or clarify request is help's decision now — gone from here)
   // The child's request this move answers (requests.js): the brain reads it (a visual request asks Studio on any lane).
   if (p.request) move.request = p.request;
   // (v6.11 G2: how many times each joint kind has been said this lesson — brain/say.js rotates the authored forms by it)
@@ -4250,90 +3968,6 @@ function splitTeach(out, input, cap, extra = 0) {
   return { ...out, state: s, move: teach, ui: teachUi, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }) };
 }
 /**
- * v6.6 B1′: the live beat's authored simpler in the lesson language and that beat's ref (with its board), or null: the live
- * card's own beat (an ask's explain beat or the worked step, a check, a then-card's remediation), else the walk's current beat.
- */
-export function liveBeatSimpler(s, kit, { prevMove = null } = {}) {
-  const lang = s.ctx?.lang ?? "hinglish";
-  const said = (x) => { const t = x ? saidIn(x, lang) : null; return t && String(t).trim() ? String(t).trim() : null; };
-  // (v6.8 B1‴, main on director16 c4 steady 36, offtopic 34, c5-t02 offtopic 32: a Hindi request during a worked step got the
-  // yourStep's simpler on a closed card's board) during a worked step, the live part is that step: its own simpler, on the worked board
-  const wm = /^worked:step(\d+)$/.exec(String(prevMove?.scriptBeat?.beatId ?? ""));
-  if (wm && prevMove?.kind === "worked_example") {
-    const we = skillScriptOf(kit, prevMove.scriptBeat.skillId)?.workedExample;
-    const st = we?.steps?.[Number(wm[1]) - 1];
-    const doLine = st?.do ? [said(st.do), st.result != null ? String(st.result) : null].filter(Boolean).join(": ") : null;
-    const t = said(st?.simpler) ?? doLine;
-    if (t) return { text: t, alts: [doLine, said(we?.simpler)].filter((x) => x && x !== t), beat: { ...prevMove.scriptBeat } };
-  }
-  const live0 = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
-  // (v6.8 B1‴: a closed card — answered, or its why pending — is not the live part)
-  const live = live0 && !(s.itemsDone ?? []).includes(live0.id) && s.pendingWhy !== live0.id ? live0 : null;
-  if (live && isScriptCard(live)) {
-    const sk = skillScriptOf(kit, live.skillId);
-    const ref = cardBeatRef(s, kit, live);
-    if (!sk || !ref) return null;
-    const base = { scriptId: scriptIdOf(kit), skillId: live.skillId };
-    if (live.scriptAsk) {
-      if (live.scriptAsk.beatId === "worked") {
-        const we = sk.workedExample ?? {};
-        const t = said(we.yourStep?.simpler) ?? said(we.simpler) ?? said(live.scriptAsk.simpler);
-        return t ? { text: t, beat: { ...base, beatId: "worked", kind: "worked", ...(we.board ? { board: we.board } : ref.board ? { board: ref.board } : {}) } } : null;
-      }
-      const b = sk.explain?.find((x) => x.id === live.scriptAsk.beatId);
-      const t = said(b?.ask?.simpler) ?? said(live.scriptAsk.simpler) ?? said(b?.simpler);
-      const alts = [said(b?.ask?.simpler), said(live.scriptAsk.simpler), said(b?.simpler), said(b?.point)].filter((x) => x && x !== t);
-      return t ? { text: t, alts, beat: { ...base, beatId: b?.id ?? live.scriptAsk.beatId, kind: "explain", ...((b?.board ?? ref.board) ? { board: b?.board ?? ref.board } : {}) } } : null;
-    }
-    if (live.scriptCheck) {
-      const c = sk.checks?.find((x) => x.id === live.scriptCheck.checkId);
-      const t = said(c?.simpler) ?? said(live.scriptCheck.simpler);
-      const crem = sk.remediation?.find((x) => x.targets === live.scriptCheck.targets);
-      // (O3: the check's remediation is not another wording of the check)
-      void crem;
-      if (t) return { text: t, alts: [], beat: { ...base, beatId: live.scriptCheck.checkId, kind: "check", ...(ref.board ? { board: ref.board } : {}) } };
-      return null;
-    }
-    // (v6.7 P5, main on director15 c5-t02 steering 8, c6 steering 8: the then-card's own simpler was drawn on the remediation's
-    // board: a simpler is drawn on the board of the beat it comes from — the then-card's on the then-card's)
-    const r = sk.remediation?.find((x) => x.targets === live.scriptThen?.targets);
-    const own = said(r?.then?.simpler) ?? said(live.scriptThen?.simpler);
-    if (own) return { text: own, alts: [said(r?.simpler), said(r?.say)].filter((x) => x && x !== own), beat: { ...ref, ...(ref.board ? { board: ref.board } : {}) } };
-    const t = said(r?.simpler);
-    return t ? { text: t, beat: { ...base, beatId: `rem:${r?.targets ?? ""}`, kind: "remediation", ...((r?.board ?? ref.board) ? { board: r?.board ?? ref.board } : {}) } } : null;
-  }
-  const cur = currentBeatRef(s, kit);
-  if (!cur) return null;
-  const sk = skillScriptOf(kit, cur.skillId);
-  const t = cur.kind === "explain" ? said(sk?.explain?.find((x) => x.id === cur.beatId)?.simpler)
-    : cur.kind === "worked" ? said(sk?.workedExample?.simpler) ?? said(sk?.workedExample?.yourStep?.simpler) : null;
-  return t ? { text: t, beat: cur } : null;
-}
-/**
- * v6.9 T1 (main's request table, director17: "never the same sentence"; "never a skip past the live remediation"; "with nothing left
- * to re-say: the key and its why"): the live part's authored words for a Hindi or clarify request — the remediation just said
- * (its simpler, its say, its card's simpler), else the live beat's (liveBeatSimpler and its other authored wordings) — the first that
- * none of her last four turns said. → { text, beat } | { none: true, beat } (all said: the key comes) | null (no live part).
- */
-export function freshLivePart(s, kit, prevMove) {
-  const lang = s.ctx?.lang ?? "hinglish";
-  const said = (x) => { const t = x ? saidIn(x, lang) : null; return t && String(t).trim() ? String(t).trim() : null; };
-  const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-4).map((t) => normLine(t.text ?? ""));
-  const fresh = (t) => !!t && !recentT.some((y) => y.includes(normLine(t).slice(0, 60)));
-  const rb = prevMove?.scriptBeat?.kind === "remediation" ? prevMove.scriptBeat : null;
-  if (rb) {
-    const sk = skillScriptOf(kit, rb.skillId);
-    const r = sk?.remediation?.find((x) => `rem:${x.targets}` === String(rb.beatId));
-    const cands = [said(r?.simpler), said(r?.say), said(r?.then && typeof r.then === "object" ? r.then.simpler : null)].filter(Boolean);
-    const t = cands.find(fresh);
-    return t ? { text: t, beat: { ...rb } } : { none: true, beat: { ...rb } };
-  }
-  const lb = liveBeatSimpler(s, kit, { prevMove });
-  if (!lb) return null;
-  const t = [lb.text, ...(lb.alts ?? [])].find(fresh);
-  return t ? { text: t, beat: lb.beat } : { none: true, beat: lb.beat };
-}
-/**
  * v6.6 A2 (main, director14: five asides never returned — the return was due, her line had none, and the queue counted it served):
  * an aside whose return was not said this turn goes back on the queue, to come back at the next boundary (the wrap waits for it).
  * Called by the turn (brain/turn.js, the harness) with the reply's guard. Returns the state.
@@ -4346,34 +3980,6 @@ export function requeueMissedReturn(s, guard) {
   const e = (s.later ?? []).find((x) => x.servedAt === s.turn && String(x.topic) === String(r.topic));
   if (!e) return s;
   return { ...s, later: s.later.map((x) => (x === e ? { ...x, servedAt: null, requeued: (x.requeued ?? 0) + 1 } : x)) };
-}
-/** v6.6 K3: whether a helper line (the card's simpler, its beat's simpler, its remediation's say or simpler) is left unsaid on it. */
-function helpLeft(s, kit, item, { any = false } = {}) {
-  const lang = s.ctx?.lang ?? "hinglish";
-  const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
-  const sk = skillScriptOf(kit, item.skillId);
-  const rem = sk?.remediation?.find((r) => r.targets === (meta?.targets ?? null)) ?? null;
-  const beat = item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId) : null;
-  const said = new Set([...(s.cardHelp?.id === item.id ? s.cardHelp.said ?? [] : []), ...(s.remSaid ?? [])]);
-  const remDone = !any && !!rem && (s.remedied ?? []).includes(rem.targets);
-  // (a misconception's remediation is help too, whatever card it was matched on)
-  const remAny = any ? (sk?.remediation ?? []).filter((r) => r.targets === (meta?.targets ?? null) || r.targets === item.targetsMisconception) : [];
-  // (v6.8 B1‴, main on director16 c6 steering 10: a helper line her recent turns said — a Hindi request's simpler too — is spent)
-  const recentT = (s.recent ?? []).filter((t) => t.who === "teacher").slice(-6).map((t) => normLine(t.text ?? "")).join(" ");
-  return [meta?.simpler, beat?.simpler, ...(remDone ? [] : [rem?.say, rem?.simpler]), ...remAny.flatMap((r) => [r.say, r.simpler])].map((x) => (x ? saidIn(x, lang) : null))
-    .some((t) => t && String(t).trim() && (any || (!said.has(normLine(t)) && !recentT.includes(normLine(t).slice(0, 60)))));
-}
-/** v6.9 T1: the card's own simpler (else its beat's) was said on it, or lately. */
-function helpSpentOn(s, kit, item) {
-  const lang = s.ctx?.lang ?? "hinglish";
-  const meta = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
-  const sk = skillScriptOf(kit, item.skillId);
-  const beat = item.scriptAsk?.beatId && item.scriptAsk.beatId !== "worked" ? sk?.explain?.find((b) => b.id === item.scriptAsk.beatId) : null;
-  const t = [meta?.simpler, beat?.ask?.simpler, beat?.simpler].map((x) => (x ? saidIn(x, lang) : null)).find((x) => x && String(x).trim());
-  if (!t) return false;
-  const k = normLine(t);
-  const recentT = (s.recent ?? []).filter((x) => x.who === "teacher").slice(-6).map((x) => normLine(x.text ?? "")).join(" ");
-  return (s.cardHelp?.id === item.id && (s.cardHelp.said ?? []).includes(k)) || recentT.includes(k.slice(0, 60));
 }
 /** v6.1 R9: the authored simpler (format 2.3) of the explain beat a move teaches, in the lesson language, or null. */
 function simplerOfBeat(s, kit, move) {
@@ -4400,78 +4006,12 @@ function heldTurn(prev, input) {
   const giveUp = scriptOn() && GIVE_UP_WORDS.test(String(input.text ?? "")) && !SAYS_CLARIFY.test(String(input.text ?? ""));
   const lost = c?.flags?.dontKnow || giveUp || ["confused", "another", "clarify"].includes(c?.request?.type) || readIntent(String(input.text ?? ""))?.type === "confused";
   const remId = String(prev.lastMove?.scriptBeat?.beatId ?? "");
-  if (h.teach && lost && remId.startsWith("rem:") && h.activeItemId) {
-    const s = structuredClone(prev);
-    s.turn += 1;
-    s.splitHold = undefined;
-    const item = findItem(s, input.kit, h.activeItemId);
-    const rem = item ? skillScriptOf(input.kit, item.skillId)?.remediation?.find((r) => `rem:${r.targets}` === remId) : null;
-    const lang = s.ctx?.lang ?? "hinglish";
-    const meta = item?.scriptThen ?? item?.scriptCheck ?? item?.scriptAsk;
-    const sm = rem?.simpler ? saidIn(rem.simpler, lang) : meta?.simpler ? saidIn(meta.simpler, lang) : null;
-    const remBeatOf = rem?.simpler && rem?.board ? { scriptId: scriptIdOf(input.kit), skillId: item.skillId, beatId: remId, kind: "remediation", board: rem.board } : null;
-    // v6.11 G2 (main on director19 c4 stuck 22, c5-t01 stuck 48, steering 12: "samajh nahi aaya" after a remediation got its card) — the
-    // remediation's simpler is said and the turn ends on its check-in; the card still waits (a live run only; a replay walks its record)
-    // (once: a second "samajh nahi aaya" after the simpler gets the card, with nothing said twice)
-    // (L1: a give-up there gets the remediation's simpler and then its card, in one turn — the teaching alone is for "samajh nahi aaya")
-    if (sm && !prev.lastMove?.smaller && !giveUp && !scriptFor(input.kit)?.script?.recordedRun) {
-      const teach = { ...carried(prev.lastMove), simpler: String(sm), smaller: true, splitTeach: true, checkinOk: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) };
-      delete teach.rendered; delete teach.point;
-      s.splitHold = h;
-      const teachUi = { status: "your_turn" };
-      s.lastMove = teach; s.moveVoiced = false; s.lastUi = teachUi; s.activeItemId = undefined;
-      return { state: s, move: teach, moduleCommands: [], ui: teachUi, end: false, proposal: directorProposal(teach, { ui: teachUi, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-    }
-    const m = { ...h.move, ...(sm ? { simpler: String(sm), smaller: true, ...(remBeatOf ? { simplerBeat: remBeatOf } : {}) } : {}) };
-    // (v6.3 H1′: the line is said on this card, so a later miss on it climbs past it)
-    if (sm) { const hp = s.cardHelp?.id === h.activeItemId ? s.cardHelp : { id: h.activeItemId, said: [], misses: 0 }; s.cardHelp = { ...hp, said: [...hp.said, normLine(sm)] }; }
-    s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
-    return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-  }
+  // (dc-r8-director25 H4: still lost after a remediation's say, its follow-up card held — help on the remediation, decided before the walk)
   // v6.11 G2 (main on director19 c6 stuck 38: an aside after a split's first half dropped the held half — the worked problem was never
   // said and the walk resumed at step 1): an aside is answered (or parked) and the held half still comes, on this turn
   // (and "samajh nahi aaya" to a closing split's check-in — after a key — is answered by the held teaching, never by skipping it: c5-t01)
-  // dc-r8-director20 L2 (c5-t01 offtopic 44, and the key turns G3 now splits): a clarify after a key is answered by its why again and
-  // the check-in; it does not move on. Once: a second clarify gets the held half. (Its simpler wording is Learning's to author; until
-  // then the authored why is said again.)
-  // (dc-r8-second-clarify-shows-not-rewords: asked a second time, the same line again and the check-in — a third ask gets the held half)
-  // (C1, main on director21 c4 steering 54–58, c6 steering 16–20, stuck c4 42–46: the same why said three turns running. After a key, a
-  // give-up or a clarify gets the why's second wording — the card's whyAlt — once; with none written, or once it is said, the walk goes
-  // on: no authored sentence is said in two turns running)
-  // (a right answer's close — its why said, move.closed — is a key said too: c4 steady 100→102 moved on after "samajh nahi aaya")
-  const whyAlt = !h.teach && (prev.lastMove?.gave?.answer || prev.lastMove?.closed?.answer || (prev.lastMove?.closeBeat && prev.lastMove?.gaveCheck)) && prev.lastMove?.splitClose && !prev.lastMove?.whyAltSaid ? whyAltOf(prev, input.kit) : null;
-  if (whyAlt && !prev.lastMove?.secondClarify && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
-    && (c?.request?.type === "clarify" || SAYS_CLARIFY.test(String(input.text ?? "")) || giveUp)) {
-    const s = structuredClone(prev);
-    s.turn += 1;
-    const { secondClarify: _sc, clarifyN: _cn, ...prevMove } = carried(prev.lastMove, ["gave", "closed", "closeBeat", "closedBeat", "splitClose", "gaveCheck"]);
-    // (dc-r8-director22 K: a key is said once — the why's second wording never re-says it: after a give-up's key, a miss's key or a right
-    // answer's close alike, it is said as the card's simpler with the check-in, no verdict frame and no key again)
-    const { gave: _g, closed: _c, closeBeat: _cb, gaveCheck: _gc, splitClose: _sc2, cardBeat: _cd, bridgeBeat: _bb, ...rest0 } = prevMove;
-    // (the board the key was said over stays up: the second wording explains that same answer — unless Learning gave it its own board)
-    const again = { ...rest0, kind: "reteach", simpler: whyAlt.text.charAt(0).toUpperCase() + whyAlt.text.slice(1), stayCheckin: true, smaller: true, whyAltSaid: true, ...(whyAlt.board ? {} : { keepBoard: true }),
-      scriptBeat: { ...(prevMove.closeBeat ?? prevMove.scriptBeat ?? {}), ...(whyAlt.board ? { board: whyAlt.board } : {}) } };
-    const ui0 = { status: "your_turn" };
-    s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
-    return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-  }
-  // (dc-r8-director23 H2, main's 034 on Learning's dry run, c4 stuck 48: a second "samajh nahi aaya" after the why's second wording — at a
-  // then-card's check-in — was answered with an earlier card. With nothing unsaid left, a clarify gets the worked answer — the card's key
-  // and its why, on its answer board — then the check-in; the walk stays. A clarify after that goes on.)
-  if (!h.teach && prev.lastMove?.whyAltSaid && !prev.lastMove?.workedAnswerSaid && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun
-    && (c?.request?.type === "clarify" || c?.request?.type === "another" || SAYS_CLARIFY.test(String(input.text ?? "")))) {
-    const wa = workedAnswerOf(prev, input.kit);
-    if (wa) {
-      const s = structuredClone(prev);
-      s.turn += 1;
-      const { secondClarify: _sc, clarifyN: _cn, ...rest0 } = carried(prev.lastMove, []);
-      const again = { ...rest0, kind: "reteach", simpler: wa.text, stayCheckin: true, smaller: true, whyAltSaid: true, workedAnswerSaid: true,
-        ...(wa.board ? {} : { keepBoard: true }), scriptBeat: { ...(prev.lastMove.scriptBeat ?? {}), ...(wa.board ? { board: wa.board } : {}) } };
-      const ui0 = { status: "your_turn" };
-      s.lastMove = again; s.moveVoiced = false; s.lastUi = ui0; s.activeItemId = undefined;
-      return { state: s, move: again, moduleCommands: [], ui: ui0, end: false, proposal: directorProposal(again, { ui: ui0, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
-    }
-  }
+  // (dc-r8-director25 H4: a clarify or a give-up after a key's check-in — the why's other wording, else "we'll meet this again" and the
+  // lesson goes on — is help on the card just keyed, decided before the walk; the L2/C1 and H2 branches that said it here are gone)
   const retAns = prev.returnAsked && c?.asideReply && !c?.help;
   if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const s = structuredClone(prev);
