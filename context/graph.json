@@ -29658,6 +29658,48 @@
    "at": "2026-11-17",
    "title": "Released c12dbb6 with scripts/release.mjs: web taxila-web--sc12dbb6-0npg (was taxila-web--sbd9a6f3-lj0n), worker + canary/nightly jobs on taxila-worker:c12dbb6 (was bd9a6f3); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs c12dbb6 --rollback.",
    "source": "inbox/release-c12dbb6.json"
+  },
+  {
+   "id": "ms-r8-director28",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director28 (16 live lessons on release 49's code, four Opus judges): no topic passes; c4 and c6 fail on unsaid boards only with every axis at 3.5 or above; quick questions read as an echo quiz by all four judges",
+   "source": "inbox/r8-main-47.json"
+  },
+  {
+   "id": "dc-r8-director28",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "A point and its card share a turn again, the short reason making room; quick questions and the invitation go; every point's and remediation's board is its own; help is a hard precondition for a request; a joint keeps what is up",
+   "source": "inbox/r8-main-47.json"
+  },
+  {
+   "id": "rj-r8-quick-question-as-listening-check",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "A small keyed question about what the point has just said, in place of a check-in before a waiting card: all four judges read it as a quiz that tests nothing, the same as or worse than \"samajh aaya?\"",
+   "source": "inbox/r8-main-47.json"
+  },
+  {
+   "id": "rj-r8-invitation-before-worked-example",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "Ending a right verdict's turn on an invitation to the worked problem: a yes/no whose only answer is yes; two judges read it as a check-in in disguise, and a child who answers it with a request hears the lead-in twice",
+   "source": "inbox/r8-main-47.json"
+  },
+  {
+   "id": "fd-split-parts-expose-shared-boards",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "When a point or a remediation is split from its card, a board the two shared becomes the card's figure shown before the card (24 of director28's 33 unsaid boards are the script's own pages)",
+   "source": "inbox/r8-main-47.json"
+  },
+  {
+   "id": "fd-new-question-kind-new-paths",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "Each new kind of turn ending (quick question, invitation, a reply said alone) brought request and aside paths nobody wrote rules for; listening fell in three of four topics on paths that did not exist in director27",
+   "source": "inbox/r8-main-47.json"
   }
  ],
  "edges": [
@@ -47480,6 +47522,56 @@
    "src": "fd-assembly-filter-dropped-reworded-point",
    "rel": "constrains",
    "dst": "dc-r8-director27"
+  },
+  {
+   "src": "dc-r8-director28",
+   "rel": "supersedes",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "dc-r8-director28",
+   "rel": "supersedes",
+   "dst": "dc-r8-right-answer-goes-on"
+  },
+  {
+   "src": "dc-r8-director28",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-quick-question-as-listening-check",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-invitation-before-worked-example",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "fd-split-parts-expose-shared-boards",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "fd-new-question-kind-new-paths",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-quick-question-as-listening-check",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "rj-r8-invitation-before-worked-example",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "fd-split-parts-expose-shared-boards",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
   }
  ]
 }

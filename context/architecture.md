@@ -680,3 +680,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-right-verdict-alone-is-the-weakest-checkin` (2026-11-17): With quick questions in place, the largest source of check-in turns is a right answer's verdict and why standing alone because what follows does not fit in 75 words (7, 4, 6, 4 a steady lesson on the 042 dry run)
 - `fd-park-overtaken-by-childs-ending` (2026-11-17): A park the child's own stop or bye overtakes before the return was due is not a broken promise; parkReturned no longer fires there and the case is counted as parkCutByChildEnd
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-split-parts-expose-shared-boards` (2026-11-17): When a point or a remediation is split from its card, a board the two shared becomes the card's figure shown before the card (24 of director28's 33 unsaid boards are the script's own pages)
+- `fd-new-question-kind-new-paths` (2026-11-17): Each new kind of turn ending (quick question, invitation, a reply said alone) brought request and aside paths nobody wrote rules for; listening fell in three of four topics on paths that did not exist in director27

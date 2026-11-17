@@ -1,0 +1,97 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director28",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director28 (16 live lessons on release 49's code, four Opus judges): no topic passes; c4 and c6 fail on unsaid boards only with every axis at 3.5 or above; quick questions read as an echo quiz by all four judges"
+  },
+  {
+   "id": "dc-r8-director28",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "A point and its card share a turn again, the short reason making room; quick questions and the invitation go; every point's and remediation's board is its own; help is a hard precondition for a request; a joint keeps what is up"
+  },
+  {
+   "id": "rj-r8-quick-question-as-listening-check",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "A small keyed question about what the point has just said, in place of a check-in before a waiting card: all four judges read it as a quiz that tests nothing, the same as or worse than \"samajh aaya?\""
+  },
+  {
+   "id": "rj-r8-invitation-before-worked-example",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "Ending a right verdict's turn on an invitation to the worked problem: a yes/no whose only answer is yes; two judges read it as a check-in in disguise, and a child who answers it with a request hears the lead-in twice"
+  },
+  {
+   "id": "fd-split-parts-expose-shared-boards",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "When a point or a remediation is split from its card, a board the two shared becomes the card's figure shown before the card (24 of director28's 33 unsaid boards are the script's own pages)"
+  },
+  {
+   "id": "fd-new-question-kind-new-paths",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "Each new kind of turn ending (quick question, invitation, a reply said alone) brought request and aside paths nobody wrote rules for; listening fell in three of four topics on paths that did not exist in director27"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director28",
+   "rel": "supersedes",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "dc-r8-director28",
+   "rel": "supersedes",
+   "dst": "dc-r8-right-answer-goes-on"
+  },
+  {
+   "src": "dc-r8-director28",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-quick-question-as-listening-check",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-invitation-before-worked-example",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "fd-split-parts-expose-shared-boards",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "fd-new-question-kind-new-paths",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28"
+  },
+  {
+   "src": "rj-r8-quick-question-as-listening-check",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "rj-r8-invitation-before-worked-example",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "fd-split-parts-expose-shared-boards",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director28` (2026-11-17): 16 lessons (4 pilot topics × steady, stuck, offtopic, steering), Director only, reactive child, joins off, int/r6 integration 82; 12 lessons from one invocation on 864d4836f (release 49's code), the 4 c5-t01 lessons from a second on 998fcf4ff (one script token: the rule-based child's answer for a mix-up, \"no place\" → \"koi mark nahi\", after the frozen safety turn fired on it four times in the first invocation). 1,730 model calls, about $1.27. Method: four Opus judges (high effort), one per topic, each reading 4 lessons by hand against 14 clauses fixed before the run; the predicate check over the live rows read 0 on every gated line. Hand counts (c4, c5-t01, c5-t02, c6): beats 161/162, 144/144, 172/172, 152/152; verdicts 98/98, 94/94, 114/114, 82/82 (quick questions and asked steps included); misgrades 0; false keys 0; words against the board 0, 0, 7, 0; unsaid boards by the strict reading 6, 19, 3, 5 (24 script data, 9 paging at a joint). Axes, director27 → director28: listening 4→3.5, 3→3, 3.5→3, 4→3.5; worked example 4, 4, 4, 4→3.5; class level 4 in all; screen and speech 4, 3.5, 3, 3.5→4; register 3.5 in all; promises 4→3.5, 3.5→3, 3.5, 3.5. Check-in turns in the steady lessons 16, 11, 8, 10 (director27: 29, 26, 23, 20); no judge finds them tedious overall; two name the check-in after a remediation. Quick questions: 59 asked, 3 rated real small steps, 56 a quiz of what was just said; no giveaway, no misread. Requests answered without help: 3, 10, 3 (5 with the hook), 2 (6 with the hook). Invitations: 18; natural where the child said yes, a check-in in disguise by two judges. Short reasons: 14 rows, true and enough by both judges who heard them. Result: no topic passes; c4 and c6 fail on unsaid boards only. Reports: `evals/hybrid-side-by-side/results/2026-11-17-director28/judges/`; judgement: `docs/design/round7/judgements/director28-2026-11-17.md`.",
+  "decisions": "- `dc-r8-director28` (2026-11-17, main loop; supersedes `dc-r8-director27` and `dc-r8-right-answer-goes-on`): director28's judges applied to the clauses fixed before the run. Decided: (1) a point and its card share a turn again: verdict, reason, point, card, the short reason said when the full one leaves no room; the walk's 60-word cap on a point after a verdict goes; the scripts are cut so every point and card fit (61 words together; hook, first point and card 75); (2) quick questions go wherever the pair fits, and a script keeps one only where the pair cannot be cut and the answer is not said in the point (the checker reads that); (3) a remediation and its follow-up card are one turn where the whole turn fits 60 words, the remediations cut to fit; (4) the verdict's turn runs into the worked example up to its first question; the invitation goes; (5) worked examples ask the reasoning step and tell the sum; (6) every point's and remediation's board shows what that part says and nothing its card asks that the part does not speak of; (7) a joint keeps what is up: a part's page starts at that part's first word on every path; (8) help is a hard precondition: a request's turn says an unsaid wording of the last part taught, or its key, or the nothing-easier line, before anything else, and throws under tests otherwise; after a key the nothing-easier line comes before the return; (9) an aside reply or a park never ends on a check-in and is not counted in the turn's 75; (10) \"let me try\" at an asked step means that step. Rationale: both devices built to replace check-ins put a new kind of question between the child and the card and neither asked anything; the remedy is fewer kinds of turn (a teaching turn ends on a card's question, an asked step, the child's own step, or a check-in after help, a key or a bridge). One stated deviation from the clauses: clause 1's remedy (pages from the script compile) is not applied, because 24 of the 33 unsaid boards are the compile's own pages; the scripts' boards are read part by part instead. c6 is not counted as passed although its judge notes it would pass if a board drawn at the lead-in to its own part were accepted: the strict reading was set before the run and the five rows are a paging fault. Work orders: Learning 017, Brain 044. What would reverse it: two director29 judges finding verdict + reason + point + card too much in one breath → that turn's limit goes to 65 and the scripts are cut again (quick questions do not come back); two judges finding the remediation with its card too much again → together only at 50; any unsaid board from a joint → the page start is taken from one function for every path; any request answered without one of the three → the precondition moves to where the turn is assembled; two judges finding right answers under-explained with the short reason → the short form only before a point of its own skill; a worked example read as a quiz of sums by two judges → that script's examples rewritten from the judge's rows; two topics passing with every axis at 3.5 → the staged scripts get the same read three at a time, each judged before the next three.",
+  "rejected": "- `rj-r8-quick-question-as-listening-check` (2026-11-17, from `ms-r8-director28`): what was tried: where a point's card did not fit its turn, the turn ended on a small keyed question about \"one thing the point has just said or the board shows\" (Learning 016 A.1, Brain 042 Q1), graded by the card's reader with no hint and no second try. What broke: all four judges read it as an echo (\"saat bina rang ke… kitne tukde bina rang ke hain?\"); 56 of 59 tested nothing; the steady child repeats the last sentence 10 to 20 times a lesson; a child who gives up hears the point's sentence again as the answer line; three judges rate it the same as \"samajh aaya?\" and one worse. The fault was in the order's wording, not the authoring. They were also asked where the pair fitted (the walk's 60-word cap). The three rated real asked the child to apply the point to something it had not said. Do not write a question whose answer is in the sentence before it; if a small step is ever wanted again, the checker must read that the key is not in the point.\n- `rj-r8-invitation-before-worked-example` (2026-11-17, from `ms-r8-director28`): what was tried: a right verdict that stood alone before a worked example ended on an authored invitation (\"Agla sawaal hum dono saath mein karein?\") instead of a comprehension check-in, counted on its own line (Brain 043 R2). What broke: it is a yes/no whose only answer is yes; where the child answered it with a picture request, a clarify or an aside (10 of 18), the walk treated the reply as about the card, and after the detour the lead-in said the invitation's words again. Two judges: a check-in in disguise. The count of \"comprehension check-ins\" fell partly by renaming a turn ending. A turn's ending is counted by what the child can do with it, not by its words."
+ }
+}
