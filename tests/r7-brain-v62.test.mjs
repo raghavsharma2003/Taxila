@@ -154,7 +154,12 @@ describe("r7-brain-v62.test.mjs", () => {
     const T = "c4-maths-ch05-t01";
     setScriptForTest(T, runScript(T));
     const { kit, rows, last } = await replay(RUN, "steady", T, 47);
-    assert.equal(last.state.lastMove?.closeBeat?.beatId, "then:c4-maths-ch05-t01-m-part-part", "the card answered last turn: the 3/4 chocolate bar");
+    // (dc-r8-director25 H4: help on row 36's Hindi request is replayed now — a worked step's own simpler, the walk waiting on its check-in — and
+    // the walk after it no longer asks the then-card's why at 44: it poses c1, and row 46 answers c1. The card closed is still the one just
+    // answered: the then-card's why where it is pending, else the card live before the turn)
+    const answered = last.before.pendingWhy ? "then:c4-maths-ch05-t01-m-part-part" : String(last.before.activeItemId ?? "").split(":").at(-1);
+    assert.equal(answered === "then:c4-maths-ch05-t01-m-part-part" || answered === "c1", true, `the card live before row 46: ${last.before.activeItemId}`);
+    assert.equal(last.state.lastMove?.closeBeat?.beatId, answered, "the card answered last turn");
     assert.equal(last.state.lastMove?.closedBeat, undefined, "v6.3: the worked barfi, missed earlier, is not closed now");
     replyDeps.chat = async () => ({ text: rows[46].text });
     const out = await textReply({ instructions: "x", state: last.state, kit, childText: last.child, history: [], ui: last.p.r.ui, module: null });
