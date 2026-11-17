@@ -1,0 +1,43 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director28a-live-check",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director28a (16 live lessons on release 48, 1,380 model calls, $1.013): not judged; the predicate check over the live rows found two scripted turns that lost an authored point (steady c5-t02 row 2, steady c4 row 106)"
+  },
+  {
+   "id": "fd-assembly-filter-dropped-reworded-point",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "The scripted assembly's filter for her own sentences dropped a whole authored point when one drafted sentence shared 70% of its words: the point was held as one piece but listed as authored only sentence by sentence"
+  },
+  {
+   "id": "fd-dry-matrix-never-feeds-a-draft",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "The dry matrix runs no model, so no path that reads the model's draft is exercised by it; an adversarial-draft probe over every scripted turn found 8 steady rows losing a point before the fix and is now in the gate"
+  }
+ ],
+ "edges": [
+  {
+   "src": "fd-assembly-filter-dropped-reworded-point",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28a-live-check"
+  },
+  {
+   "src": "fd-dry-matrix-never-feeds-a-draft",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28a-live-check"
+  },
+  {
+   "src": "fd-assembly-filter-dropped-reworded-point",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director28a-live-check` (2026-11-17): the first paid run after integration 81, on release 48 (commit bd9a6f3): 4 pilot topics × 4 rule-based children, Director only, reactive child, 1,380 model calls, about $1.013. Method: `check-run.mjs` over the live rows before any judge reads them. Gated predicates not 0: `partOnce` 2 and `orderParts` 2, both on the same two rows: steady c5-t02 row 2 (hook and quick question said, the e1 point gone, 33 words where the dry run says 64) and steady c4 row 106 (verdict, why and quick question, the s3 e2 point gone). The other non-zero lines (`skillRemediation` 2, `teachingParts` 2, `requestAnswered` 1, `requestHelped` 1, `endsOnQuestion` 1) all follow the safety turn firing on the child's line \"no place\" in c5-t01 (steady row 40, stuck row 56): the known item, in frozen code. The run was not judged: the fault is mechanical and sits in the steady lesson of two topics. Raw output kept in the session scratchpad only; the two faulty lessons are fixtures under `tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28a/`. After the fix the new gated predicate `quickPoint` reads 2 on this run and 0 on the dry matrix; the adversarial probe (six drafts on every scripted turn of the four steady lessons, about 45 s, no model) read 8 lost points before the fix and 0 after, and 0 over the other 12 lessons (389 scripted turns).",
+  "rejected": "- `fd-assembly-filter-dropped-reworded-point` and `fd-dry-matrix-never-feeds-a-draft` (2026-11-17, findings from `ms-r8-director28a-live-check`): what was tried: Brain 042's E2 fixed the previous run's lost point in the length guard (`lengthGuard`, `authoredPartsOf`) and unit-tested it there. What broke: the loss was never in a guard. In `textReply0`'s scripted assembly the filter that removes her own sentences compared the whole point, word by word, with each drafted sentence, and the list of authored text held only the point's separate sentences; one drafted sentence rewording the point (70% shared words) made the whole point count as hers, and it was dropped. The `long` and `leak` flags on the two rows were what the draft tripped, not what cut the point. Why it kept coming back: the dry matrix runs no model, so nothing in the gate ever fed a draft through the assembly. Fixed at the cause (the assembly records which pieces it placed from authored text and no filter or trim removes them) and by one check of the finished turn against the walk's authored plan (`holdAuthored`: throws under tests and the dry harness, restores the part in production and records `guard.authoredRestored`). Law for the next reader: a fault seen only on live rows is looked for in what reads the draft, with a stubbed draft, before any guard is patched; and a paid run's live check is read before the judges are."
+ }
+}

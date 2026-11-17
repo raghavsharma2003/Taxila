@@ -29630,6 +29630,27 @@
    "at": "2026-11-17",
    "title": "Released bd9a6f3 with scripts/release.mjs: web taxila-web--sbd9a6f3-lj0n (was taxila-web--s3061266-81si), worker + canary/nightly jobs on taxila-worker:bd9a6f3 (was 3061266); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs bd9a6f3 --rollback.",
    "source": "inbox/release-bd9a6f3.json"
+  },
+  {
+   "id": "ms-r8-director28a-live-check",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director28a (16 live lessons on release 48, 1,380 model calls, $1.013): not judged; the predicate check over the live rows found two scripted turns that lost an authored point (steady c5-t02 row 2, steady c4 row 106)",
+   "source": "inbox/r8-main-46.json"
+  },
+  {
+   "id": "fd-assembly-filter-dropped-reworded-point",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "The scripted assembly's filter for her own sentences dropped a whole authored point when one drafted sentence shared 70% of its words: the point was held as one piece but listed as authored only sentence by sentence",
+   "source": "inbox/r8-main-46.json"
+  },
+  {
+   "id": "fd-dry-matrix-never-feeds-a-draft",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "The dry matrix runs no model, so no path that reads the model's draft is exercised by it; an adversarial-draft probe over every scripted turn found 8 steady rows losing a point before the fix and is now in the gate",
+   "source": "inbox/r8-main-46.json"
   }
  ],
  "edges": [
@@ -47437,6 +47458,21 @@
    "src": "fd-right-verdict-alone-is-the-weakest-checkin",
    "rel": "measured_by",
    "dst": "ms-r8-042-dry"
+  },
+  {
+   "src": "fd-assembly-filter-dropped-reworded-point",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28a-live-check"
+  },
+  {
+   "src": "fd-dry-matrix-never-feeds-a-draft",
+   "rel": "measured_by",
+   "dst": "ms-r8-director28a-live-check"
+  },
+  {
+   "src": "fd-assembly-filter-dropped-reworded-point",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
   }
  ]
 }
