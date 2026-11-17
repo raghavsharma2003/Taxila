@@ -72,6 +72,22 @@ export const BEAT_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya
 // (v6.10 T2, main on director18 c5-t02 stuck 54-56: "Kuch poochna hai ab tak?" — a "haan" to it means the child HAS a question, and she
 // posed the card; it is no longer a check-in form)
 export const WORKED_ASK = { hinglish: ["Yahan tak theek hai?", "Ab tak samajh aaya?", "Yeh kadam saaf hai?", "Yeh kadam samajh aaya?"], english: ["Does that make sense so far?", "Clear so far?", "Is that step clear?", "Did that step make sense?"] };
+/** dc-r8-director27 Brain 042 E4 (c5-t02's judge, 9 rows; Learning 016's list): a check-in form is not said in a lesson whose script teaches
+ *  one of its words as a term — "Yeh hissa saaf hua?" where `terms` teach "hissa" as a fraction's part ("hissa" in two senses). The forms
+ *  left, else all of them. */
+const BEAT_ASK_FOR = new WeakMap();
+export function beatAsk(kit) {
+  const sc = scriptFor(kit)?.script;
+  if (!sc?.terms?.length) return BEAT_ASK;
+  if (BEAT_ASK_FOR.has(sc)) return BEAT_ASK_FOR.get(sc);
+  // (a word's stem: its inflection off — hissa, hisse, hisson are one word; aaya and aayat are two)
+  const stem = (w) => w.replace(/(?:on|en|a|e|i|o|s)$/, "");
+  const stems = new Set(sc.terms.flatMap((t) => [t?.hi, t?.en, typeof t === "string" ? t : null]).filter(Boolean).join(" ").toLowerCase().split(/[^\p{L}]+/u).filter((w) => w.length >= 4).map(stem));
+  const keep = (f) => !String(f).toLowerCase().split(/[^\p{L}]+/u).some((w) => w.length >= 4 && stems.has(stem(w)));
+  const out = Object.fromEntries(Object.entries(BEAT_ASK).map(([L, fs]) => { const k = fs.filter(keep); return [L, k.length ? k : fs]; }));
+  BEAT_ASK_FOR.set(sc, out);
+  return out;
+}
 // v6 R3 (director8 c4: 5 of 7 probe answers ignored): one line that takes up how they thought, before the next beat; it never
 // grades their reason (a probe is never right or wrong)
 /** v6.2 H3: a child's turn that gives a reason or a way of working (what a "you told me how you thought" ack takes up). */
@@ -917,6 +933,25 @@ export function foreignNumbers(text, { kit, content = [], childText = "" } = {})
 }
 export const asksToCompute = (x) => TO_THEM.test(String(x).trim()) && COMPUTE_CUE.test(String(x));
 
+/** dc-r8-director27 Brain 042 E2: the authored parts a scripted turn says — the point, help's wording, a card, what is said first (a hook, a
+ *  bridge, a held part), worked lines, a quick question and its say, an asked step — as texts. */
+export function authoredPartsOf(state, ui = null) {
+  const lm = state?.lastMove ?? {};
+  return [lm.point, lm.simpler, lm.cardPoint, ...(lm.sayFirst ?? []), ...(lm.rendered ?? []), ...(lm.heldSaid ?? []), ui?.ask?.text, lm.quick?.prompt, lm.quickReply?.say, lm.stepAsk?.prompt]
+    .filter((x) => x != null && String(x).trim()).map((x) => String(x).replace(/\s+/g, " ").trim());
+}
+/** dc-r8-director27 Brain 042 E2: the length guard on a scripted turn — her own sentences go, from the end, until the turn is within `max`
+ *  words; an authored sentence (one of `authored`'s, or one inside an authored part) is never dropped, rewritten or reworded, and the order is
+ *  kept. A turn whose authored parts alone run over `max` is said whole: the walk broke it at part boundaries already. Pure. */
+export function lengthGuard(text, { authored = [], max = 40 } = {}) {
+  const k = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const A = authored.map(k).filter(Boolean);
+  const mine = (x) => { const t = k(x); return !!t && !A.some((a) => a.includes(t) || t.includes(a)); };
+  const ss = String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g)?.map((x) => x.trim()).filter(Boolean) ?? [];
+  const out = [...ss];
+  for (let i = out.length - 1; i >= 0 && words(out.join(" ")) > max; i--) if (mine(out[i])) out.splice(i, 1);
+  return out.join(" ").replace(/\s+/g, " ").trim();
+}
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
   const parts = p5Flag("GUARDS") ? sentences(text) : String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
@@ -1498,7 +1533,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const card = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
     // (dc-r8-director27 P7: the opener before the first point is recorded as its own kind, not an aside)
     const lp = cleanParts([{ part: "aside", text: j, kind: "opener" }, ...(state.lastMove.sayFirst ?? []).map((x) => ({ part: "held", text: String(x) })), { part: "body", text: String(state.lastMove.point) },
-      card ? { part: "card", text: card } : state.lastMove.quick?.prompt ? { part: "quick", text: String(state.lastMove.quick.prompt).replace(/\s+/g, " ").trim(), kind: "quickAsk" } : { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
+      card ? { part: "card", text: card } : state.lastMove.quick?.prompt ? { part: "quick", text: String(state.lastMove.quick.prompt).replace(/\s+/g, " ").trim(), kind: "quickAsk" } : { part: "aside", text: rotateOf(beatAsk(kit)[L], state) }]);
     return { reply: joinParts(lp), guard: { hookHelp: state.lastMove.hookHelp, ...(!card && state.lastMove.quick?.prompt ? { quickAsk: String(state.lastMove.quick.prompt).replace(/\s+/g, " ").trim() } : {}), hookJoint: j, hookJointBy: jointsAt(kit, "hindiSwitch", lang, state) ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
   }
   // (2.4: the ending is authored — the teach-back's question, its key and why on a miss, what was covered, the goodbye. Code says it
@@ -1515,7 +1550,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director22 T3: the teach-back's verdict is a turn of its own — the verdict, the key and its why on a miss, then a check-in)
     if (end === "teachbackKey") {
       // (the verdict and the key are the answer board's unit — a body part, drawn from the first word, T1)
-      const lp = cleanParts([{ part: "body", text: [close, ...lines].filter(Boolean).join(" ") }, { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
+      const lp = cleanParts([{ part: "body", text: [close, ...lines].filter(Boolean).join(" ") }, { part: "aside", text: rotateOf(beatAsk(kit)[L], state) }]);
       return { reply: joinParts(lp), guard: { authoredEnd: end, lineParts: lp, parts: { list: lp } } };
     }
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
@@ -1540,7 +1575,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director27 P7: the closing question's lead-in is no point, its hint is help — the walk names each line, renderedKinds)
     const kindOfLine = (x, n) => (tiredL && n === 0 && x === tiredL ? "tiredBye" : end === "teachback" ? state.lastMove.renderedKinds?.[n] ?? null : end === "wrapCovered" ? (ackL && n === 0 && x === ackL ? "wrapAck" : "covered") : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
     // (turn one ends on something she can answer: the wrap's closing question — main's R7, `wrap.ask` — never a comprehension check-in)
-    const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(BEAT_ASK[L], state)) : null;
+    const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(beatAsk(kit)[L], state)) : null;
     const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
       ...body.map((x, n) => ({ part: kindOfLine(x, n) === "help" ? "simpler" : "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
     return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
@@ -2069,6 +2104,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const fixed = toAap(reply);
     if (!registerBroken(fixed, address)) { reply = fixed; guard.repaired = true; found = problems(reply); }
   }
+  // dc-r8-director27 Brain 042 E2 (director27 c5-t02 offtopic 2 to 4: after the hook the first point was never said — the live length guard
+  // cut a scripted turn of hook and point to her word cap, and the turn was streamed as cut): on a scripted turn the walk decides the turn's
+  // length (it breaks at part boundaries, 75 words); the length guard drops only her own sentences, from the end, and never drops, rewrites
+  // or rewords an authored part
+  if (found.includes("long") && (scripted || !!(item && (item.scriptAsk || item.scriptCheck || item.scriptThen)))) {
+    reply = lengthGuard(reply, { authored: authoredPartsOf(state, ui), max });
+    found = found.filter((p) => p !== "long");
+    guard.lengthGuard = true;
+  }
   // round 7 latency cut 1 (main, after director6: 44% of turns paid a second model call): in script mode, a draft whose only
   // problems are ones the final assembly below fixes in code — the beat's point (mustsay, on an explain beat with a point),
   // the missing "not right" (uncorrected) or the missing yes (noconfirm) — is not rewritten: the rewrite's words would be
@@ -2461,7 +2505,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const framing = scripted && stepN && !remedy ? stepFrame : stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()
       : pickOf((remedy ? REMEDY_FRAME : whole ? WORKED_FRAME : WORKED_FRAME_PART)[lang === "english" ? "english" : "hinglish"], state));
     // (v6.1 R9: a scripted step's check-in only where state.js allowed one; else a statement)
-    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)
+    const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(beatAsk(kit)[lang === "english" ? "english" : "hinglish"], state)
       // (v6.9 R6: one step opener a turn — a step said under its label, or opening on its own step word, gets no "Ab agla kadam")
       // (dc-r8-director26 C1: told steps split from the child's own step are followed by that card, never by a next step — the split's
       // check-in ends them, below)
@@ -3002,19 +3046,19 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (v6.10 R7, main on director18: "Pehla kadam dekho. … Ab agla kadam dekhte hain." — a step label said in this turn is its one opener)
     const STEP_LABEL = /^(?:Pehla kadam dekho|Ab (?:doosra|teesra|agla) kadam|First step|Now the (?:second|third|next) step)\.?$/i;
     const stepOpened = () => (body ?? []).some((x) => STEP_OPENER.test(String(x ?? "").trim()) || STEP_LABEL.test(String(x ?? "").trim())) || STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
-    const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
-      : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
+    const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state)
+      : afterRem ? freshOf(beatAsk(kit)[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
-    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
+    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
-      : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
+      : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(beatAsk(kit)[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
       : state.lastMove?.splitTeach && state.lastMove?.quick?.prompt ? (guard.quickAsk = dot(norm(state.lastMove.quick.prompt)))
       // (Brain 042 Q2: a segment of a worked example ends on its asked step's question, never on a step check-in)
       : state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt)))
-      : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)) : null);
+      : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(beatAsk(kit)[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
     // v6.4 Q1 (main, director12: "mujhe khud try karne do", "sawaal kya hai?", "phir se bolo", an unclear reply each got a recital
@@ -3290,7 +3334,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (l2Live && tail && tail !== card && !guard.cardQuestionOnly && !/[?？]\s*$/.test(norm(tail)) && !asideQ && scriptFor(kit)?.script && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) tail = null;
     if (l2Live && !tail && !asideQ && !guard.cardHeldForTry && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
       const lastS = [...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
-      if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state); guard.l2Checkin = true; }
+      if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state); guard.l2Checkin = true; }
     }
     const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
