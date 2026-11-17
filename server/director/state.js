@@ -3499,7 +3499,7 @@ export function step(prev, input) {
   // else reads it; the walk acts on the reading — heldTurn's quickAnswer, the worked example's stepAsk)
   if (isQuickId(prev?.activeItemId)) {
     const m = /^stepask:(.+):(\d+)$/.exec(String(prev.activeItemId));
-    prev = { ...prev, activeItemId: undefined, quickItem: undefined,
+    prev = { ...prev, activeItemId: undefined, quickItem: undefined, ...(isQuickId(prev.cardUnsaid) ? { cardUnsaid: undefined } : {}),
       ...(m && input?.event === "turn" ? { stepRead: { skillId: m[1], step: Number(m[2]), outcome: input.cls?.outcome ?? null, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } } : {}) };
   }
   // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
@@ -4269,17 +4269,23 @@ function quickOfBeat(kit, sb) {
 function quickTeach(out, input, teach, closeWords = 0) {
   const { state: s, move } = out;
   if (!scriptOn() || scriptFor(input.kit)?.script?.recordedRun || input?.event !== "turn") return teach;
-  if (move.kind !== "explain" || move.smaller || move.simpler || move.help || move.splitClose || !move.point) return teach;
+  // (an explain beat's point, or its point held by her AI line or a return and said first now, with the card held after it)
+  if (!(move.kind === "explain" || (move.heldSaid?.length && move.scriptBeat?.kind === "explain")) || move.smaller || move.simpler || move.help || move.splitClose || !move.point) return teach;
   const sb = move.scriptBeat;
   const qb = quickOfBeat(input.kit, sb);
   if (!qb || String(move.itemId ?? "") !== `script:${sb.skillId}:ask:${sb.beatId}`) return teach;
   const lang = s.ctx?.lang ?? "hinglish";
-  // (only after the beat's own point: a held part said in its place is not what the quick question asks about)
-  if (normLine(move.point) !== normLine(saidIn(qb.beat.point, lang))) return teach;
+  // (only after the beat's own point — said now, or held by her AI line and said first now: a part said in its place is not what the quick
+  // question asks about)
+  const bp = normLine(saidIn(qb.beat.point, lang));
+  if (!bp || !normLine(move.point).includes(bp)) return teach;
   const prompt = String(saidIn(qb.quick.prompt, lang) ?? "").replace(/\s+/g, " ").trim();
   if (!prompt) return teach;
   // (the turn's parts before the card, and the quick question in the check-in's place: within 75 words, else the check-in as before)
-  const before = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).filter((p) => p.k !== "card").reduce((a, p) => a + p.n, 0);
+  const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).filter((p) => p.k !== "card");
+  // (a point held and said first now stands in the body too — counted once)
+  const twice = (move.sayFirst ?? []).length && normLine((move.sayFirst ?? []).join(" ")) === normLine(move.point) ? p0.find((p) => p.k === "body")?.n ?? 0 : 0;
+  const before = p0.reduce((a, p) => a + p.n, 0) - twice;
   if (before + wordsIn(prompt) > L2_CAP) return { ...teach, quickNoRoom: true };
   const item = friendly(scriptQuickItem(sb.skillId, sb.beatId, qb.quick));
   const { checkinOk: _c, ...rest } = teach;
@@ -4639,7 +4645,7 @@ function splitTeach(out, input, cap, extra = 0) {
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: [], teach: true };
   s.activeItemId = undefined;
   // (Brain 042 Q1: the quick question is what the child's next line is read against — by the card's reader, against its own key)
-  if (teach.quick) { s.quickItem = teach.quick.item; s.activeItemId = teach.quick.item.id; teach.quick = { ...teach.quick, item: undefined }; delete teach.quick.item; }
+  if (teach.quick) { s.quickItem = teach.quick.item; s.activeItemId = teach.quick.item.id; if (isQuickId(s.cardUnsaid)) s.cardUnsaid = undefined; teach.quick = { ...teach.quick, item: undefined }; delete teach.quick.item; }
   s.lastMove = teach;
   const teachUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
   s.lastUi = teachUi;
