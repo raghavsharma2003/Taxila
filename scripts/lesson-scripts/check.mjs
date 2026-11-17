@@ -767,7 +767,12 @@ export function v22Errors(s) {
       // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
       const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"
         && figureOf({ template: "wholes@1", params: { wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
-      if (a !== b && !appended) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
+      // (dc-r8-director28 item 6, Learning 017 C: a card that asks the child to count the marks of a line it names — the count-marks
+      // card, "12 barabar gaps ke beech kitne marks?" — is posed over the line it starts from, never over the line whose ticks it asks
+      // to count; its answerBoard adds that line. Allowed where the answer's lines begin with the posing board's and the key is a count.)
+      const countPosed = /^\d+$/.test(String(c.key ?? "").trim()) && /^line\[/.test(String(a)) && /^line\[/.test(String(b ?? ""))
+        && String(a).replace(/\]$/, ",").startsWith(String(b).replace(/\]$/, ",")) && a !== b;
+      if (a !== b && !appended && !countPosed) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
     }
     // director11 D1/D2 (dc-r7-script-walk-v6-3): the board a card closes over (its answerBoard, else its own board) draws
     // the figure its why names, in the answer state it judges. whyFigureErrors compares them.
@@ -1259,7 +1264,7 @@ export function d28Errors(s) {
  *  E. `joints.stepMiss`: three forms of 4 words or fewer, each saying the answer was not it, naming no answer, asking nothing.
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
-export const D29_PILOTS = ["c6-maths-ch06-t01", "c4-maths-ch05-t01"];
+export const D29_PILOTS = ["c6-maths-ch06-t01", "c4-maths-ch05-t01", "c5-maths-ch02-t01"];
 export const D29_JOINTS = ["stepMiss"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
