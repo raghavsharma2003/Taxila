@@ -71,3 +71,22 @@ test("returnAlone allows an afterKeyGoOn form before the return question, and no
   assert.equal(flags(`Is sawaal ka sahi jawab: 1/3. ${goOn} ${ret}`).length, 1, "a key before the go-on line");
   assert.equal(flags(`${goOn} Ek circle ko 3 barabar tukdon mein kaato. ${ret}`).length, 1, "a teaching part with the return");
 });
+
+// (main's R7 on the merged tree: the wrap's first turn ends on its closing question — one of `wrap.ask` — never on a comprehension
+// check-in; whatever she answers, the next turn is the wrap's second, opening on a `wrap.ack` form)
+test("wrapTwoTurns: turn one ends on a wrap.ask form; her answer gets turn two, opening on a wrap.ack form", () => {
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c6-maths-ch06-t01.json", import.meta.url), "utf8"));
+  const covered = script.skills.map((k) => k.covered?.hi).filter(Boolean).join(" "), bye = script.wrap.goodbye.hi, ask = script.wrap.ask[1].hi, ack = script.wrap.ack[0].hi;
+  const flags = (rows) => lessonFlags({ script, rows }).filter((f) => f.predicate === "wrapTwoTurns").map((f) => f.why);
+  const one = (end) => ({ who: "teacher", move: "wrap", text: `${covered} ${end}` });
+  const two = (text) => ({ who: "teacher", move: "wrap", text });
+  assert.deepEqual(flags([one(ask), { who: "child", text: "pata nahi" }, two(`${ack} Aaj tumne parimap joda. ${bye}`)]), []);
+  assert.deepEqual(flags([one(ask), { who: "child", text: "samajh nahi aaya" }, two(`${ack} ${bye}`)]), []);
+  // (code's fallback when a script has none)
+  assert.deepEqual(flags([one("Aaj ka paath kaisa laga?"), { who: "child", text: "achha" }, two(`${ack} ${bye}`)]), []);
+  assert.equal(flags([one("Yahan tak theek hai?"), { who: "child", text: "haan" }, two(`${ack} ${bye}`)]).length, 1, "a check-in ends turn one");
+  assert.equal(flags([one(ask), { who: "child", text: "achha laga" }, two(`Aaj tumne parimap joda. ${bye}`)]).length, 1, "no ack after her reply");
+  assert.equal(flags([one(ask), { who: "child", text: "samajh nahi aaya" }, { who: "teacher", move: "reteach", text: "Parimap kinaare ki lambai hai. Yahan tak theek hai?" }]).length, 1, "her answer re-taught");
+  // (a goodbye in reply is a reply: the ack, the sentence to her, the goodbye)
+  assert.deepEqual(flags([one(ask), { who: "child", text: "bye" }, two(`${ack} ${bye}`)]), []);
+});

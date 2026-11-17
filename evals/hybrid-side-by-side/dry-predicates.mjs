@@ -969,15 +969,34 @@ PREDICATES.endsOnQuestion = (L, r, i) => {
 };
 /** dc-r8-director25 L2: the wrap is two turns while the child is still there — what was covered, ending on something to answer; then
  *  (after the reply) the acknowledgement, the sentence to her and the goodbye. A wrap after the child leaves is the goodbye alone. Gated. */
+// (main's R7 on the merged tree: turn one ends on the wrap's closing question, one of `wrap.ask` (code's fallback: its first form) — never
+// a comprehension check-in; whatever she answers, the next turn is the wrap's second, and it opens on a `wrap.ack` form when she replied)
+const WRAP_ASK_FALLBACK = ["Aaj ka paath kaisa laga?", "How did today's lesson feel?"];
 PREDICATES.wrapTwoTurns = (L, r, i, ctx) => {
-  if (String(r.move ?? "") !== "wrap") return null;
   const sc = ctx.script;
+  const one = ctx.o.wrapOne;
+  ctx.o.wrapOne = null;
+  if (one) {
+    // (the safety turn is frozen and comes first, whatever the lesson was doing)
+    if (String(r.move ?? "") === "safeguard") return null;
+    if (String(r.move ?? "") !== "wrap") return `her answer to the wrap's closing question was answered with ${String(r.move ?? "a turn")}, not the wrap's second turn`;
+    const acks = (sc?.wrap?.ack ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
+    if (acks.length && String(ctx.prevChild ?? "").trim() && !acks.some((a) => key(r.text).startsWith(a))) return "the wrap's second turn does not open on a wrap.ack form after her reply";
+    return null;
+  }
+  if (String(r.move ?? "") !== "wrap") return null;
   const covered = [...(sc?.skills ?? []).map((k) => k.covered), sc?.wrap?.covered].filter(Boolean).flatMap((c) => [c.hi, c.en]).filter(Boolean).map((x) => key3(x).slice(0, 40));
   const bye = [sc?.wrap?.goodbye?.hi, sc?.wrap?.goodbye?.en].filter(Boolean).map((x) => key3(x).slice(0, 30));
   const t = key3(r.text);
   if (!covered.some((c) => c && t.includes(c))) return null;
-  // (turn one, what was covered, ends on something she can answer)
-  if (!bye.some((b) => b && t.includes(b))) return /[?？]\s*$/.test(String(r.text ?? "").trim()) ? null : "the wrap's first turn ends with nothing for the child to answer";
+  // (turn one, what was covered, ends on the wrap's closing question)
+  if (!bye.some((b) => b && t.includes(b))) {
+    ctx.o.wrapOne = true;
+    const asks = [...(sc?.wrap?.ask ?? []).flatMap((f) => [f?.hi, f?.en]), ...WRAP_ASK_FALLBACK].filter(Boolean).map(key);
+    const last = sentencesOf(r.text).at(-1) ?? "";
+    if (!/[?？]\s*$/.test(String(r.text ?? "").trim())) return "the wrap's first turn ends with nothing for the child to answer";
+    return asks.includes(key(last)) ? null : `the wrap's first turn ends on "${last.slice(0, 40)}", not one of wrap.ask`;
+  }
   return LEAVING.test(String(ctx.prevChild ?? "")) ? null : "what was covered and the goodbye in one turn";
 };
 /** dc-r8-director25 L2: when a guard rejects her draft, what is said is the authored parts — never the fixed carry-on lines of a

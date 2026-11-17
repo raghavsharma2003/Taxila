@@ -43,6 +43,8 @@ const WHAT = {
   "remediation sayAlt": "a remediation's second wording: the first rung of its help ladder", "remediation simpler": "a remediation's plainer line",
   "card whyAlt": "the why's second wording, said after a key's check-in", "check whyAlt": "the why's second wording, said after a key's check-in",
   "then_card whyAlt": "the why's second wording, said after a key's check-in", "your_step whyAlt": "the why's second wording, said after a key's check-in",
+  // (main's R7 on the merged tree: the wrap's closing question; missing, code's fallback form is said)
+  "wrap ask": "the wrap's closing question, three forms (how the lesson felt): the first turn of the wrap ends on it. Fallback: code's first form",
 };
 for (const k of KEYS) out.push(`| ${k} | ${total(k)} | ${WHAT[k] ?? ""} |`);
 out.push("", "## Per script", "", `| Script | Where | Parts | Cells | Missing | ${KEYS.join(" | ")} | Doubles |`, `|---|---|---|---|---|${KEYS.map(() => "---").join("|")}|---|`);

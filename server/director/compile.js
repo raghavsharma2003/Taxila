@@ -275,6 +275,8 @@ export function compileScript(script, plan = null) {
   // (dc-r8-director25 H4: after a key's check-in the ladder is the why's other wording — a card with no whyAlt is a hole too)
   for (const p of parts.filter((x) => CARDS.has(x.kind))) for (const x of ladderSpec(script, helpPartFrom(script, p), { keyed: true }).filter((y) => !y.present))
     holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/after_key`, field: x.field, path: x.path });
+  // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)
+  if (script && !(Array.isArray(script.wrap?.ask) && script.wrap.ask.length)) holes.push({ part: "wrap", kind: "wrap", rule: "wrap/ask", field: "ask", path: "wrap.ask" });
   const order = orderOf(script ?? {}, parts, plan);
   // (Loop's ask A: under a plan, the compressed check's wrong, misconception and give-up cells say nothing and take the unit's onMiss —
   // no help, no second try, no remediation, as the walk does; right stays its why, and the unit's onRight skips the rest)

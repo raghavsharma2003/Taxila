@@ -1641,6 +1641,26 @@ export function d24Errors(s) {
       for (const later of items.slice(i)) if (later.x.key != null && keyHit(t, later.x.key)) { e.push(`${a}: names ${later.at === at ? "its own card's" : `${later.at}'s`} key "${later.x.key}"`); break; }
     }
   });
+  // (main's R7 on the merged H4 + L2 tree: `wrap.ask`, the closing question the wrap's first turn ends on — three forms, one question
+  // each, asking how the lesson felt; never a comprehension check. Optional: a script without it is said with code's fallback, and
+  // scripts/lesson-scripts/compile-report.mjs lists the hole)
+  const ask = s.wrap?.ask;
+  if (ask !== undefined) {
+    if (!Array.isArray(ask) || ask.length !== 3) e.push("wrap.ask: three forms [{ hi, en }] (the wrap's closing question)");
+    else {
+      const seenA = new Set();
+      ask.forEach((f, i) => {
+        for (const l of ["hi", "en"]) {
+          const t = String(f?.[l] ?? "").trim(), a = `wrap.ask[${i}]${l === "en" ? " (en)" : ""}`;
+          if (!t) { e.push(`${a}: empty`); continue; }
+          if (sentencesOf(t).length !== 1 || !/[?？]$/.test(t)) e.push(`${a}: one sentence, a question`);
+          if (t.split(/\s+/).length > 12) e.push(`${a}: at most 12 words`);
+          if (/\b(samajh|samjha|samjhi|theek hai\?|clear|understand|make sense)\b/i.test(t)) e.push(`${a}: asks how the lesson felt, never whether it was understood`);
+          if (l === "hi") { const k = t.toLowerCase(); if (seenA.has(k)) e.push(`${a}: the same as another form`); seenA.add(k); }
+        }
+      });
+    }
+  }
   const ack = s.wrap?.ack;
   if (!Array.isArray(ack) || ack.length !== 3) e.push("wrap.ack: three forms [{ hi, en }] (director23 T2: said when the child spoke after the closing key's check-in)");
   else {

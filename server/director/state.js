@@ -2391,6 +2391,14 @@ function teachback(s, input) {
   return plan("teachback", SH.teachbackFollowup({ protege: scriptIdOf(kit) ? null : s.ctx.protege, missing }), { probe: "P1", format: "F7" });
 }
 
+/** main's R7: the wrap's closing question when a script has no `wrap.ask` (the compile report lists the hole). */
+export const WRAP_ASK_FALLBACK = Object.freeze({ hi: "Aaj ka paath kaisa laga?", en: "How did today's lesson feel?" });
+/** One of a list, rotated by the lesson (its seed and key) and a salt, so two lists do not move in step. */
+function lessonPick(s, list, salt = "") {
+  if (!list?.length) return null;
+  const h = [...`${String(s.ctx?.lessonKey ?? s.ctx?.sessionId ?? "")}|${salt}`].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
+  return list[(Math.imul(((s.seed ?? 0) >>> 0) ^ h, 2654435761) >>> 0) % list.length];
+}
 function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afterKey = false, second = null }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
   const phase0 = s.phase;
@@ -2431,15 +2439,23 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
     // (dc-r8-director25 L2 item 2: the wrap is two turns while the child is still there. Turn one: what was covered, ending on a check-in
     // (brain/say.js), the lesson not yet over. Turn two, after her reply: the acknowledgement — only when she spoke after the closing key's
     // check-in — the sentence to her and the goodbye. On her stop, the goodbye alone, as before)
+    // (main's R7 on the merged tree: turn one ends on the wrap's closing question — `wrap.ask`, rotated by the lesson — not a comprehension
+    // check-in: "samajh nahi aaya" to "Yahan tak theek hai?" got "Achha, theek hai." and the goodbye, a brush-off. Her answer to it is not
+    // graded, not help and no reason to re-teach: turn two always follows, opening on a `wrap.ack` form whenever she replied)
     if (second) {
-      const lines2 = [second.ack, bye].filter((x) => x && String(x).trim()).map(endLine);
-      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(second.ack ? { wrapAck: endLine(second.ack) } : {}),
+      const ack2 = second.replied && !second.ack ? lessonPick(s, (Array.isArray(w?.ack) ? w.ack : []).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim()), "wrapAck") : null;
+      const ackS = second.ack ?? ack2;
+      const lines2 = [ackS, bye].filter((x) => x && String(x).trim()).map(endLine);
+      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(ackS ? { wrapAck: endLine(ackS) } : {}),
         ...(second.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board: second.board, mode: "fresh" } } : {}) });
     }
     if (l2On() && !stopping && covered && String(covered).trim()) {
       s.phase = phase0 === "done" ? "teachback" : phase0;
-      s.wrapTwo = { ack: ack ?? null, board: keyFirst?.board ?? null };
-      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: [endLine(covered)], authoredEnd: "wrapCovered", wrapPart: 1,
+      // (the ack waits for her answer to the closing question: turn two opens on it whenever she replied)
+      s.wrapTwo = { ack: null, board: keyFirst?.board ?? null };
+      const asks = (Array.isArray(w?.ask) && w.ask.length ? w.ask : [WRAP_ASK_FALLBACK]).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
+      const wrapAsk = lessonPick(s, asks, "wrapAsk") ?? saidIn(WRAP_ASK_FALLBACK, lang);
+      return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: [endLine(covered)], authoredEnd: "wrapCovered", wrapPart: 1, wrapAsk: String(wrapAsk).trim(),
         ...(keyFirst?.line ? { endKey: keyFirst.line } : {}),
         ...(keyFirst?.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board: keyFirst.board, mode: "fresh" } } : {}) });
     }
@@ -2670,7 +2686,7 @@ function decide(s, input, item) {
   if (s.phase === "done") return toWrap(s, { stopping: true, kit: input.kit });
   // (dc-r8-director25 L2 item 2: the wrap's second turn, whatever her reply to what was covered — a stop or a goodbye of hers included:
   // the acknowledgement, the sentence to her, the goodbye)
-  if (s.wrapTwo) { const w2 = s.wrapTwo; s.wrapTwo = undefined; return { ...toWrap(s, { kit: input.kit, second: w2 }), ...(w2.board ? { holdBoard: true } : {}) }; }
+  if (s.wrapTwo) { const w2 = { ...s.wrapTwo, replied: String(input.text ?? input.answer ?? "").trim().length > 0 }; s.wrapTwo = undefined; return { ...toWrap(s, { kit: input.kit, second: w2 }), ...(w2.board ? { holdBoard: true } : {}) }; }
   // round 7 (Learning patch 006): the Conductor's lesson slot ends at its window (≤ bedtime − 60): never past hardStopAt
   if (pastBrief(s, "hardStopAt")) return toWrap(s, { kit: input.kit });
   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken
@@ -3599,6 +3615,7 @@ function step0(prev, input) {
   // (dc-r8-director25 L2 item 2: which turn of the wrap this is, and its acknowledgement, for brain/say.js and the seam record)
   if (p.wrapPart) move.wrapPart = p.wrapPart;
   if (p.wrapAck) move.wrapAck = p.wrapAck;
+  if (p.wrapAsk) move.wrapAsk = p.wrapAsk;
   // round 7 S3: the answer of a card let go after two misses plus help, said in code (brain/say.js)
   if (p.gave?.answer) move.gave = { ...p.gave };
   // v6.3 T1′ (main, director11 c5-t02 steady T17: "Toh poora jawab: Sana …" after the why-probe was answered): a worked close is

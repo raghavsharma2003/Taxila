@@ -1480,10 +1480,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // her, the goodbye)
     const ackL = state.lastMove.wrapAck ? d(state.lastMove.wrapAck) : null;
     const kindOfLine = (x, n) => (end === "wrapCovered" ? "covered" : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
-    // (turn one ends on something she can answer: a check-in, its form rotated)
-    const tail1 = end === "wrapCovered" ? rotateOf(BEAT_ASK[L], state) : null;
+    // (turn one ends on something she can answer: the wrap's closing question — main's R7, `wrap.ask` — never a comprehension check-in)
+    const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(BEAT_ASK[L], state)) : null;
     const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
-      ...body.map((x, n) => ({ part: "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1 }] : [])]);
+      ...body.map((x, n) => ({ part: "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
     return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (dc-r8-director25 L2 item 4, c6 offtopic 0: "Aaj cricket ground jaise rectangles ka perimeter dekhenge" — the greeting said the model's
