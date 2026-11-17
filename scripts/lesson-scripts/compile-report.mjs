@@ -85,6 +85,17 @@ out.push("## Authored parts over 45 words (dc-r8-director25 L2: Learning's to sh
   `A turn of more than one part breaks at the last seam before ${LONG_PART} words; a single part is never broken inside, so each of these is said whole, as one turn of its own. ${longs.length} parts in ${new Set(longs.map((x) => x.topicId)).size} scripts (words: Hinglish / English).`, "",
   "| Script | Where | Part | Words | Opens |", "|---|---|---|---|---|",
   ...longs.map((x) => `| ${x.topicId} | ${x.where} | ${x.path} | ${x.hi} / ${x.en} | ${x.text.split(/\s+/).slice(0, 8).join(" ").replace(/\|/g, "/")} … |`), "");
+// dc-r8-director28, Learning 017 A: the parts that share a turn, measured (scripts/lesson-scripts/check.mjs fitOf). The pilots are held
+// to the limits by the checker; a staged script's counts are its holes for the read the staged scripts still need.
+const { fitOf, HOOK_MAX, FIRST_TURN_MAX, POINT_CARD_MAX, REM_CARD_MAX, WORKED_OPENING_MAX } = await import("./check.mjs");
+out.push("## Fit: parts that share a turn (Learning 017 A, dc-r8-director28)", "",
+  `Counts of parts over their limit: hook over ${HOOK_MAX} words; hook, first point and card over ${FIRST_TURN_MAX}; a later point and its card over ${POINT_CARD_MAX}; a remediation and its follow-up card over ${REM_CARD_MAX} (said alone, ending on a check-in: reported, never failed); a worked opening (problem to the first question) over ${WORKED_OPENING_MAX}. Also: beats keeping a \`quick\`, \`joints.workedInvite\` still present, \`joints.stepMiss\` missing.`, "",
+  "| Script | Where | Hooks > 20 | First turns > 75 | Points > 61 | Quick kept | Remediations > 49 | Worked > 53 | workedInvite | stepMiss missing |", "|---|---|---|---|---|---|---|---|---|---|");
+for (const r of rows) {
+  const f = fitOf(r.s);
+  out.push(`| ${r.s.topicId} | ${r.where} | ${f.hooks.filter((h) => h.hook > HOOK_MAX).length} | ${f.hooks.filter((h) => h.total > FIRST_TURN_MAX).length} | ${f.points.filter((p) => !p.first && p.total > POINT_CARD_MAX).length} | ${f.points.filter((p) => p.quick).length} | ${f.rems.filter((x) => x.total > REM_CARD_MAX).length} | ${f.worked.filter((w) => w.total > WORKED_OPENING_MAX).length} | ${r.s.joints?.workedInvite ? "yes" : ""} | ${Array.isArray(r.s.joints?.stepMiss) && r.s.joints.stepMiss.length === 3 ? "" : "yes"} |`);
+}
+out.push("");
 const text = out.join("\n");
 if (process.argv.includes("--print")) process.stdout.write(text);
 else { writeFileSync(new URL("docs/design/round7/brain/COMPILE-HOLES.md", ROOT), text); console.log(`COMPILE-HOLES.md: ${rows.length} scripts`); }
