@@ -2,6 +2,139 @@
 
 Newest entry first. Per main's 029: reports go here and in commit messages, not by message.
 
+## 2026-11-17 · (this commit) Brain 043 R1 and R2 script fields: `whyShort` on every card with a why; `joints.workedInvite`
+
+Written by the Brain 043 build (`main/d28-code`), in the four pilots only; staged scripts untouched (each card with a why and no
+`whyShort`, and a script with no `workedInvite`, is a compile hole; the walk says the whole why, and code's invitation forms).
+
+**New fields (exact names):**
+- `whyShort` `{ hi, en }` beside `why` on every explain card (`explain[].ask`), remediation follow-up card (`remediation[].then`) and
+  check (`checks[]`) that has a why: c4 23, c5-t01 27, c5-t02 27, c6 23 (100 in all). Not on the closing question, not on the worked
+  example's own card (`yourStep`). 10 words or fewer (counted as the checker counts: tokens with a letter or digit), shorter than
+  the why, every number in it in the card's prompt, key or why, asks nothing, no leading "kyunki"/"toh" (the walk joins it to the
+  verdict as it joins the why: "<verdict>, kyunki <x>", "<verdict>. Dekho, <x>" or "<verdict>: <x>"; none of the pilots' whys opens
+  on "kyunki" or "Dekho", so neither does a short form). `why` is unchanged.
+- `joints.workedInvite`: three forms per script, each one question of 10 words or fewer inviting the child to do the next problem
+  together; no promise, no praise, no slot, no number. Said where a right verdict stands alone before a worked example (the
+  `beforeWorked` lead-in is then not said). Written so that no form's head is a stretch of a `beforeWorked` form (the joint-rotation
+  predicate recognises a form by its head).
+
+No existing sentence was changed. `node scripts/lesson-scripts/check.mjs <topic>` passes on the four.
+
+### `whyShort`, every card (Hinglish; the `en` beside it; words why → short)
+
+| Script | Card | `why` (hi) | `whyShort` (hi) | `whyShort` (en) | Words |
+|---|---|---|---|---|---|
+| c4 | s1 e1.ask | rangin tukda roti ke 2 barabar tukdon mein se 1 hai, toh 1/2, yaani aadha; neeche wala number 2 hai | roti ke 2 barabar tukdon mein se 1, yaani 1/2 | 1 of the roti's 2 equal pieces, so 1/2 | 20 → 10 |
+| c4 | s1 e2.ask | pizza ke tukde chhote-bade hain, aur ek-tihaai tabhi banta hai jab 3 tukde barabar hon | ek-tihaai ke liye 3 barabar tukde chahiye; yeh chhote-bade hain | a third needs 3 equal pieces; these are not | 15 → 10 |
+| c4 | s1 e3.ask | circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3 | 3 barabar tukdon mein se 2 mein rang, yaani 2/3 | 2 of the 3 equal pieces are coloured, so 2/3 | 15 → 10 |
+| c4 | s1 e4.ask | Raju ka tukda patti ke 6 tukdon mein se 1 hai, toh 1/6, 1/5 nahi; bache hue 5 tukde naam nahi badalte | Raju ka tukda 6 tukdon mein se 1, yaani 1/6 | Raju's piece is 1 of 6 pieces, so 1/6 | 22 → 10 |
+| c4 | s1 remediation[0].then (unequal-parts) | do tukde barabar hon tabhi har ek aadha hota; yahan bada tukda chhote se bada hai, toh aadhe se zyada | tukde barabar nahi; bada tukda aadhe se zyada hai | unequal pieces; the big one is over half | 20 → 9 |
+| c4 | s1 remediation[1].then (part-part) | khaye hue 2 tukde chocolate ke 4 barabar tukdon mein se hain, toh 2/4; bache hue 2 neeche wala number nahi | 4 barabar tukdon mein se 2 khaye, yaani 2/4 | 2 of the 4 equal pieces were eaten, so 2/4 | 21 → 9 |
+| c4 | s1 c1 | laddoo ke 3 tukdon mein bada tukda theek aadha hai, yaani 1/2; dono chhote milkar baaki aadha | bada tukda theek aadha laddoo hai, yaani 1/2 | the big piece is exactly half the laddoo, 1/2 | 17 → 8 |
+| c4 | s1 c2 | 1/12 ka matlab chocolate ke 12 barabar tukdon mein se 1 khaya; 12 mein se 1 gaya, toh 11 bache | 12 tukdon mein se 1 khaya, toh 11 bache | 1 of 12 pieces was eaten, so 11 are left | 20 → 9 |
+| c4 | s1 c3 | chaaron tukde milkar poora cake hain aur bada tukda baaki se bada hai, toh har chhota tukda 1/4 se kam | ek tukda bada hai, isliye har chhota 1/4 se kam | one is bigger, so a small one is under 1/4 | 20 → 10 |
+| c4 | s2 e1.ask | 12 laddoo 2 barabar group mein jaayein toh har group mein 6, aur 2 × 6 = 12 | 2 barabar group, har ek mein 6 laddoo | 2 equal groups, 6 laddoos in each | 16 → 8 |
+| c4 | s2 e2.ask | 6 group ko jod kar 3 barabar bade group banao: har bade group mein 2 group, yaani 8 aam | 6 group se 3 bade group, har ek mein 2 | 6 groups make 3 bigger groups, 2 in each | 19 → 10 |
+| c4 | s2 e3.ask | 4 × 5 = 20, toh 20 kanche 4 bachchon mein barabar batte hain; har bachche ke 5 kanche 1/4 hain | 4 × 5 = 20, toh 4 bachche, har ek ka 1/4 | 4 × 5 = 20, so 4 children, each gets 1/4 | 19 → 10 |
+| c4 | s2 remediation[0].then (part-part) | kele 6 barabar thailon mein the, toh jo thaila gaya woh 1/6 hai; bache hue 5 neeche wale number mein nahi jaate | 6 barabar thailon mein se 1 thaila, yaani 1/6 | 1 of 6 equal bags, so 1/6 | 22 → 9 |
+| c4 | s2 remediation[1].then (unequal-parts) | 21 ka 1/3 tab hota jab teeno ko 7 milti; yahan kisi ke paas 7 nahi, isliye kisi ke paas 1/3 nahi | 1/3 matlab 7 pencil; kisi ke paas 7 nahi | 1/3 of 21 is 7, and nobody has 7 | 22 → 9 |
+| c4 | s2 c1 | 18 laddoo 3 barabar plate mein the, har plate mein 6; Ravi ne 1 plate li, yaani 1/3 | Ravi ne 3 barabar plate mein se 1 li | Ravi took 1 of 3 equal plates | 18 → 9 |
+| c4 | s2 c2 | charon group barabar hote toh 16 ka 1/4 hota 4; 7 usse zyada hai, toh Rani sahi hai | 16 ka 1/4 hai 4, aur 7 usse zyada | 1/4 of 16 is 4, and 7 is more | 18 → 9 |
+| c4 | s3 e1.ask | patti 4 mein kati ho toh har tukda, 2 mein kati patti ke tukde ka aadha hota hai | 4 mein kati patti ka tukda, 2 wale ka aadha | a piece of 4 is half a piece of 2 | 18 → 10 |
+| c4 | s3 e2.ask | 4 tukdon wale pizza ka har tukda 1/4 hai, aur woh 6 tukdon wale ke 1/6 se bada hai | 1/4 wala tukda 1/6 wale se bada hai | a 1/4 slice is bigger than a 1/6 slice | 19 → 8 |
+| c4 | s3 e3.ask | ek jitni patti 5 mein kati toh tukda 2 wale se chhota; zyada tukde, chhota tukda, toh {friend} galat hai | zyada tukde, chhota tukda: 1/5 wala, 1/2 wale se chhota | more pieces, smaller piece: 1/5 is smaller than 1/2 | 20 → 10 |
+| c4 | s3 remediation[0].then (bigger-denominator-bigger) | 7 tukdon wala cake kam barabar tukdon mein kata, toh uska har tukda 9 wale ke tukde se bada hai | kam tukde, bada tukda: 7 wale cake ka tukda bada | fewer pieces, bigger piece: the 7-piece cake's is bigger | 20 → 10 |
+| c4 | s3 c1 | Meena ka tukda 1/2, jo 1/3 se bada; Sonu ki roti 9 tukdon mein kati, toh uska 1/9 tukda 1/3 se chhota | Sonu ka tukda 1/9 hai, jo 1/3 se chhota | Sonu's piece is 1/9, smaller than 1/3 | 22 → 9 |
+| c4 | s3 c2 | 8 mein bati chocolate ka har tukda 1/8 hai, 2 mein bati ka 1/2; 1/8 chhota hai, toh Farhan ka tukda kam | Farhan ka tukda 1/8, Gita ka 1/2; 1/8 chhota | Farhan's piece is 1/8, Gita's 1/2; 1/8 is smaller | 22 → 9 |
+| c4 | s3 c3 | chocolate jitne zyada tukdon mein kate, tukda utna chhota; isliye pehle 1/10, phir 1/7, phir 1/4 | zyada tukde, chhota tukda: 1/10, phir 1/7, phir 1/4 | more pieces, smaller piece: 1/10, then 1/7, then 1/4 | 16 → 9 |
+| c5-t01 | s1 e1.ask | neeche wala number 3 matlab 0 se 1 ke 3 barabar gaps, aur pehla gap isi line par khatam hota hai | 0 se 1 ke 3 gaps; pehla isi line par | 3 gaps from 0 to 1; the first is here | 21 → 10 |
+| c5-t01 | s1 e2.ask | beech ke marks se gaps hamesha ek zyada, toh 7 marks ke 8 gaps | marks se gaps ek zyada: 7 marks, 8 gaps | one more gap than marks: 7 marks, 8 gaps | 14 → 9 |
+| c5-t01 | s1 e3.ask | 10 gaps wala har gap 8 gaps wale se chhota hai, isliye 1/10 pehle ruk jaata hai, 0 ke paas | 10 gaps wala gap chhota, toh 1/10 pehle rukta hai | a 1/10 gap is smaller, so 1/10 stops sooner | 20 → 10 |
+| c5-t01 | s1 remediation[0].then (count-marks) | 1/12 metre matlab ribbon ke 12 barabar gap, aur 12 gap ke beech 11 marks hote hain | 12 gap ke beech 11 marks hote hain | 12 gaps have 11 marks between them | 17 → 8 |
+| c5-t01 | s1 remediation[1].then (whole-number-bias) | 7 gaps wala har gap 5 gaps wale se chhota hai, isliye 1/7, 0 aur 1/5 ke beech rukta hai | 1/7 ka gap chhota, toh woh 1/5 se pehle | a 1/7 gap is smaller, so it stops before 1/5 | 20 → 9 |
+| c5-t01 | s1 remediation[2].then (not-numbers) | line ke neeche sadak 6 barabar gaps mein hai, aur pehla mark 0 se ek gap par, yaani 1/6 kilometre | 6 barabar gaps, pehla mark ek gap par: 1/6 kilometre | 6 equal gaps; the first mark is 1/6 kilometre | 20 → 10 |
+| c5-t01 | s1 c1 | 10 marks se line ke 11 barabar gaps bante hain, aur pehla mark ek gap par hai, yaani 1/11 | 10 marks se 11 gaps, pehla mark ek gap par | 10 marks make 11 gaps; the first is one gap | 19 → 10 |
+| c5-t01 | s1 c2 | 11 barabar gaps mein har gap 4 wale gap se chhota hai, isliye 1/11 pehle rukta hai; {friend} galat hai | 1/11 ka gap chhota, isliye 1/11 pehle rukta hai | a 1/11 gap is smaller, so 1/11 stops sooner | 20 → 9 |
+| c5-t01 | s1 c3 | 1/9 matlab 9 barabar gaps mein se 1 gap, toh 1/9 ki jagah 0 se ek gap par, pehle mark par hai | 1/9 matlab 0 se ek gap, yaani pehla mark | 1/9 is one gap from 0, the first mark | 22 → 9 |
+| c5-t01 | s2 e1.ask | har gap 1/8 ka, aur aise 5 gap mile toh 5/8 | 1/8 ke 5 gap, yaani 5/8 | 5 gaps of 1/8 make 5/8 | 11 → 6 |
+| c5-t01 | s2 e2.ask | 1/5 ke 5 gap milkar 5/5 banate hain, aur 5/5 = 1 | 1/5 ke 5 gap se 5/5 = 1 | 5 gaps of 1/5 make 1 | 11 → 7 |
+| c5-t01 | s2 e3.ask | beech 3/6 par hai, aur upar wala number 4 usse ek zyada hai, toh ek gap aage, beech ke baad | beech 3/6 par, aur 4/6 usse ek gap aage | the middle is 3/6, and 4/6 is one gap on | 20 → 9 |
+| c5-t01 | s2 remediation[0].then (count-marks) | 9 marks se 10 barabar gaps bante hain, toh har gap 1/10 | 9 marks, 10 gaps: har gap 1/10 | 9 marks, 10 gaps: each is 1/10 | 12 → 7 |
+| c5-t01 | s2 remediation[1].then (whole-number-bias) | 1/6 ke 3 gap sirf beech tak jaate hain, aur 2/3 beech se aage hai | 3 gap sirf beech tak; 2/3 beech se aage | 3 gaps reach the middle; 2/3 is past it | 15 → 9 |
+| c5-t01 | s2 remediation[2].then (not-numbers) | har patthar 1/8 kilometre aage hai, toh teesra patthar 3/8 kilometre par | har patthar 1/8 aage, toh teesra 3/8 kilometre par | each stone is 1/8 on; the third, 3/8 kilometre | 12 → 9 |
+| c5-t01 | s2 c1 | 5 marks se 6 barabar gaps bante hain, aur chautha mark 4 gaps par hai, yaani 4/6 | 5 marks se 6 gaps; chautha mark 4 gaps par | 5 marks, 6 gaps; the 4th mark is 4 gaps | 17 → 10 |
+| c5-t01 | s2 c2 | 1/10 ka gap 1/5 ke gap ka aadha hai, toh 3 chhote gap 3/10 tak hi jaate hain, 3/5 se pehle | 1/10 ka gap chhota, toh 3/10 pehle aata hai | a 1/10 gap is shorter, so 3/10 comes first | 21 → 9 |
+| c5-t01 | s2 c3 | 3/4 akela ek number hai, toh line par uski sirf ek jagah hai: 0 se 3 gap chalkar, wahi ek mark | 3/4 ek number hai, toh line par ek mark | 3/4 is one number, so one mark on the line | 21 → 9 |
+| c5-t01 | s3 e1.ask | 5 gap se 5/5 = 1 aa gaya, toh chhatha gap 1 ke baad, 6/5 par | 5 gap se 1 aa gaya, chhatha gap uske baad | 5 gaps reach 1; the 6th gap is past it | 15 → 10 |
+| c5-t01 | s3 e2.ask | 4/2 matlab 1/2 ke 4 gap, aur har 2 gap se ek poora banta hai, toh 4/2 = 2 | har 2 gap se ek poora, toh 4 gap = 2 | every 2 gaps make a whole; 4 gaps make 2 | 18 → 10 |
+| c5-t01 | s3 e3.ask | 7/3 ke 7 gaps mein teen-teen gaps ke 2 group bante hain, 6/3 = 2, aur 1 gap bachta hai | teen-teen ke 2 group, aur 1 gap bachta hai | 2 groups of three, and 1 gap left over | 19 → 9 |
+| c5-t01 | s3 remediation[0].then (all-less-than-one) | har gap 1/6 hai, aur runner ne 7 gap daude, toh 7/6 | 1/6 ke 7 gap, yaani 7/6 | 7 gaps of 1/6 make 7/6 | 12 → 6 |
+| c5-t01 | s3 remediation[1].then (whole-number-bias) | dono mein 9 gap, par 1/5 wala gap do guna lamba: 9/5, 1 ke aage hai, aur 9/10, 1 se pehle | 1/5 wala gap do guna lamba, toh 9/5 aage | a 1/5 gap is twice as long; 9/5 is further | 21 → 9 |
+| c5-t01 | s3 remediation[2].then (not-numbers) | station 1 = 5/5 hai, aur 3 gap aage 5 + 3 = 8, yaani 8/5 | 1 = 5/5, aur 3 gap aage 8/5 | 1 is 5/5, and 3 gaps on is 8/5 | 13 → 7 |
+| c5-t01 | s3 c1 | 3/3 = 1 aur 6/3 = 2, aur 5/3 dono ke beech hai | 5/3, 3/3 aur 6/3 ke beech hai | 5/3 sits between 3/3 and 6/3 | 11 → 7 |
+| c5-t01 | s3 c2 | 1/6 ka gap 1/12 ke gap se do guna hai, toh 11 lambe gap 11/6 tak, 11/12 se kaafi aage | 1/6 ka gap do guna, toh 11/6 aage | a 1/6 gap is twice as long; 11/6 is further | 20 → 8 |
+| c5-t01 | s3 c3 | har 5 gaps se ek poora, toh 2 tak 10 gaps hain; 2 gap aur chalo toh kul 12, yaani 12/5 | 2 tak 10 gaps, aur 2 gap aage: 12/5 | 10 gaps reach 2, and 2 more make 12/5 | 21 → 9 |
+| c5-t02 | s1 e1.ask | dono patti barabar lambi hain, par doosri 8 hisson mein kati hai aur pehli sirf 4 mein | doosri patti 8 hisson mein kati, pehli sirf 4 mein | the second is in 8 parts, the first in 4 | 17 → 10 |
+| c5-t02 | s1 e2.ask | 8 hisson wali patti ke do 1/8 hisse milkar 4 hisson wali patti ka ek hissa, yaani 1/4, banate hain | do 1/8 hisse milkar ek 1/4 hissa banate hain | two 1/8 parts together make one 1/4 part | 20 → 9 |
+| c5-t02 | s1 e3.ask | 1/3 ka gap 1/7 ke gap se bada hai, toh 1/3 zero se aage jaakar rukta hai | 1/3 ka gap bada, toh woh aage rukta hai | a 1/3 gap is bigger, so it stops further | 17 → 9 |
+| c5-t02 | s1 remediation[0].then (bigger-denominator) | 11 hisse 9 se zyada hain, toh 11 wali dor ka hissa 1/11, 1/9 se chhota hai | zyada hisse, chhota hissa: 1/11, 1/9 se chhota | more parts, smaller part: 1/11 is smaller than 1/9 | 17 → 8 |
+| c5-t02 | s1 c1 | 5 hisson wali roti ka 1/5, 10 hisson wali roti ke 1/10 se do guna bada hai | 1/5 wala hissa 1/10 se do guna bada hai | a 1/5 part is twice a 1/10 part | 17 → 9 |
+| c5-t02 | s1 c2 | poora ek ho toh 1/12 ke hisse sabse chhote, 1/6 beech mein, aur 1/3 sabse bade | 1/12 sabse chhota, 1/6 beech mein, 1/3 sabse bada | 1/12 smallest, 1/6 in the middle, 1/3 biggest | 16 → 9 |
+| c5-t02 | s1 c3 | mark 1/3 hai, aur 1/3 ka gap 1/5 ke gap se bada hai, isliye 1/5 pehle aata hai | mark 1/3 hai, aur 1/5 ka gap chhota | the mark is 1/3, and a 1/5 gap is smaller | 18 → 8 |
+| c5-t02 | s2 e1.ask | pehli patti 2/7 thi; hisse wahi 7 hain aur rang ab 4 mein hai, toh 4/7 | hisse wahi 7, rang ab 4 mein: 4/7 | still 7 parts, now 4 coloured: 4/7 | 16 → 8 |
+| c5-t02 | s2 e2.ask | neeche wala number dono ka 7 hai, par 4/7 zero se 4 gap door hai aur 2/7 sirf 2, isliye barabar nahi | 4/7 zero se 4 gap door, 2/7 sirf 2 | 4/7 is 4 gaps from zero, 2/7 only 2 | 22 → 9 |
+| c5-t02 | s2 e3.ask | dono ke gap 1/5 ke hain, aur Mona teen gap chali, Sonu sirf ek | Mona teen gap chali, Sonu sirf ek | Mona walked three gaps, Sonu only one | 14 → 7 |
+| c5-t02 | s2 e4.ask | 2/3 aadhe se aage nikal jaata hai, aur 3/10 aadhe, yaani 5/10, tak bhi nahi pahunchta | 2/3 aadhe se aage, 3/10 aadhe tak bhi nahi | 2/3 is past half, 3/10 not even half | 16 → 9 |
+| c5-t02 | s2 remediation[0].then (same-bottom-equal) | har hissa 1/7 hai, aur {friend} ke 3 hisse Gopi ke 6 hisson se kam hain | har hissa 1/7; 3 hisse, 6 se kam | every part is 1/7; 3 parts are fewer than 6 | 16 → 8 |
+| c5-t02 | s2 remediation[1].then (tops-only) | 1/2 theek aadhi patti hai, jabki 2/6 aadhi patti tak nahi pahunchta | 1/2 theek aadha, 2/6 aadhe tak nahi | 1/2 is half, 2/6 is less than half | 12 → 7 |
+| c5-t02 | s2 remediation[2].then (gap-thinking) | 9/10 mein bas 1/10 ki kami hai, 7/8 mein 1/8 ki, aur 1/10 ki kami chhoti hai | 9/10 mein bas 1/10 ki kami hai, jo chhoti hai | 9/10 is short by only 1/10, less than 1/8 | 17 → 10 |
+| c5-t02 | s2 c0 | dono ke hisse 1/6 ke hain, toh 4/6 mein se 1/6 hatao, 3 hisse bachte hain | 4/6 mein se 1/6 hatao, 3 hisse bachte | take 1/6 from 4/6 and 3 parts are left | 16 → 8 |
+| c5-t02 | s2 c1 | {friend} ka 5/10 bas aadha cake hai, jabki Ben ka 3/5 aadhe se aage hai | 5/10 bas aadha, Ben ka 3/5 aadhe se aage | 5/10 is just half, Ben's 3/5 is past half | 15 → 9 |
+| c5-t02 | s2 c2 | 4 hisson wali chocolate ka ek hissa 1/4 hai aur 6 wali ka 1/6, aur 1/4 bada hai | 1/4 wala hissa 1/6 wale se bada hai | a 1/4 part is bigger than a 1/6 part | 18 → 8 |
+| c5-t02 | s3 e1.ask | patti 8 hisson mein kati aur 3 mein rang hai, toh 3/8; 5 hisson wali patti 3/5 thi | 8 hisson mein se 3 mein rang, yaani 3/8 | 3 of the 8 parts are coloured, so 3/8 | 18 → 9 |
+| c5-t02 | s3 e2.ask | ginti dono mein 3 hai, par 1/5 ke gap 1/8 wale gap se bade hain, isliye 3/5 ka mark aage hai | 1/5 ke gap bade, toh 3/5 ka mark aage | 1/5 gaps are bigger, so the 3/5 mark is further | 21 → 9 |
+| c5-t02 | s3 e3.ask | dono mein 2 hisse hain, aur 1/5 ka hissa 1/9 wale se bada, isliye 2/5 zyada | 1/5 ka hissa bada, isliye 2/5 zyada | a 1/5 part is bigger, so 2/5 is more | 16 → 7 |
+| c5-t02 | s3 e4.ask | 2/4 ko 1/8 ke gap mein badlo toh 4/8 banta hai, aur 5/8 usse ek gap aage hai | 2/4 yaani 4/8, aur 5/8 ek gap aage | 2/4 is 4/8, and 5/8 is one gap past | 18 → 8 |
+| c5-t02 | s3 remediation[0].then (tops-only) | dono deewar par chaar-chaar hisse, par 1/10 ka hissa 1/6 se chhota, isliye 4/10 kam hai, yaani Kavya ki deewar par | 1/10 ka hissa chhota, isliye 4/10 kam hai | a 1/10 part is smaller, so 4/10 is less | 21 → 8 |
+| c5-t02 | s3 remediation[1].then (bigger-denominator) | dono ne teen-teen hisse banaye, par 1/4 ka hissa 1/12 se bada hai, isliye pehli team ne zyada banayi | 1/4 ka hissa 1/12 se bada hai | a 1/4 part is bigger than a 1/12 part | 19 → 7 |
+| c5-t02 | s3 remediation[2].then (gap-thinking) | 5/6 mein bas 1/6 ki kami hai, 4/5 mein 1/5 ki, aur 1/6 ki kami chhoti hai | 5/6 mein bas 1/6 ki kami hai, jo chhoti hai | 5/6 is short by only 1/6, less than 1/5 | 17 → 10 |
+| c5-t02 | s3 c1 | teeno mein 4 hisse, par 1/9 ka hissa sabse chhota aur 1/5 ka sabse bada; isliye 4/9, phir 4/7, phir 4/5 | 1/9 ka hissa sabse chhota, 1/5 ka sabse bada | a 1/9 part is smallest, a 1/5 part biggest | 21 → 9 |
+| c5-t02 | s3 c2 | dono ke paanch-paanch hisse, par Imran ka har hissa Anjali ke hisse ka do guna hai | Imran ka har hissa Anjali ke hisse ka do guna | each of Imran's parts is double one of Anjali's | 16 → 10 |
+| c5-t02 | s3 c3 | 8/9 mein bas 1/9 ki kami hai, 6/7 mein 1/7 ki, aur 1/9 ki kami chhoti hai | 8/9 mein bas 1/9 ki kami hai, jo chhoti hai | 8/9 is short by only 1/9, less than 1/7 | 17 → 10 |
+| c6 | s1 e1.ask | 4 + 5 + 6 = 15 cm, teeno bhujayein judi, koi nahi chhooti | teeno bhujayein judi: 4 + 5 + 6 = 15 cm | all three sides: 4 + 5 + 6 = 15 cm | 11 → 8 |
+| c6 | s1 e2.ask | chhah bhujayein, har ek 5 cm ki: 6 × 5 = 30 cm | 6 bhujayein, har ek 5 cm: 6 × 5 = 30 cm | six sides of 5 cm: 6 × 5 = 30 cm | 11 → 10 |
+| c6 | s1 e3.ask | dhaaga sirf kinaare par chalta hai: 6 + 4 + 6 + 4 = 20 cm | sirf kinaara: 6 + 4 + 6 + 4 = 20 cm | only the edge: 6 + 4 + 6 + 4 = 20 cm | 12 → 8 |
+| c6 | s1 remediation[0].then (missing-sides) | P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m | paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m | all five sides: 8 + 5 + 7 + 6 + 3 = 29 m | 14 → 9 |
+| c6 | s1 remediation[1].then (area-perimeter) | kinaare par 14 + 9 + 14 + 9 = 46 cm lagega, toh 140 − 46 = 94 cm bachega | kinaare par 46 cm, toh 140 − 46 = 94 cm | the edge takes 46 cm, so 140 − 46 = 94 cm | 15 → 9 |
+| c6 | s1 c1 | chaaron bhujayein judti hain: 9 + 6 + 7 + 4 = 26 m | chaaron bhujayein: 9 + 6 + 7 + 4 = 26 m | all four sides: 9 + 6 + 7 + 4 = 26 m | 10 → 8 |
+| c6 | s1 c2 | parimap kinaara hai: 10 + 4 + 10 + 4 = 28 cm; 10 × 4 andar ki jagah hai | parimap kinaara hai: 10 + 4 + 10 + 4 = 28 cm | perimeter is the edge: 10 + 4 + 10 + 4 = 28 cm | 15 → 9 |
+| c6 | s2 e1.ask | 10 aur 6 dono do-do baar aate hain: 10 + 6 + 10 + 6 = 32 m | dono do-do baar: 10 + 6 + 10 + 6 = 32 m | both come twice: 10 + 6 + 10 + 6 = 32 m | 14 → 9 |
+| c6 | s2 e2.ask | aadha chakkar 12 + 5 = 17 m, aur uska do guna: 2 × 17 = 34 m | aadha chakkar 17 m, do guna 34 m | half a round is 17 m, double is 34 m | 14 → 8 |
+| c6 | s2 e3.ask | chaar bhujayein, har ek 6 cm: 4 × 6 = 24 cm, lambai hai isliye cm | chaar bhujayein, har ek 6 cm: 4 × 6 = 24 cm | four sides of 6 cm: 4 × 6 = 24 cm | 14 → 10 |
+| c6 | s2 remediation[0].then (l-plus-b) | do lambai aur do chaudai: 19 + 8 + 19 + 8 = 54 m | do lambai aur do chaudai jodkar 54 m | two lengths and two breadths make 54 m | 11 → 8 |
+| c6 | s2 remediation[1].then (area-perimeter) | kinaara centimetre mein naapte hain aur bhujayein judti hain: 11 + 2 + 11 + 2 = 26 cm | bhujayein judti hain: 11 + 2 + 11 + 2 = 26 cm | the sides add up: 11 + 2 + 11 + 2 = 26 cm | 15 → 9 |
+| c6 | s2 c1 | aadha chakkar 40 + 25 = 65 m, poora chakkar 2 × 65 = 130 m | aadha chakkar 65 m, poora 2 × 65 = 130 m | half a round 65 m, full round 130 m | 12 → 9 |
+| c6 | s2 c2 | laal 2 × (16 + 9) = 50 cm, neela 2 × (20 + 6) = 52 cm; neele ki border lambi | laal 50 cm, neela 52 cm; neele ki border lambi | red is 50 cm, blue 52 cm: blue's is longer | 16 → 10 |
+| c6 | s2 c3 | chaar barabar bhujayein: 4 × 11 = 44 cm, aur jawab centimetre mein | chaar barabar bhujayein: 4 × 11 = 44 cm | four equal sides: 4 × 11 = 44 cm | 11 → 7 |
+| c6 | s3 e1.ask | 60 m chaar barabar bhujaon mein: 60 ÷ 4 = 15 m | chaar barabar bhujayein: 60 ÷ 4 = 15 m | four equal sides: 60 ÷ 4 = 15 m | 10 → 7 |
+| c6 | s3 e2.ask | aadha chakkar 30 m, usme se lambai 20 m gayi, bache 10 m | aadha chakkar 30 m, usme se 20 gaye: 10 m | half a round is 30, minus 20: 10 m | 13 → 10 |
+| c6 | s3 e3.ask | taar 40 − 2 = 38 m lagegi, aur ₹10 per metre se kharcha 38 × 10 = ₹380 | taar 38 m, toh 38 × 10 = ₹380 | 38 m of wire, so 38 × 10 = ₹380 | 15 → 7 |
+| c6 | s3 remediation[0].then (l-plus-b) | 90 ka aadha 45 m, usme se 28 m lambai gayi, bache 17 m | 90 ka aadha 45, usme se 28 gaye: 17 m | half of 90 is 45, minus 28: 17 m | 14 → 10 |
+| c6 | s3 remediation[1].then (area-perimeter) | kinaara 2 × (9 + 6) = 30 m, aur 30 × 20 = ₹600 | kinaara 30 m, aur 30 × 20 = ₹600 | the edge is 30 m, and 30 × 20 = ₹600 | 10 → 7 |
+| c6 | s3 c1 | 84 m baad chaar barabar bhujaon par baanti gayi: 84 ÷ 4 = 21 m | chaar barabar bhujayein: 84 ÷ 4 = 21 m | four equal sides: 84 ÷ 4 = 21 m | 13 → 7 |
+| c6 | s3 c2 | kinaara 2 × (30 + 20) = 100 m hai, aur 100 metre taar ka daam ₹1500 | kinaara 100 m, aur 100 × 15 = ₹1500 | the edge is 100 m, and 100 × 15 = ₹1500 | 14 → 7 |
+| c6 | s3 c3 | 70 ka aadha 35 cm, usme se 20 cm lambai gayi, bache 15 cm | 70 ka aadha 35, usme se 20 gaye: 15 cm | half of 70 is 35, minus 20: 15 cm | 14 → 10 |
+
+### `joints.workedInvite`, three forms per script (hi, with the en)
+
+| Script | Forms |
+|---|---|
+| c4 | Agla sawaal hum dono saath mein karein? (Shall the two of us do the next problem together?)<br>Kadam-kadam karke, agla sawaal milkar dekhein? (Step by step, shall we do the next one together?)<br>Ab ek sawaal tum aur main saath mein hal karein? (Now shall you and I solve one problem together?) |
+| c5-t01 | Agla sawaal line par saath mein karein? (Shall we do the next problem together on the line?)<br>Ek-ek kadam karke, agla sawaal milkar dekhein? (Step by step, shall we try the next one together?)<br>Ab ek sawaal hum dono milkar hal karein? (Now shall the two of us solve one problem together?) |
+| c5-t02 | Agla sawaal hum saath mein karein? (Shall we do the next problem together?)<br>Ek sawaal kadam-kadam, milkar hal karein? (Shall we solve one problem together, step by step?)<br>Ab ek sawaal tum aur main saath mein karein? (Now shall you and I do one problem together?) |
+| c6 | Agla sawaal hum dono saath mein karein? (Shall the two of us do the next problem together?)<br>Kadam-kadam karke, agla sawaal milkar hal karein? (Step by step, shall we solve the next one together?)<br>Ab ek hisaab tum aur main saath mein karein? (Now shall you and I work out one sum together?) |
+
 ## 2026-11-17 · `179be9184`..(this commit) patch 016 (director27 list): done in the four pilots; one item (D3) needs a data file outside this lane
 
 **New fields (exact names, for Brain 042):**

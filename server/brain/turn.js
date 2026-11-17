@@ -26,7 +26,7 @@ import { facetStmts, probeLogStmt, reteachStmt, gradeAuditStmt, weaveEnqueueStmt
 import { gradeLater, settledGrade, finalEvent, awaitGrade, forgetGrade, pregrade } from "../comprehension/later.js";
 import { classify, classifyFast, targetFor, helpOf } from "../director/classify.js";
 import { scanSafety, floorViolations, helpLeadOf, wantsToStop } from "../director/safety.js";
-import { step, evidenceFrom, upcomingItem, scriptWhyOf } from "../director/state.js";
+import { step, evidenceFrom, upcomingItem, scriptWhyOf, scriptWhyShortOf } from "../director/state.js";
 import { noteModuleEvents, moduleAnswerOf } from "../director/modules.js";
 import { findItem, promptFor, revealsAnswer, whyKey, norm as normAnswer } from "../director/items.js";
 import { withheldValues } from "../studio/qa/whiteboard.js";
@@ -1794,7 +1794,9 @@ export async function planTurn(base, cls, c) {
     prompt: String(activeItem.prompt_hi || activeItem.prompt_en || "").slice(0, 400),
     // v6.1 R7 (main, director9: right-answer verdicts with wrong reasons ×4 in c5-t02): a right answer's reason is the card's
     // AUTHORED why, else none; the card's listed wrong answer, so no sentence of hers states the misconception
-    ...((() => { const w = scriptWhyOf(kit, activeItem, next.ctx?.lang ?? "hinglish"); return w ? { why: w } : {}; })()),
+    // (dc-r8-director27 Brain 043 R1: the walk chose the card's short why — its why and what came next did not fit in one turn, the short
+    // form did — and the verdict says it in the why's place)
+    ...((() => { const L = next.ctx?.lang ?? "hinglish"; const sh = next.lastMove?.whyShort ? scriptWhyShortOf(kit, activeItem, L) : null; const w = sh ?? scriptWhyOf(kit, activeItem, L); return w ? { why: w, ...(sh ? { whyShort: true } : {}) } : {}; })()),
     ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: String((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
   else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.

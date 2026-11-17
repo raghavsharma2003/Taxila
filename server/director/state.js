@@ -110,6 +110,17 @@ export function scriptWhyOf(kit, item, lang = "hinglish") {
   const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
   return one && one.split(/\s+/).length <= WHY_MAX_WORDS ? one : null; // (2.3's validator refuses a longer one)
 }
+/** dc-r8-director27 Brain 043 R1: a card's `whyShort` (its why cut to the core, 10 words or fewer) in the lesson language, as scriptWhyOf
+ *  gives the why — or null (no short form, the worked example's own card, no why). */
+export const WHY_SHORT_MAX = 10;
+export function scriptWhyShortOf(kit, item, lang = "hinglish") {
+  if (!item?.skillId || item.scriptAsk?.beatId === "worked") return null;
+  const c = item.scriptAsk ?? item.scriptCheck ?? item.scriptThen;
+  if (!c?.why || !c.whyShort) return null;
+  const t = saidIn(c.whyShort, lang);
+  const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
+  return one && one.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length <= WHY_SHORT_MAX ? one : null;
+}
 /**
  * A card's key in the lesson language, from its AUTHORED forms only (director7: "jawab 0 tha" for the key "between 0 and 1"
  * took the first number out of a range key). A key that IS a number or fraction (with a unit) is said as it is; any other key
@@ -930,6 +941,26 @@ function segmentTurn(out, input, closeWords = 0) {
   if (p0.reduce((a, x) => a + x.n, 0) + qW + lead <= L2_CAP || b < 0) return out;
   if (b > 0 || lead > 0 || move.asideAck || move.returnReply) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
   return out;
+}
+/** dc-r8-director27 Brain 043 R2: a right verdict that stands alone because a worked problem follows (an asked example's first segment, or
+ *  the problem said with its steps) — or her reply to an aside said alone before it — ends on an invitation to do the problem together (joints.workedInvite; code's forms when the script has
+ *  none), not on a check-in. The held segment opens at the problem: no beforeWorked lead-in after an invitation (brain/seams.js). The
+ *  child's line to it is read as at a check-in today (heldTurn): a yes, or anything that is not a request, gets the segment. */
+function inviteBefore(br, out, input) {
+  const { move } = out;
+  const held = br.state?.splitHold?.move;
+  if (!held || !br.move?.splitClose || br.move.workedInvite || !(Number(held.problemLines) > 0 || held.scriptBeat?.beatId === "worked:problem")) return br;
+  // (only where the problem is what comes next: an aside's return due on this turn, a bridge or a held part said first is not — c4 steady
+  // 44, the close broken off for the return, "Agla sawaal …?" and then the return's question)
+  if (move.returned?.topic || held.returned?.topic || held.bridgeSaid || held.sayFirst?.length || held.heldSaid?.length) return br;
+  const right = input?.cls?.outcome === "correct" && !!move.closeBeat && !move.gave && !move.workedDone && !move.closed && !!br.move.closeBeat;
+  const reply = !!br.move.leadAlone;
+  if (!right && !reply) return br;
+  br.move = { ...br.move, workedInvite: true };
+  br.state.lastMove = br.move;
+  br.state.splitHold = { ...br.state.splitHold, move: { ...held, afterInvite: true } };
+  br.proposal = directorProposal(br.move, { ui: br.ui, guidance: br.state.guidance, purpose: br.state.purpose });
+  return br;
 }
 /** The walk's current beat as a scriptBeat ref (with its board), or null. */
 function currentBeatRef(s, kit) {
@@ -3139,7 +3170,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -4300,8 +4331,10 @@ function quickAnswer(prev, input, h) {
   const text = String(input.text ?? "");
   const answered = ["correct", "incorrect", "partial", "misconception"].includes(c.outcome);
   const col = columnName(input, prev);
-  if (!answered && col !== "give_up" && (c.request || c.help || c.asideReply || ["clarify", "hindi", "picture", "repeat", "aside", "try_first", "move_on"].includes(col))) return null;
-  const right = c.outcome === "correct";
+  // (Brain 043 R3: a second repeat — the quick question was said again once — gets `say`, then the card)
+  const again = col === "repeat" && !answered && !!prev.lastMove?.quickAgain;
+  if (!answered && col !== "give_up" && !again && (c.request || c.help || c.asideReply || ["clarify", "hindi", "picture", "repeat", "aside", "try_first", "move_on"].includes(col))) return null;
+  const right = !again && c.outcome === "correct";
   const lang = prev.ctx?.lang ?? "hinglish";
   const qb = quickOfBeat(input.kit, { kind: "explain", skillId: q.skillId, beatId: q.beatId });
   const say = right ? null : fillFriend(String(saidIn(qb?.quick?.say, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf);
@@ -4314,6 +4347,30 @@ function quickAnswer(prev, input, h) {
   s.lastMove = m; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId ?? undefined; s.quickItem = undefined;
   return { state: s, move: m, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(m, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
 }
+/** dc-r8-director27 Brain 043 R3 (c4 steady 38 to 40: "phir se bolo" to the quick question got the card, nothing said to the child): a repeat
+ *  at a quick question gets the quick prompt again, once, over the point's board — the card stays held and the child's next line is read
+ *  against the quick question's key as before; a second repeat gets `say` and then the card (quickAnswer). null otherwise. */
+function quickAgain(prev, input, h) {
+  const q = prev.lastMove?.quick;
+  if (!q?.prompt || !h?.teach || !scriptOn() || prev.lastMove?.quickAgain) return null;
+  const c = input.cls ?? {};
+  if (["correct", "incorrect", "partial", "misconception"].includes(c.outcome) || columnName(input, prev) !== "repeat") return null;
+  const qb = quickOfBeat(input.kit, { kind: "explain", skillId: q.skillId, beatId: q.beatId });
+  if (!qb) return null;
+  const s = structuredClone(prev);
+  s.turn += 1;
+  // (the quick question is on the table again: step() let it go before reading this line)
+  friendOf = s.ctx?.firstName ?? "";
+  const qi = friendly(scriptQuickItem(q.skillId, q.beatId, qb.quick));
+  s.quickItem = qi; s.activeItemId = qi.id;
+  const lm = prev.lastMove;
+  const m = { kind: "explain", shape: lm.shape, splitTeach: true, quickAgain: true, request: "repeat", quick: { ...q }, skillId: lm.skillId,
+    ...(lm.scriptBeat ? { scriptBeat: lm.scriptBeat } : {}), ...(lm.methods ? { methods: lm.methods } : {}), ...(lm.prefs ? { prefs: lm.prefs } : {}) };
+  s.lastMove = m; s.moveVoiced = false;
+  const ui = { status: "your_turn", ...(prev.lastUi?.later ? { later: prev.lastUi.later } : {}) };
+  s.lastUi = ui;
+  return { state: s, move: m, moduleCommands: [], ui, end: false, proposal: directorProposal(m, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
 /** v6.11 G2: can Studio draw a switch from one board to another inside one turn (its own heldBoard, on a line long enough to hold both)? */
 function switchFits(from, to) {
   try {
@@ -4323,7 +4380,49 @@ function switchFits(from, to) {
     return !r || (r.screens?.length ?? 1) >= 2;
   } catch { return true; }
 }
+// ───────────── dc-r8-director27 Brain 043 R1: a right answer goes on ─────────────
+// A right verdict's why and what the walk adds next that do not fit in one turn, where the verdict with the card's `whyShort` and the same
+// do: the short form is said in the why's place (the move carries whyShort; brain/turn.js puts it in lastGraded.why, which brain/say.js
+// says after the verdict as it says a why). Where both fit, or neither, the turn is as before. Never after a key, a miss or a give-up.
+/** The card a close closes (an explain card, a check, a remediation's follow-up card) — never the worked example's own card. */
+function closeCardOf(kit, cb) {
+  const sk = cb?.skillId ? skillScriptOf(kit, cb.skillId) : null;
+  const b = String(cb?.beatId ?? "");
+  if (!sk || !b || b === "worked" || b.startsWith("worked:") || b.startsWith("teachback")) return null;
+  return b.startsWith("then:") ? sk.remediation?.find((r) => r.targets === b.slice(5))?.then ?? null : sk.checks?.find((c) => c.id === b) ?? sk.explain?.find((e) => e.id === b)?.ask ?? null;
+}
+/** The short why a right verdict on this turn may say, or null (not a right verdict on a card with a why and a shorter whyShort). */
+function shortWhyFor(out, input) {
+  const { state: s, move } = out;
+  if (!scriptOn() || !l2On() || scriptFor(input.kit)?.script?.recordedRun || input?.event !== "turn" || input.branch) return null;
+  if (input.cls?.outcome !== "correct" || !move?.closeBeat || move.gave || move.workedDone || move.closed) return null;
+  const card = closeCardOf(input.kit, move.closeBeat);
+  if (!card?.why || !card.whyShort || typeof card.whyShort !== "object") return null;
+  const lang = s.ctx?.lang ?? "hinglish";
+  const clean = (x) => String(saidIn(x, lang) ?? "").replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "");
+  const short = clean(card.whyShort), long = clean(card.why);
+  const wc = (t) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+  return short && wordsIn(short) < wordsIn(long) && wc(short) <= WHY_SHORT_MAX ? short : null;
+}
+const cloneOut = (out) => { try { return structuredClone(out); } catch { return null; } };
 export function splitLong(out, input) {
+  const short = shortWhyFor(out, input);
+  const a0 = short ? cloneOut(out) : null, b0 = a0 ? cloneOut(out) : null;
+  if (!a0 || !b0) return inviteBefore(splitLongOnce(out, input), out, input);
+  const a = splitLongOnce(a0, input);
+  // (the why and what comes next fit: as now)
+  if (!a.state?.splitHold) return a;
+  const b = splitLongOnce(b0, input, { shortWhy: short });
+  // (the short form takes what comes next with the verdict: the whole turn, or the point ending on its quick question with the card next —
+  // never a turn that would now end on a check-in somewhere else: c4 steady 82 on the first try, a verdict, the worked problem and its
+  // step ending on "Yeh kadam samajh aaya?")
+  if (b.state?.splitHold && !(a.move?.splitClose && !b.move?.splitClose && b.move?.quick)) return inviteBefore(a, out, input);
+  b.move = { ...b.move, whyShort: true };
+  b.state.lastMove = b.move;
+  b.proposal = directorProposal(b.move, { ui: b.ui, guidance: b.state.guidance, purpose: b.state.purpose });
+  return b;
+}
+function splitLongOnce(out, input, opt = {}) {
   const { state: s, move, ui } = out;
   if (!splitOn() || !scriptOn() || input.branch || input.event !== "turn" || out.end || out.hold) return out;
   // (director9: a repair after a right answer carried closures and a bridge, 128 words; only the split's own halves are exempt)
@@ -4369,9 +4468,13 @@ export function splitLong(out, input) {
   // (dc-r8-director26 C1 item 2: the words she will say — a verdict frame and its "Dekho," with a joint's margin (6), each why once (the card's graded why and the
   // worked example's why are one sentence on a worked close: c4 steady 86 counted 44 words for a close of 31, and broke a turn of 56), and
   // "Toh poora jawab:" before a worked answer (3). It was 6 + every why + 4)
-  const whyTexts = [...new Set([move.workedDone?.why ? null : s.lastGraded?.why ?? closedCardWhy, move.closed?.why, move.workedDone?.why].filter(Boolean)
+  // (Brain 043 R4: the why counted is the card's this turn closes — s.lastGraded is the card graded on the turn before, and counted another
+  // card's why wherever two cards were answered one after the other; R1: the short why in its place when the walk tries it)
+  const whyTexts = [...new Set([move.workedDone?.why ? null : opt.shortWhy ?? closedCardWhy ?? s.lastGraded?.why, move.closed?.why, move.workedDone?.why].filter(Boolean)
     .map((x) => String(typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim()).filter(Boolean))];
-  const closeWords = hasClose && !recorded ? 6 + whyTexts.join(" ").split(/\s+/).filter(Boolean).length + (move.workedDone?.answer ? 3 : 0) : 0;
+  // (Brain 043 R4, c5-t02 steady 70: the frame and its joint to the why are at most four words — "Haan, bilkul theek, kyunki", "Haan, sahi
+  // hai. Dekho," — brain/say.js FRAMES.right; six counted a verdict of 17 words as 20, and broke a turn of 75)
+  const closeWords = hasClose && !recorded ? VERDICT_FRAME_WORDS + whyTexts.join(" ").split(/\s+/).filter(Boolean).length + (move.workedDone?.answer ? 3 : 0) : 0;
   // (dc-r8-director26 C1, main's ruling change 4: the problem and its first step share a turn after a verdict, the beforeWorked joint, a
   // bridge or a held part only when all of it fits in 75 words with her check-in; when it does not, the verdict, the joint and the problem
   // are said as they were before the ruling — one turn, its own break rules — and the first step goes back to the walk)
@@ -4382,7 +4485,7 @@ export function splitLong(out, input) {
   if (l2On() && !recorded) { const sg = segmentTurn(out, input, closeWords); if (sg) return sg; }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
     const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
-    if (p0.some((x) => ["close", "bridge", "held"].includes(x.k)) && p0.reduce((a, x) => a + x.n, 0) + 4 > L2_CAP) return splitLong(withoutFirstStep(out), input);
+    if (p0.some((x) => ["close", "bridge", "held"].includes(x.k)) && p0.reduce((a, x) => a + x.n, 0) + 4 > L2_CAP) return splitLongOnce(withoutFirstStep(out), input, opt);
   }
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
@@ -4430,6 +4533,9 @@ export function splitLong(out, input) {
 // past the decision's own 170-row limit; at 75 words 131 to 165 rows and 27 to 33 check-ins, and the turns the director25 judges called
 // monologue, 76 words and over, still break. dc-r8-l2-break-at-75.)
 export const L2_CAP = 75;
+/** Brain 043 R4: the most words a right verdict's frame and its joint to the why take (brain/say.js FRAMES.right, three words, and
+ *  ", kyunki" or ". Dekho,"). */
+export const VERDICT_FRAME_WORDS = 4;
 /** dc-r8-director27 P2: a remediation and its follow-up card share a turn only within 60 words (a point and its own card keep L2_CAP). */
 export const REM_CARD_CAP = 60;
 /** Her lines that answer what the child said on this turn (an aside said again, a taste question, a sad aside): a split turn says them on
@@ -4724,6 +4830,8 @@ function heldTurn(prev, input) {
     return { state: s, move: h.move, moduleCommands: h.moduleCommands ?? [], ui: h.ui, end: false, proposal: directorProposal(h.move, { ui: h.ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
   }
   if (c?.flags?.distress || c?.flags?.wantsToStop || ["stop", "end", "break", "goodbye", "language"].includes(c?.request?.type)) return null;
+  // (Brain 043 R3: "phir se bolo" at a quick question — the quick question again, once, over the point's board)
+  { const qa = quickAgain(prev, input, h); if (qa) return qa; }
   // (Brain 042 Q1: the child's line on the point's quick question)
   { const qa = quickAnswer(prev, input, h); if (qa) return qa; }
   // (any request of theirs — a picture, "samajh nahi aaya", a repeat — is answered by the walk with the card live, never by
@@ -4776,6 +4884,9 @@ function heldTurn(prev, input) {
     s.splitHold = undefined;
     const text = String(input.text ?? "");
     const m = { ...h.move };
+    // (Brain 043 R2: the problem opens without its lead-in only straight after her invitation — after a detour, a picture or help, the
+    // lead-in is said again: dry c6 steady 18 to 20)
+    if (m.afterInvite && !prev.lastMove?.workedInvite) delete m.afterInvite;
     // (v6.11 J2: the answer to her return question is the aside's own reply: no park, no second return; the held half comes now)
     s.returnAnswer = retAns ? { topic: prev.returnAsked.topic, said: text.replace(/\s+/g, " ").trim().slice(0, 80) } : undefined;
     s.returnAsked = undefined;

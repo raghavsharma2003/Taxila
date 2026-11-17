@@ -689,7 +689,7 @@ export function jointErrors(s) {
   // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
   // written before them still passes) (dc-r8-director26 J1: beforeWorked, the lead into a worked problem; optional likewise)
   // (dc-r8-director26 N1, B2: helpToCard, a point's card after its wordings are spent; checkinStop, the stop menu; optional likewise)
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -896,7 +896,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s));
   return e;
 }
 
@@ -1169,6 +1169,74 @@ export function d27Errors(s) {
         if (/\b(bye|alvida|phir milenge|phir milte|goodbye|see you)\b/i.test(t)) e.push(`${at}: the goodbye is its own line; this one comes before it`);
       }
     } });
+  }
+  return e;
+}
+
+/** dc-r8-director27, Brain 043 (two script fields; the walk uses them in the same order): a right answer goes on.
+ *  - `whyShort` { hi, en } beside a card's `why` (an explain card, a remediation's follow-up card, a check; not the closing question, not
+ *    the worked example's own card): the why cut to its core, 10 words or fewer, said in the why's place after a right verdict when the
+ *    why and what comes next do not fit in one turn. Every number in it is in the card's prompt, key or why; it asks nothing and does not
+ *    open on "kyunki" (the walk joins it to the verdict as it joins a why). A card with a why and no whyShort is a compile hole, never an
+ *    error here (the staged scripts have none and walk as before).
+ *  - `joints.workedInvite`: three forms, each one question of 10 words or fewer that invites the child to do the next problem together —
+ *    said where a right verdict stands alone before a worked example. No promise, no praise, no slot.
+ *  The rules apply to any script that has the fields. */
+export const D28_JOINTS = ["workedInvite"];
+export const WHY_SHORT_MAX = 10, INVITE_MAX = 10;
+export function d28Errors(s) {
+  const e = [];
+  const said = (x) => (x && typeof x === "object" ? String(x.hi ?? "") : String(x ?? ""));
+  const nums = (t) => new Set((String(t ?? "").replace(/₹/g, " ").match(/\d+(?:[./]\d+)?/g) ?? []));
+  const PRAISE = /\b(shabash|bahut\s+(?:achha|badhiya)|well\s+done|great|good\s+job|wah|kamaal|super|excellent|badhiya)\b/i;
+  const PROMISE = /\b(zaroor|pakka|promise|wada|vaada|surely|i will|i'll|main\s+\w+\s+(?:dungi|karungi|aaungi))\b/i;
+  for (const k of s.skills ?? []) {
+    const cards = [...(k.explain ?? []).filter((b) => b.ask).map((b) => [`${k.skillId}/${b.id}.ask`, b.ask]),
+      ...(k.remediation ?? []).map((r, i) => [`${k.skillId}/remediation[${i}].then`, r.then]).filter(([, c]) => c && typeof c === "object"),
+      ...(k.checks ?? []).map((c) => [`${k.skillId}/${c.id}`, c])];
+    for (const [where, c] of cards) {
+      if (!c.whyShort) continue;
+      const at = `${where}.whyShort`;
+      if (!c.why) { e.push(`${at}: a card with no why has no short why`); continue; }
+      if (typeof c.whyShort !== "object") { e.push(`${at}: { hi, en }`); continue; }
+      const own = new Set([...nums(said(c.prompt)), ...nums(c.prompt?.en), ...nums(c.key), ...nums(said(c.why)), ...nums(c.why?.en), ...(c.accept ?? []).flatMap((a) => [...nums(a)])]);
+      for (const l of ["hi", "en"]) {
+        const t = String(c.whyShort?.[l] ?? "").trim(), a = `${at}${l === "en" ? " (en)" : ""}`;
+        if (!t) { e.push(`${a}: empty`); continue; }
+        const n = d27Words(t);
+        if (n > WHY_SHORT_MAX) e.push(`${a}: ${n} words > ${WHY_SHORT_MAX}`);
+        if (n >= d27Words(c.why?.[l])) e.push(`${a}: no shorter than the why (${n} words)`);
+        for (const x of nums(t)) if (!own.has(x)) e.push(`${a}: states ${x}, which the card's prompt, key and why do not`);
+        if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
+        if (l === "hi" && /^\s*(?:kyunki|toh)\b/i.test(t)) e.push(`${a}: no leading "kyunki" or "toh" (the walk joins it to the verdict as it joins the why)`);
+        if (l === "en" && /^\s*(?:because|so)\b/i.test(t)) e.push(`${a}: no leading "because" or "so"`);
+        if (PRAISE.test(t)) e.push(`${a}: praises ("${t.match(PRAISE)[0]}"); the verdict before it is the praise`);
+      }
+    }
+    const y = k.workedExample?.yourStep;
+    if (y?.whyShort) e.push(`${k.skillId}/workedExample.yourStep.whyShort: the child's own step has no short why`);
+  }
+  if (s.teachback?.whyShort) e.push(`teachback.whyShort: the closing question has no short why`);
+  const forms = s.joints?.workedInvite;
+  if (forms != null) {
+    if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.workedInvite: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Brain 043 R2)`);
+    else {
+      for (const l of ["hi", "en"]) {
+        const seen = new Set();
+        forms.forEach((f, i) => {
+          const t = String(f?.[l] ?? "").trim(), at = `joints.workedInvite[${i}]${l === "en" ? " (en)" : ""}`;
+          if (!t) { e.push(`${at}: empty`); return; }
+          if (d27Words(t) > INVITE_MAX) e.push(`${at}: ${d27Words(t)} words > ${INVITE_MAX}`);
+          if (sentencesOf(t).length !== 1 || !/[?？]$/.test(t) || (t.match(/[?？]/g) ?? []).length !== 1) e.push(`${at}: one question, ending on it`);
+          if (/\{[^}]*\}/.test(t)) e.push(`${at}: no slot`);
+          if (/\d/.test(t)) e.push(`${at}: no number`);
+          if (PRAISE.test(t)) e.push(`${at}: no praise ("${t.match(PRAISE)[0]}")`);
+          if (PROMISE.test(t)) e.push(`${at}: no promise ("${t.match(PROMISE)[0]}")`);
+          if (!/\b(saath|milkar|together)\b/i.test(t)) e.push(`${at}: invites the child to do it together`);
+          const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x);
+        });
+      }
+    }
   }
   return e;
 }

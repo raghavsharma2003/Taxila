@@ -44,6 +44,7 @@ export function lessonCounts(rows, script) {
   // (main's R8 on the merged H4 + L2 tree: turns that end on a check-in, and check-ins back to back — a check-in turn directly after a
   // check-in turn — so the next judged run's length can be compared with this one)
   c.checkinTurns = 0; c.checkinsBackToBack = 0;
+  c.invitations = 0; c.whyShortSaid = 0;
   // (dc-r8-director26 C1: the longest run of check-in turns back to back, and the longest that no request of the child's drives — a
   // check-in turn answering her clarify, give-up, Hindi, repeat or picture request breaks the run. The measure: every steady lesson at
   // most 22 check-in turns and no undriven run over 2)
@@ -57,6 +58,10 @@ export function lessonCounts(rows, script) {
     c.teacherTurns++;
     const text = norm(r.text), n = text ? text.split(" ").length : 0;
     const ci = CHECKIN_END.test(String(r.text ?? "").trim());
+    // (Brain 043 R2: a turn that ends on an invitation to do the next problem together is no comprehension check-in, and is not hidden —
+    // its own line; R1: a right verdict said with the card's short why)
+    if (r.workedInvite) c.invitations++;
+    if (r.whyShort) c.whyShortSaid++;
     if (ci) { c.checkinTurns++; if (lastCheckin) c.checkinsBackToBack++; }
     lastCheckin = ci;
     const driven = REQUESTS.has(String(r.cell?.column ?? ""));

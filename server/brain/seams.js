@@ -19,6 +19,10 @@ export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemedi
 export const CODE_SEAM_FORMS = Object.freeze({
   beforeWorked: { hinglish: ["Ab ek sawaal saath mein karte hain.", "Chalo, ab ek sawaal milkar hal karte hain.", "Ab isi tarah ka ek sawaal saath mein dekhte hain."],
     english: ["Now let's do one together.", "Let's work one out together.", "Now let's solve one together."] },
+  // (dc-r8-director27 Brain 043 R2: code's invitation to do the next problem together, for a script without joints.workedInvite — the
+  // compile report lists the hole; a question, no promise, no praise)
+  workedInvite: { hinglish: ["Agla sawaal saath mein karein?", "Ek sawaal milkar hal karein?", "Ab ek sawaal saath mein karke dekhein?"],
+    english: ["Shall we do the next one together?", "Shall we work one out together?", "Shall we try one together now?"] },
   // (dc-r8-director27 P3: code's after-key return for a script without joints.afterKeyReturn — help.js FALLBACK_JOINTS; the compile report
   // lists the hole)
   // (a getter: help.js and this module import each other through compile.js — read at use, never at load)
@@ -63,6 +67,15 @@ export const SEAM_TABLE = [
   ["start", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
+/** Brain 043 R2: her last turn ended on her invitation to do the problem together, and this turn is the problem it invited (the walk marks
+ *  it afterInvite) — straight after it, never after a detour. */
+export function invitedJustNow(kit, state, lang = "hinglish") {
+  if (!state?.lastMove?.afterInvite) return false;
+  const own = jointOf(kit, "workedInvite", lang);
+  const forms = own?.length ? own : CODE_SEAM_FORMS.workedInvite[lang === "english" ? "english" : "hinglish"];
+  const lastT = low([...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1)?.text ?? "");
+  return !!lastT && forms.some((f) => lastT.endsWith(low(f)));
+}
 const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard"]);
 export const seamJoint = (left, right) => TABLE.get(`${left}>${right}`) ?? null;
 
@@ -252,6 +265,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
     if (j === "backTo" && info.afterKeyReturn) j = "afterKeyReturn";
+    // (Brain 043 R2: after her invitation to do the problem together the turn starts at the problem — no lead-in)
+    if (j === "beforeWorked" && prevKind === "start" && invitedJustNow(kit, state, lang)) j = null;
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)
     if (j && used.includes(j)) j = null;
     const own = j ? jointOf(kit, j, lang) : null;

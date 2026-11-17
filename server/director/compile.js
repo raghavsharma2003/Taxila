@@ -273,6 +273,12 @@ export function compileScript(script, plan = null) {
   // (dc-r8-director25 H4: after a key's check-in the ladder is the why's other wording — a card with no whyAlt is a hole too)
   for (const p of parts.filter((x) => CARDS.has(x.kind))) for (const x of ladderSpec(script, helpPartFrom(script, p), { keyed: true }).filter((y) => !y.present))
     holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/after_key`, field: x.field, path: x.path });
+  // (dc-r8-director27 Brain 043 R1: a card with a why and no whyShort — a right verdict whose why and what comes next do not fit in one turn
+  // stands alone on its check-in, as before)
+  for (const p of parts.filter((x) => ["card", "then_card", "check"].includes(x.kind))) {
+    const c = at(script, p.path);
+    if (c?.why && !c.whyShort) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/right`, field: "whyShort", path: `${p.path}.whyShort` });
+  }
   // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)
   if (script && !(Array.isArray(script.wrap?.ask) && script.wrap.ask.length)) holes.push({ part: "wrap", kind: "wrap", rule: "wrap/ask", field: "ask", path: "wrap.ask" });
   const order = orderOf(script ?? {}, parts, plan);

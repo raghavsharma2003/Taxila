@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, lessonKeyOf, JOIN_MAX_WORDS } from "./seams.js";
+import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS } from "./seams.js";
 import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
@@ -1345,7 +1345,8 @@ function seamsOf(out, { state, kit, ui = null }) {
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out;
-  const g = { ...out.guard, seams: r.seams, jointsUsed: r.jointsUsed, ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
+  // (Brain 043 R2: the invitation said at the turn's end rotates as a joint does — counted when its words are in what she said)
+  const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : [])], ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }
@@ -2749,7 +2750,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const k = [0, 1, 2].map((j) => (k0 + j) % 3).find((j) => ok(j) && !used(j)) ?? [0, 1, 2].map((j) => (k0 + j) % 3).find(ok);
         lead = dot(joints[k]);
       }
-      guard.rightWhy = why ? "authored" : "none";
+      // (Brain 043 R1: the card's short why, said in the why's place — the walk chose it, brain/turn.js lastGraded.whyShort)
+      guard.rightWhy = why ? (graded0?.whyShort ? "short" : "authored") : "none";
     }
     // v6.2 H4 (director10 c4: "Zaroor. Now try."): a bare English filler in a Hinglish lesson goes
     if (lang !== "english") { const n0 = ss.length; ss = ss.filter((x) => !/^(?:now\s+try|try\s+now|let'?s\s+(?:try|go|see)|try\s+it|go\s+on|okay|ok|good|great|nice|well\s+done)[.!]?$/i.test(norm(x))); if (ss.length < n0) guard.fillerDropped = n0 - ss.length; }
@@ -3000,6 +3002,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const quickR = state.lastMove?.quickReply ?? null;
     const quickS = quickR ? (quickR.right ? `${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?]+$/, "")}.` : quickR.say ? dot(norm(quickR.say)) : null) : null;
     if (quickR && body.length) { guard.quickBodyDropped = body.length; body = []; }
+    // (Brain 043 R3: "phir se bolo" at a quick question — the quick question again, nothing else)
+    if (state.lastMove?.quickAgain) { body = []; guard.quickAgain = true; }
     // (Brain 042 Q2: an asked step's question said again — "phir se bolo" — is the question alone, nothing of hers)
     if (state.lastMove?.stepAsk?.prompt && !workedLines?.length && !state.lastMove?.splitClose && !state.lastMove?.help) { body = []; }
     const closedA = state.lastMove?.closed?.answer ? norm(state.lastMove.closed.answer) : null;
@@ -3052,6 +3056,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
+      // (Brain 043 R2: a right verdict, or her reply to an aside, said alone before a worked problem ends on an invitation to do it
+      // together — the script's workedInvite forms, else code's — never on a check-in)
+      : state.lastMove?.splitClose && state.lastMove.workedInvite ? (guard.workedInvite = seamForm(jointOf(kit, "workedInvite", lang)?.length ? jointOf(kit, "workedInvite", lang) : CODE_SEAM_FORMS.workedInvite[lang === "english" ? "english" : "hinglish"], state, "workedInvite"))
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(beatAsk(kit)[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)

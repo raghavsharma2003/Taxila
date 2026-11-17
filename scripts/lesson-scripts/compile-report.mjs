@@ -44,6 +44,10 @@ const WHAT = {
   "card whyAlt": "the why's second wording, said after a key's check-in", "check whyAlt": "the why's second wording, said after a key's check-in",
   "then_card whyAlt": "the why's second wording, said after a key's check-in", "your_step whyAlt": "the why's second wording, said after a key's check-in",
   // (main's R7 on the merged tree: the wrap's closing question; missing, code's fallback form is said)
+  // (dc-r8-director27 Brain 043 R1: the why cut to its core, said in its place when the why and what comes next do not fit in one turn)
+  "card whyShort": "a card's why cut to its core (10 words or fewer), said after a right answer when the why and what comes next do not fit in one turn. Missing: the verdict and its why stand alone, as before",
+  "check whyShort": "a check's why cut to its core (10 words or fewer); missing: the verdict and its why stand alone, as before",
+  "then_card whyShort": "a follow-up card's why cut to its core (10 words or fewer); missing: the verdict and its why stand alone, as before",
   "wrap ask": "the wrap's closing question, three forms (how the lesson felt): the first turn of the wrap ends on it. Fallback: code's first form",
 };
 for (const k of KEYS) out.push(`| ${k} | ${total(k)} | ${WHAT[k] ?? ""} |`);

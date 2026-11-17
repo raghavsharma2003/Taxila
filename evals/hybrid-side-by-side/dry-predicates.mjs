@@ -793,7 +793,9 @@ export const ORDER_LAWS = {
     if (!Array.isArray(r.seams)) return ctx.o.noSeamsReported ? null : ((ctx.o.noSeamsReported = true), "a turn with no seams record");
     const t = norm(r.text);
     for (const s of r.seams) {
-      const want = seamJoint(s.left, s.right);
+      const want0 = seamJoint(s.left, s.right);
+      // (Brain 043 R2: after her invitation to do the problem together, the turn starts at the problem — no lead-in)
+      const want = want0 === "beforeWorked" && s.left === "start" && ctx.prevT?.workedInvite ? null : want0;
       const forms = want ? (ctx.script?.joints?.[want] ?? []).length : 0;
       if (want && forms && !s.joint && !r.seams.some((x) => x !== s && x.joint === want)) return `${s.left} → ${s.right} takes ${want}, none said`;
       // (dc-r8-director27 P3: after a key with nothing left, the back-to seam takes the after-key return form — one joint, both things)
