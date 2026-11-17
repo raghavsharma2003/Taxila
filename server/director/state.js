@@ -3214,6 +3214,12 @@ export function step(prev, input) {
   const pre = helpBefore(prev, input, said);
   let out = pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input);
   if (!pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
+  // (help's wording is said on its own turn: a walk move built from the last one never carries it into a turn help did not decide)
+  if (input?.event === "turn" && out?.state?.lastMove && !out.state.lastMove.help && prev?.lastMove?.help && out.state.lastMove.simpler && out.state.lastMove.simpler === prev.lastMove.simpler) {
+    const { simpler: _s, simplerBeat: _b, smaller: _m, helpNew: _n, ...lm } = out.state.lastMove;
+    out.state.lastMove = lm;
+    if (out.move) out.move = { ...lm };
+  }
   const helped = out?.state?.lastMove?.help ?? null;
   // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
   // ones that return a copy of the last state before step0's own clearing)
