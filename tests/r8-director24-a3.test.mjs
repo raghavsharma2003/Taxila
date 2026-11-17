@@ -13,7 +13,8 @@ test("an aside said again: her reply says their clause back in a phrase form, or
   const a = againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", st(3));
   assert.match(a, /sixer/);
   assert.doesNotMatch(a, /khela/);
-  assert.ok(/pichhli baar sixer maara/i.test(a) || !/maara/.test(a), a);
+  // (dc-r8-director27 P6.3: Learning 016's said-again form says their clause back too — "Haan, sixer maara, yeh tumne bataya tha.")
+  assert.ok(/pichhli baar sixer maara|sixer maara, yeh tumne bataya/i.test(a) || !/maara/.test(a), a);
   assert.match(againInHerWords("mujhe cricket pasand hai", "cricket", "hinglish", st(4)), /cricket/);
   // (no word of theirs: none — the plain ack stands)
   assert.equal(againInHerWords("haan", "cricket", "hinglish", st(1)), null);
