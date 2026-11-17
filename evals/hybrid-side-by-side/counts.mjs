@@ -18,6 +18,8 @@ import { PREDICATES, lessonFlags } from "./dry-predicates.mjs";
 import { helpTurnOf } from "./help-predicates.mjs";
 /** The context helpTurnOf reads at row i (the child's line before it), as dry-predicates' lessonFlags keeps it. */
 const helpCtx = (rows, i, script) => { const ch = [...rows.slice(0, i)].reverse().find((x) => x.who !== "teacher"); return { o: {}, script, prevChild: ch?.text ?? "", prevRead: String(ch?.read ?? "") }; };
+/** A turn that ends on a check-in (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
+const CHECKIN_END = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
 const QUIET = QUIET_PICTURE_LINES.map((x) => String(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim());
 
 const ROOT = new URL("../../", import.meta.url).pathname;
@@ -39,11 +41,18 @@ function jointHeads(script) {
 export function lessonCounts(rows, script) {
   const c = { teacherTurns: 0, childLines: 0, turnsOver60Words: 0, turnsOver45Words: 0, turnsOver75Words: 0, twoPartTurnsOver75Words: 0, longPointAndCard: 0, pictureRequests: 0, pictureViews: 0, quietPictureLines: 0, boardChanged: 0, boardKept: 0, boardSplit: 0,
     cardsSaid: 0, cardsSaidAgainWithin2: 0, joinsWritten: 0, joinsFellBack: 0, openersWritten: 0, openersFellBack: 0, moves: {}, columns: {}, reads: {}, joints: {} };
+  // (main's R8 on the merged H4 + L2 tree: turns that end on a check-in, and check-ins back to back — a check-in turn directly after a
+  // check-in turn — so the next judged run's length can be compared with this one)
+  c.checkinTurns = 0; c.checkinsBackToBack = 0;
+  let lastCheckin = false;
   const heads = jointHeads(script), lastCards = [];
   for (const r of rows) {
     if (r.who === "child") { c.childLines++; bump(c.reads, String(r.read ?? "none").split(/[\s·:]/)[0] || "none"); continue; }
     c.teacherTurns++;
     const text = norm(r.text), n = text ? text.split(" ").length : 0;
+    const ci = CHECKIN_END.test(String(r.text ?? "").trim());
+    if (ci) { c.checkinTurns++; if (lastCheckin) c.checkinsBackToBack++; }
+    lastCheckin = ci;
     // (her word total is left out: it moves with every wording edit and would bury the counts that mean something)
     if (n > 60) c.turnsOver60Words++;
     // (dc-r8-director25 L2: turns over 45 words in all, and those that hold two parts with a seam the rule breaks at — the target is 0;
