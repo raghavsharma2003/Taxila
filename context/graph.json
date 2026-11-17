@@ -29539,6 +29539,55 @@
    "at": "2026-11-17",
    "title": "Released 3061266 with scripts/release.mjs: web taxila-web--s3061266-81si (was taxila-web--s521801a-a8er), worker + canary/nightly jobs on taxila-worker:3061266 (was 521801a); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 3061266 --rollback.",
    "source": "inbox/release-3061266.json"
+  },
+  {
+   "id": "ms-r8-director27",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director27: 16 lessons (4 pilot topics x steady, stuck, offtopic, steering), Director only, reactive child, on integration 80b (30612666a, release 47), model joins off; 1,536 calls, about $1.11; four Opus judges reading by hand, rows checked by the main loop against the records. Hand counts (c4, c5-t01, c5-t02, c6): beats 163/163, 158/158, 153/154, 154/154; verdicts 69/69, 81/81, 80/80, 77/77; misgrades 0; false keys 0; words against the board 0, 0, 5, 2; unsaid boards 0, 2, 1, 0 by the judges and 4, 2, 1, 4 by the strict reading (a board-less remediation said under its follow-up card's board). Axes: listening 4, 3, 3.5, 4; worked example 4 x4; class level 4 x4; screen and speech 4, 3.5, 3, 3.5; register 3.5 x4 (first time all four); promises 4, 3.5, 3.5, 3.5. Help turns over another part's board 0 of about 180 (director26: 6); help with nothing new 0, 0, 1, 0; model-written sentences 0; stop turns authored 9 of 9. Steady lessons 143, 133, 131, 113 rows with 29, 26, 23, 20 check-in turns, tedious to all four judges; 0 turns over 75 words; abrupt seams 3, 4, 3, 4; requests met with nothing 0, 3, 0, 2; the problem said with its first told step in 0 of 24 worked examples. No topic passes the scale gate.",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "dc-r8-director27",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "After director27, three work orders in order. Brain 041: a turn's pages are built from the parts said in it (a part's own board at its own first word, a board-less part keeps what is up, a card's board never before the card's first word), with general predicates written from the gate's sentences; a remediation and its follow-up card are separate turns again (60), a point with its card keeps 75; a request always gets a help part for the part she is on (helpSpent when nothing is left, the bridge's own wording at a bridge, one authored after-key return form, keyed only when a key was said as help); the closing question's miss goes through the picker; back-to on every return. Learning 016: re-asks that do not do the card's work, hints true of the posing board, remediation boards, and two new fields. Brain 042: where a check-in stood before a waiting card the turn ends on explain[].quick (a small keyed question; right gets a short yes and the card, anything else gets the answer in one line and the card), and a worked example is done with the child through workedExample.steps[].ask; measure at most 14 check-in turns in a steady lesson, none before a waiting card or inside a worked example, none over 75 words. Reverse: a board drawn for a part not being said in director28, then every part carries its page from the script compile and the walk only concatenates; two judges finding quick questions a quiz, then they stay only in worked examples and right answers get a whyShort so the point and card share the turn; a misgrade on a quick question, then quick questions go two-option only; the measure unmet in the dry run, then no judged run until the sources are read.",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "fd-shared-turn-draws-wrong-part",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "director27: the changes that put two parts in one turn to save check-ins (a remediation with its follow-up card; the hook with the first point) drew the wrong part's board, because a turn's board is still derived from the walk's move and not from the parts said. pageParts held the right board on every such row and held.pages showed another. Third round running in which the fix for the judged fault held and the change made beside it produced the next count failure (director25: the second-request rule; director26: help on a remediation; director27: shared turns). The dry predicates passed because each was written from the previous run's shape.",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "fd-one-joint-left-requests-unanswered",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "director27: J1's rule that the go-on line is never said with another joint removed it where the back-to line follows, and nothing else in that turn spoke to the child, so a clarify or give-up after a key got a back-to line and a bare card (c5-t01 stuck 30, steering 18; listening 3.5 to 3). The authored helpSpent line was said 0 times in 16 lessons. A rule that removes a sentence has to say what answers the child in its place.",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "fd-bridge-address-is-previous-card",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "director27: after a bridge the walk's address is still the card before it, so a request at the bridge's check-in gets that card's second why, the row records keyed true though no key was said as help, and the next request gets the go-on line (c5-t01 steady 80, 82; c6 stuck 58, offtopic 54).",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "rj-r8-remediation-with-its-card",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "Rejected after director27: a remediation and its follow-up card in one turn of up to 75 words (one of the four changes in dc-r8-checkins-by-source). What broke: two judges found it too much in one breath (two new stories and a question in 68 to 74 words), and on that path the card's board was drawn from the remediation's first word (c5-t02: 5 contradictions in four lessons). A point with its own card in one turn to 75 was not found too much by any judge and stays.",
+   "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "rj-r8-comprehension-checkin-before-a-card",
+   "kind": "rejection",
+   "at": "2026-11-17",
+   "title": "Rejected after director27: ending a turn on a comprehension check-in (samajh aaya, saaf hua, yeh kadam saaf hai) where a card is waiting or inside a worked example. Tried from director25 to director27 with the count cut from 32 to 20 a lesson; all four director27 judges still found it tedious, the steady child answers haan 16 to 22 times, and the step check-in after a problem with no step told is untrue. The check-in stays after help, after a remediation and after a bridge.",
+   "source": "inbox/r8-main-44.json"
   }
  ],
  "edges": [
@@ -47251,6 +47300,76 @@
    "src": "ms-r8-integration-80-dry",
    "rel": "part_of",
    "dst": "dc-r8-director26"
+  },
+  {
+   "src": "dc-r8-director27",
+   "rel": "supersedes",
+   "dst": "dc-r8-director26"
+  },
+  {
+   "src": "dc-r8-director27",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "dc-r8-director27",
+   "rel": "supersedes",
+   "dst": "dc-r8-checkins-by-source"
+  },
+  {
+   "src": "dc-r8-director27",
+   "rel": "caused_by",
+   "dst": "fd-shared-turn-draws-wrong-part"
+  },
+  {
+   "src": "fd-shared-turn-draws-wrong-part",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "fd-one-joint-left-requests-unanswered",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "fd-bridge-address-is-previous-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "fd-one-joint-left-requests-unanswered",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "fd-bridge-address-is-previous-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "rj-r8-remediation-with-its-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "rj-r8-remediation-with-its-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "rj-r8-comprehension-checkin-before-a-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director27"
+  },
+  {
+   "src": "rj-r8-comprehension-checkin-before-a-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "op-r8-guided-worked-steps",
+   "rel": "part_of",
+   "dst": "dc-r8-director27"
   }
  ]
 }
