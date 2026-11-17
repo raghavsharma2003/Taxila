@@ -307,6 +307,12 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         const w = wrongAnswer(input, kit, rng);
         return say({ text: w.text, kind: "wrong", wrongFrom: w.from });
       }
+      // (dc-r8-director27 P7: the wrap's closing question — how today felt, what they liked, easy or hard — gets a short word about the
+      // lesson, never "haan")
+      const lastQ = String(input.teacher ?? "").split(/(?<=[.!?\u0964])\s+/).at(-1) ?? "";
+      if (/(?:paath|padhai|kaam)\b.*\b(?:kaisa\s+laga|achha\s+laga|aasaan\s+laga|mushkil)|lesson\s+(?:feel|you\s+liked)|work\s+feel/i.test(lastQ) && /\?\s*$/.test(lastQ)) {
+        return say({ text: pick(rng, /aasaan|easy/i.test(lastQ) ? ["thoda mushkil tha", "aasaan laga", "thoda mushkil, thoda aasaan"] : ["achha laga", "maza aaya", "thoda mushkil tha", "sawaal achhe the"]), kind: "ack" });
+      }
       // no keyed question on the table: an open question gets a short go, anything else a short acknowledgement
       if (/\?\s*$/.test(String(input.teacher ?? ""))) return say({ text: rng() < P.right.open ? pick(rng, ["haan", "mujhe lagta hai haan", "haan, samajh aaya"]) : pick(rng, LINES.dontknow), kind: "ack" });
       return say({ text: pick(rng, LINES.ack), kind: "ack" });

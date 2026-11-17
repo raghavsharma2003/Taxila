@@ -10,6 +10,9 @@ import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
 import { applySeams, seamStart, lessonKeyOf, JOIN_MAX_WORDS } from "./seams.js";
+import { inSaid as helpInSaid, normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
+/** A child who says she is tired (dc-r8-director27 P6.5). */
+const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
 import { altCall } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
@@ -378,6 +381,8 @@ const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favo
 /** dc-r8-director24 A3: her reply to an aside said again after its return — the aside kind's reply form with a noun of the child's line
  *  (a past verb — "maara", "khela", "dekha" — is no noun), rotated by how many asides she has answered; null when no word of theirs fits. */
 const VERBISH = /(?:aara|ela|ala|ila|kha|aya|iya|aaya|gaye|gayi)$/;
+/** Every sentence she has said in this lesson (the said set, and her recent turns). */
+const saidLinesOf = (state) => [...(state?.said ?? []), ...(state?.recent ?? []).filter((t) => t.who === "teacher").flatMap((t) => helpSentences(t.text ?? ""))];
 export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const words = j2WordsOf(said, topic).filter((w) => !VERBISH.test(w));
   if (!words.length) return null;
@@ -385,9 +390,11 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   // (dc-r8-director26 A4: what they said said back in a phrase form — its last clause, "sixer maara": "Achha, pichhli baar sixer maara." —
   // before the word form; the judges heard "Oh, chauka. Achha." as no reply)
   const clause = String(said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
-  const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words }) : null;
+  // (dc-r8-director27 P6.3: a reply she has said in this lesson is not said again — the next form)
+  const avoid = saidLinesOf(state);
+  const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid }) : null;
   if (p?.form === "phrase" && p.line) return p.line;
-  const r = asideReplyLine({ said, topic, lang, n, words });
+  const r = asideReplyLine({ said, topic, lang, n, words, avoid });
   return r?.form === "word" && r.line ? r.line : null;
 }
 export function j2WordsOf(said, topic = null) {
@@ -1469,7 +1476,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   if (state.lastMove?.checkin === "stop" && scriptFor(kit)?.script) {
     const own = jointsAt(kit, "checkinStop", lang, state);
     const r0 = own ? freshOf(own, state) : fallbackReply(state, null);
-    const lp = cleanParts([{ part: "aside", text: r0 }]);
+    // (dc-r8-director27 P7: the stop line is recorded as what it is, not an aside)
+    const lp = cleanParts([{ part: "aside", text: r0, kind: "stopLine" }]);
     return { reply: r0, guard: { authoredStop: own ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
   }
   // (dc-r8-director26 N1 item 2: a clarify or a give-up at the opening's check-in is answered through the authored path, with no model
@@ -1484,7 +1492,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const j1 = state.lastMove.hookHelp === "give_up" ? String(j0).replace(/^\s*(?:haan|bilkul|sahi|yes|sure|of course)\s*[,!.]\s*/i, L === "english" ? "That's okay, " : "Koi baat nahi, ") : String(j0);
     const j = j1.charAt(0).toUpperCase() + j1.slice(1);
     const card = ui?.ask?.text ? String(ui.ask.text).replace(/\s+/g, " ").trim() : null;
-    const lp = cleanParts([{ part: "aside", text: j }, ...(state.lastMove.sayFirst ?? []).map((x) => ({ part: "held", text: String(x) })), { part: "body", text: String(state.lastMove.point) },
+    // (dc-r8-director27 P7: the opener before the first point is recorded as its own kind, not an aside)
+    const lp = cleanParts([{ part: "aside", text: j, kind: "opener" }, ...(state.lastMove.sayFirst ?? []).map((x) => ({ part: "held", text: String(x) })), { part: "body", text: String(state.lastMove.point) },
       card ? { part: "card", text: card } : { part: "aside", text: rotateOf(BEAT_ASK[L], state) }]);
     return { reply: joinParts(lp), guard: { hookHelp: state.lastMove.hookHelp, hookJoint: j, hookJointBy: jointsAt(kit, "hindiSwitch", lang, state) ? "authored" : "code", lineParts: lp, parts: { list: lp } } };
   }
@@ -1512,17 +1521,24 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director25 L2 item 2: the wrap's second turn — the acknowledgement, the sentence to her, the goodbye — has it before the goodbye)
     const part2 = state.lastMove.wrapPart === 2;
     if (end === "wrap" && (lines.length >= 2 || part2)) mine = didSentence(state, kit, L);
-    const body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
+    let body = mine ? [...lines.slice(0, -1), mine, lines.at(-1)] : lines;
+    // (dc-r8-director27 P6.5: "thak gayi, bye" — the goodbye after one authored sentence about being tired: joints.tiredBye, else code's form)
+    let tiredL = null;
+    if (end === "wrap" && body.length && TIRED.test(String(childText ?? ""))) {
+      const tb = helpJointOf(scriptFor(kit)?.script, "tiredBye", { lang: L, lessonKey: lessonKeyOf(state) });
+      if (tb?.text) { tiredL = d(tb.text); body = [tiredL, ...body]; }
+    }
     // (main's 031: a right teach-back answer's verdict leads the wrap over the answer board — a body part, drawn from its first word)
     const onAnswer = state.lastMove.scriptBeat?.beatId === "teachback:answer";
     // (dc-r8-director25 L2 item 5: the seam record names each part as what it is — what was covered, the acknowledgement, the sentence to
     // her, the goodbye)
     const ackL = state.lastMove.wrapAck ? d(state.lastMove.wrapAck) : null;
-    const kindOfLine = (x, n) => (end === "wrapCovered" ? (ackL && n === 0 && x === ackL ? "wrapAck" : "covered") : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
+    // (dc-r8-director27 P7: the closing question's lead-in is no point, its hint is help — the walk names each line, renderedKinds)
+    const kindOfLine = (x, n) => (tiredL && n === 0 && x === tiredL ? "tiredBye" : end === "teachback" ? state.lastMove.renderedKinds?.[n] ?? null : end === "wrapCovered" ? (ackL && n === 0 && x === ackL ? "wrapAck" : "covered") : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
     // (turn one ends on something she can answer: the wrap's closing question — main's R7, `wrap.ask` — never a comprehension check-in)
     const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(BEAT_ASK[L], state)) : null;
     const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
-      ...body.map((x, n) => ({ part: "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
+      ...body.map((x, n) => ({ part: kindOfLine(x, n) === "help" ? "simpler" : "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
     return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (dc-r8-director25 L2 item 4, c6 offtopic 0: "Aaj cricket ground jaise rectangles ka perimeter dekhenge" — the greeting said the model's
@@ -2567,7 +2583,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // form when none fits or they asked her back, the sad set when it is sad; her draft's sentences about the aside go)
       const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
       const asked = [...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
-      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked });
+      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state) });
       j2Line = pick.line ?? null;
       guard.j2 = { said: rr0.said, line: j2Line, form: pick.form };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
@@ -2771,9 +2787,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director22 J2: backTo is said when, and only when, the card comes back after another unit came between — the board unit up
     // on her last turn is not the card's own; a hint, a clarify or a break on the same card is no return)
     const cardUnit = unitOf(state.lastMove?.cardBeat?.beatId ? state.lastMove.cardBeat : state.lastMove?.scriptBeat);
-    const cameBack = posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit;
+    // (dc-r8-director27 P5: the back-to joint on EVERY return to an earlier card, whatever led there — c4 offtopic 32, steering 18; c5-t01
+    // offtopic 12; c5-t02 steady 92, offtopic 10, steering 20; c6 offtopic 12. posedAt is undone by the split paths, so a card said on an
+    // earlier turn — its question in the said set — and not on her last one is a return)
+    const onLastTurn = !!(herPrev && card && herPrev.includes(norm(card).toLowerCase().slice(0, 40)));
+    const cardQ0 = card ? helpSentences(String(card)).at(-1) ?? "" : "";
+    const saidBeforeNow = !!cardQ0 && helpNorm(cardQ0).split(" ").length >= 4 && helpInSaid(cardQ0, state.said ?? []);
+    const cameBack = (posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit) || (saidBeforeNow && !onLastTurn);
     // (dc-r8-director23 S: what the seam pass needs to know of the card — server/brain/seams.js)
-    guard.seamInfo = { posedBefore, cameBack, onLastTurn: !!(herPrev && card && herPrev.includes(norm(card).toLowerCase().slice(0, 40))) };
+    guard.seamInfo = { posedBefore: posedBefore || saidBeforeNow, cameBack, onLastTurn };
     const saidBefore = (x) => { const t = norm(x).toLowerCase().replace(/[.!?\u0964]+$/, ""); return !!herPrev && t.length > 12 && herPrev.includes(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !saidBefore(x)); if (ss.length < n0) guard.repeatDropped = n0 - ss.length; }
     // v6 R3: a probe answered: one line that takes up how they thought (hers when she wrote one), before anything new
@@ -3213,6 +3235,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));
       // (dc-r8-director23 harness, c5-t01 steady 10, stuck 14, steering 10: a one-sentence card with Learning's reask is asked by its reask too)
+      // (dc-r8-director27 P6.6, c5-t02 steady 110: a return to a one-sentence card — "Toh zyada kisne khaya, Farhan ne ya Isha ne?", turns
+      // after its problem — says Learning's reask, the question with its givens named, never the bare question with no referent)
+      } else if (askMark && cardSs.length < 2 && norm(q) !== norm(card) && guard.seamInfo?.cameBack && !saidIn2 && !missedTwice && rqNow !== "visual" && !guard.altOnly) {
+        tail = q; guard.cardQuestionOnly = true;
+        body = body.filter((x) => !REPOSE_FRAME.test(x));
       } else if ((cardSs.length >= 2 || ((askMark || tailQ) && norm(q) !== norm(card))) && q && saidIn2 && !missedTwice && !askedForIt && rqNow !== "visual" && !guard.altOnly && (helped || (giveUpNow && body.length > 0) || (rqNow !== "language" && (!NON_ANSWER.has(rqNow) || rqNow === "unclear" || rqNow === "off_format")))) {
         tail = q; guard.cardQuestionOnly = true;
         body = body.filter((x) => !REPOSE_FRAME.test(x));

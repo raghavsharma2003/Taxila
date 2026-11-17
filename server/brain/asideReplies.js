@@ -104,7 +104,22 @@ function returnIndexOf(k, topic, asked, lang) {
 
 /** Her reply to the child's answer about their aside: { line, form: "phrase" | "word" | "plain" | "sad" }. The sad set when the aside or the
  *  answer is sad; a plain form when they ask her back (rule 4) or no word of theirs fits; else a form with their word. */
-export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "" } = {}) {
+// (dc-r8-director27 P6.3: a reply she has already said in this lesson — `avoid`, her said set's sentences — is not said again: c4 offtopic 20
+// and 32 said "Achha, pichhli baar sixer maara." word for word to the same aside. The next form of that shape is said, else a word or plain
+// form she has not said)
+const avoidKey = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+export function asideReplyLine(args = {}) {
+  const avoid = new Set((args.avoid ?? []).map((x) => avoidKey(typeof x === "string" ? x : x?.k)).filter(Boolean));
+  if (!avoid.size) return asideReplyLine0(args);
+  const fresh = (line) => !!line && !String(line).split(/(?<=[.!?\u0964])\s+/).map(avoidKey).filter(Boolean).every((k) => avoid.has(k));
+  const first = asideReplyLine0(args);
+  if (!first?.line || fresh(first.line) || first.form === "sad") return first;
+  for (let t = 1; t <= 12; t++) { const r = asideReplyLine0({ ...args, skip: t }); if (r?.line && fresh(r.line)) return r; }
+  return first;
+}
+/** The shape of a phrase form: what it asks of the slot (a "last time", a liking, a favourite), else its own text. */
+const formShape = (f) => (/pichhli\s+baar|last\s+time|aisa\s+hua/i.test(f) ? "past" : /favou?rite/i.test(f) ? "fav" : /achha\s+lagta|like/i.test(f) ? "like" : f);
+function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0 } = {}) {
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
   // (phraseReplies[i] answers returns[i]: the return her line asked, the child's own phrase back)
@@ -130,10 +145,14 @@ export function asideReplyLine({ said = "", topic = "", lang = "hinglish", n = 0
     for (const x of want ? pool : []) { const j = x.phraseReplies.findIndex((f) => want.test(formOf(f, lang).toLowerCase())); if (j >= 0) { kp = x; i = j; break; } }
   }
   const phrase = i >= 0 && kp?.phraseReplies?.[i] ? phraseOf(said) : null;
-  if (phrase) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };
+  // (skip: the forms after the first, in order — the phrase form's siblings of the same shape, then the word forms, then the plain ones)
+  const sibs = phrase ? kp.phraseReplies.map((f, j) => ({ f, j })).filter(({ f, j }) => j !== i && formShape(formOf(f, lang)) === formShape(formOf(kp.phraseReplies[i], lang))).map(({ f }) => f) : [];
+  if (phrase && skip === 0) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };
+  if (phrase && skip <= sibs.length) return { line: cap(fill(formOf(sibs[skip - 1], lang), { phrase })), form: "phrase" };
+  const s1 = phrase ? skip - sibs.length - 1 : skip;
   const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
-  if (word) { const f = pickN(k?.replies, n); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
-  const p = pickN(k?.plain, n);
+  if (word && s1 < (k?.replies?.length ?? 0)) { const f = pickN(k?.replies, n + Math.max(0, s1)); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
+  const p = pickN(k?.plain, n + Math.max(0, s1 - (word ? k?.replies?.length ?? 0 : 0)));
   return { line: p ? formOf(p, lang) : null, form: "plain" };
 }
 

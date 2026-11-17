@@ -529,102 +529,150 @@ export function unitBoardOf(kit, unit) {
   return null;
 }
 const HELD_CLOSE = new Set(["close", "closed"]);
+/** A close that says something about the card (a why, a value, a key, a right word) — else it is said over the page it opens (the
+ *  harness records the same test as a close with no beat). */
+const CLOSE_SAYS = /\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i;
+/** A unit's first part's own board (where a bridge leads): an explain beat's point board, a worked problem's, a check's. */
+function firstPartBoardOf(kit, unit) {
+  const m = /^(.*?):(.+)$/.exec(String(unit ?? ""));
+  const sk = m ? (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === m[1]) : null;
+  if (!sk) return null;
+  if (m[2] === "worked") return sk.workedExample?.board ?? null;
+  const b = (sk.explain ?? []).find((x) => x.id === m[2]);
+  if (b) return b.board ?? b.ask?.board ?? null;
+  return (sk.checks ?? []).find((x) => x.id === m[2])?.board ?? null;
+}
 /**
- * The held board of a script turn: { board, unit, switchTo?: { board, unit, atChar, atClause } }, or null (no script beat, no board).
- * The board up while her FIRST spoken part is said is that part's unit's: the just-answered card's (its answer-state board,
- * closeBeat) while its close is spoken, else the open card's unit. It changes at most once, where her words begin the next
- * unit's first spoken part. A turn that says nothing of a new unit (a Hindi, clarify, aside or "sawaal kya hai" turn; an aside
- * question that ends her turn, A4) keeps the board up (`up`, the held board the last turn ended on). Every spoken part is the
- * held unit's, or the switch's after it.
+ * dc-r8-director27 P1, one paging law. The held board of a script turn: { board, unit, switchTo?, switches?, unitAfter? }, or null.
+ * A turn's pages come from the parts said in it, in order: a part with a board of its own pages it at its own first word; a part with
+ * none — an aside, a bridge, a check-in, a close that says nothing, a remediation with no board in the script, help with no board —
+ * keeps what is up; a seam's joint is said over the board of the part it leads into. A card's board is the card's: it goes up at the
+ * card's first word, on every path. `board` is the page up from the turn's first word (the board up, unless the first part with a
+ * board starts the turn or nothing is up); each later change is a switch at the first word of the part that owns the new board
+ * (`switches`, in order; `switchTo` is the last of them). A turn with no part of its own keeps the board up.
+ * (Replaces dc-r7-held-board's units: a unit's board was picked from its card, so a point said before its card, a remediation said with
+ * its then-card, and a remediation with no board were all said over a card not yet asked — fd-shared-turn-draws-wrong-part.)
  */
 export function heldOf({ move, list = null, line = "", kit, up = null, graded = false }) {
-  // (v6.9 N1, main on director17: a stop or goodbye menu, a break, a wrap, a check-in has no unit part — the board up stays, nothing
-  // new is drawn, the walk's next unit is not shown)
   // (a move that clears the board — the teach-back's key turn with no answerBoard, a "board hatao" — holds none: nothing is up)
   if (move?.clear === "board") return null;
   // (dc-r8-director22 K: the why's second wording after a key is said over the board the key was said over)
   if (move?.keepBoard && up?.board) return { board: up.board, unit: up.unit };
   // (main's 026: the wrap that says a teach-back's key holds its answerBoard — a unit of its own, end:teachback:answer)
   const answerWrap = move?.kind === "wrap" && move?.scriptBeat?.beatId === "teachback:answer" && !!move.scriptBeat.board;
+  // (v6.9 N1: a stop or goodbye menu, a break, a wrap, a check-in has no part of its own — the board up stays, nothing new is drawn)
   const noUnitMove = (["break", "wrap", "safeguard"].includes(move?.kind) && !answerWrap) || !!move?.checkin || ["stop", "goodbye", "break", "end"].includes(move?.request);
-  if (noUnitMove) { const h = up?.board ? { board: up.board, unit: up.unit } : null; if (h && STRICT_PAGES()) heldPredicates(h, [], String(line ?? ""), { up, noUnit: true }); return h; }
-  // (dc-r8-director22 T1: the teach-back's key turn is its answer board's unit from the first word — never the question's card beat)
+  if (noUnitMove) { const h = up?.board ? { board: up.board, unit: up.unit } : null; if (h && STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up }); return h; }
+  // (dc-r8-director22 T1: the teach-back's key turn is its answer board's from the first word — never the question's card beat)
   const answerB = move?.scriptBeat?.beatId === "teachback:answer" && move.scriptBeat.board ? move.scriptBeat : null;
   const cardB = answerB ?? (move?.cardBeat?.beatId ? move.cardBeat : move?.scriptBeat);
-  // (v6.9 N2: the bridge is the next card's unit — bridge + the next skill's first card — never a unit of its own)
+  // (v6.9 N2: the bridge leads into the next skill's first unit)
   const unitOfBeat = (b) => { const u = unitOf(b); return u && /:bridge$/.test(u) ? firstUnitOf(kit, b.skillId) ?? u : u; };
   const curUnit = unitOfBeat(cardB) ?? unitOfBeat(move?.scriptBeat);
   if (!curUnit && !up) return null;
-  // (dc-r8-director23, c4 steady 98: a remediation said on its own turn is drawn on its own authored board before she describes it — the
-  // unit's board is its then-card's only once that card is posed)
-  const remOwn = move?.scriptBeat?.kind === "remediation" && move.scriptBeat.board && !(list ?? []).some((p) => p.part === "card" && String(p.text ?? "").trim()) ? move.scriptBeat.board : null;
+  const sb = move?.scriptBeat ?? null;
   // (dc-r8-director26, the record — c5-t01 steering 14: a picture asked for after a key is of the answered board, the close's answer board)
-  const answeredPic = move?.request === "visual" && move?.scriptBeat?.answerBoard && move.scriptBeat.board ? move.scriptBeat.board : null;
-  const cur = curUnit ? { unit: curUnit, board: remOwn ?? answeredPic ?? unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
+  const answeredPic = move?.request === "visual" && sb?.answerBoard && sb.board ? sb.board : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;
-  const close = closeB ? { unit: unitOf(closeB) ?? up?.unit ?? null, board: closeB.board } : null;
-  // (v6.9 N1: a close is a unit part only when it closes something — a verdict graded this turn, a give-up, a worked answer, an
-  // earlier card's close; a bare acknowledgement — "Achha." to "woh toh ho gaya na" — rides on the board up, as an aside does)
+  // (v6.9 N1: a close is said over its answered board only when it closes something — a verdict graded this turn, a give-up, a worked
+  // answer, an earlier card's close; a bare acknowledgement rides on the board up, as an aside does)
   const closing = !!(move?.gave || move?.workedDone || move?.closed) || !!graded;
   const text = String(line ?? "").replace(/\s+/g, " ").trim();
   const offs = list?.length ? offsetsOf(list).filter((p) => String(p.text ?? "").trim()) : [];
-  // (v6.9 N2, main on director17 c4 stuck 74, c5-t02 stuck 52, c6 offtopic 40: a give-up's close, then the bridge into the next skill:
-  // the move's beat is still the closed card's, so the bridge and what follows it are the next skill's first unit — the switch is
-  // where the bridge begins; a move already on a card of that skill keeps its own unit)
+  // (v6.9 N2: a give-up's close, then the bridge into the next skill: the move's beat is still the closed card's, so what follows the
+  // bridge is the next skill's first unit — on its first part's own board)
   const bridgeSk = move?.bridgeBeat?.skillId ?? null;
-  const bridgeU = bridgeSk && String(curUnit ?? "").split(":")[0] !== bridgeSk ? (() => { const u = firstUnitOf(kit, bridgeSk); return u ? { unit: u, board: unitBoardOf(kit, u) } : null; })() : null;
-  let pastBridge = false;
-  // (dc-r8-director25 H4 item 5: a help wording is said over the board of the part it belongs to — the remediation's, not its then-card's;
-  // a key over its answer board — drawn first, before the card's own board comes back for its question: its own page)
-  // (its own page only when its board is not the card's unit's — the board changes once a turn: a verdict before it rides on it, bare, as
-  // say.js says it when the boards differ; the card's board comes back for its question)
-  // (dc-r8-director26 B1: the board is the help decision's (move.help.board, as pickHelp returned it) and nowhere else's; null — a
-  // remediation with no board of its own — keeps the board that is up, never a card's)
+  const bridgeU = bridgeSk && String(curUnit ?? "").split(":")[0] !== bridgeSk ? (() => { const u = firstUnitOf(kit, bridgeSk); return u ? { unit: u, board: firstPartBoardOf(kit, u) } : null; })() : null;
+  // (dc-r8-director26 B1: help's words go over the board the help decision returned, and nowhere else's; null — a remediation with no
+  // board of its own — keeps the board that is up)
   const helpOwn = helpBoardOfMove(move);
-  const helpU0 = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board }
-    : helpOwn === null && up?.board && offs.some((p) => p.part === "simpler") ? { unit: `${unitOf(move.simplerBeat) ?? up.unit ?? curUnit}#help`, board: up.board } : null;
-  const helpU = helpU0 && !(cur?.board && JSON.stringify(cur.board) === JSON.stringify(helpU0.board)) ? helpU0 : null;
-  let sawHelp = false, pastHelp = false;
-  const unitOfPart = (p) => {
-    if (helpU && p.part === "simpler") { sawHelp = true; return helpU; }
-    // (dc-r8-director26: a check-in after the turn has gone on from help to another unit's part is that part's, not help's)
-    if (helpU && CHECKIN_ONLY.test(String(p.text ?? "").trim()) && pastHelp) return cur;
-    const u = unitOfPart0(p);
-    if (sawHelp && u && u !== helpU) pastHelp = true;
-    return u;
+  const on = (board, unit) => (board ? { board, unit: unit ?? curUnit } : null);
+  let pastBridge = false;
+  /** A part's own page, or null (it keeps what is up). */
+  const ownOf = (p) => {
+    const t = String(p.text ?? "").trim();
+    if (CHECKIN_ONLY.test(t)) return null;
+    switch (p.part) {
+      case "aside": return null;
+      // (dc-r8-director22 B: a bridge changes no board — the next unit's board goes up with its first part)
+      case "bridge": pastBridge = true; return null;
+      case "close": case "closed": {
+        // (a key — a give-up's, a worked answer, a closed card's, a yes-or-no key said as its why — always says the card's answer)
+        if (!closing || !(move?.gave || move?.workedDone || move?.closed || move?.keyFact || CLOSE_SAYS.test(t))) return null;
+        // (a key closed by help is said over the board the help decision returned)
+        if (helpOwn !== undefined && move?.help?.card === "close") return helpOwn ? on(helpOwn, `${unitOf(closeB) ?? curUnit}#help`) : null;
+        const b = p.part === "closed" ? move?.closedBeat ?? closeB : closeB;
+        return b?.board ? on(b.board, unitOf(b) ?? up?.unit) : null;
+      }
+      case "simpler": {
+        if (helpOwn !== undefined) return helpOwn ? on(helpOwn, `${unitOf(move?.simplerBeat ?? sb) ?? curUnit}#help`) : null;
+        const b = move?.simplerBeat?.board ? move.simplerBeat : sb;
+        return b?.board ? on(b.board, unitOfBeat(b)) : null;
+      }
+      case "card": case "alt": {
+        if (answeredPic) return on(answeredPic, curUnit);
+        const b = answerB ?? (move?.cardBeat?.board ? move.cardBeat : null);
+        return on(b?.board ?? unitBoardOf(kit, curUnit), curUnit);
+      }
+      case "held": { const b = move?.heldBeat?.board ? move.heldBeat : sb; return b?.board ? on(b.board, unitOfBeat(b)) : null; }
+      default: {
+        if (pastBridge && bridgeU?.board) return on(bridgeU.board, bridgeU.unit);
+        if (answerB) return on(answerB.board, curUnit);
+        if (answeredPic) return on(answeredPic, curUnit);
+        // (a remediation's own `board`, or none: then it keeps what is up — never its then-card's)
+        return sb?.board ? on(sb.board, unitOfBeat(sb)) : null;
+      }
+    }
   };
-  const unitOfPart0 = (p) => {
-    // (main's R3 on the merged H4 + L2 tree, dry c4 steady 94: the check-in that ends a help turn — "Ab tak samajh aaya?" — is no unit's
-    // part: it rides on the help's own page; a switch back to the card's posing board under it was planned and never drawn)
-    if (helpU && CHECKIN_ONLY.test(String(p.text ?? "").trim())) return helpU;
-    if (helpU && HELD_CLOSE.has(p.part) && closing) return helpU;
-    if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
-    if (p.part === "aside") return null;
-    // (dc-r8-director22 B: a bridge changes no board — it rides on the board up; the next unit's board goes up with its first part)
-    if (p.part === "bridge") { pastBridge = true; return null; }
-    return pastBridge && bridgeU?.board ? bridgeU : cur;
-  };
-  const spoken = offs.map((p) => ({ ...p, held: unitOfPart(p) })).filter((p) => p.held);
-  // her first spoken unit part's unit; with no line yet (a preselect), the close's when the move closes a card, else the move's; a
-  // line with no unit part in it (an aside, an acknowledgement, an aside question that ends her turn) keeps the board up
-  const noUnitLine = offs.length > 0 && !spoken.length;
-  let held = spoken[0]?.held ?? (!offs.length ? (closing && close ? close : cur ?? up) : up ?? cur);
-  // (v6.11 G2, main on director19 row 8: the board went up under "Achha." / "Theek hai." — words before her first unit part are no unit's:
-  // the board up stays under them, and the first unit part is where the new board goes up)
-  if (spoken.length && spoken[0].start > 0 && up?.board && JSON.stringify(up.board) !== JSON.stringify(spoken[0].held.board)) held = up;
-  if (!held?.board) held = up?.board ? up : cur?.board ? cur : null;
-  if (!held) return null;
-  const out = { board: held.board, unit: held.unit };
-  const next = spoken.find((p) => p.held.unit !== held.unit);
-  if (next && next.held.board && JSON.stringify(next.held.board) !== JSON.stringify(held.board) && next.start > 0 && next.start < text.length) {
-    out.switchTo = { board: next.held.board, unit: next.held.unit, atChar: next.start, atClause: clauseAt(text, next.start) };
-  } else if (next && next.held.unit) {
-    // (the same board under the next unit: no redraw — the unit is the switch's from its first part)
-    out.unitAfter = { unit: next.held.unit, atChar: next.start };
+  const owns = offs.map(ownOf);
+  // (a seam's joint is said over the board of the part it leads into)
+  for (let k = offs.length - 2; k >= 0; k--) if (offs[k].joint && offs[k].part !== "aside") owns[k] = owns[k + 1];
+  const spoken = offs.map((p, k) => ({ ...p, own: owns[k] }));
+  // with no line yet (a preselect — her parts are not known; the final line pages from them): the close's page when the move closes a
+  // card, else the turn's card's
+  if (!offs.length) {
+    const h = closing && closeB ? on(closeB.board, unitOf(closeB) ?? up?.unit) : on(answeredPic ?? unitBoardOf(kit, curUnit) ?? cardB?.board ?? sb?.board, curUnit) ?? (up?.board ? up : null);
+    return h ? { board: h.board, unit: h.unit } : null;
   }
-  if (STRICT_PAGES()) heldPredicates(out, spoken, text, { up, noUnit: noUnitLine });
+  const pages = [];
+  let cur = up?.board ? { board: up.board, unit: up.unit } : null, lastUnit = cur?.unit ?? null;
+  for (const p of spoken) {
+    if (!p.own) continue;
+    lastUnit = p.own.unit;
+    if (cur && sameBoard(cur.board, p.own.board)) continue;
+    pages.push({ board: p.own.board, unit: p.own.unit, atChar: p.start });
+    cur = p.own;
+  }
+  if (!pages.length) {
+    const h = up?.board ? { board: up.board, unit: up.unit } : null;
+    if (h && lastUnit && lastUnit !== h.unit) h.unitAfter = { unit: lastUnit, atChar: spoken.find((p) => p.own?.unit === lastUnit)?.start ?? 0 };
+    if (h && STRICT_PAGES()) pagePredicates(h, spoken, text, { up });
+    return h;
+  }
+  // (the first page is from the turn's first word when its part starts the turn, or when nothing is up: an empty screen takes the first
+  // board at once)
+  const first = pages[0].atChar === 0 || !up?.board ? pages.shift() : { board: up.board, unit: up.unit };
+  const out = { board: first.board, unit: first.unit };
+  const sws = pages.filter((p) => p.atChar > 0 && p.atChar < text.length).map((p) => ({ board: p.board, unit: p.unit, atChar: p.atChar, atClause: clauseAt(text, p.atChar) }));
+  if (sws.length) { out.switchTo = sws.at(-1); if (sws.length > 1) out.switches = sws; }
+  const endUnit = sws.at(-1)?.unit ?? first.unit;
+  if (lastUnit && lastUnit !== endUnit) out.unitAfter = { unit: lastUnit, atChar: spoken.find((p) => p.own?.unit === lastUnit)?.start ?? 0 };
+  if (STRICT_PAGES()) pagePredicates(out, spoken, text, { up });
   if (STRICT_HELP()) helpBoardPredicate(out, move, offs, { up, text });
   return out;
+}
+const sameBoard = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);
+/** A held turn's pages as [{ atChar, board, unit }]: the board from 0, then each switch. */
+export function heldPagesOf(h) {
+  if (!h?.board) return [];
+  const sws = h.switches ?? (h.switchTo ? [h.switchTo] : []);
+  return [{ atChar: 0, board: h.board, unit: h.unit }, ...sws.map((s) => ({ atChar: s.atChar, board: s.board, unit: s.unit }))];
+}
+/** The board up at character `at` of a held turn. */
+export function heldBoardAt(h, at) {
+  let b = null;
+  for (const p of heldPagesOf(h)) if (p.atChar <= at) b = p.board;
+  return b;
 }
 /** The board a help move's words go over, as the help decision gave it: a board, null (the board up stays), or undefined (no help, or a
  *  move recorded before the decision carried its board). */
@@ -641,7 +689,7 @@ export function helpBoardPredicate(h, move, offs, { up = null, text = "" } = {})
   if (!want) return;
   const p = offs.find((x) => x.part === "simpler") ?? (move.help.card === "close" ? offs.find((x) => x.part === "close") : null);
   if (!p) return;
-  const b = h.switchTo && p.start >= h.switchTo.atChar ? h.switchTo.board : h.board;
+  const b = heldBoardAt(h, p.start);
   if (JSON.stringify(b) !== JSON.stringify(want)) {
     throw new Error(`B1: help (${move.help.part}, ${move.help.request}) said over ${b?.template} ${JSON.stringify(b?.params ?? {}).slice(0, 60)}, not ${own ? "the board help returned" : "the board up"} | ${String(text).slice(p.start, p.start + 60)}`);
   }
@@ -653,24 +701,21 @@ export function firstUnitOf(kit, skillId) {
   const id = sk.explain?.[0]?.id ?? (sk.workedExample ? "worked" : sk.checks?.[0]?.id ?? null);
   return id ? `${skillId}:${id}` : null;
 }
-/** The four held-board predicates (main), thrown under tests: ≤1 change per turn; a change only at the start of a spoken part of a
- *  new unit; every spoken part's unit is the held one, or the switch's from its char on. (The fourth — no grading of an unsaid
- *  card — is turn.js planTurn's cardUnsaid, A4.) */
-export function heldPredicates(h, spoken, text, { up = null, noUnit = false } = {}) {
-  const sw = h.switchTo ?? null;
-  // (v6.9 N1: a turn with no unit part — an aside, an aside return, an acknowledgement, a break or stop menu, a goodbye — draws
-  // nothing new: the board up, no switch)
-  if (noUnit && (sw || h.unitAfter || (up?.board && JSON.stringify(up.board) !== JSON.stringify(h.board)))) throw new Error(`held: a turn with no unit part drew ${sw ? "a switch" : "a new board"} (${h.unit})`);
-  if (sw) {
-    const at = spoken.find((p) => p.start === sw.atChar);
-    if (!at) throw new Error(`held: a change not at a spoken part (atChar ${sw.atChar})`);
-    if (at.held.unit !== sw.unit || spoken.some((p) => p.start < sw.atChar && p.held.unit === sw.unit)) throw new Error(`held: a change not at a new unit's first spoken part (${sw.unit})`);
+/** dc-r8-director27 P1, the paging law as an invariant (thrown under tests and dry runs, never in serving): every change of board is at
+ *  the first word of a spoken part that owns the new board; a part with a board of its own has it up at its first word; a part with none
+ *  is said over the board that was up before it (on an empty screen, the first board may come up early). `spoken`: [{ part, start, own }]. */
+export function pagePredicates(h, spoken, text, { up = null } = {}) {
+  const pages = heldPagesOf(h);
+  for (const pg of pages.slice(1)) {
+    const at = spoken.find((p) => p.start === pg.atChar);
+    if (!at || !at.own || !sameBoard(at.own.board, pg.board)) throw new Error(`P1: a board change at ${pg.atChar} that is not a part's own board (${at ? at.part : "no part"})`);
   }
-  const after = sw?.atChar ?? h.unitAfter?.atChar ?? Infinity;
-  const unitAfter = sw?.unit ?? h.unitAfter?.unit ?? null;
+  const boardAt = (x) => { let b = up?.board ?? null; for (const p of pages) if (p.atChar <= x) b = p.board; return b; };
+  const boardBefore = (x) => { let b = up?.board ?? null; for (const p of pages) if (p.atChar < x) b = p.board; return b; };
   for (const p of spoken) {
-    const want = p.start >= after ? unitAfter : h.unit;
-    if (p.held.unit !== want) throw new Error(`held: a spoken ${p.part} part of ${p.held.unit} said over ${want} | ${text.slice(p.start, p.start + 60)}`);
+    const b = boardAt(p.start);
+    if (p.own) { if (!sameBoard(b, p.own.board)) throw new Error(`P1: a ${p.part} part said over ${b?.template}, not its own ${p.own.board?.template} | ${String(text).slice(p.start, p.start + 60)}`); }
+    else { const was = boardBefore(p.start); if (was && !sameBoard(b, was)) throw new Error(`P1: a ${p.part} part with no board of its own drew ${b?.template} | ${String(text).slice(p.start, p.start + 60)}`); }
   }
 }
 /** The held board a turn ends on (the switch's when it switched), as the next turn's `up`. */
@@ -678,4 +723,4 @@ export function heldPredicates(h, spoken, text, { up = null, noUnit = false } = 
 /** A part that is only a check-in (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
 const CHECKIN_ONLY = /^(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
 const unitUp = (u) => (u == null ? u : String(u).replace(/#help$/, ""));
-export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: unitUp(h.switchTo.unit) } : { board: h.board, unit: unitUp(h.unitAfter?.unit ?? h.unit) }) : null);
+export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: unitUp(h.unitAfter && h.unitAfter.atChar >= h.switchTo.atChar ? h.unitAfter.unit : h.switchTo.unit) } : { board: h.board, unit: unitUp(h.unitAfter?.unit ?? h.unit) }) : null);

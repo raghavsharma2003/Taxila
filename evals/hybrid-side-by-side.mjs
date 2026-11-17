@@ -423,7 +423,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
       // (dc-r7-held-board: a held turn is the held board, then at most one switch — as Studio's heldBoard draws it, kept when up)
       const H = askF.intent.held ?? null;
-      const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switchTo ? [{ atChar: H.switchTo.atChar, boardRef: H.switchTo.board, scriptBeat: askF.intent.scriptBeat }] : [])]
+      // (dc-r8-director27 P1: every change of board her parts make — `switches`, else the one `switchTo`)
+      const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switches ?? (H.switchTo ? [H.switchTo] : [])).map((w) => ({ atChar: w.atChar, boardRef: w.board, scriptBeat: askF.intent.scriptBeat }))]
         : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
       if (H) {
         let hb = null;
@@ -439,7 +440,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
         // are the TAKE's: what Studio's heldBoard drew, kept or switched, page by page)
         heldRec = { unit: hb?.held?.unit ?? null, changed: !!hb?.held?.changed, kept: !!hb?.kept, drawn: hb ? (hb.kept ? "kept" : "held") : "refused",
           pages: (hb?.screens ?? []).map((x) => ({ from: x.from ?? 0, template: x.template ?? null, ...(x.beside ? { beside: x.beside.template ?? null } : {}) })),
-          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) },
+          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}), ...(H.switches ? { switches: H.switches.map((w) => ({ unit: w.unit, atChar: w.atChar })) } : {}) },
           // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
           layout: hb?.layout ?? null,
           ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none" } } : {}) };
@@ -542,14 +543,15 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (main's C1 ruling: the problem said with its first step — the first problemLines lines are the problem's)
     const pL = Number(lmB.problemLines) || 0;
     const stepBeat = (t) => { if (!stepLines.length) return null; const n = stepLines.findIndex((x) => x && String(t ?? "").replace(/\s+/g, " ").includes(x.slice(0, 40))); if (n >= 0) stepAt = n; return stepAt < pL ? "worked:problem" : `worked:step${lmB.stepFrom + stepAt - pL}`; };
-    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !(lmB.gave || lmB.workedDone || lmB.closed || lmB.keyFact || tGuard?.ynFact) && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : (pp.part === "body" && stepBeat(pp.text)) || partBeat[pp.part] || null, boards: partBoards[pp.part] ?? [] }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
       .filter((pp) => pp.beat);
     const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
       ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };
     const lastChild = [...rows].reverse().find((r) => r.who === "child") ?? null;
     const dc = drawnContradictions(rowDrawn, [...rows].reverse().find((r) => r.who === "teacher" && r.check?.itemId) ?? null,
       lastChild && rows.at(-1) === lastChild ? lastChild : null,
-      { answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null });
+      // (dc-r8-director27 P7: the closing verdict is said over the closing question's own answer board — c4 steady 138, c5-t01 steady 128)
+      { answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : next.lastMove?.scriptBeat?.beatId === "teachback:answer" ? next.lastMove.scriptBeat.board ?? null : null });
     v6.drawn = dc;
     const contradictions = dc.closeOffBoard + dc.cardAsAlt + dc.modelWords + v6.unpaged + v6.droppedPages + v6.nothingNew;
     // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key

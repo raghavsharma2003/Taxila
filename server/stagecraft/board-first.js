@@ -1267,14 +1267,23 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
     // one at char 0, or a new held board — the board up holds until her first unit part; no board changes under a joint)
     const lead = !pic && !!keepRef && !!keepPage?.ops?.length && (!same || h.switchTo) ? jointLead(ask?.line?.parts?.list, text) : 0;
     const upKept = lead !== 0 && !same ? { script: keepPage, template: upRefOf(keepRef)?.template ?? keepPage.template ?? null, facts: keepPage.facts ?? null, kept: true } : null;
-    const want = h.switchTo?.board?.template && Number.isInteger(h.switchTo.atChar) && h.switchTo.atChar < text.length ? h.switchTo : null;
+    // (dc-r8-director27 P1: a turn's pages come from its parts — each part with a board of its own pages it at its first word, so a turn
+    // may change board more than once: `switches`, in order; `switchTo` alone is a turn with one change)
+    const wants = (Array.isArray(h.switches) && h.switches.length ? h.switches : h.switchTo ? [h.switchTo] : []).filter((w) => w?.board?.template && Number.isInteger(w.atChar) && w.atChar < text.length);
+    const want = wants[0] ?? null;
     /** the switches, in order (a joints-only line has none: nothing changes) */
     const sws = [];
     if (lead !== -1) {
       const at0 = Math.max(lead, 0);
       // (the held board, when it is not the board up, comes in at her first unit part — unless the intent's switch is due there too)
       if (upKept && at0 > 0 && at0 < text.length && !(want && want.atChar <= at0)) sws.push({ board: h.board, unit: h.unit, atChar: at0 });
-      if (want) { const at = Math.max(want.atChar, at0); if (at > 0 && at < text.length && !(sws.length && at <= sws[0].atChar)) sws.push({ ...want, atChar: at, ...(at !== want.atChar ? { atClause: undefined } : {}) }); }
+      for (const w of wants) {
+        const at = Math.max(w.atChar, at0);
+        if (!(at > 0 && at < text.length)) continue;
+        const sw1 = { ...w, atChar: at, ...(at !== w.atChar ? { atClause: undefined } : {}) };
+        // (two changes held back to one place by her leading joints: the later board is the one up there)
+        if (sws.length && at <= sws.at(-1).atChar) sws[sws.length - 1] = { ...sw1, atChar: sws.at(-1).atChar }; else sws.push(sw1);
+      }
     }
     const sw = sws.at(-1) ?? null;
     // the held board: the page up when it is this board (its split, too, when no new picture is asked), else drawn new. A turn

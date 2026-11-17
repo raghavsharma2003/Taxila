@@ -19,7 +19,7 @@ import { saidIn, joinable } from "./script.js";
 /** The requests help answers. A "hint" is a wrong answer's (or an unremedied mix-up's) help on a live card. */
 export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint"]);
 /** The joints help may say (Learning 014). Each script carries them as `joints.<kind>: [{hi, en}, …]`. */
-export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn", "helpToCard"]);
+export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn"]);
 /** Code's forms for a joint a script has not authored yet: shapes a teacher says, few and plain. The script's own forms win. */
 export const FALLBACK_JOINTS = Object.freeze({
   // (a Hindi request with nothing unsaid on the part: a true line — there are no easier words — then the question alone)
@@ -28,13 +28,24 @@ export const FALLBACK_JOINTS = Object.freeze({
   // (a give-up or a clarify after a key's check-in with the why's other wording said: they will meet it again; the lesson goes on)
   afterKeyGoOn: Object.freeze([{ hi: "Koi baat nahi, yeh hum aage phir dekhenge.", en: "That's okay, we'll see this again soon." },
     { hi: "Theek hai, is par hum baad mein phir aayenge.", en: "That's fine, we'll come back to this later." }]),
+  // (dc-r8-director27 P3, Learning 016 writes the script's own: after a key said as help, with nothing left to say on it, the lesson goes back
+  // to the earlier card — one sentence that says both things, this will come again and now back to the earlier question; the go-on line and
+  // the back-to line are never stacked)
+  afterKeyReturn: Object.freeze([{ hi: "Koi baat nahi, yeh phir aayega; ab pehle wale sawaal par wapas chalte hain.", en: "That's okay, this will come up again; now back to the earlier question." },
+    { hi: "Theek hai, is par hum phir aayenge; abhi pichhle sawaal ko dekhte hain.", en: "All right, we'll come back to this; for now let's look at the earlier question." }]),
+  // (dc-r8-director27 P6.5, Learning 016 writes the script's own: a child who says she is tired and says bye gets one sentence about that
+  // before the goodbye — no menu)
+  tiredBye: Object.freeze([{ hi: "Thakaan ho toh aaram karna bilkul theek hai.", en: "When you're tired, resting is the right thing to do." },
+    { hi: "Aaj bahut mehnat hui, ab thoda aaram karo.", en: "You worked hard today; rest a little now." }]),
   // (dc-r8-director26 N1: a give-up or a clarify on a point whose wordings are all said gets its card — with one word to the child first,
   // never the bare card: c5-t02 stuck 28, "mujhe nahi pata" answered with the card alone)
   helpToCard: Object.freeze([{ hi: "Koi baat nahi, ise ek sawaal se dekhte hain.", en: "That's okay, let's look at it through a question." },
     { hi: "Theek hai, chalo ek sawaal karke dekhte hain.", en: "All right, let's try it with a question." }]),
 });
 
-const CARD_KINDS = new Set(["card", "check", "then_card", "your_step"]);
+const CARD_KINDS = new Set(["card", "check", "then_card", "your_step", "teachback"]);
+/** dc-r8-director27 P4: the closing question's part id (it has no compile.js part: the teach-back is the script's ending, not a skill's). */
+export const TEACHBACK_PART = "end:teachback";
 export const normSentence = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 export const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).map((x) => x.trim()).filter(Boolean);
 
@@ -89,6 +100,12 @@ const partsById = (script) => new Map((compiledFor(script).parts ?? []).map((p) 
 /** The part a compile.js part id names, with what help needs of it: { id, kind, path, point?, worked?, board, card?, answerBoard?, key?, why? }. */
 export function helpPart(script, partId) {
   if (!script || !partId) return null;
+  if (partId === TEACHBACK_PART) {
+    const tb = script.teachback;
+    if (!tb?.prompt) return null;
+    const board = tb.board && typeof tb.board === "object" ? tb.board : null;
+    return { id: partId, kind: "teachback", path: "teachback", board, key: tb.key ?? null, why: tb.why ?? null, answerBoard: (tb.answerBoard && typeof tb.answerBoard === "object" ? tb.answerBoard : null) ?? board };
+  }
   return helpPartFrom(script, partsById(script).get(partId));
 }
 /** helpPart from a compile.js part object itself (compile.js reads ladders while it compiles, before any part map exists). */
@@ -157,27 +174,31 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
     }
     case "check": case "then_card": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
     // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
-    case "your_step": rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("problemAlt", `${part.worked}.problemAlt`, part.board), rung("simpler", `${part.worked}.simpler`, part.board)]; break;
+    case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
+      rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("problemAlt", `${part.worked}.problemAlt`, wb), rung("simpler", `${part.worked}.simpler`, wb)]; break; }
     // (a worked step: its own simpler, then the worked problem's ladder — problemAlt, simpler (Brain 039 A2: "a worked problem or step:
     // problemAlt, simpler"). Main's R3 on the merged tree, c5-t01 stuck 44: a step's ladder of one rung left a second "samajh nahi aaya"
     // on the step with nothing — the walk went on to the your-step card unhelped while the problem's two other wordings were unsaid)
     case "worked_step": rungs = [...(part.step ? [rung("simpler", `${part.path}.simpler`, part.board)] : []), rung("problemAlt", `${part.worked}.problemAlt`, part.board), rung("simpler", `${part.worked}.simpler`, part.board)]; break;
     case "remediation": rungs = [rung("sayAlt", `${part.path}.sayAlt`, part.board), rung("simpler", `${part.path}.simpler`, part.board)]; break;
     case "bridge": rungs = [rung("simpler", `${part.path}.simpler`, null)]; break;
+    // (dc-r8-director27 P4: the closing question — its hint first, the key when none is left)
+    case "teachback": rungs = [rung("simpler", "teachback.simpler", part.board)]; break;
     default: rungs = [];
   }
   return rungs;
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
 export function helpJointHoles(script) {
   const out = [];
   // (dc-r8-director26 J1: beforeWorked, the seam pass's lead into a worked problem — brain/seams.js CODE_SEAM_FORMS when the script has none)
-  for (const k of [...HELP_JOINTS, "beforeWorked"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  // (dc-r8-director27: afterKeyReturn is a help joint; tiredBye, the sentence to a tired child before the goodbye — Learning 016 writes both)
+  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
   const hs = script?.joints?.hindiSwitch;
   if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
   return out;
@@ -250,7 +271,8 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
     const rung = { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null };
     // (what happens to the card with a wording said: a posed card stays; a point's or a remediation's card is asked after a give-up or
     // a Hindi request, and waits after a clarify; a worked step and a key's check-in end on the check-in; a bridge goes on)
-    const card = keyed ? "wait" : isCard ? "keep" : part.kind === "bridge" ? "goOn" : part.kind === "worked_step" ? "wait"
+    // (dc-r8-director27 P3: a bridge's second wording is said and she waits on its check-in, as a point's — the lesson goes on from there)
+    const card = keyed ? "wait" : isCard ? "keep" : part.kind === "bridge" ? "wait" : part.kind === "worked_step" ? "wait"
       : part.card && request !== "clarify" ? "ask" : "wait";
     return { ...base, rung, board: rung.board, card, key: null, joint: null };
   }
@@ -277,5 +299,7 @@ export function pickHelp({ script, part: partId, keyed = false, request, said = 
   // (dc-r8-director26 J1 item 1: the go-on line, "aisa sawaal aage phir aayega", is said only after a key — c5-t02 stuck 58, 64; c5-t01
   // stuck 44; c6 stuck 44 said it at a worked step and then worked the same problem. A step goes on to the next step, which opens on its
   // own step frame ("Pehle …", "Ab doosra kadam."); no promise)
-  return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint: null };
+  // (dc-r8-director27 P3, c5-t01 stuck 44: a fourth clarify at a worked step got the next step and nothing to her — with nothing left for the
+  // part, the turn says the helpSpent line, then goes on; helpSpent was said 0 times in director27's 16 lessons)
+  return { ...base, rung: null, board: part.board ?? null, card: "goOn", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
 }

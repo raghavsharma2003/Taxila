@@ -163,6 +163,9 @@ function commit(st, r, ctx) {
   for (const id of said) st.cards.set(id, { other: false });
 }
 
+/** The part she is on when row i is said ({ beat, kind, skill, keyed } — keyed: a key was said on it as help, after a miss or a request), read
+ *  from the record, not from the walk's own cell (dc-r8-director27 P3: the walk's `keyed` was set by a right answer's verdict). */
+export function addressAt(L, r, i, ctx) { return stateAt(L, r, i, ctx).addr ?? null; }
 export const D27_PREDICATES = {
   /** P1.1: every board on screen during a turn belongs to a part said in that turn or earlier in the lesson — never a card not yet said
    *  (a card's board belongs to the card from its first word). The board carried up from the turn before is not this turn's. */

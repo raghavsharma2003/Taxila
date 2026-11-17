@@ -5,22 +5,27 @@
 // the joint kind or none, the form) and the seam predicates read that list and nothing else.
 import { jointOf, scriptFor } from "../director/script.js";
 import { joinParts } from "./lineParts.js";
+import { FALLBACK_JOINTS } from "../director/help.js";
 
 const norm = (x) => String(x ?? "").replace(/\s+/g, " ").trim();
 const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+/).filter(Boolean);
 
 /** The joints this pass owns (a park and a return carry the aside: they are parts of their own, not joints). */
-export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked"];
+export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn"];
 // (code's own neutral after-aside line, before the scripts had afterAside)
 // (dc-r8-director26 J1 item 3: code's lead into a worked problem, for a script without joints.beforeWorked — the compile report lists the
 // hole; a problem done together, never a question to the child)
 export const CODE_SEAM_FORMS = Object.freeze({
   beforeWorked: { hinglish: ["Ab ek sawaal saath mein karte hain.", "Chalo, ab ek sawaal milkar hal karte hain.", "Ab isi tarah ka ek sawaal saath mein dekhte hain."],
     english: ["Now let's do one together.", "Let's work one out together.", "Now let's solve one together."] },
+  // (dc-r8-director27 P3: code's after-key return for a script without joints.afterKeyReturn — help.js FALLBACK_JOINTS; the compile report
+  // lists the hole)
+  afterKeyReturn: { hinglish: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.hi), english: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.en) },
 });
 const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain.", "Achha, ab wapas apne sawaal par.", "Theek hai, ab aage badhte hain.", "Okay, back to where we were.", "Right, let's pick up where we left off."],
-  beforeWorked: [...CODE_SEAM_FORMS.beforeWorked.hinglish, ...CODE_SEAM_FORMS.beforeWorked.english] };
+  beforeWorked: [...CODE_SEAM_FORMS.beforeWorked.hinglish, ...CODE_SEAM_FORMS.beforeWorked.english],
+  afterKeyReturn: [...CODE_SEAM_FORMS.afterKeyReturn.hinglish, ...CODE_SEAM_FORMS.afterKeyReturn.english] };
 
 /** The seam table: [left kind, right kind] → the joint that seam takes. Anything not listed takes none — a point and its own card, a
  *  verdict and its own why, a bridge and the unit it opens, a park and the card it leads into. */
@@ -46,6 +51,9 @@ export const SEAM_TABLE = [
   // (dc-r8-director26 J1 item 3: a verdict, a key or a closed card into a worked problem — c6 steady 16, 58, 86, stuck 34, offtopic 42,
   // steering 40; c5-t02 steady 20, 72, 132, steering 42: "Bilkul sahi, kyunki … Phoolon ki ek kyari …" with nothing between)
   ["verdict", "workedProblem", "beforeWorked"], ["missVerdict", "workedProblem", "beforeWorked"], ["key", "workedProblem", "beforeWorked"], ["closed", "workedProblem", "beforeWorked"],
+  // (dc-r8-director27 P5, c4 steady 46: her reply to an aside straight into a worked problem — the lead-in on that path too; one joint, the
+  // problem's)
+  ["asideReply", "workedProblem", "beforeWorked"], ["aiReply", "workedProblem", "beforeWorked"], ["aiLine", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard"]);
@@ -157,6 +165,8 @@ function kindOf(p, i, list, info) {
   // help wording is recorded as help, never as a point)
   if (info.helpJoint?.form && i === 0 && low(t).startsWith(low(info.helpJoint.form).slice(0, 20))) return info.helpJoint.kind;
   if (p.part === "simpler") return "help";
+  // (dc-r8-director27 P7: code's frame before a card said again — "Phir se dekho:" — is no point)
+  if (["body", "held"].includes(p.part) && /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again|One more look)\s*:\s*$/i.test(t)) return "repose";
   switch (p.part) {
     case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
@@ -175,7 +185,8 @@ function kindOf(p, i, list, info) {
     case "card": return info.returnCard ? "returnCard" : "card";
     default:
       if (info.tryFirst && low(t).startsWith(low(info.tryFirst).slice(0, 20))) return "tryFirst";
-      if (info.authoredEnd && i === 0 && VERDICT_HEAD.test(t)) return MISS_WORD.test(sentencesOf(t)[0] ?? "") ? "missVerdict" : "verdict";
+      // (dc-r8-director27 P7, c4 steady 138: "Haan, sahi hai, kyunki … nahi jaate" is a right verdict — a right head wins over a "nahi" in its why)
+      if (info.authoredEnd && i === 0 && VERDICT_HEAD.test(t)) return !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "") ? "missVerdict" : "verdict";
       if (CHECKIN_Q.test(t) && sentencesOf(t).length === 1) return "checkin";
       return info.remediation ? "remediation" : "point";
   }
@@ -201,13 +212,18 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // (dc-r8-director26 J1 item 2: the go-on line is a joint of this table — where the back-to joint follows, it is not said. c5-t01 stuck 30,
   // steering 18; c5-t02 stuck 46; c6 stuck 30, steering 18: "…abhi aage badhte hain. Achha, ab pehle wale sawaal ko phir se dekhte hain." —
   // two joints that contradict each other)
-  if (info.helpJoint?.kind === "afterKeyGoOn" && info.helpJoint.form && info.returnCard && kinds.includes("returnCard")) {
+  // (dc-r8-director27 P3, fd-one-joint-left-requests-unanswered: dropping the go-on line left a back-to line and a bare card that said nothing
+  // to the child — c5-t01 stuck 30, steering 18. After a key with nothing left to say on it, the return to the earlier card is led by ONE
+  // authored form that says both: this will come again, and now back to the earlier question (afterKeyReturn). P5, c6 steering 32: before
+  // the aside's return the go-on line is not said — the return is led by its own form)
+  const intoReturn = kinds.includes("returnCard") && info.returnCard ? "returnCard" : kinds.includes("return") ? "return" : null;
+  if (info.helpJoint?.kind === "afterKeyGoOn" && info.helpJoint.form && intoReturn) {
     const goK = sentencesOf(info.helpJoint.form).map(low);
     const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => goK.includes(low(x))));
-    if (at >= 0 && at < kinds.indexOf("returnCard")) {
+    if (at >= 0 && at < kinds.indexOf(intoReturn)) {
       const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
       if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
-      info = { ...info, helpJoint: null, goOnDropped: info.helpJoint.form };
+      info = { ...info, helpJoint: null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
       kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
     }
   }
@@ -224,6 +240,7 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (no joint between a point and its own card, a verdict and its own why: those are not in the table)
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
+    if (j === "backTo" && info.afterKeyReturn) j = "afterKeyReturn";
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)
     if (j && used.includes(j)) j = null;
     const own = j ? jointOf(kit, j, lang) : null;
@@ -267,7 +284,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     if (at) Object.assign(at, { joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
     else seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
   }
-  return { list: out.map(({ joint, ...p }) => p), seams, jointsUsed: used, said };
+  // (dc-r8-director27 P1: a joint keeps its mark — it is said over the board of the part it leads into, and the page builder reads that)
+  return { list: out.map(({ joint, ...p }) => (joint ? { ...p, joint } : p)), seams, jointsUsed: used, said };
 }
 
 /** The reply and its parts after the seam pass. */

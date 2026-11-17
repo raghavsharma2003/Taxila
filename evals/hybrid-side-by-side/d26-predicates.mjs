@@ -72,10 +72,14 @@ D26_PREDICATES.goOnStacked = function goOnStacked(L, r) {
 };
 /** J1 item 1 (c5-t02 stuck 58, 64; c5-t01 stuck 44; c6 stuck 44): the go-on line ("such a question will come again; now we go on") is
  *  said only after a key — at a worked step whose ladder is empty she goes to the next step, with no promise. */
-D26_PREDICATES.goOnAfterKey = function goOnAfterKey(L, r) {
+// (dc-r8-director27 P5: "no key given" is read from the record — a key said as help on the part she is on — never from the walk's own
+// cell.keyed, which a right answer's verdict set: c5-t01 steady 82, the go-on line at a bridge's check-in)
+D26_PREDICATES.goOnAfterKey = function goOnAfterKey(L, r, i, ctx) {
   const sm = r.seams ?? [];
   if (!sm.some((x) => x.joint === "afterKeyGoOn")) return null;
-  return r.cell?.keyed ? null : `the go-on line with no key given (${r.cell?.part ?? "no part"}, ${r.cell?.column ?? "no column"})`;
+  const a = ctx ? addressAt(L, r, i, ctx) : null;
+  const keyed = a ? a.keyed : r.cell?.keyed;
+  return keyed ? null : `the go-on line with no key given (${a ? a.beat : r.cell?.part ?? "no part"}, ${r.cell?.column ?? "no column"})`;
 };
 /** J1 item 3 (c6 steady 16, 58, 86, stuck 34, offtopic 42, steering 40; c5-t02 steady 20, 72, 132, steering 42): a verdict runs into a
  *  worked problem with nothing between — the seam takes beforeWorked (the script's forms, else code's). */
@@ -87,6 +91,7 @@ D26_PREDICATES.beforeWorked = function beforeWorked(L, r) {
   return (r.seams ?? []).some((x) => x.joint === "beforeWorked") ? null : "a verdict into the worked problem with no lead-in (beforeWorked)";
 };
 
+import { addressAt } from "./d27-predicates.mjs";
 // ───────────── R1: a skill's remediation is its own ─────────────
 import { helpPart, at } from "../../server/director/help.js";
 /** R1 (c5-t02 steady 118, 120, 126, 146): a mix-up shown on a card of a skill whose own remediation for it has not been said in this lesson
