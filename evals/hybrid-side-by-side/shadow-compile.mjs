@@ -134,7 +134,15 @@ export function shadowLesson({ rows, script }, { compiled = null } = {}) {
       if (/prompt$|\.ask$/.test(p) && T.includes(` ${key(sentencesOf(t).at(-1) ?? "")} `)) return true;
       return T.includes(` ${key(t)} `);
     };
-    const missing = (cell.say ?? []).map((p) => ({ p, t: textAt(script, p) })).filter((x) => x.t && x.t !== "joint" && !saidAs(x.p, x.t));
+    // (dc-r8-director25 H4: a help cell is pickHelp over the part's ladder — the wording to expect is its first rung none of whose sentences
+    // she said in the rows before; with none left, the key or a joint, which this shadow does not check)
+    let say = cell.say ?? [];
+    if (cell.via === "pickHelp") {
+      const said = new Set(R.slice(0, i).filter((x) => x.who === "teacher").flatMap((x) => sentencesOf(x.text)).map(key));
+      const first = (cell.ladder ?? []).find((p) => { const t = textAt(script, p); return t && !sentencesOf(t).some((x) => said.has(key(x))); });
+      say = first ? [first] : [];
+    }
+    const missing = say.map((p) => ({ p, t: textAt(script, p) })).filter((x) => x.t && x.t !== "joint" && !saidAs(x.p, x.t));
     const why = missing.length ? `not said: ${missing.map((x) => x.p).join(", ")}` : null;
     out.push({ row: i, part: part.id, column, help, address: cell.address, then: cell.then, verdict: why ? "differ" : "equal", ...(why ? { why } : {}), text: norm(r.text).slice(0, 120) });
   }

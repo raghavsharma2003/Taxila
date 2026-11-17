@@ -85,8 +85,11 @@ const partsById = (script) => new Map((compiledFor(script).parts ?? []).map((p) 
 /** The part a compile.js part id names, with what help needs of it: { id, kind, path, point?, worked?, board, card?, answerBoard?, key?, why? }. */
 export function helpPart(script, partId) {
   if (!script || !partId) return null;
-  const p = partsById(script).get(partId);
-  if (!p) return null;
+  return helpPartFrom(script, partsById(script).get(partId));
+}
+/** helpPart from a compile.js part object itself (compile.js reads ladders while it compiles, before any part map exists). */
+export function helpPartFrom(script, p) {
+  if (!script || !p) return null;
   const skillPath = p.path.replace(/^(skills\[\d+\]).*$/, "$1");
   const out = { id: p.id, kind: p.kind, path: p.path };
   if (p.kind === "point" || p.kind === "checkin") {
@@ -133,8 +136,14 @@ export function helpPart(script, partId) {
 
 /** A part's ladder: [{ field, path, value, board }], rungs whose field the script has, in order. `keyed`: the card just keyed. */
 export function ladderOf(script, part, { keyed = false } = {}) {
+  return ladderSpec(script, part, { keyed }).filter((r) => r.present);
+}
+/** Every rung a part's ladder names, whether the script has it or not: [{ field, path, value, board, present }]. A rung the script lacks is
+ *  a missing rung — compile.js lists it as a hole for Learning; help skips it. */
+export function ladderSpec(script, part, { keyed = false } = {}) {
   if (!part) return [];
-  const rung = (field, path, board) => { const v = at(script, path); return v != null && (typeof v !== "object" || v.hi || v.en) ? { field, path, value: v, board: (v && typeof v === "object" && v.board && typeof v.board === "object" ? v.board : null) ?? board ?? null } : null; };
+  const rung = (field, path, board) => { const v = at(script, path); const present = v != null && (typeof v !== "object" || !!(v.hi || v.en));
+    return { field, path, value: v, present, board: (v && typeof v === "object" && v.board && typeof v.board === "object" ? v.board : null) ?? board ?? null }; };
   let rungs;
   if (keyed) rungs = CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard)] : [];
   else switch (part.kind) {
@@ -150,12 +159,21 @@ export function ladderOf(script, part, { keyed = false } = {}) {
     case "bridge": rungs = [rung("simpler", `${part.path}.simpler`, null)]; break;
     default: rungs = [];
   }
-  return rungs.filter(Boolean);
+  return rungs;
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
   then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
 
+/** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
+ *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
+export function helpJointHoles(script) {
+  const out = [];
+  for (const k of HELP_JOINTS) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  const hs = script?.joints?.hindiSwitch;
+  if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
+  return out;
+}
 /** The forms of a help joint for a script (its own, else code's), as { forms, by }. */
 export function helpJointForms(script, kind) {
   const own = script?.joints?.[kind];

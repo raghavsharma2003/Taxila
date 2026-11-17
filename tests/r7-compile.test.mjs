@@ -25,48 +25,53 @@ test("every cell says only authored fields (script paths) and carries its addres
       if (cell.notApplicable) continue;
       // (the greeting's line is the script's top-level greetSimpler, L3)
       for (const ref of cell.say) assert.match(ref, /^(?:skills\[\d+\]\.|greetSimpler$)/, `${cell.address}: ${ref}`);
-      assert.ok(["end", "checkin", "card", "next", "remediation"].includes(cell.then), cell.address);
+      // (dc-r8-director25 H4: a help cell's then is help's — pickHelp decides the card's fate)
+      assert.ok(["end", "checkin", "card", "next", "remediation", "help"].includes(cell.then), cell.address);
     }
     assert.deepEqual(c.doubles, [], s.topicId);
   }
 });
 
-test("dc-r8-second-clarify-shows-not-rewords: a second clarify shows the board and re-says; a third is clarify/spent; alts[0] optional", () => {
+// dc-r8-director25 H4 supersedes dc-r8-second-clarify-shows-not-rewords here: a clarify, a give-up, a Hindi request and a wrong answer's hint
+// compile to one pickHelp cell over the part's ladder, the same in every help state — no second or third clarify row, no counter.
+test("dc-r8-director25 H4: the help columns are one pickHelp cell over the part's ladder, whatever the help state; a missing rung is a hole", () => {
   const s = structuredClone(live[0]);
   const sk = s.skills[0], b = sk.explain[0];
-  // (2.4: Learning's pointAlt is the second ask's line when written — tested below; first, a point with none)
-  const pa = b.pointAlt; delete b.pointAlt;
-  const second = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard;
-  assert.deepEqual(second.say, ["skills[0].explain[0].point"]);
-  assert.equal(second.show, "skills[0].explain[0].board");
-  assert.equal(second.then, "checkin");
-  assert.equal(second.help, "spent");
-  assert.ok(second.secondClarify);
-  const third = compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.spent;
-  assert.deepEqual(third.say, []);
-  assert.equal(third.then, "card");
-  assert.ok(third.thirdClarify);
-  // a script that authors alts[0] says it in place of the same line again
-  b.alts = [{ hi: "Doosre shabdon mein: roti ke do barabar tukde.", en: "In other words: the roti in two equal pieces." }];
-  assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].alts[0]"]);
-  assert.ok(!compileScript(live[0]).missing.some((m) => /alts\[0\]/.test(m.path)), "alts[0] is never a hole");
-  // (and a written pointAlt goes before alts[0])
-  if (pa) { b.pointAlt = pa; assert.deepEqual(compileScript(s).cells[`${sk.skillId}:${b.id}:point`].clarify.heard.say, ["skills[0].explain[0].pointAlt"]); }
+  const cells = compileScript(s).cells;
+  for (const col of ["clarify", "give_up", "hindi"]) for (const h of ["fresh", "heard", "spent"]) {
+    const cell = cells[`${sk.skillId}:${b.id}:checkin`][col][h];
+    assert.equal(cell.via, "pickHelp", cell.address);
+    assert.deepEqual(cell.ladder, ["skills[0].explain[0].pointAlt", "skills[0].explain[0].simpler"], cell.address);
+    assert.deepEqual(cell.say, []);
+  }
+  // (an explain card: its own ask.simpler first, then its point's — a card without ask.simpler skips it, and the field is a hole)
+  const card = cells[`${sk.skillId}:${b.id}:card`].wrong.fresh;
+  assert.equal(card.via, "pickHelp");
+  assert.deepEqual(card.ladder, [...(b.ask.simpler ? ["skills[0].explain[0].ask.simpler"] : []), "skills[0].explain[0].pointAlt", "skills[0].explain[0].simpler"]);
+  if (!b.ask.simpler) assert.ok(compileScript(s).missing.some((m) => m.path === "skills[0].explain[0].ask.simpler" && m.field === "ask.simpler"));
+  // (a point without its pointAlt: the ladder is its simpler alone, and pointAlt is listed for Learning)
+  delete b.pointAlt;
+  const c2 = compileScript(s);
+  assert.deepEqual(c2.cells[`${sk.skillId}:${b.id}:point`].clarify.heard.ladder, ["skills[0].explain[0].simpler"]);
+  assert.ok(c2.missing.some((m) => m.path === "skills[0].explain[0].pointAlt"));
+  // (the joints help says: listed when the script has none)
+  assert.deepEqual(c2.helpJoints.filter((j) => /missing/.test(j.why)).map((j) => j.joint).sort(), ["afterKeyGoOn", "helpSpent"].filter((k) => !s.joints?.[k]?.length).sort());
 });
 
 test("no hole is silent: every missing field's cells compile to a named fallback, and the field is still listed", () => {
   for (const s of live) {
     const c = compileScript(s);
     for (const cs of Object.values(c.cells)) for (const hs of Object.values(cs)) for (const cell of Object.values(hs)) assert.ok(!cell.hole, cell.address);
-    assert.equal(c.fallbacks.length > 0, c.missing.length > 0, s.topicId);
+    // (a missing field is a named fallback's, or a help ladder's rung — which help skips, dc-r8-director25 H4)
+    const ladderField = (m) => /(?:^|\.)(?:simpler|pointAlt|problemAlt|sayAlt|whyAlt)$/.test(m.field) || m.field === "ask.simpler";
+    assert.ok(c.missing.every((m) => ladderField(m) || c.fallbacks.some((f) => f.part === m.part)), s.topicId);
   }
-  // a worked problem with no simpler: its clarify re-says it and shows its board (resay_show), and the field is listed for Learning.
-  // Checked on a copy with the field removed: Learning has since authored workedExample.simpler in every script (integration 37).
+  // a worked problem with no simpler: its help ladder is its problemAlt alone, and the field is listed for Learning.
   const s = structuredClone(live[0]), sk = s.skills[0];
   delete sk.workedExample.simpler;
   const cell = compileScript(s).cells[`${sk.skillId}:worked:problem`].clarify.fresh;
-  assert.equal(cell.fallback, "resay_show");
-  assert.deepEqual(cell.say, ["skills[0].workedExample.problem"]);
+  assert.equal(cell.via, "pickHelp");
+  assert.deepEqual(cell.ladder, ["skills[0].workedExample.problemAlt"]);
   assert.ok(compileScript(s).missing.some((m) => m.path === "skills[0].workedExample.simpler"));
 });
 

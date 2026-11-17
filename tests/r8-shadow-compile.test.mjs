@@ -18,16 +18,20 @@ test("shadow: the column and the part a turn read", () => {
   assert.equal(partOf(key, script).spent, true, "a key's turn is the card, its help spent");
 });
 
-test("shadow: a clarify at a point's check-in equals its cell when the simpler is said, and differs when it is not", () => {
+// (dc-r8-director25 H4: the clarify cell is pickHelp over the point's ladder — pointAlt first, then simpler — not the simpler by a counter)
+test("shadow: a clarify at a point's check-in equals its cell when its first unsaid wording is said, and differs when it is not", () => {
   const rows = (reply) => [
     { who: "teacher", text: "Namaste.", move: "greet" }, { who: "child", text: "haan", read: "no_evidence" },
     { who: "teacher", text: `${e1.point.hi} Yeh hissa saaf hua?`, beat: "s1:explain:e1", card: null },
     { who: "child", text: "samajh nahi aaya", read: "no_evidence · another" },
     { who: "teacher", text: reply, beat: "s1:explain:e1" },
   ];
-  const [a] = shadowLesson({ rows: rows(`${e1.simpler.hi} Yahan tak theek hai?`), script });
+  const [a] = shadowLesson({ rows: rows(`${e1.pointAlt.hi} Yahan tak theek hai?`), script });
   assert.equal(a.address, "c4-maths-ch05-t01-s1:e1:checkin/clarify/fresh");
   assert.equal(a.verdict, "equal");
   const [b] = shadowLesson({ rows: rows(`${e1.ask.prompt.hi}`), script });
   assert.equal(b.verdict, "differ");
+  // (the simpler while the pointAlt is unsaid skips a rung)
+  const [c] = shadowLesson({ rows: rows(`${e1.simpler.hi} Yahan tak theek hai?`), script });
+  assert.equal(c.verdict, "differ");
 });
