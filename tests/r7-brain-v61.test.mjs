@@ -68,11 +68,13 @@ describe("r7-brain-v61.test.mjs", () => {
     const ask = sc.skills[0].explain.find((b) => b.id === "e1").ask;
     ask.simpler = { hi: "Line ke 0 aur 1 ke beech gaps gino, marks nahi.", en: "Count the gaps between 0 and 1, not the marks." };
     setScriptForTest(T1, { ...sc, version: 2.3 });
-    const { kit, last } = await replay(RUN, "steady", T1, 11);
-    assert.equal(last.child, "pata nahi");
-    assert.equal(last.p.r.move.kind, "hint");
-    assert.equal(last.state.lastMove?.simpler, ask.simpler.hi);
-    const out = await sayAt(kit, last, "Riya, 1/3 ka matlab hai 3 barabar hisse, aur pehla hissa 1/3 hota hai. Ab batao.");
+    // (dc-r8-director26 C1, main's ruling change 1: the hook is said on e1's turn now, so the run's recorded lines no longer meet e1's card
+    // at its row 11 — the same give-up is walked live on e1's card)
+    const L = toE1();
+    L.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } });
+    assert.equal(L.r.move.kind, "hint");
+    assert.equal(L.r.state.lastMove?.simpler, ask.simpler.hi);
+    const out = await sayL(L, "Riya, 1/3 ka matlab hai 3 barabar hisse, aur pehla hissa 1/3 hota hai. Ab batao.", "pata nahi");
     assert.match(out.reply, /^Line ke 0 aur 1 ke beech gaps gino, marks nahi\./, out.reply);
     assert.doesNotMatch(out.reply, /1\/3 ka matlab/);
   });

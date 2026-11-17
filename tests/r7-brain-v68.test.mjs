@@ -94,18 +94,22 @@ describe("r7-brain-v68.test.mjs", () => {
     for (const [persona, topic] of ROWS) test(`${persona} ${topic} row 2: the hook is the authored line, whatever she wrote`, async () => {
       for (const d of DRAFTS) {
         const { out, last } = await reply(persona, topic, 2, d);
-        assert.equal(last.state.lastMove?.kind, "hook");
+        // (dc-r8-director26 C1, main's ruling change 1: where the hook and e1's point fit in 75 words — stuck c6 — the hook is said first on
+        // e1's turn, and the point after it; still nothing of hers)
+        const lm = last.state.lastMove;
+        assert.ok(lm?.kind === "hook" || lm?.hookSaid, lm?.kind);
         // (dc-r8-director25 L2: no turn ends with nothing for the child to answer — the hook ends on one check-in, code's form)
         const ask = BEAT_ASK.hinglish.find((q) => norm(out.reply).endsWith(q));
         assert.ok(ask, `the hook ends on a check-in: ${out.reply}`);
-        assert.equal(norm(out.reply).slice(0, -ask.length).trim(), norm(last.state.lastMove.sayFirst.join(" ")), `draft ${d("x")}`);
+        assert.equal(norm(out.reply).slice(0, -ask.length).trim(), norm([...lm.sayFirst, ...(lm.hookSaid ? [lm.point] : [])].join(" ")), `draft ${d("x")}`);
       }
     });
     test("an authored point's own question is said (c5-t02 stuck 8: 'Neeche ka 4?' was dropped with the point), her own question is not", async () => {
       for (const d of [(t) => t, (t) => `${t} Tumhe kya lagta hai, kitne tukde?`]) {
         // (dc-r8-director25 H4: row 8 is a Hindi request on e1's card, whose ladder this run's script has said — help's line and the
-        // question; the point is said where the walk teaches it, row 4, whose recorded line had dropped it)
-        const { out } = await reply("stuck", "c5-t02", 4, d);
+        // question; the point is said where the walk teaches it — row 2 since dc-r8-director26 C1, after the hook on its turn (main's ruling
+        // change 1); row 4 before, whose recorded line had dropped it)
+        const { out } = await reply("stuck", "c5-t02", 2, d);
         assert.match(out.reply, /Neeche ka 4\? Patti ke 4 barabar tukde\./);
         assert.doesNotMatch(out.reply, /Tumhe kya lagta hai/);
       }
@@ -189,7 +193,10 @@ describe("r7-brain-v68.test.mjs", () => {
       if (last.state.lastMove.help?.joint === "helpSpent") { assert.doesNotMatch(out.reply, /jawab/i); assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)), out.reply); return; }
       const e1 = sc.skills[0].explain.find((b) => b.id === "e1");
       const lastT = norm([...last.state.recent].reverse().find((t) => t.who === "teacher")?.text);
-      const sim = norm(said(e1.ask?.simpler ?? e1.simpler));
+      // (dc-r8-director26 C1, main's ruling change 2: e1's point and its card are one turn now, so the run's "haan" at row 7 answers the card
+      // and its remediation's follow-up card is the live part at row 8 — that card's own simpler is the live part's words)
+      const then = /:then:(.+)$/.exec(String(last.p.r.ui?.ask?.itemId ?? ""));
+      const sim = norm(said(then ? sc.skills[0].remediation.find((r) => r.targets === then[1])?.then?.simpler : e1.ask?.simpler ?? e1.simpler));
       assert.ok(!lastT.includes(sim.slice(0, 40)));
       assert.ok(norm(out.reply).includes(sim.split(" ").slice(0, 5).join(" ")), out.reply);
       assert.ok(norm(out.reply).endsWith(norm(last.p.r.ui.ask.text)));

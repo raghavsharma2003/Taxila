@@ -348,7 +348,12 @@ describe("R5: a turn too long for one is split, never cut", () => {
     assert.notEqual(short.move.splitClose, true);
   });
 
+  // (dc-r8-director26 C1, main's ruling change 3: a remediation and its follow-up card share a turn of up to 75 words — the fixture's own
+  // say and card are 53 words, one turn now: r8-director26-c1. Here the say is made long, so the two run over 75 and still split)
+  const LONG_SAY = "Ek cheenti corner se chalti hai aur har bhuja ke baad apna total badhati hai, pehle 10, phir 4 aur, phir 6 aur, aur har baar woh ruk kar ginti dohraati hai. Jab tak wapas shuruaat wale corner par na aaye, chakkar poora nahi hota, isliye har bhuja ek ek karke judti hai.";
   test("a remediation's long say and its card: the say now ending on a check-in, the card on its own board next; 'samajh nahi aaya' keeps the card live", async () => {
+    const long = structuredClone(SC); long.skills[0].remediation[0].say = { hi: LONG_SAY, en: LONG_SAY };
+    setScriptForTest(); setScriptForTest(K.topicId, long);
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
@@ -463,7 +468,9 @@ describe("v6 (c5-t01 judge, Studio's alternate view)", () => {
   const toCard = () => {
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: "x" }] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
-    return r;
+    // (dc-r8-director26 C1: the hook is said first on e1's turn now — what that turn said first is its own, never a later turn's: ONE_TURN)
+    const { sayFirst: _sf, hookSaid: _hs, ...lm } = r.state.lastMove;
+    return { ...r, state: { ...r.state, lastMove: lm } };
   };
   const say = (r, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: r.ui, module: null }); };
 

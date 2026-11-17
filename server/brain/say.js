@@ -2443,7 +2443,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (v6.1 R9: a scripted step's check-in only where state.js allowed one; else a statement)
     const ask = item && ui?.ask?.itemId === item.id ? ui.ask.text : remedy && scripted ? freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)
       // (v6.9 R6: one step opener a turn — a step said under its label, or opening on its own step word, gets no "Ab agla kadam")
-      : scripted && !state.lastMove?.checkinOk ? (stepFrame || opensFirst ? null : pickOf(WORKED_GO[lang === "english" ? "english" : "hinglish"], state)) : rotateOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
+      // (dc-r8-director26 C1: told steps split from the child's own step are followed by that card, never by a next step — the split's
+      // check-in ends them, below)
+      : scripted && !state.lastMove?.checkinOk ? (stepFrame || opensFirst || state.lastMove?.splitTeach ? null : pickOf(WORKED_GO[lang === "english" ? "english" : "hinglish"], state)) : rotateOf(WORKED_ASK[lang === "english" ? "english" : "hinglish"], state);
     // v3 K2: a remediation follows a graded wrong answer, and its board goes up on this turn, so the verdict is said first:
     // her lead when it says "not right" (and not the key), else code's
     const key0 = String(state.lastMove?.content?.find((c) => /^its answer: /.test(c))?.slice(12) ?? "").trim();

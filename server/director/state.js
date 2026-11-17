@@ -763,7 +763,8 @@ function walkNextV2(s, input, prefix, sk) {
         const card0 = saidIn(we.yourStep?.prompt, lang);
         // (help's go-on line said before this turn counts: input.helpLeadWords)
         const lead0 = walkLeadWords(input, lang, s.lastMove);
-        if (steps0.length === 1 && card0 && wordsIn(problem, steps0[0], card0) + lead0 + 3 <= L2_CAP) {
+        // (a problem written as a question keeps the child's own step for another turn: one question a turn — askAndCard)
+        if (steps0.length === 1 && card0 && !/[?？]\s*$/.test(problem.at(-1) ?? "") && wordsIn(problem, steps0[0], card0) + lead0 + 3 <= L2_CAP) {
           w.workedStep = 1;
           s.scriptCard = item; s.phase = "practice";
           activate(s, item);

@@ -32,12 +32,13 @@ describe("script walk v2", () => {
   };
   const toBeat = (L, beatId) => { for (let i = 0; i < 6 && L.r.move.scriptBeat?.beatId !== beatId; i++) L.t("haan"); return L.r; };
 
-  test("the hook is set in the child's interest; e1 teaches its must-say words and poses its own question as the card", () => {
+  // (dc-r8-director26 C1, main's ruling change 1: the hook never ends on a check-in of its own — it and e1 fit in 75 words, so the hook's
+  // line in the child's interest is said first on e1's turn; it was a turn of its own, ending on "Ab tak samajh aaya?")
+  test("the hook is set in the child's interest and said on e1's turn; e1 teaches its must-say words and poses its own question as the card", () => {
     const L = run();
     L.t("haan");
-    assert.equal(L.r.move.scriptBeat.kind, "hook");
-    assert.ok(L.r.state.lastContent.some((x) => /Cricket ground/.test(x)), "the cricket slot");
-    L.t("haan");
+    assert.equal(L.r.move.hookSaid, true);
+    assert.ok((L.r.move.sayFirst ?? []).some((x) => /Cricket ground/.test(x)), "the cricket slot, said first");
     assert.equal(L.r.move.scriptBeat.beatId, "e1");
     assert.deepEqual(L.r.move.mustSay, ["parimap", "15 cm"]);
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`);
@@ -122,28 +123,27 @@ describe("script walk v2", () => {
     const L = run();
     for (const b of ["e1", "e2"]) { toBeat(L, b); L.t("x", cls("correct")); }
     let i = 0; while (i++ < 4 && L.r.move.scriptBeat?.kind !== "worked") L.t("haan");
-    // v3 V1: first the problem (what is given, what to find), on its own turn
-    assert.equal(L.r.move.scriptBeat.beatId, "worked:problem");
+    // v3 V1: first the problem (what is given, what to find). dc-r8-director26 C1, main's ruling change 4: the problem and the first told
+    // step share a turn when they fit in 75 words — its lines lead the rendered ones (problemLines), the turn's beat the step's
+    const steps = S1.workedExample.steps;
+    const pL = L.r.move.problemLines ?? 0;
+    assert.ok(pL > 0 ? L.r.move.scriptBeat.beatId === "worked:step1" && L.r.move.stepFrom === 1 : L.r.move.scriptBeat.beatId === "worked:problem", JSON.stringify(L.r.move.scriptBeat));
     // (v6.7 R4, main on director15: the problem is stated once — no "Diya hai … Dhoondhna hai …" recital after it)
     assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && !L.r.move.rendered.some((x) => /^(?:Dhoondhna hai|Diya hai)/.test(x)), L.r.move.rendered.join(" | "));
     assert.ok(!L.r.ui.ask?.itemId, "no card yet");
-    // v4 W2: then the steps, do → result → why (the givens are not read again), with no card — dc-r8-director26 C1: two to a turn where
-    // the two fit in 75 words, the turn's beat the last step said
-    const steps = S1.workedExample.steps;
-    for (let k = 0; k < steps.length;) {
+    // v4 W2: then the steps, do → result → why (the givens are not read again) — dc-r8-director26 C1: two to a turn where the two fit in
+    // 75 words; the turn that holds the last told step holds the child's own step too, as its card (main's ruling change 4)
+    const said = L.r.move.rendered.slice(pL);
+    while (!L.r.ui.ask?.itemId) {
       L.t("haan");
-      const n = L.r.move.rendered.length;
+      const n = L.r.move.rendered?.length ?? 0;
       assert.ok(n === 1 || n === 2, String(n));
-      assert.equal(L.r.move.scriptBeat.beatId, `worked:step${k + n}`);
-      for (let j = 0; j < n; j++) {
-        assert.ok(L.r.move.rendered[j].includes(steps[k + j].result) && /kyunki/.test(L.r.move.rendered[j]), L.r.move.rendered[j]);
-        assert.ok(!/Diya hai/.test(L.r.move.rendered[j]), "the givens are not read again");
-      }
       if (n === 2) assert.ok(L.r.move.rendered.join(" ").split(/\s+/).length <= 75, "two steps only where they fit");
-      assert.ok(!L.r.ui.ask?.itemId, "no card on a step");
-      k += n;
+      said.push(...L.r.move.rendered);
+      if (!L.r.ui.ask?.itemId) assert.equal(L.r.move.scriptBeat.beatId, `worked:step${said.length}`);
     }
-    L.t("haan");
+    assert.equal(said.length, steps.length, "every told step said once, in order");
+    steps.forEach((st, k) => { assert.ok(said[k].includes(st.result) && /kyunki/.test(said[k]), said[k]); assert.ok(!/Diya hai/.test(said[k]), "the givens are not read again"); });
     assert.equal(L.r.move.scriptBeat.beatId, "worked");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:worked`);
     // after their step (right here) the worked answer is closed on that turn (the verdict with its why, or "Toh poora jawab");

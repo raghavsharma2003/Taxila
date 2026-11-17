@@ -857,15 +857,24 @@ PREDICATES.goodbyeNoMenu = (L, r, i, ctx) => {
 };
 /** dc-r8-director24 K3: a wrong answer to a yes-or-no card gets "Nahi," then the fact — never the fact with no miss word. Gated. */
 PREDICATES.ynNahi = (L, r, i, ctx) => r.keyFact && !/^(?:nahi|no)\b/i.test(String(r.text ?? "").trim()) ? "a yes-or-no miss's fact with no 'Nahi'" : null;
-/** dc-r8-director24 L: one new thing a turn — no turn over 60 words holds an explain point and a card (the verdict, its why and the next
- *  point end on the point's check-in; the card comes next turn). Gated. */
+/** dc-r8-director24 L: one new thing a turn — no turn over 60 words holds an explain point and a card when another part comes before the
+ *  point (the verdict, its why and the next point end on the point's check-in; the card comes next turn). dc-r8-director26 C1, main's
+ *  ruling change 2: a bare point and its own card — nothing before them — share a turn of up to 75 words; over 75 a point and a card in
+ *  one turn are always a fault. Gated. */
 PREDICATES.longPointCard = (L, r) => {
   const n = String(r.text ?? "").trim().split(/\s+/).filter(Boolean).length;
+  if (n <= 60) return null;
   const pp = r.pageParts ?? [];
   // (dc-r8-director25: a seam's joint — "Ab pehle wale sawaal ko phir se dekhte hain." before a card asked again — is no point)
   const forms = (r.seams ?? []).map((x) => low(x.form ?? "")).filter(Boolean);
   const textOf = (p, k) => low(String(r.text ?? "").slice(p.from, pp[k + 1]?.from ?? undefined));
-  return n > 60 && pp.some((p, k) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? "")) && !forms.includes(textOf(p, k))) && pp.some((p) => p.part === "card") ? `${n} words holding a point and a card` : null;
+  const at = pp.findIndex((p, k) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? "")) && !forms.includes(textOf(p, k)));
+  if (at < 0 || !pp.some((p) => p.part === "card")) return null;
+  if (n > 75) return `${n} words holding a point and a card`;
+  // (a part before the point: a verdict, its why, a key, a bridge, a held part, help's words — anything said before it that is not a
+  // seam's joint; or words the record has no part for, an aside's reply or the hook, before the point's own first part)
+  const before = pp.slice(0, at).some((p, k) => !forms.includes(textOf(p, k))) || (pp[at]?.from ?? 0) > 0;
+  return before ? `${n} words holding a point and a card, with a part before the point` : null;
 };
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {

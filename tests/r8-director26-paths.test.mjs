@@ -57,10 +57,16 @@ test("N1: a clarify at the opening's check-in (c5-t02 steering 4) is one authore
   assert.match(out.reply, /\?\s*$/, "ends on a question");
 });
 
-test("N1: a give-up at the hook's check-in (c6 steady 4) opens on a word to her, then the point and its card", async () => {
-  const { out } = await lineAt("steady", "c6-maths-ch06-t01", 5);
+// (dc-r8-director26 C1, main's ruling change 1: c6's hook is said on e1's turn now — it has no check-in of its own for steady's give-up at
+// row 3. c4's hook still has one, after greetSimpler (the two run over 75 words with e1): offtopic c4 4, the same give-up there. Its word,
+// e1's point whole, and a question to end on — the card waits for the next turn, the point and its card over 60 words with the word before
+// them, dc-r8-director24 L)
+test("N1: a give-up at the hook's check-in (c4 offtopic 4; c6 steady 4 before the hook shared e1's turn) opens on a word to her, then the point", async () => {
+  const { out, p } = await lineAt("offtopic", "c4-maths-ch05-t01", 5);
+  assert.equal(p.before.lastMove?.kind, "hook");
   assert.equal(out.guard.parts.list[0].part, "aside");
-  assert.equal(out.guard.parts.list.at(-1).part, "card");
+  assert.ok(out.reply.includes(String(p.state.lastMove.point).trim()), "the point whole");
+  assert.match(out.reply, /\?\s*$/, "ends on a question");
 });
 
 test("N1: 'pata nahi, aap batao' at the check-in on the last card's why (c5-t01 steady 128) gets the why's other wording or the go-on line", async () => {
@@ -101,8 +107,10 @@ test("J1: the go-on line is not said where the back-to joint follows (the seam p
   assert.ok(!r.seams.some((x) => x.joint === "afterKeyGoOn") || !r.seams.some((x) => x.joint === "backTo"), JSON.stringify(r.seams));
 });
 
-test("J1: a worked step whose ladder is empty (c6 stuck 44) goes on to the next step with no go-on promise", async () => {
-  const { plans } = await replay(RUN, "stuck", "c6-maths-ch06-t01", 45);
+// (dc-r8-director26 C1, main's ruling change 4: c6 stuck's last told step and the child's own step are one turn now, so its clarifies at
+// row 36 are on that card, not on step 1; c5-t01 stuck 44, the work order's other row for this, still reaches step 1's empty ladder)
+test("J1: a worked step whose ladder is empty (c5-t01 stuck 44; c6 stuck 44 before the ruling) goes on to the next step with no go-on promise", async () => {
+  const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t01", 45);
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.help?.card, "goOn");
   assert.ok(!m.help?.joint, "no joint: the next step opens on its own frame");
