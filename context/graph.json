@@ -29588,6 +29588,41 @@
    "at": "2026-11-17",
    "title": "Rejected after director27: ending a turn on a comprehension check-in (samajh aaya, saaf hua, yeh kadam saaf hai) where a card is waiting or inside a worked example. Tried from director25 to director27 with the count cut from 32 to 20 a lesson; all four director27 judges still found it tedious, the steady child answers haan 16 to 22 times, and the step check-in after a problem with no step told is untrue. The check-in stays after help, after a remediation and after a bridge.",
    "source": "inbox/r8-main-44.json"
+  },
+  {
+   "id": "ms-r8-042-dry",
+   "kind": "measurement",
+   "title": "Brain 042 on the dry matrix: steady check-in turns 29, 26, 20, 21 → 20, 14, 18, 15 (c4, c5-t01, c5-t02, c6); none before a waiting card or inside a worked example; 0 turns over 75; the measure (≤ 14) met in c5-t01 only",
+   "at": "2026-11-17",
+   "source": "inbox/d28-042-dry.json"
+  },
+  {
+   "id": "ms-r8-043-dry",
+   "kind": "measurement",
+   "title": "Brain 043 on the dry matrix: steady check-in turns 20, 14, 18, 15 → 16, 11, 8, 10 (c4, c5-t01, c5-t02, c6); invitations 2, 2, 2, 3; whyShort said 0, 1, 4, 0; 0 turns over 75; the measure (≤ 14) met but in c4",
+   "at": "2026-11-17",
+   "source": "inbox/d28-043-dry.json"
+  },
+  {
+   "id": "fd-right-verdict-alone-is-the-weakest-checkin",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "With quick questions in place, the largest source of check-in turns is a right answer's verdict and why standing alone because what follows does not fit in 75 words (7, 4, 6, 4 a steady lesson on the 042 dry run)",
+   "source": "inbox/r8-main-45.json"
+  },
+  {
+   "id": "dc-r8-right-answer-goes-on",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "A right answer goes on: a short reason (whyShort, 10 words) is said when the full why leaves no room for what follows, and before a worked example a verdict that stands alone ends on an invitation, not a comprehension check-in (Brain 043)",
+   "source": "inbox/r8-main-45.json"
+  },
+  {
+   "id": "fd-park-overtaken-by-childs-ending",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "A park the child's own stop or bye overtakes before the return was due is not a broken promise; parkReturned no longer fires there and the case is counted as parkCutByChildEnd",
+   "source": "inbox/r8-main-45.json"
   }
  ],
  "edges": [
@@ -47370,6 +47405,31 @@
    "src": "op-r8-guided-worked-steps",
    "rel": "part_of",
    "dst": "dc-r8-director27"
+  },
+  {
+   "src": "ms-r8-043-dry",
+   "rel": "supersedes",
+   "dst": "ms-r8-042-dry"
+  },
+  {
+   "src": "dc-r8-right-answer-goes-on",
+   "rel": "part_of",
+   "dst": "dc-r8-director27"
+  },
+  {
+   "src": "dc-r8-right-answer-goes-on",
+   "rel": "measured_by",
+   "dst": "ms-r8-043-dry"
+  },
+  {
+   "src": "dc-r8-right-answer-goes-on",
+   "rel": "caused_by",
+   "dst": "fd-right-verdict-alone-is-the-weakest-checkin"
+  },
+  {
+   "src": "fd-right-verdict-alone-is-the-weakest-checkin",
+   "rel": "measured_by",
+   "dst": "ms-r8-042-dry"
   }
  ]
 }
