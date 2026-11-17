@@ -834,6 +834,9 @@ import { HELP_PREDICATES, helpFirstUnsaid, helpPartOfItem, helpGoOnSaid } from "
 Object.assign(PREDICATES, HELP_PREDICATES);
 import { D26_PREDICATES } from "./d26-predicates.mjs";
 Object.assign(PREDICATES, D26_PREDICATES);
+// dc-r8-director27 (Brain 041): P1's paging law, P3's requests, P5's returns — written from the gate's sentences (d27-predicates.mjs)
+import { D27_PREDICATES } from "./d27-predicates.mjs";
+Object.assign(PREDICATES, D27_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

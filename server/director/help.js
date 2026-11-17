@@ -145,15 +145,19 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
   const rung = (field, path, board) => { const v = at(script, path); const present = v != null && (typeof v !== "object" || !!(v.hi || v.en));
     return { field, path, value: v, present, board: (v && typeof v === "object" && v.board && typeof v.board === "object" ? v.board : null) ?? board ?? null }; };
   let rungs;
-  if (keyed) rungs = CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard)] : [];
-  else switch (part.kind) {
+  // (dc-r8-director27 P3, c5-t02 stuck 42: after a key the why's other wording comes first, then the card's own wordings still unsaid — the
+  // picker decides before any joint does; the go-on line was said with the worked example's simpler unsaid)
+  if (keyed) return CARD_KINDS.has(part.kind) ? [rung("whyAlt", `${part.path}.whyAlt`, part.answerBoard), ...ladderSpec(script, part)] : [];
+  switch (part.kind) {
     case "point": case "checkin": rungs = [rung("pointAlt", `${part.point}.pointAlt`, part.board), rung("simpler", `${part.point}.simpler`, part.board)]; break;
     case "card": {
       const pb = boardAt(script, `${part.point}.board`);
       rungs = [rung("ask.simpler", `${part.path}.simpler`, part.board), rung("pointAlt", `${part.point}.pointAlt`, pb), rung("simpler", `${part.point}.simpler`, pb)];
       break;
     }
-    case "check": case "then_card": case "your_step": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
+    case "check": case "then_card": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
+    // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
+    case "your_step": rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("problemAlt", `${part.worked}.problemAlt`, part.board), rung("simpler", `${part.worked}.simpler`, part.board)]; break;
     // (a worked step: its own simpler, then the worked problem's ladder — problemAlt, simpler (Brain 039 A2: "a worked problem or step:
     // problemAlt, simpler"). Main's R3 on the merged tree, c5-t01 stuck 44: a step's ladder of one rung left a second "samajh nahi aaya"
     // on the step with nothing — the walk went on to the your-step card unhelped while the problem's two other wordings were unsaid)
@@ -166,7 +170,7 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler"], your_step: ["simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
