@@ -52,6 +52,7 @@ function helpIndex(ctx) {
 /** The said set before this row: every sentence of her earlier turns, with its row. */
 function saidBefore(L, i) {
   const out = [];
+  if (!Array.isArray(L?.rows)) return out;
   const have = new Set();
   for (let j = 0; j < i; j++) {
     const r = L.rows[j];
@@ -118,6 +119,7 @@ function partOfItem(id, ctx) {
 /** The card just keyed when row i is said (a key said, and no card posed nor a new unit taught since), else null. Read over the
  *  earlier rows, once each (the predicates run in row order). */
 function keyedBefore(L, i, ctx) {
+  if (!Array.isArray(L?.rows)) return null;
   const st = (ctx.o.helpKeyedAt ??= { upto: 0, val: null, card: null });
   if (st.upto > i) { st.upto = 0; st.val = null; st.card = null; }
   for (; st.upto < i; st.upto++) {

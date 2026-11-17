@@ -3,6 +3,7 @@
 // a question states no answer, so its numbers are no false key (c5-t02 steady 132).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { PREDICATES } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 import { falseAnswerNumbers } from "../evals/hybrid-side-by-side/checks.mjs";
 
@@ -21,10 +22,14 @@ test("cardWholeAgain: a one-sentence card with a question clause after its colon
   assert.equal(PREDICATES.cardWholeAgain("L", { who: "teacher", card: q, text: `Har bhuja jodo. ${q}`, pageParts: [{ part: "simpler" }, { part: "card" }] }, 1, { ...ctx, prevT: { text: q } }), null);
 });
 
+// (dc-r8-director25 H4: the predicate reads the help turn's part — the walk's record — and the lesson's rows)
 test("hindiNewWords: the switch line and the card only is a Hindi request with no new words", () => {
-  const ctx = { prevRead: "no_evidence · language", o: { teacherTexts: ["Yeh roti dekho.", "Neeche wala number."] } };
-  const card = "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?";
-  assert.match(PREDICATES.hindiNewWords("L", { who: "teacher", card, text: `Haan, Hindi mein samjhaati hoon. ${card}` }, 1, ctx) ?? "", /no new words/);
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const card = script.skills[0].explain[0].ask.prompt.hi;
+  const ctx = { prevRead: "no_evidence · language", script, o: {} };
+  const r = { who: "teacher", card, text: `Haan, Hindi mein samjhaati hoon. ${card}`, cell: { part: `${script.skills[0].skillId}:e1:card`, column: "hindi" } };
+  const L = { rows: [{ who: "teacher", text: "Yeh roti dekho." }, { who: "child", text: "Hindi mein bolo" }, r] };
+  assert.match(PREDICATES.hindiNewWords(L, r, 2, ctx) ?? "", /no new words/);
 });
 
 // (dc-r8-director24 item 8: "8/8 = 1" names a whole and "1/1 ka matlab hota poori roti" explains a term — no false key: c5-t01 steady 92,

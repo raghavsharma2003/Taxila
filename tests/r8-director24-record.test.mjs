@@ -20,7 +20,8 @@ test("the greet's simpler is the hook; a check-in is a check-in; the closing key
 
 test("the Hindi switch is in the record", () => {
   const r = run([{ part: "body", text: "Haan, Hindi mein samjhaati hoon. Ek roti socho." }], { hindiSwitch: "Haan, Hindi mein samjhaati hoon." });
-  assert.deepEqual(r.seams[0], { left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: "Haan, Hindi mein samjhaati hoon." });
+  // (dc-r8-director25 item 8: with who wrote the form)
+  assert.deepEqual(r.seams[0], { left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: "Haan, Hindi mein samjhaati hoon.", by: "authored" });
 });
 
 // (dc-r8-director24 P: a part is said once — gated partOnce reads the e3 point said again with nothing asked, and a card before its point)
@@ -32,7 +33,9 @@ test("P: partOnce flags a point said again with nothing asked, and a card posed 
   const pt = { who: "teacher", text: "Ab 0 se 1 tak ki ek number line lo. Zero se jitna door, utna bada." };
   assert.equal(PREDICATES.partOnce("L", pt, 1, ctx), null);
   assert.match(PREDICATES.partOnce("L", pt, 3, { ...ctx, prevRead: "correct" }) ?? "", /e3 point said again/);
-  assert.equal(PREDICATES.partOnce("L", pt, 5, { ...ctx, prevRead: "no_evidence · another" }), null);
+  // (dc-r8-director25 H4: a request no longer excuses a point said again — help says the part's other wordings; only "say it again" does)
+  assert.match(PREDICATES.partOnce("L", pt, 5, { ...ctx, prevRead: "no_evidence · another" }) ?? "", /e3 point said again/);
+  assert.equal(PREDICATES.partOnce("L", pt, 7, { ...ctx, prevRead: "no_evidence · repeat" }), null);
   const ctx2 = { script, o: {}, prevRead: "correct" };
   assert.match(PREDICATES.partOnce("L", { who: "teacher", card: "Isi line par, zero se zyada door kaun rukega, 1/3 ya 1/7?", text: "Isi line par, zero se zyada door kaun rukega, 1/3 ya 1/7?" }, 1, ctx2) ?? "", /card posed with its point never said/);
 });
