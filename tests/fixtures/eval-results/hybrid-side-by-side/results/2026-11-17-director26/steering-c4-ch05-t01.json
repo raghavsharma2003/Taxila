@@ -1,0 +1,4826 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 905,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj hum ek cheez ko barabar tukdon mein baantna seekhenge, aur un tukdon ke naam. Socho, Maa ne kitchen mein ek garam roti banayi, aur tum do bhai-behen ho. Roti ke 2 tukde honge. Dono ke tukde sach mein barabar kab hote hain, aaj wahi pakadna hai. Ab tak samajh aaya?",
+   "move": "hook",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01:greet",
+    "column": "clarify"
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "greetSimpler",
+     "joint": null
+    },
+    {
+     "left": "greetSimpler",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 874,
+   "replyReadyMs": 1779,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1779,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 986,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh roti dekho: 2 barabar tukde, aur ek tukde mein rang hai. Dono tukde ek jitne bade hain, kyunki roti barabar kati hai. Fraction mein neeche wala number roti ke kul barabar tukde ginta hai, aur upar wala number, jitne tukde humne liye. Yahan tak saaf hai?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:hook",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 843,
+   "replyReadyMs": 1829,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 986,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1184,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Socho, tum aur ek dost ek roti baant rahe ho, aur dono ko bilkul ek jitna mila. Roti kitne barabar tukdon mein bati, woh ginti neeche wale number mein jaati hai, aur tumhare paas kitne tukde hain, woh upar wale number mein. Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "move": "practice",
+   "card": "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:checkin",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "simpler",
+     "from": 80,
+     "beat": "e1"
+    },
+    {
+     "part": "card",
+     "from": 224,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1130,
+   "replyReadyMs": 2314,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1184,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 653,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, ise ek aasaan tareeke se kehti hoon. Roti ke tukde ungli se gino: ek, do. Ab dekho, rang inmein se kitne tukdon mein hai. Toh rangin tukda 1/2 hai ya 1/1?",
+   "move": "hint",
+   "card": "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:card",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "simpler",
+     "from": 81,
+     "beat": "e1"
+    },
+    {
+     "part": "card",
+     "from": 129,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "hindiSwitch",
+     "joint": "hindiSwitch",
+     "form": "Achha, ise ek aasaan tareeke se kehti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1012,
+   "replyReadyMs": 1665,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1665,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/1",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/1 sahi nahi hai. Ek naye tareeke se socho. Jab chocolate ke saare tukde barabar hon, toh neeche wala number batata hai ki poori chocolate kitne barabar tukdon mein bati thi. Tukde kha lo ya bacha lo, yeh ginti nahi badalti. Upar wala number bas woh tukde ginta hai jinki baat ho rahi hai. Yeh hissa saaf hua?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "body",
+     "from": 19,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "body",
+     "from": 45,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "body",
+     "from": 291,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     },
+     {
+      "from": 19,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+      "atChar": 19
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ek naye tareeke se socho.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1037,
+   "replyReadyMs": 1038,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1038,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti",
+       "hideResult": true,
+       "legend": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 19,
+     "atClause": null,
+     "estMs": 1520,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 4,
+         "shade": 2,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 2,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 2,
+        "shade": 1,
+        "whole": "roti",
+        "hideResult": true,
+        "legend": true
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-part-part"
+     },
+     {
+      "from": 19,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 4,
+          "shade": 2,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-part-part"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1090,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek paratha 8 barabar tukdon mein kata socho. Usmein se 3 kha lo ya 5, paratha phir bhi 8 tukdon se hi bana tha, isliye neeche wala number 8 hi rehta hai, aur upar wala number sirf khaye hue tukde ginta hai. Is chocolate ke rangin tukde khaye gaye. Pinky kehti hai 2/4, Golu kehta hai 2/2. Kiska sahi hai, Pinky ka ya Golu ka?",
+   "move": "practice",
+   "card": "Is chocolate ke rangin tukde khaye gaye. Pinky kehti hai 2/4, Golu kehta hai 2/2. Kiska sahi hai, Pinky ka ya Golu ka?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:rem:1",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "simpler",
+     "from": 45,
+     "beat": "rem:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "card",
+     "from": 207,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     },
+     {
+      "from": 207,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part#help",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+      "atChar": 207
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 966,
+   "replyReadyMs": 2056,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1090,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 12,
+     "shade": 0,
+     "whole": "bar"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 12,
+       "shade": 0,
+       "whole": "bar"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 207,
+     "atClause": null,
+     "estMs": 15960,
+     "beat": "then:c4-maths-ch05-t01-m-part-part",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 4,
+         "shade": 2,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 12,
+      "shade": 0,
+      "whole": "bar"
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 2,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 12,
+        "shade": 0,
+        "whole": "bar"
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-part-part"
+     },
+     {
+      "from": 207,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 4,
+          "shade": 2,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-part-part"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 956,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yahan chocolate ek circle ki tarah bani hai: chaar barabar tukde, do mein rang, do bina rang ke. Rangin tukde woh hain jo khaye gaye. 4 barabar tukdon wali chocolate ke 2 tukde khaye gaye, toh Pinky ka 2/4 sahi hai ya Golu ka 2/2?",
+   "move": "reteach",
+   "card": "Is chocolate ke rangin tukde khaye gaye. Pinky kehti hai 2/4, Golu kehta hai 2/2. Kiska sahi hai, Pinky ka ya Golu ka?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:rem:1:then",
+    "column": "picture"
+   },
+   "pageParts": [
+    {
+     "part": "alt",
+     "from": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "card",
+     "from": 134,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1",
+      "beside": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part"
+    },
+    "layout": {
+     "split": true,
+     "panels": [
+      {
+       "side": "left",
+       "role": "held",
+       "template": "fraction-bars@1",
+       "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part"
+      },
+      {
+       "side": "right",
+       "role": "view",
+       "template": "fraction-parts@1",
+       "view": "round"
+      }
+     ]
+    },
+    "picture": {
+     "view": "round",
+     "decided": "once"
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1454,
+   "replyReadyMs": 2410,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2410,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 4,
+       "shade": 2,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 2,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "altView": "round",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "sawaal kya hai?",
+   "read": "no_evidence · repeat",
+   "intent": "repeat",
+   "classifyMs": 806,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Phir se dekho: Is chocolate ke rangin tukde khaye gaye. Pinky kehti hai 2/4, Golu kehta hai 2/2. Kiska sahi hai, Pinky ka ya Golu ka?",
+   "move": "practice",
+   "card": "Is chocolate ke rangin tukde khaye gaye. Pinky kehti hai 2/4, Golu kehta hai 2/2. Kiska sahi hai, Pinky ka ya Golu ka?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:rem:1:then",
+    "column": "repeat"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "card",
+     "from": 15,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 844,
+   "replyReadyMs": 1650,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1650,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-part-part",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 4,
+       "shade": 2,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-part-part",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "parts": 4,
+     "shaded": 2
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": ""
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "2/4",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki khaye hue 2 tukde chocolate ke 4 barabar tukdon mein se hain, toh 2/4; bache hue 2 neeche wala number nahi. Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "move": "practice",
+   "card": "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:rem:1:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch05-t01-m-part-part"
+    },
+    {
+     "part": "card",
+     "from": 128,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 128,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-part-part",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:e1",
+      "atChar": 128
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 932,
+   "replyReadyMs": 932,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 932,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 4,
+       "shade": 2,
+       "label": "2/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 4,
+         "shade": 2,
+         "label": "2/4"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 128,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "e1",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti",
+       "hideResult": true,
+       "legend": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 4,
+        "shade": 2,
+        "label": "2/4"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 4,
+          "shade": 2,
+          "label": "2/4"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 128,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 2,
+        "shade": 1,
+        "whole": "roti",
+        "hideResult": true,
+        "legend": true
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karti hoon",
+   "read": "no_evidence · thinking",
+   "intent": "try_first",
+   "classifyMs": 783,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo.",
+   "move": "practice",
+   "card": "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:card",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    }
+   ],
+   "replyMs": 1881,
+   "replyReadyMs": 2664,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2664,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    }
+   },
+   "guard": [
+    "samecard",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/1",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/1 sahi nahi hai. Roti ke dono tukde ek jitne hain, isliye dono ka naam ek hi hai. Woh naam is baat se banta hai ki roti kitne tukdon mein kati. Toh rangin tukda 1/2 hai ya 1/1?",
+   "move": "hint",
+   "card": "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "simpler",
+     "from": 19,
+     "beat": "e1"
+    },
+    {
+     "part": "simpler",
+     "from": 84,
+     "beat": "e1"
+    },
+    {
+     "part": "card",
+     "from": 146,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1060,
+   "replyReadyMs": 1061,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1061,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti",
+     "hideResult": true,
+     "legend": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    },
+    "counts": {
+     "parts": 2,
+     "shaded": 1
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti",
+      "hideResult": true,
+      "legend": true
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "one half",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek, kyunki rangin tukda roti ke 2 barabar tukdon mein se 1 hai, toh 1/2, yaani aadha; neeche wala number 2 hai. Yeh pizza aur yeh cake, dono ke 3-3 tukde. Cake ke teeno tukde barabar hain, toh wahan har tukda ek-tihaai hai, 1/3. Pizza mein ek tukda bada hai aur do chhote. Ab tak samajh aaya?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e1:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "body",
+     "from": 128,
+     "beat": "e2"
+    },
+    {
+     "part": "body",
+     "from": 289,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     },
+     {
+      "from": 128,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:e2",
+      "atChar": 128
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1056,
+   "replyReadyMs": 1056,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1056,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 2,
+     "shade": 1,
+     "whole": "roti"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 2,
+       "shade": 1,
+       "whole": "roti"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 128,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "e2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 3,
+         "equal": false,
+         "title": "Pizza"
+        },
+        {
+         "parts": 3,
+         "title": "Cake"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 2,
+      "shade": 1,
+      "whole": "roti"
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Pizza"
+      },
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Cake"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 2,
+        "shade": 1,
+        "whole": "roti"
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 128,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 3,
+          "equal": false,
+          "title": "Pizza"
+         },
+         {
+          "parts": 3,
+          "title": "Cake"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "intent": "aside",
+   "classifyMs": 651,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?",
+   "move": "practice",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e2:checkin",
+    "column": "aside"
+   },
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "aiAsked": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiQuestion",
+     "joint": null
+    }
+   ],
+   "replyMs": 685,
+   "replyReadyMs": 1336,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1336,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 3,
+       "equal": false,
+       "title": "Pizza"
+      },
+      {
+       "parts": 3,
+       "title": "Cake"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Pizza"
+      },
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Cake"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "batting",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "classifyMs": 833,
+   "classifyPath": "fast",
+   "readRaw": "incorrect"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, toh tumhe batting sabse achha lagta hai. Chalo, ab padhai aage badhate hain. Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?",
+   "move": "practice",
+   "card": "Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e2:card",
+    "column": "aside_reply"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 84,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiReply",
+     "joint": null
+    },
+    {
+     "left": "aiReply",
+     "right": "card",
+     "joint": "afterAiLine",
+     "form": "Chalo, ab padhai aage badhate hain.",
+     "by": "authored"
+    }
+   ],
+   "j2": {
+    "line": "Achha, toh tumhe batting sabse achha lagta hai.",
+    "refused": []
+   },
+   "replyMs": 852,
+   "replyReadyMs": 1685,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1685,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 3,
+       "equal": false,
+       "title": "Pizza"
+      },
+      {
+       "parts": 3,
+       "title": "Cake"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Pizza"
+      },
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Cake"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 754,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Pizza ka chhota tukda uske bade tukde ke saath milaa kar dekho. Phir cake ke tukdon ko aapas mein milao. Kya pizza ka ek chhota tukda poore pizza ka ek-tihaai hai?",
+   "move": "hint",
+   "card": "Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e2:card",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 64,
+     "beat": "e2"
+    },
+    {
+     "part": "card",
+     "from": 105,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1107,
+   "replyReadyMs": 1861,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1861,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 3,
+       "equal": false,
+       "title": "Pizza"
+      },
+      {
+       "parts": 3,
+       "title": "Cake"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Pizza"
+      },
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Cake"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "Yes",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 796,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh jawab nahi hai. Ise ek alag tareeke se dekhte hain. Ek rassi socho, jo ek lambe aur kuch chhote tukdon mein kati. Yeh baant barabar nahi, isliye tukde gin kar fraction naam nahi rakh sakte. Ab ek kaagaz ko theek beech se modo aur kaato: dono tukde ek jaise hain, tabhi har tukda aadha hai. Yahan tak theek hai?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "body",
+     "from": 26,
+     "beat": "rem:c4-maths-ch05-t01-m-unequal-parts"
+    },
+    {
+     "part": "body",
+     "from": 62,
+     "beat": "rem:c4-maths-ch05-t01-m-unequal-parts"
+    },
+    {
+     "part": "body",
+     "from": 300,
+     "beat": "rem:c4-maths-ch05-t01-m-unequal-parts"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-unequal-parts",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 26,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-unequal-parts",
+      "atChar": 26
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh jawab nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise ek alag tareeke se dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 857,
+   "replyReadyMs": 1653,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1653,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch05-t01-m-unequal-parts",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 3,
+       "equal": false,
+       "title": "Pizza"
+      },
+      {
+       "parts": 3,
+       "title": "Cake"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch05-t01-m-unequal-parts",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 3,
+         "equal": false,
+         "title": "Pizza"
+        },
+        {
+         "parts": 3,
+         "title": "Cake"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 26,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c4-maths-ch05-t01-m-unequal-parts",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 2,
+         "equal": false,
+         "title": "Roti"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 2,
+       "shaded": 0,
+       "label": "Roti"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 2,
+        "equal": false,
+        "title": "Roti"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 3,
+          "equal": false,
+          "title": "Pizza"
+         },
+         {
+          "parts": 3,
+          "title": "Cake"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-unequal-parts"
+     },
+     {
+      "from": 26,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 2,
+          "equal": false,
+          "title": "Roti"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch05-t01-m-unequal-parts"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1713,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Roti ke 2 tukde hue: ek bada, ek chhota. Kya bada tukda roti ke aadhe se zyada hai?",
+   "move": "practice",
+   "card": "Roti ke 2 tukde hue: ek bada, ek chhota. Kya bada tukda roti ke aadhe se zyada hai?",
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "then:c4-maths-ch05-t01-m-unequal-parts"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-unequal-parts",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-unequal-parts"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1496,
+   "replyReadyMs": 3209,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1713,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch05-t01-m-unequal-parts",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 2,
+       "equal": false,
+       "title": "Roti"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:then:c4-maths-ch05-t01-m-unequal-parts",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 2,
+        "equal": false,
+        "title": "Roti"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 2,
+       "shaded": 0,
+       "label": "Roti"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 2,
+        "equal": false,
+        "title": "Roti"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "han",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki do tukde barabar hon tabhi har ek aadha hota; yahan bada tukda chhote se bada hai, toh aadhe se zyada. Chalo, pehle wale sawaal ki taraf wapas aate hain. Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?",
+   "move": "practice",
+   "card": "Pizza ka ek chhota tukda lo. Kya woh pizza ka ek-tihaai hai, haan ya nahi?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch05-t01-m-unequal-parts"
+    },
+    {
+     "part": "body",
+     "from": 123,
+     "beat": "e2"
+    },
+    {
+     "part": "card",
+     "from": 174,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 123,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:rem:c4-maths-ch05-t01-m-unequal-parts",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:e2",
+      "atChar": 123
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Chalo, pehle wale sawaal ki taraf wapas aate hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1081,
+   "replyReadyMs": 1081,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1081,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 2,
+       "equal": false,
+       "title": "Roti"
+      },
+      {
+       "parts": 2,
+       "title": "Barabar"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 2,
+         "equal": false,
+         "title": "Roti"
+        },
+        {
+         "parts": 2,
+         "title": "Barabar"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 123,
+     "atClause": null,
+     "estMs": 8740,
+     "beat": "e2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 3,
+         "equal": false,
+         "title": "Pizza"
+        },
+        {
+         "parts": 3,
+         "title": "Cake"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 2,
+        "equal": false,
+        "title": "Roti"
+       },
+       {
+        "parts": 2,
+        "title": "Barabar"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Pizza"
+      },
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": "Cake"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 2,
+          "equal": false,
+          "title": "Roti"
+         },
+         {
+          "parts": 2,
+          "title": "Barabar"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 123,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 3,
+          "equal": false,
+          "title": "Pizza"
+         },
+         {
+          "parts": 3,
+          "title": "Cake"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "no",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Dekho, pizza ke tukde chhote-bade hain, aur ek-tihaai tabhi banta hai jab 3 tukde barabar hon. Is circle ke 3 barabar tukde hain, ek mein rang. Yeh rangin tukda ek-tihaai hai, 1/3. Neeche wala number 3 isliye hai, kyunki poore circle ke 3 barabar tukde hain. Yeh hissa saaf hua?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e2:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "body",
+     "from": 115,
+     "beat": "e3"
+    },
+    {
+     "part": "body",
+     "from": 279,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 115,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:e3",
+      "atChar": 115
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1100,
+   "replyReadyMs": 1100,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1100,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 3,
+       "equal": false,
+       "title": "Pizza"
+      },
+      {
+       "parts": 3,
+       "title": "Cake"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 3,
+         "equal": false,
+         "title": "Pizza"
+        },
+        {
+         "parts": 3,
+         "title": "Cake"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 115,
+     "atClause": null,
+     "estMs": 7220,
+     "beat": "e3",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 1,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 3,
+        "equal": false,
+        "title": "Pizza"
+       },
+       {
+        "parts": 3,
+        "title": "Cake"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "numbers": [
+     "1/3"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 3,
+          "equal": false,
+          "title": "Pizza"
+         },
+         {
+          "parts": 3,
+          "title": "Cake"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 115,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 3,
+        "shade": 1,
+        "whole": "circle"
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 3549,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ek circle ko 3 dost barabar baantein, toh har dost ko circle ka ek-tihaai milta hai. Board par jo ek rangin tukda hai, woh ek dost ka tukda hai, 1/3. Neeche wala number 3 batata hai ki circle kitne barabar tukdon mein bata. Ek aur tukde mein rang bharo. Ab circle ka kitna bhaag rangin hai, fraction mein?",
+   "move": "practice",
+   "card": "Ek aur tukde mein rang bharo. Ab circle ka kitna bhaag rangin hai, fraction mein?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e3:checkin",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "simpler",
+     "from": 85,
+     "beat": "e3"
+    },
+    {
+     "part": "simpler",
+     "from": 150,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 224,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1128,
+   "replyReadyMs": 4677,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3549,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "numbers": [
+     "1/3"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "phir se bolo",
+   "read": "no_evidence · repeat",
+   "intent": "repeat",
+   "classifyMs": 795,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Phir se dekho: Ek aur tukde mein rang bharo. Ab circle ka kitna bhaag rangin hai, fraction mein?",
+   "move": "practice",
+   "card": "Ek aur tukde mein rang bharo. Ab circle ka kitna bhaag rangin hai, fraction mein?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e3:card",
+    "column": "repeat"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 15,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 746,
+   "replyReadyMs": 1541,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1541,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "numbers": [
+     "1/3"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "2/1",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "2/1 sahi nahi hai. Ek aur tukda rangin hua, toh ab rangin tukde gino. Circle ke kul tukde utne hi rehte hain. Circle ke 3 barabar tukdon mein se 2 mein rang ho, toh circle ka kitna bhaag rangin hai?",
+   "move": "hint",
+   "card": "Ek aur tukde mein rang bharo. Ab circle ka kitna bhaag rangin hai, fraction mein?",
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e3:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "simpler",
+     "from": 19,
+     "beat": "e3"
+    },
+    {
+     "part": "simpler",
+     "from": 70,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 110,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1566,
+   "replyReadyMs": 1567,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1567,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 1,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    },
+    "counts": {
+     "parts": 3,
+     "shaded": 1
+    },
+    "numbers": [
+     "1/3"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 1,
+      "whole": "circle"
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "do-tihaai",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki circle 3 barabar tukdon mein bata hai aur ab 2 mein rang hai, yaani 2/3. Is baar upar wali patti ke 8 barabar tukde hain. Ek mein rang, saat bina rang ke. Rangin tukda 1/8 hai. Dhyaan do, 1/8 ka 8 saare tukde ginta hai, bache hue 7 nahi. Ab tak samajh aaya?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "body",
+     "from": 93,
+     "beat": "e4"
+    },
+    {
+     "part": "body",
+     "from": 258,
+     "beat": "e4"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e4",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-parts@1"
+     },
+     {
+      "from": 93,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e3",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:e4",
+      "atChar": 93
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1556,
+   "replyReadyMs": 1556,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1556,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-parts@1",
+    "params": {
+     "parts": 3,
+     "shade": 2,
+     "whole": "circle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e4",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 3,
+       "shade": 2,
+       "whole": "circle"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 93,
+     "atClause": null,
+     "estMs": 6840,
+     "beat": "e4",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 8,
+         "shade": 1,
+         "label": "1/8"
+        },
+        {
+         "parts": 6,
+         "shade": 1,
+         "label": "?"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 3,
+      "shade": 2,
+      "whole": "circle"
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 8,
+       "shaded": 1,
+       "label": "1/8"
+      },
+      {
+       "parts": 6,
+       "shaded": 1,
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "1/8"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 8,
+        "shade": 1,
+        "label": "1/8"
+       },
+       {
+        "parts": 6,
+        "shade": 1,
+        "label": "?"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 3,
+        "shade": 2,
+        "whole": "circle"
+       }
+      },
+      "beat": "e4"
+     },
+     {
+      "from": 93,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 8,
+          "shade": 1,
+          "label": "1/8"
+         },
+         {
+          "parts": 6,
+          "shade": 1,
+          "label": "?"
+         }
+        ]
+       }
+      },
+      "beat": "e4"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1051,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Neeche wali patti ek ribbon hai, 6 barabar tukde. Raju ne 1 tukda kaat kar le liya, 5 bache. Raju kehta hai usne ribbon ka 1/5 liya, kyunki 5 tukde bache. Kya Raju sahi hai?",
+   "move": "practice",
+   "card": "Neeche wali patti ek ribbon hai, 6 barabar tukde. Raju ne 1 tukda kaat kar le liya, 5 bache. Raju kehta hai usne ribbon ka 1/5 liya, kyunki 5 tukde bache. Kya Raju sahi hai?",
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "e4"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:e4",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e4"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1021,
+   "replyReadyMs": 2072,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1051,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e4",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 8,
+       "shade": 1,
+       "label": "1/8"
+      },
+      {
+       "parts": 6,
+       "shade": 1,
+       "label": "?"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch05-t01-s1:ask:e4",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 8,
+        "shade": 1,
+        "label": "1/8"
+       },
+       {
+        "parts": 6,
+        "shade": 1,
+        "label": "?"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 8,
+       "shaded": 1,
+       "label": "1/8"
+      },
+      {
+       "parts": 6,
+       "shaded": 1,
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "1/8"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 8,
+        "shade": 1,
+        "label": "1/8"
+       },
+       {
+        "parts": 6,
+        "shade": 1,
+        "label": "?"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "no",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Dekho, Raju ka tukda ribbon ke 6 tukdon mein se 1 hai, toh 1/6, 1/5 nahi; bache hue 5 tukde naam nahi badalte. Ek lambi barfi ke 5 barabar tukde kiye, aur 3 tukde kha liye. Khaye hue tukde poori barfi ka kaunsa fraction hain?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch05-t01-s1:e4:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e4"
+    },
+    {
+     "part": "body",
+     "from": 131,
+     "beat": "worked:problem"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch05-t01-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 131,
+      "template": "fraction-parts@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch05-t01-s1:e4",
+     "switchTo": {
+      "unit": "c4-maths-ch05-t01-s1:worked",
+      "atChar": 131
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    }
+   ],
+   "replyMs": 1347,
+   "replyReadyMs": 1347,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1347,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 8,
+       "shade": 1,
+       "label": "1/8"
+      },
+      {
+       "parts": 6,
+       "shade": 1,
+       "label": "1/6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:problem",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 8,
+         "shade": 1,
+         "label": "1/8"
+        },
+        {
+         "parts": 6,
+         "shade": 1,
+         "label": "1/6"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 131,
+     "atClause": null,
+     "estMs": 9880,
+     "beat": "worked:problem",
+     "template": "fraction-parts@1",
+     "board": {
+      "template": "fraction-parts@1",
+      "params": {
+       "parts": 5,
+       "shade": 3,
+       "whole": "bar",
+       "hideResult": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-parts@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 8,
+        "shade": 1,
+        "label": "1/8"
+       },
+       {
+        "parts": 6,
+        "shade": 1,
+        "label": "1/6"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "parts": 5,
+     "shaded": 3
+    },
+    "numbers": [
+     "5"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-parts@1",
+     "params": {
+      "parts": 5,
+      "shade": 3,
+      "whole": "bar",
+      "hideResult": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 8,
+          "shade": 1,
+          "label": "1/8"
+         },
+         {
+          "parts": 6,
+          "shade": 1,
+          "label": "1/6"
+         }
+        ]
+       }
+      },
+      "beat": "worked:problem"
+     },
+     {
+      "from": 131,
+      "board": {
+       "template": "fraction-parts@1",
+       "params": {
+        "parts": 5,
+        "shade": 3,
+        "whole": "bar",
+        "hideResult": true
+       }
+      },
+      "beat": "worked:problem"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "thak gayi, bye",
+   "read": "no_evidence · goodbye",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 1360,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj ke liye itna hi, phir milte hain!",
+   "move": "wrap",
+   "card": null,
+   "cell": {
+    "part": null,
+    "column": "stop"
+   },
+   "held": {
+    "unit": null,
+    "changed": true,
+    "kept": false,
+    "drawn": "cleared",
+    "pages": [],
+    "intent": {
+     "unit": null,
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "goodbye",
+     "joint": null
+    }
+   ],
+   "replyMs": 1,
+   "replyReadyMs": 1361,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1360,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}

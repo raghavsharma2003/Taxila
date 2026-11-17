@@ -1,0 +1,6036 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 732,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ki pitch socho, lagbhag 20 m lambi aur 3 m chaudi. Ek kone se chalo, kinaare-kinaare poori pitch ghoomo aur wapas wahin aa jao. Jitna chale, utna pitch ka parimap hai. Ab tak samajh aaya?",
+   "move": "hook",
+   "card": null,
+   "seams": [
+    {
+     "left": "start",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1078,
+   "replyReadyMs": 1810,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1078,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 875,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Is triangle ki teen bhujayein hain, 4 cm, 5 cm aur 6 cm. Ek kone par ungli rakho aur kinaare par chalao: pehli bhuja, doosri, teesri, aur wapas usi kone par. Ungli jitna chali, wahi parimap hai. Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?",
+   "move": "explain",
+   "card": "Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:hook",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "card",
+     "from": 195,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 743,
+   "replyReadyMs": 1618,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 875,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "6 cm",
+      "5 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "5",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "9 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 663,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "9 cm sahi nahi hai. Ek doosri tarah se samajhte hain. Ab ek khet socho, kone P, Q, R, S, T. P par ungli rakho aur har bhuja ka naam lo jaise-jaise uski lambai jodte ho. Ek bhi bhuja chhooti toh jod adhoora. Jod tabhi poora hota hai jab tum wapas P par pahunchte ho. Yahan tak theek hai?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "body",
+     "from": 20,
+     "beat": "rem:c6-maths-ch06-t01-m-missing-sides"
+    },
+    {
+     "part": "body",
+     "from": 54,
+     "beat": "rem:c6-maths-ch06-t01-m-missing-sides"
+    },
+    {
+     "part": "body",
+     "from": 266,
+     "beat": "rem:c6-maths-ch06-t01-m-missing-sides"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 20,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e1",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides",
+      "atChar": 20
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ek doosri tarah se samajhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 2263,
+   "replyReadyMs": 2926,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2926,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch06-t01-m-missing-sides",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c6-maths-ch06-t01-m-missing-sides",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "cm",
+       "sides": [
+        4,
+        5,
+        6
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 20,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c6-maths-ch06-t01-m-missing-sides",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "pentagon",
+       "unit": "m",
+       "sides": [
+        8,
+        5,
+        7,
+        6,
+        3
+       ],
+       "names": [
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 5,
+     "corners": 5,
+     "sideValues": [
+      "8 m",
+      "5 m",
+      "7 m",
+      "6 m",
+      "3 m"
+     ]
+    },
+    "numbers": [
+     "8",
+     "5",
+     "7",
+     "6",
+     "3"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "triangle",
+        "unit": "cm",
+        "sides": [
+         4,
+         5,
+         6
+        ],
+        "trace": true
+       }
+      },
+      "beat": "then:c6-maths-ch06-t01-m-missing-sides"
+     },
+     {
+      "from": 20,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "pentagon",
+        "unit": "m",
+        "sides": [
+         8,
+         5,
+         7,
+         6,
+         3
+        ],
+        "names": [
+         "P",
+         "Q",
+         "R",
+         "S",
+         "T"
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch06-t01-m-missing-sides"
+     }
+    ]
+   },
+   "guard": [
+    "flat",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "intent": "aside",
+   "classifyMs": 894,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?",
+   "move": "practice",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:0",
+    "column": "aside"
+   },
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "aiAsked": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiQuestion",
+     "joint": null
+    }
+   ],
+   "replyMs": 1085,
+   "replyReadyMs": 1979,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1979,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-missing-sides",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "pentagon",
+     "unit": "m",
+     "sides": [
+      8,
+      5,
+      7,
+      6,
+      3
+     ],
+     "names": [
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 5,
+     "corners": 5,
+     "sideValues": [
+      "8 m",
+      "5 m",
+      "7 m",
+      "6 m",
+      "3 m"
+     ]
+    },
+    "numbers": [
+     "8",
+     "5",
+     "7",
+     "6",
+     "3"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "chauka",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "classifyMs": 599,
+   "classifyPath": "fast",
+   "readRaw": "incorrect"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, toh tumhe chauka sabse achha lagta hai. Ab wapas apne kaam par. Khet PQRST ki paanch bhujayein hain: PQ 8 m, QR 5 m, RS 7 m, ST 6 m, TP 3 m. Khet ka poora kinaara kitne metre ka hai?",
+   "move": "practice",
+   "card": "Khet PQRST ki paanch bhujayein hain: PQ 8 m, QR 5 m, RS 7 m, ST 6 m, TP 3 m. Khet ka poora kinaara kitne metre ka hai?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:0:then",
+    "column": "aside_reply"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 71,
+     "beat": "then:c6-maths-ch06-t01-m-missing-sides"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiReply",
+     "joint": null
+    },
+    {
+     "left": "aiReply",
+     "right": "card",
+     "joint": "afterAiLine",
+     "form": "Ab wapas apne kaam par.",
+     "by": "authored"
+    }
+   ],
+   "j2": {
+    "line": "Achha, toh tumhe chauka sabse achha lagta hai.",
+    "refused": []
+   },
+   "replyMs": 1630,
+   "replyReadyMs": 2229,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2229,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-missing-sides",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "pentagon",
+     "unit": "m",
+     "sides": [
+      8,
+      5,
+      7,
+      6,
+      3
+     ],
+     "names": [
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-missing-sides",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 5,
+     "corners": 5,
+     "sideValues": [
+      "8 m",
+      "5 m",
+      "7 m",
+      "6 m",
+      "3 m"
+     ]
+    },
+    "numbers": [
+     "8",
+     "5",
+     "7",
+     "6",
+     "3"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "29 m",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki P se wapas P tak paanchon bhujayein: 8 + 5 + 7 + 6 + 3 = 29 m. Theek hai, ab wapas usi sawaal par chalte hain. Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?",
+   "move": "practice",
+   "card": "Ungli kone se chal ke wapas usi kone tak kul kitne cm chali?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c6-maths-ch06-t01-m-missing-sides"
+    },
+    {
+     "part": "body",
+     "from": 82,
+     "beat": "e1"
+    },
+    {
+     "part": "card",
+     "from": 130,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 82,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-missing-sides",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:e1",
+      "atChar": 82
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Theek hai, ab wapas usi sawaal par chalte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1057,
+   "replyReadyMs": 1057,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1057,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "pentagon",
+     "unit": "m",
+     "sides": [
+      8,
+      5,
+      7,
+      6,
+      3
+     ],
+     "names": [
+      "P",
+      "Q",
+      "R",
+      "S",
+      "T"
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "pentagon",
+       "unit": "m",
+       "sides": [
+        8,
+        5,
+        7,
+        6,
+        3
+       ],
+       "names": [
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T"
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 82,
+     "atClause": null,
+     "estMs": 8360,
+     "beat": "e1",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "cm",
+       "sides": [
+        4,
+        5,
+        6
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "pentagon",
+      "unit": "m",
+      "sides": [
+       8,
+       5,
+       7,
+       6,
+       3
+      ],
+      "names": [
+       "P",
+       "Q",
+       "R",
+       "S",
+       "T"
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "6 cm",
+      "5 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "5",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "pentagon",
+        "unit": "m",
+        "sides": [
+         8,
+         5,
+         7,
+         6,
+         3
+        ],
+        "names": [
+         "P",
+         "Q",
+         "R",
+         "S",
+         "T"
+        ],
+        "trace": true
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 82,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "triangle",
+        "unit": "cm",
+        "sides": [
+         4,
+         5,
+         6
+        ],
+        "trace": true
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 15 cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 902,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Dekho, 4 + 5 + 6 = 15 cm, teeno bhujayein judi, koi nahi chhooti. Yeh hexagon hai, chhah bhujaon wala. Sab bhujayein barabar hain, par label sirf ek par hai: 5 cm. Baaki par kuch likha nahi, phir bhi woh kinaare ka hissa hain. Parimap mein har bhuja aati hai, likhi ho ya na ho. Yahan tak saaf hai?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e1:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1"
+    },
+    {
+     "part": "body",
+     "from": 82,
+     "beat": "e2"
+    },
+    {
+     "part": "body",
+     "from": 295,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 82,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e1",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:e2",
+      "atChar": 82
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1105,
+   "replyReadyMs": 2007,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2007,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay",
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "cm",
+     "sides": [
+      4,
+      5,
+      6
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "cm",
+       "sides": [
+        4,
+        5,
+        6
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 82,
+     "atClause": null,
+     "estMs": 6840,
+     "beat": "e2",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "hexagon",
+       "side": "5 cm"
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "cm",
+      "sides": [
+       4,
+       5,
+       6
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "numbers": [
+     "5"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "triangle",
+        "unit": "cm",
+        "sides": [
+         4,
+         5,
+         6
+        ],
+        "trace": true
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 82,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "hexagon",
+        "side": "5 cm"
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1747,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Poore hexagon ka parimap kitna hua?",
+   "move": "practice",
+   "card": "Poore hexagon ka parimap kitna hua?",
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1041,
+   "replyReadyMs": 2788,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1747,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "side": "5 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "numbers": [
+     "5"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "5 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 661,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "5 cm sahi nahi hai. Har bhuja 5 cm ki hai, aur hexagon ki bhujayein chhah hain. In dono baaton ko milakar socho. Poore hexagon ka parimap kitna hua?",
+   "move": "hint",
+   "card": "Poore hexagon ka parimap kitna hua?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 20,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 80,
+     "beat": "e2"
+    },
+    {
+     "part": "card",
+     "from": 113,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 3881,
+   "replyReadyMs": 4542,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 4542,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "side": "5 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "numbers": [
+     "5"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "5 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1071,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "5 cm nahi, yeh jawab theek nahi baitha. Shahad ke chhatte ka ek khaana dekho: uski chhah bhujayein hoti hain, sab ek jaisi. Yahan ek bhuja par 5 cm likha hai, toh baaki paanch bhi 5 cm ki hain. Parimap ke liye chhahon bhujayein ginni hain, sirf likhi hui nahi. Poore hexagon ka parimap kitna hua?",
+   "move": "hint",
+   "card": "Poore hexagon ka parimap kitna hua?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 40,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 124,
+     "beat": "e2"
+    },
+    {
+     "part": "simpler",
+     "from": 194,
+     "beat": "e2"
+    },
+    {
+     "part": "card",
+     "from": 261,
+     "beat": "e2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1273,
+   "replyReadyMs": 2344,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2344,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "hexagon",
+     "side": "5 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    },
+    "counts": {
+     "sides": 6,
+     "corners": 6
+    },
+    "numbers": [
+     "5"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "hexagon",
+      "side": "5 cm"
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "30 centimetre",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki chhah bhujayein, har ek 5 cm ki: 6 × 5 = 30 cm. Ab yeh rectangle dekho, 6 cm lamba aur 4 cm chauda. Parimap ek dhaaga hai jo kinaare par chalta hai: upar 6, bagal ki bhuja 4, neeche 6, phir 4. Andar ki jagah area hai, woh bilkul alag cheez hai. Yahan tak theek hai?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e2:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2"
+    },
+    {
+     "part": "body",
+     "from": 67,
+     "beat": "e3"
+    },
+    {
+     "part": "body",
+     "from": 264,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 67,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e2",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:e3",
+      "atChar": 67
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 2395,
+   "replyReadyMs": 2396,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2396,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "hexagon",
+     "unit": "cm",
+     "sides": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "hexagon",
+       "unit": "cm",
+       "sides": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 67,
+     "atClause": null,
+     "estMs": 6080,
+     "beat": "e3",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 6,
+       "h": 4,
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "hexagon",
+      "unit": "cm",
+      "sides": [
+       5,
+       5,
+       5,
+       5,
+       5,
+       5
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "hexagon",
+        "unit": "cm",
+        "sides": [
+         5,
+         5,
+         5,
+         5,
+         5,
+         5
+        ],
+        "trace": true
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 67,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "rect",
+        "unit": "cm",
+        "w": 6,
+        "h": 4,
+        "trace": true
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "flat",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 887,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "move": "practice",
+   "card": "Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e3:checkin",
+    "column": "aside"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 55,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "park",
+     "joint": null
+    },
+    {
+     "left": "park",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2543,
+   "replyReadyMs": 3430,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2543,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 1199,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Dhaaga sirf chaaron kinaaron par jaata hai: 6, 4, 6 aur 4. Andar ki jagah ka isse koi lena-dena nahi. 6 cm lambe, 4 cm chaude rectangle ke kinaare par ek baar lapetne mein kitna dhaaga lagega?",
+   "move": "hint",
+   "card": "Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e3:card",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "simpler",
+     "from": 59,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 102,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1277,
+   "replyReadyMs": 2476,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2476,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 1122,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Rectangle ka kinaara ek dhaage ki tarah khul gaya hai: 6 cm, 4 cm, 6 cm, 4 cm. Andar ki jagah is line mein nahi aati. 6 cm lambe, 4 cm chaude rectangle ke kinaare par ek baar lapetne mein kitna dhaaga lagega?",
+   "move": "reteach",
+   "card": "Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e3:card",
+    "column": "picture"
+   },
+   "pageParts": [
+    {
+     "part": "alt",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 118,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e3",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1",
+      "beside": "unrolled@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e3"
+    },
+    "layout": {
+     "split": true,
+     "panels": [
+      {
+       "side": "left",
+       "role": "held",
+       "template": "measured@1",
+       "unit": "c6-maths-ch06-t01-s1:e3"
+      },
+      {
+       "side": "right",
+       "role": "view",
+       "template": "unrolled@1",
+       "view": "unrolled"
+      }
+     ]
+    },
+    "picture": {
+     "view": "unrolled",
+     "decided": "once"
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 935,
+   "replyReadyMs": 2057,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2057,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "altView": "unrolled",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "24 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 650,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "24 cm sahi nahi hai. Aao, isko ek naye dhang se dekhein. Kinaare par dhaaga lapeto, phir kholke scale par rakho: woh lambai parimap hai, cm mein. Andar tiles bichhao toh woh area hai. Parimap mein chaaron bhujayein jodte hain, guna nahi. Yeh hissa saaf hua?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e3:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "body",
+     "from": 21,
+     "beat": "rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    {
+     "part": "body",
+     "from": 57,
+     "beat": "rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    {
+     "part": "body",
+     "from": 238,
+     "beat": "rem:c6-maths-ch06-t01-m-area-perimeter"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 21,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e3",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+      "atChar": 21
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Aao, isko ek naye dhang se dekhein.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1053,
+   "replyReadyMs": 1703,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1703,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 6,
+     "h": 4,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 6,
+       "h": 4,
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 21,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 14,
+       "h": 9
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "14 cm",
+      "9 cm",
+      "14 cm",
+      "9 cm"
+     ]
+    },
+    "numbers": [
+     "14",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "rect",
+        "unit": "cm",
+        "w": 6,
+        "h": 4,
+        "trace": true
+       }
+      },
+      "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+     },
+     {
+      "from": 21,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "rect",
+        "unit": "cm",
+        "w": 14,
+        "h": 9
+       }
+      },
+      "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 815,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:1",
+    "column": "aside"
+   },
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "returnSaid": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "return",
+     "joint": null
+    }
+   ],
+   "replyMs": 1792,
+   "replyReadyMs": 2607,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1792,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 14,
+     "h": 9
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "14 cm",
+      "9 cm",
+      "14 cm",
+      "9 cm"
+     ]
+    },
+    "numbers": [
+     "14",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    }
+   },
+   "guard": [
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "sixer",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 882,
+   "classifyPath": "model",
+   "readRaw": "no_evidence"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, sixer! Theek hai. Ab phir se kaam par aate hain. Tumhare paas 140 cm ribbon hai. 14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ribbon lagao. Kitna bachega?",
+   "move": "practice",
+   "card": "Tumhare paas 140 cm ribbon hai. 14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ribbon lagao. Kitna bachega?",
+   "cell": {
+    "part": null,
+    "column": "aside_reply"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 56,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "asideReply",
+     "joint": null
+    },
+    {
+     "left": "asideReply",
+     "right": "card",
+     "joint": "afterAside",
+     "form": "Ab phir se kaam par aate hain.",
+     "by": "authored"
+    }
+   ],
+   "j2": {
+    "line": "Achha, sixer! Theek hai.",
+    "refused": []
+   },
+   "replyMs": 1131,
+   "replyReadyMs": 2013,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1131,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 14,
+     "h": 9
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-area-perimeter",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "14 cm",
+      "9 cm",
+      "14 cm",
+      "9 cm"
+     ]
+    },
+    "numbers": [
+     "14",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 994,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, ise doosre, aasaan shabdon mein bolti hoon. Ribbon andar nahi jaata. Pehle dekho kinaare par kitna lagega, phir use 140 mein se ghatao. 140 cm ribbon mein se 14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ek baar lagaane ke baad kitna ribbon bachega?",
+   "move": "hint",
+   "card": "Tumhare paas 140 cm ribbon hai. 14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ribbon lagao. Kitna bachega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:1:then",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    {
+     "part": "simpler",
+     "from": 77,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    {
+     "part": "card",
+     "from": 144,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "hindiSwitch",
+     "joint": "hindiSwitch",
+     "form": "Bilkul, ise doosre, aasaan shabdon mein bolti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1316,
+   "replyReadyMs": 2310,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2310,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 14,
+     "h": 9
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-area-perimeter",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 1,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "14 cm",
+      "9 cm",
+      "14 cm",
+      "9 cm"
+     ]
+    },
+    "numbers": [
+     "14",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle main try karun?",
+   "read": "no_evidence · selftry",
+   "intent": "try_first",
+   "classifyMs": 880,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo.",
+   "move": "practice",
+   "card": "Tumhare paas 140 cm ribbon hai. 14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ribbon lagao. Kitna bachega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:1:then",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    }
+   ],
+   "replyMs": 923,
+   "replyReadyMs": 1803,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1803,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch06-t01-m-area-perimeter",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "cm",
+     "w": 14,
+     "h": 9
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:then:c6-maths-ch06-t01-m-area-perimeter",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "14 cm",
+      "9 cm",
+      "14 cm",
+      "9 cm"
+     ]
+    },
+    "numbers": [
+     "14",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 14,
+      "h": 9
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "94 cm hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 681,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki kinaare par 14 + 9 + 14 + 9 = 46 cm lagega, toh 140 − 46 = 94 cm bachega. Chalo, ab pichhle sawaal par wapas chalte hain. Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "move": "practice",
+   "card": "Kinaare par ek baar dhaaga lapetna hai. Kitna dhaaga lagega?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:rem:1:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c6-maths-ch06-t01-m-area-perimeter"
+    },
+    {
+     "part": "body",
+     "from": 93,
+     "beat": "e3"
+    },
+    {
+     "part": "card",
+     "from": 141,
+     "beat": "e3"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 93,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:rem:c6-maths-ch06-t01-m-area-perimeter",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:e3",
+      "atChar": 93
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Chalo, ab pichhle sawaal par wapas chalte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1178,
+   "replyReadyMs": 1859,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1859,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "name": "140 − 46 = 94 cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "name": "140 − 46 = 94 cm"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 93,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "e3",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 6,
+       "h": 4,
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "name": "140 − 46 = 94 cm"
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "6 cm",
+      "4 cm",
+      "6 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "6",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 6,
+      "h": 4,
+      "trace": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "name": "140 − 46 = 94 cm"
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 93,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "rect",
+        "unit": "cm",
+        "w": 6,
+        "h": 4,
+        "trace": true
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "20 centimetre",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Dekho, dhaaga sirf kinaare par chalta hai: 6 + 4 + 6 + 4 = 20 cm. Phoolon ki ek kyari triangle jaisi hai, uski bhujayein 7 m, 9 m aur 12 m hain. Uske kinaare-kinaare ek baar baad lagani hai. Kitni lambi baad lagegi?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3"
+    },
+    {
+     "part": "body",
+     "from": 82,
+     "beat": "worked:problem"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "area-grid@1"
+     },
+     {
+      "from": 82,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:e3",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:worked",
+      "atChar": 82
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    }
+   ],
+   "replyMs": 2477,
+   "replyReadyMs": 2477,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2477,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "area-grid@1",
+    "params": {
+     "w": 6,
+     "h": 4,
+     "mode": "perimeter",
+     "unit": "cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:problem",
+     "template": "area-grid@1",
+     "board": {
+      "template": "area-grid@1",
+      "params": {
+       "w": 6,
+       "h": 4,
+       "mode": "perimeter",
+       "unit": "cm"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 82,
+     "atClause": null,
+     "estMs": 7600,
+     "beat": "worked:problem",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "m",
+       "sides": [
+        7,
+        9,
+        12
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "area-grid@1",
+     "params": {
+      "w": 6,
+      "h": 4,
+      "mode": "perimeter",
+      "unit": "cm"
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "area-grid@1",
+       "params": {
+        "w": 6,
+        "h": 4,
+        "mode": "perimeter",
+        "unit": "cm"
+       }
+      },
+      "beat": "worked:problem"
+     },
+     {
+      "from": 82,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "triangle",
+        "unit": "m",
+        "sides": [
+         7,
+         9,
+         12
+        ],
+        "trace": true
+       }
+      },
+      "beat": "worked:problem"
+     }
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 809,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Socho tum kyari ke ek kone par khade ho. 7 m chalo, mudo, 9 m chalo, mudo, phir 12 m chal ke wahin pahunch jao. Baad utni hi lambi chahiye jitna tum chale, toh wahi doori nikalni hai. Yahan tak saaf hai?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:worked:problem",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "worked:problem"
+    },
+    {
+     "part": "simpler",
+     "from": 41,
+     "beat": "worked:problem"
+    },
+    {
+     "part": "simpler",
+     "from": 112,
+     "beat": "worked:problem"
+    },
+    {
+     "part": "body",
+     "from": 184,
+     "beat": "worked:problem"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 2908,
+   "replyReadyMs": 3717,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3717,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:problem",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 901,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehla kadam dekho. Baad kinaare par lagegi, toh teeno bhujayein jodni hain: P = 7 + 9 + 12, kyunki ek bhi bhuja chhooti toh baad mein wahan khaali jagah reh jaayegi. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step1"
+    },
+    {
+     "part": "body",
+     "from": 19,
+     "beat": "worked:step1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1979,
+   "replyReadyMs": 2880,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1979,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "quiz"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1910,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Pehle 7 aur 9 jodo: 7 + 9 = 16 m, kyunki do bhujayein ho gayi, teesri abhi baaki hai. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1081,
+   "replyReadyMs": 2991,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1910,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 848,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Teesri bhuja bachi, 12 m. 16 mein 12 jodo, kitna hua?",
+   "move": "worked_example",
+   "card": "Teesri bhuja bachi, 12 m. 16 mein 12 jodo, kitna hua?",
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "worked"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1184,
+   "replyReadyMs": 2032,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1184,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 28 m",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 645,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Dekho, baad ko teeno bhujaon par chalna hai, ek bhi bhuja chhoot nahi sakti. Toh poora jawab: kyari ke liye 28 m lambi baad. Yahan tak theek hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:worked:yourStep",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "worked"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1796,
+   "replyReadyMs": 2441,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2441,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1343,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "16 mein pehle 4 jodo toh 20, phir bache 8 jodo toh 28 m; 12 ka koi hissa chhoota nahi. Yeh hissa saaf hua?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:worked:yourStep",
+    "column": "give_up",
+    "keyed": true
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "worked"
+    },
+    {
+     "part": "body",
+     "from": 87,
+     "beat": "worked"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1149,
+   "replyReadyMs": 2492,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1343,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 3,
+     "corners": 3,
+     "sideValues": [
+      "12 m",
+      "9 m",
+      "7 m"
+     ]
+    },
+    "numbers": [
+     "12",
+     "9",
+     "7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 935,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, yeh baat phir milegi; ab aage chalte hain. Ek park ki chaar bhujayein alag-alag lambai ki hain. Ek kone se ghoomo toh: 9 m, 6 m, 7 m aur 4 m. Usi kone par wapas pahunchne tak kitne metre chaloge?",
+   "move": "practice",
+   "card": "Ek park ki chaar bhujayein alag-alag lambai ki hain. Ek kone se ghoomo toh: 9 m, 6 m, 7 m aur 4 m. Usi kone par wapas pahunchne tak kitne metre chaloge?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:worked:yourStep",
+    "column": "give_up",
+    "keyed": true
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 50,
+     "beat": "c1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 50,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:worked",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:c1",
+      "atChar": 50
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "afterKeyGoOn",
+     "joint": "afterKeyGoOn",
+     "form": "Achha, yeh baat phir milegi; ab aage chalte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1683,
+   "replyReadyMs": 2618,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1683,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "triangle",
+     "unit": "m",
+     "sides": [
+      7,
+      9,
+      12
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "triangle",
+       "unit": "m",
+       "sides": [
+        7,
+        9,
+        12
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 50,
+     "atClause": null,
+     "estMs": 3420,
+     "beat": "c1",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "quadrilateral",
+       "unit": "m",
+       "sides": [
+        9,
+        6,
+        7,
+        4
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "triangle",
+      "unit": "m",
+      "sides": [
+       7,
+       9,
+       12
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "9 m",
+      "6 m",
+      "7 m",
+      "4 m"
+     ]
+    },
+    "numbers": [
+     "9",
+     "6",
+     "7",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "quadrilateral",
+      "unit": "m",
+      "sides": [
+       9,
+       6,
+       7,
+       4
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "triangle",
+        "unit": "m",
+        "sides": [
+         7,
+         9,
+         12
+        ],
+        "trace": true
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 50,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "quadrilateral",
+        "unit": "m",
+        "sides": [
+         9,
+         6,
+         7,
+         4
+        ]
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "22 m",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 732,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "22 m sahi nahi hai. Pehle 9 aur 6, phir usme 7. Aakhri 4 bhi jodna, tabhi chakkar poora hota hai. 9 m, 6 m, 7 m aur 4 m bhujaon wale park mein ek kone se ghoom ke wapas usi kone tak kitne metre hote hain?",
+   "move": "hint",
+   "card": "Ek park ki chaar bhujayein alag-alag lambai ki hain. Ek kone se ghoomo toh: 9 m, 6 m, 7 m aur 4 m. Usi kone par wapas pahunchne tak kitne metre chaloge?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:check:c1",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1"
+    },
+    {
+     "part": "simpler",
+     "from": 20,
+     "beat": "c1"
+    },
+    {
+     "part": "simpler",
+     "from": 48,
+     "beat": "c1"
+    },
+    {
+     "part": "card",
+     "from": 98,
+     "beat": "c1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:c1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:c1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2291,
+   "replyReadyMs": 3023,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3023,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "quadrilateral",
+     "unit": "m",
+     "sides": [
+      9,
+      6,
+      7,
+      4
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "quadrilateral",
+      "unit": "m",
+      "sides": [
+       9,
+       6,
+       7,
+       4
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "9 m",
+      "6 m",
+      "7 m",
+      "4 m"
+     ]
+    },
+    "numbers": [
+     "9",
+     "6",
+     "7",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "quadrilateral",
+      "unit": "m",
+      "sides": [
+       9,
+       6,
+       7,
+       4
+      ]
+     }
+    }
+   },
+   "guard": [
+    "samecard",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "26 m hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1049,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai, kyunki chaaron bhujayein judti hain: 9 + 6 + 7 + 4 = 26 m. Zoya ne 10 cm lambe, 4 cm chaude card ka parimap 10 × 4 = 40 cm nikala. Sahi parimap kitne centimetre hai?",
+   "move": "practice",
+   "card": "Zoya ne 10 cm lambe, 4 cm chaude card ka parimap 10 × 4 = 40 cm nikala. Sahi parimap kitne centimetre hai?",
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:check:c1",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1"
+    },
+    {
+     "part": "card",
+     "from": 75,
+     "beat": "c2"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     },
+     {
+      "from": 75,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:c1",
+     "switchTo": {
+      "unit": "c6-maths-ch06-t01-s1:c2",
+      "atChar": 75
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 856,
+   "replyReadyMs": 1905,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1905,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "quadrilateral",
+     "unit": "m",
+     "sides": [
+      9,
+      6,
+      7,
+      4
+     ],
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch06-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "quadrilateral",
+       "unit": "m",
+       "sides": [
+        9,
+        6,
+        7,
+        4
+       ],
+       "trace": true
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 75,
+     "atClause": null,
+     "estMs": 6840,
+     "beat": "c2",
+     "template": "measured@1",
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "cm",
+       "w": 10,
+       "h": 4
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "quadrilateral",
+      "unit": "m",
+      "sides": [
+       9,
+       6,
+       7,
+       4
+      ],
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 cm",
+      "4 cm",
+      "10 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "10",
+     "4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 10,
+      "h": 4
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "quadrilateral",
+        "unit": "m",
+        "sides": [
+         9,
+         6,
+         7,
+         4
+        ],
+        "trace": true
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 75,
+      "board": {
+       "template": "measured@1",
+       "params": {
+        "shape": "rect",
+        "unit": "cm",
+        "w": 10,
+        "h": 4
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 28 cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 975,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Dekho, parimap kinaara hai: 10 + 4 + 10 + 4 = 28 cm; 10 × 4 andar ki jagah hai. Seedhi bhujaon wali har shape mein har bhuja jodna chalta hai. Ab ek rectangle socho: iski bhujayein jodiyon mein aati hain, aur isse jodne ka ek jaldi wala tareeka milta hai. Yahan tak saaf hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch06-t01-s1:check:c2",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2"
+    },
+    {
+     "part": "bridge",
+     "from": 92,
+     "beat": "bridge"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "area-grid@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s1:c2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "bridge",
+     "joint": null
+    },
+    {
+     "left": "bridge",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 845,
+   "replyReadyMs": 1820,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1820,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "noconfirm"
+    ]
+   },
+   "beat": "s2:bridge:bridge",
+   "boardRef": {
+    "template": "area-grid@1",
+    "params": {
+     "w": 10,
+     "h": 4,
+     "mode": "perimeter",
+     "unit": "cm"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "area-grid@1",
+    "boardRef": {
+     "template": "area-grid@1",
+     "params": {
+      "w": 10,
+      "h": 4,
+      "mode": "perimeter",
+      "unit": "cm"
+     }
+    },
+    "counts": {
+     "rows": 4,
+     "cols": 10,
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 cm",
+      "4 cm",
+      "10 cm",
+      "4 cm"
+     ]
+    },
+    "numbers": [
+     "10",
+     "4",
+     "28"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "area-grid@1",
+     "params": {
+      "w": 10,
+      "h": 4,
+      "mode": "perimeter",
+      "unit": "cm"
+     }
+    }
+   },
+   "guard": [
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1101,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Is rectangle mein upar aur neeche wali bhuja 10 m ki hai, woh lambai hai. Daayein-baayein wali 6 m ki, woh chaudai. Aamne-saamne ki bhujayein barabar hoti hain. 10 aur 6 ek-ek baar likhe hain, par chakkar lagao toh dono do-do baar milte hain. Yahan tak theek hai?",
+   "move": "explain",
+   "card": null,
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1"
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch06-t01-s2:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "measured@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch06-t01-s2:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 2719,
+   "replyReadyMs": 3820,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2719,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "measured@1",
+    "params": {
+     "shape": "rect",
+     "unit": "m",
+     "w": 10,
+     "h": 6,
+     "trace": true
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "measured@1",
+    "boardRef": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 10,
+      "h": 6,
+      "trace": true
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4,
+     "sideValues": [
+      "10 m",
+      "6 m",
+      "10 m",
+      "6 m"
+     ]
+    },
+    "numbers": [
+     "10",
+     "6"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "m",
+      "w": 10,
+      "h": 6,
+      "trace": true
+     }
+    }
+   },
+   "guard": [
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ab main jaati hoon, bye",
+   "read": "no_evidence · goodbye",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 1346,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj ke liye itna hi, phir milte hain.",
+   "move": "wrap",
+   "card": null,
+   "cell": {
+    "part": null,
+    "column": "stop"
+   },
+   "held": {
+    "unit": null,
+    "changed": true,
+    "kept": false,
+    "drawn": "cleared",
+    "pages": [],
+    "intent": {
+     "unit": null,
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "goodbye",
+     "joint": null
+    }
+   ],
+   "replyMs": 0,
+   "replyReadyMs": 1346,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1346,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}
