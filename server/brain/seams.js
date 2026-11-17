@@ -55,6 +55,8 @@ export const SEAM_TABLE = [
   ["helpSpent", "returnCard", "backTo"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
+  // (Brain 044 T7: her go-ahead to try an asked step, into the step's question again)
+  ["tryFirst", "stepAsk", "afterTryFirst"],
   // (dc-r8-director25 L2 item 5: a picture's caption takes the seams a point takes; a key, the ones the verdict it follows takes)
   ["asideReply", "caption", "afterAside"], ["aiLine", "caption", "afterAiLine"], ["aiReply", "caption", "afterAiLine"],
   ["key", "returnCard", "backTo"], ["key", "remediation", "beforeRemediation"],

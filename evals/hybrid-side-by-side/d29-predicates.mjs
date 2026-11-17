@@ -11,6 +11,7 @@
 //   pointNoFit     T1: a point and its card that do not fit in one turn (and no quick question of the script's fits): the turn ends on the
 //                  point's check-in, the row says so (noFit), and this counts it. Pending (counted, not gated) until Learning 017's cuts are
 //                  merged; it should read 0 on the pilots then
+//   stepTryFirst   T7: "let me try" at an asked step gets that step's question again — no step skipped, no other card in its place
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -79,5 +80,16 @@ export const D29_PREDICATES = {
   /** T1: a point's turn that ends on its check-in because the point and its card do not fit (the walk's noFit). */
   pointNoFit(L, r) {
     return r.who === "teacher" && r.noFit === "point" ? "a point and its card that do not fit: the point ends on its check-in" : null;
+  },
+  /** T7: the child asks to try at an asked step: her next turn asks that step's question again (c4 stuck 28; c6 offtopic 38; c5-t02 steady 32,
+   *  offtopic 38). */
+  stepTryFirst(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx.prevT) return null;
+    const pp = ctx.prevT.pageParts ?? [];
+    const ask = pp.find((p) => p.part === "stepAsk");
+    if (!ask || String(ctx.prevIntent ?? "") !== "try_first" && !/selftry/.test(String(ctx.prevRead ?? ""))) return null;
+    const t = String(ctx.prevT.text ?? "");
+    const q = norm(t.slice(ask.from ?? 0, pp[pp.indexOf(ask) + 1]?.from ?? t.length));
+    return q && norm(r.text).includes(q) ? null : `"let me try" at the asked ${ask.beat} answered without its question`;
   },
 };

@@ -39,7 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART } from "./help.js";
+import { pickHelp, addSaid, TEACHBACK_PART, helpJoint } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -881,7 +881,7 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
   if (!asksSteps(we) || scriptFor(kit)?.script?.recordedRun) return null;
   const steps = we.steps ?? [];
   const lead = [];
-  let problemLines = 0, stepFrom = (w.workedStep ?? 0) + 1, stepReply = null;
+  let problemLines = 0, stepFrom = (w.workedStep ?? 0) + 1, stepReply = null, stepMissSaid = null;
   if (!w.workedPosed) {
     w.workedPosed = true; w.workedStep = 0;
     const problem = [saidIn(we.problem, lang)].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
@@ -896,9 +896,13 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     const right = !helped && read?.outcome === "correct";
     const st = steps[k];
     const line = helped ? null : right ? saidIn(st.ask.right, lang) : scriptWorkedStepLine(st, lang);
-    if (line) lead.push(fillFriend(String(line).replace(/\s+/g, " ").trim(), friendOf));
+    // (dc-r8-director28 Brain 044 T7: a wrong answer to the asked step hears a stepMiss form — the script's, else code's — before the step is told)
+    const wrong = !helped && !right && ["incorrect", "partial", "misconception"].includes(String(read?.outcome ?? ""));
+    const miss = wrong && line ? helpJoint(scriptFor(kit)?.script, "stepMiss", { lang, lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.stepMiss ?? 0 }) : null;
+    if (miss?.text) { s.helpJointN = { ...(s.helpJointN ?? {}), stepMiss: (s.helpJointN?.stepMiss ?? 0) + 1 }; stepMissSaid = miss.text; }
+    if (line) lead.push(fillFriend(`${miss?.text ? `${miss.text} ` : ""}${String(line).replace(/\s+/g, " ").trim()}`, friendOf));
     w.workedStep = k + 1; stepFrom = k + 1;
-    stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}) };
+    stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}), ...(stepMissSaid ? { miss: stepMissSaid } : {}) };
     s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
     if (helped) stepFrom = k + 2;
   }
@@ -3562,7 +3566,30 @@ function helpAfter(prev, input, out, pre) {
 /** Brain 042: the part her last turn was on (its beat), for a reply said alone before a worked segment (breakL2's forceAt 0). Set per step:
  *  the walk is synchronous. */
 let leadBeatOf = null;
+/** dc-r8-director28 Brain 044 T7: "let me try" at an asked step means that step — she says the try-first line and the step's question again,
+ *  the step still asked (c4 stuck 28: steps 1 and 2 never said, recorded told; c6 offtopic 38; c5-t02 steady 32, offtopic 38). null otherwise. */
+function stepTryAgain(prev, input) {
+  const sa = prev?.lastMove?.stepAsk;
+  if (!sa?.prompt || input?.event !== "turn" || input.branch || !scriptOn() || prev.lastMove?.splitClose || columnName(input, prev) !== "try_first") return null;
+  const we = skillScriptOf(input.kit, sa.skillId)?.workedExample;
+  const a = we?.steps?.[sa.step]?.ask;
+  if (!a) return null;
+  const s = structuredClone(prev);
+  s.turn += 1;
+  friendOf = s.ctx?.firstName ?? "";
+  // (the asked step is on the table again: its reading stays the step's)
+  const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
+  s.quickItem = qi; s.activeItemId = qi.id;
+  const lm = prev.lastMove;
+  const m = { kind: "worked_example", shape: lm.shape, request: "selftry", stepAgain: true, stepAsk: { ...sa }, skillId: sa.skillId, format: lm.format,
+    ...(lm.scriptBeat ? { scriptBeat: lm.scriptBeat } : {}), ...(lm.methods ? { methods: lm.methods } : {}), ...(lm.prefs ? { prefs: lm.prefs } : {}) };
+  s.lastMove = m; s.moveVoiced = false;
+  const ui = { status: "your_turn", ...(prev.lastUi?.later ? { later: prev.lastUi.later } : {}) };
+  s.lastUi = ui;
+  return { state: s, move: m, moduleCommands: [], ui, end: false, proposal: directorProposal(m, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+}
 export function step(prev, input) {
+  const tryAgain = stepTryAgain(prev, input);
   leadBeatOf = prev?.lastMove?.closeBeat ?? prev?.lastMove?.scriptBeat ?? null;
   // (Brain 042: a quick question or an asked step was what the child's line was read against — no card: it leaves the table before anything
   // else reads it; the walk acts on the reading — heldTurn's quickAnswer, the worked example's stepAsk)
@@ -3575,8 +3602,8 @@ export function step(prev, input) {
   // after it for a hint, a card asked or a turn that goes on)
   const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
   const pre = helpBefore(prev, input, said);
-  let out = pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input);
-  if (!pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
+  let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
+  if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
   // (help's wording is said on its own turn: a walk move built from the last one never carries it into a turn help did not decide)
   if (input?.event === "turn" && out?.state?.lastMove && !out.state.lastMove.help && prev?.lastMove?.help && out.state.lastMove.simpler && out.state.lastMove.simpler === prev.lastMove.simpler) {
     const { simpler: _s, simplerBeat: _b, smaller: _m, helpNew: _n, ...lm } = out.state.lastMove;

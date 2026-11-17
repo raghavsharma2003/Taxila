@@ -183,3 +183,19 @@ describe("T6: an aside reply or a park never ends on a check-in", () => {
     assert.equal(PREDICATES.longTwoPart({ rows: [r] }, r), null, "85 words with a 17-word reply and joint: 70 counted");
   });
 });
+
+describe("T7: \"let me try\" at an asked step", () => {
+  test("stepTryFirst reads every T7 row of director28 (c4 stuck 28; c6 offtopic 38; c5-t02 steady 32, offtopic 38)", () => {
+    for (const [p, t, i] of [["stuck", "c4", 28], ["offtopic", "c6", 38], ["steady", "c5t02", 32], ["offtopic", "c5t02", 38]]) assert.ok(flagged(p, t, "stepTryFirst").has(i), `${p} ${t} row ${i}`);
+  });
+  test("a wrong answer to an asked step hears a stepMiss form first: the script's, else code's (three forms, four words or fewer, no answer named); a missing joint is a compile hole", async () => {
+    const { helpJoint, helpJointHoles, FALLBACK_JOINTS: FJ } = await import("../server/director/help.js");
+    assert.equal(FJ.stepMiss.length, 3);
+    for (const f of FJ.stepMiss) for (const t of [f.hi, f.en]) { assert.ok(t.split(/\s+/).length <= 4, t); assert.ok(!/\d/.test(t), t); }
+    const bare = { joints: {} };
+    assert.equal(helpJoint(bare, "stepMiss").by, "code");
+    assert.ok(helpJointHoles(bare).some((h) => h.joint === "stepMiss"));
+    const own = { joints: { stepMiss: [{ hi: "Woh nahi.", en: "Not that." }] } };
+    assert.deepEqual([helpJoint(own, "stepMiss").text, helpJoint(own, "stepMiss").by], ["Woh nahi.", "authored"]);
+  });
+});

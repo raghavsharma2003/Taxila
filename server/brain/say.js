@@ -3169,6 +3169,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     else if (card && !lead && !body.length && !aside.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
+    // (dc-r8-director28 Brain 044 T7: "let me try" at an asked step — the try-first line, then the step's question again; no step is skipped)
+    else if (!card && state.lastMove?.stepAgain && state.lastMove?.stepAsk?.prompt) { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // v6.5 B1 (main, director13 c5-t02 offtopic 4: "2/5 aur 2/3 mein kaunsa bada hai?" with no card): in a scripted lesson, a turn
     // with no card asks no question of hers — only code's own check-in may ask
     // (the worked example's own authored question is code's, not hers: a code-rendered turn keeps it)

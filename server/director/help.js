@@ -41,6 +41,9 @@ export const FALLBACK_JOINTS = Object.freeze({
   // never the bare card: c5-t02 stuck 28, "mujhe nahi pata" answered with the card alone)
   helpToCard: Object.freeze([{ hi: "Koi baat nahi, ise ek sawaal se dekhte hain.", en: "That's okay, let's look at it through a question." },
     { hi: "Theek hai, chalo ek sawaal karke dekhte hain.", en: "All right, let's try it with a question." }]),
+  // (dc-r8-director28 Brain 044 T7, Learning 017 writes the script's own: a wrong answer to an asked step hears that it was not it — four words
+  // or fewer, no answer named — before the step is told)
+  stepMiss: Object.freeze([{ hi: "Nahi, woh nahi.", en: "No, not that." }, { hi: "Yeh nahi hai.", en: "That's not it." }, { hi: "Nahi, aisa nahi.", en: "Not quite that." }]),
 });
 
 const CARD_KINDS = new Set(["card", "check", "then_card", "your_step", "teachback"]);
@@ -200,7 +203,8 @@ export function helpJointHoles(script) {
   // (dc-r8-director27: afterKeyReturn is a help joint; tiredBye, the sentence to a tired child before the goodbye — Learning 016 writes both)
   // (dc-r8-director27 Brain 043 R2: workedInvite, the invitation to do the next problem together where a right verdict stands alone before
   // a worked example — brain/seams.js CODE_SEAM_FORMS when the script has none)
-  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "workedInvite"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  // (Brain 044 T7: stepMiss, the "not that" before a told step after a wrong answer to an asked step)
+  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "workedInvite", "stepMiss"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
   const hs = script?.joints?.hindiSwitch;
   if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
   return out;
