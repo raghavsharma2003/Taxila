@@ -242,6 +242,11 @@ describe("r7-brain-v61.test.mjs", () => {
     const out = { state: s, move: { kind: "explain", itemId: "x", point: "Ek chhota point.", closed: { answer: "30 m", why: "bahut lamba kaaran ".repeat(12) } }, ui: { ask: { text: "Kitna?" } } };
     // (dc-r8-director25 L2 reverses policy B over 45 words: a close and the next point that run over 45 break after the close, on a
     // check-in; a short close beside the same teaching stays one turn. TAXILA_L2=off keeps policy B)
+    // (main's R1 on the merged tree, dc-r8-l2-break-at-75: the break is at 75 words, so this pin moves — the close's why is 75 words
+    // now, where it was 36; a 52-word close, point and card is one turn under 75 and under the point-and-card 60)
+    const mid = splitLong(structuredClone(out), { event: "turn" });
+    assert.equal(mid.move.splitClose, undefined, "a close, a point and a card in 52 words: one turn");
+    out.move.closed.why = "bahut lamba kaaran ".repeat(25);
     const r = splitLong(structuredClone(out), { event: "turn" });
     assert.equal(r.move.splitClose, true, "the close alone, then the point");
     assert.equal(r.move.gaveCheck, true, "ending on a check-in");

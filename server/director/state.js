@@ -3990,9 +3990,11 @@ export function splitLong(out, input) {
   const closeWords = hasClose && !recorded ? 6 + String([s.lastGraded?.why ?? closedCardWhy, move.closed?.why, move.workedDone?.why].filter(Boolean).map((x) => (typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "")).join(" ")).split(/\s+/).filter(Boolean).length + 4 : 0;
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
-  if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out);
+  if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out, input);
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
-  if (l2On() && !recorded && !gaveTurn && !unfit) { const b = breakL2(out, input, closeWords); if (b) return b; }
+  // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)
+  const splitCloseOptIn = closing.some(Boolean) && process.env.TAXILA_R7_SPLIT_CLOSE === "on";
+  if (l2On() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn) { const b = breakL2(out, input, closeWords); if (b) return b; }
   if (!bridgeTurn && !gaveTurn && !unfit && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap, closeWords);
   // (L: a bridge said with the next unit's first point and card counts its words too)
   if (bridgeTurn && !gaveTurn && !unfit && !recorded && process.env.TAXILA_R7_SPLIT_CLOSE !== "on") { const bw = String(move.bridgeSaid ?? "").split(/\s+/).filter(Boolean).length + closeWords; const sp = splitTeach(out, input, cap, bw); if (sp !== out) return sp; }
@@ -4003,12 +4005,12 @@ export function splitLong(out, input) {
   const l2Over = l2On() && !recorded && bridgeTurn && (() => { const p = partsOfTurn(out, closeWords); const c = p.find((x) => x.k === "close")?.n ?? 0, b = p.find((x) => x.k === "bridge")?.n ?? 0; return c > 0 && c + b > L2_CAP; })();
   const bridgeWaits = bridgeTurn && (unfit || l2Over);
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, ...(move.verdict ? { verdict: move.verdict } : {}), ...((gaveTurn && !bridgeTurn) || unfit ? { gaveCheck: true } : {}),
-    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "methods", "prefs"].filter((k) => move[k] != null).map((k) => [k, move[k]])),
+    ...Object.fromEntries(["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "methods", "prefs", ...(l2On() ? NOW_LINES : [])].filter((k) => move[k] != null).map((k) => [k, move[k]])),
     // (v6.4 P2, main on director12 c6 stuck 54: a lone bridge drew the answered card's board, stale from the preselect: a turn that
     // closes nothing but says the bridge is on the bridge's board)
     ...((move.gave || move.closed || move.workedDone || move.verdict || !move.bridgeBeat || bridgeWaits) && move.closeBeat ? { scriptBeat: move.closeBeat } : move.bridgeBeat ? { scriptBeat: move.bridgeBeat } : {}) };
   const held = { ...move };
-  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "probeAck"]) delete held[k];
+  for (const k of ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "sayFirst", ...(bridgeWaits ? [] : ["bridgeSaid", "bridgeBeat"]), "probeAck", ...(l2On() ? NOW_LINES : [])]) delete held[k];
   // (the bridge rides in sayFirst too: when it waits, it leaves the close and leads the held turn)
   if (bridgeWaits && move.bridgeSaid) {
     const isBridge = (x) => String(x).trim() === String(move.bridgeSaid).trim();
@@ -4032,6 +4034,9 @@ export function splitLong(out, input) {
 // past the decision's own 170-row limit; at 75 words 131 to 165 rows and 27 to 33 check-ins, and the turns the director25 judges called
 // monologue, 76 words and over, still break. dc-r8-l2-break-at-75.)
 export const L2_CAP = 75;
+/** Her lines that answer what the child said on this turn (an aside said again, a taste question, a sad aside): a split turn says them on
+ *  its first half. */
+const NOW_LINES = ["asideAgain", "tasteAsked", "sadAside"];
 /** dc-r8-director24 L, kept by main's R1 on the merged tree: the most words a turn holding a new point and its card may run to (45 where
  *  the child's words are plain). splitTeach's limit; L2_CAP is breakL2's. */
 export const pointCardCap = (s) => (s?.ctx?.plainWords ? 45 : 60);
@@ -4076,15 +4081,22 @@ export const PARK_OVERDUE_TURNS = 6;
 const parkOverdue = (s, e) => Number.isFinite(e?.at) && (s?.turn ?? 0) - e.at >= PARK_OVERDUE_TURNS;
 /** L2 item 1: a close and a return due on one turn — the close now, ending on its check-in; the rest (the return first) held. heldTurn
  *  says the held move: brain/say.js says the return alone there and holds the lesson's parts for the turn after her reply. */
-function returnApart(out) {
+function returnApart(out, input = null) {
   const { state: s, move, ui } = out;
+  // (the child said the aside again on this very turn — the return was due because of it — so the close's half carries her one line on
+  // it, "Haan, cricket — woh mujhe yaad hai."; the return question comes next turn, alone. Without it her line went unheard for a turn:
+  // r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai', on the merged H4 + L2 tree)
+  const saidNow = input?.text && move.returned?.said && String(move.returned.said).trim() === String(input.text).trim();
   // (the aside is not served on this turn: it stays due, and the next boundary — the held half, heldTurn — returns it on a turn of its
   // own; a request answered first keeps it due, never lost)
   const t0 = String(move.returned.topic);
   s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
-  const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs"];
+  // (her one line to an aside the child said again — asideAgain, a taste question, a sad aside — answers what the child said on this
+  // turn: it rides on the half said now, never on the held one: r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai')
+  const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs", ...NOW_LINES];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
-    ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
+    ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}),
+    ...(saidNow && !move.asideAgain && !move.tasteAsked ? { asideAgain: { topic: String(move.returned.topic) } } : {}) };
   const held = { ...move };
   for (const k of [...closeKeys, "probeAck", "verdict", "returned"]) delete held[k];
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
@@ -4116,7 +4128,7 @@ function breakL2(out, input, closeWords = 0) {
   const sayLater = (move.sayFirst ?? []).filter((x) => !sayNow.includes(x));
   // (a close with the body said now and the card held is the point's split with its close: splitTeach's own shape)
   if (bodyNow) return splitTeach(out, input, -1, 0);
-  const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "methods", "prefs", ...(bridgeNow ? ["bridgeSaid", "bridgeBeat"] : [])];
+  const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "returned", "methods", "prefs", ...NOW_LINES, ...(bridgeNow ? ["bridgeSaid", "bridgeBeat"] : [])];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])),
     ...(sayNow.length ? { sayFirst: sayNow } : {}), ...(heldNow && move.heldSaid ? { heldSaid: move.heldSaid } : {}), ...(heldNow && move.heldBeat ? { heldBeat: move.heldBeat } : {}),
