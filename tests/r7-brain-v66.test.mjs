@@ -15,7 +15,7 @@ import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
 import { whiteboardIntentOf, boardItemOf } from "../server/brain/propose.js";
 import { joinParts } from "../server/brain/lineParts.js";
-import { liveBeatSimpler, requeueMissedReturn } from "../server/director/state.js";
+import { requeueMissedReturn } from "../server/director/state.js";
 import { returnLineOk, honestTasteLine, notRightLead, freshForm, GAVE_FORMS } from "../server/brain/say.js";
 
 const RUN = "2026-11-09-director14";
@@ -104,7 +104,10 @@ describe("r7-brain-v66.test.mjs", () => {
       assert.deepEqual(bad, []);
     });
   });
-  describe("B1′: a Hindi request re-says the live beat's own simpler, then the card", () => {
+  // (dc-r8-director25 H4 supersedes B1′, B1″ and T1's request table here: a Hindi request gets help's one decision — its part's first unsaid
+  // wording, else the line that there are no easier words and the question — and never a key. B1‴ stands: a card answered right, its
+  // why pending, is never reopened)
+  describe("H4: a Hindi request gets its part's first unsaid wording, or no easier words and the question; never a key", () => {
     // (the walk changes, so the replay walks it live: recordedRun off)
     const atLive = async (persona, topic, n) => {
       const T = TOPIC[topic];
@@ -116,44 +119,29 @@ describe("r7-brain-v66.test.mjs", () => {
       return { out, last, kit };
     };
     const ROWS = [["steady", "c4", 36], ["offtopic", "c4", 34], ["steady", "c6", 38], ["stuck", "c6", 8], ["offtopic", "c6", 32], ["steering", "c5-t01", 8]];
-    test("the live beat's simpler, on that beat's board, then the card re-posed; never another beat's (main's c4 and c6 rows)", async () => {
+    test("director14's Hindi rows, replayed live", async () => {
       const bad = [];
       for (const [persona, topic, n] of ROWS) {
-        const { out, last, kit } = await atLive(persona, topic, n);
+        const { out, last } = await atLive(persona, topic, n);
         const tag = `${persona} ${topic} row ${n}`;
         const lm = last.state.lastMove ?? {};
-        if (lm.request !== "language") { bad.push(`${tag}: not a language request (${lm.request})`); continue; }
-        // (v6.9 T1, main's request table on director17: with nothing of the live part left unsaid, the key and its why)
-        // (the key in its code frame — in Hindi words, so "line" is "rekha")
-        if (lm.gave?.answer) { if (!/jawab/i.test(out.reply)) bad.push(`${tag}: the key not said`); continue; }
-        // (O4, main on director21: Hindi asked at a key's check-in stays on the card just closed — its compiled hindi cell's line, on its
-        // board, and the check-in; the next part waits)
-        if (lm.stayCheckin) { if (!lm.simpler || !norm(out.reply).includes(norm(lm.simpler).split(" ").slice(0, 4).join(" "))) bad.push(`${tag}: the closed card's line not said`); continue; }
-        // (v6.8 B1‴, main on director16 c6 steady 38: a card answered right, its why pending, is never reopened — the walk goes on to
-        // the next card, posed in their language with no simpler before it)
         if (last.before.pendingWhy && last.before.pendingWhy === last.before.activeItemId) {
           if (last.state.activeItemId === last.before.activeItemId) bad.push(`${tag}: the closed card reopened`);
-          if (lm.simpler && norm(out.reply).includes(norm(lm.simpler).split(" ").slice(0, 5).join(" "))) bad.push(`${tag}: a simpler said before the new card was asked`);
           continue;
         }
-        // (v6.8 B1‴, main on director16: during a worked step the live part is that step — its own line)
-        const lb = liveBeatSimpler(last.state, kit, { prevMove: last.before.lastMove });
-        if (!lb) { bad.push(`${tag}: no live beat simpler`); continue; }
-        // (v6.7 B1″: a simpler said in her last turns is not said again word for word — the beat's point instead, else nothing new)
-        // (v6.8 B1‴: the live part is said again in words her LAST turn did not use — main's B1″ was "the simpler of the turn before")
-        const recentT = (last.state.recent ?? []).filter((t) => t.who === "teacher").slice(-1).map((t) => norm(t.text).toLowerCase());
-        const repeated = recentT.some((t) => t.includes(norm(lb.text).toLowerCase().slice(0, 60)));
-        // (2026-11-11, dc-r8-director20 L4 reverses B1″ here: on a Hindi request over an open card the simpler is said even when her last
-        // turn said it — what may not come with it is the "Hindi mein bolti hoon" promise)
-        if (repeated) { if (lm.simpler && recentT.some((t) => t.includes(norm(lm.simpler).toLowerCase().slice(0, 60))) && /hindi mein/i.test(out.reply)) bad.push(`${tag}: said again word for word, under a promise of a change`); }
-        else {
-          if (lm.simpler !== lb.text) bad.push(`${tag}: the simpler is not the live beat's`);
-          const head = norm(lb.text).split(" ").slice(0, 4).join(" ");
-          if (!norm(out.reply).includes(head)) bad.push(`${tag}: the live beat's simpler not said | ${out.reply.slice(0, 120)}`);
+        if (lm.gave?.answer || /(?:is sawaal ka|iska) (?:sahi )?jawab/i.test(out.reply)) bad.push(`${tag}: a Hindi request given the key`);
+        if (!lm.help) { bad.push(`${tag}: no help decision (${lm.request})`); continue; }
+        if (lm.help.request !== "hindi") bad.push(`${tag}: help for ${lm.help.request}`);
+        if (lm.help.rung) {
+          const head = norm(lm.simpler).split(" ").slice(0, 4).join(" ");
+          if (!norm(out.reply).includes(head)) bad.push(`${tag}: the ${lm.help.rung} not said | ${out.reply.slice(0, 120)}`);
+        } else if (lm.help.joint === "helpSpent") {
+          if (!norm(out.reply).startsWith(norm(lm.helpJoint.form))) bad.push(`${tag}: no easier-words line first | ${out.reply.slice(0, 80)}`);
+          if (/hindi mein (?:bol|samjha|keh)/i.test(out.reply)) bad.push(`${tag}: a promise of Hindi with nothing new`);
         }
+        // (a card live stays live: her turn ends on its question)
         const card = norm(last.p.r.ui?.ask?.text ?? "");
-        if (card && !norm(out.reply).endsWith(card)) bad.push(`${tag}: the card not re-posed last`);
-        if (/apna tareeka batao/i.test(out.reply)) bad.push(`${tag}: a question of hers outside the card`);
+        if (lm.help.card === "keep" && card && !/[?？]\s*$/.test(norm(out.reply))) bad.push(`${tag}: the card's question not asked last`);
       }
       assert.deepEqual(bad, []);
     });

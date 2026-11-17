@@ -3010,6 +3010,8 @@ function helpRequestOf(prev, input) {
   const c = input.cls ?? {};
   if (c.flags?.distress || c.flags?.wantsToStop || prev.safeguard || ["stop", "end", "break", "goodbye"].includes(c.request?.type)) return null;
   if (["teachback", "wrap", "done"].includes(String(prev.phase ?? "")) || ["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? ""))) return null;
+  // (v6.8 B1‴ stands: a card answered right, its why-probe pending, is closed — a request there is no help on it; the walk goes on)
+  if (prev.pendingWhy && prev.pendingWhy === (prev.lastUi?.ask?.itemId ?? prev.activeItemId)) return null;
   const col = columnName(input, prev);
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
