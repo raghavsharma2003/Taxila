@@ -278,7 +278,12 @@ export const PREDICATES = {
     if (ss.some((x) => SAD_LINES.has(key(x)))) return null;
     const ai = ss.findIndex((x) => AI_LINE.test(x));
     const own = (x, n) => (ctx.retRes ?? []).some((re) => re.test(x)) || (ai >= 0 && (n === ai || n === ai + 1));
-    const rest = ss.filter((x, n) => !own(x, n));
+    // (main's R2 on the merged tree: H4's go-on line after a key — joints.afterKeyGoOn — is a joint, not a part: it may lead the return's
+    // turn, before the return question and nothing else; a verdict, a key, a why or any teaching part in the return's turn is still flagged)
+    const goOn = new Set((ctx.script?.joints?.afterKeyGoOn ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key));
+    let lead = 0;
+    for (let n = 1; n <= ss.length; n++) if (goOn.has(key(ss.slice(0, n).join(" ")))) { lead = n; break; }
+    const rest = ss.filter((x, n) => n >= lead && !own(x, n));
     if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
     return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
   },

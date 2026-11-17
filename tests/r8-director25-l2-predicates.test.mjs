@@ -57,3 +57,17 @@ test("every L2 predicate is gated: in PREDICATES and not pending (check-run fail
     assert.ok(!PENDING.has(p), `${p} is pending`);
   }
 });
+
+// (main's R2 on the merged H4 + L2 tree: H4's go-on line after a key — joints.afterKeyGoOn — is a joint, not a part; it may lead the
+// return's turn. Anything else beside the return question is still flagged: a verdict, a key, a why, a teaching part.)
+test("returnAlone allows an afterKeyGoOn form before the return question, and nothing else", () => {
+  const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c4-maths-ch05-t01.json", import.meta.url), "utf8"));
+  const goOn = script.joints.afterKeyGoOn[0].hi, ret = "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?";
+  const flags = (text) => lessonFlags({ script, rows: [{ who: "child", text: "pata nahi" }, { who: "teacher", text, returnSaid: true, move: "repair" }] }).filter((f) => f.predicate === "returnAlone");
+  assert.deepEqual(flags(`${goOn} ${ret}`), []);
+  assert.deepEqual(flags(ret), []);
+  assert.equal(flags(`Bilkul sahi. ${ret}`).length, 1, "a verdict with the return");
+  assert.equal(flags(`${goOn} Is sawaal ka sahi jawab: 1/3. ${ret}`).length, 1, "a key after the go-on line");
+  assert.equal(flags(`Is sawaal ka sahi jawab: 1/3. ${goOn} ${ret}`).length, 1, "a key before the go-on line");
+  assert.equal(flags(`${goOn} Ek circle ko 3 barabar tukdon mein kaato. ${ret}`).length, 1, "a teaching part with the return");
+});
