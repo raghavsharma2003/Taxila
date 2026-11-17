@@ -101,6 +101,8 @@ export function lessonCounts(rows, script) {
   const flags = lessonFlags({ rows, script });
   c.helpTurns = rows.filter((r, i) => r.who === "teacher" && helpTurnOf({ rows }, r, i, helpCtx(rows, i, script))).length;
   c.helpSaidAgain = flags.filter((f) => f.predicate === "helpRepeats").length;
+  // (d28 fix F2: a park the child's own stop or bye overtook before its return was due — not a gate, counted so it stays visible)
+  c.parkCutByChildEnd = flags.filter((f) => f.predicate === "parkCutByChildEnd").length;
   return c;
 }
 

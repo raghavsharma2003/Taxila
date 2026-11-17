@@ -3258,6 +3258,21 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       asideP.splice(asideP.length - 1, 1, ...ss);
       guard.asideFirst = true;
     }
+    // (d28 fix F1, steady c4 64: "Ab ek cheez ki jagah … Achha, toh tumhe batting sabse achha lagta hai." — her reply to the child's answer
+    // to a return rode with the aside, after the parts the return's turn held back (a bridge said first, a point or a segment), so the
+    // child heard the lesson go on and then their own answer acknowledged. The reply to their line is the first thing said in the turn,
+    // whatever is released with it; it is no aside question, so it is taken out before the turn's end is read)
+    const replyP = [];
+    {
+      const rl = guard.returnReplyLine ?? (state.lastMove?.returnReply && guard.asideResumeLine ? guard.asideResumeLine : null);
+      if (rl) {
+        const k = keyS(rl);
+        const ia = asideP.findIndex((x) => keyS(x) === k);
+        if (ia >= 0) replyP.push(...asideP.splice(ia, 1));
+        else { const ib = body.findIndex((x) => keyS(x) === k); if (ib >= 0) replyP.push(...body.splice(ib, 1)); }
+        if (replyP.length) guard.replyFirst = true;
+      }
+    }
     // (v6.11 G2, main on director19: a return asked the child about their aside and posed a card in the same turn — a return ends her turn)
     const asideQ = asideP.length && (/[?？]\s*$/.test(asideP.at(-1)) || (!!guard.returnLine && asideP.includes(guard.returnLine))) && !graded0?.ungraded ? true : false;
     // (and a re-pose frame never rides on an aside answer: with the card held it goes)
@@ -3340,10 +3355,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const l2Live = l2On() && !!scriptFor(kit)?.script && !scriptFor(kit)?.script?.recordedRun;
     if (l2Live && tail && tail !== card && !guard.cardQuestionOnly && !/[?？]\s*$/.test(norm(tail)) && !asideQ && scriptFor(kit)?.script && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) tail = null;
     if (l2Live && !tail && !asideQ && !guard.cardHeldForTry && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
-      const lastS = [...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
+      const lastS = [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
       if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state); guard.l2Checkin = true; }
     }
-    const assembled = (asideQ ? [...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
+    const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
     // (else her sentences that ask nothing and carry no number)
@@ -3360,6 +3375,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const bridgeK = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const simplerK0 = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
       guard.lineParts = cleanParts([
+        // (d28 fix F1: her reply to the child's answer to a return leads the turn — an aside part, the board waits for her first unit part)
+        { part: "aside", text: replyP.join(" ") },
         { part: "close", text: prevPart.join(" ") },
         { part: "closed", text: closedP.join(" ") },
         ...first.map((x) => ({ part: x === bridgeK ? "bridge" : "close", text: x })),

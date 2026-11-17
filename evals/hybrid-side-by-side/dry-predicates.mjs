@@ -56,6 +56,45 @@ function parkOf(r, ctx) {
 function returnOf(r, ctx) {
   return !!r.returnSaid || (ctx.retRes ?? []).some((re) => re.test(String(r.text ?? "")));
 }
+/** The child's own stop or bye (the reader's stop intent, its wantsToStop flag, or the words). */
+const CHILD_END = /(?<![\p{L}])(?:bye|alvida|tata|goodbye|jaati\s+hoon|jaata\s+hoon|stop|bas\s+karo|band\s+karo|khatam\s+karo|aaj\s+ke\s+liye\s+(?:bas|itna))(?![\p{L}])/iu;
+const childEnded = (c) => !!c && c.who !== "teacher" && (c.intent === "stop" || (c.readFlags ?? []).includes("wantsToStop") || CHILD_END.test(String(c.text ?? "")));
+/** d28 fix F2: whether a park's return was due at some turn of hers between the park (row i) and row j: the work the park named was
+ *  finished — a card closed after the park (a right verdict or a key) with a turn of hers after it, or she moved on to another card
+ *  (not the parked card's own follow-up) — as the walk's boundary reads it (server/director/state.js: a park comes due once the live
+ *  card is no longer the parked one). */
+function returnDueBefore(L, i, j) {
+  const parked = L.rows[i]?.check?.itemId ?? null;
+  let closed = false;
+  for (let k = i + 1; k < j; k++) {
+    const t = L.rows[k];
+    if (t.who !== "teacher") continue;
+    if (closed) return true;
+    const it = t.check?.itemId ?? null;
+    if (parked && it && it !== parked && !it.includes(":then:")) return true;
+    if (t.gate?.answered === "correct" || (KEY_SAID.test(String(t.text ?? "")) && !cardIn(t))) closed = true;
+  }
+  return false;
+}
+/** What became of the park a turn makes: null (no park, or kept), { why } (broken), { why, cut: true } (the child ended the lesson
+ *  before its return was due). P1 (dc-r8-director20): a park gets its return before the goodbye — and, mid-lesson, within ten turns. */
+function parkFate(L, r, i, ctx) {
+  const pk = parkOf(r, ctx);
+  if (!pk) return null;
+  let n = 0;
+  for (let j = i + 1; j < L.rows.length; j++) {
+    const t = L.rows[j];
+    if (t.who !== "teacher") continue;
+    if (returnOf(t, ctx)) return null;
+    if (GOODBYE.test(String(t.move?.kind ?? t.move ?? ""))) {
+      if (low(t.text).includes(low(pk))) return null;
+      if (childEnded(L.rows[j - 1]) && !returnDueBefore(L, i, j)) return { why: `the park of "${pk}" cut by the child's own ending (row ${j - 1}) before its return was due`, cut: true };
+      return { why: `the park of "${pk}" not returned to before the goodbye (row ${j})` };
+    }
+    if (++n >= 10) return { why: `the park of "${pk}" not returned to in ten turns` };
+  }
+  return null;
+}
 
 /** Each predicate: (lesson, row, i, ctx) → reason or null. ctx = { prevT, prevChild, script, saidCards, jointUse }. */
 export const PREDICATES = {
@@ -277,17 +316,15 @@ export const PREDICATES = {
    *  goodbye — and, mid-lesson, within ten turns of hers — unless her goodbye names it. director20: c5-t01 steering 24 and c5-t02
    *  stuck 34 were never returned to. */
   parkReturned(L, r, i, ctx) {
-    const pk = parkOf(r, ctx);
-    if (!pk) return null;
-    let n = 0;
-    for (let j = i + 1; j < L.rows.length; j++) {
-      const t = L.rows[j];
-      if (t.who !== "teacher") continue;
-      if (returnOf(t, ctx)) return null;
-      if (GOODBYE.test(String(t.move?.kind ?? t.move ?? ""))) return low(t.text).includes(low(pk)) ? null : `the park of "${pk}" not returned to before the goodbye (row ${j})`;
-      if (++n >= 10) return `the park of "${pk}" not returned to in ten turns`;
-    }
-    return null;
+    const f = parkFate(L, r, i, ctx);
+    return f && !f.cut ? f.why : null;
+  },
+  /** d28 fix F2 (main loop's decision on the 043 dry run, offtopic c4 66 → 70, steering c4 48 → 52): the child's own ending overtakes a
+   *  park — she adds nothing about the aside to her goodbye. A park cut by the child's stop or bye before its return was due is not a
+   *  broken promise; it is counted here, on its own line, so it stays visible. Not gated. */
+  parkCutByChildEnd(L, r, i, ctx) {
+    const f = parkFate(L, r, i, ctx);
+    return f?.cut ? f.why : null;
   },
   /** P1: a return answers a park; one with none (c4 offtopic 37) is a promise she never made. */
   returnNoPark(L, r, i, ctx) {
@@ -938,7 +975,8 @@ PREDICATES.pictureDrawn = (L, r) => {
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+// (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
+export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
