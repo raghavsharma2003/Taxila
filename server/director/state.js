@@ -3773,7 +3773,7 @@ function step0(prev, input) {
       // (v6.9 T1, director17 c5-t01 steady 42: asked to go on, the walk moves on first; the aside waits for the next boundary)
       && !(GO_ON.test(String(input.text ?? "")) && responseShape("move_on", "aside_pending") === "move_on");
     const due = boundary ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
-      && (live !== e.onItem || move.kind === "break")) : null;
+      && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e))) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
@@ -4050,6 +4050,13 @@ export function breakAt(parts, cap = L2_CAP) {
   // (the first part alone is over the cap: it is said whole and ends the turn — Learning's to shorten, compile-report lists it)
   return at < 0 ? 1 : at;
 }
+/** main's R5 on the merged H4 + L2 tree (dry offtopic c5-t02 24): a park is kept within ten of her turns. A park waits for the card it was
+ *  said on to be done — but a card can stay open a long time now that turns are shorter: a remediation and its then-card, help, a
+ *  picture and a try-first held c5-t02's e3 for fifteen turns, and the return came at 54, fifteen turns after its park. Six of the
+ *  child's turns after the park, the return comes at the next boundary even while that card is still the one on the table: a card
+ *  re-posed after a detour (a held half, a then-card's close) is such a boundary; a card being worked on turn after turn is not. */
+export const PARK_OVERDUE_TURNS = 6;
+const parkOverdue = (s, e) => Number.isFinite(e?.at) && (s?.turn ?? 0) - e.at >= PARK_OVERDUE_TURNS;
 /** L2 item 1: a close and a return due on one turn — the close now, ending on its check-in; the rest (the return first) held. heldTurn
  *  says the held move: brain/say.js says the return alone there and holds the lesson's parts for the turn after her reply. */
 function returnApart(out) {
@@ -4189,7 +4196,7 @@ function heldTurn(prev, input) {
     // (dc-r8-director25 L2 item 1: lost after a close whose return was due — the held half is a boundary: the return comes now, on a turn
     // of its own, and the held half after her reply, as the due path below)
     if (l2On() && !retAns && !h.teach && lost && !scriptFor(input.kit)?.script?.recordedRun && !/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? ""))) {
-      const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && h.activeItemId !== e.onItem);
+      const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
       if (due) {
         s.later = serveLater(s.later, due.id, s.turn);
         const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}) } };
@@ -4259,7 +4266,7 @@ function heldTurn(prev, input) {
   // P1 (dc-r8-director20, c4 offtopic: a park on a card that ended in a key was never returned while the key's split held the next
   // part): the held half is a boundary too — an aside due now is returned on a turn of its own, and the held half waits for the next
   if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && !/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? ""))) {
-    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && h.activeItemId !== e.onItem);
+    const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
     if (due) {
       s.later = serveLater(s.later, due.id, s.turn);
       const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}) } };
