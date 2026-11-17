@@ -7,7 +7,7 @@
 // check-in forms.
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { lessonFlags, PREDICATES, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 import { initLessonState, step, evidenceFrom } from "../server/director/state.js";
@@ -28,8 +28,9 @@ const lessonOf = (topic, child) => {
   const k = `${topic}|${child}`;
   if (!lessons.has(k)) {
     const j = JSON.parse(readFileSync(join(DIR, `${child}-${FILE[topic]}.json`), "utf8"));
-    const snap = join(DIR, "scripts", `${j.topicId}.json`);
-    const script = JSON.parse(readFileSync(existsSync(snap) ? snap : join(ROOT, "data/lesson-scripts", `${j.topicId}.json`), "utf8"));
+    // (read against today's script: the run's own copy predates Learning 016, and the device these predicates hold is the script's — a point
+    // with a quick question, a worked example that asks a step; the rows are the turns where today's script has one)
+    const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${j.topicId}.json`), "utf8"));
     lessons.set(k, { rows: j.director, flags: lessonFlags({ rows: j.director, script }) });
   }
   return lessons.get(k);

@@ -45,12 +45,15 @@ function captionsOf(script) {
 export const D28_PREDICATES = {
   /** Q1: a check-in before a waiting card — the turn says the point (or a held part ending on its point) and ends on a check-in, and the
    *  next thing she says is that point's card. A help part (her other wording, a told step's simpler) in the turn makes it help's check-in. */
-  quickBeforeCard(L, r, i) {
+  quickBeforeCard(L, r, i, ctx) {
     if (r.who !== "teacher" || !endsOnCheckin(r)) return null;
     const pp = parts(r);
     if (pp.some((p) => p.part === "simpler")) return null;
     const last = [...pp].reverse().find((p) => ["body", "held"].includes(p.part) && /^e\d+$/.test(String(p.beat ?? "")));
     if (!last) return null;
+    // (the device is the script's: a point with no quick question — a script before Learning 016, the 30 staged — keeps its check-in)
+    const sk = (ctx?.script?.skills ?? []).find((k) => k.skillId === skillOf(r, ctx.script));
+    if (ctx?.script && !sk?.explain?.find((b) => b.id === last.beat)?.quick) return null;
     // (the card is the next part of the lesson she says: help on this point between them — a request at the check-in — moves nothing on)
     for (const nx of (L.rows ?? []).slice(i + 1).filter((x) => x.who === "teacher")) {
       const np = parts(nx).filter((p) => !["aside", "quickReply"].includes(p.part));
@@ -61,10 +64,13 @@ export const D28_PREDICATES = {
     return null;
   },
   /** Q2: no turn of a worked example ends on a check-in — only a told step's simpler (help on a step) may end on one. */
-  workedCheckin(L, r) {
+  workedCheckin(L, r, i, ctx) {
     if (r.who !== "teacher" || !endsOnCheckin(r)) return null;
     const pp = parts(r);
     if (pp.some((p) => p.part === "simpler")) return null;
+    // (a worked example that asks no step — a script before Learning 016, the 30 staged — is told as before)
+    const sk = (ctx?.script?.skills ?? []).find((k) => k.skillId === skillOf(r, ctx.script));
+    if (ctx?.script && !(sk?.workedExample?.steps ?? []).some((x) => x?.ask)) return null;
     const w = pp.find((p) => ["body", "held"].includes(p.part) && /^worked(?::(?:problem|step\d+))?$/.test(String(p.beat ?? "")));
     return w ? `a worked example's turn (${w.beat}) ending on a check-in` : null;
   },
