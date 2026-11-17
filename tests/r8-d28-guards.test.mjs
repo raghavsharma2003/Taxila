@@ -99,16 +99,21 @@ describe("the net: the finished turn read against the turn's authored plan", () 
   });
   test("holdAuthored: under tests (strict) a lost part throws; in production it is restored and named", () => {
     const out = { reply: "Socho, do roti. Is patti mein kitne hisse hain?", guard: { lineParts: [{ part: "close", text: "Socho, do roti." }, { part: "quick", text: "Is patti mein kitne hisse hain?" }] } };
-    assert.throws(() => holdAuthored(out, {}, plan), /authored part lost on a scripted turn/);
-    const ctx = process.env.NODE_TEST_CONTEXT;
+    // the strict reading is set here, not taken from the runner: the leak check runs many files in one process, where
+    // NODE_TEST_CONTEXT is not set (integration 82's leak check failed on exactly this)
+    const ctx = process.env.NODE_TEST_CONTEXT, strict = process.env.TAXILA_STRICT_AUTHORED;
+    process.env.TAXILA_STRICT_AUTHORED = "1";
+    try { assert.throws(() => holdAuthored(out, {}, plan), /authored part lost on a scripted turn/); }
+    finally { if (strict === undefined) delete process.env.TAXILA_STRICT_AUTHORED; else process.env.TAXILA_STRICT_AUTHORED = strict; }
     delete process.env.NODE_TEST_CONTEXT;
+    delete process.env.TAXILA_STRICT_AUTHORED;
     const warn = console.warn; console.warn = () => {};
     try {
       const r = holdAuthored(out, {}, plan);
       assert.equal(norm(r.reply), "Socho, do roti. Yeh patti ek poora hai: 4 hisse. Woh ek hissa 1/4 hai. Is patti mein kitne hisse hain?");
       assert.deepEqual(r.guard.authoredRestored, ["body"]);
       assert.deepEqual(r.guard.lineParts.map((p) => p.part), ["close", "body", "quick"]);
-    } finally { console.warn = warn; if (ctx !== undefined) process.env.NODE_TEST_CONTEXT = ctx; }
+    } finally { console.warn = warn; if (ctx !== undefined) process.env.NODE_TEST_CONTEXT = ctx; if (strict !== undefined) process.env.TAXILA_STRICT_AUTHORED = strict; }
     assert.equal(holdAuthored(out, {}, []), out, "a turn with no plan (a safety turn, an early path) passes through");
   });
 });
