@@ -29469,6 +29469,41 @@
    "at": "2026-11-17",
    "title": "Released 521801a with scripts/release.mjs: web taxila-web--s521801a-a8er (was taxila-web--scd6eb6d-2jzr), worker + canary/nightly jobs on taxila-worker:521801a (was cd6eb6d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 521801a --rollback.",
    "source": "inbox/release-521801a.json"
+  },
+  {
+   "id": "ms-r8-director26",
+   "kind": "measurement",
+   "at": "2026-11-17",
+   "title": "director26: 16 lessons (4 pilots x 4 rule-based children) on integration 79 (521801aa5, release 46), model joins off, 1,621 calls, $1.14, four Opus judges by hand. Gate: c5-t01 passes; c4, c6, c5-t02 fail. Contradictions 1, 0, 0, 1 and unsaid boards 1, 0, 2, 2 (c4, c5-t01, c5-t02, c6): all six rows one mechanism (a remediation's help wording drawn over the skill's first check card's board). 0 misgrades in 253 verdicts; 0 false keys. Axes d25 to d26: listening 4, 3.5, 3.5, 4 (was 3.5, 3, 3, 3.5); register 3.5, 3.5, 3, 3.5 (was 3, 3, 3, 3.5); promises 4, 3.5, 3.5, 3.5; screen and speech 3.5, 4, 3.5, 3.5. Help turns with nothing new 1, 0, 0, 0 (d25: 3, 5, 5, 1); no help sentence repeated in about 150 help turns; keys with a wording unsaid 0; paraphrasing second wordings 16 help turns. Turns over 60 words 44 of 675; steady rows 131, 133, 161, 117; check-ins tedious to 3 of 4 judges (worked-example step turns); 61-to-75-word turns monologue to 1 of 4. Model-written sentence heard 4 times, all the stop menu. Hints making a question trivial or untrue of the board 6 (c4 2, c5-t01 4). The safety turn did not occur (the line 'no place' was not said). The run's own helpBoard predicate read 0 on the six rows.",
+   "source": "inbox/r8-main-42.json"
+  },
+  {
+   "id": "dc-r8-director26",
+   "kind": "decision",
+   "at": "2026-11-17",
+   "title": "After director26. B1: the help function returns the board with the wording and nothing downstream replaces it; a remediation's help is over the remediation's own board, and one with no board keeps the board that is up; every remediation gets a board. B2: a child who wants to stop gets the authored line, never a model draft. C1: a worked example's told steps go two to a turn within 75 words with one check-in (steps authored at 30 words or fewer); no check-in after a verdict when the next part fits; measured on the dry matrix before release (steady lessons at most 22 check-ins and no run of more than two back to back outside the child's own requests, else the break of turns without a card is dropped as director26's clause 4 first said). J1: the go-on line only after a key, and never with another joint at the seam; a beforeWorked joint. N1: no request gets nothing: with no part recorded the part is the last part said; the model drafts no teaching turn. R1: 'said once' counts each remediation, not each mix-up. A4, W1 and the script list. Reverse: B1 on any wrong board in director27 (help turns then carry their own page built by the help function); C1 if the dry measure fails or two judges still find check-ins tedious (drop the break, steps in one turn); N1 on any request met with nothing (the walk refuses to end the turn); R1 if a remediation is said twice or for a mix-up not shown (count goes back to the mix-up); register below 3.5 in two topics: the cause with most rows gets the round.",
+   "source": "inbox/r8-main-42.json"
+  },
+  {
+   "id": "fd-predicate-proved-on-last-runs-fault",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "helpBoard was written and tested on the director25 rows, as dc-r8-director25 required, and read 0 on all six director26 rows where four judges found help over the wrong board: the director25 rows were a remediation's line said after its board had moved on, the director26 rows are a remediation's help borrowing a card's board. A predicate proved on one run's rows is proved for that run's mechanism. The rule is stated as an invariant the code enforces (the page builder throws in a test run when a help page's board is not the one the help function returned), with the predicate as its reader, not its only guard.",
+   "source": "inbox/r8-main-42.json"
+  },
+  {
+   "id": "fd-h4-picker-holds",
+   "kind": "finding",
+   "at": "2026-11-17",
+   "title": "The help rebuild (one function reading the said set, dc-r8-director25 H4) did what three rounds of patches (H1, H2, H3) did not: help turns with nothing new fell from 14 to 1 across 16 judged lessons, with no sentence repeated in about 150 help turns and no key given while a wording was unsaid. What remains is authored wording (second wordings that restate the first) and the board on one path.",
+   "source": "inbox/r8-main-42.json"
+  },
+  {
+   "id": "op-r8-guided-worked-steps",
+   "kind": "open",
+   "at": "2026-11-17",
+   "title": "Open teaching question after director26: worked examples are told to the child, who does one step at the end; judges in director24, 25 and 26 list it under what a parent would still find wrong, and the step turns' check-ins are where the tedium is. Candidate: each told step ends on a small question of its own with a verified key, so the check-in becomes work. Changes the script format and the walk; waits until four topics pass the gate as it stands.",
+   "source": "inbox/r8-main-42.json"
   }
  ],
  "edges": [
@@ -47126,6 +47161,36 @@
    "src": "ms-r8-integration-79-dry",
    "rel": "part_of",
    "dst": "dc-r8-director25"
+  },
+  {
+   "src": "dc-r8-director26",
+   "rel": "supersedes",
+   "dst": "dc-r8-director25"
+  },
+  {
+   "src": "dc-r8-director26",
+   "rel": "measured_by",
+   "dst": "ms-r8-director26"
+  },
+  {
+   "src": "fd-predicate-proved-on-last-runs-fault",
+   "rel": "constrains",
+   "dst": "dc-r8-director26"
+  },
+  {
+   "src": "fd-predicate-proved-on-last-runs-fault",
+   "rel": "measured_by",
+   "dst": "ms-r8-director26"
+  },
+  {
+   "src": "fd-h4-picker-holds",
+   "rel": "measured_by",
+   "dst": "ms-r8-director26"
+  },
+  {
+   "src": "op-r8-guided-worked-steps",
+   "rel": "part_of",
+   "dst": "dc-r8-director26"
   }
  ]
 }
