@@ -3075,7 +3075,11 @@ function helpBeat(kit, d, board) {
 const helpWords = (d) => fillFriend(String(d.rung?.text ?? d.key?.text ?? d.joint?.text ?? ""), d.friend ?? "").trim();
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
-  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame"];
+  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame",
+  // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
+  // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
+  // over the help. A picture is that turn's; help says its own wording)
+  "visual", "representation", "altLine", "altView", "see"];
 const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delete o[k]; if (o.sayFirst && !o.heldSaid) delete o.sayFirst; return o; };
 /** Count a help joint said (forms rotate by it), and record the decision on the state. */
 function noteHelp(s, d) {
