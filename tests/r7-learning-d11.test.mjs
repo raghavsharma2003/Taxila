@@ -19,11 +19,13 @@ test("units: a point is spoken over its ask's board, a remediation over its then
   const u = Object.fromEntries(unitsOf(s).map((x) => [x.id, x]));
   const k = s.skills[0];
   assert.deepEqual(u[`${k.skillId}/${k.explain[1].id}`].board, k.explain[1].ask.board ?? k.explain[1].board);
-  assert.notDeepEqual(k.remediation[0].board, k.remediation[0].then.board, "s1 rem0 has a board of its own (016 C2)");
-  assert.deepEqual(u[`${k.skillId}/remediation[0]`].board, k.remediation[0].board);
-  assert.deepEqual(u[`${k.skillId}/remediation[0].then`].board, k.remediation[0].then.board);
-  assert.deepEqual(k.remediation[2].board, k.remediation[2].then.board, "s1 rem2 has none of its own");
-  assert.deepEqual(u[`${k.skillId}/remediation[2]`].board, k.remediation[2].then.board);
+  // (Learning 017 C, dc-r8-director28 item 6: the count-marks card is posed on the ribbon's own 7-gap line, which no longer draws the
+  // 11 ticks it asks the child to count, so rem0 and its card share one board; rem2, the "not numbers" remediation, gets its own)
+  assert.deepEqual(k.remediation[0].board, k.remediation[0].then.board, "s1 rem0's card is posed on the remediation's own line (017 C)");
+  assert.deepEqual(u[`${k.skillId}/remediation[0]`].board, k.remediation[0].then.board);
+  assert.notDeepEqual(k.remediation[2].board, k.remediation[2].then.board, "s1 rem2 has a board of its own (017 C)");
+  assert.deepEqual(u[`${k.skillId}/remediation[2]`].board, k.remediation[2].board);
+  assert.deepEqual(u[`${k.skillId}/remediation[2].then`].board, k.remediation[2].then.board);
   assert.deepEqual(u[`${k.skillId}/bridge`].board, s.skills[1].explain[0].ask?.board ?? s.skills[1].explain[0].board);
   assert.ok(u[`${k.skillId}/remediation[0]`].parts.some(([f]) => f === "say"));
 });

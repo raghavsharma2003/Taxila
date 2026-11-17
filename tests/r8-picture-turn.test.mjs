@@ -83,7 +83,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // words speak the board; twelve boards a general say did not speak were dropped or moved to the wording that speaks them (the
     // D12 rule, tests/r7-board-ref) — parts 11 → 12, wholes 17 → 20, equal-groups 8 → 9, bars 28 → 35 (25 → 32 views), shape 7 → 8.
     // The new equal-groups and shape boards have no second view: a picture asked for on them redraws the held board with no line)
-    "fraction-parts@1": "12/12", "wholes@1": "21/21", "shade-grid@1": "1/5", "equal-groups@1": "6/9", "compare@1": "1/4",
+    "fraction-parts@1": "10/10", "wholes@1": "21/21", "shade-grid@1": "1/5", "equal-groups@1": "6/9", "compare@1": "1/4",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -100,7 +100,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // with a view); c5-t01 s1's whole-number-bias remediation gets its own halves-and-fifths line (line 59 → 60, with a view) and its
     // count-marks remediation's line is the sevenths only, no longer the then-card's two scales (still one line, with a view). The
     // c5-t02 gap-thinking boards moved from a second wording or a hint to the remediation itself: bars unchanged)
-    "fraction-bars@1": "32/35", "fraction-line@1": "42/60", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    // (Learning 017 C, dc-r8-director28: c5-t02 S1 e2's point is drawn on both strips (fraction-parts 12 → 10, bars 35 → 36, with a
+    // view); S2 e2's point on a 7-gap line (fraction-parts 10, line 60 → 61, with a view); c5-t01's redrawn remediation and point
+    // boards stay lines)
+    "fraction-bars@1": "33/36", "fraction-line@1": "43/61", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 

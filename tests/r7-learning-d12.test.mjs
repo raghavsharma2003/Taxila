@@ -28,7 +28,9 @@ test("D12.2: a card posed on shaded or named bars is a picture-read (c5-t02's s1
   const s = script("c5-maths-ch02-t02");
   const we = s.skills[0].workedExample;
   assert.ok(we.yourStep.board.params.bars.every((b) => b.shade === 0 && b.label === ""), "the yourStep has its own unnamed board");
-  delete we.yourStep.board;   // posed over the worked board again, 1/6 and 1/3 shaded
+  // (Learning 017 C: the worked problem is now posed on unmarked bars, so the old shaded board is put back for the rule)
+  we.board = we.yourStep.answerBoard;
+  delete we.yourStep.board;   // posed over the worked board again, shaded and named
   assert.ok(answerOnBoardErrors(s).some((x) => /s1\/workedExample\.yourStep: posed on fraction-bars@1 with 2 wholes already shaded or named/.test(x)));
   // the order card on labelled, shaded bars
   const t = script("c5-maths-ch02-t02");

@@ -71,7 +71,9 @@ test("D13.3: c5-t02 e1's why is a full clause; the gap remediations are one shor
   // (Learning 016 C1/C3, 2026-11-17: each gets a board of its own that its say speaks — "Board par do ek jitni patti hain: ek ke 2
   // barabar hisson mein se 1 rangin, doosri ke 7 mein se 6", "Board par do ek jaise dibbe hain: ek ke 3 barabar khaanon mein se 2
   // bhare, doosre ke 8 mein se 7"; docs/status/learning.md, 016's changed sentences. The rule is the same: both things one part short)
-  for (const [i, j, one] of [[1, 2, /2 barabar hisson mein se 1 rangin, doosri ke 7 mein se 6/], [2, 2, /3 barabar khaanon mein se 2 bhare, doosre ke 8 mein se 7/]]) {
+  // (Learning 017 A.3, 2026-11-17: both cut to fit their follow-up cards — "Do ek jitni patti: 2 mein se 1 rangin, aur 7 mein se 6",
+  // "Do ek jaise dibbe: 3 mein se 2 khaane bhare, 8 mein se 7"; the rule is the same)
+  for (const [i, j, one] of [[1, 2, /2 mein se 1 rangin, aur 7 mein se 6/], [2, 2, /3 mein se 2 khaane bhare, 8 mein se 7/]]) {
     const r = s.skills[i].remediation[j];
     assert.equal(r.targets, "c5-maths-ch02-t02-m-gap-thinking");
     assert.match(r.say.hi, one, `s${i + 1} rem${j}: one short`);

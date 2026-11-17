@@ -43,7 +43,7 @@ test("D10.4: 'no later key' covers distractors, choice cards and a then-card's o
 
 test("D10: a worked problem states every number its givens use (the givens recital is gone, the problem is said)", () => {
   const s = script("c6-maths-ch06-t01");
-  assert.match(s.skills[0].workedExample.problem.hi, /7 m, 9 m aur 12 m/);
+  assert.match(s.skills[0].workedExample.problem.hi, /8 m, 9 m aur 14 m/);   // (Learning 017 D: the problem now carries the gardener's 35 m)
   s.skills[0].workedExample.problem.hi = "Phoolon ki ek kyari triangle jaisi hai. Kitni lambi baad lagegi?";
   s.skills[0].workedExample.givens = [{ hi: "bhujayein 7 m, 9 m aur 12 m", en: "sides 7 m, 9 m and 12 m" }];
   assert.ok(workedProblemNumberErrors(s).some((x) => /givens\/find use 7, 9, 12, which its problem never states/.test(x)));
