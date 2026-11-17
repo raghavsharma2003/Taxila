@@ -51,6 +51,8 @@ export const SEAM_TABLE = [
   ["start", "hindiSwitch", "hindiSwitch"],
   // (dc-r8-director25 H4: help's joints open the turn help says them on — the decision's, recorded here)
   ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"], ["start", "helpToCard", "helpToCard"],
+  // (Brain 044 T5: after a key, the "nothing easier" line, then the after-key return into the earlier card)
+  ["helpSpent", "returnCard", "backTo"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
   // (dc-r8-director25 L2 item 5: a picture's caption takes the seams a point takes; a key, the ones the verdict it follows takes)
@@ -183,7 +185,9 @@ function kindOf(p, i, list, info) {
   if (info.workedProblem && ["body", "held"].includes(p.part) && low(t).startsWith(low(info.workedProblem).slice(0, 30))) return "workedProblem";
   // (dc-r8-director26, the record: help's joint — the go-on line, helpSpent, helpToCard — is recorded as what it is, never as a verdict; a
   // help wording is recorded as help, never as a point)
-  if (info.helpJoint?.form && i === 0 && low(t).startsWith(low(info.helpJoint.form).slice(0, 20))) return info.helpJoint.kind;
+  if (info.helpJoint?.form && (i === 0 || (i === 1 && info.helpJoint.spent)) && low(t).startsWith(low(info.helpJoint.form).slice(0, 20))) return info.helpJoint.kind;
+  // (Brain 044 T5: the "nothing easier" line said before the go-on line after a key)
+  if (info.helpJoint?.spent?.form && i === 0 && low(t).startsWith(low(info.helpJoint.spent.form).slice(0, 20))) return "helpSpent";
   if (p.part === "simpler") return "help";
   // (dc-r8-director27 P7: code's frame before a card said again — "Phir se dekho:" — is no point)
   if (["body", "held"].includes(p.part) && /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again|One more look)\s*:\s*$/i.test(t)) return "repose";
@@ -244,10 +248,11 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
       const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
       // (before the aside's return the go-on line's "we go on" contradicts the return — c6 steering 32, its judge: "abhi aage badhte hain. Ab
       // cricket ki baat karte hain". The request is still answered: the helpSpent line, then the return)
-      const spentJ = intoReturn === "return" ? helpJoint(scriptFor(kit)?.script, "helpSpent", { lang, lessonKey: lessonKeyOf(state), n: state?.helpJointN?.helpSpent ?? 0 }) : null;
+      // (Brain 044 T5: the "nothing easier" line already said before the go-on line is not said twice)
+      const spentJ = intoReturn === "return" && !info.helpJoint.spent ? helpJoint(scriptFor(kit)?.script, "helpSpent", { lang, lessonKey: lessonKeyOf(state), n: state?.helpJointN?.helpSpent ?? 0 }) : null;
       if (spentJ?.text) stripped[at] = { ...stripped[at], text: [spentJ.text, ...rest].join(" ") };
       else if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
-      info = { ...info, helpJoint: spentJ?.text ? { kind: "helpSpent", form: spentJ.text, by: spentJ.by } : null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
+      info = { ...info, helpJoint: spentJ?.text ? { kind: "helpSpent", form: spentJ.text, by: spentJ.by } : info.helpJoint.spent ? { kind: "helpSpent", form: info.helpJoint.spent.form, by: info.helpJoint.spent.by } : null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
       kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
     }
   }
@@ -287,6 +292,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
     if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }
     out.push(p);
+    // (Brain 044 T5: help's own joint that opens the turn leaves the seam after it as the turn's start — the back-to or after-key return still
+    // leads a return to an earlier card after the "nothing easier" line)
     prevKind = k;
   });
   // 3. a filler that opens two neighbouring parts is said once ("Achha, toh … Achha, ab …")
@@ -309,6 +316,12 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     const at = seams.find((x) => x.right === info.helpJoint.kind && !x.joint);
     if (at) Object.assign(at, { joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
     else seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
+  }
+  // (Brain 044 T5: the "nothing easier" line said before the go-on line after a key — its own seam, the help it is)
+  if (info.helpJoint?.spent?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.spent.form).slice(0, 20)) && !seams.some((x) => x.joint === "helpSpent")) {
+    const rec = { joint: "helpSpent", form: info.helpJoint.spent.form, by: info.helpJoint.spent.by ?? "authored" };
+    const at = seams.find((x) => x.right === "helpSpent" && !x.joint);
+    if (at) Object.assign(at, rec); else seams.unshift({ left: "start", right: "helpSpent", ...rec });
   }
   // (dc-r8-director27 P1: a joint keeps its mark — it is said over the board of the part it leads into, and the page builder reads that)
   return { list: out.map(({ joint, ...p }) => (joint ? { ...p, joint } : p)), seams, jointsUsed: used, said };

@@ -6,12 +6,16 @@
 //   pageStart      T4: every page in a turn starts at the first character of the part that owns it. A joint, a lead-in, an opener, a
 //                  bridge and a hook own no page — they are said over what is up (nothing, if nothing is up); a part of the record that
 //                  is one of them and lists a board drawn in the turn claims a page it does not own
+//   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
+//                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
 const keyOf = (b) => (b && typeof b === "object" && b.template ? canon({ template: b.template, params: b.params ?? {} }) : null);
 const sameB = (a, b) => !!keyOf(a) && keyOf(a) === keyOf(b);
+const CHECKIN_END = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
+const REQUESTS = new Set(["clarify", "give_up", "hindi"]);
 const brief = (b) => (b ? `${String(b.template).replace(/@\d+$/, "")}` : "nothing");
 
 /** A turn's parts with their texts, each marked `lead` when it owns no page: a bridge, an aside (her reply, an opener, the switch line),
@@ -51,5 +55,13 @@ export const D29_PREDICATES = {
       if (owner.from !== pg.from) return `the ${brief(pg.board)} page drawn at ${pg.from}, not at its ${owner.part}@${owner.beat}'s first word (${owner.from})`;
     }
     return null;
+  },
+  /** T5: a request (clarify, give-up, Hindi) at a quick question is answered with help on its point and then the quick question again or the
+   *  card — never a check-in while the card waits (c5-t01 steady 8; c6 steady 8). */
+  quickHelpCard(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx.prevT || !(ctx.prevT.pageParts ?? []).some((p) => p.part === "quick")) return null;
+    const req = REQUESTS.has(String(ctx.prevIntent ?? "")) ? ctx.prevIntent : REQUESTS.has(String(r.cell?.column ?? "")) ? r.cell.column : null;
+    if (!req || !CHECKIN_END.test(norm(r.text))) return null;
+    return `a ${req} at the quick question answered with a check-in, its card waiting`;
   },
 };

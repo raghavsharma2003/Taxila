@@ -254,8 +254,9 @@ export const D27_PREDICATES = {
     const intent = ctx.prevIntent ?? null;
     const req = ["clarify", "give_up", "hindi"].includes(intent) ? intent : ["clarify", "give_up", "hindi"].includes(col) ? col : null;
     if (!req || /^(?:wrap|safeguard|break|greet|done|hook)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
-    // (Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes)
-    if (ctx.prevT?.leadAlone) return null;
+    // (Brain 044 T5: after her reply said alone, a park or any turn that taught nothing, the part to help is the one taught before it — the
+    // address does not move on an aside — and the worked segment is no answer: c5-t01 stuck 44, steering 40; c5-t02 stuck 44; c6 stuck 46,
+    // offtopic 36)
     // (dc-r8-director27 Brain 042: a give-up on a quick question gets its authored `say` and the card; on an asked step, the step told —
     // the work order's answer; a clarify or a Hindi request there is help on the point or the step, read below)
     if (req === "give_up" && /:quick$/.test(String(r.cell?.part ?? "")) && (r.pageParts ?? [])[0]?.part === "quickReply") return null;
@@ -267,9 +268,9 @@ export const D27_PREDICATES = {
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);
     const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents) : true;
-    if (hasJoint(r.text, ctx.script, ["helpSpent", "helpToCard"]) || (a.keyed && hasJoint(r.text, ctx.script, ["afterKeyReturn", "afterKeyGoOn"]))) {
-      return isSpent ? null : `a ${req} on ${a.beat} answered with a help joint while its help is unsaid`;
-    }
+    // (Brain 044 T5: the three things and nothing else — an unsaid wording, the key, the "nothing easier" line; the after-key return, the go-on
+    // line and helpToCard alone are not help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
+    if (hasJoint(r.text, ctx.script, ["helpSpent"])) return isSpent ? null : `a ${req} on ${a.beat} answered with the "nothing easier" line while its help is unsaid`;
     const other = parts.find((p) => p.part === "simpler");
     return `a ${req} on ${a.beat}${a.keyed ? " (after a key)" : ""} answered with ${other ? `help for ${other.beat}` : parts.length ? parts.filter((p) => !p.joint && !p.checkin).map((p) => `${p.part}@${p.beat}`).join(", ") || "a joint" : "no part"}`;
   },

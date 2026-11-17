@@ -58,6 +58,8 @@ const DRY_DRAFT = { text: null };
 if (DRY) process.env.TAXILA_STRICT_HELP = "1";
 // (d28 guards: a dry run throws where a scripted turn lost an authored part — brain/say.js holdAuthored; serving puts it back)
 if (DRY) process.env.TAXILA_STRICT_AUTHORED = "1";
+// (Brain 044 T5: a request's turn with no help throws in the dry harness, as under tests)
+if (DRY) process.env.TAXILA_STRICT_REQUEST = "1";
 
 /** The scripted children: the same lines, in the same order, for both lanes. */
 export const SCENARIOS = {

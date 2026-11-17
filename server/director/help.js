@@ -289,8 +289,11 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (a closed card with nothing left: the helpSpent line, and the lesson goes on — the go-on line is a key's)
   if (closed && !keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
   if (keyed) {
-    const joint = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
-    return { ...base, rung: null, board: null, card: "goOn", key: null, joint };
+    // (dc-r8-director28 Brain 044 T5: after a key with nothing unsaid, the "nothing easier" line is the help — then the go-on line or the after-key
+    // return, and the lesson goes on. The go-on line alone is no help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
+    const spentJ = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 });
+    const goOn = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
+    return { ...base, rung: null, board: null, card: "goOn", key: null, joint: spentJ ?? goOn, ...(spentJ && goOn ? { then: goOn } : {}) };
   }
   if (isCard) {
     const key = keyLine(part, L);
@@ -300,7 +303,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (a point or a remediation with nothing unsaid: its card is asked; a worked step or a bridge: the lesson goes on — never with nothing:
   // main's R3 on the merged tree, c5-t02 stuck 64, a second "samajh nahi aaya" on a step whose wordings were all said got the your-step
   // card bare. The lesson goes on to the next step — dc-r8-director26 J1: never with the go-on line's promise, which is a key's)
-  if (part.card) return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: helpJoint(script, "helpToCard", { lang: L, lessonKey, n: jointN.helpToCard ?? 0 }) };
+  // (Brain 044 T5: the "nothing easier" line is the help — then the card, led by helpToCard)
+  if (part.card) { const sj = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }); const tc = helpJoint(script, "helpToCard", { lang: L, lessonKey, n: jointN.helpToCard ?? 0 });
+    return { ...base, rung: null, board: part.board ?? null, card: "ask", key: null, joint: sj ?? tc, ...(sj && tc ? { then: tc } : {}) }; }
   // (dc-r8-director26 J1 item 1: the go-on line, "aisa sawaal aage phir aayega", is said only after a key — c5-t02 stuck 58, 64; c5-t01
   // stuck 44; c6 stuck 44 said it at a worked step and then worked the same problem. A step goes on to the next step, which opens on its
   // own step frame ("Pehle …", "Ab doosra kadam."); no promise)

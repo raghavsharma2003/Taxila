@@ -3162,6 +3162,9 @@ function keySaidNoCard(prev) {
 /** The part a move is about: its live card and its beat. */
 const partOf = (st, mv) => { const b = mv?.scriptBeat; return `${st?.activeItemId ?? st?.splitHold?.activeItemId ?? ""}|${b ? `${b.skillId}:${b.beatId}` : ""}`; };
 /** A give-up: not knowing the answer, or asking for it (dc-r8-director20 G3; "hindi mein batao na" is a request, not one). */
+/** Brain 044 (dry steady c5-t01, after T5 moved the lesson onto the closing verdict's check-in): "pata nahi kaise, bas laga" is the child's
+ *  reason for an answer she gave (she does not know how, it felt so), not a give-up. */
+const SAYS_A_REASON = /(?<![\p{L}])(?:bas\s+laga|mujhe\s+laga|guess\s+kiya|aise\s+hi\s+laga)(?![\p{L}])/iu;
 const GIVE_UP_WORDS = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
 /** dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler is said before the hook. */
 const greetSimplerDue = (lastMove, input) => lastMove?.kind === "greet"
@@ -3202,7 +3205,7 @@ function columnName(input, prev = null) {
   if (!rq && cls.outcome === "no_evidence" && !cls.asideReply && !SAYS_CLARIFY.test(text) && !GIVE_UP_WORDS.test(text) && asideTopic(text, prev?.ctx?.interests)) return "aside";
   return SAYS_CLARIFY.test(text) || ["clarify", "another", "confused"].includes(rq) ? "clarify" : rq === "language" ? "hindi"
     : ["repeat", "which"].includes(rq) ? "repeat" : rq === "visual" ? "picture" : ["selftry", "thinking"].includes(rq) ? "try_first"
-      : rq === "uptake" ? "aside" : rq === "move_on" ? "move_on" : GIVE_UP_WORDS.test(text) ? "give_up"
+      : rq === "uptake" ? "aside" : rq === "move_on" ? "move_on" : GIVE_UP_WORDS.test(text) && !SAYS_A_REASON.test(text) ? "give_up"
         : cls.outcome === "correct" ? "right" : cls.outcome === "misconception" ? "misconception" : ["incorrect", "partial"].includes(cls.outcome) ? "wrong" : null;
 }
 const columnOf = (input, prev) => { const column = columnName(input, prev); return column ? { part: null, column, help: null } : null; };
@@ -3303,7 +3306,8 @@ function helpRequestOf(prev, input) {
   // (Brain 042: a give-up on a quick question or an asked step is an answer that is not right — quick.say then the card, or the step told —
   // never help: no hint ladder there)
   if (col === "give_up" && (prev.lastMove?.quick || prev.lastMove?.stepAsk)) return null;
-  // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn)
+  // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn. Brain 044 T6: her reply never
+  // stands alone now — it goes on into the live part in the same turn — so no turn reaches this)
   if (prev.lastMove?.leadAlone && prev.splitHold) return null;
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
@@ -3358,7 +3362,7 @@ function helpBeat(kit, d, board) {
   return { ...base, ...beat, ...(board ? { board } : {}) };
 }
 /** The words of a decision, said first: the wording, else the key, else the joint (friend slots filled). */
-const helpWords = (d) => fillFriend(String(d.rung?.text ?? d.key?.text ?? d.joint?.text ?? ""), d.friend ?? "").trim();
+const helpWords = (d) => fillFriend([d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
@@ -3370,6 +3374,7 @@ const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delet
 /** Count a help joint said (forms rotate by it), and record the decision on the state. */
 function noteHelp(s, d) {
   if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
+  if (d.then) s.helpJointN = { ...(s.helpJointN ?? {}), [d.then.kind]: (s.helpJointN?.[d.then.kind] ?? 0) + 1 };
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
   // (a closed card's help that moves the lesson on — its card asked, the lesson going on, a key — leaves it)
   if (d.card !== "wait" && d.card !== "keep") s.closedPart = undefined;
@@ -3378,7 +3383,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
@@ -3433,11 +3438,35 @@ function helpInput(input, d, liveId) {
   if (d.card === "close") return { ...input, helpClose: liveId, cls: { ...rest, ...(d.request === "hint" ? {} : { outcome: "no_evidence" }), ...(d.request === "hint" ? { request: input.cls?.request } : { flags: { ...flags, dontKnow: true } }) } };
   // (the walk goes on from a check-in on a plain yes: that is what it is given — the record keeps the child's own words)
   // (dc-r8-director26: the joint said before the walk's turn counts toward its words — the turn breaks with it counted)
-  if (d.card === "goOn") return { ...input, text: "haan", helpGoOn: true, helpLeadWords: d.joint?.text ? String(d.joint.text).split(/\s+/).filter(Boolean).length : 0, cls: { ...rest, outcome: "no_evidence", flags, asideReply: false } };
+  if (d.card === "goOn") return { ...input, text: "haan", helpGoOn: true, helpLeadWords: [d.joint?.text, d.then?.text].filter(Boolean).join(" ").split(/\s+/).filter(Boolean).length, cls: { ...rest, outcome: "no_evidence", flags, asideReply: false } };
   if (d.card === "ask") return { ...input, cls: { ...rest, outcome: "no_evidence", flags, request: { type: "repeat", src: "help_card" } } };
   // (a hint that keeps the card: the walk grades the miss, and capPlan does not let the card go on a count of misses)
   if (d.card === "keep" && d.request === "hint" && liveId && !recordedWalk(input)) return { ...input, helpKeep: liveId };
   return input;
+}
+/** Brain 044 T5: whether the strict reading of help's precondition is on (tests, and the dry harness's TAXILA_STRICT_REQUEST). */
+const STRICT_REQUEST = () => !!process.env.NODE_TEST_CONTEXT || process.env.TAXILA_STRICT_REQUEST === "1";
+/** Brain 044 T5: what a request's turn may answer it with — an unsaid wording (a help rung), a key (a card closed as help, a give-up's key),
+ *  the "nothing easier" line; or the reading of an answer the walk asked for (a quick question's say, an asked step told). → null when the
+ *  turn answers the request, else why not. */
+export function requestUnhelped(prev, input, out) {
+  const request = helpRequestOf(prev, input);
+  if (!request) return null;
+  const lm = out?.state?.lastMove ?? {};
+  if (["safeguard", "break", "wrap"].includes(String(lm.kind ?? "")) || out?.end) return null;
+  const h = lm.help ?? null;
+  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent")) return null;
+  if (lm.gave?.answer || lm.quickReply || lm.stepReply) return null;
+  // (the greeting's own simpler wording answers a request at the greeting)
+  if (String(prev?.lastMove?.kind ?? "") === "greet") return null;
+  // (T5, until T1: a hook said alone ends on a check-in and a request there gets the switch line and the first point — T1 makes the hook never
+  // end a turn)
+  if (lm.hookHelp) return null;
+  return `a ${request} answered with ${h ? `help ${JSON.stringify({ card: h.card, joint: h.joint ?? null })}` : lm.kind ?? "nothing"} (${lm.scriptBeat?.beatId ?? "?"})`;
+}
+function requestHelpedOrThrow(prev, input, out) {
+  const why = requestUnhelped(prev, input, out);
+  if (why) throw new Error(`T5: a request's turn with no help: ${why} | the child: ${String(input?.text ?? "").slice(0, 60)}`);
 }
 /** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help is not picked in it (helpRequestOf). */
 const recordedWalk = (input) => !!scriptFor(input?.kit)?.script?.recordedRun;
@@ -3466,6 +3495,9 @@ function helpBefore(prev, input, said) {
   if (!d0) return null;
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   const d = { ...d0, liveId };
+  // (dc-r8-director28 Brain 044 T5: a request at a quick question gets help on the point, then the card — never a check-in with the card
+  // waiting: c5-t01 steady 8; c6 steady 8)
+  if (prev.lastMove?.quick && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask && (d.rung || d.joint) && ["wait", "keep"].includes(d.card)) return { decision: { ...d, card: "ask" }, held: true };
   if (d.card === "keep" && !liveId) return { decision: { ...d, card: "wait" }, stay: true };
   if (d.card === "keep" || d.card === "wait") return { decision: d, stay: true };
   // (the part's card: held by the point's split, it comes now; not yet on the table, the walk poses it — never its point again)
@@ -3516,7 +3548,10 @@ function helpAfter(prev, input, out, pre) {
   else if (d.card === "ask") out.state.lastMove = { ...stripHelp(lm), ...(d.rung || d.joint ? helpFields(input.kit, d) : { help: mark }), ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
   else if (d.joint) {
     const j = fillFriend(d.joint.text, friendOf);
-    out.state.lastMove = { ...lm, sayFirst: [j, ...(lm.sayFirst ?? [])], helpJoint: { kind: d.joint.kind, form: j, by: d.joint.by }, help: mark };
+    // (Brain 044 T5: after a key, the "nothing easier" line first, then the go-on line — the seam pass turns it into the after-key return before
+    // an earlier card, or drops it before the aside's return; the help joint it records is the go-on line)
+    const j2 = d.then?.text ? fillFriend(d.then.text, friendOf) : null;
+    out.state.lastMove = { ...lm, sayFirst: [j, ...(j2 ? [j2] : []), ...(lm.sayFirst ?? [])], helpJoint: j2 ? { kind: d.then.kind, form: j2, by: d.then.by, spent: { form: j, by: d.joint.by } } : { kind: d.joint.kind, form: j, by: d.joint.by }, help: mark };
   } else out.state.lastMove = { ...lm, help: mark };
   noteHelp(out.state, d);
   if (out.move) out.move = { ...out.state.lastMove };
@@ -3560,6 +3595,9 @@ export function step(prev, input) {
     }
   }
   const helped = out?.state?.lastMove?.help ?? null;
+  // (dc-r8-director28 Brain 044 T5: help is a hard precondition — a turn that answers a request says an unsaid wording of the last part taught,
+  // its key, or the "nothing easier" line before anything that moves the lesson. Thrown under tests and the dry harness)
+  if (STRICT_REQUEST() && input?.event === "turn") requestHelpedOrThrow(prev, input, out);
   // (dc-r8-director22 R: her aside question is answered by the next line and only the next line — every path clears it, including the
   // ones that return a copy of the last state before step0's own clearing)
   if (input?.event === "turn" && out?.state && out.state.asideReplyDue) out.state.asideReplyDue = undefined;
