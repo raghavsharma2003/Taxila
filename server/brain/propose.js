@@ -580,6 +580,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const helpU = helpU0 && !(cur?.board && JSON.stringify(cur.board) === JSON.stringify(helpU0.board)) ? helpU0 : null;
   const unitOfPart = (p) => {
     if (helpU && p.part === "simpler") return helpU;
+    // (main's R3 on the merged H4 + L2 tree, dry c4 steady 94: the check-in that ends a help turn — "Ab tak samajh aaya?" — is no unit's
+    // part: it rides on the help's own page; a switch back to the card's posing board under it was planned and never drawn)
+    if (helpU && CHECKIN_ONLY.test(String(p.text ?? "").trim())) return helpU;
     if (helpU && HELD_CLOSE.has(p.part) && closing) return helpU;
     if (HELD_CLOSE.has(p.part)) return closing ? close ?? up ?? cur : null;
     if (p.part === "aside") return null;
@@ -637,5 +640,7 @@ export function heldPredicates(h, spoken, text, { up = null, noUnit = false } = 
 }
 /** The held board a turn ends on (the switch's when it switched), as the next turn's `up`. */
 // (dc-r8-director25 H4: a help wording's own page belongs to its part's unit — the board it leaves up is that unit's, by its plain name)
+/** A part that is only a check-in (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
+const CHECKIN_ONLY = /^(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Yeh kadam (?:saaf hai|samajh aaya)|Does that make sense so far|Clear so far|All good so far|Is that (?:part|step) clear|Did that step make sense)\?$/i;
 const unitUp = (u) => (u == null ? u : String(u).replace(/#help$/, ""));
 export const heldUpOf = (h) => (h ? (h.switchTo ? { board: h.switchTo.board, unit: unitUp(h.switchTo.unit) } : { board: h.board, unit: unitUp(h.unitAfter?.unit ?? h.unit) }) : null);
