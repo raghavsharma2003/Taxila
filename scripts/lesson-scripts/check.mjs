@@ -1259,7 +1259,7 @@ export function d28Errors(s) {
  *  E. `joints.stepMiss`: three forms of 4 words or fewer, each saying the answer was not it, naming no answer, asking nothing.
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
-export const D29_PILOTS = ["c6-maths-ch06-t01"];
+export const D29_PILOTS = ["c6-maths-ch06-t01", "c4-maths-ch05-t01"];
 export const D29_JOINTS = ["stepMiss"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
