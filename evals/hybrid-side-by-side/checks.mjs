@@ -58,7 +58,9 @@ export function pictureMismatch(text, board, altView = null) {
   const ALT = { parts: "bar patti strip parts hisse tukde", bars: "bar patti strip parts hisse tukde", line: "line rekha number", wholes: "parts hisse tukde", groups: "group samooh plate", round: "circle gol parts hisse tukde", example: "bar patti strip parts hisse tukde",
     // (v6.5, main on director13: Studio's unrolled view lays a shape's sides end to end on a line)
     // (v6.6, main on director14: the unrolled sides are drawn as a strip, "patti")
-    unrolled: "line rekha sides side bhuja bhujayein seedhi straight patti strip" };
+    unrolled: "line rekha sides side bhuja bhujayein seedhi straight patti strip",
+    // (dc-r8-director25 harness, c4 offtopic 26: a wholes board's second view is strips — "patti" — and its authored caption is true)
+    strips: "bar patti strip parts hisse tukde" };
   const av = typeof altView === "string" ? altView : altView?.view ?? null;
   const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];
@@ -145,4 +147,25 @@ export function falseAnswerNumbers(text, { keys = new Set(), given = "" } = {}) 
     }
   }
   return [...new Set(out)];
+}
+
+/**
+ * dc-r8-director25 harness (c5-t01 stuck 78: "Chhota karke dekho: 1 mark ho toh 2 gaps, 2 marks ho toh 3 gaps; …" flagged against a
+ * board of 10 marks): a smaller case she asks the child to imagine is no claim about the board. The clauses of a sentence that set up a
+ * case — "1 mark ho toh 2 gaps", "agar …" — are taken out before her words are checked against the screen.
+ */
+export function imaginedOut(text) {
+  const IMAGINED = /(?<![\p{L}])(?:ho\s+toh|hon\s+toh|hote\s+toh|hoti\s+toh|hota\s+toh|agar|if)(?![\p{L}])/iu;
+  return (String(text ?? "").match(/[^.!?।]+[.!?।]*\s*/g) ?? []).map((x) => x.split(/(?<=[,;:])\s+/).filter((c) => !IMAGINED.test(c)).join(" ")).join(" ").replace(/\s+/g, " ").trim();
+}
+/**
+ * The text a stated answer may come from (falseAnswerNumbers' `given`): the card asked and its kit prompts, her own line's question, the
+ * authored whys, the move's closes, and the authored wording it says as help — dc-r8-director25 harness, c5-t02 steady 100: "1/4 aur 2/8 ek
+ * hi jagah hain", the card's own simpler, was counted a false key because the move's simpler was not given.
+ */
+export function answerGiven({ card = null, item = null, text = "", content = [], whysOwn = [], move = {} } = {}) {
+  const lm = move ?? {};
+  return [card, item?.prompt_hi, item?.prompt_en, text, ...(content ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x)),
+    ...(whysOwn ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, ...(lm.sayFirst ?? []), lm.point, ...(lm.rendered ?? []), lm.simpler]
+    .filter(Boolean).join(" ");
 }

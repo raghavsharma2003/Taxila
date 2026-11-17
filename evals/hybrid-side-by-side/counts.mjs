@@ -14,6 +14,10 @@
 import { readdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { QUIET_PICTURE_LINES } from "../../server/stagecraft/board-first.js";
+import { lessonFlags } from "./dry-predicates.mjs";
+import { helpTurnOf } from "./help-predicates.mjs";
+/** The context helpTurnOf reads at row i (the child's line before it), as dry-predicates' lessonFlags keeps it. */
+const helpCtx = (rows, i, script) => { const ch = [...rows.slice(0, i)].reverse().find((x) => x.who !== "teacher"); return { o: {}, script, prevChild: ch?.text ?? "", prevRead: String(ch?.read ?? "") }; };
 const QUIET = QUIET_PICTURE_LINES.map((x) => String(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim());
 
 const ROOT = new URL("../../", import.meta.url).pathname;
@@ -43,7 +47,9 @@ export function lessonCounts(rows, script) {
     // (her word total is left out: it moves with every wording edit and would bury the counts that mean something)
     if (n > 60) c.turnsOver60Words++;
     // (dc-r8-director24 L: one new thing a turn — a turn over 60 words that holds a point and a card; the target is 0)
-    if (n > 60 && (r.pageParts ?? []).some((p) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? ""))) && (r.pageParts ?? []).some((p) => p.part === "card")) c.longPointAndCard++;
+    // (dc-r8-director25: as the predicate reads it — a seam's joint before a card asked again is no point)
+    const jf = (r.seams ?? []).map((x) => norm(x.form ?? "")).filter(Boolean), pp = r.pageParts ?? [];
+    if (n > 60 && pp.some((p, k) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? "")) && !jf.includes(norm(String(r.text ?? "").slice(p.from, pp[k + 1]?.from ?? undefined)))) && pp.some((p) => p.part === "card")) c.longPointAndCard++;
     // (dc-r8-director24 M: a joint said in the model's words, against one said in the authored form)
     for (const sm of r.seams ?? []) if (sm.joint && sm.form && sm.joint !== "hindiSwitch") { if (sm.by === "model") c.joinsWritten++; else c.joinsFellBack++; }
     for (const sm of r.seams ?? []) if (sm.opener) { if (sm.opener.by === "model") c.openersWritten++; else c.openersFellBack++; }
@@ -62,6 +68,11 @@ export function lessonCounts(rows, script) {
     for (const [kind, hs] of Object.entries(heads)) for (const head of hs) if (text.includes(head)) { bump(c.joints, kind); break; }
   }
   for (const k of ["moves", "columns", "reads", "joints"]) c[k] = sorted(c[k]);
+  // (dc-r8-director25 H4: help turns — a clarify, a give-up, a Hindi request, a wrong answer's hint — and those that say a sentence of the
+  // script she has already said in the lesson (the said set: help-predicates.mjs helpRepeats); the target is 0)
+  const flags = lessonFlags({ rows, script });
+  c.helpTurns = rows.filter((r, i) => r.who === "teacher" && helpTurnOf({ rows }, r, i, helpCtx(rows, i, script))).length;
+  c.helpSaidAgain = flags.filter((f) => f.predicate === "helpRepeats").length;
   return c;
 }
 
