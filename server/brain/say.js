@@ -3003,13 +3003,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const goOn = () => (afterProblem ? null : state.lastMove?.checkinOk && !checkinLately ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state)
       : afterRem ? freshOf(BEAT_ASK[L0], state) : stepOpened() || kindNow !== "worked_example" ? null : freshOf(WORKED_GO[L0], state));
     // (dc-r8-second-clarify-shows-not-rewords: a second clarify on one part is the same line again, then the check-in, never the card)
-    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (workedLines?.length && kindNow === "worked_example" ? goOn()
+    let tail = state.lastMove?.secondClarify || state.lastMove?.workedSimpler || state.lastMove?.stayCheckin ? rotateOf((kindNow === "worked_example" ? WORKED_ASK : BEAT_ASK)[L0], state) : card ?? (state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt))) : workedLines?.length && kindNow === "worked_example" ? goOn()
       // (v6.10 R7, main on director18: "Ab aage chalte hain." was left hanging after every bridge — nothing is appended after a bridge;
       // after a give-up's key, a check-in)
       : state.lastMove?.splitClose ? (state.lastMove.gaveCheck ? rotateOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state) : null)
       // (v6.3 R2, main on director11: "Ab agla kadam dekhte hain." and then the same beat's card: the teaching half of a split turn
       // is followed by ITS card, so it says a question on this comes, never a next step)
       : state.lastMove?.splitTeach && state.lastMove?.quick?.prompt ? (guard.quickAsk = dot(norm(state.lastMove.quick.prompt)))
+      // (Brain 042 Q2: a segment of a worked example ends on its asked step's question, never on a step check-in)
+      : state.lastMove?.stepAsk?.prompt && !state.lastMove?.splitClose ? (guard.stepAsk = dot(norm(state.lastMove.stepAsk.prompt)))
       : state.lastMove?.splitTeach ? (state.lastMove?.checkinOk ? goOn() : freshOf(BEAT_ASK[lang === "english" ? "english" : "hinglish"], state)) : null);
     // (v6 R5: the first half of a split turn says the closures only: none of her own teaching)
     if (state.lastMove?.splitClose) body = [];
@@ -3314,7 +3316,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : {}) },
+        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);

@@ -757,6 +757,8 @@ function walkNextV2(s, input, prefix, sk) {
       // (v3 K2: the worked answer and why are said on the move right after their step, and only when they missed it)
       // (v4 W2: after their step, right or not, the worked answer and its why are said: "Toh poora jawab: …")
       if (gone(item.id)) { w.i += 1; w.sayWorked = s.turn; continue; }
+      // (dc-r8-director27 Brain 042 Q2: a worked example with an asked step is done with the child — workedSegment)
+      { const seg = workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridgeLine, prefix }); if (seg) return seg; }
       // v3 V1: the worked example across turns: the problem (what is given, what to find) first, then its steps and their step
       if (!w.workedPosed) {
         w.workedPosed = true;
@@ -851,6 +853,64 @@ function walkNextV2(s, input, prefix, sk) {
     w.i += 1;
   }
   return null;
+}
+// ───────────── dc-r8-director27, Brain 042 Q2: a worked example done with the child ─────────────
+// A worked example whose script asks at least one step (`steps[].ask`) is a run of segments, each ending on a question: an asked step's
+// `ask.prompt`, or the child's own step. Told steps without an `ask` are said with what follows them; the problem is said with what follows
+// it up to the first question. An asked step answered right gets `ask.right`, then on; anything else gets the step told as today (its do,
+// result and why), then on; help said on it (a clarify: the step's simpler) is its telling. No hint ladder on an asked step, and no turn of
+// the worked example ends on a step check-in. A worked example with no asked step walks as before.
+/** Whether a worked example asks any step. */
+const asksSteps = (we) => (we?.steps ?? []).some((st) => st?.ask?.prompt && st.ask.key != null && String(st.ask.key).trim());
+/** The next segment of an asked worked example, as a plan; null when this worked example has no asked step (the old walk). */
+function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridgeLine, prefix = "" }) {
+  const { kit } = input;
+  const w = s.walk;
+  if (!asksSteps(we) || scriptFor(kit)?.script?.recordedRun) return null;
+  const steps = we.steps ?? [];
+  const lead = [];
+  let problemLines = 0, stepFrom = (w.workedStep ?? 0) + 1, stepReply = null;
+  if (!w.workedPosed) {
+    w.workedPosed = true; w.workedStep = 0;
+    const problem = [saidIn(we.problem, lang)].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
+    lead.push(...problem); problemLines = problem.length; stepFrom = 1;
+  } else if (w.stepAsk) {
+    // (the child's line on the asked step: read by the card's reader against its key — step() kept the reading, s.stepRead)
+    const k = w.stepAsk.step;
+    w.stepAsk = undefined;
+    const read = s.stepRead && s.stepRead.step === k && s.stepRead.skillId === skillId ? s.stepRead : null;
+    s.stepRead = undefined;
+    const helped = !!s.lastMove?.help?.rung && String(s.lastMove.help.part ?? "") === `${skillId}:worked:step${k + 1}`;
+    const right = !helped && read?.outcome === "correct";
+    const st = steps[k];
+    const line = helped ? null : right ? saidIn(st.ask.right, lang) : scriptWorkedStepLine(st, lang);
+    if (line) lead.push(fillFriend(String(line).replace(/\s+/g, " ").trim(), friendOf));
+    w.workedStep = k + 1; stepFrom = k + 1;
+    stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}) };
+    s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
+    if (helped) stepFrom = k + 2;
+  }
+  // the told steps up to the next question
+  let j = w.workedStep ?? 0;
+  const told = [];
+  while (j < steps.length && !(steps[j]?.ask?.prompt && steps[j].ask.key != null)) { const l = scriptWorkedStepLine(steps[j], lang); if (l) told.push(l); j++; }
+  const rendered = [...lead, ...told];
+  const base = { skillId, format: "F2", content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
+    whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, ...(rendered.length ? { rendered, stepFrom } : {}), ...(problemLines ? { problemLines } : {}),
+    ...(stepReply ? { stepReply } : {}), ...sayFirst };
+  if (j < steps.length) {
+    const a = steps[j].ask;
+    const prompt = fillFriend(String(saidIn(a.prompt, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf);
+    w.workedStep = j; w.stepAsk = { step: j };
+    const qi = friendly(scriptStepAskItem(skillId, j, a));
+    s.quickItem = qi; s.activeItemId = qi.id;
+    return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, stuck: true, stepAsk: { skillId, step: j, prompt }, ...ref("worked", `worked:step${j + 1}`, we.board) });
+  }
+  // the child's own step
+  w.workedStep = steps.length;
+  s.scriptCard = item; s.phase = "practice";
+  activate(s, item);
+  return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, item, probe: probeFor(item), ...ref("worked", "worked", we.board) });
 }
 /** The walk's current beat as a scriptBeat ref (with its board), or null. */
 function currentBeatRef(s, kit) {
@@ -3412,7 +3472,11 @@ function helpAfter(prev, input, out, pre) {
 export function step(prev, input) {
   // (Brain 042: a quick question or an asked step was what the child's line was read against — no card: it leaves the table before anything
   // else reads it; the walk acts on the reading — heldTurn's quickAnswer, the worked example's stepAsk)
-  if (isQuickId(prev?.activeItemId)) prev = { ...prev, activeItemId: undefined, quickItem: undefined };
+  if (isQuickId(prev?.activeItemId)) {
+    const m = /^stepask:(.+):(\d+)$/.exec(String(prev.activeItemId));
+    prev = { ...prev, activeItemId: undefined, quickItem: undefined,
+      ...(m && input?.event === "turn" ? { stepRead: { skillId: m[1], step: Number(m[2]), outcome: input.cls?.outcome ?? null, said: String(input.text ?? "").replace(/\s+/g, " ").trim().slice(0, 80) } } : {}) };
+  }
   // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
   // after it for a hint, a card asked or a turn that goes on)
   const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
@@ -3609,6 +3673,15 @@ function step0(prev, input) {
   }
   // (dc-r8-director25 H4: "pata nahi" / "samajh nahi aaya" at a point's check-in is help on the point, decided in step()'s helpBefore —
   // v6.9 T1's re-route to the card by the request table is gone)
+  // (dc-r8-director27 Brain 042 Q2: the child's line on an asked step — an answer, a give-up, anything that is no request — is read by the
+  // walk from step()'s record of it (s.stepRead): it reaches the walk as a plain go-on, never as a card's answer, a give-up's help or a
+  // frustration break)
+  if (input.event === "turn" && prev?.lastMove?.stepAsk && scriptOn()) {
+    const c = input.cls ?? {};
+    const col = columnName(input, prev);
+    const req = !!(c.request || c.help || c.asideReply) || ["clarify", "hindi", "picture", "repeat", "aside", "try_first", "move_on"].includes(col);
+    if (!c.flags?.distress && !c.flags?.wantsToStop && (!req || col === "give_up")) input = { ...input, stepAnswer: true, cls: { ...c, outcome: "no_evidence", request: undefined, flags: { ...(c.flags ?? {}), dontKnow: false, minimal: false, confused: false } } };
+  }
   // v6 R5: the second half of a split turn (splitLong) comes first
   const heldOut = prev?.splitHold ? heldTurn(prev, input) : null;
   if (heldOut) return heldOut;
@@ -3799,6 +3872,9 @@ function step0(prev, input) {
   // (dc-r8-director26 C1, main's ruling: the worked problem said with its first step — its lines lead the rendered ones; the hook said
   // before the first point, on that point's turn)
   if (p.problemLines) move.problemLines = p.problemLines;
+  // (dc-r8-director27 Brain 042 Q2: the asked step this segment ends on, and the child's answer to the one before it)
+  if (p.stepAsk) move.stepAsk = { ...p.stepAsk };
+  if (p.stepReply) move.stepReply = { ...p.stepReply };
   if (p.hookSaid) move.hookSaid = true;
   if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
   if (p.endVerdict) move.endVerdict = p.endVerdict;
@@ -4248,6 +4324,16 @@ export function splitLong(out, input) {
   // (dc-r8-director26 C1, main's ruling change 4: the problem and its first step share a turn after a verdict, the beforeWorked joint, a
   // bridge or a held part only when all of it fits in 75 words with her check-in; when it does not, the verdict, the joint and the problem
   // are said as they were before the ruling — one turn, its own break rules — and the first step goes back to the walk)
+  // (dc-r8-director27 Brain 042 Q2: a segment of an asked worked example is said whole with its question — the problem never alone; where a
+  // verdict, its why, a bridge or a held part before it make the turn run over 75 words, the break falls after them and that turn ends on
+  // its check-in)
+  if (l2On() && !recorded && (move.stepAsk || (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(String(ui?.ask?.itemId ?? "")) && asksSteps(skillScriptOf(input.kit, move.skillId)?.workedExample)))) {
+    const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
+    const qW = move.stepAsk ? wordsIn(move.stepAsk.prompt) : 0;
+    const b = p0.findIndex((x) => x.k === "body");
+    if (b > 0 && p0.reduce((a, x) => a + x.n, 0) + qW + (move.problemLines && b > 0 ? 0 : 0) > L2_CAP) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
+    return out;
+  }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
     const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
     if (p0.some((x) => ["close", "bridge", "held"].includes(x.k)) && p0.reduce((a, x) => a + x.n, 0) + 4 > L2_CAP) return splitLong(withoutFirstStep(out), input);
@@ -4556,7 +4642,7 @@ const workedWithCard = (out, input) => !!l2On() && !scriptFor(input.kit)?.script
 function problemAlone(out, input) {
   const { state: s, move } = out;
   const pL = Number(move?.problemLines) || 0;
-  if (!pL || out.ui?.ask?.itemId || !move.rendered?.length) return out;
+  if (!pL || out.ui?.ask?.itemId || !move.rendered?.length || move.stepAsk) return out;
   const lead = goOnLeadWords(input, s.ctx?.lang ?? "hinglish") + (move.asideAck || move.returnReply ? 12 : 0) + wordsIn(move.sayFirst ?? []);
   if (wordsIn(move.rendered) + lead + 4 <= L2_CAP) return out;
   return withoutFirstStep(out);
