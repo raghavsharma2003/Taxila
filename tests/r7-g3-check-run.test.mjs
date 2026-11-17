@@ -7,11 +7,12 @@ import { checkRun } from "../evals/hybrid-side-by-side/check-run.mjs";
 // (the five lessons it reads, with the run's script snapshot, copied from evals/hybrid-side-by-side/results/2026-11-11-director20)
 const RUN = new URL("./fixtures/eval-results/director20", import.meta.url).pathname;
 
-test("G3: giveUpNoKey flags director20's fault-5 rows (c4 stuck 12, c5-t01 stuck 12, c5-t02 steering 30)", () => {
+// (dc-r8-director25 H4 supersedes G3's rule: a give-up gets the key when its card's help ladder has nothing unsaid, never because the card had
+// a miss — the count decides nothing. giveUpNoKey reads the help turn's part from the walk's record, which director20's rows predate, so it
+// places none of them; it is pinned on director25's rows in tests/r8-director25-help-predicates.test.mjs)
+test("G3 under H4: giveUpNoKey reads no fault into director20's rows by a count of misses", () => {
   const flags = checkRun(RUN).filter((x) => x.predicate === "giveUpNoKey").map((x) => `${x.lesson} ${x.row}`);
-  // (main's ruling on director21, O6: a give-up's help is spent by a miss, never by the card being said twice — c4 stuck 12 and c5-t01
-  // stuck 12 had no miss and are no fault now; c5-t02 steering 30 had one)
-  for (const row of ["steering-c5-ch02-t02 30"]) assert.ok(flags.includes(row), `${row} in ${flags.join(", ")}`);
+  assert.ok(!flags.includes("steering-c5-ch02-t02 30"), "one miss is no longer a spent ladder");
   assert.ok(!flags.includes("stuck-c4-ch05-t01 12") && !flags.includes("stuck-c5-ch02-t01 12"));
   // ("hindi mein batao na" is a request, not a give-up)
   assert.ok(!flags.includes("stuck-c5-ch02-t02 8") && !flags.includes("stuck-c6-ch06-t01 8"));

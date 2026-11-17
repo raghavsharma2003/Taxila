@@ -25,7 +25,7 @@ import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, s
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor, TO_END_MAX, LEAVE_WAIT as LEAVE_WAIT_H } from "./child-sim/reactive.mjs";
-import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "./hybrid-side-by-side/checks.mjs";
+import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers, imaginedOut, answerGiven } from "./hybrid-side-by-side/checks.mjs";
 import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
 import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
 import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
@@ -474,7 +474,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           // (main on director23, c4 steady 32, 68, 74, 102, 128: the close of the card just answered was checked against the next unit's
           // board — the board up while a close is said is the closed card's (heldOf's close), so a close page is checked against that one)
           const closeHere = i === 0 && parts.length > 1 && (tGuard?.parts?.list ?? []).find((q) => String(q.text ?? "").trim())?.part === "close";
-          const n = scr && !closeHere ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
+          const n = scr && !closeHere ? screenContradictions(imaginedOut(segText), screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
           // v6 checker (a): a value the board shows as "?" that this part states
           const wh = scr && !closeHere ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
           // v6 harness: each part's own board and when it starts (its clause; ~380 ms a word before it, the S2 timing check)
@@ -494,7 +494,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // the closed card's board, which is up while it is said; the rest of the line against the turn's board)
     const closeTxt = next.lastMove?.closeBeat ? (tGuard?.parts?.list ?? []).filter((q) => q.part === "close").map((q) => String(q.text ?? "")).join(" ").trim() : "";
     const restTxt = closeTxt ? String(reply).replace(closeTxt, " ").replace(/\s+/g, " ").trim() : reply;
-    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(restTxt, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
+    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(imaginedOut(restTxt), screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
       + (screen?.kind === "whiteboard" && withheldStated(restTxt, screen).length ? 1 : 0) : 0;
     // v6 checker (main on director8: the code saw 1, 0, 0 of 10, 4, 45): (b) a picture asked for, described as something the board
     // does not draw; (c) a close's why borrowed from a point or a remediation; (d) a verdict with content said over a board
@@ -543,8 +543,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (director9: 15 of 17 flags were numbers inside an authored close, "kyunki … 6 + 4 + 6 + 4 = 20 cm": every authored why and
     // the move's own closures are given too)
     const lm = next.lastMove ?? {};
-    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x)),
-      ...(WHYS(kit)?.own ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, ...(lm.sayFirst ?? []), lm.point, ...(lm.rendered ?? [])].filter(Boolean).join(" ");
+    const given = answerGiven({ card: ui?.ask?.text, item: activeItem, text, content: next.lastContent, whysOwn: WHYS(kit)?.own, move: lm });
     const statedFalse = falseAnswerNumbers(reply, { keys: AUTHORED_KEYS(kit), given });
     const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length + (statedFalse.length ? 1 : 0);
     // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,

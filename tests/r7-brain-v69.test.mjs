@@ -91,7 +91,8 @@ describe("r7-brain-v69.test.mjs", () => {
     });
     for (const row of REQUEST_TABLE.filter((r) => ["T1.1", "T1.2", "T1.3", "T1.4"].includes(r.id))) for (const spec of row.rows) test(`${row.id} ${row.request.join("/")} on ${row.beat} (${spec}): the live part in fresh authored words, never a sentence of her last four turns; else the key`, async () => {
       const { t, turns } = await at(spec);
-      assert.ok(["language", "clarify"].includes(t.pl.state.lastMove.request), `a ${t.pl.state.lastMove.request} turn`);
+      // (dc-r8-director25 H4: help's decision is on the move — a key on an empty ladder is the walk's own close, marked help)
+      assert.ok(["language", "clarify"].includes(t.pl.state.lastMove.request) || ["hindi", "clarify"].includes(t.pl.state.lastMove.help?.request), `a ${t.pl.state.lastMove.request} turn`);
       // (2026-11-11, dc-r8-director20 L4: a Hindi request on an open card says the card's simpler even if said before, with no promise)
       if (!l4(t)) assert.deepEqual(repeats(t, turns), [], t.out.reply);
       else assert.doesNotMatch(t.out.reply, /hindi mein (?:bol|samjha|keh)/i, t.out.reply);

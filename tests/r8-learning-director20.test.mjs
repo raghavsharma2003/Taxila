@@ -18,12 +18,16 @@ test("R1: the aside-replies file holds every kind, slots right, nothing asked in
   assert.ok(d.sad.replies.every((f) => !/\{/.test(f.hi + f.en)));
 });
 
-test("R2 and S1: every pilot has a greetSimpler and five joint kinds; a switch's en says Hindi", () => {
+test("R2 and S1: every pilot has a greetSimpler and five joint kinds; a switch promises easier words, never Hindi or English (dc-r8-director25)", () => {
   for (const id of PILOTS) {
     const s = read(`data/lesson-scripts/${id}.json`);
     assert.deepEqual([...greetErrors(s), ...jointErrors(s)], [], id);
     assert.equal(s.joints.backTo.length, 3);
-    assert.ok(s.joints.hindiSwitch.every((f) => /hindi/i.test(f.en) && !/english/i.test(f.en)), id);
+    // (dc-r8-director25: the scripts have no Hindi-only text, so the switch line promises what follows: other, easier words)
+    assert.ok(s.joints.hindiSwitch.length >= 3 && s.joints.hindiSwitch.every((f) => !/hindi|english/i.test(f.en + " " + f.hi)), id);
+    assert.ok(s.joints.helpSpent?.length >= 3 && s.joints.afterKeyGoOn?.length >= 3, id);
+    assert.ok(s.skills.every((k) => k.explain.every((e) => e.ask?.simpler?.hi && e.ask.simpler.en)), `${id}: every explain card has its own hint`);
+    assert.ok(s.wrap.didFrames.every((f) => !/yaad rakh/i.test(f.hi)), id);
   }
   const s = read("data/lesson-scripts/c4-maths-ch05-t01.json");
   s.greetSimpler = { hi: "Aaj kya seekhenge?", en: "What will we learn today?" };

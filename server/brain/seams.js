@@ -29,6 +29,8 @@ export const SEAM_TABLE = [
   ["verdict", "returnCard", "backTo"], ["missVerdict", "returnCard", "backTo"], ["closed", "returnCard", "backTo"], ["bridge", "returnCard", "backTo"], ["start", "returnCard", "backTo"],
   // (the Hindi switch opens the turn it is asked on — said by the language pass, recorded here)
   ["start", "hindiSwitch", "hindiSwitch"],
+  // (dc-r8-director25 H4: help's joints open the turn help says them on — the decision's, recorded here)
+  ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
 ];
@@ -207,7 +209,10 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     }
   }
   // (the Hindi switch, said at the turn's start, is in the record: its own seam, the joint it is)
-  if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch });
+  // (dc-r8-director25 item 8: with who wrote the form — the script's, or code's own when the script has none)
+  if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
+  // (dc-r8-director25 H4: help's joint — helpSpent, afterKeyGoOn — the form the decision picked, and who wrote it)
+  if (info.helpJoint?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20))) seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
   return { list: out.map(({ joint, ...p }) => p), seams, jointsUsed: used, said };
 }
 

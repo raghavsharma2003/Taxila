@@ -62,7 +62,9 @@ describe("r7-brain-v61.test.mjs", () => {
   });
 
   test("R8 (format 2.3): 'pata nahi' on a live scripted card gets the card's authored simpler, never a model hint", async () => {
-    const sc = runScript(T1);
+    // (dc-r8-director25 H4: help is not picked on a recorded run's replay — walked live on the run's script, the give-up on e1's card gets
+    // the first rung of its ladder, ask.simpler)
+    const sc = runScript(T1); delete sc.recordedRun;
     const ask = sc.skills[0].explain.find((b) => b.id === "e1").ask;
     ask.simpler = { hi: "Line ke 0 aur 1 ke beech gaps gino, marks nahi.", en: "Count the gaps between 0 and 1, not the marks." };
     setScriptForTest(T1, { ...sc, version: 2.3 });

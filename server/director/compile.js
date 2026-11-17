@@ -11,6 +11,7 @@
 // (two remediations for one mix-up, two parts with one id).
 
 import { createHash } from "node:crypto";
+import { helpPartFrom, ladderSpec, helpJointHoles } from "./help.js";
 
 /** The part kinds of a unit (COMPILE.md "Parts"). */
 // (Loop's review, ask D: the hook is a part — its interest slot is the plan's hookSlot, so hook lines have a cell and a because)
@@ -20,8 +21,11 @@ export const PART_KINDS = Object.freeze(["point", "checkin", "card", "worked_ste
 export const REQUESTS = Object.freeze(["clarify", "hindi", "repeat", "picture", "try_first", "give_up", "move_on", "aside", "silence"]);
 export const ANSWERS = Object.freeze(["right", "wrong", "misconception"]);
 export const COLUMNS = Object.freeze([...REQUESTS, ...ANSWERS]);
-/** Help is three values and nothing else (main's condition): fresh, heard (a request re-said the help, T2.5), spent (a miss used it). */
+/** The help axis of a cell's address: fresh, heard, spent. (dc-r8-director25 H4: no rule reads it any more — help is server/director/
+ *  help.js pickHelp, from the part's ladder and what she has said, never a count. It stays as the address the shadow harness reads.) */
 export const HELP = Object.freeze(["fresh", "heard", "spent"]);
+/** The columns help answers (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi, and a wrong answer's hint. */
+export const HELP_COLUMNS = Object.freeze(["clarify", "hindi", "give_up", "wrong"]);
 const CARDS = new Set(["card", "your_step", "then_card", "check"]);
 
 /**
@@ -39,55 +43,21 @@ export function rule(kind, column, help) {
   if (kind === "hook") return ["clarify", "repeat", "silence", "hindi"].includes(column)
     ? { say: ["@slot.use"], ...(column === "hindi" ? { lang: "hi", joint: "hindiSwitch" } : {}), then: "next", help: "keep" }
     : column === "aside" ? { say: [], joint: "asidePark", then: "next", help: "keep" } : { say: [], then: "next", help: "keep" };
+  // dc-r8-director25 H4: help is one function. A clarify, a give-up, a request for Hindi and a wrong answer's hint all compile to the same
+  // cell — pickHelp over the part's ladder (help.js ladderSpec: a point's pointAlt and simpler; an explain card's ask.simpler, then its
+  // point's; a check's simpler; a worked problem's problemAlt and simpler, a step's simpler; a remediation's sayAlt and simpler; after a
+  // key, the why's whyAlt) and the said set — whatever the help state. The second-clarify, third-clarify and heard/spent rows are gone.
+  if (HELP_COLUMNS.includes(column)) return { say: [], via: "pickHelp", then: "help", help: "keep" };
   switch (column) {
-    // T1.1–T1.5, T2.1: the live part re-said in other authored words; with nothing left, the key and its why. Never spends help.
-    case "clarify": {
-      // (dc-r8-second-clarify-shows-not-rewords, main on the hole report: a SECOND clarify on a point, worked step or remediation
-      // shows that part's board again and says the same authored line once more, then the check-in — alts[0] when the script has
-      // one; help moves to spent (the authored help has been used twice). A THIRD lands in clarify/spent: today's walk, nothing fresh
-      // left — on a card, its key and why; on a point or its check-in, the card; on a worked step, the next step; on a remediation,
-      // its then-card; on a bridge, the next unit.)
-      const self = kind === "checkin" ? "@point.point" : textOf(kind);
-      // (2.4, main on director21 C1: Learning's second wordings — a point's pointAlt, the worked problem's problemAlt — are the second ask's
-      // line when written; alts[0] stays for any part that has one)
-      const altOf = kind === "checkin" ? ["@point.pointAlt", "@point.alts[0]"] : kind === "point" ? ["pointAlt", "alts[0]"] : kind === "worked_step" ? ["problemAlt", "alts[0]"] : "alts[0]";
-      const second = { say: [self], alt: altOf, show: kind === "checkin" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
-      if (kind === "point" || kind === "checkin") return help === "fresh" ? { say: [kind === "point" ? "simpler" : "@point.simpler"], then: "checkin", help: "heard" } : help === "heard" ? second : { say: [], then: "card", help: "keep", thirdClarify: true };
-      if (kind === "worked_step") return help === "fresh" ? { say: ["simpler"], then: "checkin", help: "heard", fallback: "resay_show" } : help === "heard" ? second : { say: [], then: "next", help: "keep", thirdClarify: true };
-      if (kind === "remediation") return help === "fresh" ? { say: ["simpler"], then: "card", help: "heard" } : help === "heard" ? { ...second, then: "card" } : { say: [], then: "card", help: "keep", thirdClarify: true };
-      if (kind === "bridge") return help === "fresh" ? { say: ["simpler"], then: "next", help: "keep", fallback: "next" } : { say: [], then: "next", help: "keep" };
-      // a card (C1 and O6, main on director21: a clarify spends no help, and a second clarify is shown another way): its simpler once;
-      // asked again, the point it comes from (an explain card's; the card's own question for the rest) on its board — Learning's pointAlt
-      // when written — and the check-in, the card still live; a third time, the key and its why, said plainly, and the walk goes on
-      if (help === "fresh") return { say: ["simpler", "prompt"], reask: "question", then: "end", help: "heard" };
-      if (help === "heard") return { say: [kind === "card" ? "@point.point" : "prompt"], alt: kind === "card" ? "@point.pointAlt" : null, show: kind === "card" ? "@point.board" : "board", then: "checkin", help: "spent", secondClarify: true };
-      return { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" };
-    }
-    // the joint, then the live part in Hindi (never an "ab se" promise: the joint is the script's)
-    // (dc-r8-director20 L4: on a card, its own ask.simpler else its point's simpler, in Hindi, then the card's question; the switch joint only
-    // when what follows is not what she just said — jointIf)
-    case "hindi": return card ? { say: ["simpler", "prompt"], lang: "hi", joint: "hindiSwitch", jointIf: "changed", reask: "question", then: "end", help: "keep" }
-      : { say: [...(kind === "checkin" ? ["@point.point"] : [textOf(kind)])], lang: "hi", joint: "hindiSwitch", then: "checkin", help: "keep" };
     case "repeat": return { say: [kind === "checkin" ? "@point.point" : textOf(kind)], then: card ? "end" : "checkin", help: "keep" };
     // a picture: Studio's view of the part's own board (fit is a run-time check: switchFits / pictureTurn)
     // (a bridge's picture is the next unit's board — state.js unitBoardOf(firstUnitOf) — not a field of its own)
     case "picture": return kind === "bridge" ? { say: [], view: "next", then: "next", help: "keep" } : { say: [], view: "board", needs: ["board"], then: card ? "end" : "checkin", help: "keep" };
     case "try_first": return card ? { say: ["prompt"], joint: "tryFirst", then: "end", help: "keep" } : { say: [], joint: "tryFirst", then: "card", help: "keep" };
-    // a give-up: help first while fresh (a request never spends it), the key and its why once spent
-    // (dc-r8-director20 L1: never a yes, never new material — after a point or a remediation, that part's simpler, then the card; on a
-    // worked step, the step's simpler and its check-in)
-    case "give_up":
-      if (kind === "point" || kind === "checkin") return { say: [kind === "point" ? "simpler" : "@point.simpler"], then: "card", help: "keep" };
-      if (kind === "remediation") return { say: ["simpler"], then: "card", help: "keep" };
-      if (kind === "worked_step") return { say: ["simpler"], then: "checkin", help: "keep", fallback: "resay_show" };
-      if (!card) return { say: [], then: "card", help: "keep" };
-      return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], reask: "question", then: "end", help: "spent" };
     case "move_on": return { say: [], joint: "neutral", then: "next", help: "keep" };
     case "aside": return { say: [], joint: "asidePark", then: card ? "end" : "card", help: "keep" };
     case "silence": return { say: [card ? "prompt" : kind === "checkin" ? "@checkin" : textOf(kind)], then: card ? "end" : "checkin", help: "keep" };
     case "right": return { say: ["why"], then: "next", help: "keep", needs: kind === "your_step" ? ["@worked.answer"] : [], ...(kind === "your_step" ? { fallback: "worked_answer" } : {}) };
-    // (S1: after help on a card said in her last two turns, its question alone — reask; the render reads it)
-    case "wrong": return help === "spent" ? { say: ["key", "why"], then: "next", help: "keep", key: true, fallback: "key_only" } : { say: ["simpler", "prompt"], reask: "question", then: "end", help: "spent" };
     // Loop's correction 3: keyed per mix-up — the remediation for the mix-up the classifier named, the card's own target by default
     case "misconception": return { say: [], remedy: "targets", then: "remediation", help: "spent", fallback: "as_wrong" };
   }
@@ -96,16 +66,11 @@ export function rule(kind, column, help) {
 /**
  * Named fallback cells (main's ruling 2 on the hole report): until Learning authors a missing field, its cells compile to one of these —
  * today's behaviour, written down — and the report lists every one. No hole is silent, and none throws in a lesson.
- * - resay_show: the worked problem has no simpler — its own line said again, its board shown (the second-clarify cell).
- * - next: the bridge has no simpler — no words of code's; the next unit begins.
  * - worked_answer: the worked example's own card has no why — its right answer closes on the worked example's answer.
- * - as_wrong: no remediation for the mix-up — the wrong-answer cell of the same help state (its simpler, then the key once spent).
- * - key_only: a card with no why — its key said alone (the close without "kyunki").
+ * - as_wrong: no remediation for the mix-up — the wrong-answer cell: help's (pickHelp, a hint).
  */
+// (dc-r8-director25 H4: key_only, resay_show and next were the help rows' — gone with them; a missing rung is a hole help skips)
 export const FALLBACKS = Object.freeze({
-  key_only: () => ({ say: ["key"], then: "next", help: "keep", key: true }),
-  resay_show: (kind) => ({ say: [textOf(kind)], show: "board", then: "checkin", help: "heard" }),
-  next: () => ({ say: [], then: "next", help: "keep" }),
   worked_answer: () => ({ say: ["@worked.answer"], then: "next", help: "keep" }),
   as_wrong: (kind, help) => rule(kind, "wrong", help),
 });
@@ -254,6 +219,14 @@ export function compileScript(script, plan = null) {
           notApplicable.push({ part: p.id, kind: p.kind, rule: ruleId });
           continue;
         }
+        // (dc-r8-director25 H4: a help cell is pickHelp over the part's ladder — the rungs the script has; each rung it lacks is a hole
+        // for Learning, which help skips, never a sentence of code's)
+        if (r.via === "pickHelp") {
+          const spec = ladderSpec(script, helpPartFrom(script, p));
+          for (const x of spec.filter((y) => !y.present)) holes.push({ part: p.id, kind: p.kind, rule: ruleId, field: x.field, path: x.path });
+          cells[p.id][c][h] = { say: [], via: "pickHelp", ladder: spec.filter((y) => y.present).map((y) => y.path), then: "help", help: "keep", address };
+          continue;
+        }
         const resolve = (r) => {
           const miss = [], say = [];
           // (alts[0] is optional: a script that has one says it in place of the same line again)
@@ -299,6 +272,9 @@ export function compileScript(script, plan = null) {
       }
     }
   }
+  // (dc-r8-director25 H4: after a key's check-in the ladder is the why's other wording — a card with no whyAlt is a hole too)
+  for (const p of parts.filter((x) => CARDS.has(x.kind))) for (const x of ladderSpec(script, helpPartFrom(script, p), { keyed: true }).filter((y) => !y.present))
+    holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/after_key`, field: x.field, path: x.path });
   const order = orderOf(script ?? {}, parts, plan);
   // (Loop's ask A: under a plan, the compressed check's wrong, misconception and give-up cells say nothing and take the unit's onMiss —
   // no help, no second try, no remediation, as the walk does; right stays its why, and the unit's onRight skips the rest)
@@ -310,7 +286,7 @@ export function compileScript(script, plan = null) {
   // (the authoring cost: each missing field once per part, with the rules that name it)
   const byField = new Map();
   for (const h of holes) { const k = h.path.startsWith("remediation[") ? `${h.part}|${h.path}` : h.path; const e = byField.get(k) ?? { part: h.part, kind: h.kind, field: h.field, path: h.path, rules: [] }; e.rules.push(h.rule); byField.set(k, e); }
-  return { missing: [...byField.values()], fallbacks, secondClarifyNoBoard: noBoard, notApplicable, topicId: script?.topicId ?? null, order, parts, cells, holes, doubles, cellCount: Object.values(cells).reduce((n, cs) => n + Object.values(cs).reduce((m, hs) => m + Object.keys(hs).length, 0), 0) };
+  return { missing: [...byField.values()], helpJoints: helpJointHoles(script), fallbacks, secondClarifyNoBoard: noBoard, notApplicable, topicId: script?.topicId ?? null, order, parts, cells, holes, doubles, cellCount: Object.values(cells).reduce((n, cs) => n + Object.values(cs).reduce((m, hs) => m + Object.keys(hs).length, 0), 0) };
 }
 
 // (main's condition: cached by kit hash and plan hash; the trace row carries the cell's address and its because)

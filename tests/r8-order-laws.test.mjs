@@ -35,7 +35,12 @@ test("O5 orderNoUnit: the teach-back and the wrap over the last unit's board, na
 });
 
 test("O6 orderFirstMiss: the key on a card's first miss", () => {
-  has("orderFirstMiss", ["steady-c4-ch05-t01 62", "offtopic-c4-ch05-t01 62", "offtopic-c5-ch02-t02 26", "steering-c5-ch02-t02 32"]);
+  // (dc-r8-director25 H4 items 4 and 7: the count of misses decides nothing — a first miss on a card whose ladder has nothing unsaid gets
+  // its key. On director21's scripts (no ask.simpler, no pointAlt) steady c4 62, offtopic c4 62 and steering c5-t02 32 had said their
+  // card's one rung, so their keys stand; offtopic c5-t02 26 gave e3's key with e3's simpler unsaid, which keyEarly reads too)
+  has("orderFirstMiss", ["offtopic-c5-ch02-t02 26"]);
+  for (const r of ["steady-c4-ch05-t01 62", "offtopic-c4-ch05-t01 62", "steering-c5-ch02-t02 32"]) assert.ok(!rowsOf("orderFirstMiss").includes(r), `${r}: its ladder was said`);
+  assert.ok(rowsOf("keyEarly").includes("offtopic-c5-ch02-t02 26"), "keyEarly reads the same row");
 });
 
 test("O7 orderAnswerFirst: the AI line held behind her teaching", () => {

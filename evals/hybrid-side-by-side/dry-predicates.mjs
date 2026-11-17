@@ -298,6 +298,8 @@ export const PREDICATES = {
     const keyed = (t) => !!t?.check?.gave || !!t?.keyFact || KEY_SAID.test(t?.text ?? "");
     if (!p || !GIVE_UP_ANY.test(ctx.prevChild) || CLARIFY.test(ctx.prevChild) || cardIn(p) || !CHECKIN.test(norm(p.text))) return null;
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    // (dc-r8-director25 H4 item 6: help on the card just keyed — a right answer's close too — gets the why's other wording, not the card)
+    if (r.cell?.keyed) return null;
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)
@@ -379,9 +381,9 @@ export const PREDICATES = {
     const clar = CLARIFY.test(ctx.prevChild) || /·\s*(?:another|clarify|confused)/.test(ctx.prevRead ?? "");
     const giveUp = !clar && GIVE_UP_ANY.test(ctx.prevChild);
     if (!clar && !(giveUp && m[2] === "problem")) return null;
-    const we = ctx.script?.skills?.[Number(m[1]) - 1]?.workedExample;
-    const sm = m[2] === "problem" ? we?.simpler : we?.steps?.[Number(m[3]) - 1]?.simpler;
-    const t = sm?.hi ?? sm?.en ?? (typeof sm === "string" ? sm : null);
+    // (dc-r8-director25 H4: the part's first unsaid wording — the worked problem's problemAlt, then its simpler; a step's simpler)
+    const sk = ctx.script?.skills?.[Number(m[1]) - 1];
+    const t = sk ? helpFirstUnsaid(L, i, ctx, `${sk.skillId}:worked:${m[2]}`) : null;
     if (!t) return null;
     // (said already on that part — a third ask may move on, as after a key)
     if (key(p.text).includes(key(t))) return null;
@@ -595,11 +597,15 @@ export const ORDER_LAWS = {
     if (!rq || !ctx.prevT) return null;
     // (C1: a clarify after a key, the answer said plainly, may go on — picture, Hindi and repeat stay)
     if (["another", "clarify", "confused"].includes(rq) && KEY_SAID.test(ctx.prevT.text) && !cardIn(ctx.prevT)) return null;
+    // (dc-r8-director25 H4 item 6: after a key's check-in, with the why's other wording said, help says "we'll meet this again" and the
+    // lesson goes on)
+    if (helpGoOnSaid(r, ctx)) return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
     // (a turn that teaches nothing — the break offer — is asked about the unit it held)
-    if (!asked.size && ctx.prevT.held?.unit) asked.add(unitOf(String(ctx.prevT.held.unit).split(":").pop()));
+    // (the unit's local name after its skill — "rem:<mix-up>", not the mix-up alone; a help wording's own page is its unit's)
+    if (!asked.size && ctx.prevT.held?.unit) asked.add(unitOf(String(ctx.prevT.held.unit).replace(/#help$/, "").replace(/^.+?-s\d+:/, "")));
     const moved = (r.pageParts ?? []).find((p) => p.part !== "close" && p.part !== "bridge" && beatOfPart(p) && !asked.has(unitOf(beatOfPart(p))));
     return moved ? `a ${rq} request moved from ${[...asked].join("/") || "?"} to ${unitOf(beatOfPart(moved))}` : null;
   },
@@ -668,6 +674,9 @@ export const ORDER_LAWS = {
     const miss = ["incorrect", "partial", "misconception"].includes(ctx.prevCls) || (ctx.prevCls === "no_evidence" && !/·/.test(ctx.prevRead ?? "") && GIVE_UP_ANY.test(ctx.prevChild ?? ""));
     if (!c || !miss) return null;
     const n = (ctx.o.misses[c] = (ctx.o.misses[c] ?? 0) + 1);
+    // (dc-r8-director25 H4: the count decides nothing — a first miss on a card whose ladder has nothing unsaid gets its key)
+    const id = ctx.prevT?.check?.itemId ? helpPartOfItem(ctx.prevT.check.itemId, ctx) : null;
+    if (id && !helpFirstUnsaid(L, i, ctx, id)) return null;
     return n === 1 && KEY_SAID.test(String(r.text ?? "")) ? `the key on the first miss ("${ctx.prevChild}")` : null;
   },
   /** R2 (main on director21 c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on a later turn): a reply of Learning's
@@ -695,21 +704,6 @@ export const ORDER_LAWS = {
     const keyOf = (t) => { const x = String(t ?? ""); const m = /(?:jawab(?: hai)?:?|answer (?:here )?(?:is|was))\s+([^,.;]+)/i.exec(x) ?? /(?:^|[.!?]\s+)(haan|nahi|yes|no), (?:kyunki|because)\b/i.exec(x); return m ? m[1].trim().toLowerCase() : null; };
     const k = keyOf(r.text), p = ctx.prevT ? keyOf(ctx.prevT.text) : null;
     return k && p && k === p ? `the key "${k}" said in two turns running` : null;
-  },
-  /** dc-r8-director22 H: a Hindi request gets words she did not say in her last two turns — the part's second wording or an unspent
-   *  simpler; every teaching sentence of the turn (four words or more, the card aside) said already is the fault. */
-  hindiNewWords(L, r, i, ctx) {
-    if (!/·\s*language/.test(ctx.prevRead ?? "")) return null;
-    const last2 = (ctx.o.teacherTexts ?? []).slice(-2).map(key).join(" | ");
-    const card = key(r.card ?? "");
-    const SAME = /hindi ke shabdon mein/;
-    const ss = sentencesOf(r.text ?? "").map(key).filter((x) => x.split(" ").length >= 4 && !(card && card.includes(x)) && !/hindi mein/.test(x) && !SAME.test(x));
-    // (dc-r8-director23 harness, c4 stuck 10: the switch line and the card only — no new words at all — is the fault too)
-    if (!ss.length) return "a Hindi request answered with no new words (the switch line and the card only)";
-    // (main's 037 item 3: with nothing unsaid left, the same part again is allowed when it differs by at least one Hindi swap — then it is
-    // not her last two turns' words — or the turn says plainly that it is the same line again)
-    if (sentencesOf(r.text ?? "").some((x) => SAME.test(key(x)))) return null;
-    return ss.every((x) => last2.includes(x)) ? `a Hindi request answered with her last two turns' words, and not said to be the same: "${ss[0].slice(0, 60)}"` : null;
   },
   /** dc-r8-director23 S (on the seam pass's record): a miss verdict and its remediation always have their joint. Reads `seams` only. */
   missRemediationJoint(L, r) {
@@ -782,40 +776,11 @@ PREDICATES.columnOfRead = (L, r, i, ctx) => {
   const want = { right: ["correct"], wrong: ["incorrect", "partial"], misconception: ["misconception"] }[col];
   return want && ctx.prevRead != null && !want.includes(out) ? `column ${col} on a line read "${ctx.prevRead}"` : null;
 };
-/** dc-r8-director23 H2: no help says a sentence from her last two turns — on a turn answering a clarify, a give-up or a Hindi request,
- *  a teaching sentence of five words or more (the card's own question and a check-in aside) already said in her last two turns. Gated. */
-PREDICATES.helpRepeats = (L, r, i, ctx) => {
-  if (!["clarify", "give_up", "hindi"].includes(String(r.cell?.column ?? ""))) return null;
-  // (dc-r8-director24 H3: help remembers the lesson — no sentence she has said anywhere in it)
-  const last2 = (String(r.cell?.column) === "hindi" ? (ctx.o.teacherTexts ?? []).slice(-2) : (ctx.o.teacherTexts ?? [])).map(key).join(" | ");
-  const card = key(r.card ?? "");
-  // (the card's question — its reask included — closes a card turn: it is the card, not help)
-  const ss = sentencesOf(r.text ?? "");
-  const q = r.card && /[?？]\s*$/.test(ss.at(-1) ?? "") ? key(ss.at(-1)) : null;
-  const hit = ss.map(key).find((x) => x.split(" ").length >= 5 && x !== q && !(card && card.includes(x)) && !CHECKIN.test(x) && last2.includes(x));
-  return hit ? `help says her last two turns' sentence again: "${hit.slice(0, 60)}"` : null;
-};
-/** dc-r8-director24 P: a part is said once — an explain point said again on a turn the child asked nothing of (no request, no miss, no
- *  give-up: c5-t02 steering 38, the e3 point said again after a reply), and a card's first posing with its point never said (c4 steady
- *  96). Gated. */
-PREDICATES.partOnce = (L, r, i, ctx) => {
-  const pts = (ctx.o.points ??= (() => { const out = []; for (const sk of ctx.script?.skills ?? []) for (const b of sk.explain ?? []) {
-    const first = (x) => key(sentencesOf(x ?? "")[0] ?? "");
-    out.push({ id: `${sk.skillId}:${b.id}`, pt: [b.point?.hi, b.point?.en].filter(Boolean).map(first).filter((k) => k.split(" ").length >= 4),
-      card: [b.ask?.prompt?.hi, b.ask?.prompt?.en].filter(Boolean).map((x) => key(x).slice(0, 40)) }); } return out; })());
-  const T = key(r.text ?? ""), said = (ctx.o.ptSaid ??= new Set()), seen = (ctx.o.cardSeen ??= new Set());
-  const asked = /·/.test(String(ctx.prevRead ?? "")) || /^(?:incorrect|partial|misconception)/.test(String(ctx.prevRead ?? "")) || GIVE_UP_ANY.test(ctx.prevChild ?? "") || CLARIFY.test(ctx.prevChild ?? "");
-  let why = null;
-  for (const p of pts) {
-    const has = p.pt.some((k) => k && T.includes(k));
-    if (has && said.has(p.id) && !asked && !why) why = `the ${p.id.split(":").pop()} point said again with nothing asked`;
-    const posed = r.card && p.card.some((c) => c && key(r.card).startsWith(c.slice(0, 30)));
-    if (posed && !has && !said.has(p.id) && !seen.has(p.id) && !why) why = `the ${p.id.split(":").pop()} card posed with its point never said`;
-    if (posed) seen.add(p.id);
-    if (has) said.add(p.id);
-  }
-  return why;
-};
+// ───────────── dc-r8-director25 H4: the help predicates (help-predicates.mjs), read against the said set ─────────────
+// helpRepeats, hindiNewWords and partOnce are rewritten there (they read 0 on the director25 rows judges counted); helpLadder, helpBoard,
+// keyAnswerBoard, hindiNoKey, giveUpAnswered, giveUpVerdict and keyEarly are new. All gated; tests/r8-director25-help-predicates.test.mjs.
+import { HELP_PREDICATES, helpFirstUnsaid, helpPartOfItem, helpGoOnSaid } from "./help-predicates.mjs";
+Object.assign(PREDICATES, HELP_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
@@ -844,7 +809,10 @@ PREDICATES.ynNahi = (L, r, i, ctx) => r.keyFact && !/^(?:nahi|no)\b/i.test(Strin
 PREDICATES.longPointCard = (L, r) => {
   const n = String(r.text ?? "").trim().split(/\s+/).filter(Boolean).length;
   const pp = r.pageParts ?? [];
-  return n > 60 && pp.some((p) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? ""))) && pp.some((p) => p.part === "card") ? `${n} words holding a point and a card` : null;
+  // (dc-r8-director25: a seam's joint — "Ab pehle wale sawaal ko phir se dekhte hain." before a card asked again — is no point)
+  const forms = (r.seams ?? []).map((x) => low(x.form ?? "")).filter(Boolean);
+  const textOf = (p, k) => low(String(r.text ?? "").slice(p.from, pp[k + 1]?.from ?? undefined));
+  return n > 60 && pp.some((p, k) => ["body", "held"].includes(p.part) && /(?:^|:)e\d+$/.test(String(p.beat ?? "")) && !forms.includes(textOf(p, k))) && pp.some((p) => p.part === "card") ? `${n} words holding a point and a card` : null;
 };
 /** Main's 031 T2: the turn that poses the teach-back holds one of the script's teachback.leadIn forms, before its question. Gated. */
 PREDICATES.teachbackLeadIn = (L, r, i, ctx) => {
