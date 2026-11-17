@@ -73,7 +73,8 @@ export function knowsRemedy(s, item, cls, sk) {
   const authored = item?.scriptCheck?.targets ?? item?.scriptAsk?.targets ?? null;
   if (!s.knows) return authored;
   const r = remedyNow(s.knows, item, cls, sk);
-  if (r.targets && !(s.remedied ?? []).includes(r.targets)) noteBecause(s, r.because); // (a remediation said once is not said again)
+  // (a remediation said once is not said again — counted per remediation, its skill and its mix-up: dc-r8-director26 R1)
+  if (r.targets && !(s.remedied ?? []).includes(`${item?.skillId}|${r.targets}`)) noteBecause(s, r.because);
   return r.targets;
 }
 

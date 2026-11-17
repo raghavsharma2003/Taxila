@@ -86,3 +86,24 @@ D26_PREDICATES.beforeWorked = function beforeWorked(L, r) {
   if (!pp.slice(0, at).some((p) => p.part === "close" || p.part === "closed")) return null;
   return (r.seams ?? []).some((x) => x.joint === "beforeWorked") ? null : "a verdict into the worked problem with no lead-in (beforeWorked)";
 };
+
+// ───────────── R1: a skill's remediation is its own ─────────────
+import { helpPart, at } from "../../server/director/help.js";
+/** R1 (c5-t02 steady 118, 120, 126, 146): a mix-up shown on a card of a skill whose own remediation for it has not been said in this lesson
+ *  gets that remediation — "said once" is counted for each remediation (its skill and its mix-up), never for the mix-up alone. */
+D26_PREDICATES.skillRemediation = function skillRemediation(L, r, i, ctx) {
+  if (!ctx.script || r.who !== "teacher") return null;
+  const said = (ctx.o.remBySkill ??= new Set());
+  const part = String(r.cell?.part ?? "");
+  const S = part.split(":")[0];
+  const rems = (r.pageParts ?? []).map((p) => /^rem:(.+)$/.exec(String(p.beat ?? ""))?.[1]).filter(Boolean);
+  const before = new Set(said);
+  for (const t of rems) said.add(`${S}|${t}`);
+  if (String(r.cell?.column ?? "") !== "misconception" || rems.length || !S) return null;
+  const hp = helpPart(ctx.script, part);
+  const c = hp ? at(ctx.script, hp.path) : null;
+  const t = c?.targets ?? c?.ask?.targets ?? null;
+  const sk = (ctx.script.skills ?? []).find((x) => x.skillId === S);
+  if (!t || !(sk?.remediation ?? []).some((x) => x.targets === t) || before.has(`${S}|${t}`)) return null;
+  return `the mix-up ${t} on ${part} without ${S}'s own remediation for it (never said in this lesson)`;
+};

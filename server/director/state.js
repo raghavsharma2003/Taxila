@@ -976,17 +976,21 @@ function walkLadder(s, kit) {
   s.walk = undefined;
   return null;
 }
-/** A wrong answer to a scripted check: that misconception's remediation (once per misconception), then its keyed follow-up. */
+/** A remediation's key in the said-once record (state.remedied): its skill and its mix-up (dc-r8-director26 R1). */
+export const remKeyOf = (skillId, targets) => `${skillId}|${targets}`;
+/** A wrong answer to a scripted check: that misconception's remediation (once per remediation), then its keyed follow-up. */
 function walkRemedy(s, input, item) {
   const { kit } = input;
   // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
   // (O3, main on director21 c5-t02 stuck 16: "4/1", read incorrect, got a remediation — a remediation follows only the answer that shows
   // its misconception; a plain miss gets the wrong-answer cell, the card's simpler)
   const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
-  if (!targets || (s.remedied ?? []).includes(targets)) return null;
+  // (dc-r8-director26 R1: "said once" is counted for each remediation — its skill and its mix-up — not for each mix-up id. c5-t02 steady 117
+  // to 148: the same mix-up four times in the third skill, and that skill's own remediation never said, because the first skill's had been)
+  if (!targets || (s.remedied ?? []).includes(remKeyOf(item.skillId, targets))) return null;
   const r = skillScriptOf(kit, item.skillId)?.remediation?.find((x) => x.targets === targets);
   if (!r) return null;
-  s.remedied = [...(s.remedied ?? []), targets];
+  s.remedied = [...(s.remedied ?? []), remKeyOf(item.skillId, targets)];
   s.skipped.push(item.id);
   // v6.4 K1 (main, director12: misconception routes left the card without its key — c4 ×7, c6 steady never heard 30 cm / 20 cm):
   // the card the remediation took over is posed again, once, after its follow-up card is closed

@@ -91,3 +91,12 @@ test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWor
   assert.ok(s, JSON.stringify(out.guard.seams));
   assert.ok(out.reply.indexOf(s.form) < out.reply.indexOf("Phoolon"), out.reply);
 });
+
+test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met again in the third, gets the third skill's remediation", async () => {
+  const { plans } = await replay(RUN, "steady", "c5-maths-ch02-t02", 119);
+  const m = plans.at(-1).p.r.state.lastMove;
+  assert.equal(m.scriptBeat?.kind, "remediation", JSON.stringify(m.scriptBeat));
+  assert.equal(m.scriptBeat.skillId, "c5-maths-ch02-t02-s3");
+  // (and the said-once record names the remediation, its skill and its mix-up)
+  assert.ok((plans.at(-1).p.r.state.remedied ?? []).includes("c5-maths-ch02-t02-s3|c5-maths-ch02-t02-m-tops-only"));
+});

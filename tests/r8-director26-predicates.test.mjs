@@ -55,3 +55,7 @@ test("J1 beforeWorked: a verdict into a worked problem takes the beforeWorked jo
   readsOn("beforeWorked", [["c6", "steady", 16], ["c6", "steady", 58], ["c6", "steady", 86], ["c6", "stuck", 34], ["c6", "offtopic", 42], ["c6", "steering", 40],
     ["c5-t02", "steady", 20], ["c5-t02", "steady", 72], ["c5-t02", "steady", 132], ["c5-t02", "steering", 42]]);
 });
+
+test("R1 skillRemediation: a mix-up met again in a later skill gets that skill's own remediation", () => {
+  readsOn("skillRemediation", [["c5-t02", "steady", 118], ["c5-t02", "steady", 120], ["c5-t02", "steady", 126], ["c5-t02", "steady", 146]]);
+});
