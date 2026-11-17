@@ -181,7 +181,11 @@ describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
   };
   const say = (L, draft, extra = {}) => { replyDeps.chat = async () => ({ text: draft }); return textReply({ instructions: "x", state: { ...L.r.state, mode: "text", ...(extra.state ?? {}) }, kit: K, childText: extra.childText ?? "haan", verdict: extra.verdict, history: [], ui: L.r.ui, module: null }); };
 
+  // (dc-r8-director25 H4: the smaller wording is the card's ladder's, authored; this v2 fixture has none, so e1 is given its simpler here)
   test("'pata nahi' on an explain beat: the same beat, smaller, and never her last turn's words again", async () => {
+    const withSimpler = structuredClone(SC);
+    withSimpler.skills[0].explain[0].simpler = { hi: "Har bhuja ko ek ek karke jodo.", en: "Add each side, one by one." };
+    setScriptForTest(); setScriptForTest(K.topicId, withSimpler);
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     const prevLine = `Dekho, parimap boundary ki poori lambai hai. ${S1.explain[0].point.hi} ${L.r.ui.ask.text}`;
@@ -193,7 +197,11 @@ describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.ok(!out.reply.includes(S1.explain[0].point.hi) || S1.explain[0].point.hi.split(/[.!?]/).filter(Boolean).length === 1, "not the whole point again");
   });
 
+  // (dc-r8-director25 H4: a step's help is its authored simpler; this v2 fixture's steps have none, so step 1 is given one here)
   test("'samajh nahi aaya' on a worked step: that step again smaller, never the next step", () => {
+    const withSimpler = structuredClone(SC);
+    withSimpler.skills[0].workedExample.steps[0].simpler = { hi: "Pehle do bhujayein jodo.", en: "First add two sides." };
+    setScriptForTest(); setScriptForTest(K.topicId, withSimpler);
     const L = run();
     for (let i = 0; i < 30 && !/^worked:step1$/.test(L.r.move.scriptBeat?.beatId ?? ""); i++) {
       const c = L.r.state.activeItemId ? { ...cls("correct") } : cls("no_evidence");

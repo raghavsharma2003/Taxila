@@ -51,12 +51,23 @@ describe("script walk v2", () => {
     assert.equal(L.r.move.scriptBeat.beatId, "e2");
   });
 
-  test("R1: 'pata nahi' re-teaches the same beat smaller, with the same card", () => {
+  // (dc-r8-director25 H4: the re-teach is the card's ladder's first unsaid wording, authored — never a model's smaller step; this v2 fixture
+  // has no help fields, so the test gives e1 its simpler; with none written the ladder is empty and the give-up gets the key)
+  test("R1 under H4: 'pata nahi' gets the same beat's authored wording, with the same card; with none written, the key", () => {
+    const withSimpler = structuredClone(SC);
+    withSimpler.skills[0].explain[0].simpler = { hi: "Har bhuja ko ek ek karke jodo.", en: "Add each side, one by one." };
+    setScriptForTest(); setScriptForTest(K.topicId, withSimpler);
     const L = run(); toBeat(L, "e1");
     L.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } });
     assert.equal(L.r.move.scriptBeat.beatId, "e1");
-    assert.match(L.r.move.shape, /smaller step/);
+    assert.equal(L.r.move.smaller, true);
+    assert.equal(L.r.move.simpler, "Har bhuja ko ek ek karke jodo.");
     assert.equal(L.r.ui.ask?.itemId, `script:${S1.skillId}:ask:e1`);
+    setScriptForTest(); setScriptForTest(K.topicId, SC);
+    const M = run(); toBeat(M, "e1");
+    M.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } });
+    assert.equal(M.r.state.lastMove.help?.card, "close");
+    assert.ok(M.r.state.lastMove.gave?.answer);
   });
 
   test("R1: a line that left out the must-say words gets the same beat again", () => {

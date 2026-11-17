@@ -3084,7 +3084,10 @@ function helpStay(prev, input, d) {
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   let move, ui;
   if (d.card === "keep" && liveId) {
-    move = { ...base, kind: "hint", itemId: liveId, ...f };
+    // (the move is about the card kept: its own beat and board, whatever the last move taught)
+    const it = findItem(prev, input.kit, liveId);
+    const cb = (it ? cardBeatRef(prev, input.kit, it) : null) ?? base.cardBeat ?? base.scriptBeat;
+    move = { ...base, kind: "hint", itemId: liveId, ...(cb ? { scriptBeat: cb, cardBeat: cb } : {}), ...f };
     ui = prev.lastUi;
     s.activeItemId = liveId;
   } else {

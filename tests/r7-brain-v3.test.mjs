@@ -155,6 +155,8 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     const r0 = long.skills[0].remediation[0];
     r0.then.prompt.hi = "Ek kisaan ke khet ki chhe bhujayein hain jinki lambai 10 m, 4 m, 6 m, 5 m, 4 m aur 9 m hai. Woh poore khet ke chaaron taraf ek baar baad lagata hai. Uska parimap kitna hai?";
     r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
+    // (dc-r8-director25 H4: a give-up on the then-card gets its ladder's wording — its simpler — with the card kept; this v2 fixture has none)
+    r0.then.simpler = { hi: "Chhahon bhujayein ek ek karke jodo.", en: "Add all six sides, one by one." };
     setScriptForTest(); setScriptForTest(K.topicId, long);
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
@@ -166,27 +168,25 @@ describe("v3 in the lesson (c6 skill-1 v2 fixture)", () => {
     assert.deepEqual(L.r.move.scriptBeat?.board, r0.then.board, JSON.stringify(L.r.move));
   });
 
-  test("director7: a recap is said only over the board it describes; a then-card on its own board gets none", () => {
-    const own = structuredClone(SC);
-    const r0 = own.skills[0].remediation[0];
-    r0.then.board = { template: "shape@1", params: { shape: "hexagon" } };
-    assert.notDeepEqual(r0.board ?? null, r0.then.board);
-    setScriptForTest(); setScriptForTest(K.topicId, own);
-    const L = run();
-    for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
-    L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
-    L.t("pata nahi", cls("dont_know"));
-    assert.match(String(L.r.state.activeItemId), /:then:/);
-    assert.equal(L.r.move.cardPoint ?? null, null, "the remediation say describes its own board, not the then-card's");
-    // the same then-card on the say's board keeps its recap
-    const shared = structuredClone(SC);
-    shared.skills[0].remediation[0].then.board = shared.skills[0].remediation[0].board ?? null;
-    setScriptForTest(); setScriptForTest(K.topicId, shared);
-    const M = run();
-    for (let i = 0; i < 4 && M.r.move.scriptBeat?.beatId !== "e1"; i++) M.t("haan");
-    M.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
-    M.t("pata nahi", cls("dont_know"));
-    assert.ok(M.r.move.cardPoint, JSON.stringify(M.r.move));
+  // (dc-r8-director25 H4 supersedes director7's recap on a give-up: help on the then-card is its ladder's wording — its simpler — and nothing
+  // of the remediation's rides with it, whatever board the card is on; this v2 fixture's then-card is given its simpler)
+  test("director7 under H4: a give-up on a then-card gets its simpler and the card, no remediation recap, on either board", () => {
+    for (const shareBoard of [false, true]) {
+      const own = structuredClone(SC);
+      const r0 = own.skills[0].remediation[0];
+      r0.then.board = shareBoard ? r0.board ?? null : { template: "shape@1", params: { shape: "hexagon" } };
+      r0.then.simpler = { hi: "Chhoti bhujayein bhi kinaare mein aati hain.", en: "The short sides are on the edge too." };
+      setScriptForTest(); setScriptForTest(K.topicId, own);
+      const L = run();
+      for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
+      L.t("7 cm", { ...cls("incorrect"), outcome: "misconception", misconceptionId: "c6-maths-ch06-t01-m-missing-sides" });
+      const then = L.r.state.activeItemId;
+      L.t("pata nahi", cls("dont_know"));
+      assert.match(String(L.r.state.activeItemId), /:then:/);
+      assert.equal(L.r.state.activeItemId, then, "the same card");
+      assert.equal(L.r.move.simpler, "Chhoti bhujayein bhi kinaare mein aati hain.");
+      assert.equal(L.r.move.cardPoint ?? null, null, "no recap of the remediation");
+    }
   });
 
   test("director7 cause 2: a remediation turn whose then-card has its own board switches to it at the card's clause", async () => {
@@ -506,10 +506,11 @@ describe("v5 B2: child requests are moves, never grades (c6 skill-1 v2 fixture)"
     const id = L.r.state.activeItemId;
     assert.ok(findItem(L.r.state, K, id)?.scriptCheck, "a check is live");
     L.t("samajh nahi aaya", req("another", { confused: true }));
-    assert.equal(L.r.state.activeItemId, id, "the same card");
-    assert.equal(L.r.move.kind, "reteach");
-    assert.ok(L.r.move.rendered?.length, JSON.stringify(L.r.move));
-    assert.ok(L.r.move.scriptBeat?.board || true);
+    // (dc-r8-director25 H4: the authored lines are the check's ladder — its simpler — and this v2 fixture's checks have none: the ladder is
+    // empty, so the clarify gets the check's key and why, said over its board; with a simpler written, the same card and its simpler)
+    assert.equal(L.r.state.lastMove.help?.part, `${S1.skillId}:check:${findItem(L.r.state, K, id)?.scriptCheck?.checkId ?? "c1"}`.replace(/:check:.*/, `:check:${id.split(":").pop()}`));
+    assert.equal(L.r.state.lastMove.help?.card, "close");
+    assert.ok(!L.r.state.lastMove.verdict, "no verdict on a request");
   });
 });
 
