@@ -10,12 +10,20 @@ const script = (id) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts/$
 const topic = (cls, id) => JSON.parse(readFileSync(new URL(`../data/kits/${cls}-maths.json`, import.meta.url), "utf8")).topics.find((t) => t.topicId === id);
 const PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
 
-test("units: a point is spoken over its ask's board, a remediation over its then-card's, a bridge over the next skill's first card", () => {
+// (Learning 016 C2, 2026-11-17, with the checker change of a7a1f7219 that pages a remediation's own board as the walk does — dc-r8-director27
+// P1: c5-t01 s1 rem0 has a board of its own, the sevenths line alone, different from its then-card's dens [7, 12]. A remediation with a
+// board of its own is spoken over that board and its then-card over the card's; one with none of its own is still spoken over its
+// then-card's board, as D11 pinned)
+test("units: a point is spoken over its ask's board, a remediation over its then-card's (over its own when it has one), a bridge over the next skill's first card", () => {
   const s = script("c5-maths-ch02-t01");
   const u = Object.fromEntries(unitsOf(s).map((x) => [x.id, x]));
   const k = s.skills[0];
   assert.deepEqual(u[`${k.skillId}/${k.explain[1].id}`].board, k.explain[1].ask.board ?? k.explain[1].board);
-  assert.deepEqual(u[`${k.skillId}/remediation[0]`].board, k.remediation[0].then.board);
+  assert.notDeepEqual(k.remediation[0].board, k.remediation[0].then.board, "s1 rem0 has a board of its own (016 C2)");
+  assert.deepEqual(u[`${k.skillId}/remediation[0]`].board, k.remediation[0].board);
+  assert.deepEqual(u[`${k.skillId}/remediation[0].then`].board, k.remediation[0].then.board);
+  assert.deepEqual(k.remediation[2].board, k.remediation[2].then.board, "s1 rem2 has none of its own");
+  assert.deepEqual(u[`${k.skillId}/remediation[2]`].board, k.remediation[2].then.board);
   assert.deepEqual(u[`${k.skillId}/bridge`].board, s.skills[1].explain[0].ask?.board ?? s.skills[1].explain[0].board);
   assert.ok(u[`${k.skillId}/remediation[0]`].parts.some(([f]) => f === "say"));
 });
@@ -31,10 +39,18 @@ test("the four pilots: every unit true of its card board (figure + the whiteboar
 
 test("D11.1: a remediation that teaches on its own (no longer drawn) picture is caught against its then-card board", async () => {
   const s = script("c5-maths-ch02-t01");
-  // director16: a say about a ribbon in 6 pieces over a then-card line in other parts — W10 counts it
-  s.skills[0].remediation[0].then.board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1 } };
+  // director16: a say about a road in 7 gaps over a then-card line in other parts — W10 counts it
+  // (Learning 016 C2: s1 rem0 now has a board of its own, so the say is judged against that one — below; the then-card case is held on
+  // s1 rem2, a remediation with no board of its own)
+  delete s.skills[0].remediation[2].board;
+  s.skills[0].remediation[2].then.board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1 } };
   const { errors } = await boardErrors(s, topic("c5", "c5-maths-ch02-t01"));
-  assert.ok(errors.some((x) => /remediation\[0\]: W10\.screen_claims_drawn/.test(x)), errors.join("\n"));
+  assert.ok(errors.some((x) => /remediation\[2\]: W10\.screen_claims_drawn/.test(x)), errors.join("\n"));
+  // a remediation with a board of its own is caught against that board: s1 rem0's say (7 gaps) over an 11-gap line of its own
+  const o = script("c5-maths-ch02-t01");
+  o.skills[0].remediation[0].board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1, marks: [{ num: 1, label: "1/11" }] } };
+  const own = (await boardErrors(o, topic("c5", "c5-maths-ch02-t01"))).errors;
+  assert.ok(own.some((x) => /remediation\[0\] say: its own board is not taken under its words/.test(x)), own.join("\n"));
   // a teaching line naming a strip over a round-whole card board is a figure error
   const c = script("c4-maths-ch05-t01");
   c.skills[2].explain[2].ask.board = { template: "wholes@1", params: { wholes: [{ parts: 2 }, { parts: 4 }] } };

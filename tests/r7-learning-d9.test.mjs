@@ -58,7 +58,11 @@ test("D9.3: a follow-up card is posed with its named values unmarked (c5-t02 s1 
   assert.ok(!structureErrorsV2(r, topic("c5", "c5-maths-ch02-t01")).some((x) => /already marked/.test(x)));
 });
 
-test("D9.4-5: c4's yourStep board draws the eaten pieces (5-piece barfi, 3 eaten, since the reader pass); every pilot worked example speaks its givens as one sentence", () => {
-  assert.deepEqual(script("c4-maths-ch05-t01").skills[0].workedExample.yourStep.board.params, { parts: 5, shade: 3, whole: "bar", hideResult: true });
+// (Learning 016 A2, 2026-11-17: c4 s1's worked problem asks for the pieces LEFT — 5 cut, 3 eaten, 2 left, key 2/5 — and "its board
+// shades the 2 left" (docs/status/learning.md, 016 A2); the board still draws the pieces the question counts, now the 2 left)
+test("D9.4-5: c4's yourStep board draws the pieces its question counts (5-piece barfi, the 2 left since Learning 016); every pilot worked example speaks its givens as one sentence", () => {
+  const ys = script("c4-maths-ch05-t01").skills[0].workedExample.yourStep;
+  assert.equal(ys.key, "2/5");
+  assert.deepEqual(ys.board.params, { parts: 5, shade: 2, whole: "bar", hideResult: true });
   for (const id of PILOTS) for (const k of script(id).skills) assert.equal(k.workedExample.givens.length, 1, `${k.skillId}: one spoken sentence`);
 });

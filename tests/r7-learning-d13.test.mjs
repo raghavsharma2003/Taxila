@@ -68,7 +68,10 @@ test("D13.3: c5-t02 e1's why is a full clause; the gap remediations are one shor
   assert.deepEqual(whyVerbErrors({ skills: [{ ...s.skills[0], explain: [s.skills[0].explain[0]], checks: [], remediation: [] }] }), []);
   // (director22 clause 8 rewrite, 2026-11-15: the remediation says were made general, each a different case; s3's is two boxes
   // of equal sections, each one SECTION short — "ek-ek khaane ki kami" — the same one-short rule in its own thing's word)
-  for (const [i, j, one] of [[1, 2, /ek-ek hissa/], [2, 2, /ek-ek khaane ki kami/]]) {
+  // (Learning 016 C1/C3, 2026-11-17: each gets a board of its own that its say speaks — "Board par do ek jitni patti hain: ek ke 2
+  // barabar hisson mein se 1 rangin, doosri ke 7 mein se 6", "Board par do ek jaise dibbe hain: ek ke 3 barabar khaanon mein se 2
+  // bhare, doosre ke 8 mein se 7"; docs/status/learning.md, 016's changed sentences. The rule is the same: both things one part short)
+  for (const [i, j, one] of [[1, 2, /2 barabar hisson mein se 1 rangin, doosri ke 7 mein se 6/], [2, 2, /3 barabar khaanon mein se 2 bhare, doosre ke 8 mein se 7/]]) {
     const r = s.skills[i].remediation[j];
     assert.equal(r.targets, "c5-maths-ch02-t02-m-gap-thinking");
     assert.match(r.say.hi, one, `s${i + 1} rem${j}: one short`);
