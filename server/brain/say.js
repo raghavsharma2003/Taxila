@@ -2434,7 +2434,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (v6.9 R6, main on director17: "Ab doosra kadam. Ab upar ka number … Ab agla kadam": one step opener a turn — a step whose own line
     // opens on one gets no label)
     const opensFirst = STEP_OPENER.test(String(workedLines?.[0] ?? "").trim());
-    const stepFrame = scripted && stepN && !remedy ? (opensFirst ? (stepN === 1 && /^(?:pehle|first)\b/i.test(String(workedLines?.[0] ?? "").trim()) ? (lang === "english" ? "Look." : "Dekho.") : null) : stepLabel(stepN, lang)) : null;
+    // (two told steps: no frame before the first — the step's own words open the turn; the second carries its own label when it needs one)
+    const stepFrame = state.lastMove?.stepFrom ? null : scripted && stepN && !remedy ? (opensFirst ? (stepN === 1 && /^(?:pehle|first)\b/i.test(String(workedLines?.[0] ?? "").trim()) ? (lang === "english" ? "Look." : "Dekho.") : null) : stepLabel(stepN, lang)) : null;
     // (v6.10 R7, main on director18: "Pehla kadam dekho." said on step two, and two openers in one turn — a scripted step's opener names
     // its own step number (stepLabel) or is omitted; the generic part frames are never said on a scripted step)
     const framing = scripted && stepN && !remedy ? stepFrame : stepFrame ?? (first && !/[?？]/.test(first) && words(first) <= (remedy ? 15 : 30) && !foreignOf(first).length && !((remedy || scripted) && /\d/.test(first)) && !(scripted && RULE_SAID.test(first)) ? first.trim()

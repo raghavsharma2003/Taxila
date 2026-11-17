@@ -52,7 +52,8 @@ export function rule(kind, column, help) {
     case "repeat": return { say: [kind === "checkin" ? "@point.point" : textOf(kind)], then: card ? "end" : "checkin", help: "keep" };
     // a picture: Studio's view of the part's own board (fit is a run-time check: switchFits / pictureTurn)
     // (a bridge's picture is the next unit's board — state.js unitBoardOf(firstUnitOf) — not a field of its own)
-    case "picture": return kind === "bridge" ? { say: [], view: "next", then: "next", help: "keep" } : { say: [], view: "board", needs: ["board"], then: card ? "end" : "checkin", help: "keep" };
+    // (dc-r8-director26 B1: a remediation with no board of its own keeps the board up — its named fallback, board_up — never a card's)
+    case "picture": return kind === "bridge" ? { say: [], view: "next", then: "next", help: "keep" } : { say: [], view: "board", needs: ["board"], then: card ? "end" : "checkin", help: "keep", ...(kind === "remediation" ? { fallback: "board_up" } : {}) };
     case "try_first": return card ? { say: ["prompt"], joint: "tryFirst", then: "end", help: "keep" } : { say: [], joint: "tryFirst", then: "card", help: "keep" };
     case "move_on": return { say: [], joint: "neutral", then: "next", help: "keep" };
     case "aside": return { say: [], joint: "asidePark", then: card ? "end" : "card", help: "keep" };
@@ -68,11 +69,14 @@ export function rule(kind, column, help) {
  * today's behaviour, written down — and the report lists every one. No hole is silent, and none throws in a lesson.
  * - worked_answer: the worked example's own card has no why — its right answer closes on the worked example's answer.
  * - as_wrong: no remediation for the mix-up — the wrong-answer cell: help's (pickHelp, a hint).
+ * - board_up: a remediation with no board of its own — its picture is the board that is up (dc-r8-director26 B1).
  */
 // (dc-r8-director25 H4: key_only, resay_show and next were the help rows' — gone with them; a missing rung is a hole help skips)
 export const FALLBACKS = Object.freeze({
   worked_answer: () => ({ say: ["@worked.answer"], then: "next", help: "keep" }),
   as_wrong: (kind, help) => rule(kind, "wrong", help),
+  // (dc-r8-director26 B1: a remediation with no board of its own: its picture is the board up)
+  board_up: () => ({ say: [], view: "up", then: "checkin", help: "keep" }),
 });
 /** The field a part kind says as itself. */
 function textOf(kind) { return { point: "point", worked_step: "do", remediation: "say", bridge: "self", checkin: "@checkin" }[kind] ?? "prompt"; }

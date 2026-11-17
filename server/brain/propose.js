@@ -558,7 +558,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // (dc-r8-director23, c4 steady 98: a remediation said on its own turn is drawn on its own authored board before she describes it — the
   // unit's board is its then-card's only once that card is posed)
   const remOwn = move?.scriptBeat?.kind === "remediation" && move.scriptBeat.board && !(list ?? []).some((p) => p.part === "card" && String(p.text ?? "").trim()) ? move.scriptBeat.board : null;
-  const cur = curUnit ? { unit: curUnit, board: remOwn ?? unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
+  // (dc-r8-director26, the record — c5-t01 steering 14: a picture asked for after a key is of the answered board, the close's answer board)
+  const answeredPic = move?.request === "visual" && move?.scriptBeat?.answerBoard && move.scriptBeat.board ? move.scriptBeat.board : null;
+  const cur = curUnit ? { unit: curUnit, board: remOwn ?? answeredPic ?? unitBoardOf(kit, curUnit) ?? move?.cardBeat?.board ?? move?.scriptBeat?.board ?? null } : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;
   const close = closeB ? { unit: unitOf(closeB) ?? up?.unit ?? null, board: closeB.board } : null;
   // (v6.9 N1: a close is a unit part only when it closes something — a verdict graded this turn, a give-up, a worked answer, an
@@ -580,10 +582,18 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // remediation with no board of its own — keeps the board that is up, never a card's)
   const helpOwn = helpBoardOfMove(move);
   const helpU0 = move?.help && move?.simplerBeat?.board ? { unit: `${unitOf(move.simplerBeat) ?? curUnit}#help`, board: move.simplerBeat.board }
-    : helpOwn === null && up?.board ? { unit: `${unitOf(move.simplerBeat) ?? up.unit ?? curUnit}#help`, board: up.board } : null;
+    : helpOwn === null && up?.board && offs.some((p) => p.part === "simpler") ? { unit: `${unitOf(move.simplerBeat) ?? up.unit ?? curUnit}#help`, board: up.board } : null;
   const helpU = helpU0 && !(cur?.board && JSON.stringify(cur.board) === JSON.stringify(helpU0.board)) ? helpU0 : null;
+  let sawHelp = false, pastHelp = false;
   const unitOfPart = (p) => {
-    if (helpU && p.part === "simpler") return helpU;
+    if (helpU && p.part === "simpler") { sawHelp = true; return helpU; }
+    // (dc-r8-director26: a check-in after the turn has gone on from help to another unit's part is that part's, not help's)
+    if (helpU && CHECKIN_ONLY.test(String(p.text ?? "").trim()) && pastHelp) return cur;
+    const u = unitOfPart0(p);
+    if (sawHelp && u && u !== helpU) pastHelp = true;
+    return u;
+  };
+  const unitOfPart0 = (p) => {
     // (main's R3 on the merged H4 + L2 tree, dry c4 steady 94: the check-in that ends a help turn — "Ab tak samajh aaya?" — is no unit's
     // part: it rides on the help's own page; a switch back to the card's posing board under it was planned and never drawn)
     if (helpU && CHECKIN_ONLY.test(String(p.text ?? "").trim())) return helpU;

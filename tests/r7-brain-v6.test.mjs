@@ -198,21 +198,24 @@ describe("R3 in the lesson (c6 skill-1 v2 fixture)", () => {
   });
 
   // (dc-r8-director25 H4: a step's help is its authored simpler; this v2 fixture's steps have none, so step 1 is given one here)
+  // (dc-r8-director26 C1 moves this pin: told steps that fit are said two to a turn, so the turn the child asks on may hold steps 1 and 2 —
+  // the step help says again is the last one said (its beat), never the next)
   test("'samajh nahi aaya' on a worked step: that step again smaller, never the next step", () => {
     const withSimpler = structuredClone(SC);
-    withSimpler.skills[0].workedExample.steps[0].simpler = { hi: "Pehle do bhujayein jodo.", en: "First add two sides." };
+    withSimpler.skills[0].workedExample.steps.forEach((st, k) => { st.simpler = { hi: `Kadam ${k + 1} ko dheere se dekho.`, en: `Look at step ${k + 1} slowly.` }; });
     setScriptForTest(); setScriptForTest(K.topicId, withSimpler);
     const L = run();
-    for (let i = 0; i < 30 && !/^worked:step1$/.test(L.r.move.scriptBeat?.beatId ?? ""); i++) {
+    for (let i = 0; i < 30 && !/^worked:step\d+$/.test(L.r.move.scriptBeat?.beatId ?? ""); i++) {
       const c = L.r.state.activeItemId ? { ...cls("correct") } : cls("no_evidence");
       L.t(L.r.state.activeItemId ? (findKey(L) ?? "haan") : "haan", c);
     }
-    assert.equal(L.r.move.scriptBeat?.beatId, "worked:step1", JSON.stringify(L.r.move.scriptBeat));
+    const b = L.r.move.scriptBeat?.beatId;
+    assert.match(String(b), /^worked:step\d+$/, JSON.stringify(L.r.move.scriptBeat));
     L.t("samajh nahi aaya");
-    assert.equal(L.r.move.scriptBeat?.beatId, "worked:step1", "the same step, not step 2");
+    assert.equal(L.r.move.scriptBeat?.beatId, b, "the same step, not the next");
     assert.equal(L.r.move.smaller, true);
     L.t("haan");
-    assert.notEqual(L.r.move.scriptBeat?.beatId, "worked:step1", "then it goes on");
+    assert.notEqual(L.r.move.scriptBeat?.beatId, b, "then it goes on");
   });
 
   test("a probe answered gets one line that takes it up before the next beat", async () => {

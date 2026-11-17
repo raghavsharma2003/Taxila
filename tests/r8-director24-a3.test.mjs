@@ -7,10 +7,13 @@ import { againInHerWords, honestTasteLine } from "../server/brain/say.js";
 
 const st = (n) => ({ recent: Array.from({ length: n }, () => ({ who: "teacher", text: "x" })) });
 
-test("an aside said again: her reply names a noun of the child's line, never a verb of it", () => {
+// (dc-r8-director26 A4 moves this pin: what the child said is said back in a phrase form first — its last clause whole, "Achha, pichhli baar
+// sixer maara." — where a phrase of theirs fits; a word form, when it is the reply, still names a noun and never a verb alone)
+test("an aside said again: her reply says their clause back in a phrase form, or names a noun of their line — never a verb alone", () => {
   const a = againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", st(3));
   assert.match(a, /sixer/);
-  assert.doesNotMatch(a, /maara|khela/);
+  assert.doesNotMatch(a, /khela/);
+  assert.ok(/pichhli baar sixer maara/i.test(a) || !/maara/.test(a), a);
   assert.match(againInHerWords("mujhe cricket pasand hai", "cricket", "hinglish", st(4)), /cricket/);
   // (no word of theirs: none — the plain ack stands)
   assert.equal(againInHerWords("haan", "cricket", "hinglish", st(1)), null);

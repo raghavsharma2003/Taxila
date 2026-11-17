@@ -733,7 +733,8 @@ export const ORDER_LAWS = {
     // (dc-r8-director26 A4: an aside said again gets her reply in the child's words — dc-r8-director24 A3's rule; this predicate read 0 on it
     // only because the reply's first sentence was being dropped as a fact about the aside, leaving a bare "Achha.")
     const said = String(ctx.prevChild ?? "").trim().toLowerCase();
-    const again = String(r.cell?.column ?? "") === "aside" && !!said && (L.rows ?? []).slice(0, Math.max(0, i - 1)).some((x, j) => x.who === "child" && String(x.text ?? "").trim().toLowerCase() === said && String(L.rows[j + 1]?.cell?.column ?? "") === "aside");
+    // (and a second or third aside, an earlier one's return already had: A3's reply in the child's words)
+    const again = String(r.cell?.column ?? "") === "aside" && !!said && (L.rows ?? []).slice(0, Math.max(0, i - 1)).some((x) => x.who === "teacher" && ["aside", "aside_reply"].includes(String(x.cell?.column ?? "")));
     return asked || again ? null : `her aside reply on a turn after no question of hers about it: "${hit.slice(0, 60)}"`;
   },
   /** dc-r8-director23 S (rewritten on the seam pass's record): a seam into a return to an earlier card has its joint — backTo, or the one

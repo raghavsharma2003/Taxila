@@ -127,15 +127,21 @@ describe("script walk v2", () => {
     // (v6.7 R4, main on director15: the problem is stated once — no "Diya hai … Dhoondhna hai …" recital after it)
     assert.ok(L.r.move.rendered.some((x) => /kyaari/.test(x)) && !L.r.move.rendered.some((x) => /^(?:Dhoondhna hai|Diya hai)/.test(x)), L.r.move.rendered.join(" | "));
     assert.ok(!L.r.ui.ask?.itemId, "no card yet");
-    // v4 W2: then each step on its own turn, do → result → why (the givens are not read again), with no card
+    // v4 W2: then the steps, do → result → why (the givens are not read again), with no card — dc-r8-director26 C1: two to a turn where
+    // the two fit in 75 words, the turn's beat the last step said
     const steps = S1.workedExample.steps;
-    for (let k = 0; k < steps.length; k++) {
+    for (let k = 0; k < steps.length;) {
       L.t("haan");
-      assert.equal(L.r.move.scriptBeat.beatId, `worked:step${k + 1}`);
-      assert.equal(L.r.move.rendered.length, 1);
-      assert.ok(L.r.move.rendered[0].includes(steps[k].result) && /kyunki/.test(L.r.move.rendered[0]), L.r.move.rendered[0]);
-      assert.ok(!/Diya hai/.test(L.r.move.rendered[0]), "the givens are not read again");
+      const n = L.r.move.rendered.length;
+      assert.ok(n === 1 || n === 2, String(n));
+      assert.equal(L.r.move.scriptBeat.beatId, `worked:step${k + n}`);
+      for (let j = 0; j < n; j++) {
+        assert.ok(L.r.move.rendered[j].includes(steps[k + j].result) && /kyunki/.test(L.r.move.rendered[j]), L.r.move.rendered[j]);
+        assert.ok(!/Diya hai/.test(L.r.move.rendered[j]), "the givens are not read again");
+      }
+      if (n === 2) assert.ok(L.r.move.rendered.join(" ").split(/\s+/).length <= 75, "two steps only where they fit");
       assert.ok(!L.r.ui.ask?.itemId, "no card on a step");
+      k += n;
     }
     L.t("haan");
     assert.equal(L.r.move.scriptBeat.beatId, "worked");
