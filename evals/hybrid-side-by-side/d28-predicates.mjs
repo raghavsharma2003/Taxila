@@ -11,6 +11,7 @@
 //                    and then the card — no hint, no verdict naming the answer, no second try
 //   quickGiveaway    a quick question's `say`, or an asked step's `right`, never says the card's key or the child's own step's key (the
 //                    checker holds the same on the script: scripts/lesson-scripts/check.mjs d27Errors)
+//   quickPoint       d28 guards: a point's quick question is never asked before its point was said whole (live director28a: two turns)
 //   pictureCaption   E3: a picture asked for after a key or a verdict is said in the script's own words for the view drawn — a card's
 //                    `viewCaption` or `answerViewCaption` — never a code-written caption
 import { sentencesOf, normSentence } from "../../server/director/help.js";
@@ -127,5 +128,28 @@ export const D28_PREDICATES = {
     const own = ss.filter((x) => x && !/^(?:yahan tak|ab tak|yeh hissa|yeh kadam|does that|clear so|all good|is that)/.test(x));
     if (!own.length) return "a picture after a key with no caption";
     return own.some((x) => caps.has(x)) ? null : `a picture after a key captioned in code's words: "${norm(r.text).slice(0, 50)}"`;
+  },
+  /** d28 guards (the law: on a scripted turn what is said is the walk's authored parts, whole and in order): a point's quick question asks
+   *  what its point has just said, so it is never asked before that point was said whole — in this turn or an earlier one of hers. Live,
+   *  director28a steady c5-t02 row 2 and steady c4 row 106 asked the quick question of a point a guard path had dropped (the hook, or the
+   *  verdict and its why, then the quick question). authoredWhole reads a unit started and changed; partOnce, a card posed with its point
+   *  never said: neither reads a quick question, and a point dropped whole is no unit started. Read from the text and the script alone. */
+  quickPoint(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx.script) return null;
+    const qs = (ctx.o.d28Quick ??= (ctx.script.skills ?? []).flatMap((sk) => (sk.explain ?? []).filter((b) => b.quick?.prompt).map((b) => ({
+      id: `${sk.skillId}:${b.id}`, prompts: [b.quick.prompt.hi, b.quick.prompt.en].filter(Boolean).map(normSentence),
+      // (the point, else its other wording, else the simpler said in its place: any one of them said whole)
+      ways: [b.point, b.pointAlt, b.simpler, b.ask?.simpler].flatMap((v) => [v?.hi, v?.en]).filter(Boolean).map((t) => sentencesOf(t).map(normSentence).filter(Boolean)).filter((x) => x.length) }))));
+    const T = sentencesOf(norm(r.text)).map(normSentence);
+    const said = new Set([...(ctx.o.teacherTexts ?? []).flatMap((t) => sentencesOf(norm(t)).map(normSentence)), ...T]);
+    // (two beats may share a quick question's words — c5-t02 s1 e2 and s3 e1: the question is answered for when either one's point was said)
+    const asked = qs.filter((q) => q.prompts.some((p) => T.includes(p)));
+    const byPrompt = new Map();
+    for (const q of asked) for (const p of q.prompts.filter((x) => T.includes(x))) byPrompt.set(p, [...(byPrompt.get(p) ?? []), q]);
+    for (const [, cands] of byPrompt) {
+      if (cands.some((q) => !q.ways.length || q.ways.some((w) => w.every((x) => said.has(x))))) continue;
+      return `the ${cands.map((q) => q.id.split(":").pop()).join("/")} quick question asked with its point never said whole`;
+    }
+    return null;
   },
 };

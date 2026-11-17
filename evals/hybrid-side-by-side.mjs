@@ -43,13 +43,21 @@ import { gateCtxFor } from "../server/stagecraft/board-sync.js";
 import { entryFor } from "../server/play/levels.js";
 import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
 import { seedLearner } from "./knows-her/seed.mjs";
+import { draftsFor, scriptSentenceKeys, authoredSentencesOf, authoredLost } from "./hybrid-side-by-side/adversarial.mjs";
 
 const { planTurn } = __test;
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
 const DRY = process.argv.includes("--dry");
+// (d28 guards: with --dry, every director turn's reply path is also fed the adversarial drafts of hybrid-side-by-side/adversarial.mjs —
+// an overlong draft, one stating the keys, two questions, a flat and an empty one — and each must say every authored sentence the
+// stub's turn said, whole and in order; a turn that lost one carries `adversarial` on its row. The lesson goes on from the stub's turn)
+const ADVERSARIAL = DRY && process.argv.includes("--adversarial");
+const DRY_DRAFT = { text: null };
 // (dc-r8-director26 B1: a dry run throws where a help page's board is not the one the help function returned — brain/propose.js
 // helpBoardPredicate; serving never throws)
 if (DRY) process.env.TAXILA_STRICT_HELP = "1";
+// (d28 guards: a dry run throws where a scripted turn lost an authored part — brain/say.js holdAuthored; serving puts it back)
+if (DRY) process.env.TAXILA_STRICT_AUTHORED = "1";
 
 /** The scripted children: the same lines, in the same order, for both lanes. */
 export const SCENARIOS = {
@@ -77,7 +85,8 @@ if (DRY) {
   // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
   const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
   // (dc-r8-director20 R1: her reply after an aside is authored and chosen by code, so the dry stub needs no stand-in for it)
-  const dryText = () => STUB;
+  // (d28 guards: --adversarial probes each scripted turn with drafts built to trip the guards — DRY_DRAFT.text, set around each probe)
+  const dryText = () => DRY_DRAFT.text ?? STUB;
   // (dc-r8-director20 R1: --j2-live measured the model's reply sentence, which is gone — the reply is Learning's, chosen by code)
   replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
   replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
@@ -149,6 +158,7 @@ const say = (r) => r?.ui?.ask?.text ?? null;
 /** (v6.1) one drawn board, as a key: its template and params (a second view is its own board) */
 const screenKeyOf = (scr) => JSON.stringify([scr?.template ?? null, scr?.boardRef?.params ?? null, scr?.altView ?? null]);
 const NO_COUNTS = new Set();
+const ADV_KEYS = {};
 const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
 
 async function classOf(state, kit, text, classLevel) {
@@ -275,6 +285,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // (D, main on director21: the row records the reading the turn acted on — planTurn's, after its own rules — and the raw one beside it)
     { const eff = p.cls ?? null; const row = rows.at(-1); if (eff && row?.who === "child") { const rq = eff.request?.src === "card_unsaid" ? null : eff.request?.type; const r1 = eff.outcome + (rq ? ` · ${rq}` : "") + (eff.asideReply ? " · aside" : ""); if (r1 !== row.read) { row.readRaw = row.read; row.read = r1; } const fl = ["offTopic", "wantsToStop", "dontKnow"].filter((k) => eff.flags?.[k] === true); if (fl.length) row.readFlags = fl; else delete row.readFlags; } }
     let next = { ...p.r.state, mode: "text" };
+    let advLost = null;
     let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
     // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected
     // in the same turn)
@@ -350,6 +361,21 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
       replyMs += ms;
       reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
+      if (ADVERSARIAL && next.lastMove?.scriptBeat && !["safeguard", "wrap"].includes(String(next.lastMove?.kind ?? ""))) {
+        const keys = (ADV_KEYS[kit.topicId] ??= scriptSentenceKeys(scriptForKit(kit)));
+        const expected = authoredSentencesOf(t.reply, keys);
+        const lost = [];
+        const ui2 = slot ? { ...ui, tray: "studio", studioSlot: slot } : ui;
+        for (const [kind, draft] of Object.entries(draftsFor(next, ui2, next.activeItemId ? findItem(next, kit, next.activeItemId) : null))) {
+          DRY_DRAFT.text = draft;
+          let probe = null, err = null;
+          try { probe = await textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: ui2, module: null }); } catch (e) { err = String(e?.message ?? e).slice(0, 200); }
+          finally { DRY_DRAFT.text = null; }
+          const l = err ? { missing: expected, order: true, error: err } : authoredLost(expected, probe.reply);
+          if (l.missing.length || !l.order) lost.push({ kind, ...l, said: probe?.reply ?? null });
+        }
+        if (lost.length) advLost = lost;
+      }
       // (v6.6 A2: a return her line did not say goes back on the queue, as brain/turn.js does)
       if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
       // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
@@ -581,6 +607,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     if (!heldRec && lane === "director" && reply && next.lastMove?.clear === "board") { heldRec = { unit: null, changed: true, kept: false, drawn: "cleared", pages: [], intent: { unit: null, noUnit: true }, layout: { split: false } }; next = { ...next, heldUp: undefined }; }
     if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
     rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(next.lastMove?.cell ? { cell: next.lastMove.cell } : {}),
+      ...(advLost ? { adversarial: advLost } : {}),
       // (Brain 042: the child's answer to a quick question or an asked step, as the walk read it — its own kind of evidence, no verdict)
       // (Brain 042: her reply or park line said alone before a worked segment that would not fit with it — no unit's, the segment next)
       ...(next.lastMove?.leadAlone ? { leadAlone: true } : {}),

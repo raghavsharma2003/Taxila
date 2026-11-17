@@ -952,6 +952,49 @@ export function lengthGuard(text, { authored = [], max = 40 } = {}) {
   for (let i = out.length - 1; i >= 0 && words(out.join(" ")) > max; i--) if (mine(out[i])) out.splice(i, 1);
   return out.join(" ").replace(/\s+/g, " ").trim();
 }
+/** d28 guards: a sentence's key for the authored-part law — lower case, letters, digits and "/" only (a rewording is another key). */
+export const authoredKey = (x) => String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+/** d28 guards: is the strict reading on — a thrown error, never a restored turn (tests, and the dry harness's TAXILA_STRICT_AUTHORED)? */
+const STRICT_AUTHORED = () => !!process.env.NODE_TEST_CONTEXT || process.env.TAXILA_STRICT_AUTHORED === "1";
+/** d28 guards (the law: on a scripted turn what is said is the walk's authored parts, whole and in order): what of `plan` (the turn's
+ *  authored parts, in order, as the assembly placed them) `reply` lost — the indexes of the parts not said whole (a sentence of one
+ *  missing or reworded), and whether those said keep their order. Pure. */
+export function authoredLostOf(reply, plan = []) {
+  const R = ` ${authoredKey(reply)} `;
+  const missing = [];
+  let at = 0, order = true;
+  plan.forEach((p, i) => {
+    const ks = sentences(String(p?.text ?? "")).map(authoredKey).filter(Boolean);
+    if (!ks.length) return;
+    if (!ks.every((k) => R.includes(` ${k} `))) { missing.push(i); return; }
+    const pos = R.indexOf(` ${ks[0]} `, at);
+    if (pos < 0) { order = false; return; }
+    at = pos + 1;
+  });
+  return { missing, order };
+}
+/** d28 guards: the turn with its lost authored parts put back, each in its place — before the next part of the plan that is said, else
+ *  after the last one before it, else before her closing question — and its line parts with them. Pure. */
+export function restoreAuthored(reply, plan, missing, lineParts = null) {
+  const ss = sentences(String(reply ?? "")).map((x) => String(x).replace(/\s+/g, " ").trim()).filter(Boolean);
+  let list = lineParts ? [...lineParts] : null;
+  const present = new Set(plan.map((_, i) => i).filter((i) => !missing.includes(i)));
+  const firstK = (p) => authoredKey(sentences(String(p.text))[0] ?? p.text);
+  const lastK = (p) => authoredKey(sentences(String(p.text)).at(-1) ?? p.text);
+  for (const i of missing) {
+    let at = null, li = null;
+    for (let j = i + 1; j < plan.length && at == null; j++) if (present.has(j)) { const k = ss.findIndex((x) => authoredKey(x) === firstK(plan[j])); if (k >= 0) { at = k; li = list ? list.findIndex((q) => ` ${authoredKey(q.text)} `.includes(` ${firstK(plan[j])} `)) : null; } }
+    for (let j = i - 1; j >= 0 && at == null; j--) if (present.has(j)) { const k = ss.findIndex((x) => authoredKey(x) === lastK(plan[j])); if (k >= 0) { at = k + 1; li = list ? list.findIndex((q) => ` ${authoredKey(q.text)} `.includes(` ${lastK(plan[j])} `)) + 1 : null; } }
+    if (at == null) { at = ss.length && /[?？]\s*$/.test(ss.at(-1)) ? ss.length - 1 : ss.length; li = list ? (at < ss.length ? Math.max(0, list.length - 1) : list.length) : null; }
+    ss.splice(at, 0, ...sentences(String(plan[i].text)).map((x) => String(x).replace(/\s+/g, " ").trim()).filter(Boolean));
+    if (list) list.splice(li == null || li < 0 ? list.length : li, 0, { part: plan[i].part ?? "body", text: String(plan[i].text) });
+    present.add(i);
+  }
+  const out = ss.join(" ").replace(/\s+/g, " ").trim();
+  return { reply: out, lineParts: list ? alignParts(list, out) : null };
+}
+/** d28 guards: the plan's hidden slot on a reply's guard (never serialised, never read by anything but the check). */
+const PLAN = Symbol("authoredPlan");
 /** Keep whole sentences up to `max` words (last-resort guard after one rewrite failed). */
 export function trimToWords(text, max) {
   const parts = p5Flag("GUARDS") ? sentences(text) : String(text).match(/[^.!?।]+[.!?।]*\s*/g) ?? [text];
@@ -1301,11 +1344,34 @@ export async function textReply(args) {
   const ss = sentences(out.reply).map((x) => String(x ?? "").replace(/\s+/g, " ").trim()).filter(Boolean);
   const seen = new Set();
   const kept = ss.filter((x) => { const k = x.toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim(); if (k.split(" ").length >= 3 && seen.has(k)) return false; seen.add(k); return true; });
-  if (kept.length === ss.length) return out;
-  const reply = kept.join(" ");
-  const g = { ...(out.guard ?? {}), doubleDropped: (out.guard?.doubleDropped ?? 0) + ss.length - kept.length };
-  if (g.lineParts) { g.lineParts = alignParts(g.lineParts, reply); if (g.parts) g.parts = { ...g.parts, list: g.lineParts }; }
-  return { ...out, reply, guard: g };
+  if (kept.length !== ss.length) {
+    const reply = kept.join(" ");
+    const g = { ...(out.guard ?? {}), doubleDropped: (out.guard?.doubleDropped ?? 0) + ss.length - kept.length };
+    if (g.lineParts) { g.lineParts = alignParts(g.lineParts, reply); if (g.parts) g.parts = { ...g.parts, list: g.lineParts }; }
+    out = { ...out, reply, guard: g };
+  }
+  return holdAuthored(out, args);
+}
+/** d28 guards — the law, in one place: on a scripted turn what is said is the walk's authored parts, whole and in order. The finished
+ *  turn (after every guard, the assembly, the seam pass and the last drops) is read against the turn's authored plan (say.js assembly,
+ *  guard[PLAN]); a part not said whole is a thrown error under tests and the dry harness (TAXILA_STRICT_AUTHORED), and is put back in
+ *  its place in production (guard.authoredRestored names it). Order is read too: out of order throws under strict, is counted live.
+ *  A safety turn never builds a plan (its own path replaces the whole turn); a turn with no plan is passed through. */
+function holdAuthored(out, args) {
+  const plan = out?.guard?.[PLAN];
+  if (!plan?.length || !out.reply) return out;
+  const { missing, order } = authoredLostOf(out.reply, plan);
+  if (!missing.length && order) return out;
+  const what = [...missing.map((i) => `${plan[i].part} "${String(plan[i].text).slice(0, 80)}"`), ...(order ? [] : ["the parts out of order"])].join("; ");
+  if (STRICT_AUTHORED()) throw new Error(`authored part lost on a scripted turn (${args?.state?.lastMove?.scriptBeat?.skillId ?? "?"}:${args?.state?.lastMove?.scriptBeat?.beatId ?? "?"}): ${what} | said: ${String(out.reply).slice(0, 300)}`);
+  console.warn(`[lesson] authored part lost on a scripted turn, restored: ${what}`);
+  if (!missing.length) return { ...out, guard: { ...out.guard, authoredOrder: false } };
+  const g = { ...out.guard };
+  const r = restoreAuthored(out.reply, plan, missing, g.lineParts ?? null);
+  if (r.lineParts) { g.lineParts = r.lineParts; if (g.parts) g.parts = { ...g.parts, list: r.lineParts }; }
+  g.authoredRestored = missing.map((i) => plan[i].part);
+  if (!order) g.authoredOrder = false;
+  return { ...out, reply: r.reply, guard: g };
 }
 /** dc-r8-director23 S: the one seam pass over the finished turn (server/brain/seams.js) — the only place a joint is added. */
 function seamsOf(out, { state, kit, ui = null }) {
@@ -2997,6 +3063,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (v6.4 Q1, main on director12: "Yaad karo: …" recited over the live card ×9: a live card is never under a recital; a bare card
       // turn is the card, framed below when it is said again)
     }
+    // d28 guards: the elements code just put in the body from authored text (worked lines, the point said whole as one element, a simpler,
+    // its sentences) — by provenance, never by what her draft said; her framing clause and her own sentences are not among them
+    const codeBody = new Set(workedLines?.length ? workedLines.map(norm) : point && kindNow === "explain" && state.lastMove?.smaller ? body
+      : point && kindNow === "explain" ? [dot(point)] : state.lastMove?.simpler ? body : []);
     // (dc-r8-director27 Brain 042 Q1: the child's answer to the point's quick question — a short yes from the verdict forms, or the quick
     // question's authored `say`; then the card. Nothing of hers rides with it: no why, no hint, no miss verdict naming the answer)
     const quickR = state.lastMove?.quickReply ?? null;
@@ -3116,6 +3186,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.10 P6 (main on director18): a picture asked and no view built — one honest sentence that a second picture is not there for
     // this one, then the live part again on the board that is up; never a description of a view that was not drawn
     else if (heldPic && !asked && !graded) { const np = rotateOf(NO_PICTURE[lang === "english" ? "english" : "hinglish"], state); body = [np, ...body.filter((x) => norm(x) !== norm(np))]; guard.noPictureLine = np; }
+    // d28 guards (director28a live: steady c5-t02 row 2, steady c4 row 106 — the point was dropped as "hers"): the body's authored elements
+    // are known here (codeBody, by provenance), before any pass that reads her draft. Such an element (the point, said whole as ONE element;
+    // a simpler; a worked line) is code's, never hers, whatever her draft said; and they are the turn's authored plan
+    const isAuthoredEl = (x) => codeBody.has(x);
+    const planBody = body.filter(isAuthoredEl);
     // v5 B5: a turn is at most about 60 words, except a worked step: her own sentences go first (from the end), never the
     // verdict, a closure, authored text or the card
     const MAX_WORDS = state.ctx?.plainWords ? 45 : 60;
@@ -3123,7 +3198,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const own = body === ss && !(point && kindNow === "explain") ? body : null;
     if (!workedLines?.length && total() > MAX_WORDS) {
       if (own) { while (own.length && total() > MAX_WORDS) own.pop(); guard.trimmed = true; }
-      else if (point && kindNow === "explain" && !(body.length === 1 && body[0] === dot(point))) { body = [dot(point)]; guard.trimmed = true; }
+      // (d28 guards: her own elements go; an authored one — the point, or the simpler said in its place — stays)
+      else if (point && kindNow === "explain" && body.some((x) => !isAuthoredEl(x))) { body = body.filter(isAuthoredEl); if (!body.length) body = [dot(point)]; guard.trimmed = true; }
       if (total() > MAX_WORDS && aside.length > 1) { aside.splice(1); guard.trimmed = true; }
     }
     // v5 B4: the authored bridge (and the hook's interest line) at a skill change, said by code unless her lines carry it
@@ -3205,7 +3281,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const hersLoose = (x) => { const w = keyS(x).split(" ").filter(Boolean); if (w.length < 3) return false;
         return herW.some((h) => w.filter((t) => h.has(t)).length >= Math.ceil(w.length * 0.7)); };
       const hookTurn = kindNow === "hook" && (state.lastMove?.sayFirst ?? []).length > 0;
-      body = body.filter((x) => authoredK.has(keyS(x)) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
+      // (d28 guards: an element code put in from an authored source is never matched against her draft — her near-copy of the point's
+      // first sentence covered 70% of the whole point's words, and the point went as hers, c5-t02 steady 2; her rewording of it, c4 steady 106)
+      body = body.filter((x) => authoredK.has(keyS(x)) || isAuthoredEl(x) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
       if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
@@ -3471,6 +3549,26 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         guard.cardPageDropped = { itemId: state.activeItemId ?? null, board: state.lastMove?.cardBeat?.board?.template ?? null };
         reply = cut;
       }
+    }
+    // d28 guards: the turn's authored plan, in the assembly's order — what is said first (a hook, a bridge), the quick question's authored
+    // say, the body's authored elements as the walk chose them (before any pass read her draft), an authored caption, the card or the
+    // quick question or the asked step. What the walk itself withholds — a part held for the next turn after a return, a card held behind
+    // an aside question or for the child's own try, a card whose page was refused — is not in it
+    {
+      const heldOut = new Set((guard.bodyHeld ?? []).map((x) => authoredKey(x)));
+      const heldCardK = state.splitHold?.ui?.ask?.text && !card ? sentences(String(state.splitHold.ui.ask.text)).map(authoredKey) : [];
+      const pb = [...heldNow, ...planBody.filter((x) => !heldNow.some((h) => keyS(h) === keyS(x)))]
+        .filter((x) => !heldOut.has(authoredKey(x)))
+        .map((x) => (heldCardK.length ? sentences(x).filter((y) => !heldCardK.includes(authoredKey(y))).join(" ") : x)).filter((x) => norm(x));
+      const tailAuthored = tail && !guard.cardPageDropped && (tail === card || guard.cardQuestionOnly || (guard.quickAsk && tail === guard.quickAsk) || (guard.stepAsk && tail === guard.stepAsk)) ? tail : null;
+      guard[PLAN] = [
+        // (a help joint rides in sayFirst — state.js helpJoint — and is the seam pass's to rotate: a joint form, not a part)
+        ...first.filter((x) => !state.lastMove?.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => ({ part: x === bridgeS ? "bridge" : "close", text: x })),
+        ...(quickS && quickR && !quickR.right ? [{ part: "quickReply", text: quickS }] : []),
+        ...(guard.viewCaption && asked ? [{ part: guard.altOnly ? "alt" : "body", text: asked }] : []),
+        ...pb.map((x) => ({ part: heldNow.includes(x) ? "held" : "body", text: x })),
+        ...(tailAuthored ? [{ part: tailAuthored === card || guard.cardQuestionOnly ? "card" : guard.quickAsk && tailAuthored === guard.quickAsk ? "quick" : "stepAsk", text: tailAuthored }] : []),
+      ].filter((p) => norm(p.text));
     }
   }
   // v6.2 H4 (director10 c4 offtopic T23, a break move: "Bilkul, no sahi hai: …"): on any move, a right answer is never confirmed by
