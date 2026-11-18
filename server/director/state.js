@@ -4677,13 +4677,14 @@ function splitLongOnce(out, input, opt = {}) {
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
   if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out, input);
-  // (d29 final, main's item 3 — r8-main-034, steady c4 100: a close and the card the lesson returns to, whose boards Studio cannot join in one
-  // turn (the board up held, the close's, the card's): the close ends its turn on its check-in, and the back-to line and the card are the next
-  // turn, the card on its own board — as after a key. The row says so: noFit "return")
+  // (d29 final, main's item 3 — r8-main-034, steady c4 100: a close and the next card (a return or not) whose boards Studio cannot join in one
+  // turn — asked as the turn draws them: the close's board at the first word (the board up kept when it is the same, else drawn in its place),
+  // the card's at the card's first word: the close ends its turn on its check-in, and the card is the next turn on its own board, as after a
+  // key. The row says so: noFit "card")
   if (l2On() && !recorded && hasClose && ui?.ask?.itemId && !move.point && !move.returned?.topic && move.closeBeat?.board) {
     const cb = (move.cardBeat ?? move.scriptBeat)?.board ?? null;
     const closedId = s.lastGraded?.itemId ?? null;
-    if (cb && closedId && closedId !== ui.ask.itemId && JSON.stringify(cb) !== JSON.stringify(move.closeBeat.board) && !switchesFit([s.heldUp?.board ?? null, move.closeBeat.board, cb])) return closeApart(out, "return");
+    if (cb && closedId && closedId !== ui.ask.itemId && JSON.stringify(cb) !== JSON.stringify(move.closeBeat.board) && !switchFits(move.closeBeat.board, cb, { upKept: JSON.stringify(s.heldUp?.board ?? null) === JSON.stringify(move.closeBeat.board) })) return closeApart(out, "card");
   }
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
   // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)

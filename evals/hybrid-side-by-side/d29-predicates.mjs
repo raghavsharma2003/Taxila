@@ -16,7 +16,7 @@
 //   switchFirst    T1: the switch line ("easier words") is never said before a first telling — no turn says it and then a point not said before
 //   remCardLong    T2: a remediation (or help on it) and its follow-up card in one turn over 60 words
 //   workedInvite   T3: no turn ends on an invitation to do the worked example together (joints.workedInvite is not read)
-//   returnNoFit    d29 final: a close and the returned card whose boards Studio cannot join — counted, pending
+//   cardNoFit      d29 final: a close and the next card whose boards Studio cannot join — counted, pending
 //   workedNoFit    T3: a verdict whose turn could not run into the worked example ends on its check-in (noFit "worked") — counted, pending
 //                  until Learning 017's cut openings are merged
 //   T8, the record says what was heard:
@@ -158,10 +158,10 @@ export const D29_PREDICATES = {
     return r.who === "teacher" && r.workedInvite ? "a turn ends on an invitation to the worked example" : null;
   },
   /** T3: the verdict's turn that could not run into the worked example (counted). */
-  /** d29 final (main's item 3): a close and the card the lesson returns to whose boards Studio cannot join in one turn — the close ends on its
-   *  check-in, the return is the next turn (noFit "return"). Counted, pending. */
-  returnNoFit(L, r) {
-    return r.who === "teacher" && r.noFit === "return" ? "a close and its return whose boards do not join: the close ends on its check-in" : null;
+  /** d29 final (main's item 3): a close and the next card (a return or not) whose boards Studio cannot join in one turn — the close ends on
+   *  its check-in, the card is the next turn (noFit "card"). Counted, pending. */
+  cardNoFit(L, r) {
+    return r.who === "teacher" && r.noFit === "card" ? "a close and the next card whose boards do not join: the close ends on its check-in" : null;
   },
   workedNoFit(L, r) {
     // (d29 final, main: a turn led by a key ends on its check-in by the law — only a right verdict that does not fit is counted)

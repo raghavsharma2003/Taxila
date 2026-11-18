@@ -1315,7 +1315,15 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
       if (nxs.length === sws.length) {
         const p0 = base.kept && !split ? still(page0) : page0;
         const clauseAt = (w) => { const before = text.slice(0, w.atChar).trim(); return Number.isInteger(w.atClause) ? w.atClause : before ? splitSentences(before).reduce((n, part) => n + voiceClausesOf(part).length, 0) : 0; };
-        const joined = joinPages([{ script: p0, from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text);
+        let joined = joinPages([{ script: p0, from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text);
+        // (d29 final, r8-main-034 steady c4 100: the board up kept under her leading words and the next board would pass the op cap — every
+        // drawn op of the kept page costs an eraser. The board up is cleared at the turn's first word instead — nothing to erase — and the next
+        // board comes in at its part's first word: her lead is said over an empty board, never over a board that is not drawn)
+        if (!joined && base.kept && !split) {
+          const blank = { ...page0, ops: [], facts: null };
+          joined = joinPages([{ script: blank, from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text);
+          if (joined) { screens = [{ from: 0, template: null }]; template = null; }
+        }
         if (joined) {
           const { nx } = nxs.at(-1);
           script = joined; lastRef = refKey(sw.board); lastPage = nx.script; template = nx.template; heldCounts.switched += nxs.length;
