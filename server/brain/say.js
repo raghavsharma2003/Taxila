@@ -3572,8 +3572,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         reply = r2; guard.langAck = true;
         // (dc-r8-director29 Brain 045 P2, c5-t01 stuck 8: the easier-words line is a lead — its own part, owning no page — so the help's page
         // starts at the help's first word, never at the line's)
-        if (ack.length && guard.lineParts?.length && !guard.lineParts.some((q) => q.kind === "hindiSwitch")) {
-          guard.lineParts = alignParts([{ part: "aside", text: ack[0], kind: "hindiSwitch" }, ...guard.lineParts.filter((q) => norm(q.text) !== norm(ack[0]))], reply);
+        if (ack.length && guard.lineParts?.length && !guard.lineParts.some((q) => norm(q.text) === norm(ack[0]))) {
+          guard.lineParts = alignParts([{ part: "aside", text: ack[0] }, ...guard.lineParts], reply);
           if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
         }
       }

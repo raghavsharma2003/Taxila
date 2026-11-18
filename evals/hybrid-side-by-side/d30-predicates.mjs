@@ -32,4 +32,22 @@ export function partStartOf(r, p) {
   }
 }
 
-export const D30_PREDICATES = {};
+const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
+
+export const D30_PREDICATES = {
+  /** P3: at an asked worked step a give-up or a clarify gets the step's simpler first; the step is told only at the second request or after
+   *  a wrong answer (c4 stuck 36; c5-t01 stuck 20; c5-t02 stuck 20, offtopic 16, steering 28; c6 stuck 20, offtopic 16, steering 28). */
+  stepToldEarly(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.stepAnswer?.told) return null;
+    const req = String(ctx?.prevIntent ?? r.cell?.column ?? "");
+    if (!["give_up", "clarify"].includes(req) && !["give_up", "clarify"].includes(String(r.cell?.column ?? ""))) return null;
+    const m = /^(.+)-s(\d+):worked:step(\d+)$/.exec(String(r.stepAnswer.beat ?? ""));
+    if (!m) return null;
+    const sk = (ctx.script?.skills ?? []).find((k) => k.skillId === `${m[1]}-s${m[2]}`);
+    const simpler = low(said(sk?.workedExample?.steps?.[Number(m[3]) - 1]?.simpler));
+    if (!simpler) return null;
+    const before = (L.rows ?? []).slice(0, i).filter((x) => x.who === "teacher").map((x) => low(x.text)).join(" ");
+    return before.includes(simpler.slice(0, 40)) ? null : `the step ${m[3]} told at a ${req} with its simpler unsaid`;
+  },
+};

@@ -175,7 +175,11 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
       rungs = [rung("ask.simpler", `${part.path}.simpler`, part.board), rung("pointAlt", `${part.point}.pointAlt`, pb), rung("simpler", `${part.point}.simpler`, pb)];
       break;
     }
-    case "check": case "then_card": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
+    case "check": rungs = [rung("simpler", `${part.path}.simpler`, part.board)]; break;
+    // (dc-r8-director29 Brain 045 P3: a remediation's unsaid wordings are help for its follow-up card — the card's own hint, then the
+    // remediation's sayAlt, then its simpler, each over its own board: c5-t01 steady 88, stuck 42; c6 steady 8, 90, stuck 42, 76)
+    case "then_card": { const rp = String(part.path).replace(/\.then$/, ""); const rb = boardAt(script, `${rp}.board`) ?? part.board;
+      rungs = [rung("simpler", `${part.path}.simpler`, part.board), ...(rp !== part.path ? [rung("sayAlt", `${rp}.sayAlt`, rb), rung("simpler", `${rp}.simpler`, rb)] : [])]; break; }
     // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
     case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
       rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("problemAlt", `${part.worked}.problemAlt`, wb), rung("simpler", `${part.worked}.simpler`, wb)]; break; }
@@ -193,7 +197,7 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
@@ -278,6 +282,17 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   if (request === "hint" && isCard && misses >= KEY_AFTER_MISSES) {
     const key = keyLine(part, L);
     if (key) return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: key.board, card: "close", key, joint: null, missCap: misses };
+  }
+  // (dc-r8-director29 Brain 045 P3: at an asked worked step a give-up or a clarify gets the step's own simpler, then the step's question again —
+  // the step stays asked; at the second request (its simpler said) there is no help here: the walk tells the step, as after a wrong answer)
+  const rawAt = (path) => { try { return String(path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script); } catch { return null; } };
+  if (part.kind === "worked_step" && part.step && rawAt(part.path)?.ask?.prompt && !keyed && !closed && request !== "hindi") {
+    const r0 = ladderOf(script, part)[0];
+    const t = r0 && r0.field === "simpler" ? saidIn(r0.value, L) : null;
+    if (!t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said))) return null;
+    const t0 = String(t).trim();
+    const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
+    return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true };
   }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));

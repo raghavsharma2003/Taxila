@@ -265,6 +265,8 @@ export const D27_PREDICATES = {
     if (!a || !ctx.script) return null;
     const { parts } = st.cur;
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
+    // (dc-r8-director29 Brain 045 P3: a request on the worked problem whose step is asked is helped on that step — its simpler)
+    if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);
     const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents) : true;

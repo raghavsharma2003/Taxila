@@ -3147,6 +3147,12 @@ function capPlan(s, input, p) {
   // (dc-r8-director25 H4 items 4 and 7: a wrong answer on a card whose help ladder still has an unsaid rung keeps the card — help said
   // that rung; the count of misses never lets it go with its key: c5-t02 stuck 22, offtopic 28 gave e2's key with its point's simpler unsaid)
   if (input.helpKeep && input.helpKeep === item.id && scriptCardOf(item)) return p;
+  // (dc-r8-director29 Brain 045 P3: a key is never the answer to an aside or to a yes — c5-t01 offtopic 32, steering 20: the aside is parked or
+  // replied to as anywhere else, a yes to a re-ask gets the question again; the card is let go on an answer, a give-up or the stall guard)
+  { const answered = ["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? ""));
+    const yesNow = /^\s*(?:haan|ha|han|haanji|haan\s+ji|ji|yes|yeah|ok|okay|theek\s+hai)\s*[.!]?\s*$/i.test(String(input.text ?? ""));
+    const asideNow = (() => { try { return columnName(input, s) === "aside"; } catch { return false; } })() || !!input.cls?.asideReply;
+    if (scriptOn() && scriptCardOf(item) && !answered && (yesNow || asideNow) && (s.stuckTurns?.[item.id] ?? 0) < LIMITS.cardMax) return p; }
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
   // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
@@ -3343,7 +3349,8 @@ function helpRequestOf(prev, input) {
   const col = columnName(input, prev);
   // (Brain 042: a give-up on a quick question or an asked step is an answer that is not right — quick.say then the card, or the step told —
   // never help: no hint ladder there)
-  if (col === "give_up" && (prev.lastMove?.quick || prev.lastMove?.stepAsk)) return null;
+  // (dc-r8-director29 Brain 045 P3: at an asked step a give-up is help's first — the step's simpler; help.js says when there is none left)
+  if (col === "give_up" && prev.lastMove?.quick) return null;
   // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn. Brain 044 T6: her reply never
   // stands alone now — it goes on into the live part in the same turn — so no turn reaches this)
   if (prev.lastMove?.leadAlone && prev.splitHold) return null;
@@ -3454,6 +3461,12 @@ function helpStay(prev, input, d) {
     move = { ...base, kind: "hint", itemId: liveId, ...(cb ? { scriptBeat: cb, cardBeat: cb } : {}), ...f };
     ui = prev.lastUi;
     s.activeItemId = liveId;
+  } else if (d.stepAsked && prev.lastMove?.stepAsk?.prompt) {
+    // (dc-r8-director29 Brain 045 P3: help at an asked worked step — the step's simpler, then the step's question again; the step stays asked)
+    const { itemId: _i, ...rest } = base;
+    move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk } };
+    ui = prev.lastUi;
+    s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
   } else {
     // (wait: no card is asked — a point's or a remediation's clarify, a worked step, a key's check-in; she ends on the check-in, and a
     // card held for the turn after stays held)
