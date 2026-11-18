@@ -3204,7 +3204,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "noFit"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -4659,6 +4659,16 @@ function splitLongOnce(out, input, opt = {}) {
   // verdict, its why, a bridge or a held part before it make the turn run over 75 words, the break falls after them and that turn ends on
   // its check-in)
   if (l2On() && !recorded && segmentMove(move, ui, input.kit) && move.returned?.topic && hasClose) return returnApart(out, input);
+  // (d29 final, main's item 6 — steady c4 64-68: a close, the skill's bridge, the next point and its card whose boards Studio cannot draw in one
+  // turn — the board up held, the point's, the card's — where the point and its card alone can be, the point's board drawn fresh at its turn's
+  // first word: the bridge is said in the close's turn, over the board up, ending on its check-in; the point and its card are the next turn)
+  if (l2On() && !recorded && hasClose && move.bridgeSaid && move.point && move.scriptBeat?.kind === "explain" && ui?.ask?.itemId) {
+    const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
+    const ci = parts.findIndex((p) => p.k === "body"), bi = parts.findIndex((p) => p.k === "bridge");
+    const pb = move.scriptBeat?.board ?? null, cb = move.cardBeat?.board ?? null;
+    if (bi >= 0 && ci > bi && parts.slice(0, ci).reduce((a2, p) => a2 + p.n, 0) + 4 <= L2_CAP
+      && !switchesFit([s.heldUp?.board ?? null, move.closeBeat?.board ?? null, pb, cb]) && switchesFit([null, pb, cb])) { const b = breakL2(out, input, closeWords, ci); if (b) return b; }
+  }
   if (l2On() && !recorded) { const sg = segmentTurn(out, input, closeWords); if (sg) return sg; }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {
     const p0 = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
@@ -4667,6 +4677,14 @@ function splitLongOnce(out, input, opt = {}) {
   // (dc-r8-director25 L2 item 1: the aside's return question is a turn of its own — the close of the card just answered ends its turn
   // on a check-in; the return comes on the next turn, alone, and the lesson after her reply to it)
   if (l2On() && !recorded && move.returned?.topic && hasClose) return returnApart(out, input);
+  // (d29 final, main's item 3 — r8-main-034, steady c4 100: a close and the card the lesson returns to, whose boards Studio cannot join in one
+  // turn (the board up held, the close's, the card's): the close ends its turn on its check-in, and the back-to line and the card are the next
+  // turn, the card on its own board — as after a key. The row says so: noFit "return")
+  if (l2On() && !recorded && hasClose && ui?.ask?.itemId && !move.point && !move.returned?.topic && move.closeBeat?.board) {
+    const cb = (move.cardBeat ?? move.scriptBeat)?.board ?? null;
+    const closedId = s.lastGraded?.itemId ?? null;
+    if (cb && closedId && closedId !== ui.ask.itemId && JSON.stringify(cb) !== JSON.stringify(move.closeBeat.board) && !switchesFit([s.heldUp?.board ?? null, move.closeBeat.board, cb])) return closeApart(out, "return");
+  }
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
   // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)
   const splitCloseOptIn = closing.some(Boolean) && process.env.TAXILA_R7_SPLIT_CLOSE === "on";
@@ -4770,6 +4788,22 @@ export const PARK_OVERDUE_TURNS = 6;
 const parkOverdue = (s, e) => Number.isFinite(e?.at) && (s?.turn ?? 0) - e.at >= PARK_OVERDUE_TURNS;
 /** L2 item 1: a close and a return due on one turn — the close now, ending on its check-in; the rest (the return first) held. heldTurn
  *  says the held move: brain/say.js says the return alone there and holds the lesson's parts for the turn after her reply. */
+/** d29 final: a close said apart from the card that follows it — the close ends its turn on its check-in; the rest is held for the next turn
+ *  (heldTurn). `noFit` marks why. */
+function closeApart(out, noFit) {
+  const { state: s, move, ui } = out;
+  const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs", ...NOW_LINES];
+  const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, noFit, ...(move.verdict ? { verdict: move.verdict } : {}),
+    ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}) };
+  const held = { ...move };
+  for (const k of [...closeKeys, "probeAck", "verdict"]) delete held[k];
+  s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
+  s.activeItemId = undefined;
+  s.lastMove = close;
+  const closeUi = { status: "your_turn", ...(ui?.later ? { later: ui.later } : {}), ...(ui?.moment ? { moment: ui.moment } : {}) };
+  s.lastUi = closeUi;
+  return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
+}
 function returnApart(out, input = null) {
   const { state: s, move, ui } = out;
   // (the child said the aside again on this very turn — the return was due because of it — so the close's half carries her one line on
@@ -4920,7 +4954,10 @@ function splitTeach(out, input, cap, extra = 0) {
   const u = cap < 0 || scriptFor(input.kit)?.script?.recordedRun ? null : unitTurn(out, input, extra, first);
   // (Brain 044 T1: a point and its card that fit in words share the turn only where Studio can draw every board change in it — the board up,
   // the point's, the card's; dry steady c4 94: a bridge, the point and its card on three boards drew one page)
-  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
+  // (d29 final, main's item 6: a point said first in its turn — nothing before it — has its board drawn fresh at the turn's first word: nothing
+  // up is erased, so Studio is asked for the point's board and the card's alone)
+  const pointLeads = extra === 0 && first === 0 && !move.bridgeSaid && !move.heldSaid?.length && !move.asideAck && !move.returnReply && !move.hookSaid;
+  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([pointLeads ? null : s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
   // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
   // 75 in all, counted as said; A.1: the hook, the first point and its card, 75. The 8 words of slack kept for her framing are not added)
   const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && (extra > 0 || move.hookSaid) && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;
