@@ -1267,7 +1267,7 @@ export function d28Errors(s) {
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
 export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
-export const D29_JOINTS = ["stepMiss", "startAnyway"];
+export const D29_JOINTS = ["stepMiss", "startAnyway", "afterPark"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
 /** The fit of every pair that shares a turn, measured (A.1 to A.4). */
@@ -1376,9 +1376,11 @@ export function fitReport(s) {
  *      answer board has a second view: one or two sentences, asking nothing, said after the key (it may name it). Where the
  *      answer board has no second view there is none (listed on the F lines).
  *  C.1 `joints.startAnyway`: three forms of 6 words or fewer, said after a second "aap batao" at the greeting: no question.
+ *  C.2 The park forms (`joints.asidePark`) promise the return and nothing else (d22's rule stands); the turn goes on into the
+ *      live part through `joints.afterPark`: three forms of 8 words or fewer that lead back to the work, asking nothing.
  *  "Said beats fitted": a remediation over REM_CARD_MAX with its card fails unless it is listed in REM_WHOLE (topic, skill,
  *  remediation target) with its reason; the walk says a listed one alone, ending on its check-in. */
-export const START_ANYWAY_MAX = 6;
+export const START_ANYWAY_MAX = 6, AFTER_PARK_MAX = 8;
 export const REM_WHOLE = [
   // (Learning 018, 2026-11-18: each was a note when cut to 49 — director29's judges named three of them — and is said whole now)
   { topicId: "c5-maths-ch02-t01", skillId: "c5-maths-ch02-t01-s3", targets: "c5-maths-ch02-t01-m-whole-number-bias",
@@ -1487,18 +1489,20 @@ export function d30Errors(s) {
       if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
     }
   }
-  const forms = s.joints?.startAnyway;
-  if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.startAnyway: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 018 C.1)`);
+  for (const [name, max, rule] of [["startAnyway", START_ANYWAY_MAX, "C.1"], ["afterPark", AFTER_PARK_MAX, "C.2"]]) {
+  const forms = s.joints?.[name];
+  if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.${name}: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 018 ${rule})`);
   else for (const l of ["hi", "en"]) {
     const seen = new Set();
     forms.forEach((f, i) => {
-      const t = String(f?.[l] ?? "").trim(), at = `joints.startAnyway[${i}]${l === "en" ? " (en)" : ""}`;
+      const t = String(f?.[l] ?? "").trim(), at = `joints.${name}[${i}]${l === "en" ? " (en)" : ""}`;
       if (!t) { e.push(`${at}: empty`); return; }
-      if (d27Words(t) > START_ANYWAY_MAX) e.push(`${at}: ${d27Words(t)} words > ${START_ANYWAY_MAX}`);
+      if (d27Words(t) > max) e.push(`${at}: ${d27Words(t)} words > ${max}`);
       if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
       if (/\d|\{[^}]*\}/.test(t)) e.push(`${at}: no number, no slot`);
       const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x);
     });
+  }
   }
   for (const r of fitOf(s).rems) if (r.total > REM_CARD_MAX && !remWhole(s.topicId, r.skill, r.targets))
     e.push(`${r.skill}/remediation[${r.i}]: say and card are ${r.total} words > ${REM_CARD_MAX}: cut it, or, where it cannot be said in full sentences inside the limit, list it in REM_WHOLE with its reason (Learning 018, said beats fitted)`);
