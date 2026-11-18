@@ -584,7 +584,7 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // (dc-r8-director29 Brain 045 P1, steering row 14 in all four pilots: a picture turn is of the board the walk named — pictureBoardOf — and
   // that board is the held board from the turn's first word, the panel Studio draws; never the lesson's held unit by default)
   const picB = pictureBoardOf(move);
-  if (picB) { const h = { board: picB.board, unit: picB.unit ?? curUnit }; if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up }); return h; }
+  if (picB) { const h = { board: picB.board, unit: picB.unit ?? curUnit, ...(move.pictureAlone ? { noView: true } : {}) }; if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up }); return h; }
   // (dc-r8-director26, the record — c5-t01 steering 14: a picture asked for after a key is of the answered board, the close's answer board)
   const answeredPic = move?.request === "visual" && sb?.answerBoard && sb.board ? sb.board : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;

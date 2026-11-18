@@ -39,7 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART, helpJoint } from "./help.js";
+import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -2191,7 +2191,14 @@ function requestMove(s, input, item, req, labels) {
       const kh = s.lastMove?.help?.keyed && s.lastMove.help.board && !s.lastUi?.ask?.itemId && scriptOn() && !scriptFor(kit)?.script?.recordedRun ? s.lastMove : null;
       if (kh && item && String(kh.help.part ?? "") && !String(kh.help.part).endsWith(String(item.id).split(":ask:").at(-1) ?? "")) {
         s.stayOn = { beat: { ...(kh.simplerBeat ?? {}), board: kh.help.board }, turn: s.turn };
-        return plan("reteach", SH.showVisual({ kind: req.kind }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", keyedPicture: true, ...(see ? { see } : {}) });
+        // (Brain 045 P1: where the board has no second view, the board is redrawn alone and she says help's own words on it — the keyed card's why —
+        // never a line about a picture)
+        const kp = (() => { try { return helpPart(scriptFor(kit)?.script, kh.help.part); } catch { return null; } })();
+        // (the script's caption for the answer board — Learning 018's answerViewCaption; with none the board is redrawn alone, no second view)
+        const kraw = (() => { try { return String(kp?.path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], scriptFor(kit)?.script); } catch { return null; } })();
+        const kcap = !!(kraw?.answerViewCaption && (kraw.answerViewCaption.hi ?? kraw.answerViewCaption.en ?? kraw.answerViewCaption));
+        const kwhy = kp?.why ? String(saidIn(kp.why, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim() : "";
+        return plan("reteach", SH.showVisual({ kind: req.kind }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", keyedPicture: true, ...(kcap ? {} : { pictureAlone: true }), ...(kwhy ? { pictureWords: kwhy.charAt(0).toUpperCase() + kwhy.slice(1).replace(/[.!?]?$/, ".") } : {}), ...(see ? { see } : {}) });
       }
       if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
       return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", ...(see ? { see } : {}) });
@@ -3204,7 +3211,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "noFit"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "noFit"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -4121,6 +4128,8 @@ function step0(prev, input) {
   if (p.scriptBeat) move.scriptBeat = { ...p.scriptBeat };
   // dc-r7-script-walk-v2 R4: a picture asked for during a walk re-shows the current beat's board (never a board of another idea)
   if (p.keyedPicture) move.keyedPicture = true;
+  if (p.pictureWords) move.pictureWords = p.pictureWords;
+  if (p.pictureAlone) move.pictureAlone = true;
   if (p.request === "visual" && p.visual !== "game" && scriptOn()) {
     // (SC2, Studio: while a script card is live the picture is THAT card's board, never the beat a reteach routes to; a card
     // with no board sends none, and Studio picks for the live item)

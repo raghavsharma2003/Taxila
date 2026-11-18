@@ -1115,6 +1115,8 @@ export function pictureTurn(ask, { keepRef = null, keepPage = null, variant = 0 
     const board = drawRef(h.board, { band, lang });
     if (!board?.script) return null;
     const none = { board, view: null, line: null, script: null, layout: { split: false } };
+    // (dc-r8-director29 Brain 045 P1: a board the script gives no caption for is redrawn alone — Brain marks it noView)
+    if (h.noView) return none;
     const v = heldViewCall(ask, variant);
     if (!v) return none;
     const ax = expand({ ...v.call, legend: false }, { band, lang });

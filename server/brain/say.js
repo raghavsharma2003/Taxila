@@ -13,7 +13,7 @@ import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM
 import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
-import { altCall } from "../stagecraft/board-first.js";
+import { altCall, QUIET_PICTURE_LINES } from "../stagecraft/board-first.js";
 import { safetyOpeningFor, safetyModeOf } from "../relational/openings.js";
 import { chat, chatStream, DEPLOY, isContentFilter, nonHarmFilter, notChildSafety } from "../azure.js";
 import { floorViolations, scrubPii, filterSafe } from "../director/safety.js";
@@ -2540,6 +2540,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const inCard = (x) => { const t = x.replace(/\s+/g, " ").trim().replace(/[.!?।]+$/, ""); return t.length > 3 && cardQ.some((q) => q.includes(t)); };
       const bad = screenContradictions(reply, screenFacts(ui, state.lastMove)).filter((x) => !inCard(x));
       if (bad.length) {
+        // (dc-r8-director29 Brain 045 P1: on a scripted turn a sentence of the script's or of code's that contradicts the screen is a fault of
+        // the plan, not of her draft — it throws under tests and the dry harness; her own sentences are dropped as before)
+        const isA0 = authoredSentence(state, ui?.ask?.text ?? null, kit);
+        const ours = bad.filter((b) => isA0(b) || QUIET_PICTURE_LINES.some((q) => String(b).trim().replace(/[.!?]+$/, "") === String(q).trim()));
+        if (ours.length && scriptFor(kit)?.script && STRICT_AUTHORED()) throw new Error(`screenmismatch on a scripted turn: ${ours.join(" | ").slice(0, 200)}`);
         const kept = sentences(reply).filter((x) => !bad.some((b) => b.trim() === x.trim()));
         reply = kept.join(" ").trim() || fallbackReply(state, item);
         guard.repaired = true; guard.caught = [...guard.caught, "screenmismatch"];
@@ -3215,6 +3220,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (alt && asked && card && !graded) { body = [asked]; guard.altOnly = true; guard.altLine = asked; }
     // v6.10 P6 (main on director18): a picture asked and no view built — one honest sentence that a second picture is not there for
     // this one, then the live part again on the board that is up; never a description of a view that was not drawn
+    // (dc-r8-director29 Brain 045 P1: on a scripted lesson the board is redrawn alone and she says help's own words on it — the keyed card's
+    // why where the walk named it — never a line about a picture that is not drawn)
+    else if (heldPic && !asked && !graded && scriptFor(kit)?.script) { if (state.lastMove?.pictureWords) { body = [norm(state.lastMove.pictureWords), ...body.filter((x) => norm(x) !== norm(state.lastMove.pictureWords))]; guard.pictureWords = true; } }
     else if (heldPic && !asked && !graded) { const np = rotateOf(NO_PICTURE[lang === "english" ? "english" : "hinglish"], state); body = [np, ...body.filter((x) => norm(x) !== norm(np))]; guard.noPictureLine = np; }
     // d28 guards (director28a live: steady c5-t02 row 2, steady c4 row 106 — the point was dropped as "hers"): the body's authored elements
     // are known here (codeBody, by provenance), before any pass that reads her draft. Such an element (the point, said whole as ONE element;

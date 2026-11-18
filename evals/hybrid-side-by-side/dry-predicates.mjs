@@ -992,7 +992,8 @@ PREDICATES.coveredReached = (L, r, i, ctx) => {
  *  request draws a view (the seam's `held.picture.view`), and she never tells the child a picture cannot be made. Gated. */
 PREDICATES.pictureDrawn = (L, r, i, ctx) => {
   const p = r.held?.picture;
-  if (p && !p.view) return "a picture was asked for and no view was drawn";
+  // (Brain 045 P1: a board with no second view is redrawn alone, with no line about a picture — only a picture line with no view is a fault)
+  if (p && !p.view && (r.pageParts ?? []).some((x) => x.part === "alt")) return "a picture was asked for and no view was drawn";
   if (/tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi/i.test(String(r.text ?? ""))) return "she says a picture cannot be made";
   // (dc-r8-director29 Brain 045 P1: and the held panel drawn is the board the plan named)
   return pictureNamedFlag(L, r, i, ctx);
