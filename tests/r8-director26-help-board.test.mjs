@@ -8,7 +8,8 @@ import { pickHelp, helpPart } from "../server/director/help.js";
 import { heldOf, helpBoardPredicate } from "../server/brain/propose.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
-import { scriptFor } from "../server/director/script.js";
+import { scriptFor, setScriptForTest } from "../server/director/script.js";
+import { readFileSync } from "node:fs";
 import { replay } from "./fixtures/replay.mjs";
 
 const T = "c4-maths-ch05-t01";
@@ -42,7 +43,12 @@ test("pickHelp: a remediation with a board of its own (Learning 015) returns tha
 });
 
 test("director26 c4 steering 12, walked live: the give-up on rem:1 is said over the remediation's own board, or the board up — never s1 c2's", async () => {
-  const { kit, plans } = await replay("2026-11-17-director26", "steering", T, 13);
+  // (d29 final: the pilot as director28 ran it — main's shorter beforeRemediation forms now let the remediation and its card share a turn, so
+  // the replay of director26's row 12 finds the then-card live; the rule held here is the board of help on a remediation)
+  const sc = JSON.parse(readFileSync(new URL(`./fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28/scripts/${T}.json`, import.meta.url), "utf8"));
+  delete sc.recordedRun; setScriptForTest(T, sc);
+  let kit, plans;
+  try { ({ kit, plans } = await replay("2026-11-17-director26", "steering", T, 13)); } finally { setScriptForTest(); }
   const last = plans.at(-1);
   const move = last.p.r.state.lastMove;
   assert.equal(move.help?.part, "c4-maths-ch05-t01-s1:rem:1", "the help is on the remediation");

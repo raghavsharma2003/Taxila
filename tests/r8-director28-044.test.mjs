@@ -251,8 +251,10 @@ describe("T3: the verdict's turn runs into the worked example", () => {
   test("workedNoFit counts the verdict that ends on its check-in because the worked opening does not fit (pending until Learning 017)", async () => {
     const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
     assert.ok(PENDING.has("workedNoFit") && PENDING.has("pointNoFit"));
-    const r = { who: "teacher", text: "Haan, sahi hai. Yahan tak theek hai?", noFit: "worked" };
+    const r = { who: "teacher", text: "Haan, sahi hai. Yahan tak theek hai?", noFit: "worked", seams: [{ right: "verdict" }, { right: "checkin" }] };
     assert.ok(D29_PREDICATES.workedNoFit({ rows: [r] }, r));
+    // (d29 final, main's item 4: a turn led by a key ends on its check-in by the law — not counted)
+    assert.equal(D29_PREDICATES.workedNoFit({ rows: [r] }, { ...r, text: "Is sawaal ka jawab 24 cm hai, kyunki x. Yahan tak theek hai?", seams: [{ right: "missVerdict" }, { right: "key" }, { right: "checkin" }] }), null);
   });
 });
 
