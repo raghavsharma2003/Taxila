@@ -1055,12 +1055,40 @@ const ASKS_HER_TASTE = /(?:aapko|tumhe|aap|tum)\b.*\bpasand|do you like|your fav
  * her own taste is answered on its turn (s.tasteAsked), never parked; an aside already on the list is acknowledged in one line
  * (s.asideAgain), never parked twice. Returns the new list.
  */
+/** Brain 046 (the dry offtopic lessons once Q1 parks an aside at an asked step: c5-t02 18, c6 18): a question about her taste on the topic of
+ *  an open park is answered with her line and her question back about it — that exchange is the park's return, and the park is served
+ *  there (the move's tasteAsked.served; the row's returnSaid), never left to wait for a boundary the exchange already passed. */
+function tasteServesPark(s, topic) {
+  const k = String(topic ?? "").toLowerCase();
+  // (the topic as the child's interests name it: "Virat" is cricket's)
+  const of = (t) => { const x = String(t ?? "").toLowerCase(); return Object.entries(PERSONA_INTERESTS ?? {}).find(([n, ws]) => n === x || (Array.isArray(ws) && ws.includes(x)))?.[0] ?? x; };
+  const e = k ? (s.later ?? []).find((x) => !x.servedAt && x.share && x.parkSaid && of(x.topic) === of(k)) : null;
+  if (!e) return false;
+  s.later = serveLater(s.later, e.id, s.turn);
+  return true;
+}
+/** dc-r8-director30 Brain 046 Q3 (c6 steering 50): a remediation said alone because an aside's return is due — its follow-up card waits for
+ *  the return — ends on the return's question, said in that turn after the remediation, never on a check-in. The follow-up card comes after
+ *  the child's answer to it. (A close keeps returnApart: a return is never said with a verdict that closes a card.) */
+function returnEndsHeld(prev, input, out) {
+  const s = out?.state, lm = s?.lastMove;
+  if (!lm || input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !l2On() || out.end || out.ui?.ask?.itemId) return out;
+  if (lm.kind !== "reteach" || lm.scriptBeat?.kind !== "remediation" || !lm.rendered?.length || lm.returned?.topic || lm.tasteAsked || lm.sadAside || lm.asideAgain
+    || lm.help || lm.request || lm.gave || lm.closed || lm.workedDone || lm.stepAsk || lm.returnReply) return out;
+  const then = `script:${lm.scriptBeat.skillId}:then:${String(lm.scriptBeat.beatId ?? "").replace(/^rem:/, "")}`;
+  const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && e.onItem !== then && Number.isFinite(e.at) && e.at < s.turn);
+  if (!due) return out;
+  s.later = serveLater(s.later, due.id, s.turn);
+  const { stayCheckin: _s, checkinOk: _c, ...rest } = lm;
+  s.lastMove = { ...rest, returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}), last: true } };
+  return { ...out, state: s, move: { ...s.lastMove }, proposal: directorProposal(s.lastMove, { ui: out.ui, guidance: s.guidance, purpose: s.purpose }) };
+}
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
   // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
   // reply form, then the lesson)
   if (s.returnAnswer) return s.later ?? [];
-  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; return s.later ?? []; }
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; if (tasteServesPark(s, e.topic)) s.tasteAsked.served = true; return s.later ?? []; }
   // (dc-r8-director20 R1 rule 3: a sad aside is not parked for a return that assumes liking or fun — brain/say.js says one sad line
   // now, and the lesson goes on)
   if (isSadAside(input?.text)) { s.sadAside = { turn: s.turn }; return s.later ?? []; }
@@ -3789,6 +3817,17 @@ export function step(prev, input) {
         const id = sp.state.splitHold?.move?.itemId ?? lm.itemId;
         if (id && sp.state.posedAt?.[id] === sp.state.turn) { const { [id]: _p, ...rest } = sp.state.posedAt; sp.state.posedAt = rest; }
         if (id && sp.state.cardSaidN?.[id]) sp.state.cardSaidN = { ...sp.state.cardSaidN, [id]: sp.state.cardSaidN[id] - 1 };
+        // (dc-r8-director30 Brain 046 Q3: the card held for a due return — the return is said in this turn, after the held part, and its question
+        // ends the turn, never a check-in: c4 offtopic 46, reply, bridge, point, "Yahan tak saaf hai?"; c6 steering 50, a remediation alone.
+        // The card comes after the child's answer to it, as the held half after any return)
+        const due = parkDue && !sp.state.lastMove.returned?.topic && !sp.state.lastMove.tasteAsked && !sp.state.lastMove.sadAside
+          ? (sp.state.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && sp.state.turn > e.at && e.onItem !== lm.itemId) : null;
+        if (due) {
+          sp.state.later = serveLater(sp.state.later, due.id, sp.state.turn);
+          const { stayCheckin: _s, checkinOk: _c, ...lmR } = sp.state.lastMove;
+          sp.state.lastMove = { ...lmR, returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}), last: true } };
+          sp.move = { ...sp.state.lastMove };
+        }
         out = sp;
       }
     }
@@ -3859,7 +3898,7 @@ export function step(prev, input) {
     out.state.lastMove = cell ? { ...lm1, cell } : lm1;
     if (out.move) { const { cell: _c1, ...m1 } = out.move; out.move = cell ? { ...m1, cell } : m1; }
   }
-  return out;
+  return returnEndsHeld(prev, input, out);
 }
 function stepCells(prev, input) {
   // (main on C1 ruling 5, the stuck child's "samajh nahi aaya" after a key's check-in: read as "another", it moved to the next point
@@ -4357,7 +4396,7 @@ function step0(prev, input) {
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
-  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}) };
   if (s.sadAside?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.sadAside = true;
   if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
   if (s.servedNow?.topic) {
@@ -5207,7 +5246,7 @@ function heldTurn(prev, input) {
     s.returnAsked = undefined;
     if (s.returnAnswer) { m.returnReply = s.returnAnswer; m.asideAck = true; }
     const topic0 = asideTopic(text, s.ctx?.interests);
-    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n };
+    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; if (tasteServesPark(s, topic0)) s.tasteAsked.served = true; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}) };
       // (dc-r8-director23 A2, c6 stuck 38, steering 30: the AI line always ends with her question back — on a worked step the step is held
       // for the turn after her reply, as a return holds its half; never two steps in one turn)
       if (h.move?.kind === "worked_example") {

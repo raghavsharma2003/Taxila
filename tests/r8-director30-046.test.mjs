@@ -38,3 +38,29 @@ describe("Q1: a worked step is told only on its cue", () => {
     }
   });
 });
+
+describe("Q3: an aside reply's turn", () => {
+  test("seamJoints reads her line to an aside said again going into the live part with no joint (c5-t01 offtopic 58; c5-t02, c6 offtopic 36)", () => {
+    for (const [t, row] of [["c5t01", 58], ["c5t02", 36], ["c6", 36]]) assert.ok(flagged("offtopic", t, "seamJoints").has(row), `${t} ${row}`);
+  });
+  test("an aside line into a point, a card or help takes afterAside; the Hindi switch read as her aside line takes none", async () => {
+    const { seamJoint } = await import("../server/brain/seams.js");
+    for (const k of ["point", "card", "help", "remediation", "bridge"]) assert.equal(seamJoint("aside", k), "afterAside", k);
+  });
+  test("replyCheckin is gated and reads c4 offtopic 46 (reply, bridge, point, check-in, the card dropped for a due return)", async () => {
+    const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(!PENDING.has("replyCheckin"));
+    assert.ok(flagged("offtopic", "c4", "replyCheckin").has(46));
+  });
+  test("returnAlone accepts a return whose question ends the turn after a remediation said alone (c6 steering 50's rule), not after a verdict alone", () => {
+    const { rows, script } = lesson("steering", "c6");
+    const ret = (script.joints.asideReturn ?? []).map((f) => String(f?.hi ?? f).replace("{aside}", "cricket")).find((x) => !/\{/.test(x));
+    assert.ok(ret, "the script has an asideReturn form");
+    const rem = { who: "teacher", text: `16 m sahi nahi hai. Socho, ek cheenti kone se chalti hai aur saamne wale kone tak jaati hai. ${ret}`,
+      seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "remediation" }, { left: "remediation", right: "return" }] };
+    const at = (r) => lessonFlags({ rows: [...rows.slice(0, 49), r], script }).filter((f) => f.predicate === "returnAlone" && f.row === 49);
+    assert.deepEqual(at(rem), []);
+    const bare = { ...rem, text: `16 m sahi nahi hai. ${ret}`, seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "return" }] };
+    assert.equal(at(bare).length, 1);
+  });
+});

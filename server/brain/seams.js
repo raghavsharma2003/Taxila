@@ -40,6 +40,11 @@ export const SEAM_TABLE = [
   // c5-t01 steady 46, c4 stuck 36. One joint at the seam: the back-to, which takes her back from the aside as well)
   ["asideReply", "point", "afterAside"], ["asideReply", "help", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "backTo"], ["asideReply", "remediation", "afterAside"],
   ["aside", "returnCard", "backTo"],
+  // (dc-r8-director30 Brain 046 Q3: her one line to an aside said again — or a sad line — is a reply too: its joint into the live part on every
+  // path, a card and a point alike — c5-t01 offtopic 58, c5-t02 offtopic 36, c6 offtopic 36)
+  ["aside", "point", "afterAside"], ["aside", "card", "afterAside"], ["aside", "help", "afterAside"], ["aside", "remediation", "afterAside"], ["aside", "bridge", "afterAside"],
+  ["aside", "caption", "afterAside"], ["aside", "stepAsk", "afterAside"], ["aside", "workedStep", "afterAside"], ["asideReply", "stepAsk", "afterAside"], ["asideReply", "workedStep", "afterAside"],
+  ["aiReply", "stepAsk", "afterAiLine"], ["aiReply", "workedStep", "afterAiLine"],
   // (d29 final, with Learning 017's scripts: a park before a return to an earlier card — steering c6 34, stuck c6 40 — P5's back-to too)
   ["park", "returnCard", "backTo"],
   // (dc-r8-director29 Brain 045 P6: a park line is followed by its authored joint into the live part — joints.afterPark where the script writes
@@ -294,6 +299,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
     if (j === "backTo" && info.afterKeyReturn) j = "afterKeyReturn";
+    // (Brain 046 Q3: the Hindi switch, read as her aside line until the record renames it, takes no reply's joint)
+    if (j === "afterAside" && prevKind === "aside" && info.hindiSwitch && i > 0 && low(sentencesOf(stripped[i - 1].text).join(" ")) === low(info.hindiSwitch)) j = null;
     // (Brain 043 R2: after her invitation to do the problem together the turn starts at the problem — no lead-in)
     if (j === "beforeWorked" && prevKind === "start" && invitedJustNow(kit, state, lang)) j = null;
     // (a return that opens a turn takes backTo only when another unit came between — info.returnCard says so)

@@ -355,6 +355,11 @@ export const PREDICATES = {
     let lead = 0;
     for (let n = 1; n <= ss.length; n++) if (goOn.has(key(ss.slice(0, n).join(" ")))) { lead = n; break; }
     const rest = ss.filter((x, n) => n >= lead && !own(x, n));
+    // (dc-r8-director30 Brain 046 Q3: where the card is held for a due return, the turn that holds it — her reply's, a remediation said alone —
+    // ends on the return's question, said after its part: c4 offtopic 46, c6 steering 50. Never after a verdict or a key alone: the return
+    // ends the turn, and a remediation or a point comes before it)
+    const sm = (r.seams ?? []).map((x) => x.right);
+    if (rest.length && sm.at(-1) === "return" && ["remediation", "point", "bridge"].includes(sm.at(-2)) && (ctx.retRes ?? []).some((re) => re.test(ss.at(-1)))) return null;
     if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
     return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
   },
@@ -1003,7 +1008,7 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 // (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
 // (Brain 044: pointNoFit and workedNoFit count what does not fit on today's scripts — gated once Learning 017's cuts are merged)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "replyCheckin", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

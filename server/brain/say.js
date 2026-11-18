@@ -2900,7 +2900,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // words, at most 20 words, no lesson numbers, no new promise, no fixed template; else one short retry; else none this turn
     // (an "Aur X ki baat: …" of hers — the old code return, said again from her history — always goes)
     { const n0 = ss.length; ss = ss.filter((x) => !/^(?:aur|and about)\s+\p{L}+\s+(?:ki baat\s*)?:/iu.test(x)); if (ss.length < n0) guard.returnFiltered = (guard.returnFiltered ?? 0) + n0 - ss.length; }
-    if (ret?.topic && graded && verdict === "not_yet") guard.returnHeld = true;
+    // (Brain 046 Q3: a return said after a remediation whose follow-up card waits for it ends that turn — c6 steering 50)
+    if (ret?.topic && graded && verdict === "not_yet" && !ret.last) guard.returnHeld = true;
     else if (ret?.topic) {
       const said0 = ret.said ?? "";
       // v6.7 A3 (main, director15: parked asides lost in every topic — her draft had no return line, the retry found none; a reply
@@ -3455,7 +3456,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (guard.bodyHeld → the state's bodyUnsaid → that move's sayFirst)
     // (O7, main on director21 c5-t02 offtopic 22, steady 46, c6 steady 42, c4 stuck 42: the AI line came after four sentences of teaching —
     // her answer to the child's question comes first: the teaching it would follow waits for the next turn, as a return's does)
-    if (asideQ && ((honestLine && asideP.includes(honestLine)) || (!honestLine && guard.returnLine && asideP.includes(guard.returnLine)))) {
+    // (dc-r8-director30 Brain 046 Q3: a return said in the turn that holds its card — after the held part, its question ending the turn)
+    if (asideQ && !state.lastMove?.returned?.last && ((honestLine && asideP.includes(honestLine)) || (!honestLine && guard.returnLine && asideP.includes(guard.returnLine)))) {
       const isA = authoredSentence(state, card, kit);
       const bridgeK0 = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const held = [...first.filter((x) => x === bridgeK0), ...body].filter((x) => sentences(x).some((y) => isA(y)));

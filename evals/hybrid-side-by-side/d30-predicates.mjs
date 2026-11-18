@@ -68,7 +68,7 @@ export const D30_PREDICATES = {
     return helpOtherFigure(r) ? "the short ask after help about another figure" : null;
   },
   /** P6: a turn that holds her reply to an aside never ends on a check-in, whatever follows the reply (c4 offtopic 46: reply, bridge, point,
-   *  check-in; c5-t02 offtopic 38: reply, point, check-in). Pending: c4 offtopic 46 holds its card for a park's due return (r8-main-034). */
+   *  check-in; c5-t02 offtopic 38: reply, point, check-in). Gated (Brain 046 Q3): where the card is held for a due return the turn ends on the return's question. */
   replyCheckin(L, r) {
     if (r.who !== "teacher") return null;
     const sm = r.seams ?? [];
