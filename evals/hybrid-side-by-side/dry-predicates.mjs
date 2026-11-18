@@ -435,6 +435,8 @@ export const PREDICATES = {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? ""))) return null;
     const simpler = (r.pageParts ?? []).some((x) => x.part === "simpler");
     const q = sentencesOf(p.card ?? "").at(-1) ?? "";
+    // (Brain 046 Q2: the card's `hindi` form asked in its place is the answer to a Hindi request)
+    if (!simpler && hindiFormSaid(ctx.script, r)) return null;
     if (!simpler) return "a Hindi request on a card answered with no simpler";
     // (2.4 S2: the card's re-ask — its question with its givens named — is its question too)
     const reasks = (ctx.o.reasks ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.reask) for (const v of [o.reask.hi, o.reask.en, o.reask]) if (typeof v === "string") out.push(key(v.replace(/\{\w+\}/g, ""))); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
@@ -926,7 +928,7 @@ Object.assign(PREDICATES, D28_PREDICATES);
 // (dc-r8-director28, Brain 044: a joint keeps what is up, help as a hard precondition, fewer kinds of turn — d29-predicates.mjs)
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 Object.assign(PREDICATES, D29_PREDICATES);
-import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler } from "./d30-predicates.mjs";
+import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler, hindiFormSaid } from "./d30-predicates.mjs";
 Object.assign(PREDICATES, D30_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
@@ -1008,7 +1010,7 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 // (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
 // (Brain 044: pointNoFit and workedNoFit count what does not fit on today's scripts — gated once Learning 017's cuts are merged)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "hindiSpentHole", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

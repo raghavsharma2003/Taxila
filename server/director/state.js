@@ -3478,13 +3478,15 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
   const board = helpBoardOf(d);
+  // (Brain 046 Q2: a first request for Hindi with a Hindi form says no wording — the easier-words line, then the form as the question)
+  if (!words && d.hindiForm) return { help: helpMark(d), hindiForm: d.hindiForm };
   return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: helpMark(d),
-    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}) };
+    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}) };
 }
 /**
  * A help turn that stays on the part (the card stays live, or no card is asked yet, or the card is closed with its key): built from the
@@ -3504,7 +3506,20 @@ function helpStay(prev, input, d) {
   const f = helpFields(input.kit, d);
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   let move, ui;
-  if (d.card === "keep" && liveId) {
+  if (d.card === "hindiForm" && d.stepAsked && prev.lastMove?.stepAsk?.prompt) {
+    // (Brain 046 Q2: an asked step's Hindi form is its question now; the step stays asked)
+    const { itemId: _i, ...rest } = base;
+    move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk, prompt: d.hindiForm } };
+    ui = prev.lastUi;
+    s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
+  } else if (d.card === "hindiForm" && liveId) {
+    // (Brain 046 Q2: the card's Hindi form is the card's question this turn, over the card's own beat and board)
+    const it = findItem(prev, input.kit, liveId);
+    const cb = (it ? cardBeatRef(prev, input.kit, it) : null) ?? base.cardBeat ?? base.scriptBeat;
+    move = { ...base, kind: "hint", itemId: liveId, ...(cb ? { scriptBeat: cb, cardBeat: cb } : {}), ...f };
+    ui = prev.lastUi?.ask ? { ...prev.lastUi, ask: { ...prev.lastUi.ask, text: d.hindiForm } } : prev.lastUi;
+    s.activeItemId = liveId;
+  } else if (d.card === "keep" && liveId) {
     // (the move is about the card kept: its own beat and board, whatever the last move taught)
     const it = findItem(prev, input.kit, liveId);
     const cb = (it ? cardBeatRef(prev, input.kit, it) : null) ?? base.cardBeat ?? base.scriptBeat;
@@ -3528,7 +3543,8 @@ function helpStay(prev, input, d) {
   if (d.request === "hindi") move = { ...move, request: "language", ...(d.joint ? { noLangAck: true } : {}) };
   else if (d.request === "clarify") move = { ...move, request: "clarify" };
   noteHelp(s, d);
-  s.lastMove = move; s.moveVoiced = false; s.lastUi = ui;
+  // (Brain 046 Q2: the Hindi form is this turn's words for the card; the card the walk keeps — its text read and asked again — is its own)
+  s.lastMove = move; s.moveVoiced = false; s.lastUi = d.card === "hindiForm" ? prev.lastUi : ui;
   return { state: s, move, moduleCommands: [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
 }
 /** The input a help decision hands the walk: a close lets the card go its own way (helpClose: the walk's key, its closing split); a
@@ -3562,7 +3578,7 @@ export function requestUnhelped(prev, input, out) {
   const lm = out?.state?.lastMove ?? {};
   if (["safeguard", "break", "wrap"].includes(String(lm.kind ?? "")) || out?.end) return null;
   const h = lm.help ?? null;
-  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent")) return null;
+  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent" || h.hindiForm)) return null;
   if (lm.gave?.answer || lm.quickReply || lm.stepReply) return null;
   // (the greeting's own simpler wording answers a request at the greeting; after it, the hook, the first point and its card are the next turn
   // whatever the child says — the greeting has no other wording)
@@ -3616,6 +3632,13 @@ function helpBefore(prev, input, said) {
   if (prev.lastMove?.quick && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask && (d.rung || d.joint) && ["wait", "keep"].includes(d.card)) return { decision: { ...d, card: "ask" }, held: true };
   if (d.card === "keep" && !liveId) return { decision: { ...d, card: "wait" }, stay: true };
   if (d.card === "keep" || d.card === "wait") return { decision: d, stay: true };
+  // (Brain 046 Q2: the card's Hindi form is asked in the card's place — at a live card or an asked step; with neither live the request walks
+  // as before)
+  if (d.card === "hindiForm") {
+    if (liveId || (d.stepAsked && prev.lastMove?.stepAsk?.prompt)) return { decision: d, stay: true };
+    const { hindiForm: _h, hindiAgain: _a, ...d1 } = d;
+    return d1.rung?.text ? { decision: { ...d1, card: "wait" }, stay: true } : null;
+  }
   // (dc-r8-director28 Brain 044 T2: help on a remediation and its follow-up card are one turn only within 60 words, as the remediation and its
   // card are; over it the wording ends on its check-in and the card comes next — c6 steady 52, stuck 22, 66, steering 8; c4 steering 12 ran 55
   // to 75 words)

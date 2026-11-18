@@ -16,7 +16,7 @@
 // P5, joints:
 //   returnLed        a card said again after other parts were said since its last telling (a return) is led by the back-to joint or the
 //                    after-key return form
-import { stepToldAfterSimpler } from "./d30-predicates.mjs";
+import { stepToldAfterSimpler, hindiFormSaid } from "./d30-predicates.mjs";
 import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
 import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
 
@@ -266,6 +266,8 @@ export const D27_PREDICATES = {
     if (!a || !ctx.script) return null;
     const { parts } = st.cur;
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
+    // (Brain 046 Q2: a Hindi request answered with the card's `hindi` form)
+    if (req === "hindi" && hindiFormSaid(ctx.script, r)) return null;
     // (dc-r8-director29 Brain 045 P3: a request on the worked problem whose step is asked is helped on that step — its simpler)
     if (stepToldAfterSimpler(L, r, i, ctx.script)) return null;
     // (dc-r8-director29 Brain 045 P4: a second request at the greeting is answered by the lesson's start — joints.startAnyway, then the hook)

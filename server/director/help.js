@@ -272,6 +272,24 @@ export function keyLine(part, lang = "hinglish") {
 /** Brain 044 Small (director28 c5-t02 offtopic 18, 20: five wrong answers to one question — its quick question and its card — and the
  *  ladder went on into the point's own wordings, the key never said): a card answered wrong this many times gets its key, whatever its
  *  ladder still has. The rule that let it run was dc-r8-director25 H4 ("the count of misses never lets it go while a rung is unsaid"). */
+/** dc-r8-director30 Brain 046 Q2: where a part's question keeps its `hindi` form (Learning 019) — beside `reask`: a card's ask, a check card,
+ *  a follow-up card, the worked example's your-step, an asked worked step's ask. → the script path, or null. */
+export function hindiPathOf(script, part) {
+  const at = (path) => { try { return String(path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script); } catch { return null; } };
+  const o = at(part?.path);
+  if (!o || typeof o !== "object") return null;
+  if (o.hindi) return `${part.path}.hindi`;
+  if (o.ask && typeof o.ask === "object" && o.ask.hindi) return `${part.path}.ask.hindi`;
+  return null;
+}
+/** The `hindi` form of a part's question as it is said (its Hindi-English text), or null where the script writes none. */
+export function hindiFormOf(script, part) {
+  const p = hindiPathOf(script, part);
+  if (!p) return null;
+  const v = String(p).split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script);
+  const t = v && typeof v === "object" ? v.hi ?? v.en : v;
+  return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
+}
 export const KEY_AFTER_MISSES = 5;
 export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
   if (!HELP_REQUESTS.includes(request)) return null;
@@ -301,6 +319,17 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(closed && !keyed ? { closed: true } : {}) };
+  // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
+  // line leads it (the language pass), the form is asked over the card's board; a second request on the same card gets the card's unsaid help
+  // first, then the form again. Never the "nothing easier" line, never the point's other wording in its place: c4, c5-t02, c6 offtopic 32;
+  // c5-t01 stuck 8. A script with no `hindi` form walks as before (a compile hole: hindiHoles)
+  const hf = request === "hindi" && !keyed && !closed && (isCard || (part.kind === "worked_step" && part.step)) ? hindiFormOf(script, part) : null;
+  if (hf) {
+    const again = sentencesOf(hf).some((x) => inSaid(x, said));
+    const help = again && unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim(), board: unsaid.board ?? part.board ?? null } : null;
+    const rung = help ? { ...help, text: help.text.charAt(0).toUpperCase() + help.text.slice(1) } : { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null };
+    return { ...base, rung, board: rung.board, card: "hindiForm", key: null, joint: null, hindiForm: hf, ...(part.kind === "worked_step" ? { stepAsked: true } : {}), ...(again ? { hindiAgain: true } : {}) };
+  }
   if (unsaid) {
     const t0 = String(unsaid.text).trim();
     const rung = { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null };

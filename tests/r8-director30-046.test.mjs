@@ -64,3 +64,56 @@ describe("Q3: an aside reply's turn", () => {
     assert.equal(at(bare).length, 1);
   });
 });
+
+describe("Q2: a request for Hindi gets Hindi", () => {
+  // (a patched copy of the run's script: every card of the lesson given a `hindi` form, as Learning 019 writes them; the words are the test's)
+  const withHindi = (script) => {
+    const s = structuredClone(script);
+    let n = 0;
+    const add = (o) => { if (o?.prompt && !o.hindi) o.hindi = { hi: `Seedhi boli mein sawaal ${++n}: tum kya kahoge?`, en: `Plainly, question ${n}: what do you say?` }; };
+    for (const sk of s.skills ?? []) { for (const b of sk.explain ?? []) add(b.ask); for (const c of sk.checks ?? []) add(c); for (const r of sk.remediation ?? []) add(r.then);
+      if (sk.workedExample) { add(sk.workedExample.yourStep); for (const st of sk.workedExample.steps ?? []) add(st.ask); } }
+    return s;
+  };
+  test("hindiSpentCold reads the \"nothing easier\" line said to a Hindi request at a card with a hindi form (c4, c5-t02, c6 offtopic 32)", () => {
+    for (const t of ["c4", "c5t02", "c6"]) {
+      const { rows, script } = lesson("offtopic", t);
+      assert.ok(lessonFlags({ rows, script: withHindi(script) }).some((f) => f.predicate === "hindiSpentCold" && f.row === 32), t);
+      // (today's script has no form: the fallback is counted apart, pending)
+      assert.ok(!flagged("offtopic", t, "hindiSpentCold").has(32) && flagged("offtopic", t, "hindiSpentHole").has(32), `${t} hole`);
+    }
+  });
+  test("pickHelp: the first request for Hindi at a card is its hindi form alone; the second, the card's unsaid help then the form; none, as before", async () => {
+    const { pickHelp } = await import("../server/director/help.js");
+    const { script } = lesson("offtopic", "c6");
+    const s = withHindi(script);
+    const sk = s.skills[0], b = sk.explain[0];
+    const part = `${sk.skillId}:${b.id}:card`;
+    const d1 = pickHelp({ script: s, part, request: "hindi", said: [] });
+    assert.equal(d1.card, "hindiForm");
+    assert.equal(d1.hindiForm, b.ask.hindi.hi);
+    assert.equal(d1.rung.text, "", "no wording before the form the first time");
+    assert.ok(!d1.joint, "never the nothing-easier line");
+    const { addSaid } = await import("../server/director/help.js");
+    const said = addSaid([], b.ask.hindi.hi, 1);
+    const d2 = pickHelp({ script: s, part, request: "hindi", said });
+    assert.equal(d2.card, "hindiForm");
+    assert.ok(d2.hindiAgain && d2.rung.text.length > 0, "the card's unsaid help, then the form again");
+    const d0 = pickHelp({ script, part, request: "hindi", said: [] });
+    assert.notEqual(d0.card, "hindiForm", "no form: as before");
+  });
+  test("an asked worked step's hindi form is read from its ask; a script with none has a compile hole for every card and asked step", async () => {
+    const { hindiFormOf, helpPart } = await import("../server/director/help.js");
+    const { compileScript } = await import("../server/director/compile.js");
+    const { script } = lesson("offtopic", "c6");
+    const s = withHindi(script);
+    const sk = s.skills[0];
+    const k = (sk.workedExample.steps ?? []).findIndex((st) => st.ask?.prompt);
+    assert.ok(k >= 0);
+    assert.equal(hindiFormOf(s, helpPart(s, `${sk.skillId}:worked:step${k + 1}`)), sk.workedExample.steps[k].ask.hindi.hi);
+    const holes = compileScript(script).holes.filter((h) => h.field === "hindi");
+    assert.ok(holes.some((h) => h.path === `skills[0].workedExample.steps[${k}].ask.hindi`));
+    assert.ok(holes.some((h) => /explain\[0\]\.ask\.hindi$/.test(h.path)) && holes.some((h) => /remediation\[0\]\.then\.hindi$/.test(h.path)));
+    assert.deepEqual(compileScript(s).holes.filter((h) => h.field === "hindi"), []);
+  });
+});

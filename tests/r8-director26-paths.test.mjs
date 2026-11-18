@@ -202,7 +202,9 @@ test("Record: a picture asked for after the walk's key on a then-card (c5-t01 st
 
 test("W1: the closing question answered right — the wrap opens on the verdict and its why; a line after the closing key gets the acknowledgement", async () => {
   // (Brain 044: c4 steady's replayed lines run out before the closing question on today's rules; c5-t01 steady reaches it)
-  const { kit, plans } = await replay(RUN, "steady", "c5-maths-ch02-t01", 400);
+  // (Brain 046 Q1: a yes or an aside at an asked step no longer tells it — director26's recorded lines leave the walk before the closing
+  // question in every steady lesson; director30's steady c5-t01 reaches it)
+  const { kit, plans } = await replay("2026-11-18-director30", "steady", "c5-maths-ch02-t01", 400);
   const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");
   assert.ok(asked, "the walk reaches the closing question");
   const tb = kit && (await import("../server/director/script.js")).scriptFor(kit).script.teachback;

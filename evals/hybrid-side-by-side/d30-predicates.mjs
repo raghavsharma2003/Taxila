@@ -60,7 +60,39 @@ export function helpOtherFigure(r) {
   return otherFigureOf(t.slice(h.from ?? 0, c ? c.from : t.length), String(r.card));
 }
 
+/** Brain 046 Q2: the card a row asks (its walk item, else its card's words) → that card's `hindi` form in the script, or null. */
+export function hindiFormAt(script, r) {
+  const id = String(r?.check?.itemId ?? "");
+  const m = /^script:(.+?):(?:ask:(.+)|then:(.+)|([^:]+))$/.exec(id);
+  const sk = m ? (script?.skills ?? []).find((k) => k.skillId === m[1]) : null;
+  const o = !sk ? null : m[2] === "worked" ? sk.workedExample?.yourStep : m[2] ? (sk.explain ?? []).find((b) => b.id === m[2])?.ask
+    : m[3] ? (sk.remediation ?? []).find((x) => x.targets === m[3])?.then : (sk.checks ?? []).find((c) => c.id === m[4]);
+  const st = /^stepask:(.+):(\d+)$/.exec(id);
+  const o2 = st ? (script?.skills ?? []).find((k) => k.skillId === st[1])?.workedExample?.steps?.[Number(st[2])]?.ask : null;
+  const h = (o ?? o2)?.hindi;
+  return h ? said(h) : null;
+}
+/** Brain 046 Q2: whether a row asks its card's `hindi` form — a Hindi request's answer, as the order rules (the form is new words, and the
+ *  card's question). */
+export function hindiFormSaid(script, r) {
+  const f = hindiFormAt(script, r);
+  return !!f && low(r?.text).includes(low(f).replace(/[.!?।]+$/, "").slice(0, 60));
+}
 export const D30_PREDICATES = {
+  /** dc-r8-director30 Brain 046 Q2: the "nothing easier" line (helpSpent) is never the answer to a request for Hindi — the card's `hindi` form
+   *  is (c4, c5-t02, c6 offtopic 32). Gated. */
+  hindiSpentCold(L, r, i, ctx) {
+    if (r.who !== "teacher" || String(ctx?.prevIntent ?? r.cell?.column ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
+    if (!(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
+    return hindiFormAt(ctx?.script, r) ? "a request for Hindi answered with the \"nothing easier\" line" : null;
+  },
+  /** Q2's code fallback, counted: a request for Hindi answered with the "nothing easier" line at a card whose script has no `hindi` form yet
+   *  (a compile hole until Learning 019). Pending. */
+  hindiSpentHole(L, r, i, ctx) {
+    if (r.who !== "teacher" || String(ctx?.prevIntent ?? r.cell?.column ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
+    if (!(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
+    return hindiFormAt(ctx?.script, r) ? null : "a request for Hindi answered with the \"nothing easier\" line (the card has no hindi form)";
+  },
   /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help about another figure is
    *  followed by the card's own re-ask (c5-t01 stuck 64, 70, offtopic 30). Gated. */
   reaskFigure(L, r) {
@@ -72,6 +104,9 @@ export const D30_PREDICATES = {
   replyCheckin(L, r) {
     if (r.who !== "teacher") return null;
     const sm = r.seams ?? [];
+    // (a worked example that asks no step ends each told step on its own step check-in — that walk's, read by workedCheckin: the
+    // point-card fixture's steering c4 38)
+    if (sm.at(-2)?.right === "workedStep") return null;
     return sm.some((x) => ["asideReply", "aiReply"].includes(x.right)) && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
   },
   /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,

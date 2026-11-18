@@ -11,7 +11,7 @@
 // (two remediations for one mix-up, two parts with one id).
 
 import { createHash } from "node:crypto";
-import { helpPartFrom, ladderSpec, helpJointHoles } from "./help.js";
+import { helpPartFrom, ladderSpec, helpJointHoles, hindiPathOf } from "./help.js";
 
 /** The part kinds of a unit (COMPILE.md "Parts"). */
 // (Loop's review, ask D: the hook is a part — its interest slot is the plan's hookSlot, so hook lines have a cell and a because)
@@ -278,6 +278,13 @@ export function compileScript(script, plan = null) {
   for (const p of parts.filter((x) => ["card", "then_card", "check"].includes(x.kind))) {
     const c = at(script, p.path);
     if (c?.why && !c.whyShort) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/right`, field: "whyShort", path: `${p.path}.whyShort` });
+  }
+  // (dc-r8-director30 Brain 046 Q2: a card, a follow-up card, a check, the your-step and an asked worked step with no `hindi` form — a request
+  // for Hindi there walks as before, with the card's wordings and the "nothing easier" line)
+  for (const p of parts.filter((x) => ["card", "then_card", "check", "your_step", "worked_step"].includes(x.kind))) {
+    const hp = helpPartFrom(script, p);
+    if (p.kind === "worked_step" && !at(script, p.path)?.ask?.prompt) continue;
+    if (hp && !hindiPathOf(script, hp)) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, field: "hindi", path: p.kind === "worked_step" ? `${p.path}.ask.hindi` : `${p.path}.hindi` });
   }
   // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)
   if (script && !(Array.isArray(script.wrap?.ask) && script.wrap.ask.length)) holes.push({ part: "wrap", kind: "wrap", rule: "wrap/ask", field: "ask", path: "wrap.ask" });

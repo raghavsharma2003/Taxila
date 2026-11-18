@@ -3204,7 +3204,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
     // (J2: one joint per seam — a park or an aside line already leads into the card; backTo is not stacked on it)
     else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointOf(kit, "backTo", lang)) { guard.reposeFrame = true; /* (dc-r8-director23 S: backTo is the seam pass's) */ }
-    else if (card && !lead && !body.length && !aside.length && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
+    else if (card && !lead && !body.length && !aside.length && !state.lastMove?.hindiForm && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // (dc-r8-director28 Brain 044 T7: "let me try" at an asked step — the try-first line, then the step's question again; no step is skipped)
@@ -3329,7 +3329,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       body = body.filter((x) => authoredK.has(keyS(x)) || isAuthoredEl(x) || (!hookTurn && !herK.has(keyS(x)) && !hersLoose(x)));
       if (body.length < n0) guard.hersDropped = n0 - body.length;
       // (v6.4 R3 after the drop: a card left bare and said before still gets its frame)
-      if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && ((herPrev && prevHas(card)) || posedBefore)) {
+      if (card && !lead && !body.length && !aside.length && !guard.reposeFrame && !state.lastMove?.hindiForm && ((herPrev && prevHas(card)) || posedBefore)) {
         const back = !(herPrev && prevHas(card)) && cameBack && !aside.length ? jointOf(kit, "backTo", lang) : null;
         // (dc-r8-director23 S: a return's backTo is the seam pass's; code's "again" frame only when there is none)
         body = back ? [] : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; guard.reposeFrame = true; }
@@ -3589,6 +3589,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // starts at the help's first word, never at the line's)
         if (ack.length && guard.lineParts?.length && !guard.lineParts.some((q) => norm(q.text) === norm(ack[0]))) {
           guard.lineParts = alignParts([{ part: "aside", text: ack[0] }, ...guard.lineParts], reply);
+          if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
+        }
+        // (Brain 046 Q2: the card's Hindi form asked after the easier-words line, with no wording between — the line is the turn's lead, said
+        // once by the seam pass as its hindiSwitch joint; never a part of the card's point)
+        else if (ack.length && guard.lineParts?.length && state.lastMove?.hindiForm && guard.lineParts.some((q) => q.part === "body" && norm(q.text) === norm(ack[0]))) {
+          guard.lineParts = guard.lineParts.filter((q) => !(q.part === "body" && norm(q.text) === norm(ack[0])));
           if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
         }
       }
