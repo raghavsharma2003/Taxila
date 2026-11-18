@@ -83,7 +83,9 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // words speak the board; twelve boards a general say did not speak were dropped or moved to the wording that speaks them (the
     // D12 rule, tests/r7-board-ref) — parts 11 → 12, wholes 17 → 20, equal-groups 8 → 9, bars 28 → 35 (25 → 32 views), shape 7 → 8.
     // The new equal-groups and shape boards have no second view: a picture asked for on them redraws the held board with no line)
-    "fraction-parts@1": "10/10", "wholes@1": "21/21", "shade-grid@1": "1/5", "equal-groups@1": "6/9", "compare@1": "1/4",
+    // (main, d29 dry read, 2026-11-18: c4's skill 2 and skill 3 worked examples lost their boards of words — the skill 2 one showed the
+    // asked step's answer — for the pencils' grid and the two chocolates' bars: compare 4 → 2, shade-grid 5 → 6, wholes 21 → 22)
+    "fraction-parts@1": "10/10", "wholes@1": "22/22", "shade-grid@1": "1/6", "equal-groups@1": "6/9", "compare@1": "1/2",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
