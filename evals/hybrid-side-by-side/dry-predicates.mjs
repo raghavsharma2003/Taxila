@@ -434,7 +434,10 @@ export const PREDICATES = {
     // (2.4 S2: the card's re-ask — its question with its givens named — is its question too)
     const reasks = (ctx.o.reasks ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.reask) for (const v of [o.reask.hi, o.reask.en, o.reask]) if (typeof v === "string") out.push(key(v.replace(/\{\w+\}/g, ""))); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
     const reasked = reasks.some((k) => k && key(r.text).includes(k.slice(0, 40)));
-    if (!reasked && !low(r.text).includes(low(q).slice(0, 25))) return "a Hindi request on a card: the simpler, then no question";
+    // (d29 final: a one-sentence card is asked by the clause after its colon when that clause is a question — dc-r8-director23, brain/say.js
+    // tailQ: offtopic c6 36, "2 × (lambai + chaudai) lagao: is rectangle ke liye yeh kitna banta hai?")
+    const tailQ = /[:;]\s+/.test(q) ? q.split(/[:;]\s+/).at(-1) : "";
+    if (!reasked && !low(r.text).includes(low(q).slice(0, 25)) && !(tailQ && /[?？]$/.test(tailQ) && low(r.text).includes(low(tailQ).slice(0, 25)))) return "a Hindi request on a card: the simpler, then no question";
     const ack = sentencesOf(r.text).find((x) => /hindi mein/i.test(x));
     const rest = low(r.text.replace(ack ?? "", "")).replace(low(p.card ?? ""), "");
     return ack && low(p.text).includes(rest.trim().slice(0, 40)) ? `"${ack}" with nothing changed` : null;

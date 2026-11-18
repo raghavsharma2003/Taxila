@@ -110,7 +110,9 @@ export const D29_PREDICATES = {
   },
   /** T1: a point's turn that ends on its check-in because the point and its card do not fit (the walk's noFit). */
   pointNoFit(L, r) {
-    return r.who === "teacher" && r.noFit === "point" ? "a point and its card that do not fit: the point ends on its check-in" : null;
+    // (d29 final, offtopic c5-t02 36: a turn whose point was held behind her answer to the child's AI question says no point — the move's
+    // mark is read only on a turn that says one)
+    return r.who === "teacher" && r.noFit === "point" && (r.seams ?? []).some((x) => x.right === "point") ? "a point and its card that do not fit: the point ends on its check-in" : null;
   },
   /** T7: the child asks to try at an asked step: her next turn asks that step's question again (c4 stuck 28; c6 offtopic 38; c5-t02 steady 32,
    *  offtopic 38). */

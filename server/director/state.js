@@ -4892,7 +4892,9 @@ function splitTeach(out, input, cap, extra = 0) {
   // steady 36, a park, a point and its card in 61 words)
   // (Brain 044 T6: the park line is not counted in the turn's 75)
   const parkLead = 0;
-  const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0) + parkLead;
+  // (d29 final, main's ruling on 044: a help joint said first — the "nothing easier" line before the hook — is a lead, not counted)
+  const jointForm = move.helpJoint?.form ? String(move.helpJoint.form).replace(/\s+/g, " ").trim() : null;
+  const first = scriptFor(input.kit)?.script?.recordedRun ? 0 : (move.sayFirst ?? []).map(String).filter((x) => !jointForm || x.replace(/\s+/g, " ").trim() !== jointForm).join(" ").split(/\s+/).filter(Boolean).length + (input?.helpLeadWords ?? 0) + parkLead;
   if (!card || !body.some(Boolean) || !move.itemId) return out;
   // (dc-r8-director26 C1, main's ruling changes 2-4: three turns share their card up to 75 words — a worked step with the child's own step,
   // a remediation with its follow-up card, a bare point with its own card. Every other turn keeps the cap it was given)
@@ -4902,8 +4904,8 @@ function splitTeach(out, input, cap, extra = 0) {
   const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
   if (process.env.DBG_FIT) console.error("DBG_FIT", s.turn, move.scriptBeat?.beatId, JSON.stringify({ w: wordsIn(body, card), u: u && { margin: u.margin, cap: u.cap }, cap, extra, first, draw: drawable(), boards: [s.heldUp?.board?.template, move.scriptBeat?.board?.template, move.cardBeat?.board?.template] }));
   // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
-  // 75 in all, counted as said; the 8 words of slack kept for her framing are not added to a point and its card after a close)
-  const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && extra > 0 && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;
+  // 75 in all, counted as said; A.1: the hook, the first point and its card, 75. The 8 words of slack kept for her framing are not added)
+  const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && (extra > 0 || move.hookSaid) && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;
   if ((u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + slack + extra + first <= cap) && drawable()) return out;
   let teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
   // (dc-r8-director28 Brain 044 T1: a point split from its card with no quick question in its place — the two do not fit and the script keeps no

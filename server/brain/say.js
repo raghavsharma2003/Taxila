@@ -631,8 +631,12 @@ export function notRightLead(said, lang = "hinglish", state = null) {
   // (director9 c4 ×8: "Yes sahi nahi hai": a word of theirs is never said back, only a short answer with a number)
   const short = x && x.split(/\s+/).length <= 3 && (/\d/.test(x) || lang === "english") ? x : "";
   // (v6.6 F1′, main on director14: "<answer> sahi nahi hai" up to 11 times: the echo has forms too, fresh by their fixed words)
-  if (lang === "english") return short ? freshForm(ECHO_NOT_RIGHT.english, state, short) : freshOf(FRAMES.notRight.english, state);
-  return short ? freshForm(ECHO_NOT_RIGHT.hinglish, state, short) : freshOf(FRAMES.notRight.hinglish, state);
+  // (d29 final, Learning 017 A.3: a remediation and its follow-up card are 49 words, the turn holding the miss form and the joint in 60 — the
+  // echo's forms with three fixed words at most there: "40 cm nahi, yeh jawab theek nahi baitha." ran stuck c6 38 to 63)
+  const tight = state?.lastMove?.scriptBeat?.kind === "remediation" && !!state?.lastMove?.rendered?.length;
+  const echo = (fs) => (tight ? fs.filter((f) => String(f("\u0000")).split(/\s+/).filter((w) => w && w !== "\u0000").length <= 3) : fs);
+  if (lang === "english") return short ? freshForm(echo(ECHO_NOT_RIGHT.english), state, short) : freshOf(FRAMES.notRight.english, state);
+  return short ? freshForm(echo(ECHO_NOT_RIGHT.hinglish), state, short) : freshOf(FRAMES.notRight.hinglish, state);
 }
 /** Her line with the negation of their answer taken out ("Riya, 4 nahi—rectangle mein…" → "Riya, rectangle mein…"). */
 export function withoutNegation(text, childText) {
