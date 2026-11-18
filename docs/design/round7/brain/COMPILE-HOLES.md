@@ -6,7 +6,7 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (4 live, 30 staged). Missing fields: 2667. Rule holes: 18484. Doubles: 0.
+**Scripts:** 34 (5 live, 29 staged). Missing fields: 2667. Rule holes: 18484. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
@@ -43,6 +43,7 @@
 | c4-maths-ch05-t01 | live | 63 | 1935 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t03 | live | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch01-t02 | staged | 58 | 1782 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 96 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 3 | 0 |
@@ -54,7 +55,6 @@
 | c4-maths-ch09-t01 | staged | 67 | 2052 | 109 | 10 | 10 | 10 | 10 | 9 | 9 | 9 | 10 | 2 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 3 | 0 |
 | c4-maths-ch14-t01 | staged | 49 | 1494 | 74 | 6 | 6 | 6 | 6 | 7 | 7 | 7 | 6 | 1 | 3 | 3 | 3 | 3 | 3 | 1 | 3 | 3 | 0 |
 | c5-maths-ch01-t01 | staged | 57 | 1746 | 90 | 8 | 8 | 8 | 8 | 9 | 9 | 9 | 8 | 1 | 3 | 3 | 3 | 3 | 3 | 1 | 3 | 3 | 0 |
-| c5-maths-ch02-t03 | staged | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch03-t01 | staged | 58 | 1764 | 93 | 8 | 8 | 8 | 8 | 6 | 6 | 6 | 8 | 5 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 3 | 0 |
 | c5-maths-ch03-t02 | staged | 67 | 2052 | 114 | 9 | 9 | 9 | 9 | 8 | 8 | 8 | 9 | 7 | 7 | 7 | 7 | 7 | 3 | 1 | 3 | 3 | 0 |
 | c5-maths-ch05-t01 | staged | 62 | 1899 | 102 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 8 | 4 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 3 | 0 |
@@ -176,6 +176,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch05-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch02-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch02-t02 | live | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch02-t03 | live | helpToCard | missing (code's fallback forms are said) |
 | c6-maths-ch06-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | helpToCard | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
@@ -268,7 +269,6 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch01-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | afterWorked | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
-| c5-maths-ch02-t03 | staged | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | helpToCard | missing (code's fallback forms are said) |
@@ -577,6 +577,7 @@ Counts of parts over their limit: hook over 20 words; hook, first point and card
 | c4-maths-ch05-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c5-maths-ch02-t01 | live | 0 | 0 | 0 | 0 | 2 | 0 |  |  |
 | c5-maths-ch02-t02 | live | 0 | 0 | 0 | 0 | 4 | 0 |  |  |
+| c5-maths-ch02-t03 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c6-maths-ch06-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c4-maths-ch01-t02 | staged | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c4-maths-ch03-t01 | staged | 6 | 6 | 2 | 0 | 2 | 3 |  | yes |
@@ -588,7 +589,6 @@ Counts of parts over their limit: hook over 20 words; hook, first point and card
 | c4-maths-ch09-t01 | staged | 5 | 3 | 0 | 0 | 0 | 3 |  | yes |
 | c4-maths-ch14-t01 | staged | 6 | 5 | 1 | 0 | 0 | 3 |  | yes |
 | c5-maths-ch01-t01 | staged | 5 | 3 | 2 | 0 | 2 | 3 |  | yes |
-| c5-maths-ch02-t03 | staged | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c5-maths-ch03-t01 | staged | 6 | 6 | 0 | 0 | 4 | 3 |  | yes |
 | c5-maths-ch03-t02 | staged | 6 | 6 | 4 | 0 | 2 | 3 |  | yes |
 | c5-maths-ch05-t01 | staged | 6 | 4 | 0 | 0 | 0 | 3 |  | yes |
@@ -618,6 +618,7 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | c4-maths-ch05-t01 | live | 30 | 0 |  | 0 |
 | c5-maths-ch02-t01 | live | 34 | 0 |  | 0 |
 | c5-maths-ch02-t02 | live | 34 | 0 |  | 0 |
+| c5-maths-ch02-t03 | live | 29 | 0 |  | 0 |
 | c6-maths-ch06-t01 | live | 30 | 0 |  | 0 |
 | c4-maths-ch01-t02 | staged | 28 | 0 |  | 0 |
 | c4-maths-ch03-t01 | staged | 24 | 24 | yes | 0 |
@@ -629,7 +630,6 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | c4-maths-ch09-t01 | staged | 27 | 27 | yes | 0 |
 | c4-maths-ch14-t01 | staged | 19 | 19 | yes | 0 |
 | c5-maths-ch01-t01 | staged | 23 | 23 | yes | 0 |
-| c5-maths-ch02-t03 | staged | 29 | 0 |  | 0 |
 | c5-maths-ch03-t01 | staged | 22 | 22 | yes | 1 |
 | c5-maths-ch03-t02 | staged | 27 | 27 | yes | 0 |
 | c5-maths-ch05-t01 | staged | 25 | 25 | yes | 0 |
