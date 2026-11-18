@@ -589,7 +589,7 @@ function wholesOfCompare(c) {
 
 /** The second views a pick names (artifact.altView): parts (bars), line, wholes, strips (wholes as bars), unrolled (a ruler),
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
-const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid", "scale"]);
+const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid", "scale", "tester"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
 // (round 8: NUM_HI, fracSay and lineStatesKey moved to server/forge/explainer/states-key.js — the templates use the key
 // predicate and this file imports templates.js; re-exported here so every caller is unchanged)
@@ -619,6 +619,14 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   // where the 8 had been. A quiet bar of several is named by its place, as a whole sentence: "doosri patti bhi barabar hisson
   // mein bati hai" — the part without its count, never a slot)
   const item = (x, i) => (quiet.has(x.parts) ? `${ord(i)} patti${i ? " bhi" : ""} barabar hisson mein bati hai${shadeOf(x)}` : v ? `${ord(i)} ${bar(x)}` : `ek ${bar(x)}`);
+  // (Studio 014 item 2: the tester view names the angles as the board names them, and never which is less, equal or more)
+  if (ac.template === "angle@1" && ac.tester) {
+    const names = ac.angles.map((a) => a.name).filter(Boolean), one = ac.angles.length === 1;
+    const who = names.length === ac.angles.length && !one ? `${names.slice(0, -1).join(", ")} aur ${names.at(-1)}` : "";
+    // (the lesson's own act: "kone par tester rakho")
+    return v ? `Ab ${one ? "is kone" : who ? `${who}, har ek ke kone` : "har kone"} par tester rakh kar dekho`
+      : `Dekho, ${one ? "is kone par" : who ? `${who}: har kone par` : "har kone par"} tester rakha hai, halki rekha se`;
+  }
   // (Studio 014 item 1: the to-scale view names the table's own words only — its titles and its lengths)
   if (ac.template === "compare@1" && ac.scale) {
     const sc = compareScaleOf(ac);
@@ -838,6 +846,11 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     // (a compare of two wholes in pieces — "Cake A: 3 tukde, 1 bada 2 chhote | Cake B: 3 tukde, sab barabar" — is drawn as
     // the two wholes themselves; one with fractions of its own still becomes bars, below)
     if (c.template === "compare@1") { const w2 = wholesOfCompare(c); if (w2) return w2; }
+    // (Studio 014 item 2, dc-r8-director31: an angles board's second view is the same angles with the right-angle tester laid
+    // on each — the act the class 4 lesson teaches; c4-ch01-t02's picture turns redrew the board and drew nothing new. A reflex
+    // angle, or an answer board's mark, has none)
+    if (c.template === "angle@1") return Array.isArray(c.angles) && c.angles.length && c.mark == null && c.angles.every((a) => Number.isInteger(a?.deg) && a.deg <= 180)
+      ? { template: "angle@1", angles: c.angles, tester: true, view: "tester" } : null;
     if (!["fraction-line@1", "compare@1"].includes(c.template)) return null;
     const frac = (t) => { const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t ?? "")); return m && Number(m[2]) >= 1 && Number(m[2]) <= 12 && Number(m[1]) <= Number(m[2]) ? [Number(m[1]), Number(m[2])] : null; };
     const fs = [];   // [a, b], or { at: [a, b] } for the asked mark

@@ -1438,6 +1438,20 @@ function angle(c, tl) {
     if (n === 1 && c.vertex && fitsLabel(c.vertex)) tl.add({ op: "label", at: [Math.max(textBox(c.vertex, "s").w / 2 + 6, vx - 46), vy + 40], text: c.vertex, to: [vx - 3, vy + 3], ink: "soft" }, 520, { gap: 160 });
     geo.push({ vx, vy, L, th, deg: a.deg, name });
   }
+  // Studio 014 item 2 (dc-r8-director31 ruling 2, c4-ch01-t02's picture turns drew nothing new): `tester` — the second view of
+  // an angles board: each angle as drawn, then a right-angle corner (the paper tester the class 4 lesson folds) laid on it in a
+  // lighter stroke, its corner on the angle's corner and one edge along its first arm, so the turned arm is seen inside the
+  // corner, along its edge, or outside it. Nothing is written that names less, equal or more; a 90° angle keeps its mark.
+  if (c.tester === true) {
+    if (mk || geo.some((g) => g.reflex || g.deg > 180)) return { error: "angle_tester" };
+    // (ONE tester for every angle on the board — the same corner whatever an angle's arm length — kept inside its column)
+    const T0 = n === 1 ? 80 : n === 2 ? 60 : 50;
+    for (const [i, g] of geo.entries()) {
+      const T = round1(Math.min(T0, (i + 1) * colW - 6 - g.vx));
+      tl.add({ id: `q${i}`, op: "polygon", points: [[round1(g.vx), round1(g.vy)], [round1(g.vx + T), round1(g.vy)], [round1(g.vx + T), round1(g.vy - T)], [round1(g.vx), round1(g.vy - T)]], ink: "soft", weight: 2 }, 600, { gap: i ? 200 : 400 });
+    }
+    facts.tester = "a right-angle corner laid on each angle";
+  }
   if (mk) {
     const { i, show } = mk;
     const gi = geo[i];

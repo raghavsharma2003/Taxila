@@ -89,3 +89,37 @@ test("compare@1 scale: a share is drawn as the whole it is a share of, uncut and
   assert.equal(compareScaleOf({ left: { title: "3 bachche", items: ["2 roti"] }, right: { title: "5 bachche", items: ["2 roti"] } }), null, "bars all one length draw nothing new");
   assert.equal(expand({ ...call, mark: { side: "left" } }).ok, false, "the scale view draws no answer mark");
 });
+
+test("angle@1 tester (item 2): each angle with the right-angle tester laid on it — one corner size for the board, its corner on the angle's, one edge along the first arm; no word naming less, equal or more", () => {
+  const all = boards("angle@1").map((b) => ({ ...b, v: viewOf(b.ref, b.at) }));
+  // (an answer board's mark — the answer — is never laid under a tester: those keep no view)
+  for (const b of all.filter((x) => x.ref.params.mark != null)) assert.equal(b.v, null, b.at);
+  const got = all.filter((x) => x.ref.params.mark == null);
+  assert.ok(got.length >= 9);
+  for (const b of got) {
+    assert.deepEqual(b.v, { template: "angle@1", view: "tester", kind: "figure" }, b.at);
+    const pt = viewed(b.ref, "tester");
+    const held = expand({ template: "angle@1", ...b.ref.params }).script, view = pt.view.script;
+    // the view's words are the board's words; its counts the board's
+    assert.deepEqual(texts(view).sort(), texts(held).sort(), b.at);
+    assert.deepEqual(counts(pt.view.call), counts({ template: "angle@1", ...b.ref.params }), b.at);
+    // one tester per angle: a square, its corner on the angle's corner (the accent dot), its bottom edge along the first arm
+    const testers = view.ops.filter((o) => /^q\d$/.test(o.id)), dots = view.ops.filter((o) => o.op === "circle" && o.fill === "accent");
+    assert.equal(testers.length, b.ref.params.angles.length, b.at);
+    const sides = new Set(testers.map((q) => Math.round(q.points[1][0] - q.points[0][0])));
+    assert.equal(sides.size, 1, `${b.at}: one tester size`);
+    testers.forEach((q, i) => {
+      assert.ok(Math.hypot(q.points[0][0] - dots[i].c[0], q.points[0][1] - dots[i].c[1]) < 1.5, `${b.at}: the tester's corner on angle ${i + 1}'s corner`);
+      const [p0, p1, p2] = q.points;
+      assert.ok(p1[1] === p0[1] && p2[0] === p1[0] && Math.abs((p1[0] - p0[0]) - (p1[1] - p2[1])) < 0.2, "a square corner, one edge along the first arm");
+      assert.notEqual(q.ink, "accent", "drawn lighter than the angle");
+    });
+    // a 90° angle keeps its mark
+    b.ref.params.angles.forEach((a, i) => { if (a.deg === 90) assert.ok(view.ops.some((o) => o.id === `m${i}` && o.points?.length === 3)); });
+    assert.ok(!/\b(kam|chhota|bada|zyada|barabar|less|more|equal|smaller|bigger)\b/i.test(texts(view).filter((t) => !texts(held).includes(t)).join(" ")));
+  }
+  // a reflex angle, or an answer board's mark: no tester view
+  assert.equal(expand({ template: "angle@1", angles: [{ deg: 300 }], tester: true }).ok, false);
+  assert.equal(expand({ template: "angle@1", angles: [{ deg: 60 }, { deg: 90 }], mark: { index: 0 }, tester: true }).ok, false);
+  assert.equal(viewOf({ template: "angle@1", params: { angles: [{ deg: 300 }] } }), null);
+});
