@@ -98,6 +98,10 @@ agents removed such forms from the perimeter script; other scripts may hold them
 accept form with an operator, the form with one operand removed and the form with its operator swapped must not
 grade correct.
 
+The same fault takes a division turned round: key `30 ko 6 se bhaag` grades `6 ko 30 se bhaag` correct (the
+staged fractional-units reader, 2026-11-18). Order is part of the expression under `-`, `÷` and `A ko B se
+bhaag`; G4 tests the turned-round form of every such key and accept form.
+
 **G1 also covers English number words.** `seven` for 7 and `twenty six` for 26 are graded incorrect today; the
 shared reader reads both (`numbersIn("twenty six")` = 26). They join the probe table and G4's forms.
 
