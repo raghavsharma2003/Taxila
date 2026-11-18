@@ -56,7 +56,7 @@ test("dc-r8-director25 H4: the help columns are one pickHelp cell over the part'
   assert.ok(c2.missing.some((m) => m.path === "skills[0].explain[0].pointAlt"));
   // (the joints help says: listed when the script has none)
   // (dc-r8-director26: helpToCard, N1's word before a point's card; beforeWorked, J1's lead into a worked problem — listed likewise)
-  assert.deepEqual(c2.helpJoints.filter((j) => /missing/.test(j.why)).map((j) => j.joint).sort(), ["afterKeyGoOn", "helpSpent", "helpToCard", "beforeWorked"].filter((k) => !s.joints?.[k]?.length).sort());
+  assert.deepEqual(c2.helpJoints.filter((j) => /missing/.test(j.why)).map((j) => j.joint).sort(), ["afterKeyGoOn", "helpSpent", "helpToCard", "beforeWorked", "afterWorked"].filter((k) => !s.joints?.[k]?.length).sort());
 });
 
 test("no hole is silent: every missing field's cells compile to a named fallback, and the field is still listed", () => {

@@ -62,6 +62,9 @@ export function helpOtherFigure(r, script = null) {
   // about another figure whatever numbers it names: "Pizza party socho" names none)
   const alts = (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) { if (["sayAlt", "pointAlt", "problemAlt"].includes(k)) out.push(low(said(v)).slice(0, 40)); else walk(v); } }; walk(script ?? {}); return out.filter((x) => x.length >= 20); })();
   if (alts.some((a) => low(help).includes(a)) && !sharesThing(help, String(r.card))) return true;
+  // (the card's own ask.simpler counts the card's thing in numbers of its own: about the card — dry offtopic c4 56)
+  const own = (script?.skills ?? []).flatMap((k) => (k.explain ?? []).map((b) => low(said(b.ask?.simpler)).slice(0, 40))).filter((x) => x.length >= 20);
+  if (own.some((a) => low(help).includes(a))) return false;
   return otherFigureOf(help, String(r.card));
 }
 

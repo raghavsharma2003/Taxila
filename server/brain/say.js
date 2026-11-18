@@ -260,6 +260,13 @@ const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "aa
 /** Brain 046 Q5: the rungs that say a part in other words — often about another figure (a pizza, a roti) — after which the short ask is never
  *  said; the card's own re-ask is. */
 const ALT_RUNGS = new Set(["sayAlt", "pointAlt", "problemAlt"]);
+/** Whether this turn's help is about another figure than the card's: by its numbers (seams.js otherFigureOf), except the card's own ask.simpler,
+ *  which counts the card's thing in numbers of its own (dry offtopic c4 56: 12 laddoos in three rows of 4); or another wording that names none
+ *  of the card's things (c5-t02 steering 10: a pizza for a card about two strings). */
+function figureOther(help, card, state) {
+  const rung = String(state?.lastMove?.help?.rung ?? "");
+  return (otherFigureOf(help, card) && rung !== "ask.simpler") || (ALT_RUNGS.has(rung) && !sharesThing(help, card));
+}
 export function returnLineOk(x, said, topic) {
   const t = String(x ?? "").trim();
   if (!t || /\d/.test(t) || /[?？]/.test(t)) return false;
@@ -3496,7 +3503,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // follows it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
       // (dc-r8-director30 Brain 046 Q5, c5-t02 steering 10: help said from another wording of the part — a remediation's sayAlt, a point's
       // pointAlt, a problem's problemAlt — is about another figure, a pizza for a card about two strings, whatever numbers it names)
-      const otherFigure = otherFigureOf(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card) || (ALT_RUNGS.has(String(state.lastMove?.help?.rung ?? "")) && !sharesThing(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card));
+      const otherFigure = figureOther(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card, state);
       if (otherFigure) guard.reaskFigure = true;
       const prevQ = prevT ? lastQ(prevT.text) : "";
       if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && !otherFigure) {
@@ -3522,7 +3529,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const clause = m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : cs.length >= 2 && /[?？]$/.test(c0) ? c0 : null;
         const helpNow = body.filter((x) => norm(x) !== norm(card)).join(" ");
         // (the short ask asks for the answer to the question on the table — never after help about another figure, P6)
-        const shortOk = !otherFigureOf(helpNow, card) && !(ALT_RUNGS.has(String(state.lastMove?.help?.rung ?? "")) && !sharesThing(helpNow, card));
+        const shortOk = !figureOther(helpNow, card, state);
         const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
         const pick = [["reask", reask], ["short", shortT], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
         if (pick) {

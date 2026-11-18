@@ -142,10 +142,12 @@ describe("Q5: re-asks and the worked close", () => {
   test("reaskFigure reads the short ask after help in another wording that names none of the card's things (c5-t02 steering 10: a pizza)", () => {
     assert.ok(flagged("steering", "c5t02", "reaskFigure").has(10));
   });
-  test("otherFigureOf: help counting the card's own thing is the card's; help naming numbers and none of its things is another figure's", async () => {
-    const { otherFigureOf } = await import("../server/brain/seams.js");
-    assert.equal(otherFigureOf("Board par 3 line hain, har line mein 4 laddoo.", "12 laddoo ka aadha kitne laddoo hai?"), false);
+  test("another figure: by numbers, and by another wording that names none of the card's things; sharesThing reads lesson talk as no thing", async () => {
+    const { otherFigureOf, sharesThing } = await import("../server/brain/seams.js");
     assert.equal(otherFigureOf("Ek roti ke 6 hisse socho.", "Is line par 4/9 kahaan aayega?"), true);
+    assert.equal(otherFigureOf("Line par 4 gap chalo, 9 mein se.", "Is line par 4/9 kahaan aayega?"), false);
+    assert.equal(sharesThing("Pizza party socho: jitne zyada dost, utne chhote slice.", "9 aur 11 barabar hisson mein kati do dor mein se kis dor ka hissa chhota hai?"), false);
+    assert.equal(sharesThing("Dono dor ek jitni lambi hain.", "9 aur 11 barabar hisson mein kati do dor mein se kis dor ka hissa chhota hai?"), true);
   });
   test("workedSeam (gated) reads a worked close straight into the next card (c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36)", () => {
     for (const [p, t, row] of [["steady", "c5t01", 26], ["steady", "c5t01", 56], ["stuck", "c5t01", 34], ["offtopic", "c5t01", 48], ["steering", "c5t01", 36],

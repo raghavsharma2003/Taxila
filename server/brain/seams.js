@@ -97,10 +97,9 @@ const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 export function otherFigureOf(helpText, cardText) {
   const nums = (t) => (String(t ?? "").match(/\d+(?:\s*\/\s*\d+)?/g) ?? []).flatMap((x) => x.split("/").map((y) => y.trim())).filter((y) => Number(y) > 1);
   const card = new Set(nums(cardText));
-  // (dc-r8-director30 Brain 046 Q5, dry offtopic c4 56: help that counts the card's own thing in numbers of its own — the card's 12 laddoos in
-  // three rows of 4 — is about the card; a number the card does not name makes help another figure's only where it names none of the card's
-  // things. Help in another wording — a sayAlt, a pointAlt — is read by its rung, brain/say.js ALT_RUNGS)
-  return !!card.size && nums(helpText).some((n) => !card.has(n)) && !sharesThing(helpText, cardText);
+  // (Brain 046 Q5: help in another wording that names no number — a sayAlt's pizza — and the card's own ask.simpler, which counts the card's
+  // thing in numbers of its own, are read by their rung: brain/say.js ALT_RUNGS, OWN_RUNGS)
+  return !!card.size && nums(helpText).some((n) => !card.has(n));
 }
 /** Words that name no thing a card is about: the lesson's own talk and Hinglish function words. */
 const FIGURE_STOP = new Set(["barabar", "hissa", "hisse", "hisson", "line", "board", "socho", "dekho", "wala", "wale", "wali", "kitne", "kitna", "kitni", "kaunsa", "kaunsi",
@@ -109,7 +108,9 @@ const FIGURE_STOP = new Set(["barabar", "hissa", "hisse", "hisson", "line", "boa
   "badi", "milega", "milta", "chalo", "isko", "usko", "unka", "inka", "tumne", "tumhe", "tumhari", "tumhara", "aur", "hai", "kis", "toh", "par", "bhi", "yeh", "woh", "jab", "tab",
   "kya", "har", "mein", "karo", "liye", "yahi", "wahi", "isse", "agar", "kuch", "sirf", "raha", "rahi", "rahe", "mila", "mile", "wapas", "pehla", "pehli", "doosra", "doosri",
   "utna", "utne", "jitna", "jitne", "jitni", "gino", "baar", "kaise", "aise", "jaise", "ise", "use", "abhi", "nahi", "sahi", "the", "and", "for", "you", "how", "many", "teen",
-  "chaar", "paanch", "kahan", "saath", "baat", "aate", "aata", "aati", "ek-ek", "do-do", "line", "lines"]);
+  "chaar", "paanch", "kahan", "saath", "baat", "aate", "aata", "aati", "ek-ek", "do-do", "line", "lines", "bache", "bacha", "bachi", "bachega", "bachegi", "hue", "hua", "hui",
+  "liya", "liye", "diya", "kiya", "gaya", "gayi", "gaye", "kata", "kati", "kate", "kaat", "kaata", "baante", "baanto", "banta", "bante", "banti", "bani", "bana", "banate", "uska",
+  "uski", "uske", "naam", "kehta", "kehti", "kehte", "sakte", "sakta", "sakti", "ruka", "ruki", "ruke", "rakho", "lagao", "jodo", "chalte", "chalti", "paas", "door", "aage", "peeche", "isi", "usi", "wali", "khada", "khade", "khadi"]);
 /** Whether help names a thing of the card's — a word of three letters or more that is not lesson talk ("laddoo", "dor", "roti"). */
 export function sharesThing(helpText, cardText) {
   const w = (t) => new Set((String(t ?? "").toLowerCase().match(/[\p{L}-]{3,}/gu) ?? []).filter((x) => !FIGURE_STOP.has(x)));
