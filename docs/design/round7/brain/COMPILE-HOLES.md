@@ -6,13 +6,13 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (4 live, 30 staged). Missing fields: 2239. Rule holes: 17865. Doubles: 0.
+**Scripts:** 34 (4 live, 30 staged). Missing fields: 2239. Rule holes: 19789. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: board_up 369. Cells left as holes with no fallback: 0.
 
-**Not applicable:** 375 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 378 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
 ## Missing fields, all scripts
 
@@ -38,7 +38,7 @@
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | c4-maths-ch05-t01 | live | 63 | 1935 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t02 | live | 74 | 2268 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch01-t02 | staged | 60 | 1836 | 73 | 9 | 9 | 9 | 9 | 9 | 9 | 3 | 3 | 3 | 3 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 72 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
@@ -97,6 +97,7 @@
 | worked_step/hindi/fresh | 300 |
 | worked_step/hindi/heard | 300 |
 | worked_step/hindi/spent | 300 |
+| then_card/after_key | 296 |
 | card/right | 248 |
 | checkin/clarify/fresh | 248 |
 | checkin/clarify/heard | 248 |
@@ -128,8 +129,19 @@
 | remediation/hindi/fresh | 148 |
 | remediation/hindi/heard | 148 |
 | remediation/hindi/spent | 148 |
-| then_card/after_key | 148 |
+| then_card/clarify/fresh | 148 |
+| then_card/clarify/heard | 148 |
+| then_card/clarify/spent | 148 |
+| then_card/give_up/fresh | 148 |
+| then_card/give_up/heard | 148 |
+| then_card/give_up/spent | 148 |
+| then_card/hindi/fresh | 148 |
+| then_card/hindi/heard | 148 |
+| then_card/hindi/spent | 148 |
 | then_card/right | 148 |
+| then_card/wrong/fresh | 148 |
+| then_card/wrong/heard | 148 |
+| then_card/wrong/spent | 148 |
 | remediation/picture/fresh | 123 |
 | remediation/picture/heard | 123 |
 | remediation/picture/spent | 123 |
@@ -164,6 +176,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch01-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch01-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -172,6 +185,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch03-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch03-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -180,6 +194,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch03-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch03-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch03-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch04-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -188,6 +203,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch04-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch04-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch04-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch04-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -196,6 +212,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch04-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch04-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch04-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch06-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -204,6 +221,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch06-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch06-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch06-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch07-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -212,6 +230,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch07-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch07-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch07-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch09-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -220,6 +239,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch09-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch09-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch09-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c4-maths-ch14-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -228,6 +248,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c4-maths-ch14-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c4-maths-ch14-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c4-maths-ch14-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch01-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -236,6 +257,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch01-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch01-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch01-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch02-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -244,6 +266,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch02-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch02-t03 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -252,6 +275,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch03-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch03-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -260,6 +284,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch03-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch03-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch03-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -268,6 +293,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch05-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch13-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -276,6 +302,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch13-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch13-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch13-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c5-maths-ch13-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -284,6 +311,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c5-maths-ch13-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c5-maths-ch13-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c5-maths-ch13-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -292,6 +320,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch02-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch02-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch02-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -300,6 +329,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch02-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch02-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch02-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -308,6 +338,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch02-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch02-t03 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch02-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch02-t04 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -316,6 +347,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch02-t04 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch02-t04 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch02-t04 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -324,6 +356,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch05-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -332,6 +365,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch07-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch07-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t03 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -340,6 +374,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch07-t03 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch07-t03 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch07-t03 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t04 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -348,6 +383,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch07-t04 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch07-t04 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch07-t04 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch07-t05 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -356,6 +392,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch07-t05 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch07-t05 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch07-t05 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c6-maths-ch08-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -364,6 +401,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c6-maths-ch08-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c6-maths-ch08-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c6-maths-ch08-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch02-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -372,6 +410,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c7-maths-ch02-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c7-maths-ch02-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c7-maths-ch02-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -380,6 +419,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c7-maths-ch03-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c7-maths-ch03-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c7-maths-ch03-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch05-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -388,6 +428,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c7-maths-ch05-t01 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | stepMiss | missing (code's fallback forms are said) |
+| c7-maths-ch05-t01 | staged | startAnyway | missing (code's fallback forms are said) |
 | c7-maths-ch05-t01 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 | c7-maths-ch05-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
@@ -396,6 +437,7 @@ A script without them is said with code's fallback forms (server/director/help.j
 | c7-maths-ch05-t02 | staged | beforeWorked | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | tiredBye | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | stepMiss | missing (code's fallback forms are said) |
+| c7-maths-ch05-t02 | staged | startAnyway | missing (code's fallback forms are said) |
 | c7-maths-ch05-t02 | staged | hindiSwitch | its forms promise Hindi, not easier words |
 
 ## Doubles
@@ -528,8 +570,8 @@ Counts of parts over their limit: hook over 20 words; hook, first point and card
 | Script | Where | Hooks > 20 | First turns > 75 | Points > 61 | Quick kept | Remediations > 49 | Worked > 53 | workedInvite | stepMiss missing |
 |---|---|---|---|---|---|---|---|---|---|
 | c4-maths-ch05-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
-| c5-maths-ch02-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
-| c5-maths-ch02-t02 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c5-maths-ch02-t01 | live | 0 | 0 | 0 | 0 | 2 | 0 |  |  |
+| c5-maths-ch02-t02 | live | 0 | 0 | 0 | 0 | 3 | 0 |  |  |
 | c6-maths-ch06-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c4-maths-ch01-t02 | staged | 6 | 4 | 1 | 0 | 0 | 3 |  | yes |
 | c4-maths-ch03-t01 | staged | 6 | 6 | 2 | 0 | 2 | 3 |  | yes |
