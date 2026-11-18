@@ -268,9 +268,10 @@ describe("Q5's leftover: a worked close does not say a why her turn before said"
 });
 
 describe("d31: the t2 predicates know the wrap's acknowledgements", () => {
-  test("every wrap.ack form of the four pilots and the three staged scripts is a wrap acknowledgement, never an aside one", async () => {
+  test("every wrap.ack form of the live scripts and the two staged scripts is a wrap acknowledgement, never an aside one", async () => {
     const { T2, wrapAckIn } = await import("./fixtures/t2-predicates.mjs");
-    const dirs = { "data/lesson-scripts": Object.values(TOPIC), "data/lesson-scripts-staged": ["c5-maths-ch02-t03", "c4-maths-ch01-t02", "c6-maths-ch07-t01"] };
+    // (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged, beside the four pilots)
+    const dirs = { "data/lesson-scripts": [...Object.values(TOPIC), "c5-maths-ch02-t03"], "data/lesson-scripts-staged": ["c4-maths-ch01-t02", "c6-maths-ch07-t01"] };
     let n = 0;
     for (const [d, ts] of Object.entries(dirs)) for (const t of ts) for (const f of JSON.parse(readFileSync(join(ROOT, d, `${t}.json`), "utf8")).wrap.ack) {
       const row = { text: `${f.hi} Aaj humne bahut kuch dekha.` };

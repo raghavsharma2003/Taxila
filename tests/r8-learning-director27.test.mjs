@@ -39,7 +39,7 @@ test("017 B (was 016 A1): a quick question only where its point and card do not 
       assert.ok(!mine.some((x) => card.includes(x)), `${at}: shares a form with its card`);
     }
   }
-  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3, "every beat of the four pilots");
+  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3 + 3 + 3 + 3, "every beat of the live scripts (the four pilots, then c5-maths-ch02-t03's 3 + 3 + 3, live since dc-r8-director31)");
   assert.equal(kept, 0, "every pilot pair fits, so no pilot keeps a quick");
 });
 
@@ -97,7 +97,7 @@ test("016 C: every remediation has a board its say speaks or is a 'socho' tellin
     else { imagine++; assert.match(r.say.hi, /\bsocho\b/i, `${at}: no board, and not an imagine telling`); }
     if (r.sayAlt?.board) assert.ok(BF.scriptBoardSpoken(ask(r.sayAlt.hi, r.sayAlt.board)), `${at}: sayAlt board unspoken`);
   }
-  assert.deepEqual([own, imagine], [19, 8]);
+  assert.deepEqual([own, imagine], [19 + 5, 8]); // (the four pilots 19 + 8; c5-maths-ch02-t03, live since dc-r8-director31: 5 with a board)
   // (C2: the count-marks board drew the 11 lower ticks its card asks the child to count)
   const cm = S["c5-maths-ch02-t01"].skills[0].remediation[0];
   assert.ok(!(cm.board.params.dens ?? []).includes(12) && cm.board.params.den === 7);

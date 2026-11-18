@@ -85,7 +85,7 @@ test("018 A.3: every follow-up card and check whose answer board has a second vi
     if (x.view) { n++; assert.ok(x.card.answerViewCaption?.hi && x.card.answerViewCaption?.en, `${t} ${x.at}`); }
     else assert.equal(x.card.answerViewCaption, undefined, `${t} ${x.at}: no second view, no caption`);
   }
-  assert.equal(n, 38, "c4 10, c5-t01 12, c5-t02 14, c6 2");
+  assert.equal(n, 48, "c4 10, c5-t01 12, c5-t02 14, c6 2, c5-t03 10 (live since dc-r8-director31)");
   const s = fresh("c4-maths-ch05-t01");
   delete s.skills[0].checks[0].answerViewCaption;
   assert.ok(d30Errors(s).some((x) => /skills\[0\]\.c1\.answerViewCaption: what to look at/.test(x)));

@@ -6,6 +6,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { kitTopic, lint, wrongArithmetic } from "../scripts/kits/kit-gaps.mjs";
 import { rankTopics } from "../scripts/lesson-scripts/next-topics.mjs";
+import { readdirSync } from "node:fs";
 
 const TOPICS = [
   "c4-maths-ch04-t01", "c4-maths-ch01-t02", "c5-maths-ch03-t01", "c4-maths-ch09-t01", "c6-maths-ch02-t01", "c4-maths-ch06-t01",
@@ -48,5 +49,9 @@ test("the arithmetic check reads chains, lists and units, and skips mixed number
 
 test("the list is still the top of the traffic ranking (scripted topics drop out of it)", () => {
   const ranked = rankTopics().map((t) => t.id);
-  assert.ok(TOPICS.every((t) => ranked.includes(t)), "a listed topic got scripted: move it out of TOPICS");
+  // (a topic of the list that went live — c5-maths-ch02-t03, dc-r8-director31 — left the ranking by rule; it stays in TOPICS so its
+  // kit is still held to the worked-example and misconception checks above)
+  const live = new Set(readdirSync(new URL("../data/lesson-scripts/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)));
+  assert.deepEqual(TOPICS.filter((t) => live.has(t)), ["c5-maths-ch02-t03"], "the listed topics that are live");
+  assert.ok(TOPICS.filter((t) => !live.has(t)).every((t) => ranked.includes(t)), "a listed topic got scripted: move it out of TOPICS");
 });
