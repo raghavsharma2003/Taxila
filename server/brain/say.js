@@ -642,7 +642,7 @@ export function notRightLead(said, lang = "hinglish", state = null) {
   const short = x && x.split(/\s+/).length <= 3 && (/\d/.test(x) || lang === "english") ? x : "";
   // (v6.6 F1′, main on director14: "<answer> sahi nahi hai" up to 11 times: the echo has forms too, fresh by their fixed words)
   // (d29 final, Learning 017 A.3: a remediation and its follow-up card are 49 words, the turn holding the miss form and the joint in 60 — the
-  // echo's forms with three fixed words at most there: "40 cm nahi, yeh jawab theek nahi baitha." ran stuck c6 38 to 63)
+  // echo's forms with three fixed words at most there: "40 cm nahi, yeh jawab theek nahi baitha." — the form before d31's "Nahi, X theek nahi." — ran stuck c6 38 to 63)
   const tight = state?.lastMove?.scriptBeat?.kind === "remediation" && !!state?.lastMove?.rendered?.length;
   const echo = (fs) => (tight ? fs.filter((f) => String(f("\u0000")).split(/\s+/).filter((w) => w && w !== "\u0000").length <= 3) : fs);
   if (lang === "english") return short ? freshForm(echo(ECHO_NOT_RIGHT.english), state, short) : freshOf(FRAMES.notRight.english, state);
@@ -798,7 +798,8 @@ export function freshForm(fns, state, ...args) {
   return f(...args);
 }
 const ECHO_NOT_RIGHT = {
-  hinglish: [(x) => `${x} sahi nahi hai.`, (x) => `Jawab ${x} nahi hai.`, (x) => `${x} nahi, yeh jawab theek nahi baitha.`, (x) => `${x} se baat nahi bani.`],
+  // (Learning 019 B c5-t01, main's d31: "X nahi, yeh jawab theek nahi baitha" read odd — a tuition teacher's plain "Nahi, …" in its place)
+  hinglish: [(x) => `${x} sahi nahi hai.`, (x) => `Jawab ${x} nahi hai.`, (x) => `Nahi, ${x} theek nahi.`, (x) => `${x} se baat nahi bani.`],
   english: [(x) => `Not quite, ${x} isn't it.`, (x) => `${x} is not the answer.`, (x) => `${x} doesn't fit here.`],
 };
 /** v6.8 R5 (main on director16: "Is sawaal ka jawab Gopi ke paas tha"): a key with no number — a name, a phrase — is said in the colon
