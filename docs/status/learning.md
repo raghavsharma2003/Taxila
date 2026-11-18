@@ -1709,8 +1709,8 @@ does not state (the checker confirms numbers, slots and the key's forms).
 
 ### The `--since` read
 
-After the edits I ran the new list against `3fc4a673a` on all four (`check.mjs <topic> --since 3fc4a673a`; 33 to 47 parts a script,
-most only for the new `hindi`) and read every part whose spoken text changed other than its `hindi` — 15 in c4, 20 in c5-t01, 6 in
+After the edits I ran the new list against `3fc4a673a` on all four (`check.mjs <topic> --since 3fc4a673a`; 38, 42, 40 and 33 parts,
+most only for the new `hindi`) and read every part whose spoken text changed other than its `hindi` — 14 in c4, 18 in c5-t01, 6 in
 c5-t02, 5 in c6 — against its board and its card by hand. Two were wrong and are fixed: c5-t01's s3 worked caption ("poore number line
 ke neeche", heard as "the whole number line") → "0, 1, 2 jaise poore number line ke neeche"; c5-t02's S3 e3 point said "kam hisson
 wali patti" over a compare board that draws no strip → "jo kam hisson mein kata ho". Every other sentence is true of its own board
