@@ -5,7 +5,7 @@
 // keyed). Each was run over the director25 fixture rows it is written for and reads non-zero there
 // (tests/r8-director25-help-predicates.test.mjs). Merged into dry-predicates.mjs's PREDICATES; gated. Pure.
 import { missesOnQuestion } from "./d29-predicates.mjs";
-import { hindiFormSaid } from "./d30-predicates.mjs";
+import { hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { compiledFor } from "../../server/director/compile.js";
 import { helpPart, ladderOf, sameSentence, normSentence, sentencesOf, at, FALLBACK_JOINTS, keyLine } from "../../server/director/help.js";
 
@@ -267,6 +267,8 @@ export const HELP_PREDICATES = {
     const ix = helpIndex(ctx);
     const spentLine = sentencesOf(r.text).some((s) => ix.joints.has(normSentence(s)));
     const ss = helpSentences(r, ctx);
+    // (Brain 047 R8: at a card with no `hindi` form whose help is spent, the switch line and the whole card are the answer)
+    if (!ss.length && !spentLine && r.card && !hindiFormAt(ctx.script, r) && low(r.text).includes(low(r.card)) && r.cell?.part && !helpFirstUnsaid(L, i, ctx, r.cell.part)) return null;
     if (!ss.length) return spentLine ? null : "a Hindi request answered with no new words (the switch line and the card only)";
     const said = saidBefore(L, i);
     return ss.every(({ k }) => inSet(k, said)) ? `a Hindi request answered with words she has said: "${ss[0].s.slice(0, 60)}"` : null;

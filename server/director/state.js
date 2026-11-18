@@ -3477,7 +3477,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
@@ -3578,7 +3578,8 @@ export function requestUnhelped(prev, input, out) {
   const lm = out?.state?.lastMove ?? {};
   if (["safeguard", "break", "wrap"].includes(String(lm.kind ?? "")) || out?.end) return null;
   const h = lm.help ?? null;
-  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent" || h.hindiForm)) return null;
+  // (Brain 047 R8: a Hindi request with the part's help spent is answered by the switch line and the whole card, or the lesson going on)
+  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent" || h.hindiForm || h.hindiWhole)) return null;
   if (lm.gave?.answer || lm.quickReply || lm.stepReply) return null;
   // (the greeting's own simpler wording answers a request at the greeting; after it, the hook, the first point and its card are the next turn
   // whatever the child says — the greeting has no other wording)

@@ -1,0 +1,79 @@
+// Brain 047 (docs/patches/to-brain/047-director31-short-ask-returns-help.md, dc-r8-director31): each new or changed predicate pinned non-zero
+// on the director31 rows the order lists (tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-18-director31; rows are 0-based
+// indexes into a lesson's `director`), replayed with that run's own script snapshot, and each rule pinned from the order's sentences.
+// Learning 020 rewrites the scripts and adds fields at the same time: nothing here pins a sentence of today's script.
+import { test, describe } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { lessonFlags, PENDING } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
+
+const ROOT = new URL("..", import.meta.url).pathname;
+const RUN = join(ROOT, "tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-18-director31");
+const TOPIC = { c4: "c4-maths-ch05-t01", c5t01: "c5-maths-ch02-t01", c5t02: "c5-maths-ch02-t02", c5t03: "c5-maths-ch02-t03", c6: "c6-maths-ch06-t01",
+  c4ch01: "c4-maths-ch01-t02", c6ch07: "c6-maths-ch07-t01" };
+const cache = new Map();
+export const lesson = (persona, t) => {
+  const k = `${persona}|${t}`;
+  if (!cache.has(k)) {
+    const j = JSON.parse(readFileSync(join(RUN, `${persona}-${TOPIC[t].replace(/^c(\d)-maths-/, "c$1-")}.json`), "utf8"));
+    cache.set(k, { rows: j.director, script: JSON.parse(readFileSync(join(RUN, "scripts", `${TOPIC[t]}.json`), "utf8")) });
+  }
+  return cache.get(k);
+};
+const flagged = (persona, t, name, L = lesson(persona, t)) => new Set(lessonFlags(L).filter((f) => f.predicate === name).map((f) => f.row));
+/** A copy of a script with every `hindi` form taken off (Learning 020: most cards have none). */
+const noForms = (script) => { const s = structuredClone(script); const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { delete o.hindi; Object.values(o).forEach(walk); } }; walk(s); return s; };
+
+describe("R8: a Hindi request at a card with no form", () => {
+  test("pickHelp: the card's unsaid help first (no line, no form); with its help spent, the whole card — never the \"nothing easier\" line, never a key", async () => {
+    const { pickHelp, addSaid, ladderOf, helpPart } = await import("../server/director/help.js");
+    const script = noForms(lesson("offtopic", "c4").script);
+    const sk = script.skills[0], c = sk.checks.find((x) => x.prompt);
+    const part = `${sk.skillId}:check:${c.id}`;
+    const d1 = pickHelp({ script, part, request: "hindi", said: [] });
+    assert.ok(d1.rung?.text, "the card's unsaid help");
+    assert.ok(!d1.joint && !d1.hindiForm && !d1.key, "no line, no form, no key");
+    assert.equal(d1.card, "keep");
+    let said = [];
+    for (const r of ladderOf(script, helpPart(script, part))) said = addSaid(said, r.value.hi, 1);
+    const d2 = pickHelp({ script, part, request: "hindi", said });
+    assert.ok(!d2.joint, "never the nothing-easier line");
+    assert.ok(!d2.key, "never the key");
+    assert.equal(d2.card, "hindiForm");
+    assert.equal(d2.hindiForm, c.prompt.hi.replace(/\s+/g, " ").trim(), "the whole card");
+    assert.equal(d2.hindiWhole, true);
+  });
+  test("an asked step with no form: its simpler, then the step's question whole — a Hindi request is no cue to tell the step", async () => {
+    const { pickHelp, addSaid } = await import("../server/director/help.js");
+    const script = noForms(lesson("stuck", "c5t01").script);
+    const n = script.skills.findIndex((k) => (k.workedExample?.steps ?? []).some((st) => st.ask?.prompt && st.simpler));
+    const sk = script.skills[n], j = sk.workedExample.steps.findIndex((st) => st.ask?.prompt && st.simpler);
+    const part = `${sk.skillId}:worked:step${j + 1}`;
+    const d1 = pickHelp({ script, part, request: "hindi", said: [] });
+    assert.equal(d1.stepAsked, true);
+    assert.equal(d1.card, "keep");
+    assert.ok(d1.rung?.text);
+    const d2 = pickHelp({ script, part, request: "hindi", said: addSaid([], sk.workedExample.steps[j].simpler.hi, 1) });
+    assert.equal(d2.card, "hindiForm");
+    assert.equal(d2.stepAsked, true);
+    assert.equal(d2.hindiForm, sk.workedExample.steps[j].ask.prompt.hi.replace(/\s+/g, " ").trim());
+  });
+  test("hindiSpentCold is gated and reads the \"nothing easier\" line to a Hindi request at a card with no form (director31 c4 offtopic 32, as answered before 047)", () => {
+    assert.ok(!PENDING.has("hindiSpentCold"));
+    const { rows, script } = lesson("offtopic", "c4");
+    const r = rows[32];
+    const spent = script.joints.helpSpent[0].hi;
+    const rs = [...rows.slice(0, 32), { ...r, text: `${spent} ${r.card}`, seams: [{ left: "start", right: "help", joint: "helpSpent", form: spent, by: "authored" }, { left: "help", right: "card", joint: null }] }];
+    assert.ok(flagged("offtopic", "c4", "hindiSpentCold", { rows: rs, script: noForms(script) }).has(32));
+    assert.ok(!flagged("offtopic", "c4", "hindiSpentCold").has(32), "the run's own row: the form was said");
+  });
+  test("no compile hole for a card with no form; a switch line that names Hindi is no hole", async () => {
+    const { compileScript } = await import("../server/director/compile.js");
+    const { helpJointHoles } = await import("../server/director/help.js");
+    const script = noForms(lesson("offtopic", "c4").script);
+    assert.deepEqual(compileScript(script).holes.filter((h) => h.field === "hindi"), []);
+    const s = { ...script, joints: { ...script.joints, hindiSwitch: [{ hi: "Theek hai, Hindi mein poochhti hoon.", en: "All right, I'll ask in Hindi." }] } };
+    assert.ok(!helpJointHoles(s).some((h) => h.joint === "hindiSwitch"));
+  });
+});

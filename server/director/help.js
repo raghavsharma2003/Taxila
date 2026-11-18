@@ -215,8 +215,7 @@ export function helpJointHoles(script) {
   // (Brain 045 P4: startAnyway, the line that starts the lesson after a second request at the greeting)
   // (Brain 046 Q5: afterWorked, the seam from a worked example's close into the next card — brain/seams.js CODE_SEAM_FORMS when the script has none)
   for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "stepMiss", "startAnyway", "afterWorked"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
-  const hs = script?.joints?.hindiSwitch;
-  if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
+  // (Brain 047 R8, dc-r8-director31 item 1: the switch line promises only Hindi now — a form that names Hindi is no hole)
   return out;
 }
 /** The forms of a help joint for a script (its own, else code's), as { forms, by }. */
@@ -291,6 +290,14 @@ export function hindiFormOf(script, part) {
   const t = v && typeof v === "object" ? v.hi ?? v.en : v;
   return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
 }
+/** Brain 047 R8: a part's question as written (its `prompt`: a card's ask, a check, a follow-up card, the your-step, an asked step's ask), said
+ *  whole — the answer to a Hindi request at a card with no `hindi` form once its help is spent. → its Hindi-English text, or null. */
+export function cardPromptOf(script, part) {
+  const o = String(part?.path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((x, k) => x?.[/^\d+$/.test(k) ? Number(k) : k], script);
+  const p = o && typeof o === "object" ? o.prompt ?? (o.ask && typeof o.ask === "object" ? o.ask.prompt : null) : null;
+  const t = p && typeof p === "object" ? p.hi ?? p.en : p;
+  return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
+}
 export const KEY_AFTER_MISSES = 5;
 export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
   if (!HELP_REQUESTS.includes(request)) return null;
@@ -309,10 +316,15 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (dc-r8-director29 Brain 045 P3: at an asked worked step a give-up or a clarify gets the step's own simpler, then the step's question again —
   // the step stays asked; at the second request (its simpler said) there is no help here: the walk tells the step, as after a wrong answer)
   const rawAt = (path) => { try { return String(path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script); } catch { return null; } };
-  if (part.kind === "worked_step" && part.step && rawAt(part.path)?.ask?.prompt && !keyed && !closed && request !== "hindi") {
+  // (Brain 047 R8: a Hindi request at an asked step with no `hindi` form gets the same — its simpler, then the step's question; with the simpler
+  // said, the step's question whole after the switch line. A Hindi request is no cue to tell the step)
+  if (part.kind === "worked_step" && part.step && rawAt(part.path)?.ask?.prompt && !keyed && !closed && (request !== "hindi" || !hindiFormOf(script, part))) {
     const r0 = ladderOf(script, part)[0];
     const t = r0 && r0.field === "simpler" ? saidIn(r0.value, L) : null;
-    if (!t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said))) return null;
+    const spent = !t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said));
+    if (spent && request === "hindi") { const whole = cardPromptOf(script, part);
+      return whole ? { part: part.id, kind: part.kind, keyed: false, request, rung: { field: "whole", path: part.path, text: "", board: part.board ?? null }, board: part.board ?? null, card: "hindiForm", key: null, joint: null, hindiForm: whole, hindiWhole: true, stepAsked: true } : null; }
+    if (spent) return null;
     const t0 = String(t).trim();
     const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
     return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true };
@@ -323,7 +335,7 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
   // line leads it (the language pass), the form is asked over the card's board; a second request on the same card gets the card's unsaid help
   // first, then the form again. Never the "nothing easier" line, never the point's other wording in its place: c4, c5-t02, c6 offtopic 32;
-  // c5-t01 stuck 8. A script with no `hindi` form walks as before (a compile hole: hindiHoles)
+  // c5-t01 stuck 8. A card with no `hindi` form gets its unsaid help, then itself whole (Brain 047 R8, below)
   const hf = request === "hindi" && !keyed && !closed && (isCard || (part.kind === "worked_step" && part.step)) ? hindiFormOf(script, part) : null;
   if (hf) {
     // (a second request: the form said before, every sentence of it — a form whose givens sentence reads as the card's own is not said
@@ -349,10 +361,15 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   }
   // nothing unsaid left
   if (request === "hindi") {
-    // (a Hindi request never gets a key: one true line that there are no easier words, and the question alone)
-    const joint = helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 });
-    const card = keyed || part.kind === "bridge" ? "goOn" : isCard ? "keep" : part.card ? "ask" : "wait";
-    return { ...base, rung: null, board: part.board ?? null, card, key: null, joint };
+    // (Brain 047 R8, dc-r8-director31 item 1: most cards have no `hindi` form now, on purpose. A Hindi request never gets a key and never the
+    // "nothing easier" line (c4 offtopic 32): with the part's help spent, the switch line (the language pass says it) and the whole card again
+    // — said as the card's question, as a form is. A point's card is asked; after a key or at a bridge the lesson goes on with the go-on line)
+    if (keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 }), hindiWhole: true };
+    if (part.kind === "bridge") return { ...base, rung: null, board: null, card: "goOn", key: null, joint: null, hindiWhole: true };
+    const whole = isCard ? cardPromptOf(script, part) : null;
+    if (whole) return { ...base, rung: { field: "whole", path: part.path, text: "", board: part.board ?? null }, board: part.board ?? null, card: "hindiForm", key: null, joint: null, hindiForm: whole, hindiWhole: true };
+    const card = isCard ? "keep" : part.card ? "ask" : "goOn";
+    return { ...base, rung: null, board: part.board ?? null, card, key: null, joint: null, hindiWhole: true };
   }
   // (a closed card with nothing left: the helpSpent line, and the lesson goes on — the go-on line is a key's)
   if (closed && !keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };

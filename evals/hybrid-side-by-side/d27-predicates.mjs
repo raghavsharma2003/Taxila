@@ -16,7 +16,7 @@
 // P5, joints:
 //   returnLed        a card said again after other parts were said since its last telling (a return) is led by the back-to joint or the
 //                    after-key return form
-import { stepToldAfterSimpler, hindiFormSaid } from "./d30-predicates.mjs";
+import { stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
 import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
 
@@ -278,6 +278,8 @@ export const D27_PREDICATES = {
     const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents) : true;
     // (Brain 044 T5: the three things and nothing else — an unsaid wording, the key, the "nothing easier" line; the after-key return, the go-on
     // line and helpToCard alone are not help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
+    // (Brain 047 R8: a Hindi request at a card with no `hindi` form, its help spent: the switch line and the whole card)
+    if (req === "hindi" && isSpent && r.card && !hindiFormAt(ctx.script, r) && low(r.text).includes(low(r.card))) return null;
     if (hasJoint(r.text, ctx.script, ["helpSpent"])) return isSpent ? null : `a ${req} on ${a.beat} answered with the "nothing easier" line while its help is unsaid`;
     const other = parts.find((p) => p.part === "simpler");
     return `a ${req} on ${a.beat}${a.keyed ? " (after a key)" : ""} answered with ${other ? `help for ${other.beat}` : parts.length ? parts.filter((p) => !p.joint && !p.checkin).map((p) => `${p.part}@${p.beat}`).join(", ") || "a joint" : "no part"}`;

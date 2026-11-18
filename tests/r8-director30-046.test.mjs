@@ -80,7 +80,8 @@ describe("Q2: a request for Hindi gets Hindi", () => {
       const { rows, script } = lesson("offtopic", t);
       assert.ok(lessonFlags({ rows, script: withHindi(script) }).some((f) => f.predicate === "hindiSpentCold" && f.row === 32), t);
       // (today's script has no form: the fallback is counted apart, pending)
-      assert.ok(!flagged("offtopic", t, "hindiSpentCold").has(32) && flagged("offtopic", t, "hindiSpentHole").has(32), `${t} hole`);
+      // (Brain 047 R8: at a card with no form the line is the fault too — hindiSpentHole is folded into hindiSpentCold)
+      assert.ok(flagged("offtopic", t, "hindiSpentCold").has(32), `${t} no form`);
     }
   });
   test("pickHelp: the first request for Hindi at a card is its hindi form alone; the second, the card's unsaid help then the form; none, as before", async () => {
@@ -99,10 +100,11 @@ describe("Q2: a request for Hindi gets Hindi", () => {
     const d2 = pickHelp({ script: s, part, request: "hindi", said });
     assert.equal(d2.card, "hindiForm");
     assert.ok(d2.hindiAgain && d2.rung.text.length > 0, "the card's unsaid help, then the form again");
+    // (no form: the card's unsaid help first, as any request for help — Brain 047 R8)
     const d0 = pickHelp({ script, part, request: "hindi", said: [] });
-    assert.notEqual(d0.card, "hindiForm", "no form: as before");
+    assert.ok(d0.rung?.text && !d0.hindiForm && !d0.joint, "no form: the card's unsaid help");
   });
-  test("an asked worked step's hindi form is read from its ask; a script with none has a compile hole for every card and asked step", async () => {
+  test("an asked worked step's hindi form is read from its ask; a script with none has no compile hole for it (Brain 047 R8)", async () => {
     const { hindiFormOf, helpPart } = await import("../server/director/help.js");
     const { compileScript } = await import("../server/director/compile.js");
     const { script } = lesson("offtopic", "c6");
@@ -111,9 +113,8 @@ describe("Q2: a request for Hindi gets Hindi", () => {
     const k = (sk.workedExample.steps ?? []).findIndex((st) => st.ask?.prompt);
     assert.ok(k >= 0);
     assert.equal(hindiFormOf(s, helpPart(s, `${sk.skillId}:worked:step${k + 1}`)), sk.workedExample.steps[k].ask.hindi.hi);
-    const holes = compileScript(script).holes.filter((h) => h.field === "hindi");
-    assert.ok(holes.some((h) => h.path === `skills[0].workedExample.steps[${k}].ask.hindi`));
-    assert.ok(holes.some((h) => /explain\[0\]\.ask\.hindi$/.test(h.path)) && holes.some((h) => /remediation\[0\]\.then\.hindi$/.test(h.path)));
+    // (Brain 047 R8: a card with no form is no hole — a form is written only where an honest plainer sentence exists)
+    assert.deepEqual(compileScript(script).holes.filter((h) => h.field === "hindi"), []);
     assert.deepEqual(compileScript(s).holes.filter((h) => h.field === "hindi"), []);
   });
 });

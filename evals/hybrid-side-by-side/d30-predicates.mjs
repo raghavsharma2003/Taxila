@@ -273,7 +273,8 @@ export const D30_PREDICATES = {
    *  steady 88; c4 steering 14, 16). Gated. A question of two words or fewer, and her return or AI question, is no re-ask. */
   reaskRunning(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx?.prevT || !r.card) return null;
-    // (a request for Hindi at a card with no hindi form is answered as before — Q2's fallback, counted by hindiSpentHole)
+    // (a request for Hindi at a card with no hindi form: the switch line and the whole card, which may be the question her turn before ended on
+    // — Brain 047 R8)
     if (String(ctx?.prevIntent ?? "") === "hindi" && !hindiFormAt(ctx?.script, r)) return null;
     // (and the card's `hindi` form said to a request for Hindi is no re-ask: the order keeps it out of the rotation — the form is said as
     // written, whatever question it ends on; dry steady c5-t01 36, c3's form ends on the card's own question)
@@ -302,18 +303,12 @@ export const D30_PREDICATES = {
     return `a bridge in a verdict-point-card turn (${(r.seams ?? []).map((x) => x.right).join(" > ")})`;
   },
   /** dc-r8-director30 Brain 046 Q2: the "nothing easier" line (helpSpent) is never the answer to a request for Hindi — the card's `hindi` form
-   *  is (c4, c5-t02, c6 offtopic 32). Gated. */
+   *  is (c4, c5-t02, c6 offtopic 32). Brain 047 R8: nor at a card with no form — the switch line, its unsaid help, then the whole card
+   *  (director31 c4 offtopic 32). Gated. */
   hindiSpentCold(L, r, i, ctx) {
     if (r.who !== "teacher" || String(ctx?.prevIntent ?? r.cell?.column ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
     if (!(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
-    return hindiFormAt(ctx?.script, r) ? "a request for Hindi answered with the \"nothing easier\" line" : null;
-  },
-  /** Q2's code fallback, counted: a request for Hindi answered with the "nothing easier" line at a card whose script has no `hindi` form yet
-   *  (a compile hole until Learning 019). Pending. */
-  hindiSpentHole(L, r, i, ctx) {
-    if (r.who !== "teacher" || String(ctx?.prevIntent ?? r.cell?.column ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
-    if (!(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
-    return hindiFormAt(ctx?.script, r) ? null : "a request for Hindi answered with the \"nothing easier\" line (the card has no hindi form)";
+    return `a request for Hindi answered with the "nothing easier" line${hindiFormAt(ctx?.script, r) ? "" : " (the card has no hindi form)"}`;
   },
   /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help about another figure is
    *  followed by the card's own re-ask (c5-t01 stuck 64, 70, offtopic 30). Gated. */

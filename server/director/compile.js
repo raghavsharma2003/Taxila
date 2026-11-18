@@ -11,7 +11,7 @@
 // (two remediations for one mix-up, two parts with one id).
 
 import { createHash } from "node:crypto";
-import { helpPartFrom, ladderSpec, helpJointHoles, hindiPathOf } from "./help.js";
+import { helpPartFrom, ladderSpec, helpJointHoles } from "./help.js";
 
 /** The part kinds of a unit (COMPILE.md "Parts"). */
 // (Loop's review, ask D: the hook is a part — its interest slot is the plan's hookSlot, so hook lines have a cell and a because)
@@ -279,16 +279,8 @@ export function compileScript(script, plan = null) {
     const c = at(script, p.path);
     if (c?.why && !c.whyShort) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/right`, field: "whyShort", path: `${p.path}.whyShort` });
   }
-  // (dc-r8-director30 Brain 046 Q2: a card, a follow-up card, a check, the your-step and an asked worked step with no `hindi` form — a request
-  // for Hindi there walks as before, with the card's wordings and the "nothing easier" line)
-  for (const p of parts.filter((x) => ["card", "then_card", "check", "your_step", "worked_step"].includes(x.kind))) {
-    const hp = helpPartFrom(script, p);
-    if (p.kind === "worked_step" && !at(script, p.path)?.ask?.prompt) continue;
-    if (hp && !hindiPathOf(script, hp)) {
-      holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, field: "hindi", path: p.kind === "worked_step" ? `${p.path}.ask.hindi` : `${p.path}.hindi` });
-      fallbacks.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, fallback: "the card's wordings, then the helpSpent line", field: "hindi" });
-    }
-  }
+  // (Brain 047 R8, dc-r8-director31 item 1: a card with no `hindi` form is no hole — a form is written only where an honest plainer sentence
+  // exists; a Hindi request there gets the switch line and the card's unsaid help, then the whole card: help.js pickHelp)
   // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)
   if (script && !(Array.isArray(script.wrap?.ask) && script.wrap.ask.length)) holes.push({ part: "wrap", kind: "wrap", rule: "wrap/ask", field: "ask", path: "wrap.ask" });
   const order = orderOf(script ?? {}, parts, plan);
