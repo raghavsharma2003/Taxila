@@ -1031,10 +1031,92 @@ function cycle(c, tl) {
   return { facts: Object.fromEntries([["stages", n], ...stages.map((s, i) => [`stage${i + 1}`, s])]), claims };
 }
 
+/** Studio 014 (dc-r8-director31 item 5): a unit word, one spelling per unit ("metre" and "m" are one unit). */
+const UNIT_ONE = { m: "m", metre: "m", meter: "m", metres: "m", meters: "m", cm: "cm", km: "km", mm: "mm" };
+/**
+ * Studio 014 item 1: a compare@1 table whose every item is a quantity in ONE unit ("20 cm"; "36 cm ka 1/3" — a share of a
+ * length) as the to-scale bars its `scale` view draws: one bar per item in table order, or — when one column holds ONE length
+ * and the other column's lengths add up to it exactly ("16 cm" | "6 cm", "6 cm", "2 cm", "2 cm") — that whole as one bar cut
+ * at its pieces. A share's bar is the whole it is a share of, uncut and labelled as the table labels it: the share's own
+ * length is what such a card asks (c6-ch07-t01 c2, "kiska hissa lamba hai?"), so it is never cut or shaded.
+ * → { unit, whole?: { title, label, n, pieces: [{ label, n }], piecesTitle }, bars?: [{ title, label, n }] } or null. PURE.
+ */
+export function compareScaleOf(c) {
+  const Q = /^(\d+(?:\.\d+)?)\s*(\p{L}+)(?:\s+ka\s+(\d+)\s*\/\s*(\d+))?$/u;
+  const cols = [];
+  for (const side of [c?.left, c?.right]) {
+    if (!side || !Array.isArray(side.items) || !side.items.length) return null;
+    const items = side.items.map((t) => {
+      const label = String(t ?? "").trim(), m = Q.exec(label);
+      if (!m) return null;
+      const n = Number(m[1]), unit = UNIT_ONE[m[2].toLowerCase()] ?? m[2].toLowerCase();
+      if (m[3] && !(Number(m[3]) >= 1 && Number(m[3]) <= Number(m[4]) && Number(m[4]) <= 12)) return null;
+      return n > 0 && n <= 10000 ? { label, n, unit, share: !!m[3] } : null;
+    });
+    if (items.some((x) => !x)) return null;
+    cols.push({ title: String(side.title ?? "").trim(), items });
+  }
+  const all = cols.flatMap((col) => col.items);
+  if (new Set(all.map((x) => x.unit)).size !== 1) return null;
+  const unit = all[0].unit;
+  for (const [w, p] of [[0, 1], [1, 0]]) {
+    const W = cols[w], P = cols[p];
+    if (W.items.length !== 1 || P.items.length < 2 || [...W.items, ...P.items].some((x) => x.share)) continue;
+    if (Math.abs(P.items.reduce((a, x) => a + x.n, 0) - W.items[0].n) > 1e-6) continue;
+    return { unit, whole: { title: W.title, label: W.items[0].label, n: W.items[0].n, piecesTitle: P.title, pieces: P.items.map(({ label, n }) => ({ label, n })) } };
+  }
+  // (bars all of one length restate the table's "the same" and draw nothing new: "3 bachche 2 roti | 5 bachche 2 roti")
+  if (all.length > 4 || new Set(all.map((x) => x.n)).size < 2) return null;
+  return { unit, bars: cols.flatMap((col) => col.items.map(({ label, n }, i) => ({ title: i ? "" : col.title, label, n }))) };
+}
+/** compare@1 `scale` (Studio 014 item 1): the table's lengths as bars in proportion (compareScaleOf), every word the table's
+ *  own. Counts are the table's (derivedCounts reads left / right, as for the table). */
+function compareScale(c, tl) {
+  const s = compareScaleOf(c);
+  if (!s) return { error: "compare_scale_items" };
+  // (laid out for the split's panel too — board-first SPLIT_BOARD: 0.8 of this geometry with every word one size up — so two
+  // words side by side are spaced by their m widths at that scale, never only by their widths here)
+  const K = 0.8, wm = (t) => textBox(t, "m").w, after = (x, w0, t, pad = 10) => round1(x + (w0 + pad + wm(t) / 2) / K);
+  const H = 26;
+  if (s.whole) {
+    const w = s.whole, x0 = 30, W = 250, y = 120;
+    if (w.title) tl.add({ id: "t0", op: "text", at: [after(x0, 0, w.title, 0), y - 46], text: w.title, size: "s", ink: "accent" }, 400, { gap: 0 });
+    tl.add({ id: "b0", op: "rect", at: [x0, y], w: W, h: H, weight: 2 }, 800, { gap: 200 });
+    const lx = after(x0 + W, 0, w.label);
+    if (K * lx + wm(w.label) / 2 > K * 396) return { error: "compare_scale_label" };
+    tl.add({ id: "l0", op: "text", at: [lx, y + H / 2], text: w.label, size: "s", ink: "accent" }, 400, { gap: 120 });
+    let x = x0;
+    w.pieces.forEach((p, i) => {
+      const x1 = round1(x + (p.n / w.n) * W), mid = round1((x + x1) / 2);
+      if (i < w.pieces.length - 1) tl.add({ id: `k${i}`, op: "line", from: [x1, y - 6], to: [x1, y + H + 6], weight: 2, ink: "accent" }, 300, { gap: 160 });
+      // (a piece too short for its label has it above the bar, the next below, so neighbours never overlap — as unrolled@1)
+      const roomy = wm(p.label) + 6 <= (x1 - x) * K;
+      tl.add({ id: `p${i}`, op: "text", at: [mid, roomy || i % 2 === 0 ? y + H + 20 : y - 18], text: p.label, size: "s" }, 400, { gap: 100 });
+      x = x1;
+    });
+    if (w.piecesTitle) tl.add({ id: "t1", op: "text", at: [after(x0, 0, w.piecesTitle, 0), y + H + 62], text: w.piecesTitle, size: "s", ink: "accent" }, 400, { gap: 200 });
+    return { facts: { view: "to scale", whole: `${w.label}: ${w.pieces.length} pieces`.slice(0, 40), pieces: w.pieces.map((p) => p.label).join(", ").slice(0, 40) } };
+  }
+  const max = Math.max(...s.bars.map((b) => b.n)), x0 = 30, W = 340, gap = s.bars.length > 3 ? 62 : 76;
+  const top = Math.round((BOARD.h - ((s.bars.length - 1) * gap + H)) / 2) + 10;
+  const facts = { view: "to scale" };
+  for (const [i, b] of s.bars.entries()) {
+    const y = top + i * gap, len = round1(Math.max(4, (b.n / max) * W));
+    // (over each bar its column's title and its length, as the table writes them: words never run past the board)
+    const tx = after(x0, 0, b.title || "", 0), lx = b.title ? after(x0, wm(b.title), b.label, 14) : after(x0, 0, b.label, 0);
+    if (K * lx + wm(b.label) / 2 > K * 396) return { error: "compare_scale_label" };
+    if (b.title) tl.add({ id: `t${i}`, op: "text", at: [tx, y - 14], text: b.title, size: "s", ink: "accent" }, 400, { gap: i ? 200 : 0 });
+    tl.add({ id: `l${i}`, op: "text", at: [lx, y - 14], text: b.label, size: "s" }, 400, { gap: 80 });
+    tl.add({ id: `b${i}`, op: "rect", at: [x0, y], w: len, h: H, weight: 2 }, 600 + Math.round(len * 2), { gap: 120 });
+    facts[`bar${i + 1}`] = `${b.title ? `${b.title}: ` : ""}${b.label}`.slice(0, 40);
+  }
+  return { facts };
+}
 function compare(c, tl) {
   const { left, right } = c;
   const ok = (side) => side && fitsLabel(side.title) && Array.isArray(side.items) && side.items.length >= 1 && side.items.length <= 4 && side.items.every(fitsLabel);
   if (!ok(left) || !ok(right)) return { error: "sides" };
+  if (c.scale === true) { if (c.mark != null) return { error: "compare_scale_mark" }; return compareScale(c, tl); }
   const colW = 175;
   // one size for both titles and one for all the items: the table reads as a table
   const titleSize = [left, right].every((d) => sizeFor(d.title, colW - 8) === "m") ? "m" : "s";

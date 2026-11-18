@@ -28,7 +28,7 @@ import { fitLegible, scaleScript } from "./board-legible.js";
 import { scriptFacts, isMotionOp, shiftOp, lintScript, opGeometry } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 import { resolveBoardRef } from "../forge/explainer/board-ref.js";
-import { expand } from "../forge/explainer/templates.js";
+import { expand, compareScaleOf } from "../forge/explainer/templates.js";
 import { splitSentences } from "../voice/sentences.js";
 import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
 import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
@@ -589,7 +589,7 @@ function wholesOfCompare(c) {
 
 /** The second views a pick names (artifact.altView): parts (bars), line, wholes, strips (wholes as bars), unrolled (a ruler),
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
-const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid"]);
+const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid", "scale"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
 // (round 8: NUM_HI, fracSay and lineStatesKey moved to server/forge/explainer/states-key.js — the templates use the key
 // predicate and this file imports templates.js; re-exported here so every caller is unchanged)
@@ -619,6 +619,17 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   // where the 8 had been. A quiet bar of several is named by its place, as a whole sentence: "doosri patti bhi barabar hisson
   // mein bati hai" — the part without its count, never a slot)
   const item = (x, i) => (quiet.has(x.parts) ? `${ord(i)} patti${i ? " bhi" : ""} barabar hisson mein bati hai${shadeOf(x)}` : v ? `${ord(i)} ${bar(x)}` : `ek ${bar(x)}`);
+  // (Studio 014 item 1: the to-scale view names the table's own words only — its titles and its lengths)
+  if (ac.template === "compare@1" && ac.scale) {
+    const sc = compareScaleOf(ac);
+    if (sc?.whole) { const w = sc.whole, list = w.pieces.map((p) => p.label).join(", ");
+      return v ? `Ab isi ko naap se dekho: ${w.label} ki ek patti, ${list} ke tukdon mein kati hui`
+        : `Dekho, ${w.title ? `${w.title} ` : ""}${w.label} ki ek lambi patti hai, aur ${list} ke hisse usi naap se kaate hain`; }
+    if (sc?.bars) { const list = sc.bars.map((b) => `${b.title ? `${b.title}, ` : ""}${b.label}`).join("; ");
+      const what = ["cm", "m", "km", "mm"].includes(sc.unit) ? "lambai" : "sankhya";
+      return v ? `Ab inhe naap se pattiyon mein dekho: ${list}` : `Dekho, har ${what} ek patti hai, naap ke hisaab se: ${list}`; }
+    return "";
+  }
   if (ac.template === "shade-grid@1") return v ? `Ab inhe ek jaal mein gino: ${ac.rows} qatarein hain, aur har qatar mein ${ac.cols}`
     : `Wahi ${NUM_HI[ac.rows] ?? ac.rows} group ab ek jaal mein hain: ${ac.rows} qatarein, har qatar mein ${ac.cols}`;
   if (ac.wholes) {
@@ -865,7 +876,12 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
       bars.push(!Array.isArray(f) ? { parts: b, shade: a, label: "?" } : isWithheld(a, b) ? { parts: b, shade: 0, label: "?" } : { parts: b, shade: a, label: key });
     }
     // (… and a line's 0 and 1 stay: the bars of a 0-1 line are drawn with its ends)
-    return bars.length >= 1 && bars.length <= 3 ? { template: "fraction-bars@1", bars, ...(c.template === "fraction-line@1" ? { ends: true } : {}) } : null;
+    if (bars.length >= 1 && bars.length <= 3) return { template: "fraction-bars@1", bars, ...(c.template === "fraction-line@1" ? { ends: true } : {}) };
+    // (Studio 014 item 1, dc-r8-director31: a table whose items are lengths in one unit — "Ribbon P 20 cm | Ribbon Q 12 cm",
+    // "Chocolate 16 cm | Hisse 6, 6, 2, 2 cm" — is drawn to scale: a bar per length, or the whole cut at its pieces. c6-ch07
+    // stuck 18 heard such a table read back as its picture)
+    if (c.template === "compare@1" && compareScaleOf(c)) return { template: "compare@1", left: c.left, right: c.right, scale: true, view: "scale" };
+    return null;
   } catch { return null; }
 }
 

@@ -1422,6 +1422,8 @@ export function boardKind(ref) {
   if (t === "fraction-parts@1") return p.whole === "bar" ? "strip" : "circle";
   if (t === "wholes@1") return p.as === "bar" ? "strip" : "circle";
   if (t === "shade-grid@1" || t === "equal-groups@1") return "grid";
+  // (Studio 014: a compare table's to-scale view is bars — pattiyan)
+  if (t === "compare@1" && p.scale === true) return "strip";
   return "figure";
 }
 /** The second view a picture turn draws beside `ref` (pictureTurn, as tests/r8-picture-turn holds it): { template, view, kind } or null. */
