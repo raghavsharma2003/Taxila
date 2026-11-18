@@ -5,6 +5,8 @@
 //
 //   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
 //   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
+//   --staged                                      (eval only) a topic with no pilot script walks its staged script
+//                                                 (data/lesson-scripts-staged), snapshot in <out>/scripts; the server never serves one
 //   --learners meera,meeraForgot,kabir,player     round 8 (integration 26, "taught this child"): each lesson starts from a seeded
 //                                                 learner (evals/knows-her/seed.mjs: the knows.js plan, warm-up and interests);
 //                                                 with --matrix, every topic × every learner on --scenario (default steady).
@@ -23,6 +25,7 @@ import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
+import { useStaged, snapshotStaged } from "./hybrid-side-by-side/staged.mjs";
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor, TO_END_MAX, LEAVE_WAIT as LEAVE_WAIT_H } from "./child-sim/reactive.mjs";
 import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers, imaginedOut, answerGiven } from "./hybrid-side-by-side/checks.mjs";
@@ -660,6 +663,10 @@ const runs = LEARNERS.length
   : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
 // (a run finished in parts: --skip leaves out lessons already written, by output name)
 const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
+// (d31: --staged walks a topic whose script is staged — data/lesson-scripts-staged, no pilot script — in this process only; the server
+// never serves that folder. evals/hybrid-side-by-side/staged.mjs)
+const STAGED_TOPICS = process.argv.includes("--staged") ? useStaged(runs.map((r) => r.topicId)) : [];
+if (STAGED_TOPICS.length) console.error(`staged scripts walked (eval only): ${STAGED_TOPICS.join(", ")}`);
 // (main, after director6's first start walked no script at all: a script run never starts on a topic with no walkable script;
 // it says which topic and why, and spends nothing)
 if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
@@ -668,6 +675,7 @@ if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
 }
 const dir = OUT;
 mkdirSync(dir, { recursive: true });
+snapshotStaged(dir, STAGED_TOPICS);
 for (const { topicId, classLevel, name: scenario, learner = null } of runs) {
   const kit = kitFromFile(getTopic(topicId));
   // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
