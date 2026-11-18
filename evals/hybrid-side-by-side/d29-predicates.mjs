@@ -30,6 +30,7 @@
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
+import { partStartOf } from "./d30-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -90,7 +91,9 @@ export const D29_PREDICATES = {
       const owner = parts.find((p) => !p.lead && p.from >= after && p.boards.some((b) => sameB(b, pg.board)));
       if (!owner) continue;
       if (claim && claim.from < owner.from) return `the ${claim.part} at ${claim.from} ("${claim.text.slice(0, 30)}") claims the ${brief(pg.board)} page its ${owner.part}@${owner.beat} owns`;
-      if (owner.from !== pg.from) return `the ${brief(pg.board)} page drawn at ${pg.from}, not at its ${owner.part}@${owner.beat}'s first word (${owner.from})`;
+      // (Brain 045 P2: the owner's first word is its own, past a lead the record folded into it — partStartOf, the one start)
+      const start = partStartOf(r, owner);
+      if (start !== pg.from) return `the ${brief(pg.board)} page drawn at ${pg.from}, not at its ${owner.part}@${owner.beat}'s first word (${start})`;
     }
     return null;
   },

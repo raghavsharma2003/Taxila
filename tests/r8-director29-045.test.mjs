@@ -47,3 +47,15 @@ describe("P1: a picture turn draws the board the walk named", () => {
     assert.equal(heldOf({ move: { ...move, pictureAlone: true }, list: null, line: "", kit: null, up }).noView, true);
   });
 });
+
+describe("P2: the page's start, one function", () => {
+  test("pageStart reads c5-t01 stuck 8: the easier-words line folded into the help's part, its page drawn at the line", () => {
+    assert.ok(flagged("stuck", "c5t01", "pageStart").has(8));
+  });
+  test("partStartOf skips a seam's joint form at the head of a part, and nothing else", async () => {
+    const { partStartOf } = await import("../evals/hybrid-side-by-side/d30-predicates.mjs");
+    const r = { text: "Haan, aasaan shabdon mein. Ek roti ko beech se kaato.", seams: [{ joint: "hindiSwitch", form: "Haan, aasaan shabdon mein." }] };
+    assert.equal(partStartOf(r, { from: 0 }), 26);
+    assert.equal(partStartOf({ ...r, seams: [] }, { from: 0 }), 0);
+  });
+});

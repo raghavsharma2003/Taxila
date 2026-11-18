@@ -3568,7 +3568,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const named = !same && named0;
       const ack = named ? [] : [same ? HINDI_SAME : freshOf(jointsAt(kit, "hindiSwitch", lang, state) ?? LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
       const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
-      if (r2 !== reply) { reply = r2; guard.langAck = true; }
+      if (r2 !== reply) {
+        reply = r2; guard.langAck = true;
+        // (dc-r8-director29 Brain 045 P2, c5-t01 stuck 8: the easier-words line is a lead — its own part, owning no page — so the help's page
+        // starts at the help's first word, never at the line's)
+        if (ack.length && guard.lineParts?.length && !guard.lineParts.some((q) => q.kind === "hindiSwitch")) {
+          guard.lineParts = alignParts([{ part: "aside", text: ack[0], kind: "hindiSwitch" }, ...guard.lineParts.filter((q) => norm(q.text) !== norm(ack[0]))], reply);
+          if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
+        }
+      }
     }
     // v6.2 H4 (main, director10 c4 ×10: "Ab in dono numbers se bhinn likho. Ab in dono numbers se bhinn likho."): a sentence is said
     // once, after the Hindi words too (two that differed only by "fraction" / "bhinn" are one); a copy in the card is the one kept

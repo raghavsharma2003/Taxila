@@ -17,4 +17,19 @@ export function pictureNamedFlag(L, r, i, ctx) {
     return null;
 }
 
+/** P2: where a part's own words start — its recorded start, past any lead sentence the record folded into it (a seam's joint form: the
+ *  easier-words line, a back-to line) — the one start every page is read against (c5-t01 stuck 8). */
+export function partStartOf(r, p) {
+  const t = String(r.text ?? "");
+  const forms = (r.seams ?? []).filter((x) => x.joint && x.form).map((x) => String(x.form).replace(/\s+/g, " ").trim().toLowerCase());
+  let at = p.from ?? 0;
+  for (;;) {
+    const rest = t.slice(at);
+    const lead = rest.match(/^\s*/)[0].length;
+    const f = forms.find((x) => rest.slice(lead).toLowerCase().startsWith(x));
+    if (!f) return at + lead;
+    at += lead + f.length;
+  }
+}
+
 export const D30_PREDICATES = {};
