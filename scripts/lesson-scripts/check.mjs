@@ -1548,7 +1548,7 @@ export function d30Report(s) {
  *      two are the same: the why names the other form. */
 export const AFTER_WORKED_MAX = 6;
 /** Scripts outside the four pilots held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged. */
-export const STANDARD_STAGED = [];
+export const STANDARD_STAGED = ["c5-maths-ch02-t03", "c4-maths-ch01-t02", "c6-maths-ch07-t01"];
 /** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */
 export const HINDI_FORM_ENGLISH = /\b(and|or|but|so|the|are|was|were|of|what|which|who|how|many|much|equal|equally|part|parts|piece|pieces|colou?r|colou?red|shaded?|same|total|left|count|whole|half|bigger|smaller|biggest|smallest|more|less|than|answer|find|first|second|third|then|now|yes|right|wrong|side|sides|length|breadth|width|cost|times|each|every|between|after|before|top|bottom|distance|share|shared|divide|divided|add|subtract|multiply|correct|think|tell|cut|eat|ate|eaten|take|took|give|gave|walk|walked|run|ran|fence|wire|round|rounds)\b/i;
 /** Every card the child answers, with where it is (A.1). */
