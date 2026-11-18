@@ -3658,7 +3658,9 @@ function helpHeld(prev, input, d) {
   s.splitHold = undefined; s.cardUnsaid = undefined; s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   const req = input.cls?.request;
   if (d.request === "hindi" && req?.type === "language") { s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true }; if (!d.joint) s.langN = (s.langN ?? 0) + 1; }
-  const f = d.rung || d.joint ? helpFields(input.kit, d) : {};
+  // (Brain 047 R8: a Hindi request with the point's help spent asks the held card with nothing before it but the switch line — the help mark
+  // says so)
+  const f = d.rung || d.joint ? helpFields(input.kit, d) : { help: helpMark(d) };
   let move = { ...stripHelp(h.move), ...f, ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
   noteHelp(s, d);
   s.lastMove = move; s.moveVoiced = false; s.lastUi = h.ui; s.lastContent = h.lastContent; s.activeItemId = h.activeItemId;
@@ -3698,7 +3700,7 @@ function helpAfter(prev, input, out, pre) {
     // an earlier card, or drops it before the aside's return; the help joint it records is the go-on line)
     const j2 = d.then?.text ? fillFriend(d.then.text, friendOf) : null;
     out.state.lastMove = { ...lm, sayFirst: [j, ...(j2 ? [j2] : []), ...(lm.sayFirst ?? [])], helpJoint: j2 ? { kind: d.then.kind, form: j2, by: d.then.by, spent: { form: j, by: d.joint.by } } : { kind: d.joint.kind, form: j, by: d.joint.by }, help: mark };
-  } else out.state.lastMove = { ...lm, help: mark };
+  } else out.state.lastMove = { ...lm, help: mark, ...(d.request === "hindi" && d.hindiWhole ? { request: "language" } : {}) };
   noteHelp(out.state, d);
   if (out.move) out.move = { ...out.state.lastMove };
   return out;

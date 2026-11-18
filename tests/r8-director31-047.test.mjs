@@ -97,3 +97,24 @@ describe("R1: back to the earlier question, by the card's identity", () => {
     assert.deepEqual(cardsSaidNow({ lastUi: { ask: B }, recent: [{ who: "teacher", text: "Haan, sahi. Yahan tak saaf hai?" }] }), []);
   });
 });
+
+describe("R8: a Hindi request with the help spent, off a live card", () => {
+  test("at a closed card the lesson goes on (no line, no key); at a point its card is asked", async () => {
+    const { pickHelp, addSaid, ladderOf, helpPart } = await import("../server/director/help.js");
+    const script = noForms(lesson("offtopic", "c4").script);
+    const sk = script.skills[0], c = sk.checks.find((x) => x.prompt);
+    const part = `${sk.skillId}:check:${c.id}`;
+    let said = [];
+    for (const r of ladderOf(script, helpPart(script, part), { keyed: true })) said = addSaid(said, r.value.hi, 1);
+    const d = pickHelp({ script, part, request: "hindi", said, closed: true });
+    assert.equal(d.card, "goOn");
+    assert.ok(!d.joint && !d.key && d.hindiWhole);
+    const e = sk.explain.find((b) => b.ask && b.pointAlt && b.simpler);
+    const pp = `${sk.skillId}:${e.id}:point`;
+    let s2 = [];
+    for (const r of ladderOf(script, helpPart(script, pp))) s2 = addSaid(s2, r.value.hi, 1);
+    const d2 = pickHelp({ script, part: pp, request: "hindi", said: s2 });
+    assert.equal(d2.card, "ask");
+    assert.ok(!d2.joint && d2.hindiWhole);
+  });
+});

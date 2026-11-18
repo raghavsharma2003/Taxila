@@ -365,7 +365,8 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     // "nothing easier" line (c4 offtopic 32): with the part's help spent, the switch line (the language pass says it) and the whole card again
     // — said as the card's question, as a form is. A point's card is asked; after a key or at a bridge the lesson goes on with the go-on line)
     if (keyed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 }), hindiWhole: true };
-    if (part.kind === "bridge") return { ...base, rung: null, board: null, card: "goOn", key: null, joint: null, hindiWhole: true };
+    // (a card closed by its key or a right answer, or a bridge: the lesson goes on, after the switch line)
+    if (part.kind === "bridge" || closed) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: null, hindiWhole: true };
     const whole = isCard ? cardPromptOf(script, part) : null;
     if (whole) return { ...base, rung: { field: "whole", path: part.path, text: "", board: part.board ?? null }, board: part.board ?? null, card: "hindiForm", key: null, joint: null, hindiForm: whole, hindiWhole: true };
     const card = isCard ? "keep" : part.card ? "ask" : "goOn";
