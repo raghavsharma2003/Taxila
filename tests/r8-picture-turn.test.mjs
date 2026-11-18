@@ -34,13 +34,13 @@ const numsIn = (v) => (JSON.stringify(v).match(/\d+(?:\.\d+)?/g) ?? []).map(Numb
 
 /** The boards with no second view today, by template — why, and which of the pilots' boards. */
 const NO_VIEW = {
-  "shape@1": "a named outline with free-text labels (\"5 cm\", \"parimap 60 m\"): no numbers to lay out again",
-  "compare@1": "a word board: two titled lists; only a compare naming two whole cut into pieces has one (wholes)",
-  "fraction-line@1": "beyond one whole (to 2 or 3), a target to place, or a two-scale line whose marks are the key",
-  "fraction-bars@1": "three unnamed bars (no view without inventing a name), or a two-scale line view that does not lay out in the split's 320-wide panel (c5-t02 worked 1/6 and 1/3)",
-  "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question)",
-  "equal-groups@1": "unequal sizes [6, 3, 3] (no equal grid)",
-  "measured@1": "(none today: the six-sided strip lays out since v6.11)",
+  "shape@1": "a named outline with free-text labels (\"parimap 60 m\", \"baad 84 m\"): the perimeter is a label, not a length the template knows, and a rectangle's strip to scale would show its asked side by eye; a named pentagon has no lengths",
+  "compare@1": "a word board: two titled lists; only a compare naming two wholes cut into pieces (wholes) or listing lengths in one unit (Studio 014: scale) has one — c6's \"16 cm aur 9 cm\" items are two lengths each",
+  "fraction-line@1": "(none on the pilots since Studio 014: a line past 1, two scales past 1, or a target to place is drawn as whole strips end to end; a count key it would cut still has none)",
+  "fraction-bars@1": "(none on the pilots since Studio 014: three bars are three circles)",
+  "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question — grouping it any way is the answer or a split the card did not ask)",
+  "equal-groups@1": "(none on the pilots since Studio 014: unequal sizes are rows from one edge)",
+  "measured@1": "c6 s3 e3's 12 × 8 m garden (name, trace and a two-line mix-up): its unrolled view is built, but the held board itself does not lay out in the split's left panel (\"rectangle\" and \"perimeter\" meet at panel scale, the mix-up runs below the board)",
 };
 
 test("P6: pictureTurn — every pilot card and worked board gets its view, with a line naming only what the view draws, or no view and no line (never a line without a view)", () => {
@@ -87,7 +87,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // asked step's answer — for the pencils' grid and the two chocolates' bars: compare 4 → 2, shade-grid 5 → 6, wholes 21 → 22)
     // (Learning 020 rewrites, dc-r8-director31, 2026-11-18: one more fraction-parts board and one more equal-groups board, each with its view:
     // parts 10/10 → 11/11, equal-groups 6/9 → 7/10; every per-board assertion above still holds for them)
-    "fraction-parts@1": "11/11", "wholes@1": "22/22", "shade-grid@1": "1/6", "equal-groups@1": "7/10", "compare@1": "1/2",
+        // (Studio 014, dc-r8-director31 item 5, 2026-11-18: three unequal-groups boards get the rows view (equal-groups 7/10 → 10/10), three
+    // three-bar boards the three-circle view (bars 33 → 36), eighteen lines past 1 / with a target the strips view (line 43 → 61);
+    // every per-board assertion above holds for each, and no board that had a view changed it)
+    "fraction-parts@1": "11/11", "wholes@1": "22/22", "shade-grid@1": "1/6", "equal-groups@1": "10/10", "compare@1": "1/2",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -107,7 +110,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // (Learning 017 C, dc-r8-director28: c5-t02 S1 e2's point is drawn on both strips (fraction-parts 12 → 10, bars 35 → 36, with a
     // view); S2 e2's point on a 7-gap line (fraction-parts 10, line 60 → 61, with a view); c5-t01's redrawn remediation and point
     // boards stay lines)
-    "fraction-bars@1": "33/36", "fraction-line@1": "43/61", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    "fraction-bars@1": "36/36", "fraction-line@1": "61/61", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 

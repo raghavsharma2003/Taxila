@@ -1417,6 +1417,8 @@ export const VIEW_KIND_WORDS = {
 export function boardKind(ref) {
   if (!ref?.template) return null;
   const t = ref.template, p = ref.params ?? ref;
+  // (Studio 014: a line's wholes as strips end to end are strips — pattiyan)
+  if (t === "fraction-line@1" && p.as === "strips") return "strip";
   if (t === "fraction-line@1" || t === "unrolled@1" || t === "number-line-hop@1") return "line";
   if (t === "fraction-bars@1") return "strip";
   if (t === "fraction-parts@1") return p.whole === "bar" ? "strip" : "circle";

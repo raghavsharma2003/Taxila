@@ -123,3 +123,75 @@ test("angle@1 tester (item 2): each angle with the right-angle tester laid on it
   assert.equal(expand({ template: "angle@1", angles: [{ deg: 60 }, { deg: 90 }], mark: { index: 0 }, tester: true }).ok, false);
   assert.equal(viewOf({ template: "angle@1", params: { angles: [{ deg: 300 }] } }), null);
 });
+
+test("fraction-line@1 strips (item 5): a line past 1, with two scales past 1, or with a fraction to place is its wholes as strips end to end — the line's counts, the line's words, a mark shaded up to it, a fraction to place not drawn", () => {
+  // (the posing boards: an answer board's two marks — "6/3" and "7/3" on one scale — have no strips view, and need none)
+  const got = boards("fraction-line@1").filter((b) => !b.at.includes("answerBoard") && (b.ref.params.target != null || Number(b.ref.params.to ?? 1) > 1));
+  assert.ok(got.length >= 15);
+  for (const b of got) {
+    const p = b.ref.params, held = { template: "fraction-line@1", ...p };
+    assert.deepEqual(viewOf(b.ref, b.at), { template: "fraction-line@1", view: "strips", kind: "strip" }, b.at);
+    const pt = viewed(b.ref, "strips"), view = pt.view.script, w = Number(p.to ?? 1), dens = p.dens ?? [p.den];
+    assert.deepEqual(counts(pt.view.call), counts(held), `${b.at}: the line's counts`);
+    // one strip per whole per scale, all of one width; the words are the line's (its whole numbers, its mark labels, "?")
+    const strips = view.ops.filter((o) => /^w\d\d$/.test(o.id));
+    assert.equal(strips.length, w * dens.length, b.at);
+    assert.equal(new Set(strips.map((r) => r.w)).size, 1);
+    const own = new Set([...Array.from({ length: w + 1 }, (_, j) => String(j)), "?", ...(p.marks ?? []).map((m) => (Array.isArray(m) ? `${m[0]}/${m[1]}` : String(m.label ?? `${m.num}/${p.den}`))), ...(p.hop ? [`${p.hop.num}/${p.den}`] : [])]);
+    for (const t of texts(view)) assert.ok(own.has(t), `${b.at}: "${t}" is not the line's`);
+    // shaded: up to the one mark (given or asked), as many parts as its numerator; a fraction to place shades nothing
+    const shaded = view.ops.filter((o) => o.op === "rect" && o.fill).reduce((a, o) => a + o.w + 4, 0), pw = strips[0].w / (dens[0]);
+    const want = p.mark ?? (p.marks?.length ? (Array.isArray(p.marks[0]) ? p.marks[0][0] * (dens[0] / p.marks[0][1] === 1 ? 1 : 0) || p.marks[0][0] : p.marks[0].num) : 0);
+    if (p.target != null || !(p.mark ?? p.marks?.length)) assert.equal(shaded, 0, `${b.at}: nothing shaded`);
+    else if (!p.dens) assert.ok(Math.abs(shaded / pw - want) < 0.05, `${b.at}: ${shaded / pw} parts shaded, want ${want}`);
+    if (p.mark != null) assert.ok(texts(view).includes("?"), "an asked mark is named ?");
+  }
+});
+
+test("fraction-bars@1 three bars (item 5): three circles of the same parts side by side, the shading kept, no name written", () => {
+  const got = boards("fraction-bars@1").filter((b) => !b.at.includes("answerBoard") && b.ref.params.bars.length === 3);
+  assert.ok(got.length >= 8);
+  for (const b of got) {
+    assert.deepEqual(viewOf(b.ref, b.at), { template: "wholes@1", view: "wholes", kind: "circle" }, b.at);
+    const pt = viewed(b.ref, "wholes");
+    const bars = b.ref.params.bars, ws = counts(pt.view.call).wholes;
+    assert.deepEqual(ws.map((x) => [x.parts, x.shaded]), bars.map((x) => [x.parts, x.shade ?? 0]), b.at);
+    assert.deepEqual(texts(pt.view.script), [], "no word on the view");
+  }
+});
+
+test("equal-groups@1 rows (item 5): unequal groups as rows of cells from one edge, each size written at its row's end as the board writes it", () => {
+  // (an answer board's equal share beside the groups — equalTo — is the answer: no rows view)
+  const got = boards("equal-groups@1").filter((b) => Array.isArray(b.ref.params.sizes) && new Set(b.ref.params.sizes).size > 1 && b.ref.params.equalTo == null);
+  assert.ok(got.length >= 2);
+  for (const b of got) {
+    assert.deepEqual(viewOf(b.ref, b.at), { template: "equal-groups@1", view: "rows", kind: "grid" }, b.at);
+    const pt = viewed(b.ref, "rows"), view = pt.view.script, sizes = b.ref.params.sizes;
+    assert.deepEqual(counts(pt.view.call), counts({ template: "equal-groups@1", ...b.ref.params }), b.at);
+    assert.deepEqual(texts(view), sizes.map(String));
+    const rows = view.ops.filter((o) => /^g\d$/.test(o.id));
+    assert.equal(new Set(rows.map((r) => r.at[0])).size, 1, "every row from one edge");
+    assert.deepEqual(rows.map((r) => Math.round(r.w / (rows[0].w / sizes[0]))), sizes, "a row as long as its group");
+  }
+});
+
+test("shape@1 / measured@1 radii (item 3): a circle whose radius the board draws gets that radius at three places, a third of a turn apart (no diameter), under the board's own label", () => {
+  const circles = [...boards("shape@1"), ...boards("measured@1")].filter((b) => b.ref.params.shape === "circle");
+  for (const b of circles) {
+    const p = b.ref.params, v = viewOf(b.ref, b.at), call = BF.altCall(b.ref);
+    if (b.ref.template === "shape@1" && !p.radius) { assert.equal(call, null, `${b.at}: no radius drawn, no view`); continue; }
+    assert.equal(call?.view, "radii", b.at);
+    const x = expand(Object.fromEntries(Object.entries(call).filter(([k]) => k !== "view")));
+    assert.ok(x.ok, x.errors.join());
+    const arrows = x.script.ops.filter((o) => /^rad\d$/.test(o.id)), rim = x.script.ops.find((o) => o.op === "circle" && !o.fill);
+    assert.equal(arrows.length, 3);
+    for (const a of arrows) assert.ok(Math.abs(Math.hypot(a.to[0] - a.from[0], a.to[1] - a.from[1]) - rim.r) < 1, "centre to rim");
+    const ang = arrows.map((a) => Math.atan2(a.to[1] - a.from[1], a.to[0] - a.from[0]));
+    for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) assert.ok(Math.abs(Math.abs(ang[i] - ang[j]) - Math.PI) > 0.3, "no two radii make a diameter");
+    const held = expand({ template: b.ref.template, ...p }).script;
+    assert.deepEqual([...new Set(texts(x.script))].sort(), [...new Set(texts(held))].sort(), `${b.at}: the board's words only`);
+    assert.deepEqual(x.script.facts.counts, held.facts.counts);
+    // (drawn beside the held board where that board itself lays out in the split's left panel)
+    if (v) assert.equal(v.view, "radii");
+  }
+});
