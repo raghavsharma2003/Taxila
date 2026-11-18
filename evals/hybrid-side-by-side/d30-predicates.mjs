@@ -83,6 +83,35 @@ export function hindiFormAt(script, r) {
   const h = (o ?? o2 ?? o3)?.hindi;
   return h ? said(h) : null;
 }
+/** d31 046 follow-up: the script object a row's card is (its walk item, else the object whose prompt is the row's card), or null. */
+export function cardObjAt(script, r) {
+  const id = String(r?.check?.itemId ?? "");
+  const m = /^script:(.+?):(?:ask:(.+)|then:(.+)|([^:]+))$/.exec(id);
+  const sk = m ? (script?.skills ?? []).find((k) => k.skillId === m[1]) : null;
+  const o = !sk ? null : m[2] === "worked" ? sk.workedExample?.yourStep : m[2] ? (sk.explain ?? []).find((b) => b.id === m[2])?.ask
+    : m[3] ? (sk.remediation ?? []).find((x) => x.targets === m[3])?.then : (sk.checks ?? []).find((c) => c.id === m[4]);
+  const c = low(r?.card);
+  if (o && (!c || slotless(said(o.prompt)).every((x) => c.includes(x)) || slotless(o.prompt?.en ?? "").every((x) => c.includes(x)))) return o;
+  if (!c) return null;
+  for (const k of script?.skills ?? []) for (const x of [...(k.explain ?? []).map((b) => b.ask), ...(k.checks ?? []), ...(k.remediation ?? []).map((y) => y.then), k.workedExample?.yourStep]) {
+    if (x?.prompt && [said(x.prompt), x.prompt?.en].some((t) => t && slotless(t).length && slotless(t).every((y) => c.includes(y)))) return x;
+  }
+  return null;
+}
+/** A form's stretches with no {slot} in them, each lowercased and trimmed of end punctuation (empty ones dropped). */
+const slotless = (t) => low(t).split(/\{\w+\}/).map((x) => x.replace(/^[\s,.:;!?]+|[\s,.:;!?]+$/g, "")).filter((x) => x.length >= 3);
+/** A sentence's key: its letters and numbers only. */
+const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/).filter(Boolean);
+/** Whether a row says its card in a self-contained form: the whole card, its reask, or its Hindi form. */
+function selfContained(script, r) {
+  const t = low(r?.text);
+  if (r?.card && t.includes(low(r.card))) return "whole";
+  const o = cardObjAt(script, r);
+  for (const f of [o?.reask?.hi ?? o?.reask, o?.reask?.en]) if (typeof f === "string" && slotless(f).length && slotless(f).every((x) => t.includes(x))) return "reask";
+  if (hindiFormSaid(script, r)) return "hindi";
+  return null;
+}
 /** Brain 046 Q2: whether a row asks its card's `hindi` form — a Hindi request's answer, as the order rules (the form is new words, and the
  *  card's question). */
 export function hindiFormSaid(script, r) {
@@ -147,6 +176,23 @@ export function whyLeadOf(r) {
   return /^[^.?!:]{3,40}, kyunki /.test(t) ? "kyunki" : /^[^.?!:]{3,40}\. Dekho, /.test(t) ? "dekho" : /^[^.?!:]{3,25}: /.test(t) && !/^(?:toh poora jawab|iska jawab|is sawaal ka|yahan sahi jawab)/i.test(t) ? "colon" : null;
 }
 export const D30_PREDICATES = {
+  /** d31 046 follow-up rule 1: a re-ask ends on the card's reask, its whole question, its Hindi form or a short ask — never on a proper part
+   *  of the card's question, its last sentence alone or the clause after its colon (dry d31f steady c6-ch07-t01 6, c5-ch02-t03 10, 84,
+   *  c6-ch06-t01 90, c5-ch02-t02 8, c4-ch05-t01 16; offtopic c5-ch02-t01 22, 62; stuck c5-ch02-t01 40). A one-sentence card with no reask
+   *  keeps the clause after its colon. Gated. */
+  reaskWhole(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.card) return null;
+    const q = lastAsk(r);
+    if (!q || selfContained(ctx?.script, r)) return null;
+    const cs = sentencesOf(r.card), c0 = cs.at(-1) ?? "";
+    const o = cardObjAt(ctx?.script, r);
+    const reask = o?.reask ? said(o.reask) : null;
+    const parts = new Set();
+    if (cs.length >= 2) parts.add(qKey(c0));
+    const m0 = c0.split(/[:;]\s+/).at(-1) ?? "";
+    if (m0 !== c0 && (cs.length >= 2 || reask)) parts.add(qKey(m0));
+    return parts.has(qKey(q)) ? `a re-ask on a part of the card's question: "${q.slice(0, 60)}"` : null;
+  },
   /** dc-r8-director30 Brain 046 Q6: a picture's caption is the one written for the part the picture is of — never another part's caption
    *  found by an identical board (c5-t01 offtopic 26: e2's caption on a follow-up card; c4 steady 18: the point's on the card's). Gated. */
   captionPart(L, r, i, ctx) {
@@ -211,6 +257,12 @@ export const D30_PREDICATES = {
     if (String(ctx?.prevIntent ?? "") === "hindi" && hindiFormSaid(ctx?.script, r)) return null;
     const q = lastAsk(r), p = lastAsk(ctx.prevT);
     if (!q || q !== p || q.split(" ").length < 4) return null;
+    // (d31 046 follow-up: a card of two or more sentences with no reask has one self-contained form, the whole card — its last sentence
+    // alone is never said (reaskWhole). Said whole again after help about another figure, where the short ask may not stand (P6), it is
+    // the re-ask)
+    const o = cardObjAt(ctx?.script, r);
+    if (!o?.reask && sentencesOf(r.card ?? "").length >= 2 && low(r.text).includes(low(r.card))
+      && helpOtherFigure(r, ctx?.script)) return null;
     if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
     return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
   },

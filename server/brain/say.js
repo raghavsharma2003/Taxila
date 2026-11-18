@@ -3493,7 +3493,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (dc-r8-director23 harness: a one-sentence card with no reask is asked by the clause after its colon when that clause is a question
       // of its own — "…ruka: woh 0 se kitne kilometre par hai?")
       const tailQ = (() => { if (askMark || cardSs.length >= 2) return null; const c0 = norm(card); const m = c0.split(/[:;]\s+/).at(-1) ?? ""; return m !== c0 && /[?？]$/.test(m) && m.split(/\s+/).length >= 3 ? m.charAt(0).toUpperCase() + m.slice(1) : null; })();
-      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : tailQ ?? cardSs.at(-1);
+      // (d31 046 follow-up, rule 1 — dry steady c4-ch05-t01 16, c6-ch07-t01 6: the card's last sentence alone is never said; it can need
+      // givens no longer said, or ask about another figure than the help's. A card of two or more sentences with no reask is said whole)
+      const q = askMark ? norm(fillFriend(typeof askMark === "string" ? askMark : (lang === "english" ? askMark.en : askMark.hi) ?? "", state.ctx?.firstName ?? "")) : tailQ ?? (cardSs.length >= 2 ? null : cardSs.at(-1));
       // (main's 034, c4 steering 34: two give-ups at a check-in got the hint, then the hint again with the whole card — a give-up is no wrong
       // answer: "after the second miss the whole card" reads wrong answers only)
       const giveUpNow = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know)(?![\p{L}])/iu.test(String(childText ?? ""));
@@ -3594,16 +3596,21 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const c0 = cs.at(-1) ?? "", m0 = c0.split(/[:;]\s+/).at(-1) ?? "";
         // (d31, the staged c6-ch07-t01's dry stuck 62: a card of one sentence is its own last question clause — after its reask, it is what
         // differs; before, nothing differed and the reask was said again)
-        const clause = m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : cs.length >= 1 && /[?？]$/.test(c0) ? c0 : null;
+        // (d31 046 follow-up, rule 1 — dry steady c6-ch07-t01 6, c5-ch02-t03 10, 84, c6-ch06-t01 90: the last question clause alone dangles or
+        // needs givens no longer said. The rotation's two self-contained forms are Learning's reask and the whole card as written; only a
+        // one-sentence card with no reask keeps its clause after a colon, as before)
+        const clause = cs.length < 2 && !reask && m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : null;
+        const whole = cs.length >= 1 && /[?？]$/.test(c0) ? card : null;
         const helpNow = body.filter((x) => norm(x) !== norm(card)).join(" ");
         // (the short ask asks for the answer to the question on the table — never after help about another figure, P6)
         const shortOk = !figureOther(helpNow, card, state);
         const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
-        const pick = [["reask", reask], ["short", shortT], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
+        const pick = [["reask", reask], ["short", shortT], ["whole", whole], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
         if (pick) {
           const [k, t] = pick;
           tail = t; guard.reaskRotated = k;
           if (k === "short") { guard.reaskShort = { part: "card", text: t, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" }; guard.cardQuestionOnly = false; }
+          else if (k === "whole") { guard.cardQuestionOnly = false; guard.reaskShort = undefined; }
           else { guard.cardQuestionOnly = true; guard.reaskShort = undefined; }
           body = body.filter((x) => !REPOSE_FRAME.test(x));
         }

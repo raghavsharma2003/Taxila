@@ -470,7 +470,11 @@ export const PREDICATES = {
     // (dc-r8-director30 Brain 046 Q5: re-asks alternate — a one-sentence card is its own last question clause, said after its reask in the
     // turn before: only the card said whole in her turn before is the fault there; the staged c6-ch07-t01's dry stuck 58, 60, 62)
     const one = sentencesOf(r.card ?? "").length < 2;
-    const said = (one ? [ctx.prevT] : [ctx.prevT, ctx.prevPrevT]).some((t) => t && low(t.text).includes(c));
+    // (d31 046 follow-up rule 1: the re-ask alternates between the card's reask and the whole card, read on her turn before alone — the
+    // whole card after a turn that ended on the reask is the rotation (dry d31f steady c6-ch07-t01 6); a card of two or more sentences
+    // with no reask has no other self-contained form, and its whole card said again is read by reaskRunning)
+    if (!one && !hasReask) return null;
+    const said = [ctx.prevT].some((t) => t && low(t.text).includes(c));
     return said && low(r.text).includes(c) ? "the whole card said again after a hint, said whole in her last two turns" : null;
   },
   /** S1: "Ab isi par ek sawaal." only when the card follows in the same turn. */
