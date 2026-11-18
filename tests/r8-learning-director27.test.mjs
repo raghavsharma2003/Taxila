@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { scriptOf, d27Errors, isD27, D27_PILOTS, checkTopic, toldStepText } from "../scripts/lesson-scripts/check.mjs";
+import { scriptOf, d27Errors, isD27, D27_PILOTS, checkTopic, toldStepText, fitOf } from "../scripts/lesson-scripts/check.mjs";
 
 const words = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 const norm = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -18,23 +18,29 @@ test("016: the checker passes the four pilots, and its new rules are quiet on th
   }
 });
 
-test("016 A1: every explain beat has a quick question in its shape; its key is not its card's, and it names no card key", () => {
-  let n = 0;
-  for (const [t, s] of Object.entries(S)) for (const k of s.skills) for (const b of k.explain) {
-    const q = b.quick, at = `${t} ${k.skillId} ${b.id}`;
-    assert.ok(q, `${at}: quick`);
-    n++;
-    for (const l of ["hi", "en"]) {
-      assert.ok(words(q.prompt[l]) <= 14 && /\?\s*$/.test(q.prompt[l]), `${at} prompt ${l}`);
-      assert.ok(words(q.say[l]) <= 12 && !/\?/.test(q.say[l]), `${at} say ${l}`);
-    }
-    assert.ok(q.key && Array.isArray(q.accept) && q.accept.length, at);
-    if (b.ask) {
+// (Learning 017 B, dc-r8-director28: the quick questions asked back the sentence just said; a quick is kept only where a point and
+// its card cannot be cut to fit one turn, and every pilot pair now fits, so no pilot beat keeps one. Where one is kept its shape is
+// still director27's: a short question, a one-line say, a key that is not its card's.)
+test("017 B (was 016 A1): a quick question only where its point and card do not fit; then in its shape, its key not its card's", () => {
+  let n = 0, kept = 0;
+  for (const [t, s] of Object.entries(S)) {
+    const fit = new Map(fitOf(s).points.map((p) => [`${p.skill}/${p.id}`, p]));
+    for (const k of s.skills) for (const b of k.explain) {
+      const q = b.quick, at = `${t} ${k.skillId} ${b.id}`, f = fit.get(`${k.skillId}/${b.id}`);
+      n++;
+      assert.equal(!!q, f.total > f.limit, `${at}: quick ${q ? "on a pair that fits" : "missing on a pair that does not fit"} (${f.total}/${f.limit})`);
+      if (!q) continue;
+      kept++;
+      for (const l of ["hi", "en"]) {
+        assert.ok(words(q.prompt[l]) <= 14 && /\?\s*$/.test(q.prompt[l]), `${at} prompt ${l}`);
+        assert.ok(words(q.say[l]) <= 12 && !/\?/.test(q.say[l]), `${at} say ${l}`);
+      }
       const card = [b.ask.key, ...(b.ask.accept ?? [])].map(norm), mine = [q.key, ...q.accept].map(norm);
       assert.ok(!mine.some((x) => card.includes(x)), `${at}: shares a form with its card`);
     }
   }
   assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3, "every beat of the four pilots");
+  assert.equal(kept, 0, "every pilot pair fits, so no pilot keeps a quick");
 });
 
 test("016 A2: every worked example of two or more steps asks a step; the ask's answer is that step's result, never the child's own step's", () => {
@@ -56,10 +62,14 @@ test("016 A2: every worked example of two or more steps asks a step; the ask's a
 test("016 A2: c4 skill 1's own step needs thinking (the bottom number is hers); c6 skill 3 gives the child two steps and her own is not '3 × 160'", () => {
   const c4 = S["c4-maths-ch05-t01"].skills[0].workedExample;
   assert.equal(c4.yourStep.key, "2/5");
-  assert.ok(!c4.steps.some((x) => /\b5\b/.test(x.result)), "no told or asked step states the bottom number 5");
+  // (Learning 017 D: the asked step is now the bottom number's reasoning, "saare tukde: 5"; the child's own step still needs thinking:
+  // the top number, the pieces left, is said by no step)
+  assert.ok(!c4.steps.some((x) => /\b2\b/.test(`${x.result} ${x.why.hi} ${x.ask?.right?.hi ?? ""}`)), "no told or asked step states the 2 pieces left");
   assert.equal(c4.yourStep.wrongIfMis, "2/3", "the part-part slip is the child's to avoid");
   const c6 = S["c6-maths-ch06-t01"].skills[2].workedExample;
-  assert.ok(c6.steps.filter((x) => x.ask).length >= 2);
+  // (Learning 017 D: director28's judges read c6's two asked sums as a quiz; one asked step, the reasoning one, and no sum asked)
+  assert.ok(c6.steps.filter((x) => x.ask).length >= 1);
+  assert.ok(!c6.steps.some((x) => x.ask && /\d\s*[+×]\s*\d/.test(x.ask.prompt.hi)), "no asked step is a sum");
   assert.ok(!/3\s*×\s*160/.test(`${c6.yourStep.prompt.hi} ${c6.yourStep.prompt.en}`), "her step is not handed to her as a sum");
   assert.ok(!c6.steps.some((x) => /3\s*×/.test(`${x.do.hi} ${x.result}`)), "no step tells the times-three");
 });

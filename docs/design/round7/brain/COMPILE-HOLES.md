@@ -36,10 +36,10 @@
 
 | Script | Where | Parts | Cells | Missing | card ask.simpler | card whyAlt | card whyShort | check whyAlt | check whyShort | point pointAlt | remediation board | remediation sayAlt | then_card whyAlt | then_card whyShort | worked_step problemAlt | wrap ask | your_step whyAlt | Doubles |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch05-t01 | live | 65 | 1989 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch05-t01 | live | 63 | 1935 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 2 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t02 | live | 74 | 2268 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c6-maths-ch06-t01 | live | 66 | 2016 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch01-t02 | staged | 60 | 1836 | 73 | 9 | 9 | 9 | 9 | 9 | 9 | 3 | 3 | 3 | 3 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 72 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t02 | staged | 57 | 1746 | 71 | 7 | 7 | 7 | 8 | 8 | 7 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
@@ -154,9 +154,13 @@ A script without them is said with code's fallback forms (server/director/help.j
 | Script | Where | Joint | Hole |
 |---|---|---|---|
 | c4-maths-ch05-t01 | live | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch05-t01 | live | workedInvite | missing (code's fallback forms are said) |
 | c5-maths-ch02-t01 | live | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch02-t01 | live | workedInvite | missing (code's fallback forms are said) |
 | c5-maths-ch02-t02 | live | helpToCard | missing (code's fallback forms are said) |
+| c5-maths-ch02-t02 | live | workedInvite | missing (code's fallback forms are said) |
 | c6-maths-ch06-t01 | live | helpToCard | missing (code's fallback forms are said) |
+| c6-maths-ch06-t01 | live | workedInvite | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch01-t02 | staged | helpToCard | missing (code's fallback forms are said) |
@@ -404,13 +408,12 @@ None.
 
 ## Authored parts over 45 words (dc-r8-director25 L2: Learning's to shorten)
 
-A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 113 parts in 27 scripts (words: Hinglish / English).
+A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 112 parts in 27 scripts (words: Hinglish / English).
 
 | Script | Where | Part | Words | Opens |
 |---|---|---|---|---|
 | c5-maths-ch02-t02 | live | skills[0].explain[e1].ask.viewCaption | 53 / 52 | Yahan dono patti ki jagah 0 se 1 … |
 | c5-maths-ch02-t02 | live | skills[0].workedExample.simpler | 46 / 38 | Ise baantne ki tarah socho: ek chocolate do … |
-| c5-maths-ch02-t02 | live | skills[2].checks[c2].prompt | 49 / 42 | Anjali aur Imran ke paas ek jaise ribbon … |
 | c4-maths-ch01-t02 | staged | skills[1].explain[e1].point | 41 / 46 | Pehle tester ko kone par tikao. Agar kona … |
 | c4-maths-ch01-t02 | staged | skills[1].workedExample.problem | 60 / 52 | Rani ki rangoli mein 3 kone hain. Kone … |
 | c4-maths-ch01-t02 | staged | skills[2].explain[e1].point | 43 / 51 | String ka ek sira beech mein haath se … |
@@ -521,3 +524,44 @@ A turn of more than one part breaks at the last seam before 45 words; a single p
 | c7-maths-ch05-t02 | staged | skills[2].explain[e1].point | 54 / 53 | Kaagaz ko ek baar modo, toh ek seedhi … |
 | c7-maths-ch05-t02 | staged | skills[2].explain[e2].point | 49 / 56 | Board par do lines ek crossing banati hain. … |
 | c7-maths-ch05-t02 | staged | skills[2].explain[e3].point | 46 / 46 | Set-square ki ek bhuja ko ruler se sata … |
+
+## Fit: parts that share a turn (Learning 017 A, dc-r8-director28)
+
+Counts of parts over their limit: hook over 20 words; hook, first point and card over 75; a later point and its card over 61; a remediation and its follow-up card over 49 (said alone, ending on a check-in: reported, never failed); a worked opening (problem to the first question) over 53. Also: beats keeping a `quick`, `joints.workedInvite` still present, `joints.stepMiss` missing.
+
+| Script | Where | Hooks > 20 | First turns > 75 | Points > 61 | Quick kept | Remediations > 49 | Worked > 53 | workedInvite | stepMiss missing |
+|---|---|---|---|---|---|---|---|---|---|
+| c4-maths-ch05-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c5-maths-ch02-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c5-maths-ch02-t02 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c6-maths-ch06-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c4-maths-ch01-t02 | staged | 6 | 4 | 1 | 0 | 0 | 3 |  | yes |
+| c4-maths-ch03-t01 | staged | 6 | 6 | 2 | 0 | 2 | 3 |  | yes |
+| c4-maths-ch03-t02 | staged | 6 | 4 | 2 | 0 | 0 | 3 |  | yes |
+| c4-maths-ch04-t01 | staged | 6 | 4 | 0 | 0 | 4 | 3 |  | yes |
+| c4-maths-ch04-t02 | staged | 6 | 6 | 3 | 0 | 1 | 3 |  | yes |
+| c4-maths-ch06-t01 | staged | 6 | 6 | 1 | 0 | 0 | 3 |  | yes |
+| c4-maths-ch07-t01 | staged | 6 | 6 | 3 | 0 | 0 | 3 |  | yes |
+| c4-maths-ch09-t01 | staged | 5 | 3 | 0 | 0 | 0 | 3 |  | yes |
+| c4-maths-ch14-t01 | staged | 6 | 5 | 1 | 0 | 0 | 3 |  | yes |
+| c5-maths-ch01-t01 | staged | 5 | 3 | 2 | 0 | 2 | 3 |  | yes |
+| c5-maths-ch02-t03 | staged | 6 | 5 | 2 | 0 | 5 | 3 |  | yes |
+| c5-maths-ch03-t01 | staged | 6 | 6 | 0 | 0 | 4 | 3 |  | yes |
+| c5-maths-ch03-t02 | staged | 6 | 6 | 4 | 0 | 2 | 3 |  | yes |
+| c5-maths-ch05-t01 | staged | 6 | 4 | 0 | 0 | 0 | 3 |  | yes |
+| c5-maths-ch13-t01 | staged | 6 | 6 | 1 | 0 | 4 | 3 |  | yes |
+| c5-maths-ch13-t02 | staged | 6 | 4 | 1 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch02-t01 | staged | 7 | 7 | 4 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch02-t02 | staged | 6 | 6 | 4 | 0 | 3 | 3 |  | yes |
+| c6-maths-ch02-t03 | staged | 5 | 4 | 3 | 0 | 5 | 3 |  | yes |
+| c6-maths-ch02-t04 | staged | 6 | 6 | 1 | 0 | 3 | 3 |  | yes |
+| c6-maths-ch05-t01 | staged | 7 | 6 | 3 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch07-t01 | staged | 6 | 6 | 2 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch07-t03 | staged | 6 | 6 | 2 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch07-t04 | staged | 6 | 6 | 4 | 0 | 4 | 3 |  | yes |
+| c6-maths-ch07-t05 | staged | 6 | 5 | 1 | 0 | 3 | 3 |  | yes |
+| c6-maths-ch08-t01 | staged | 6 | 5 | 2 | 0 | 5 | 3 |  | yes |
+| c7-maths-ch02-t01 | staged | 6 | 2 | 0 | 0 | 4 | 3 |  | yes |
+| c7-maths-ch03-t01 | staged | 6 | 4 | 1 | 0 | 3 | 3 |  | yes |
+| c7-maths-ch05-t01 | staged | 6 | 5 | 2 | 0 | 3 | 3 |  | yes |
+| c7-maths-ch05-t02 | staged | 7 | 7 | 4 | 0 | 4 | 3 |  | yes |

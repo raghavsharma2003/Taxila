@@ -1075,3 +1075,243 @@ Read from the dry run's steady lessons. Six sentences changed; everything else i
 ## c5-t01 skill 1 check 3: the mix-up's answer reworded (main loop, 2026-11-17)
 
 `wrongIfMis` "no place" → "koi mark nahi". The card asks "kaunsa mark hai?", so a child with the mix-up answers about marks. The old token, said by the rule-based child, was read as a safety disclosure by the safety turn's model read (once in director28a's steady and stuck lessons, three times in director28's steady lesson: rows 40, 48, 56). Nothing in the safety code was changed or measured; a real child who answers a maths question with "no place" can still get a safety turn, and that stays on the list for the safety phase. The staged script `data/lesson-scripts-staged/` has one card with the same token; it is read when the staged scripts are.
+
+## Patch 017 (2026-11-17, branch main/d29-learning)
+
+Order: `docs/patches/to-learning/017-director28-boards-and-fit.md` (dc-r8-director28). Done on the four pilots; the checker holds
+them to the limits (`d29Errors`, `D29_PILOTS` = the four), `fitReport` prints the fit (`F` lines of `check.mjs <topic>`), and the
+compile report has a Fit table per script (staged scripts show their counts there; they are not failed).
+
+### A. Fit (word counts of `hi`; every limit met)
+
+**No pair or remediation was left over its limit.** No beat keeps a `quick` (every point and card fits A.1/A.2), and no remediation
+stays whole (every `say` and follow-up card fits 49). The help path's `sayAlt` + card is reported too (45 to 69) but not cut: A.3
+names the remediation, and T2's help-path limit is the walk's. The hooks are one or two sentences that run into the first point.
+Per script (hook + first point + card /75; later point + card /61; remediation `say` + card /49; worked opening /53):
+
+```
+== c4-maths-ch05-t01
+hook s1 slot0 (cooking): hook 18 + first point 33 + card 16 = 67/75
+hook s1 slot1 (drawing): hook 18 + first point 33 + card 16 = 67/75
+hook s2 slot0 (cooking): hook 18 + first point 31 + card 16 = 65/75
+hook s2 slot1 (cricket): hook 19 + first point 31 + card 16 = 66/75
+hook s3 slot0 (cooking): hook 19 + first point 21 + card 18 = 58/75
+hook s3 slot1 (drawing): hook 18 + first point 21 + card 18 = 57/75
+point s1 e2: 31 + card 15 = 46/61
+point s1 e3: 30 + card 15 = 45/61
+point s1 e4: 23 + card 33 = 56/61
+point s2 e2: 44 + card 14 = 58/61
+point s2 e3: 33 + card 24 = 57/61
+point s3 e2: 33 + card 9 = 42/61
+point s3 e3: 28 + card 32 = 60/61
+remediation s1[0]: say 30 + card 18 = 48/49; sayAlt + card 48
+remediation s1[1]: say 26 + card 23 = 49/49; sayAlt + card 65
+remediation s2[0]: say 23 + card 23 = 46/49; sayAlt + card 64
+remediation s2[1]: say 24 + card 25 = 49/49; sayAlt + card 59
+remediation s3[0]: say 23 + card 23 = 46/49; sayAlt + card 45
+worked s1: problem 13 + first question 12 (steps[0]) = 25/53
+worked s2: problem 6 + first question 11 (steps[0]) = 17/53
+worked s3: problem 20 + first question 13 (steps[0]) = 33/53
+== c5-maths-ch02-t01
+hook s1 slot0 (cricket): hook 20 + first point 28 + card 15 = 63/75
+hook s1 slot1 (vehicles): hook 20 + first point 28 + card 15 = 63/75
+hook s1 slot2 (games): hook 20 + first point 28 + card 15 = 63/75
+hook s2 slot0 (cricket): hook 18 + first point 33 + card 16 = 67/75
+hook s2 slot1 (games): hook 18 + first point 33 + card 16 = 67/75
+hook s3 slot0 (cricket): hook 19 + first point 35 + card 21 = 75/75
+hook s3 slot1 (vehicles): hook 18 + first point 35 + card 21 = 74/75
+point s1 e2: 30 + card 22 = 52/61
+point s1 e3: 31 + card 22 = 53/61
+point s2 e2: 34 + card 17 = 51/61
+point s2 e3: 32 + card 13 = 45/61
+point s3 e2: 37 + card 20 = 57/61
+point s3 e3: 34 + card 22 = 56/61
+remediation s1[0]: say 29 + card 17 = 46/49; sayAlt + card 62
+remediation s1[1]: say 24 + card 25 = 49/49; sayAlt + card 63
+remediation s1[2]: say 26 + card 22 = 48/49; sayAlt + card 40
+remediation s2[0]: say 21 + card 19 = 40/49; sayAlt + card 62
+remediation s2[1]: say 24 + card 25 = 49/49; sayAlt + card 66
+remediation s2[2]: say 26 + card 21 = 47/49; sayAlt + card 56
+remediation s3[0]: say 23 + card 25 = 48/49; sayAlt + card 61
+remediation s3[1]: say 25 + card 24 = 49/49; sayAlt + card 69
+remediation s3[2]: say 24 + card 25 = 49/49; sayAlt + card 67
+worked s1: problem 20 + first question 11 (steps[0]) = 31/53
+worked s2: problem 15 + first question 13 (steps[0]) = 28/53
+worked s3: problem 21 + first question 11 (steps[0]) = 32/53
+== c5-maths-ch02-t02
+hook s1 slot0 (cooking): hook 17 + first point 31 + card 26 = 74/75
+hook s1 slot1 (drawing): hook 17 + first point 31 + card 26 = 74/75
+hook s2 slot0 (cooking): hook 20 + first point 29 + card 18 = 67/75
+hook s2 slot1 (nature): hook 20 + first point 29 + card 18 = 67/75
+hook s3 slot0 (games): hook 20 + first point 17 + card 20 = 57/75
+hook s3 slot1 (cooking): hook 20 + first point 17 + card 20 = 57/75
+point s1 e2: 30 + card 17 = 47/61
+point s1 e3: 43 + card 12 = 55/61
+point s2 e2: 29 + card 23 = 52/61
+point s2 e3: 33 + card 23 = 56/61
+point s2 e4: 28 + card 25 = 53/61
+point s3 e2: 45 + card 16 = 61/61
+point s3 e3: 36 + card 24 = 60/61
+point s3 e4: 44 + card 13 = 57/61
+remediation s1[0]: say 24 + card 21 = 45/49; sayAlt + card 46
+remediation s2[0]: say 24 + card 25 = 49/49; sayAlt + card 47
+remediation s2[1]: say 24 + card 25 = 49/49; sayAlt + card 45
+remediation s2[2]: say 23 + card 25 = 48/49; sayAlt + card 69
+remediation s3[0]: say 24 + card 25 = 49/49; sayAlt + card 53
+remediation s3[1]: say 24 + card 25 = 49/49; sayAlt + card 57
+remediation s3[2]: say 25 + card 24 = 49/49; sayAlt + card 50
+worked s1: problem 21 + first question 14 (steps[0]) = 35/53
+worked s2: problem 17 + first question 13 (steps[0]) = 30/53
+worked s3: problem 20 + first question 14 (steps[0]) = 34/53
+== c6-maths-ch06-t01
+hook s1 slot0 (cricket): hook 19 + first point 37 + card 13 = 69/75
+hook s1 slot1 (drawing): hook 18 + first point 37 + card 13 = 68/75
+hook s1 slot2 (nature): hook 20 + first point 37 + card 13 = 70/75
+hook s2 slot0 (cricket): hook 17 + first point 43 + card 7 = 67/75
+hook s2 slot1 (games): hook 17 + first point 43 + card 7 = 67/75
+hook s3 slot0 (football): hook 20 + first point 36 + card 8 = 64/75
+hook s3 slot1 (nature): hook 20 + first point 36 + card 8 = 64/75
+hook s3 slot2 (cricket): hook 19 + first point 36 + card 8 = 63/75
+point s1 e2: 41 + card 6 = 47/61
+point s1 e3: 41 + card 10 = 51/61
+point s2 e2: 42 + card 12 = 54/61
+point s2 e3: 35 + card 12 = 47/61
+point s3 e2: 28 + card 6 = 34/61
+point s3 e3: 41 + card 10 = 51/61
+remediation s1[0]: say 25 + card 23 = 48/49; sayAlt + card 41
+remediation s1[1]: say 29 + card 19 = 48/49; sayAlt + card 55
+remediation s2[0]: say 29 + card 20 = 49/49; sayAlt + card 61
+remediation s2[1]: say 27 + card 16 = 43/49; sayAlt + card 56
+remediation s3[0]: say 27 + card 21 = 48/49; sayAlt + card 59
+remediation s3[1]: say 26 + card 23 = 49/49; sayAlt + card 58
+worked s1: problem 27 + first question 11 (steps[0]) = 38/53
+worked s2: problem 21 + first question 14 (steps[0]) = 35/53
+worked s3: problem 18 + first question 11 (steps[0]) = 29/53
+```
+
+### B. Quick questions
+
+All deleted: on the four pilots every pair fits, so none may keep one (B.1). The checker: `quick` is no longer required on a D29
+script; a `quick` on a pair that fits is an error; a pair over its limit without a `quick` is an error; a kept `quick` whose key or
+any accepted form is in its point (hi or en) is an error.
+
+### C. Boards changed (part: old → new)
+
+| Script | Part | Old | New |
+|---|---|---|---|
+| c4 | s1 e4 point | `fraction-bars` 8 "1/8" + 6 "?" (the Raju strip) | `fraction-bars` 8 "1/8" alone (caption: the 8-gap line); the card keeps both strips |
+| c4 | s3 bigger-denominator `sayAlt` | `wholes` Laddoo 2, Laddoo 4 | `wholes` Roti 3, Roti 5 (the words no longer give the e1 card's answer) |
+| c5-t01 | s1 e2 point | `fraction-line` dens [7,8], 1/7 | den 7, "1/7" (the point speaks the upper line only); the card keeps [7,8] |
+| c5-t01 | s1 e3 point | den 8, "1/8" and "1/2" | den 8, "1/8" (the point never said 1/2) |
+| c5-t01 | s1 count-marks card (rem0 then) | dens [7,12], 1/7 (the 11 ticks it asks to count) | den 7, "1/7" (the ribbon it starts from); answerBoard keeps [7,12]; the card is said as "Socho, … kaat rahe ho" |
+| c5-t01 | s1 "not numbers" rem2 | dens [7,6], 1/7 (its card's) | den 7, "1/7" |
+| c5-t01 | s2 count-marks rem0 | dens [4,10], 2/4 (its card's) | den 4 |
+| c5-t01 | s2 "not numbers" rem2 | den 8, mark 3 (its card's) | den 8 |
+| c5-t01 | s3 "all less than one" rem0 | dens [8,6] 0–2, 8/8 (its card's) | den 8 0–2, "8/8 = 1" |
+| c5-t01 | s3 "not numbers" rem2 | den 5 0–2, mark 8 (its card's) | den 5 0–2, "5/5 = 1" |
+| c5-t02 | S1 e2 point | `fraction-parts` 8, 1 shaded | `fraction-bars` 4 + 8, the 8's first part "1/8" ("dono patti") |
+| c5-t02 | S2 e2 point | `fraction-parts` 7, 4 shaded | `fraction-line` den 7, "4/7", 4 hops ("ek number line par") |
+| c5-t02 | S1 worked problem | bars 8 "1/8" + 2 "1/2" shaded (the child's step's answer board) | bars 8 + 2, unshaded, unnamed |
+| c5-t02 | S2 worked problem | line den 8, "3/8", "5/8" (the answer board) | line den 8 |
+| c5-t02 | S3 worked problem | line dens [7,3], 2/7 and 2/3 marked | line dens [7,3] |
+| c5-t02 | S2 c2 (new card) | `wholes` 4 + 6 | bars 3 + 6 unshaded; answerBoard 2/3, 5/6 |
+| c6 | s1 worked problem | `measured` triangle 7, 9, 12 | triangle 8, 9, 14; own step's answerBoard `shape` triangle "35 − 31 = 4 m" |
+
+Every other `explain[].board`, remediation board and `sayAlt.board` was read against its part and left: it shows what its part says.
+Captions (`viewCaption`) of each redrawn board were rewritten to say only what it draws. The checker (director10 cause #2) now allows
+a card that asks the child to count a line's marks to be posed on the line it starts from when its answer board adds that line and
+its key is a count (the count-marks card).
+
+### D. Worked examples (asked step → the child's own step), before → after, with the blind solve of each new key
+
+| Script | Before | After | Blind solve (problem and board alone) |
+|---|---|---|---|
+| c4 s1 | asked "Plate par kitne tukde bache?" (2, on the board); own: the fraction | asked "Neeche wale number mein kaunse tukde ginoge: saare, ya sirf khaye hue?" → **saare tukde**; own "plate par bache tukde … kaunsa fraction?" → 2/5 | bottom = all 5 equal pieces; left = 5 − 3 = 2 on top → 2/5 |
+| c4 s2 | no asked step; told "1/3 kya kehta hai"; own 15 ÷ 3 | asked "1/3 ke liye 15 pencil ko kitne barabar group mein baantoge?" → **3**; own "ek group mein kitni pencil?" → 5 | 1/3 → 3 equal groups; 15 shared in 3 → 5 |
+| c4 s3 | asked "Kiska ek tukda chhota hoga…?" (fifth asking); own 2 | asked "6 chhote tukde, bade tukdon par barabar rakhne hain. Unke kitne group banaoge?" → **3**; own "3 wali ke ek tukde par 6 wali ke kitne tukde?" → 2 | one group per big piece, 3 big pieces → 3 groups; 6 in 3 groups → 2 on each |
+| c5-t01 s1 | asked "3 khambon se kitne gaps bane?" (the frame thrice); own the first pole | asked "Doori ke liye khambe ginoge, ya khambon ke beech ke gaps?" → **gaps**; told 3 poles → 4 gaps; own "pehla khamba ghar se kitne kilometre par?" → 1/4 kilometre | distance is walked in gaps; 3 poles cut 1 km into 4 equal gaps; first pole one gap from home → 1/4 km |
+| c5-t01 s2 | asked "5 barabar gaps ke liye beech mein kitne marks lagenge?" (on the board); own the 2nd mark (with its method said) | asked "2/5 ka kaunsa number batata hai ki line kitne barabar gaps mein kategi?" → **neeche wala number**; told each gap 1/5; own "2/5 ke liye 0 ke baad kaunse mark par?" → the 2nd mark | bottom 5 cuts 0–1 into fifths; top 2 = two gaps from 0 → second mark |
+| c5-t01 s3 | asked "0 se 4 gap chalkar kis fraction par?"; own "7 gap the, 4 mein 1 aa gaya; kitne bache?" (7 − 4 handed over) | asked "7/4 line par 1 se pehle aayega, ya 1 ke baad?" → **after**; told 4 gaps reach 1; own "1 ke baad kaunse mark par 7/4?" → **the 3rd mark** (new key) | top 7 > bottom 4, so past 1; 7 gaps of 1/4, 4 reach 1, 3 more → third mark after 1 |
+| c5-t02 S1 | told "upar wala number dekho"; asked "Kiski chocolate zyada hisson mein kati?"; own Sana | asked "Ek-ek hissa mila; bada hissa kiska: jiski chocolate kam hisson mein kati, ya zyada?" → **kam hisson mein**; told 8 and 2; own "bada hissa kisko mila?" → Sana | same chocolate, fewer parts → bigger part; Sana's is in 2, Rahul's in 8 → Sana |
+| c5-t02 S2 | asked "har hissa kaunsa fraction hai?" (the frame); own Raju | asked "Hisse ek size ke; faisla kaun karega, upar wala number ya neeche wala?" → **upar wala number**; told 5 and 3; own "kam cake kisne khaya?" → Raju | both in eighths, so the count decides; 3 < 5 → Raju |
+| c5-t02 S3 | asked "Isha ki chocolate 3 mein kati. Har hissa kaunsa fraction?"; own Isha | asked "Dono ne 2-2 hisse khaye; ab faisla kaun karega, ginti ya hisse ka size?" → **hisse ka size**; told 1/3 and 1/7; own "zyada kisne khaya?" → Isha | counts equal, so size decides; 1/3 > 1/7 → Isha |
+| c6 s1 | asked "Pehle 7 aur 9 jodo"; own "16 mein 12 jodo" | problem now 8 m, 9 m, 14 m and the gardener's 35 m; asked "Baad kin bhujaon par lagegi: sirf do par, ya teeno par?" → **teeno par**; told 8 + 9 + 14 = 31 m; own "maali ki 35 m baad mein se kitni bachegi?" → **4 m** (new key; mix-up 18 m) | the fence goes on every side; 8 + 9 + 14 = 31; 35 − 31 = 4 m |
+| c6 s2 | told "use 2 × (l + b)"; asked "24 + 18 kitna?"; own "2 × 42 kitna?" | asked "Kone se saamne wale kone tak, aadhe chakkar mein kaun si bhujayein aati hain?" → **ek lambai aur ek chaudai**; told 24 + 18 = 42 cm; own "poore kinaare par kitni tape?" → 84 cm | corner to opposite corner = one length + one breadth; 42 is half the round; whole = 84 cm |
+| c6 s3 | asked "50 + 30 kitna?", "2 × 80 kitna?"; own 3 × 160 | asked "Teen chakkar ki doori ke liye, pehle kaunsi doori nikalni hogi?" → **ek chakkar**; told 2 × (50 + 30) = 160 m; own "teen chakkar mein kul kitne metre?" → 480 m | three equal rounds, so find one round first; 160 m a round; 3 × 160 = 480 m |
+
+Every opening (problem's first word to the end of the first question) is 17 to 38 words, with no told step between. No `ask.right`
+or told form opens the next step's sentence; no fact is said twice (c4 s1's "5 tukdon mein se 3 kha liye" is said once, in the
+problem). The checker fails an asked step or own step that asks a bare sum (`a + b`, `a × b`, "7 aur 9 jodo").
+
+### E. Joints
+
+`joints.stepMiss` in all four: "Nahi, yeh nahi hai." / "Yeh jawab nahi hai." / "Nahi, kuch aur hai." (4 words or fewer, no number, no
+question). `joints.workedInvite` deleted in all four (the checker fails it on a D29 script). Switch line (E.3): the second wordings
+after "easier words" that were another story of the same weight are plain now: c4 s1 e3 `pointAlt` ("Ulta chalo: agar tumhe 1/3
+banana ho…" → "Seedhi baat: circle ke 3 barabar tukde hain, aur 1 mein rang. Isliye 1/3: neeche 3, upar 1.", steady 36); c4 s1 e1
+and s2 e2 `pointAlt` lose "Ulte kram mein socho" / "Ulta socho"; c6 s1 rem0 `sayAlt` (the chowkidaar story, steering 8 → "P se
+chalo, ek-ek bhuja par ruko aur uski lambai jodo. Ungli wapas P par aaye, tabhi ruko."); c5-t01 s1 rem2 `sayAlt` (steering 8,
+"Number se jagah tak chalo: 1/7 kilometre sadak par ek hi jagah hai, line ke upar pehla mark. Ek jagah ka ek hi naam hota hai…" →
+"Seedhi baat: khilona ek hi jagah ruka, toh uska ek hi number hai. Woh number 1/7 kilometre hai."). The other `pointAlt`s and `sayAlt`s
+were read for the same and left: each is a plainer picture of the same point.
+
+### F. Sentences the judges named (old → new; row)
+
+- **c4** s3 bigger-denominator `say` (steady 98): "…12 bada number hai, par 12 wali ka tukda patla hai, kyunki neeche wala number
+  batata hai roti kitne tukdon mein kati, tukda kitna bada yeh nahi." → "Do ek jaisi roti: ek 3 barabar tukdon mein kati, ek 12 mein.
+  Roti utni hi, toh 12 wali ka har tukda patla." Its `sayAlt` (steady 100): "Ek laddoo 2 bachche baantein… waisa hi laddoo 4 bachche
+  baantein, toh har ek ko aadhe ka bhi aadha…" → "Do ek jaisi roti socho: ek 3 bachche baantein, doosri 5 bachche. Roti utni hi hai,
+  toh 5 bachchon wala tukda chhota." The part-part follow-up re-ask (steady 10, stuck 34, steering 14): "4 barabar tukdon wali chocolate
+  ke 2 tukde khaye gaye, toh Pinky ka 2/4 sahi hai ya Golu ka 2/2?" → "Is chocolate ke rangin tukde khaye gaye: Pinky ka 2/4 sahi hai ya
+  Golu ka 2/2?" The c2 hint (steady 54, offtopic 62): "…Unmein se khaya hua tukda hata do." → "Socho, 1/12 ka neeche wala number kya
+  ginta hai, aur upar wala kya ginta hai." s2 worked second hint (steady 86, the `problemAlt`): "…Pehle 1/3 ka matlab dekhenge, phir us
+  ek group ki pencil." → "Socho, 15 pencil 3 doston mein barabar baantni hain. Ek dost ko jitni milein, wahi 15 ka 1/3 hai." "Ulta
+  chalo", "Ulte kram mein socho": gone (above). "Ab upar wala number: 2, kyunki…": the step is gone (D). Chocolate and patti (steady
+  128, 130): s3's own step "Board par dono chocolate patti ki tarah bani hain… 3 wali patti…" → "Tumhari baari: 3 wali chocolate ke ek
+  tukde par, 6 wali chocolate ke kitne tukde aate hain?". s1 worked re-ask "Plate par bache 2 tukde…" → "Plate par bache tukde poori
+  barfi ka kaunsa fraction hain?" (016 B: no number the card leaves the child).
+- **c5-t01** "Pehle 7 gaps the" (s1 e3) → "Gap zyada, toh har gap pehle se chhota hai."; "1/12 metre matlab ribbon ke 12 barabar gap…"
+  (rem0 card's why) → "12 barabar gaps ke beech 11 marks hote hain, gaps se ek kam"; "7 = 4 + 3: pehle 4 gap se 1 poora hua…" → "pehle
+  4 gap se 1 poora hua, aur baaki 3 gap 1 ke aage gaye"; "Is sawaal ka jawab: sahi nahi" (offtopic 58): s1 c2's key "wrong" → "galat"
+  (the word its prompt offers; "wrong" stays accepted, `wrongIfMis` "right" → "sahi"); the frame "kitne barabar gaps" (s1 e2 card, e3
+  quick, worked step): the quick and the worked step are gone; "0 ke baad pehla mark kaunsa fraction hai" (e2 quick and c1): the quick is
+  gone; km and kilometre: every spoken "km" is "kilometre"; "bata"/"bati" for divided (5 lines) → "kata"/"kati", "logon mein bate" →
+  "logon mein baante".
+- **c5-t02** S2 e1 hint (stuck 60) "Patti ke hisse wahi 7 rehte hain; badalti sirf rang wale hisson ki ginti hai." → "Pehli patti par
+  2/7 kaise bana, woh dekho; doosri patti par wahi tareeka lagao."; re-ask (offtopic 54) "7 barabar hisson wali patti ke 4 hisson mein
+  rang bharein…" → "Doosri patti ke 4 hisson mein rang bharein, toh woh kaunsa fraction banega?"; "Zoya" as two people (steady 54, 80):
+  the S2 follow-up card's `{friend}` is "Neha"; S2 c2, a skill 1 card (one part of 1/4 against 1/6), → "Do ek jaisi patti: ek ke 3
+  barabar hisson mein se 2 rangin, doosri ke 6 mein se 5. Dono mein ek-ek hissa bina rang ka hai. Kya dono mein rang barabar hai, haan
+  ya nahi?" (gap-thinking, key No: empty parts 1/3 > 1/6, so 5/6 has more); S3 c2 "Dono apne liye hue hisse jodkar ek ribbon banate
+  hain. Kiska ribbon lamba banega…" → "Kiske 5 hisse milkar lambe hain, Anjali ke ya Imran ke?"; the frame "…kaunsa fraction hai?":
+  the quicks and S2's asked "har hissa kaunsa fraction hai?" are gone; roti in the hook against patti on the board: "Kitchen mein do ek
+  jaisi barfi ki patti kaati: ek ke 4 barabar hisse, doosri ke 8." "Toh poora jawab:" is not in the script (the walk's form).
+- **c6** s2 rem1 (steady 72) "Parimap aur area ko jawab ki ikaai se pehchaano. …" → "Socho, kinaare par dhaaga lapeta aur scale par
+  naapa: woh kinaara hai. Andar ke 1 cm wale square gine: woh area hai. Kinaare ke liye bhujayein jodo."; s3 e1's point (steady 80)
+  "…toh 60 m chaaron mein barabar bat-ta hai." → "Yeh kinaara chaar barabar bhujaon se bana hai, do se nahi. Ungli kone se chale, toh
+  chaaron bhujayein paar karke hi 60 m poore hote hain."; s3 rem0 (steady 82) "…rectangle ka parimap aadha karo aur lambai ghatao; square
+  ka parimap 4 se baanto." → "Socho, rectangle ke poore chakkar mein do lambai aur do chaudai hain. Kone se saamne wale kone tak sirf
+  aadha chakkar hai: ek lambai aur ek chaudai."; the s1 e2 card's re-ask (offtopic 16–20, none authored) → "Is hexagon ki ek bhuja par 5
+  cm likha hai; poore hexagon ka parimap kitne cm hai?"; "lambai" as a length (steady 48, 56), in skill 2: "jawab ek lambai hai" →
+  "Jawab kinaare ka naap hai", the e3 card "chaaron bhujaon ki kul lambai" → "chaaron bhujayein milkar kitne cm hain?", and its did, why,
+  whyAlt, `pointAlt`, the c3 hint and the bookmark card ("kinaare ki poori lambai" → "poora kinaara kitne centimetre ka"); skill 1
+  still says "lambai" for a length before the long side is named; the e1 hint (stuck 6) "Board ki line dekho: ungli ka poora safar wahi
+  hai…" → "Board par triangle ki har bhuja par uska naap likha hai. Ungli jin bhujaon se guzri, un sabke naap milakar socho."
+
+### Tests
+
+Run: `tests/r7-board-ref`, `tests/r8-learning-*` (with the new `r8-learning-director28`), `tests/r7-learning-*`, `tests/r8-picture-turn`,
+`tests/r7-compile`: 277 tests, 273 pass, 4 fail. Repinned where 017 changed what they pin, each keeping its rule: `r8-learning-director27`
+016 A1 → 017 B (a quick only on a pair that does not fit; none kept), 016 A2 (c4: the pieces left are the child's; c6: one asked step,
+no sum asked); `r7-learning-d10` (c6's sides 8, 9, 14); `r7-learning-d11` (the count-marks card shares the ribbon's line; s1 rem2 now
+has its own board); `r7-learning-d12` D12.2 (the worked problem is unmarked now, so the rule is tested by putting the shaded board back);
+`r7-learning-d13` D13.3 (the two gap remediations cut to fit); `r8-picture-turn` (fraction-parts 12 → 10, bars 35 → 36, line 60 → 61).
+Failing, not the scripts: `r7-compile` "help columns… a missing rung is a hole" (compile.js still lists `workedInvite` among the help
+joints; Brain 044 stops reading it); `r7-learning-coldstart`, `r7-learning-kit-workflows`, `r7-learning-reactive-child` (files absent
+from this sparse checkout: `evals/placement-coldstart/sim.mjs`, `docs/research/census/…`, `evals/child-sim/reactive.mjs`).
+
+### For main
+
+- The compile report's help-joints table lists `workedInvite` missing on the four pilots: compile.js, not the scripts (Brain 044).
+- A.3's help path (`sayAlt` + card, 45 to 69 words) is measured in `fitReport` but not cut; if the walk joins a `sayAlt` to its card
+  under T2's 60, about half the `sayAlt`s need the same cut.

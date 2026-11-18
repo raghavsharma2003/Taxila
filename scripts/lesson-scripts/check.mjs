@@ -689,7 +689,7 @@ export function jointErrors(s) {
   // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
   // written before them still passes) (dc-r8-director26 J1: beforeWorked, the lead into a worked problem; optional likewise)
   // (dc-r8-director26 N1, B2: helpToCard, a point's card after its wordings are spent; checkinStop, the stop menu; optional likewise)
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS, ...D29_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -767,7 +767,12 @@ export function v22Errors(s) {
       // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
       const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"
         && figureOf({ template: "wholes@1", params: { wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
-      if (a !== b && !appended) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
+      // (dc-r8-director28 item 6, Learning 017 C: a card that asks the child to count the marks of a line it names — the count-marks
+      // card, "12 barabar gaps ke beech kitne marks?" — is posed over the line it starts from, never over the line whose ticks it asks
+      // to count; its answerBoard adds that line. Allowed where the answer's lines begin with the posing board's and the key is a count.)
+      const countPosed = /^\d+$/.test(String(c.key ?? "").trim()) && /^line\[/.test(String(a)) && /^line\[/.test(String(b ?? ""))
+        && String(a).replace(/\]$/, ",").startsWith(String(b).replace(/\]$/, ",")) && a !== b;
+      if (a !== b && !appended && !countPosed) e.push(at(`${where}: its answerBoard poses ${a}, the board on screen while it is asked draws ${b ?? "nothing"}: give it its own unmarked board`));
     }
     // director11 D1/D2 (dc-r7-script-walk-v6-3): the board a card closes over (its answerBoard, else its own board) draws
     // the figure its why names, in the answer state it judges. whyFigureErrors compares them.
@@ -896,7 +901,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s));
   return e;
 }
 
@@ -1107,7 +1112,9 @@ export function d27Errors(s) {
   for (const k of s.skills ?? []) {
     for (const b of k.explain ?? []) {
       const at = `${k.skillId}/${b.id}.quick`;
-      if (!b.quick) { e.push(`${at}: every explain beat has a quick question { prompt, key, accept, say } (dc-r8-director27)`); continue; }
+      // (dc-r8-director28, Learning 017 B: a quick question is kept only where its point and card do not fit one turn; d29Errors
+      // reads where it may stand. Scripts not yet under 017 keep director27's rule.)
+      if (!b.quick) { if (!isD29(s)) e.push(`${at}: every explain beat has a quick question { prompt, key, accept, say } (dc-r8-director27)`); continue; }
       if (!keyed(b.quick, at, { promptMax: QUICK_PROMPT_MAX, lineField: "say", lineMax: QUICK_SAY_MAX })) continue;
       const card = b.ask;
       if (card) {
@@ -1241,6 +1248,121 @@ export function d28Errors(s) {
   return e;
 }
 
+/** dc-r8-director28, Learning 017 (the walk's side is Brain 044): a point and its card share a turn again; quick questions and the
+ *  invitation go; worked examples ask the reasoning step. Word counts are of the `hi` text (d27Words).
+ *  A. Fit, the parts that share a turn:
+ *   1. each hook slot 20 words or fewer, one or two sentences; hook + the skill's first point + its card 75 or fewer;
+ *   2. every later point + its card 61 or fewer;
+ *   (a beat over its limit is an error unless it keeps a `quick`: the script's record that the pair could not be cut, B.2)
+ *   3. a remediation's `say` + its follow-up card 49 or fewer: MEASURED AND REPORTED, never failed (where it cannot be cut it stays
+ *      whole and the walk says it alone, ending on a check-in: fitReport lists it);
+ *   4. a worked example's opening, from the problem's first word to the end of its first question (an asked step, else the child's
+ *      own step), 53 or fewer; at most one told step stands between, and it is 10 words or fewer as told.
+ *  B. A `quick` is an error on a beat that fits; on a beat that does not, its key and every accepted form are not in the point.
+ *  D. An asked step and the child's own step never ask a bare sum ("24 + 18 kitna?", "Pehle 7 aur 9 jodo", "2 × 42 kitna hoga?"):
+ *     the asked step is where the child decides what to do, and the arithmetic may be told.
+ *  E. `joints.stepMiss`: three forms of 4 words or fewer, each saying the answer was not it, naming no answer, asking nothing.
+ *     `joints.workedInvite` is gone.
+ *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
+export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
+export const D29_JOINTS = ["stepMiss"];
+export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
+export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
+/** The fit of every pair that shares a turn, measured (A.1 to A.4). */
+export function fitOf(s) {
+  const W = (x) => d27Words(x?.hi);
+  const hooks = [], points = [], rems = [], worked = [];
+  for (const k of s?.skills ?? []) {
+    const ex = k.explain ?? [], e1 = ex[0];
+    for (const [i, sl] of (k.hook?.interestSlots ?? []).entries()) {
+      const hook = W(sl.use), point = W(e1?.point), card = W(e1?.ask?.prompt);
+      hooks.push({ skill: k.skillId, slot: i, interest: sl.interest, hook, sentences: sentencesOf(sl.use?.hi).length, point, card, total: hook + point + card });
+    }
+    ex.forEach((b, j) => {
+      const point = W(b.point), card = W(b.ask?.prompt);
+      const first = j === 0;
+      const total = first ? Math.max(0, ...hooks.filter((h) => h.skill === k.skillId).map((h) => h.total)) : point + card;
+      points.push({ skill: k.skillId, id: b.id, first, point, card, total, limit: first ? FIRST_TURN_MAX : POINT_CARD_MAX, quick: !!b.quick });
+    });
+    (k.remediation ?? []).forEach((r, i) => {
+      const say = W(r.say), then = W(r.then?.prompt), alt = r.sayAlt ? W(r.sayAlt) : null;
+      rems.push({ skill: k.skillId, i, targets: r.targets, say, then, total: say + then, alt: alt == null ? null : alt + then });
+    });
+    const we = k.workedExample;
+    if (we) {
+      const steps = we.steps ?? [], f = steps.findIndex((x) => x.ask);
+      const between = (f < 0 ? steps : steps.slice(0, f)).map((x) => d27Words(toldStepText(x)));
+      const q = f < 0 ? we.yourStep?.prompt : steps[f].ask?.prompt;
+      const problem = W(we.problem), question = W(q);
+      worked.push({ skill: k.skillId, problem, between, question, total: problem + between.reduce((a, b) => a + b, 0) + question, asked: f < 0 ? "yourStep" : `steps[${f}]` });
+    }
+  }
+  return { hooks, points, rems, worked };
+}
+/** A bare sum asked: two numbers joined by an operator, or "<n> aur <n> jodo / guna karo". */
+const SUM_ASKED = /\d\s*[+×*÷−]\s*\d|\d\s+x\s+\d|\b\d+\s+(?:aur|and)\s+\d+\s+(?:jodo|guna|ghatao|add|multiply)/i;
+export function d29Errors(s) {
+  if (!isD29(s)) return [];
+  const e = [], fit = fitOf(s);
+  const has = (t, forms) => { const n = ` ${d27Norm(t)} `; return forms.some((f) => { const x = d27Norm(f); return x && n.includes(` ${x} `); }); };
+  for (const h of fit.hooks) {
+    const at = `${h.skill}/hook.slot${h.slot}`;
+    if (h.hook > HOOK_MAX) e.push(`${at}: ${h.hook} words > ${HOOK_MAX} (Learning 017 A.1: one or two sentences that set the scene)`);
+    if (h.sentences < 1 || h.sentences > 2) e.push(`${at}: one or two sentences (${h.sentences})`);
+  }
+  const skills = new Map((s.skills ?? []).map((k) => [k.skillId, k]));
+  for (const p of fit.points) {
+    const b = (skills.get(p.skill)?.explain ?? []).find((x) => x.id === p.id);
+    const at = `${p.skill}/${p.id}`, over = p.total > p.limit;
+    const what = p.first ? "the hook, the first point and its card" : "the point and its card";
+    if (over && !p.quick) e.push(`${at}: ${what} are ${p.total} words > ${p.limit} (Learning 017 A.${p.first ? 1 : 2}): cut the point, not the card's givens; a pair that cannot be cut keeps a quick question (B.2) and is listed in docs/status/learning.md`);
+    if (!over && p.quick) e.push(`${at}.quick: ${what} fit one turn (${p.total} ≤ ${p.limit}): no quick question (Learning 017 B.1)`);
+    if (b?.quick) {
+      const forms = [b.quick.key, ...(b.quick.accept ?? [])].filter(Boolean);
+      for (const l of ["hi", "en"]) for (const f of forms) if (has(b.point?.[l] ?? "", [f])) e.push(`${at}.quick${l === "en" ? " (en)" : ""}: "${f}" is in the point: the child applies the point to something it did not say (Learning 017 B.2)`);
+    }
+  }
+  for (const w of fit.worked) {
+    const at = `${w.skill}/workedExample`;
+    if (w.total > WORKED_OPENING_MAX) e.push(`${at}: the problem${w.between.length ? ", the told steps" : ""} and the first question (${w.asked}) are ${w.total} words > ${WORKED_OPENING_MAX} (Learning 017 A.4)`);
+    if (w.between.length > 1) e.push(`${at}: ${w.between.length} told steps before the first question; one at most (Learning 017 A.4)`);
+    else if (w.between.length === 1 && w.between[0] > BETWEEN_TOLD_MAX) e.push(`${at}: the told step before the first question is ${w.between[0]} words > ${BETWEEN_TOLD_MAX} (Learning 017 A.4)`);
+  }
+  for (const k of s.skills ?? []) {
+    const we = k.workedExample;
+    if (!we) continue;
+    (we.steps ?? []).forEach((x, j) => { for (const l of ["hi", "en"]) { const p = String(x.ask?.prompt?.[l] ?? ""); if (SUM_ASKED.test(p)) e.push(`${k.skillId}/workedExample.steps[${j}].ask.prompt${l === "en" ? " (en)" : ""}: asks a sum ("${p}"); ask the step where the child decides what to do, and tell the arithmetic (Learning 017 D.1)`); } });
+    for (const l of ["hi", "en"]) { const p = String(we.yourStep?.prompt?.[l] ?? ""); if (SUM_ASKED.test(p)) e.push(`${k.skillId}/workedExample.yourStep.prompt${l === "en" ? " (en)" : ""}: hands the child the sum ("${p}"); her own step still needs thinking (Learning 017 D.2)`); }
+  }
+  const j = s.joints ?? {};
+  if (j.workedInvite != null) e.push("joints.workedInvite: the invitation is gone (Learning 017 E.2)");
+  const forms = j.stepMiss;
+  if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.stepMiss: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 017 E.1)`);
+  else for (const l of ["hi", "en"]) {
+    const seen = new Set();
+    forms.forEach((f, i) => {
+      const t = String(f?.[l] ?? "").trim(), at = `joints.stepMiss[${i}]${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${at}: empty`); return; }
+      if (d27Words(t) > STEP_MISS_MAX) e.push(`${at}: ${d27Words(t)} words > ${STEP_MISS_MAX}`);
+      if (sentencesOf(t).length !== 1) e.push(`${at}: one sentence`);
+      if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+      if (/\d|\{[^}]*\}/.test(t)) e.push(`${at}: names no answer (no number, no slot)`);
+      if (!(l === "hi" ? /\b(nahi|nahin|na)\b/i : /\b(no|not|isn't|wrong)\b/i).test(t)) e.push(`${at}: says the answer was not it`);
+      const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x);
+    });
+  }
+  return e;
+}
+/** Learning 017's fit, as lines for the checker's report and the status file (A.3 is measured here, never failed). */
+export function fitReport(s) {
+  const f = fitOf(s), out = [];
+  for (const h of f.hooks) out.push(`hook ${h.skill.replace(/^.*-/, "")} slot${h.slot} (${h.interest}): hook ${h.hook} + first point ${h.point} + card ${h.card} = ${h.total}/${FIRST_TURN_MAX}${h.hook > HOOK_MAX ? `, hook over ${HOOK_MAX}` : ""}${h.total > FIRST_TURN_MAX ? " OVER" : ""}`);
+  for (const p of f.points.filter((x) => !x.first)) out.push(`point ${p.skill.replace(/^.*-/, "")} ${p.id}: ${p.point} + card ${p.card} = ${p.total}/${POINT_CARD_MAX}${p.quick ? " (keeps quick)" : ""}${p.total > POINT_CARD_MAX ? " OVER" : ""}`);
+  for (const r of f.rems) out.push(`remediation ${r.skill.replace(/^.*-/, "")}[${r.i}]: say ${r.say} + card ${r.then} = ${r.total}/${REM_CARD_MAX}${r.total > REM_CARD_MAX ? " WHOLE (said alone)" : ""}${r.alt != null ? `; sayAlt + card ${r.alt}` : ""}`);
+  for (const w of f.worked) out.push(`worked ${w.skill.replace(/^.*-/, "")}: problem ${w.problem}${w.between.length ? ` + told ${w.between.join("+")}` : ""} + first question ${w.question} (${w.asked}) = ${w.total}/${WORKED_OPENING_MAX}${w.total > WORKED_OPENING_MAX ? " OVER" : ""}`);
+  return out;
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = process.argv.slice(2);
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
@@ -1251,6 +1373,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
     for (const x of [...r.structure.map((m) => `  S ${m}`), ...r.boards.map((m) => `  W ${m}`), ...r.runtime.map((m) => `  V ${m}`)]) console.log(x);
+    // (Learning 017 A: the fit of every pair that shares a turn, measured; a remediation over its limit is reported, never failed)
+    if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of fitReport(scriptOf(t))) console.log(`  F ${m}`);
     // (director18 D13: a manual-read list, never a gate — whys with no verb found after code's "kyunki")
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
