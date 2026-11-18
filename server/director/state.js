@@ -3508,7 +3508,7 @@ function helpStay(prev, input, d) {
   let move, ui;
   if (d.card === "hindiForm" && d.stepAsked && prev.lastMove?.stepAsk?.prompt) {
     // (Brain 046 Q2: an asked step's Hindi form is its question now; the step stays asked)
-    const { itemId: _i, ...rest } = base;
+    const { itemId: _i, stepAgain: _sa, ...rest } = base;
     move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk, prompt: d.hindiForm } };
     ui = prev.lastUi;
     s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
@@ -3528,7 +3528,8 @@ function helpStay(prev, input, d) {
     s.activeItemId = liveId;
   } else if (d.stepAsked && prev.lastMove?.stepAsk?.prompt) {
     // (dc-r8-director29 Brain 045 P3: help at an asked worked step — the step's simpler, then the step's question again; the step stays asked)
-    const { itemId: _i, ...rest } = base;
+    // (Brain 046: never with the try-first line of a turn before — dry stuck c5-t01 30, a give-up after "let me try" heard the go-ahead again)
+    const { itemId: _i, stepAgain: _sa, ...rest } = base;
     move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk } };
     ui = prev.lastUi;
     s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;

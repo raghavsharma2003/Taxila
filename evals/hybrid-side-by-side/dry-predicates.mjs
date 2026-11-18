@@ -111,7 +111,10 @@ export const PREDICATES = {
       // miss verdict "Nahi, yeh jawab nahi hai.", which is no joint)
       const T = low(r.text);
       const atStart = (h) => { for (let p = T.indexOf(h); p >= 0; p = T.indexOf(h, p + 1)) if (p === 0 || /[.!?।]\s*$/u.test(T.slice(0, p))) return true; return false; };
-      const hit = forms.findIndex((h, n) => h && (ctx.jointHeadStart?.[kind]?.[n] ? atStart(h) : T.includes(h)));
+      let hit = forms.findIndex((h, n) => h && (ctx.jointHeadStart?.[kind]?.[n] ? atStart(h) : T.includes(h)));
+      // (Brain 046: a form said with its leading filler dropped after her reply's "Achha, …" — "Ab pehle wale sawaal ko phir se dekhte hain." for
+      // "Achha, ab pehle wale …" — is read from the turn's seam record: dry offtopic c6 34)
+      if (hit < 0) { const f = (r.seams ?? []).find((x) => x.joint === kind && x.form); if (f) { const k = low(f.form); hit = (ctx.script?.joints?.[kind] ?? []).map((g) => low(String(g?.hi ?? g ?? ""))).findIndex((g) => g && (g === k || g.endsWith(k))); } }
       if (hit < 0) continue;
       const use = (ctx.jointUse[kind] ??= forms.map(() => 0));
       if (use[hit] >= 1 && use.some((n, j) => j !== hit && n === 0)) { use[hit]++; return `${kind} form ${hit + 1} again before the others`; }
@@ -858,7 +861,8 @@ export const ORDER_LAWS = {
       const forms = want ? (ctx.script?.joints?.[want] ?? []).length : 0;
       if (want && forms && !s.joint && !r.seams.some((x) => x !== s && x.joint === want)) return `${s.left} → ${s.right} takes ${want}, none said`;
       // (dc-r8-director27 P3: after a key with nothing left, the back-to seam takes the after-key return form — one joint, both things)
-      if (s.joint && s.joint !== want && !(s.joint === "afterKeyReturn" && want === "backTo")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      // (Brain 046 Q5: a worked example's close into the next card takes afterWorked — read by workedSeam)
+      if (s.joint && s.joint !== want && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }
     return null;

@@ -12,7 +12,7 @@ const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+/).filter(Boolean);
 
 /** The joints this pass owns (a park and a return carry the aside: they are parts of their own, not joints). */
-export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn", "afterPark"];
+export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn", "afterPark", "afterWorked"];
 // (code's own neutral after-aside line, before the scripts had afterAside)
 // (dc-r8-director26 J1 item 3: code's lead into a worked problem, for a script without joints.beforeWorked — the compile report lists the
 // hole; a problem done together, never a question to the child)
@@ -27,10 +27,15 @@ export const CODE_SEAM_FORMS = Object.freeze({
   // lists the hole)
   // (a getter: help.js and this module import each other through compile.js — read at use, never at load)
   get afterKeyReturn() { return { hinglish: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.hi), english: FALLBACK_JOINTS.afterKeyReturn.map((f) => f.en) }; },
+  // (dc-r8-director30 Brain 046 Q5: code's seam from a worked example's close into the next card, for a script without joints.afterWorked —
+  // six words or fewer; the compile report lists the hole)
+  afterWorked: { hinglish: ["Ab tumhari baari, naya sawaal.", "Chalo, ab agla sawaal.", "Ab ek sawaal tumhare liye."],
+    english: ["Now your turn, a new one.", "Now, the next question.", "Here's one for you now."] },
 });
 const CODE_JOINTS = { afterAside: ["Chalo, jahan the wahin se aage chalte hain.", "Achha, ab wapas apne sawaal par.", "Theek hai, ab aage badhte hain.", "Okay, back to where we were.", "Right, let's pick up where we left off."],
   beforeWorked: [...CODE_SEAM_FORMS.beforeWorked.hinglish, ...CODE_SEAM_FORMS.beforeWorked.english],
-  get afterKeyReturn() { return [...CODE_SEAM_FORMS.afterKeyReturn.hinglish, ...CODE_SEAM_FORMS.afterKeyReturn.english]; } };
+  get afterKeyReturn() { return [...CODE_SEAM_FORMS.afterKeyReturn.hinglish, ...CODE_SEAM_FORMS.afterKeyReturn.english]; },
+  afterWorked: [...CODE_SEAM_FORMS.afterWorked.hinglish, ...CODE_SEAM_FORMS.afterWorked.english] };
 
 /** The seam table: [left kind, right kind] → the joint that seam takes. Anything not listed takes none — a point and its own card, a
  *  verdict and its own why, a bridge and the unit it opens, a park and the card it leads into. */
@@ -92,7 +97,24 @@ const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 export function otherFigureOf(helpText, cardText) {
   const nums = (t) => (String(t ?? "").match(/\d+(?:\s*\/\s*\d+)?/g) ?? []).flatMap((x) => x.split("/").map((y) => y.trim())).filter((y) => Number(y) > 1);
   const card = new Set(nums(cardText));
-  return !!card.size && nums(helpText).some((n) => !card.has(n));
+  // (dc-r8-director30 Brain 046 Q5, dry offtopic c4 56: help that counts the card's own thing in numbers of its own — the card's 12 laddoos in
+  // three rows of 4 — is about the card; a number the card does not name makes help another figure's only where it names none of the card's
+  // things. Help in another wording — a sayAlt, a pointAlt — is read by its rung, brain/say.js ALT_RUNGS)
+  return !!card.size && nums(helpText).some((n) => !card.has(n)) && !sharesThing(helpText, cardText);
+}
+/** Words that name no thing a card is about: the lesson's own talk and Hinglish function words. */
+const FIGURE_STOP = new Set(["barabar", "hissa", "hisse", "hisson", "line", "board", "socho", "dekho", "wala", "wale", "wali", "kitne", "kitna", "kitni", "kaunsa", "kaunsi",
+  "kaun", "hain", "hota", "hoti", "hote", "jaata", "jaati", "jaate", "pehle", "baad", "beech", "upar", "neeche", "number", "fraction", "gaps", "gap", "mark", "marks", "jawab",
+  "sawaal", "batao", "yahan", "wahan", "isliye", "kyunki", "phir", "dono", "teeno", "aadha", "poora", "poori", "tukde", "tukda", "tukdon", "zyada", "chhota", "chhoti", "bada",
+  "badi", "milega", "milta", "chalo", "isko", "usko", "unka", "inka", "tumne", "tumhe", "tumhari", "tumhara", "aur", "hai", "kis", "toh", "par", "bhi", "yeh", "woh", "jab", "tab",
+  "kya", "har", "mein", "karo", "liye", "yahi", "wahi", "isse", "agar", "kuch", "sirf", "raha", "rahi", "rahe", "mila", "mile", "wapas", "pehla", "pehli", "doosra", "doosri",
+  "utna", "utne", "jitna", "jitne", "jitni", "gino", "baar", "kaise", "aise", "jaise", "ise", "use", "abhi", "nahi", "sahi", "the", "and", "for", "you", "how", "many", "teen",
+  "chaar", "paanch", "kahan", "saath", "baat", "aate", "aata", "aati", "ek-ek", "do-do", "line", "lines"]);
+/** Whether help names a thing of the card's — a word of three letters or more that is not lesson talk ("laddoo", "dor", "roti"). */
+export function sharesThing(helpText, cardText) {
+  const w = (t) => new Set((String(t ?? "").toLowerCase().match(/[\p{L}-]{3,}/gu) ?? []).filter((x) => !FIGURE_STOP.has(x)));
+  const c = w(cardText);
+  return [...w(helpText)].some((x) => c.has(x));
 }
 /** Brain 043 R2: her last turn ended on her invitation to do the problem together, and this turn is the problem it invited (the walk marks
  *  it afterInvite) — straight after it, never after a detour. */
@@ -299,6 +321,9 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     // (help's joint is said by help, not by this table: its seam is recorded, with its form, below)
     let j = HELP_JOINT_KINDS.has(k) ? null : seamJoint(prevKind, k);
     if (j === "backTo" && info.afterKeyReturn) j = "afterKeyReturn";
+    // (dc-r8-director30 Brain 046 Q5: a worked example's close — "Toh poora jawab: …" — into the next card or its point takes joints.afterWorked:
+    // c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36)
+    if (!j && prevKind === "verdict" && ["card", "point"].includes(k) && i > 0 && stripped[i - 1]?.part === "close" && (state?.lastMove?.closeBeat?.beatId === "worked" || !!state?.lastMove?.workedDone)) j = "afterWorked";
     // (Brain 046 Q3: the Hindi switch, read as her aside line until the record renames it, takes no reply's joint)
     if (j === "afterAside" && prevKind === "aside" && info.hindiSwitch && i > 0 && low(sentencesOf(stripped[i - 1].text).join(" ")) === low(info.hindiSwitch)) j = null;
     // (Brain 043 R2: after her invitation to do the problem together the turn starts at the problem — no lead-in)

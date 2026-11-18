@@ -70,7 +70,19 @@ describe("Brain 043: the walk", () => {
     const stripped = { ...sc, skills: sc.skills.map((k) => ({ ...k, explain: k.explain.map((b) => (b.ask ? { ...b, ask: { ...b.ask, whyShort: undefined } } : b)),
       checks: k.checks.map((c) => ({ ...c, whyShort: undefined })), remediation: k.remediation.map((r) => (r.then && typeof r.then === "object" ? { ...r, then: { ...r.then, whyShort: undefined } } : r)) })) };
     setScriptForTest(T, stripped);
-    const again = step(before, { event: "turn", kit: W.K, cls: classifyFast({ target: targetFor(before, W.K, findItem(before, W.K, before.activeItemId)), childText: String(findItem(before, W.K, before.activeItemId).answer), lang: "hinglish", typed: true }).result, text: String(findItem(before, W.K, before.activeItemId).answer), now: (before.turn + 1) * 20_000 });
+    const stepAt = (b) => step(b, { event: "turn", kit: W.K, cls: classifyFast({ target: targetFor(b, W.K, findItem(b, W.K, b.activeItemId)), childText: String(findItem(b, W.K, b.activeItemId).answer), lang: "hinglish", typed: true }).result, text: String(findItem(b, W.K, b.activeItemId).answer), now: (b.turn + 1) * 20_000 });
+    let again = stepAt(before);
+    // (dc-r8-director30 Brain 046 Q4: the short why is also said where the full why fits 75 but the verdict, point and card pass 65 — those turns
+    // are read on; the rule here is the first turn where the full why does not fit at all)
+    for (let n = 0; n < 60 && !(again.state.splitHold && !again.ui?.ask?.itemId); n++) {
+      setScriptForTest(T, sc);
+      let x = null;
+      for (let k = 0; k < 60; k++) { x = W.say(W.key()); if (W.r.state.lastMove?.whyShort) break; x = null; }
+      if (!x) break;
+      before = x.before;
+      setScriptForTest(T, stripped);
+      again = stepAt(before);
+    }
     // (Brain 044 T1: without the short form the card does not fit with them — the verdict stands alone, or, with no 60-word cap on the point,
     // the point ends the turn on its quick question or its check-in; either way the card waits)
     assert.ok(again.state.splitHold && !again.ui?.ask?.itemId, "without the short form the card is held for the next turn");

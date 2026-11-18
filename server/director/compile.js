@@ -284,7 +284,10 @@ export function compileScript(script, plan = null) {
   for (const p of parts.filter((x) => ["card", "then_card", "check", "your_step", "worked_step"].includes(x.kind))) {
     const hp = helpPartFrom(script, p);
     if (p.kind === "worked_step" && !at(script, p.path)?.ask?.prompt) continue;
-    if (hp && !hindiPathOf(script, hp)) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, field: "hindi", path: p.kind === "worked_step" ? `${p.path}.ask.hindi` : `${p.path}.hindi` });
+    if (hp && !hindiPathOf(script, hp)) {
+      holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, field: "hindi", path: p.kind === "worked_step" ? `${p.path}.ask.hindi` : `${p.path}.hindi` });
+      fallbacks.push({ part: p.id, kind: p.kind, rule: `${p.kind}/hindi`, fallback: "the card's wordings, then the helpSpent line", field: "hindi" });
+    }
   }
   // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)
   if (script && !(Array.isArray(script.wrap?.ask) && script.wrap.ask.length)) holes.push({ part: "wrap", kind: "wrap", rule: "wrap/ask", field: "ask", path: "wrap.ask" });

@@ -32,7 +32,7 @@ export function partStartOf(r, p) {
   }
 }
 
-import { otherFigureOf } from "../../server/brain/seams.js";
+import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
 
@@ -51,13 +51,18 @@ const TAUGHT = new Set(["point", "card", "returnCard", "workedProblem", "stepAsk
 
 /** P6: a turn's help is about another figure — it names a number the card does not (server/brain/seams.js otherFigureOf; c5-t01 stuck 64, 70,
  *  offtopic 30). The help is the row's text from its first help part to its card part (or its end); the card is the row's card. */
-export function helpOtherFigure(r) {
+export function helpOtherFigure(r, script = null) {
   const pp = r?.pageParts ?? [];
   const h = pp.find((p) => ["simpler", "help"].includes(p.part));
   if (!h || !r?.card) return false;
   const c = pp.find((p) => p.part === "card" && (p.from ?? 0) > (h.from ?? 0));
   const t = String(r.text ?? "");
-  return otherFigureOf(t.slice(h.from ?? 0, c ? c.from : t.length), String(r.card));
+  const help = t.slice(h.from ?? 0, c ? c.from : t.length);
+  // (Brain 046 Q5, c5-t02 steering 10: help said from another wording — a remediation's sayAlt, a point's pointAlt, a problem's problemAlt — is
+  // about another figure whatever numbers it names: "Pizza party socho" names none)
+  const alts = (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) { if (["sayAlt", "pointAlt", "problemAlt"].includes(k)) out.push(low(said(v)).slice(0, 40)); else walk(v); } }; walk(script ?? {}); return out.filter((x) => x.length >= 20); })();
+  if (alts.some((a) => low(help).includes(a)) && !sharesThing(help, String(r.card))) return true;
+  return otherFigureOf(help, String(r.card));
 }
 
 /** Brain 046 Q2: the card a row asks (its walk item, else its card's words) → that card's `hindi` form in the script, or null. */
@@ -94,7 +99,31 @@ function fullWhyIn(script, r) {
   }
   return null;
 }
+/** Brain 046 Q5: the question a turn ends on — its last sentence, where it asks. */
+const lastAsk = (r) => { const ss = String(r?.text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/); const q = ss.at(-1) ?? ""; return /[?？]\s*$/.test(q) ? low(q) : null; };
 export const D30_PREDICATES = {
+  /** dc-r8-director30 Brain 046 Q5: a worked example's close going into the next card (or its point) says joints.afterWorked between them
+   *  (c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36). Gated. */
+  workedSeam(L, r) {
+    if (r.who !== "teacher") return null;
+    const pp = r.pageParts ?? [], c = pp.findIndex((p) => p.part === "close" && p.beat === "worked");
+    if (c < 0 || !["card", "body"].includes(pp[c + 1]?.part ?? "") || /^(?:worked|rem:)/.test(String(pp[c + 1]?.beat ?? ""))) return null;
+    // (a wrong answer's close into its remediation takes beforeRemediation, never this seam)
+    if ((r.seams ?? []).some((x) => x.right === "missVerdict" || x.right === "remediation")) return null;
+    return (r.seams ?? []).some((x) => x.joint === "afterWorked") ? null : "a worked example's close into the next card with no afterWorked seam";
+  },
+  /** dc-r8-director30 Brain 046 Q5: no re-ask sentence is said in two turns running — the question a turn ends on, the same as the turn of
+   *  hers before it ended on, on the same card (c5-t01 steady 8, stuck 62, 70, 72, offtopic 22, 62, steering 10; c5-t02 steady 88, 90; c6
+   *  steady 88; c4 steering 14, 16). Gated. A question of two words or fewer, and her return or AI question, is no re-ask. */
+  reaskRunning(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT || !r.card) return null;
+    // (a request for Hindi at a card with no hindi form is answered as before — Q2's fallback, counted by hindiSpentHole)
+    if (String(ctx?.prevIntent ?? "") === "hindi" && !hindiFormAt(ctx?.script, r)) return null;
+    const q = lastAsk(r), p = lastAsk(ctx.prevT);
+    if (!q || q !== p || q.split(" ").length < 4) return null;
+    if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
+    return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
+  },
   /** dc-r8-director30 Brain 046 Q4: a verdict, a point and a card in one turn over 65 words says the card's short reason where it has one
    *  (c4 steady 42, stuck 64, steering 56; c5-t02 stuck 74, offtopic 52). Gated. */
   vpcLong(L, r, i, ctx) {
@@ -123,9 +152,9 @@ export const D30_PREDICATES = {
   },
   /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help about another figure is
    *  followed by the card's own re-ask (c5-t01 stuck 64, 70, offtopic 30). Gated. */
-  reaskFigure(L, r) {
+  reaskFigure(L, r, i, ctx) {
     if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "reaskShort")) return null;
-    return helpOtherFigure(r) ? "the short ask after help about another figure" : null;
+    return helpOtherFigure(r, ctx?.script) ? "the short ask after help about another figure" : null;
   },
   /** P6: a turn that holds her reply to an aside never ends on a check-in, whatever follows the reply (c4 offtopic 46: reply, bridge, point,
    *  check-in; c5-t02 offtopic 38: reply, point, check-in). Gated (Brain 046 Q3): where the card is held for a due return the turn ends on the return's question. */

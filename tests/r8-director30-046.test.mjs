@@ -131,3 +131,31 @@ describe("Q4: the verdict, point and card turn is 65 words", () => {
     assert.ok(!PENDING.has("vpcLong") && !PENDING.has("vpcBridge"));
   });
 });
+
+describe("Q5: re-asks and the worked close", () => {
+  test("reaskRunning (gated) reads the same re-ask two turns running on the order's rows", async () => {
+    const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(!PENDING.has("reaskRunning") && PENDING.has("repeatedAuthored"));
+    for (const [p, t, row] of [["steady", "c5t01", 8], ["stuck", "c5t01", 62], ["stuck", "c5t01", 70], ["stuck", "c5t01", 72], ["offtopic", "c5t01", 22], ["offtopic", "c5t01", 62],
+      ["steering", "c5t01", 10], ["steady", "c5t02", 90], ["steering", "c4", 14], ["steering", "c4", 16]]) assert.ok(flagged(p, t, "reaskRunning").has(row), `${p} ${t} ${row}`);
+  });
+  test("reaskFigure reads the short ask after help in another wording that names none of the card's things (c5-t02 steering 10: a pizza)", () => {
+    assert.ok(flagged("steering", "c5t02", "reaskFigure").has(10));
+  });
+  test("otherFigureOf: help counting the card's own thing is the card's; help naming numbers and none of its things is another figure's", async () => {
+    const { otherFigureOf } = await import("../server/brain/seams.js");
+    assert.equal(otherFigureOf("Board par 3 line hain, har line mein 4 laddoo.", "12 laddoo ka aadha kitne laddoo hai?"), false);
+    assert.equal(otherFigureOf("Ek roti ke 6 hisse socho.", "Is line par 4/9 kahaan aayega?"), true);
+  });
+  test("workedSeam (gated) reads a worked close straight into the next card (c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36)", () => {
+    for (const [p, t, row] of [["steady", "c5t01", 26], ["steady", "c5t01", 56], ["stuck", "c5t01", 34], ["offtopic", "c5t01", 48], ["steering", "c5t01", 36],
+      ["steady", "c5t02", 26], ["steady", "c5t02", 64], ["steady", "c5t02", 82], ["stuck", "c5t02", 34], ["offtopic", "c5t02", 72], ["steering", "c5t02", 36]]) assert.ok(flagged(p, t, "workedSeam").has(row), `${p} ${t} ${row}`);
+  });
+  test("afterWorked: code's three forms of six words or fewer, and a compile hole where a script has none", async () => {
+    const { CODE_SEAM_FORMS } = await import("../server/brain/seams.js");
+    const { helpJointHoles } = await import("../server/director/help.js");
+    for (const l of ["hinglish", "english"]) { assert.equal(CODE_SEAM_FORMS.afterWorked[l].length, 3); for (const f of CODE_SEAM_FORMS.afterWorked[l]) assert.ok(f.split(/\s+/).length <= 6, f); }
+    assert.ok(helpJointHoles({ joints: {} }).some((h) => h.joint === "afterWorked"));
+    assert.ok(!helpJointHoles({ joints: { afterWorked: [{ hi: "Ab tumhari baari.", en: "Your turn." }] } }).some((h) => h.joint === "afterWorked"));
+  });
+});

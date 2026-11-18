@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS, otherFigureOf } from "./seams.js";
+import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS, otherFigureOf, sharesThing } from "./seams.js";
 import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
@@ -257,6 +257,9 @@ export function returnNoteOf(said, topic, lang = "hinglish", alone = false) {
 }
 const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "hai", "hain", "tha", "thi", "kal", "aaj", "bahut", "kiya", "khela", "aur", "kya", "with", "that", "this", "have"]);
 /** v6.4 H2″: an aside's return line: 4-20 words, one content word of theirs, no digits or lesson words, no promise, no template. */
+/** Brain 046 Q5: the rungs that say a part in other words — often about another figure (a pizza, a roti) — after which the short ask is never
+ *  said; the card's own re-ask is. */
+const ALT_RUNGS = new Set(["sayAlt", "pointAlt", "problemAlt"]);
 export function returnLineOk(x, said, topic) {
   const t = String(x ?? "").trim();
   if (!t || /\d/.test(t) || /[?？]/.test(t)) return false;
@@ -3491,13 +3494,44 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (dc-r8-director29 Brain 045 P6 — c5-t01 stuck 64, 70, offtopic 30: the short ask only where her turn before ended on the card's question
       // and this turn's help is about the card's own figure; after help about another figure (seams.js otherFigureOf) the card's own re-ask
       // follows it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
-      const otherFigure = otherFigureOf(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card);
+      // (dc-r8-director30 Brain 046 Q5, c5-t02 steering 10: help said from another wording of the part — a remediation's sayAlt, a point's
+      // pointAlt, a problem's problemAlt — is about another figure, a pizza for a card about two strings, whatever numbers it names)
+      const otherFigure = otherFigureOf(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card) || (ALT_RUNGS.has(String(state.lastMove?.help?.rung ?? "")) && !sharesThing(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card));
       if (otherFigure) guard.reaskFigure = true;
       const prevQ = prevT ? lastQ(prevT.text) : "";
       if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && !otherFigure) {
         const short = norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state));
         guard.reaskShort = { part: tail === card || guard.cardQuestionOnly ? "card" : "stepAsk", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" };
         tail = short;
+      }
+    }
+    // (dc-r8-director30 Brain 046 Q5: no re-ask sentence is said in two turns running — c5-t01 stuck 68 to 72 said Learning's reask three turns
+    // running, c4 steering 12 to 16 the whole card. Where the question this turn ends on is the one her turn before ended on, the walk takes the
+    // next of the card's forms that differs: Learning's reask, the short ask (only after help about the card's own figure, said this turn), the
+    // card's last question clause; with none that differs, as before. The card's Hindi form is not in this rotation)
+    if (tail && card && kindNow !== "safeguard" && !asideQ && !state.lastMove?.hindiForm && String(state.lastMove?.request ?? "") !== "language" && scriptFor(kit)?.script && !scriptFor(kit)?.script?.recordedRun
+      && (tail === card || guard.cardQuestionOnly || guard.reaskShort)) {
+      const lastQ = (t) => sentences(norm(t)).map(norm).filter(Boolean).at(-1) ?? "";
+      const prevT = [...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1);
+      const prevQ = prevT ? lastQ(prevT.text) : "";
+      if (prevQ && /[?？]$/.test(prevQ) && keyS(lastQ(tail)) === keyS(prevQ)) {
+        const am = rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
+        const reask = am ? norm(fillFriend(typeof am === "string" ? am : (lang === "english" ? am.en : am.hi) ?? "", state.ctx?.firstName ?? "")) : null;
+        const cs = sentences(card).map(norm).filter(Boolean);
+        const c0 = cs.at(-1) ?? "", m0 = c0.split(/[:;]\s+/).at(-1) ?? "";
+        const clause = m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : cs.length >= 2 && /[?？]$/.test(c0) ? c0 : null;
+        const helpNow = body.filter((x) => norm(x) !== norm(card)).join(" ");
+        // (the short ask asks for the answer to the question on the table — never after help about another figure, P6)
+        const shortOk = !otherFigureOf(helpNow, card) && !(ALT_RUNGS.has(String(state.lastMove?.help?.rung ?? "")) && !sharesThing(helpNow, card));
+        const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
+        const pick = [["reask", reask], ["short", shortT], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
+        if (pick) {
+          const [k, t] = pick;
+          tail = t; guard.reaskRotated = k;
+          if (k === "short") { guard.reaskShort = { part: "card", text: t, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" }; guard.cardQuestionOnly = false; }
+          else { guard.cardQuestionOnly = true; guard.reaskShort = undefined; }
+          body = body.filter((x) => !REPOSE_FRAME.test(x));
+        }
       }
     }
     const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();

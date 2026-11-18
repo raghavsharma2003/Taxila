@@ -213,7 +213,8 @@ export function helpJointHoles(script) {
   // (Brain 044 T7: stepMiss, the "not that" before a told step after a wrong answer to an asked step)
   // (Brain 044 T3: workedInvite is not read — no hole for it)
   // (Brain 045 P4: startAnyway, the line that starts the lesson after a second request at the greeting)
-  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "stepMiss", "startAnyway"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  // (Brain 046 Q5: afterWorked, the seam from a worked example's close into the next card — brain/seams.js CODE_SEAM_FORMS when the script has none)
+  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "stepMiss", "startAnyway", "afterWorked"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
   const hs = script?.joints?.hindiSwitch;
   if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
   return out;
