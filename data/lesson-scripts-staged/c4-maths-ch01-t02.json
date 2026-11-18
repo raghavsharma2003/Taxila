@@ -366,304 +366,153 @@
    "bridgeToNext": { "hi": "Ab ek aisi shape aayegi jismein koi kona hi nahi hota: circle, jise hum string se banayenge.", "en": "Next comes a shape with no corner at all: the circle, which we will draw with a string.", "simpler": {"hi": "Ab bina kone wali shape, circle, banayenge.", "en": "Next we draw a shape with no corner, the circle."} }
   },
   {
-   "skillId": "c4-maths-ch01-t02-s3",
+   "skillId": "c4-maths-ch01-t02-s3", "covered": { "hi": "Aakhir mein circle aaya: uske kinaare ka har point centre se barabar door hota hai.", "en": "Last came the circle: every point on its edge is equally far from the centre." },
    "hook": {
     "convey": "draw round a bangle, or mark a big circle in the playground with a rope and chalk → a circle has a centre, and every point on it is the same distance from the centre",
     "interestSlots": [
      {
       "interest": "drawing",
-      "use": {
-       "hi": "Ek chudi kaagaz par rakho aur uske kinaare par pencil ghumakar drawing banao. Jo shape banegi, woh circle hai. Aaj dekhenge ki circle ki khaas baat kya hai.",
-       "en": "Put a bangle on paper and run a pencil round its edge to make a drawing. The shape you get is a circle. Today we see what is special about a circle."
-      }
+      "use": { "hi": "Drawing ke liye chudi kaagaz par rakho aur uske kinaare par pencil ghumao: jo shape banegi, woh circle hai.", "en": "For a drawing, put a bangle on paper and run a pencil round its edge: the shape you get is a circle." }
      },
      {
       "interest": "games",
-      "use": {
-       "hi": "Playground mein ek game ke liye bada circle banana hai. Aaj seekhenge ki rassi aur chalk se sahi circle kaise banta hai.",
-       "en": "A big circle is needed in the playground for a game. Today we learn how a rope and chalk make a true circle."
-      }
+      "use": { "hi": "Playground mein game ke liye bada circle banana hai. Rassi aur chalk se woh kaise banega, aaj dekhenge.", "en": "A big circle is needed in the playground for a game. Today we see how a rope and chalk make it." }
      }
     ]
    },
    "explain": [
     {
      "id": "e1",
-     "convey": "string compass: one end of the string held still at the centre, pencil at the other end, string kept tight → the pencil stays the string's length from the centre at every point",
-     "mustSay": [
-      {
-       "hi": "centre",
-       "en": "centre"
-      },
-      {
-       "hi": "string tight",
-       "en": "string tight"
-      }
-     ],
-     "board": {
-      "template": "shape@1",
-      "params": {
-       "shape": "circle",
-       "centre": "centre"
-      }
-     },
-     "point": {
-      "hi": "String ka ek sira beech mein haath se dabakar rakho. Yeh point circle ka centre hai, Hindi mein kendra. Doosre sire par pencil baandho aur string tight rakhkar ghumao. Pencil har jagah centre se utni hi door rehti hai jitni string lambi hai.",
-      "en": "Hold one end of the string still in the middle with your hand. This point is the circle's centre, kendra in Hindi. Tie a pencil to the other end and turn it with the string kept tight. Everywhere, the pencil stays as far from the centre as the string is long."
-     },
+     "convey": "string compass: one end of the string held still = the centre, a pencil at the other end, string kept tight → the pencil stays one string-length from the centre everywhere; asked: one edge point is 4 cm away, how far is another",
+     "mustSay": [{ "hi": "centre", "en": "centre" }, { "hi": "string tight", "en": "string tight" }],
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "string"} }, "viewCaption": { "hi": "Board par beech mein centre ka point hai, aur centre se kinaare tak ka teer string hai.", "en": "The board shows the centre point in the middle, and the arrow from the centre to the edge is the string." },
+     "point": { "hi": "String ka ek sira dabakar rakho: yahi centre hai. Doosre sire par pencil baandho, string tight rakhkar ghumao: pencil har jagah centre se string jitni door rehti hai.", "en": "Hold one end of the string down: that is the centre. Tie a pencil to the other end and go round with the string tight: everywhere, the pencil stays one string-length from the centre." }, "pointAlt": { "hi": "Khoonte se bandhi ek bakri socho, jo rassi tight karke chaaron taraf ghoomti hai. Woh har baar khoonte se rassi jitni door hi pahunchti hai, aur uske chalne se ek circle ban jaata hai.", "en": "Picture a goat tied to a peg, walking all the way round with the rope tight. Each time it gets exactly one rope-length from the peg, and its path makes a circle." },
      "ask": {
-      "prompt": { "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. {friend} ka kehna hai ki kinaare ka koi doosra point 5 cm door hai. Kya yeh sahi hai?", "en": "One point on this circle's edge is 4 cm from the centre. {friend} says another point on the edge is 5 cm away. Is that right?" },
+      "prompt": { "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. {friend} ka kehna hai ki doosra point 5 cm door hai. Kya yeh sahi hai?", "en": "One point on this circle's edge is 4 cm from the centre. {friend} says another point is 5 cm away. Is that right?" }, "hindi": { "hi": "Is circle ke kinaare ka ek point centre se 4 cm door hai. {friend} ka kehna hai ki kinaare ka koi aur point 5 cm door hai; kya yeh baat theek hai?", "en": "One point on this circle's edge is 4 cm from the centre. {friend} says some other edge point is 5 cm away; is that so?" }, "reask": { "hi": "Jis circle ke kinaare ka ek point centre se 4 cm door hai, kya uska koi doosra point 5 cm door ho sakta hai?", "en": "On a circle with an edge point 4 cm from the centre, can another edge point be 5 cm away?" },
       "key": "No",
-      "accept": ["nahi", "nahin", "no", "nahi, woh bhi 4 cm door hai", "no, it is also 4 cm away"],
-      "why": { "hi": "string ki lambai nahi badalti, toh kinaare ka har point centre se 4 cm door hai, 5 cm nahi", "en": "the string's length does not change, so every point on the edge is 4 cm from the centre, not 5 cm" },
-      "answerBoard": {
-       "template": "shape@1",
-       "params": {
-        "shape": "circle",
-        "centre": "centre",
-        "radius": "4 cm"
-       }
-      }
+      "accept": ["nahi", "nahin", "no", "nahi, woh bhi 4 cm door hai", "no, it is also 4 cm away", "galat hai"],
+      "why": { "hi": "kinaare ka har point centre se string jitna door hai, toh har point 4 cm door hai, 5 cm nahi", "en": "every edge point is one string-length from the centre, so every point is 4 cm away, not 5 cm" }, "whyShort": { "hi": "kinaare ka har point 4 cm door, 5 cm nahi", "en": "every edge point is 4 cm away, not 5 cm" }, "whyAlt": { "hi": "ghumate waqt string ki lambai nahi badalti; 4 cm ki string pencil ko 5 cm tak le hi nahi ja sakti", "en": "the string's length does not change as it goes round; a 4 cm string can never take the pencil out to 5 cm" },
+      "simpler": { "hi": "Socho, string tight rakhne par pencil kabhi centre ke paas aati hai ya door jaati hai kya.", "en": "Think whether, with the string tight, the pencil ever comes closer to the centre or goes further." },
+      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "har point 4 cm"} }
      },
-     "simpler": {
-      "hi": "String ki lambai kabhi nahi badalti. Isliye pencil har jagah centre se utni hi door rehti hai.",
-      "en": "The string's length never changes. So the pencil stays the same distance from the centre everywhere."
-     }
+     "simpler": { "hi": "String ki lambai kabhi nahi badalti, isliye pencil centre se hamesha utni hi door rehti hai.", "en": "The string's length never changes, so the pencil always stays just as far from the centre." }
     },
     {
      "id": "e2",
-     "convey": "coin: every point the same distance from its centre → a circle; lemon: longer one way, the distance changes → round, but not a circle",
-     "mustSay": [
-      {
-       "hi": "barabar door",
-       "en": "equally far"
-      },
-      {
-       "hi": "circle nahi",
-       "en": "not a circle"
-      }
-     ],
-     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "sikka"} },
-     "point": { "hi": "Sikke ke kinaare ka har point centre se barabar door hai, isliye sikka circle hai. Agar kisi gol cheez mein centre se doori kahin kam, kahin zyada ho, toh woh gol toh hai, par circle nahi.", "en": "Every point on the coin's edge is equally far from its centre, so the coin is a circle. If in some round thing the distance from the centre is less in one place and more in another, it is round, but not a circle." },
+     "convey": "a coin: every edge point equally far from its centre → a circle; a round thing whose edge is nearer in one place and further in another → round, but not a circle; asked: a roti 8 cm one way, 10 cm the other",
+     "mustSay": [{ "hi": "barabar door", "en": "equally far" }, { "hi": "circle nahi", "en": "not a circle" }],
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "sikka"} }, "viewCaption": { "hi": "Board par sikka bana hai: beech mein centre, aur centre se kinaare tak ek teer, jis par barabar door likha hai.", "en": "The board shows the coin: the centre in the middle, and an arrow from the centre to the edge marked equally far." },
+     "point": { "hi": "Sikke ke kinaare ka har point centre se barabar door hai, isliye sikka circle hai. Jis gol cheez mein yeh doori kahin kam aur kahin zyada ho, woh gol toh hai, par circle nahi.", "en": "Every point on a coin's edge is equally far from its centre, so the coin is a circle. A round thing whose distance is less in one place and more in another is round, but not a circle." }, "pointAlt": { "hi": "Ek nimbu dekho: woh gol dikhta hai, par uske centre se kinaara ek taraf door hai aur doosri taraf paas. Isliye nimbu gol hai, circle nahi; sikke mein yeh doori har taraf ek jaisi hai.", "en": "Look at a lemon: it looks round, but its edge is far from the centre one way and near the other. So a lemon is round, not a circle; in a coin this distance is the same every way." },
      "ask": {
-      "prompt": {
-       "hi": "Ek roti ke centre se kinaara ek taraf 8 cm hai aur doosri taraf 10 cm. Kya yeh roti circle hai, haan ya nahi?",
-       "en": "From the centre of a roti, the edge is 8 cm away on one side and 10 cm on the other. Is this roti a circle, yes or no?"
-      },
+      "prompt": { "hi": "Ek roti ke centre se kinaara ek taraf 8 cm door hai aur doosri taraf 10 cm. Kya yeh roti circle hai?", "en": "From the centre of a roti, the edge is 8 cm away one way and 10 cm the other. Is this roti a circle?" }, "hindi": { "hi": "Roti ke centre se uska kinaara ek taraf 8 cm par hai aur doosri taraf 10 cm par. Kya is roti ko circle kahenge?", "en": "From a roti's centre its edge is 8 cm away one way and 10 cm the other. Would we call this roti a circle?" }, "reask": { "hi": "Jis roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm door hai, kya woh circle hai?", "en": "Is a roti whose edge is 8 cm from the centre one way and 10 cm the other a circle?" },
       "key": "No",
-      "accept": [
-       "nahi",
-       "nahin",
-       "no",
-       "nahi, doori barabar nahi",
-       "no, the distances are not equal"
-      ],
+      "accept": ["nahi", "nahin", "no", "nahi, doori barabar nahi", "no, the distances are not equal", "circle nahi hai"],
       "targets": "c4-maths-ch01-t02-m-round-is-circle",
       "wrongIfMis": "Yes",
-      "why": {
-       "hi": "roti ka kinaara centre se ek taraf 8 cm aur doosri taraf 10 cm hai, toh roti circle nahi",
-       "en": "the roti's edge is 8 cm from the centre one way, 10 cm the other, so it is not a circle"
-      },
-      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "roti"} }, "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "roti"} }
+      "why": { "hi": "sikka circle hai, kyunki kinaara har taraf barabar door hai; roti ka 8 cm aur 10 cm, toh circle nahi", "en": "a coin is a circle, its edge equally far every way; the roti's is 8 cm and 10 cm, so no" }, "whyShort": { "hi": "doori 8 cm aur 10 cm, barabar nahi", "en": "the distances are 8 cm and 10 cm, not equal" }, "whyAlt": { "hi": "circle hoti toh roti ka kinaara har taraf centre se utna hi door hota, jitna sikke mein; yahan ek taraf kinaara zyada door hai", "en": "if it were a circle the roti's edge would be just as far every way, as in a coin; here the edge is further one way" },
+      "simpler": { "hi": "Dono taraf ki doori aapas mein milao, aur yaad karo ki circle mein yeh doori kaisi hoti hai.", "en": "Compare the two distances with each other, and remember what this distance is like in a circle." },
+      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "sikka"} }
      },
-     "simpler": { "hi": "Circle ki pehchaan hai: centre se kinaare ki doori har taraf ek jaisi. Doori badle, toh shape gol ho sakti hai, par circle nahi.", "en": "The mark of a circle: the distance from the centre to the edge is the same on every side. If the distance changes, the shape can be round, but not a circle." }
+     "simpler": { "hi": "Circle ki pehchaan doori se hoti hai: centre se kinaare tak har taraf ek jaisi doori.", "en": "A circle is known by its distance: the same distance from the centre to the edge every way." }
     },
     {
      "id": "e3",
-     "convey": "playground circle: rope 3 m tied to a peg, chalk at the other end, rope kept tight → every chalk mark is 3 m from the peg; a mark at another distance is not on this circle",
-     "mustSay": [
-      {
-       "hi": "rassi tight",
-       "en": "rope tight"
-      },
-      {
-       "hi": "3 m",
-       "en": "3 m"
-      }
-     ],
-     "board": {
-      "template": "measured@1",
-      "params": {
-       "shape": "circle",
-       "unit": "m",
-       "r": 3
-      }
-     },
-     "point": {
-      "hi": "Khoonte se 3 m ki rassi baandho, doosre sire par chalk. Rassi tight rakhkar chalo, toh chalk ka har nishaan khoonte se 3 m door aata hai. Isliye yeh sahi circle banta hai.",
-      "en": "Tie a 3 m rope to a peg, with chalk at the other end. Walk round keeping the rope tight, and every chalk mark comes 3 m from the peg. That is why this makes a true circle."
-     },
+     "convey": "playground circle: a 3 m rope tied to a peg, chalk at the other end, rope kept tight → every chalk mark is 3 m from the peg; asked: of marks 3 m, 4 m and 3 m away, which is not on this circle",
+     "mustSay": [{ "hi": "rassi tight", "en": "rope tight" }, { "hi": "3 m", "en": "3 m" }],
+     "board": { "template": "measured@1", "params": {"shape": "circle", "unit": "m", "r": 3} }, "viewCaption": { "hi": "Board par khoonte se kinaare tak ki doori 3 m likhi hai, jitni rassi lambi hai.", "en": "The board gives the distance from the peg to the edge as 3 m, as long as the rope." },
+     "point": { "hi": "Khoonte se 3 m ki rassi baandho, aur doosre sire par chalk. Rassi tight rakhkar chalo, toh chalk ka har nishaan khoonte se 3 m door aata hai.", "en": "Tie a 3 m rope to a peg, with chalk at the other end. Walk round keeping the rope tight, and every chalk mark comes 3 m from the peg." }, "pointAlt": { "hi": "Rassi beech mein dheeli ho jaaye, toh chalk khoonte ke paas aa jaata hai aur shape bigad jaati hai. Tight rassi har nishaan ko khoonte se barabar door rakhti hai, aur wahi sahi circle banata hai.", "en": "If the rope goes slack, the chalk comes closer to the peg and the shape goes wrong. A tight rope keeps every mark equally far from the peg, and that makes a true circle." },
      "ask": {
-      "prompt": { "hi": "Zameen par ek nishaan khoonte se theek rassi ki lambai jitna door hai. Kya woh nishaan is circle par hai, haan ya nahi?", "en": "A mark on the ground is exactly one rope-length from the peg. Is that mark on this circle, yes or no?" },
-      "key": "Yes",
-      "accept": ["haan", "han", "yes", "haan, circle par hai", "yes, it is on the circle"],
-      "why": { "hi": "is circle ka har nishaan khoonte se rassi jitna, yaani 3 m, door hai; woh nishaan bhi utna hi door hai", "en": "every mark of this circle is one rope-length, 3 m, from the peg, and that mark is just as far" },
-      "answerBoard": {
-       "template": "measured@1",
-       "params": {
-        "shape": "circle",
-        "unit": "m",
-        "r": 3
-       }
-      }
+      "prompt": { "hi": "Zameen par teen nishaan hain: khoonte se 3 m, 4 m aur 3 m door. Inmein se kaunsa nishaan is circle par nahi hai?", "en": "There are three marks on the ground: 3 m, 4 m and 3 m from the peg. Which of them is not on this circle?" }, "hindi": { "hi": "Zameen par teen nishaan bane hain, khoonte se 3 m, 4 m aur 3 m door. Inme se kaunsa nishaan is circle par nahi aata?", "en": "Three marks are made on the ground, 3 m, 4 m and 3 m from the peg. Which of them does not fall on this circle?" }, "reask": { "hi": "Khoonte se 3 m, 4 m aur 3 m door ke nishaanon mein kaunsa nishaan 3 m rassi wale circle par nahi hai?", "en": "Of marks 3 m, 4 m and 3 m from the peg, which is not on the 3 m rope's circle?" },
+      "key": "4 m wala",
+      "accept": ["4 m", "4 m door", "4 m door wala", "4 metre wala", "chaar metre wala", "the 4 m one"],
+      "why": { "hi": "3 m ki rassi se har nishaan khoonte se 3 m door aata hai; 4 m wala nishaan circle par nahi", "en": "a 3 m rope puts every mark 3 m from the peg; the 4 m mark is not on the circle" }, "whyShort": { "hi": "circle par har nishaan 3 m door hai", "en": "every mark on the circle is 3 m away" }, "whyAlt": { "hi": "tight 3 m rassi chalk ko 4 m tak pahuncha hi nahi sakti, toh 4 m wala nishaan is rassi se bana hi nahi", "en": "a tight 3 m rope can never take the chalk out to 4 m, so the 4 m mark was not made by this rope" },
+      "simpler": { "hi": "Rassi ki lambai yaad karo, aur har nishaan ki doori usse milao.", "en": "Remember the rope's length, and compare each mark's distance with it." },
+      "answerBoard": { "template": "measured@1", "params": {"shape": "circle", "unit": "m", "r": 3} }
      },
-     "simpler": {
-      "hi": "Rassi 3 m ki hai, toh har chalk nishaan khoonte se 3 m door aata hai. Circle par sirf wahi nishaan hain jo 3 m door hain.",
-      "en": "The rope is 3 m long, so every chalk mark comes 3 m from the peg. Only marks that are 3 m away are on the circle."
-     }
+     "simpler": { "hi": "Rassi 3 m ki hai aur tight hai, toh chalk har baar khoonte se 3 m par hi nishaan banata hai.", "en": "The rope is 3 m and tight, so the chalk always makes its mark 3 m from the peg." }
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Pooja rangoli ke liye 50 cm ki string ke ek sire par chalk baandhti hai. Doosra sira centre par pakadkar, string tight rakhkar circle banati hai. Phir ek kinaare se centre se hote hue doosre kinaare tak seedhi line kheenchti hai. Woh line kitni lambi hai?",
-     "en": "For a rangoli, Pooja ties chalk to one end of a 50 cm string. Holding the other end at the centre and keeping the string tight, she draws a circle. Then she draws a straight line from one edge, through the centre, to the other edge. How long is that line?"
-    }, "simpler": { "hi": "Ek 50 cm ki string ka ek sira centre par hai aur doosre sire par chalk hai, aur isse circle bana. Ab ek kinaare se centre se hote hue doosre kinaare tak ki line ki lambai nikalni hai.", "en": "A 50 cm string has one end at the centre and chalk at the other end, and it draws a circle. Now we find the length of the line from one edge, through the centre, to the other edge." },
-    "givens": [
-     {
-      "hi": "50 cm ki tight string ka ek sira centre par hai, aur line centre se hokar ek kinaare se doosre kinaare tak jaati hai.",
-      "en": "A tight 50 cm string has one end at the centre, and the line runs from one edge through the centre to the other edge."
-     }
-    ],
-    "find": {
-     "hi": "centre se hokar jaane wali line ki lambai",
-     "en": "the length of the line through the centre"
-    },
+    "problem": { "hi": "Pooja 50 cm ki tight string se rangoli ka circle banati hai. Phir ek kinaare se centre se hote hue doosre kinaare tak seedhi line kheenchti hai.", "en": "Pooja draws a rangoli circle with a tight 50 cm string. Then she draws a straight line from one edge, through the centre, to the other edge." }, "problemAlt": { "hi": "Pooja ki string ka ek sira centre par tha aur doosre par chalk. Hum us seedhi line ki lambai nikalenge jo ek kinaare se chalkar centre se guzarti hai aur doosre kinaare par rukti hai.", "en": "One end of Pooja's string was at the centre and the chalk at the other. We will find the length of the straight line that starts at one edge, passes through the centre and stops at the other edge." }, "simpler": { "hi": "Pehle ek chhoti baat yaad karo: tight rassi ka har nishaan khoonte se rassi jitna door aata tha. Pooja ki string bhi waise hi kaam karti hai.", "en": "First recall a small one: every mark of a tight rope came one rope-length from the peg. Pooja's string works just the same way." },
+    "givens": [{ "hi": "String ki lambai, aur centre se hokar jaane wali line.", "en": "The string's length, and the line through the centre." }],
+    "find": { "hi": "centre se hokar jaane wali line ki lambai", "en": "the length of the line through the centre" },
     "steps": [
      {
-      "do": {
-       "hi": "Pehle dekho kinaara centre se kitni door hai",
-       "en": "First see how far the edge is from the centre"
-      },
-      "result": "har point centre se 50 cm door",
-      "why": {
-       "hi": "tight string har point ko centre se 50 cm door rakhti hai",
-       "en": "the tight string keeps every point 50 cm from the centre"
-      },
-      "simpler": {
-       "hi": "String tight hai aur 50 cm lambi hai. Isliye kinaare ka har point centre se 50 cm door hai.",
-       "en": "The string is tight and 50 cm long. So every point on the edge is 50 cm from the centre."
-      }
-     },
-     {
-      "do": {
-       "hi": "Ab line ke dono taraf dekho, centre ke is paar aur us paar",
-       "en": "Now look at the line on both sides of the centre"
-      },
-      "result": "kinaare se centre tak 50 cm, centre se doosre kinaare tak 50 cm",
-      "why": {
-       "hi": "line centre se hokar ek kinaare se doosre kinaare tak jaati hai",
-       "en": "the line goes through the centre from one edge to the other"
-      },
-      "simpler": {
-       "hi": "Line centre se hokar jaati hai. Centre ke ek taraf kinaare tak 50 cm hai, aur doosri taraf bhi 50 cm.",
-       "en": "The line passes through the centre. On one side it is 50 cm to the edge, and on the other side also 50 cm."
-      }
+      "ask": { "prompt": { "hi": "Pehle socho: kinaare ka koi bhi point centre se kitni door hai?", "en": "First think: how far from the centre is any point on the edge?" }, "hindi": { "hi": "Pehle yeh batao: kinaare ka har point centre se kitna door hai?", "en": "First tell me this: how far from the centre is each point on the edge?" }, "key": "50 cm", "accept": ["50", "50 centimetre", "pachaas cm", "string jitna", "string jitni door", "50 cm door"], "right": { "hi": "Bilkul, 50 cm: tight string har point ko utna hi door rakhti hai.", "en": "Exactly, 50 cm: the tight string keeps every point just that far." } },
+      "do": { "hi": "Kinaare ki centre se doori dekho", "en": "Look at the edge's distance from the centre" },
+      "result": "50 cm, string jitni",
+      "why": { "hi": "tight string kinaare ke har point ko centre se string jitna door rakhti hai", "en": "the tight string keeps every edge point one string-length from the centre" },
+      "simpler": { "hi": "Yaad karo, chalk kinaare tak kaise pahuncha: string ke ek sire par, jabki doosra sira centre par tha.", "en": "Remember how the chalk reached the edge: on one end of the string, while the other end was at the centre." }
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "Ab dono taraf ki lambai jodo. Poori line kitni lambi hai?",
-      "en": "Now add the lengths on both sides. How long is the whole line?"
-     },
-     "key": "100 cm",
-     "accept": [
-      "100",
-      "1 m",
-      "1 metre",
-      "sau cm",
-      "100 centimetre",
-      "100 centimetres"
-     ],
-     "simpler": {
-      "hi": "Line mein centre ke dono taraf 50 cm aata hai. Bas dono lambaiyan jodo.",
-      "en": "The line has 50 cm on each side of the centre. Just add the two lengths."
-     },
-     "why": { "hi": "kinaare se centre tak 50 cm aur centre se doosre kinaare tak 50 cm hai, 50 + 50 = 100", "en": "edge to centre is 50 cm and centre to the other edge is 50 cm: 50 + 50 = 100" },
-     "answerBoard": {
-      "template": "shape@1",
-      "params": {
-       "shape": "circle",
-       "centre": "centre",
-       "diameter": "100 cm"
-      }
-     }
+     "prompt": { "hi": "Tumhari baari: ek kinaare se doosre kinaare tak poori line kitni lambi hai?", "en": "Your turn: how long is the whole line from one edge to the other?" }, "hindi": { "hi": "Ab tum batao: ek kinaare se centre se hote hue doosre kinaare tak line kitni lambi hai?", "en": "Now you tell me: how long is the line from one edge, through the centre, to the other edge?" }, "reask": { "hi": "50 cm string wale circle mein kinaare se centre se hote hue kinaare tak line kitni lambi hai?", "en": "In a circle drawn with a 50 cm string, how long is the line from edge through the centre to edge?" },
+     "key": "100 cm", "why": { "hi": "line mein centre ke dono taraf 50 cm hai, toh 50 + 50 = 100 cm", "en": "the line has 50 cm on each side of the centre, so 50 + 50 = 100 cm" }, "whyAlt": { "hi": "line centre se do string jitni doori jodti hai, aur string 50 cm ki hai, toh poori line 100 cm, yaani 1 metre", "en": "the line joins two string-lengths through the centre, and the string is 50 cm, so the whole line is 100 cm, that is 1 metre" },
+     "accept": ["100", "100 centimetre", "100 centimetres", "sau cm", "1 m", "1 metre", "ek metre"],
+     "wrongIfMis": "50 cm",
+     "simpler": { "hi": "Line centre par rukti nahi; woh centre ke us paar bhi kinaare tak jaati hai.", "en": "The line does not stop at the centre; it goes on past the centre to the edge on the other side." },
+     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "diameter": "100 cm"} }
     },
-    "answer": {
-     "hi": "poori line 100 cm lambi hai",
-     "en": "the whole line is 100 cm long"
-    },
-    "why": {
-     "hi": "is line mein centre se kinaare tak ki 50 cm doori do baar aati hai, 50 + 50 = 100",
-     "en": "the line holds the 50 cm centre-to-edge distance twice, 50 + 50 = 100"
-    },
-    "board": {
-     "template": "measured@1",
-     "params": {
-      "shape": "circle",
-      "unit": "cm",
-      "r": 50
-     }
-    }
+    "answer": { "hi": "poori line 100 cm lambi hai", "en": "the whole line is 100 cm long" },
+    "why": { "hi": "centre se hokar jaane wali line mein string jitni doori do baar aati hai", "en": "a line through the centre holds the string's length twice" },
+    "board": { "template": "measured@1", "params": {"shape": "circle", "unit": "cm", "r": 50} }, "viewCaption": { "hi": "Board par rangoli ka centre aur kinaara bana hai, aur centre se kinaare tak string ki lambai likhi hai.", "en": "The board shows the rangoli's centre and edge, with the string's length written from the centre to the edge." }
    },
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Rangoli ke liye {friend} ne haath se ek gol banaya, aur Pooja ne khoonti aur tight string se. Inmein se pakka circle kiska hai?", "en": "For a rangoli, {friend} drew a round shape by hand, and Pooja drew one with a pin and a tight string. Whose is surely a circle?" },
-     "key": "Pooja ka",
+     "prompt": { "hi": "Rangoli ke liye {friend} ne haath se ek gol banaya, aur Pooja ne khoonte aur tight string se. Inmein se pakka circle kiska hai?", "en": "For a rangoli, {friend} drew a round shape by hand, and Pooja drew one with a peg and a tight string. Whose is surely a circle?" }, "hindi": { "hi": "{friend} ne rangoli ke liye haath se gol banaya, aur Pooja ne khoonte aur kasi hui string se. In dono mein pakka circle kiska hai?", "en": "{friend} made a round shape by hand for the rangoli, and Pooja made one with a peg and a taut string. Of the two, whose is surely a circle?" }, "reask": { "hi": "Haath se bane gol aur tight string se bane gol mein, pakka circle kaunsa hai?", "en": "Of a round shape drawn by hand and one drawn with a tight string, which is surely a circle?" },
+     "key": "Pooja ka", "did": { "hi": "haath ke gol aur string ke circle mein fark pehchana", "en": "told a hand-drawn round shape from a string circle" },
      "accept": ["Pooja", "Pooja wala", "string wala", "Pooja ka circle", "Pooja's", "string wala circle"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "dono",
-     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre"} },
-     "why": { "hi": "tight string har point ko centre se ek jitna door rakhti hai; haath se bane gol mein yeh doori badal sakti hai", "en": "a tight string keeps every point the same distance from the centre; in a hand-drawn round shape that distance can change" },
-     "simpler": { "hi": "Gol dikhna kaafi nahi hai. Socho, kiske gol mein har point centre se pakka ek jitna door rahega.", "en": "Looking round is not enough. Think in whose shape every point will surely stay the same distance from the centre." },
-     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "Pooja ka"} }
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "string", "name": "rangoli"} }, "viewCaption": { "hi": "Board par rangoli ka centre hai, aur centre se kinaare tak string ka teer.", "en": "The board shows the rangoli's centre, and the string as an arrow from the centre to the edge." },
+     "why": { "hi": "Pooja ne tight string se banaya, toh har point barabar door hai; haath se bane gol mein doori badal sakti hai", "en": "Pooja used a tight string, so every point is equally far; in a round shape drawn by hand the distance can change" }, "whyShort": { "hi": "tight string har point ko barabar door rakhti hai", "en": "a tight string keeps every point equally far" }, "whyAlt": { "hi": "haath se banate waqt pencil kahin centre ke paas aa sakti hai, kahin door ja sakti hai; string tight ho toh aisa nahi hota", "en": "drawing by hand, the pencil can come nearer the centre in one place and go further in another; with a tight string that cannot happen" },
+     "simpler": { "hi": "Gol dikhna kaafi nahi hai. Socho, kiski shape mein har point centre se pakka ek jitna door rahega.", "en": "Looking round is not enough. Think in whose shape every point will surely stay the same distance from the centre." },
+     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "tight string", "name": "Pooja ka"} }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "{friend} ne ek gol ghadi ke centre se uske kinaare tak har jagah naapa, aur har baar 7 cm aaya. {friend} ka kehna hai ki ghadi ka kinaara circle hai. Kya yeh sahi hai?", "en": "{friend} measured from a round clock's centre to its edge all the way round, and got 7 cm every time. {friend} says the clock's edge is a circle. Is that right?" },
-     "key": "Yes",
-     "accept": ["haan", "han", "yes", "haan, circle hai", "yes, it is a circle"],
+     "prompt": { "hi": "{friend} ne ek gol ghadi ke centre se uske kinaare tak kai jagah naapa, aur har baar 7 cm aaya. {friend} ka kehna hai ki ghadi ka kinaara circle hai. Kya yeh sahi hai?", "en": "{friend} measured from a round clock's centre to its edge in many places, and got 7 cm every time. {friend} says the clock's edge is a circle. Is that right?" }, "hindi": { "hi": "{friend} ne gol ghadi ke centre se kinaare tak kai jagah naapa, aur har jagah 7 cm hi aaya. {friend} ka kehna hai ki ghadi ka kinaara circle hai; kya yeh baat theek hai?", "en": "{friend} measured from a round clock's centre to the edge in many places, and it came to 7 cm each time. {friend} says the clock's edge is a circle; is that so?" }, "reask": { "hi": "Jis ghadi ke centre se kinaare tak har jagah 7 cm aaya, kya uska kinaara circle hai?", "en": "If a clock measures 7 cm from its centre to its edge everywhere, is its edge a circle?" },
+     "key": "Yes", "did": { "hi": "naap se ghadi ke kinaare ko circle pehchana", "en": "used measuring to tell that a clock's edge is a circle" },
+     "accept": ["haan", "han", "yes", "haan, circle hai", "yes, it is a circle", "sahi hai"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "No",
-     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "ghadi"} },
-     "why": { "hi": "ghadi ke kinaare ka har point centre se 7 cm door hai, jaise circle mein har point barabar door hota hai", "en": "every point of the clock's edge is 7 cm from the centre, as in a circle, where every point is equally far" },
-     "simpler": { "hi": "Har jagah naap ek hi aaya. Yaad karo, circle ke kinaare ki doori centre se kaisi hoti hai.", "en": "Every measurement came out the same. Remember how far a circle's edge is from its centre." },
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "ghadi"} }, "viewCaption": { "hi": "Board par ghadi bani hai, aur uske beech mein centre ka point dikhaya gaya hai.", "en": "The board shows the clock, with its centre point marked in the middle." },
+     "why": { "hi": "ghadi ke kinaare ka har point centre se 7 cm door hai, aur circle mein har point barabar door hota hai", "en": "every point of the clock's edge is 7 cm from the centre, and in a circle every point is equally far" }, "whyShort": { "hi": "har jagah 7 cm, yaani barabar door", "en": "7 cm everywhere, so equally far" }, "whyAlt": { "hi": "agar kahin naap 7 cm se kam ya zyada aata, tab woh circle na hota; yahan har baar 7 cm aaya", "en": "if anywhere the measure came less or more than 7 cm, it would not be a circle; here it was 7 cm every time" },
+     "simpler": { "hi": "Har jagah naap ek hi aaya. Yaad karo, circle ke kinaare ki centre se doori kaisi hoti hai.", "en": "Every measurement came out the same. Remember what a circle's edge is like in its distance from the centre." },
      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "7 cm", "name": "ghadi"} }
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Ek thali aur ek aam, dono gol dikhte hain. Inmein circle kaunsa hai: thali ya aam?", "en": "A plate and a mango both look round. Which of them is a circle: the plate or the mango?" },
-     "key": "thali",
-     "accept": ["plate", "the plate", "thali hai", "thali wala", "thaali"],
+     "prompt": { "hi": "Ek chudi aur ek anda, dono gol dikhte hain. Inmein se circle kaunsa hai: chudi ya anda?", "en": "A bangle and an egg both look round. Which of them is a circle: the bangle or the egg?" }, "hindi": { "hi": "Chudi aur anda, dono gol nazar aate hain. In dono mein circle kaun sa hai, chudi ya anda?", "en": "A bangle and an egg both look round. Of the two, which one is a circle, the bangle or the egg?" },
+     "key": "chudi", "did": { "hi": "chudi aur ande mein se circle chuna", "en": "picked the circle out of a bangle and an egg" },
+     "accept": ["chudi hai", "bangle", "the bangle", "chudi wala", "choodi"],
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
      "wrongIfMis": "dono",
-     "board": {
-      "template": "shape@1",
-      "params": {
-       "shape": "circle",
-       "centre": "centre",
-       "name": "circle"
-      }
-     },
-     "why": { "hi": "thali ke kinaare ka har point centre se barabar door hai, jabki aam ek taraf lamba hai", "en": "every point on the plate's rim is equally far from its centre, while the mango is longer one way" },
-     "simpler": { "hi": "Circle wahi hai jiska har kinaara centre se ek jitna door ho. Socho ki dono mein se kiska kinaara har taraf barabar door hai.", "en": "A circle is the one whose edge is the same distance from the centre everywhere. Think about which of the two has its edge equally far on every side." },
-     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "thali"} }
+     "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door"} }, "viewCaption": { "hi": "Board par centre se kinaare tak ek teer hai, jis par barabar door likha hai.", "en": "The board has an arrow from the centre to the edge, marked equally far." },
+     "why": { "hi": "dono gol hain, par chudi ka kinaara har taraf centre se barabar door hai aur anda ek taraf lamba hai", "en": "both are round, but the bangle's edge is equally far from the centre every way, and the egg is longer one way" }, "whyShort": { "hi": "chudi har taraf barabar, anda ek taraf lamba", "en": "the bangle is even; the egg is long one way" }, "whyAlt": { "hi": "ande ke centre se uski nok tak ki doori, uske pet tak ki doori se zyada hai; chudi mein yeh doori har jagah ek jaisi hai", "en": "from an egg's centre, its tip is further than its side; in a bangle this distance is the same everywhere" },
+     "simpler": { "hi": "Dono ke centre se kinaare tak alag-alag taraf socho, aur dekho ki kiski doori har taraf ek jaisi rehti hai.", "en": "From the centre of each, think towards the edge in different directions, and see whose distance stays the same every way." },
+     "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "barabar door", "name": "chudi"} }
     }
    ],
    "ladder": [{"itemId": "c4-maths-ch01-t02-i08", "why": "the still point of the string → the centre"}, {"itemId": "c4-maths-ch01-t02-i09", "why": "5 cm tight string → every point 5 cm from the pin"}, {"itemId": "c4-maths-ch01-t02-i11", "why": "why the 2 m rope must stay tight → the same distance from the peg"}, {"itemId": "c4-maths-ch01-t02-rl-h3", "why": "harder: 6 cm string, marks at 6, 7 and 6 cm → the 7 cm mark is off the circle"}],
    "remediation": [
     {
      "targets": "c4-maths-ch01-t02-m-round-is-circle",
-     "move": "string compass (pin, string, pencil) beside a hand-drawn oval → measure from the centre to several points on both → only one has all distances the same",
-     "say": {
-      "hi": "String se bane circle mein centre se har point barabar door hai. Haath se bane oval mein yeh doori badalti hai, isliye oval circle nahi.",
-      "en": "In the circle made with a string, every point is equally far from the centre. In an oval drawn by hand this distance changes, so the oval is not a circle."
-     },
-     "simpler": {
-      "hi": "Circle mein centre se har point ki doori barabar hoti hai. Oval mein yeh doori badalti hai, isliye oval circle nahi.",
-      "en": "In a circle every point is the same distance from the centre. In an oval it changes, so an oval is not a circle."
-     },
-     "then": { "prompt": { "hi": "12 cm ki string ghumate waqt beech mein dheeli ho gayi, aur ek gol shape bani. Kya woh circle hai, haan ya nahi?", "en": "A 12 cm string went loose now and then while turning, and a round shape was drawn. Is it a circle, yes or no?" }, "key": "No", "accept": ["nahi", "nahin", "no", "nahi, circle nahi hai", "no, it is not a circle"], "targets": "c4-maths-ch01-t02-m-round-is-circle", "wrongIfMis": "Yes", "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "gol shape"} }, "why": { "hi": "dheeli string par pencil centre ke paas aayi, toh har point 12 cm door nahi raha; shape gol hai par circle nahi", "en": "a loose string let the pencil come closer, so not every point stayed 12 cm away; round, but not a circle" }, "simpler": {"hi": "Circle mein har point centre se string jitna door hota hai. Socho, dheeli string se yeh doori har jagah wahi rahegi kya.", "en": "In a circle every point is one string-length from the centre. Think whether a loose string keeps that distance the same everywhere."}, "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "name": "gol shape"} } }
+     "move": "string compass (pin, string, pencil) beside a hand-drawn oval → measure from the centre to several points on both → only one has all distances the same; then a string that went slack while drawing",
+     "say": { "hi": "Ek circle string se banao, ek oval haath se. Dono mein centre se kinaare tak kai jagah naapo: circle mein har jagah wahi doori aati hai, oval mein doori badalti hai.", "en": "Draw one circle with a string, and an oval by hand. In both, measure the distance from the centre to the edge in many places: in the circle it comes out the same everywhere, in the oval it changes." }, "board": { "template": "compare@1", "params": {"left": {"title": "String se", "items": ["har jagah wahi doori"]}, "right": {"title": "Haath se oval", "items": ["doori badalti hai"]}} }, "viewCaption": { "hi": "Baayein taraf string se bani shape hai jismein har jagah wahi doori hai. Daayein taraf haath ka oval hai, jismein doori badalti hai.", "en": "On the left is the shape made with a string, with the same distance everywhere. On the right is the hand-drawn oval, where the distance changes." }, "sayAlt": { "hi": "Ek nimbu ko beech se kaato aur uske centre se chhilke tak alag-alag taraf naapo. Ek taraf chhilka door milega aur doosri taraf paas, isliye nimbu gol hai par circle nahi.", "en": "Cut a lemon across the middle and measure from its centre to the peel in different directions. The peel is far one way and near another, so the lemon is round but not a circle." },
+     "simpler": { "hi": "Circle mein centre se kinaare tak har jagah ek hi doori hoti hai. Jahan doori badle, woh circle nahi.", "en": "In a circle the distance from the centre to the edge is the same everywhere. Where the distance changes, it is not a circle." },
+     "then": {
+      "prompt": { "hi": "12 cm ki string ghumate waqt beech mein dheeli ho gayi. Kya bani hui gol shape circle hai?", "en": "A 12 cm string went slack partway while going round. Is the round shape that was drawn a circle?" }, "hindi": { "hi": "12 cm ki string ghumate hue beech mein dheeli pad gayi. Jo gol shape bani, kya woh circle hai?", "en": "A 12 cm string went slack partway while being turned. The round shape that came out: is it a circle?" }, "reask": { "hi": "12 cm string beech mein dheeli ho jaane se bani gol shape kya circle hai?", "en": "Is the round shape drawn when a 12 cm string went slack partway a circle?" },
+      "key": "No",
+      "accept": ["nahi", "nahin", "no", "nahi, circle nahi hai", "no, it is not a circle", "circle nahi"],
+      "targets": "c4-maths-ch01-t02-m-round-is-circle",
+      "wrongIfMis": "Yes",
+      "board": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "tight string"} }, "viewCaption": { "hi": "Board par centre se kinaare tak tight string ka teer hai, jaisa string poori tight rehne par hota.", "en": "The board has the tight string as an arrow from the centre to the edge, as it would be if the string stayed tight." },
+      "why": { "hi": "string tight nahi rahi, beech mein dheeli hui, toh har point 12 cm door nahi raha: gol hai, circle nahi", "en": "the string did not stay tight, so not every point stayed 12 cm away: round, but not a circle" }, "whyShort": { "hi": "dheeli string se doori 12 cm nahi rahi", "en": "a slack string did not keep 12 cm" }, "whyAlt": { "hi": "dheeli string par pencil centre ke paas khisak gayi; circle ke liye pencil ko har jagah poori 12 cm door rehna tha", "en": "on a slack string the pencil slipped closer to the centre; for a circle it had to stay the full 12 cm away everywhere" },
+      "simpler": { "hi": "Circle mein har point centre se string jitna door hota hai. Socho, dheeli string se yeh doori har jagah wahi rahegi kya.", "en": "In a circle every point is one string-length from the centre. Think whether a slack string keeps that distance the same everywhere." },
+      "answerBoard": { "template": "shape@1", "params": {"shape": "circle", "centre": "centre", "radius": "tight string"} }
+     }
     }
    ],
    "bridgeToNext": null
