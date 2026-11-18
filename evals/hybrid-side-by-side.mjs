@@ -166,6 +166,13 @@ const NO_COUNTS = new Set();
 const ADV_KEYS = {};
 const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
 
+const DRY_YES = /^(?:haan|han|ha|haa|haanji|haan ji|ji haan|yes|yeah)[\s.!]*$/i, DRY_NO = /^(?:nahi|nahin|na|no|nope)[\s.!]*$/i;
+/** (dry only) a bare yes or no said against a yes-or-no key of the other polarity. */
+function dryPolarityMiss(target, text) {
+  if (target?.mode !== "item" || target.key == null) return false;
+  const k = String(target.key).trim(), t = String(text ?? "").trim();
+  return (DRY_YES.test(k) && DRY_NO.test(t)) || (DRY_NO.test(k) && DRY_YES.test(t));
+}
 async function classOf(state, kit, text, classLevel) {
   const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
   const target = targetFor(state, kit, item);
@@ -173,6 +180,9 @@ async function classOf(state, kit, text, classLevel) {
   // (latency fields: which path read the turn — code alone, or the model; production's speculation overlaps the model path)
   const fast = classifyFast(args);
   const path = fast.result ? "fast" : "model";
+  // (d31: the dry stub stands in for the model: a bare yes or no against a yes-or-no key of the other polarity is a wrong answer, as the
+  // model reads it — the code path grades only the key's own polarity; the staged c4-ch01-t02's "yes" to a "No" card was read as nothing)
+  if (DRY && !fast.result && dryPolarityMiss(target, text)) { dryCall("classify"); return { outcome: "incorrect", confidence: 1, flags: {}, source: "dry", path }; }
   if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }), path }; }
   return { ...(await classify(args)), path };
 }

@@ -77,14 +77,20 @@ export function hindiFormAt(script, r) {
     : m[3] ? (sk.remediation ?? []).find((x) => x.targets === m[3])?.then : (sk.checks ?? []).find((c) => c.id === m[4]);
   const st = /^stepask:(.+):(\d+)$/.exec(id);
   const o2 = st ? (script?.skills ?? []).find((k) => k.skillId === st[1])?.workedExample?.steps?.[Number(st[2])]?.ask : null;
-  const h = (o ?? o2)?.hindi;
+  // (an asked step whose row records no step item: its cell's part, "<skill>:worked:step<n>" — the staged c6-ch07-t01's dry steady 36)
+  const cp = !o && !o2 ? /^(.+?-s\d+):worked:step(\d+)(?::ask)?$/.exec(String(r?.cell?.part ?? "")) : null;
+  const o3 = cp ? (script?.skills ?? []).find((k) => k.skillId === cp[1])?.workedExample?.steps?.[Number(cp[2]) - 1]?.ask : null;
+  const h = (o ?? o2 ?? o3)?.hindi;
   return h ? said(h) : null;
 }
 /** Brain 046 Q2: whether a row asks its card's `hindi` form — a Hindi request's answer, as the order rules (the form is new words, and the
  *  card's question). */
 export function hindiFormSaid(script, r) {
   const f = hindiFormAt(script, r);
-  return !!f && low(r?.text).includes(low(f).replace(/[.!?।]+$/, "").slice(0, 60));
+  if (!f) return false;
+  // (a form with a slot — "{friend} ka kehna hai …" — is said filled: its longest stretch with no slot is read)
+  const piece = low(f).replace(/[.!?।]+$/, "").split(/\{\w+\}/).sort((a, b) => b.length - a.length)[0] ?? "";
+  return low(r?.text).includes(piece.trim().slice(0, 60));
 }
 /** Brain 046 Q4: a turn that holds a right verdict, a new point and its card (a close, a point, a card — the turn's seams). */
 const vpcOf = (r) => { const sm = (r?.seams ?? []).map((x) => x.right); const v = sm.indexOf("verdict"), p = sm.indexOf("point"), c = sm.lastIndexOf("card"); return v >= 0 && p > v && c > p; };
@@ -138,7 +144,7 @@ function captionsOf(script) {
 export function whyLeadOf(r) {
   if (!(r?.seams ?? []).some((x) => x.right === "verdict")) return null;
   const t = String(r.text ?? "");
-  return /^[^.?!:]{3,40}, kyunki /.test(t) ? "kyunki" : /^[^.?!:]{3,40}\. Dekho, /.test(t) ? "dekho" : /^[^.?!:]{3,25}: /.test(t) ? "colon" : null;
+  return /^[^.?!:]{3,40}, kyunki /.test(t) ? "kyunki" : /^[^.?!:]{3,40}\. Dekho, /.test(t) ? "dekho" : /^[^.?!:]{3,25}: /.test(t) && !/^(?:toh poora jawab|iska jawab|is sawaal ka|yahan sahi jawab)/i.test(t) ? "colon" : null;
 }
 export const D30_PREDICATES = {
   /** dc-r8-director30 Brain 046 Q6: a picture's caption is the one written for the part the picture is of — never another part's caption

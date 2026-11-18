@@ -39,7 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart, inSaid, sentencesOf as helpSentencesOf } from "./help.js";
+import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -2660,11 +2660,14 @@ function teachback(s, input) {
     }
     // (dc-r8-director27 P4, c5-t02 steady 126, c6 steady 108: a miss on the closing question got the key at once with teachback.simpler
     // unsaid. It goes through the picker: a wording left — the miss verdict, the hint, the question again; none left — the key)
+    // (d31, the staged c4-ch01-t02's dry steady 106, 108: a give-up on the closing question — "pata nahi, …" — is no wrong answer: it gets
+    // the help or the key with no miss verdict before it, as a give-up on a card does; giveUpVerdict, requestAnswered)
+    const gaveUpEnd = GIVE_UP_WORDS.test(String(input?.text ?? "")) && !SAYS_A_REASON.test(String(input?.text ?? "")) && !["correct", "incorrect", "partial", "misconception"].includes(String(cls?.outcome ?? ""));
     const tbD = pickHelp({ script: authoredEnd(kit), part: TEACHBACK_PART, request: "hint", said: saidNowOf(s), lang: lang === "english" ? "english" : "hinglish" });
     if (tbD?.rung?.text) {
       const q = saidIn(tb.prompt, lang);
       if (q && String(q).trim()) {
-        return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [endLine(tbD.rung.text), endLine(q)], renderedKinds: ["help", "closingQuestion"], authoredEnd: "teachback", endVerdict: "not_yet",
+        return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [endLine(tbD.rung.text), endLine(q)], renderedKinds: ["help", "closingQuestion"], authoredEnd: "teachback", ...(gaveUpEnd ? { endGaveUp: true } : { endVerdict: "not_yet" }),
           ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
       }
     }
@@ -2677,7 +2680,7 @@ function teachback(s, input) {
     const board = tb.answerBoard ?? null;
     return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: keyLine ? [keyLine] : [], authoredEnd: "teachbackKey", ...(board ? {} : { clear: "board" }),
       // (dc-r8-director23 T2, c6 steady 114: a miss on the closing question gets a miss verdict before the key)
-      endVerdict: hit ? "correct" : "not_yet",
+      ...(gaveUpEnd && !hit ? { endGaveUp: true } : { endVerdict: hit ? "correct" : "not_yet" }),
       ...(board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback:answer", kind: "teachback", board, mode: "fresh" } } : {}) });
   }
   s.teachbackTries += 1;
@@ -3635,7 +3638,8 @@ function helpBefore(prev, input, said) {
   const d0 = helpDecision(prev, input, request, said);
   if (!d0) return null;
   const liveId = prev.lastUi?.ask?.itemId ?? null;
-  const d = { ...d0, liveId };
+  // (d31, the staged c4-ch01-t02's dry offtopic 32: a card's hindi form with a {friend} slot is said with the friend's name, as its prompt is)
+  const d = { ...d0, ...(d0.hindiForm ? { hindiForm: fillFriend(d0.hindiForm, friendOf) } : {}), liveId };
   // (dc-r8-director28 Brain 044 T5: a request at a quick question gets help on the point, then the card — never a check-in with the card
   // waiting: c5-t01 steady 8; c6 steady 8)
   if (prev.lastMove?.quick && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask && (d.rung || d.joint) && ["wait", "keep"].includes(d.card)) return { decision: { ...d, card: "ask" }, held: true };
@@ -3740,6 +3744,7 @@ function stepTryAgain(prev, input) {
 }
 export function step(prev, input) {
   recordedNow = recordedWalk(input);
+  backToWords = backToWordsOf(input?.kit);
   // (dc-r8-director28 Brain 044 T1: after the greeting's simpler wording, the next turn is the hook, the first point and its card — a second
   // request there is answered by the teaching it asks for; the greeting has no other wording)
   const input0 = input;
@@ -4957,6 +4962,20 @@ export const l2On = (env = process.env) => !/^(off|0|false)$/i.test(String(env.T
 /** The parts of a turn in the order she says them, with their words: close (a verdict and its why, a key, a missed card's close),
  *  bridge, held (parts a return held), body (the point, a remediation's say, worked lines), card. Joints and her reply to an aside ride
  *  on the part they lead into. */
+/** d31: the words a card coming back takes for its joint — the longest of the script's backTo forms, at least seven (the staged
+ *  c4-ch01-t02's dry steady 74: a verdict, its why and a card coming back counted 74 and said 76 — its joint is nine words). Set per step. */
+let backToWords = 7;
+function backToWordsOf(kit) {
+  try { return Math.max(7, ...(scriptFor(kit)?.script?.joints?.backTo ?? []).map((f) => wordsIn(saidIn0(f, "hinglish") ?? ""))); } catch { return 7; }
+}
+/** d31: a card's question already in her said set (said on an earlier turn, not her last). */
+function cardSaidBefore(s, card) {
+  const k = helpNormSentence(helpSentencesOf(String(card ?? "")).at(-1) ?? "");
+  if (k.split(" ").length < 4) return false;
+  const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
+  if (herLast && herLast.includes(String(card).replace(/\s+/g, " ").trim().toLowerCase().slice(0, 40))) return false;
+  return (s.said ?? []).some((x) => (typeof x === "string" ? x : x?.k) === k);
+}
 export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   const { state: s, move, ui } = out;
   const lang = s.ctx?.lang ?? "hinglish";
@@ -4975,7 +4994,9 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   const joint = move.problemLines && C > 0 ? 10 : 0;
   const parts = [{ k: "close", n: C }, { k: "bridge", n: bridge ? wordsIn(bridge) : 0 }, { k: "held", n: wordsIn(held) }, { k: "body", n: wordsIn(body.filter(Boolean)) + joint },
     // (a card asked before comes back with its joint or frame: about seven words)
-    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + (s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn ? 7 : 0) : 0 }].filter((p) => p.n > 0);
+    // (d31: and a card whose question is in the said set — posedAt is undone by the split paths, as brain/say.js reads a return: the staged
+    // c4-ch01-t02's dry steady 74 counted its returning card with no joint)
+    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + ((s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn) || cardSaidBefore(s, ui.ask.text) ? backToWords : 0) : 0 }].filter((p) => p.n > 0);
   if (parts.length && lead) parts[0] = { ...parts[0], n: parts[0].n + lead };
   // (a miss verdict and the remediation it leads into are one answer — the order law: the remediation comes straight after the answer
   // it remedies; no seam between them)

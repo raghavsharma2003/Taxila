@@ -127,10 +127,15 @@ export const D28_PREDICATES = {
     const closed = parts(ctx.prevT).some((p) => ["close", "closed"].includes(p.part)) || /(?:sahi jawab|jawab hai|jawab:|kyunki)/i.test(String(ctx.prevT.text ?? ""));
     if (!closed) return null;
     const caps = (ctx.o.d28Caps ??= captionsOf(ctx.script));
+    // (d31: an answer board with no second view — the staged c4-ch01-t02's shape@1 — needs no answerViewCaption (Learning 019's standard);
+    // the board is redrawn alone and she says the keyed card's authored why on it (state.js pictureAlone, pictureWords): authored words)
+    const whys = (ctx.o.d31Whys ??= (() => { const out = new Set(); const walk = (o) => { if (!o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);
+      if (o.answerBoard && o.why) for (const t of [o.why.hi, o.why.en]) if (t) for (const x of sentencesOf(t)) out.add(normSentence(x).replace(/^(?:kyunki|because) /, ""));
+      for (const v of Object.values(o)) walk(v); }; walk(ctx.script); return out; })());
     const ss = sentencesOf(norm(r.text)).map(normSentence).filter((x) => !CHECKIN_END.test(x + "?"));
     const own = ss.filter((x) => x && !/^(?:yahan tak|ab tak|yeh hissa|yeh kadam|does that|clear so|all good|is that)/.test(x));
     if (!own.length) return "a picture after a key with no caption";
-    return own.some((x) => caps.has(x)) ? null : `a picture after a key captioned in code's words: "${norm(r.text).slice(0, 50)}"`;
+    return own.some((x) => caps.has(x) || whys.has(x)) ? null : `a picture after a key captioned in code's words: "${norm(r.text).slice(0, 50)}"`;
   },
   /** d28 guards (the law: on a scripted turn what is said is the walk's authored parts, whole and in order): a point's quick question asks
    *  what its point has just said, so it is never asked before that point was said whole — in this turn or an earlier one of hers. Live,

@@ -1706,7 +1706,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const d = (x) => { const t = String(x ?? "").replace(/\s+/g, " ").trim(); return t ? (/[.!?\u0964]$/.test(t) ? t : `${t}.`) : null; };
     const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
     const end = state.lastMove.authoredEnd;
-    const v = state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
+    // (d31: a give-up on the closing question takes no verdict — state.js endGaveUp)
+    const v = state.lastMove.endGaveUp ? null : state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
     const endW = state.lastMove.endVerdict ? (state.lastMove.endWhy ? saidIn(state.lastMove.endWhy, L) : null) : state.lastGraded?.why;
     // (Brain 046 Q6: the end's verdict takes the why's rotating lead-in, as every right verdict does)
     const endLead = v === "correct" && L !== "english" && endW && String(endW).trim() ? rightWhyLead(freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, ""), spokenMarks(endW, L), state) : null;
@@ -3079,7 +3080,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const ALT_WORD = { parts: ["patti", "bars"], bars: ["patti", "bars"], line: ["sankhya rekha", "a number line"], groups: ["groups", "groups"], round: ["gol", "a circle"] };
     // (dc-r8-director23 C: Learning's authored caption for the view of the board the picture redraws — `viewCaption` beside that board in
     // the script — is said in place of code's line when a view is drawn; code's line, then the quiet line, stay as the fallbacks)
-    const authoredCap = visualAsk && (heldPic ? !!state.lastMove.altLine : !!alt) ? viewCaptionOf(kit, state, lang, { drawn: viewKindOf(alt) }) : null;
+    // (d31, the staged scripts' angle@1, shape@1, compare@1 and measured@1 boards: a board with no second view is redrawn alone — its own
+    // authored viewCaption, written against that board, is the picture's line; before, nothing was said and the picture request got the
+    // question alone: dry stuck c6-ch07-t01 18)
+    const upBoard = state?.heldUp?.board ?? state.lastMove?.scriptBeat?.board ?? null;
+    const noSecond = visualAsk && !alt && !!upBoard && !(() => { try { return altCall(upBoard); } catch { return null; } })();
+    const authoredCap = visualAsk && ((heldPic ? !!state.lastMove.altLine : !!alt) || noSecond) ? viewCaptionOf(kit, state, lang, { drawn: viewKindOf(alt) }) : null;
     if (authoredCap) guard.viewCaption = true;
     const asked = !visualAsk ? null
       : authoredCap ? authoredCap
@@ -3586,7 +3592,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const reask = am ? norm(fillFriend(typeof am === "string" ? am : (lang === "english" ? am.en : am.hi) ?? "", state.ctx?.firstName ?? "")) : null;
         const cs = sentences(card).map(norm).filter(Boolean);
         const c0 = cs.at(-1) ?? "", m0 = c0.split(/[:;]\s+/).at(-1) ?? "";
-        const clause = m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : cs.length >= 2 && /[?？]$/.test(c0) ? c0 : null;
+        // (d31, the staged c6-ch07-t01's dry stuck 62: a card of one sentence is its own last question clause — after its reask, it is what
+        // differs; before, nothing differed and the reask was said again)
+        const clause = m0 !== c0 && /[?？]$/.test(m0) && m0.split(/\s+/).length >= 3 ? m0.charAt(0).toUpperCase() + m0.slice(1) : cs.length >= 1 && /[?？]$/.test(c0) ? c0 : null;
         const helpNow = body.filter((x) => norm(x) !== norm(card)).join(" ");
         // (the short ask asks for the answer to the question on the table — never after help about another figure, P6)
         const shortOk = !figureOther(helpNow, card, state);

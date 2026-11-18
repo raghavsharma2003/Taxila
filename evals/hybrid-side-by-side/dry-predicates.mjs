@@ -467,7 +467,10 @@ export const PREDICATES = {
     // that is a question of its own; a card that is only its question is said as its question)
     const clauseQ = (() => { const c0 = norm(r.card ?? ""); const m = c0.split(/[:;]\s+/).at(-1) ?? ""; return m !== c0 && /[?？]$/.test(m) && m.split(/\s+/).length >= 3; })();
     if (sentencesOf(r.card ?? "").length < 2 && !hasReask && !clauseQ) return null;
-    const said = [ctx.prevT, ctx.prevPrevT].some((t) => t && low(t.text).includes(c));
+    // (dc-r8-director30 Brain 046 Q5: re-asks alternate — a one-sentence card is its own last question clause, said after its reask in the
+    // turn before: only the card said whole in her turn before is the fault there; the staged c6-ch07-t01's dry stuck 58, 60, 62)
+    const one = sentencesOf(r.card ?? "").length < 2;
+    const said = (one ? [ctx.prevT] : [ctx.prevT, ctx.prevPrevT]).some((t) => t && low(t.text).includes(c));
     return said && low(r.text).includes(c) ? "the whole card said again after a hint, said whole in her last two turns" : null;
   },
   /** S1: "Ab isi par ek sawaal." only when the card follows in the same turn. */
@@ -754,6 +757,9 @@ export const ORDER_LAWS = {
       "done>other": "'done' asks for nothing: recorded with no help column",
       "reason>other": "her reason after a key or a verdict is heard and not graded: recorded with no help column",
     };
+    // (d31: the simulated child's miss on a word key with no near value is the hedge "pata nahi, shayad wahi" — evals/child-sim/reactive.mjs
+    // nearMiss; its words open on a give-up, and the walk hears the give-up they say: the staged c4-ch01-t02's keys "bilkul fit", "khulna")
+    if (want === "miss" && col === "give_up" && /^pata nahi\b/i.test(String(ctx.prevChild ?? "").trim())) return null;
     return ALLOWED[`${want}>${col}`] ? null : `the child meant ${want}; the walk recorded ${col} ("${String(ctx.prevChild).slice(0, 50)}")`;
   },
   /** Main's 026: no turn says a teach-back's key while the teach-back's question board is up — the key turn shows its answerBoard,

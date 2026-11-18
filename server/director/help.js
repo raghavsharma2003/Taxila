@@ -328,7 +328,11 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   if (hf) {
     // (a second request: the form said before, every sentence of it — a form whose givens sentence reads as the card's own is not said
     // by the card: dry offtopic c5-t01 32, e3's "Line ke neeche wahi 0 se 1 hai, …" read as said and the first request got help first)
-    const again = sentencesOf(hf).every((x) => inSaid(x, said));
+    // (and read word for word: a form is the card in other words, so the near-same reading of inSaid takes it for the card said — the staged
+    // c5-t03's dry steady 36)
+    const saidKeys = new Set(keysOf(said));
+    const saidOf = (x) => { if (!/\{\w+\}/.test(x)) return saidKeys.has(normSentence(x)); const piece = x.split(/\{\w+\}/).map(normSentence).sort((a, b) => b.length - a.length)[0]; return !!piece && [...saidKeys].some((k) => k.includes(piece)); };
+    const again = sentencesOf(hf).every(saidOf);
     const help = again && unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim(), board: unsaid.board ?? part.board ?? null } : null;
     const rung = help ? { ...help, text: help.text.charAt(0).toUpperCase() + help.text.slice(1) } : { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null };
     return { ...base, rung, board: rung.board, card: "hindiForm", key: null, joint: null, hindiForm: hf, ...(part.kind === "worked_step" ? { stepAsked: true } : {}), ...(again ? { hindiAgain: true } : {}) };

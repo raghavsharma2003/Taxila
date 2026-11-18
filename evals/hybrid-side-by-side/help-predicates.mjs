@@ -26,6 +26,9 @@ function helpIndex(ctx) {
   const rungs = new Map(), cards = [];
   let parts = [];
   try { parts = compiledFor(script).parts ?? []; } catch { parts = []; }
+  // (d31: the closing question's help — teachback.simpler, picked by state.js through TEACHBACK_PART — is a rung too: a give-up there opens
+  // on it, the staged c4-ch01-t02's dry steady 106)
+  for (const t of [script.teachback?.simpler?.hi, script.teachback?.simpler?.en]) for (const s of sentencesOf(t ?? "")) { const k = normSentence(s); if (k.split(" ").length >= 4 && !rungs.has(k)) rungs.set(k, { path: "teachback.simpler", field: "simpler", board: script.teachback?.board ?? null }); }
   for (const p of parts) {
     const hp = helpPart(script, p.id);
     if (!hp) continue;
@@ -285,7 +288,10 @@ export const HELP_PREDICATES = {
     for (const p of pts) {
       const has = p.ss.some((k) => T.includes(k));
       if (has && said.has(p.id) && !repeatAsked && !why) why = `the ${p.id.split(":").pop()} point said again (first at row ${said.get(p.id)})`;
-      const posed = r.card && p.card.some((c) => c && low(r.card).startsWith(c.slice(0, 30)));
+      // (d31: the card the row asks is its walk item where the row records one — two cards' first 30 characters can be one: the staged
+      // c5-t03's s1 e2 and s2 e1 both open "Doosri patti utni hi lambi hai, par")
+      const askId = /^script:(.+?):ask:([^:]+)$/.exec(String(r.check?.itemId ?? ""));
+      const posed = r.card && (askId ? `${askId[1]}:${askId[2]}` === p.id : p.card.some((c) => c && low(r.card).startsWith(c.slice(0, 30))));
       if (posed && !has && !said.has(p.id) && !seen.has(p.id) && !why) why = `the ${p.id.split(":").pop()} card posed with its point never said`;
       if (posed) seen.add(p.id);
       if (has && !said.has(p.id)) said.set(p.id, i);
