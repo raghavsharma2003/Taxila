@@ -2185,6 +2185,14 @@ function requestMove(s, input, item, req, labels) {
       // A picture on the stage (item 5): a re-teach move with the diagram representation, so planModule mounts the item's
       // engine as a show or the explainer@1 board (SHOW_MOVES), and the brain asks Studio for the whiteboard on any lane
       // (brain/propose.js whiteboardAskOf `requested`). A picture of the question on the table is help: it spends a rung.
+      // (d29 final, with Learning 017's scripts — steering c5-t02 14, steering c6 14: a picture asked after help on a card just keyed, its why's
+      // other wording said over its answer board, is a picture of THAT card — never the earlier card the lesson returns to next, which waits
+      // for its back-to line)
+      const kh = s.lastMove?.help?.keyed && s.lastMove.help.board && !s.lastUi?.ask?.itemId && scriptOn() && !scriptFor(kit)?.script?.recordedRun ? s.lastMove : null;
+      if (kh && item && String(kh.help.part ?? "") && !String(kh.help.part).endsWith(String(item.id).split(":ask:").at(-1) ?? "")) {
+        s.stayOn = { beat: { ...(kh.simplerBeat ?? {}), board: kh.help.board }, turn: s.turn };
+        return plan("reteach", SH.showVisual({ kind: req.kind }), { skillId: currentSkillId(s, kit, item), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", keyedPicture: true, ...(see ? { see } : {}) });
+      }
       if (item && s.pendingWhy !== item.id) s.hintLevel = Math.min(3, s.hintLevel + 1);
       return plan("reteach", SH.showVisual({ kind: req.kind }), { ...(item ? { item } : { skillId: currentSkillId(s, kit, item) }), representation: "diagram", visual: req.kind ?? "diagram", request: "visual", ...(see ? { see } : {}) });
     }
@@ -3196,7 +3204,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -4112,6 +4120,7 @@ function step0(prev, input) {
   // round 7 T2: the script beat this move renders (brain/propose.js puts its board on Studio's ask as intent.boardRef)
   if (p.scriptBeat) move.scriptBeat = { ...p.scriptBeat };
   // dc-r7-script-walk-v2 R4: a picture asked for during a walk re-shows the current beat's board (never a board of another idea)
+  if (p.keyedPicture) move.keyedPicture = true;
   if (p.request === "visual" && p.visual !== "game" && scriptOn()) {
     // (SC2, Studio: while a script card is live the picture is THAT card's board, never the beat a reteach routes to; a card
     // with no board sends none, and Studio picks for the live item)

@@ -1510,7 +1510,8 @@ export function didSentence(state, kit, L = "hinglish") {
 export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = {}) {
   const sc = scriptFor(kit)?.script;
   if (!sc) return null;
-  const want = [state?.heldUp?.board, state?.lastMove?.cardBeat?.board, state?.lastMove?.scriptBeat?.board].filter(Boolean).map((b) => JSON.stringify(b));
+  // (d29 final: a picture of the card just keyed — state.js keyedPicture — is captioned by that card's board alone, never the waiting card's)
+  const want = (state?.lastMove?.keyedPicture ? [state.lastMove.scriptBeat?.board] : [state?.heldUp?.board, state?.lastMove?.cardBeat?.board, state?.lastMove?.scriptBeat?.board]).filter(Boolean).map((b) => JSON.stringify(b));
   if (!want.length) return null;
   let hit = null;
   const walk = (o) => {
