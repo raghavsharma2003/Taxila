@@ -1315,3 +1315,218 @@ from this sparse checkout: `evals/placement-coldstart/sim.mjs`, `docs/research/c
 - The compile report's help-joints table lists `workedInvite` missing on the four pilots: compile.js, not the scripts (Brain 044).
 - A.3's help path (`sayAlt` + card, 45 to 69 words) is measured in `fitReport` but not cut; if the walk joins a `sayAlt` to its card
   under T2's 60, about half the `sayAlt`s need the same cut.
+
+## Patch 018 (2026-11-18, branch main/d30-learning)
+
+Order: `docs/patches/to-learning/018-director29-captions-and-said-lines.md` (dc-r8-director29 item 9). Done on the four pilots.
+The checker holds them to it (`d30Errors`, `d30Report` in `scripts/lesson-scripts/check.mjs`; the `F` lines of `check.mjs <topic>`
+now also report the captions read, the answer boards with no second view, and the remediations left whole).
+
+### New script fields and joints (exact names; code reads them)
+
+- `answerViewCaption` `{ hi, en }` beside the `answerBoard` of a follow-up card (`remediation[].then`) or a check (`checks[]`) whose
+  answer board has a second view: what to look at in that picture, said after the key (it may name the key). 1–2 sentences, no
+  question, true of the answer board's view kind. None where the answer board has no second view (the checker refuses one there).
+- `joints.startAnyway`: three forms, 6 words or fewer, no question, no slot — said after a second "pata nahi, aap batao" at the
+  greeting, before the hook: "Chalo, main batati hoon." / "Theek hai, main shuru karti hoon." / "Achha, pehle main dikhati hoon."
+- `joints.afterPark`: three forms, 8 words or fewer, no question, no slot — said after a park line, before the live part:
+  "Ab yeh kaam poora karte hain." / "Chalo, pehle yahan se aage badhte hain." / "Abhi apne kaam par wapas chalte hain."
+- The checker's `REM_WHOLE` list (topic, skill, remediation `targets`, reason): a remediation over 49 words with its card passes
+  only when listed; the walk says a listed one alone, ending on its check-in.
+
+### C.2 park forms: the decision
+
+**The park forms promise the return and nothing else; every park is followed by `joints.afterPark`, in all four scripts.** Not the
+other way: the checker's director22 rule ("a park promises the return and nothing else; the walk says what is next") stands, and
+rewriting the forms to lead back themselves broke it (tried, 7–8 errors a script). Brain 045 builds: park line → one
+`afterPark` form → the live part. The one park named as abrupt, c5-t02's "{aside} ki baat bhi karenge, bilkul." (steady 40), is
+now "{aside} ki baat bhi zaroor karenge, thodi der mein."
+
+### A.1 Captions read against the drawn view
+
+Every `viewCaption` of the four scripts (c4 45, c5-t01 46, c5-t02 54, c6 30; 137 with a second view, 38 on the held board only)
+was read against the view `pictureTurn` draws for its board (kinds: `line` = fraction-line and unrolled views; `strip` = bars,
+fraction-parts as bar, wholes as bar; `circle` = round, wholes; `grid` = shade-grid). The checker fails a caption naming a line,
+strip, circle or grid that is neither the view's kind nor the held board's. Changed (board → view the caption was read against):
+
+| Script | Board | Board → view | Was | Now |
+|---|---|---|---|---|
+| c5-t02 | S1 worked | bars 8+2 → wholes (circles) | "…0 se 1 ki number line hai: line ke upar 8 barabar gap, line ke neeche 2." (stuck 18) | "Dono chocolate yahan do ek jaise gol ban gayi hain: pehla gol 8 barabar hisson mein, doosra 2 mein." |
+| c5-t02 | S2 e2 point | line den 7 → strip | "Is gol ke saat barabar hisse hain…" | "Yeh patti saat barabar hisson mein hai, aur pehle chaar hisson mein rang bhara hai." |
+| c4 | s3 e1 point | bar 2 → circle | "…Rang theek beech ki line tak jaata hai." | "…Rangin tukda aur bina rang ka tukda ek jitne bade hain." |
+| c6 | s3 e3 point | measured plot → no view | "Plot ka poora kinaara ek line par khula hai: …" | "Plot ka kinaara chaar bhujaon se bana hai: 12 m, 8 m, 12 m, 8 m, kul 40 m. …" |
+| c5-t01 | s1 e2, s1 e3 points; s2 rem0, s2 rem2 | line → strip | "Yeh line …", "Is line ko sadak samjho…" (the strip called a line) | "Yeh patti …", "Is patti ko sadak samjho…" |
+| c4 | s1 e4 card; s3 e1 card | bars → line (dens [8,6]; [2,4]) | "ek taraf … doosri taraf" | "line ke upar … line ke neeche" (the view's top scale first) |
+| c5-t02 | S1 e2 point | bars 4+8 → line dens [8,4] | "ek taraf 4 …, doosri taraf 8" | "line ke upar 8 barabar gap, line ke neeche 4" |
+| c5-t01 | s3 e1 card, s3 c2 | line, no view | "dono taraf" | "upar bhi … neeche bhi", "upar-neeche dono" |
+
+### A.2 Worked captions and the asked steps' answers
+
+The checker reads the key and every accepted form of each asked step (and of the own step while the worked board is still up for
+it) in words or digits, number words as digits; a form the problem itself states is a given. Changed:
+c5-t01 s1 worked (strip): "…gaps ke beech ke teen marks teen khambe. Rangin gap ghar se pehle khambe tak ka raasta hai." (named
+"gaps", the asked key, and pointed at the own step's 1/4: stuck 18) → "…aur beech ke teen marks teen khambe.";
+c5-t01 s2 worked (held line): "…paanch barabar gaps mein…" (an accepted "5" of the asked step) → "…barabar gaps mein kati hui.";
+c5-t01 s3 worked: "Line ke upar 7/4 likha hai…" ("upar", an accepted form of the new asked step) → "7/4 ki jagah dhoondni hai.";
+c6 s1 worked (unrolled): "…8 m, 9 m aur 14 m, ek ke baad ek." (stuck 18; the checker cannot see this one — it gives the step by
+laying all three sides end to end, not by a word) → "Yahan kyari ka kinaara khol kar seedhi line bana di hai. Maali ke paas 35 m
+baad hai."; c6 s3 worked: "Rani ka ek chakkar yahan…" ("ek chakkar", the asked key) → "Park ka kinaara yahan khol kar seedhi line
+bana di hai: 50 m, 30 m, 50 m, 30 m."
+
+### A.3 `answerViewCaption`
+
+38 added: c4 10, c5-t01 12, c5-t02 14, c6 2 — every follow-up card and check whose answer board has a second view. Each read
+against its view and against the key. Answer boards with no second view (no caption written): c4 s2 c2 and s2 rem1's card
+(equal-groups of unequal sizes), s3 c3 (three bars); c5-t01 all six of skill 3 (lines beyond 1); c5-t02 S1 c2 and S3 c1 (three
+bars); c6 12 (area-grid, compare and shape boards: s1 c2, s1 rem1's card, s2 c1–c3, both s2 remediation cards, s3 c1–c3, both s3
+remediation cards).
+
+### B. Remediations (before → after)
+
+Rewritten as full sentences, inside 49 with their card:
+- **c4** s1 unequal-parts: "Yeh rassi … kati: baant barabar nahi, toh naam nahi. Kaagaz beech se kata, dono tukde ek jaise: inhe
+  fraction ka naam milta hai." → "Yeh rassi ek lambe aur do chhote tukdon mein kati, isliye in tukdon ka fraction naam nahi hota.
+  Kaagaz beech se kata, dono tukde ek jaise, toh unka fraction naam hai." s1 part-part: "…batata hai ki poori chocolate kitne
+  tukdon mein bati; tukde kha lo, yeh ginti nahi badalti." → "…Neeche wala number poori chocolate ke tukde ginta hai; kuch tukde
+  kha lo, woh ginti wahi rehti hai." (the stitch "socho. Socho" is fixed at the joint: `beforeRemediation[2]` "Ek naye tareeke
+  se socho." → "Ek aur tareeka dekhte hain."; a remediation with no board stays a "socho" telling, as 016 C holds). s2
+  part-part: "Kele nahi, thaile gino: diya hua thaila 5 mein se ek hai." → "Yahan kele nahi, thaile gino; jo thaila diya, woh 5
+  thailon mein se ek hai." s3: "Do ek jaisi roti: ek 3 … ek 12 mein. Roti utni hi, toh 12 wali ka har tukda patla." → "Do ek
+  jaisi roti hain: ek 3 barabar tukdon mein kati, doosri 12 mein. Roti utni hi hai, toh 12 wali ka har tukda patla hai."
+- **c5-t01** s1 count-marks: "Darzi ka ribbon, 0 se 1 metre: 6 chalk ke marks, aur 7 barabar gap. …" → "Darzi ka ribbon 0 se 1
+  metre tak hai, aur us par 6 chalk ke marks hain. Marks 6 hain, par gap 7 bante hain, isliye pehla mark 1/7 metre par hai."
+  s1 whole-number-bias (steady 16): "Line ke ek taraf 2 barabar gap, doosri taraf 5. Zyada gap, toh har gap chhota: …" → "Line ke
+  upar 2 barabar gap hain, neeche 5. Gap jitne zyada, har gap utna chhota: 1/5 ka gap 1/2 wale se chhota hai." s2 count-marks
+  (steady 52, the child who said "1st mark"): "Line par 3 marks, par gap 4: …" → "0 se pehle mark tak ek gap hai, doosre mark tak
+  do gap. Hum gap ginte hain, mark nahi, isliye 3 marks wali line mein 4 gap hain." s2 whole-number-bias: "Upar 1/3 ke gap,
+  neeche 1/6 ke: 1/3 wala do guna lamba. Toh …" → "Upar har gap 1/3 hai, neeche 1/6: upar wala do guna lamba hai. 2 chhote gap
+  2/6 par rukte hain, 2 lambe 2/3 par." s3 all-less-than-one: "Line 0 se 2, har gap 1/8. 8 gap 0 se 1 bhar dete hain: 1 par
+  8/8. Naunva gap 1 ke aage." → "Yeh line 0 se 2 tak hai, har gap 1/8. 8 gap chalkar 1 aata hai, yaani 8/8; naunva gap 1 ke aage
+  hai."
+- **c5-t02** S1: "…10 bada number hai, phir bhi 10 walon ka hissa chhota." → "Do ek jaisi roti hain: … phir bhi 10 logon wala hissa
+  chhota hota hai." S2 gap-thinking: "Do ek jitni patti: 2 mein se 1 rangin, aur 7 mein se 6. Pehli ki kami aadhi patti, doosri
+  ki bas 1/7." → "Pehli patti mein 2 mein se 1 rangin hai, doosri mein 7 mein se 6. Pehli ka aadha khaali hai, doosri ka bas
+  1/7." S3 bigger-denominator: "Do ek jaisi rassi: 2 aur 8 barabar hisse. 2 wali ke ek hisse mein 8 wali ke chaar; …" → "Ek rassi
+  2 hisson mein kati, aur waisi hi doosri 8 mein. 2 wali ke ek hisse mein 8 wali ke chaar aate hain." S3 gap-thinking: "Do ek
+  jaise dibbe: 3 mein se 2 khaane bhare, 8 mein se 7. …" → "Dono dibbon mein ek-ek khaana khaali hai, par 3 khaanon wale ka
+  khaana bada hai. Isliye 8 khaanon wala bharne ke zyada paas hai."
+- **c6** s2 l-plus-b: "…Lambai, phir chaudai chali: ab saamne wale kone par, bas aadha chakkar. …" → "Socho, ek cheenti khet
+  ke kone se chalti hai. Woh lambai, phir chaudai chali, toh saamne wale kone par hai: aadha chakkar. Shuru wala kona do
+  bhujayein door hai." The other c6 remediations and c4 s2's "Socho, saari cheezein…" were read and left: full sentences.
+
+**Left whole (REM_WHOLE, said alone and ending on a check-in), five:**
+- c5-t01 s3 whole-number-bias (58/49): "Socho, do fractions ka upar wala number ek jaisa hai, toh dono mein utne hi gap chalne hain.
+  Jiska neeche wala number bada hai, uska har gap chhota hai, toh woh kam door jaata hai." — was "…Neeche wala bada, toh har gap
+  chhota, aur safar jaldi khatam."; two sentences that each need their clause.
+- c5-t01 s3 not-numbers (65/49, steady 84): "Yeh stations 0 se 2 tak hain, aur har do stations ke beech 5 barabar gaps hain;
+  station 1 par 5/5 hai. Train jahan rukti hai, uska number ek fraction hai: upar woh gaps jo train chali, aur neeche 5." — was
+  "Train ka number ek fraction: upar gine gaps, neeche 5…".
+- c5-t02 S2 same-bottom-equal (56/49): "Do ek jaisi roti hain, dono 5 barabar hisson mein. Ek se 2 hisse liye, doosri se 4. Har
+  hissa ek hi size ka hai, toh 4 hisse matlab zyada roti." — the card is 25 words; three sentences do not go under 24.
+- c5-t02 S2 tops-only (63/49, the judge's named note): "Do ek jaisi patti socho, ek 3 barabar hisson mein aur doosri 9 mein. 3
+  wali patti ka ek hissa, 9 wali ke teen hisson jitna lamba hai. Isliye 9 wali ke 2 hisse bhi usse chhote hain."
+- c5-t02 S3 tops-only (60/49): "Do ek jitni patti hain, ek 3 barabar hisson mein aur ek 5 mein, toh 3 wali ka har hissa bada hai.
+  Dono mein utne hi hisse rangein, toh 3 wali mein rang zyada hoga."
+
+c5-t01 skill 3 has two standing alone and c5-t02 skills 2 and 3 have two and one: a steady lesson meets at most the ones its child
+misses, but the decision's reversal clause (more than two alone in a steady lesson) is closest in c5-t02.
+
+### B. Other changed sentences (old → new; judge's row)
+
+- **c4** s1 e4 point (stuck 20, the dense e4 turn: point cut, card untouched): "Is patti ke 8 barabar tukde hain, ek mein rang.
+  Rangin tukda 1/8 hai: …" → "Is patti ka rangin tukda 1/8 hai: 8 saare tukde ginta hai, bache hue 7 nahi." s2 e2 point (s44, the
+  card's regrouping untaught): "…1/3 mein bhi yahi, bas neeche wala number 3 hai." → "24 aam 6 barabar group mein hain. 1/6 ka
+  matlab: 6 barabar group banao aur ek group lo, toh 24 ka 1/6 hai 4 aam. Chhote group jodkar bade group bhi bante hain:
+  teen-teen milao, toh har bada group 24 ka 1/2 hai." s3 e2 `whyShort` (steady 70, circular): "1/4 wala tukda 1/6 wale se bada
+  hai" → "4 tukdon wale pizza ke tukde kam, isliye bade". s3 worked (s72): problem "…doosri 6 mein. Dono poori chocolate ek jitni
+  hain." → "…doosri 6 mein."; asked step "6 chhote tukde, bade tukdon par barabar rakhne hain. Unke kitne group banaoge?" → "6 wali
+  ke saare tukde, 3 wali ke kitne tukde dhak denge?" (right: "Haan, teeno, kyunki dono chocolate ek jitni hain."). s2 worked own
+  step (steady 58, "3 barabar group" twice): "Tumhari baari: socho, 15 pencil 3 barabar group mein baant rahe ho. Ek group mein
+  kitni pencil aayengi?" → "Tumhari baari: ek group mein kitni pencil aayengi?".
+- **c5-t01** `whyShort` s1 e1 (steady 12, stuck 10): "0 se 1 ke 3 gaps; 1/3 isi line par" → "line 3 gaps mein kati hai, toh 1/3
+  yahin hai"; s3 e2 (steady 72): "har 2 gap se ek poora, toh 4 gap = 2" → "do gap ek poora hain, toh 4 gap 2 poore". s3 e2 point
+  (steady 70 → 74, the giveaway): "…aur hum 6/4 par. Upar wala 6 neeche wale 4 se bada, toh 6/4 1 ke aage hai." → "…aur hum 6/4
+  par." (its `simpler` "6 chauthai" → "Chhe chauthai"). s3 worked asked step (repeated e1's frame): "7/4 line par 1 se pehle
+  aayega, ya 1 ke baad?" → "7/4 ek poore, yaani 1, se kam hai ya zyada?". s3 rem1 card: "Nayi line, 0 se 2: ek taraf … doosri
+  taraf 10 mein." → "Nayi line 0 se 2 tak: upar har poora 5 gaps mein, neeche 10 mein." "km": no spoken line says it (017 made them
+  all "kilometre"); "km" is left only in accept forms and `convey`. "line" against "patti": the captions (A.1).
+- **c5-t02** S2 e3 point (the Mona card had little left): "…Zero se jitna door, utna bada. Neeche wala number same ho, toh upar
+  wala batata hai kitne gap paar karne hain." → "…kati hai, har gap 1/5. Upar wala number batata hai ki zero se kitne gap chalna
+  hai." Size of the missing part, taught in a point of each skill (S2 c2 and S3 c3 keep their cards): S2 e4 "…Neeche wale number
+  alag, toh hisse alag size ke: 10 wali ke chhote, 3 wali ke bade." → "Do barabar patti hain: … 10 wali ke hisse chhote hain, 3
+  wali ke bade, toh khaali hissa bhi 3 wali ka bada hota hai."; S3 e3 → "Ginti barabar ho, toh hisse ka size faisla karta hai:
+  kam hisson wali patti ke hisse bade. Khaali hisse bhi aise hi: 5 wali ka ek khaali hissa, 9 wali ke khaali hisse se bada."
+  Number-line points cut (steady 68, 70): S3 e2 → "Ab dono ek number line par hain: line ke upar 5 barabar gap, neeche 8. Dono mein
+  teen-teen gap chalne hain, par 1/5 aur 1/8 ke gap ka size alag hai."; S3 e4 loses "Isi tarah upar ke har mark ko neeche ke gaps
+  mein gin sakte ho." S2 e4 card (offtopic 52, the dangling "Par"): a `reask` "Ek patti ka 2/3 aur usi size ki doosri patti ka 3/10:
+  bada kaun hai?". S3 worked asked step (premise gave it): "Dono ne 2-2 hisse khaye; ab faisla kaun karega, ginti ya hisse ka
+  size?" → "Yahan faisla kaun karega: khaye hue hisson ki ginti, ya hisse ka size?"; its close's why (said the counts again):
+  "dono ne 2 hisse khaye, par Isha ke 1/3 wale hisse…" → "kam hisson mein kati chocolate ke hisse bade hote hain, aur Isha ki
+  chocolate 3 mein kati thi". S2 worked: the told step "Meena ne 1/8 wale 5 khaye, Raju ne 3" is gone (it left the own step
+  nothing to do; steady 60, 78). "Toh poora jawab:" is the walk's, left.
+- **c6** hook (fragment): "…woh pitch ka parimap hai. Ab triangle par." → "Cricket pitch ke kinaare kone se chalkar wahin lauto:
+  yahi parimap hai. Isi tarah triangle ka bhi niklega." Openers on a change of figure (steady 48, 74; stuck 70; offtopic 44, 76;
+  steering 50): s2 e3 "Square ki chaaron bhujayein…" → "Ab ek square lo: uski chaaron bhujayein…"; s3 e3 "Plot 12 m lamba, 8 m
+  chauda hai, toh…" → "Ab ek plot: 12 m lamba, 8 m chauda, toh…" (and "Par neeche wali bhuja…" → "Neeche wali bhuja…"). s3 e1's
+  card (offtopic 66): its `targets` (l-plus-b) is dropped, so the half-the-perimeter answer (30 m) takes the card's own hint
+  ("Ulta socho: kaunsa number chaar baar jodne par 60 banta hai.") instead of the rectangle remediation and the talaab card; the
+  misconception stays tested by s3 e2. The "aadha … usme se … bache" frame: kept once (s3 e2's why); s3 c3's why and short why
+  → "aadhi dori, 35 cm, mein ek lambai aur ek chaudai hai; lambai 20 cm hai, toh chaudai 15 cm" / "aadhi dori 35 cm; lambai 20, toh
+  chaudai 15 cm"; s3 rem0's card → "ek lambai aur ek chaudai milkar 45 m hain, aur lambai 28 m, toh chaudai 17 m" / "lambai aur
+  chaudai milkar 45 m; chaudai 17 m". s1 worked asked step (the two-way near-giveaway): "Baad kin bhujaon par lagegi: sirf do par, ya
+  teeno par?" → "Poori baad lagane ke liye kitni bhujaon ka naap jodna hoga?". Facts said twice in the worked closes (steady 26, 60,
+  80): s1 answer "kyari par 31 m baad lagi, aur 4 m bachi" → "maali ke paas 4 m baad bachegi", its why → "maali ki baad kyari ke
+  poore kinaare se 4 m lambi thi"; s2 step right "…: 24 cm aur 18 cm." → "Haan, ek lambai aur ek chaudai, yaani aadha chakkar."
+  (the told step says 24 + 18 next); s3 right "Haan, ek chakkar ki doori pehle, kyunki teeno chakkar ek jaise hain.", its close's
+  why "ek chakkar park ka parimap hai, 160 m, aur teen chakkar uske teen guna" → "Rani ne ek hi doori teen baar daudi".
+- **All four, C.3** `wrap.ack` (steady 95–102 in every topic): "Har paath mein kuch naya hota hai." / "Kuch baatein aasaan thi, kuch
+  mein mehnat lagi." / "Aaj humne milkar kaafi kuch dekha." → "Achha, tumne yeh bataya, mujhe achha laga." / "Theek hai, main yeh
+  yaad rakhungi." / "Hmm, samajh gayi, batane ke liye shukriya." — each follows "achha laga", "mushkil tha" and "maine dobara check
+  kiya" alike. The scripts author no separate line after the "how was it" answer: `wrap.ack` is that line (code's otherwise).
+- **All four, C.4** `afterKeyReturn` (c5-t01 steering 16): "Aisa sawaal phir aayega; ab pichhle sawaal par wapas chalte hain." →
+  "Aisa sawaal phir aayega; chalo, ab pichhle sawaal ko dekhte hain."; "Is par hum phir aayenge, abhi pehle wale sawaal par wapas
+  chalo." (and its c5-t02/c6 variants) → "Is par hum phir aayenge; tab tak pehle wala sawaal saath mein dekhte hain." (c6: "Is tarah
+  ka hisaab phir aayega; tab tak…"). The third form, the judges' model, is unchanged.
+
+### New and changed keys, with the blind solve (problem and board alone)
+
+| Script | Where | Key | Solve |
+|---|---|---|---|
+| c4 | s3 worked asked step (new question) | 3 | the two chocolates are the same size, so all 6 small pieces together cover the whole of the other: all 3 big pieces |
+| c5-t01 | s3 worked asked step (was "after") | zyada | 1 = 4/4; 7 quarters > 4 quarters, so 7/4 is more than 1 |
+| c6 | s1 worked asked step (was "teeno par") | teeno | the fence goes round the whole edge of a triangular bed: all 3 sides' lengths are added |
+| c5-t02 | S3 worked asked step (question changed, key kept) | hisse ka size | 2/3 and 2/7: both counts are 2, so the size of a part decides |
+
+Each `answerViewCaption` that names a key was checked against that key by the same solve (e.g. c6 s1 c1 9 + 6 + 7 + 4 = 26 m; s1
+rem0 8 + 5 + 7 + 6 + 3 = 29 m; c5-t02 S3 rem2 5/6 is 1/6 short, 4/5 is 1/5 short, so 5/6 needs less juice).
+
+### Tests
+
+New: `tests/r8-learning-director29.test.mjs` (9 tests): the pilots pass `d30Errors`; the view kinds come from `pictureTurn`; a
+caption naming the wrong kind of view fails (the c5-t02 stuck 18 caption put back; c6's unrolled line on a no-view board); a worked
+caption naming an asked step's answer in words fails ("gaps", "ek chakkar", "paanch" as 5; c4's given 5 does not); `startAnyway`
+three forms of six words or fewer and `afterPark`; every follow-up card and check with a second-view answer board has an
+`answerViewCaption` (38) and none without; a remediation over 49 fails unless in `REM_WHOLE`. Repinned, each keeping its rule:
+`r8-learning-director28` 017 A.3 (a pilot remediation fits 49 or is listed whole); `r7-learning-d13` D13.3 (the two gap-thinking
+remediations are still one part short, in their new sentences).
+Run: `node --test --test-concurrency=2 tests/r7-board-ref.test.mjs tests/r8-learning-*.test.mjs tests/r7-learning-*.test.mjs
+tests/r8-picture-turn.test.mjs tests/r8-card-stated.test.mjs tests/r7-compile*.test.mjs`: 314 tests, 313 pass, 1 fails —
+`r7-learning-kit-workflows` "the real plans build…", for a file absent from this sparse checkout
+(`docs/research/census/2026-10-21-kits-english-only-forms.json`). `r8-picture-turn`'s view counts did not move (no board changed).
+The compile report: no hole on the pilots; c5-t02's cell count falls by one step (the deleted told step); the fit table shows the
+listed whole remediations (c5-t01 2, c5-t02 3). `docs/design/round7/brain/COMPILE-HOLES.md` was regenerated to check and left as it
+was (Brain's file).
+
+### For main
+
+- **A.2 cannot catch c6's kind of giveaway by words.** The c6 s1 caption gave the step by listing all three sides end to end; no
+  word of the key or its forms was in it. Fixed by hand; the checker only reads words and digits.
+- **The A.1 rule allows the held board's kind** (the split keeps it up on the left), so a caption may name the held line and the
+  drawn strip together, as the c5-t01 captions do. It would not catch a caption that describes only the held board while a view is
+  drawn beside it.
+- **C.2 the other way was not possible without reversing director22's park rule** in the checker; I left the rule and added the
+  joint. If main prefers parks that lead back themselves, `asidePark`'s "nothing else" check has to go first.
+- **A.3 on explain cards:** the order names follow-up cards and checks only. An explain card answered and then asked for a picture
+  (c4 steering 14 was the Pinky follow-up card, but c5-t02 and c6's were too) gets no `answerViewCaption` from this patch.
+- **Five remediations stand whole**, three of them in c5-t02 (skills 2 and 3). If director30 hears more than two alone in a
+  steady lesson, the decision's clause re-reads the 60-word turn.
