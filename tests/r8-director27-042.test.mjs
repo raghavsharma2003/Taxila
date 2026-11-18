@@ -30,7 +30,8 @@ const lessonOf = (topic, child) => {
     const j = JSON.parse(readFileSync(join(DIR, `${child}-${FILE[topic]}.json`), "utf8"));
     // (read against today's script: the run's own copy predates Learning 016, and the device these predicates hold is the script's — a point
     // with a quick question, a worked example that asks a step; the rows are the turns where today's script has one)
-    const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${j.topicId}.json`), "utf8"));
+    // (d29 final: the scripts as director28 ran them — Learning 017 deleted the quick questions these predicates read)
+    const script = PRE017(j.topicId);
     lessons.set(k, { rows: j.director, flags: lessonFlags({ rows: j.director, script }) });
   }
   return lessons.get(k);
@@ -67,7 +68,8 @@ describe("Brain 042: the predicates read director27's rows", () => {
     readsOn("pictureCaption", [["c5-t01", "steering", 14], ["c6", "steering", 14], ["c5-t02", "steady", 18]]);
   });
   test("quickGraded and quickGiveaway read the rows built to break them", () => {
-    const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c6-maths-ch06-t01.json"), "utf8"));
+    // (d29 final: a beat with a quick question — the c6 pilot as director28 ran it; Learning 017 deleted them)
+    const script = PRE017("c6-maths-ch06-t01");
     const e2 = script.skills[0].explain[1];
     const S = script.skills[0].skillId;
     const ask = { who: "teacher", text: `Point. ${e2.quick.prompt.hi}`, pageParts: [{ part: "body", from: 0, beat: "e2" }, { part: "quick", from: 7, beat: "e2" }] };
@@ -92,7 +94,11 @@ describe("Brain 042: the predicates read director27's rows", () => {
 const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2"];
 const KEEP = {};
 /** A lesson walked with the card's own reader: each line is classified against the item on the table, as the dry harness reads it. */
+/** d29 final: Learning 017 deleted every explain beat's quick question (a point and its card share a turn) and reshaped the worked examples;
+ *  the devices these walks test stay in code for a beat that keeps them (017 B.2), so they walk the four pilots as director28 ran them. */
+const PRE017 = (T) => JSON.parse(readFileSync(new URL(`./fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28/scripts/${T}.json`, import.meta.url), "utf8"));
 function walk(T) {
+  { const sc = PRE017(T); delete sc.recordedRun; setScriptForTest(T, sc); }
   const K = kitFromFile(getTopic(T));
   let r = step(initLessonState({ topicId: T, kit: K, ctx: { ...CTX, classLevel: Number(/^c(\d)/.exec(T)[1]), lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
   const say = (text) => {

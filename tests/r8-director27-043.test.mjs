@@ -25,7 +25,11 @@ const scriptOf = (t) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts"
 const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2", "TAXILA_R7_SCRIPT_DIR"];
 const KEEP = {};
 /** A lesson walked with the card's own reader: each line is classified against the item on the table, as the dry harness reads it. */
+/** d29 final: Learning 017 deleted every explain beat's quick question (a point and its card share a turn) and reshaped the worked examples;
+ *  the devices these walks test stay in code for a beat that keeps them (017 B.2), so they walk the four pilots as director28 ran them. */
+const PRE017 = (T) => JSON.parse(readFileSync(new URL(`./fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28/scripts/${T}.json`, import.meta.url), "utf8"));
 function walk(T) {
+  { const sc = PRE017(T); delete sc.recordedRun; setScriptForTest(T, sc); }
   const K = kitFromFile(getTopic(T));
   let r = step(initLessonState({ topicId: T, kit: K, ctx: { ...CTX, classLevel: Number(/^c(\d)/.exec(T)[1]), lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
   const say = (text) => {
@@ -98,7 +102,9 @@ describe("Brain 043: the walk", () => {
   });
 
   test("R2: after a detour the lead-in is said again; the seam pass skips it only straight after the invitation (code's forms when the script has none)", () => {
-    const sc = scriptOf("c6-maths-ch06-t01");
+    // (d29 final: the invitation's joint is retired — Brain 044 T3 reads it nowhere, Learning 017 deleted it; the seam rule is held on the
+    // scripts as director28 ran them)
+    const sc = PRE017("c6-maths-ch06-t01"); delete sc.recordedRun;
     const kit = kitFromFile(getTopic("c6-maths-ch06-t01"));
     const form = sc.joints.workedInvite[1].hi;
     const st = (lastText, afterInvite = true) => ({ lastMove: { afterInvite }, recent: [{ who: "teacher", text: `Bilkul sahi, kyunki x. ${lastText}` }] });
@@ -160,7 +166,8 @@ describe("Brain 043: the checker and the compile report", () => {
       assert.deepEqual(d28Errors(s), [], t);
       assert.deepEqual(compileScript(s).missing.filter((h) => h.field === "whyShort"), [], `${t}: no whyShort hole`);
       assert.ok(!compileScript(s).helpJoints.some((j) => j.joint === "workedInvite"), `${t}: no workedInvite hole`);
-      assert.equal(s.joints.workedInvite.length, 3);
+      // (d29 final: Learning 017 deleted joints.workedInvite — Brain 044 T3 reads no invitation)
+      assert.equal(s.joints.workedInvite, undefined, `${t}: no workedInvite joint`);
     }
   });
   test("whyShort: length, a number the card does not have, a question, a leading kyunki, no shorter than the why", () => {

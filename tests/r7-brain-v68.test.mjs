@@ -99,8 +99,11 @@ describe("r7-brain-v68.test.mjs", () => {
         const lm = last.state.lastMove;
         assert.ok(lm?.kind === "hook" || lm?.hookSaid, lm?.kind);
         // (dc-r8-director25 L2: no turn ends with nothing for the child to answer — the hook ends on one check-in, code's form)
-        const ask = BEAT_ASK.hinglish.find((q) => norm(out.reply).endsWith(q));
-        assert.ok(ask, `the hook ends on a check-in: ${out.reply}`);
+        // (Brain 044 T1 with Learning 017 A.1: where the hook, the first point and its card fit 75 words as said, the turn ends on the card —
+        // still nothing of hers; else on one check-in, code's form)
+        const card = norm(last.p.r.ui?.ask?.text ?? "");
+        const ask = card && lm.hookSaid && norm(out.reply).endsWith(card) ? card : BEAT_ASK.hinglish.find((q) => norm(out.reply).endsWith(q));
+        assert.ok(ask, `the hook ends on a check-in or the first card: ${out.reply}`);
         assert.equal(norm(out.reply).slice(0, -ask.length).trim(), norm([...lm.sayFirst, ...(lm.hookSaid ? [lm.point] : [])].join(" ")), `draft ${d("x")}`);
       }
     });
