@@ -32,6 +32,9 @@ function walkReal(topicId, { plan, answer, interests = [] }) {
   for (let n = 0; n < 90 && !r.end && r.move.kind !== "wrap" && r.state.phase !== "teachback"; n++) {
     const ask = r.ui?.ask?.itemId ? (r.move.item ?? { id: r.ui.ask.itemId }) : null;
     let text = "haan", c = cls("no_evidence");
+    // (Brain 046 Q1: a yes at an asked worked step asks the step again — the step is told only after a wrong answer or a second request; the
+    // walking child answers an asked step wrong, so the walk tells it as it did when "haan" told it)
+    if (!ask && /^stepask:/.test(String(r.state.activeItemId ?? ""))) { text = "galat jawab"; c = cls("incorrect"); }
     if (ask) { const a = answer(ask) ?? { verdict: "right" }; text = a.verdict === "right" ? "sahi jawab" : "galat jawab"; c = a.verdict === "right" ? cls("correct") : cls("incorrect", a.misconceptionId ? { misconceptionId: a.misconceptionId } : {}); if (a.misconceptionId) c.outcome = "misconception"; }
     prevAsk = ask ?? prevAsk;
     const recent = [...(r.state.recent ?? []), { who: "teacher", text: (r.move.mustSay ?? []).join(" ") }];
