@@ -3218,7 +3218,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "noFit"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "noFit", "closeShort"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -4608,6 +4608,20 @@ function shortWhyFor(out, input) {
 }
 const cloneOut = (out) => { try { return structuredClone(out); } catch { return null; } };
 export function splitLong(out, input) {
+  // (dc-r8-director29 Brain 045 P5, c4 steady 76: a worked example's close with its why and the next card pass 75 — the close says the answer
+  // without its why ("Toh poora jawab: …" and the script's answer), and the row says so: closeShort)
+  if (out?.move?.workedDone?.why && !scriptFor(input.kit)?.script?.recordedRun && l2On() && input?.event === "turn") {
+    const a0 = cloneOut(out);
+    const a1 = a0 ? splitLongOnce(a0, input) : null;
+    if (a1?.state?.splitHold) {
+      const c0 = cloneOut(out);
+      if (c0) {
+        c0.move = { ...c0.move, workedDone: { ...c0.move.workedDone, why: "" } }; c0.state.lastMove = c0.move;
+        const c = splitLongOnce(c0, input);
+        if (!c.state?.splitHold) { c.move = { ...c.move, closeShort: true }; c.state.lastMove = c.move; c.proposal = directorProposal(c.move, { ui: c.ui, guidance: c.state.guidance, purpose: c.state.purpose }); return c; }
+      }
+    }
+  }
   const short = shortWhyFor(out, input);
   const a0 = short ? cloneOut(out) : null, b0 = a0 ? cloneOut(out) : null;
   if (!a0 || !b0) return inviteBefore(splitLongOnce(out, input), out, input);
@@ -4662,7 +4676,9 @@ function splitLongOnce(out, input, opt = {}) {
   const bridgeB = bridgeU ? unitBoardOf(input.kit, bridgeU) : null;
   const closeB = move.closeBeat?.board ?? null, nextB = (bridgeTurn ? bridgeB ?? move.bridgeBeat?.board : null) ?? (move.cardBeat ?? move.scriptBeat)?.board ?? null;
   const hasClose = closing.some(Boolean) || (!!move.closeBeat && (!!move.verdict || ["correct", "incorrect", "partial", "misconception"].includes(input.cls?.outcome)));
-  const unfit = hasClose && !!closeB && !!nextB && !scriptFor(input.kit)?.script?.recordedRun && !switchFits(closeB, nextB);
+  // (d30, as the d29 final ruling asks of every board question: the close's board as the turn draws it — the board up kept when it is the same,
+  // else drawn in its place — then the next part's)
+  const unfit = hasClose && !!closeB && !!nextB && !scriptFor(input.kit)?.script?.recordedRun && !switchFits(closeB, nextB, { upKept: JSON.stringify(s.heldUp?.board ?? null) === JSON.stringify(closeB) });
   // (dc-r8-director24 L, main's 035: one new thing a turn — a verdict, its why, the next point and its card in one breath of 60 to 80 words.
   // The close's words count: over the cap, the turn ends on the point's check-in and the card comes next turn)
   const closedCardWhy = (() => { try { const cb = move.closeBeat; return cb ? workedAnswerOf({ ...s, lastMove: { scriptBeat: cb } }, input.kit)?.why ?? null : null; } catch { return null; } })();

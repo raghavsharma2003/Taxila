@@ -708,7 +708,7 @@ export const ORDER_LAWS = {
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (Brain 044 T1: after the greeting's simpler wording, a request gets the "nothing easier" line and the lesson starts — hook, point, card)
-    if ((ctx.prevT.seams ?? []).some((x) => x.right === "greetSimpler") && (r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
+    if ((ctx.prevT.seams ?? []).some((x) => x.right === "greetSimpler") && (r.seams ?? []).some((x) => ["helpSpent", "startAnyway"].includes(x.joint))) return null;
     // (one unit: a remediation and its then-card; the worked problem, its steps and the child's own step)
     const unitOf = (b) => (/^worked/.test(b) ? "worked" : /^(?:rem|then):/.test(b) ? `rem:${b.replace(/^(?:rem|then):/, "")}` : b);
     const asked = new Set([...(ctx.prevT.pageParts ?? []).map(beatOfPart), liveBeatOf(ctx.prevT)].filter(Boolean).map(unitOf));
