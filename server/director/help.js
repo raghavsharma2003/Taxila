@@ -261,7 +261,11 @@ export function keyLine(part, lang = "hinglish") {
  *   key:   { key, why, text, board } when the card closes
  *   joint: { kind, text, by } — helpSpent or afterKeyGoOn, said first
  */
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {} }) {
+/** Brain 044 Small (director28 c5-t02 offtopic 18, 20: five wrong answers to one question — its quick question and its card — and the
+ *  ladder went on into the point's own wordings, the key never said): a card answered wrong this many times gets its key, whatever its
+ *  ladder still has. The rule that let it run was dc-r8-director25 H4 ("the count of misses never lets it go while a rung is unsaid"). */
+export const KEY_AFTER_MISSES = 5;
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
   if (!HELP_REQUESTS.includes(request)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -271,6 +275,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (a hint is a wrong answer's help: on a live card only)
   if (request === "hint" && !isCard) return null;
   // (dc-r8-director27 P3: a card closed by a right answer — its why's other wording first, as after a key; it is not keyed)
+  if (request === "hint" && isCard && misses >= KEY_AFTER_MISSES) {
+    const key = keyLine(part, L);
+    if (key) return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: key.board, card: "close", key, joint: null, missCap: misses };
+  }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(closed && !keyed ? { closed: true } : {}) };

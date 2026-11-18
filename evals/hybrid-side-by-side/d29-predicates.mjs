@@ -24,6 +24,8 @@
 //   openerSeam     the switch line is recorded once, as the switch — never also as an empty opener seam
 //   quickAddress   a line on a quick question is addressed as the quick question, not as the point's check-in
 //   whyShortFlag   a row that says the answered card's short reason carries whyShort
+//   reaskTwice     Small: after a second wrong answer in a row the question is not said word for word as her last turn ended
+//   keyAfterFive   Small: the fifth wrong answer to one question (its quick question and its card) is met with the key
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -46,6 +48,23 @@ export function leadPartsOf(r, script) {
     const text = t.slice(p.from ?? 0, end).trim();
     return { part: p.part, beat: String(p.beat ?? ""), from: p.from ?? 0, end, text, boards: p.boards ?? [], lead: p.part === "bridge" || p.part === "aside" || isLeadText(text, r, script) };
   });
+}
+
+const WRONG_READS = new Set(["incorrect", "misconception", "partial"]);
+const readOf = (row) => String(row?.read ?? "").split(" ")[0];
+const lastSentence = (t) => (String(t ?? "").replace(/\s+/g, " ").trim().match(/[^.?!।]+[.?!।]*$/u)?.[0] ?? "").trim();
+const keyText = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+const KEY_WORDS = /(?:sawaal ka|iska) (?:sahi )?jawab|sahi jawab:|the answer (?:here )?(?:is|was)|iska jawab hai|poora jawab/i;
+
+/** Small: the wrong answers to the question a turn answers, up to and including that turn — the teacher turns on the same beat's card or
+ *  quick question that follow a wrong answer. 0 when the turn is on no card or quick question. */
+export function missesOnQuestion(rows, i) {
+  const base = (x) => /^(.+):(?:card|quick)$/.exec(String(x?.cell?.part ?? ""))?.[1] ?? null;
+  const b = base(rows[i]);
+  if (!b) return 0;
+  let n = 0;
+  for (let k = 1; k <= i; k++) if (rows[k].who === "teacher" && base(rows[k]) === b && WRONG_READS.has(readOf(rows[k - 1]))) n++;
+  return n;
 }
 
 export const D29_PREDICATES = {
@@ -176,5 +195,24 @@ export const D29_PREDICATES = {
     const k = (x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
     // (the short form said in the why's place — not the whole why, which may hold the short form's words)
     return ws && t.includes(k(ws)) && !(card.why?.hi && t.includes(k(card.why.hi).slice(0, 40))) ? "the card's short reason said with no whyShort on the row" : null;
+  },
+  /** Small: a second wrong answer in a row is not met with the question said word for word as her turn before ended (c4 steady 86,
+   *  offtopic 52; c5-t01 steering 54). Both turns follow a wrong answer; the question is each turn's last sentence. */
+  reaskTwice(L, r, i) {
+    const rows = L.rows ?? [];
+    if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
+    let j = i - 2; while (j >= 0 && rows[j].who !== "teacher") j--;
+    if (j < 1 || !WRONG_READS.has(readOf(rows[j - 1]))) return null;
+    const q = lastSentence(r.text), q0 = lastSentence(rows[j].text);
+    return /[?？]$/.test(q) && keyText(q) === keyText(q0) ? "the question said again word for word straight after a second wrong answer" : null;
+  },
+  /** Small: after five wrong answers to one question — its card's and the quick question that asked it first — the card gets its key
+   *  (c5-t02 offtopic 20: the ladder ran on into the point's wordings). The count is the turns on that beat's card or quick question that
+   *  answer a wrong answer; the fifth one says the key. */
+  keyAfterFive(L, r, i) {
+    const rows = L.rows ?? [];
+    if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
+    const n = missesOnQuestion(rows, i);
+    return n >= 5 && !KEY_WORDS.test(String(r.text ?? "")) && !r.keyFact ? `wrong answer ${n} to one question and no key` : null;
   },
 };

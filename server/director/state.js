@@ -3475,6 +3475,10 @@ const STRICT_REQUEST = () => !!process.env.NODE_TEST_CONTEXT || process.env.TAXI
 export function requestUnhelped(prev, input, out) {
   const request = helpRequestOf(prev, input);
   if (!request) return null;
+  // (help is a script's: a kit lesson with no script, or a turn with no part recorded to help on, has no help to give — the earlier rules
+  // answer it as they did)
+  if (!scriptFor(input.kit)?.script) return null;
+  if (!(() => { try { return helpPartOf(prev, input); } catch { return null; } })()) return null;
   // (a request to speak English is a language for the lesson, not a request for easier words)
   if (request === "hindi" && input?.cls?.request?.lang && !/^(?:hindi|hinglish)$/i.test(String(input.cls.request.lang))) return null;
   const lm = out?.state?.lastMove ?? {};
@@ -3493,6 +3497,15 @@ function requestHelpedOrThrow(prev, input, out) {
 }
 /** A replay of a recorded run walks what that run walked (tests/fixtures/replay.mjs marks it): help is not picked in it (helpRequestOf). */
 const recordedWalk = (input) => !!scriptFor(input?.kit)?.script?.recordedRun;
+/** Brain 044 Small: the wrong answers to one question — its card's (by its live item) and the quick question of the same beat, which asks it
+ *  first ("<skill>:<beat>:card" ↔ the beat's quick evidence). */
+function missesOn(prev, cardPart, liveId) {
+  const m = prev?.misses ?? {};
+  const q = /^(.+):([^:]+):card$/.exec(String(cardPart ?? ""));
+  // (a quick question's answer is beat evidence, never a card's miss: read from there)
+  const quickMiss = q ? (prev?.beatEvidence ?? []).filter((e) => e.kind === "quick" && e.skillId === q[1] && e.beatId === q[2] && !e.right && ["incorrect", "partial", "misconception"].includes(String(e.read ?? ""))).length : 0;
+  return (m[liveId] ?? 0) + quickMiss;
+}
 /**
  * The help turn, before the walk. A request that stays on its part is answered here (helpStay). Anything that moves the walk — a card
  * closed with its key, a card asked, the lesson going on — is carried out by the walk on the input helpInput gives it, and helpAfter
@@ -3508,8 +3521,10 @@ function helpBefore(prev, input, said) {
     if (!["wrong", "misconception"].includes(columnName(input, prev))) return null;
     const part = cardPartOf(input.kit, { itemId: liveId });
     if (!part) return null;
+    // (Brain 044 Small: the wrong answers to this question so far — its card's and its quick question's — and this one)
+    const misses = missesOn(prev, part, liveId) + 1;
     const d0 = pickHelp({ script: scriptFor(input.kit)?.script, part, request: "hint", said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, misses });
     if (!d0) return null;
     const d = { ...d0, friend: friendOf, liveId };
     return { decision: d, input: helpInput(input, d, liveId), hint: true };

@@ -229,6 +229,9 @@ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad k
 // v6.10 T2: the child says they answered already — ask once more, in one short line (no key, no re-teach)
 const ASK_AGAIN = { hinglish: ["Ek baar phir bata do, tumhara jawab kya hai?", "Mujhse chhoot gaya, ek baar aur bolo na, jawab kya hai?", "Phir se bolo, tumhara jawab kya tha?"],
   english: ["Tell me once more, what's your answer?", "I missed it, say your answer again?", "One more time, what was your answer?"] };
+// (Brain 044 Small: the short ask after a second miss in a row — the question was said in her last turn; no referent, no number)
+const MISS_AGAIN_ASK = { hinglish: ["Ab phir se socho, jawab kya hoga?", "Toh ab batao, kya aayega?", "Ab ek baar aur try karo: kya jawab hai?"],
+  english: ["Think again, what's the answer?", "So now, what do you get?", "Try once more: what's the answer?"] };
 const NO_PICTURE = { hinglish: ["Iski doosri tasveer abhi nahi ban rahi, toh board wali tasveer hi dekhte hain.", "Is par doosri tasveer nahi ban paa rahi; jo board par hai, usi ko dekho.", "Iska alag chitra abhi nahi hai, isliye board wala hi lete hain."],
   english: ["I can't draw a second picture for this one, so let's use the one on the board.", "There isn't another picture for this one; look at the board again.", "No second picture for this one, so we'll stay with the board."] };
 const PARK_LATER = { hinglish: [(t) => `${capT(t)} ki baat hum thodi der mein karenge.`, (t) => `${capT(t)} yaad rahega; thodi der mein uspar aate hain.`, (t) => `${capT(t)} ke baare mein baad mein baat karenge, pakka.`],
@@ -1391,6 +1394,9 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     // (dc-r8-director28 Brain 044 T8: a re-ask after a hint or help on the same card, and the card asked again because the child asked — "phir se
     // bolo", "sawaal kya hai", a picture — is no return: no back-to line, recorded as the card)
     returnCard: !!si.posedBefore && !si.onLastTurn && state?.lastMove?.request !== "selftry" && (si.cameBack || (hasClose && otherCard))
+      // (Brain 044 Small: her last turn was a hint ending on the short ask for their answer — the same card said now, not answered right, is the
+      // card after its hint)
+      && !(!otherCard && state?.lastVerdict !== "correct" && herPrev && [...(jointOf(kit, "missAgainAsk", lang) ?? []), ...MISS_AGAIN_ASK[lang]].some((f) => f && herPrev.trim().endsWith(String(f).toLowerCase().trim())))
       && !(state?.lastMove?.kind === "hint" || ["keep", "ask"].includes(String(state?.lastMove?.help?.card ?? "")) || state?.lastMove?.request === "visual"
         || (["repeat", "which"].includes(String(state?.lastMove?.request ?? "")) && /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu.test(String(childText ?? "")))),
     remediation: state?.lastMove?.scriptBeat?.kind === "remediation",
@@ -3443,6 +3449,20 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastS = [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
       if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state); guard.l2Checkin = true; }
     }
+    // (Brain 044 Small, director28 c4 steady 84/86, offtopic 50/52, c5-t01 steering 52/54: a second miss in a row got a new hint and then
+    // the same question word for word as the turn before — the question said in her last turn is not said again straight after a miss:
+    // a short ask for their answer takes its place, the script's own `missAgainAsk` joint where it has one, else code's)
+    if (tail && graded && verdict === "not_yet" && !asideQ && scriptFor(kit)?.script && !scriptFor(kit)?.script?.recordedRun
+      && (tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk))) {
+      const lastQ = (t) => sentences(norm(t)).map(norm).filter(Boolean).at(-1) ?? "";
+      const prevT = [...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1);
+      const tq = lastQ(tail);
+      if (prevT && /[?？]$/.test(tq) && keyS(lastQ(prevT.text)) === keyS(tq)) {
+        const short = norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state));
+        guard.reaskShort = { part: tail === card || guard.cardQuestionOnly ? "card" : "stepAsk", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" };
+        tail = short;
+      }
+    }
     const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
@@ -3475,7 +3495,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : {}), part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
+        { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
@@ -3571,7 +3591,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const pb = [...heldNow, ...planBody.filter((x) => !heldNow.some((h) => keyS(h) === keyS(x)))]
         .filter((x) => !heldOut.has(authoredKey(x)))
         .map((x) => (heldCardK.length ? sentences(x).filter((y) => !heldCardK.includes(authoredKey(y))).join(" ") : x)).filter((x) => norm(x));
-      const tailAuthored = tail && !guard.cardPageDropped && (tail === card || guard.cardQuestionOnly || (guard.quickAsk && tail === guard.quickAsk) || (guard.stepAsk && tail === guard.stepAsk)) ? tail : null;
+      const tailAuthored = tail && !guard.cardPageDropped && !(guard.reaskShort && tail === guard.reaskShort.text) && (tail === card || guard.cardQuestionOnly || (guard.quickAsk && tail === guard.quickAsk) || (guard.stepAsk && tail === guard.stepAsk)) ? tail : null;
       guard[PLAN] = [
         // (a help joint rides in sayFirst — state.js helpJoint — and is the seam pass's to rotate: a joint form, not a part)
         ...first.filter((x) => !state.lastMove?.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => ({ part: x === bridgeS ? "bridge" : "close", text: x })),

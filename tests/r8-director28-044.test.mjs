@@ -272,3 +272,26 @@ describe("T8: the record says what was heard", () => {
     assert.match(src, /body: bOf\(lmB\.scriptBeat\),/);
   });
 });
+
+describe("Small: a second miss, five misses", () => {
+  test("reaskTwice reads the question said word for word after a second miss in a row (c4 steady 86, offtopic 52; c5-t01 steering 54)", () => {
+    for (const [p, t, i] of [["steady", "c4", 86], ["offtopic", "c4", 52], ["steering", "c5t01", 54]]) assert.ok(flagged(p, t, "reaskTwice").has(i), `${p} ${t} row ${i}`);
+    // (the first miss's turn is not a second miss)
+    assert.ok(!flagged("steady", "c4", "reaskTwice").has(84));
+  });
+  test("keyAfterFive reads the fifth wrong answer to one question met with a hint (c5-t02 offtopic 20; row 18 is the fourth)", () => {
+    const f = flagged("offtopic", "c5t02", "keyAfterFive");
+    assert.ok(f.has(20)); assert.ok(!f.has(18));
+  });
+  test("pickHelp: a hint on a card answered wrong five times is its key, whatever the ladder still has; four times, a rung", async () => {
+    const { pickHelp, KEY_AFTER_MISSES } = await import("../server/director/help.js");
+    const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC.c5t02}.json`), "utf8"));
+    const part = `${script.skills[0].skillId}:e1:card`;
+    const four = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES - 1 });
+    assert.ok(four, "the card has a ladder");
+    assert.equal(four.card, "keep"); assert.ok(four.rung);
+    const five = pickHelp({ script, part, request: "hint", said: [], misses: KEY_AFTER_MISSES });
+    assert.equal(five.card, "close"); assert.equal(five.rung, null); assert.ok(five.key?.text);
+    assert.equal(KEY_AFTER_MISSES, 5);
+  });
+});

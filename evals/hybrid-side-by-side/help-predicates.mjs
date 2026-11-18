@@ -4,6 +4,7 @@
 // (the said set, rebuilt here from her earlier rows), and the help turn's part (the walk's record; after a key's check-in, the card just
 // keyed). Each was run over the director25 fixture rows it is written for and reads non-zero there
 // (tests/r8-director25-help-predicates.test.mjs). Merged into dry-predicates.mjs's PREDICATES; gated. Pure.
+import { missesOnQuestion } from "./d29-predicates.mjs";
 import { compiledFor } from "../../server/director/compile.js";
 import { helpPart, ladderOf, sameSentence, normSentence, sentencesOf, at, FALLBACK_JOINTS, keyLine } from "../../server/director/help.js";
 
@@ -396,6 +397,9 @@ export const HELP_PREDICATES = {
     if (!h || h.keyed || h.request === "hindi") return null;
     const part = helpPart(ctx.script, h.part);
     if (!part || part.key == null || !keySays(r, h, ctx)) return null;
+    // (Brain 044 Small: a hint on the fifth wrong answer to one question is its key, whatever the ladder still has — server/director/help.js
+    // KEY_AFTER_MISSES)
+    if (h.request === "hint" && missesOnQuestion(L.rows ?? [], i) >= 5) return null;
     const left = helpFirstUnsaid(L, i, ctx, h.part);
     return left ? `the key of ${h.part} given to a ${h.request} with "${String(left).slice(0, 50)}" unsaid` : null;
   },

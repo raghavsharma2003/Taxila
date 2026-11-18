@@ -377,7 +377,8 @@ describe("r7-brain-v68.test.mjs", () => {
               const text = out.reply.replace(/\s+/g, " ").trim();
               // (v6.10 T2: an ask-again turn keeps the card said on the turn before it, and says only its one line)
               // (dc-r8-director23 C: a picture turn asks the card's question alone — the harness's cardQ row mark, as on a W turn)
-              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain ? null : pl.p.r.ui?.ask?.text ?? null, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
+              // (Brain 044 Small: a second miss in a row asks for the answer in a short line — the card was said on the turn before, as an ask-again's)
+              const f = heldFlags({ text, card: out.guard?.cardHeld || out.guard?.askAgain || out.guard?.reaskShort ? null : pl.p.r.ui?.ask?.text ?? null, ...(out.guard?.cardQuestionOnly || out.guard?.cardHeldForTry ? { cardQ: true } : {}) }, null); // (as turn.js: A4 drops ui.ask)
               if (f.length) h5.push(`${persona} ${topic} ${n}: ${f.map((x) => x.why).join("; ")}`);
             } catch (e) { errs.push(`${persona} ${topic} ${n}: ${e.message.slice(0, 160)}`); }
           }
