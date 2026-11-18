@@ -74,7 +74,8 @@ test("N1/P6.1 (Brain 044 T1): a request at the greeting gets the greeting's simp
   const at4 = p4.at(-1).state.lastMove;
   assert.equal(at4.scriptBeat?.beatId, "e1");
   assert.ok(at4.hookSaid, "the hook is said with the first point");
-  assert.equal(at4.help?.joint, "helpSpent", "a second request: the nothing-easier line first");
+  // (dc-r8-director29 Brain 045 P4: the line that starts the lesson — "nothing easier" is never said before something has been taught)
+  assert.equal(at4.help?.joint, "startAnyway", "a second request: the start line first");
 }));
 
 test("N1 (Brain 044 T1): a give-up after the greeting's simpler wording (c4 offtopic 4) opens on a word to her, then the hook and the point", async () => {
