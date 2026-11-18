@@ -477,13 +477,7 @@
      "id": "e3",
      "convey": "same top → same count → piece size decides; 1/5 > 1/8 → 3/5 > 3/8; then two equal strips in 9 and 5 parts → 2/9 vs 2/5",
      "mustSay": [{"hi": "ginti barabar", "en": "same count"}, {"hi": "hisse ka size", "en": "part size"}],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": { "title": "3/5", "items": ["3 hisse", "har hissa 1/5", "bade hisse"] },
-       "right": { "title": "3/8", "items": ["3 hisse", "har hissa 1/8", "chhote hisse"] }
-      }
-     }, "viewCaption": { "hi": "Do gol hain, ek par 3/5 likha hai aur ek par 3/8, aur dono teen-teen hisson mein bante hain. Yahan ginti dekho, jo dono mein barabar hai.", "en": "Two circles, one labelled 3/5 and one 3/8, each split into three parts. Look at the count here, which is the same in both." },
+     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 3, "label": "3/5"}, {"parts": 8, "shade": 3, "label": "3/8"}]} }, "viewCaption": { "hi": "Yahan 0 se 1 ki number line hai: line ki ek taraf 5 barabar gap aur 3/5 par ek mark, doosri taraf 8 barabar gap aur 3/8 par ek mark. Dono mark teesre gap ke ant par hain.", "en": "Here is a number line from 0 to 1: 5 equal gaps on one side of the line with a mark at 3/5, and 8 equal gaps on the other with a mark at 3/8. Both marks are at the end of the third gap." },
      "point": { "hi": "Ginti barabar ho, toh hisse ka size faisla karta hai. 3/5 ke hisse 1/5 wale hain, jo 1/8 wale hisson se bade hain.", "en": "When the counts match, the size of a part decides. The parts of 3/5 are 1/5 parts, which are bigger than 1/8 parts." }, "pointAlt": { "hi": "Do bachchon ko teen-teen laddoo mile, par ek ke laddoo bade the aur doosre ke chhote; jiske laddoo bade, uske paas zyada. Fraction mein bhi upar wala number barabar ho, toh dekho kiske hisse bade hain.", "en": "Two children each got three laddoos, but one got big laddoos and the other small ones; whoever got the big ones has more. With fractions too, when the top numbers match, see whose parts are bigger." },
      "ask": {
       "prompt": { "hi": "Yeh do patti dekho. Ek ke 9 barabar hisson mein se 2, doosri ke 5 mein se 2. Kaunsa zyada hai, 2/9 ya 2/5?", "en": "Look at these two strips. 2 out of 9 equal parts of one, 2 out of 5 of the other. Which is more, 2/9 or 2/5?" }, "key": "2/5",
