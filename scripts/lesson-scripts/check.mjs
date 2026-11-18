@@ -14,6 +14,8 @@
 //   node scripts/lesson-scripts/check.mjs <topicId> --blind q.json --keys k.json
 //   node scripts/lesson-scripts/check.mjs --all
 //   node scripts/lesson-scripts/check.mjs <topicId> --since <rev>     also list every part whose spoken text changed since <rev>
+//   LESSON_SCRIPTS_DIR=data/lesson-scripts-staged node scripts/lesson-scripts/check.mjs <topicId> --standard
+//                                                                     hold a staged script to the pilots' standard for this run
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -1708,6 +1710,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const topics = args.includes("--all") ? allTopics() : args.filter((a, i) => !a.startsWith("--") && !["--blind", "--keys", "--since"].includes(args[i - 1]));
   if (!topics.length) { console.error("usage: check.mjs <topicId> [--blind q.json --keys k.json] | --all"); process.exit(2); }
   let bad = 0;
+  // (Learning 019 Part 2: --standard holds the named staged scripts to the pilots' standard for this run only, as STANDARD_STAGED does
+  // for good; the v2.4 rules — second wordings, reasks, the wrap — fire once a script has its teachback)
+  if (args.includes("--standard")) for (const t of topics) if (!STANDARD_STAGED.includes(t)) STANDARD_STAGED.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);

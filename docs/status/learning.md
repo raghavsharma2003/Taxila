@@ -1743,3 +1743,38 @@ tests/r8-picture-turn.test.mjs tests/r8-card-stated.test.mjs tests/r7-compile*.t
 - **`tests/fixtures/t2-predicates.mjs` and `r7-brain-v69`** recognise "yeh jaankar achha laga" as an acknowledgement; the new acks
   ("Achha, tumne dil se bataya.", "Theek hai, main yeh yaad rakhungi.") are not in their lists, if a dry-matrix predicate counts them.
 - The new asked steps (c4 s3, c5-t01 s3, c6 s1) are not yet heard by a judge.
+
+## Patch 019, Part 2 (2026-11-18, branch main/d31-learning): the first three staged scripts — chosen, measured, not yet at the standard
+
+**The three:** `c5-maths-ch02-t03` (named by the order); `c4-maths-ch01-t02` and `c6-maths-ch07-t01`.
+- `c6-maths-ch07-t01` (fractional units 1/n; comparing unit fractions; sharing): every board kind it uses — wholes, fraction-parts,
+  fraction-line, fraction-bars, equal-groups, compare — is one the c4, c5-t01 and c5-t02 pilots exercise, 230 boards between them,
+  and its three skills are the pilots' own ideas a class higher (c4 s1, c5-t02 S1).
+- `c4-maths-ch01-t02` (right angles, comparing angles, circles): shape@1, measured@1 and compare@1 only, the c6 pilot's boards (38 of
+  them). The other class 4 scripts bring kinds no pilot draws (place-value, column-op, number-line-hop/scale), except
+  `c4-maths-ch14-t01` (pictographs), which is almost all compare@1 (41 boards), the kind the pilots use least (3).
+
+**Measured, not done.** None of the three is at the pilots' standard yet, and I did not move any of them, list any in
+`STANDARD_STAGED`, or change any of their lines in this patch. The staged scripts are v2.3 without a teachback, so today's checker
+holds them to v2.3's rules only. Held to the pilots' standard (`check.mjs <topic> --standard`, new, with a teachback present so
+the v2.4 rules fire), each fails 157 to 172 lines before its worked examples are even rebuilt:
+
+| Script | Errors | Second wordings (pointAlt, whyAlt, sayAlt, problemAlt) | viewCaption | hindi | answerViewCaption | did | Fit (hooks, points, remediations) | Worked | Joints | Wrap, teachback | covered | reask | Other |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| c5-maths-ch02-t03 | 172 | 42 | 36 | 26 | 10 | 9 | 19 | 3 | 8 | 7 | 3 | 7 | 2 |
+| c4-maths-ch01-t02 | 157 | 39 | 29 | 25 | 0 | 10 | 12 | 4 | 8 | 7 | 3 | 12 | 8 |
+| c6-maths-ch07-t01 | 160 | 38 | 23 | 24 | 8 | 9 | 18 | 7 | 8 | 7 | 3 | 4 | 11 |
+
+On top of these: `whyShort` on every card (about 20 a script; a compile hole, not a checker line), the worked examples (two told
+steps before the first question in every skill; none asks a step: each needs an asked deciding step, the sum told, and its opening
+cut to 53), a teachback with its key blind-solved, and one word per idea (c5-t03 says tukda and hissa, bar and patti). That is about
+180 new authored sentences a script, each read against its board, before a run; the order's list reads as if the staged scripts
+were a few rules short of the pilots, and they are four rounds short (they predate director21's v2.4 fields).
+
+**What I would not put in front of a child yet (read, not changed):** c5-t03 s1's hook is 29 words and tells the whole fold before the
+first point; its e3 card asks "1/8 wale kitne hisse" on a line whose 3/4 mark is not drawn until the answer; s2's point sentences
+"Patti par 1/2 ke tukde 2 hain, aur 2/3 ke tukde 3" read as notes; c1 says "chocolate bar" and "health bar" beside "patti".
+
+**For main:** the batch needs either the full authoring above (one session per script, I estimate, at the standard Parts 1 of 016 to 019
+held the pilots to) or a decision that a staged script may be run first at v2.3 plus Part 1 A (hindi, afterWorked, step wordings) and
+the fit, with the v2.4 fields left to the compile report's fallbacks. `check.mjs <topic> --standard` measures either way.
