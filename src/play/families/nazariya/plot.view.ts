@@ -8,7 +8,8 @@ import type { Moment, NazariyaAct, PlayActBody } from "../../../../shared/play.t
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
 import { goalOf } from "../../engines/khand/words.ts";
-import { built, frontView, sideView, topView, type NzState, type Plot } from "./grid.ts";
+import { built, frontView, namedKey, sideView, topView, type NzState, type Plot } from "./grid.ts";
+import { greyed } from "../../core/law4.ts";
 import type { ViewsParams } from "./views.logic.ts";
 import { pitCells, type ArrayParams } from "./array.logic.ts";
 import { areaPerimeter } from "./floor.logic.ts";
@@ -114,7 +115,7 @@ export const makePlotView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
         c.push({ id: "k0", label: "0", kind: "pad", group: "pad2", onPress: () => { num = Math.min(9999, num * 10); deps.changed(); } });
         c.push({ id: "kdel", label: "Del", kind: "pad", group: "pad1", aria: "Delete a digit", onPress: () => { num = Math.floor(num / 10); deps.changed(); } });
         if (!(mode === "array" && fade === 3) && !(side && fade >= 2 && s.named === null)) c.push({ id: "close", label: "Build", kind: "secondary", group: "go", onPress: () => { pad = false; deps.changed(); } });
-        c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: true, group: "go", onPress: () => { const r = ctl.dispatch({ kind: "name", n: num } as never); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
+        c.push({ id: "name", label: `Say ${num}`, kind: "primary", you: !greyed(s, namedKey(num)), disabled: greyed(s, namedKey(num)), group: "go", onPress: () => { const r = ctl.dispatch({ kind: "name", n: num } as never); if (!r.refused) { num = 0; pad = false; } deps.changed(); } });
         return c;
       }
       c.push({ id: "tool-build", label: "Build", kind: "choice", group: "tools", aria: `Build${tool === "build" ? " (on)" : ""}`, onPress: () => { tool = "build"; deps.changed(); } });

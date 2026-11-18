@@ -11,7 +11,7 @@
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { BhaapAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -63,6 +63,8 @@ export const makeBhaapView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (const m of ms) if (m.kind === "solved") { doneAt = now + 0.5; cheered = false; }
     const mc = ms.some((m) => m.kind === "misconception_consequence");
     if (refused === "already" || refused === "steady" || refused === "there" || refused === "level_over") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again, a greyed pick) is a soft thup
+    else if (refused && !mc && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused || mc) { api.sfx("look"); if (!mc) api.fx.shake(2); }
     else api.sfx(last.m === "heat" || last.m === "sun" ? "tick" : last.m === "rain" || last.m === "pump" || last.m === "flow" || last.m === "wipe" ? "pour" : last.m === "sail" ? "slide" : last.m === "put" || ["cold", "coldDrink", "warmDrink", "ac", "heater", "exhaust"].includes(last.m) ? "drop" : "tap");
     api.invalidate(); deps.changed();

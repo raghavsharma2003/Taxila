@@ -8,13 +8,14 @@
 import type { Candidate, FamilyLogic, Facts, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel, StripsAct } from "../../../../shared/play.ts";
 import { add, cmp, eq, gcd, lcm, rat, ratStr, type Rat } from "../../core/rat.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 import { focusMal } from "../../core/pick.ts";
 
 export type StripsGoal = "make" | "equal" | "compare" | "unit" | "add";
 export interface Bar { d: number; shaded: number[] }
 export interface StripsParams { bars: Bar[]; goal: StripsGoal; target?: [number, number]; locked: number[] }
-export interface StripsState extends Undoable<StripsState> {
+export interface StripsState extends Undoable<StripsState>, Law4Marks {
   bars: Bar[];
   predicted: number | null;        // compare: the first choice (a committed prediction)
   revealed: boolean;               // compare: both bars now cut into the same number of parts
@@ -76,7 +77,7 @@ function compareMal(p: StripsParams, choice: number): string | null {
   return null;
 }
 
-function apply(level: PlayLevel<StripsParams>, s: StripsState, act: StripsAct, seq: number): { state: StripsState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<StripsParams>, s: StripsState, act: StripsAct, seq: number): { state: StripsState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -222,6 +223,11 @@ function apply(level: PlayLevel<StripsParams>, s: StripsState, act: StripsAct, s
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+/** law 4, pick (ruling 005): the key of a compare / unit choice ("A more", "same", "B more") */
+export const chooseKey = (bar: number) => `choose:${bar}`;
+/** law 4 (pick; src/play/core/law4.ts): a choice shown wrong (a wrong prediction, or a wrong confirmation once both bars are
+ *  cut alike) is greyed until the level ends; a choice refused only because the bars are not yet cut alike is not */
+const apply = withPicks<PlayLevel<StripsParams>, StripsState, StripsAct>(applyLaw, (_l, _s, a) => (a.kind === "choose" ? chooseKey(a.bar) : null), { when: (r) => r.refused !== "reveal_first" });
 function equalMal(p: StripsParams, mine: Bar): string | null {
   const ref = p.bars[0], rn = ref.shaded.length, rd = ref.d, n = mine.shaded.length, d = mine.d;
   if (n - rn > 0 && n - rn === d - rd) return "add-same";

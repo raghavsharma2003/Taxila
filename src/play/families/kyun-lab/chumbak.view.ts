@@ -24,10 +24,11 @@ import type { ChumbakAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material, Role } from "../../core/styles.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
-import { DIRS, KIT_PINS, SPOTS, barPole, carPoles, chumbakHelpers, jointsOf, letterAhead, needleAt, piecePole, pinsAt, polesOf, printed, sizeAt, type ChumbakParams, type ChumbakState } from "./chumbak.logic.ts";
+import { DIRS, KIT_PINS, SPOTS, barPole, carPoles, chumbakHelpers, claimKey, jointsOf, letterAhead, needleAt, piecePole, pinsAt, polesOf, printed, sizeAt, type ChumbakParams, type ChumbakState } from "./chumbak.logic.ts";
 
 const HOLD = 1.6;   // s: the stage keeps drawing after an act (the last beat lands inside it)
 /** a stable 0..1 hash (pin and filing places are the level's own, never random per frame) */
@@ -559,7 +560,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const undo: ControlSpec = { id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) };
     const runBtn = (key: string): ControlSpec => ({ id: "run", label: W(`chumbak.run.${key}`), aria: W(`chumbak.run.${key}`), kind: "primary", group: "go", disabled: wait.waits({ kind: "run" }), onPress: () => act({ kind: "run" }) });
     if (g === "pakka") {
-      for (let i = 0; i < (p.bars as number); i++) out.push({ id: `claim-${i}`, label: W("chumbak.pakka.claim", { bar: "ABC"[i] }), kind: "choice", group: "claim", onPress: () => act({ kind: "claim", i }) });
+      for (let i = 0; i < (p.bars as number); i++) out.push({ id: `claim-${i}`, label: W("chumbak.pakka.claim", { bar: "ABC"[i] }), kind: "choice", group: "claim", disabled: greyed(s, claimKey(p, s, i)), onPress: () => act({ kind: "claim", i }) });
       out.push(undo);
       return out;
     }
@@ -569,7 +570,7 @@ export const makeChumbakView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
       return out;
     }
     if (g === "taakat") {
-      for (let i = 0; i < 2; i++) out.push({ id: `claim-${i}`, label: W(`chumbak.taakat.claim.${sizeAt(p, i)}`), kind: "choice", group: "claim", onPress: () => act({ kind: "claim", i }) });
+      for (let i = 0; i < 2; i++) out.push({ id: `claim-${i}`, label: W(`chumbak.taakat.claim.${sizeAt(p, i)}`), kind: "choice", group: "claim", disabled: greyed(s, claimKey(p, s, i)), onPress: () => act({ kind: "claim", i }) });
       out.push(undo);
       return out;
     }

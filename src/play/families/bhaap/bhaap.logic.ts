@@ -43,6 +43,7 @@
 // water, notches, waits, steps); tests/r7-games-bhaap.test.mjs checks both against the kits.
 import type { BhaapAct, Candidate, Facts, FamilyLogic, GenRequest, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withLooks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export const BHAAP_MODES = ["avastha", "bhaapan", "hawa", "chakra"] as const;
@@ -230,7 +231,7 @@ export interface BhaapParams {
   lay: number;
 }
 export type World = AvW | BhW | NaW | KaW | BaW | KuW;
-export interface BhaapState extends Undoable<BhaapState> {
+export interface BhaapState extends Undoable<BhaapState>, Law4Marks {
   w: World;
   /** the law's last answer for the view ("" when the last act just happened) */
   why: string;
@@ -310,7 +311,7 @@ const mom = (kind: Moment["kind"], seq: number, facts: Facts, mis?: string): Mom
 
 // ───────────────────────────── apply (THE LAW) ─────────────────────────────
 type Out = { state: BhaapState; moments: Moment[]; refused?: string };
-function apply(level: PlayLevel<BhaapParams>, s: BhaapState, act: BhaapAct, seq: number): Out {
+function applyLaw(level: PlayLevel<BhaapParams>, s: BhaapState, act: BhaapAct, seq: number): Out {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -615,6 +616,8 @@ function apply(level: PlayLevel<BhaapParams>, s: BhaapState, act: BhaapAct, seq:
     return no("no_tool");
   }
 }
+/** law 4 (ruling 005; src/play/core/law4.ts): an experiment done again on the same set-up is a look, not a check */
+const apply = withLooks<PlayLevel<BhaapParams>, BhaapState, BhaapAct>(applyLaw, (_l, a) => a.kind === "use" || a.kind === "put", (s) => s.w);
 const goalMet = (_l: PlayLevel<BhaapParams>, s: BhaapState) => s.done;
 
 // ───────────────────────────── solve, shortcut, malActs ─────────────────────────────

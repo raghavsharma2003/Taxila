@@ -6,10 +6,11 @@
 import type { BalanceAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { withAlpha } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
-import { balanceHelpers as H, type BalanceParams, type BalanceState, type Pan } from "./balance.logic.ts";
+import { balanceHelpers as H, typedKey, type BalanceParams, type BalanceState, type Pan } from "./balance.logic.ts";
 
 interface Box { x: number; y: number; w: number; h: number }
 interface Fly { x0: number; y0: number; x1: number; y1: number; t0: number; kind: "unit" | "bag"; up: boolean }
@@ -184,7 +185,9 @@ export const makeBalanceView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [];
     const digits = (go: string): ControlSpec[] => [...["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map((d) => ({ id: `k${d}`, label: d, kind: "pad" as const, group: "pad", onPress: () => { if (pad.length < 2) pad += d; deps.changed(); } })),
-      { id: "kdel", label: "⌫", aria: "delete", kind: "pad" as const, group: "pad", onPress: () => { pad = pad.slice(0, -1); deps.changed(); } }, { id: "go", label: go, kind: "primary" as const, group: "go", you: true, disabled: !pad, onPress: () => {} }];
+      { id: "kdel", label: "⌫", aria: "delete", kind: "pad" as const, group: "pad", onPress: () => { pad = pad.slice(0, -1); deps.changed(); } }, { id: "go", label: go, kind: "primary" as const, group: "go", you: true,
+        // law 4 (typed): a number that missed stays off until she types another (the logic refuses it "unchanged")
+        disabled: !pad || greyed(s, typedKey(fill ? { kind: "drop", n: Number(pad) } : { kind: "name", x: Number(pad) })), onPress: () => {} }];
     if (fill) {
       const d = digits(`${say(lang, "strips.pour")} ${pad || "?"}`);
       d[d.length - 1].onPress = () => { if (pad) { act({ kind: "drop", n: Number(pad) }); pad = ""; } };

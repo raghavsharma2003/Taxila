@@ -22,6 +22,7 @@
 import type { Candidate, FamilyLogic, Facts, GenRequest, LineAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { cmp, gcd, rat, ratStr, sub, type Rat } from "../../core/rat.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
+import { withPicks, type Law4Marks } from "../../core/law4.ts";
 import { mulberry32 } from "../../core/rng.ts";
 
 export type LineForm = "whole" | "fraction" | "mixed" | "decimal" | "integer";
@@ -40,7 +41,7 @@ export interface LineParams {
 }
 export type HopOp = "+" | "-" | "×" | "÷";
 export interface Hop { a: number; b: number; op: HopOp }
-export interface LineState extends Undoable<LineState> {
+export interface LineState extends Undoable<LineState>, Law4Marks {
   marks: (number | null)[];
   commits: number;
   landed: boolean;                     // the last commit landed every marker within tolerance
@@ -201,7 +202,7 @@ function init(level: PlayLevel<LineParams>): LineState {
   return { marks: level.params.values.map(() => null), commits: 0, landed: false, ordered: null, rounded: null, done: false, acts: 0, prev: null, depth: 0 };
 }
 
-function apply(level: PlayLevel<LineParams>, s: LineState, act: LineAct, seq: number): { state: LineState; moments: Moment[]; refused?: string } {
+function applyLaw(level: PlayLevel<LineParams>, s: LineState, act: LineAct, seq: number): { state: LineState; moments: Moment[]; refused?: string } {
   const p = level.params, out: Moment[] = [];
   if (s.done) return { state: s, moments: [], refused: "level_over" };
   if (act.kind === "undo") return { state: { ...popUndo(s), acts: s.acts + 1 }, moments: [] };
@@ -266,6 +267,11 @@ function apply(level: PlayLevel<LineParams>, s: LineState, act: LineAct, seq: nu
   }
   return { state: bump(s), moments: out, refused: "unknown_act" };
 }
+/** law 4, pick (ruling 005): the key of a rounding (one of the two ends) */
+export const roundKey = (to: number) => `round:${Number(to)}`;
+/** law 4 (pick; src/play/core/law4.ts): an end shown wrong is greyed until the level ends (the other end is then hers to
+ *  press, as kon/place draw's join); a rounding refused only because the value has not landed is not */
+const apply = withPicks<PlayLevel<LineParams>, LineState, LineAct>(applyLaw, (_l, _s, a) => (a.kind === "round" ? roundKey(a.to) : null), { when: (r) => r.refused === "wrong_round" });
 const fmtWhole = (x: number) => x.toLocaleString("en-IN");
 function fmt(x: number): string { return Math.abs(x - Math.round(x)) < 1e-9 ? String(Math.round(x)) : x.toFixed(2).replace(/0+$/, "").replace(/\.$/, ""); }
 /**

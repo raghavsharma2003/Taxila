@@ -5,11 +5,12 @@
 import type { LineAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { withAlpha, type Role } from "../../core/styles.ts";
 import { say } from "../../copy.ts";
 import { word } from "../../engines/words.ts";
-import { lineHelpers as H, type LineParams, type LineState } from "./line.logic.ts";
+import { lineHelpers as H, roundKey, type LineParams, type LineState } from "./line.logic.ts";
 
 export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
   const deps = depsIn as unknown as ViewDeps<LineParams, LineState, LineAct>;
@@ -303,7 +304,7 @@ export const makeLineView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     out.push({ id: "nudge-left", label: "◀", aria: "move left a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "place", which: sel, x: +(cur - step).toFixed(4) }) });
     out.push({ id: "nudge-right", label: "▶", aria: "move right a little", kind: "pad", group: "nudge", disabled: cur === null, onPress: () => cur !== null && act({ kind: "place", which: sel, x: +(cur + step).toFixed(4) }) });
     if (roundGoal && s.landed) {
-      for (const end of [p.lo, p.hi]) out.push({ id: `round-${end}`, label: `${end === p.lo ? "↓" : "↑"} ${H.fmtWhole(end)}`, kind: "choice", group: "order", onPress: () => act({ kind: "round", to: end }) });
+      for (const end of [p.lo, p.hi]) out.push({ id: `round-${end}`, label: `${end === p.lo ? "↓" : "↑"} ${H.fmtWhole(end)}`, kind: "choice", group: "order", disabled: greyed(st(), roundKey(end)), onPress: () => act({ kind: "round", to: end }) });
       out.push({ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) });
       return out;
     }

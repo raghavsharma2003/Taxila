@@ -8,6 +8,10 @@
 - No served level changed: 64,800 served bodies hash the same before and after, `proof.discriminates` included. So there is no re-cert.
 - `box` and `match` are not picks. Their mix-ups (lxb, slant-side) come from a laid floor or rectangle, a constructed act named from one level, and they are not in this battery (question for main in `docs/status/games.md`).
 
+## Gate 2, law 4 (2026-11-16, ruling 005; branch `claude/r8-law4-open`)
+
+**A sighting is a level's first check only** (main's ruling 005, section 1). A pick made after a miss on the same level is never a sighting and never counts toward a repeat: `gradeLevel` (`src/play/core/replay.ts`) keeps a pick's `chanceMis` only when its moment is the level's first check (`firstCheckSeq`: the first miss of any kind, solve, `missed` or decisive refusal); a later pick keeps the chance weight and carries no `chanceMis`, so `afterLevelBody`, `nameOnRepeat` and the shadow reading never see it. Before this, the grade read the level's first *decisive* moment, which already held for every kon commit (a miss is the decisive refusal `missed`); the new rule closes the one gap, a plain `law_refused` miss before a pick. The battery's figures did not move (`tests/r8-habit-battery-*.test.mjs`, every printed line the same before and after). tri's Done already waits (S4); nothing in nazariya/tri changes.
+
 ## The pick and its exact options (`triLogic.pickOptions`, `triPickOptions`)
 
 `more`: she puts tent B's top corner on a grid point, then checks. Every point the law takes is an option: 0 ≤ x ≤ w, above the base (0 ≤ z < zb), (w + 1) × zb of them. shape-looks shows on the w points of A's top line other than A's own corner. So p = w / ((w + 1) zb).

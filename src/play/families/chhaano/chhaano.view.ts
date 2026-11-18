@@ -14,7 +14,7 @@
 import type { ChhaanoAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -103,6 +103,8 @@ export const makeChhaanoView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     pickSel();
     for (const m of ms) if (m.kind === "solved") { doneAt = now + 0.5; cheered = false; }
     if (refused === "pure" || refused === "settled" || refused === "no_spot") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again) is a soft thup, never the miss's look
+    else if (refused && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused) { api.sfx("look"); if (!ms.some((m) => m.kind === "misconception_consequence")) api.fx.shake(2); }
     else api.sfx(last.m === "pour" || last.m === "filter" || last.m === "drain" ? "pour" : last.m === "take" ? "drop" : last.m === "winnow" || last.m === "sieve" ? "slide" : "tap");
     api.invalidate(); deps.changed();

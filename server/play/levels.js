@@ -241,7 +241,9 @@ export function afterLevelBody(s, { grade = null, level = null, history = null }
   const seen = (grade.evidence ?? []).find((r) => r.misconceptionId)?.misconceptionId ?? null;
   if (seen) s2.nextFocus = seen;
   // round 8 law 3: a mix-up seen from one pick is remembered (not named) with the surface it was seen on; the next level
-  // aims at it, so a second sighting on another surface can name it (nameOnRepeat)
+  // aims at it, so a second sighting on another surface can name it (nameOnRepeat). A sighting is a level's first check
+  // only (law 4, ruling 005): a pick after a miss on the same level carries no chanceMis (gradeLevel firstCheckSeq), so it is
+  // never remembered here nor counted toward a repeat
   const pickRow = (grade.evidence ?? []).find((r) => r.chanceMis && !r.misconceptionId) ?? null;
   const pick = pickRow?.chanceMis ?? null;
   // (dc-r8-gate2-shadow S3: a sighting on a level where a habit gives the mix-up's act is not remembered; the next level
@@ -453,6 +455,7 @@ function firmOf(level, kit) {
  * (gradeLevel reports it as `chanceMis` at chance weight). It is named here when the session saw it from as many picks as
  * its blind chance calls for (namingSpec: the family's chanceRepeat, else the computed default), on levels whose surfaces
  * differ, within the session's first NAMING_LEVELS levels: the row then carries misconceptionId at the game weight. Pure.
+ * Each sighting is a level's first check (law 4, ruling 005: gradeLevel drops chanceMis from a pick made after a miss).
  */
 /**
  * Gate 2, H1 (dc-r8-gate2-habit-children): two sightings are two different acts. Of a pick's sightings in order (each with

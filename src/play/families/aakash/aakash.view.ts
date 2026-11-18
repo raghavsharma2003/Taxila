@@ -18,7 +18,7 @@
 // After a wrong move only magnifiers mark what to look at again (never the key, never a cross).
 import type { AakashAct, Moment } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -77,6 +77,8 @@ export const makeAakashView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     for (const m of ms) if (m.kind === "solved") { doneAt = now + 0.5; cheered = false; }
     const mc = ms.some((m) => m.kind === "misconception_consequence");
     if (refused === "level_over" || refused === "dizzy" || refused === "round_done") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again, a greyed pick) is a soft thup
+    else if (refused && !mc && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused || mc) { api.sfx("look"); if (!mc) api.fx.shake(2); }
     else api.sfx(last.m === "spin" ? "tick" : last.m === "round" || last.m === "moon" || last.m === "months" ? "slide" : last.m === "shine" ? "pour" : "tap");
     api.invalidate(); deps.changed();

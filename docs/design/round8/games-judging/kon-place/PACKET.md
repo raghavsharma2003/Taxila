@@ -182,6 +182,14 @@ sweep: {"full":true,"seeds":10,"randomSeeds":30,"constSeeds":4,"constPls":null};
   - Every assertion holds. The worst figures are unchanged, except that vertex-off's worst drop moves from 0.0929 to 0.0930.
   - Time: 6 s → 16 s for the file.
 
+## Gate 2, law 4 (2026-11-16, ruling 005; branch `claude/r8-law4-open`)
+
+**A sighting is a level's first check only** (main's ruling 005, section 1). A pick made after a miss on the same level is never a sighting and never counts toward a repeat: `gradeLevel` (`src/play/core/replay.ts`) keeps a pick's `chanceMis` only when its moment is the level's first check (`firstCheckSeq`: the first miss of any kind, solve, `missed` or decisive refusal); a later pick keeps the chance weight and carries no `chanceMis`, so `afterLevelBody`, `nameOnRepeat` and the shadow reading never see it. Before this, the grade read the level's first *decisive* moment, which already held for every kon commit (a miss is the decisive refusal `missed`); the new rule closes the one gap, a plain `law_refused` miss before a pick. The battery's figures did not move (`tests/r8-habit-battery-*.test.mjs`, every printed line the same before and after).
+
+- **draw** (a pick): a join that missed is greyed at the same placement and dot (`placePickKey`; pressed anyway, the law refuses it `missed_option` with no moment). With one join left, the other button solves as before. The blind chance of a join (1 in 2, both orders among four levels) is read on first joins and does not move.
+- **measure** (typed): a reading that missed at the same placement is refused `unchanged` (as kon/name's Yahi naam); "Yahi hai" is off while the pad holds it (`placeReadKey`).
+- **size** (a pick): a pick that missed is greyed until the level ends.
+
 ## Gate 2: evidence
 
 Ruling (`RULINGS-2026-11-11-night.md`, decision `dc-r8-game-gate-play-then-evidence`), kon/place: "nothing reaches the teacher from one join press (the packet says the sign does; make the code and the packet agree with law 3), and give the tolerance that names vertex-off". **Law 3's number:** an act that a blind guess or one ordinary slip produces more than 1 time in 10 names nothing by itself. **Read per session** (`RULINGS-2026-11-15.md`, "To Games, 2026-11-16"): the 1 in 10 is the chance that a child is named a mix-up she does not hold over one sitting. Named from one level, vertex-off (1 in 3.1), wrong-scale in `measure` (1 in 2.9) and in `draw` (1 in 9.4) were over it over four levels; every kon/place mix-up is now named on a repeat ("Per session", below). Computed in the same test ("gate 2, per session"); the rule on branch `claude/r8-gate2-session`.

@@ -13,7 +13,8 @@
 import type { Moment, RangAct } from "../../../../shared/play.ts";
 import type { PointerKind, ViewApi } from "../../core/stage.ts";
 import type { Material } from "../../core/styles.ts";
-import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait } from "../../core/viewkit.ts";
+import { clamp, lerp, type ControlSpec, type FamilyView, type MakeView, type Readout, type ViewDeps, missWait, isMiss } from "../../core/viewkit.ts";
+import { greyed } from "../../core/law4.ts";
 import { ease } from "../../core/juice.ts";
 import { say } from "../../copy.ts";
 import { word, type WordKey } from "../../engines/words.ts";
@@ -60,6 +61,8 @@ export const makeRangView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     if (cupsMode && !refused && last.kind === "sort") sel = firstOpen();
     const mc = ms.some((m) => m.kind === "misconception_consequence");
     if (refused === "level_over" || refused === "full" || refused === "again" || refused === "no_gud") api.sfx("refuse");
+    // law 4 (ruling 005): a refusal that plays no miss (an experiment looked at again, a greyed pick) is a soft thup
+    else if (refused && !mc && !isMiss(ms, refused)) api.sfx("refuse");
     else if (refused || mc) { api.sfx("look"); if (!mc) api.fx.shake(2); }
     else api.sfx(last.kind === "drop" || last.kind === "use" ? "drop" : last.kind === "sort" ? "land" : "tap");
     api.invalidate(); deps.changed();
@@ -298,7 +301,7 @@ export const makeRangView: MakeView = (api: ViewApi, depsIn: ViewDeps) => {
     const s = st(); if (s.done) return [];
     const out: ControlSpec[] = [{ id: "undo", label: say(lang, "undo"), kind: "secondary", group: "go", onPress: () => act({ kind: "undo" }) }];
     if (!cupsMode) {
-      out.push({ id: "danger", label: W("rang.danger"), aria: W("rang.danger"), kind: "secondary", group: "go", onPress: () => act({ kind: "use", m: "danger" }) });
+      out.push({ id: "danger", label: W("rang.danger"), aria: W("rang.danger"), kind: "secondary", group: "go", disabled: greyed(st(), "danger"), onPress: () => act({ kind: "use", m: "danger" }) });
       // never "your move": the button must not hint when the colour is right (the child decides it is)
       out.push({ id: "done", label: W("rang.claim"), aria: W("rang.claim"), kind: "primary", group: "go", disabled: wait.waits({ kind: "done" }), onPress: () => act({ kind: "done" }) });
     }
