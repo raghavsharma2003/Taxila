@@ -88,3 +88,11 @@ describe("3: the closing check-in and the wrap", () => {
     } finally { setScriptForTest(T, undefined); setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
   });
 });
+
+describe("4: a due return waits for a remediation's follow-up card", () => {
+  test("the walk no longer ends a remediation said alone on a due return (returnEndsHeld is gone), and the follow-up card's verdict is the return's boundary", () => {
+    const src = readFileSync(join(ROOT, "server/director/state.js"), "utf8");
+    assert.ok(!/returnEndsHeld\(/.test(src));
+    assert.match(src, /const thenDone = String\(prev\.activeItemId \?\? ""\)\.includes\(":then:"\)/);
+  });
+});

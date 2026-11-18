@@ -73,9 +73,10 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     const j = Math.max(...scriptFor(K).script.joints.beforeRemediation.map((x) => words(x.hi)));
     // (dc-r8-director27 P2: two judges found the two too much in one breath at 68 to 74 words — the card joins within 60, REM_CARD_CAP)
     assert.deepEqual(u, { margin: 5 + j, cap: 60 }, "her miss verdict and the longest beforeRemediation form beside the authored words, under 60");
-    // (an aside's return due at the follow-up card's held half keeps the remediation on a turn of its own, as before the ruling)
+    // (d31 046 follow-up 4 — repinned: a due return never comes between a remediation and its follow-up card; the two share a turn as they
+    // would with no return due, and the return waits for the card's verdict. Before, a due return kept the remediation on a turn of its own)
     const due = { ...o, state: { ...o.state, later: [{ topic: "cricket", at: 3, share: true, parkSaid: true, onItem: "script:c6-maths-ch06-t01-s1:ask:e3" }] } };
-    assert.equal(unitTurn(due, { kit: K, cls: cls("misconception") }), null);
+    assert.deepEqual(unitTurn(due, { kit: K, cls: cls("misconception") }), { margin: 5 + j, cap: 60 });
     // the page: the verdict and the remediation on the remediation's board, the card on its own from its first word
     const v = "16 m sahi nahi hai.", say = "Ek cheenti corner se chalti hai aur har bhuja ke baad apna total badhati hai.", card = "Is khet ka parimap kitna hai?";
     const line = `${v} ${say} ${card}`;

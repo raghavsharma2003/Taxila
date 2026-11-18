@@ -1067,22 +1067,6 @@ function tasteServesPark(s, topic) {
   s.later = serveLater(s.later, e.id, s.turn);
   return true;
 }
-/** dc-r8-director30 Brain 046 Q3 (c6 steering 50): a remediation said alone because an aside's return is due — its follow-up card waits for
- *  the return — ends on the return's question, said in that turn after the remediation, never on a check-in. The follow-up card comes after
- *  the child's answer to it. (A close keeps returnApart: a return is never said with a verdict that closes a card.) */
-function returnEndsHeld(prev, input, out) {
-  const s = out?.state, lm = s?.lastMove;
-  if (!lm || input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !l2On() || out.end || out.ui?.ask?.itemId) return out;
-  if (lm.kind !== "reteach" || lm.scriptBeat?.kind !== "remediation" || !lm.rendered?.length || lm.returned?.topic || lm.tasteAsked || lm.sadAside || lm.asideAgain
-    || lm.help || lm.request || lm.gave || lm.closed || lm.workedDone || lm.stepAsk || lm.returnReply) return out;
-  const then = `script:${lm.scriptBeat.skillId}:then:${String(lm.scriptBeat.beatId ?? "").replace(/^rem:/, "")}`;
-  const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && e.onItem !== then && Number.isFinite(e.at) && e.at < s.turn);
-  if (!due) return out;
-  s.later = serveLater(s.later, due.id, s.turn);
-  const { stayCheckin: _s, checkinOk: _c, ...rest } = lm;
-  s.lastMove = { ...rest, returned: { topic: due.topic, share: !!due.share, ...(due.said ? { said: String(due.said) } : {}), last: true } };
-  return { ...out, state: s, move: { ...s.lastMove }, proposal: directorProposal(s.lastMove, { ui: out.ui, guidance: s.guidance, purpose: s.purpose }) };
-}
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
   // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
@@ -3840,7 +3824,8 @@ export function step(prev, input) {
     const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length;
     // (a park whose return is due waits for no card: the held part ends its turn and the return comes at the boundary after it, as before —
     // r8-main-034's offtopic lesson, where the card would have kept the return off for twenty turns)
-    const parkDue = (out.state.later ?? []).some((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && out.state.turn > e.at && e.onItem !== out.state.lastMove?.itemId);
+    // (d31 046 follow-up 4: a remediation's follow-up card is not held for a due return — the return waits for its verdict)
+    const parkDue = !/:then:/.test(String(out.ui?.ask?.itemId ?? "")) && (out.state.later ?? []).some((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && out.state.turn > e.at && e.onItem !== out.state.lastMove?.itemId);
     if (w > L2_CAP || parkDue) {
       const hadPoint = lm.point != null;
       const sp = splitTeach({ ...out, move: { ...lm, ...(hadPoint ? {} : { point: lm.sayFirst.join(" ") }) } }, input, 0, 0);
@@ -3942,7 +3927,9 @@ export function step(prev, input) {
     out.state.lastMove = cell ? { ...lm1, cell } : lm1;
     if (out.move) { const { cell: _c1, ...m1 } = out.move; out.move = cell ? { ...m1, cell } : m1; }
   }
-  return returnEndsHeld(prev, input, out);
+  // (d31 046 follow-up 4: a remediation said alone ends on its check-in — returnEndsHeld no longer puts a due return after it; the return
+  // waits for the follow-up card's verdict)
+  return out;
 }
 function stepCells(prev, input) {
   // (main on C1 ruling 5, the stuck child's "samajh nahi aaya" after a key's check-in: read as "another", it moved to the next point
@@ -4439,8 +4426,12 @@ function step0(prev, input) {
       && !(prev.activeItemId && ["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")))
       // (v6.9 T1, director17 c5-t01 steady 42: asked to go on, the walk moves on first; the aside waits for the next boundary)
       && !(GO_ON.test(String(input.text ?? "")) && responseShape("move_on", "aside_pending") === "move_on");
-    const due = boundary ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
-      && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e))) : null;
+    // (d31 046 follow-up 4: a return that waited for a remediation's follow-up card is due at that card's verdict, the walk going back to the
+    // card it was parked on — inside a worked example too: the staged c6-ch07-t01's dry steady 42 → 44)
+    const thenDone = String(prev.activeItemId ?? "").includes(":then:") && live !== prev.activeItemId && !String(live ?? "").includes(":then:") && !s.splitHold
+      && !["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")) && !move.request && !input.cls?.request?.type;
+    const due = boundary || thenDone ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
+      && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e) || thenDone)) : null;
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
@@ -5157,10 +5148,9 @@ export function unitTurn(out, input = null, extra = 0, first = 0) {
   const askId = String(ui?.ask?.itemId ?? "");
   if (move.kind === "worked_example" && move.rendered?.length && /:ask:worked$/.test(askId)) return { margin: 3 + extra + first + goOn };
   // (her miss verdict, "<answer> sahi nahi hai." or "Nahi, yeh theek nahi hai.", five words or fewer, and the longest beforeRemediation form)
-  // (an aside parked on another card is due at the follow-up card's held half — the aside's return turn stays where it was: the remediation
-  // keeps its own turn then)
-  const parkDue = (s?.later ?? []).some((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && e.onItem !== askId && Number.isFinite(e.at) && e.at < (s?.turn ?? 0));
-  if (move.kind === "reteach" && move.scriptBeat?.kind === "remediation" && move.rendered?.length && /:then:/.test(askId) && !parkDue) {
+  // (d31 046 follow-up 4, the staged c6-ch07-t01's dry steady 42: a due return never comes between a remediation and its follow-up card —
+  // the two are said as they would be with no return due, and the return waits for that card's verdict)
+  if (move.kind === "reteach" && move.scriptBeat?.kind === "remediation" && move.rendered?.length && /:then:/.test(askId)) {
     const j = Math.max(0, ...(jointOf(input?.kit, "beforeRemediation", s?.ctx?.lang ?? "hinglish") ?? []).map((x) => wordsIn(x)));
     // (a close said before the miss verdict — a worked answer, a key — counts as its words)
     // (dc-r8-director27 P2: two judges found a remediation and its follow-up card too much in one breath at 68 to 74 words — the card joins
