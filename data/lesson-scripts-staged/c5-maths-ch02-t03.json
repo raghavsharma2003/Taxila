@@ -61,194 +61,172 @@
     "interestSlots": [
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Socho, ek roti ko beech se moda aur ek aadhe hisse par ghee lagaya. Ab usi roti ko ek baar aur moda, toh ghee wale tukde do ho gaye.",
-       "en": "Picture a roti folded down the middle, with ghee spread on one half. Now the same roti is folded once more, and the ghee part is now two pieces."
-      }
+      "use": {"hi": "Socho, ek roti ko beech se modkar aadhe hisse par ghee lagaya, phir roti ko ek baar aur moda.", "en": "Picture a roti folded down the middle with ghee on one half, then folded once more."}
      },
      {
       "interest": "drawing",
-      "use": {
-       "hi": "Ek drawing sheet ko aadha moda aur ek aadhe hisse mein colour kiya. Phir sheet ko dobara moda, toh colour wale khaane do ho gaye.",
-       "en": "A drawing sheet is folded in half and one half is coloured. Then the sheet is folded again, and the coloured part is now two boxes."
-      }
+      "use": {"hi": "Ek drawing sheet ko aadha modkar ek aadhe mein rang bharo, phir sheet ko ek baar aur modo.", "en": "Fold a drawing sheet in half and colour one half, then fold the sheet once more."}
      }
     ]
    },
    "explain": [
     {
      "id": "e1",
-     "convey": "one paper strip folded once → 2 equal parts; 1 coloured = 1/2 → the same strip cut into 10 equal parts below → how many of them the coloured half covers",
+     "convey": "one paper strip folded once → 2 equal parts; 1 coloured = 1/2 → a second strip of the same length cut into 10 equal parts → how many of them the coloured half covers",
      "mustSay": [{"hi": "1/2", "en": "1/2"}, {"hi": "2 barabar hisse", "en": "2 equal parts"}],
      "board": {"template": "fraction-parts@1", "params": {"parts": 2, "shade": 1, "whole": "bar"}},
-     "point": {
-      "hi": "Upar ki kaagaz ki patti beech se modi gayi hai, toh iske 2 barabar hisse hain. Ek hissa rang wala hai, woh 1/2 hai, yaani aadhi patti.",
-      "en": "The paper strip on top is folded down the middle, so it has 2 equal parts. One part is shaded; that is 1/2, half the strip."
-     },
+     "viewCaption": {"hi": "Yahi patti yahan ek gol ban gayi hai: do barabar hisse, aur ek mein rang.", "en": "Here the same strip has become a circle: two equal parts, and one coloured."},
+     "point": {"hi": "Yeh kaagaz ki patti beech se modi gayi hai, toh iske 2 barabar hisse bane. Ek hisse mein rang hai, woh patti ka 1/2 hai.", "en": "This paper strip is folded down the middle, so it has 2 equal parts. One part is coloured; that is 1/2 of the strip."},
+     "pointAlt": {"hi": "Ek roti do bachche barabar baantein, toh har ek ko aadhi roti milti hai. Is patti ka rang wala hissa bhi waisa hi hai: do barabar mein se ek.", "en": "If two children share a roti equally, each gets half the roti. The coloured part of this strip is just like that: one of two equal parts."},
      "ask": {
-      "prompt": { "hi": "Neeche wahi patti 10 barabar hisson mein kaati gayi. Upar ka rang wala aadha, inmein se kitne hisson jitna hai?", "en": "Below, the same strip is cut into 10 equal parts. The shaded half on top, how many of these parts is it?" },
+      "prompt": {"hi": "Doosri patti bilkul utni hi lambi hai, par 10 barabar hisson mein kati hai. Pehli patti ka rang wala aadha, doosri patti ke kitne hisson jitna hai?", "en": "The second strip is exactly as long, but cut into 10 equal parts. The coloured half of the first strip is as long as how many parts of the second?"},
+      "hindi": {"hi": "Ek aur patti utni hi lambi hai, uske 10 barabar hisse hain. Pehli patti ka rang wala aadha hissa, doosri patti ke kitne hisson ke barabar hai?", "en": "One more strip is just as long, with 10 equal parts. The coloured half of the first strip matches how many parts of the second?"},
+      "reask": {"hi": "Pehli patti ka rang wala aadha, 10 hisson wali doosri patti ke kitne hisson jitna hai?", "en": "The coloured half of the first strip is as long as how many parts of the 10-part second strip?"},
       "key": "5",
-      "why": { "hi": "upar ki aadhi patti neeche ki aadhi patti jitni hai, aur 10 ka aadha 5 hota hai", "en": "half the top strip is as long as half the bottom strip, and half of 10 is 5" },
-      "accept": ["paanch", "five", "5 hisse", "paanch hisse"],
-      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 0, "label": ""}]} },
-      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 5, "label": "5/10"}]} }
+      "accept": ["paanch", "five", "5 hisse", "paanch hisse", "5 hisson jitna"],
+      "why": {"hi": "rang wala aadha doosri patti ke bhi aadhe tak jaata hai, aur 10 hisson ka aadha 5 hisse hai", "en": "the coloured half reaches halfway along the second strip too, and half of 10 parts is 5 parts"},
+      "whyShort": {"hi": "10 hisson ka aadha 5 hisse hai", "en": "half of 10 parts is 5 parts"},
+      "whyAlt": {"hi": "Doosri patti ke 10 hisson ko do barabar dher mein baanto, toh har dher mein 5 aate hain; ek dher hi aadhi patti hai.", "en": "Split the second strip's 10 parts into two equal heaps and each heap has 5; one heap is half the strip."},
+      "simpler": {"hi": "Pehli patti ke rang wale hisse ke theek neeche dekho, aur doosri patti ke jo hisse wahan tak aate hain, unhe gino.", "en": "Look straight under the coloured part of the first strip, and count the parts of the second strip that reach that far."},
+      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 0, "label": ""}]}},
+      "viewCaption": {"hi": "Yahan dono patti 0 se 1 tak ek number line ban gayi hain: line ke upar do barabar gap, line ke neeche das, aur upar pehle gap ke ant par ek mark.", "en": "Here both strips have become one number line from 0 to 1: two equal gaps above the line, ten below, and a mark at the end of the first gap above."},
+      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 5, "label": "5/10"}]}}
      },
-     "simpler": {
-      "hi": "Neeche ki patti ka aadha hissa dekho. Usmein jitne chhote hisse hain, utne hi upar ke aadhe mein samaate hain.",
-      "en": "Look at half of the bottom strip. As many small parts as it holds fit into the half on top."
-     }
+     "simpler": {"hi": "Patti ko beech se moda, toh do barabar hisse bane. Rang ek hisse mein hai, isliye rang aadhi patti par hai.", "en": "The strip was folded down the middle, making two equal parts. The colour is in one part, so it covers half the strip."}
     },
     {
      "id": "e2",
-     "convey": "the same strip folded again → 4 equal parts; the coloured half is now 2 smaller parts → 2/4; no colour added or taken away → 2/4 = 1/2 → transfer: the same strip with every part cut into 3, count the shaded pieces",
+     "convey": "the same strip folded again → 4 equal parts; the coloured half is now 2 smaller parts → 2/4; no colour added or taken away → 2/4 = 1/2 → transfer: a second strip of the same length in 12 parts, how many to colour for the same amount",
      "mustSay": [{"hi": "2/4", "en": "2/4"}, {"hi": "1/2 = 2/4", "en": "1/2 = 2/4"}],
      "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "bar"}},
-     "point": {
-      "hi": "Ab upar wahi patti 4 barabar hisson mein hai. Rang wala aadha 2 chhote hisson mein bant gaya, toh rang wala hissa 2/4 hai. Rang na joda, na hataya, isliye 1/2 = 2/4.",
-      "en": "Now the strip on top is in 4 equal parts. The shaded half has split into 2 smaller parts, so the shaded part is 2/4. No colour was added or taken away, so 1/2 = 2/4."
-     },
+     "viewCaption": {"hi": "Wahi patti yahan gol ban gayi hai: chaar barabar hisse, aur do mein rang.", "en": "The same strip has become a circle here: four equal parts, and two coloured."},
+     "point": {"hi": "Ab wahi patti ek baar aur modi, toh 4 barabar hisse bane. Rang wala aadha ab 2 chhote hisson mein hai, yaani 2/4. Rang na badha, na ghata, isliye 1/2 = 2/4.", "en": "Now the same strip is folded once more, making 4 equal parts. The coloured half is now 2 smaller parts, that is 2/4. No colour was added or taken away, so 1/2 = 2/4."},
+     "pointAlt": {"hi": "Roti ko aadha modo, phir ek baar aur: kholne par 4 barabar hisse milte hain, aur aadhi roti ab 2 hisse hai. Roti utni hi hai, bas hisse chhote ho gaye.", "en": "Fold a roti in half, then once more: open it and there are 4 equal parts, and half the roti is now 2 parts. The roti is the same, only the parts got smaller."},
      "ask": {
-      "prompt": {
-       "hi": "Is baar neeche wali patti ke hisse aur kaate gaye, toh 12 barabar tukde bane. Inmein se kitne tukde rang wale honge?",
-       "en": "This time the bottom strip's parts were cut further, into 12 equal pieces. How many of them will be shaded?"
-      },
+      "prompt": {"hi": "Doosri patti utni hi lambi hai, par 12 barabar hisson mein kati hai. Ismein kitne hisson mein rang bharen ki rang pehli patti jitna hi ho?", "en": "The second strip is just as long, but cut into 12 equal parts. How many of its parts should we colour so the colour is as much as on the first strip?"},
+      "hindi": {"hi": "Ek aur patti utni hi lambi hai, uske 12 barabar hisse hain. Usmein kitne hisson mein rang bharen, taaki rang pehli patti jitna hi rahe?", "en": "One more strip is just as long, with 12 equal parts. How many of its parts should get colour, so the colour stays as much as on the first strip?"},
+      "reask": {"hi": "12 hisson wali patti mein kitne hisson mein rang bharen ki rang pehli patti jitna ho?", "en": "In the 12-part strip, how many parts should we colour so the colour matches the first strip?"},
       "key": "6",
-      "why": {
-       "hi": "12 tukde 4 hisson ke teen guna hain, toh rang wale 2 × 3 = 6 hain, jo 12 ka aadha hai",
-       "en": "12 pieces is three times 4 parts, so the shaded ones are 2 × 3 = 6, which is half of 12"
-      },
-      "accept": ["chhe", "six", "6 tukde", "chhe tukde"],
+      "accept": ["chhe", "six", "6 hisse", "chhe hisson mein", "6 hisson mein"],
+      "why": {"hi": "12 hisse 4 ke teen guna hain, toh rang wale 2 hisse bhi teen guna hue: 6, jo 12 ka aadha hai", "en": "12 parts is three times 4, so the 2 coloured parts also became three times as many: 6, half of 12"},
+      "whyShort": {"hi": "rang wale 2 hisse teen guna hue, yaani 6", "en": "the 2 coloured parts became three times as many: 6"},
+      "whyAlt": {"hi": "Pehli patti ke har hisse ke neeche doosri patti ke 3 hisse aate hain, toh rang wale do hisson ke neeche 3 aur 3 hisse hain.", "en": "Under each part of the first strip sit 3 parts of the second, so under the two coloured parts there are 3 and 3."},
+      "simpler": {"hi": "Pehle dekho ki pehli patti ke ek hisse ke neeche doosri patti ke kitne hisse aate hain. Phir rang wale hisson ke neeche dekho.", "en": "First see how many parts of the second strip sit under one part of the first. Then look under the coloured parts."},
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 12, "shade": 0, "label": ""}]}},
+      "viewCaption": {"hi": "Dono patti yahan ek number line par hain, 0 se 1 tak: line ke upar chaar barabar gap, neeche baarah, aur upar doosre gap ke ant par ek mark.", "en": "Both strips are on one number line here, from 0 to 1: four equal gaps above the line, twelve below, and a mark at the end of the second gap above."},
       "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 12, "shade": 6, "label": "6/12"}]}}
      },
-     "simpler": {
-      "hi": "Upar ke har hisse ke theek neeche kuch chhote tukde hain. Rang wale hisson ke neeche wale tukde gino.",
-      "en": "Right under each part on top sit some small pieces. Count the pieces under the shaded parts."
-     }
+     "simpler": {"hi": "Doosre mod se har hissa do chhote hisson mein bant gaya. Rang wala hissa bhi do mein bata, par rang utna hi raha.", "en": "The second fold split every part into two smaller parts. The coloured part split in two as well, but the colour stayed the same."}
     },
     {
      "id": "e3",
-     "convey": "0-to-1 line in eighths: the half-way point carries three names, 1/2, 2/4 and 4/8 → one point, one amount, many names → transfer: where three quarters sits in eighths",
-     "mustSay": [{"hi": "sankhya rekha", "en": "number line"}, {"hi": "1/2 = 2/4 = 4/8", "en": "1/2 = 2/4 = 4/8"}],
+     "convey": "0-to-1 line in eighths: the half-way mark carries three names, 1/2, 2/4 and 4/8 → one place, one amount, many names → transfer: how many eighths from 0 to three quarters",
+     "mustSay": [{"hi": "number line", "en": "number line"}, {"hi": "1/2 = 2/4 = 4/8", "en": "1/2 = 2/4 = 4/8"}],
      "board": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 4, "label": "1/2 = 2/4 = 4/8"}]}},
-     "point": {
-      "hi": "Yeh sankhya rekha 0 se 1 tak 8 barabar hisson mein bati hai. Beech wala nishaan 1/2 bhi hai, 2/4 bhi aur 4/8 bhi. Toh 1/2 = 2/4 = 4/8: ek hi jagah, ek hi maatra, teen naam.",
-      "en": "This number line from 0 to 1 is split into 8 equal parts. The middle mark is 1/2, and also 2/4, and also 4/8. So 1/2 = 2/4 = 4/8: one place, one amount, three names."
-     },
+     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: aath barabar hisse, aur pehle aadhe hisson mein rang, theek beech tak.", "en": "Here the line has become a strip: eight equal parts, with the first half of them coloured, right up to the middle."},
+     "point": {"hi": "Yeh number line 0 se 1 tak 8 barabar gap mein kati hai. Beech ka mark 4/8 hai, aur wahi 1/2 bhi hai aur 2/4 bhi. Toh 1/2 = 2/4 = 4/8: ek jagah, teen naam.", "en": "This number line from 0 to 1 is cut into 8 equal gaps. The middle mark is 4/8, and it is also 1/2 and also 2/4. So 1/2 = 2/4 = 4/8: one place, three names."},
+     "pointAlt": {"hi": "Ruler ki tarah socho: 0 se 1 tak 8 barabar gap, aur 4 gap chalne par theek beech aata hai. Us jagah ko aadha kaho, do chauthai kaho ya chaar aathve, jagah wahi hai.", "en": "Think of a ruler: 8 equal gaps from 0 to 1, and walking 4 gaps brings you to the exact middle. Call that place a half, two quarters or four eighths, it is the same place."},
      "ask": {
-      "prompt": {
-       "hi": "Isi rekha par 0 se 3/4 tak jaana hai. Iske liye 1/8 wale kitne hisse lagenge?",
-       "en": "On this same line, you go from 0 to 3/4. How many 1/8 parts does that take?"
-      },
+      "prompt": {"hi": "Isi line par 0 se chalkar 3/4 tak pahunchna hai. 1/8 wale kitne gap chalne honge?", "en": "On this same line we walk from 0 to 3/4. How many gaps of 1/8 must we walk?"},
+      "hindi": {"hi": "Isi line par 0 se 3/4 tak jaana hai. Iske liye 1/8 wale kitne gap chalne padenge?", "en": "On this line we go from 0 to 3/4. How many gaps of 1/8 do we need to walk for it?"},
+      "reask": {"hi": "0 se 3/4 tak pahunchne ke liye, is line par 1/8 wale kitne gap chalne honge?", "en": "To reach 3/4 from 0, how many gaps of 1/8 must we walk on this line?"},
       "key": "6",
-      "why": { "hi": "rekha par har chauthai mein 2 chhote aathve hisse hain, toh 3 chauthai tak 3 × 2 = 6 hisse, yaani 6/8", "en": "each quarter of the line holds 2 eighths, so 3 quarters is 3 × 2 = 6 eighths, that is 6/8" },
-      "accept": ["6/8", "chhe", "six", "6 hisse"],
+      "accept": ["chhe", "six", "6 gap", "chhe gap", "6/8"],
+      "why": {"hi": "line par har 1/4 mein 1/8 wale 2 gap hain, toh 3/4 tak 3 × 2 = 6 gap, yaani 6/8", "en": "every 1/4 of the line holds 2 gaps of 1/8, so 3/4 needs 3 × 2 = 6 gaps, that is 6/8"},
+      "whyShort": {"hi": "har 1/4 mein 2 gap, toh 3/4 tak 6", "en": "2 gaps in every 1/4, so 6 up to 3/4"},
+      "whyAlt": {"hi": "Beech ka mark 4/8 hai, yaani aadha raasta; 3/4 uske baad ek chauthai aur aage hai, aur ek chauthai mein 2 gap aate hain.", "en": "The middle mark is 4/8, half of the way; 3/4 is one more quarter past it, and a quarter holds 2 gaps."},
+      "simpler": {"hi": "Pehle dekho ki 0 se 1/4 tak 1/8 wale kitne gap aate hain. Phir socho ki 3/4 mein aise kitne 1/4 hain.", "en": "First see how many gaps of 1/8 there are from 0 to 1/4. Then think how many such quarters 3/4 holds."},
       "answerBoard": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 4, "label": "1/2"}, {"num": 6, "label": "3/4 = 6/8"}]}}
      },
-     "simpler": {
-      "hi": "Rekha ka beech wala nishaan ek hi jagah hai. Usko 1/2 bolo, 2/4 bolo ya 4/8, maatra wahi rehti hai.",
-      "en": "The middle mark of the line is one single place. Call it 1/2, 2/4 or 4/8, the amount stays the same."
-     }
+     "simpler": {"hi": "Line ka beech wala mark ek hi jagah hai. Use 1/2 kaho, 2/4 kaho ya 4/8, jagah wahi rehti hai.", "en": "The middle mark of the line is one place. Call it 1/2, 2/4 or 4/8, the place stays the same."}
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Sana ek chaukor rumal ko aadha modti hai aur ek aadhe hisse mein rang bharti hai. Phir rumal ko do baar aur aadha modti hai. Kholne par kitne barabar hisse honge, aur rang wala hissa kaunsa bhinn hai?",
-     "en": "Sana folds a square hanky in half and colours one half. Then she folds it in half two more times. When it is opened, how many equal parts are there, and what fraction is coloured?"
-    }, "simpler": { "hi": "Har baar aadha modne se hisse dugne ho jaate hain. Teen baar modne ke baad hisse gino, phir rang wale gino.", "en": "Each fold in half doubles the parts. Count the parts after the three folds, then count the coloured ones." },
+    "problem": {"hi": "Sana ek chaukor rumal ko aadha modti hai aur ek aadhe mein rang bharti hai. Phir use do baar aur aadha modti hai.", "en": "Sana folds a square hanky in half and colours one half. Then she folds it in half two more times."},
+    "problemAlt": {"hi": "Yeh waisa hi hai jaise roti ko aadha modkar ghee lagao, phir do baar aur modo. Kholne par dekhna hai ki kitne hisse hain, aur ghee kitne hisson par hai.", "en": "It is just like folding a roti in half, spreading ghee, then folding twice more. When it is opened we see how many parts there are and how many have ghee."},
+    "simpler": {"hi": "Ek kaagaz lekar socho: har baar aadha modo, aur kholkar gino ki kitne hisse dikhte hain.", "en": "Think with a sheet of paper: fold it in half each time, then open it and count the parts you see."},
     "givens": [
-     {
-      "hi": "ek chaukor rumal, pehle mod par ek aadha rang wala, phir do mod aur, har baar aadha",
-      "en": "one square hanky, one half coloured at the first fold, then two more folds, each in half"
-     }
+     {"hi": "ek chaukor rumal, pehle mod par ek aadha rang wala, phir do mod aur, har baar aadha", "en": "one square hanky, one half coloured at the first fold, then two more folds, each in half"}
     ],
-    "find": {
-     "hi": "kholne par kul barabar hisse aur rang wala bhinn",
-     "en": "the number of equal parts and the fraction coloured when opened"
-    },
+    "find": {"hi": "kholne par kul barabar hisse aur rang wale hisse", "en": "the number of equal parts and of coloured parts when opened"},
     "steps": [
      {
-      "do": {"hi": "Pehle mod ke baad hisse dekho", "en": "Look at the parts after the first fold"},
-      "result": "2 barabar hisse, 1 rang wala, yaani 1/2",
-      "why": {
-       "hi": "ek mod se rumal do barabar hisson mein banta hai",
-       "en": "one fold makes the hanky into two equal parts"
+      "ask": {
+       "prompt": {"hi": "Har baar aadha modne par hisson ki ginti ka kya hota hai?", "en": "Each time it is folded in half, what happens to the number of parts?"},
+       "hindi": {"hi": "Jab bhi rumal aadha moda jaata hai, hisson ki ginti mein kya badlaav aata hai?", "en": "Whenever the hanky is folded in half, what change comes in the number of parts?"},
+       "key": "dugni ho jaati hai",
+       "accept": ["dugni", "dugne", "dugne ho jaate hain", "double", "doubles", "do guna", "2 guna", "doguna"],
+       "right": {"hi": "Haan, har mod par hisse dugne ho jaate hain: har hissa do mein bant-ta hai.", "en": "Yes, the parts double at every fold: each part splits in two."}
       },
-      "simpler": {
-       "hi": "Ek baar aadha modne se rumal ke 2 barabar hisse bante hain. Unmein se ek rang wala hai, toh woh 1/2 hai.",
-       "en": "One fold in half makes 2 equal parts of the hanky. One of them is coloured, so that is 1/2."
-      }
+      "do": {"hi": "Ek mod par hisson ki ginti dekho", "en": "See what one fold does to the number of parts"},
+      "result": "har mod par hisse dugne",
+      "why": {"hi": "har hissa do barabar hisson mein bant-ta hai", "en": "every part splits into two equal parts"},
+      "simpler": {"hi": "Kaagaz ko ek baar modkar kholo, aur dekho ki pehle ka ek hissa ab kitne hisson mein bata hai.", "en": "Fold a paper once and open it, and see how many parts one earlier part has become."}
      },
      {
-      "do": { "hi": "Doosre mod ke baad hisse dekho", "en": "Look at the parts after the second fold" },
-      "result": "4 barabar hisse, 2 rang wale, yaani 2/4",
-      "why": {
-       "hi": "har hissa do chhote hisson mein banta hai, toh kul hisse bhi dugne aur rang wale bhi dugne",
-       "en": "every part splits into two smaller parts, so the total parts double and the coloured parts double too"
-      },
-      "simpler": {
-       "hi": "Doosre mod se har hissa do mein bant gaya, toh 4 hisse bane. Rang wala hissa bhi do bana, toh 2/4 rang wala hai.",
-       "en": "The second fold splits every part in two, so there are 4 parts. The coloured part also becomes two, so 2/4 is coloured."
-      }
+      "do": {"hi": "Ab teeno mod ke baad hisse gino", "en": "Now count the parts after all three folds"},
+      "result": "2, phir 4, phir 8 barabar hisse",
+      "why": {"hi": "pehle mod se 2 hisse bane, aur do mod uske baad hue", "en": "the first fold made 2 parts, and two folds came after it"},
+      "simpler": {"hi": "Pehle mod ke baad hisse gino, phir har agle mod ke baad.", "en": "Count the parts after the first fold, then after each fold that follows."}
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "Teesra mod har hissa phir do chhote hisson mein baantta hai, toh rumal ke 8 barabar hisse bante hain, jaise neeche wali patti. Inmein se kitne hisse rang wale honge?",
-      "en": "The third fold splits every part into two smaller parts again, so the hanky has 8 equal parts, like the bottom strip. How many of them will be coloured?"
-     },
-     "key": "4", "why": { "hi": "teesre mod ke baad 8 barabar hisse hote hain, aur rang wala aadha hissa unmein se 4 hisse hota hai", "en": "after the third fold there are 8 equal parts, and the coloured half is 4 of those parts" },
-     "accept": ["chaar", "four", "4 hisse", "chaar hisse"],
-     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 0, "label": ""}]}},
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 2, "label": "2/4"}, {"parts": 8, "shade": 4, "label": "4/8"}]}},
-     "simpler": {
-      "hi": "Abhi 2 hisse rang wale hain, aur har mod har hisse ko do mein baantta hai. Bas rang wale hisson ka dugna socho.",
-      "en": "There are 2 coloured parts now, and every fold splits each part in two. Just think of double the coloured parts."
-     }
+     "prompt": {"hi": "Rang pehle mod par aadhe rumal mein bhara tha. Kholne par 8 hisson mein se kitne hisson mein rang hoga?", "en": "The colour went on half the hanky at the first fold. When it is opened, how many of the 8 parts will have colour?"},
+     "hindi": {"hi": "Pehle mod par rumal ke aadhe hisse mein rang bhara tha. Kholne par 8 hisson mein se kitne hisson mein rang dikhega?", "en": "At the first fold colour was filled in half the hanky. When opened, in how many of the 8 parts will colour show?"},
+     "reask": {"hi": "Kholne par rumal ke 8 hisson mein se kitne hisson mein rang hoga?", "en": "When the hanky is opened, how many of its 8 parts will have colour?"},
+     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]}},
+     "viewCaption": {"hi": "Rumal yahan do ek jaise gol ban gaya hai: pehla do barabar hisson mein, ek mein rang, aur doosra aath barabar hisson mein.", "en": "The hanky has become two identical circles here: the first in two equal parts, one coloured, and the second in eight equal parts."},
+     "key": "4",
+     "why": {"hi": "rang aadhe rumal mein hai, aur 8 hisson ka aadha 4 hisse hai, yaani 4/8", "en": "the colour is on half the hanky, and half of 8 parts is 4 parts, that is 4/8"},
+     "whyAlt": {"hi": "Rang wale hisse bhi har mod par dugne hue: pehle 1, phir 2, phir 4.", "en": "The coloured parts doubled at every fold too: first 1, then 2, then 4."},
+     "accept": ["chaar", "four", "4 hisse", "chaar hisson mein", "4/8"],
+     "targets": "c5-maths-ch02-t03-m-more-pieces-more",
+     "wrongIfMis": "8",
+     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 8, "shade": 4, "label": "4/8"}]}},
+     "simpler": {"hi": "Rang aadhe rumal mein hai. Ab socho ki 8 hisson ka aadha kitne hisse hota hai.", "en": "The colour is on half the hanky. Now think how many parts half of 8 parts is."}
     },
-    "answer": {
-     "hi": "rumal ke 8 barabar hisse hain aur 4 rang wale, yaani 4/8, jo 1/2 aur 2/4 ke barabar hai",
-     "en": "the hanky has 8 equal parts with 4 coloured, that is 4/8, which equals 1/2 and 2/4"
-    },
-    "why": {
-     "hi": "har mod par kul hisse aur rang wale hisse dono dugne hote hain, par rang wali jagah utni hi rehti hai",
-     "en": "at every fold the total parts and the coloured parts both double, but the coloured area stays the same"
-    },
-    "board": {"template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "bar"}}
+    "answer": {"hi": "kholne par 8 barabar hisse hain aur 4 mein rang, yaani 4/8, jo 1/2 ke barabar hai", "en": "opened, there are 8 equal parts with 4 coloured, that is 4/8, which equals 1/2"},
+    "why": {"hi": "hisse badle, par rumal par rang utna hi raha", "en": "the parts changed, but the colour on the hanky stayed the same"},
+    "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}]}},
+    "viewCaption": {"hi": "Rumal yahan gol ban gaya hai: do barabar hisse, aur ek mein rang.", "en": "Here the hanky has become a circle: two equal parts, one coloured."}
    },
    "checks": [
     {
      "id": "c1",
-     "prompt": {
-      "hi": "Do ek jaisi chocolate bar hain. Mohit ne ek bar ka 1/2 khaya. Anjali ne doosri bar ke 6 barabar tukdon mein se 3 tukde khaaye. Zyada kisne khaya: Mohit ne, Anjali ne, ya dono ne barabar?",
-      "en": "Two identical chocolate bars. Mohit ate 1/2 of one bar. Anjali ate 3 of the 6 equal pieces of the other bar. Who ate more: Mohit, Anjali, or did they eat the same?"
-     },
+     "prompt": {"hi": "Do ek jaisi chocolate hain. Mohit ne ek chocolate ka 1/2 khaya. Anjali ne doosri ke 6 barabar hisson mein se 3 hisse khaaye. Zyada kisne khaya: Mohit ne, Anjali ne, ya dono ne barabar?", "en": "Two identical chocolates. Mohit ate 1/2 of one. Anjali ate 3 of the 6 equal parts of the other. Who ate more: Mohit, Anjali, or both the same?"},
+     "hindi": {"hi": "Do ek jaisi chocolate hain: Mohit ne ek ka 1/2 khaya, aur Anjali ne doosri ke 6 barabar hisson mein se 3 hisse khaaye. Kisne zyada khaya, ya dono ne utna hi?", "en": "Two chocolates alike: Mohit ate 1/2 of one, and Anjali ate 3 of the 6 equal parts of the other. Who ate more, or did both eat just as much?"},
+     "reask": {"hi": "Mohit ke 1/2 aur Anjali ke 6 mein se 3 hisson mein, zyada kisne khaya, ya dono ne barabar?", "en": "Between Mohit's 1/2 and Anjali's 3 of 6 parts, who ate more, or both the same?"},
      "key": "the same",
-     "why": {
-      "hi": "6 barabar tukdon mein se 3 tukde 3/6 hain, aur 3/6 = 1/2",
-      "en": "3 of 6 equal pieces is 3/6, and 3/6 = 1/2"
-     },
+     "did": {"hi": "1/2 aur 3/6 ko ek hi maatra pehchaana", "en": "saw that 1/2 and 3/6 are one amount"},
      "accept": ["same", "barabar", "dono ne barabar", "dono ne barabar khaya", "same amount", "both the same"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "Anjali",
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]}},
-     "simpler": {
-      "hi": "6 barabar tukdon mein se 3 tukde matlab aadhe tukde. Ab isko Mohit ke 1/2 se milaao.",
-      "en": "3 of 6 equal pieces means half of the pieces. Now match that with Mohit's 1/2."
-     },
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 6, "shade": 3, "label": "3/6"}]}}
+     "viewCaption": {"hi": "Dono chocolate yahan do ek jaise gol ban gayi hain: ek do barabar hisson mein, doosri chhe mein.", "en": "Both chocolates have become two identical circles here: one in two equal parts, the other in six."},
+     "why": {"hi": "6 barabar hisson mein se 3 hisse 3/6 hain, aur 3/6 = 1/2, isliye dono ne barabar khaya", "en": "3 of 6 equal parts is 3/6, and 3/6 = 1/2, so both ate the same"},
+     "whyShort": {"hi": "3/6 aur 1/2 ek hi maatra hain", "en": "3/6 and 1/2 are one amount"},
+     "whyAlt": {"hi": "Anjali ki chocolate ke 6 hisson ka aadha 3 hisse hai, toh usne bhi aadhi chocolate hi khayi.", "en": "Half of the 6 parts of Anjali's chocolate is 3 parts, so she too ate half a chocolate."},
+     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 6, "shade": 3, "label": "3/6"}]}},
+     "answerViewCaption": {"hi": "Line ke upar 2 barabar gap hain aur neeche 6. Upar ka 1/2 wala mark aur neeche ka 3/6 wala mark ek hi jagah par hain, isliye dono ne barabar khaya.", "en": "Above the line there are 2 equal gaps and below it 6. The 1/2 mark above and the 3/6 mark below are at the same place, so both ate the same."},
+     "simpler": {"hi": "Pehle socho ki 6 barabar hisson mein se 3 hisse poori chocolate ka kitna hai. Phir use Mohit ke 1/2 se milaao.", "en": "First think how much of the whole chocolate 3 of 6 equal parts is. Then compare it with Mohit's 1/2."}
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 12 barabar hisson mein bati hai. 0 ke baad paanchve nishaan par gol ghera hai. Woh nishaan 1/2 se bada hai, chhota hai, ya barabar?", "en": "This number line from 0 to 1 is split into 12 equal parts. The 5th mark after 0 is circled. Is that mark bigger than 1/2, smaller, or equal?" },
+     "prompt": {"hi": "Yeh number line 0 se 1 tak 12 barabar gap mein kati hai. 0 ke baad paanchve mark par gol ghera hai. Woh mark 1/2 se bada hai, chhota hai, ya barabar?", "en": "This number line from 0 to 1 is cut into 12 equal gaps. The fifth mark after 0 is circled. Is that mark bigger than 1/2, smaller, or equal?"},
+     "hindi": {"hi": "Yeh number line 0 se 1 tak 12 barabar gap mein kati hai, aur 0 ke baad paanchve mark par ghera bana hai. Woh mark 1/2 se bada hai, chhota hai, ya utna hi?", "en": "This number line from 0 to 1 is cut into 12 equal gaps, and the fifth mark after 0 has a ring round it. Is that mark bigger than 1/2, smaller, or just as much?"},
+     "reask": {"hi": "0 se 1 tak 12 barabar gap wali line par paanchva mark, 1/2 se bada hai, chhota hai, ya barabar?", "en": "On the line from 0 to 1 in 12 equal gaps, is the fifth mark bigger than 1/2, smaller, or equal?"},
      "key": "smaller",
-     "why": { "hi": "0 ke baad paanchva nishaan 5/12 hai, aur 1/2 = 6/12 chhatthe nishaan par hai, toh 5/12 chhota hai", "en": "the 5th mark after 0 is 5/12, and 1/2 = 6/12 sits at the 6th mark, so 5/12 is smaller" },
+     "did": {"hi": "12 gap wali line par 1/2 se chhota mark pehchaana", "en": "found a mark smaller than 1/2 on a line of 12 gaps"},
      "accept": ["chhota", "chhota hai", "kam", "smaller", "less"],
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "bigger",
-     "board": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "mark": 5} },
-     "simpler": { "hi": "Rekha ke 12 barabar hisse hain, aur 1/2 theek beech mein hota hai. Dekho paanchva nishaan beech se pehle hai, beech mein, ya baad mein.", "en": "The line has 12 equal parts, and 1/2 sits right in the middle. See whether the 5th mark is before the middle, at it, or after it." },
-     "answerBoard": { "template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "marks": [{"num": 5, "label": "5/12"}, {"num": 6, "label": "6/12 = 1/2"}]} }
+     "board": {"template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "mark": 5}},
+     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: 12 barabar hisse, aur pehle 5 hisson mein rang.", "en": "Here the line has become a strip: 12 equal parts, with the first 5 coloured."},
+     "why": {"hi": "0 ke baad paanchva mark 5/12 hai, aur 1/2 = 6/12 chhatthe mark par hai, isliye 5/12 chhota hai", "en": "the fifth mark after 0 is 5/12, and 1/2 = 6/12 is at the sixth mark, so 5/12 is smaller"},
+     "whyShort": {"hi": "1/2 chhatthe mark par hai, paanchva usse pehle", "en": "1/2 is the sixth mark; the fifth comes first"},
+     "whyAlt": {"hi": "12 gap ka aadha 6 gap hai; paanchva mark aadhe tak pahunchne se ek gap pehle hi ruk jaata hai.", "en": "Half of 12 gaps is 6 gaps; the fifth mark stops one gap short of the half."},
+     "answerBoard": {"template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "marks": [{"num": 5, "label": "5/12"}, {"num": 6, "label": "6/12 = 1/2"}]}},
+     "simpler": {"hi": "Pehle dhoondo ki 12 gap wali line ka beech, yaani 1/2, kaunse mark par aata hai. Phir paanchve mark ko usse milaao.", "en": "First find which mark the middle of the 12-gap line, 1/2, falls on. Then compare the fifth mark with it."}
     }
    ],
    "ladder": [
@@ -276,35 +254,37 @@
    "remediation": [
     {
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
-     "move": "two same-length bars, 3 parts and 6 parts: one part below is half a part above → more pieces of the same whole are smaller pieces → 2 of 6 can be the same amount as 1 of 3",
-     "say": {
-      "hi": "Yeh do patti ek jitni lambi hain. Upar wali 3 barabar hisson mein bati hai, neeche wali 6 mein. Neeche ka har hissa upar wale hisse ka aadha hai. Tukde zyada hain, par har tukda chhota hai, toh maatra zyada nahi hoti.",
-      "en": "These two bars are the same length. The top one is cut into 3 equal parts, the bottom one into 6. Each bottom part is half a top part. There are more pieces, but each piece is smaller, so the amount is not more."
-     },
-     "simpler": {
-      "hi": "Neeche ke tukde patle hain, upar ke mote. Zyada patle tukde, kam mote tukdon jitne ho sakte hain.",
-      "en": "The pieces below are thin, the ones on top chunky. More thin pieces can be as much as fewer chunky ones."
-     },
+     "move": "two same-length strips, 2 parts and 4 parts, half coloured on each: a part of the second is half a part of the first → 2 of its parts match 1 of the first → more parts of the same whole are smaller parts",
+     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}, {"parts": 4, "shade": 2, "label": ""}]}},
+     "viewCaption": {"hi": "Dono patti yahan do ek jaise gol ban gayi hain: pehla do barabar hisson mein, doosra chaar mein, aur dono mein aadhe hisson mein rang hai.", "en": "Both strips have become two identical circles here: the first in two equal parts, the second in four, and half the parts of each are coloured."},
+     "say": {"hi": "Yeh do patti ek jitni lambi hain, par doosri ke hisse chhote hain: uske 2 hisse pehli ke ek hisse jitne hain.", "en": "These two strips are the same length, but the second one's parts are smaller: 2 of its parts are as long as one part of the first."},
+     "sayAlt": {"hi": "Ek roti ke 2 bade hisse karo, aur waisi hi doosri roti ke 4 chhote. Do chhote hisse milkar ek bada hissa bante hain, roti utni hi rehti hai.", "en": "Cut one roti into 2 big parts and an identical roti into 4 small ones. Two small parts together make one big part; the roti stays the same."},
+     "simpler": {"hi": "Doosri patti ke 2 hisse saath rakho; woh pehli patti ke ek hisse jitne lambe hain.", "en": "Put 2 parts of the second strip together; they are as long as one part of the first."},
      "then": {
-      "prompt": { "hi": "Farhan ne ek chocolate ka 1/3 khaya, {friend} ne waisi hi doosri ke 6 barabar tukdon mein se 2. Zyada kisne, ya barabar?", "en": "Farhan ate 1/3 of a chocolate bar; {friend} ate 2 of 6 equal pieces of an identical bar. Who ate more, or the same?" },
+      "prompt": {"hi": "Farhan ne chocolate ka 1/3 khaya; {friend} ne waisi chocolate ke 6 barabar hisson mein se 2. Kiska zyada, ya barabar?", "en": "Farhan ate 1/3 of a chocolate; {friend} ate 2 of the 6 equal parts of an identical one. Who ate more, or the same?"},
+      "hindi": {"hi": "Farhan ne ek chocolate ka 1/3 khaya, aur {friend} ne waisi hi doosri chocolate ke 6 barabar hisson mein se 2 hisse. Kisne zyada khaya, ya dono ne utna hi?", "en": "Farhan ate 1/3 of a chocolate, and {friend} ate 2 of the 6 equal parts of another just like it. Who ate more, or did both eat just as much?"},
+      "reask": {"hi": "Farhan ke 1/3 aur {friend} ke 6 mein se 2 hisson mein, zyada kisne khaya, ya barabar?", "en": "Between Farhan's 1/3 and {friend}'s 2 of 6 parts, who ate more, or the same?"},
       "key": "the same",
-      "why": {
-       "hi": "6 barabar tukdon mein se 2 tukde 2/6 hain, aur 2/6 = 1/3",
-       "en": "2 of 6 equal pieces is 2/6, and 2/6 = 1/3"
-      },
       "accept": ["same", "barabar", "dono ne barabar", "both the same", "same amount"],
       "targets": "c5-maths-ch02-t03-m-more-pieces-more",
       "wrongIfMis": "{friend}",
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]}},
-      "simpler": {
-       "hi": "Chocolate ke 6 tukdon ke teen barabar dher banao, toh har dher mein 2 tukde aate hain. Farhan ka 1/3 ek dher jitna hai.",
-       "en": "Make three equal heaps of the 6 chocolate pieces, and each heap has 2 pieces. Farhan's 1/3 is as much as one heap."
-      },
-      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 6, "shade": 2, "label": "2/6"}]}}
+      "viewCaption": {"hi": "Dono chocolate yahan do ek jaise gol hain: ek teen barabar hisson mein, doosri chhe mein.", "en": "Both chocolates are two identical circles here: one in three equal parts, the other in six."},
+      "why": {"hi": "6 barabar hisson mein se 2 hisse 2/6 hain, aur 2/6 = 1/3, isliye dono ne barabar khaya", "en": "2 of 6 equal parts is 2/6, and 2/6 = 1/3, so both ate the same"},
+      "whyShort": {"hi": "2/6 aur 1/3 ek hi maatra hain", "en": "2/6 and 1/3 are one amount"},
+      "whyAlt": {"hi": "6 hisson ke teen barabar dher banao, toh har dher mein 2 hisse aate hain; ek dher hi chocolate ka 1/3 hai.", "en": "Make three equal heaps of the 6 parts and each heap has 2; one heap is 1/3 of the chocolate."},
+      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 6, "shade": 2, "label": "2/6"}]}},
+      "answerViewCaption": {"hi": "Line ke upar 3 barabar gap hain, neeche 6. Upar ka 1/3 wala mark aur neeche ka 2/6 wala mark ek hi jagah par hain, isliye dono ne barabar khaya.", "en": "There are 3 equal gaps above the line and 6 below. The 1/3 mark above and the 2/6 mark below are at the same place, so both ate the same."},
+      "simpler": {"hi": "Chocolate ke 6 hisson ke teen barabar dher socho, aur dekho ki ek dher mein kitne hisse aate hain.", "en": "Think of the chocolate's 6 parts in three equal heaps, and see how many parts one heap holds."}
      }
     }
    ],
-   "bridgeToNext": { "hi": "Modne par 1/2 se 2/4 bana: kul hisse aur rang wale hisse, dono dugne hue, aur maatra wahi rahi. Ab bina mode, guna karke barabar bhinn banayenge.", "en": "Folding turned 1/2 into 2/4: the total parts and the coloured parts both doubled, and the amount stayed the same. Next we make equivalent fractions without folding, by multiplying.", "simpler": {"hi": "Modne par 1/2 se 2/4 bana, aur rang wali maatra wahi rahi. Agle hisse mein bina mode, guna karke barabar bhinn banayenge.", "en": "Folding turned 1/2 into 2/4, and the coloured amount stayed the same. Next we make equal fractions by multiplying, without folding."} }
+   "bridgeToNext": {
+    "hi": "Modne par 1/2 se 2/4 bana: kul hisse aur rang wale hisse, dono dugne hue, aur rang utna hi raha. Ab bina mode, guna karke barabar fraction banayenge.",
+    "en": "Folding turned 1/2 into 2/4: the total parts and the coloured parts both doubled, and the colour stayed the same. Next we make equal fractions by multiplying, without folding.",
+    "simpler": {"hi": "Modne par 1/2 se 2/4 bana, aur rang utna hi raha. Ab bina mode, guna karke barabar fraction banayenge.", "en": "Folding turned 1/2 into 2/4, and the colour stayed the same. Next we make equal fractions by multiplying, without folding."}
+   },
+   "covered": {"hi": "Patti ko modne par hisse badhte hain par rang utna hi rehta hai, isliye 1/2 = 2/4 = 4/8.", "en": "Folding a strip makes more parts but keeps the colour the same, so 1/2 = 2/4 = 4/8."}
   },
   {
    "skillId": "c5-maths-ch02-t03-s2",
