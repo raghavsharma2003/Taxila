@@ -1765,15 +1765,15 @@ the v2.4 rules fire), each fails 157 to 172 lines before its worked examples are
 | c4-maths-ch01-t02 | 157 | 39 | 29 | 25 | 0 | 10 | 12 | 4 | 8 | 7 | 3 | 12 | 8 |
 | c6-maths-ch07-t01 | 160 | 38 | 23 | 24 | 8 | 9 | 18 | 7 | 8 | 7 | 3 | 4 | 11 |
 
-On top of these: `whyShort` on every card (about 20 a script; a compile hole, not a checker line), the worked examples (two told
-steps before the first question in every skill; none asks a step: each needs an asked deciding step, the sum told, and its opening
+On top of these: `whyShort` on every card (about 20 a script; a compile hole, not a checker line), the worked examples (in c5-t03
+two told steps before the first question in every skill and no asked step: each needs an asked deciding step, the sum told, and its opening
 cut to 53), a teachback with its key blind-solved, and one word per idea (c5-t03 says tukda and hissa, bar and patti). That is about
 180 new authored sentences a script, each read against its board, before a run; the order's list reads as if the staged scripts
 were a few rules short of the pilots, and they are four rounds short (they predate director21's v2.4 fields).
 
 **What I would not put in front of a child yet (read, not changed):** c5-t03 s1's hook is 29 words and tells the whole fold before the
-first point; its e3 card asks "1/8 wale kitne hisse" on a line whose 3/4 mark is not drawn until the answer; s2's point sentences
-"Patti par 1/2 ke tukde 2 hain, aur 2/3 ke tukde 3" read as notes; c1 says "chocolate bar" and "health bar" beside "patti".
+first point; s2's point sentences "Patti par 1/2 ke tukde 2 hain, aur 2/3 ke tukde 3" read as notes; s1 c1 says "chocolate bar" and
+s3's hook "health bar" beside "patti" everywhere else; its three worked examples each tell two steps and ask none.
 
 **For main:** the batch needs either the full authoring above (one session per script, I estimate, at the standard Parts 1 of 016 to 019
 held the pilots to) or a decision that a staged script may be run first at v2.3 plus Part 1 A (hindi, afterWorked, step wordings) and
