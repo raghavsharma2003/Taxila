@@ -649,3 +649,5 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | c7-maths-ch03-t01 | staged | 25 | 25 | yes | 0 |
 | c7-maths-ch05-t01 | staged | 26 | 26 | yes | 0 |
 | c7-maths-ch05-t02 | staged | 25 | 25 | yes | 1 |
+
+Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi request gets the card's unsaid help): none.

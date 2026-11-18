@@ -107,6 +107,11 @@ for (const r of rows) {
   out.push(`| ${r.s.topicId} | ${r.where} | ${cards.length} | ${cards.filter((c) => !c.card.hindi).length} | ${Array.isArray(r.s.joints?.afterWorked) && r.s.joints.afterWorked.length ? "" : "yes"} | ${hits.length} |`);
 }
 out.push("");
+// (Learning 020 rule 1: a card may have no `hindi` form where the script has no honest plainer one; each is a hole, named here, and
+// the walk gives that card's unsaid help on a Hindi request. Named for the scripts at the standard: the live ones and STANDARD_STAGED.)
+const { STANDARD_STAGED } = await import("./check.mjs");
+const holes = rows.filter((r) => r.where === "live" || STANDARD_STAGED.includes(r.s.topicId)).flatMap((r) => hindiCards(r.s).filter((c) => !c.card.hindi).map((c) => `${r.s.topicId} ${c.at}`));
+out.push("Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi request gets the card's unsaid help): " + (holes.length ? "" : "none."), ...holes.map((h) => `- ${h}`), "");
 const text = out.join("\n");
 if (process.argv.includes("--print")) process.stdout.write(text);
 else { writeFileSync(new URL("docs/design/round7/brain/COMPILE-HOLES.md", ROOT), text); console.log(`COMPILE-HOLES.md: ${rows.length} scripts`); }

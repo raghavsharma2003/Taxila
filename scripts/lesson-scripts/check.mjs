@@ -16,6 +16,8 @@
 //   node scripts/lesson-scripts/check.mjs <topicId> --since <rev>     also list every part whose spoken text changed since <rev>
 //   LESSON_SCRIPTS_DIR=data/lesson-scripts-staged node scripts/lesson-scripts/check.mjs <topicId> --standard
 //                                                                     hold a staged script to the pilots' standard for this run
+//   node scripts/lesson-scripts/check.mjs <topicId> --d32 [--rules]   hold a script to Learning 020's rules for this run; --rules
+//                                                                     lists stated-rule sentences (R) and askWhole candidates (A)
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -908,7 +910,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s));
   return e;
 }
 
@@ -1628,7 +1630,8 @@ export function equalForms(card) {
 export function d31Errors(s) {
   if (!isD29(s)) return [];
   const e = [];
-  for (const { at, card } of hindiCards(s)) e.push(...hindiFormErrors(card, at));
+  // (Learning 020 rule 1: under d32 a card may have no `hindi` form — a hole the compile report lists; one that is present passes A.1)
+  for (const { at, card } of hindiCards(s)) if (card.hindi || !isD32(s)) e.push(...hindiFormErrors(card, at));
   const forms = s.joints?.afterWorked;
   if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.afterWorked: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 019 A.2)`);
   else for (const l of ["hi", "en"]) {
@@ -1654,6 +1657,256 @@ export function d31Errors(s) {
     if (!eq.some((f) => n.includes(dot(f)))) e.push(`${at}.why: accepts ${eq.join(", ")} for ${card.key}: say they are the same (name the other form) (Learning 019 B)`);
   }
   return e;
+}
+/** Learning 020 Part 1 (dc-r8-director31 items 1, 2's re-asks, 3's ends, 4, 5, 7's checker rules; docs/patches/to-learning/
+ *  020-director31-hindi-rules-and-rewrites.md). The rule set `d32Errors` applies to a topic in D32_READY (each script's agent adds
+ *  its topic when the script passes) or to every topic named with `--d32`; elsewhere every script checks as it did under 019.
+ *  1  A `hindi` form is another sentence: it fails when more than HINDI_OVERLAP_MAX of its content words (numbers, fractions,
+ *     slots, names, the script's `terms` and the function words dropped; a word's final vowels dropped, so "hua" and "hue" are
+ *     one word) are in its card's prompt. "samkon" never, where `terms` has "right angle". A card may have no `hindi` form: it
+ *     is a hole (the compile report lists it) and the walk gives that card's unsaid help.
+ *  2  `joints.hindiSwitch` promises only Hindi: none of "aasaan", "seedhe", "doosre shabdon".
+ *  3  A stated rule is true: no point, remediation, why, `covered` or wrap sentence says unequal pieces have no fraction name or
+ *     that a fraction is named only when the parts are equal (RULE_FALSE). `--rules` prints every sentence of those fields with
+ *     "tabhi", "sirf", "hamesha", "kabhi nahi", "nahi hota" as an R line for the independent reader (a listing, not an error).
+ *  4  `reask` { hi, en } on every asked worked step and on the teachback: a second way of asking, ending on the question;
+ *     `told` { hi, en } on every worked step: the sentence she says when she tells the step, asking nothing.
+ *  5  No two cards of a script end on the same last sentence.
+ *  6  The verdict, point and card turn: the previous card's `whyShort` (its `why` where there is none) + the point + the card ≤
+ *     POINT_TURN_MAX words unless listed in POINT_WHOLE (two a script at most); the first teaching turn (the first skill's longest
+ *     hook use, the longest `joints.startAnyway` form, its first point and card) ≤ FIRST_TEACH_MAX.
+ *  7  A card, check, follow-up card, own step or asked step whose board has no second view (viewOf) has a `pictureBoard`
+ *     { template, params } with a `pictureCaption` { hi, en }.
+ *  8  `askWhole: true` on a card whose question asks for a change its board does not show: required on ASK_WHOLE_REQUIRED;
+ *     `--rules` prints the candidates (A lines: "agar", "ek aur", "aur ek", "socho" in the prompt, no askWhole) for main.
+ *  9  `whyAltAsHelp: true` only where `whyAlt` names neither the key nor an accepted form, nor one option of a two-way card.
+ *  10 Every card's `simpler`, every `reask` and every step's easier wording never names the key or an accepted form the prompt
+ *     does not state; on a two-way card (the prompt has "ya", or the accepted forms name both options) a wording that names one
+ *     option and not the other fails.
+ *  Also: no `wrap.ack` form says "yaad rakh" (a promise she cannot keep). */
+export const D32_READY = [];
+export const isD32 = (s) => D32_READY.includes(s?.topicId);
+export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;
+/** Pairs said whole over POINT_TURN_MAX, each with its reason (as REM_WHOLE): { topicId, skillId, explainId, reason }. */
+export const POINT_WHOLE = [];
+/** Cards whose question asks for a change the board does not show (main confirms each from the A lines): { topicId, skillId, card }. */
+export const ASK_WHOLE_REQUIRED = [
+  // (director31 c4 stuck 18, steering 30: "ek aur tukda rang do" over a board that shows no change)
+  { topicId: "c4-maths-ch05-t01", skillId: "c4-maths-ch05-t01-s1", card: "e3" },
+];
+const D32_STOP = new Set("hai hain ho hota hoti hote tha thi the ko ka ki ke mein me se par pe aur ya toh to kya yeh ye woh wo is us isme isko usko unka uska iska apna apni bhi sirf wala wali wale liye tak ne na nahi nahin ek do teen char chaar paanch jab agar ab phir hi kaun kaunsa kaunsi kaunse kitna kitni kitne kaise kyun".split(" "));
+/** The names in a text: a capitalised word not at a sentence's start, and the friend pool. */
+const namesIn = (t) => new Set(sentencesOf(t).flatMap((x) => x.split(/\s+/).slice(1).map((w) => w.replace(/[^\p{L}]/gu, "")).filter((w) => /^\p{Lu}\p{Ll}+$/u.test(w)).map((w) => w.toLowerCase())));
+const contentWords = (t, drop) => String(t ?? "").toLowerCase().replace(/\{[a-zA-Z]+\}/g, " ").replace(/\d+(?:[./]\d+)?/g, " ").replace(/[^\p{L}\s]+/gu, " ")
+  .split(/\s+/).filter((w) => w && !D32_STOP.has(w) && !drop.has(w)).map((w) => w.replace(/(?<=..)[aeiou]+$/, ""));
+/** Rule 1's measure: the share of the form's content words that are in its card's prompt. */
+export function hindiOverlap(card, s) {
+  const p = card?.prompt?.hi ?? "", h = card?.hindi?.hi ?? "";
+  const drop = new Set([...FRIEND_POOL, "Asha", "Riya"].map((x) => x.toLowerCase()));
+  for (const x of s?.terms ?? []) for (const w of `${x.hi ?? ""} ${x.en ?? ""}`.toLowerCase().split(/[^\p{L}]+/u)) if (w) drop.add(w);
+  for (const w of [...namesIn(p), ...namesIn(h)]) drop.add(w);
+  const H = new Set(contentWords(h, drop)), P = new Set(contentWords(p, drop)), shared = [...H].filter((w) => P.has(w));
+  return { form: H.size, prompt: P.size, shared: shared.length, share: H.size ? shared.length / H.size : 0, words: shared };
+}
+/** Every card the child answers with its board, the givens a hint may name, and a short id: [{ at, skillId, id, kind, card, board, given }]. */
+export function d32Cards(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    const put = (id, kind, card, board, given = "") => out.push({ at: `${k.skillId}/${id}`, skillId: k.skillId, id, kind, card, board: board ?? null, given });
+    for (const b of k.explain ?? []) if (b.ask?.prompt) put(b.id, "card", b.ask, b.ask.board ?? b.board);
+    (k.remediation ?? []).forEach((r, j) => { if (r.then?.prompt) put(`remediation[${j}].then`, "follow-up", r.then, r.then.board ?? r.board); });
+    for (const c of k.checks ?? []) if (c.prompt) put(c.id, "check", c, c.board);
+    const we = k.workedExample, wg = `${we?.problem?.hi ?? ""} ${we?.problem?.en ?? ""}`;
+    (we?.steps ?? []).forEach((x, j) => { if (x.ask?.prompt) put(`workedExample.steps[${j}].ask`, "asked step", x.ask, we.board, wg); });
+    if (we?.yourStep?.prompt) put("workedExample.yourStep", "own step", we.yourStep, we.yourStep.board ?? we.board, we.yourStep.board ? "" : wg);
+  }
+  if (s?.teachback?.prompt) out.push({ at: "teachback", skillId: null, id: "teachback", kind: "closing", card: s.teachback, board: s.teachback.board ?? null, given: "" });
+  return out;
+}
+const lastSentence = (t) => { const x = sentencesOf(t); return d27Norm(x[x.length - 1] ?? ""); };
+const isYesNo = (x) => x.split(" ").length === 1 && (YES_W.test(x) || NO_W.test(x));
+/** A two-way card's two options, read from "X ya Y" in its question where one side is the key or an accepted form: [key side, other
+ *  side] or null. A list of three ("X, Y, ya Z") is not two-way; a number is paired with a number ("1/10 loge ya 1/5"). */
+const d32Norm = (t) => l018Norm(String(t ?? "").replace(/['’]s\b/gi, "").replace(/\.(?!\d)/g, " "));
+export function twoWayOptions(card) {
+  const forms = [card?.key, ...(card?.accept ?? [])].filter((x) => x != null).map((f) => d32Norm(f).trim()).filter(Boolean);
+  const q = sentencesOf(card?.prompt?.hi ?? "").filter((x) => /(?<![\p{L}])ya(?![\p{L}])/iu.test(x)).pop();
+  if (!q) return null;
+  const segs = q.split(/(?<![\p{L}])ya(?![\p{L}])/iu);
+  if (segs.length !== 2) return null;
+  const ctx = segs[0].split(/[:;]|(?<![\p{L}])toh(?![\p{L}])/iu).pop();
+  if (/,\s*$/.test(ctx) && ctx.replace(/,\s*$/, "").includes(",")) return null;
+  const keep = (w) => /^\d/.test(w) || !D32_STOP.has(w);
+  const L = d32Norm(ctx).trim().split(" ").filter(keep), R = d32Norm(segs[1]).trim().split(" ").filter(keep);
+  const right = R[0], num = /^\d/.test(right ?? "");
+  const left = num ? [...L].reverse().find((w) => /^\d/.test(w)) : L[L.length - 1];
+  const judged = (w) => isYesNo(w) || /^(sahi|galat|theek|barabar)$/.test(w); // (a verdict, or "equal": those words are in every hint)
+  if (!left || !right || left === right || judged(left) || judged(right)) return null;
+  const hit = (w) => forms.includes(w); // (an accepted form is the option itself: a loose pairing is not read as two-way)
+  if (hit(left) && !hit(right)) return [left, right];
+  if (hit(right) && !hit(left)) return [right, left];
+  return null;
+}
+const has = (T, x) => T.includes(` ${x} `);
+const reEsc = (x) => x.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
+/** A form named as one side of a choice ("X ... ya Y", "Y ya ... X"), not given: and in a re-ask, beside another of its kind (another
+ *  fraction, another name or slot), since a re-ask restates the question's options. */
+const offered = (T, x, reask) => {
+  const X = reEsc(x);
+  if (new RegExp(` ${X}(?: \\S+){0,3} (?:ya|or|aur|and) `).test(T) || new RegExp(` (?:ya|or|aur|and)(?: \\S+){0,3} ${X} `).test(T)) return true;
+  if (!reask) return false;
+  const fr = (T.match(/\d+\/\d+/g) ?? []), xf = x.match(/\d+\/\d+/g) ?? [];
+  if (xf.length && fr.some((y) => !xf.includes(y))) return true;
+  const tail = x.split(" ").slice(1).join(" ");
+  return !!tail && T.split(` ${tail} `).length > 2; // ("Ben ke paas … {friend} ke paas": both sides in the same words)
+};
+/** The hint wordings of a card that name its answer (rule 10) or one option of a two-way card: [{ field, l, form }]. */
+export function hintHits(c, fields) {
+  const out = [], card = c.card, given = d32Norm(`${card.prompt?.hi ?? ""} ${card.prompt?.en ?? ""} ${c.given ?? ""}`), opts = twoWayOptions(card);
+  for (const [field, text] of fields) for (const l of ["hi", "en"]) {
+    const t = text?.[l]; if (!t) continue;
+    const T = d32Norm(t);
+    for (const f of [card.key, ...(card.accept ?? [])].filter((x) => x != null)) {
+      const x = d32Norm(f).trim();
+      if (!x || has(given, x) || isYesNo(x)) continue;
+      if (has(T, x) && !offered(T, x, field === "reask")) { out.push({ field, l, form: String(f) }); break; }
+    }
+    if (l === "hi" && opts && has(T, opts[0]) !== has(T, opts[1])) out.push({ field, l, form: `${has(T, opts[0]) ? opts[0] : opts[1]}" and not "${has(T, opts[0]) ? opts[1] : opts[0]}`, twoWay: true });
+  }
+  return out;
+}
+export const RULE_FALSE = [/fraction\s+naam\s+nahi\s+(hota|hai)/i, /sirf\s+barabar\b.*\bfraction\s+(ka\s+)?naam/i, /tabhi\s+kehte\s+hain\s+jab\b.*\bbarabar/i,
+  /\bno fraction name\b/i, /\bonly equal\b.*\bfraction name\b/i];
+export const RULE_WORDS = /(?<![\p{L}])(tabhi|sirf|hamesha|kabhi\s+nahi|nahi\s+hota)(?![\p{L}])/iu;
+/** The sentences of the fields where a rule is stated (rule 3): [{ at, l, text }]. */
+export function ruleSentences(s) {
+  const out = [], put = (at, f) => { for (const l of ["hi", "en"]) for (const x of sentencesOf(f?.[l])) out.push({ at, l, text: x }); };
+  for (const k of s?.skills ?? []) {
+    const id = k.skillId;
+    put(`${id}/covered`, k.covered);
+    for (const b of k.explain ?? []) { put(`${id}/${b.id}.point`, b.point); put(`${id}/${b.id}.pointAlt`, b.pointAlt); }
+    (k.remediation ?? []).forEach((r, j) => { put(`${id}/remediation[${j}].say`, r.say); put(`${id}/remediation[${j}].sayAlt`, r.sayAlt); });
+    (k.workedExample?.steps ?? []).forEach((x, j) => put(`${id}/workedExample.steps[${j}].why`, x.why));
+  }
+  for (const c of d32Cards(s)) for (const f of ["why", "whyShort", "whyAlt"]) put(`${c.at}.${f}`, c.card[f]);
+  const w = s?.wrap ?? {};
+  for (const [k, v] of Object.entries(w)) (Array.isArray(v) ? v : [v]).forEach((f, i) => { if (f && typeof f === "object" && (f.hi || f.en)) put(`wrap.${k}${Array.isArray(v) ? `[${i}]` : ""}`, f); });
+  return out;
+}
+/** Rule 6's counts: [{ skill, id, at, reason, point, card, total, limit, first, listed }]. */
+export function pointTurns(s) {
+  const W = (x) => d27Words(x?.hi), out = [];
+  const max = (xs) => Math.max(0, ...xs);
+  (s?.skills ?? []).forEach((k, i) => (k.explain ?? []).forEach((b, j) => {
+    const at = `${k.skillId}/${b.id}`, point = W(b.point), card = W(b.ask?.prompt);
+    if (j === 0) {
+      if (i !== 0) return;
+      const hook = max((k.hook?.interestSlots ?? []).map((sl) => W(sl.use))), start = max((s.joints?.startAnyway ?? []).map(W));
+      out.push({ skill: k.skillId, id: b.id, at, first: true, hook, start, point, card, total: hook + start + point + card, limit: FIRST_TEACH_MAX, listed: null });
+      return;
+    }
+    const prev = k.explain[j - 1].ask, reason = W(prev?.whyShort ?? prev?.why);
+    const listed = POINT_WHOLE.find((x) => x.topicId === s.topicId && x.skillId === k.skillId && x.explainId === b.id) ?? null;
+    out.push({ skill: k.skillId, id: b.id, at, first: false, reason, point, card, total: reason + point + card, limit: POINT_TURN_MAX, listed });
+  }));
+  return out;
+}
+const ASK_CHANGE = /(?<![\p{L}])(agar|ek\s+aur|aur\s+ek|socho)(?![\p{L}])/iu;
+/** Rule 8's candidates: cards whose prompt asks for an imagined change and that carry no askWhole. */
+export function askWholeCandidates(s) { return d32Cards(s).filter((c) => ASK_CHANGE.test(c.card.prompt?.hi ?? "") && c.card.askWhole !== true); }
+const PICTURE_KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
+/** Rule 7: the cards a picture request would draw nothing new over: [{ at, template }]. */
+export function noPictureCards(s) {
+  return d32Cards(s).filter((c) => PICTURE_KINDS.has(c.kind) && !c.card.pictureBoard && !(c.board?.template && viewOf(c.board, c.at)))
+    .map((c) => ({ at: c.at, template: c.board?.template ?? null }));
+}
+const formsOk = (e, at, f, { question, max } = {}) => {
+  if (!f || typeof f !== "object") { e.push(`${at}: { hi, en }`); return; }
+  for (const l of ["hi", "en"]) {
+    const t = String(f[l] ?? "").trim(), a = `${at}${l === "en" ? " (en)" : ""}`;
+    if (!t) { e.push(`${a}: empty`); continue; }
+    if (question === true && !/[?？]\s*$/.test(t)) e.push(`${a}: ends on the question`);
+    if (question === false && /[?？]/.test(t)) e.push(`${a}: asks nothing`);
+    if (max && d27Words(t) > max) e.push(`${a}: ${d27Words(t)} words > ${max}`);
+  }
+};
+export function d32Errors(s, { force = false } = {}) {
+  if (!force && !isD32(s)) return [];
+  const e = [], cards = d32Cards(s), school = (s.terms ?? []).some((x) => /right angle/i.test(`${x.en ?? ""} ${x.hi ?? ""}`));
+  // 1
+  for (const c of cards) {
+    if (!c.card.hindi) continue;
+    const o = hindiOverlap(c.card, s);
+    if (o.share > HINDI_OVERLAP_MAX) e.push(`${c.at}.hindi: ${o.shared} of its ${o.form} content words are the card's (${o.words.join(", ")}): ${Math.round(o.share * 100)}% > ${HINDI_OVERLAP_MAX * 100}%; say it in another sentence, or write none (Learning 020 rule 1)`);
+    if (school && /samkon/i.test(c.card.hindi.hi ?? "")) e.push(`${c.at}.hindi: "samkon": the school's word is "right angle" (Learning 020 rule 1)`);
+  }
+  // 2
+  (s.joints?.hindiSwitch ?? []).forEach((f, i) => { const m = String(f?.hi ?? "").match(/(?<![\p{L}])(aasaan|aasan|seedhe|doosre\s+shabdon)(?![\p{L}])/iu); if (m) e.push(`joints.hindiSwitch[${i}]: "${m[1]}": promise only Hindi ("Theek hai, Hindi mein poochhti hoon.") (Learning 020 rule 2)`); });
+  // 3
+  for (const x of ruleSentences(s)) if (RULE_FALSE.some((re) => re.test(x.text))) e.push(`${x.at}${x.l === "en" ? " (en)" : ""}: "${x.text}" is a false rule: a piece cannot be named by counting the pieces unless they are equal; it still has a fraction (Learning 020 rule 3, dc-r8-director31 ruling 1)`);
+  // 4
+  for (const k of s.skills ?? []) (k.workedExample?.steps ?? []).forEach((x, j) => {
+    const at = `${k.skillId}/workedExample.steps[${j}]`;
+    if (x.ask) { formsOk(e, `${at}.ask.reask`, x.ask.reask, { question: true }); if (x.ask.reask?.hi && d27Norm(x.ask.reask.hi) === d27Norm(x.ask.prompt?.hi)) e.push(`${at}.ask.reask: the question's own words; ask it another way`); }
+    formsOk(e, `${at}.told`, x.told, { question: false, max: TOLD_STEP_MAX });
+  });
+  if (s.teachback) { formsOk(e, "teachback.reask", s.teachback.reask, { question: true }); if (s.teachback.reask?.hi && d27Norm(s.teachback.reask.hi) === d27Norm(s.teachback.prompt?.hi)) e.push("teachback.reask: the question's own words; ask it another way"); }
+  // 5
+  const ends = new Map();
+  for (const c of cards) { const x = lastSentence(c.card.prompt?.hi); if (!x) continue; if (ends.has(x)) e.push(`${c.at}: ends on "${x}", as ${ends.get(x)} does; each card ends on its own sentence (Learning 020 rule 5)`); else ends.set(x, c.at); }
+  // 6
+  const turns = pointTurns(s);
+  for (const p of turns) {
+    if (p.first && p.total > p.limit) e.push(`${p.at}: the first teaching turn (hook ${p.hook} + startAnyway ${p.start} + point ${p.point} + card ${p.card}) is ${p.total} words > ${p.limit}: cut the point (Learning 020 rule 6)`);
+    if (!p.first && p.total > p.limit && !p.listed) e.push(`${p.at}: short reason ${p.reason} + point ${p.point} + card ${p.card} = ${p.total} words > ${p.limit}: cut the point (one example, one new thing), never the card's givens, or list it in POINT_WHOLE with its reason (Learning 020 rule 6)`);
+  }
+  const listed = POINT_WHOLE.filter((x) => x.topicId === s.topicId);
+  for (const w of listed) if (!turns.some((p) => p.listed === w && p.total > p.limit)) e.push(`POINT_WHOLE ${w.skillId} ${w.explainId}: listed but fits (or is gone); take it off the list`);
+  if (listed.length > POINT_WHOLE_PER_SCRIPT) e.push(`POINT_WHOLE: ${listed.length} pairs listed for ${s.topicId}, more than ${POINT_WHOLE_PER_SCRIPT}: the limit is wrong for this script; say so to main (Learning 020 rule 6)`);
+  // 7
+  for (const x of noPictureCards(s)) e.push(`${x.at}: its board (${x.template ?? "none"}) has no second view: author a pictureBoard { template, params } with a pictureCaption (Learning 020 rule 7)`);
+  for (const c of cards) if (c.card.pictureBoard) {
+    const pb = c.card.pictureBoard;
+    if (!pb?.template || !BOARD_REFS[pb.template] || typeof (pb.params ?? null) !== "object") e.push(`${c.at}.pictureBoard: { template, params } with a known template (Learning 020 rule 7)`);
+    formsOk(e, `${c.at}.pictureCaption`, c.card.pictureCaption, { question: false });
+  }
+  // 8
+  for (const r of ASK_WHOLE_REQUIRED.filter((x) => x.topicId === s.topicId)) {
+    const c = cards.find((x) => x.skillId === r.skillId && x.id === r.card);
+    if (!c) e.push(`ASK_WHOLE_REQUIRED ${r.skillId} ${r.card}: no such card; take it off the list`);
+    else if (c.card.askWhole !== true) e.push(`${c.at}: short ask marker missing: askWhole: true (its question asks for a change the board does not show; Learning 020 rule 8)`);
+  }
+  for (const c of cards) if (c.card.askWhole != null && c.card.askWhole !== true) e.push(`${c.at}.askWhole: true or absent`);
+  // 9
+  for (const c of cards) {
+    if (c.card.whyAltAsHelp == null) continue;
+    if (c.card.whyAltAsHelp !== true) { e.push(`${c.at}.whyAltAsHelp: true or absent`); continue; }
+    if (!c.card.whyAlt) { e.push(`${c.at}.whyAltAsHelp: no whyAlt`); continue; }
+    for (const h of hintHits({ ...c, given: "" }, [["whyAlt", c.card.whyAlt]])) e.push(`${c.at}.whyAlt${h.l === "en" ? " (en)" : ""}: said as help, it names "${h.form}"; take whyAltAsHelp off or reword it (Learning 020 rule 9)`);
+  }
+  // 10
+  for (const c of cards) {
+    const fields = [["simpler", c.card.simpler], ["reask", c.card.reask]];
+    for (const h of hintHits(c, fields)) {
+      if (!h.twoWay && c.kind === "asked step" && h.field === "simpler") continue; // (019's stepSimplerHits holds it)
+      e.push(`${c.at}.${h.field}${h.l === "en" ? " (en)" : ""}: ${h.twoWay ? `leaves one option: names "${h.form}"` : `names the answer "${h.form}"`} (Learning 020 rule 10)`);
+    }
+  }
+  for (const k of s.skills ?? []) (k.workedExample?.steps ?? []).forEach((x, j) => {
+    if (!x.ask) return;
+    const c = cards.find((y) => y.at === `${k.skillId}/workedExample.steps[${j}].ask`);
+    for (const h of hintHits(c, [["simpler", x.simpler]]).filter((y) => y.twoWay)) e.push(`${k.skillId}/workedExample.steps[${j}].simpler: leaves one option: names "${h.form}" (Learning 020 rule 10)`);
+  });
+  // wrap.ack
+  (s.wrap?.ack ?? []).forEach((f, i) => { if (/yaad\s+rakh/i.test(String(f?.hi ?? ""))) e.push(`wrap.ack[${i}]: "yaad rakh…" promises what she cannot keep (Learning 020)`); });
+  return e;
+}
+/** The --rules listing: R lines (stated rules for the reader) and A lines (askWhole candidates for main). */
+export function d32Listing(s) {
+  return [
+    ...ruleSentences(s).filter((x) => x.l === "hi" && RULE_WORDS.test(x.text)).map((x) => `R ${x.at}: ${x.text}`),
+    ...askWholeCandidates(s).map((c) => `A ${c.at} over ${c.board?.template ?? "no board"}: ${c.card.prompt.hi}`),
+  ];
 }
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
@@ -1716,6 +1969,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   // (Learning 019 Part 2: --standard holds the named staged scripts to the pilots' standard for this run only, as STANDARD_STAGED does
   // for good; the v2.4 rules — second wordings, reasks, the wrap — fire once a script has its teachback)
   if (args.includes("--standard")) for (const t of topics) if (!STANDARD_STAGED.includes(t)) STANDARD_STAGED.push(t);
+  // (Learning 020: --d32 holds the named scripts to the 020 rules for this run only, as D32_READY does for good)
+  if (args.includes("--d32")) for (const t of topics) if (!D32_READY.includes(t)) D32_READY.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
@@ -1733,6 +1988,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       for (const m of lines) console.log(`  C ${m}`);
     }
     // (director18 D13: a manual-read list, never a gate — whys with no verb found after code's "kyunki")
+    // (Learning 020 rules 3 and 8: stated-rule sentences for the independent reader, askWhole candidates for main; a listing, never a gate)
+    if (args.includes("--rules")) for (const m of d32Listing(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {
