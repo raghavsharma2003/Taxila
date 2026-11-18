@@ -1374,7 +1374,7 @@ export function holdAuthored(out, args, plan = out?.guard?.[PLAN]) {
   return { ...out, reply: r.reply, guard: g };
 }
 /** dc-r8-director23 S: the one seam pass over the finished turn (server/brain/seams.js) — the only place a joint is added. */
-function seamsOf(out, { state, kit, ui = null }) {
+function seamsOf(out, { state, kit, ui = null, childText = "" }) {
   const list0 = out.guard?.parts?.list ?? out.guard?.lineParts;
   // (a turn with no parts — a break's offer, a stop — is one part of code's: its seam record says so)
   const whole = !list0?.length || joinParts(list0) !== String(out.reply ?? "").replace(/\s+/g, " ").trim();
@@ -1388,7 +1388,11 @@ function seamsOf(out, { state, kit, ui = null }) {
   const herPrev = String([...(state?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
   const info = {
     miss: ["not_yet", "incorrect"].includes(String(state?.lastVerdict ?? "")),
-    returnCard: !!si.posedBefore && !si.onLastTurn && state?.lastMove?.request !== "selftry" && (si.cameBack || (hasClose && otherCard)),
+    // (dc-r8-director28 Brain 044 T8: a re-ask after a hint or help on the same card, and the card asked again because the child asked — "phir se
+    // bolo", "sawaal kya hai", a picture — is no return: no back-to line, recorded as the card)
+    returnCard: !!si.posedBefore && !si.onLastTurn && state?.lastMove?.request !== "selftry" && (si.cameBack || (hasClose && otherCard))
+      && !(state?.lastMove?.kind === "hint" || ["keep", "ask"].includes(String(state?.lastMove?.help?.card ?? "")) || state?.lastMove?.request === "visual"
+        || (["repeat", "which"].includes(String(state?.lastMove?.request ?? "")) && /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu.test(String(childText ?? "")))),
     remediation: state?.lastMove?.scriptBeat?.kind === "remediation",
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
@@ -3455,6 +3459,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     if (assembled) {
       const bridgeK = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const simplerK0 = state.lastMove?.simpler ? new Set(sentences(norm(state.lastMove.simpler)).map(keyS)) : null;
+      // (Brain 044 T8: an asked step's confirmation — its ask.right — is recorded as what it is, not as a point)
+      const stepOkK = state.lastMove?.stepReply?.right && state.lastMove.stepReply.line ? keyS(norm(dot(state.lastMove.stepReply.line))) : null;
       const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).filter((x) => !state.lastMove.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => keyS(norm(dot(x))))) : null;
       guard.lineParts = cleanParts([
         // (d28 fix F1: her reply to the child's answer to a return leads the turn — an aside part, the board waits for her first unit part)
@@ -3467,7 +3473,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (Brain 042 Q1: the answer to the quick question — no board of its own: the point's stays up until the card's first word)
         ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
-        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : {}), part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : {}), part: heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
         { part: tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),

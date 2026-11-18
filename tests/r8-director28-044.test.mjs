@@ -247,3 +247,28 @@ describe("T3: the verdict's turn runs into the worked example", () => {
     assert.ok(D29_PREDICATES.workedNoFit({ rows: [r] }, r));
   });
 });
+
+describe("T8: the record says what was heard", () => {
+  const reads = (name, rows) => { for (const [p, t, i] of rows) assert.ok(flagged(p, t, name).has(i), `${name}: ${p} ${t} row ${i}`); };
+  test("reaskReturn: a re-ask after a hint or help, or asked for by the child, is no return (director28 rows)", () => {
+    reads("reaskReturn", [["steady", "c5t02", 98], ["offtopic", "c5t02", 18], ["offtopic", "c5t02", 20], ["offtopic", "c5t02", 42], ["offtopic", "c5t02", 56],
+      ["offtopic", "c4", 26], ["offtopic", "c4", 42], ["steering", "c4", 16], ["steering", "c4", 22], ["stuck", "c6", 8]]);
+  });
+  test("stepConfirm: a step's confirmation is not a point (c4 steady 46, steering 38; c5-t02 steady 74, 120)", () => {
+    reads("stepConfirm", [["steady", "c4", 46], ["steady", "c5t02", 74], ["steady", "c5t02", 120]]);
+  });
+  test("openerSeam: row 4's empty opener seam (c5-t01 all four; c6 steady 4)", () => {
+    reads("openerSeam", [["steady", "c5t01", 4], ["stuck", "c5t01", 4], ["offtopic", "c5t01", 4], ["steering", "c5t01", 4], ["steady", "c6", 4]]);
+  });
+  test("quickAddress: a quick question's row addressed as a check-in (c5-t01 steady 8, offtopic 32; c6 steady 8)", () => {
+    reads("quickAddress", [["steady", "c5t01", 8], ["offtopic", "c5t01", 32], ["steady", "c6", 8]]);
+  });
+  test("whyShortFlag: c5-t01 steady 118 said the short reason with no flag", () => {
+    reads("whyShortFlag", [["steady", "c5t01", 118]]);
+  });
+  test("pageParts: a bridge or a remediation that owns no board in the script lists none (the harness record; partOffBeat 0 on the dry matrix)", () => {
+    const src = readFileSync(join(ROOT, "evals/hybrid-side-by-side.mjs"), "utf8");
+    assert.match(src, /bridge: lmB\.bridgeBeat\?\.scriptBoard \? bOf\(lmB\.bridgeBeat\) : \[\]/);
+    assert.match(src, /body: bOf\(lmB\.scriptBeat\),/);
+  });
+});

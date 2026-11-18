@@ -15,7 +15,7 @@
 // exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
 // her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
+import { initLessonState, step, requeueMissedReturn, scriptWhyShortOf } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classify, classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
@@ -618,7 +618,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (Brain 042: her reply or park line said alone before a worked segment that would not fit with it — no unit's, the segment next)
       ...(next.lastMove?.leadAlone ? { leadAlone: true } : {}),
       // (Brain 043: a right verdict said with the card's short why; a turn that ends on an invitation to the next problem done together)
-      ...(tGuard?.rightWhy === "short" ? { whyShort: true } : {}), ...(tGuard?.workedInvite ? { workedInvite: tGuard.workedInvite } : {}),
+      // (Brain 044 T8: every row that says the card's short reason carries it, whichever path said it — c5-t01 steady 118, the closing turn)
+      ...(tGuard?.rightWhy === "short" || (() => { try { const ws = activeItem ? scriptWhyShortOf(kit, activeItem, "hinglish") : null; return !!ws && String(reply).toLowerCase().includes(String(ws).toLowerCase()); } catch { return false; } })() ? { whyShort: true } : {}), ...(tGuard?.workedInvite ? { workedInvite: tGuard.workedInvite } : {}),
       ...(next.lastMove?.quickReply ? { quickAnswer: { beat: `${next.lastMove.quickReply.skillId}:${next.lastMove.quickReply.beatId}`, right: !!next.lastMove.quickReply.right } } : {}),
       ...(next.lastMove?.noFit ? { noFit: next.lastMove.noFit } : {}), ...(next.lastMove?.stepReply ? { stepAnswer: { beat: `${next.lastMove.stepReply.skillId}:worked:step${next.lastMove.stepReply.step + 1}`, right: !!next.lastMove.stepReply.right, told: next.lastMove.stepReply.told ?? null } } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: tGuard.seams } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),

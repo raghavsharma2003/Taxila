@@ -312,7 +312,11 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   }
   // (the Hindi switch, said at the turn's start, is in the record: its own seam, the joint it is)
   // (dc-r8-director25 item 8: with who wrote the form — the script's, or code's own when the script has none)
-  if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
+  if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) {
+    // (Brain 044 T8: the switch line said as the opener part is one line, recorded once — as the switch: c6 steady 4, row 4's empty opener seam)
+    if (seams[0]?.right === "opener" && !seams[0].joint && low(out[0].text) === low(info.hindiSwitch)) { seams.shift(); if (seams[0]) seams[0] = { ...seams[0], left: "hindiSwitch" }; }
+    seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
+  }
   // (dc-r8-director25 H4: help's joint — helpSpent, afterKeyGoOn — the form the decision picked, and who wrote it)
   // (Brain 044 T5: after the "nothing easier" line the go-on line is the second part)
   if (info.helpJoint?.form && out.length && (low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20)) || (info.helpJoint.spent && out[1] && low(out[1].text).startsWith(low(info.helpJoint.form).slice(0, 20))))) {

@@ -911,7 +911,7 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     if (miss?.text) { s.helpJointN = { ...(s.helpJointN ?? {}), stepMiss: (s.helpJointN?.stepMiss ?? 0) + 1 }; stepMissSaid = miss.text; }
     if (line) lead.push(fillFriend(`${miss?.text ? `${miss.text} ` : ""}${String(line).replace(/\s+/g, " ").trim()}`, friendOf));
     w.workedStep = k + 1; stepFrom = k + 1;
-    stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}), ...(stepMissSaid ? { miss: stepMissSaid } : {}) };
+    stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}), ...(stepMissSaid ? { miss: stepMissSaid } : {}), ...(right && line ? { line: fillFriend(String(line).replace(/\s+/g, " ").trim(), friendOf) } : {}) };
     s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
     if (helped) stepFrom = k + 2;
   }
@@ -3767,7 +3767,8 @@ export function step(prev, input) {
     : (out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0) || lmNow.asideAck && !input.cls?.asideReply ? "aside"
       : lmNow.kind === "break" || lmNow.stopping || out?.move?.stopping || (["wrap", "done"].includes(String(lmNow.kind ?? out?.move?.kind ?? "")) && out?.state?.stoppedEarly && !prev?.stoppedEarly) ? "stop"
         : input.cls?.asideReply ? "aside_reply" : null;
-  const cell0h = helped && cell0 ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
+  // (Brain 044 T8: a line on a quick question is addressed as the quick question, whatever help said — c5-t01 steady 8, offtopic 32; c6 steady 8)
+  const cell0h = helped && cell0 && !/:quick$/.test(String(cell0.part ?? "")) ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
   const cell = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)

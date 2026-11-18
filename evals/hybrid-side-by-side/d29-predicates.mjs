@@ -18,6 +18,12 @@
 //   workedInvite   T3: no turn ends on an invitation to do the worked example together (joints.workedInvite is not read)
 //   workedNoFit    T3: a verdict whose turn could not run into the worked example ends on its check-in (noFit "worked") — counted, pending
 //                  until Learning 017's cut openings are merged
+//   T8, the record says what was heard:
+//   reaskReturn    a card asked again after a hint or help on it, or because the child asked for it, is not recorded (or said) as a return
+//   stepConfirm    an asked step's confirmation (its ask.right) is not recorded as a point
+//   openerSeam     the switch line is recorded once, as the switch — never also as an empty opener seam
+//   quickAddress   a line on a quick question is addressed as the quick question, not as the point's check-in
+//   whyShortFlag   a row that says the answered card's short reason carries whyShort
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -132,5 +138,43 @@ export const D29_PREDICATES = {
   /** T3: the verdict's turn that could not run into the worked example (counted). */
   workedNoFit(L, r) {
     return r.who === "teacher" && r.noFit === "worked" ? "a verdict and the worked example's opening that do not fit: the verdict ends on its check-in" : null;
+  },
+  /** T8: a re-ask is no return (c5-t02 steady 98, offtopic 18, 20; c4 offtopic 26, 42, steering 16, 22; c6 stuck 8). */
+  reaskReturn(L, r, i, ctx) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "returnCard")) return null;
+    const helped = (r.pageParts ?? []).some((p) => p.part === "simpler");
+    const asked = /·\s*(?:repeat|which|visual)/.test(String(ctx.prevRead ?? ""));
+    const afterHint = String(ctx.prevT?.move ?? "") === "hint" && !!r.check?.itemId && r.check.itemId === ctx.prevT?.check?.itemId;
+    return helped || asked || afterHint ? `a card asked again ${helped ? "after help on it" : asked ? "because the child asked" : "after a hint"} recorded as a return` : null;
+  },
+  /** T8: an asked step's confirmation is not a point (c4 steady 46, steering 38). */
+  stepConfirm(L, r) {
+    if (r.who !== "teacher" || !r.stepAnswer?.right) return null;
+    const sm = r.seams ?? [];
+    return sm.some((x) => x.right === "point") && !sm.some((x) => x.right === "stepConfirm") ? "an asked step's confirmation recorded as a point" : null;
+  },
+  /** T8: the switch line recorded once (row 4's empty opener seam). */
+  openerSeam(L, r) {
+    const sm = r.seams ?? [];
+    return r.who === "teacher" && sm.some((x) => x.joint === "hindiSwitch") && sm.some((x) => x.right === "opener" && !x.joint && !x.form) ? "the switch line recorded also as an empty opener seam" : null;
+  },
+  /** T8: a line on a quick question is addressed as the quick question (c5-t01 steady 8; c6 steady 8). */
+  quickAddress(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx.prevT || !(ctx.prevT.pageParts ?? []).some((p) => p.part === "quick")) return null;
+    return /:checkin$/.test(String(r.cell?.part ?? "")) ? `a line on the quick question addressed as ${r.cell.part}` : null;
+  },
+  /** T8: a row that says the answered card's short reason carries whyShort (c5-t01 steady 118). */
+  whyShortFlag(L, r, i, ctx) {
+    if (r.who !== "teacher" || r.whyShort || !ctx.script) return null;
+    const id = String(ctx.prevT?.check?.itemId ?? "");
+    const m = /^script:(.+?):(?:ask:(.+)|then:(.+)|([^:]+))$/.exec(id);
+    if (!m) return null;
+    const sk = (ctx.script.skills ?? []).find((k) => k.skillId === m[1]);
+    const card = m[2] ? sk?.explain?.find((b) => b.id === m[2])?.ask : m[3] ? sk?.remediation?.find((x) => x.targets === m[3])?.then : sk?.checks?.find((c) => c.id === m[4]);
+    const ws = card?.whyShort?.hi;
+    const t = norm(r.text).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ");
+    const k = (x) => norm(x).toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+    // (the short form said in the why's place — not the whole why, which may hold the short form's words)
+    return ws && t.includes(k(ws)) && !(card.why?.hi && t.includes(k(card.why.hi).slice(0, 40))) ? "the card's short reason said with no whyShort on the row" : null;
   },
 };
