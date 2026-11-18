@@ -84,10 +84,15 @@ export const D30_PREDICATES = {
   },
   /** P3: at an asked worked step a give-up or a clarify gets the step's simpler first; the step is told only at the second request or after
    *  a wrong answer (c4 stuck 36; c5-t01 stuck 20; c5-t02 stuck 20, offtopic 16, steering 28; c6 stuck 20, offtopic 16, steering 28). */
+  // (dc-r8-director30 Brain 046 Q1: and read on its cue as keyEarly reads a key's — a step is told only at a second request (a give-up or a
+  // clarify, its simpler said) or after a wrong answer to it; never after a yes, an aside, a remark or anything else: c5-t01 stuck 22,
+  // c5-t02 stuck 22, offtopic 18, c6 stuck 22, offtopic 18)
   stepToldEarly(L, r, i, ctx) {
     if (r.who !== "teacher" || !r.stepAnswer?.told) return null;
     const req = String(ctx?.prevIntent ?? r.cell?.column ?? "");
-    if (!["give_up", "clarify"].includes(req) && !["give_up", "clarify"].includes(String(r.cell?.column ?? ""))) return null;
+    const wrong = /^(?:incorrect|partial|misconception)\b/.test(String(ctx?.prevRead ?? "")) || !!r.stepAnswer.miss || ["wrong", "misconception"].includes(String(r.cell?.column ?? ""));
+    if (wrong) return null;
+    if (!["give_up", "clarify"].includes(req) && !["give_up", "clarify"].includes(String(r.cell?.column ?? ""))) return `the step told on a cue that is no request and no wrong answer (${req || r.cell?.column || "none"}: "${String(ctx?.prevChild ?? "").slice(0, 30)}")`;
     const m = /^(.+)-s(\d+):worked:step(\d+)$/.exec(String(r.stepAnswer.beat ?? ""));
     if (!m) return null;
     const sk = (ctx.script?.skills ?? []).find((k) => k.skillId === `${m[1]}-s${m[2]}`);

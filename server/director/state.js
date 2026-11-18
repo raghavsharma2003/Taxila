@@ -39,7 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart } from "./help.js";
+import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart, inSaid, sentencesOf as helpSentencesOf } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -905,9 +905,26 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     const helped = !!s.lastMove?.help?.rung && !s.lastMove.help.stepAsked && String(s.lastMove.help.part ?? "") === `${skillId}:worked:step${k + 1}`;
     const right = !helped && read?.outcome === "correct";
     const st = steps[k];
-    const line = helped ? null : right ? saidIn(st.ask.right, lang) : scriptWorkedStepLine(st, lang);
     // (dc-r8-director28 Brain 044 T7: a wrong answer to the asked step hears a stepMiss form — the script's, else code's — before the step is told)
     const wrong = !helped && !right && ["incorrect", "partial", "misconception"].includes(String(read?.outcome ?? ""));
+    // (dc-r8-director30 Brain 046 Q1: a step is told only on its cue — a second request (a give-up or a clarify: help had nothing left, its
+    // simpler said) or a wrong answer to it; never after a yes, an aside, a remark or anything else (c5-t01 stuck 22: "haan"; c5-t02 stuck 22,
+    // offtopic 18: an aside; c6 stuck 22, offtopic 18). Anything else keeps the step asked: its question again — at a yes once, then the
+    // step's easier wording (where unsaid) before its question)
+    const cue = columnName(input, s);
+    if (!helped && !right && !wrong && !["give_up", "clarify"].includes(cue) && !input.helpGoOn && !input.helpClose && st?.ask?.prompt) {
+      const yesN = w.stepYes?.step === k ? w.stepYes.n : 0;
+      const yes = !cue || cue === "move_on" ? true : false;
+      if (yes) w.stepYes = { step: k, n: yesN + 1 };
+      const simp = yes && yesN >= 1 ? saidIn(st.simpler, lang) : null;
+      const said0 = saidNowOf(s);
+      const simpler = simp && String(simp).trim() && !helpSentencesOf(String(simp)).some((x) => inSaid(x, said0)) ? String(simp).trim() : null;
+      if (simpler) lead.push(fillFriend(simpler.charAt(0).toUpperCase() + simpler.slice(1), friendOf));
+      w.workedStep = k; stepFrom = k + 1;
+      stepReply = { skillId, step: k, right: false, told: false, again: cue ?? "yes", ...(simpler ? { simpler: true } : {}) };
+      s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right: false, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
+    } else {
+    const line = helped ? null : right ? saidIn(st.ask.right, lang) : scriptWorkedStepLine(st, lang);
     const miss = wrong && line && !scriptFor(kit)?.script?.recordedRun ? helpJoint(scriptFor(kit)?.script, "stepMiss", { lang, lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.stepMiss ?? 0 }) : null;
     if (miss?.text) { s.helpJointN = { ...(s.helpJointN ?? {}), stepMiss: (s.helpJointN?.stepMiss ?? 0) + 1 }; stepMissSaid = miss.text; }
     if (line) lead.push(fillFriend(`${miss?.text ? `${miss.text} ` : ""}${String(line).replace(/\s+/g, " ").trim()}`, friendOf));
@@ -915,6 +932,7 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}), ...(stepMissSaid ? { miss: stepMissSaid } : {}), ...(right && line ? { line: fillFriend(String(line).replace(/\s+/g, " ").trim(), friendOf) } : {}) };
     s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
     if (helped) stepFrom = k + 2;
+    }
   }
   // the told steps up to the next question
   let j = w.workedStep ?? 0;
