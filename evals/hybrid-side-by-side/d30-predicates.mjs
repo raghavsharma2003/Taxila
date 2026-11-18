@@ -48,7 +48,30 @@ export function stepToldAfterSimpler(L, r, i, script) {
 
 const TAUGHT = new Set(["point", "card", "returnCard", "workedProblem", "stepAsk", "remediation", "help", "quickAsk", "quick", "verdict", "missVerdict", "key"]);
 
+/** P6: a turn's help drawn on a board other than its card's — help about another figure (c5-t01 stuck 64, offtopic 30: a line of 3 gaps, a
+ *  line of 7, before a card on two lines). */
+export function helpOtherFigure(r) {
+  const pp = r?.pageParts ?? [];
+  const bOf = (p) => JSON.stringify(p?.own ?? p?.boards?.[0] ?? null);
+  const card = pp.find((p) => p.part === "card");
+  if (!card || bOf(card) === "null") return false;
+  return pp.some((p) => ["simpler", "help"].includes(p.part) && bOf(p) !== "null" && bOf(p) !== bOf(card));
+}
+
 export const D30_PREDICATES = {
+  /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help drawn on another board is
+   *  followed by the card's own re-ask (c5-t01 stuck 64, offtopic 30). Gated. */
+  reaskFigure(L, r) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "reaskShort")) return null;
+    return helpOtherFigure(r) ? "the short ask after help about another figure" : null;
+  },
+  /** P6: a turn that holds her reply to an aside never ends on a check-in, whatever follows the reply (c4 offtopic 46: reply, bridge, point,
+   *  check-in; c5-t02 offtopic 38: reply, point, check-in). Pending: c4 offtopic 46 holds its card for a park's due return (r8-main-034). */
+  replyCheckin(L, r) {
+    if (r.who !== "teacher") return null;
+    const sm = r.seams ?? [];
+    return sm.some((x) => ["asideReply", "aiReply"].includes(x.right)) && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
+  },
   /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,
    *  c5-t02, c6: a second request at the greeting). */
   helpSpentCold(L, r, i) {

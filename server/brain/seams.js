@@ -45,8 +45,13 @@ export const SEAM_TABLE = [
   // (dc-r8-director29 Brain 045 P6: a park line is followed by its authored joint into the live part — joints.afterPark where the script writes
   // one; where it has none (Learning 018's park forms lead back themselves) the turn goes straight on: no code form)
   ["park", "point", "afterPark"], ["park", "card", "afterPark"], ["park", "help", "afterPark"], ["park", "remediation", "afterPark"],
+  // (d30, Learning 018's park-form decision — every park line is followed by one afterPark form, then the live part: a worked example's told
+  // step, its asked step or its problem too — dry offtopic c5-t02 18, c6 18)
+  ["park", "workedStep", "afterPark"], ["park", "stepAsk", "afterPark"], ["park", "workedProblem", "afterPark"],
   // (her AI line, or her reply after it, into the lesson)
   ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "backTo"], ["aiLine", "remediation", "afterAiLine"],
+  // (dc-r8-director29 Brain 045 P6, c4 offtopic 46: her reply into the next skill's bridge — the joint back before it, as before a point)
+  ["asideReply", "bridge", "afterAside"], ["aiLine", "bridge", "afterAiLine"], ["aiReply", "bridge", "afterAiLine"],
   ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "backTo"], ["aiReply", "remediation", "afterAiLine"],
   // (a miss verdict into its remediation)
   ["missVerdict", "remediation", "beforeRemediation"],

@@ -3484,7 +3484,14 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastQ = (t) => sentences(norm(t)).map(norm).filter(Boolean).at(-1) ?? "";
       const prevT = [...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1);
       const tq = lastQ(tail);
-      if (prevT && /[?？]$/.test(tq) && keyS(lastQ(prevT.text)) === keyS(tq)) {
+      // (dc-r8-director29 Brain 045 P6 — c5-t01 stuck 64, offtopic 30: the short ask only where her turn before ended on the card's question and
+      // this turn's help is about the card's own figure. Help drawn on another board is about another figure: the card's own re-ask follows
+      // it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
+      const hb = state.lastMove?.help?.board ?? null, cb = state.lastMove?.cardBeat?.board ?? state.lastMove?.scriptBeat?.board ?? null;
+      const otherFigure = !!hb?.template && !!cb?.template && JSON.stringify(hb) !== JSON.stringify(cb);
+      if (otherFigure) guard.reaskFigure = true;
+      const prevQ = prevT ? lastQ(prevT.text) : "";
+      if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && !otherFigure) {
         const short = norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state));
         guard.reaskShort = { part: tail === card || guard.cardQuestionOnly ? "card" : "stepAsk", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" };
         tail = short;

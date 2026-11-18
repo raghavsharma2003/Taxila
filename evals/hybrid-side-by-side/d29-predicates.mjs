@@ -30,7 +30,7 @@
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
-import { partStartOf } from "./d30-predicates.mjs";
+import { partStartOf, helpOtherFigure } from "./d30-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -218,6 +218,8 @@ export const D29_PREDICATES = {
     if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
     let j = i - 2; while (j >= 0 && rows[j].who !== "teacher") j--;
     if (j < 1 || !WRONG_READS.has(readOf(rows[j - 1]))) return null;
+    // (dc-r8-director29 Brain 045 P6: after help about another figure — drawn on another board — the card's own re-ask is the rule, not the short ask)
+    if (helpOtherFigure(r)) return null;
     const q = lastSentence(r.text), q0 = lastSentence(rows[j].text);
     return /[?？]$/.test(q) && keyText(q) === keyText(q0) ? "the question said again word for word straight after a second wrong answer" : null;
   },

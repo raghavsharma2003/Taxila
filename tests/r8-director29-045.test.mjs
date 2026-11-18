@@ -126,3 +126,33 @@ describe("P5-P7: a right answer goes on; seams; the record", () => {
     } finally { setScriptForTest(); }
   });
 });
+
+describe("P5-P7 (d30 completion): the rows the order names", () => {
+  test("P6 reaskFigure reads the short ask after help drawn on another figure's board (c5-t01 stuck 64, offtopic 30), and 0 with the help on the card's board", async () => {
+    assert.ok(flagged("stuck", "c5t01", "reaskFigure").has(64));
+    assert.ok(flagged("offtopic", "c5t01", "reaskFigure").has(30));
+    const { rows } = lesson("stuck", "c5t01");
+    const r = structuredClone(rows[64]);
+    const card = r.pageParts.find((p) => p.part === "card");
+    for (const p of r.pageParts) if (p.part === "simpler") { p.own = card.own; p.boards = card.boards; }
+    const { D30_PREDICATES } = await import("../evals/hybrid-side-by-side/d30-predicates.mjs");
+    assert.equal(D30_PREDICATES.reaskFigure({ rows }, r, 64), null);
+  });
+  test("P6 replyCheckin reads her reply's turn ending on a check-in (c4 offtopic 46, c5-t02 offtopic 38)", () => {
+    assert.ok(flagged("offtopic", "c4", "replyCheckin").has(46));
+    assert.ok(flagged("offtopic", "c5t02", "replyCheckin").has(38));
+  });
+  test("P6: her reply into the next skill's bridge takes its joint back, as into a point", async () => {
+    const { seamJoint } = await import("../server/brain/seams.js");
+    assert.equal(seamJoint("aiReply", "bridge"), "afterAiLine");
+    assert.equal(seamJoint("asideReply", "bridge"), "afterAside");
+  });
+  test("P6: reaskTwice does not read the card's own re-ask after help about another figure", async () => {
+    const { D29_PREDICATES } = await import("../evals/hybrid-side-by-side/d29-predicates.mjs");
+    const { rows } = lesson("stuck", "c5t01");
+    const r = structuredClone(rows[64]);
+    r.text = r.text.replace(/Ab phir se socho, jawab kya hoga\?$/, rows[62].text.split(/(?<=[.?!])\s+/).at(-1));
+    r.seams = r.seams.map((x) => (x.right === "reaskShort" ? { ...x, right: "card" } : x));
+    assert.equal(D29_PREDICATES.reaskTwice({ rows: [...rows.slice(0, 64), r] }, r, 64), null);
+  });
+});
