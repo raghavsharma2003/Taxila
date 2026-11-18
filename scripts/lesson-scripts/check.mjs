@@ -18,6 +18,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
 import { toSpoken } from "../../server/voice/spoken.js";
+// (Learning 018, A.1: the view a picture turn draws beside a board is read from the same call Studio draws it with — read-only)
+import { pictureTurn } from "../../server/stagecraft/board-first.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -901,7 +903,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s));
   return e;
 }
 
@@ -1265,7 +1267,7 @@ export function d28Errors(s) {
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
 export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
-export const D29_JOINTS = ["stepMiss"];
+export const D29_JOINTS = ["stepMiss", "startAnyway"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
 /** The fit of every pair that shares a turn, measured (A.1 to A.4). */
@@ -1363,6 +1365,148 @@ export function fitReport(s) {
   return out;
 }
 
+/** Learning 018 (dc-r8-director29 item 9): captions read against the view that is drawn, written to be said.
+ *  A.1 Every `viewCaption` (and `answerViewCaption`) is true of the view drawn for its board: a caption that names a line, a
+ *      strip, a circle or a grid fails when neither the view pictureTurn draws beside the board nor the held board itself is
+ *      that kind (the held board stays up as the split's left panel, so naming it is true).
+ *  A.2 A worked example's caption names no asked step's answer (nor the child's own step's, while the worked board is still up
+ *      for it), in digits or in words: the key and every accepted form, number words read as digits; a form the problem
+ *      itself states is a given, not an answer.
+ *  A.3 `answerViewCaption` { hi, en } beside the `answerBoard` of every remediation follow-up card and every check whose
+ *      answer board has a second view: one or two sentences, asking nothing, said after the key (it may name it). Where the
+ *      answer board has no second view there is none (listed on the F lines).
+ *  C.1 `joints.startAnyway`: three forms of 6 words or fewer, said after a second "aap batao" at the greeting: no question.
+ *  "Said beats fitted": a remediation over REM_CARD_MAX with its card fails unless it is listed in REM_WHOLE (topic, skill,
+ *  remediation target) with its reason; the walk says a listed one alone, ending on its check-in. */
+export const START_ANYWAY_MAX = 6;
+export const REM_WHOLE = [
+  // { topicId, skillId, targets, reason }
+];
+export const remWhole = (topicId, skillId, targets) => REM_WHOLE.find((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets) ?? null;
+export const VIEW_KIND_WORDS = {
+  line: /\b(number line|line|lines|rekha|rekhayein|rekhaon)\b/i,
+  strip: /\b(patti|pattiyan|pattiyaan|pattiyon|strip|strips|bar|bars)\b/i,
+  circle: /\b(circle|circles|gol|gola|golon)\b/i,
+  grid: /\b(jaal|grid|grids)\b/i,
+};
+/** The kind of a board or of a drawn view's call: line, strip, circle, grid, or figure (a shape, a word board). */
+export function boardKind(ref) {
+  if (!ref?.template) return null;
+  const t = ref.template, p = ref.params ?? ref;
+  if (t === "fraction-line@1" || t === "unrolled@1" || t === "number-line-hop@1") return "line";
+  if (t === "fraction-bars@1") return "strip";
+  if (t === "fraction-parts@1") return p.whole === "bar" ? "strip" : "circle";
+  if (t === "wholes@1") return p.as === "bar" ? "strip" : "circle";
+  if (t === "shade-grid@1" || t === "equal-groups@1") return "grid";
+  return "figure";
+}
+/** The second view a picture turn draws beside `ref` (pictureTurn, as tests/r8-picture-turn holds it): { template, view, kind } or null. */
+export function viewOf(ref, at = "x") {
+  const ask = { intent: { intentId: `l018:${at}`, lessonId: "l018", kind: "whiteboard", style: { band: "B3" }, boardRef: ref,
+    scriptBeat: { kind: "check", ownBoard: true, answers: [] }, held: { board: ref, unit: at }, request: { kind: "show" } }, line: { text: "" }, mode: "fresh" };
+  const v = pictureTurn(ask, {})?.view;
+  return v ? { template: v.template, view: v.view, kind: boardKind(v.call) } : null;
+}
+/** The kinds a caption names that are neither the drawn view's nor the held board's. */
+export function wrongKinds(text, viewKind, heldKind) {
+  return Object.keys(VIEW_KIND_WORDS).filter((k) => VIEW_KIND_WORDS[k].test(String(text ?? "")) && k !== viewKind && k !== heldKind);
+}
+const NUM_W = { ek: 1, one: 1, do: 2, two: 2, teen: 3, three: 3, chaar: 4, char: 4, four: 4, paanch: 5, five: 5, chhah: 6, chhe: 6, six: 6, saat: 7, seven: 7, aath: 8, eight: 8, nau: 9, nine: 9, das: 10, ten: 10 };
+const l018Norm = (t) => ` ${d27Norm(t).split(" ").map((w) => NUM_W[w] ?? w).join(" ")} `;
+/** The asked step's answer forms a worked caption names (A.2). */
+export function workedCaptionHits(we) {
+  const out = [], given = l018Norm(`${we?.problem?.hi ?? ""} ${we?.problem?.en ?? ""}`);
+  const asked = (we?.steps ?? []).map((st, j) => [`steps[${j}].ask`, st.ask]).filter(([, a]) => a);
+  if (we?.yourStep && !we.yourStep.board) asked.push(["yourStep", we.yourStep]);
+  for (const l of ["hi", "en"]) {
+    const c = we?.viewCaption?.[l]; if (!c) continue;
+    const cap = l018Norm(c);
+    for (const [at, a] of asked) for (const f of [a.key, ...(a.accept ?? [])].filter((x) => x != null)) {
+      const x = l018Norm(f).trim();
+      if (!x || given.includes(` ${x} `)) continue;
+      if (cap.includes(` ${x} `)) { out.push({ l, at, form: String(f) }); break; }
+    }
+  }
+  return out;
+}
+/** Every board with its caption, and every answer board, with the view drawn for it. */
+export function captionViews(s) {
+  const out = [];
+  const walk = (o, p) => {
+    if (Array.isArray(o)) return o.forEach((y, i) => walk(y, `${p}[${i}]`));
+    if (!o || typeof o !== "object") return;
+    for (const [bk, ck] of [["board", "viewCaption"], ["answerBoard", "answerViewCaption"]]) if (o[bk]?.template)
+      out.push({ at: `${p}.${bk}`, cap: ck, ref: o[bk], caption: o[ck] ?? null, view: viewOf(o[bk], `${p}.${bk}`), held: boardKind(o[bk]), owner: o });
+    for (const [k, v] of Object.entries(o)) if (!["board", "answerBoard", "bridgeBoard"].includes(k)) walk(v, p ? `${p}.${k}` : k);
+  };
+  (s?.skills ?? []).forEach((k, i) => walk(k, `skills[${i}]`));
+  if (s?.teachback) walk(s.teachback, "teachback");
+  return out;
+}
+/** The follow-up cards and checks (A.3), each with its answer board's view. */
+export function answerCards(s) {
+  const out = [];
+  (s?.skills ?? []).forEach((k, i) => {
+    for (const c of k.checks ?? []) out.push({ at: `skills[${i}].${c.id}`, skillId: k.skillId, card: c });
+    (k.remediation ?? []).forEach((r, j) => { if (r.then) out.push({ at: `skills[${i}].remediation[${j}].then`, skillId: k.skillId, card: r.then }); });
+  });
+  for (const x of out) x.view = x.card.answerBoard?.template ? viewOf(x.card.answerBoard, x.at) : null;
+  return out;
+}
+export function d30Errors(s) {
+  if (!isD29(s)) return [];
+  const e = [];
+  for (const b of captionViews(s)) {
+    if (!b.caption) continue;
+    for (const l of ["hi", "en"]) {
+      const bad = wrongKinds(b.caption[l], b.view?.kind ?? null, b.held);
+      if (bad.length) e.push(`${b.at.replace(/\.(answer)?[bB]oard$/, "")}.${b.cap}${l === "en" ? " (en)" : ""}: names a ${bad.join(" and a ")}, but the view drawn is ${b.view ? `a ${b.view.kind} (${b.view.view})` : "none"} over a ${b.held} board (Learning 018 A.1)`);
+    }
+  }
+  (s.skills ?? []).forEach((k, i) => { for (const h of workedCaptionHits(k.workedExample)) e.push(`skills[${i}].workedExample.viewCaption${h.l === "en" ? " (en)" : ""}: names ${h.at}'s answer "${h.form}" (Learning 018 A.2)`); });
+  for (const x of answerCards(s)) {
+    const c = x.card.answerViewCaption, at = `${x.at}.answerViewCaption`;
+    if (x.view && !c) { e.push(`${at}: what to look at in the answer board's picture, said after the key (Learning 018 A.3)`); continue; }
+    if (!x.view && c) { e.push(`${at}: the answer board has no second view; write none (Learning 018 A.3)`); continue; }
+    if (!c) continue;
+    for (const l of ["hi", "en"]) {
+      const t = String(c[l] ?? "").trim(), a = `${at}${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${a}: empty`); continue; }
+      const n = sentencesOf(t).length;
+      if (n < 1 || n > 2) e.push(`${a}: one or two sentences (got ${n})`);
+      if (/[?？]/.test(t)) e.push(`${a}: asks nothing`);
+    }
+  }
+  const forms = s.joints?.startAnyway;
+  if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.startAnyway: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 018 C.1)`);
+  else for (const l of ["hi", "en"]) {
+    const seen = new Set();
+    forms.forEach((f, i) => {
+      const t = String(f?.[l] ?? "").trim(), at = `joints.startAnyway[${i}]${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${at}: empty`); return; }
+      if (d27Words(t) > START_ANYWAY_MAX) e.push(`${at}: ${d27Words(t)} words > ${START_ANYWAY_MAX}`);
+      if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+      if (/\d|\{[^}]*\}/.test(t)) e.push(`${at}: no number, no slot`);
+      const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x);
+    });
+  }
+  for (const r of fitOf(s).rems) if (r.total > REM_CARD_MAX && !remWhole(s.topicId, r.skill, r.targets))
+    e.push(`${r.skill}/remediation[${r.i}]: say and card are ${r.total} words > ${REM_CARD_MAX}: cut it, or, where it cannot be said in full sentences inside the limit, list it in REM_WHOLE with its reason (Learning 018, said beats fitted)`);
+  for (const w of REM_WHOLE) if (w.topicId === s.topicId && !fitOf(s).rems.some((r) => r.skill === w.skillId && r.targets === w.targets && r.total > REM_CARD_MAX))
+    e.push(`REM_WHOLE ${w.skillId} ${w.targets}: listed but fits (or is gone); take it off the list`);
+  return e;
+}
+/** Learning 018's lines for the F report: the captions' views, the answer boards with no second view, the remediations left whole. */
+export function d30Report(s) {
+  const out = [], cv = captionViews(s).filter((b) => b.cap === "viewCaption" && b.caption);
+  out.push(`captions: ${cv.length} read against their view (${cv.filter((b) => b.view).length} with a second view, ${cv.filter((b) => !b.view).length} held board only)`);
+  const ac = answerCards(s);
+  out.push(`answerViewCaption: ${ac.filter((x) => x.card.answerViewCaption).length} of ${ac.filter((x) => x.view).length} answer boards with a second view`);
+  for (const x of ac.filter((y) => !y.view)) out.push(`answer board with no second view (no answerViewCaption): ${x.at}${x.card.answerBoard ? ` (${x.card.answerBoard.template})` : " (none)"}`);
+  for (const r of fitOf(s).rems) { const w = remWhole(s.topicId, r.skill, r.targets); if (w) out.push(`remediation ${r.skill.replace(/^.*-/, "")}[${r.i}] left whole (${r.total}/${REM_CARD_MAX}): ${w.reason}`); }
+  return out;
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = process.argv.slice(2);
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
@@ -1375,6 +1519,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     for (const x of [...r.structure.map((m) => `  S ${m}`), ...r.boards.map((m) => `  W ${m}`), ...r.runtime.map((m) => `  V ${m}`)]) console.log(x);
     // (Learning 017 A: the fit of every pair that shares a turn, measured; a remediation over its limit is reported, never failed)
     if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of fitReport(scriptOf(t))) console.log(`  F ${m}`);
+    if (isD29(scriptOf(t))) for (const m of d30Report(scriptOf(t))) console.log(`  F ${m}`);
     // (director18 D13: a manual-read list, never a gate — whys with no verb found after code's "kyunki")
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
