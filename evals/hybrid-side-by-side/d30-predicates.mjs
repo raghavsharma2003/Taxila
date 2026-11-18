@@ -195,6 +195,17 @@ export const D30_PREDICATES = {
     if (m0 !== c0 && (cs.length >= 2 || reask)) parts.add(qKey(m0));
     return parts.has(qKey(q)) ? `a re-ask on a part of the card's question: "${q.slice(0, 60)}"` : null;
   },
+  /** d31 046 follow-up 3b: the wrap's two turns never open on the same `wrap.ack` form (dry d31f steady c6-ch07-t01 88, 90: "Achha, tumne
+   *  dil se bataya." twice). Gated. */
+  wrapAckTwice(L, r, i, ctx) {
+    if (r.who !== "teacher" || String(r.move ?? "") !== "wrap") return null;
+    const forms = (ctx?.script?.wrap?.ack ?? []).flatMap((f) => [f?.hi ?? f, f?.en]).filter((x) => typeof x === "string" && x.trim()).map((x) => low(x));
+    const t = low(r.text);
+    const f = forms.filter((x) => t.startsWith(x)).sort((a, b) => b.length - a.length)[0] ?? null;
+    const p = ctx.wrapAck ?? null;
+    ctx.wrapAck = f;
+    return f && p === f ? `both wrap turns open on "${f.slice(0, 40)}"` : null;
+  },
   /** d31 046 follow-up rule 2: a request to hear the question ("sawaal kya hai?", "phir se bolo") at a live card is answered with its reask,
    *  its whole question or its Hindi form; at an asked worked step, with the step's question (dry d31f steady c4-ch01-t02 14,
    *  c4-ch05-t01 14; stuck c4-ch01-t02 16). Gated. */

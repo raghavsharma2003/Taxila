@@ -59,3 +59,32 @@ describe("2: \"What is the question?\" gets the question", () => {
     assert.deepEqual(lessonFlags({ rows: [...rows.slice(0, 14), r], script }).filter((f) => ["reaskRunning", "clarifyAsked"].includes(f.predicate)), []);
   });
 });
+
+describe("3: the closing check-in and the wrap", () => {
+  test("wrapAckTwice is gated and reads both wrap turns opening on one form (steady c6-ch07-t01 90)", () => {
+    assert.ok(!PENDING.has("wrapAckTwice"));
+    assert.deepEqual([...flagged("steady-c6-ch07-t01", "wrapAckTwice")], [90]);
+  });
+  test("the replayed row: \"maine ek ek karke gina\" at the closing question's check-in goes on to the wrap, as \"maine dobara check kiya\" does", async () => {
+    const { initLessonState, step } = await import("../server/director/state.js");
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const T = "c6-maths-ch07-t01";
+    const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts-staged", `${T}.json`), "utf8"));
+    setScriptForTest(T, sc);
+    const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+    try {
+      const kit = kitFromFile(getTopic(T));
+      const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", ageBand: "10-15", lang: "hinglish", interests: ["cricket"], firstMeeting: true, topicTitle: kit.title ?? T, classLevel: 6, sessionId: "11111111-1111-1111-1111-11111111aaaa", teacher: "director" };
+      const s0 = step(initLessonState({ topicId: T, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 }).state;
+      // (the state after the closing question's right answer said with its why and a check-in — the teach-back keyed, its wrap next)
+      const at = { ...s0, phase: "teachback", teachbackScript: true, teachbackKeyed: true, teachbackPassed: true, activeItemId: undefined, lastUi: { status: "your_turn" },
+        lastMove: { kind: "teachback", authoredEnd: "teachbackKey", endVerdict: "correct", probe: "P1" } };
+      for (const text of ["maine ek ek karke gina", "maine dobara check kiya"]) {
+        const out = step(structuredClone(at), { event: "turn", kit, text, cls: { outcome: "no_evidence", confidence: 1, flags: {} }, now: 60_000 });
+        assert.equal(out.move.kind, "wrap", text);
+      }
+    } finally { setScriptForTest(T, undefined); setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+  });
+});

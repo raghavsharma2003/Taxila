@@ -2744,7 +2744,11 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
     // check-in: "samajh nahi aaya" to "Yahan tak theek hai?" got "Achha, theek hai." and the goodbye, a brush-off. Her answer to it is not
     // graded, not help and no reason to re-teach: turn two always follows, opening on a `wrap.ack` form whenever she replied)
     if (second) {
-      const ack2 = second.replied && !second.ack ? lessonPick(s, (Array.isArray(w?.ack) ? w.ack : []).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim()), "wrapAck") : null;
+      // (d31 046 follow-up 3b, the staged c6-ch07-t01's dry steady 88, 90: both wrap turns opened on "Achha, tumne dil se bataya." — turn
+      // two's form is never the one turn one said; the next form in the list where the pick is that one)
+      const acks2 = (Array.isArray(w?.ack) ? w.ack : []).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
+      const pick2 = second.replied && !second.ack ? lessonPick(s, acks2, "wrapAck") : null;
+      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? acks2.find((x) => x !== second.ackSaid) ?? null : pick2;
       const ackS = second.ack ?? ack2;
       const lines2 = [ackS, bye].filter((x) => x && String(x).trim()).map(endLine);
       return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(ackS ? { wrapAck: endLine(ackS) } : {}),
@@ -2753,7 +2757,7 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
     if (l2On() && !stopping && covered && String(covered).trim()) {
       s.phase = phase0 === "done" ? "teachback" : phase0;
       // (the ack waits for her answer to the closing question: turn two opens on it whenever she replied)
-      s.wrapTwo = { ack: null, board: keyFirst?.board ?? null };
+      s.wrapTwo = { ack: null, board: keyFirst?.board ?? null, ...(ack ? { ackSaid: ack } : {}) };
       const asks = (Array.isArray(w?.ask) && w.ask.length ? w.ask : [WRAP_ASK_FALLBACK]).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
       const wrapAsk = lessonPick(s, asks, "wrapAsk") ?? saidIn(WRAP_ASK_FALLBACK, lang);
       // (dc-r8-director26 W1: what the child said after the closing key's check-in is answered by the acknowledgement first — c5-t02 steady
@@ -4072,7 +4076,11 @@ function step0(prev, input) {
   }
   // round 7 A8 (brain-steering-persistence): how they asked to be taught, read in code, is kept for the lesson (s.methods:
   // rendered last on every compile, mapped to knobs); a turn that is only that ask is the adopt request
-  if (input.event === "turn" && input.cls && !input.cls.flags?.distress && !["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)) {
+  // (d31 046 follow-up 3a, the staged c6-ch07-t01's dry steady 85: at the closing question's check-in "maine ek ek karke gina" — what the
+  // child did — was read as "teach me step by step" and got a model turn in the wrap's place. There a reply that asks for no help goes on
+  // to the wrap, as "maine dobara check kiya" does (c5-t03 steady 93): no teaching is left to adapt)
+  if (input.event === "turn" && input.cls && !input.cls.flags?.distress && !["correct", "incorrect", "partial", "misconception"].includes(input.cls.outcome)
+    && !(s.phase === "teachback" && s.teachbackKeyed)) {
     const m = readMethod(input.text ?? "");
     if (m) {
       s.methods = keepMethod(s.methods, m);
