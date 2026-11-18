@@ -1319,7 +1319,7 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
         // (d29 final, r8-main-034 steady c4 100: the board up kept under her leading words and the next board would pass the op cap — every
         // drawn op of the kept page costs an eraser. The board up is cleared at the turn's first word instead — nothing to erase — and the next
         // board comes in at its part's first word: her lead is said over an empty board, never over a board that is not drawn)
-        if (!joined && base.kept && !split) {
+        if (!joined && base.kept && !split && h.clearIfFull) {
           const blank = { ...page0, ops: [], facts: null };
           joined = joinPages([{ script: blank, from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text);
           if (joined) { screens = [{ from: 0, template: null }]; template = null; }

@@ -665,6 +665,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const out = { board: first.board, unit: first.unit, ...(!up?.board && first.atChar > 0 && first.atChar < text.length ? { from: first.atChar } : {}) };
   const sws = pages.filter((p) => p.atChar > 0 && p.atChar < text.length).map((p) => ({ board: p.board, unit: p.unit, atChar: p.atChar, atClause: clauseAt(text, p.atChar) }));
   if (sws.length) { out.switchTo = sws.at(-1); if (sws.length > 1) out.switches = sws; }
+  // (d29 final, r8-main-034 steady c4 100: the board up kept under leading words that own no page — where Studio cannot join it with the next
+  // board under the op cap, it may clear it at the turn's first word rather than leave the next board undrawn)
+  if (sws.length && up?.board && first.board === up.board && !(pages[0]?.atChar === 0)) out.clearIfFull = true;
   const endUnit = sws.at(-1)?.unit ?? first.unit;
   if (lastUnit && lastUnit !== endUnit) out.unitAfter = { unit: lastUnit, atChar: spoken.find((p) => p.own?.unit === lastUnit)?.start ?? 0 };
   if (STRICT_PAGES()) pagePredicates(out, spoken, text, { up });
