@@ -80,7 +80,8 @@ skipped silently.
 **G5. Two things 047 may have left** (check before building; skip what is there):
 - a picture request at a card on the checker's `PICTURE_NONE` list gets the card's hint, said as help, not
   "there is nothing to draw" and not the same board again;
-- a card's `pictureBoard` + `pictureCaption` are what a picture request draws.
+- a card's `pictureBoard` + `pictureCaption` are what a picture request draws, and they come before the board's
+  own second view when a card has both.
 
 **G6. One line about a picture, not two.** Where a script card has a `viewCaption` or `pictureCaption`, the
 engine's own line for the view ("do sankhya rekhayein …") is not also said: the script's caption is the line.
@@ -101,6 +102,14 @@ grade correct.
 The same fault takes a division turned round: key `30 ko 6 se bhaag` grades `6 ko 30 se bhaag` correct (the
 staged fractional-units reader, 2026-11-18). Order is part of the expression under `-`, `÷` and `A ko B se
 bhaag`; G4 tests the turned-round form of every such key and accept form.
+
+And it takes a denial moved: with the accept form `nahi, right angle hai` (the child disagreeing with a
+claim), the reply `right angle nahi hai` (the claim itself, the card's named mix-up) grades correct. Four cards
+of the staged angles script did this (its reader, 2026-11-18); the forms are removed there. In code: a form or
+a reply that holds a denial word (`nahi`, `na`, `no`, `not`, `galat`) is the same as another only when the
+denial stands in the same place relative to the words it denies (leading "nahi," against "… nahi hai"); when
+the code cannot tell, the reply goes to the model, never to `correct`. G4 tests every yes / no card's wrong
+answer said three ways.
 
 **G1 also covers English number words.** `seven` for 7 and `twenty six` for 26 are graded incorrect today; the
 shared reader reads both (`numbersIn("twenty six")` = 26). They join the probe table and G4's forms.
