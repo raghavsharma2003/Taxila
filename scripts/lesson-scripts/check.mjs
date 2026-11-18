@@ -1820,14 +1820,15 @@ export function noPictureCards(s) {
   return d32Cards(s).filter((c) => PICTURE_KINDS.has(c.kind) && !c.card.pictureBoard && !(c.board?.template && viewOf(c.board, c.at)))
     .map((c) => ({ at: c.at, template: c.board?.template ?? null }));
 }
-const formsOk = (e, at, f, { question, max } = {}) => {
-  if (!f || typeof f !== "object") { e.push(`${at}: { hi, en }`); return; }
+const formsOk = (e, at, f, { question, max, rule } = {}) => {
+  const r = rule ? ` (Learning 020 rule ${rule})` : "";
+  if (!f || typeof f !== "object") { e.push(`${at}: { hi, en }${r}`); return; }
   for (const l of ["hi", "en"]) {
     const t = String(f[l] ?? "").trim(), a = `${at}${l === "en" ? " (en)" : ""}`;
-    if (!t) { e.push(`${a}: empty`); continue; }
-    if (question === true && !/[?？]\s*$/.test(t)) e.push(`${a}: ends on the question`);
-    if (question === false && /[?？]/.test(t)) e.push(`${a}: asks nothing`);
-    if (max && d27Words(t) > max) e.push(`${a}: ${d27Words(t)} words > ${max}`);
+    if (!t) { e.push(`${a}: empty${r}`); continue; }
+    if (question === true && !/[?？]\s*$/.test(t)) e.push(`${a}: ends on the question${r}`);
+    if (question === false && /[?？]/.test(t)) e.push(`${a}: asks nothing${r}`);
+    if (max && d27Words(t) > max) e.push(`${a}: ${d27Words(t)} words > ${max}${r}`);
   }
 };
 export function d32Errors(s, { force = false } = {}) {
@@ -1847,10 +1848,10 @@ export function d32Errors(s, { force = false } = {}) {
   // 4
   for (const k of s.skills ?? []) (k.workedExample?.steps ?? []).forEach((x, j) => {
     const at = `${k.skillId}/workedExample.steps[${j}]`;
-    if (x.ask) { formsOk(e, `${at}.ask.reask`, x.ask.reask, { question: true }); if (x.ask.reask?.hi && d27Norm(x.ask.reask.hi) === d27Norm(x.ask.prompt?.hi)) e.push(`${at}.ask.reask: the question's own words; ask it another way`); }
-    formsOk(e, `${at}.told`, x.told, { question: false, max: TOLD_STEP_MAX });
+    if (x.ask) { formsOk(e, `${at}.ask.reask`, x.ask.reask, { question: true, rule: 4 }); if (x.ask.reask?.hi && d27Norm(x.ask.reask.hi) === d27Norm(x.ask.prompt?.hi)) e.push(`${at}.ask.reask: the question's own words; ask it another way (Learning 020 rule 4)`); }
+    formsOk(e, `${at}.told`, x.told, { question: false, max: TOLD_STEP_MAX, rule: 4 });
   });
-  if (s.teachback) { formsOk(e, "teachback.reask", s.teachback.reask, { question: true }); if (s.teachback.reask?.hi && d27Norm(s.teachback.reask.hi) === d27Norm(s.teachback.prompt?.hi)) e.push("teachback.reask: the question's own words; ask it another way"); }
+  if (s.teachback) { formsOk(e, "teachback.reask", s.teachback.reask, { question: true, rule: 4 }); if (s.teachback.reask?.hi && d27Norm(s.teachback.reask.hi) === d27Norm(s.teachback.prompt?.hi)) e.push("teachback.reask: the question's own words; ask it another way (Learning 020 rule 4)"); }
   // 5
   const ends = new Map();
   for (const c of cards) { const x = lastSentence(c.card.prompt?.hi); if (!x) continue; if (ends.has(x)) e.push(`${c.at}: ends on "${x}", as ${ends.get(x)} does; each card ends on its own sentence (Learning 020 rule 5)`); else ends.set(x, c.at); }
@@ -1868,7 +1869,7 @@ export function d32Errors(s, { force = false } = {}) {
   for (const c of cards) if (c.card.pictureBoard) {
     const pb = c.card.pictureBoard;
     if (!pb?.template || !BOARD_REFS[pb.template] || typeof (pb.params ?? null) !== "object") e.push(`${c.at}.pictureBoard: { template, params } with a known template (Learning 020 rule 7)`);
-    formsOk(e, `${c.at}.pictureCaption`, c.card.pictureCaption, { question: false });
+    formsOk(e, `${c.at}.pictureCaption`, c.card.pictureCaption, { question: false, rule: 7 });
   }
   // 8
   for (const r of ASK_WHOLE_REQUIRED.filter((x) => x.topicId === s.topicId)) {
