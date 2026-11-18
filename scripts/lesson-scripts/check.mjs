@@ -775,7 +775,9 @@ export function v22Errors(s) {
       const a = figureOf(c.answerBoard), b = figureOf(board);
       // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
       const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"
-        && figureOf({ template: "wholes@1", params: { wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
+        // (d32, main: the appended wholes keep the posed drawing's own shape; a circle posed and strips answered is a new figure)
+        && (c.answerBoard.params?.as ?? null) === (board.params?.as ?? null)
+        && figureOf({ template: "wholes@1", params: { ...(board.params?.as ? { as: board.params.as } : {}), wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
       // (dc-r8-director28 item 6, Learning 017 C: a card that asks the child to count the marks of a line it names — the count-marks
       // card, "12 barabar gaps ke beech kitne marks?" — is posed over the line it starts from, never over the line whose ticks it asks
       // to count; its answerBoard adds that line. Allowed where the answer's lines begin with the posing board's and the key is a count.)
