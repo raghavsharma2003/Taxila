@@ -7,6 +7,8 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
 import { heldOf, heldPagesOf, pagePredicates } from "../server/brain/propose.js";
 import { heldBoard } from "../server/stagecraft/board-first.js";
 import { lessonFlags } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
@@ -148,13 +150,17 @@ describe("T5: help is a hard precondition", () => {
     assert.equal(d.then?.kind, "helpToCard");
   });
   test("the walk's precondition: a request's turn with no unsaid wording, key or \"nothing easier\" line is unhelped (thrown under tests)", () => {
-    const prev = { turn: 4, phase: "practice", ctx: { lang: "hinglish" }, lastMove: { kind: "explain", scriptBeat: beat("e1", B(5)) }, lastUi: { status: "your_turn" } };
-    const input = { event: "turn", text: "pata nahi, aap batao", cls: { outcome: "no_evidence", flags: { dontKnow: true } } };
+    // (help is a script's: the precondition reads a scripted lesson's turn on a recorded part — the c4 pilot's kit and its first point)
+    const kit = kitFromFile(getTopic(TOPIC.c4));
+    const prev = { turn: 4, phase: "practice", ctx: { lang: "hinglish" }, lastMove: { kind: "explain", scriptBeat: { scriptId: TOPIC.c4, skillId: `${TOPIC.c4}-s1`, beatId: "e1", kind: "explain" } }, lastUi: { status: "your_turn" } };
+    const input = { event: "turn", kit, text: "pata nahi, aap batao", cls: { outcome: "no_evidence", flags: { dontKnow: true } } };
     assert.match(String(requestUnhelped(prev, input, { state: { lastMove: { kind: "worked_example", scriptBeat: beat("worked:problem", B(5)) } } })), /give_up answered with worked_example/);
     assert.equal(requestUnhelped(prev, input, { state: { lastMove: { kind: "reteach", help: { rung: "pointAlt", card: "wait" } } } }), null, "an unsaid wording");
     assert.equal(requestUnhelped(prev, input, { state: { lastMove: { kind: "practice", help: { rung: null, card: "goOn", joint: "helpSpent", then: "afterKeyGoOn" } } } }), null, "the nothing-easier line");
     assert.match(String(requestUnhelped(prev, input, { state: { lastMove: { kind: "practice", help: { rung: null, card: "goOn", joint: "afterKeyGoOn" } } } })), /give_up/, "the go-on line alone is no help");
     assert.equal(requestUnhelped(prev, { ...input, text: "haan", cls: { outcome: "no_evidence" } }, { state: { lastMove: { kind: "explain" } } }), null, "no request");
+    // (a kit lesson with no script has no help to give: the earlier rules answer it as they did)
+    assert.equal(requestUnhelped(prev, { ...input, kit: undefined }, { state: { lastMove: { kind: "worked_example" } } }), null, "no script");
     void FALLBACK_JOINTS;
   });
 });
