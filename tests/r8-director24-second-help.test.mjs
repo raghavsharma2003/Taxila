@@ -14,11 +14,14 @@ import { PREDICATES } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
 describe("r8-director24-second-help (H4)", () => {
   const KEEP = {};
-  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; process.env.TAXILA_R7_SCRIPT = "on"; setScriptForTest(); });
+  const T = "c5-maths-ch02-t01";
+  // (repinned d32: Learning 020 writes a `hindi` form only where an honest plainer sentence exists, and this card has none now — the walk is
+  // given a copy of the live script whose first card carries one, in the test's own words; the rule pinned is the same)
+  const sc = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+  sc.skills[0].explain[0].ask.hindi ??= { hi: "Seedhi boli mein poochhti hoon: is line par yeh nishaan kahan aayega?", en: "Plainly: where does this mark go on the line?" };
+  beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; process.env.TAXILA_R7_SCRIPT = "on"; setScriptForTest(); setScriptForTest(T, sc); });
   afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
 
-  const T = "c5-maths-ch02-t01";
-  const sc = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
   const sk = sc.skills[0], e1 = sk.explain[0];
   const PART = `${sk.skillId}:e1:card`;
   const cls = (o, request = null) => ({ outcome: o, confidence: 0.9, flags: {}, ...(request ? { request } : {}) });

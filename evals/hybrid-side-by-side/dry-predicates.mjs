@@ -6,7 +6,7 @@
 // A lesson is { topicId, persona, rows } (the harness's director rows), with the topic's lesson script (`script`, for its joints).
 
 import { readFileSync } from "node:fs";
-import { asideReplyForms, phraseOf } from "../../server/brain/asideReplies.js";
+import { asideReplyForms, phraseOf, saidPhrase } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
 import { seamJoint, joinProblem } from "../../server/brain/seams.js";
 import { FALLBACK } from "../../server/brain/say.js";
@@ -263,7 +263,8 @@ export const PREDICATES = {
     if (!used) for (const re of F.phrase ?? []) {
       for (let n = 1; n <= Math.min(ss.length, 2) && !used; n++) {
         const head = ss.slice(0, n).join(" "), m = head.match(re);
-        if (m && low(m[1]) === low(phraseOf(ctx.prevChild) ?? "\u0000")) used = head;
+        // (d32 step 0: or the last clause that names something, as the walk takes it — "fielding karna, catch pakadna" → "catch pakadna")
+        if (m && [phraseOf(ctx.prevChild), saidPhrase(ctx.prevChild)].some((x) => x && low(m[1]) === low(x))) used = head;
       }
       if (used) break;
     }

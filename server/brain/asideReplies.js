@@ -134,7 +134,7 @@ export function asideReplyLine(args = {}) {
 /** The shape of a phrase form: what it asks of the slot (a "last time", a liking, a favourite), else its own text. */
 const formShape = (f) => (/pichhli\s+baar|last\s+time|aisa\s+hua/i.test(f) ? "past" : /favou?rite/i.test(f) ? "fav" : /achha\s+lagta|like/i.test(f) ? "like" : f);
 /** The child's phrase from the last clause that names something ("fielding karna, catch pakadna" → "catch pakadna"), or null. */
-const saidPhrase = (said) => String(said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? null;
+export const saidPhrase = (said) => String(said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? null;
 function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0 } = {}) {
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;

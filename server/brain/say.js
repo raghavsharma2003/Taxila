@@ -3724,6 +3724,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
           if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
         }
       }
+      // (d32 step 0, dry stuck c4-ch05-t01 8: Learning 020's switch line names Hindi — "Haan, ise Hindi mein bolti hoon." — so it is read as
+      // already said and no ack is added; the line the turn opens on is still the turn's lead, never a part of the card's point)
+      if (named && state.lastMove?.hindiForm && guard.lineParts?.some((q) => q.part === "body" && norm(q.text) === norm(ss0[0] ?? ""))) {
+        guard.lineParts = guard.lineParts.filter((q) => !(q.part === "body" && norm(q.text) === norm(ss0[0] ?? "")));
+        if (guard.parts) guard.parts = { ...guard.parts, list: guard.lineParts };
+      }
     }
     // v6.2 H4 (main, director10 c4 ×10: "Ab in dono numbers se bhinn likho. Ab in dono numbers se bhinn likho."): a sentence is said
     // once, after the Hindi words too (two that differed only by "fraction" / "bhinn" are one); a copy in the card is the one kept
