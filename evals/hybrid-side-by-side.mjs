@@ -266,6 +266,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       const qOf = (c) => nrm(c).split(/(?<=[.!?।])\s+/).filter(Boolean).at(-1) ?? "";
       // (dc-r8-director22 W: a card asked by its question alone — the reask with its givens named — is on the table too)
       const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) || (!!qOf(lastT.card) && nrm(lastT.text).endsWith(qOf(lastT.card))) || !!lastT.cardQ
+          // (d31 046 follow-up: the short ask — "Ab phir se socho, jawab kya hoga?" — asks for the card's answer: the card is on the table, and a
+          // yes/no card is not answered "haan, samajh aaya" as if her line were a check-in — the re-ask rotation's dry steady c4-ch01-t02 19)
+          || (lastT.seams ?? []).some((x) => x.right === "reaskShort")
         : !lastT || !live || (!!liveP && nrm(lastT.text).includes(liveP.slice(0, 30)));
       const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
         beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, ...(quick && cardSaid ? { quick } : {}), boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",

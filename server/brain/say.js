@@ -3278,11 +3278,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       if (state.lastMove?.returnReply) guard.returnReply = j2Line ? "hers" : "joint";
       guard.asideResume = true;
     }
+    // (d31 046 follow-up, the adversarial probe on the dry stuck c4-ch01-t02 18: a picture turn's caption leads its card — code's "again"
+    // frame is not put before it, as her real line, whose draft had a lead, never had it; the frame came only with a draft that had none)
     // (J1, main on director21: backTo fired 0 times in 33 returns to an earlier card — a card asked before, not on her last turn, comes
     // back with the script's backTo joint; a card asked again at once keeps code's frame)
     // (J2: one joint per seam — a park or an aside line already leads into the card; backTo is not stacked on it)
     else if (card && !lead && !body.length && !aside.length && !(herPrev && prevHas(card)) && cameBack && state.lastMove?.request !== "selftry" && jointOf(kit, "backTo", lang)) { guard.reposeFrame = true; /* (dc-r8-director23 S: backTo is the seam pass's) */ }
-    else if (card && !lead && !body.length && !aside.length && !state.lastMove?.hindiForm && ((herPrev && prevHas(card)) || posedBefore)) { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
+    else if (card && !lead && !body.length && !aside.length && !state.lastMove?.hindiForm && ((herPrev && prevHas(card)) || posedBefore) && state.lastMove?.request !== "visual") { body = state.lastMove?.request === "selftry" ? tryFirstLead(kit, lang, state, guard) : [freshOf(FRAMES.again[lang === "english" ? "english" : "hinglish"], state)]; codeLines.push(...body); guard.reposeFrame = true; }
     // (v6.6 F1′: asked to try first, the card is said with an invitation even the first time)
     else if (card && !lead && !body.length && state.lastMove?.request === "selftry") { body = tryFirstLead(kit, lang, state, guard); codeLines.push(...body); guard.reposeFrame = "selftry"; }
     // (dc-r8-director28 Brain 044 T7: "let me try" at an asked step — the try-first line, then the step's question again; no step is skipped)

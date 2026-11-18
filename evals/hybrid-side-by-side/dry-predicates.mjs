@@ -280,6 +280,9 @@ export const PREDICATES = {
     // are the caption's, not half of that simpler)
     const caps = (ctx.o.caps ??= (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.viewCaption) for (const v of [o.viewCaption.hi, o.viewCaption.en]) if (typeof v === "string") out.push(v); for (const v of Object.values(o)) walk(v); } }; walk(ctx.script ?? {}); return out; })());
     if (caps.length) { const t0 = norm(r.text); const cap = caps.find((c) => t0.includes(norm(c))); if (cap) r = { ...r, text: t0.replace(norm(cap), " ").replace(/\s+/g, " ").trim() }; }
+    // (d31 046 follow-up: the card's `hindi` form — Brain 046 Q2's answer to a request for Hindi — is new words for the card, said whole; a
+    // sentence it shares with the card proves no card started: dry steady c5-ch02-t01 38, offtopic c6-ch07-t01 32)
+    { const hf = hindiFormSaid(ctx.script, r) ? norm(hindiFormAt(ctx.script, r) ?? "") : ""; const t0 = norm(r.text); if (hf && t0.includes(hf)) r = { ...r, text: t0.replace(hf, " ").replace(/\s+/g, " ").trim() }; }
     const T = ` ${key(r.text)} `;
     // (a unit sentence is said when a sentence of hers is it — or ends with it after a frame's ":" or "—", "Phir se dekho: …"; never as
     // the tail of a longer sentence of hers, "… aur upar ka woh ek hissa 1/4 hai")
@@ -947,7 +950,7 @@ Object.assign(PREDICATES, D28_PREDICATES);
 // (dc-r8-director28, Brain 044: a joint keeps what is up, help as a hard precondition, fewer kinds of turn — d29-predicates.mjs)
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 Object.assign(PREDICATES, D29_PREDICATES);
-import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler, hindiFormSaid } from "./d30-predicates.mjs";
+import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 Object.assign(PREDICATES, D30_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */

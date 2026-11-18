@@ -5051,8 +5051,14 @@ function returnApart(out, input = null) {
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}),
     ...(saidNow && !move.asideAgain && !move.tasteAsked ? { asideAgain: { topic: String(move.returned.topic) } } : {}) };
+  // (d31 046 follow-up, the dry offtopic c6-ch06-t01 34 → 38: the skill's bridge goes with the close, ending on its check-in, as it does with
+  // no return due — never held into her reply's turn after the return, where it and the next point ran past their card's 75 words and the
+  // reply's turn ended on a check-in, replyCheckin)
+  const isBridge = (x) => !!move.bridgeSaid && String(x).trim() === String(move.bridgeSaid).trim();
+  if (move.bridgeSaid && move.point && (move.sayFirst ?? []).every(isBridge) && String(move.bridgeSaid).split(/\s+/).filter(Boolean).length + 30 <= L2_CAP)
+    Object.assign(close, { bridgeSaid: move.bridgeSaid, sayFirst: [String(move.bridgeSaid)], ...(move.bridgeBeat ? { bridgeBeat: move.bridgeBeat } : {}) });
   const held = { ...move };
-  for (const k of [...closeKeys, "probeAck", "verdict", "returned"]) delete held[k];
+  for (const k of [...closeKeys, "probeAck", "verdict", "returned", ...(close.bridgeSaid ? ["bridgeSaid", "bridgeBeat", "sayFirst"] : [])]) delete held[k];
   s.splitHold = { move: held, ui, activeItemId: s.activeItemId ?? null, lastContent: s.lastContent ?? [], moduleCommands: out.moduleCommands ?? [] };
   s.activeItemId = undefined;
   s.lastMove = close;
