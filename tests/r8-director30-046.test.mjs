@@ -117,3 +117,17 @@ describe("Q2: a request for Hindi gets Hindi", () => {
     assert.deepEqual(compileScript(s).holes.filter((h) => h.field === "hindi"), []);
   });
 });
+
+describe("Q4: the verdict, point and card turn is 65 words", () => {
+  test("vpcLong reads a verdict-point-card turn over 65 words with the full why where the card has a short one (c5-t02 stuck 74, offtopic 52)", () => {
+    assert.ok(flagged("stuck", "c5t02", "vpcLong").has(74));
+    assert.ok(flagged("offtopic", "c5t02", "vpcLong").has(52));
+  });
+  test("vpcBridge reads a skill's bridge riding in a verdict-point-card turn (c4 steady 42, stuck 64, steering 56)", () => {
+    for (const [p, row] of [["steady", 42], ["stuck", 64], ["steering", 56]]) assert.ok(flagged(p, "c4", "vpcBridge").has(row), `${p} ${row}`);
+  });
+  test("both are gated", async () => {
+    const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(!PENDING.has("vpcLong") && !PENDING.has("vpcBridge"));
+  });
+});

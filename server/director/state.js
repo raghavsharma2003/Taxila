@@ -4703,6 +4703,16 @@ function shortWhyFor(out, input) {
   return short && wordsIn(short) < wordsIn(long) && wc(short) <= WHY_SHORT_MAX ? short : null;
 }
 const cloneOut = (out) => { try { return structuredClone(out); } catch { return null; } };
+/** dc-r8-director30 Brain 046 Q4: the verdict, point and card turn's limit, met by the walk with the short reason. */
+const VPC_CAP = 65;
+/** The words of a turn that holds a right verdict with its card's full why, a new point and its card — 0 for any other turn. */
+function vpcWords(out, input) {
+  const { state: s, move, ui } = out ?? {};
+  if (!move?.closeBeat || !move.point || move.scriptBeat?.kind !== "explain" || !ui?.ask?.itemId || move.bridgeSaid || move.gave || move.workedDone || move.closed) return 0;
+  const card = closeCardOf(input.kit, move.closeBeat);
+  const why = card?.why ? String(saidIn(card.why, s?.ctx?.lang ?? "hinglish") ?? "") : "";
+  return VERDICT_FRAME_WORDS + wordsIn([why]) + wordsIn([...(move.sayFirst ?? []), move.point, ...(move.rendered ?? [])].filter(Boolean), ui.ask.text);
+}
 export function splitLong(out, input) {
   // (dc-r8-director29 Brain 045 P5, c4 steady 76: a worked example's close with its why and the next card pass 75 — the close says the answer
   // without its why ("Toh poora jawab: …" and the script's answer), and the row says so: closeShort)
@@ -4722,6 +4732,18 @@ export function splitLong(out, input) {
   const a0 = short ? cloneOut(out) : null, b0 = a0 ? cloneOut(out) : null;
   if (!a0 || !b0) return inviteBefore(splitLongOnce(out, input), out, input);
   const a = splitLongOnce(a0, input);
+  // (dc-r8-director30 Brain 046 Q4: a verdict, its full why, a point and its card that pass 65 words say the short reason in the why's place —
+  // where the turn with it is still one turn; c5-t02 stuck 74, offtopic 52 ran 72 to 75)
+  if (!a.state?.splitHold && vpcWords(a, input, false) > VPC_CAP) {
+    const b1 = splitLongOnce(b0, input, { shortWhy: short });
+    if (!b1.state?.splitHold && b1.ui?.ask?.itemId) {
+      b1.move = { ...b1.move, whyShort: true };
+      b1.state.lastMove = b1.move;
+      b1.proposal = directorProposal(b1.move, { ui: b1.ui, guidance: b1.state.guidance, purpose: b1.state.purpose });
+      return b1;
+    }
+    return a;
+  }
   // (the why and what comes next fit: as now)
   if (!a.state?.splitHold) return a;
   const b = splitLongOnce(b0, input, { shortWhy: short });
@@ -4800,12 +4822,13 @@ function splitLongOnce(out, input, opt = {}) {
   // (d29 final, main's item 6 — steady c4 64-68: a close, the skill's bridge, the next point and its card whose boards Studio cannot draw in one
   // turn — the board up held, the point's, the card's — where the point and its card alone can be, the point's board drawn fresh at its turn's
   // first word: the bridge is said in the close's turn, over the board up, ending on its check-in; the point and its card are the next turn)
-  if (l2On() && !recorded && hasClose && move.bridgeSaid && move.point && move.scriptBeat?.kind === "explain" && ui?.ask?.itemId) {
+  if (l2On() && !recorded && hasClose && move.bridgeSaid && move.point && move.scriptBeat?.kind === "explain" && ui?.ask?.itemId && !move.returned?.topic) {
     const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
     const ci = parts.findIndex((p) => p.k === "body"), bi = parts.findIndex((p) => p.k === "bridge");
     const pb = move.scriptBeat?.board ?? null, cb = move.cardBeat?.board ?? null;
-    if (bi >= 0 && ci > bi && parts.slice(0, ci).reduce((a2, p) => a2 + p.n, 0) + 4 <= L2_CAP
-      && !switchesFit([s.heldUp?.board ?? null, move.closeBeat?.board ?? null, pb, cb]) && switchesFit([null, pb, cb])) { const b = breakL2(out, input, closeWords, ci); if (b) return b; }
+    // (dc-r8-director30 Brain 046 Q4: and whatever the boards — a skill's bridge never rides in a turn that holds a verdict, a point and a card:
+    // the bridge goes with the verdict, ending on its check-in; the next turn is the point and its card — c4 steady 42, stuck 64, steering 56)
+    if (bi >= 0 && ci > bi && parts.slice(0, ci).reduce((a2, p) => a2 + p.n, 0) + 4 <= L2_CAP) { const b = breakL2(out, input, closeWords, ci); if (b) return b; }
   }
   if (l2On() && !recorded) { const sg = segmentTurn(out, input, closeWords); if (sg) return sg; }
   if (l2On() && !recorded && move.problemLines && !ui?.ask?.itemId) {

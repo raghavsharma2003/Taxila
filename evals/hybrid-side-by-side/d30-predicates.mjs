@@ -78,7 +78,35 @@ export function hindiFormSaid(script, r) {
   const f = hindiFormAt(script, r);
   return !!f && low(r?.text).includes(low(f).replace(/[.!?।]+$/, "").slice(0, 60));
 }
+/** Brain 046 Q4: a turn that holds a right verdict, a new point and its card (a close, a point, a card — the turn's seams). */
+const vpcOf = (r) => { const sm = (r?.seams ?? []).map((x) => x.right); const v = sm.indexOf("verdict"), p = sm.indexOf("point"), c = sm.lastIndexOf("card"); return v >= 0 && p > v && c > p; };
+const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+/** The card a row's close closes, with its full why said in the row: { card, why } or null. */
+function fullWhyIn(script, r) {
+  const cl = (r?.pageParts ?? []).find((p) => p.part === "close");
+  const id = String(cl?.beat ?? "");
+  if (!id) return null;
+  const t = low(r.text);
+  for (const sk of script?.skills ?? []) {
+    const c = id.startsWith("then:") ? (sk.remediation ?? []).find((x) => `then:${x.targets}` === id)?.then : (sk.checks ?? []).find((x) => x.id === id) ?? (sk.explain ?? []).find((x) => x.id === id)?.ask;
+    const why = low(said(c?.why)).replace(/^(?:kyunki|because)\s+/, "");
+    if (c?.whyShort && why && t.includes(why.slice(0, 40))) return { card: c, why };
+  }
+  return null;
+}
 export const D30_PREDICATES = {
+  /** dc-r8-director30 Brain 046 Q4: a verdict, a point and a card in one turn over 65 words says the card's short reason where it has one
+   *  (c4 steady 42, stuck 64, steering 56; c5-t02 stuck 74, offtopic 52). Gated. */
+  vpcLong(L, r, i, ctx) {
+    if (r.who !== "teacher" || !vpcOf(r) || wordsOf(r.text) <= 65) return null;
+    return fullWhyIn(ctx?.script, r) ? `a verdict, a point and a card in ${wordsOf(r.text)} words with the full why, where the card has a short one` : null;
+  },
+  /** Q4: a skill's bridge never rides in a turn that holds a verdict, a point and a card — it goes with the verdict (c4 steady 42, stuck 64,
+   *  steering 56). Gated. */
+  vpcBridge(L, r) {
+    if (r.who !== "teacher" || !vpcOf(r) || !(r.seams ?? []).some((x) => x.right === "bridge")) return null;
+    return `a bridge in a verdict-point-card turn (${(r.seams ?? []).map((x) => x.right).join(" > ")})`;
+  },
   /** dc-r8-director30 Brain 046 Q2: the "nothing easier" line (helpSpent) is never the answer to a request for Hindi — the card's `hindi` form
    *  is (c4, c5-t02, c6 offtopic 32). Gated. */
   hindiSpentCold(L, r, i, ctx) {
