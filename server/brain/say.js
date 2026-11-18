@@ -3508,6 +3508,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // owning no page (Brain 044 T4): the next point's board comes in at the point's first word)
       const bridgeTextK = new Set((scriptFor(kit)?.script?.skills ?? []).map((sk) => sk.bridgeToNext ? saidIn(sk.bridgeToNext, lang) : null).filter(Boolean).map((t) => keyS(norm(dot(t)))));
       // (Brain 044 T8: an asked step's confirmation — its ask.right — is recorded as what it is, not as a point)
+      // (dc-r8-director29 Brain 045 P7: a told worked step is recorded as what it is, not as a point — c4 stuck 36; c5-t01 steady 24, 50, 76)
+      const stepToldK = kindNow === "worked_example" && workedLines?.length ? new Set(workedLines.slice(state.lastMove?.problemLines ?? 0).map((x) => keyS(norm(x)))) : null;
       const stepOkK = state.lastMove?.stepReply?.right && state.lastMove.stepReply.line ? keyS(norm(dot(state.lastMove.stepReply.line))) : null;
       const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).filter((x) => !state.lastMove.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => keyS(norm(dot(x))))) : null;
       guard.lineParts = cleanParts([
@@ -3521,7 +3523,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (Brain 042 Q1: the answer to the quick question — no board of its own: the point's stays up until the card's first word)
         ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
-        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : stepToldK?.has(keyS(x)) ? { kind: "workedStep" } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
         { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),

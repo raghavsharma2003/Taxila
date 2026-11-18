@@ -12,7 +12,7 @@ const low = (x) => norm(x).toLowerCase().replace(/[.!?।:]+$/, "");
 const sentencesOf = (t) => norm(t).split(/(?<=[.!?।])\s+/).filter(Boolean);
 
 /** The joints this pass owns (a park and a return carry the aside: they are parts of their own, not joints). */
-export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn"];
+export const SEAM_JOINTS = ["backTo", "afterAside", "afterAiLine", "beforeRemediation", "afterTryFirst", "beforeWorked", "afterKeyReturn", "afterPark"];
 // (code's own neutral after-aside line, before the scripts had afterAside)
 // (dc-r8-director26 J1 item 3: code's lead into a worked problem, for a script without joints.beforeWorked — the compile report lists the
 // hole; a problem done together, never a question to the child)
@@ -42,6 +42,9 @@ export const SEAM_TABLE = [
   ["aside", "returnCard", "backTo"],
   // (d29 final, with Learning 017's scripts: a park before a return to an earlier card — steering c6 34, stuck c6 40 — P5's back-to too)
   ["park", "returnCard", "backTo"],
+  // (dc-r8-director29 Brain 045 P6: a park line is followed by its authored joint into the live part — joints.afterPark where the script writes
+  // one; where it has none (Learning 018's park forms lead back themselves) the turn goes straight on: no code form)
+  ["park", "point", "afterPark"], ["park", "card", "afterPark"], ["park", "help", "afterPark"], ["park", "remediation", "afterPark"],
   // (her AI line, or her reply after it, into the lesson)
   ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "backTo"], ["aiLine", "remediation", "afterAiLine"],
   ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "backTo"], ["aiReply", "remediation", "afterAiLine"],

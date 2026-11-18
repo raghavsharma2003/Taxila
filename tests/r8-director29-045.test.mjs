@@ -100,3 +100,29 @@ describe("P4: a second request at the greeting starts the lesson", () => {
     assert.equal(helpJoint({ joints: {} }, "startAnyway").by, "code");
   });
 });
+
+describe("P5-P7: a right answer goes on; seams; the record", () => {
+  test("a park line takes joints.afterPark into the live part where the script writes one, and goes straight on where it has none", async () => {
+    const { seamJoint } = await import("../server/brain/seams.js");
+    for (const k of ["point", "card", "help"]) assert.equal(seamJoint("park", k), "afterPark");
+    const { seamPass } = await import("../server/brain/seams.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const T = TOPIC.c6, kit = kitFromFile(getTopic(T));
+    const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${T}.json`), "utf8"));
+    const park = "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye.";
+    const list = [{ part: "aside", text: park }, { part: "card", text: "Is triangle ka parimap kitna hai?" }];
+    const carriers = [{ kind: "asidePark", re: /cricket ki baat bhi hogi/ }];
+    try {
+      setScriptForTest(T, { ...sc, joints: { ...sc.joints, afterPark: [{ hi: "Ab apne sawaal par.", en: "Now, our question." }] } });
+      const r1 = seamPass(list, { kit, state: { ctx: { lang: "hinglish" } }, lang: "hinglish", info: { carriers } });
+      const s1 = (r1.seams ?? []).find((x) => x.right === "card");
+      if (s1?.left === "park") assert.equal(s1.joint, "afterPark");
+      const { afterPark: _a, ...joints } = sc.joints;
+      setScriptForTest(T, { ...sc, joints });
+      const r2 = seamPass(list, { kit, state: { ctx: { lang: "hinglish" } }, lang: "hinglish", info: { carriers } });
+      assert.ok(!(r2.seams ?? []).some((x) => x.joint === "afterPark"), "no form: straight on");
+    } finally { setScriptForTest(); }
+  });
+});
