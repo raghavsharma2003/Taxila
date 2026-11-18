@@ -164,15 +164,15 @@
       "simpler": {"hi": "Kaagaz ko ek baar modkar kholo, aur dekho ki pehle ka ek hissa ab kitne hisson mein bata hai.", "en": "Fold a paper once and open it, and see how many parts one earlier part has become."}
      },
      {
-      "do": {"hi": "Ab teeno mod ke baad hisse gino", "en": "Now count the parts after all three folds"},
+      "do": {"hi": "Teeno mod ke baad hisse gino", "en": "Count the parts after the three folds"},
       "result": "2, phir 4, phir 8 barabar hisse",
-      "why": {"hi": "pehle mod se 2 hisse bane, aur do mod uske baad hue", "en": "the first fold made 2 parts, and two folds came after it"},
+      "why": {"hi": "rumal teen baar moda gaya", "en": "the hanky was folded three times"},
       "simpler": {"hi": "Pehle mod ke baad hisse gino, phir har agle mod ke baad.", "en": "Count the parts after the first fold, then after each fold that follows."}
      }
     ],
     "yourStep": {
-     "prompt": {"hi": "Rang pehle mod par aadhe rumal mein bhara tha. Kholne par 8 hisson mein se kitne hisson mein rang hoga?", "en": "The colour went on half the hanky at the first fold. When it is opened, how many of the 8 parts will have colour?"},
-     "hindi": {"hi": "Pehle mod par rumal ke aadhe hisse mein rang bhara tha. Kholne par 8 hisson mein se kitne hisson mein rang dikhega?", "en": "At the first fold colour was filled in half the hanky. When opened, in how many of the 8 parts will colour show?"},
+     "prompt": {"hi": "Kholne par 8 hisson mein se kitne hisson mein rang dikhega?", "en": "When it is opened, in how many of the 8 parts will colour show?"},
+     "hindi": {"hi": "Rumal kholne par, uske 8 hisson mein se kitne hisson par rang hoga?", "en": "When the hanky is opened, how many of its 8 parts will have colour on them?"},
      "reask": {"hi": "Kholne par rumal ke 8 hisson mein se kitne hisson mein rang hoga?", "en": "When the hanky is opened, how many of its 8 parts will have colour?"},
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]}},
      "viewCaption": {"hi": "Rumal yahan do ek jaise gol ban gaya hai: pehla do barabar hisson mein, ek mein rang, aur doosra aath barabar hisson mein.", "en": "The hanky has become two identical circles here: the first in two equal parts, one coloured, and the second in eight equal parts."},
@@ -257,7 +257,7 @@
      "move": "two same-length strips, 2 parts and 4 parts, half coloured on each: a part of the second is half a part of the first → 2 of its parts match 1 of the first → more parts of the same whole are smaller parts",
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}, {"parts": 4, "shade": 2, "label": ""}]}},
      "viewCaption": {"hi": "Dono patti yahan do ek jaise gol ban gayi hain: pehla do barabar hisson mein, doosra chaar mein, aur dono mein aadhe hisson mein rang hai.", "en": "Both strips have become two identical circles here: the first in two equal parts, the second in four, and half the parts of each are coloured."},
-     "say": {"hi": "Yeh do patti ek jitni lambi hain, par doosri ke hisse chhote hain: uske 2 hisse pehli ke ek hisse jitne hain.", "en": "These two strips are the same length, but the second one's parts are smaller: 2 of its parts are as long as one part of the first."},
+     "say": {"hi": "Dono patti ek jitni lambi hain, pehli 2 hisson mein aur doosri 4 mein. Doosri ke hisse chhote hain: uske 2 hisse pehli ke ek hisse jitne hain.", "en": "Both strips are the same length, the first in 2 parts and the second in 4. The second one's parts are smaller: 2 of them are as long as one part of the first."},
      "sayAlt": {"hi": "Ek roti ke 2 bade hisse karo, aur waisi hi doosri roti ke 4 chhote. Do chhote hisse milkar ek bada hissa bante hain, roti utni hi rehti hai.", "en": "Cut one roti into 2 big parts and an identical roti into 4 small ones. Two small parts together make one big part; the roti stays the same."},
      "simpler": {"hi": "Doosri patti ke 2 hisse saath rakho; woh pehli patti ke ek hisse jitne lambe hain.", "en": "Put 2 parts of the second strip together; they are as long as one part of the first."},
      "then": {
@@ -464,7 +464,7 @@
     },
     {
      "id": "c3",
-     "prompt": {"hi": "1/4 ke barabar kaunsa bhinn hai: 3/12 ya 9/12?", "en": "Which fraction equals 1/4: 3/12 or 9/12?"},
+     "prompt": {"hi": "1/4 ke barabar kaunsa fraction hai: 3/12 ya 9/12?", "en": "Which fraction equals 1/4: 3/12 or 9/12?"},
      "hindi": {"hi": "3/12 aur 9/12 mein se kaunsa fraction 1/4 ke barabar hai?", "en": "Of 3/12 and 9/12, which fraction equals 1/4?"},
      "reask": {"hi": "3/12 aur 9/12 mein se 1/4 ke barabar kaun hai?", "en": "Which of 3/12 and 9/12 equals 1/4?"},
      "key": "3/12",
@@ -506,11 +506,11 @@
      "move": "a strip in 3 parts, 1 coloured, over the same strip in 6 → every part cut in 2 → the cut reaches the coloured part too → the top changes with the bottom, by the same number",
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": ""}, {"parts": 6, "shade": 2, "label": ""}]}},
      "viewCaption": {"hi": "Dono patti yahan do ek jaise gol ban gayi hain: pehla teen barabar hisson mein, ek mein rang; doosra chhe mein, do mein rang.", "en": "Both strips have become two identical circles here: the first in three equal parts, one coloured; the second in six, two coloured."},
-     "say": {"hi": "Har hissa 2 mein kaato, toh rang wala hissa bhi 2 mein kat jaata hai. Isliye neeche ke saath upar ka number bhi 2 se guna hota hai.", "en": "Cut every part of the strip in 2, and the coloured part is cut in 2 as well. That is why the top number is multiplied by 2 along with the bottom."},
+     "say": {"hi": "Patti ka har hissa 2 mein kaato, toh rang wala hissa bhi 2 mein katta hai. Isliye neeche ke saath upar ka number bhi 2 se guna hota hai.", "en": "Cut every part of the strip in 2, and the coloured part is cut in 2 as well. That is why the top number is multiplied by 2 along with the bottom."},
      "sayAlt": {"hi": "Barfi ki patti ke 3 hisson mein se 1 tumhara hai. Har hissa aadha kaato, toh 6 hisse bante hain, aur tumhara hissa bhi 2 ban jaata hai: dono number badalte hain.", "en": "One of the 3 parts of a barfi strip is yours. Cut every part in half: there are 6 parts, and your part becomes 2 as well. Both numbers change."},
      "simpler": {"hi": "Hisse kate, toh rang wala hissa bhi kata. Isliye upar wala number bhi badalta hai.", "en": "When the parts are cut, the coloured part is cut too. So the top number changes as well."},
      "then": {
-      "prompt": {"hi": "{friend} ne 2/6 ke barabar bhinn 2/12 likha. Usne kaunsa number guna karna chhod diya: upar wala ya neeche wala?", "en": "{friend} wrote 2/12 as a fraction equal to 2/6. Which number was left without multiplying: the top or the bottom?"},
+      "prompt": {"hi": "{friend} ne 2/6 ke barabar fraction 2/12 likha. Usne kaunsa number guna karna chhod diya: upar wala ya neeche wala?", "en": "{friend} wrote 2/12 as a fraction equal to 2/6. Which number was left without multiplying: the top or the bottom?"},
       "hindi": {"hi": "{friend} ne 2/6 ke barabar 2/12 likha. Usne kaunsa number guna nahi kiya, upar wala ya neeche wala?", "en": "{friend} wrote 2/12 as equal to 2/6. Which number was not multiplied, the top or the bottom?"},
       "reask": {"hi": "2/6 se 2/12 banane mein {friend} ne kaunsa number guna nahi kiya, upar wala ya neeche wala?", "en": "Making 2/12 from 2/6, which number did {friend} not multiply, the top or the bottom?"},
       "key": "upar wala",
@@ -536,7 +536,7 @@
      "sayAlt": {"hi": "Barfi ke 4 hisse the aur 1 tumhara. Har hissa do mein kaata, toh 8 hisse hue aur tumhare 2; agar 4 jodte, toh tumhare 5 hisse ho jaate, jo barfi mein the hi nahi.", "en": "The barfi had 4 parts and 1 was yours. Each part was cut in two: 8 parts, and 2 of them yours. Adding 4 would give you 5 parts, which the barfi never had."},
      "simpler": {"hi": "Hisse kaatne se hisse guna hote hain, judte nahi. Isliye upar bhi usi number se guna karo.", "en": "Cutting parts multiplies them, it does not add to them. So multiply the top by the same number."},
      "then": {
-      "prompt": {"hi": "2/7 ke barabar ek bhinn ka upar 6 hai. Uska neeche kya aayega?", "en": "A fraction equal to 2/7 has 6 on top. What is its bottom?"},
+      "prompt": {"hi": "2/7 ke barabar ek fraction ka upar 6 hai. Uska neeche kya aayega?", "en": "A fraction equal to 2/7 has 6 on top. What is its bottom?"},
       "hindi": {"hi": "Ek fraction 2/7 ke barabar hai aur uska upar wala number 6 hai. Uska neeche wala number kitna hoga?", "en": "A fraction equals 2/7 and its top number is 6. What will its bottom number be?"},
       "reask": {"hi": "2/7 ke barabar, upar 6 wale fraction ka neeche wala number kya aayega?", "en": "For the fraction equal to 2/7 with 6 on top, what is the bottom number?"},
       "key": "21",
@@ -700,7 +700,7 @@
    "checks": [
     {
      "id": "c1",
-     "prompt": {"hi": "Inmein se kaunsa bhinn 1/5 ke barabar hai: 2/10 ya 2/6?", "en": "Which of these fractions equals 1/5: 2/10 or 2/6?"},
+     "prompt": {"hi": "Inmein se kaunsa fraction 1/5 ke barabar hai: 2/10 ya 2/6?", "en": "Which of these fractions equals 1/5: 2/10 or 2/6?"},
      "hindi": {"hi": "2/10 aur 2/6 mein se kaunsa fraction 1/5 ke barabar hai?", "en": "Of 2/10 and 2/6, which fraction equals 1/5?"},
      "reask": {"hi": "1/5 ke barabar kaun hai, 2/10 ya 2/6?", "en": "Which equals 1/5, 2/10 or 2/6?"},
      "key": "2/10",
@@ -779,11 +779,11 @@
      "sayAlt": {"hi": "Barfi ki ek patti ko 4 hisson mein kaato aur 1 lo; waisi patti ko 8 mein kaato aur 2 lo. Haath mein barfi utni hi aati hai, bas naam alag hain: 1/4 aur 2/8.", "en": "Cut a barfi strip into 4 parts and take 1; cut one like it into 8 and take 2. You hold the same barfi, only the names differ: 1/4 and 2/8."},
      "simpler": {"hi": "Doosri patti ke do chhote hisse, pehli patti ke ek bade hisse jitne hain. Isliye number alag hon, phir bhi maatra ek ho sakti hai.", "en": "Two small parts of the second strip are as long as one big part of the first. So the numbers can differ and the amount still be one."},
      "then": {
-      "prompt": {"hi": "Teen bhinn suno: 3/9, 4/12 aur 5/12. Inmein se kitne bhinn 1/3 ke barabar hain?", "en": "Listen to three fractions: 3/9, 4/12 and 5/12. How many of them equal 1/3?"},
+      "prompt": {"hi": "Teen fraction suno: 3/9, 4/12 aur 5/12. Inmein se kitne fraction 1/3 ke barabar hain?", "en": "Listen to three fractions: 3/9, 4/12 and 5/12. How many of them equal 1/3?"},
       "hindi": {"hi": "3/9, 4/12 aur 5/12 mein se kitne fraction 1/3 ke barabar hain?", "en": "Of 3/9, 4/12 and 5/12, how many fractions equal 1/3?"},
       "reask": {"hi": "1/3 ke barabar kitne fraction hain, 3/9, 4/12 aur 5/12 mein se?", "en": "How many of 3/9, 4/12 and 5/12 equal 1/3?"},
       "key": "2",
-      "accept": ["do", "two", "do bhinn", "2 bhinn", "two of them"],
+      "accept": ["do", "two", "do fraction", "2 fraction", "two of them"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
       "wrongIfMis": "0",
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
@@ -800,9 +800,9 @@
      "move": "1/2 and 2/3 each have a bottom one more than the top, yet 2/3 is past a half → a fixed gap between top and bottom does not keep the amount → only one multiplier for both does",
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 3, "shade": 2, "label": "2/3"}]}},
      "viewCaption": {"hi": "Dono patti yahan ek number line par hain: line ke upar do barabar gap, neeche teen, aur dono ke mark alag jagah par hain.", "en": "Both strips are on one number line here: two equal gaps above the line, three below, and their marks are at different places."},
-     "say": {"hi": "Pehli patti ke 2 hisson mein se 1 mein rang hai, yaani 1/2; doosri ke 3 mein se 2, yaani 2/3. Dono mein farak 1 hai, phir bhi maatra alag hai.", "en": "The first strip has colour in 1 of its 2 parts, that is 1/2; the second in 2 of 3, that is 2/3. Both differ by 1, yet the amounts are different."},
+     "say": {"hi": "Pehli patti 2 hisson mein, doosri 3 mein, aur rang 1/2 aur 2/3 hai. Dono mein neeche wala number upar se 1 zyada hai, phir bhi 2/3 mein rang zyada hai.", "en": "The first strip is in 2 parts, the second in 3, and the colour is 1/2 and 2/3. In both the bottom number is 1 more than the top, yet 2/3 has more colour."},
      "sayAlt": {"hi": "Do ek jaisi roti lo: ek ke 2 hisson mein se 1 lo, doosri ke 3 mein se 2. Doosri baar zyada roti milti hai, jabki dono baar neeche wala number upar se 1 hi zyada tha.", "en": "Take two identical rotis: 1 of the first's 2 parts, 2 of the second's 3. The second time you get more roti, though both times the bottom number was just 1 more than the top."},
-     "simpler": {"hi": "1/2 aadha hai, 2/3 aadhe se zyada. Dono mein farak 1 hi hai, phir bhi maatra alag hai.", "en": "1/2 is half, 2/3 more than half. Both differ by 1, yet the amounts differ."},
+     "simpler": {"hi": "1/2 aadha hai, 2/3 aadhe se zyada. Dono mein neeche wala upar se 1 hi zyada hai, phir bhi maatra alag hai.", "en": "1/2 is half, 2/3 more than half. In both the bottom is just 1 more than the top, yet the amounts differ."},
      "then": {
       "prompt": {"hi": "{friend} ne 1/3 mein upar aur neeche 2 jodkar 3/5 banaya. Kya dono barabar hain, haan ya nahi?", "en": "{friend} added 2 to the top and bottom of 1/3 and made 3/5. Are the two equal, yes or no?"},
       "hindi": {"hi": "{friend} ne 1/3 ke upar aur neeche, dono mein 2 jodkar 3/5 likha. Kya 3/5 aur 1/3 barabar hain, haan ya nahi?", "en": "{friend} added 2 to both the top and bottom of 1/3 and wrote 3/5. Are 3/5 and 1/3 equal, yes or no?"},
