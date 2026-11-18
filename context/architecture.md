@@ -685,3 +685,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-split-parts-expose-shared-boards` (2026-11-17): When a point or a remediation is split from its card, a board the two shared becomes the card's figure shown before the card (24 of director28's 33 unsaid boards are the script's own pages)
 - `fd-new-question-kind-new-paths` (2026-11-17): Each new kind of turn ending (quick question, invitation, a reply said alone) brought request and aside paths nobody wrote rules for; listening fell in three of four topics on paths that did not exist in director27
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-fit-limit-is-the-walks-arithmetic` (2026-11-18): A fit limit written for the scripts must be the walk's own arithmetic: remediation pairs written to 49 words split at 61 because the walk allows five words for the miss and the longest joint, which was seven or eight words
+- `fd-fit-check-must-draw-the-turn` (2026-11-18): A check that asks Studio whether a turn's boards fit must hand it exactly what the turn draws: one board too many, or the board up drawn fresh instead of held, turned turns that drew correctly into check-ins

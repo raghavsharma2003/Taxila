@@ -1,0 +1,70 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-d29-dry",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "Dry run of the four pilots on integration 84 (16 lessons, no model): every gated predicate 0; the steady lessons end 23 turns on a comprehension check-in (6, 6, 5, 6) against 45 in director28's live steady lessons (16, 11, 8, 10)"
+  },
+  {
+   "id": "dc-r8-op-cap-stays",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "The whiteboard's cap of 120 ops stays; a turn whose boards cannot be joined under it is split by the walk, and Studio clears a kept page that sits only under a lead that owns none"
+  },
+  {
+   "id": "dc-r8-stop-checkin-stays",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A child's first clear stop keeps the stop protocol's one check-in: dc-r8-director28's small item is not built while the safety floor is frozen"
+  },
+  {
+   "id": "fd-fit-limit-is-the-walks-arithmetic",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "A fit limit written for the scripts must be the walk's own arithmetic: remediation pairs written to 49 words split at 61 because the walk allows five words for the miss and the longest joint, which was seven or eight words"
+  },
+  {
+   "id": "fd-fit-check-must-draw-the-turn",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "A check that asks Studio whether a turn's boards fit must hand it exactly what the turn draws: one board too many, or the board up drawn fresh instead of held, turned turns that drew correctly into check-ins"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "measured_by",
+   "dst": "ms-r8-d29-dry"
+  },
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "part_of",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "dc-r8-stop-checkin-stays",
+   "rel": "constrains",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "fd-fit-limit-is-the-walks-arithmetic",
+   "rel": "measured_by",
+   "dst": "ms-r8-d29-dry"
+  },
+  {
+   "src": "fd-fit-check-must-draw-the-turn",
+   "rel": "measured_by",
+   "dst": "ms-r8-d29-dry"
+  },
+  {
+   "src": "ms-r8-d29-dry",
+   "rel": "part_of",
+   "dst": "dc-r8-director28"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-d29-dry` (2026-11-18): the dry matrix (`evals/hybrid-side-by-side.mjs --matrix --director-only --reactive --dry`, no model, rule-based child) over the four pilots × steady, stuck, offtopic, steering on 788d71f07 (Brain 044, Learning 017, main's script fixes, the Studio join fixes): 16 lessons, 643 teacher turns. `check-run.mjs` exit 0, every gated predicate 0, the new ones included (pageStart, quickHelpCard, asideCheckin, stepTryFirst, hookAlone, switchFirst, remCardLong, workedInvite, reaskReturn, stepConfirm, openerSeam, quickAddress, whyShortFlag, reaskTwice, keyAfterFive); pending: pointNoFit 0, workedNoFit 0, cardNoFit 0, repeatedAuthored 15 (a card's question said again on the turn after help, a hint or a picture, as the help rule requires), parkCutByChildEnd 1. The adversarial probe lost 0 of 643 turns (the build agent's run). Turns over 75 words: 7, the longest 86, each the first teaching turn led by the \"nothing easier\" line after a second request at the greeting (a lead, not counted in the 75); none in a steady lesson. Turns ending on a comprehension check-in in the steady lessons, counted by the three check-in forms at the end of her turn (c4, c5-t01, c5-t02, c6): 6, 6, 5, 6 = 23 of 204 teacher turns; director28's live steady lessons by the same count: 16, 11, 8, 10 = 45 of 266. What the 23 follow: a key or a miss and its key (8), a verdict with the skill's bridge (5), a verdict before a due return or after the closing question (the rest). Limits of this number: a dry run has no model words, so it says what the walk plans, not how a turn of 60 to 75 words sounds; director29 is the live reading.\n",
+  "decisions": "- `dc-r8-op-cap-stays` (2026-11-18, main loop; part of building `dc-r8-director28`): Studio's join of two boards in one turn fails only when the joined script would pass the whiteboard contract's 120 ops, because every drawn op of the outgoing page costs an erase op (measured on c4: 49 + 49 + 24 = 122; the 034 fixture 55 + 55 + 40 = 150). Decided: the cap stays for this round. The walk asks Studio with exactly what the turn draws and splits where it does not fit: a skill's bridge goes into the verdict's turn (ending on its check-in) and the next point keeps its card; a close followed by a card that cannot join ends on its check-in (`noFit: \"card\"`); a card led only by a back-to line over a kept page that cannot join gets that page cleared at the turn's first word (`clearIfFull`), so the line is said over an empty board and the card's board comes in at its first word. Rows are marked `noFit` and counted by pending predicates. Reverses if: a live run shows more than two turns in a steady lesson marked `noFit` for boards, or two judges name the cleared page under a back-to line as a blank or unsaid board. Then build a one-op page clear in the whiteboard contract (shared/whiteboard.js, the client player, Studio's QA), which is a client change and was not worth it for one turn in sixteen lessons.\n- `dc-r8-stop-checkin-stays` (2026-11-18, main loop; constrains `dc-r8-director28`): the decision's small item \"a child who has clearly said stop is not asked the stop menu again\" is not built. Both director28 rows (c4 offtopic 70, c5-t02 steering 62) are the first stop after \"bas, aaj ke liye itna hi\"; the stop protocol gives one check-in before ending and `tests/round2-safety-floor.test.mjs` pins exactly that sentence to it. Safety code is frozen by the owner's build-first directive. Reverses if: the freeze lifts (before real users), when the stop protocol is re-read with those two rows; or the owner asks for it sooner.\n"
+ }
+}
