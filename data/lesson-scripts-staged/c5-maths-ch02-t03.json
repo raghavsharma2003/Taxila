@@ -221,7 +221,7 @@
      "targets": "c5-maths-ch02-t03-m-more-pieces-more",
      "wrongIfMis": "bigger",
      "board": {"template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "mark": 5}},
-     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: 12 barabar hisse, aur pehle 5 hisson mein rang.", "en": "Here the line has become a strip: 12 equal parts, with the first 5 coloured."},
+     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: baarah barabar hisse, aur pehle paanch hisson mein rang.", "en": "Here the line has become a strip: twelve equal parts, with the first five coloured."},
      "why": {"hi": "0 ke baad paanchva mark 5/12 hai, aur 1/2 = 6/12 chhatthe mark par hai, isliye 5/12 chhota hai", "en": "the fifth mark after 0 is 5/12, and 1/2 = 6/12 is at the sixth mark, so 5/12 is smaller"},
      "whyShort": {"hi": "1/2 chhatthe mark par hai, paanchva usse pehle", "en": "1/2 is the sixth mark; the fifth comes first"},
      "whyAlt": {"hi": "12 gap ka aadha 6 gap hai; paanchva mark aadhe tak pahunchne se ek gap pehle hi ruk jaata hai.", "en": "Half of 12 gaps is 6 gaps; the fifth mark stops one gap short of the half."},
@@ -568,17 +568,11 @@
     "interestSlots": [
      {
       "interest": "games",
-      "use": {
-       "hi": "Ek video game mein do health bar ek jaise lambe hain. Ek 4 barabar khaanon mein bata hai aur 3 bhare hain, doosra 8 khaanon mein aur 6 bhare hain.",
-       "en": "In a video game, two health bars are the same length. One is split into 4 equal blocks with 3 filled, the other into 8 blocks with 6 filled."
-      }
+      "use": {"hi": "Game mein do health patti hain: ek ke 4 mein se 3 hisse bhare, doosri ke 8 mein se 6.", "en": "In a game there are two health strips: 3 of one's 4 parts are full, 6 of the other's 8."}
      },
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Do ek jaise cake hain. Ek ke 4 barabar tukdon mein se 3 tumhare hain, doosre ke 8 barabar tukdon mein se 6 tumhare bhai ke.",
-       "en": "Two identical cakes. 3 of the 4 equal pieces of one are yours, and 6 of the 8 equal pieces of the other are your brother's."
-      }
+      "use": {"hi": "Kitchen mein do ek jaisi barfi: tumhe 4 hisson mein se 3 mile, bhai ko 8 mein se 6.", "en": "In the kitchen, two identical barfis: you got 3 of 4 parts, your brother 6 of 8."}
      }
     ]
    },
@@ -586,211 +580,250 @@
     {
      "id": "e1",
      "convey": "0-to-1 line in eighths: 6 eighths from 0 reach the mark that is also 3/4 → 3/4 and 6/8 land on the same point → transfer: 1/4 and 2/8 on the same line",
-     "mustSay": [{"hi": "3/4 = 6/8", "en": "3/4 = 6/8"}, {"hi": "ek hi nishaan", "en": "the same mark"}],
+     "mustSay": [{"hi": "3/4 = 6/8", "en": "3/4 = 6/8"}, {"hi": "ek hi mark", "en": "the same mark"}],
      "board": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 6, "label": "3/4 = 6/8"}]}},
-     "point": { "hi": "Is rekha par 0 aur 1 ke beech 8 barabar hisse hain. 0 se 6 chhote hisse chalo toh 6/8 aata hai, aur wahi nishaan 3/4 bhi hai. 3/4 aur 6/8 ek hi nishaan par hain, toh 3/4 = 6/8.", "en": "On this line there are 8 equal parts between 0 and 1. Walk 6 small parts from 0 and you reach 6/8, and that mark is also 3/4. 3/4 and 6/8 are at the same mark, so 3/4 = 6/8." },
+     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: aath barabar hisse, aur pehle chhe hisson mein rang.", "en": "Here the line has become a strip: eight equal parts, with the first six coloured."},
+     "point": {"hi": "Is number line par 0 se 1 tak 8 barabar gap hain. 6 gap chalkar 6/8 aata hai, aur wahi mark 3/4 bhi hai.", "en": "On this number line there are 8 equal gaps from 0 to 1. Walking 6 gaps brings you to 6/8, and that same mark is 3/4 too."},
+     "pointAlt": {"hi": "Ek ruler par 0 se 1 tak 8 barabar gap socho. Chhe gap chalo ya teen chauthai, pahunchoge usi jagah, isliye 6/8 aur 3/4 ek hi maatra ke do naam hain.", "en": "Picture a ruler with 8 equal gaps from 0 to 1. Walk six gaps or three quarters, you reach the same place, so 6/8 and 3/4 are two names for one amount."},
      "ask": {
-      "prompt": {
-       "hi": "{friend} ka kehna hai ki 1/4 aur 2/8 barabar nahi ho sakte, kyunki unke number alag hain. Isi rekha ko dekhkar batao, kya yeh sahi hai, haan ya nahi?",
-       "en": "{friend} says 1/4 and 2/8 cannot be equal because their numbers are different. Looking at this same line, is that right, yes or no?"
-      },
+      "prompt": {"hi": "{friend} ka kehna hai ki 1/4 aur 2/8 barabar nahi ho sakte, kyunki number alag hain. Isi line ko dekho: kya yeh baat sahi hai, haan ya nahi?", "en": "{friend} says 1/4 and 2/8 cannot be equal because the numbers are different. Look at this same line: is that right, yes or no?"},
+      "hindi": {"hi": "{friend} ka kehna hai ki 1/4 aur 2/8 barabar nahi ho sakte, kyunki dono ke number alag hain. Isi line ko dekhkar batao, uski baat theek hai, haan ya nahi?", "en": "{friend} says 1/4 and 2/8 can't be equal, because their numbers differ. Looking at this line, is that so, yes or no?"},
+      "reask": {"hi": "Kya {friend} ki baat sahi hai ki 1/4 aur 2/8 barabar nahi hain, haan ya nahi?", "en": "Is {friend} right that 1/4 and 2/8 are not equal, yes or no?"},
       "key": "no",
-      "why": {
-       "hi": "is rekha par 2/8 aur 1/4 ek hi nishaan par hain, 0 ke baad doosra nishaan",
-       "en": "on this line 2/8 and 1/4 sit at the same mark, the 2nd mark after 0"
-      },
-      "accept": ["nahi", "galat", "nahi, dono barabar hain", "wrong"],
+      "accept": ["nahi", "galat", "nahi, dono barabar hain", "wrong", "no, they are equal"],
       "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
       "wrongIfMis": "yes",
+      "why": {"hi": "is line par 2/8 aur 1/4 ek hi mark par hain, 0 ke baad doosra mark, isliye dono barabar hain", "en": "on this line 2/8 and 1/4 are at the same mark, the second after 0, so they are equal"},
+      "whyShort": {"hi": "2/8 aur 1/4 ek hi mark par hain", "en": "2/8 and 1/4 are at the same mark"},
+      "whyAlt": {"hi": "Line ke 8 gap ko 4 barabar hisson mein baanto, toh har chauthai mein 2 gap aate hain; 1/4 tak bhi 2 gap, 2/8 tak bhi 2 gap.", "en": "Split the line's 8 gaps into 4 equal parts and each quarter holds 2 gaps; up to 1/4 is 2 gaps, and up to 2/8 is 2 gaps too."},
+      "simpler": {"hi": "Pehle socho ki 8 gap ka chautha hissa kitne gap hai; wahi 1/4 ka mark hai. Phir 0 se 2 gap chalo aur dono jagah milaao.", "en": "First think how many gaps a quarter of 8 gaps is; that is the 1/4 mark. Then walk 2 gaps from 0 and compare the two places."},
       "answerBoard": {"template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 2, "label": "1/4 = 2/8"}, {"num": 6, "label": "3/4 = 6/8"}]}}
      },
-     "simpler": {
-      "hi": "Rekha par 0 se 6 chhote hisse chalo, toh 6/8 aata hai. Wahi nishaan 3/4 bhi hai, toh dono ek hi maatra hain.",
-      "en": "Walk 6 small parts from 0 on the line and you reach 6/8. That same mark is 3/4, so both are one amount."
-     }
+     "simpler": {"hi": "Line par 0 se 6 gap chalo, toh 6/8 aata hai. Wahi jagah 3/4 bhi hai, toh dono ek hi maatra hain.", "en": "Walk 6 gaps from 0 on the line and you reach 6/8. That place is 3/4 too, so both are one amount."}
     },
     {
      "id": "e2",
-     "convey": "the check without a picture: does one number multiply BOTH top and bottom → 2/3 and 6/9: 2 × 3 = 6, 3 × 3 = 9 → same multiplier → equal → transfer: find the one multiplier for 1/6 and 2/12, drawn as a bar of 6 above a bar of 12",
-     "mustSay": [{"hi": "ek hi number se guna", "en": "multiplied by the same number"}, { "hi": "1/6", "en": "1/6" }],
+     "convey": "the check without a picture: does one number multiply BOTH top and bottom → 2/3 and 6/9: 2 × 3 = 6, 3 × 3 = 9 → same multiplier → equal → transfer: find the one multiplier for 1/2 and 5/10",
+     "mustSay": [{"hi": "ek hi number se guna", "en": "multiplied by one number"}, {"hi": "2/3 = 6/9", "en": "2/3 = 6/9"}],
      "board": {"template": "compare@1", "params": {"left": {"title": "2/3", "items": ["upar 2 × 3 = 6", "neeche 3 × 3 = 9"]}, "right": {"title": "6/9", "items": ["dono × 3", "barabar"]}}},
-     "point": { "hi": "Check karne ka tareeka: dekho kya upar aur neeche dono ek hi number se guna hue. Dono ek hi number se guna hue hon, toh bhinn barabar hain. Ab upar ki patti dekho: 6 hisse, ek rang wala, yaani 1/6.", "en": "The way to check: see whether the top and bottom were both multiplied by the same number. If both were multiplied by the same number, the fractions are equal. Now look at the top bar: 6 parts, one shaded, that is 1/6." },
+     "viewCaption": {"hi": "Board par do dabbe hain: ek mein 2/3, doosre mein 6/9, aur saath mein likha hai ki upar aur neeche kis number se guna hue.", "en": "The board has two boxes: one with 2/3, the other with 6/9, and beside them is written what number the top and bottom were multiplied by."},
+     "point": {"hi": "Bina tasveer ke jaanchne ka tareeka: dekho ki upar aur neeche, dono ek hi number se guna hue ya nahi. 2/3 aur 6/9 mein upar 2 × 3 = 6, neeche 3 × 3 = 9, toh 2/3 = 6/9.", "en": "The way to check without a picture: see whether the top and the bottom were both multiplied by one number. For 2/3 and 6/9, top 2 × 3 = 6, bottom 3 × 3 = 9, so 2/3 = 6/9."},
+     "pointAlt": {"hi": "Ek patti ke 3 hisson mein se 2 mein rang ho, aur har hissa 3 mein kaat do: 9 mein se 6 hisson mein rang aa jaata hai. Patti wahi, rang wahi, sirf hisse chhote hue.", "en": "If 2 of a strip's 3 parts are coloured and every part is cut into 3, then 6 of the 9 parts are coloured. Same strip, same colour, only smaller parts."},
      "ask": {
-      "prompt": { "hi": "12 hisson wali neeche ki patti bhi utni hi lambi hai, aur 1/6 = 2/12 hai. Upar aur neeche dono kis ek number se guna hue hain?", "en": "The bar below, in 12 parts, is just as long, and 1/6 = 2/12. By which one number were the top and bottom both multiplied?" },
-      "key": "2",
-      "why": { "hi": "upar 1 × 2 = 2 hua aur neeche 6 × 2 = 12", "en": "the top went 1 × 2 = 2 and the bottom 6 × 2 = 12" },
-      "accept": ["do", "two", "2 se", "do se"],
-      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 1, "label": "1/6"}, {"parts": 12, "shade": 0, "label": ""}]} },
-      "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 1, "label": "1/6"}, {"parts": 12, "shade": 2, "label": "2/12"}]} }
+      "prompt": {"hi": "Ab 1/2 aur 5/10 ko isi tarah jaancho. Upar aur neeche, dono kis ek number se guna hue?", "en": "Now check 1/2 and 5/10 the same way. By which one number were the top and the bottom both multiplied?"},
+      "hindi": {"hi": "1/2 aur 5/10 ko isi tarah jaancho. Upar wala aur neeche wala, dono kaunse ek number se guna hue hain?", "en": "Check 1/2 and 5/10 this way. Which one number were the top one and the bottom one both multiplied by?"},
+      "reask": {"hi": "1/2 se 5/10 banane mein upar aur neeche, dono kis ek number se guna hue?", "en": "Making 5/10 from 1/2, by which one number were top and bottom both multiplied?"},
+      "key": "5",
+      "accept": ["paanch", "five", "5 se", "paanch se", "5 se guna"],
+      "why": {"hi": "upar 1 × 5 = 5 hua aur neeche 2 × 5 = 10, isliye 1/2 = 5/10", "en": "top 1 × 5 = 5 and bottom 2 × 5 = 10, so 1/2 = 5/10"},
+      "whyShort": {"hi": "1 × 5 = 5 aur 2 × 5 = 10", "en": "1 × 5 = 5 and 2 × 5 = 10"},
+      "whyAlt": {"hi": "1/2 ki patti ka har hissa 5 mein kaato: 2 hisse 10 ban jaate hain, aur rang wala ek hissa 5.", "en": "Cut each part of a 1/2 strip into 5: the 2 parts become 10, and the one coloured part becomes 5."},
+      "simpler": {"hi": "Pehle neeche wale number dekho: do kis number se guna hokar das bana. Phir dekho ki upar wala bhi usi se guna hua ya nahi.", "en": "First look at the bottom numbers: what number turned two into ten. Then see whether the top was multiplied by the same."},
+      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}]}},
+      "viewCaption": {"hi": "Do ek jaise gol hain: ek do barabar hisson mein, doosra das mein.", "en": "Two identical circles: one in two equal parts, the other in ten."},
+      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 10, "shade": 5, "label": "5/10"}]}}
      },
-     "simpler": { "hi": "Pehle neeche dekho: 6 kis number se guna hokar 12 bana. Phir dekho upar wala number bhi usi se guna hua ya nahi.", "en": "First look at the bottom: 6 times what made 12. Then see whether the top number was multiplied by that same one." }
+     "simpler": {"hi": "Upar aur neeche, dono ek hi number se guna hue hon, toh fraction barabar hain.", "en": "When the top and the bottom were both multiplied by one number, the fractions are equal."}
     },
     {
      "id": "e3",
      "convey": "the same check can say no: 2/3 and 4/9 → top × 2 but bottom × 3 → no single multiplier → not equal → transfer: 1/2 and 2/6 on two unshaded bars of 2 and 6 parts",
      "mustSay": [{"hi": "upar ek number se, neeche doosre se", "en": "top by one number, bottom by another"}, {"hi": "barabar nahi", "en": "not equal"}],
      "board": {"template": "compare@1", "params": {"left": {"title": "2/3 aur 4/9", "items": ["upar × 2", "neeche × 3"]}, "right": {"title": "ek hi number nahi", "items": ["barabar nahi"]}}},
-     "point": { "hi": "Yeh check na bhi bol sakta hai: agar upar ek number se guna hua aur neeche kisi doosre number se, toh bhinn barabar nahi. Ab yeh do patti dekho, ek 2 hisson mein, ek 6 mein.", "en": "This check can also say no: if the top was multiplied by one number and the bottom by a different one, the fractions are not equal. Now look at these two bars, one in 2 parts, one in 6." },
+     "viewCaption": {"hi": "Board ke ek dabbe mein 2/3 aur 4/9 hain, upar aur neeche ke guna ke saath; doosre dabbe mein likha hai ki number ek nahi, isliye barabar nahi.", "en": "One box on the board has 2/3 and 4/9, with what the top and bottom were multiplied by; the other says the number is not the same, so not equal."},
+     "point": {"hi": "Yeh jaanch nahi bhi bol sakti hai. 2/3 aur 4/9 mein upar 2 × 2 = 4 hua, par neeche 3 × 3 = 9: upar ek number se, neeche doosre se, isliye barabar nahi.", "en": "This check can say no as well. For 2/3 and 4/9 the top went 2 × 2 = 4, but the bottom 3 × 3 = 9: the top by one number, the bottom by another, so not equal."},
+     "pointAlt": {"hi": "4/9 ki patti socho: 9 chhote hisson mein se 4 mein rang. 2/3 jitna rang hone ke liye 9 mein se 6 chahiye the, toh 4/9 kam hai.", "en": "Picture a 4/9 strip: 4 of 9 small parts coloured. To have as much colour as 2/3 it would need 6 of the 9, so 4/9 is less."},
      "ask": {
-      "prompt": {
-       "hi": "Isi tarah check karo: kya 1/2 aur 2/6 barabar bhinn hain, haan ya nahi?",
-       "en": "Check the same way: are 1/2 and 2/6 equal fractions, yes or no?"
-      },
+      "prompt": {"hi": "Isi tarah jaancho: kya 1/2 aur 2/6 barabar fraction hain, haan ya nahi?", "en": "Check it the same way: are 1/2 and 2/6 equal fractions, yes or no?"},
+      "hindi": {"hi": "1/2 aur 2/6 ko isi tarah jaancho. Kya dono barabar fraction hain, haan ya nahi?", "en": "Check 1/2 and 2/6 this way. Are the two equal fractions, yes or no?"},
+      "reask": {"hi": "Kya 1/2 aur 2/6 barabar fraction hain, haan ya nahi?", "en": "Are 1/2 and 2/6 equal fractions, yes or no?"},
       "key": "no",
-      "why": {
-       "hi": "upar 1 × 2 = 2 hua par neeche 2 × 3 = 6, ek hi number nahi hai",
-       "en": "the top went 1 × 2 = 2 but the bottom went 2 × 3 = 6, which is not one number"
-      },
       "accept": ["nahi", "barabar nahi", "not equal"],
+      "why": {"hi": "upar 1 × 2 = 2 hua par neeche 2 × 3 = 6; ek hi number nahi hai, isliye barabar nahi", "en": "top 1 × 2 = 2 but bottom 2 × 3 = 6; not one number, so not equal"},
+      "whyShort": {"hi": "upar 2 se guna hua, neeche 3 se", "en": "the top was multiplied by 2, the bottom by 3"},
+      "whyAlt": {"hi": "2/6 ki patti mein 6 mein se sirf 2 hisse hain, jo aadhe se kam hain; 1/2 poora aadha hai.", "en": "A 2/6 strip has only 2 of its 6 parts, less than half; 1/2 is a whole half."},
+      "simpler": {"hi": "Upar wale numbers aur neeche wale numbers ko alag-alag dekho, aur socho ki dono kis number se guna hue.", "en": "Look at the top numbers and the bottom numbers separately, and think what number each pair was multiplied by."},
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]}},
+      "viewCaption": {"hi": "Do ek jaise gol hain: ek do barabar hisson mein, doosra chhe mein.", "en": "Two identical circles: one in two equal parts, the other in six."},
       "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 6, "shade": 2, "label": "2/6"}]}}
      },
-     "simpler": { "hi": "Upar aur neeche ka guna ka number alag ho, toh bhinn barabar nahi.", "en": "If the top and the bottom are multiplied by different numbers, the fractions are not equal." }
+     "simpler": {"hi": "Upar ek number se guna ho aur neeche doosre se, toh fraction barabar nahi hote.", "en": "If the top is multiplied by one number and the bottom by another, the fractions are not equal."}
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Rahul ne ek chikki bar ka 3/4 khaya. Sita ne usi size ki doosri chikki bar ka 9/12 khaya. Kya dono ne barabar chikki khayi?",
-     "en": "Rahul ate 3/4 of a chikki bar. Sita ate 9/12 of another chikki bar of the same size. Did they both eat the same amount?"
-    }, "simpler": { "hi": "3/4 ka neeche wala 4, 9/12 mein 12 ban gaya. Dekho, upar wala 3 bhi utne guna hua ya nahi.", "en": "The bottom 4 of 3/4 became 12 in 9/12. See whether the top 3 grew by the same times." },
-    "givens": [
-     {
-      "hi": "Rahul ka hissa 3/4 hai aur Sita ka 9/12, dono usi size ki bar se",
-      "en": "Rahul's share is 3/4 and Sita's 9/12, both of same-size bars"
-     }
-    ],
-    "find": {"hi": "kya 3/4 aur 9/12 barabar bhinn hain", "en": "whether 3/4 and 9/12 are equivalent"},
+    "problem": {"hi": "Rahul ne ek chikki ka 3/4 khaya, aur Sita ne waisi hi chikki ka 9/12. Kya dono ne barabar chikki khayi?", "en": "Rahul ate 3/4 of a chikki, and Sita ate 9/12 of one just like it. Did they eat the same amount?"},
+    "problemAlt": {"hi": "Socho, do ek jaisi chikki hain: ek 4 hisson mein kati hai aur doosri 12 mein. Dekhna hai ki pehli ke 4 mein se 3 hisse aur doosri ke 12 mein se 9 hisse, chikki barabar hai ya nahi.", "en": "Picture two identical chikkis, one cut into 4 parts and the other into 12. We see whether 3 of the first's 4 parts and 9 of the second's 12 are the same amount of chikki."},
+    "simpler": {"hi": "Barabar jaanchne ke liye dekho ki neeche jis number se guna hua, upar bhi usi se guna hua ya nahi.", "en": "To check for equal, see whether the top was multiplied by the same number as the bottom."},
+    "givens": [{"hi": "Rahul ka hissa 3/4, Sita ka 9/12, dono ek jaisi chikki se", "en": "Rahul's share 3/4, Sita's 9/12, both from identical chikkis"}],
+    "find": {"hi": "kya 3/4 aur 9/12 barabar fraction hain", "en": "whether 3/4 and 9/12 are equal fractions"},
     "steps": [
      {
-      "do": {"hi": "Neeche dekho, 4 se 12 kaise bana", "en": "Look at the bottom: how 4 became 12"},
-      "result": "4 × 3 = 12",
-      "why": {"hi": "neeche ka number 3 guna hua", "en": "the bottom number was multiplied by 3"},
-      "simpler": {
-       "hi": "Neeche 4 tha aur 12 bana. 4 ko 3 se guna karo, toh 12 aata hai.",
-       "en": "The bottom was 4 and became 12. Multiply 4 by 3 and you get 12."
-      }
+      "ask": {
+       "prompt": {"hi": "4 ko 3 se guna karke 12 bana. Barabar ke liye upar kya chahiye?", "en": "4 times 3 made 12. For equal, what must the top be?"},
+       "hindi": {"hi": "Neeche 4 ko 3 se guna karke 12 bana. Dono barabar hon, toh upar kaunsa number hona chahiye?", "en": "Below, 4 multiplied by 3 made 12. For the two to be equal, which number must be on top?"},
+       "key": "9",
+       "accept": ["nau", "nine", "9 hona chahiye", "upar 9", "3 × 3 = 9"],
+       "right": {"hi": "Haan, upar 9 hona chahiye, kyunki upar bhi 3 se guna hoga.", "en": "Yes, the top must be 9, because it is multiplied by 3 too."}
+      },
+      "do": {"hi": "Barabar ke liye upar ka number socho", "en": "Work out the top number needed for equal"},
+      "result": "upar 3 × 3 = 9 hona chahiye",
+      "why": {"hi": "neeche 3 se guna hua, toh upar bhi 3 se", "en": "the bottom was multiplied by 3, so the top by 3 as well"},
+      "simpler": {"hi": "Neeche jis number se guna hua, upar bhi usi se guna hoga. Ab upar ke 3 ke saath wahi karke socho.", "en": "The top is multiplied by the same number as the bottom. Now do that to the top 3 in your head."}
      },
      {
-      "do": {"hi": "Upar dekho, 3 se 9 kaise bana", "en": "Look at the top: how 3 became 9"},
-      "result": "3 × 3 = 9",
-      "why": {"hi": "upar ka number bhi 3 guna hua", "en": "the top number was also multiplied by 3"},
-      "simpler": {
-       "hi": "Upar 3 tha aur 9 bana. 3 ko bhi 3 se guna kiya, toh 9 aaya.",
-       "en": "The top was 3 and became 9. 3 was also multiplied by 3, giving 9."
-      }
+      "do": {"hi": "Ab Sita ka upar wala number dekho", "en": "Now look at Sita's top number"},
+      "result": "Sita ka upar 9 hi hai, toh 3/4 = 9/12",
+      "why": {"hi": "upar aur neeche dono 3 se guna hue", "en": "the top and the bottom were both multiplied by 3"},
+      "simpler": {"hi": "Sita ke fraction ka upar wala number padho.", "en": "Read the top number of Sita's fraction."}
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "Upar aur neeche dono ek hi number 3 se guna hue. Toh kya Rahul aur Sita ne barabar chikki khayi, haan ya nahi?",
-      "en": "The top and bottom were both multiplied by the same number 3. So did Rahul and Sita eat the same amount, yes or no?"
-     },
-     "key": "yes", "why": { "hi": "3/4 se 9/12 banane mein upar aur neeche dono ko 3 se guna kiya, isliye dono barabar hain", "en": "3/4 becomes 9/12 by multiplying the top and bottom both by 3, so the two fractions are equal" },
-     "accept": ["haan", "haan, barabar", "barabar", "same"],
-     "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
-     "wrongIfMis": "no",
-     "simpler": {
-      "hi": "Jab upar aur neeche dono ek hi number se guna hon, toh maatra nahi badalti. Yahan dekho dono kis number se guna hue.",
-      "en": "When the top and bottom are both multiplied by one same number, the amount does not change. Look at what number both were multiplied by here."
-     },
+     "prompt": {"hi": "Mohan ne bhi waisi chikki ka 8/12 khaya. Mohan ne Rahul se kam khaya, zyada, ya barabar?", "en": "Mohan also ate 8/12 of a chikki just like it. Did Mohan eat less than Rahul, more, or the same?"},
+     "hindi": {"hi": "Mohan ne bhi waisi hi chikki ka 8/12 khaya. Usne Rahul se kam khaya, zyada khaya, ya utna hi?", "en": "Mohan too ate 8/12 of the same kind of chikki. Did he eat less than Rahul, more, or just as much?"},
+     "reask": {"hi": "Mohan ka 8/12, Rahul ke 3/4 se kam hai, zyada, ya barabar?", "en": "Is Mohan's 8/12 less than Rahul's 3/4, more, or the same?"},
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 3, "label": "3/4"}, {"parts": 12, "shade": 9, "label": "9/12"}]}}
+     "viewCaption": {"hi": "Do ek jaise gol hain: ek chaar barabar hisson mein, doosra baarah mein.", "en": "Two identical circles: one in four equal parts, the other in twelve."},
+     "key": "kam",
+     "why": {"hi": "3/4 = 9/12 hai, aur Mohan ka 8/12 usse ek hissa kam hai", "en": "3/4 = 9/12, and Mohan's 8/12 is one part less"},
+     "whyAlt": {"hi": "12 hisson wali chikki mein Rahul jitna hone ke liye 9 hisse chahiye; Mohan ke paas sirf 8 hain.", "en": "In a chikki of 12 parts, matching Rahul needs 9 parts; Mohan has only 8."},
+     "accept": ["kam khaya", "Rahul se kam", "less", "thoda kam", "ek hissa kam"],
+     "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
+     "wrongIfMis": "barabar",
+     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 3, "label": "3/4"}, {"parts": 12, "shade": 8, "label": "8/12"}]}},
+     "simpler": {"hi": "Rahul ka 3/4, baarah hisson mein kitna banta hai, yeh abhi dekha. Ab use Mohan ke 8/12 se milaao.", "en": "You just saw what Rahul's 3/4 is in twelve parts. Now compare it with Mohan's 8/12."}
     },
-    "answer": {"hi": "haan, 3/4 = 9/12, dono ne barabar chikki khayi", "en": "yes, 3/4 = 9/12, they both ate the same amount"},
-    "why": {
-     "hi": "3/4 ke upar aur neeche dono ko 3 se guna karne par 9/12 banta hai, toh dono ek hi maatra hain",
-     "en": "multiplying both the top and bottom of 3/4 by the same number 3 gives 9/12, so both are the same amount"
-    },
-    "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}}
+    "answer": {"hi": "Sita ne Rahul jitna khaya, 3/4 = 9/12; Mohan ne usse kam khaya, 8/12", "en": "Sita ate as much as Rahul, 3/4 = 9/12; Mohan ate less, 8/12"},
+    "why": {"hi": "barabar hone ke liye upar aur neeche, dono ek hi number se guna hone chahiye", "en": "to be equal, the top and the bottom must be multiplied by one number"},
+    "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
+    "viewCaption": {"hi": "Dono chikki yahan do ek jaise gol hain: ek chaar barabar hisson mein, doosri baarah mein.", "en": "Both chikkis are two identical circles here: one in four equal parts, the other in twelve."}
    },
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Inmein se kaunsa bhinn 1/5 ke barabar hai: 2/10 ya 2/6?", "en": "Which of these fractions equals 1/5: 2/10 or 2/6?" },
+     "prompt": {"hi": "Inmein se kaunsa bhinn 1/5 ke barabar hai: 2/10 ya 2/6?", "en": "Which of these fractions equals 1/5: 2/10 or 2/6?"},
+     "hindi": {"hi": "2/10 aur 2/6 mein se kaunsa fraction 1/5 ke barabar hai?", "en": "Of 2/10 and 2/6, which fraction equals 1/5?"},
+     "reask": {"hi": "1/5 ke barabar kaun hai, 2/10 ya 2/6?", "en": "Which equals 1/5, 2/10 or 2/6?"},
      "key": "2/10",
-     "why": { "hi": "neeche 5 × 2 = 10, upar 1 × 2 = 2, toh 1/5 = 2/10; 2/6 mein sirf 1 joda gaya", "en": "bottom 5 × 2 = 10, top 1 × 2 = 2, so 1/5 = 2/10; 2/6 only adds 1 to both" },
+     "did": {"hi": "1/5 ke barabar fraction pehchaana", "en": "found the fraction equal to 1/5"},
      "accept": ["2/10 wala", "pehla", "pehla wala", "two tenths", "do bata das", "2 by 10"],
      "targets": "c5-maths-ch02-t03-m-add-same",
      "wrongIfMis": "2/6",
-     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]} },
-     "simpler": { "hi": "Dekho kis bhinn mein 1/5 ke upar aur neeche dono ek hi number se guna hue hain. Jodna guna nahi hai.", "en": "See in which fraction both the top and bottom of 1/5 were multiplied by one same number. Adding is not multiplying." },
-     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 1, "label": "1/5"}, {"parts": 10, "shade": 2, "label": "2/10"}, {"parts": 6, "shade": 2, "label": "2/6"}]} }
+     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]}},
+     "viewCaption": {"hi": "Teen patti ek jitni lambi hain: ek paanch barabar hisson mein, ek das mein, aur ek chhe mein.", "en": "Three strips of the same length: one in five equal parts, one in ten, and one in six."},
+     "why": {"hi": "neeche 5 × 2 = 10 aur upar 1 × 2 = 2, isliye 1/5 = 2/10; 2/6 mein 1 joda gaya", "en": "below 5 × 2 = 10 and above 1 × 2 = 2, so 1/5 = 2/10; 2/6 only had 1 added"},
+     "whyShort": {"hi": "upar aur neeche, dono 2 se guna hue", "en": "top and bottom were both multiplied by 2"},
+     "whyAlt": {"hi": "1/5 ki patti ka har hissa 2 mein kaato: 10 hisse bante hain, aur rang wala ek hissa 2.", "en": "Cut each part of a 1/5 strip in 2: there are 10 parts, and the one coloured part becomes 2."},
+     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 5, "shade": 1, "label": "1/5"}, {"parts": 10, "shade": 2, "label": "2/10"}, {"parts": 6, "shade": 2, "label": "2/6"}]}},
+     "simpler": {"hi": "Dekho kis fraction mein 1/5 ke upar aur neeche, dono ek hi number se guna hue hain. Jodna guna nahi hai.", "en": "See in which fraction both the top and bottom of 1/5 were multiplied by one number. Adding is not multiplying."}
     },
     {
      "id": "c2",
-     "prompt": { "hi": "Yeh sankhya rekha 0 se 1 tak 10 barabar hisson mein bati hai. 0 ke baad aathve nishaan par gol ghera hai. Kya woh nishaan 4/5 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is split into 10 equal parts. The 8th mark after 0 is circled. Is that mark equal to 4/5, yes or no?" },
+     "prompt": {"hi": "Yeh number line 0 se 1 tak 10 barabar gap mein kati hai. 0 ke baad aathve mark par ghera hai. Kya woh mark 4/5 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is cut into 10 equal gaps. The eighth mark after 0 is ringed. Is that mark equal to 4/5, yes or no?"},
+     "hindi": {"hi": "Yeh number line 0 se 1 tak 10 barabar gap mein kati hai, aur 0 ke baad aathve mark par ghera bana hai. Woh mark 4/5 ke barabar hai, haan ya nahi?", "en": "This number line from 0 to 1 is cut into 10 equal gaps, and the eighth mark after 0 has a ring round it. Is that mark equal to 4/5, yes or no?"},
+     "reask": {"hi": "0 se 1 tak 10 gap wali line par aathva mark, 4/5 ke barabar hai, haan ya nahi?", "en": "On the line from 0 to 1 in 10 gaps, is the eighth mark equal to 4/5, yes or no?"},
      "key": "yes",
-     "why": { "hi": "0 ke baad aathva nishaan 8/10 hai, aur 4/5 ke upar aur neeche dono ko 2 se guna karke 8/10 banta hai", "en": "the 8th mark after 0 is 8/10, and 4/5 with top and bottom both multiplied by 2 is 8/10" },
+     "did": {"hi": "10 gap wali line par 4/5 ka mark pehchaana", "en": "found the mark for 4/5 on a line of 10 gaps"},
      "accept": ["haan", "haan, barabar hai", "barabar"],
      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
      "wrongIfMis": "no",
-     "board": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "mark": 8} },
-     "simpler": { "hi": "Rekha ke 10 barabar hisse hain. Ab 4/5 ke upar aur neeche ko dugna karke aathve nishaan se milaao.", "en": "The line has 10 equal parts. Now double the top and bottom of 4/5 and match it with the 8th mark." },
-     "answerBoard": { "template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 8, "label": "8/10 = 4/5"}]} }
+     "board": {"template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "mark": 8}},
+     "viewCaption": {"hi": "Yahan line ek patti ban gayi hai: das barabar hisse, aur pehle aath hisson mein rang.", "en": "Here the line has become a strip: ten equal parts, with the first eight coloured."},
+     "why": {"hi": "0 ke baad aathva mark 8/10 hai, aur 4/5 ke upar aur neeche ko 2 se guna karke 8/10 banta hai", "en": "the eighth mark after 0 is 8/10, and multiplying the top and bottom of 4/5 by 2 gives 8/10"},
+     "whyShort": {"hi": "4/5 ko 2 se guna karke 8/10 banta hai", "en": "4/5 times 2 on both gives 8/10"},
+     "whyAlt": {"hi": "10 gap ko 5 barabar hisson mein baanto, toh har 1/5 mein 2 gap aate hain; 4/5 tak 4 baar 2, yaani 8 gap.", "en": "Split the 10 gaps into 5 equal parts and each 1/5 holds 2 gaps; up to 4/5 is 4 times 2, that is 8 gaps."},
+     "answerBoard": {"template": "fraction-line@1", "params": {"den": 10, "from": 0, "to": 1, "marks": [{"num": 8, "label": "8/10 = 4/5"}]}},
+     "answerViewCaption": {"hi": "Patti ke das barabar hisson mein se aath mein rang hai, yaani 8/10, aur yahi 4/5 bhi hai.", "en": "Eight of the strip's ten equal parts are coloured, that is 8/10, and that is 4/5 as well."},
+     "simpler": {"hi": "Pehle socho ki 4/5 ko kis number se guna karein ki neeche das ho jaaye. Phir dekho ki upar wala number aathve mark se milta hai ya nahi.", "en": "First think what to multiply 4/5 by to get ten below. Then see whether the top number matches the eighth mark."}
     },
     {
      "id": "c3",
-     "prompt": { "hi": "{friend} ka kehna hai ki 3/7 aur 4/8 barabar hain, kyunki dono mein neeche ka number upar se 4 zyada hai. {friend} ki baat sahi hai, haan ya nahi?", "en": "{friend} says 3/7 and 4/8 are equal because in both the bottom number is 4 more than the top. Is {friend} right, yes or no?" },
+     "prompt": {"hi": "{friend} ka kehna hai ki 3/7 aur 4/8 barabar hain, kyunki dono mein neeche ka number upar se 4 zyada hai. {friend} ki baat sahi hai, haan ya nahi?", "en": "{friend} says 3/7 and 4/8 are equal because in both the bottom number is 4 more than the top. Is {friend} right, yes or no?"},
+     "hindi": {"hi": "{friend} ka kehna hai ki 3/7 aur 4/8 barabar hain, kyunki dono mein neeche wala number upar wale se 4 zyada hai. Kya uski baat theek hai, haan ya nahi?", "en": "{friend} says 3/7 and 4/8 are equal, because in both the bottom number is 4 more than the top. Is that so, yes or no?"},
+     "reask": {"hi": "Kya 3/7 aur 4/8 barabar hain, haan ya nahi?", "en": "Are 3/7 and 4/8 equal, yes or no?"},
      "key": "no",
-     "why": {
-      "hi": "4/8 theek aadha hai, par 3/7 aadhe se kam hai, 3 ka dugna 6 hi hai, 7 nahi",
-      "en": "4/8 is exactly half, but 3/7 is less than half: double 3 is only 6, not 7"
-     },
+     "did": {"hi": "upar aur neeche ke farak wali galti pakdi", "en": "caught the slip of judging by the gap between top and bottom"},
      "accept": ["nahi", "galat", "barabar nahi", "wrong"],
      "targets": "c5-maths-ch02-t03-m-add-same",
      "wrongIfMis": "yes",
      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 0, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]}},
-     "simpler": {
-      "hi": "4/8 mein upar ka dugna theek neeche ke barabar hai, isliye woh aadha hai. Ab 3/7 ko bhi isi tarah dekho.",
-      "en": "In 4/8, double the top is exactly the bottom, so it is a half. Now look at 3/7 the same way."
-     },
-     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 3, "label": "3/7"}, {"parts": 8, "shade": 4, "label": "4/8"}]}}
+     "viewCaption": {"hi": "Do ek jaise gol hain: ek saat barabar hisson mein, doosra aath mein.", "en": "Two identical circles: one in seven equal parts, the other in eight."},
+     "why": {"hi": "4/8 theek aadha hai, par 3/7 aadhe se kam hai, kyunki 3 ka dugna 6 hi hai, 7 nahi", "en": "4/8 is exactly half, but 3/7 is less than half, since double 3 is only 6, not 7"},
+     "whyShort": {"hi": "4/8 aadha hai, 3/7 aadhe se kam", "en": "4/8 is half, 3/7 is less than half"},
+     "whyAlt": {"hi": "4/8 mein khaali hisse 4 hain aur 3/7 mein bhi 4, par 7 wale hisse bade hain, isliye 3/7 mein khaali jagah zyada hai.", "en": "4/8 leaves 4 parts empty and 3/7 leaves 4 too, but the parts of 7 are bigger, so 3/7 leaves more empty."},
+     "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 3, "label": "3/7"}, {"parts": 8, "shade": 4, "label": "4/8"}]}},
+     "answerViewCaption": {"hi": "Line ke upar saat barabar gap hain, neeche aath. 3/7 wala mark 4/8 wale mark se pehle aata hai, isliye dono barabar nahi.", "en": "There are seven equal gaps above the line and eight below. The 3/7 mark comes before the 4/8 mark, so the two are not equal."},
+     "simpler": {"hi": "Pehle dekho ki 4/8 aadhe se kitna hai. Phir socho ki 3/7 bhi theek aadha hai ya nahi.", "en": "First see how 4/8 compares with a half. Then think whether 3/7 is exactly half too."}
     }
    ],
    "ladder": [
-    {"itemId": "c5-maths-ch02-t03-i04", "why": "4/6 and 2/3, × 2 on both → the e2 check with a yes and a reason"},
+    {
+     "itemId": "c5-maths-ch02-t03-i04",
+     "why": "4/6 and 2/3, × 2 on both → the e2 check with a yes and a reason"
+    },
     {
      "itemId": "c5-maths-ch02-t03-rl-h3",
      "why": "6/9 and 8/12, no direct multiplier → both brought to 2/3 to decide"
     },
-    {"itemId": "c5-maths-ch02-t03-i11", "why": "3/4 cup with a 1/8 spoon → 3/4 = 6/8 used to count spoonfuls"}
+    {
+     "itemId": "c5-maths-ch02-t03-i11",
+     "why": "3/4 cup with a 1/8 spoon → 3/4 = 6/8 used to count spoonfuls"
+    }
    ],
    "remediation": [
     {
      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
      "move": "two same-length bars, 6 parts and 12: two small parts below fill one part above → one amount can carry two names → different numbers do not decide; the multiplier check does",
-     "say": { "hi": "Ek maatra ke kai naam ho sakte hain. Yeh do patti ek jitni lambi hain: upar wali ke tukde 4, neeche wali ke 8. Neeche ke do tukde milkar upar ka ek tukda bante hain. Number alag hon, maatra phir bhi ek ho sakti hai.", "en": "One amount can have many names. These two bars are the same length: the top one is cut in 4, the bottom one in 8. Two small pieces below make one piece on top. The numbers can differ and the amount still be one." }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]} },
-     "simpler": { "hi": "Do chhote tukde, ek bada tukda: maatra wahi. Isliye number alag hon, phir bhi bhinn barabar ho sakte hain.", "en": "Two small pieces, one big piece: the same amount. So fractions with different numbers can still be equal." },
-     "then": { "prompt": { "hi": "Teen bhinn suno: 3/9, 4/12 aur 5/12. Inmein se kitne bhinn 1/3 ke barabar hain?", "en": "Listen to three fractions: 3/9, 4/12 and 5/12. How many of them equal 1/3?" }, "key": "2", "why": { "hi": "1/3 ke upar-neeche ko 3 se guna karke 3/9, aur 4 se 4/12 banta hai; 5/12 nahi, toh 2 barabar hain", "en": "the top and bottom of 1/3 times 3 give 3/9, times 4 give 4/12; 5/12 is not equal, so 2 are equal" }, "accept": ["do", "two", "do bhinn", "2 bhinn", "two of them"], "targets": "c5-maths-ch02-t03-m-different-numbers-unequal", "wrongIfMis": "koi nahi", "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]} }, "simpler": { "hi": "Har bhinn mein dekho, neeche wala number upar wale ka theek teen guna hai ya nahi.", "en": "In each fraction, see whether the bottom number is exactly three times the top one." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 3, "label": "3/9"}, {"parts": 12, "shade": 4, "label": "4/12"}, {"parts": 12, "shade": 5, "label": "5/12"}]} } }
+     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]}},
+     "viewCaption": {"hi": "Dono patti yahan do ek jaise gol ban gayi hain: ek chaar barabar hisson mein, doosra aath mein.", "en": "Both strips have become two identical circles here: one in four equal parts, the other in eight."},
+     "say": {"hi": "Yeh do patti ek jitni lambi hain, pehli ke 4 hisse aur doosri ke 8. Doosri ke 2 hisse milkar pehli ka 1 hissa banate hain: number alag, maatra ek.", "en": "These two strips are the same length, the first in 4 parts and the second in 8. Two parts of the second make one part of the first: different numbers, one amount."},
+     "sayAlt": {"hi": "Barfi ki ek patti ko 4 hisson mein kaato aur 1 lo; waisi patti ko 8 mein kaato aur 2 lo. Haath mein barfi utni hi aati hai, bas naam alag hain: 1/4 aur 2/8.", "en": "Cut a barfi strip into 4 parts and take 1; cut one like it into 8 and take 2. You hold the same barfi, only the names differ: 1/4 and 2/8."},
+     "simpler": {"hi": "Doosri patti ke do chhote hisse, pehli patti ke ek bade hisse jitne hain. Isliye number alag hon, phir bhi maatra ek ho sakti hai.", "en": "Two small parts of the second strip are as long as one big part of the first. So the numbers can differ and the amount still be one."},
+     "then": {
+      "prompt": {"hi": "Teen bhinn suno: 3/9, 4/12 aur 5/12. Inmein se kitne bhinn 1/3 ke barabar hain?", "en": "Listen to three fractions: 3/9, 4/12 and 5/12. How many of them equal 1/3?"},
+      "hindi": {"hi": "3/9, 4/12 aur 5/12 mein se kitne fraction 1/3 ke barabar hain?", "en": "Of 3/9, 4/12 and 5/12, how many fractions equal 1/3?"},
+      "reask": {"hi": "1/3 ke barabar kitne fraction hain, 3/9, 4/12 aur 5/12 mein se?", "en": "How many of 3/9, 4/12 and 5/12 equal 1/3?"},
+      "key": "2",
+      "accept": ["do", "two", "do bhinn", "2 bhinn", "two of them"],
+      "targets": "c5-maths-ch02-t03-m-different-numbers-unequal",
+      "wrongIfMis": "0",
+      "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}, {"parts": 12, "shade": 0, "label": ""}]}},
+      "viewCaption": {"hi": "Teen patti ek jitni lambi hain: ek nau barabar hisson mein, aur do baarah mein.", "en": "Three strips of the same length: one in nine equal parts, and two in twelve."},
+      "why": {"hi": "1/3 ko 3 se guna karke 3/9 aur 4 se guna karke 4/12 banta hai; 5/12 nahi, isliye 2", "en": "1/3 times 3 on both is 3/9 and times 4 is 4/12; 5/12 is not, so 2"},
+      "whyShort": {"hi": "3/9 aur 4/12 barabar hain, 5/12 nahi", "en": "3/9 and 4/12 are equal, 5/12 is not"},
+      "whyAlt": {"hi": "Har fraction mein dekho ki neeche wala number upar wale ka teen guna hai ya nahi: 9 aur 12 haan, par 5 ka teen guna 15 hai.", "en": "In each fraction see whether the bottom is three times the top: 9 and 12 are, but three times 5 is 15."},
+      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 9, "shade": 3, "label": "3/9"}, {"parts": 12, "shade": 4, "label": "4/12"}, {"parts": 12, "shade": 5, "label": "5/12"}]}},
+      "simpler": {"hi": "Har fraction mein dekho ki neeche wala number upar wale ka theek teen guna hai ya nahi.", "en": "In each fraction see whether the bottom number is exactly three times the top."}
+     }
     },
     {
      "targets": "c5-maths-ch02-t03-m-add-same",
      "move": "1/2 and 2/3 each have a bottom one more than the top, yet 2/3 is past a half → a fixed gap between top and bottom does not keep the amount → only one multiplier for both does",
-     "say": { "hi": "Patti par 1/2 ke tukde 2 hain, aur 2/3 ke tukde 3. Dono mein neeche ka number upar se 1 zyada hai, par 1/2 theek aadha hai aur 2/3 aadhe se zyada. Toh farak dekhkar nahi, guna dekhkar faisla karte hain.", "en": "These bars show 1/2 in 2 parts and 2/3 in 3 parts. In both the bottom is 1 more than the top, but 1/2 is exactly a half and 2/3 is more than a half. So we decide by multiplying, not by the gap." }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 3, "shade": 2, "label": "2/3"}]} },
-     "simpler": { "hi": "1/2 aadha hai, 2/3 aadhe se zyada. Dono mein farak 1 hi hai, phir bhi maatra alag hai.", "en": "1/2 is a half, 2/3 is more than a half. The gap is 1 in both, yet the amounts differ." },
+     "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 3, "shade": 2, "label": "2/3"}]}},
+     "viewCaption": {"hi": "Dono patti yahan ek number line par hain: line ke upar do barabar gap, neeche teen, aur dono ke mark alag jagah par hain.", "en": "Both strips are on one number line here: two equal gaps above the line, three below, and their marks are at different places."},
+     "say": {"hi": "Pehli patti ke 2 hisson mein se 1 mein rang hai, yaani 1/2; doosri ke 3 mein se 2, yaani 2/3. Dono mein farak 1 hai, phir bhi maatra alag hai.", "en": "The first strip has colour in 1 of its 2 parts, that is 1/2; the second in 2 of 3, that is 2/3. Both differ by 1, yet the amounts are different."},
+     "sayAlt": {"hi": "Do ek jaisi roti lo: ek ke 2 hisson mein se 1 lo, doosri ke 3 mein se 2. Doosri baar zyada roti milti hai, jabki dono baar neeche wala number upar se 1 hi zyada tha.", "en": "Take two identical rotis: 1 of the first's 2 parts, 2 of the second's 3. The second time you get more roti, though both times the bottom number was just 1 more than the top."},
+     "simpler": {"hi": "1/2 aadha hai, 2/3 aadhe se zyada. Dono mein farak 1 hi hai, phir bhi maatra alag hai.", "en": "1/2 is half, 2/3 more than half. Both differ by 1, yet the amounts differ."},
      "then": {
-      "prompt": {
-       "hi": "{friend} ne 1/3 ke upar aur neeche 2 jodkar 3/5 likha. Kya 3/5, 1/3 ke barabar hai, haan ya nahi?",
-       "en": "{friend} added 2 to the top and bottom of 1/3 and wrote 3/5. Is 3/5 equal to 1/3, yes or no?"
-      },
+      "prompt": {"hi": "{friend} ne 1/3 mein upar aur neeche 2 jodkar 3/5 banaya. Kya dono barabar hain, haan ya nahi?", "en": "{friend} added 2 to the top and bottom of 1/3 and made 3/5. Are the two equal, yes or no?"},
+      "hindi": {"hi": "{friend} ne 1/3 ke upar aur neeche, dono mein 2 jodkar 3/5 likha. Kya 3/5 aur 1/3 barabar hain, haan ya nahi?", "en": "{friend} added 2 to both the top and bottom of 1/3 and wrote 3/5. Are 3/5 and 1/3 equal, yes or no?"},
+      "reask": {"hi": "Kya 3/5, 1/3 ke barabar hai, haan ya nahi?", "en": "Is 3/5 equal to 1/3, yes or no?"},
       "key": "no",
-      "why": {
-       "hi": "upar 1 se 3 hone ke liye × 3 chahiye, par neeche 3 × 3 = 9 hota, 5 nahi",
-       "en": "the top going 1 to 3 needs × 3, but then the bottom would be 3 × 3 = 9, not 5"
-      },
       "accept": ["nahi", "galat", "barabar nahi", "not equal"],
       "targets": "c5-maths-ch02-t03-m-add-same",
       "wrongIfMis": "yes",
       "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 0, "label": ""}, {"parts": 5, "shade": 0, "label": ""}]}},
-      "simpler": {
-       "hi": "Upar aur neeche 2 jodna guna karna nahi hai. Barabar bhinn ke liye dono ko ek hi number se guna karte hain.",
-       "en": "Adding 2 to the top and bottom is not multiplying. For an equal fraction, both are multiplied by one same number."
-      },
-      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 5, "shade": 3, "label": "3/5"}]}}
+      "viewCaption": {"hi": "Do ek jaise gol hain: ek teen barabar hisson mein, doosra paanch mein.", "en": "Two identical circles: one in three equal parts, the other in five."},
+      "why": {"hi": "1 se 3 banane ke liye upar 3 se guna chahiye, par tab neeche 3 × 3 = 9 hota, 5 nahi", "en": "the top 1 became 3 by times 3, so the bottom should be 3 × 3 = 9, not 5"},
+      "whyShort": {"hi": "neeche 9 chahiye tha, 5 nahi", "en": "the bottom needed 9, not 5"},
+      "whyAlt": {"hi": "3/5 aadhe se zyada hai, aur 1/3 aadhe se kam; dono barabar ho hi nahi sakte.", "en": "3/5 is more than half and 1/3 less than half; they cannot be equal."},
+      "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 3, "shade": 1, "label": "1/3"}, {"parts": 5, "shade": 3, "label": "3/5"}]}},
+      "answerViewCaption": {"hi": "Line ke upar teen barabar gap hain, neeche paanch. 1/3 wala mark 3/5 wale mark se kaafi pehle hai, isliye dono barabar nahi.", "en": "There are three equal gaps above the line and five below. The 1/3 mark comes well before the 3/5 mark, so the two are not equal."},
+      "simpler": {"hi": "Upar aur neeche kuch jodna guna karna nahi hai. Dekho ki upar jis number se guna hua, neeche bhi usi se hua ya nahi.", "en": "Adding something to the top and bottom is not multiplying. See whether the bottom was multiplied by the same number as the top."}
      }
     }
    ],
-   "bridgeToNext": null
+   "bridgeToNext": null,
+   "covered": {"hi": "Do fraction tab barabar hain jab upar aur neeche ek hi number se guna hue hon.", "en": "Two fractions are equal when the top and bottom were multiplied by one number."}
   }
  ]
 }
