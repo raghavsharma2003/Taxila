@@ -13,8 +13,10 @@
 //   node scripts/lesson-scripts/check.mjs <topicId>                     exit 1 on any error
 //   node scripts/lesson-scripts/check.mjs <topicId> --blind q.json --keys k.json
 //   node scripts/lesson-scripts/check.mjs --all
+//   node scripts/lesson-scripts/check.mjs <topicId> --since <rev>     also list every part whose spoken text changed since <rev>
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, relative } from "node:path";
+import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
 import { toSpoken } from "../../server/voice/spoken.js";
@@ -469,8 +471,9 @@ export function unitFigureErrors(s) {
  * whole by the "?"-drop). A card's prompt and the worked problem (its question) may ask. */
 export function rhetoricalQuestionErrors(s) {
   const e = [];
-  // (director21 S2/E1: a card's reask and the teach-back's prompt are questions; a problemAlt may pose its problem as one)
-  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask|reask|problemAlt)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
+  // (director21 S2/E1: a card's reask and the teach-back's prompt are questions; a problemAlt may pose its problem as one;
+  // Learning 019 A.1: a card's `hindi` form is its question)
+  const ok = (path) => /\.(ask\.prompt|prompt|problem|ask|reask|problemAlt|hindi)$/.test(path) || /checks\[\d+\]\.prompt$/.test(path) || /then\.prompt$/.test(path) || /yourStep\.prompt$/.test(path);
   const walk = (x, path) => {
     if (Array.isArray(x)) return x.forEach((v, i) => walk(v, `${path}[${i}]`));
     if (!x || typeof x !== "object" || x.template) return;
@@ -691,7 +694,7 @@ export function jointErrors(s) {
   // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
   // written before them still passes) (dc-r8-director26 J1: beforeWorked, the lead into a worked problem; optional likewise)
   // (dc-r8-director26 N1, B2: helpToCard, a point's card after its wordings are spent; checkinStop, the stop menu; optional likewise)
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS, ...D29_JOINTS].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS, ...D29_JOINTS, "afterWorked"].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -903,7 +906,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s));
   return e;
 }
 
@@ -1269,7 +1272,7 @@ export function d28Errors(s) {
 export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
 export const D29_JOINTS = ["stepMiss", "startAnyway", "afterPark"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
-export function isD29(s) { return D29_PILOTS.includes(s?.topicId); }
+export function isD29(s) { return D29_PILOTS.includes(s?.topicId) || STANDARD_STAGED.includes(s?.topicId); }
 /** The fit of every pair that shares a turn, measured (A.1 to A.4). */
 export function fitOf(s) {
   const W = (x) => d27Words(x?.hi);
@@ -1393,6 +1396,9 @@ export const REM_WHOLE = [
     reason: "the judge's named note (\"3 wali ka ek hissa 9 wali ke teen jitna; 9 wali ke 2 usse chhote\"): one part of the 3 strip against three of the 9, and so two of the 9 are less" },
   { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s3", targets: "c5-maths-ch02-t02-m-tops-only",
     reason: "the bigger part first, then the same count coloured: two steps, each a sentence, against a 25-word card" },
+  // (Learning 019, 2026-11-18: director30's judge heard it end without its conclusion, offtopic 82)
+  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-gap-thinking",
+    reason: "the two strips with their counts, how much of each is empty, and the conclusion it lacked (director30 c5-t02 offtopic 82): the counts keep its board drawn, and with them it cannot end on its conclusion inside 49 with its 25-word card" },
 ];
 export const remWhole = (topicId, skillId, targets) => REM_WHOLE.find((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets) ?? null;
 export const VIEW_KIND_WORDS = {
@@ -1521,10 +1527,185 @@ export function d30Report(s) {
   return out;
 }
 
+/** Learning 019 (dc-r8-director30 items 2, 5's joint, 6): the plain-Hindi form of every card, the worked close's seam, easier
+ *  wordings that lead to a step without stating it, the wrap's one "achha laga", and the read of what changed since a run.
+ *  A.1 `hindi` { hi, en } beside the `prompt` of every card the child answers: an explain card, a remediation's follow-up card,
+ *      a check, an asked worked step, the worked example's own step and the closing question. The same question with the same
+ *      givens and the same key, in the Hindi a child of that class uses at home: English stays only where it is the school's word
+ *      for the thing (fraction, line, rectangle, the units), never an English connective or verb. One or two sentences ending
+ *      on the question. Every number and slot of the prompt and no other; no key or accepted form the prompt does not state
+ *      (a yes and a no offered together are a choice, not an answer). Said when a child asks for Hindi (Brain 046 Q2).
+ *  A.2 `joints.afterWorked`: three forms of 6 words or fewer, said between a worked example's close and the next card; they ask
+ *      nothing, name no number and carry no slot.
+ *  A.3 An asked step's `simpler` (and the child's own step's) never contains the step's answer: its key and every accepted form,
+ *      in words or digits, number words read as digits; a form the problem itself states is a given.
+ *  A.4 `--since <rev>` lists every point, remediation, card and worked example whose spoken text changed since <rev>, with its
+ *      board (and a card's key), so main reads each against its board before a run (changedParts).
+ *  B   (all four) The wrap says "achha laga" once at most: no `wrap.ack` form says it, and one form at most across the wrap's
+ *      ack, ask and goodbye. (c5-t01) A card whose `accept` holds an equal fraction in other numbers says in its `why` that the
+ *      two are the same: the why names the other form. */
+export const AFTER_WORKED_MAX = 6;
+/** Scripts outside the four pilots held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged. */
+export const STANDARD_STAGED = [];
+/** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */
+export const HINDI_FORM_ENGLISH = /\b(and|or|but|so|the|are|was|were|of|what|which|who|how|many|much|equal|equally|part|parts|piece|pieces|colou?r|colou?red|shaded?|same|total|left|count|whole|half|bigger|smaller|biggest|smallest|more|less|than|answer|find|first|second|third|then|now|yes|right|wrong|side|sides|length|breadth|width|cost|times|each|every|between|after|before|top|bottom|distance|share|shared|divide|divided|add|subtract|multiply|correct|think|tell|cut|eat|ate|eaten|take|took|give|gave|walk|walked|run|ran|fence|wire|round|rounds)\b/i;
+/** Every card the child answers, with where it is (A.1). */
+export function hindiCards(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    for (const b of k.explain ?? []) if (b.ask?.prompt) out.push({ at: `${k.skillId}/${b.id}.ask`, card: b.ask });
+    (k.remediation ?? []).forEach((r, j) => { if (r.then?.prompt) out.push({ at: `${k.skillId}/remediation[${j}].then`, card: r.then }); });
+    for (const c of k.checks ?? []) if (c.prompt) out.push({ at: `${k.skillId}/${c.id}`, card: c });
+    const we = k.workedExample;
+    (we?.steps ?? []).forEach((x, j) => { if (x.ask?.prompt) out.push({ at: `${k.skillId}/workedExample.steps[${j}].ask`, card: x.ask }); });
+    if (we?.yourStep?.prompt) out.push({ at: `${k.skillId}/workedExample.yourStep`, card: we.yourStep });
+  }
+  if (s?.teachback?.prompt) out.push({ at: "teachback", card: s.teachback });
+  return out;
+}
+const d31Nums = (t) => [...new Set(String(t ?? "").replace(/₹/g, " ").match(/\d+(?:[./]\d+)?/g) ?? [])].sort();
+const d31Slots = (t) => [...new Set(String(t ?? "").match(/\{[a-zA-Z]+\}/g) ?? [])].sort();
+const YES_W = /\b(haan|han|ha|yes|ji)\b/i, NO_W = /\b(nahi|nahin|na|no)\b/i;
+/** A `hindi` form's faults (A.1). */
+export function hindiFormErrors(card, at) {
+  const e = [], h = card?.hindi, p = card?.prompt ?? {};
+  if (!h || typeof h !== "object") return [`${at}.hindi: the question in the Hindi a child uses at home { hi, en } (Learning 019 A.1)`];
+  for (const l of ["hi", "en"]) {
+    const t = String(h[l] ?? "").trim(), a = `${at}.hindi${l === "en" ? " (en)" : ""}`;
+    if (!t) { e.push(`${a}: empty`); continue; }
+    const n = sentencesOf(t).length;
+    if (n < 1 || n > 2) e.push(`${a}: one or two sentences (got ${n})`);
+    if (!/[?？]\s*$/.test(t)) e.push(`${a}: ends on the question`);
+    const want = d31Nums(p.hi), got = d31Nums(t);
+    if (JSON.stringify(want) !== JSON.stringify(got)) e.push(`${a}: the numbers of the question exactly (question ${want.join(", ") || "none"}; form ${got.join(", ") || "none"})`);
+    if (JSON.stringify(d31Slots(p.hi)) !== JSON.stringify(d31Slots(t))) e.push(`${a}: the question's slots exactly`);
+  }
+  const hi = String(h.hi ?? "");
+  if (hi && d27Norm(hi) === d27Norm(p.hi)) e.push(`${at}.hindi: the same words as the card; say it in the Hindi a child uses at home`);
+  const en = hi.match(HINDI_FORM_ENGLISH);
+  if (en) e.push(`${at}.hindi: "${en[0]}" is English where a plain Hindi word exists (Learning 019 A.1)`);
+  const H = l018Norm(hi), P = l018Norm(p.hi), choice = YES_W.test(hi) && NO_W.test(hi);
+  for (const f of [card.key, ...(card.accept ?? [])].filter((x) => x != null)) {
+    const x = l018Norm(f).trim();
+    if (!x || P.includes(` ${x} `)) continue;
+    if (choice && (YES_W.test(x) || NO_W.test(x)) && x.split(" ").length === 1) continue;
+    if (H.includes(` ${x} `)) { e.push(`${at}.hindi: names the answer "${f}" that the question does not state (Learning 019 A.1)`); break; }
+  }
+  return e;
+}
+/** The asked steps' (and the own step's) easier wordings that state the step's answer (A.3). */
+export function stepSimplerHits(we) {
+  const out = [], given = l018Norm(`${we?.problem?.hi ?? ""} ${we?.problem?.en ?? ""}`);
+  const asked = (we?.steps ?? []).map((st, j) => [`steps[${j}]`, st.ask, [st.simpler, st.ask?.simpler]]).filter(([, a]) => a);
+  if (we?.yourStep) asked.push(["yourStep", we.yourStep, [we.yourStep.simpler]]);
+  for (const [at, a, texts] of asked) for (const l of ["hi", "en"]) {
+    const t = texts.map((x) => x?.[l]).filter(Boolean).join(" ");
+    if (!t) continue;
+    const T = l018Norm(t);
+    for (const f of [a.key, ...(a.accept ?? [])].filter((x) => x != null)) {
+      const x = l018Norm(f).trim();
+      if (!x || given.includes(` ${x} `)) continue;
+      if (T.includes(` ${x} `)) { out.push({ at, l, form: String(f) }); break; }
+    }
+  }
+  return out;
+}
+const fracVal = (t) => {
+  const x = String(t ?? "").trim(), m = x.match(/^(\d+)\s*\/\s*(\d+)$/), w = x.match(/^(\d+)\s+(?:aur\s+|and\s+)?(\d+)\s*\/\s*(\d+)$/);
+  if (m && +m[2]) return [+m[1], +m[2]];
+  return w && +w[3] ? [+w[1] * +w[3] + +w[2], +w[3]] : null;
+};
+/** The equal fractions in other numbers a card accepts (B, c5-t01). */
+export function equalForms(card) {
+  const k = fracVal(card?.key); if (!k) return [];
+  return [...new Set((card.accept ?? []).map((a) => String(a).trim()).filter((a) => { const v = fracVal(a); return v && v[0] * k[1] === v[1] * k[0] && !(v[0] === k[0] && v[1] === k[1] && /^\d+\s*\/\s*\d+$/.test(a)); }))];
+}
+export function d31Errors(s) {
+  if (!isD29(s)) return [];
+  const e = [];
+  for (const { at, card } of hindiCards(s)) e.push(...hindiFormErrors(card, at));
+  const forms = s.joints?.afterWorked;
+  if (!Array.isArray(forms) || forms.length !== 3) e.push(`joints.afterWorked: 3 forms (got ${Array.isArray(forms) ? forms.length : 0}; Learning 019 A.2)`);
+  else for (const l of ["hi", "en"]) {
+    const seen = new Set();
+    forms.forEach((f, i) => {
+      const t = String(f?.[l] ?? "").trim(), at = `joints.afterWorked[${i}]${l === "en" ? " (en)" : ""}`;
+      if (!t) { e.push(`${at}: empty`); return; }
+      if (d27Words(t) > AFTER_WORKED_MAX) e.push(`${at}: ${d27Words(t)} words > ${AFTER_WORKED_MAX}`);
+      if (sentencesOf(t).length !== 1) e.push(`${at}: one sentence`);
+      if (/[?？]/.test(t)) e.push(`${at}: asks nothing`);
+      if (/\d|\{[^}]*\}/.test(t)) e.push(`${at}: no number, no slot`);
+      const x = d27Norm(t); if (seen.has(x)) e.push(`${at}: the same form twice`); seen.add(x);
+    });
+  }
+  (s.skills ?? []).forEach((k) => { for (const h of stepSimplerHits(k.workedExample)) e.push(`${k.skillId}/workedExample.${h.at}.simpler${h.l === "en" ? " (en)" : ""}: states the step's answer "${h.form}"; say what to look at, not what is there (Learning 019 A.3)`); });
+  const LAGA = /\b(achha|accha|acha)\s+laga\b/i, w = s.wrap ?? {};
+  (w.ack ?? []).forEach((f, i) => { if (LAGA.test(String(f?.hi ?? ""))) e.push(`wrap.ack[${i}]: "achha laga" is the child's word here; the ack says it in other words (Learning 019 B)`); });
+  const laga = [...(w.ack ?? []), ...(w.ask ?? []), w.goodbye].filter((f) => LAGA.test(String(f?.hi ?? ""))).length;
+  if (laga > 1) e.push(`wrap: "achha laga" in ${laga} forms; one at most across ack, ask and goodbye (Learning 019 B)`);
+  for (const { at, card } of hindiCards(s)) {
+    const eq = equalForms(card); if (!eq.length || !card.why) continue;
+    const dot = (t) => ` ${d27Norm(t).replace(/\.(?=\s|$)/g, "").trim()} `, n = dot(card.why.hi);
+    if (!eq.some((f) => n.includes(dot(f)))) e.push(`${at}.why: accepts ${eq.join(", ")} for ${card.key}: say they are the same (name the other form) (Learning 019 B)`);
+  }
+  return e;
+}
+/** The spoken fields of a part, by kind (A.4). */
+const PART_FIELDS = {
+  point: ["point", "pointAlt", "simpler", "viewCaption"],
+  card: ["prompt", "reask", "hindi", "right", "simpler", "why", "whyShort", "whyAlt", "viewCaption", "answerViewCaption"],
+  remediation: ["say", "sayAlt", "simpler", "viewCaption"],
+  worked: ["problem", "problemAlt", "simpler", "viewCaption", "answer", "why"],
+  step: ["do", "why", "simpler", "result"],
+};
+const spokenOf = (x) => (x == null ? "" : typeof x === "string" ? x : typeof x === "object" ? String(x.hi ?? JSON.stringify(x)) : String(x));
+/** Every part of a script with its spoken fields and board: [{ at, kind, fields, board, key }]. */
+export function partsOf(s) {
+  const out = [], put = (at, kind, o, board, extra = {}) => out.push({ at, kind, fields: Object.fromEntries(PART_FIELDS[kind].map((f) => [f, spokenOf(o?.[f])])), board: board ?? null, ...extra });
+  for (const k of s?.skills ?? []) {
+    const id = k.skillId.replace(/^.*-(s\d+)$/, "$1");
+    for (const b of k.explain ?? []) {
+      put(`${id} ${b.id} point`, "point", b, b.board);
+      if (b.ask) put(`${id} ${b.id} card`, "card", b.ask, b.ask.board ?? b.board, { key: b.ask.key });
+    }
+    for (const r of k.remediation ?? []) {
+      put(`${id} remediation ${r.targets.replace(/^.*-m-/, "")}`, "remediation", { ...r, sayAlt: r.sayAlt }, r.board ?? null, { altBoard: r.sayAlt?.board ?? null });
+      if (r.then) put(`${id} remediation ${r.targets.replace(/^.*-m-/, "")} card`, "card", r.then, r.then.board ?? r.board ?? null, { key: r.then.key });
+    }
+    for (const c of k.checks ?? []) put(`${id} ${c.id}`, "card", c, c.board ?? null, { key: c.key });
+    const we = k.workedExample;
+    if (we) {
+      put(`${id} worked`, "worked", we, we.board);
+      (we.steps ?? []).forEach((x, j) => { put(`${id} worked step ${j}`, "step", x, we.board); if (x.ask) put(`${id} worked step ${j} ask`, "card", x.ask, we.board, { key: x.ask.key }); });
+      if (we.yourStep) put(`${id} worked own step`, "card", we.yourStep, we.yourStep.board ?? we.board, { key: we.yourStep.key });
+    }
+  }
+  if (s?.teachback) put("teachback", "card", s.teachback, s.teachback.board ?? null, { key: s.teachback.key });
+  return out;
+}
+/** What changed between two versions of a script, part by part (A.4): [{ at, kind, board, key, changed: [[field, old, new]] }]. */
+export function changedParts(sNew, sOld) {
+  const old = new Map(partsOf(sOld).map((p) => [p.at, p]));
+  return partsOf(sNew).flatMap((p) => {
+    const o = old.get(p.at);
+    const changed = Object.keys(p.fields).filter((f) => p.fields[f] !== (o?.fields?.[f] ?? "")).map((f) => [f, o?.fields?.[f] ?? "", p.fields[f]]);
+    const boardMoved = o && JSON.stringify(o.board) !== JSON.stringify(p.board);
+    return changed.length || boardMoved ? [{ at: p.at, kind: p.kind, board: p.board, key: p.key ?? null, boardMoved: !!boardMoved, isNew: !o, changed }] : [];
+  });
+}
+const boardLine = (b) => (b?.template ? `${b.template} ${JSON.stringify(b.params ?? {})}` : "no board of its own");
+/** The --since lines for one topic. */
+export function sinceReport(sNew, sOld) {
+  return changedParts(sNew, sOld).flatMap((c) => [
+    `${c.at} [${c.kind}${c.isNew ? ", new" : ""}] over ${boardLine(c.board)}${c.boardMoved ? " (board changed)" : ""}${c.key != null ? `; key ${c.key}` : ""}`,
+    ...c.changed.map(([f, a, b]) => `    ${f}: ${a ? `"${a}" → ` : ""}"${b}"`),
+  ]);
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const args = process.argv.slice(2);
   const opt = (name) => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
-  const topics = args.includes("--all") ? allTopics() : args.filter((a, i) => !a.startsWith("--") && !["--blind", "--keys"].includes(args[i - 1]));
+  const topics = args.includes("--all") ? allTopics() : args.filter((a, i) => !a.startsWith("--") && !["--blind", "--keys", "--since"].includes(args[i - 1]));
   if (!topics.length) { console.error("usage: check.mjs <topicId> [--blind q.json --keys k.json] | --all"); process.exit(2); }
   let bad = 0;
   for (const t of topics) {
@@ -1534,6 +1715,15 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // (Learning 017 A: the fit of every pair that shares a turn, measured; a remediation over its limit is reported, never failed)
     if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of fitReport(scriptOf(t))) console.log(`  F ${m}`);
     if (isD29(scriptOf(t))) for (const m of d30Report(scriptOf(t))) console.log(`  F ${m}`);
+    // (Learning 019 A.4: every point, remediation, card and worked example whose spoken text changed since a named commit, with its
+    // board and key: main reads each against its board and card before a run)
+    if (opt("--since")) {
+      const rel = relative(ROOT, join(SCRIPTS, `${t}.json`));
+      let old = null; try { old = JSON.parse(execFileSync("git", ["show", `${opt("--since")}:${rel}`], { cwd: ROOT, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"], maxBuffer: 1 << 26 })); } catch { old = null; }
+      const lines = sinceReport(scriptOf(t), old ?? { skills: [] });
+      console.log(`  C changed since ${opt("--since")}${old ? "" : " (the script is not in that commit: every part is new)"}: ${lines.filter((x) => !x.startsWith(" ")).length} parts`);
+      for (const m of lines) console.log(`  C ${m}`);
+    }
     // (director18 D13: a manual-read list, never a gate — whys with no verb found after code's "kyunki")
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
