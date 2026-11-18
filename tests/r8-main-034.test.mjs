@@ -28,7 +28,9 @@ test("034: a point and its card in one turn — the c4 dry lessons read 0 on eve
     const flags = [];
     for (const f of files) {
       const j = JSON.parse(readFileSync(join(out, f), "utf8"));
-      for (const x of lessonFlags({ rows: j.director, script }).filter((y) => !PENDING.has(y.predicate))) flags.push(`${f} ${x.row} ${x.predicate}: ${x.why}`);
+      // (Brain 046 Q5: the fixture's cards keep no `reask` — a one-question card after help in another wording has no re-ask form that differs,
+      // and the walk says the card as before; reaskRunning reads the pilots, whose cards have theirs)
+      for (const x of lessonFlags({ rows: j.director, script }).filter((y) => !PENDING.has(y.predicate) && y.predicate !== "reaskRunning")) flags.push(`${f} ${x.row} ${x.predicate}: ${x.why}`);
     }
     assert.deepEqual(flags, []);
   } finally { rmSync(out, { recursive: true, force: true }); }
