@@ -4725,7 +4725,44 @@ function vpcWords(out, input) {
   const why = card?.why ? String(saidIn(card.why, s?.ctx?.lang ?? "hinglish") ?? "") : "";
   return VERDICT_FRAME_WORDS + wordsIn([why]) + wordsIn([...(move.sayFirst ?? []), move.point, ...(move.rendered ?? [])].filter(Boolean), ui.ask.text);
 }
+/** Brain 046 Q5: content words of a line (no Hinglish function words), for whyRepeated. */
+const WHY_STOP = new Set("aur ka ki ke ko se mein me par hai hain tha thi the toh to yeh ye woh wo jo ek isliye kyunki bhi hi na nahi kya ya hota hoti hote hua hue sab and the a an of to in is are was so because".split(" "));
+const contentWords = (t) => (String(t ?? "").toLowerCase().match(/[\p{L}\p{N}/]+/gu) ?? []).filter((w) => /\d/.test(w) || (w.length > 1 && !WHY_STOP.has(w)));
+/** Brain 046 Q5: whether a worked close's why repeats the why her turn before said — the same authored text, or a step of that worked
+ *  example said there (its do, result or why) sharing at least 60% of the close why's content words (director30 c5-t02 steady 82, 0.70;
+ *  c5-t01 steady 78 reads 0.55 and is not caught — Learning 019 rewrote that close's why). The simple rule only: no similarity engine. */
+export function whyRepeated(out, kit) {
+  const why = String(out?.move?.workedDone?.why ?? "").trim();
+  if (!why) return false;
+  const lang = out.state?.ctx?.lang ?? "hinglish";
+  const herLast = String([...(out.state?.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ").toLowerCase();
+  if (!herLast) return false;
+  const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  if (herLast.includes(low(why).replace(/[.!?]+$/, "").slice(0, 40))) return true;
+  const we = (scriptFor(kit)?.script?.skills ?? []).map((k) => k.workedExample).find((w) => w && low(saidIn(w.why, lang)) === low(why));
+  const cw = contentWords(why);
+  if (!we || cw.length < 3) return false;
+  for (const st of we.steps ?? []) {
+    const said = ["do", "result", "why"].map((k) => saidIn(st?.[k], lang)).filter((x) => x && herLast.includes(low(x).slice(0, 30)));
+    if (!said.length) continue;
+    const sw = new Set(contentWords(said.join(" ")));
+    if (cw.filter((w) => sw.has(w)).length / cw.length >= 0.6) return true;
+  }
+  return false;
+}
 export function splitLong(out, input) {
+  // (Brain 046 Q5: a worked example's close does not say a why her turn before said — c5-t01 steady 76 to 78, c5-t02 steady 80, 82: the close
+  // says its answer without the why, the closeShort path)
+  if (out?.move?.workedDone?.why && !scriptFor(input.kit)?.script?.recordedRun && l2On() && input?.event === "turn" && whyRepeated(out, input.kit)) {
+    const c0 = cloneOut(out);
+    if (c0) {
+      c0.move = { ...c0.move, workedDone: { ...c0.move.workedDone, why: "" }, closeShort: true }; c0.state.lastMove = c0.move;
+      const c = splitLongOnce(c0, input, { closeShort: true });
+      c.move = { ...c.move, closeShort: true, whyRepeated: true }; c.state.lastMove = { ...c.state.lastMove, closeShort: true, whyRepeated: true };
+      c.proposal = directorProposal(c.move, { ui: c.ui, guidance: c.state.guidance, purpose: c.state.purpose });
+      return c;
+    }
+  }
   // (dc-r8-director29 Brain 045 P5, c4 steady 76: a worked example's close with its why and the next card pass 75 — the close says the answer
   // without its why ("Toh poora jawab: …" and the script's answer), and the row says so: closeShort)
   if (out?.move?.workedDone?.why && !scriptFor(input.kit)?.script?.recordedRun && l2On() && input?.event === "turn") {

@@ -246,3 +246,23 @@ describe("Q6: the why's lead-in rotates", () => {
     }
   });
 });
+
+describe("Q5's leftover: a worked close does not say a why her turn before said", () => {
+  test("whyRepeated reads c5-t02 steady 82's close why against row 80's told step; not c5-t02 steady 64's; and the close says no why there", async () => {
+    const { whyRepeated } = await import("../server/director/state.js");
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const { rows, script } = lesson("steady", "c5t02");
+    setScriptForTest(TOPIC.c5t02, script);
+    try {
+      const kit = kitFromFile(getTopic(TOPIC.c5t02));
+      const whyOf = (n) => script.skills[n].workedExample.why.hi;
+      const out = (why, her) => ({ move: { workedDone: { answer: "x", why } }, state: { ctx: { lang: "hinglish" }, recent: [{ who: "teacher", text: her }, { who: "child", text: "y" }] } });
+      assert.equal(whyRepeated(out(whyOf(2), rows[80].text), kit), true, "c5-t02 steady 82");
+      assert.equal(whyRepeated(out(whyOf(1), rows[62].text ?? ""), kit), false, "a close whose why the step turn did not say");
+      assert.equal(whyRepeated(out(whyOf(1), `Haan. ${whyOf(1)}. Tumhari baari?`), kit), true, "the same authored text");
+      assert.equal(whyRepeated(out("", rows[80].text), kit), false);
+    } finally { setScriptForTest(undefined); }
+  });
+});
