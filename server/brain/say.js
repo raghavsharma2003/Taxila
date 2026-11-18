@@ -3019,7 +3019,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const cardQ0 = card ? helpSentences(String(card)).at(-1) ?? "" : "";
     // (exactly: two cards' questions share most words — "0 ke baad pehla mark …", "0 ke baad chautha mark …" — and are not one card)
     const cardK0 = cardQ0 ? helpNorm(cardQ0) : "";
-    const saidBeforeNow = cardK0.split(" ").length >= 4 && (state.said ?? []).some((x) => (typeof x === "string" ? x : x?.k) === cardK0);
+    // (Brain 047 R1: by the card's identity — the walk item her turns said (state.js cardsSaid) — never by its last sentence: the staged
+    // c4-ch01-t02's four cards end "Kya yeh sahi hai?", and "back to the earlier question" was said before cards never asked: director31
+    // c4-ch01-t02 steady 34, 72, 102; stuck 48; offtopic 30; steering 32)
+    const saidBeforeNow = !!ui?.ask?.itemId && (state.cardsSaid ?? []).includes(ui.ask.itemId); void cardK0;
     const cameBack = (posedBefore && !!cardUnit && !!state.heldUp?.unit && state.heldUp.unit !== cardUnit) || (saidBeforeNow && !onLastTurn);
     // (dc-r8-director23 S: what the seam pass needs to know of the card — server/brain/seams.js)
     guard.seamInfo = { posedBefore: posedBefore || saidBeforeNow, cameBack, onLastTurn };
@@ -3588,8 +3591,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // running, c4 steering 12 to 16 the whole card. Where the question this turn ends on is the one her turn before ended on, the walk takes the
     // next of the card's forms that differs: Learning's reask, the short ask (only after help about the card's own figure, said this turn), the
     // card's last question clause; with none that differs, as before. The card's Hindi form is not in this rotation)
+    // (Brain 047 R1: a card posed for the first time is said whole — director31 steady c4-ch01-t02 34 took its re-ask because the card before
+    // ended on the same sentence)
     if (tail && card && kindNow !== "safeguard" && !asideQ && !state.lastMove?.hindiForm && String(state.lastMove?.request ?? "") !== "language" && scriptFor(kit)?.script && !scriptFor(kit)?.script?.recordedRun
-      && (tail === card || guard.cardQuestionOnly || guard.reaskShort)) {
+      && (posedBefore || saidBeforeNow || onLastTurn) && (tail === card || guard.cardQuestionOnly || guard.reaskShort)) {
       const lastQ = (t) => sentences(norm(t)).map(norm).filter(Boolean).at(-1) ?? "";
       const prevT = [...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1);
       const prevQ = prevT ? lastQ(prevT.text) : "";

@@ -77,3 +77,23 @@ describe("R8: a Hindi request at a card with no form", () => {
     assert.ok(!helpJointHoles(s).some((h) => h.joint === "hindiSwitch"));
   });
 });
+
+describe("R1: back to the earlier question, by the card's identity", () => {
+  test("falseReturn is gated and reads the six rows (c4-ch01-t02 steady 34, 72, 102; stuck 48; offtopic 30; steering 32), and no other topic", () => {
+    assert.ok(!PENDING.has("falseReturn"));
+    const want = { steady: [34, 72, 102], stuck: [48], offtopic: [30], steering: [32] };
+    for (const [p, rows] of Object.entries(want)) assert.deepEqual([...flagged(p, "c4ch01", "falseReturn")].sort((a, b) => a - b), rows, p);
+    for (const t of ["c4", "c5t01", "c5t02", "c5t03", "c6", "c6ch07"]) for (const p of ["steady", "stuck", "offtopic", "steering"]) assert.equal(flagged(p, t, "falseReturn").size, 0, `${p} ${t}`);
+  });
+  test("cardsSaidNow: a card is said when her turn carried that walk item and said its words — two cards ending on one sentence are two cards", async () => {
+    const { cardsSaidNow } = await import("../server/director/state.js");
+    const A = { itemId: "script:x-s1:c1", text: "Ek kitaab ko ghuma kar rakha. Kya yeh sahi hai?" };
+    const B = { itemId: "script:x-s1:c2", text: "Ek board ko ghuma kar rakha. Kya yeh sahi hai?" };
+    const said = cardsSaidNow({ lastUi: { ask: A }, recent: [{ who: "teacher", text: `Haan, sahi. ${A.text}` }] });
+    assert.deepEqual(said, [A.itemId]);
+    // (B's last sentence was said with A: B is not said)
+    assert.deepEqual(cardsSaidNow({ cardsSaid: said, lastUi: { ask: B }, recent: [{ who: "teacher", text: "Chalo, aage badhte hain. Kya yeh sahi hai?" }] }), [A.itemId]);
+    // (a card held by a split — the turn carried it and did not say it — is not said)
+    assert.deepEqual(cardsSaidNow({ lastUi: { ask: B }, recent: [{ who: "teacher", text: "Haan, sahi. Yahan tak saaf hai?" }] }), []);
+  });
+});

@@ -953,6 +953,9 @@ import { D29_PREDICATES } from "./d29-predicates.mjs";
 Object.assign(PREDICATES, D29_PREDICATES);
 import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 Object.assign(PREDICATES, D30_PREDICATES);
+// (dc-r8-director31, Brain 047: returns by identity, the short ask by kind of help, a yes at an asked step — d31-predicates.mjs)
+import { D31_PREDICATES } from "./d31-predicates.mjs";
+Object.assign(PREDICATES, D31_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

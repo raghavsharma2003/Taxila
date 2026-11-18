@@ -3909,6 +3909,9 @@ export function step(prev, input) {
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
     out.state.said = helped && out.state.lastMove?.simpler ? addSaid(said, out.state.lastMove.simpler, out.state.turn ?? 0) : said;
+    // (Brain 047 R1: the cards said — by identity, the walk item her turn carried and whose words her turn said; never by a card's last
+    // sentence, which four cards of c4-ch01-t02 share: "Kya yeh sahi hai?")
+    out.state.cardsSaid = cardsSaidNow(prev);
     // (the card just keyed: a give-up or a clarify after its check-in is help on it — the record help reads; a help turn sets it itself)
     if (!helped) {
       const lmK = out.state.lastMove ?? {};
@@ -4969,12 +4972,23 @@ function backToWordsOf(kit) {
   try { return Math.max(7, ...(scriptFor(kit)?.script?.joints?.backTo ?? []).map((f) => wordsIn(saidIn0(f, "hinglish") ?? ""))); } catch { return 7; }
 }
 /** d31: a card's question already in her said set (said on an earlier turn, not her last). */
-function cardSaidBefore(s, card) {
-  const k = helpNormSentence(helpSentencesOf(String(card ?? "")).at(-1) ?? "");
-  if (k.split(" ").length < 4) return false;
+function cardSaidBefore(s, card, id = null) {
   const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
   if (herLast && herLast.includes(String(card).replace(/\s+/g, " ").trim().toLowerCase().slice(0, 40))) return false;
-  return (s.said ?? []).some((x) => (typeof x === "string" ? x : x?.k) === k);
+  // (Brain 047 R1: by the card's identity — the staged c4-ch01-t02's four cards ending "Kya yeh sahi hai?")
+  return !!id && (s.cardsSaid ?? []).includes(id);
+}
+/** Brain 047 R1: the walk items whose card her turns have said — the lesson's record before this turn, with her last turn added when it
+ *  carried a card (prev.lastUi) and said it, every sentence of it (a card first posed is said whole). */
+export function cardsSaidNow(prev) {
+  const have = prev?.cardsSaid ?? [];
+  const id = prev?.lastUi?.ask?.itemId ?? null, card = prev?.lastUi?.ask?.text ?? null;
+  if (!id || !card || have.includes(id)) return have;
+  const t = String([...(prev.recent ?? [])].reverse().find((x) => x.who === "teacher")?.text ?? "");
+  if (!t) return have;
+  const keys = new Set(helpSentencesOf(t).map(helpNormSentence));
+  const cs = helpSentencesOf(String(card)).map(helpNormSentence).filter(Boolean);
+  return cs.length && cs.every((k) => keys.has(k)) ? [...have, id].slice(-200) : have;
 }
 export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   const { state: s, move, ui } = out;
@@ -4996,7 +5010,7 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
     // (a card asked before comes back with its joint or frame: about seven words)
     // (d31: and a card whose question is in the said set — posedAt is undone by the split paths, as brain/say.js reads a return: the staged
     // c4-ch01-t02's dry steady 74 counted its returning card with no joint)
-    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + ((s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn) || cardSaidBefore(s, ui.ask.text) ? backToWords : 0) : 0 }].filter((p) => p.n > 0);
+    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + ((s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn) || cardSaidBefore(s, ui.ask.text, ui.ask.itemId) ? backToWords : 0) : 0 }].filter((p) => p.n > 0);
   if (parts.length && lead) parts[0] = { ...parts[0], n: parts[0].n + lead };
   // (a miss verdict and the remediation it leads into are one answer — the order law: the remediation comes straight after the answer
   // it remedies; no seam between them)
