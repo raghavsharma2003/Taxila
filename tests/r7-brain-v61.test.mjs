@@ -186,7 +186,12 @@ describe("r7-brain-v61.test.mjs", () => {
   // R10 swap put "rekha" inside cards that say "line" — the authoredWhole dry predicate. The test now holds the reverse)
   test("W1 (was R10): in the Hindi mode a scripted card is shown and read as written", async () => {
     const { readFileSync } = await import("node:fs");
-    setScriptForTest(T1, JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8")));
+    const sc0 = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t01.json", import.meta.url), "utf8"));
+    setScriptForTest(T1, sc0);
+    // (Brain 046 Q2, repinned d31: at the card a request for Hindi is made on, the card's authored `hindi` form is its question — written
+    // too, never a word swap. The rule kept: a scripted card is shown as written, its prompt or its hindi form)
+    const hindiOf = new Map();
+    (function walk(o) { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { if (o.prompt?.hi && o.hindi?.hi) hindiOf.set(String(o.prompt.hi).replace(/\s+/g, " ").trim(), String(o.hindi.hi).replace(/\s+/g, " ").trim()); Object.values(o).forEach(walk); } })(sc0);
     const L = walkOf(T1);
     for (let i = 0; i < 4 && !L.r.state.activeItemId; i++) L.t("haan");
     const lang = { ...cls("no_evidence"), request: { type: "language", lang: "hindi" } };
@@ -197,7 +202,7 @@ describe("r7-brain-v61.test.mjs", () => {
     let seen = 0;
     for (let i = 0; i < 40 && seen < 2; i++) {
       const sc = L.r.state.scriptCard, card = L.r.ui?.ask?.text ?? "";
-      if (card && sc?.prompt_hi && sw.test(sc.prompt_hi)) { assert.equal(card, String(sc.prompt_hi).replace(/\s+/g, " ").trim(), "the card as written"); seen++; }
+      if (card && sc?.prompt_hi && sw.test(sc.prompt_hi)) { const w = String(sc.prompt_hi).replace(/\s+/g, " ").trim(); assert.ok(card === w || card === hindiOf.get(w), `the card as written: ${card}`); seen++; }
       L.t(sc ? String(sc.answer) : "haan", sc ? cls("correct") : cls("no_evidence"));
     }
     assert.ok(seen >= 1, "a card with such a word was reached");

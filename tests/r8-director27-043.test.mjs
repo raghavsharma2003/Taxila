@@ -205,7 +205,9 @@ describe("Brain 043: the checker and the compile report", () => {
     assert.match(e, /together/);
   });
   test("a staged script without the fields is a compile hole, not an error", () => {
-    const st = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts-staged/c5-maths-ch02-t03.json"), "utf8"));
+    // (repinned d31: Learning 019 brought c5-maths-ch02-t03 to the pilots' standard — whyShort on every card, the stepMiss joint — so it has
+    // no such holes now; a staged script not yet at the standard is read: c4-maths-ch03-t01)
+    const st = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts-staged/c4-maths-ch03-t01.json"), "utf8"));
     assert.deepEqual(d28Errors(st), []);
     const c = compileScript(st);
     assert.ok(c.missing.some((h) => h.field === "whyShort"), "whyShort holes");

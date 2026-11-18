@@ -66,21 +66,26 @@ describe("r8-director24-second-help (H4)", () => {
     assert.ok((g.state.lastMove.sayFirst ?? [])[0], "the joint is said first");
   });
 
-  test("a Hindi request climbs the same ladder and never gets a key: with nothing unsaid, no easier words, and the question", () => {
+  // (repinned d31 on Brain 046 Q2: the card has a `hindi` form (Learning 019) — the first request is that form alone; each request after it
+  // climbs the same ladder, then the form again; with nothing unsaid, the form again — never a key, never the "nothing easier" line, the
+  // question stays. The rule kept: a Hindi request climbs the card's ladder and never gets a key)
+  test("a Hindi request climbs the same ladder and never gets a key: the hindi form first, the ladder with it, then the form, and the question", () => {
     const { K, r } = atCard();
     const card = r.state.activeItemId;
     const hindi = { type: "language", lang: "hindi" };
+    assert.ok(e1.ask.hindi?.hi, "this card has its hindi form");
     let x = r;
-    for (let k = 0; k < ladder.length; k++) {
+    for (let k = 0; k <= ladder.length; k++) {
       x = say(K, x, "hindi mein samjhao", cls("no_evidence", hindi));
       assert.equal(x.state.lastMove.cell?.column, "hindi");
-      assert.equal(x.state.lastMove.help?.rung, ["ask.simpler", "pointAlt", "simpler"][k]);
+      assert.equal(x.state.lastMove.help?.rung, ["hindi", "ask.simpler", "pointAlt", "simpler"][k]);
+      assert.equal(x.state.lastMove.hindiForm, e1.ask.hindi.hi.replace(/\s+/g, " ").trim(), "the form is the card's question");
       assert.equal(x.state.ctx.lang, "hindi", "the lesson's language from now on");
     }
     const s = say(K, x, "aur hindi mein batao", cls("no_evidence", hindi));
     assert.ok(!s.state.lastMove.gave, "never a key");
-    assert.equal(s.state.lastMove.help?.joint, "helpSpent");
-    assert.equal(s.state.lastMove.noLangAck, true, "no switch line promising what does not follow");
+    assert.notEqual(s.state.lastMove.help?.joint, "helpSpent", "never the nothing-easier line");
+    assert.equal(s.state.lastMove.help?.rung, "hindi");
     assert.equal(s.state.activeItemId, card, "the question stays");
     assert.equal(s.ui.ask?.itemId, card);
   });

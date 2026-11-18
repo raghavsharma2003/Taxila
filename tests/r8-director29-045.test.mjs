@@ -73,13 +73,13 @@ describe("P3: two rungs and two cues", () => {
     for (const [p, t, i] of [["stuck", "c6", 46], ["steering", "c6", 16], ["steering", "c5t02", 16]]) assert.ok(flagged(p, t, "requestHelped").has(i), `${p} ${t} row ${i}`);
   });
   test("pickHelp: an asked step's simpler first, the step asked again; none at the second request; a follow-up card's ladder runs on into its remediation", async () => {
-    const { pickHelp, ladderOf, helpPart } = await import("../server/director/help.js");
+    const { pickHelp, ladderOf, helpPart, addSaid } = await import("../server/director/help.js");
     const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC.c4}.json`), "utf8"));
     const S = script.skills[0].skillId;
     const d = pickHelp({ script, part: `${S}:worked:step1`, request: "give_up", said: [] });
     assert.equal(d.card, "keep"); assert.equal(d.rung.field, "simpler"); assert.equal(d.stepAsked, true);
-    const k = d.rung.text.toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim();
-    assert.equal(pickHelp({ script, part: `${S}:worked:step1`, request: "clarify", said: [{ k }] }), null, "the second request: the walk tells the step");
+    // (repinned d31: Learning 019 rewrote this step's simpler in two sentences — the said set holds it as the walk does, sentence by sentence)
+    assert.equal(pickHelp({ script, part: `${S}:worked:step1`, request: "clarify", said: addSaid([], d.rung.text, 1) }), null, "the second request: the walk tells the step");
     const then = `${S}:rem:0:then`;
     const fields = ladderOf(script, helpPart(script, then)).map((r) => r.path);
     assert.ok(fields.some((f) => /remediation\[0\]\.(?:sayAlt|simpler)$/.test(f)), `the remediation's wordings are on the then-card's ladder: ${fields}`);
