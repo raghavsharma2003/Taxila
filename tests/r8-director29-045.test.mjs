@@ -128,15 +128,13 @@ describe("P5-P7: a right answer goes on; seams; the record", () => {
 });
 
 describe("P5-P7 (d30 completion): the rows the order names", () => {
-  test("P6 reaskFigure reads the short ask after help drawn on another figure's board (c5-t01 stuck 64, offtopic 30), and 0 with the help on the card's board", async () => {
-    assert.ok(flagged("stuck", "c5t01", "reaskFigure").has(64));
+  test("P6 reaskFigure reads the short ask after help about another figure (c5-t01 stuck 64, 70, offtopic 30), and 0 after help on the card's own numbers", async () => {
+    for (const n of [64, 70]) assert.ok(flagged("stuck", "c5t01", "reaskFigure").has(n), `stuck ${n}`);
     assert.ok(flagged("offtopic", "c5t01", "reaskFigure").has(30));
-    const { rows } = lesson("stuck", "c5t01");
-    const r = structuredClone(rows[64]);
-    const card = r.pageParts.find((p) => p.part === "card");
-    for (const p of r.pageParts) if (p.part === "simpler") { p.own = card.own; p.boards = card.boards; }
-    const { D30_PREDICATES } = await import("../evals/hybrid-side-by-side/d30-predicates.mjs");
-    assert.equal(D30_PREDICATES.reaskFigure({ rows }, r, 64), null);
+    const { otherFigureOf } = await import("../server/brain/seams.js");
+    // (director28 c4 steady 86: help on the card's own 15 pencils in 3 groups is about the card)
+    assert.equal(otherFigureOf("Board ke baayein taraf likha hai ki 15 pencil ke 3 barabar group banane hain. Pehle 1/3 ka matlab dekhenge.", "15 pencil 3 barabar group mein baanto, toh ek group mein kitni pencil aayengi?"), false);
+    assert.equal(otherFigureOf("Pizza ke 3 barabar hisse hon aur teeno le lo: 3/3 ek poora hai.", "1/5 wale gaps dekho. 0 se theek 1 tak pahunchne ke liye aise kitne gap chalne honge?"), true);
   });
   test("P6 replyCheckin reads her reply's turn ending on a check-in (c4 offtopic 46, c5-t02 offtopic 38)", () => {
     assert.ok(flagged("offtopic", "c4", "replyCheckin").has(46));
@@ -151,9 +149,14 @@ describe("P5-P7 (d30 completion): the rows the order names", () => {
     const { D29_PREDICATES } = await import("../evals/hybrid-side-by-side/d29-predicates.mjs");
     const { rows } = lesson("stuck", "c5t01");
     const r = structuredClone(rows[64]);
-    r.text = r.text.replace(/Ab phir se socho, jawab kya hoga\?$/, rows[62].text.split(/(?<=[.?!])\s+/).at(-1));
+    const q = rows[62].text.split(/(?<=[.?!])\s+/).at(-1);
+    r.text = r.text.replace(/Ab phir se socho, jawab kya hoga\?$/, q);
     r.seams = r.seams.map((x) => (x.right === "reaskShort" ? { ...x, right: "card" } : x));
-    assert.equal(D29_PREDICATES.reaskTwice({ rows: [...rows.slice(0, 64), r] }, r, 64), null);
+    const rows2 = [...rows.slice(0, 64), r];
+    assert.equal(D29_PREDICATES.reaskTwice({ rows: rows2 }, r, 64), null);
+    // (the same re-ask after help on the card's own numbers is still read)
+    const r2 = { ...r, text: `Nahi, yeh theek nahi hai. 1/5 wale gaps gino. ${q}` };
+    assert.ok(D29_PREDICATES.reaskTwice({ rows: [...rows.slice(0, 64), r2] }, r2, 64));
   });
 });
 

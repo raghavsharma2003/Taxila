@@ -284,8 +284,12 @@ describe("T8: the record says what was heard", () => {
 });
 
 describe("Small: a second miss, five misses", () => {
-  test("reaskTwice reads the question said word for word after a second miss in a row (c4 steady 86, offtopic 52; c5-t01 steering 54)", () => {
-    for (const [p, t, i] of [["steady", "c4", 86], ["offtopic", "c4", 52], ["steering", "c5t01", 54]]) assert.ok(flagged(p, t, "reaskTwice").has(i), `${p} ${t} row ${i}`);
+  // (dc-r8-director29 Brain 045 P6 supersedes this rule for offtopic c4 52 and c5-t01 steering 54: their help is about another figure — a book
+  // of 8 pages before a card on a strip of 6; one pole at the half before a road of 4 gaps — and after such help the card's own re-ask is said,
+  // not the short ask; reaskTwice reads them no more)
+  test("reaskTwice reads the question said word for word after a second miss in a row (c4 steady 86) — not after help about another figure (c4 offtopic 52, c5-t01 steering 54: Brain 045 P6)", () => {
+    for (const [p, t, i] of [["steady", "c4", 86]]) assert.ok(flagged(p, t, "reaskTwice").has(i), `${p} ${t} row ${i}`);
+    for (const [p, t, i] of [["offtopic", "c4", 52], ["steering", "c5t01", 54]]) assert.ok(!flagged(p, t, "reaskTwice").has(i), `${p} ${t} row ${i}: help about another figure, the card's own re-ask`);
     // (the first miss's turn is not a second miss)
     assert.ok(!flagged("steady", "c4", "reaskTwice").has(84));
   });

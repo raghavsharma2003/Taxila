@@ -32,6 +32,7 @@ export function partStartOf(r, p) {
   }
 }
 
+import { otherFigureOf } from "../../server/brain/seams.js";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
 
@@ -48,19 +49,20 @@ export function stepToldAfterSimpler(L, r, i, script) {
 
 const TAUGHT = new Set(["point", "card", "returnCard", "workedProblem", "stepAsk", "remediation", "help", "quickAsk", "quick", "verdict", "missVerdict", "key"]);
 
-/** P6: a turn's help drawn on a board other than its card's — help about another figure (c5-t01 stuck 64, offtopic 30: a line of 3 gaps, a
- *  line of 7, before a card on two lines). */
+/** P6: a turn's help is about another figure — it names a number the card does not (server/brain/seams.js otherFigureOf; c5-t01 stuck 64, 70,
+ *  offtopic 30). The help is the row's text from its first help part to its card part (or its end); the card is the row's card. */
 export function helpOtherFigure(r) {
   const pp = r?.pageParts ?? [];
-  const bOf = (p) => JSON.stringify(p?.own ?? p?.boards?.[0] ?? null);
-  const card = pp.find((p) => p.part === "card");
-  if (!card || bOf(card) === "null") return false;
-  return pp.some((p) => ["simpler", "help"].includes(p.part) && bOf(p) !== "null" && bOf(p) !== bOf(card));
+  const h = pp.find((p) => ["simpler", "help"].includes(p.part));
+  if (!h || !r?.card) return false;
+  const c = pp.find((p) => p.part === "card" && (p.from ?? 0) > (h.from ?? 0));
+  const t = String(r.text ?? "");
+  return otherFigureOf(t.slice(h.from ?? 0, c ? c.from : t.length), String(r.card));
 }
 
 export const D30_PREDICATES = {
-  /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help drawn on another board is
-   *  followed by the card's own re-ask (c5-t01 stuck 64, offtopic 30). Gated. */
+  /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help about another figure is
+   *  followed by the card's own re-ask (c5-t01 stuck 64, 70, offtopic 30). Gated. */
   reaskFigure(L, r) {
     if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "reaskShort")) return null;
     return helpOtherFigure(r) ? "the short ask after help about another figure" : null;

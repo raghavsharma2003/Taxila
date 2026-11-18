@@ -218,7 +218,7 @@ export const D29_PREDICATES = {
     if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
     let j = i - 2; while (j >= 0 && rows[j].who !== "teacher") j--;
     if (j < 1 || !WRONG_READS.has(readOf(rows[j - 1]))) return null;
-    // (dc-r8-director29 Brain 045 P6: after help about another figure — drawn on another board — the card's own re-ask is the rule, not the short ask)
+    // (dc-r8-director29 Brain 045 P6: after help about another figure the card's own re-ask is the rule, not the short ask)
     if (helpOtherFigure(r)) return null;
     const q = lastSentence(r.text), q0 = lastSentence(rows[j].text);
     return /[?？]$/.test(q) && keyText(q) === keyText(q0) ? "the question said again word for word straight after a second wrong answer" : null;

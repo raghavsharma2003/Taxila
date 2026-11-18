@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS } from "./seams.js";
+import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS, otherFigureOf } from "./seams.js";
 import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
@@ -3486,11 +3486,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastQ = (t) => sentences(norm(t)).map(norm).filter(Boolean).at(-1) ?? "";
       const prevT = [...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1);
       const tq = lastQ(tail);
-      // (dc-r8-director29 Brain 045 P6 — c5-t01 stuck 64, offtopic 30: the short ask only where her turn before ended on the card's question and
-      // this turn's help is about the card's own figure. Help drawn on another board is about another figure: the card's own re-ask follows
-      // it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
-      const hb = state.lastMove?.help?.board ?? null, cb = state.lastMove?.cardBeat?.board ?? state.lastMove?.scriptBeat?.board ?? null;
-      const otherFigure = !!hb?.template && !!cb?.template && JSON.stringify(hb) !== JSON.stringify(cb);
+      // (dc-r8-director29 Brain 045 P6 — c5-t01 stuck 64, 70, offtopic 30: the short ask only where her turn before ended on the card's question
+      // and this turn's help is about the card's own figure; after help about another figure (seams.js otherFigureOf) the card's own re-ask
+      // follows it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
+      const otherFigure = otherFigureOf(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card);
       if (otherFigure) guard.reaskFigure = true;
       const prevQ = prevT ? lastQ(prevT.text) : "";
       if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && !otherFigure) {

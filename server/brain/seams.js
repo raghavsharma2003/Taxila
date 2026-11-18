@@ -81,6 +81,14 @@ export const SEAM_TABLE = [
   ["start", "workedProblem", "beforeWorked"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
+/** dc-r8-director29 Brain 045 P6: help about another figure — it names a number (a whole number past 1, or a part of a fraction) the card does
+ *  not (c5-t01 stuck 64: 3/3 of a pizza before a card on 1/5; offtopic 30: 6 marks before a card of 7; stuck 70: halves of a roti in sixths
+ *  before 4/6). Help that works the card's own numbers — c4 steady 86's 15 pencils in 3 groups, on its own board — is about the card. */
+export function otherFigureOf(helpText, cardText) {
+  const nums = (t) => (String(t ?? "").match(/\d+(?:\s*\/\s*\d+)?/g) ?? []).flatMap((x) => x.split("/").map((y) => y.trim())).filter((y) => Number(y) > 1);
+  const card = new Set(nums(cardText));
+  return !!card.size && nums(helpText).some((n) => !card.has(n));
+}
 /** Brain 043 R2: her last turn ended on her invitation to do the problem together, and this turn is the problem it invited (the walk marks
  *  it afterInvite) — straight after it, never after a detour. */
 export function invitedJustNow(kit, state, lang = "hinglish") {
