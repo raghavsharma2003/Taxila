@@ -4,7 +4,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { d32Errors, D32_READY, isD32, structureErrors, kitTopic, scriptOf, hindiOverlap, HINDI_OVERLAP_MAX, POINT_TURN_MAX,
+import { d32Errors, D32_READY, D32_PICTURES_READY, isD32, structureErrors, kitTopic, scriptOf, hindiOverlap, HINDI_OVERLAP_MAX, POINT_TURN_MAX,
   FIRST_TEACH_MAX, ASK_WHOLE_REQUIRED, d32Listing, viewOf, twoWayOptions, d31Errors } from "../scripts/lesson-scripts/check.mjs";
 import { INTERESTS } from "../server/persona/signals.js";
 
@@ -23,25 +23,20 @@ const frag = ({ card = {}, skill = {}, top = {} } = {}) => ({
 const run = (s) => d32Errors(s, { force: true });
 const ruled = (s, n) => run(s).filter((x) => x.includes(`Learning 020 rule ${n})`) || x.includes(`Learning 020 rule ${n},`));
 
-test("020 the gate: off unless the topic is in D32_READY (or --d32 put it there); the seven check exactly as before", () => {
-  assert.deepEqual(D32_READY, []);
+test("020 the gate: on for the five live scripts (the picture rule waits for Studio 014 in D32_PICTURES_READY), off for the two staged ones until they are rewritten", () => {
   const live = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
   const staged = ["c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+  assert.deepEqual(D32_READY, live);
+  assert.deepEqual(D32_PICTURES_READY, []); // (rule 7 waits for Studio 014)
   const scripts = [...live.map((t) => scriptOf(t)), ...staged.map((t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8")))];
   for (const s of scripts) {
     Object.defineProperty(s, "__interests", { value: INTERESTS, enumerable: false });
-    assert.equal(isD32(s), false, s.topicId);
-    assert.deepEqual(d32Errors(s), [], s.topicId);
-    assert.equal(structureErrors(s, kitTopic(s.topicId)).length, 0, s.topicId); // pinned: today's count
-    assert.ok(run(s).length > 0, `${s.topicId}: the rules do bite with the flag`);
+    const isLive = live.includes(s.topicId);
+    assert.equal(isD32(s), isLive, s.topicId);
+    assert.deepEqual(d32Errors(s), [], s.topicId); // (live: clean on the gate; staged: the gate is off)
+    if (isLive) assert.equal(structureErrors(s, kitTopic(s.topicId)).length, 0, s.topicId);
+    assert.ok(run(s).length > 0, `${s.topicId}: the rules do bite when forced (rule 7 at least)`);
   }
-  // (a card with no hindi form fails 019 off the gate and is a hole on it)
-  const s = JSON.parse(JSON.stringify(scriptOf("c4-maths-ch05-t01")));
-  delete s.skills[0].checks[1].hindi;
-  assert.ok(d31Errors(s).some((x) => /c2\.hindi: the question in the Hindi/.test(x)));
-  D32_READY.push(s.topicId);
-  try { assert.ok(!d31Errors(s).some((x) => /c2\.hindi: the question in the Hindi/.test(x))); assert.ok(d32Errors(s).length > 0); }
-  finally { D32_READY.length = 0; }
 });
 
 test("020 rule 1: a hindi form that shares most of its content words with the card fails; another sentence passes; samkon fails", () => {
@@ -131,6 +126,7 @@ test("020 rule 7: a card whose board has no second view needs a pictureBoard wit
 test("020 rule 8: askWhole is required on the listed cards; --rules lists the candidates", () => {
   assert.deepEqual(ASK_WHOLE_REQUIRED[0], { topicId: "c4-maths-ch05-t01", skillId: "c4-maths-ch05-t01-s1", card: "e3" });
   const s = JSON.parse(JSON.stringify(scriptOf("c4-maths-ch05-t01")));
+  delete s.skills[0].explain[2].ask.askWhole; // (the live script carries it since its 020 pass)
   assert.ok(ruled(s, 8).some((x) => /s1\/e3: short ask marker missing/.test(x)));
   s.skills[0].explain[2].ask.askWhole = true;
   assert.deepEqual(ruled(s, 8), []);

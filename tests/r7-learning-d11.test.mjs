@@ -44,10 +44,12 @@ test("D11.1: a remediation that teaches on its own (no longer drawn) picture is 
   // director16: a say about a road in 7 gaps over a then-card line in other parts — W10 counts it
   // (Learning 016 C2: s1 rem0 now has a board of its own, so the say is judged against that one — below; the then-card case is held on
   // s1 rem2, a remediation with no board of its own)
-  delete s.skills[0].remediation[2].board;
-  s.skills[0].remediation[2].then.board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1 } };
+  // (dc-r8-director31: the 020 rewrite rewrote s1's remediations; rem[2] now says one road in 7 gaps, which an 11-gap line does not
+  // contradict, so the rule is held on rem[1], whose say names 2 and 7 gaps and has no board of its own once deleted)
+  delete s.skills[0].remediation[1].board;
+  s.skills[0].remediation[1].then.board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1 } };
   const { errors } = await boardErrors(s, topic("c5", "c5-maths-ch02-t01"));
-  assert.ok(errors.some((x) => /remediation\[2\]: W10\.screen_claims_drawn/.test(x)), errors.join("\n"));
+  assert.ok(errors.some((x) => /remediation\[1\]: W10\.screen_claims_drawn/.test(x)), errors.join("\n"));
   // a remediation with a board of its own is caught against that board: s1 rem0's say (7 gaps) over an 11-gap line of its own
   const o = script("c5-maths-ch02-t01");
   o.skills[0].remediation[0].board = { template: "fraction-line@1", params: { den: 11, from: 0, to: 1, marks: [{ num: 1, label: "1/11" }] } };

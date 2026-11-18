@@ -15,21 +15,21 @@ test("019: the four pilots pass the new rules", () => {
   for (const [t, s] of Object.entries(S)) assert.deepEqual(d31Errors(s), [], t);
 });
 
-test("019 A.1: every card, follow-up card, check, asked step, own step and closing question has a hindi form", () => {
+test("019 A.1, as 020 rule 1 left it: a hindi form is optional (a card with no honest plainer sentence has none); one that is written is whole and ends on its question", () => {
   for (const [t, s] of Object.entries(S)) {
     const cards = hindiCards(s);
     // (a floor on each script's size: the four pilots 30 or more; c5-maths-ch02-t03, live as judged in dc-r8-director31, has 29)
     assert.ok(cards.length >= (t === "c5-maths-ch02-t03" ? 29 : 30), `${t}: ${cards.length} cards`);
     for (const { at, card } of cards) {
+      if (!card.hindi) continue; // (optional now)
       assert.ok(card.hindi?.hi && card.hindi?.en, `${t} ${at}`);
       assert.match(card.hindi.hi.trim(), /\?$/, `${t} ${at}: ends on the question`);
     }
     // (the walk's kinds: explain cards, follow-ups, checks, asked steps, the own step, the closing question)
     for (const re of [/\/e\d\.ask$/, /remediation\[\d\]\.then$/, /\/c\d$/, /steps\[\d\]\.ask$/, /yourStep$/, /^teachback$/]) assert.ok(cards.some((c) => re.test(c.at)), `${t}: ${re}`);
   }
-  const s = fresh("c4-maths-ch05-t01");
-  delete s.skills[0].checks[1].hindi;
-  assert.ok(d31Errors(s).some((x) => /s1\/c2\.hindi: the question in the Hindi a child uses at home/.test(x)));
+  // (dc-r8-director31 / 020 rule 1: the form is optional, so a script with none on a card is not failed for it, and every kind of card
+  //  must still exist in hindiCards, form or not: the walk lists cards, not forms)
 });
 
 test("019 A.1: the form keeps the question's numbers and slots exactly and names no answer the question does not state", () => {

@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { asideReplyErrors, greetErrors, jointErrors, structureErrors, kitTopic } from "../scripts/lesson-scripts/check.mjs";
+import { D32_READY, asideReplyErrors, greetErrors, jointErrors, structureErrors, kitTopic } from "../scripts/lesson-scripts/check.mjs";
 
 const read = (p) => JSON.parse(readFileSync(new URL(`../${p}`, import.meta.url), "utf8"));
 const PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01"];
@@ -24,7 +24,10 @@ test("R2 and S1: every pilot has a greetSimpler and five joint kinds; a switch p
     assert.deepEqual([...greetErrors(s), ...jointErrors(s)], [], id);
     assert.equal(s.joints.backTo.length, 3);
     // (dc-r8-director25: the scripts have no Hindi-only text, so the switch line promises what follows: other, easier words)
-    assert.ok(s.joints.hindiSwitch.length >= 3 && s.joints.hindiSwitch.every((f) => !/hindi|english/i.test(f.en + " " + f.hi)), id);
+    // (dc-r8-director31 item 1 reverses this half of the rule for a script in D32_READY: its switch forms promise only Hindi, in both
+    //  forms, and never easier words (checker rule 2 of 020); a script not in D32_READY keeps the dc-r8-director25 rule)
+    if (D32_READY.includes(id)) assert.ok(s.joints.hindiSwitch.length >= 3 && s.joints.hindiSwitch.every((f) => /hindi/i.test(f.hi) && /hindi/i.test(f.en) && !/aasaan|aasan|seedhe|doosre\s+shabdon|easier|simpler/i.test(f.en + " " + f.hi)), id);
+    else assert.ok(s.joints.hindiSwitch.length >= 3 && s.joints.hindiSwitch.every((f) => !/hindi|english/i.test(f.en + " " + f.hi)), id);
     assert.ok(s.joints.helpSpent?.length >= 3 && s.joints.afterKeyGoOn?.length >= 3, id);
     assert.ok(s.skills.every((k) => k.explain.every((e) => e.ask?.simpler?.hi && e.ask.simpler.en)), `${id}: every explain card has its own hint`);
     assert.ok(s.wrap.didFrames.every((f) => !/yaad rakh/i.test(f.hi)), id);

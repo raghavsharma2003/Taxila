@@ -1684,7 +1684,9 @@ export function d31Errors(s) {
  *     does not state; on a two-way card (the prompt has "ya", or the accepted forms name both options) a wording that names one
  *     option and not the other fails.
  *  Also: no `wrap.ack` form says "yaad rakh" (a promise she cannot keep). */
-export const D32_READY = [];
+export const D32_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
+/** Rule 7 (a picture has something to draw) waits for Studio 014's views: on for a topic listed here, with --d32, or when forced. */
+export const D32_PICTURES_READY = [];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
 export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;
 /** Pairs said whole over POINT_TURN_MAX, each with its reason (as REM_WHOLE): { topicId, skillId, explainId, reason }. */
@@ -1865,7 +1867,7 @@ export function d32Errors(s, { force = false } = {}) {
   for (const w of listed) if (!turns.some((p) => p.listed === w && p.total > p.limit)) e.push(`POINT_WHOLE ${w.skillId} ${w.explainId}: listed but fits (or is gone); take it off the list`);
   if (listed.length > POINT_WHOLE_PER_SCRIPT) e.push(`POINT_WHOLE: ${listed.length} pairs listed for ${s.topicId}, more than ${POINT_WHOLE_PER_SCRIPT}: the limit is wrong for this script; say so to main (Learning 020 rule 6)`);
   // 7
-  for (const x of noPictureCards(s)) e.push(`${x.at}: its board (${x.template ?? "none"}) has no second view: author a pictureBoard { template, params } with a pictureCaption (Learning 020 rule 7)`);
+  if (force || D32_PICTURES_READY.includes(s?.topicId)) for (const x of noPictureCards(s)) e.push(`${x.at}: its board (${x.template ?? "none"}) has no second view: author a pictureBoard { template, params } with a pictureCaption (Learning 020 rule 7)`);
   for (const c of cards) if (c.card.pictureBoard) {
     const pb = c.card.pictureBoard;
     if (!pb?.template || !BOARD_REFS[pb.template] || typeof (pb.params ?? null) !== "object") e.push(`${c.at}.pictureBoard: { template, params } with a known template (Learning 020 rule 7)`);
@@ -1971,7 +1973,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   // for good; the v2.4 rules — second wordings, reasks, the wrap — fire once a script has its teachback)
   if (args.includes("--standard")) for (const t of topics) if (!STANDARD_STAGED.includes(t)) STANDARD_STAGED.push(t);
   // (Learning 020: --d32 holds the named scripts to the 020 rules for this run only, as D32_READY does for good)
-  if (args.includes("--d32")) for (const t of topics) if (!D32_READY.includes(t)) D32_READY.push(t);
+  if (args.includes("--d32")) for (const t of topics) { if (!D32_READY.includes(t)) D32_READY.push(t); if (!D32_PICTURES_READY.includes(t)) D32_PICTURES_READY.push(t); }
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
