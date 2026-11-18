@@ -29784,6 +29784,27 @@
    "at": "2026-11-18",
    "title": "Released 577c904 with scripts/release.mjs: web taxila-web--s577c904-r0xn (was taxila-web--se18ceef-hjpy), worker + canary/nightly jobs on taxila-worker:577c904 (was e18ceef); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 577c904 --rollback.",
    "source": "inbox/release-577c904.json"
+  },
+  {
+   "id": "ms-r8-director30",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "director30 (16 live lessons on release 51's code, four Opus judges): three of four pilot topics pass every line of the scale gate with every axis at 3.5 or above; the fourth fails on one script sentence; 16 of 16 picture turns draw the board named",
+   "source": "inbox/r8-main-51.json"
+  },
+  {
+   "id": "dc-r8-director30",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "The staged lessons come out of hold three at a time, each batch read and judged before the next; a worked step is told only on its cue; a Hindi request gets a plain-Hindi form of the question; the verdict-point-card turn is 65 words by the walk; no re-ask is said twice running",
+   "source": "inbox/r8-main-51.json"
+  },
+  {
+   "id": "fd-read-what-changed-before-a-run",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "The one failing row of director30 was a point sentence a script gained that round and nobody read against its board: every part whose text changed since the last judged run is read against its board and card before the next run, from a list the checker prints",
+   "source": "inbox/r8-main-51.json"
   }
  ],
  "edges": [
@@ -47716,6 +47737,26 @@
    "src": "dc-r8-director29",
    "rel": "measured_by",
    "dst": "ms-r8-d30-dry"
+  },
+  {
+   "src": "dc-r8-director30",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
+  },
+  {
+   "src": "dc-r8-director30",
+   "rel": "supersedes",
+   "dst": "dc-r8-director29"
+  },
+  {
+   "src": "fd-read-what-changed-before-a-run",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
+  },
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
   }
  ]
 }

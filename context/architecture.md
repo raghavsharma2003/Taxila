@@ -695,3 +695,7 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-predicate-read-plan-not-screen` (2026-11-18): A predicate that reads the plan and not what was drawn passes a wrong picture: all four steering lessons drew another card's board on a picture turn, in the dry run and the live run, with every gated predicate at 0
 - `fd-cut-to-fit-reads-as-notes` (2026-11-18): Cutting remediations and short reasons to a word limit produced lines two judges read as notes, not speech; a fit limit needs a said-aloud read after the cut
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-read-what-changed-before-a-run` (2026-11-18): The one failing row of director30 was a point sentence a script gained that round and nobody read against its board: every part whose text changed since the last judged run is read against its board and card before the next run, from a list the checker prints

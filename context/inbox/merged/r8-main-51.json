@@ -1,0 +1,48 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director30",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "director30 (16 live lessons on release 51's code, four Opus judges): three of four pilot topics pass every line of the scale gate with every axis at 3.5 or above; the fourth fails on one script sentence; 16 of 16 picture turns draw the board named"
+  },
+  {
+   "id": "dc-r8-director30",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "The staged lessons come out of hold three at a time, each batch read and judged before the next; a worked step is told only on its cue; a Hindi request gets a plain-Hindi form of the question; the verdict-point-card turn is 65 words by the walk; no re-ask is said twice running"
+  },
+  {
+   "id": "fd-read-what-changed-before-a-run",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "The one failing row of director30 was a point sentence a script gained that round and nobody read against its board: every part whose text changed since the last judged run is read against its board and card before the next run, from a list the checker prints"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director30",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
+  },
+  {
+   "src": "dc-r8-director30",
+   "rel": "supersedes",
+   "dst": "dc-r8-director29"
+  },
+  {
+   "src": "fd-read-what-changed-before-a-run",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
+  },
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "measured_by",
+   "dst": "ms-r8-director30"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director30` (2026-11-18): 16 lessons (4 pilot topics × steady, stuck, offtopic, steering), Director only, reactive child, joins off, int/r6 integration 85, commit 932da5faf (release 51's code), one invocation, 1,301 model calls, about $0.96. Method: four Opus judges (high effort), one per topic, each reading 4 lessons by hand against 21 clauses fixed before the run; the predicate check over the live rows read 0 on every gated line, and main compared every picture turn's drawn board with the named one by hand before the judges (16 of 16). Hand counts (c4, c5-t01, c5-t02, c6): beats 142/146, 141/141, 157/157, 166/166; verdicts 96/96, 100/100, 108/108, 116/116; misgrades 0; false keys 0 (c4's two badly put reasons ruled untrue wording, not a false key); words against the board 0, 0, 1 (steady 74, a script sentence added by Learning 018), 0; unsaid boards by the strict reading 0 in all four (director29: 0, 1, 1, 0; director28: 6, 19, 3, 5). Gate: c4, c5-t01 and c6 pass every line; c5-t02 fails on the one row. Axes, director29 → director30: listening 3.5→4, 3.5, 3.5, 3.5; worked example 4→3.5, 4, 3.5→4, 4; class level 4 in all; screen and speech 4, 4→4.5, 3.5→4, 4→4.5; register 3.5 in all; promises 3.5→4, 3.5, 3.5, 3.5→4. Check-in turns in the steady lessons 4, 5, 4, 4 (director29: 6, 6, 5, 6). Turns over 75 words: 3, each led by a park line or the start line. Rows marked noFit for the op cap: 1, not in a steady lesson. Results and reports: `evals/hybrid-side-by-side/results/2026-11-18-director30/`.\n",
+  "decisions": "- `dc-r8-director30` (2026-11-18, main loop; supersedes `dc-r8-director29`, whose items stand as built): three pilot topics pass the gate, so the staged lessons come out of hold as the clause set before the run said. Decided: (1) a worked step is told only at a second request or after a wrong answer, never after a yes or an aside; (2) every card, follow-up card and asked step gets a plain-Hindi form of its question, said when a child asks for Hindi, and the nothing-easier line is never the answer to a Hindi request; (3) an aside reply is followed by its joint on every path and its turn never ends on a check-in; (4) the verdict-point-card turn is 65 words, met by the walk (the short reason, and the bridge kept with the verdict), not by cutting scripts; (5) no re-ask sentence is said in two turns running, and a worked close is followed by an authored seam into the next card; (6) the pilots' script list, a checker rule that a step's easier wording never holds the step's answer, and a checker list of every part changed since the last judged run, read by main before a run; (7) a picture's caption by the part, the whyShort flag by what was said; (8) the staged scripts three at a time: brought to the pilots' standard by Learning, read by main, run dry, run live with the four scripted children and judged by the same gate; a script that passes moves to `data/lesson-scripts/` and is released; the next three start only after the batch before is judged; the first batch is c5-maths-ch02-t03 and one script each from classes 4 and 6. Two deviations from the clauses, stated in the judgement: clause 2's 65 words is met by the walk rather than by cutting scripts (said beats fitted), and clause 3's remedy for a cold nothing-easier line is the Hindi form, because the line was cold in answer to a request for Hindi. c5-t02 is not re-judged alone; it runs with the first batch. Reverses if: a pilot that passed here fails a gate line in the next run for a cause in code (then the staged batches stop until two runs in a row pass); two judges find the plain-Hindi form stiff or harder than the Hinglish question (then it is said only at a second request); two judges find the short reason at 65 words under-explains (then 75 returns); two judges find rotated re-asks confuse which question is asked (then each card gets a second authored re-ask). Orders: `docs/patches/to-brain/046-director30-cues-hindi-reasks.md`, `docs/patches/to-learning/019-director30-pilots-list-and-first-three.md`.\n"
+ }
+}
