@@ -1380,7 +1380,17 @@ export function fitReport(s) {
  *  remediation target) with its reason; the walk says a listed one alone, ending on its check-in. */
 export const START_ANYWAY_MAX = 6;
 export const REM_WHOLE = [
-  // { topicId, skillId, targets, reason }
+  // (Learning 018, 2026-11-18: each was a note when cut to 49 — director29's judges named three of them — and is said whole now)
+  { topicId: "c5-maths-ch02-t01", skillId: "c5-maths-ch02-t01-s3", targets: "c5-maths-ch02-t01-m-whole-number-bias",
+    reason: "two sentences: the same top number means the same gaps walked; the bigger bottom number means shorter gaps, so less far (cut to fit it read \"Neeche wala bada, toh har gap chhota\")" },
+  { topicId: "c5-maths-ch02-t01", skillId: "c5-maths-ch02-t01-s3", targets: "c5-maths-ch02-t01-m-not-numbers",
+    reason: "the train needs the stations, the gaps between them and what goes on top and below, said as a teacher says it (director29 c5-t01 steady 84: \"Train ka number ek fraction: upar gine gaps, neeche 5\")" },
+  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-same-bottom-equal",
+    reason: "the two rotis, what was taken from each and why equal parts let the count decide: three sentences against a 25-word card" },
+  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-tops-only",
+    reason: "the judge's named note (\"3 wali ka ek hissa 9 wali ke teen jitna; 9 wali ke 2 usse chhote\"): one part of the 3 strip against three of the 9, and so two of the 9 are less" },
+  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s3", targets: "c5-maths-ch02-t02-m-tops-only",
+    reason: "the bigger part first, then the same count coloured: two steps, each a sentence, against a 25-word card" },
 ];
 export const remWhole = (topicId, skillId, targets) => REM_WHOLE.find((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets) ?? null;
 export const VIEW_KIND_WORDS = {

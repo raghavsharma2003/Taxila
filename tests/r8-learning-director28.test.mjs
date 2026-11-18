@@ -2,7 +2,7 @@
 // the reasoning step, joints.stepMiss in and joints.workedInvite out. Written from the rules, not from a sentence of today's scripts.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { scriptOf, d29Errors, fitOf, fitReport, D29_PILOTS, HOOK_MAX, POINT_CARD_MAX, REM_CARD_MAX, WORKED_OPENING_MAX } from "../scripts/lesson-scripts/check.mjs";
+import { scriptOf, d29Errors, fitOf, fitReport, D29_PILOTS, HOOK_MAX, POINT_CARD_MAX, REM_CARD_MAX, WORKED_OPENING_MAX, remWhole } from "../scripts/lesson-scripts/check.mjs";
 
 const S = Object.fromEntries(D29_PILOTS.map((t) => [t, scriptOf(t)]));
 const fresh = (t) => structuredClone(S[t]);
@@ -59,9 +59,11 @@ test("017 E: stepMiss, three short forms that say no and name no answer; workedI
   assert.ok(e.some((x) => /joints\.stepMiss\[0\]: \d+ words > 4/.test(x)) && e.some((x) => /joints\.stepMiss\[0\]: names no answer/.test(x)));
 });
 
-test("017 A.3: a remediation and its card are measured and reported, never failed; every pilot remediation fits 49", () => {
+// (repinned for Learning 018, "said beats fitted": a pilot remediation fits 49 or is on the checker's REM_WHOLE list with its reason;
+// d29Errors still never fails one — d30Errors does, unless it is listed)
+test("017 A.3: a remediation and its card are measured and reported, never failed by d29Errors; every pilot remediation fits 49 or is listed whole (018)", () => {
   for (const [t, s] of Object.entries(S)) {
-    for (const r of fitOf(s).rems) assert.ok(r.total <= REM_CARD_MAX, `${t} ${r.skill} rem${r.i}: ${r.total}`);
+    for (const r of fitOf(s).rems) assert.ok(r.total <= REM_CARD_MAX || remWhole(t, r.skill, r.targets), `${t} ${r.skill} rem${r.i}: ${r.total}`);
     assert.ok(fitReport(s).some((x) => /^remediation /.test(x)), t);
   }
   const s = fresh("c6-maths-ch06-t01");
