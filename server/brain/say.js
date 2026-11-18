@@ -2540,10 +2540,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const inCard = (x) => { const t = x.replace(/\s+/g, " ").trim().replace(/[.!?।]+$/, ""); return t.length > 3 && cardQ.some((q) => q.includes(t)); };
       const bad = screenContradictions(reply, screenFacts(ui, state.lastMove)).filter((x) => !inCard(x));
       if (bad.length) {
-        // (dc-r8-director29 Brain 045 P1: on a scripted turn a sentence of the script's or of code's that contradicts the screen is a fault of
-        // the plan, not of her draft — it throws under tests and the dry harness; her own sentences are dropped as before)
-        const isA0 = authoredSentence(state, ui?.ask?.text ?? null, kit);
-        const ours = bad.filter((b) => isA0(b) || QUIET_PICTURE_LINES.some((q) => String(b).trim().replace(/[.!?]+$/, "") === String(q).trim()));
+        // (dc-r8-director29 Brain 045 P1: on a scripted turn code's own picture line contradicting the screen is a fault of the plan — the board
+        // drawn is not the one named — and throws under tests and the dry harness. Her draft's sentences are dropped as before; an authored
+        // sentence is not checked here: this guard reads her draft against the first page, and the authored point is said over its own)
+        const ours = bad.filter((b) => QUIET_PICTURE_LINES.some((q) => String(b).trim().replace(/[.!?]+$/, "") === String(q).trim()));
         if (ours.length && scriptFor(kit)?.script && STRICT_AUTHORED()) throw new Error(`screenmismatch on a scripted turn: ${ours.join(" | ").slice(0, 200)}`);
         const kept = sentences(reply).filter((x) => !bad.some((b) => b.trim() === x.trim()));
         reply = kept.join(" ").trim() || fallbackReply(state, item);
