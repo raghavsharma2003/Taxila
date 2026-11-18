@@ -104,7 +104,85 @@ function fullWhyIn(script, r) {
 }
 /** Brain 046 Q5: the question a turn ends on — its last sentence, where it asks. */
 const lastAsk = (r) => { const ss = String(r?.text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/); const q = ss.at(-1) ?? ""; return /[?？]\s*$/.test(q) ? low(q) : null; };
+/** Brain 046 Q6: the script object a compile part id names ("S:e2:card", "S:e2:point", "S:rem:0:then", "S:rem:0", "S:check:c1",
+ *  "S:worked:yourStep", "S:worked:problem"), or null. */
+export function partObjectOfId(script, part) {
+  const m = /^(.+?-s\d+):(.+)$/.exec(String(part ?? ""));
+  const sk = m ? (script?.skills ?? []).find((k) => k.skillId === m[1]) : null;
+  if (!sk) return null;
+  const b = m[2].split(":");
+  if (b[0] === "rem") { const r = sk.remediation?.[Number(b[1])]; return b[2] === "then" ? r?.then ?? null : r ?? null; }
+  if (b[0] === "check") return (sk.checks ?? []).find((c) => c.id === b[1]) ?? null;
+  if (b[0] === "worked") return b[1] === "yourStep" ? sk.workedExample?.yourStep?.board ? sk.workedExample.yourStep : sk.workedExample ?? null : sk.workedExample ?? null;
+  const e = (sk.explain ?? []).find((x) => x.id === b[0]);
+  return e ? (b[1] === "card" && e.ask?.board ? e.ask : e) : null;
+}
+/** The card a close's beat names ("e2", "c1", "then:<mix-up>") in any skill, or null. */
+function cardOfBeat(script, beat, part = null) {
+  const id = String(beat ?? "");
+  const S = /^(.+?-s\d+):/.exec(String(part ?? ""))?.[1] ?? null;
+  for (const sk of (script?.skills ?? []).filter((k) => !S || k.skillId === S)) {
+    const c = id.startsWith("then:") ? (sk.remediation ?? []).find((x) => `then:${x.targets}` === id)?.then : (sk.checks ?? []).find((x) => x.id === id) ?? (sk.explain ?? []).find((x) => x.id === id)?.ask;
+    if (c) return c;
+  }
+  return null;
+}
+/** Every authored viewCaption in a script, with the object it is written beside. */
+function captionsOf(script) {
+  const out = [];
+  const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (!o || typeof o !== "object") return; if (o.viewCaption) out.push({ o, t: low(said(o.viewCaption)) }); for (const v of Object.values(o)) walk(v); };
+  walk(script);
+  return out.filter((c) => c.t.length >= 20);
+}
+/** Brain 046 Q6: the lead-in of a right verdict to its why — ", kyunki", ". Dekho,", a colon — or null. */
+export function whyLeadOf(r) {
+  if (!(r?.seams ?? []).some((x) => x.right === "verdict")) return null;
+  const t = String(r.text ?? "");
+  return /^[^.?!:]{3,40}, kyunki /.test(t) ? "kyunki" : /^[^.?!:]{3,40}\. Dekho, /.test(t) ? "dekho" : /^[^.?!:]{3,25}: /.test(t) ? "colon" : null;
+}
 export const D30_PREDICATES = {
+  /** dc-r8-director30 Brain 046 Q6: a picture's caption is the one written for the part the picture is of — never another part's caption
+   *  found by an identical board (c5-t01 offtopic 26: e2's caption on a follow-up card; c4 steady 18: the point's on the card's). Gated. */
+  captionPart(L, r, i, ctx) {
+    if (r.who !== "teacher" || String(r.cell?.column ?? "") !== "picture" || !ctx?.script) return null;
+    const own = partObjectOfId(ctx.script, r.cell?.part);
+    if (!own) return null;
+    const t = low(r.text);
+    const hit = captionsOf(ctx.script).find((c) => t.includes(c.t.slice(0, 50)));
+    return hit && hit.o !== own && low(said(own.viewCaption)).slice(0, 50) !== hit.t.slice(0, 50) ? `another part's caption said on ${r.cell.part}: "${hit.t.slice(0, 50)}"` : null;
+  },
+  /** Q6: `whyShort` is on a row only where the card's short reason was said in the full why's place (c5-t02 steady 50, 66, 92, 94, stuck 74,
+   *  offtopic 52, 76: set because the short text sits inside the full why). Gated. */
+  whyShortSet(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.whyShort) return null;
+    const t = low(r.text).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ");
+    const k = (x) => low(x).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/, "");
+    const cl = (r.pageParts ?? []).find((p) => p.part === "close");
+    if (!cl) return null;
+    const card = cardOfBeat(ctx?.script, cl.beat, r.cell?.part);
+    return card?.why && t.includes(k(said(card.why)).slice(0, 40)) ? "whyShort on a row that said the full why" : null;
+  },
+  /** Q6: every teacher row that answers a child's line has its cell (c5-t01 and c5-t02 stuck 22, a "haan"). Gated. */
+  cellMissing(L, r, i) {
+    if (r.who !== "teacher" || r.cell || (L.rows ?? [])[i - 1]?.who !== "child") return null;
+    return "a teacher row with no cell";
+  },
+  /** Q6: a miss is recorded as a miss, never `verdict` (c5-t02 steady 98: the closing question's miss). Gated. */
+  missAsVerdict(L, r, i, ctx) {
+    if (r.who !== "teacher" || !/^(?:incorrect|partial|misconception)\b/.test(String(ctx?.prevRead ?? ""))) return null;
+    if (!(r.seams ?? []).some((x) => x.right === "verdict")) return null;
+    const s0 = String(r.text ?? "").split(/(?<=[.!?\u0964])\s+/)[0] ?? "";
+    return /(?<![\p{L}])(?:sahi\s+nahi|nahi\s+hai|galat|theek\s+nahi)(?![\p{L}])/iu.test(s0) && !/^(?:haan|bilkul|sahi)\b/i.test(s0) ? `a miss recorded as verdict: "${s0.slice(0, 50)}"` : null;
+  },
+  /** Q6: the verdict's lead-in to its why ("Dekho,", "kyunki", a colon) is not the one of the verdict before it. Gated. */
+  whyLeadRunning(L, r, i, ctx) {
+    const f = whyLeadOf(r);
+    // (a right verdict with no lead-in — a worked close said short — stands between two: they are not running)
+    if (!f) { if ((r.seams ?? []).some((x) => x.right === "verdict") && /^(?:haan|bilkul|sahi)\b/i.test(String(r.text ?? ""))) ctx.prevWhyLead = null; return null; }
+    const p = ctx.prevWhyLead ?? null;
+    ctx.prevWhyLead = f;
+    return p === f ? `the why's lead-in "${f}" in two verdicts running` : null;
+  },
   /** dc-r8-director30 Brain 046 Q5: a worked example's close going into the next card (or its point) says joints.afterWorked between them
    *  (c5-t01 steady 26, 56, stuck 34, offtopic 48, steering 36; c5-t02 steady 26, 64, 82, stuck 34, offtopic 72, steering 36). Gated. */
   workedSeam(L, r) {
@@ -122,6 +200,9 @@ export const D30_PREDICATES = {
     if (r.who !== "teacher" || !ctx?.prevT || !r.card) return null;
     // (a request for Hindi at a card with no hindi form is answered as before — Q2's fallback, counted by hindiSpentHole)
     if (String(ctx?.prevIntent ?? "") === "hindi" && !hindiFormAt(ctx?.script, r)) return null;
+    // (and the card's `hindi` form said to a request for Hindi is no re-ask: the order keeps it out of the rotation — the form is said as
+    // written, whatever question it ends on; dry steady c5-t01 36, c3's form ends on the card's own question)
+    if (String(ctx?.prevIntent ?? "") === "hindi" && hindiFormSaid(ctx?.script, r)) return null;
     const q = lastAsk(r), p = lastAsk(ctx.prevT);
     if (!q || q !== p || q.split(" ").length < 4) return null;
     if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;

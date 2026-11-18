@@ -1530,7 +1530,27 @@ export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = 
   // (d29 final: a picture of the card just keyed — state.js keyedPicture — is captioned by that card's board alone, never the waiting card's)
   const want = (state?.lastMove?.keyedPicture ? [state.lastMove.scriptBeat?.board] : [state?.heldUp?.board, state?.lastMove?.cardBeat?.board, state?.lastMove?.scriptBeat?.board]).filter(Boolean).map((b) => JSON.stringify(b));
   if (!want.length) return null;
+  // (Brain 046 Q6: the caption is chosen by the part the picture is of — the live card's script object where the board up is the card's,
+  // then the held unit's, then the beat the turn said — never by matching board parameters over the whole script: c5-t01 offtopic 26
+  // said e2's caption on a remediation's follow-up card drawn on an identical board; c4 steady 18 the point's on the card's. Only where no
+  // part resolves to a script object is the whole script searched by board, as before)
+  const held = state?.heldUp, card = state?.lastMove?.cardBeat;
+  const refs = state?.lastMove?.keyedPicture ? [state.lastMove.scriptBeat]
+    : [card && (!held?.board || JSON.stringify(held.board) === JSON.stringify(card.board)) ? card : null, held?.unit ? unitRefOf(held.unit) : null, card, state?.lastMove?.scriptBeat];
+  const parts = [...new Set(refs.filter(Boolean).map((r) => partObjectOf(sc, r)).filter(Boolean))];
   let hit = null;
+  const pick = (o) => {
+    if (hit || !o || typeof o !== "object") return;
+    const onBoard = o.board && want.includes(JSON.stringify(o.board));
+    const onAnswer = !onBoard && o.answerBoard && want.includes(JSON.stringify(o.answerBoard)) && JSON.stringify(o.answerBoard) !== JSON.stringify(o.board);
+    const cap = onBoard ? o.viewCaption : onAnswer ? o.answerViewCaption ?? (o.answerBoard && !o.board ? o.viewCaption : null) : null;
+    if (cap) {
+      const own = drawn ? viewKindOf(altCall(onBoard ? o.board : o.answerBoard)) : null;
+      hit = drawn && own && own !== drawn ? { none: true } : cap; return;
+    }
+    if (onBoard || onAnswer) hit = { none: true };
+  };
+  if (parts.length) parts.forEach(pick);
   const walk = (o) => {
     if (hit || !o || typeof o !== "object") return;
     if (Array.isArray(o)) return o.forEach(walk);
@@ -1548,9 +1568,52 @@ export function viewCaptionOf(kit, state, lang = "hinglish", { drawn = null } = 
     if (onAnswer && o.viewCaption) { hit = { none: true }; return; }
     for (const v of Object.values(o)) walk(v);
   };
-  walk(sc);
+  if (!parts.length) walk(sc);
   const t = hit && !hit.none ? (lang === "english" ? hit.en ?? hit.hi : hit.hi ?? hit.en) ?? (typeof hit === "string" ? hit : null) : null;
   return t && String(t).trim() ? String(t).trim() : null;
+}
+/** A held unit ("<skill>:e2", "<skill>:rem:<mix-up>", "<skill>:worked…", "<skill>:<check>") as a beat reference. */
+function unitRefOf(unit) {
+  const m = /^(.+?-s\d+):(.+)$/.exec(String(unit ?? ""));
+  if (!m) return null;
+  const b = m[2];
+  return { skillId: m[1], beatId: b, kind: /^e\d+$/.test(b) ? "explain" : /^rem:/.test(b) ? "remediation" : /^worked/.test(b) ? "worked" : "check" };
+}
+/** The script object a beat reference names (Brain 046 Q6): a point's card with its own board is the point's ask; a follow-up card is
+ *  its remediation's `then`; a worked example's own step, its yourStep where that has its own board. null when nothing resolves. */
+function partObjectOf(sc, ref) {
+  if (!ref) return null;
+  if (ref.kind === "teachback" || ref.skillId === "end") return sc.teachback && typeof sc.teachback === "object" ? sc.teachback : null;
+  const sk = (sc.skills ?? []).find((x) => x.skillId === ref.skillId);
+  if (!sk) return null;
+  const b = String(ref.beatId ?? "").replace(/^explain:/, "");
+  const t = /^then:(.+)$/.exec(b);
+  if (t) { const r = (sk.remediation ?? []).find((x) => x.targets === t[1]); return r?.then && typeof r.then === "object" ? r.then : null; }
+  const r = /^rem:(.+)$/.exec(b);
+  if (r) return (sk.remediation ?? []).find((x) => x.targets === r[1]) ?? null;
+  if (/^worked/.test(b)) { const w = sk.workedExample; return w ? (ref.ownBoard && w.yourStep?.board ? w.yourStep : w) : null; }
+  const e = (sk.explain ?? []).find((x) => x.id === b);
+  if (e) return ref.ownBoard && e.ask?.board ? e.ask : e;
+  return (sk.checks ?? []).find((c) => c.id === b) ?? null;
+}
+/** A right verdict's frame joined to its why (Hinglish): "<frame>, kyunki <why>", "<frame>. Dekho, <why>" or "<frame>: <why>".
+ *  (v6.7 R4: the joint varies — never the one of her last 2 turns; dc-r8-director23 S: the opener rotates from the lesson's seed.)
+ *  (Brain 046 Q6: "Dekho," was heard 9 to 11 times a lesson, six times within four turns of itself — the last-two-turns test never saw the
+ *  verdict before, which is rarely in those two. The form rotates by how many verdicts have taken one and is never the form of the verdict
+ *  before: state.whyJoint, written by brain/turn.js from guard.whyJoint. The authored end's verdict takes the same rotation.)
+ *  → { text, k } */
+export function rightWhyLead(fr, why, state) {
+  const last2 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
+  const w = joinable(why, { lower: true });
+  const joints = [`${fr}, kyunki ${w}`, `${fr}. Dekho, ${w}`, `${fr}: ${w}`];
+  const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. Dekho, /.test(t) : /^[^.:]{3,25}: /.test(t));
+  const k0 = (seamStart(lessonKeyOf(state), "whyOpener") + (state?.whyJoint?.n ?? 0)) % 3;
+  const prevJ = state?.whyJoint?.last ?? null;
+  // ("Sahi jawab: <why>" reads as a key being given: that frame never takes the colon)
+  const ok = (j) => !(j === 2 && /jawab$/i.test(fr));
+  const order = [0, 1, 2].map((j) => (k0 + j) % 3);
+  const k = order.find((j) => ok(j) && j !== prevJ && !used(j)) ?? order.find((j) => ok(j) && j !== prevJ) ?? order.find(ok);
+  return { text: joints[k], k };
 }
 /** The topic her AI-line question asked about ("Tumhe Virat ke baare mein …" → Virat), else the child's first interest. */
 function asideTopicOf(line, state) {
@@ -1643,14 +1706,17 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
     const end = state.lastMove.authoredEnd;
     const v = state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
-    const close = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${state.lastMove.endVerdict ? (state.lastMove.endWhy ? why(saidIn(state.lastMove.endWhy, L)) : "") : why(state.lastGraded?.why)}`)
+    const endW = state.lastMove.endVerdict ? (state.lastMove.endWhy ? saidIn(state.lastMove.endWhy, L) : null) : state.lastGraded?.why;
+    // (Brain 046 Q6: the end's verdict takes the why's rotating lead-in, as every right verdict does)
+    const endLead = v === "correct" && L !== "english" && endW && String(endW).trim() ? rightWhyLead(freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, ""), spokenMarks(endW, L), state) : null;
+    const close = endLead ? d(endLead.text) : v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${why(endW)}`)
       : v === "not_yet" ? notRightLead(String(childText ?? "").trim(), L, state) : null;
     const lines = (state.lastMove.rendered ?? []).map((x) => d(spokenMarks(x, L)));
     // (dc-r8-director22 T3: the teach-back's verdict is a turn of its own — the verdict, the key and its why on a miss, then a check-in)
     if (end === "teachbackKey") {
       // (the verdict and the key are the answer board's unit — a body part, drawn from the first word, T1)
       const lp = cleanParts([{ part: "body", text: [close, ...lines].filter(Boolean).join(" ") }, { part: "aside", text: rotateOf(beatAsk(kit)[L], state) }]);
-      return { reply: joinParts(lp), guard: { authoredEnd: end, lineParts: lp, parts: { list: lp } } };
+      return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), lineParts: lp, parts: { list: lp } } };
     }
     // (T4, clause 2 as written: between what was covered and the goodbye, one sentence about what this child did — the model's, at most
     // 18 words, naming only cards and values in the lesson's rows, no praise of the child's traits; left out when the check fails)
@@ -1677,7 +1743,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(beatAsk(kit)[L], state)) : null;
     const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
       ...body.map((x, n) => ({ part: kindOfLine(x, n) === "help" ? "simpler" : "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
-    return { reply: joinParts(lp), guard: { authoredEnd: end, ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
+    return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (dc-r8-director25 L2 item 4, c6 offtopic 0: "Aaj cricket ground jaise rectangles ka perimeter dekhenge" — the greeting said the model's
   // words about the world. A scripted greeting is said by code: who she is and one question about the child — the warm-up card when the
@@ -2846,17 +2912,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       lead = dot(`${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
       // (v6.7 R4, main on director15: always "<frame>, kyunki <why>": the joint varies — never the one of her last 2 turns)
       if (why && lang !== "english") {
-        const last2 = [...(state.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
         const fr = freshOf(FRAMES.right.hinglish, state).replace(/[.!?।—–\s-]+$/, "");
-        const w = joinable(why, { lower: true });
-        const joints = [`${fr}, kyunki ${w}`, `${fr}. Dekho, ${w}`, `${fr}: ${w}`];
-        const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. Dekho, /.test(t) : /^[^.:]{3,25}: /.test(t));
-        // (dc-r8-director23 S: the why's opener rotates from the lesson's seed too)
-        const k0 = seamStart(lessonKeyOf(state), "whyOpener") % 3;
-        // ("Sahi jawab: <why>" reads as a key being given: that frame never takes the colon)
-        const ok = (j) => !(j === 2 && /jawab$/i.test(fr));
-        const k = [0, 1, 2].map((j) => (k0 + j) % 3).find((j) => ok(j) && !used(j)) ?? [0, 1, 2].map((j) => (k0 + j) % 3).find(ok);
-        lead = dot(joints[k]);
+        const j = rightWhyLead(fr, why, state);
+        lead = dot(j.text);
+        guard.whyJoint = j.k;
       }
       // (Brain 043 R1: the card's short why, said in the why's place — the walk chose it, brain/turn.js lastGraded.whyShort)
       guard.rightWhy = why ? (graded0?.whyShort ? "short" : "authored") : "none";

@@ -968,6 +968,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.cardHeld && next?.activeItemId) { next.cardUnsaid = next.activeItemId; if (r.ui?.ask) r = { ...r, ui: { ...r.ui, ask: null, chips: [] } }; }
     // (P1: a return is a turn of its own — the authored parts it held are said first on the next turn, state.js step0's sayFirst)
     if (guard?.bodyHeld?.length && next) next.bodyUnsaid = guard.bodyHeld;
+    // (Brain 046 Q6: a verdict's lead-in to its why rotates — the form said and how many have been said, read by brain/say.js)
+    if (guard?.whyJoint != null && next) next.whyJoint = { last: guard.whyJoint, n: (next.whyJoint?.n ?? 0) + 1 };
     // (J1: backTo's forms rotate by how many times a card has come back)
     if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
     // (2.4 J1: each seam joint kind rotates by how many times it has been said)

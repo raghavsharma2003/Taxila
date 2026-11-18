@@ -3193,7 +3193,9 @@ function capPlan(s, input, p) {
     if (scriptOn() && scriptCardOf(item) && !noteGuess && ["selftry", "repeat", "clarify", "confused"].includes(rq)) return p; }
   // (dc-r8-director25 H4 items 4 and 7: a wrong answer on a card whose help ladder still has an unsaid rung keeps the card — help said
   // that rung; the count of misses never lets it go with its key: c5-t02 stuck 22, offtopic 28 gave e2's key with its point's simpler unsaid)
-  if (input.helpKeep && input.helpKeep === item.id && scriptCardOf(item)) return p;
+  // (a card kept live by help is asked again, so its next answer is graded: help spends a rung, never the assertion — dry steering c6 18,
+  // "29 metre" to the follow-up card asked again after a third miss's help was read against no key, rung 4, and the card was dropped)
+  if (input.helpKeep && input.helpKeep === item.id && scriptCardOf(item)) { if (s.hintLevel >= 4) s.hintLevel = 3; return p; }
   // (dc-r8-director29 Brain 045 P3: a key is never the answer to an aside or to a yes — c5-t01 offtopic 32, steering 20: the aside is parked or
   // replied to as anywhere else, a yes to a re-ask gets the question again; the card is let go on an answer, a give-up or the stall guard)
   { const answered = ["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? ""));
@@ -3302,10 +3304,16 @@ function columnName(input, prev = null) {
         : cls.outcome === "correct" ? "right" : cls.outcome === "misconception" ? "misconception" : ["incorrect", "partial"].includes(cls.outcome) ? "wrong" : null;
 }
 const columnOf = (input, prev) => { const column = columnName(input, prev); return column ? { part: null, column, help: null } : null; };
-export function cellAddressOf(prev, input) {
+/** The record's cell for a reply that asks for no column (Brain 046 Q6): "yes" for a plain yes, else "other", on the part the walk was on. */
+function recordCellOf(prev, input) {
+  const t = String(input?.text ?? "").trim();
+  const column = YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t)) ? "yes" : "other";
+  return cellAddressOf(prev, input, column) ?? { part: null, column, help: null };
+}
+export function cellAddressOf(prev, input, colIn = null) {
   if (!prev || input?.event !== "turn") return null;
   const kit = input.kit, lm = prev.lastMove ?? {}, sb = lm.scriptBeat;
-  const column = columnName(input, prev);
+  const column = colIn ?? columnName(input, prev);
   if (!column) return null;
   const script = scriptFor(kit)?.script ?? null;
   if (lm.kind === "greet") return script?.greetSimpler ? { part: `${script.topicId ?? "lesson"}:greet`, column } : null;
@@ -3863,7 +3871,10 @@ export function step(prev, input) {
   // (the cell address the turn read rides on the move and the state's lastMove: the harness writes it on each teacher row)
   // (dc-r8-director23 R2: the column is what the walk read on THIS turn — a move built from the last one (K's second wording) never keeps
   // that turn's cell; a column with no part the walk is on is still recorded, with no part)
-  const cell0 = (() => { try { return cellAddressOf(prev, input0) ?? (input0?.event === "turn" ? columnOf(input0, prev) : null); } catch { return null; } })();
+  // (Brain 046 Q6: every teacher row has its cell — a reply that asks for no column, a plain "haan" or a remark, is recorded on the part
+  // the walk was on with the column "yes" or "other": c5-t01 and c5-t02 stuck 22 had none. The record only: help reads columnName, which
+  // still answers null there)
+  const cell0 = (() => { try { return cellAddressOf(prev, input0) ?? (input0?.event === "turn" ? columnOf(input0, prev) ?? recordCellOf(prev, input0) : null); } catch { return null; } })();
   // (dc-r8-director23 T2: each card she got right, with the misses it took — the wrap's sentence about her names the hardest)
   if (input?.event === "turn" && out?.state && prev?.activeItemId && input.cls?.outcome === "correct" && prev.phase !== "teachback")
     out.state.rightLog = [...(prev.rightLog ?? []), { id: prev.activeItemId, misses: (prev.misses?.[prev.activeItemId] ?? 0) + (prev.cardHelp?.id === prev.activeItemId ? prev.cardHelp.misses ?? 0 : 0), turn: prev.turn ?? 0 }].slice(-40);

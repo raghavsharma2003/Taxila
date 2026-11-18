@@ -748,6 +748,11 @@ export const ORDER_LAWS = {
       "ack>none": "an acknowledgement asks for nothing: the walk goes on, no column",
       "done>none": "'done' asks for nothing: the walk goes on, no column",
       "reason>none": "her reason after a key or a verdict is heard and not graded: no column",
+      // (Brain 046 Q6: every teacher row has its cell — a reply that asks for no column is recorded "yes" or "other", which help never reads)
+      "yes>other": "a yes asks for nothing: recorded with no help column",
+      "ack>other": "an acknowledgement asks for nothing: recorded with no help column",
+      "done>other": "'done' asks for nothing: recorded with no help column",
+      "reason>other": "her reason after a key or a verdict is heard and not graded: recorded with no help column",
     };
     return ALLOWED[`${want}>${col}`] ? null : `the child meant ${want}; the walk recorded ${col} ("${String(ctx.prevChild).slice(0, 50)}")`;
   },

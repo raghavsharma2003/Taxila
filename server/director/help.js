@@ -326,7 +326,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // c5-t01 stuck 8. A script with no `hindi` form walks as before (a compile hole: hindiHoles)
   const hf = request === "hindi" && !keyed && !closed && (isCard || (part.kind === "worked_step" && part.step)) ? hindiFormOf(script, part) : null;
   if (hf) {
-    const again = sentencesOf(hf).some((x) => inSaid(x, said));
+    // (a second request: the form said before, every sentence of it — a form whose givens sentence reads as the card's own is not said
+    // by the card: dry offtopic c5-t01 32, e3's "Line ke neeche wahi 0 se 1 hai, …" read as said and the first request got help first)
+    const again = sentencesOf(hf).every((x) => inSaid(x, said));
     const help = again && unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim(), board: unsaid.board ?? part.board ?? null } : null;
     const rung = help ? { ...help, text: help.text.charAt(0).toUpperCase() + help.text.slice(1) } : { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null };
     return { ...base, rung, board: rung.board, card: "hindiForm", key: null, joint: null, hindiForm: hf, ...(part.kind === "worked_step" ? { stepAsked: true } : {}), ...(again ? { hindiAgain: true } : {}) };

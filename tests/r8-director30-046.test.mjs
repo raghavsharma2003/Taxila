@@ -161,3 +161,88 @@ describe("Q5: re-asks and the worked close", () => {
     assert.ok(!helpJointHoles({ joints: { afterWorked: [{ hi: "Ab tumhari baari.", en: "Your turn." }] } }).some((h) => h.joint === "afterWorked"));
   });
 });
+
+describe("Q6: small", () => {
+  test("captionPart (gated) reads another part's caption said on a picture by an identical board (c5-t01 offtopic 26; c4 steady 18)", async () => {
+    const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(!PENDING.has("captionPart"));
+    assert.ok(flagged("offtopic", "c5t01", "captionPart").has(26));
+    assert.ok(flagged("steady", "c4", "captionPart").has(18));
+  });
+  test("viewCaptionOf picks the caption of the part the picture is of, not the first object with the same board", async () => {
+    const { viewCaptionOf } = await import("../server/brain/say.js");
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const said = (x) => (x && typeof x === "object" ? x.hi : x);
+    // (c5-t01 offtopic 26: a picture on rem[0]'s follow-up card; the script's e2 point has the identical board and comes first)
+    {
+      const { rows, script } = lesson("offtopic", "c5t01");
+      const r = rows[26], sk = script.skills[0], then = sk.remediation[0].then;
+      assert.equal(JSON.stringify(then.board), JSON.stringify(sk.explain[1].board), "the fixture's two boards are identical");
+      setScriptForTest(TOPIC.c5t01, script);
+      try {
+        const kit = kitFromFile(getTopic(TOPIC.c5t01));
+        const st = { heldUp: { board: then.board, unit: r.held.intent.unit }, lastMove: { cardBeat: { skillId: sk.skillId, beatId: `then:${sk.remediation[0].targets}`, kind: "check", board: then.board, ownBoard: true } } };
+        assert.equal(viewCaptionOf(kit, st, "hinglish"), said(then.viewCaption).trim());
+      } finally { setScriptForTest(undefined); }
+    }
+    // (c4 steady 18: a picture on e2's card, whose own board is the point's board)
+    {
+      const { script } = lesson("steady", "c4");
+      const sk = script.skills[0], e2 = sk.explain[1];
+      assert.equal(JSON.stringify(e2.ask.board), JSON.stringify(e2.board));
+      setScriptForTest(TOPIC.c4, script);
+      try {
+        const kit = kitFromFile(getTopic(TOPIC.c4));
+        const st = { heldUp: { board: e2.board, unit: `${sk.skillId}:e2` }, lastMove: { cardBeat: { skillId: sk.skillId, beatId: "e2", kind: "explain", board: e2.ask.board, ownBoard: true } } };
+        assert.equal(viewCaptionOf(kit, st, "hinglish"), said(e2.ask.viewCaption).trim());
+        // (no card live: the picture is of the held point, and says the point's caption)
+        assert.equal(viewCaptionOf(kit, { heldUp: { board: e2.board, unit: `${sk.skillId}:e2` }, lastMove: { scriptBeat: { skillId: sk.skillId, beatId: "e2", kind: "explain", board: e2.board } } }, "hinglish"), said(e2.viewCaption).trim());
+      } finally { setScriptForTest(undefined); }
+    }
+  });
+  test("whyShortSet (gated) reads whyShort set where the full why was said (c5-t02 steady 50, 66, 92, 94, stuck 74, offtopic 52, 76)", () => {
+    for (const [p, row] of [["steady", 50], ["steady", 66], ["steady", 92], ["steady", 94], ["stuck", 74], ["offtopic", 52], ["offtopic", 76]])
+      assert.ok(flagged(p, "c5t02", "whyShortSet").has(row), `${p} ${row}`);
+  });
+  test("the harness marks whyShort from what brain/say.js said (guard.rightWhy), not by a substring of the reply", () => {
+    const src = readFileSync(join(ROOT, "evals/hybrid-side-by-side.mjs"), "utf8");
+    assert.match(src, /tGuard\?\.rightWhy === "short" \|\| \(tGuard\?\.rightWhy == null && next\.lastMove\?\.whyShort\)/);
+    assert.ok(!/scriptWhyShortOf\(kit, it/.test(src));
+  });
+  test("cellMissing (gated) reads a teacher row with no cell after a child's line (c5-t01 and c5-t02 stuck 22, a \"haan\")", () => {
+    assert.ok(flagged("stuck", "c5t01", "cellMissing").has(22));
+    assert.ok(flagged("stuck", "c5t02", "cellMissing").has(22));
+  });
+  test("a plain \"haan\" at an asked step is recorded on the step's part with the column \"yes\"", async () => {
+    const { cellAddressOf } = await import("../server/director/state.js");
+    const prev = { lastMove: { stepAsk: { skillId: "x-s1", step: 0 } } };
+    assert.equal(cellAddressOf(prev, { event: "turn", text: "haan", cls: { outcome: "no_evidence" } }), null, "help still reads no column");
+    assert.deepEqual(cellAddressOf(prev, { event: "turn", text: "haan", cls: { outcome: "no_evidence" } }, "yes"), { part: "x-s1:worked:step1:ask", column: "yes" });
+  });
+  test("missAsVerdict (gated) reads the closing question's miss recorded as verdict (c5-t02 steady 98); the seam pass records it missVerdict", async () => {
+    assert.ok(flagged("steady", "c5t02", "missAsVerdict").has(98));
+    const { applySeams } = await import("../server/brain/seams.js");
+    const list = [{ part: "close", text: "12/7 sahi nahi hai." }, { part: "simpler", text: "Dono mein 7 hisse liye gaye." }, { part: "body", text: "Kaunsa chhota hai?" }];
+    const out = applySeams(list.map((p) => p.text).join(" "), list, { kit: null, state: {}, lang: "hinglish", info: { authoredEnd: true } });
+    assert.equal(out.seams[0].right, "missVerdict");
+    const right = [{ part: "close", text: "Bilkul sahi, kyunki 1/9 ki kami chhoti hai." }, { part: "body", text: "Ab ek sawaal aur." }];
+    assert.equal(applySeams(right.map((p) => p.text).join(" "), right, { kit: null, state: {}, lang: "hinglish", info: { authoredEnd: true } }).seams[0].right, "verdict");
+  });
+  test("whyLeadRunning (gated) reads the same lead-in to the why in two verdicts running (\"Dekho,\": c4 offtopic 18, 28; c5-t01 offtopic 12; c5-t02 offtopic 14)", () => {
+    for (const [t, row] of [["c4", 18], ["c4", 42], ["c5t01", 12], ["c5t02", 14]]) assert.ok(flagged("offtopic", t, "whyLeadRunning").has(row), `${t} ${row}`);
+  });
+});
+
+describe("Q6: the why's lead-in rotates", () => {
+  test("rightWhyLead never takes the form of the verdict before, and the colon never follows \"Sahi jawab\"", async () => {
+    const { rightWhyLead } = await import("../server/brain/say.js");
+    for (let n = 0; n < 6; n++) for (const last of [0, 1, 2]) {
+      const st = { ctx: { topicId: "t" }, recent: [], whyJoint: { last, n } };
+      assert.notEqual(rightWhyLead("Bilkul sahi", "3 gap", st).k, last);
+      const k = rightWhyLead("Sahi jawab", "3 gap", st).k;
+      assert.notEqual(k, last); assert.notEqual(k, 2);
+    }
+  });
+});

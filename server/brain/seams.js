@@ -244,7 +244,10 @@ function kindOf(p, i, list, info) {
   // (dc-r8-director27 P7: code's frame before a card said again — "Phir se dekho:" — is no point)
   if (["body", "held"].includes(p.part) && /^(?:Phir se dekho|Ek baar aur dekho|Ek baar phir dekho|Sawaal yeh hai|Dhyan se dekho|Here it is again|Once more|The question is|Look again|One more look)\s*:\s*$/i.test(t)) return "repose";
   switch (p.part) {
-    case "close": return info.miss && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
+    // (Brain 046 Q6, c5-t02 steady 98: the closing question's miss — graded by the end's own walk, with no lastVerdict — is a miss verdict
+    // where its head reads as one, as the default case reads an authored end's verdict)
+    case "close": return (info.miss || (info.authoredEnd && VERDICT_HEAD.test(t) && !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "")))
+      && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
     case "bridge": return "bridge";
     case "aside":

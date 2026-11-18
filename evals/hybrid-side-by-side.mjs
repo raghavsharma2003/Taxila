@@ -15,7 +15,7 @@
 // exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
 // her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
 import { mkdirSync, writeFileSync } from "node:fs";
-import { initLessonState, step, requeueMissedReturn, scriptWhyShortOf } from "../server/director/state.js";
+import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
 import { classify, classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
@@ -385,6 +385,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (P1, as brain/turn.js: a return's turn held the lesson's authored parts; the next turn says them first)
       if (t.guard?.bodyHeld?.length && next) next = { ...next, bodyUnsaid: t.guard.bodyHeld };
       if (t.guard?.backTo && next) next = { ...next, backToN: (next.backToN ?? 0) + 1 };
+      // (Brain 046 Q6: the verdict's lead-in to its why rotates — as brain/turn.js keeps it)
+      if (t.guard?.whyJoint != null && next) next = { ...next, whyJoint: { last: t.guard.whyJoint, n: (next.whyJoint?.n ?? 0) + 1 } };
       if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(t.guard, t.reply)) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
       // (dc-r8-director22 R, as brain/turn.js: only when her turn ended on that question — a turn that posed a card asked the card)
       if (t.guard?.asideEnd && !ui?.ask) next = { ...next, asideReplyDue: true };
@@ -620,7 +622,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (Brain 043: a right verdict said with the card's short why; a turn that ends on an invitation to the next problem done together)
       // (Brain 044 T8: every row that says the card's short reason carries it, whichever path said it — c5-t01 steady 118, the closing turn)
       // (dc-r8-director29 Brain 045 P7: whyShort only on a row that said the card's short reason — the answered card's or the live one's)
-      ...((() => { try { const its = [activeItem, next.lastGraded?.itemId ? findItem(next, kit, next.lastGraded.itemId) : null].filter(Boolean); return its.some((it) => { const ws = scriptWhyShortOf(kit, it, "hinglish"); return !!ws && String(reply).toLowerCase().includes(String(ws).toLowerCase().replace(/[.!?]+$/, "")); }); } catch { return false; } })() ? { whyShort: true } : {}), ...(tGuard?.workedInvite ? { workedInvite: tGuard.workedInvite } : {}),
+      // (dc-r8-director30 Brain 046 Q6: and only where the short reason was said in the full why's place — what brain/say.js said, its
+      // guard.rightWhy, not the short text found inside the reply: the short text is often inside the full why, c5-t02 steady 50, 66, 92, 94)
+      // (a verdict said by the walk's authored end — the closing question's lead — is not say.js's verdict: there the walk's own choice,
+      // the move's whyShort, is what was said)
+      ...(tGuard?.rightWhy === "short" || (tGuard?.rightWhy == null && next.lastMove?.whyShort) ? { whyShort: true } : {}), ...(tGuard?.workedInvite ? { workedInvite: tGuard.workedInvite } : {}),
       ...(next.lastMove?.quickReply ? { quickAnswer: { beat: `${next.lastMove.quickReply.skillId}:${next.lastMove.quickReply.beatId}`, right: !!next.lastMove.quickReply.right } } : {}),
       ...(next.lastMove?.noFit ? { noFit: next.lastMove.noFit } : {}), ...(next.lastMove?.tasteAsked?.served && tGuard?.honestNow ? { returnSaid: true } : {}), ...(next.lastMove?.closeShort ? { closeShort: true } : {}), ...(next.lastMove?.stepReply ? { stepAnswer: { beat: `${next.lastMove.stepReply.skillId}:worked:step${next.lastMove.stepReply.step + 1}`, right: !!next.lastMove.stepReply.right, told: next.lastMove.stepReply.told ?? null } } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: tGuard.seams } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
