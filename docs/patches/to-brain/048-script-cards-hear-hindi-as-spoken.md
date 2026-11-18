@@ -87,6 +87,20 @@ engine's own line for the view ("do sankhya rekhayein …") is not also said: th
 The comparing-fractions reader found the two-scale line view captioned "ek number line" by the script while the
 engine line says two.
 
+**G7. Sums are not bags of numbers (added 23:45 UTC, from the perimeter script's fix pass and main's probe).**
+`sameWords` compares the numbers and words of two strings as an unordered set and drops the signs. So a card
+with the accept form `24 + 18 + 24 + 18` graded `24 × 18` **correct**, and `24 + 18` correct: a false key, in
+code. Probe: `classifyFast` with key `84`, accept `["24 + 18 + 24 + 18"]`, replies `24 × 18` and `24 + 18`,
+both `correct`. When either side holds an operator (`+ - × x * ÷ /` between numbers, `guna`, `jod`, `plus`,
+`times`, `bhaag`, `minus`, `ghata`) the two are the same only if they are the same expression: the same
+operators and the same numbers the same number of times (order free only under `+` and `×`). The scripts' fix
+agents removed such forms from the perimeter script; other scripts may hold them, and G4 must look: for every
+accept form with an operator, the form with one operand removed and the form with its operator swapped must not
+grade correct.
+
+**G1 also covers English number words.** `seven` for 7 and `twenty six` for 26 are graded incorrect today; the
+shared reader reads both (`numbersIn("twenty six")` = 26). They join the probe table and G4's forms.
+
 ## Measure
 
 - The probe table above, as the first test in the G4 file: all 27 right.
