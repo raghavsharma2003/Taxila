@@ -8,6 +8,24 @@ const minusCard = (row) => { const t = norm(row?.text), c = norm(row?.card); ret
 const words = (t) => norm(t).split(" ").filter(Boolean).length;
 const CHECKIN = /(?:Yahan tak (?:theek|saaf) hai|Ab tak samajh aaya|Yeh hissa saaf hua|Kuch poochna hai ab tak)\?\s*$/;
 
+// (d31: the wrap's acknowledgement is no aside acknowledgement — its forms are read from the scripts, the pilots' and the staged ones:
+// "Achha, tumne dil se bataya.", "Theek hai, main yeh yaad rakhungi.", "Hmm, samajh gayi, batane ke liye shukriya.", and the older
+// "Achha, yeh jaankar achha laga.")
+import { readdirSync, readFileSync } from "node:fs";
+const SCRIPT_DIRS = ["../../data/lesson-scripts/", "../../data/lesson-scripts-staged/"].map((d) => new URL(d, import.meta.url));
+export const WRAP_ACKS = (() => {
+  const out = new Set();
+  for (const dir of SCRIPT_DIRS) {
+    let names = [];
+    try { names = readdirSync(dir).filter((n) => n.endsWith(".json")); } catch { continue; }
+    for (const n of names) {
+      try { for (const f of JSON.parse(readFileSync(new URL(n, dir), "utf8"))?.wrap?.ack ?? []) for (const x of [f?.hi, f?.en, typeof f === "string" ? f : null]) if (x) out.add(low(x)); } catch { /* not a script */ }
+    }
+  }
+  return out;
+})();
+/** The wrap's acknowledgement said in a row (one of the scripts' wrap.ack forms), or null. */
+export const wrapAckIn = (row) => sentencesOf(row?.text).find((x) => WRAP_ACKS.has(low(x))) ?? null;
 export const T2 = {
   /** T2.1: "samajh nahi aaya" at the check-in after a point got the card alone, the point not re-said. */
   clarifyAtCheckin(row, child, prevT) {
@@ -44,7 +62,7 @@ export const T2 = {
   /** T2.9: the check-in form that a "haan" answers with a question. */
   kuchPoochna(row) { return /Kuch poochna hai ab tak\?|Anything to ask so far\?/i.test(row?.text ?? "") ? "the 'Kuch poochna hai?' check-in form" : null; },
   /** A6: the acknowledgement of an aside reply. */
-  asideAck(row) { return /yeh jaankar achha laga|Wah, mazedaar|thanks for telling me/i.test(row?.text ?? "") ? "an aside acknowledgement" : null; },
+  asideAck(row) { const t = sentencesOf(row?.text).filter((x) => !WRAP_ACKS.has(low(x))).join(" "); return /yeh jaankar achha laga|Wah, mazedaar|thanks for telling me/i.test(t) ? "an aside acknowledgement" : null; },
   /** R7: a give-up stacked with a new point and a new card (more than a key, its why and a card). */
   gaveStacked(row) {
     if (!/(?:is sawaal ka|iska|yahan) (?:sahi )?jawab/i.test(row?.text ?? "")) return null;

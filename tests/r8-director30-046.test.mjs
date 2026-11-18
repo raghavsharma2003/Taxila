@@ -266,3 +266,19 @@ describe("Q5's leftover: a worked close does not say a why her turn before said"
     } finally { setScriptForTest(undefined); }
   });
 });
+
+describe("d31: the t2 predicates know the wrap's acknowledgements", () => {
+  test("every wrap.ack form of the four pilots and the three staged scripts is a wrap acknowledgement, never an aside one", async () => {
+    const { T2, wrapAckIn } = await import("./fixtures/t2-predicates.mjs");
+    const dirs = { "data/lesson-scripts": Object.values(TOPIC), "data/lesson-scripts-staged": ["c5-maths-ch02-t03", "c4-maths-ch01-t02", "c6-maths-ch07-t01"] };
+    let n = 0;
+    for (const [d, ts] of Object.entries(dirs)) for (const t of ts) for (const f of JSON.parse(readFileSync(join(ROOT, d, `${t}.json`), "utf8")).wrap.ack) {
+      const row = { text: `${f.hi} Aaj humne bahut kuch dekha.` };
+      assert.equal(wrapAckIn(row), f.hi, `${t}: ${f.hi}`);
+      assert.equal(T2.asideAck(row), null, `${t}: ${f.hi}`);
+      n++;
+    }
+    assert.ok(n >= 21);
+    assert.ok(T2.asideAck({ text: "Wah, mazedaar. Chalo aage." }), "an aside acknowledgement is still read");
+  });
+});
