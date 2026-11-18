@@ -1530,3 +1530,251 @@ was (Brain's file).
   (c4 steering 14 was the Pinky follow-up card, but c5-t02 and c6's were too) gets no `answerViewCaption` from this patch.
 - **Five remediations stand whole**, three of them in c5-t02 (skills 2 and 3). If director30 hears more than two alone in a
   steady lesson, the decision's clause re-reads the 60-word turn.
+
+## Patch 019, Part 1 (2026-11-18, branch main/d31-learning)
+
+Order: `docs/patches/to-learning/019-director30-pilots-list-and-first-three.md` (dc-r8-director30 items 2, 5's joint, 6). Done on the
+four pilots, from `3fc4a673a`; commit `f43f12dd6`. The checker holds them to it (`d31Errors` in `scripts/lesson-scripts/check.mjs`);
+`check.mjs <topic>` passes on all four; the compile report shows no new hole on the pilots (rows unchanged) and gains a Learning 019
+table (cards without `hindi`, `afterWorked` missing, step wordings stating their answer: 0 / no / 0 on the pilots; every staged
+script has all of its cards without a form).
+
+### New script fields and joints (exact names; code reads them)
+
+- `hindi` `{ hi, en }` beside `prompt` (inserted right after it) on every card the child answers: `explain[].ask`,
+  `remediation[].then`, `checks[]`, `workedExample.steps[].ask`, `workedExample.yourStep`, `teachback`. The same question, givens
+  and key in the Hindi a child of that class uses at home; one or two sentences ending on the question; the `en` is the gloss.
+- `joints.afterWorked`: three forms, 6 words or fewer, no question, no number or slot — said between a worked example's close and the
+  next card. The same three in all four: "Ab ek sawaal tum akele karo." / "Chalo, ab tumhari apni baari." / "Ab agla sawaal tumhare
+  liye." (the checker's joint-kind list now allows it).
+- `check.mjs <topic> --since <rev>`: `C` lines listing every point, card, remediation, worked example and worked step whose spoken
+  text (or board) changed since `<rev>`, each with its board (`template params`) and a card's key, old → new. Exported as
+  `changedParts(new, old)` / `sinceReport(new, old)` / `partsOf(s)`.
+- `STANDARD_STAGED` (empty in Part 1): the staged scripts held to the pilots' standard (`isD29` reads it beside `D29_PILOTS`).
+
+### Checker rules added (`d31Errors`, pilots and `STANDARD_STAGED`)
+
+- A.1 `hindi` on every card above; 1–2 sentences ending on "?"; every number of the prompt's `hi` and no other (digits, fractions,
+  ₹ amounts), the prompt's `{slots}` exactly; not the card's own words; no key or accepted form the prompt does not itself state
+  (number words read as digits; a yes and a no offered together are a choice); no English connective or verb from
+  `HINDI_FORM_ENGLISH` (and, or, what, which, how, many, equal, part(s), piece(s), colour, same, total, side, length, breadth, …;
+  the school's words — fraction, line, rectangle, square, circle, the units — and the script's own nouns stay). `rhetoricalQuestionErrors`
+  allows a question in a `hindi` field.
+- A.2 `joints.afterWorked` as above.
+- A.3 an asked step's `simpler` (and the step's `ask.simpler`, and the own step's `simpler`) never contains the step's key or an
+  accepted form, in words or digits; a form the problem itself states is a given (`stepSimplerHits`).
+- B the wrap: no `wrap.ack` form says "achha laga", and one form at most across `ack`, `ask` and `goodbye`; a card whose `accept`
+  holds an equal fraction in other numbers (4/6 for 2/3; a mixed number for 11/6) names that form in its `why` (`equalForms`).
+
+### Changed lines (old → new; the judge's row)
+
+**c4**
+- The two reasons heard as a wrong rule (steady 32, 90; stuck 52; offtopic 22; steering 42), and their two siblings of the same
+  shape: s1 worked close why "…; khaye hue 3 tukde neeche wale number mein nahi jaate" → "5 barabar tukdon mein se 2 bache; neeche
+  wala number 5 hai, saare tukde, khaye hue 3 nahi"; closing question why "…; bina rang ke 5 neeche wale number mein nahi jaate" →
+  "neeche wala number circle ke saare 9 barabar tukde ginta hai, bina rang ke 5 nahi, aur upar wala rangin 4"; s1 own step whyAlt
+  "khaye hue 3 tukde neeche nahi jaate; …" → "neeche wale number mein hamesha poori barfi ke saare tukde aate hain, yaani 5, khaye hue
+  3 nahi; toh 2/5"; s1 part-part card why "…; bache hue 2 neeche wala number nahi" → "4 barabar tukdon mein se 2 khaye, toh 2/4;
+  neeche wala number saare 4 tukde ginta hai, bache hue 2 nahi"; s2 part-part card why "…; bache hue 5 neeche wale number mein nahi
+  jaate" → "6 barabar thailon mein se diya hua thaila 1/6 hai; neeche wala number saare 6 thaile ginta hai, bache 5 nahi".
+- The shading that means left over (s26, k38, o18, r36): s1 worked problem + "Is baar rangin tukde woh hain jo plate par bache."
+- Help for "2/1" and "4/1" (steering 30, 32; offtopic 64): the s1 e3 card's first help now says where each count goes — "Pehle gino
+  ki circle ke kul kitne tukde hain: yeh ginti neeche wala number hai. Phir socho, ek aur tukda rangne ke baad kitne rangin honge: woh
+  ginti upar wala number."; its point's other wording (the notes "Seedhi baat: … neeche 3, upar 1.") → "Circle ke 3 barabar tukde
+  hain aur ek mein rang hai, isliye rangin tukda 1/3 hai. Neeche wala number saare tukde ginta hai, rangin bhi aur bina rang ke bhi,
+  aur upar wala sirf rangin." (see For main: the kit has no upside-down mix-up for a remediation to name it).
+- Notes (clause 14): s2 e1 point "Jaanch: dono ke laddoo jodo, toh saare 12 wapas." → "Dono ke laddoo jodkar dekho, toh saare 12
+  wapas mil jaate hain."; s2 e3 point "Group ka size pata ho, toh aise group gino: wahi ginti neeche wala number hai." → "Group mein
+  kitne hain, yeh pata ho, toh group gino: wahi neeche wala number." (and its pointAlt's "Dher ka size pata ho, toh dher gino" →
+  "Jab pata ho ki ek dher mein kitne rupaye hain, toh gino ki kitne dher bante hain").
+- s3 worked (s72–76): asked step "6 wali ke saare tukde, 3 wali ke kitne tukde dhak denge?" (near-given) → "6 wali ke tukde 3 wali
+  par barabar rakhne hain: jodoge ya baantoge?" (key "baantenge"; right "Haan, baantenge: 6 tukde 3 bade tukdon par barabar bat-te
+  hain."; told "6 chhote tukde 3 bade tukdon par barabar rakhne hain: baant kar, har bade tukde par barabar"); the close that answered
+  a question nobody asked, answer "1/3 wala tukda bada hai, aur us par 1/6 wale 2 tukde aate hain" → "3 wali ke ek tukde par 6 wali
+  ke 2 tukde aate hain" (its why keeps the skill's point). Own step unchanged (key 2).
+- A.3: s1 step "Khaane se pehle wali poori barfi socho: uske saare tukde gino." → "Khaane se pehle wali poori barfi yaad karo, jab ek
+  bhi tukda khaya nahi gaya tha. Neeche wala number usi barfi ki baat karta hai."; s2 step "Socho 3 dost hain …" → "Socho, 1/3 ka
+  neeche wala number kya batata hai: pencil kitne doston ko barabar milengi."
+
+**c5-t01**
+- s3 asked step (steady 74: answered by the e2 point, e1's frame) "7/4 ek poore, yaani 1, se kam hai ya zyada?" → "7/4 kahan aayega:
+  1 aur 2 ke beech, ya 2 ke baad?" (key "1 aur 2 ke beech"; right "Haan, 1 aur 2 ke beech, kyunki 2 tak 8 gap lagte hain."; told
+  "Dekho, 2 tak kitne gap lagte hain: 1 aur 2 ke beech: 7 gap, 8 se kam"); "4 gap = 1" three times (steady 76–78): the close's why
+  "pehle 4 gap se 1 poora hua, aur baaki 3 gap 1 ke aage gaye" → "1 ke baad 3 gap aur chalne the"; the worked caption's "0, 1 aur 2"
+  (now an accepted form) → "0, 1, 2 jaise poore number".
+- s1 rem[2] `sayAlt` (steady 8, steering 10) "Seedhi baat: khilona ek hi jagah ruka, … 1/7 kilometre hai." → "Socho, ruler par 0
+  ke baad pehli lakeer ek pakki jagah hai, aur uska ek number hai. Sadak par khilona bhi ek pakki jagah ruka, isliye us jagah ka number
+  1/7 kilometre hai."
+- s1 e3 `pointAlt`, heard as agreeing with "1/8" (offtopic 42) "…isliye pehla mark, 1/8, pehle se 0 ke zyada paas aata hai." → "Do ek
+  jaisi roti socho: ek 4 barabar hisson mein kati, ek 6 mein, toh 6 wali ka har hissa patla hai. Line par bhi gap jitne zyada, har gap
+  utna chhota, aur pehla mark utna hi 0 ke paas."
+- "upar / neeche" (steady 84): one meaning each — "line ke upar / line ke neeche" for the board's two scales, "upar / neeche wala
+  number" for a fraction's two numbers; no bare "upar"/"neeche" left in either sense: s3 rem not-numbers "…upar woh gaps jo train chali,
+  aur neeche 5." → "…upar wala number woh gaps hain jo train chali, aur neeche wala number 5."; s2 rem whole-number-bias "Upar har gap
+  1/3 hai, neeche 1/6: upar wala do guna lamba hai. …" → "Line ke upar har gap 1/3 hai, line ke neeche usse aadha, 1/6. 2 lambe gap 2/3
+  par rukte hain, 2 chhote 2/6 par."; s3 rem whole-number-bias card "upar har poora 5 gaps mein, neeche 10 mein" → "line ke upar …,
+  line ke neeche …"; s3 rem all-less-than-one card "Neeche har poora …" → "Line ke neeche har poora …"; s1 rem not-numbers card
+  "Khilona neeche pehle mark par" → "Khilona wahan pehle mark par"; s1 e3 card simpler; teachback simpler "wahi ginti neeche jaati
+  hai" → "wahi ginti neeche wala number hai".
+- Verdict whys that do not link an equal answer (steady 56, 82, 88): s2 c1 "…yaani 4/6" → "…: 4/6, jo 2/3 ke barabar hai"; s3 rem
+  cards and checks gain the mixed form ("7/6, yaani 1 aur 1/6"; "9/5, yaani 1 aur 4/5"; "8/5, jo 1 aur 3/5 hai"; "11/6, yaani 1 aur
+  5/6, 11/12 se aage hai"; "12/5, yaani 2 aur 2/5"; teachback "9/7 …, yaani 1 aur 2/7").
+- A.3: s1 step "Ghar se pehle khambe tak chalo: tum ek gap chale, …" → "Ghar se pehle khambe tak chalkar socho: tumhare pair kis
+  cheez par chale, aur khamba kahan khada raha."; s2 step "Neeche wala number batata hai … yahan woh 5 hai." → "2/5 ke dono numbers mein
+  se socho: kaunsa poore ke baare mein batata hai, aur kaunsa chalne ke baare mein."
+- "X nahi, yeh jawab theek nahi baitha" is code (`server/brain/say.js` ECHO_NOT_RIGHT), not a script line: For main.
+
+**c5-t02**
+- S3 e3 point, the failing row (steady 74) "Ginti barabar ho, toh hisse ka size faisla karta hai: kam hisson wali patti ke hisse bade.
+  Khaali hisse bhi aise hi: 5 wali ka ek khaali hissa, 9 wali ke khaali hisse se bada." → "Ginti barabar ho, toh hisse ka size faisla
+  karta hai. 3/5 mein 1/5 wale hisse hain, jo 1/8 wale se bade hain. Khaali hissa bhi aisa hi: jo kam hisson mein kata ho, uska khaali
+  hissa bada." (speaks of its compare board, 3/5 and 3/8; names no strip and no 9; does not state 2/5 against 2/9).
+- Comparing with a half, used by S2 e4's card and c1, now taught in S2 e4's point: "Do barabar patti hain, ek 3 hisson mein aur ek 10
+  mein. 10 wali ke hisse chhote hain, toh khaali hissa 3 wali ka bada hai. Aadhe se bhi milao: jo aadhe se aage, woh bada." (no number
+  of the card's; true of its two bars).
+- Remediations that ended without their conclusion: S2 gap-thinking (offtopic 82) "…Pehli ka aadha khaali hai, doosri ka bas 1/7." →
+  "Pehli patti mein 2 mein se 1 hissa rangin hai, doosri mein 7 mein se 6. Pehli ka aadha khaali hai, aur doosri ka bas 1/7, isliye
+  doosri mein rang zyada hai." (said whole, below); S3 bigger-denominator (steady 86) "Ek rassi 2 hisson mein kati, aur waisi hi
+  doosri 8 mein. 2 wali ke ek hisse mein 8 wali ke chaar aate hain." → "Do ek jaisi rassi: 2 hisson wali ke ek hisse mein, 8 hisson
+  wali ke chaar aate hain, isliye 8 wala hissa chhota hai." (fits 49).
+- "Isha ki chocolate 3 mein kati" twice running (steady 80, 82): the close's why "…, aur Isha ki chocolate 3 mein kati thi" → "kam
+  hisson mein kati chocolate ke hisse bade hote hain, isliye Isha ke 2 hisse zyada hain".
+- A.3: S1 step (stuck 20, offtopic 16) "Ek patti kam logon mein bate ya zyada mein: kam logon wala hissa bada hota hai." → "Socho, do
+  ek jaisi patti hain: ek do logon mein bati, ek das logon mein. Kis baant mein har ek ko bada hissa milega, bas yeh socho."
+
+**c6**
+- The re-ask at stuck 48 needed the 140 cm: the card's last question now carries it — "Tumhare paas 140 cm ribbon hai. 14 cm lambe,
+  9 cm chaude sticker ke kinaare-kinaare ribbon lagao. Kitna bachega?" → "14 cm lambe, 9 cm chaude sticker ke kinaare-kinaare ribbon
+  lagana hai. Tumhare 140 cm ribbon mein se kitna bachega?" (the short ask after help about the aangan is the walk's, Brain 046 Q5).
+- The s1 asked step (thin) "Poori baad lagane ke liye kitni bhujaon ka naap jodna hoga?" (key teeno) → "Kitni baad bachegi, yeh jaanne se
+  pehle kya nikaalna hoga?" (key "kyari ka parimap"; right "Haan, kyari ka parimap, yaani teeno bhujaon ka jod."; told "Pehle kyari ke
+  poore kinaare ki lambai chahiye: kyari ka parimap, teeno bhujaon ka jod, kyunki baad kinaare par hi lagti hai").
+- A.3 (stuck 20, offtopic 16, 52): s1 step "Socho baad ki jaali teen roll mein aayi hai … teeno roll milakar banti hai." → "Socho, maali
+  ko kaise pata chalega ki baad kam padegi ya bachegi. Use pehle yeh jaanna hoga ki kyari ko gherne mein kitni baad lagegi."; s2 step
+  "Tape ek kone se chalao: pehle lambi bhuja, phir mud ke chhoti bhuja. …" → "Tape ek kone se saamne wale kone tak chalao, aur dekho
+  raaste mein kaun si bhujayein aati hain." (its asked step now also accepts "lambi aur chhoti bhuja", "ek lambi aur ek chhoti bhuja",
+  "ek lambi ek chhoti"); s3 step "…Toh ek chakkar mein har bhuja ek baar aati hai." → "Rani har chakkar mein park ke poore kinaare par
+  daudti hai, aur teeno baar wahi raasta hai. Socho, kaunsi doori teen baar judegi."
+
+**All four:** `wrap.ack` "Achha, tumne yeh bataya, mujhe achha laga." / "Achha, yeh jaankar achha laga." → "Achha, tumne dil se
+bataya." / "Theek hai, main yeh yaad rakhungi." (the third, "Hmm, samajh gayi, batane ke liye shukriya.", kept). "achha laga" is left
+only in `wrap.ask[1]` ("Aaj ki padhai mein kuch aisa tha jo achha laga?"), once.
+
+### `hindi` forms: count per script, five examples each (card → form)
+
+c4 30, c5-t01 34, c5-t02 34, c6 30 (128).
+- c4: s1 e1 "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda roti ka kaunsa fraction hai?" → "Roti ke ek tukde mein rang hai,
+  doosre mein nahi. Rang wala tukda poori roti ka kaunsa fraction hai?"; s1 c2 → "Tumhari chocolate mein 12 barabar tukde hain, aur
+  tumne 1/12 kha liya. Ab kitne tukde bache hain?"; s2 e1 "12 laddoo ka aadha kitne laddoo hai?" → "12 laddoo ko aadha karo, toh kitne
+  laddoo bante hain?"; s2 rem part-part card → "30 kele 6 thailon mein barabar bhare gaye, aur 1 thaila kisi ko de diya. Jo thaila de
+  diya, woh saare kelon ka 1/5 hai ya 1/6?"; s3 own step → "Ab tum batao: 3 tukdon wali chocolate ke ek tukde ke upar, 6 tukdon wali
+  ke kitne tukde aayenge?"
+- c5-t01: s1 e3 → "Line ke neeche wahi 0 se 1 hai, 10 barabar gaps mein kata hua. 1/8 aur 1/10 mein se kaun 0 ke zyada paas rukega?";
+  s1 rem count-marks card → "Maan lo wahi ribbon 12 barabar gaps mein kaatna hai. Beech mein chalk ke kitne marks lagane padenge?";
+  s2 asked step → "2/5 ke dono numbers mein se kaun batata hai ki line kitne barabar gaps mein kategi?"; s3 c2 → "Line 0 se 2 tak hai:
+  ek baar 1/6 wale 11 gap chalo, ek baar 1/12 wale 11 gap. 11/6 aur 11/12 mein se 0 se zyada door kaun gaya?"; teachback → "Ek line 0
+  se 2 tak hai, jismein 0 aur 1 ke beech 6 marks hain aur 1 aur 2 ke beech bhi 6, sab barabar doori par. 0 se 9 gap chaloge, toh kis
+  fraction par pahunchoge?"
+- c5-t02: S1 e1 → "Doosri patti bhi utni hi lambi hai, par 8 barabar hisson mein kati hai. Uska ek hissa pehli patti ke ek hisse se
+  bada hai ya chhota?"; S1 asked step → "Dono ko ek-ek hissa mila. Bada hissa kiska hoga, jiski chocolate kam hisson mein kati, ya jiski
+  zyada mein?"; S2 e4 → "Ek patti ka 2/3 lo, aur utni hi badi doosri patti ka 3/10; 3/10 mein hisse zyada hain. Par 2/3 aur 3/10 mein
+  bada kaun hai?"; S2 rem same-bottom card → "Do ek jaise ribbon hain, dono 7 barabar hisson mein kate. Neha ne ek se 3 hisse liye aur
+  Gopi ne doosre se 6, toh Neha ka ribbon zyada hai ya kam?"; S3 c3 → "Do bilkul ek jaise pizza hain; ek ke 7 barabar hisson mein se 6
+  bache aur doosre ke 9 mein se 8, yaani dono mein bas ek-ek hissa kam hai. 6/7 aur 8/9 mein poore pizza ke zyada paas kaun hai?"
+- c6: s1 rem missing-sides card → "Ek khet PQRST hai, jiski bhujayein PQ 8 m, QR 5 m, RS 7 m, ST 6 m aur TP 3 m hain. Uska poora
+  kinaara kitne metre lamba hai?"; s1 rem area-perimeter card → "Ek sticker 14 cm lamba aur 9 cm chauda hai, uske kinaare-kinaare
+  ribbon lagana hai. Tumhare paas 140 cm ribbon hai, usmein se kitna bachega?"; s2 e2 "Is rectangle ke liye 2 × (lambai + chaudai)
+  kitna banta hai?" → "Is rectangle mein lambai aur chaudai jodo, phir 2 se guna karo: kitna aata hai?"; s2 c2 → "Laal card 16 cm lamba
+  aur 9 cm chauda hai, neela card 20 cm lamba aur 6 cm chauda, aur dono ke poore kinaare par sunehri border lagani hai. Kiski border
+  lambi hogi, laal ki ya neele ki?"; s3 c2 → "Ek rectangle khet 30 m lamba aur 20 m chauda hai, aur taar ₹15 ki ek metre milti hai. Khet
+  ke chaaron taraf ek baar taar lagane mein kitne rupaye lagenge?"
+
+### Remediations left whole
+
+One added: c5-t02 S2 gap-thinking (49 → 51 with its conclusion and the counts that keep its board drawn; a shorter say without the
+counts fails "its own board is not taken under its words"). `REM_WHOLE` now lists six (c5-t01 2, c5-t02 4). c5-t02 skill 2 now has
+all three of its remediations said alone: For main.
+
+### New and changed keys, with the blind solve (problem and board alone)
+
+| Script | Where | Key | Solve |
+|---|---|---|---|
+| c4 | s3 worked asked step (new question) | baantenge | 6 equal pieces go equally onto 3 pieces: equal sharing among 3 is division (6 ÷ 3), not adding; the own step's 2 follows |
+| c5-t01 | s3 worked asked step (new question) | 1 aur 2 ke beech | 4 gaps a whole: 1 = 4/4, 2 = 8/4; 4 < 7 < 8 |
+| c6 | s1 worked asked step (new question) | kyari ka parimap | the fence left is 35 m less the fence used, and the fence used is the bed's edge, 8 + 9 + 14 = 31 m: the perimeter first |
+| c6 | s2 worked asked step (accept forms added) | ek lambai aur ek chaudai | corner to opposite corner of a 24 × 18 rectangle is one long side and one short side |
+
+Every other key is unchanged. Each new `hindi` form was read against its card's key: the same givens, nothing stated that the card
+does not state (the checker confirms numbers, slots and the key's forms).
+
+### The `--since` read
+
+After the edits I ran the new list against `3fc4a673a` on all four (`check.mjs <topic> --since 3fc4a673a`; 38, 42, 40 and 33 parts,
+most only for the new `hindi`) and read every part whose spoken text changed other than its `hindi` — 14 in c4, 18 in c5-t01, 6 in
+c5-t02, 5 in c6 — against its board and its card by hand. Two were wrong and are fixed: c5-t01's s3 worked caption ("poore number line
+ke neeche", heard as "the whole number line") → "0, 1, 2 jaise poore number line ke neeche"; c5-t02's S3 e3 point said "kam hisson
+wali patti" over a compare board that draws no strip → "jo kam hisson mein kata ho". Every other sentence is true of its own board
+and states no answer of its own card.
+
+### Tests
+
+New: `tests/r8-learning-director30.test.mjs` (10 tests): the pilots pass `d31Errors`; a `hindi` form on every kind of card; numbers,
+slots and the key's forms (director30's "Neha ke paas kam" put back fails); English words and the card's own words; `afterWorked`;
+A.3 on director30's own rows put back (c5-t02 S1 "kam", c6 s1 "teeno"; c6 s2's laid-out sides are not caught by words — see For main);
+the wrap's "achha laga"; equal forms (c5-t01's 4/6 why put back); `--since` (c5-t02's failing sentence put back is the one listed, over
+compare@1). Repinned, keeping its rule: `r7-learning-d13` D13.3 (c5-t02's S2 gap remediation is still one part short, now with its
+conclusion). Run: `node --test --test-concurrency=2 tests/r7-board-ref.test.mjs tests/r8-learning-*.test.mjs tests/r7-learning-*.test.mjs
+tests/r8-picture-turn.test.mjs tests/r8-card-stated.test.mjs tests/r7-compile*.test.mjs`: 324 tests, 323 pass after the repin, 1 fails —
+`r7-learning-kit-workflows` "the real plans build…", for the file absent from this sparse checkout
+(`docs/research/census/2026-10-21-kits-english-only-forms.json`).
+
+### For main
+
+- **The upside-down fraction has no mix-up in the kit** (c4's misconceptions are part-part, unequal-parts, bigger-denominator), so no
+  remediation can be routed to it. What the script can do is done: the s1 e3 card's first help says which count goes where; its
+  `wrongIfMis` "2/1" still routes to part-part, whose wording names "all the pieces at the bottom". s2 e3 (key 1/4, no `targets`) keeps
+  its help; a "4/1" there gets the card's hints. Naming "the numbers are the wrong way round" needs a kit mix-up (and its remediation)
+  or a per-wrong-answer field the walk reads.
+- **"X nahi, yeh jawab theek nahi baitha"** is `server/brain/say.js` ECHO_NOT_RIGHT (code), not a script line: Brain's.
+- **A.3 by words misses c6 s2's kind** (the sides laid out in order, no accepted form word for word). Rewritten by hand; the accept
+  forms "lambi aur chhoti bhuja" were added so a wording that says them is caught.
+- **c5-t02 skill 2 now has three remediations said alone** (same-bottom-equal, tops-only, gap-thinking). The judge's dead spot was "a
+  remediation followed by 'Yahan tak saaf hai?'"; the third one is the price of its conclusion. Clause 21 is closest here.
+- **`tests/fixtures/t2-predicates.mjs` and `r7-brain-v69`** recognise "yeh jaankar achha laga" as an acknowledgement; the new acks
+  ("Achha, tumne dil se bataya.", "Theek hai, main yeh yaad rakhungi.") are not in their lists, if a dry-matrix predicate counts them.
+- The new asked steps (c4 s3, c5-t01 s3, c6 s1) are not yet heard by a judge.
+
+## Patch 019, Part 2 (2026-11-18, branch main/d31-learning): the first three staged scripts — chosen, measured, not yet at the standard
+
+**The three:** `c5-maths-ch02-t03` (named by the order); `c4-maths-ch01-t02` and `c6-maths-ch07-t01`.
+- `c6-maths-ch07-t01` (fractional units 1/n; comparing unit fractions; sharing): every board kind it uses — wholes, fraction-parts,
+  fraction-line, fraction-bars, equal-groups, compare — is one the c4, c5-t01 and c5-t02 pilots exercise, 230 boards between them,
+  and its three skills are the pilots' own ideas a class higher (c4 s1, c5-t02 S1).
+- `c4-maths-ch01-t02` (right angles, comparing angles, circles): shape@1, measured@1 and compare@1 only, the c6 pilot's boards (38 of
+  them). The other class 4 scripts bring kinds no pilot draws (place-value, column-op, number-line-hop/scale), except
+  `c4-maths-ch14-t01` (pictographs), which is almost all compare@1 (41 boards), the kind the pilots use least (3).
+
+**Measured, not done.** None of the three is at the pilots' standard yet, and I did not move any of them, list any in
+`STANDARD_STAGED`, or change any of their lines in this patch. The staged scripts are v2.3 without a teachback, so today's checker
+holds them to v2.3's rules only. Held to the pilots' standard (`check.mjs <topic> --standard`, new, with a teachback present so
+the v2.4 rules fire), each fails 157 to 172 lines before its worked examples are even rebuilt:
+
+| Script | Errors | Second wordings (pointAlt, whyAlt, sayAlt, problemAlt) | viewCaption | hindi | answerViewCaption | did | Fit (hooks, points, remediations) | Worked | Joints | Wrap, teachback | covered | reask | Other |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| c5-maths-ch02-t03 | 172 | 42 | 36 | 26 | 10 | 9 | 19 | 3 | 8 | 7 | 3 | 7 | 2 |
+| c4-maths-ch01-t02 | 157 | 39 | 29 | 25 | 0 | 10 | 12 | 4 | 8 | 7 | 3 | 12 | 8 |
+| c6-maths-ch07-t01 | 160 | 38 | 23 | 24 | 8 | 9 | 18 | 7 | 8 | 7 | 3 | 4 | 11 |
+
+On top of these: `whyShort` on every card (about 20 a script; a compile hole, not a checker line), the worked examples (in c5-t03
+two told steps before the first question in every skill and no asked step: each needs an asked deciding step, the sum told, and its opening
+cut to 53), a teachback with its key blind-solved, and one word per idea (c5-t03 says tukda and hissa, bar and patti). That is about
+180 new authored sentences a script, each read against its board, before a run; the order's list reads as if the staged scripts
+were a few rules short of the pilots, and they are four rounds short (they predate director21's v2.4 fields).
+
+**What I would not put in front of a child yet (read, not changed):** c5-t03 s1's hook is 29 words and tells the whole fold before the
+first point; s2's point sentences "Patti par 1/2 ke tukde 2 hain, aur 2/3 ke tukde 3" read as notes; s1 c1 says "chocolate bar" and
+s3's hook "health bar" beside "patti" everywhere else; its three worked examples each tell two steps and ask none.
+
+**For main:** the batch needs either the full authoring above (one session per script, I estimate, at the standard Parts 1 of 016 to 019
+held the pilots to) or a decision that a staged script may be run first at v2.3 plus Part 1 A (hindi, afterWorked, step wordings) and
+the fit, with the v2.4 fields left to the compile report's fallbacks. `check.mjs <topic> --standard` measures either way.

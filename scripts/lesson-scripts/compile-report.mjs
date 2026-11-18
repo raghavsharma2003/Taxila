@@ -96,6 +96,17 @@ for (const r of rows) {
   out.push(`| ${r.s.topicId} | ${r.where} | ${f.hooks.filter((h) => h.hook > HOOK_MAX).length} | ${f.hooks.filter((h) => h.total > FIRST_TURN_MAX).length} | ${f.points.filter((p) => !p.first && p.total > POINT_CARD_MAX).length} | ${f.points.filter((p) => p.quick).length} | ${f.rems.filter((x) => x.total > REM_CARD_MAX).length} | ${f.worked.filter((w) => w.total > WORKED_OPENING_MAX).length} | ${r.s.joints?.workedInvite ? "yes" : ""} | ${Array.isArray(r.s.joints?.stepMiss) && r.s.joints.stepMiss.length === 3 ? "" : "yes"} |`);
 }
 out.push("");
+// Learning 019 (dc-r8-director30 items 2, 5's joint, 6): the plain-Hindi form of every card, the worked close's seam, and the easier
+// wordings that state a step's answer. The pilots (and the staged scripts brought to their standard) are held to them by the checker.
+const { hindiCards, stepSimplerHits } = await import("./check.mjs");
+out.push("## Hindi forms, afterWorked, step wordings (Learning 019 A, dc-r8-director30)", "",
+  "Cards (explain cards, follow-up cards, checks, asked worked steps, the own step, the closing question) without a `hindi` form; `joints.afterWorked` missing; an asked step's or the own step's `simpler` that states its answer.", "",
+  "| Script | Where | Cards | Without hindi | afterWorked missing | Step wordings stating the answer |", "|---|---|---|---|---|---|");
+for (const r of rows) {
+  const cards = hindiCards(r.s), hits = (r.s.skills ?? []).flatMap((k) => stepSimplerHits(k.workedExample).filter((h) => h.l === "hi"));
+  out.push(`| ${r.s.topicId} | ${r.where} | ${cards.length} | ${cards.filter((c) => !c.card.hindi).length} | ${Array.isArray(r.s.joints?.afterWorked) && r.s.joints.afterWorked.length ? "" : "yes"} | ${hits.length} |`);
+}
+out.push("");
 const text = out.join("\n");
 if (process.argv.includes("--print")) process.stdout.write(text);
 else { writeFileSync(new URL("docs/design/round7/brain/COMPILE-HOLES.md", ROOT), text); console.log(`COMPILE-HOLES.md: ${rows.length} scripts`); }
