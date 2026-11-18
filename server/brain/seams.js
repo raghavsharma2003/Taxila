@@ -40,6 +40,8 @@ export const SEAM_TABLE = [
   // c5-t01 steady 46, c4 stuck 36. One joint at the seam: the back-to, which takes her back from the aside as well)
   ["asideReply", "point", "afterAside"], ["asideReply", "help", "afterAside"], ["asideReply", "card", "afterAside"], ["asideReply", "returnCard", "backTo"], ["asideReply", "remediation", "afterAside"],
   ["aside", "returnCard", "backTo"],
+  // (d29 final, with Learning 017's scripts: a park before a return to an earlier card — steering c6 34, stuck c6 40 — P5's back-to too)
+  ["park", "returnCard", "backTo"],
   // (her AI line, or her reply after it, into the lesson)
   ["aiLine", "point", "afterAiLine"], ["aiLine", "help", "afterAiLine"], ["aiLine", "card", "afterAiLine"], ["aiLine", "returnCard", "backTo"], ["aiLine", "remediation", "afterAiLine"],
   ["aiReply", "point", "afterAiLine"], ["aiReply", "card", "afterAiLine"], ["aiReply", "returnCard", "backTo"], ["aiReply", "remediation", "afterAiLine"],

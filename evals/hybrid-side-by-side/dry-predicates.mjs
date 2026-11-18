@@ -107,7 +107,11 @@ export const PREDICATES = {
   /** A joint form used twice before another form of its kind was used once (the rotation does not reach the joints). */
   jointRotation(L, r, i, ctx) {
     for (const [kind, forms] of Object.entries(ctx.jointHeads)) {
-      const hit = forms.findIndex((h) => h && low(r.text).includes(h));
+      // (d29 final: a form is read where a sentence starts with it — Learning 017's stepMiss form "Yeh jawab nahi hai." sits inside the
+      // miss verdict "Nahi, yeh jawab nahi hai.", which is no joint)
+      const T = low(r.text);
+      const atStart = (h) => { for (let p = T.indexOf(h); p >= 0; p = T.indexOf(h, p + 1)) if (p === 0 || /[.!?।]\s*$/u.test(T.slice(0, p))) return true; return false; };
+      const hit = forms.findIndex((h, n) => h && (ctx.jointHeadStart?.[kind]?.[n] ? atStart(h) : T.includes(h)));
       if (hit < 0) continue;
       const use = (ctx.jointUse[kind] ??= forms.map(() => 0));
       if (use[hit] >= 1 && use.some((n, j) => j !== hit && n === 0)) { use[hit]++; return `${kind} form ${hit + 1} again before the others`; }
@@ -997,9 +1001,12 @@ export function lessonFlags({ rows, script }) {
   const heads = {};
   // (each form is recognised by its longest stretch with no slot in it)
   for (const [kind, forms] of Object.entries(script?.joints ?? {})) heads[kind] = (forms ?? []).map((f) => String(f?.hi ?? f ?? "").split(/\{\w+\}/).map((x) => low(x).replace(/^[\s,.:;!?]+|[\s,.:;!?]+$/g, "")).sort((a, b) => b.length - a.length)[0]?.slice(0, 32) ?? "").map((h) => (h.length >= 8 ? h : null));
+  // (d29 final: whether a form's head is its first words — a form with no slot before its head — read at a sentence start only)
+  const headStart = {};
+  for (const [kind, forms] of Object.entries(script?.joints ?? {})) headStart[kind] = (forms ?? []).map((f) => !/^\s*\{\w+\}/.test(String(f?.hi ?? f ?? "")) && !/\{\w+\}/.test(String(f?.hi ?? f ?? "")));
   const workedBy = new Map((script?.skills ?? []).map((sk, n) => [`s${n + 1}`, sk.workedExample ?? null]));
   const forms = (k) => (script?.joints?.[k] ?? []).flatMap((f) => [f?.hi ?? f, f?.en]).filter((x) => typeof x === "string" && x.includes("{aside}")).map(formRe);
-  const ctx = { o: { said: new Set(), reported: new Set(), pend: null, misses: {}, skill: null }, script, parkRes: forms("asidePark"), retRes: forms("asideReturn"), prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, problemSaid: new Set(), returnDue: false, cardTurns: {},
+  const ctx = { o: { said: new Set(), reported: new Set(), pend: null, misses: {}, skill: null }, script, parkRes: forms("asidePark"), retRes: forms("asideReturn"), prevT: null, prevChild: "", prevCls: null, saidCards: new Set(), jointUse: {}, jointHeads: heads, jointHeadStart: headStart, problemSaid: new Set(), returnDue: false, cardTurns: {},
     workedOf: (r) => workedBy.get(String(r.beat ?? "").split(":")[0]) ?? null };
   const out = [];
   rows.forEach((r, i) => {
@@ -1051,6 +1058,9 @@ export const ASIDE_LEAD_MAX = 15;
 export function asideLeadWords(r) {
   const sm = r.seams ?? [];
   const LEAD = new Set(["asideReply", "aiReply", "park"]);
+  // (d29 final, main's ruling on 044: the "nothing easier" line leading a turn is a lead like her aside reply — 15 words at most, not counted
+  // in the turn's 75; it is its own sentence, so its words are the form's)
+  if (sm[0]?.right === "helpSpent" && sm[0].form && norm(r.text).startsWith(norm(sm[0].form))) return Math.min(ASIDE_LEAD_MAX, words(sm[0].form));
   if (!sm.length || !LEAD.has(sm[0].right)) return 0;
   const t = norm(r.text), pp = r.pageParts ?? [];
   // (the lead runs to the first part the record pages — the joint after her reply rides with it)
