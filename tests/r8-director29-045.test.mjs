@@ -59,3 +59,29 @@ describe("P2: the page's start, one function", () => {
     assert.equal(partStartOf({ ...r, seams: [] }, { from: 0 }), 0);
   });
 });
+
+describe("P3: two rungs and two cues", () => {
+  test("stepToldEarly reads every asked step told with its simpler unsaid", () => {
+    for (const [p, t, i] of [["stuck", "c4", 36], ["stuck", "c5t01", 20], ["stuck", "c5t02", 20], ["offtopic", "c5t02", 16], ["steering", "c5t02", 28],
+      ["stuck", "c6", 20], ["offtopic", "c6", 16], ["steering", "c6", 28]]) assert.ok(flagged(p, t, "stepToldEarly").has(i), `${p} ${t} row ${i}`);
+  });
+  test("keyEarly reads a follow-up card keyed with its remediation's wordings unsaid", () => {
+    for (const [p, t, i] of [["steady", "c5t01", 88], ["stuck", "c5t01", 42], ["offtopic", "c5t01", 22], ["steering", "c5t01", 10],
+      ["steady", "c6", 8], ["steady", "c6", 90], ["stuck", "c6", 42], ["stuck", "c6", 76], ["steering", "c6", 10]]) assert.ok(flagged(p, t, "keyEarly").has(i), `${p} ${t} row ${i}`);
+  });
+  test("requestHelped reads the \"nothing easier\" line said for a follow-up card while its remediation's wordings are unsaid", () => {
+    for (const [p, t, i] of [["stuck", "c6", 46], ["steering", "c6", 16], ["steering", "c5t02", 16]]) assert.ok(flagged(p, t, "requestHelped").has(i), `${p} ${t} row ${i}`);
+  });
+  test("pickHelp: an asked step's simpler first, the step asked again; none at the second request; a follow-up card's ladder runs on into its remediation", async () => {
+    const { pickHelp, ladderOf, helpPart } = await import("../server/director/help.js");
+    const script = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${TOPIC.c4}.json`), "utf8"));
+    const S = script.skills[0].skillId;
+    const d = pickHelp({ script, part: `${S}:worked:step1`, request: "give_up", said: [] });
+    assert.equal(d.card, "keep"); assert.equal(d.rung.field, "simpler"); assert.equal(d.stepAsked, true);
+    const k = d.rung.text.toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, "").trim();
+    assert.equal(pickHelp({ script, part: `${S}:worked:step1`, request: "clarify", said: [{ k }] }), null, "the second request: the walk tells the step");
+    const then = `${S}:rem:0:then`;
+    const fields = ladderOf(script, helpPart(script, then)).map((r) => r.path);
+    assert.ok(fields.some((f) => /remediation\[0\]\.(?:sayAlt|simpler)$/.test(f)), `the remediation's wordings are on the then-card's ladder: ${fields}`);
+  });
+});

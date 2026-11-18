@@ -35,6 +35,17 @@ export function partStartOf(r, p) {
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
 
+/** P3: a turn that tells an asked step after the step's simpler was said — the second request's answer, as the order rules. */
+export function stepToldAfterSimpler(L, r, i, script) {
+  if (!r?.stepAnswer?.told) return false;
+  const m = /^(.+)-s(\d+):worked:step(\d+)$/.exec(String(r.stepAnswer.beat ?? ""));
+  if (!m) return false;
+  const sk = (script?.skills ?? []).find((k) => k.skillId === `${m[1]}-s${m[2]}`);
+  const simpler = low(said(sk?.workedExample?.steps?.[Number(m[3]) - 1]?.simpler));
+  if (!simpler) return false;
+  return (L.rows ?? []).slice(0, i).filter((x) => x.who === "teacher").some((x) => low(x.text).includes(simpler.slice(0, 40)));
+}
+
 export const D30_PREDICATES = {
   /** P3: at an asked worked step a give-up or a clarify gets the step's simpler first; the step is told only at the second request or after
    *  a wrong answer (c4 stuck 36; c5-t01 stuck 20; c5-t02 stuck 20, offtopic 16, steering 28; c6 stuck 20, offtopic 16, steering 28). */

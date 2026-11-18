@@ -2,6 +2,7 @@
 // the judges named for it and reads non-zero there (tests/r8-director26-predicates.test.mjs) before it is gated at 0 on the dry matrix.
 // Merged into dry-predicates.mjs's PREDICATES. Pure.
 import { FALLBACK } from "../../server/brain/say.js";
+import { stepToldAfterSimpler } from "./d30-predicates.mjs";
 import { toAap } from "../../server/director/register.js";
 import { sentencesOf, normSentence } from "../../server/director/help.js";
 
@@ -35,6 +36,8 @@ function jointKeys(ctx) {
   return (ctx.o.d26Joints = out);
 }
 D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
+  // (dc-r8-director29 Brain 045 P3: at an asked step the second request is answered by the step told, its simpler said before)
+  if (stepToldAfterSimpler(L, r, i, ctx.script)) return null;
   /** N1 (c5-t01 steady 128: "pata nahi, aap batao" after the check-in on c3's why went straight to the closing question; c5-t02 stuck 28: a
    *  bare card after "mujhe nahi pata"; c5-t02 steering 4 and c6 row 4: the first point with no word to her): a give-up or a clarify is
    *  answered first — her turn opens on a wording of help, a joint (a word to the child), or the key — never straight on the next

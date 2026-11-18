@@ -901,7 +901,8 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     w.stepAsk = undefined;
     const read = s.stepRead && s.stepRead.step === k && s.stepRead.skillId === skillId ? s.stepRead : null;
     s.stepRead = undefined;
-    const helped = !!s.lastMove?.help?.rung && String(s.lastMove.help.part ?? "") === `${skillId}:worked:step${k + 1}`;
+    // (Brain 045 P3: help that said only the asked step's simpler leaves the step to tell — at the second request it is told)
+    const helped = !!s.lastMove?.help?.rung && !s.lastMove.help.stepAsked && String(s.lastMove.help.part ?? "") === `${skillId}:worked:step${k + 1}`;
     const right = !helped && read?.outcome === "correct";
     const st = steps[k];
     const line = helped ? null : right ? saidIn(st.ask.right, lang) : scriptWorkedStepLine(st, lang);
@@ -3428,7 +3429,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);

@@ -473,6 +473,7 @@ export const PREDICATES = {
   /** Main on the shadow (2026-11-11): a clarify or a give-up on a worked problem gets the problem's simpler (never step 1); a clarify on
    *  a worked step gets that step's simpler (never the step again). Where the script has no simpler, nothing is asked of the turn. */
   workedClarify(L, r, i, ctx) {
+    if (stepToldAfterSimpler(L, r, i, ctx.script)) return null;
     const p = ctx.prevT;
     const m = /^s(\d+):worked:worked:(problem|step(\d+))$/.exec(String(p?.beat ?? ""));
     // (a second clarify, and anything after one, has had the part's help: C1's cell says the part's own line, then moves on)
@@ -920,7 +921,7 @@ Object.assign(PREDICATES, D28_PREDICATES);
 // (dc-r8-director28, Brain 044: a joint keeps what is up, help as a hard precondition, fewer kinds of turn — d29-predicates.mjs)
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 Object.assign(PREDICATES, D29_PREDICATES);
-import { D30_PREDICATES, pictureNamedFlag } from "./d30-predicates.mjs";
+import { D30_PREDICATES, pictureNamedFlag, stepToldAfterSimpler } from "./d30-predicates.mjs";
 Object.assign(PREDICATES, D30_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
