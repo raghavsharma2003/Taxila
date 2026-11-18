@@ -156,3 +156,30 @@ describe("P5-P7 (d30 completion): the rows the order names", () => {
     assert.equal(D29_PREDICATES.reaskTwice({ rows: [...rows.slice(0, 64), r] }, r, 64), null);
   });
 });
+
+describe("P7 (d30 completion): the record", () => {
+  const run = async (list, info) => {
+    const { seamPass } = await import("../server/brain/seams.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const kit = kitFromFile(getTopic(TOPIC.c4));
+    return seamPass(list, { kit, state: { ctx: { lang: "hinglish" } }, lang: "hinglish", info }).seams;
+  };
+  test("the greeting's question after its simpler wording is not recorded as a point (row 2 in stuck and steering lessons, c4 steady 2)", async () => {
+    const g = "Aaj hum barabar tukdon ki baat karenge.";
+    const seams = await run([{ part: "body", text: g }, { part: "body", text: "Chalo, shuru karein?" }], { greetSimpler: g, greetTurn: true });
+    assert.ok(!seams.some((x) => x.right === "point"), JSON.stringify(seams));
+    assert.equal(seams.at(-1).right, "greetAsk");
+  });
+  test("one start seam a turn, no hook > hook: the start line after a second request, the Hindi switch (row 4; c4 steady 36, stuck 8, steering 8)", async () => {
+    const form = "Chalo, main batati hoon.";
+    const s1 = await run([{ part: "close", text: form }, { part: "close", text: "Kitchen mein Maa ne roti banayi." }, { part: "body", text: "Roti ke do barabar tukde hain." }, { part: "card", text: "Ek tukda kitna hai?" }],
+      { greet: true, helpJoint: { kind: "startAnyway", form, by: "authored" } });
+    assert.equal(s1.filter((x) => x.left === "start").length, 1, JSON.stringify(s1));
+    assert.ok(!s1.some((x) => x.left === "hook" && x.right === "hook"), JSON.stringify(s1));
+    const sw = "Achha, ise ek aasaan tareeke se kehti hoon.";
+    const s2 = await run([{ part: "aside", text: sw }, { part: "simpler", text: "Board par saare tukde gino." }, { part: "card", text: "Kitne tukde hain?" }], { hindiSwitch: sw });
+    assert.equal(s2.filter((x) => x.left === "start").length, 1, JSON.stringify(s2));
+    assert.equal(s2[0].right, "hindiSwitch");
+  });
+});

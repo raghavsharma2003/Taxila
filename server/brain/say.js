@@ -1412,6 +1412,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     returnLine: out.guard?.returnLine ?? null,
     replyLine: out.guard?.j2?.line ?? out.guard?.returnReplyLine ?? null, asideAck: !!out.guard?.asideResume,
     greet: ["greet", "hook"].includes(String(state?.lastMove?.kind ?? "")) || !!state?.lastMove?.hookSaid, authoredEnd: !!out.guard?.authoredEnd,
+    // (Brain 045 P7: the greeting's simpler wording on its own turn ends on the greeting's question — recorded as that, never a point)
+    greetTurn: !!state?.lastMove?.greetHelp,
     // (dc-r8-director25 L2 item 5: the picture's line, and the script's greetSimpler said before the hook, are recorded as what they are)
     caption: out.guard?.captionLine ?? null,
     greetSimpler: (() => { if (String(state?.lastMove?.kind ?? "") !== "hook" && !state?.lastMove?.hookSaid) return null; const g = scriptFor(kit)?.script?.greetSimpler; const t = g ? saidIn(g, lang) : null;

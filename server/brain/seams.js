@@ -193,6 +193,10 @@ function kindOf(p, i, list, info) {
   if (p.part === "alt" || (info.caption && low(t).startsWith(low(info.caption).slice(0, 30)))) return "caption";
   // (a key said on its own — a give-up's, or the worked answer said as help — is a key, not a verdict or a point)
   if (["close", "body", "simpler"].includes(p.part) && KEY_HEAD.test(t)) return "key";
+  // (Brain 045 P7: the start line after a second request at the greeting is the help joint it is, never a second hook — no hook > hook)
+  if (info.helpJoint?.kind === "startAnyway" && info.helpJoint.form && i === 0 && low(t).startsWith(low(info.helpJoint.form).slice(0, 20))) return "startAnyway";
+  // (Brain 045 P7: on the greeting's own turn, what follows its simpler wording is the greeting's question — never a point)
+  if (info.greetTurn && i > 0 && /[?？]\s*$/.test(t) && list.slice(0, i).some((q, k) => kindOf(q, k, list, { ...info, greetTurn: false }) === "greetSimpler")) return "greetAsk";
   if (info.greet && (p.part === "close" || p.part === "closed")) return "hook";
   if (info.workedProblem && ["body", "held"].includes(p.part) && low(t).startsWith(low(info.workedProblem).slice(0, 30))) return "workedProblem";
   // (dc-r8-director26, the record: help's joint — the go-on line, helpSpent, helpToCard — is recorded as what it is, never as a verdict; a
@@ -325,6 +329,10 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) {
     // (Brain 044 T8: the switch line said as the opener part is one line, recorded once — as the switch: c6 steady 4, row 4's empty opener seam)
     if (seams[0]?.right === "opener" && !seams[0].joint && low(out[0].text) === low(info.hindiSwitch)) { seams.shift(); if (seams[0]) seams[0] = { ...seams[0], left: "hindiSwitch" }; }
+    // (Brain 045 P7: one start seam a turn — the switch line opens the turn, and what was its opening part follows it; a part that is the
+    // switch line itself, recorded as an aside, is that line, recorded once)
+    if (seams[0]?.left === "start" && ["aside", "opener"].includes(seams[0].right) && !seams[0].joint && low(sentencesOf(out[0].text).join(" ")) === low(info.hindiSwitch)) { seams.shift(); if (seams[0]) seams[0] = { ...seams[0], left: "hindiSwitch" }; }
+    else if (seams[0]?.left === "start") seams[0] = { ...seams[0], left: "hindiSwitch" };
     seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
   }
   // (dc-r8-director25 H4: help's joint — helpSpent, afterKeyGoOn — the form the decision picked, and who wrote it)
@@ -332,13 +340,13 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   if (info.helpJoint?.form && out.length && (low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20)) || (info.helpJoint.spent && out[1] && low(out[1].text).startsWith(low(info.helpJoint.form).slice(0, 20))))) {
     const at = seams.find((x) => x.right === info.helpJoint.kind && !x.joint);
     if (at) Object.assign(at, { joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
-    else seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
+    else { if (seams[0]?.left === "start") seams[0] = { ...seams[0], left: info.helpJoint.kind }; seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by }); }
   }
   // (Brain 044 T5: the "nothing easier" line said before the go-on line after a key — its own seam, the help it is)
   if (info.helpJoint?.spent?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.spent.form).slice(0, 20)) && !seams.some((x) => x.joint === "helpSpent")) {
     const rec = { joint: "helpSpent", form: info.helpJoint.spent.form, by: info.helpJoint.spent.by ?? "authored" };
     const at = seams.find((x) => x.right === "helpSpent" && !x.joint);
-    if (at) Object.assign(at, rec); else seams.unshift({ left: "start", right: "helpSpent", ...rec });
+    if (at) Object.assign(at, rec); else { if (seams[0]?.left === "start") seams[0] = { ...seams[0], left: "helpSpent" }; seams.unshift({ left: "start", right: "helpSpent", ...rec }); }
   }
   // (dc-r8-director27 P1: a joint keeps its mark — it is said over the board of the part it leads into, and the page builder reads that)
   return { list: out.map(({ joint, ...p }) => (joint ? { ...p, joint } : p)), seams, jointsUsed: used, said };
