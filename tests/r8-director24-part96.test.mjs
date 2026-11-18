@@ -51,9 +51,14 @@ test("c4 steady 96: after her right answer to e1, e2's point is said before its 
     };
     const a = await turn(r.state, cls(FX.read), FX.child, FX.verdict);
     const e2 = SCRIPT.skills.find((k) => k.skillId === "c4-maths-ch05-t01-s3").explain.find((b) => b.id === "e2");
-    assert.doesNotMatch(a.out.reply, /bada tukda kaunsa fraction/);
+    // (Brain 044 T1: the verdict, its why, e2's point and its card share a turn where they fit 75 words — the point before the card, in it)
     const c1 = pctx();
-    assert.equal(PREDICATES.partOnce("L", { who: "teacher", text: a.out.reply, card: null }, 96, c1), null);
+    assert.equal(PREDICATES.partOnce("L", { who: "teacher", text: a.out.reply, card: a.st.lastUi?.ask?.text ?? null }, 96, c1), null);
+    if (/bada tukda kaunsa fraction/.test(a.out.reply)) {
+      const p0 = a.out.reply.indexOf(e2.point.hi.split(/(?<=[.!?])\s+/)[0]);
+      assert.ok(p0 >= 0 && p0 < a.out.reply.search(/bada tukda kaunsa fraction/), `e2's point before its card: ${a.out.reply}`);
+      return;
+    }
     // (dc-r8-director25 L2: the verdict, its why and e2's point run over 45 words — the verdict ends its turn on a check-in, and her "haan"
     // brings the point; the point is said before the card, each turn read by partOnce)
     let said = a.out.reply, at = a, row = 98;

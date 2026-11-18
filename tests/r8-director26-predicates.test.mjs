@@ -94,7 +94,9 @@ test("Record pictureAfterKey: a picture after a key draws the answered board or 
 // dc-r8-director26 C1, main's ruling change 2: longPointCard reads a point and its card in one turn over 60 words as a fault only when
 // another part comes before the point (director24's rule: a verdict, a why, a key, a bridge); over 75 always. A bare point and its own card
 // share a turn of up to 75 words.
-test("C1 longPointCard: over 60 a fault only with a part before the point; over 75 always", () => {
+// (Brain 044 T1: the 60-word limit with a part before the point goes — a verdict, its reason, the point and its card share a turn to 75; over
+// 75 a point and its card are still always a fault)
+test("C1 longPointCard: over 75 a point and its card are a fault, whatever comes before (Brain 044 T1: no 60 with a part before the point)", () => {
   const words = (n, w = "tukda") => Array.from({ length: n }, () => w).join(" ");
   const row = (parts) => {
     let text = "", pageParts = [];
@@ -105,13 +107,14 @@ test("C1 longPointCard: over 60 a fault only with a part before the point; over 
   assert.ok(!PENDING.has("longPointCard"), "gated");
   assert.equal(P({ rows: [] }, row([["body", "e1", 55], ["card", "e1", 15]])), null, "a bare point and its card, 70 words: one turn");
   assert.match(P({ rows: [] }, row([["body", "e1", 62], ["card", "e1", 16]])) ?? "", /78 words/, "a bare point and its card over 75");
-  assert.match(P({ rows: [] }, row([["close", "e1", 20], ["body", "e2", 30], ["card", "e2", 15]])) ?? "", /part before the point/, "a verdict, the next point and its card over 60");
-  assert.match(P({ rows: [] }, row([["bridge", "bridge", 15], ["body", "e1", 35], ["card", "e1", 12]])) ?? "", /part before the point/, "a bridge, the point and its card over 60");
+  assert.equal(P({ rows: [] }, row([["close", "e1", 20], ["body", "e2", 30], ["card", "e2", 15]])), null, "a verdict, the next point and its card, 65 words: one turn");
+  assert.equal(P({ rows: [] }, row([["bridge", "bridge", 15], ["body", "e1", 35], ["card", "e1", 12]])), null, "a bridge, the point and its card, 62 words: one turn");
+  assert.match(P({ rows: [] }, row([["close", "e1", 30], ["body", "e2", 35], ["card", "e2", 15]])) ?? "", /80 words/, "a verdict, the next point and its card over 75");
   assert.equal(P({ rows: [] }, row([["close", "e1", 20], ["body", "e2", 25], ["card", "e2", 12]])), null, "57 words with a verdict: one turn, as director24 allowed");
   // (words before the point the record has no part for — her reply to an aside, the hook — are a part before it)
   const hooked = row([["body", "e1", 40], ["card", "e1", 12]]);
   const hookText = words(14, "pitch");
   const h = { ...hooked, text: `${hookText} ${hooked.text}`, pageParts: hooked.pageParts.map((p) => ({ ...p, from: p.from + hookText.length + 1 })) };
-  assert.match(P({ rows: [] }, h) ?? "", /part before the point/, "the hook, the point and its card over 60");
+  assert.equal(P({ rows: [] }, h), null, "the hook, the point and its card, 66 words: one turn");
   assert.equal(P({ rows: [] }, row([["body", "e1", 50], ["body", "e1", 15]])), null, "no card: no fault");
 });

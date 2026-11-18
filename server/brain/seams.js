@@ -52,7 +52,7 @@ export const SEAM_TABLE = [
   // (dc-r8-director25 H4: help's joints open the turn help says them on — the decision's, recorded here)
   ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"], ["start", "helpToCard", "helpToCard"],
   // (Brain 044 T5: after a key, the "nothing easier" line, then the after-key return into the earlier card)
-  ["helpSpent", "returnCard", "backTo"],
+  ["helpSpent", "returnCard", "backTo"], ["helpSpent", "afterKeyGoOn", "afterKeyGoOn"], ["helpSpent", "helpToCard", "helpToCard"],
   // (her go-ahead to try first, into the card)
   ["tryFirst", "card", "afterTryFirst"], ["tryFirst", "returnCard", "afterTryFirst"],
   // (Brain 044 T7: her go-ahead to try an asked step, into the step's question again)
@@ -314,7 +314,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // (dc-r8-director25 item 8: with who wrote the form — the script's, or code's own when the script has none)
   if (info.hindiSwitch && out.length && low(out[0].text).startsWith(low(info.hindiSwitch).slice(0, 20))) seams.unshift({ left: "start", right: "hindiSwitch", joint: "hindiSwitch", form: info.hindiSwitch, by: info.hindiSwitchBy ?? "authored" });
   // (dc-r8-director25 H4: help's joint — helpSpent, afterKeyGoOn — the form the decision picked, and who wrote it)
-  if (info.helpJoint?.form && out.length && low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20))) {
+  // (Brain 044 T5: after the "nothing easier" line the go-on line is the second part)
+  if (info.helpJoint?.form && out.length && (low(out[0].text).startsWith(low(info.helpJoint.form).slice(0, 20)) || (info.helpJoint.spent && out[1] && low(out[1].text).startsWith(low(info.helpJoint.form).slice(0, 20))))) {
     const at = seams.find((x) => x.right === info.helpJoint.kind && !x.joint);
     if (at) Object.assign(at, { joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });
     else seams.unshift({ left: "start", right: info.helpJoint.kind, joint: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by });

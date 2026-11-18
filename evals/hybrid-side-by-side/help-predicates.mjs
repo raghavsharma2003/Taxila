@@ -194,9 +194,12 @@ export function helpFirstUnsaid(L, i, ctx, partId, { keyed = false } = {}) {
 export function helpGoOnSaid(r, ctx) {
   // (dc-r8-director26 J1: where the back-to joint follows, it is the go-on — the seam pass drops the go-on line and marks the back-to)
   if ((r.seams ?? []).some((x) => x.joint === "afterKeyGoOn" || (x.joint === "backTo" && x.goOn))) return true;
-  const first = normSentence(sentencesOf(r.text)[0] ?? "");
   const forms = [...FALLBACK_JOINTS.afterKeyGoOn, ...(ctx.script?.joints?.afterKeyGoOn ?? [])].flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence);
-  return !!first && forms.includes(first);
+  // (Brain 044 T5: after a key the "nothing easier" line comes first, then the go-on line)
+  const spent = [...FALLBACK_JOINTS.helpSpent, ...(ctx.script?.joints?.helpSpent ?? [])].flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence);
+  const ss = sentencesOf(r.text).map(normSentence);
+  const first = ss[0] ?? "";
+  return (!!first && forms.includes(first)) || (spent.includes(first) && forms.includes(ss[1] ?? ""));
 }
 /** dc-r8-director26 N1: whether a sentence is help's own — a rung of any ladder, or a help joint (exported for d26-predicates.mjs). */
 export function helpSentenceOf(ctx, sentence) {

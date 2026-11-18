@@ -251,7 +251,8 @@ describe("r7-brain-v65.test.mjs", () => {
   });
   test("K2 predicate: a simpler on a live card re-poses it in the same turn, never 'Ab isi par ek sawaal' and a wait (c4 steady 8, offtopic 26, steering 30)", async () => {
     // (steering 30 is a give-up on a card already missed once: dc-r8-director20 G3 and O6 give it its key and why)
-    for (const [persona, n] of [["steady", 8], ["offtopic", 26]]) {
+    // (Brain 044: offtopic's walk now meets the simpler on the live then-card at row 24 — the hint after "two-thirds" — and row 26 is her park)
+    for (const [persona, n] of [["steady", 8], ["offtopic", 24]]) {
       const { out, last } = await atLive(persona, "c4", n);
       assert.ok(!last.state.lastMove?.splitTeach && last.p.r.ui?.ask, `${persona} c4 row ${n}: split`);
       assert.doesNotMatch(out.reply, /Ab (?:isi|is) par ek (?:chhota )?sawaal/, out.reply);

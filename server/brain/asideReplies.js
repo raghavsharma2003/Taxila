@@ -157,7 +157,7 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
       : /favou?rite/i.test(String(said)) ? /favou?rite/ : LIKING_A.test(String(said)) ? /achha\s+lagta|like/ : PAST_A.test(String(said)) ? /pichhli\s+baar|last\s+time|aisa\s+hua/
         // (Brain 044, dry offtopic c4 on a path T6 reshaped: "fielding karna, catch pakadna" to "uske baare mein thoda aur batao na?" got "Oh,
         // catch. Achha." — an answer of no shape to a question of no shape, with a phrase of theirs, is said back as what they like)
-        : saidPhrase(said) ? /achha\s+lagta|like/ : null;
+        : String(asked ?? "").trim() && saidPhrase(said) ? /achha\s+lagta|like/ : null;
     // (dc-r8-director23 A2, c4 offtopic 20: "Dhoni" to "Tumhara favourite kaun hai?" after a question about Virat — an aside of no kind —
     // got the plain line; the favourite and liking forms name nothing of a kind, so another kind's form of that shape is used)
     const pool = [k, ...Object.values(KINDS).filter((x) => x !== k)].filter((x) => x?.phraseReplies?.length);

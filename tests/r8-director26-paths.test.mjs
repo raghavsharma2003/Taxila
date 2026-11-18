@@ -60,26 +60,26 @@ test("B2: 'bas aaj ke liye itna hi' (c4 stuck 68) gets the authored stop line, w
 // (dc-r8-director27 P6.1: after a request at the greeting the hook is said with the first point, as on the ordinary path — c5-t02 steering's
 // "samajh nahi aaya" at the greeting gets greetSimpler, the hook and e1 at row 2, so there is no opening check-in left; the clarify at row 4
 // is at e1's check-in, and gets e1's help)
-test("N1/P6.1: a request at the greeting gets the hook with the first point; the next clarify (c5-t02 steering 4) is help on that point", async () => on041("c5-maths-ch02-t02", async () => {
+// (dc-r8-director28 Brain 044 T1 changes both: after a request at the greeting, the greeting's simpler wording is its own turn and ends on the
+// greeting's question; the next turn is the hook, the first point and its card — a second request there gets the "nothing easier" line first.
+// The hook never ends a turn, so no request meets the hook's check-in)
+test("N1/P6.1 (Brain 044 T1): a request at the greeting gets the greeting's simpler wording alone; the next turn is the hook with the first point (c5-t02 steering 2, 4)", async () => on041("c5-maths-ch02-t02", async () => {
   const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t02", 3);
   const at2 = plans.at(-1).state.lastMove;
-  assert.equal(at2.kind, "explain");
-  assert.equal(at2.scriptBeat?.beatId, "e1");
-  assert.ok(at2.hookSaid, "the hook is said with the first point");
-  const { st, out } = await lineAt("steering", "c5-maths-ch02-t02", 5, { model: async () => ({ text: "" }) });
-  assert.equal(st.lastMove.help?.part, "c5-maths-ch02-t02-s1:e1:checkin");
-  assert.ok((out.guard.parts?.list ?? []).some((p) => p.part === "simpler"), out.reply);
-  assert.match(out.reply, /\?\s*$/, "ends on a question");
+  assert.ok(at2.greetHelp, "the greeting's simpler wording on its own turn");
+  assert.equal((at2.sayFirst ?? []).length, 1);
+  const { plans: p4 } = await replay(RUN, "steering", "c5-maths-ch02-t02", 5);
+  const at4 = p4.at(-1).state.lastMove;
+  assert.equal(at4.scriptBeat?.beatId, "e1");
+  assert.ok(at4.hookSaid, "the hook is said with the first point");
+  assert.equal(at4.help?.joint, "helpSpent", "a second request: the nothing-easier line first");
 }));
 
-// (dc-r8-director26 C1, main's ruling change 1: c6's hook is said on e1's turn now — it has no check-in of its own for steady's give-up at
-// row 3. c4's hook still has one, after greetSimpler (the two run over 75 words with e1): offtopic c4 4, the same give-up there. Its word,
-// e1's point whole, and a question to end on — the card waits for the next turn, the point and its card over 60 words with the word before
-// them, dc-r8-director24 L)
-test("N1: a give-up at the hook's check-in (c4 offtopic 4; c6 steady 4 before the hook shared e1's turn) opens on a word to her, then the point", async () => {
-  const { out, p } = await lineAt("offtopic", "c4-maths-ch05-t01", 5);
-  assert.equal(p.before.lastMove?.kind, "hook");
-  assert.equal(out.guard.parts.list[0].part, "aside");
+test("N1 (Brain 044 T1): a give-up after the greeting's simpler wording (c4 offtopic 4) opens on a word to her, then the hook and the point", async () => {
+  // (the ordinary hook turn now, no longer the code-only hook-help path: the model's draft is stubbed empty)
+  const { out, p } = await lineAt("offtopic", "c4-maths-ch05-t01", 5, { model: async () => ({ text: "" }) });
+  assert.ok(p.before.lastMove?.greetHelp, "the turn before was the greeting's simpler wording");
+  assert.ok(out.reply.startsWith(String(p.state.lastMove.help?.joint === "helpSpent" ? p.state.lastMove.sayFirst[0] : "").trim()), out.reply);
   assert.ok(out.reply.includes(String(p.state.lastMove.point).trim()), "the point whole");
   assert.match(out.reply, /\?\s*$/, "ends on a question");
 });
@@ -176,7 +176,12 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
 // board's — under the card's authored viewCaption; director27 c5-t01 steering 14, c6 steering 14, c5-t02 steady 18 drew the answer board
 // with a code-written caption)
 test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering 14) is drawn on the card's own posing board (E3)", async () => {
-  const { plans } = await replay(RUN, "steering", "c5-maths-ch02-t01", 15);
+  // (Brain 044: the walk on today's rules no longer keys a card at steering 13 — the picture after a key is found where the walk makes one,
+  // c5-t01 offtopic 27)
+  const { plans: all } = await replay(RUN, "offtopic", "c5-maths-ch02-t01", 400);
+  const at = all.findIndex((x, i) => i > 0 && all[i - 1].p.r.state.lastMove?.gave?.answer && x.p.r.state.lastMove?.request === "visual");
+  assert.ok(at > 0, "a picture asked for right after a key");
+  const plans = all.slice(0, at + 1);
   const m = plans.at(-1).p.r.state.lastMove;
   const prev = plans.at(-2).p.r.state.lastMove;
   assert.ok(prev.gave?.answer, "the key was said on the turn before");
@@ -185,7 +190,8 @@ test("Record: a picture asked for after the walk's key on a then-card (c5-t01 st
 });
 
 test("W1: the closing question answered right — the wrap opens on the verdict and its why; a line after the closing key gets the acknowledgement", async () => {
-  const { kit, plans } = await replay(RUN, "steady", "c4-maths-ch05-t01", 400);
+  // (Brain 044: c4 steady's replayed lines run out before the closing question on today's rules; c5-t01 steady reaches it)
+  const { kit, plans } = await replay(RUN, "steady", "c5-maths-ch02-t01", 400);
   const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");
   assert.ok(asked, "the walk reaches the closing question");
   const tb = kit && (await import("../server/director/script.js")).scriptFor(kit).script.teachback;

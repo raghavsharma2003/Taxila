@@ -28,35 +28,28 @@ describe("dc-r8-director26 C1: turns that end on the lesson's question", () => {
     return { K, t, get r() { return r; } };
   };
 
-  test("1. the hook and e1's point share a turn when they fit (c6); after a request at the greeting, greetSimpler and the hook keep theirs (c4)", () => {
+  // (dc-r8-director28 Brain 044 T1 changes this rule: the hook never ends a turn — the hook, the first point and its card are one turn, and
+  // where they do not fit the point ends on its quick question or check-in, counted; after a request at the greeting, the greeting's simpler
+  // wording is its own turn)
+  test("1. the hook never ends a turn — it is said with e1's point (c6); after a request at the greeting, greetSimpler alone (c4)", () => {
     const L = run("c6-maths-ch06-t01");
     L.t("haan");
     const m = L.r.state.lastMove;
-    // (Learning 016 lengthened c6's hook — its last sentence leads into the first point — to 41 words: with e1's 37 and her check-in it runs
-    // over 75, so the hook is said on its own turn, as c4's is. The rule is what is held: shared when they fit, else the hook alone)
-    // (dc-r8-director27 Brain 042, E5: the hook and the point share a turn when they fit in 75 words with what ends it — the point's quick
-    // question in the check-in's place where its card does not fit with them. Learning 016's c6 hook is 34 words: hook, point and the quick
-    // question are 84, so the hook keeps its own turn and the point comes with its card — never a check-in before the waiting card)
-    const sk0 = scriptFor(L.K).script.skills[0];
-    const hookW = words(sk0.hook.interestSlots.find((x) => x.interest === "cricket")?.use?.hi);
-    const e1 = sk0.explain[0];
-    const endW = hookW + words(e1.point.hi) + words(e1.ask.prompt.hi) > L2_CAP ? words(e1.quick?.prompt?.hi ?? "x x x x") : 4;
-    if (hookW + words(e1.point.hi) + endW > L2_CAP) { assert.equal(m.kind, "hook"); assert.ok(!m.hookSaid); }
-    else {
     assert.equal(m.hookSaid, true);
     assert.equal(m.scriptBeat?.beatId, "e1");
     const sk = scriptFor(L.K).script.skills[0];
     assert.ok(sk.hook.interestSlots.some((x) => x.use.hi === m.sayFirst?.[0]), "the hook's line in the child's interest, said first");
-    assert.ok(words(m.sayFirst) + words(m.point) + 4 <= L2_CAP, "the two fit in 75 words with her check-in");
-    // (the hook before them is a part: the point and its card keep director24's 60 — here they run over it, so the card waits)
-    assert.equal(L.r.ui?.ask, undefined);
-    assert.equal(L.r.move.splitTeach, true);
-    }
-    // c4: "pata nahi" to the greeting — greetSimpler, then the hook, on a turn of their own (with e1 they run over 75)
+    // (the card with them where hook, point and card fit 75; else the point's quick question, or its check-in counted as not fitting)
+    const hookW = words(m.sayFirst), fits = hookW + words(m.point) + words(sk.explain[0].ask.prompt.hi) <= L2_CAP;
+    if (fits) assert.ok(L.r.ui?.ask, "the card with them");
+    else assert.ok(m.quick || m.noFit === "point", JSON.stringify({ quick: !!m.quick, noFit: m.noFit }));
+    // c4: "pata nahi" to the greeting — greetSimpler alone, ending on the greeting's question; the hook next turn
     const C = run("c4-maths-ch05-t01");
     C.t("pata nahi", { ...cls("no_evidence"), flags: { dontKnow: true } });
-    assert.equal(C.r.state.lastMove.kind, "hook");
-    assert.equal(C.r.state.lastMove.sayFirst?.[0], scriptFor(C.K).script.greetSimpler.hi);
+    assert.equal(C.r.state.lastMove.greetHelp, true);
+    assert.deepEqual(C.r.state.lastMove.sayFirst, [scriptFor(C.K).script.greetSimpler.hi]);
+    C.t("haan");
+    assert.equal(C.r.state.lastMove.hookSaid, true, "the hook with the first point next");
   });
 
   test("2. a bare point and its own card: one turn up to 75 words; with a close before the point, director24's 60", () => {

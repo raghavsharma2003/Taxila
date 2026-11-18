@@ -67,7 +67,9 @@ describe("Brain 043: the walk", () => {
       checks: k.checks.map((c) => ({ ...c, whyShort: undefined })), remediation: k.remediation.map((r) => (r.then && typeof r.then === "object" ? { ...r, then: { ...r.then, whyShort: undefined } } : r)) })) };
     setScriptForTest(T, stripped);
     const again = step(before, { event: "turn", kit: W.K, cls: classifyFast({ target: targetFor(before, W.K, findItem(before, W.K, before.activeItemId)), childText: String(findItem(before, W.K, before.activeItemId).answer), lang: "hinglish", typed: true }).result, text: String(findItem(before, W.K, before.activeItemId).answer), now: (before.turn + 1) * 20_000 });
-    assert.ok(again.state.lastMove.splitClose, "without the short form the verdict and its why stand alone, as before");
+    // (Brain 044 T1: without the short form the card does not fit with them — the verdict stands alone, or, with no 60-word cap on the point,
+    // the point ends the turn on its quick question or its check-in; either way the card waits)
+    assert.ok(again.state.splitHold && !again.ui?.ask?.itemId, "without the short form the card is held for the next turn");
     assert.ok(!again.state.lastMove.whyShort);
   });
 

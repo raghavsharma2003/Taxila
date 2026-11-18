@@ -322,7 +322,8 @@ describe("R5: a turn too long for one is split, never cut", () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
     // the e1 card's turn with a long close of an earlier card on it: over the cap together
-    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    // (Brain 044 T1: a point and its card share a turn to 75 words now, not 60 — the close is long enough to pass 75 with them)
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai, aur yahi baat har shape par lagti hai chahe triangle ho ya rectangle";
     const out0 = { ...L.r, state: structuredClone(L.r.state), move: { ...L.r.move, closed: { answer: "12 cm", why: long }, closeBeat: { scriptId: "x", beatId: "c0", kind: "check", board: { template: "measured@1", params: { shape: "rect", unit: "cm", w: 4, h: 2 } } } } };
     const split = splitLong(out0, { event: "turn", kit: K });
     assert.equal(split.move.splitClose, true, "a close + new teaching over the cap is split");
@@ -380,7 +381,8 @@ describe("R5: a turn too long for one is split, never cut", () => {
   test("a picture asked over 'shall we go on?' is answered as a picture with the card live, never by the held beat (director9 c5-t02)", () => {
     const L = run();
     for (let i = 0; i < 4 && L.r.move.scriptBeat?.beatId !== "e1"; i++) L.t("haan");
-    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    // (Brain 044 T1: a point and its card share a turn to 75 words now, not 60 — the close is long enough to pass 75 with them)
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai, aur yahi baat har shape par lagti hai chahe triangle ho ya rectangle";
     const split = splitLong({ ...L.r, state: structuredClone(L.r.state), move: { ...L.r.move, closed: { answer: "12 cm", why: long } } }, { event: "turn", kit: K });
     assert.equal(split.move.splitClose, true);
     const r = step({ ...split.state, recent: [] }, { event: "turn", kit: K, cls: { ...cls("no_evidence"), request: { type: "visual", kind: "picture", whole: true } }, text: "picture dikhao", now: 9e6 });
@@ -507,7 +509,8 @@ describe("v6 after director9: the split covers what it missed", () => {
     t.after(() => { if (was === undefined) delete process.env.TAXILA_R7_SPLIT_CLOSE; else process.env.TAXILA_R7_SPLIT_CLOSE = was; });
     let r = step(initLessonState({ topicId: K.topicId, kit: K, ctx: { ...CTX, classLevel: 6, lang: "hinglish", interests: ["cricket"] }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     for (let i = 0; i < 4 && r.move.scriptBeat?.beatId !== "e1"; i++) r = step({ ...r.state, recent: [] }, { event: "turn", kit: K, cls: cls("no_evidence"), text: "haan", now: (r.state.turn + 1) * 20_000 });
-    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai";
+    // (Brain 044 T1: a point and its card share a turn to 75 words now, not 60 — the close is long enough to pass 75 with them)
+    const long = "har bhuja ek ek baar judti hai aur koi bhuja chhootti nahi isliye poori boundary ki lambai milti hai jo parimap kehlati hai, aur yahi baat har shape par lagti hai chahe triangle ho ya rectangle";
     const out = splitLong({ ...r, state: structuredClone(r.state), move: { ...r.move, kind: "repair", closed: { answer: "12 cm", why: long } } }, { event: "turn", kit: K });
     assert.equal(out.move.splitClose, true);
     const again = splitLong(out, { event: "turn", kit: K });

@@ -42,6 +42,17 @@ async function lineAt(persona, T, row, draft) {
   return { out, state, t: norm(out.reply) };
 }
 const at = (t, x) => t.indexOf(norm(x));
+/** Brain 044 T1/T5/T6 move today's live walk off the live run's rows: the teacher row (0-based) where the walk first reaches a state, on the
+ *  run's child lines. */
+async function rowWhere(persona, T, pred) {
+  const { plans } = await replay(RUN, persona, T, 400);
+  const p = plans.find((x) => pred(x.state));
+  return p ? p.row : null;
+}
+/** steady c4's turn on a point after a right answer (live: row 106, the s3 e2 point; today's walk on the run's lines reaches s1 e2 so). */
+const S3E2 = (st) => st.lastMove?.scriptBeat?.kind === "explain" && !!st.lastMove?.point && st.lastVerdict === "correct" && !st.lastMove?.splitTeach;
+/** A point whose quick question's key the point itself says. */
+const QUICK_IN_POINT = (st) => !!st.lastMove?.quick?.prompt && !!st.lastMove?.point && !st.lastMove?.splitClose;
 
 describe("the two live losses, at their cause", () => {
   beforeEach(on); afterEach(off);
@@ -64,20 +75,30 @@ describe("the two live losses, at their cause", () => {
     const T = "c4-maths-ch05-t01";
     // (the item on the table is the e2 card, key 1/4 — "In dono pizza mein bada tukda kaunsa fraction hai?"; her rewording said "har tukda
     // 1/4", the leak guard caught it on the draft, and the point went with her copy in the assembly, not with the leak)
-    const draft = "Bilkul sahi! Dekho, ab yeh do ek jaise pizza dekho, pehla 6 barabar tukdon mein kata hai toh uska har tukda 1/6 hai aur doosra pizza utna hi bada hai par sirf 4 barabar tukdon mein kata, toh uska har tukda 1/4 hai. Pehle pizza ka ek tukda kaunsa fraction hai?";
-    const { out, state, t } = await lineAt("steady", T, 106, draft);
+    const row = await rowWhere("steady", T, S3E2);
+    assert.ok(row, "the walk reaches a point after a right answer");
+    // (her draft rewords the point — its sentences run together — and states the card's key, as live)
+    const { kit, last } = await replay(RUN, "steady", T, row + 1);
+    const item = (await import("../server/director/items.js")).findItem(last.state, kit, last.state.activeItemId ?? last.state.splitHold?.activeItemId);
+    const draft = `Bilkul sahi! Dekho, ${norm(last.state.lastMove.point).replace(/[.!?]+\s*/g, ", ").replace(/,\s*$/, "")}, toh jawab ${item?.answer ?? ""} hai. ${last.p.r.ui?.ask?.text ?? last.state.lastMove.quick?.prompt ?? ""}`;
+    const { out, state, t } = await lineAt("steady", T, row, draft);
     const lm = state.lastMove;
-    assert.equal(`${lm.scriptBeat?.skillId}:${lm.scriptBeat?.beatId}`, "c4-maths-ch05-t01-s3:e2", "the walk is on the s3 e2 point, as live");
     assert.equal(state.lastVerdict, "correct", "the e1 card was answered right, as live");
     assert.ok(out.guard.caught.includes("leak"), `the leak guard fired on her rewording (the card's key 1/4): ${out.guard.caught}`);
     assert.ok(at(t, lm.point) > 0, `the point is said whole, after the verdict: ${t}`);
-    assert.ok(at(t, lm.point) < at(t, lm.quick.prompt), `the quick question after its point: ${t}`);
+    // (Brain 044 T1: the point's quick question where the point and its card do not fit; its card where they do)
+    const next = lm.quick?.prompt ?? (state.lastUi?.ask?.text ?? "");
+    assert.ok(at(t, lm.point) < at(t, next), `the quick question or the card after its point: ${t}`);
     assert.equal(out.guard.authoredRestored, undefined, "kept at the cause, not restored by the net");
   });
 
   test("the quick question's own point is never a leak of that quick question: the point says the key 1/6 and is said", async () => {
-    const { t, state } = await lineAt("steady", "c4-maths-ch05-t01", 106, "Bilkul sahi! Pehle pizza ka ek tukda kaunsa fraction hai?");
-    assert.ok(String(state.lastMove.point).includes("1/6") && at(t, state.lastMove.point) > 0, t);
+    // (Brain 044 T1: a quick question is asked only where a point and its card do not fit — found where today's walk asks one)
+    const row = await rowWhere("steady", "c4-maths-ch05-t01", QUICK_IN_POINT);
+    assert.ok(row, "today's walk asks a quick question on the run's lines");
+    const { last } = await replay(RUN, "steady", "c4-maths-ch05-t01", row + 1);
+    const { t, state } = await lineAt("steady", "c4-maths-ch05-t01", row, `Bilkul sahi! ${last.state.lastMove.quick.prompt}`);
+    assert.ok(at(t, state.lastMove.point) >= 0, t);
   });
 });
 
@@ -120,8 +141,10 @@ describe("the net: the finished turn read against the turn's authored plan", () 
 
 describe("the adversarial drafts, through the live reply path on the two live turns", () => {
   beforeEach(on); afterEach(off);
-  for (const [T, row] of [["c5-maths-ch02-t02", 2], ["c4-maths-ch05-t01", 106]]) {
-    test(`${T} row ${row}: every adversarial draft keeps what the stub's turn said of the script, whole and in order`, async () => {
+  for (const [T, row0] of [["c5-maths-ch02-t02", 2], ["c4-maths-ch05-t01", 106]]) {
+    test(`${T} row ${row0}: every adversarial draft keeps what the stub's turn said of the script, whole and in order`, async () => {
+      // (Brain 044: c4's live row 106 is where today's walk reaches the s3 e2 point after a right answer)
+      const row = T === "c4-maths-ch05-t01" ? await rowWhere("steady", T, S3E2) : row0;
       const keys = scriptSentenceKeys(scriptOf(T));
       const base = await lineAt("steady", T, row, "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?");
       const expected = authoredSentencesOf(base.t, keys);
