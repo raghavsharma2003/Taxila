@@ -704,3 +704,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-dry-read-finds-what-predicates-miss` (2026-11-18): Four walk faults from one round's rules passed every gated predicate and were found only by main reading three steady dry lessons turn by turn
 - `fd-staged-scripts-older-format` (2026-11-18): The 30 staged scripts are an older format: about 160 to 170 failing lines each against the pilots' standard, one authoring agent per script to bring one up
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-main-read-misses-rules-and-joints` (2026-11-18): Main's script and dry reads check lines against boards and miss two classes: a stated rule that is false as mathematics, and a joint said in the wrong place; both were in front of main before director31 and were found by judges
+- `fd-design-does-not-exempt-gate` (2026-11-18): A behaviour described to judges as by design before a run (the caption read back over a board with no second view) still counts against the gate line it breaks

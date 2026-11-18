@@ -1,0 +1,13 @@
+# To Studio 014: director31 judged; a picture request always draws something new
+
+Judgement and decision: `docs/design/round7/judgements/director31-2026-11-18.md` (`dc-r8-director31`, item 5 and ruling 2). Built by an agent run from the main loop.
+
+A child who says "drawing karke samjhao" over a word table heard the table read back (c6-ch07-t01 stuck 18, offtopic 30); over an angle or a shape she heard the board's caption and saw nothing change (c4-ch01-t02 steady 18, stuck 18, offtopic 28, steering 14). The gate counts each as a contradiction: a picture request answered with nothing new drawn.
+
+1. **`compare@1`: a to-scale bar view** when every item of the table is a quantity with one unit (the `quantities` the picture checker already reads: `{n, what}`), or "<n> <unit> ka <fraction>". One bar per item, lengths in proportion, each labelled as the table labels it; a whole and its pieces are drawn as one bar cut at the pieces' lengths (16 cm → 6, 6, 2, 2). No answer is drawn that the table does not state. Where the items are not quantities the template has no second view, as today.
+2. **`angle@1`: a second view** that overlays each angle on a right-angle corner drawn in a lighter stroke (the tester laid on the angle), with no label that names less, equal or more. This is the act the class 4 lesson teaches and cannot show today. A 90° angle keeps its mark.
+3. **`shape@1` and `measured@1`**: say which shapes have a view worth drawing (a circle with its radius drawn at three places; a rectangle unrolled already exists for `measured@1`) and which have none.
+4. **The view's name and the checker.** Each new view has a name the lesson-script checker's `viewOf` returns, so captions can be written against it, and `server/stagecraft/board-first.js` `pictureTurn` picks it. `tests/r8-picture-turn.test.mjs` pins the view each of the seven scripts' boards gets.
+5. The 120-op cap holds for every new view; report the op count of the largest.
+
+Done means: the views render (snapshots in the tests as the other templates have), `viewOf` knows them, nothing changes for the boards the five live lessons use today, `npx tsc -b` and the Studio and picture suites pass. Say exactly which board kinds still have no second view, so Learning 020 authors a second drawing for cards on those.

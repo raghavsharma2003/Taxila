@@ -29854,6 +29854,48 @@
    "at": "2026-11-18",
    "title": "Released d9d9d17 with scripts/release.mjs: web taxila-web--sd9d9d17-zrim (was taxila-web--s577c904-r0xn), worker + canary/nightly jobs on taxila-worker:d9d9d17 (was 577c904); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs d9d9d17 --rollback.",
    "source": "inbox/release-d9d9d17.json"
+  },
+  {
+   "id": "ms-r8-director31",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "director31: 28 lessons on release 52's code (4 pilots, 3 staged), 7 Opus judges by hand: 3 topics pass every gate line (c5-t01, c6, staged c5-t03); c4 fails on a stated wrong rule, c5-t02 on promises 3, the staged c4-ch01-t02 and c6-ch07-t01 fail",
+   "source": "inbox/r8-main-53.json"
+  },
+  {
+   "id": "dc-r8-director31",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "After director31: the first staged lesson goes live; a Hindi form is plainer or not written; a rule is true or not said; a picture always draws something new; the short ask by kind of help; an independent cold read of every script before a paid run",
+   "source": "inbox/r8-main-53.json"
+  },
+  {
+   "id": "fd-main-read-misses-rules-and-joints",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "Main's script and dry reads check lines against boards and miss two classes: a stated rule that is false as mathematics, and a joint said in the wrong place; both were in front of main before director31 and were found by judges",
+   "source": "inbox/r8-main-53.json"
+  },
+  {
+   "id": "fd-design-does-not-exempt-gate",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "A behaviour described to judges as by design before a run (the caption read back over a board with no second view) still counts against the gate line it breaks",
+   "source": "inbox/r8-main-53.json"
+  },
+  {
+   "id": "rj-r8-hindi-form-as-reordered-card",
+   "kind": "rejection",
+   "at": "2026-11-18",
+   "title": "A Hindi form written as the card's question with words reordered, after a line promising easier words: heard as the same sentence in six topics, promises 3 in one",
+   "source": "inbox/r8-main-53.json"
+  },
+  {
+   "id": "rj-r8-caption-as-picture-over-viewless-board",
+   "kind": "rejection",
+   "at": "2026-11-18",
+   "title": "Answering a picture request over a board with no second view by saying the board's own caption: nothing new is drawn; two judges find it does not help",
+   "source": "inbox/r8-main-53.json"
   }
  ],
  "edges": [
@@ -47851,6 +47893,61 @@
    "src": "fd-staged-scripts-older-format",
    "rel": "constrains",
    "dst": "dc-r8-director30"
+  },
+  {
+   "src": "dc-r8-director31",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "dc-r8-director31",
+   "rel": "supersedes",
+   "dst": "dc-r8-director30"
+  },
+  {
+   "src": "fd-main-read-misses-rules-and-joints",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "fd-main-read-misses-rules-and-joints",
+   "rel": "constrains",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "fd-design-does-not-exempt-gate",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "rj-r8-hindi-form-as-reordered-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "rj-r8-hindi-form-as-reordered-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "rj-r8-caption-as-picture-over-viewless-board",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "rj-r8-caption-as-picture-over-viewless-board",
+   "rel": "constrains",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "dc-r8-reask-two-whole-forms",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
+  },
+  {
+   "src": "dc-r8-return-waits-for-followup",
+   "rel": "measured_by",
+   "dst": "ms-r8-director31"
   }
  ]
 }
