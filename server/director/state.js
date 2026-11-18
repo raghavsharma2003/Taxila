@@ -4902,7 +4902,6 @@ function splitTeach(out, input, cap, extra = 0) {
   // (Brain 044 T1: a point and its card that fit in words share the turn only where Studio can draw every board change in it — the board up,
   // the point's, the card's; dry steady c4 94: a bridge, the point and its card on three boards drew one page)
   const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
-  if (process.env.DBG_FIT) console.error("DBG_FIT", s.turn, move.scriptBeat?.beatId, JSON.stringify({ w: wordsIn(body, card), u: u && { margin: u.margin, cap: u.cap }, cap, extra, first, draw: drawable(), boards: [s.heldUp?.board?.template, move.scriptBeat?.board?.template, move.cardBeat?.board?.template] }));
   // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
   // 75 in all, counted as said; A.1: the hook, the first point and its card, 75. The 8 words of slack kept for her framing are not added)
   const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && (extra > 0 || move.hookSaid) && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;
