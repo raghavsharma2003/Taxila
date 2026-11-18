@@ -46,8 +46,11 @@ describe("r7-brain-v610.test.mjs", () => {
         // (v6.11: the turn's one word of a twin pair — data/lesson-twins.json, the card's word winning — may differ from the take's)
         assert.ok(twinless(x.out.reply).startsWith(twinless(x.pic.line).slice(0, 20)), x.out.reply);
       } else {
+        // (dc-r8-director29 Brain 045 P1 supersedes v6.10 P6's honest "no second picture" line: where no view is drawn the board is redrawn
+        // alone and she says help's own words on it — never a line about a picture, drawn or not)
         assert.ok(!parts.some((q) => q.part === "alt"), x.out.reply);
-        assert.match(x.out.reply, NO_PIC);
+        assert.doesNotMatch(x.out.reply, NO_PIC);
+        assert.doesNotMatch(x.out.reply, /isi cheez ki ek aur tasveer/i);
       }
     });
   });

@@ -174,11 +174,20 @@ describe("Brain 042: the walk", () => {
     assert.ok(W.r.ui?.ask?.itemId?.endsWith(":ask:worked") || m.stepAsk, "then the next question: the child's own step, or the next asked step");
   });
 
-  test("Q2: an asked step not answered right is told as today, then on", () => {
+  // (dc-r8-director29 Brain 045 P3 changes the first request: a give-up at an asked step gets the step's simpler, then the step's question again;
+  // the step is told at the second request, as before, and then the walk goes on — director29 c6 stuck 20, offtopic 16, steering 28)
+  test("Q2: an asked step not answered right is told as today, then on (Brain 045 P3: at the second request; the first gets its simpler)", () => {
     const W = walk("c6-maths-ch06-t01");
     for (let n = 0; n < 30 && !W.r.state.lastMove?.stepAsk; n++) { W.say(W.key()); if (W.r.state.splitHold?.move?.stepAsk) W.say("haan"); }
     const sa = W.r.state.lastMove.stepAsk;
     assert.ok(sa);
+    W.say("pata nahi");
+    const m1 = W.r.state.lastMove;
+    assert.ok(!m1.stepReply?.told, "the first request: the step is not told");
+    assert.ok(m1.stepAsk, "the step's question again, the step still asked");
+    assert.equal(m1.stepAsk.step, sa.step, "the same step");
+    assert.equal(m1.help?.rung, "simpler", "the step's simpler wording first");
+    assert.ok(m1.simpler, "said");
     W.say("pata nahi");
     const m = W.r.state.lastMove;
     assert.equal(m.stepReply?.right, false);

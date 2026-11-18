@@ -179,21 +179,25 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
     "Achha, toh tumhe batting sabse achha lagta hai.");
 });
 
-// (dc-r8-director27 Brain 042 E3 supersedes this row's rule: a picture asked for after a key draws the card's own second view — its posing
-// board's — under the card's authored viewCaption; director27 c5-t01 steering 14, c6 steering 14, c5-t02 steady 18 drew the answer board
-// with a code-written caption)
-test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering 14) is drawn on the card's own posing board (E3)", async () => {
-  // (Brain 044: the walk on today's rules no longer keys a card at steering 13 — the picture after a key is found where the walk makes one,
-  // c5-t01 offtopic 27)
-  const { plans: all } = await replay(RUN, "offtopic", "c5-maths-ch02-t01", 400);
-  const at = all.findIndex((x, i) => i > 0 && all[i - 1].p.r.state.lastMove?.gave?.answer && x.p.r.state.lastMove?.request === "visual");
-  assert.ok(at > 0, "a picture asked for right after a key");
-  const plans = all.slice(0, at + 1);
-  const m = plans.at(-1).p.r.state.lastMove;
-  const prev = plans.at(-2).p.r.state.lastMove;
-  assert.ok(prev.gave?.answer, "the key was said on the turn before");
-  if (prev.closeBeat?.posingBoard) assert.deepEqual(m.scriptBeat?.board, prev.closeBeat.posingBoard, "the picture is on the card's posing board");
-  else assert.deepEqual(m.scriptBeat?.board, prev.closeBeat?.board, "a card with no answer board: the board the key was said over");
+// (dc-r8-director27 Brain 042 E3 superseded this row's rule — the card's own second view, its posing board's — and dc-r8-director29 Brain 045 P1
+// supersedes E3: one function names the board a picture turn is of — the part being helped, or the answered card's answer board after its
+// key — and that board is drawn under its answerViewCaption (Learning 018), else redrawn alone with the card's why. Brain 045 P3 moves the key
+// off the recorded rows (a follow-up card's ladder runs into its remediation's wordings first), so the key is reached here by missing the
+// then-card on director29 steering c5-t01 until the walk keys it)
+test("Record: a picture asked for after the walk's key on a then-card (c5-t01 steering) is drawn on the card's answer board (Brain 045 P1)", async () => {
+  const { kit, plans } = await replay("2026-11-18-director29", "steering", "c5-maths-ch02-t01", 12);
+  let st = { ...plans.at(-1).state };
+  assert.ok(String(st.activeItemId ?? "").includes(":then:"), "a follow-up card is live");
+  for (let k = 0; k < 6 && !st.lastMove?.gave?.answer; k++) { const p = await planAt(st, "1 and 6", kit); st = { ...p.r.state, mode: "text" }; }
+  const prev = st.lastMove;
+  assert.ok(prev.gave?.answer, "the walk keyed the card");
+  assert.ok(prev.closeBeat?.answerBoard, "the key was said over the card's answer board");
+  const p = await planAt(st, "drawing karke samjhao", kit);
+  const m = p.r.state.lastMove;
+  assert.equal(m.request, "visual");
+  assert.ok(m.keyedPicture, "a picture of the card just keyed");
+  assert.deepEqual(m.scriptBeat?.board, prev.closeBeat.board, "the picture is on the answered card's answer board");
+  assert.notDeepEqual(m.scriptBeat?.board, prev.closeBeat.posingBoard, "never the posing board");
 });
 
 test("W1: the closing question answered right — the wrap opens on the verdict and its why; a line after the closing key gets the acknowledgement", async () => {

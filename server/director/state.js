@@ -3153,7 +3153,10 @@ function capPlan(s, input, p) {
   { const answered = ["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? ""));
     const yesNow = /^\s*(?:haan|ha|han|haanji|haan\s+ji|ji|yes|yeah|ok|okay|theek\s+hai)\s*[.!]?\s*$/i.test(String(input.text ?? ""));
     const asideNow = (() => { try { return columnName(input, s) === "aside"; } catch { return false; } })() || !!input.cls?.asideReply;
-    if (scriptOn() && scriptCardOf(item) && !answered && (yesNow || asideNow) && (s.stuckTurns?.[item.id] ?? 0) < LIMITS.cardMax) return p; }
+    // (dc-r7-script-walk-v6-10 T2.7, kept under P3: "haan, woh maine bata diya" — a yes that says the answer was given — is no give-up: the card
+    // stays, its question again; director18 offtopic c5-t01 24 walked on today's ladder reached its key on it)
+    const claimNow = /maine bata diya|bata (?:diya|chuki|chuka)|woh wala ho gaya|already/i.test(String(input.text ?? ""));
+    if (scriptOn() && scriptCardOf(item) && !answered && (yesNow || claimNow || asideNow) && (s.stuckTurns?.[item.id] ?? 0) < LIMITS.cardMax) return p; }
   const pins = s.pendingWhy !== item.id && !["safeguard", "wrap", "break", "teachback"].includes(p.kind);
   // round 7 S3 (main, the stall split): a stuck turn on this card ("pata nahi", "nahi aata", working in silence) is counted;
   // only stuck turns hold a card past the cap (up to twice it): a distracted, away or off-topic turn never does
@@ -4154,7 +4157,20 @@ function step0(prev, input) {
     // (dc-r8-director27, Brain 042 E3 — director27 c5-t01 steering 14, c6 steering 14, c5-t02 steady 18: a picture asked for after a key drew
     // the answer board with a code-written caption; the card's own second view is drawn — its posing board's — and its authored viewCaption
     // is said)
-    if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) { const { posingBoard: pb, answerBoard: _ab, ...b0 } = s.stayOn.beat; move.scriptBeat = pb ? { ...b0, board: pb } : { ...s.stayOn.beat }; }
+    // (dc-r8-director29 Brain 045 P1 supersedes E3 for a picture: after a key the picture is of the answered card's answer board — the board
+    // the key was said over — captioned by its answerViewCaption (Learning 018); where the script writes none the board is redrawn alone and she
+    // says the card's why on it (pictureAlone, pictureWords), as after help's own key)
+    const keyedAns = s.stayOn?.turn === s.turn && s.stayOn.beat?.answerBoard && s.stayOn.beat?.board && p.request === "visual" && p.visual !== "game" && !scriptFor(input.kit)?.script?.recordedRun ? s.stayOn.beat : null;
+    if (keyedAns) {
+      const { posingBoard: _pb, ...b0 } = keyedAns;
+      move.scriptBeat = { ...b0 };
+      move.keyedPicture = true;
+      const kc = (() => { try { return closeCardOf(input.kit, keyedAns); } catch { return null; } })();
+      const cap = kc?.answerViewCaption;
+      const kwhy = kc?.why ? String(saidIn(kc.why, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "") : "";
+      if (!(cap && (cap.hi ?? cap.en ?? (typeof cap === "string" ? cap : null)))) { move.pictureAlone = true; if (kwhy) move.pictureWords = kwhy.charAt(0).toUpperCase() + kwhy.slice(1).replace(/[.!?]?$/, "."); }
+    }
+    else if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) { const { posingBoard: pb, answerBoard: _ab, ...b0 } = s.stayOn.beat; move.scriptBeat = pb ? { ...b0, board: pb } : { ...s.stayOn.beat }; }
     else if (card) move.scriptBeat = card;
     else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
   }
@@ -4617,7 +4633,7 @@ export function splitLong(out, input) {
       const c0 = cloneOut(out);
       if (c0) {
         c0.move = { ...c0.move, workedDone: { ...c0.move.workedDone, why: "" } }; c0.state.lastMove = c0.move;
-        const c = splitLongOnce(c0, input);
+        const c = splitLongOnce(c0, input, { closeShort: true });
         if (!c.state?.splitHold) { c.move = { ...c.move, closeShort: true }; c.state.lastMove = c.move; c.proposal = directorProposal(c.move, { ui: c.ui, guidance: c.state.guidance, purpose: c.state.purpose }); return c; }
       }
     }
@@ -4688,7 +4704,8 @@ function splitLongOnce(out, input, opt = {}) {
   // "Toh poora jawab:" before a worked answer (3). It was 6 + every why + 4)
   // (Brain 043 R4: the why counted is the card's this turn closes — s.lastGraded is the card graded on the turn before, and counted another
   // card's why wherever two cards were answered one after the other; R1: the short why in its place when the walk tries it)
-  const whyTexts = [...new Set([move.workedDone?.why ? null : opt.shortWhy ?? closedCardWhy ?? s.lastGraded?.why, move.closed?.why, move.workedDone?.why].filter(Boolean)
+  // (Brain 045 P5: the close said short counts no why — the graded card's why is the worked example's, left unsaid with it)
+  const whyTexts = [...new Set([move.workedDone?.why || opt.closeShort ? null : opt.shortWhy ?? closedCardWhy ?? s.lastGraded?.why, move.closed?.why, move.workedDone?.why].filter(Boolean)
     .map((x) => String(typeof x === "string" ? x : saidIn(x, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim()).filter(Boolean))];
   // (Brain 043 R4, c5-t02 steady 70: the frame and its joint to the why are at most four words — "Haan, bilkul theek, kyunki", "Haan, sahi
   // hai. Dekho," — brain/say.js FRAMES.right; six counted a verdict of 17 words as 20, and broke a turn of 75)
@@ -4968,7 +4985,10 @@ export function unitTurn(out, input = null, extra = 0, first = 0) {
     // (dc-r8-director27 P2: two judges found a remediation and its follow-up card too much in one breath at 68 to 74 words — the card joins
     // the remediation's turn only within 60; else the remediation ends on its check-in and the card comes next turn. A point with its own
     // card keeps 75)
-    return { margin: 5 + (j || 8) + first + goOn + (move.workedDone || move.gave || move.closed ? extra : 0), cap: REM_CARD_CAP };
+    // (d30 045, dry steady c4 82: the verdict says a short numeric answer back — "1/4, 1/7, 1/10 sahi nahi hai.", its words and three — a
+    // remediation and its card at 61 words where five were counted)
+    const said = String(input?.text ?? "").trim(), echo = /\d/.test(said) ? Math.min(6, wordsIn(said)) : 0;
+    return { margin: Math.max(5, echo + 3) + (j || 8) + first + goOn + (move.workedDone || move.gave || move.closed ? extra : 0), cap: REM_CARD_CAP };
   }
   // (a point said in answer to a request — a give-up or a clarify at the hook, help's go-on line — is help's turn: it keeps its cap)
   const asked = !!input?.cls?.request?.type || !!input?.helpGoOn || GIVE_UP_WORDS.test(String(input?.text ?? "")) || SAYS_CLARIFY.test(String(input?.text ?? ""));

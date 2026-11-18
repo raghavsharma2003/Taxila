@@ -2827,7 +2827,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // was her own words kept as the verdict; so were the invented methods and the doubled whys): a right answer's verdict is code's
     // frame and the card's authored why — never her words
     if (verdict === "correct" && graded) {
-      const why = graded0?.why ? spokenMarks(String(graded0.why).trim(), lang) : null;
+      // (Brain 045 P5, c4 steady 76: a worked close said short — the walk's closeShort — is the verdict bare, then "Toh poora jawab:" and the
+      // answer; the why is not said)
+      const why = graded0?.why && !state?.lastMove?.closeShort ? spokenMarks(String(graded0.why).trim(), lang) : null;
       const why1 = why ? (lang === "english" ? `, because ${joinable(why, { lower: true })}` : `, kyunki ${joinable(why, { lower: true })}`) : "";
       lead = dot(`${freshOf(FRAMES.right[lang === "english" ? "english" : "hinglish"], state).replace(/[.!?।—–\s-]+$/, "")}${why1}`);
       // (v6.7 R4, main on director15: always "<frame>, kyunki <why>": the joint varies — never the one of her last 2 turns)
@@ -3509,7 +3511,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const bridgeTextK = new Set((scriptFor(kit)?.script?.skills ?? []).map((sk) => sk.bridgeToNext ? saidIn(sk.bridgeToNext, lang) : null).filter(Boolean).map((t) => keyS(norm(dot(t)))));
       // (Brain 044 T8: an asked step's confirmation — its ask.right — is recorded as what it is, not as a point)
       // (dc-r8-director29 Brain 045 P7: a told worked step is recorded as what it is, not as a point — c4 stuck 36; c5-t01 steady 24, 50, 76)
-      const stepToldK = kindNow === "worked_example" && workedLines?.length ? new Set(workedLines.slice(state.lastMove?.problemLines ?? 0).map((x) => keyS(norm(x)))) : null;
+      // (the worked problem said alone — its own beat, no problemLines — is the problem, never a told step: the seam before it is beforeWorked)
+      const stepToldK = kindNow === "worked_example" && workedLines?.length && !(state.lastMove?.scriptBeat?.beatId === "worked:problem" && !state.lastMove?.problemLines) ? new Set(workedLines.slice(state.lastMove?.problemLines ?? 0).map((x) => keyS(norm(x)))) : null;
       const stepOkK = state.lastMove?.stepReply?.right && state.lastMove.stepReply.line ? keyS(norm(dot(state.lastMove.stepReply.line))) : null;
       const hookK = state.lastMove?.hookSaid ? new Set((state.lastMove.sayFirst ?? []).filter((x) => !state.lastMove.helpJoint?.form || keyS(x) !== keyS(state.lastMove.helpJoint.form)).map((x) => keyS(norm(dot(x))))) : null;
       guard.lineParts = cleanParts([
