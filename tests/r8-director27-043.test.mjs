@@ -84,22 +84,17 @@ describe("Brain 043: the walk", () => {
     assert.ok(VERDICT_FRAME_WORDS <= 4 && L2_CAP === 75);
   });
 
-  test("R2: a right verdict that stands alone before a worked example ends on an invitation; the problem opens without its lead-in", () => {
+  // (dc-r8-director28 Brain 044 T3 reverses R2: no invitation — the verdict's turn runs into the worked example where they fit 75, else it ends on
+  // its check-in, counted as not fitting (noFit "worked"); joints.workedInvite is not read)
+  test("R2 (reversed by Brain 044 T3): a right verdict before a worked example never ends on an invitation; where they do not fit, it is counted", () => {
     const T = "c6-maths-ch06-t01";
     const W = walk(T);
-    let inv = null;
-    for (let n = 0; n < 40 && !inv; n++) { W.say(W.key()); if (W.r.state.lastMove?.workedInvite) inv = W.r; }
-    assert.ok(inv, "a turn ending on the invitation");
-    const m = inv.state.lastMove;
-    assert.ok(m.splitClose && m.closeBeat, "the verdict and its why");
-    assert.ok(!inv.ui?.ask, "no card with it");
-    const held = inv.state.splitHold?.move;
-    assert.ok(held?.afterInvite, "the held turn is the problem it invites");
-    assert.ok(Number(held.problemLines) > 0, "the held turn opens at the problem");
-    // (the child's yes goes to the worked segment)
-    W.say("haan");
-    assert.ok(W.r.state.lastMove.problemLines > 0, "the problem comes");
-    assert.equal(W.r.state.lastMove.afterInvite, true);
+    let alone = null;
+    for (let n = 0; n < 40 && !alone; n++) { W.say(W.key()); assert.ok(!W.r.state.lastMove?.workedInvite, "no invitation"); if (W.r.state.lastMove?.noFit === "worked") alone = W.r; }
+    if (alone) {
+      assert.ok(alone.state.lastMove.splitClose && !alone.ui?.ask, "the verdict and its why, the problem held");
+      assert.ok(!alone.state.splitHold?.move?.afterInvite);
+    }
   });
 
   test("R2: after a detour the lead-in is said again; the seam pass skips it only straight after the invitation (code's forms when the script has none)", () => {
@@ -195,6 +190,8 @@ describe("Brain 043: the checker and the compile report", () => {
     assert.deepEqual(d28Errors(st), []);
     const c = compileScript(st);
     assert.ok(c.missing.some((h) => h.field === "whyShort"), "whyShort holes");
-    assert.ok(c.helpJoints.some((j) => j.joint === "workedInvite"), "the workedInvite hole");
+    // (Brain 044 T3: joints.workedInvite is not read — no hole; joints.stepMiss is, T7)
+    assert.ok(!c.helpJoints.some((j) => j.joint === "workedInvite"), "no workedInvite hole");
+    assert.ok(c.helpJoints.some((j) => j.joint === "stepMiss"), "the stepMiss hole");
   });
 });

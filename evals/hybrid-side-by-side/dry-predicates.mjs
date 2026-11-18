@@ -387,6 +387,11 @@ export const PREDICATES = {
     if (String(p.move ?? "") === "hook" || ((p.pageParts ?? []).length && (p.pageParts ?? []).every((x) => ["close", "closed", "aside", "bridge"].includes(x.part)) && !keyed(p))) return null;
     // (dc-r8-director25 H4 item 6: help on the card just keyed — a right answer's close too — gets the why's other wording, not the card)
     if (r.cell?.keyed) return null;
+    // (Brain 044 T2: help on a remediation whose wording and follow-up card run over 60 words ends on its check-in — the card comes next)
+    if ((r.pageParts ?? []).some((x) => x.part === "simpler" && /^rem:/.test(String(x.beat ?? ""))) && !r.card) {
+      const nx = (L.rows ?? []).slice(i + 1).find((x) => x.who === "teacher");
+      if (nx?.card && words(r.text) - 4 + words(nx.card) > 60) return null;
+    }
     // (a second give-up after the key and its why were said again may move on)
     if (KEY_SAID.test(p.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (after a second clarify on any part its help is spent: the cell's third level moves on — C1, main on director21)

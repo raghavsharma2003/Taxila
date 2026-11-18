@@ -14,6 +14,10 @@
 //   stepTryFirst   T7: "let me try" at an asked step gets that step's question again — no step skipped, no other card in its place
 //   hookAlone      T1: the hook never ends a turn — no turn's last part before its check-in is the hook
 //   switchFirst    T1: the switch line ("easier words") is never said before a first telling — no turn says it and then a point not said before
+//   remCardLong    T2: a remediation (or help on it) and its follow-up card in one turn over 60 words
+//   workedInvite   T3: no turn ends on an invitation to do the worked example together (joints.workedInvite is not read)
+//   workedNoFit    T3: a verdict whose turn could not run into the worked example ends on its check-in (noFit "worked") — counted, pending
+//                  until Learning 017's cut openings are merged
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
@@ -110,5 +114,23 @@ export const D29_PREDICATES = {
     const pp = r.pageParts; const at = pp.indexOf(pt);
     const ss = t.slice(pt.from, pp[at + 1]?.from ?? t.length).split(/(?<=[.!?\u0964])\s+/).map((x) => norm(x).toLowerCase()).filter(Boolean);
     return ss.length && ss.every((x) => !said.has(x)) ? `the switch line before the ${pt.beat} point's first telling` : null;
+  },
+  /** T2: a remediation, or help on one, and its follow-up card share a turn only within 60 words (c6 steady 52, stuck 22, 66, steering 8; c4
+   *  steering 12). */
+  remCardLong(L, r) {
+    if (r.who !== "teacher") return null;
+    const pp = r.pageParts ?? [];
+    const rem = pp.some((p) => ["body", "simpler"].includes(p.part) && /^rem:/.test(String(p.beat ?? "")));
+    const card = pp.some((p) => p.part === "card" && /^then:/.test(String(p.beat ?? "")));
+    const n = norm(r.text).split(" ").filter(Boolean).length;
+    return rem && card && n > 60 ? `a remediation and its follow-up card in ${n} words` : null;
+  },
+  /** T3: the invitation is gone — no turn says it (the record's workedInvite mark). */
+  workedInvite(L, r) {
+    return r.who === "teacher" && r.workedInvite ? "a turn ends on an invitation to the worked example" : null;
+  },
+  /** T3: the verdict's turn that could not run into the worked example (counted). */
+  workedNoFit(L, r) {
+    return r.who === "teacher" && r.noFit === "worked" ? "a verdict and the worked example's opening that do not fit: the verdict ends on its check-in" : null;
   },
 };

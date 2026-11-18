@@ -219,3 +219,31 @@ describe("T1: a point and its card share a turn", () => {
     assert.equal(D29_PREDICATES.pointNoFit({ rows: [r] }, { ...r, noFit: undefined }), null);
   });
 });
+
+describe("T2: a remediation and its follow-up card: one turn at 60", () => {
+  test("remCardLong reads the help-path rows of director28 (c6 steady 52, stuck 66, steering 8; c4 steering 12)", () => {
+    for (const [p, t, i] of [["steady", "c6", 52], ["stuck", "c6", 66], ["steering", "c6", 8], ["steering", "c4", 12]]) assert.ok(flagged(p, t, "remCardLong").has(i), `${p} ${t} row ${i}`);
+  });
+  test("remCardLong reads 0 on a remediation and its card within 60, and on one over 60 said apart", () => {
+    const r = (n, card) => ({ who: "teacher", text: Array.from({ length: n }, () => "w").join(" "), pageParts: [{ part: "simpler", beat: "rem:x", from: 0 }, ...(card ? [{ part: "card", beat: "then:x", from: 10 }] : [])] });
+    assert.equal(D29_PREDICATES.remCardLong({ rows: [] }, r(58, true)), null);
+    assert.ok(D29_PREDICATES.remCardLong({ rows: [] }, r(61, true)));
+    assert.equal(D29_PREDICATES.remCardLong({ rows: [] }, r(61, false)), null);
+  });
+});
+
+describe("T3: the verdict's turn runs into the worked example", () => {
+  test("workedInvite reads the invitations of director28 (18 said) and the walk says none: joints.workedInvite is no hole", async () => {
+    let n = 0;
+    for (const p of ["steady", "stuck", "offtopic", "steering"]) for (const t of Object.keys(FILE)) n += flagged(p, t, "workedInvite").size;
+    assert.equal(n, 18);
+    const { helpJointHoles } = await import("../server/director/help.js");
+    assert.ok(!helpJointHoles({ joints: {} }).some((h) => h.joint === "workedInvite"));
+  });
+  test("workedNoFit counts the verdict that ends on its check-in because the worked opening does not fit (pending until Learning 017)", async () => {
+    const { PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(PENDING.has("workedNoFit") && PENDING.has("pointNoFit"));
+    const r = { who: "teacher", text: "Haan, sahi hai. Yahan tak theek hai?", noFit: "worked" };
+    assert.ok(D29_PREDICATES.workedNoFit({ rows: [r] }, r));
+  });
+});

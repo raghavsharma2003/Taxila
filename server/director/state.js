@@ -961,6 +961,15 @@ function segmentTurn(out, input, closeWords = 0) {
  *  none), not on a check-in. The held segment opens at the problem: no beforeWorked lead-in after an invitation (brain/seams.js). The
  *  child's line to it is read as at a check-in today (heldTurn): a yes, or anything that is not a request, gets the segment. */
 function inviteBefore(br, out, input) {
+  // (dc-r8-director28 Brain 044 T3: no invitation — the verdict's turn runs into the worked example where they fit 75; where they do not, it ends
+  // on its check-in and the row says so (noFit "worked", counted); joints.workedInvite is not read)
+  if (!scriptFor(input?.kit)?.script?.recordedRun) {
+    const held = br.state?.splitHold?.move;
+    if (held && br.move?.splitClose && (Number(held.problemLines) > 0 || held.scriptBeat?.beatId === "worked:problem" || held.stepAsk)) {
+      br.move = { ...br.move, noFit: "worked" }; br.state.lastMove = br.move;
+    }
+    return br;
+  }
   const { move } = out;
   const held = br.state?.splitHold?.move;
   if (!held || !br.move?.splitClose || br.move.workedInvite || !(Number(held.problemLines) > 0 || held.scriptBeat?.beatId === "worked:problem")) return br;
@@ -3514,6 +3523,11 @@ function helpBefore(prev, input, said) {
   if (prev.lastMove?.quick && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask && (d.rung || d.joint) && ["wait", "keep"].includes(d.card)) return { decision: { ...d, card: "ask" }, held: true };
   if (d.card === "keep" && !liveId) return { decision: { ...d, card: "wait" }, stay: true };
   if (d.card === "keep" || d.card === "wait") return { decision: d, stay: true };
+  // (dc-r8-director28 Brain 044 T2: help on a remediation and its follow-up card are one turn only within 60 words, as the remediation and its
+  // card are; over it the wording ends on its check-in and the card comes next — c6 steady 52, stuck 22, 66, steering 8; c4 steering 12 ran 55
+  // to 75 words)
+  if (d.card === "ask" && d.kind === "remediation" && prev.splitHold?.ui?.ask?.text && !recordedWalk(input)
+    && wordsIn(helpWords(d), prev.splitHold.ui.ask.text) + (d.request === "hindi" ? 8 : 0) > REM_CARD_CAP) return { decision: { ...d, card: "wait" }, stay: true };
   // (the part's card: held by the point's split, it comes now; not yet on the table, the walk poses it — never its point again)
   if (d.card === "ask" && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask) return { decision: d, held: true };
   return { decision: d, input: helpInput(input, d, liveId) };
