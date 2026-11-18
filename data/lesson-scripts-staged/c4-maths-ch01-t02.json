@@ -207,339 +207,163 @@
    "bridgeToNext": { "hi": "Ab woh kone dekhenge jo tester mein fit nahi hote, jaise cake ki nok, aur unhe right angle se milayenge.", "en": "Next we look at corners that do not fit the tester, like the tip of a cake piece, and hold them against a right angle.", "simpler": {"hi": "Ab kone ko tester se milakar dekhenge ki woh right angle se kam hai ya zyada.", "en": "Next we hold corners against the tester to see whether they are less or more than a right angle."} }
   },
   {
-   "skillId": "c4-maths-ch01-t02-s2",
+   "skillId": "c4-maths-ch01-t02-s2", "covered": { "hi": "Phir angle ko tester se milaya: angle khulne se bada hota hai, bhujaon ki lambai se nahi.", "en": "Then we held angles against the tester: an angle grows by its opening, not by its arm length." },
    "hook": {
-    "convey": "a pointed slice tip and a game-map angle → compare each opening with the tester → less, equal or more than a right angle; long lines do not make an angle bigger",
+    "convey": "a cake piece's narrow tip and a game map's long-armed angles → hold each against the tester → less, equal or more than a right angle; long arms do not make an angle bigger",
     "interestSlots": [
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Kitchen mein cake ka ek slice dekho, uski nok patli hoti hai. Aaj dekhenge ki woh nok right angle se kam khuli hai ya zyada.",
-       "en": "Look at a slice of cake in the kitchen; its tip is narrow. Today we see whether that tip opens less or more than a right angle."
-      }
+      "use": { "hi": "Cake ke tukde ki nok patli hoti hai. Aaj use right angle se milakar dekhenge.", "en": "The tip of a piece of cake is narrow. Today we hold it against a right angle and see." }
      },
      {
       "interest": "games",
-      "use": {
-       "hi": "Video game ke map mein kisi angle ki lines bahut lambi ho sakti hain. Aaj dekhenge ki lambi lines se angle bada hota hai ya nahi.",
-       "en": "On a video game map the lines of an angle can be very long. Today we see whether long lines make an angle bigger or not."
-      }
+      "use": { "hi": "Video game ke map par kuch angle bahut lambi bhujaon wale hote hain. Aaj unhe tester se jaanchenge.", "en": "On a video game map some angles have very long arms. Today we check them with the tester." }
      }
     ]
    },
    "explain": [
     {
      "id": "e1",
-     "convey": "tester on a corner → corner narrower than the tester = less than a right angle; exact fit = equal; corner opens wider than the tester = more than a right angle",
-     "mustSay": [
-      {
-       "hi": "right angle se kam",
-       "en": "less than a right angle"
-      },
-      {
-       "hi": "right angle se zyada",
-       "en": "more than a right angle"
-      }
-     ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Tester se tang",
-        "items": [
-         "right angle se kam"
-        ]
-       },
-       "right": {
-        "title": "Tester se khula",
-        "items": [
-         "right angle se zyada"
-        ]
-       }
-      }
-     },
-     "point": { "hi": "Pehle tester ko kone par tikao. Agar kona tester se tang hai, toh woh right angle se kam hai. Agar kona tester se zyada khula hai, toh woh right angle se zyada hai. Bilkul fit ho, toh right angle ke barabar.", "en": "First set the tester against the corner. If the corner is narrower than the tester, it is less than a right angle. If the corner opens wider than the tester, it is more than a right angle. If it fits exactly, it equals a right angle." },
+     "convey": "tester's one edge along one arm of the corner → the other arm inside the tester = less than a right angle; along its other edge = equal; outside it = more; asked: a cake tip whose other arm stays inside",
+     "mustSay": [{ "hi": "right angle se kam", "en": "less than a right angle" }, { "hi": "zyada", "en": "more" }],
+     "board": { "template": "compare@1", "params": {"left": {"title": "Doosri bhuja", "items": ["tester ke andar", "kinaare par", "tester ke bahar"]}, "right": {"title": "Angle", "items": ["right angle se kam", "barabar", "zyada"]}} }, "viewCaption": { "hi": "Baayein taraf likha hai ki doosri bhuja kahan padi, aur daayein taraf uske theek saamne us angle ka naam.", "en": "The left side says where the other arm fell, and the right side, just opposite it, names that angle." },
+     "point": { "hi": "Tester ka ek kinaara kone ki ek bhuja par rakho. Doosri bhuja tester ke andar rahe toh angle right angle se kam, bahar nikle toh zyada, aur kinaare par pade toh barabar.", "en": "Lay one edge of the tester along one arm of the corner. If the other arm stays inside the tester the angle is less than a right angle, if it goes outside it is more, and if it lies along the edge it is equal." }, "pointAlt": { "hi": "Ek kitaab ka cover dheere-dheere kholo. Shuru mein cover aur panne ke beech ka angle right angle se kam hota hai, phir ek jagah tester bilkul fit hota hai, aur usse aage kholo toh angle right angle se zyada ho jaata hai.", "en": "Open a book's cover slowly. At first the angle between the cover and the page is less than a right angle, then at one point the tester fits exactly, and open it further and the angle becomes more than a right angle." },
      "ask": {
-      "prompt": { "hi": "Ek kitaab khuli rakhi hai. Tester ko panno ke kone mein rakha, toh ek panna tester ke bahar nikal gaya. Yeh angle right angle se kam hai ya zyada?", "en": "A book lies open. When the tester is put in the corner between its pages, one page goes outside the tester. Is this angle less or more than a right angle?" },
-      "key": "zyada",
-      "accept": ["more", "right angle se zyada", "more than a right angle", "zyada hai", "bada"],
-      "why": { "hi": "ek panna tester ke bahar nikla, yaani kona tester se zyada khula hai, aur tester khud ek right angle hai", "en": "one page went outside the tester, so the corner opens wider than the tester, and the tester itself is a right angle" },
-      "board": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["kitaab ka kona"]}, "right": {"title": "Tester", "items": ["right angle"]}} },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Kona", "items": ["kitaab ka kona"]}, "right": {"title": "Tester", "items": ["right angle"]}} }
+      "prompt": { "hi": "Cake ke tukde ki nok par tester rakha: doosri bhuja tester ke andar reh gayi. Yeh angle right angle se kam hai ya zyada?", "en": "The tester is put on the tip of a piece of cake: the other arm stays inside the tester. Is this angle less or more than a right angle?" }, "hindi": { "hi": "Cake ke tukde ki nok par tester lagaya, toh nok ki doosri bhuja tester ke andar hi reh gayi. Yeh kona samkon se kam khula hai ya zyada?", "en": "The tester was put on the cake piece's tip, and the tip's other arm stayed inside the tester. Is this corner open less or more than a right angle?" }, "reask": { "hi": "Cake ke tukde ki nok par tester rakhne se doosri bhuja andar reh gayi; nok ka angle right angle se kam hai ya zyada?", "en": "With the tester on a cake piece's tip the other arm stayed inside; is the tip's angle less or more than a right angle?" },
+      "key": "kam",
+      "accept": ["kam hai", "right angle se kam", "less", "less than a right angle", "chhota", "smaller"],
+      "why": { "hi": "cake ki nok ki doosri bhuja tester ke andar reh gayi, toh nok zyada nahi, kam khuli: right angle se kam", "en": "the cake tip's other arm stayed inside the tester, so the tip opens less than the tester: less than a right angle" }, "whyShort": { "hi": "bhuja tester ke andar rahi, toh kam khula", "en": "the arm stayed inside, so it opens less" }, "whyAlt": { "hi": "right angle hota toh doosri bhuja tester ke kinaare par padti; woh usse pehle hi ruk gayi, isliye nok kam khuli hai", "en": "if it were a right angle the other arm would lie along the tester's edge; it stopped short of it, so the tip opens less" },
+      "simpler": { "hi": "Tester ke dono kinaare dekho, aur socho ki nok ki doosri bhuja kahan ruki.", "en": "Look at both edges of the tester, and think where the tip's other arm stopped." },
+      "board": { "template": "compare@1", "params": {"left": {"title": "Cake ki nok", "items": ["doosri bhuja", "tester ke andar"]}, "right": {"title": "Angle", "items": ["right angle se kam", "right angle se zyada"]}} }, "viewCaption": { "hi": "Baayein taraf likha hai ki cake ki nok ki doosri bhuja tester ke andar reh gayi. Daayein taraf dono jawab likhe hain jinme se ek chunna hai.", "en": "The left side says the cake tip's other arm stayed inside the tester. The right side gives the two answers to choose from." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Cake ki nok", "items": ["doosri bhuja", "tester ke andar"]}, "right": {"title": "Angle", "items": ["right angle se kam", "right angle se zyada"]}, "mark": {"side": "right", "item": 0}} }
      },
-     "simpler": { "hi": "Tester ko kone se milao. Kona tester se tang ho toh angle chhota hai, aur tester se bhi khula ho toh angle bada hai.", "en": "Hold the tester against the corner. If the corner is narrower than the tester the angle is smaller, and if it opens beyond the tester the angle is bigger." }
+     "simpler": { "hi": "Tester ko kone par rakh kar sirf doosri bhuja dekho. Wahi batati hai ki angle right angle ke mukable kaisa hai.", "en": "Put the tester on the corner and look only at the other arm. That tells you how the angle stands against a right angle." }
     },
     {
      "id": "e2",
-     "convey": "angle P: square corner with short arms; angle Q: square corner with long arms → the tester fits both → same angle; an angle is how wide the arms open, not how long they are",
-     "mustSay": [
-      {
-       "hi": "bhuja",
-       "en": "arm"
-      },
-      {
-       "hi": "khulna",
-       "en": "how wide it opens"
-      }
-     ],
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Angle P",
-        "items": [
-         "chhoti bhuja",
-         "square corner"
-        ]
-       },
-       "right": {
-        "title": "Angle Q",
-        "items": [
-         "lambi bhuja",
-         "square corner"
-        ]
-       }
-      }
-     },
-     "point": {
-      "hi": "Angle bhuja ki lambai se nahi, uske khulne se naapte hain. Bhuja chhoti ho ya lambi, agar tester bilkul fit hota hai, toh woh square corner hai. Yeh khulna hi angle hai.",
-      "en": "An angle is measured by how wide it opens, not by the length of its arms. Short arms or long, if the tester fits exactly, it is a square corner. This opening is the angle."
-     },
+     "convey": "angle P: short arms; angle Q: long arms → the tester fits both exactly → the same angle: an angle is bigger by its opening, not its arm length; asked: short arms opened more vs long arms opened less",
+     "mustSay": [{ "hi": "bhujaon ki lambai se nahi", "en": "not by the length of the arms" }, { "hi": "khulne se", "en": "by the opening" }],
+     "board": { "template": "compare@1", "params": {"left": {"title": "Angle P", "items": ["chhoti bhujayein", "tester bilkul fit"]}, "right": {"title": "Angle Q", "items": ["lambi bhujayein", "tester bilkul fit"]}} }, "viewCaption": { "hi": "Baayein taraf angle P ki chhoti bhujayein hain, daayein taraf angle Q ki lambi. Dono ke neeche likha hai ki tester bilkul fit hota hai.", "en": "On the left are angle P's short arms, on the right angle Q's long ones. Under both it says the tester fits exactly." },
+     "point": { "hi": "Angle khulne se bada hota hai, bhujaon ki lambai se nahi. P ki bhujayein chhoti hain aur Q ki lambi, par tester dono par bilkul fit hai, toh dono barabar hain.", "en": "An angle is bigger by its opening, not by the length of its arms. P's arms are short and Q's long, but the tester fits both exactly, so both are equal." }, "pointAlt": { "hi": "Ek chhoti aur ek badi kitaab lo. Dono ke kone par tester bilkul fit hota hai, toh badi kitaab ka kona bhi utna hi khula hai jitna chhoti kitaab ka.", "en": "Take a small book and a big book. The tester fits both corners exactly, so the big book's corner opens just as much as the small book's." },
      "ask": {
-      "prompt": {
-       "hi": "Ek kone ki bhuja 3 cm hai, doosre ki 12 cm, aur dono par tester bilkul fit hota hai. Kaunsa angle bada hai, ya dono barabar?",
-       "en": "One corner has arms 3 cm long, another has arms 12 cm long, and the tester fits both exactly. Which angle is bigger, or are both equal?"
-      },
-      "key": "dono barabar",
-      "accept": [
-       "barabar",
-       "both equal",
-       "both are equal",
-       "equal",
-       "same",
-       "both same",
-       "dono same",
-       "dono right angle"
-      ],
+      "prompt": { "hi": "3 cm bhujaon wala angle right angle se zyada khula hai, aur 12 cm bhujaon wala right angle se kam. Kaunsa angle bada hai?", "en": "The angle with 3 cm arms opens more than a right angle, and the one with 12 cm arms less. Which angle is bigger?" }, "hindi": { "hi": "Ek kone ki bhujayein 3 cm ki hain aur woh samkon se zyada khula hai; doosre ki bhujayein 12 cm ki hain par woh samkon se kam khula hai. Inme kaunsa kona bada hai?", "en": "One corner has 3 cm arms and opens more than a right angle; the other has 12 cm arms but opens less than a right angle. Which corner is bigger?" }, "reask": { "hi": "3 cm bhujaon wala angle right angle se zyada aur 12 cm bhujaon wala kam khula hai; kaunsa angle bada hai?", "en": "The 3 cm-armed angle opens more than a right angle and the 12 cm-armed one less; which angle is bigger?" },
+      "key": "3 cm wala",
+      "accept": ["3 cm", "3 cm bhujaon wala", "3 cm wala angle", "chhoti bhujaon wala", "the 3 cm one", "the one with 3 cm arms"],
       "targets": "c4-maths-ch01-t02-m-arm-length",
       "wrongIfMis": "12 cm wala",
-      "why": {
-       "hi": "tester dono par bilkul fit hota hai, aur 3 cm ya 12 cm ki bhuja khulna nahi badalti",
-       "en": "the tester fits both exactly, and arms of 3 cm or 12 cm do not change the opening"
-      },
-      "board": {
-       "template": "compare@1",
-       "params": {
-        "left": {
-         "title": "3 cm bhuja",
-         "items": [
-          "tester bilkul fit"
-         ]
-        },
-        "right": {
-         "title": "12 cm bhuja",
-         "items": [
-          "tester bilkul fit"
-         ]
-        }
-       }
-      },
-      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 cm bhuja", "items": ["tester bilkul fit"]}, "right": {"title": "12 cm bhuja", "items": ["tester bilkul fit"]}} }
+      "why": { "hi": "3 cm bhujayein right angle se zyada khuli hain aur 12 cm bhujayein kam, toh 3 cm wala angle bada hai", "en": "the 3 cm arms open more than a right angle, the 12 cm arms less: the 3 cm angle is bigger" }, "whyShort": { "hi": "3 cm wala zyada khula hai, toh woh bada", "en": "the 3 cm one opens more, so it is bigger" }, "whyAlt": { "hi": "12 cm ki lambi bhujayein sirf bhujayein lambi karti hain; khulne mein 3 cm wala angle tester se bhi aage hai", "en": "the long 12 cm arms only make the arms longer; in opening, the 3 cm angle goes past even the tester" },
+      "simpler": { "hi": "Bhujaon ki lambai abhi chhod do. Dono ka khulna right angle se milao, aur dekho kaun zyada khula hai.", "en": "Leave the arm lengths aside for now. Hold each one's opening against a right angle, and see which opens more." },
+      "board": { "template": "compare@1", "params": {"left": {"title": "3 cm bhujayein", "items": ["right angle se zyada"]}, "right": {"title": "12 cm bhujayein", "items": ["right angle se kam"]}} }, "viewCaption": { "hi": "Baayein taraf 3 cm bhujaon wale angle ka khulna likha hai, daayein taraf 12 cm bhujaon wale ka.", "en": "The left side gives how the 3 cm-armed angle opens, the right side the 12 cm-armed one." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 cm bhujayein", "items": ["right angle se zyada"]}, "right": {"title": "12 cm bhujayein", "items": ["right angle se kam"]}, "mark": {"side": "left"}} }
      },
-     "simpler": {
-      "hi": "Bhuja lambi ho ya chhoti, angle usse nahi badalta. Sirf dekho ki kona kitna khula hai.",
-      "en": "Long arms or short arms, that does not change the angle. Just look at how wide the corner opens."
-     }
+     "simpler": { "hi": "Bhujaon ko lamba karne se kona zyada nahi khulta, isliye angle wahi rehta hai.", "en": "Making the arms longer does not open the corner any wider, so the angle stays the same." }
     },
     {
      "id": "e3",
-     "convey": "an angle changes with its opening, not its arm length → long scissors opened a little: to make the angle bigger, open them wider, not make the blades longer",
-     "mustSay": [
-      {
-       "hi": "thoda sa khula",
-       "en": "opens a little"
-      },
-      {
-       "hi": "zyada khula",
-       "en": "opens wider"
-      }
-     ],
-     "board": { "template": "compare@1", "params": {"left": {"title": "Blade", "items": ["aur lambi karoge"]}, "right": {"title": "Kainchi", "items": ["aur khologe"]}} },
-     "point": { "hi": "Angle bhuja ki lambai se nahi, khulne se badalta hai. Bhuja lambi ho par thoda sa khula ho, toh angle chhota hi rehta hai. Jo zyada khula hai, wahi bada angle hai.", "en": "An angle changes with its opening, not its arm length. Long arms opened a little still make a small angle. The one that opens wider is the bigger angle." },
-     "ask": { "prompt": {"hi": "Ek lambi kainchi thodi si khuli hai, aur tumhe uska angle bada karna hai. Kya karoge: blade aur lambi karoge, ya kainchi aur khologe?", "en": "A long pair of scissors is opened slightly, and you want to make its angle bigger. What will you do: make the blades longer, or open the scissors wider?"}, "key": "aur kholenge", "accept": ["kholenge", "aur kholo", "kainchi aur kholo", "zyada kholo", "zyada kholenge", "kholunga", "kholungi", "aur kholunga", "aur kholungi", "kainchi aur kholunga", "kainchi aur kholungi", "khologe", "aur khol denge", "open it wider", "open wider", "open the scissors wider", "open them wider"], "targets": "c4-maths-ch01-t02-m-arm-length", "wrongIfMis": "blade lambi", "why": { "hi": "angle kainchi ka khulna hai; blade aur lambi karoge toh khulna wahi rahega, kainchi aur khologe tabhi angle bada hoga", "en": "the angle is the opening; longer blades keep the same opening, and only opening the scissors wider makes it bigger" }, "board": { "template": "compare@1", "params": {"left": {"title": "Blade", "items": ["aur lambi karoge"]}, "right": {"title": "Kainchi", "items": ["aur khologe"]}} }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Blade", "items": ["aur lambi karoge"]}, "right": {"title": "Kainchi", "items": ["aur khologe"]}} } },
-     "simpler": { "hi": "Yaad rakho, angle blade ki lambai nahi hai. Angle do blades ke beech ka khulna hai.", "en": "Remember, the angle is not the length of the blades. The angle is the opening between the two blades." }
+     "convey": "a pair of scissors' blades make an angle → opened a little: a small angle; opened wide: a big angle; asked: two scissors with blades of 20 cm and 8 cm opened the same",
+     "mustSay": [{ "hi": "thoda kholo", "en": "open a little" }, { "hi": "zyada kholo", "en": "open wider" }],
+     "board": { "template": "compare@1", "params": {"left": {"title": "Thoda kholo", "items": ["chhota angle"]}, "right": {"title": "Zyada kholo", "items": ["bada angle"]}} }, "viewCaption": { "hi": "Baayein taraf likha hai ki thoda kholne se chhota angle banta hai, aur daayein taraf ki zyada kholne se bada.", "en": "The left side says a little opening makes a small angle, and the right side that a wide opening makes a big one." },
+     "point": { "hi": "Kainchi ke do blade ek angle banate hain. Kainchi ko thoda kholo toh angle chhota, aur zyada kholo toh angle bada ho jaata hai.", "en": "A pair of scissors' two blades make an angle. Open the scissors a little and the angle is small, and open them wide and the angle becomes big." }, "pointAlt": { "hi": "Apni do ungliyan V ki tarah kholo. Ungliyan paas rakho toh angle chhota, door phailao toh angle bada; ungliyan wahi rehti hain, sirf khulna badalta hai.", "en": "Open two of your fingers like a V. Keep them close and the angle is small, spread them apart and it is big; the fingers stay the same, only the opening changes." },
+     "ask": {
+      "prompt": { "hi": "Ek kainchi ke blade 20 cm lambe hain, aur doosri ke 8 cm. Dono ko bilkul utna hi khola gaya. Kiska angle bada hai, ya dono barabar hain?", "en": "One pair of scissors has 20 cm blades, the other 8 cm. Both are opened exactly the same. Whose angle is bigger, or are both equal?" }, "hindi": { "hi": "Ek kainchi ke blade 20 cm ke hain aur doosri ke 8 cm ke, aur dono ko ek jitna khola. Inme kiska angle bada hai, ya dono ka ek jaisa hai?", "en": "One pair of scissors has 20 cm blades and the other 8 cm, and both were opened just as much. Whose angle is bigger, or are both the same?" }, "reask": { "hi": "Ek jitna khuli 20 cm aur 8 cm blade wali kainchiyon mein kiska angle bada hai, ya dono barabar hain?", "en": "Of two scissors opened the same, with 20 cm and 8 cm blades, whose angle is bigger, or are both equal?" },
+      "key": "dono barabar",
+      "accept": ["barabar", "dono same", "same", "both equal", "equal", "both the same", "dono ek jaise", "dono ka barabar"],
+      "targets": "c4-maths-ch01-t02-m-arm-length",
+      "wrongIfMis": "20 cm wali",
+      "why": { "hi": "20 cm aur 8 cm blade wali dono kainchiyon ko utna hi khola gaya, aur angle khulne se banta hai", "en": "the 20 cm and the 8 cm scissors were opened just as much, and an angle comes from the opening" }, "whyShort": { "hi": "khulna ek jitna, toh angle barabar", "en": "the same opening, so equal angles" }, "whyAlt": { "hi": "8 cm wali kainchi ke blade lambe kar do, toh woh 20 cm wali jaisi ho jaayegi, par khulna wahi rahega; isliye dono angle barabar", "en": "make the 8 cm blades longer and that pair becomes like the 20 cm one, but its opening stays the same; so both angles are equal" },
+      "simpler": { "hi": "Yaad karo, angle kis baat se bada hota hai. Ab dekho, dono kainchiyon mein woh baat alag hai ya ek jaisi.", "en": "Remember what makes an angle bigger. Now see whether that is different or alike in the two pairs of scissors." },
+      "board": { "template": "compare@1", "params": {"left": {"title": "20 cm blade", "items": ["utna hi khola"]}, "right": {"title": "8 cm blade", "items": ["utna hi khola"]}} }, "viewCaption": { "hi": "Baayein taraf 20 cm blade wali kainchi hai, daayein taraf 8 cm wali, aur dono utni hi kholi gayi hain.", "en": "On the left are the scissors with 20 cm blades, on the right the 8 cm ones, and both are opened just as much." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "20 cm blade", "items": ["utna hi khola"]}, "right": {"title": "8 cm blade", "items": ["utna hi khola"]}} }
+     },
+     "simpler": { "hi": "Kainchi ko jitna zyada kholo, uske blade ke beech ka angle utna bada hota hai.", "en": "The wider you open the scissors, the bigger the angle between their blades." }
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "Rani ki rangoli mein 3 kone hain. Kone P ki bhuja 9 cm hai, aur woh tester ke andar reh jaata hai, beech mein khaali jagah. Kone Q ki bhuja 4 cm hai, aur tester bilkul fit hota hai. Kone R ki bhuja 3 cm hai, aur uski ek bhuja tester ke bahar jaati hai. Sabse bada angle kaunsa hai?",
-     "en": "Rani's rangoli has 3 corners. Corner P has arms 9 cm long and stays inside the tester, with empty space between. Corner Q has arms 4 cm long and the tester fits exactly. Corner R has arms 3 cm long and one arm goes outside the tester. Which is the biggest angle?"
-    }, "simpler": { "hi": "Teen kone P, Q aur R hain. Tester se dekhkar batana hai ki inmein sabse bada angle kaunsa hai.", "en": "There are three corners, P, Q and R. Using the tester, we say which of them is the biggest angle." },
-    "givens": [
-     {
-      "hi": "Teeno kone tester se mile: P mein khaali jagah bachi, Q bilkul fit hua, aur R tester ke bahar gaya.",
-      "en": "All three corners met the tester: P left empty space, Q fit exactly, and R went outside the tester."
-     }
-    ],
-    "find": {
-     "hi": "teeno mein sabse bada angle kaunsa hai",
-     "en": "which of the three is the biggest angle"
-    },
+    "problem": { "hi": "Rani ki rangoli mein kone P, Q, R ki bhujayein 9, 4, 3 cm hain. Tester par P ki doosri bhuja andar rahi, Q fit hua, R ki bahar nikli.", "en": "In Rani's rangoli, corners P, Q and R have arms of 9, 4 and 3 cm. With the tester, P's other arm stayed inside, Q fitted, and R's went outside." }, "problemAlt": { "hi": "Teen kone hain. Ek ki bhujayein sabse lambi hain, par uski doosri bhuja tester ke andar hi rahi; doosre par tester fit hua; aur teesre ki bhuja tester ke bahar nikli.", "en": "There are three corners. One has the longest arms, but its other arm stayed inside the tester; the tester fitted the second; and the third one's arm went outside the tester." }, "simpler": { "hi": "Rangoli ke teen kone hain, aur teeno par tester rakha gaya. Hamein unme se sabse bada angle chunna hai.", "en": "The rangoli has three corners, and the tester was put on all three. We have to pick the biggest angle of them." },
+    "givens": [{ "hi": "Teeno kone ki bhujaon ki lambai, aur tester par har kone ki doosri bhuja kahan padi.", "en": "The arm lengths of the three corners, and where each corner's other arm fell against the tester." }],
+    "find": { "hi": "teeno mein sabse bada angle kaunsa hai", "en": "which of the three is the biggest angle" },
     "steps": [
      {
-      "do": {
-       "hi": "P aur Q ko tester se milao",
-       "en": "Compare P and Q with the tester"
-      },
-      "result": "P right angle se kam, Q right angle ke barabar",
-      "why": {
-       "hi": "P tester se tang hai aur Q bilkul fit hota hai",
-       "en": "P is narrower than the tester and Q fits exactly"
-      },
-      "simpler": {
-       "hi": "P tester se tang hai, toh P right angle se chhota hai. Q tester mein bilkul fit hai, toh Q right angle hai.",
-       "en": "P is narrower than the tester, so P is smaller than a right angle. Q fits the tester exactly, so Q is a right angle."
-      }
-     },
-     {
-      "do": {
-       "hi": "Ab R ko tester se milao",
-       "en": "Now compare R with the tester"
-      },
-      "result": "R right angle se zyada",
-      "why": {
-       "hi": "R ki ek bhuja tester ke bahar jaati hai, yaani R zyada khula hai",
-       "en": "one arm of R goes outside the tester, so R opens wider"
-      },
-      "simpler": {
-       "hi": "R ki ek bhuja tester se bahar nikalti hai. Matlab R tester se bhi zyada khula hai, right angle se bada.",
-       "en": "One arm of R goes outside the tester. That means R opens even wider than the tester, more than a right angle."
-      }
+      "ask": { "prompt": { "hi": "Sabse bada angle chunne ke liye kya dekhoge: bhujaon ki lambai, ya khulna?", "en": "To pick the biggest angle, will you look at arm length or opening?" }, "hindi": { "hi": "Sabse bada kona chunne ke liye kis cheez par dhyaan doge: bhujaon ki lambai par, ya khulne par?", "en": "To pick the biggest corner, what will you pay attention to: the arm lengths, or the opening?" }, "key": "khulna", "accept": ["khulna dekhenge", "khulna dekhunga", "khulna dekhungi", "opening", "the opening", "how wide it opens"], "right": { "hi": "Bilkul, khulna: bhujaon ki lambai se angle bada nahi hota.", "en": "Exactly, the opening: arm length does not make an angle bigger." } },
+      "do": { "hi": "Angle chunne ke liye dekho", "en": "To pick an angle, look at" },
+      "result": "khulna, bhujaon ki lambai nahi",
+      "why": { "hi": "angle bhujaon ki lambai se nahi, khulne se bada hota hai", "en": "an angle is bigger by its opening, not by its arm length" },
+      "simpler": { "hi": "Socho, cake ki nok aur kainchi mein angle kis baat se bada ya chhota hua tha.", "en": "Think what made the angle bigger or smaller with the cake tip and the scissors." }
      }
     ],
     "yourStep": {
-     "prompt": {
-      "hi": "Ab bhuja ki lambai chhodo, sirf khulna dekho. Teeno mein sabse bada angle kaunsa hai?",
-      "en": "Now ignore the arm lengths and look only at the opening. Which of the three is the biggest angle?"
-     },
-     "key": "R",
-     "accept": [
-      "kona R",
-      "angle R",
-      "R wala",
-      "corner R",
-      "R hai"
-     ],
+     "prompt": { "hi": "Tumhari baari: teeno mein sabse bada angle kaunsa hai?", "en": "Your turn: which of the three is the biggest angle?" }, "hindi": { "hi": "Ab tum batao: in teeno kone mein se sabse bada kaun sa hai?", "en": "Now you tell me: of these three corners, which is the biggest?" }, "reask": { "hi": "P, Q aur R mein sabse bada angle kaunsa hai?", "en": "Of P, Q and R, which is the biggest angle?" },
+     "key": "R", "why": { "hi": "P ki bhuja tester ke andar rahi, Q fit hua, aur R ki bahar nikli, toh R sabse zyada khula hai", "en": "P's arm stayed inside the tester, Q fitted, and R's went outside, so R opens the most" }, "whyAlt": { "hi": "teeno ko khulne ke hisaab se rakho: P sabse kam, phir Q, aur sabse zyada R; P ki 9 cm bhujayein is kram ko nahi badalti", "en": "put the three in order of opening: P least, then Q, and R most; P's 9 cm arms do not change that order" },
+     "accept": ["kona R", "angle R", "R wala", "R hai", "corner R"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
      "wrongIfMis": "P",
-     "simpler": {
-      "hi": "Bhuja ki lambai mat dekho. Jo kona tester se bhi zyada khula hai, wahi sabse bada angle hai.",
-      "en": "Do not look at the arm lengths. The corner that opens even wider than the tester is the biggest angle."
-     },
-     "why": {
-      "hi": "P mein khaali jagah bachi, Q bilkul fit hua, par R tester ke bahar jaata hai, toh R sabse khula hai",
-      "en": "P left empty space and Q fit exactly, but R's arm goes outside the tester, so R opens the most"
-     },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "P aur Q", "items": ["P: khaali jagah", "Q: bilkul fit"]}, "right": {"title": "R", "items": ["tester ke bahar"]}, "mark": {"side": "right"}} }
+     "simpler": { "hi": "Teeno ki doosri bhuja dekho: jo tester se sabse aage tak khuli, wahi sabse bada angle hai.", "en": "Look at each one's other arm: the one that opens furthest past the tester is the biggest angle." },
+     "board": { "template": "compare@1", "params": {"left": {"title": "P aur Q", "items": ["P: andar", "Q: fit"]}, "right": {"title": "R", "items": ["bahar"]}} }, "viewCaption": { "hi": "Baayein taraf P aur Q ki bhujayein aur unka tester par haal likha hai, daayein taraf R ka.", "en": "The left side gives P's and Q's arms and how each sat against the tester, the right side R's." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "P aur Q", "items": ["P: andar", "Q: fit"]}, "right": {"title": "R", "items": ["bahar"]}, "mark": {"side": "right"}} }
     },
-    "answer": {
-     "hi": "teeno mein sabse bada angle R hai",
-     "en": "R is the biggest of the three angles"
-    },
-    "why": {
-     "hi": "R sabse zyada khula hai, aur P ki lambi bhuja se uska angle bada nahi hota",
-     "en": "R opens the widest, and P's long arms do not make its angle bigger"
-    },
-    "board": {
-     "template": "compare@1",
-     "params": {
-      "left": {
-       "title": "P aur Q",
-       "items": [
-        "P: khaali jagah",
-        "Q: bilkul fit"
-       ]
-      },
-      "right": {
-       "title": "R",
-       "items": [
-        "tester ke bahar"
-       ]
-      }
-     }
-    }
+    "answer": { "hi": "teeno mein R sabse bada angle hai", "en": "R is the biggest of the three angles" },
+    "why": { "hi": "P ki bhujayein sabse lambi hain, par lambi bhujaon se angle bada nahi hota", "en": "P's arms are the longest, but long arms do not make an angle bigger" },
+    "board": { "template": "compare@1", "params": {"left": {"title": "P aur Q", "items": ["P: andar", "Q: fit"]}, "right": {"title": "R", "items": ["bahar"]}} }, "viewCaption": { "hi": "Baayein taraf P aur Q ki bhujayein aur tester par unka haal likha hai, daayein taraf R ka.", "en": "The left side gives P's and Q's arms and how they sat against the tester, the right side R's." }
    },
    "checks": [
-    { "id": "c1", "prompt": {"hi": "{friend} ne ek angle ki bhuja 15 cm se 30 cm kar di, aur khulna wahi rakha. Ab angle pehle se bada hai, chhota hai, ya utna hi?", "en": "{friend} made an angle's arms 30 cm instead of 15 cm, and kept the opening the same. Is the angle now bigger, smaller, or the same as before?"}, "key": "utna hi", "accept": ["utna hi hai", "wahi", "same", "the same", "barabar", "equal", "na bada na chhota", "angle wahi hai", "pehle jitna"], "targets": "c4-maths-ch01-t02-m-arm-length", "wrongIfMis": "bada", "board": {"template": "compare@1", "params": {"left": {"title": "Pehle", "items": ["15 cm bhuja"]}, "right": {"title": "Ab", "items": ["30 cm bhuja", "khulna wahi"]}}}, "why": { "hi": "angle khulna hai, aur khulna wahi raha jo pehle tha; bhuja 15 cm se 30 cm karne se angle nahi badalta", "en": "the angle is the opening, which stayed as before; 30 cm arms instead of 15 cm do not change it" }, "simpler": {"hi": "Angle bhuja ki lambai nahi, uska khulna hai. Socho, yahan khulna badla ya nahi.", "en": "An angle is its opening, not its arm length. Think whether the opening changed here."}, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Pehle", "items": ["15 cm bhuja"]}, "right": {"title": "Ab", "items": ["30 cm bhuja", "khulna wahi"]}} } },
+    {
+     "id": "c1",
+     "prompt": { "hi": "Ek badi kitaab ke panne 30 cm lambe hain. Tester ka ek kinaara ek panne par rakha, toh doosra panna tester ke andar hi reh gaya. Panno ke beech ka angle right angle se kam hai ya zyada?", "en": "A big book has pages 30 cm long. One edge of the tester is laid on one page, and the other page stays inside the tester. Is the angle between the pages less or more than a right angle?" }, "hindi": { "hi": "Badi kitaab ke panne 30 cm lambe hain. Tester ka ek kinaara ek panne par lagaya, toh doosra panna tester ke andar hi reh gaya; dono panno ke beech ka kona samkon se kam khula hai ya zyada?", "en": "A big book's pages are 30 cm long. One edge of the tester was put on one page, and the other page stayed inside the tester; is the corner between the two pages open less or more than a right angle?" }, "reask": { "hi": "30 cm lambe panno wali kitaab mein doosra panna tester ke andar reh gaya, toh panno ke beech ka angle right angle se kam hai ya zyada?", "en": "In a book with 30 cm pages the other page stayed inside the tester; is the angle between the pages less or more than a right angle?" },
+     "key": "kam", "did": { "hi": "lambe panno wali kitaab ka angle tester se jaancha", "en": "checked the angle of a book with long pages using the tester" },
+     "accept": ["kam hai", "right angle se kam", "less", "less than a right angle", "chhota", "smaller"],
+     "targets": "c4-maths-ch01-t02-m-arm-length",
+     "wrongIfMis": "zyada",
+     "board": { "template": "compare@1", "params": {"left": {"title": "Doosra panna", "items": ["tester ke andar"]}, "right": {"title": "Angle", "items": ["right angle se kam", "right angle se zyada"]}} }, "viewCaption": { "hi": "Baayein taraf likha hai ki doosra panna tester ke andar reh gaya. Daayein taraf dono jawab likhe hain jinme se ek chunna hai.", "en": "The left side says the other page stayed inside the tester. The right side gives the two answers to choose from." },
+     "why": { "hi": "doosra panna tester ke andar reh gaya, toh panne kam khule hain, zyada nahi; 30 cm lambai ise nahi badalti", "en": "the other page stayed inside the tester, so the pages open less, not more; 30 cm pages do not change that" }, "whyShort": { "hi": "panna tester ke andar raha, toh kam khula", "en": "the page stayed inside, so it opens less" }, "whyAlt": { "hi": "panne kitne bhi lambe hon, doosra panna tester ke kinaare tak pahuncha hi nahi; isliye yeh angle right angle se chhota hai", "en": "however long the pages are, the other page never reached the tester's edge; so this angle is smaller than a right angle" },
+     "simpler": { "hi": "Panno ki lambai abhi chhod do. Bas yeh dekho ki doosra panna tester ke mukable kahan ruka.", "en": "Leave the length of the pages aside for now. Just see where the other page stopped against the tester." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Doosra panna", "items": ["tester ke andar"]}, "right": {"title": "Angle", "items": ["right angle se kam", "right angle se zyada"]}, "mark": {"side": "right", "item": 0}} }
+    },
     {
      "id": "c2",
-     "prompt": { "hi": "Ek darwaze ke kone ki ek bhuja 2 m lambi hai, aur tester us kone par bilkul fit hota hai. {friend} ka kehna hai ki yeh angle right angle se bada hai, kyunki bhuja bahut lambi hai. Kya yeh sahi hai?", "en": "A door's corner has one arm 2 m long, and the tester fits that corner exactly. {friend} says this angle is bigger than a right angle because the arm is very long. Is that right?" },
-     "key": "No",
-     "accept": ["nahi", "nahin", "no", "nahi, right angle ke barabar hai", "no, it equals a right angle"],
+     "prompt": { "hi": "Ek darwaze ke kone ki ek bhuja 2 m lambi hai, aur tester us kone par bilkul fit hota hai. Yeh angle right angle se kam hai, barabar hai, ya zyada?", "en": "One arm of a door's corner is 2 m long, and the tester fits that corner exactly. Is this angle less than, equal to, or more than a right angle?" }, "hindi": { "hi": "Darwaze ke kone ki ek bhuja 2 m lambi hai, aur us kone par tester poora baith jaata hai. Yeh kona samkon se kam hai, uske barabar hai, ya usse zyada?", "en": "One arm of a door's corner is 2 m long, and the tester sits fully on that corner. Is this corner less than a right angle, equal to it, or more?" }, "reask": { "hi": "2 m lambi bhuja wala darwaze ka kona tester par bilkul fit hai; yeh angle right angle se kam hai, barabar hai, ya zyada?", "en": "A door's corner with a 2 m arm fits the tester exactly; is this angle less than, equal to, or more than a right angle?" },
+     "key": "barabar", "did": { "hi": "lambi bhuja wale darwaze ke kone ko sahi parkha", "en": "judged a door corner with a long arm rightly" },
+     "accept": ["barabar hai", "right angle ke barabar", "equal", "equal to a right angle", "right angle hai", "same"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
-     "wrongIfMis": "Yes",
-     "board": { "template": "compare@1", "params": {"left": {"title": "Bhuja", "items": ["2 m lambi"]}, "right": {"title": "Tester", "items": ["bilkul fit"]}} },
-     "why": { "hi": "tester bilkul fit hota hai, toh angle right angle ke barabar hai; 2 m lambi bhuja khulna nahi badalti", "en": "the tester fits exactly, so the angle equals a right angle; 2 m long arms do not change the opening" },
-     "simpler": { "hi": "Bhuja ki lambai chhodo, sirf tester dekho. Yaad karo, tester bilkul fit ho toh angle kitna hota hai.", "en": "Forget the arm length and look only at the tester. Remember what an angle is when the tester fits exactly." },
+     "wrongIfMis": "zyada",
+     "board": { "template": "compare@1", "params": {"left": {"title": "Bhuja", "items": ["2 m lambi"]}, "right": {"title": "Tester", "items": ["bilkul fit"]}} }, "viewCaption": { "hi": "Baayein taraf darwaze ke kone ki 2 m lambi bhuja likhi hai, aur daayein taraf ki tester us kone par bilkul fit hota hai.", "en": "The left side gives the door corner's 2 m long arm, and the right side says the tester fits that corner exactly." },
+     "why": { "hi": "tester bilkul fit hota hai, toh angle right angle ke barabar hai; 2 m lambi bhuja khulna nahi badalti", "en": "the tester fits exactly, so the angle equals a right angle; a 2 m long arm does not change the opening" }, "whyShort": { "hi": "tester bilkul fit hai, toh right angle ke barabar", "en": "the tester fits exactly, so it equals one" }, "whyAlt": { "hi": "bhuja ko kaat kar chhota kar do, tab bhi tester us kone par waise hi fit hoga; lambai se kona zyada nahi khulta", "en": "cut the arm shorter and the tester would still fit that corner just the same; length does not open a corner wider" },
+     "simpler": { "hi": "Bhuja ki lambai chhodo, sirf tester dekho. Yaad karo, tester bilkul fit hone ka matlab kya hota hai.", "en": "Forget the arm length and look only at the tester. Remember what it means when the tester fits exactly." },
      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bhuja", "items": ["2 m lambi"]}, "right": {"title": "Tester", "items": ["bilkul fit"]}} }
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Ek angle ki bhuja 20 cm lambi hai, par woh kona tester se tang hai. Right angle ke mukable yeh angle kam hai ya zyada?", "en": "An angle has arms 20 cm long, but the corner is narrower than the tester. Compared with a right angle, is this angle less or more?" },
-     "key": "kam",
-     "accept": [
-      "less",
-      "right angle se kam",
-      "less than a right angle",
-      "kam hai"
-     ],
+     "prompt": { "hi": "Ghadi ki minute wali sui lambi hoti hai, aur 3 baje dono suiyan right angle banati hain. {friend} ka kehna hai ki minute wali sui aur lambi kar dein, toh 3 baje ka angle right angle se bada ho jaayega. Kya yeh sahi hai?", "en": "A clock's minute hand is long, and at 3 o'clock the two hands make a right angle. {friend} says that if the minute hand is made even longer, the angle at 3 o'clock will become bigger than a right angle. Is that right?" }, "hindi": { "hi": "Ghadi ki minute wali sui lambi hoti hai, aur 3 baje dono suiyan samkon banati hain. {friend} ka kehna hai ki yeh sui aur lambi kar do, toh 3 baje ka kona samkon se bada ho jaayega; kya yeh baat theek hai?", "en": "A clock's minute hand is long, and at 3 o'clock the two hands make a right angle. {friend} says that if this hand is made longer still, the corner at 3 o'clock will become bigger than a right angle; is that so?" }, "reask": { "hi": "Kya ghadi ki minute wali sui aur lambi karne se 3 baje ka angle right angle se bada ho jaayega?", "en": "Does making a clock's minute hand longer make the angle at 3 o'clock bigger than a right angle?" },
+     "key": "No", "did": { "hi": "lambi sui wali ghadi ka angle sahi parkha", "en": "judged the angle of a clock with a longer hand rightly" },
+     "accept": ["nahi", "nahin", "no", "nahi, right angle hi rahega", "no, it stays a right angle", "galat hai"],
      "targets": "c4-maths-ch01-t02-m-arm-length",
-     "wrongIfMis": "zyada",
-     "board": {
-      "template": "compare@1",
-      "params": {
-       "left": {
-        "title": "Bhuja",
-        "items": [
-         "20 cm lambi"
-        ]
-       },
-       "right": {
-        "title": "Kona",
-        "items": [
-         "tester se tang"
-        ]
-       }
-      }
-     },
-     "why": {
-      "hi": "kona tester se tang hai, aur 20 cm lambi bhuja use zyada nahi kholti",
-      "en": "the corner is narrower than the tester, and 20 cm arms do not open it any wider"
-     },
-     "simpler": {
-      "hi": "Bhuja kitni bhi lambi ho, angle sirf khulne se naapte hain. Ab socho, tester se tang kona right angle se chhota hai ya bada.",
-      "en": "However long the arms are, an angle is measured only by its opening. Now think whether a corner narrower than the tester is smaller or bigger than a right angle."
-     },
-     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Bhuja", "items": ["20 cm lambi"]}, "right": {"title": "Kona", "items": ["tester se tang"]}} }
+     "wrongIfMis": "Yes",
+     "board": { "template": "compare@1", "params": {"left": {"title": "3 baje", "items": ["right angle"]}, "right": {"title": "Sui lambi kar dein", "items": ["3 baje"]}} }, "viewCaption": { "hi": "Baayein taraf likha hai ki 3 baje dono suiyan right angle banati hain. Daayein taraf wahi 3 baje hain, bas minute wali sui aur lambi.", "en": "The left side says that at 3 o'clock the two hands make a right angle. The right side is the same 3 o'clock, only with the minute hand longer." },
+     "why": { "hi": "sui lambi kar dein, tab bhi 3 baje suiyon ka khulna nahi badalta, toh angle right angle hi rahega", "en": "making the hand longer does not change how wide the hands open at 3 o'clock, so the angle stays a right angle" }, "whyShort": { "hi": "sui lambi karne se khulna nahi badalta", "en": "a longer hand does not change the opening" }, "whyAlt": { "hi": "3 baje lambi sui bhi 12 ki taraf hi rehti hai aur chhoti sui 3 ki taraf; dono ke beech ka khulna wahi hai, chahe sui kitni bhi lambi ho", "en": "at 3 o'clock even a longer hand still points to 12 and the short hand to 3; the opening between them is the same, however long the hand" },
+     "simpler": { "hi": "Socho, sui lambi karne se 3 baje dono suiyan kahan ki taraf rehti hain, aur unke beech ka khulna badalta hai kya.", "en": "Think where the two hands point at 3 o'clock when one is made longer, and whether the opening between them changes." },
+     "answerBoard": { "template": "compare@1", "params": {"left": {"title": "3 baje", "items": ["right angle"]}, "right": {"title": "Sui lambi kar dein", "items": ["3 baje"]}} }
     }
    ],
-   "ladder": [{"itemId": "c4-maths-ch01-t02-rl-o2", "why": "a pizza tip narrower than a napkin corner → less than a right angle"}, {"itemId": "c4-maths-ch01-t02-i05", "why": "long arms opened a little vs a short square corner → the square corner is bigger"}, {"itemId": "c4-maths-ch01-t02-i04", "why": "say why longer arms do not make a bigger angle → an angle is the opening"}],
+   "ladder": [{"itemId": "c4-maths-ch01-t02-rl-o2", "why": "a pizza tip narrower than a napkin corner → less than a right angle"}, {"itemId": "c4-maths-ch01-t02-i05", "why": "long arms opened a little vs a short right angle → the right angle is bigger"}, {"itemId": "c4-maths-ch01-t02-i04", "why": "say why longer arms do not make a bigger angle → an angle is the opening"}],
    "remediation": [
     {
      "targets": "c4-maths-ch01-t02-m-arm-length",
-     "move": "two-arm angle maker: hold the opening fixed, stretch the arms longer and longer → the opening does not change → then lay the paper tester on it",
-     "say": {
-      "hi": "Angle ka khulna pakad lo aur bhuja chhoti se lambi karte jao. Khulna wahi rehta hai, toh angle bhi wahi rehta hai.",
-      "en": "Hold the angle's opening still and make its arms longer and longer. The opening stays the same, so the angle stays the same too."
-     },
-     "simpler": {
-      "hi": "Bhuja lambi karo, khulna wahi rehta hai. Toh angle bhi wahi rehta hai.",
-      "en": "Make the arms longer and the opening stays the same. So the angle stays the same."
-     },
-     "then": { "prompt": { "hi": "4 cm blade wali kainchi tester se zyada khuli, 16 cm wali tang. {friend} ka kehna hai: 4 cm wali ka angle bada. Sahi?", "en": "4 cm-blade scissors open wider than the tester, 16 cm ones narrower. {friend} says the 4 cm angle is bigger. Right?" }, "key": "Yes", "accept": ["haan", "han", "yes", "sahi hai", "haan sahi hai", "haan, 4 cm wali ka angle bada hai"], "targets": "c4-maths-ch01-t02-m-arm-length", "wrongIfMis": "No", "board": { "template": "compare@1", "params": {"left": {"title": "4 cm blade", "items": ["tester se zyada khuli"]}, "right": {"title": "16 cm blade", "items": ["tester se tang"]}} }, "why": { "hi": "4 cm blade wali tester se zyada khuli, 16 cm wali tang; toh 4 cm wali ka angle bada", "en": "the 4 cm blades open wider than the tester, the 16 cm blades narrower; so the 4 cm angle is bigger" }, "simpler": { "hi": "Blade ki lambai mat dekho. Sirf yeh dekho ki tester ke mukable kaun kitni khuli hai.", "en": "Do not look at the blade length. Just see how far each pair opens compared with the tester." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 cm blade", "items": ["tester se zyada khuli"]}, "right": {"title": "16 cm blade", "items": ["tester se tang"]}} } }
+     "move": "two pencils held as an angle, opening fixed; a pencil added to the end of each → the arms grow, the opening does not → the angle does not; then two pairs of scissors, short blades opened past the tester, long blades narrower than it",
+     "say": { "hi": "Do pencil ko angle ki tarah pakdo. Ab dono ke aage ek-ek pencil jodo: bhujayein lambi ho gayi, par khulna wahi raha, toh angle bhi wahi raha.", "en": "Hold two pencils like an angle. Now add one more pencil to the end of each: the arms got longer, but the opening stayed the same, so the angle stayed the same too." }, "board": { "template": "compare@1", "params": {"left": {"title": "Do pencil", "items": ["angle ki tarah"]}, "right": {"title": "Aage pencil jodo", "items": ["bhujayein lambi", "khulna wahi"]}} }, "viewCaption": { "hi": "Baayein taraf angle ki tarah pakdi do pencil hain. Daayein taraf likha hai ki pencil jodne se bhujayein lambi hui, par khulna wahi raha.", "en": "On the left are two pencils held like an angle. The right side says adding pencils made the arms longer, but the opening stayed the same." }, "sayAlt": { "hi": "Ghadi ki badi sui lambi hai aur chhoti sui chhoti. Phir bhi 3 baje dono ke beech right angle hi banta hai, kyunki angle suiyon ki lambai se nahi, unke beech ke khulne se banta hai.", "en": "A clock's big hand is long and its small hand short. Still at 3 o'clock they make just a right angle, because an angle comes from the opening between the hands, not from their length." },
+     "simpler": { "hi": "Bhujayein lambi karne se angle zyada nahi khulta. Angle sirf khulne se bada hota hai.", "en": "Making the arms longer does not open the angle wider. An angle grows only by opening." },
+     "then": {
+      "prompt": { "hi": "4 cm blade wali kainchi tester se zyada khuli hai, aur 16 cm blade wali tester se kam. Kiska angle bada hai?", "en": "Scissors with 4 cm blades open more than the tester, and scissors with 16 cm blades less. Whose angle is bigger?" }, "hindi": { "hi": "4 cm blade wali kainchi tester se zyada khuli hai aur 16 cm blade wali usse kam; in dono mein kiska angle bada hai?", "en": "The scissors with 4 cm blades open more than the tester and the ones with 16 cm blades less; of the two, whose angle is bigger?" }, "reask": { "hi": "4 cm blade wali kainchi tester se zyada aur 16 cm wali kam khuli; kiska angle bada hai?", "en": "The 4 cm-blade scissors open more than the tester and the 16 cm ones less; whose angle is bigger?" },
+      "key": "4 cm wali",
+      "accept": ["4 cm", "4 cm blade wali", "4 cm wali kainchi", "chhote blade wali", "the 4 cm one", "4 cm one"],
+      "targets": "c4-maths-ch01-t02-m-arm-length",
+      "wrongIfMis": "16 cm wali",
+      "board": { "template": "compare@1", "params": {"left": {"title": "4 cm blade", "items": ["tester se zyada khuli"]}, "right": {"title": "16 cm blade", "items": ["tester se kam"]}} }, "viewCaption": { "hi": "Baayein taraf 4 cm blade wali kainchi hai jo tester se zyada khuli, daayein taraf 16 cm wali jo tester se kam khuli.", "en": "On the left are the 4 cm-blade scissors, open more than the tester; on the right the 16 cm ones, open less." },
+      "why": { "hi": "4 cm blade wali tester se zyada khuli aur 16 cm blade wali kam, toh 4 cm wali ka angle bada", "en": "the 4 cm pair opens more than the tester and the 16 cm pair less, so the 4 cm angle is bigger" }, "whyShort": { "hi": "4 cm wali zyada khuli, toh uska angle bada", "en": "the 4 cm pair opens more: a bigger angle" }, "whyAlt": { "hi": "16 cm ke lambe blade sirf bhujayein lambi karte hain; khulne mein 4 cm wali kainchi tester se bhi aage hai", "en": "the long 16 cm blades only make the arms longer; in opening, the 4 cm pair goes past even the tester" },
+      "simpler": { "hi": "Blade ki lambai mat dekho. Sirf yeh dekho ki tester ke mukable kaun kitni khuli hai.", "en": "Do not look at the blade length. Just see how far each pair opens compared with the tester." },
+      "answerBoard": { "template": "compare@1", "params": {"left": {"title": "4 cm blade", "items": ["tester se zyada khuli"]}, "right": {"title": "16 cm blade", "items": ["tester se kam"]}, "mark": {"side": "left"}} }
+     }
     }
    ],
-   "bridgeToNext": { "hi": "Ab tak hum kone aur angle dekh rahe the. Ab ek aisi shape dekhenge jismein koi kona hi nahi hota: circle.", "en": "So far we looked at corners and angles. Next we look at a shape that has no corner at all: the circle.", "simpler": {"hi": "Kone aur angle hum dekh chuke. Agle hisse mein ek aisi shape dekhenge jisme koi kona hota hi nahi, circle.", "en": "We have seen corners and angles. Next we meet a shape with no corner at all, the circle."} }
+   "bridgeToNext": { "hi": "Ab ek aisi shape aayegi jismein koi kona hi nahi hota: circle, jise hum string se banayenge.", "en": "Next comes a shape with no corner at all: the circle, which we will draw with a string.", "simpler": {"hi": "Ab bina kone wali shape, circle, banayenge.", "en": "Next we draw a shape with no corner, the circle."} }
   },
   {
    "skillId": "c4-maths-ch01-t02-s3",
