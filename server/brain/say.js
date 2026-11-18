@@ -230,6 +230,8 @@ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad k
 const ASK_AGAIN = { hinglish: ["Ek baar phir bata do, tumhara jawab kya hai?", "Mujhse chhoot gaya, ek baar aur bolo na, jawab kya hai?", "Phir se bolo, tumhara jawab kya tha?"],
   english: ["Tell me once more, what's your answer?", "I missed it, say your answer again?", "One more time, what was your answer?"] };
 // (Brain 044 Small: the short ask after a second miss in a row — the question was said in her last turn; no referent, no number)
+/** d31 046 follow-up rule 2: the child's own words asking to hear the question (the early pass's askedForIt reads the same). */
+const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
 const MISS_AGAIN_ASK = { hinglish: ["Ab phir se socho, jawab kya hoga?", "Toh ab batao, kya aayega?", "Ab ek baar aur try karo: kya jawab hai?"],
   english: ["Think again, what's the answer?", "So now, what do you get?", "Try once more: what's the answer?"] };
 const NO_PICTURE = { hinglish: ["Iski doosri tasveer abhi nahi ban rahi, toh board wali tasveer hi dekhte hain.", "Is par doosri tasveer nahi ban paa rahi; jo board par hai, usi ko dekho.", "Iska alag chitra abhi nahi hai, isliye board wala hi lete hain."],
@@ -3603,7 +3605,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const whole = cs.length >= 1 && /[?？]$/.test(c0) ? card : null;
         const helpNow = body.filter((x) => norm(x) !== norm(card)).join(" ");
         // (the short ask asks for the answer to the question on the table — never after help about another figure, P6)
-        const shortOk = !figureOther(helpNow, card, state);
+        // (rule 2, dry steady c4-ch01-t02 14, c4-ch05-t01 14, stuck c4-ch01-t02 16: a request to hear the question — "sawaal kya hai?",
+        // "phir se bolo" — gets the question, never the short ask; with no other form that differs, the card is said again as it is)
+        const askedQ = ["repeat", "which"].includes(String(state.lastMove?.request ?? "")) && HEAR_Q.test(String(childText ?? ""));
+        const shortOk = !askedQ && !figureOther(helpNow, card, state);
         const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
         const pick = [["reask", reask], ["short", shortT], ["whole", whole], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
         if (pick) {
@@ -3613,6 +3618,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
           else if (k === "whole") { guard.cardQuestionOnly = false; guard.reaskShort = undefined; }
           else { guard.cardQuestionOnly = true; guard.reaskShort = undefined; }
           body = body.filter((x) => !REPOSE_FRAME.test(x));
+        } else if (askedQ && guard.reaskShort && tail === guard.reaskShort.text) {
+          // (a short ask set before this pass — a miss's — is no answer to a request to hear the question: the card as it is)
+          tail = card; guard.reaskShort = undefined; guard.cardQuestionOnly = false; guard.reaskRotated = "whole";
         }
       }
     }

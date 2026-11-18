@@ -103,6 +103,8 @@ const slotless = (t) => low(t).split(/\{\w+\}/).map((x) => x.replace(/^[\s,.:;!?
 /** A sentence's key: its letters and numbers only. */
 const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/).filter(Boolean);
+/** d31 046 follow-up rule 2: the child's own words asking to hear the question. */
+const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
 /** Whether a row says its card in a self-contained form: the whole card, its reask, or its Hindi form. */
 function selfContained(script, r) {
   const t = low(r?.text);
@@ -193,6 +195,16 @@ export const D30_PREDICATES = {
     if (m0 !== c0 && (cs.length >= 2 || reask)) parts.add(qKey(m0));
     return parts.has(qKey(q)) ? `a re-ask on a part of the card's question: "${q.slice(0, 60)}"` : null;
   },
+  /** d31 046 follow-up rule 2: a request to hear the question ("sawaal kya hai?", "phir se bolo") at a live card is answered with its reask,
+   *  its whole question or its Hindi form; at an asked worked step, with the step's question (dry d31f steady c4-ch01-t02 14,
+   *  c4-ch05-t01 14; stuck c4-ch01-t02 16). Gated. */
+  clarifyAsked(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT) return null;
+    if (!(String(ctx?.prevIntent ?? "") === "repeat" || /·\s*(?:repeat|which)\b/.test(String(ctx?.prevRead ?? ""))) || !HEAR_Q.test(String(ctx?.prevChild ?? ""))) return null;
+    if (r.card) return selfContained(ctx.script, r) ? null : `a request to hear the question answered without it: "${String(r.text ?? "").slice(0, 60)}"`;
+    const step = (x) => (x?.seams ?? []).some((y) => y.right === "stepAsk");
+    return step(ctx.prevT) && !step(r) ? "a request to hear the step's question answered without it" : null;
+  },
   /** dc-r8-director30 Brain 046 Q6: a picture's caption is the one written for the part the picture is of — never another part's caption
    *  found by an identical board (c5-t01 offtopic 26: e2's caption on a follow-up card; c4 steady 18: the point's on the card's). Gated. */
   captionPart(L, r, i, ctx) {
@@ -258,11 +270,11 @@ export const D30_PREDICATES = {
     const q = lastAsk(r), p = lastAsk(ctx.prevT);
     if (!q || q !== p || q.split(" ").length < 4) return null;
     // (d31 046 follow-up: a card of two or more sentences with no reask has one self-contained form, the whole card — its last sentence
-    // alone is never said (reaskWhole). Said whole again after help about another figure, where the short ask may not stand (P6), it is
-    // the re-ask)
+    // alone is never said (reaskWhole). Said whole again, it is the answer to a request to hear the question (rule 2), or the re-ask
+    // after help about another figure, where the short ask may not stand (P6))
     const o = cardObjAt(ctx?.script, r);
     if (!o?.reask && sentencesOf(r.card ?? "").length >= 2 && low(r.text).includes(low(r.card))
-      && helpOtherFigure(r, ctx?.script)) return null;
+      && ((String(ctx?.prevIntent ?? "") === "repeat" && HEAR_Q.test(String(ctx?.prevChild ?? ""))) || helpOtherFigure(r, ctx?.script))) return null;
     if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
     return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
   },

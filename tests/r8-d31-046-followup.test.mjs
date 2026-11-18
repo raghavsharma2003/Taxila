@@ -42,3 +42,20 @@ describe("1: a re-ask is always a question a child can answer from what she just
     assert.match(src, /const clause = cs\.length < 2 && !reask && /);
   });
 });
+
+describe("2: \"What is the question?\" gets the question", () => {
+  test("clarifyAsked is gated and reads the three requests answered with the short ask alone", () => {
+    assert.ok(!PENDING.has("clarifyAsked"));
+    for (const [name, row] of [["steady-c4-ch01-t02", 14], ["steady-c4-ch05-t01", 14], ["stuck-c4-ch01-t02", 16]]) assert.ok(flagged(name, "clarifyAsked").has(row), `${name} ${row}`);
+  });
+  test("clarifyAsked reads no request answered with the whole card", () => {
+    const { rows, script } = lesson("steady-c4-ch01-t02");
+    const r = { ...rows[14], text: `Phir se dekho: ${rows[14].card}`, seams: [{ left: "start", right: "card" }] };
+    assert.deepEqual(lessonFlags({ rows: [...rows.slice(0, 14), r], script }).filter((f) => f.predicate === "clarifyAsked"), []);
+  });
+  test("a request to hear the question at a card with no reask, said whole in her turn before, gets the card again — reaskRunning allows it", () => {
+    const { rows, script } = lesson("steady-c4-ch01-t02");
+    const r = { ...rows[14], text: rows[14].card, seams: [{ left: "start", right: "card" }] };
+    assert.deepEqual(lessonFlags({ rows: [...rows.slice(0, 14), r], script }).filter((f) => ["reaskRunning", "clarifyAsked"].includes(f.predicate)), []);
+  });
+});
