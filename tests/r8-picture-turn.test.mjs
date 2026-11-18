@@ -324,3 +324,32 @@ test("main on director22: a view whose captions cannot be said clean is still dr
   }
   assert.ok(viewed > 100 && quiet >= 1, `views ${viewed}, of which with the quiet line ${quiet}`);
 });
+
+// Studio 014 (dc-r8-director31 item 4): the view each of the seven scripts' card, check, follow-up, own-step and asked-step boards gets
+// (viewOf: the view pictureTurn draws), by board template → view template and name, and how many such cards the checker's rule 7
+// still lists (no second view and no authored pictureBoard). A change here is a change in what a picture request draws.
+test("Studio 014: the seven scripts' card boards — the view each gets, and what rule 7 still lists", async () => {
+  const { d32Cards, viewOf, noPictureCards } = await import("../scripts/lesson-scripts/check.mjs");
+  const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts-staged", "c6-maths-ch07-t01"]];
+  const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
+  const got = {};
+  for (const [d, T] of SEVEN) {
+    const s = JSON.parse(readFileSync(new URL(`../data/${d}/${T}.json`, import.meta.url), "utf8")), m = {};
+    for (const c of d32Cards(s)) {
+      if (!KINDS.has(c.kind)) continue;
+      const v = c.board?.template ? viewOf(c.board, c.at) : null, k = `${c.board?.template ?? "none"} → ${v ? `${v.template} ${v.view}` : "none"}`;
+      m[k] = (m[k] ?? 0) + 1;
+    }
+    got[T] = { ...Object.fromEntries(Object.entries(m).sort()), "rule 7": noPictureCards(s).length };
+  }
+  assert.deepEqual(got, {
+    "c4-maths-ch05-t01": { "equal-groups@1 \u2192 equal-groups@1 rows": 2, "equal-groups@1 \u2192 shade-grid@1 grid": 3, "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 fraction-parts@1 round": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 2, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 2, "shade-grid@1 \u2192 fraction-parts@1 round": 1, "shade-grid@1 \u2192 none": 4, "wholes@1 \u2192 wholes@1 strips": 7, "wholes@1 \u2192 wholes@1 wholes": 3, "rule 7": 4 },
+    "c5-maths-ch02-t01": { "fraction-line@1 \u2192 fraction-bars@1 parts": 18, "fraction-line@1 \u2192 fraction-line@1 strips": 15, "rule 7": 0 },
+    "c5-maths-ch02-t02": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 17, "fraction-line@1 \u2192 fraction-bars@1 parts": 10, "wholes@1 \u2192 wholes@1 strips": 3, "rule 7": 0 },
+    "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 17, "fraction-line@1 \u2192 fraction-bars@1 parts": 5, "rule 7": 0 },
+    "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 7 },
+    "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 9, "compare@1 \u2192 none": 1, "measured@1 \u2192 measured@1 radii": 3, "shape@1 \u2192 none": 12, "shape@1 \u2192 shape@1 radii": 2, "rule 7": 13 },
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 none": 3, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 6, "fraction-line@1 \u2192 fraction-bars@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 2, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 3 }
+  });
+});
