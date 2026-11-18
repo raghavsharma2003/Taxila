@@ -920,6 +920,8 @@ Object.assign(PREDICATES, D28_PREDICATES);
 // (dc-r8-director28, Brain 044: a joint keeps what is up, help as a hard precondition, fewer kinds of turn — d29-predicates.mjs)
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 Object.assign(PREDICATES, D29_PREDICATES);
+import { D30_PREDICATES, pictureNamedFlag } from "./d30-predicates.mjs";
+Object.assign(PREDICATES, D30_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
@@ -988,10 +990,12 @@ PREDICATES.coveredReached = (L, r, i, ctx) => {
 
 /** Main on director22 (10 of the run's 13 contradictions; the dry run showed all 10 and no predicate counted them): a picture
  *  request draws a view (the seam's `held.picture.view`), and she never tells the child a picture cannot be made. Gated. */
-PREDICATES.pictureDrawn = (L, r) => {
+PREDICATES.pictureDrawn = (L, r, i, ctx) => {
   const p = r.held?.picture;
   if (p && !p.view) return "a picture was asked for and no view was drawn";
-  return /tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi/i.test(String(r.text ?? "")) ? "she says a picture cannot be made" : null;
+  if (/tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi/i.test(String(r.text ?? ""))) return "she says a picture cannot be made";
+  // (dc-r8-director29 Brain 045 P1: and the held panel drawn is the board the plan named)
+  return pictureNamedFlag(L, r, i, ctx);
 };
 
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)

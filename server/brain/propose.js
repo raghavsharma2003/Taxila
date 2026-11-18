@@ -556,6 +556,13 @@ function firstPartBoardOf(kit, unit) {
  * (Replaces dc-r7-held-board's units: a unit's board was picked from its card, so a point said before its card, a remediation said with
  * its then-card, and a remediation with no board were all said over a card not yet asked — fd-shared-turn-draws-wrong-part.)
  */
+/** Brain 045 P1: the board a picture turn is of, as the walk named it on the move (state.js: the part being helped, the live card, or the
+ *  answered card's answer board after its key) — { board, unit } — or null (no picture asked, or no board named). */
+export function pictureBoardOf(move) {
+  if (move?.request !== "visual" || move?.visual === "game") return null;
+  const sb = move?.scriptBeat;
+  return sb?.board?.template ? { board: sb.board, unit: unitOf(sb) } : null;
+}
 export function heldOf({ move, list = null, line = "", kit, up = null, graded = false }) {
   // (a move that clears the board — the teach-back's key turn with no answerBoard, a "board hatao" — holds none: nothing is up)
   if (move?.clear === "board") return null;
@@ -574,6 +581,10 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const curUnit = unitOfBeat(cardB) ?? unitOfBeat(move?.scriptBeat);
   if (!curUnit && !up) return null;
   const sb = move?.scriptBeat ?? null;
+  // (dc-r8-director29 Brain 045 P1, steering row 14 in all four pilots: a picture turn is of the board the walk named — pictureBoardOf — and
+  // that board is the held board from the turn's first word, the panel Studio draws; never the lesson's held unit by default)
+  const picB = pictureBoardOf(move);
+  if (picB) { const h = { board: picB.board, unit: picB.unit ?? curUnit }; if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up }); return h; }
   // (dc-r8-director26, the record — c5-t01 steering 14: a picture asked for after a key is of the answered board, the close's answer board)
   const answeredPic = move?.request === "visual" && sb?.answerBoard && sb.board ? sb.board : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;
