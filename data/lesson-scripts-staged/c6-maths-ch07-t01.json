@@ -368,187 +368,178 @@
     "interestSlots": [
      {
       "interest": "cooking",
-      "use": {
-       "hi": "Kitchen mein 3 roti bachi hain aur 4 bachche khaane baithe hain. Sabko barabar milna hai, par roti bachchon se kam hain, toh har bachche ko poori roti nahi, roti ka ek fraction milega.",
-       "en": "There are 3 rotis left in the kitchen and 4 children sit down to eat. Everyone must get the same, but there are fewer rotis than children, so each child gets not a whole roti but a fraction of one."
-      }
+      "use": { "hi": "Kitchen mein 3 roti bachi hain aur 4 bachche khaane baithe hain. Sabko barabar milna hai.", "en": "There are 3 rotis left in the kitchen and 4 children sit down to eat. Everyone must get the same." }
      },
      {
       "interest": "drawing",
-      "use": {
-       "hi": "Drawing class mein colour paper ki 2 lambi pattiyan 3 doston mein barabar baantni hain. Har dost ka hissa ek patti se kam hoga, aur use fraction mein naapenge.",
-       "en": "In drawing class, 2 long strips of colour paper are to be shared equally among 3 friends. Each friend's share will be less than one strip, and we will measure it as a fraction."
-      }
+      "use": { "hi": "Drawing class mein 3 colour kaagaz 4 doston mein barabar baantne hain. Pehle yahi baat roti se samajhte hain.", "en": "In drawing class 3 sheets of colour paper are to be shared equally among 4 friends. First let's understand it with rotis." }
      }
     ]
    },
    "explain": [
     {
      "id": "e1",
-     "convey": "3 rotis among 4 children: every roti into 4 equal parts → each child gets 1/4 from each roti → 3 rotis give 1/4 + 1/4 + 1/4 = 3/4 roti each",
+     "convey": "3 rotis among 4 children: every roti into 4 equal parts → each child gets 1/4 from each roti → 3 rotis give 1/4 + 1/4 + 1/4 = 3/4 roti each; the card: the same 4 children with 2 rotis, on its own board of two round rotis",
      "mustSay": [
       { "hi": "4 barabar hisse", "en": "4 equal parts" },
       { "hi": "1/4", "en": "1/4" },
       { "hi": "3/4 roti", "en": "3/4 of a roti" }
      ],
-     "board": { "template": "fraction-parts@1", "params": { "parts": 4, "shade": 1, "whole": "roti" } },
-     "point": {
-      "hi": "3 roti 4 bachchon mein barabar baantni hain. Har roti ke 4 barabar hisse karo, jaise is roti mein. Har roti se har bachche ko ek hissa, yaani 1/4 milta hai. Teen roti se teen hisse: 1/4 + 1/4 + 1/4 = 3/4 roti.",
-      "en": "3 rotis are to be shared equally among 4 children. Make 4 equal parts of each roti, like this roti. From each roti every child gets one part, that is 1/4. Three rotis give three parts: 1/4 + 1/4 + 1/4 = 3/4 of a roti."
-     },
+     "board": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 4, "shade": 1, "label": "" }, { "parts": 4, "shade": 1, "label": "" }, { "parts": 4, "shade": 1, "label": "" }] } }, "viewCaption": { "hi": "Board par teeno roti patti ki tarah bani hain, har ek 4 barabar hisson mein, aur har roti ka ek hissa rangin hai.", "en": "On the board the three rotis are drawn as strips, each in 4 equal parts, and one part of each roti is coloured." },
+     "point": { "hi": "3 roti 4 bachchon mein barabar baantni hain. Har roti ke 4 barabar hisse karo, aur har bachche ko har roti se ek hissa do, yaani 1/4. Teen roti se teen hisse milte hain: 3/4 roti.", "en": "3 rotis are to be shared equally among 4 children. Make 4 equal parts of each roti, and give each child one part from every roti, that is 1/4. Three rotis give three parts: 3/4 of a roti." }, "pointAlt": { "hi": "Socho 4 bachche baithe hain, aur tum har roti ke 4 barabar hisse karke sabko ek-ek dete ho. Teen roti ke baad har bachche ke paas teen hisse hain, har ek 1/4, yaani 3/4 roti.", "en": "Picture 4 children sitting, and you cut each roti into 4 equal parts and give everyone one. After three rotis each child has three parts, each 1/4, so 3/4 of a roti." },
      "ask": {
-      "prompt": { "hi": "Ab bachche wahi 4 hain, par roti sirf 2. Har roti ke aise hi 4 barabar hisse karo. Har bachche ko kitni roti milegi?", "en": "Now there are the same 4 children, but only 2 rotis. Make 4 equal parts of each roti in the same way. How much roti does each child get?" },
-      "key": "2/4",
-      "accept": ["2/4 roti", "1/2", "aadhi roti", "aadhi", "half", "do bata chaar"],
+      "prompt": { "hi": "Ab bachche wahi 4 hain, par roti sirf 2. Har bachche ko kitni roti milegi?", "en": "Now there are the same 4 children, but only 2 rotis. How much roti does each child get?" }, "hindi": { "hi": "Bachche wahi 4 hain, lekin ab roti sirf 2 hain. Toh har bachche ko kitni roti milegi?", "en": "The children are the same 4, but now there are only 2 rotis. So how much roti will each child get?" }, "reask": { "hi": "2 roti 4 bachchon mein barabar baanto, toh har bachche ko kitni roti milegi?", "en": "Share 2 rotis equally among 4 children: how much roti does each child get?" },
+      "key": "2/4", "did": { "hi": "2 roti 4 bachchon mein baant kar har ek ka hissa nikala", "en": "shared 2 rotis among 4 children and found each one's share" },
+      "accept": ["2/4 roti", "1/2", "1/2 roti", "aadhi roti", "aadhi", "half", "do bata chaar"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
       "wrongIfMis": "4/2",
-      "why": { "hi": "har roti se har bachche ko 1/4 milta hai, aur 2 roti se 1/4 + 1/4 = 2/4", "en": "each child gets 1/4 from each roti, and from 2 rotis 1/4 + 1/4 = 2/4" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 4, "shade": 2, "whole": "roti"} }
+      "why": { "hi": "har roti se 1/4, toh 2 roti se 2/4; 2/4 aur 1/2, yaani aadhi roti, ek hi hain", "en": "1/4 from each roti, so 2/4 from 2 rotis; 2/4 and 1/2, half a roti, are the same" }, "whyShort": { "hi": "har roti se ek 1/4, aur roti do", "en": "one 1/4 from each roti, and two rotis" }, "whyAlt": { "hi": "Do roti ke 4-4 hisse karo toh 8 hisse bante hain; 4 bachchon mein baanto toh har ek ko 2 hisse, yaani 2/4, aadhi roti.", "en": "Cut two rotis into 4 parts each and there are 8 parts; shared among 4 children each gets 2 parts, that is 2/4, half a roti." },
+      "simpler": { "hi": "Har roti se har bachche ko ek hissa milta hai. Ab gino, roti kitni hain.", "en": "Each child gets one part from every roti. Now count how many rotis there are." },
+      "board": { "template": "wholes@1", "params": { "wholes": [{ "parts": 4, "title": "Roti" }, { "parts": 4, "title": "Roti" }] } }, "viewCaption": { "hi": "Yahan dono roti seedhi patti ki tarah ek ke neeche ek khuli hain, har ek 4 barabar hisson mein.", "en": "Here the two rotis are opened out as straight strips, one under the other, each in 4 equal parts." },
+      "answerBoard": { "template": "wholes@1", "params": { "wholes": [{ "parts": 4, "shade": 1, "title": "1/4" }, { "parts": 4, "shade": 1, "title": "1/4" }] } }
      },
-     "simpler": { "hi": "Har roti ke 4 barabar hisse, aur har bachche ko har roti se ek hissa, yaani 1/4. Teen roti se teen hisse milte hain: 3/4.", "en": "Each roti has 4 equal parts, and each child gets one part, 1/4, from every roti. Three rotis give three parts: 3/4." }
+     "simpler": { "hi": "Har roti se har bachche ko ek 1/4 hissa milta hai. Roti teen hain, toh har bachche ke paas teen 1/4, yaani 3/4.", "en": "Each child gets one 1/4 part from every roti. There are three rotis, so each child has three 1/4 parts, that is 3/4." }
     },
     {
      "id": "e2",
-     "convey": "reasonableness: fewer things than sharers → each share less than 1 whole (3 rotis, 4 children → 3/4); more things than sharers → more than 1 (5 laddoos, 2 children → 5/2); things on top, sharers below",
+     "convey": "reasonableness: fewer things than sharers → each share less than 1 whole (3 rotis, 4 children → 3/4); more things than sharers → more than 1 (5 laddoos, 2 children → 5/2); things on top, sharers below; the card: 6 chikkis among 5 children, on its own board",
      "mustSay": [
       { "hi": "1 se kam", "en": "less than 1" },
       { "hi": "1 se zyada", "en": "more than 1" },
-      { "hi": "upar cheezein, neeche baantne wale", "en": "things on top, sharers below" }
+      { "hi": "baantne wale neeche", "en": "the sharers below" }
      ],
-     "board": { "template": "fraction-parts@1", "params": {"parts": 8, "shade": 0, "whole": "roti"} },
-     "point": { "hi": "3 roti aur 4 bachche: roti kam, bachche zyada, toh har ek ko 3/4, 1 se kam. 5 laddoo aur 2 bachche: laddoo zyada, toh har ek ko 5/2, 1 se zyada. Dono mein upar cheezein, neeche baantne wale. Yeh roti 8 barabar hisson mein bati hai.", "en": "3 rotis and 4 children: fewer rotis, more children, so each gets 3/4, less than 1. 5 laddoos and 2 children: more laddoos, so each gets 5/2, more than 1. In both, things on top, sharers below. This roti is in 8 equal parts." },
+     "board": { "template": "compare@1", "params": { "left": { "title": "3 roti, 4 bachche", "items": ["3/4 roti, 1 se kam"] }, "right": { "title": "5 laddoo, 2 bachche", "items": ["5/2 laddoo, 1 se zyada"] } } }, "viewCaption": { "hi": "Board par dono baantne ke hisaab likhe hain: roti wale mein har hissa 1 se kam, laddoo wale mein 1 se zyada.", "en": "The board shows both sharings: with the rotis each share is less than 1, with the laddoos more than 1." },
+     "point": { "hi": "3 roti aur 4 bachche: roti kam hain, toh har ek ko 3/4, jo 1 se kam hai. 5 laddoo aur 2 bachche: laddoo zyada hain, toh har ek ko 5/2, jo 1 se zyada hai. Dono mein baanti jaane wali cheezein upar, baantne wale neeche.", "en": "3 rotis and 4 children: there are fewer rotis, so each gets 3/4, which is less than 1. 5 laddoos and 2 children: there are more laddoos, so each gets 5/2, which is more than 1. In both, the things shared go on top, the sharers below." }, "pointAlt": { "hi": "Pehle dekho cheezein zyada hain ya log. 3 roti aur 4 bachchon mein roti kam, toh hissa 1 se kam, 3/4. 5 laddoo aur 2 bachchon mein laddoo zyada, toh hissa 5/2, 1 se zyada.", "en": "First see whether there are more things or more people. With 3 rotis and 4 children there are fewer rotis, so the share is less than 1, 3/4. With 5 laddoos and 2 children there are more laddoos, so the share is 5/2, more than 1." },
      "ask": {
-      "prompt": { "hi": "Ab wahi 3 roti 8 bachchon mein barabar baanto. Ab har bachche ka hissa pehle wale 3/4 se bada hoga ya chhota?", "en": "Now share the same 3 rotis equally among 8 children. Will each child's share now be bigger or smaller than the 3/4 before?" },
-      "key": "chhota",
-      "accept": ["chhota hoga", "3/4 se chhota", "smaller", "3/8", "3/8, chhota"],
+      "prompt": { "hi": "Ab 6 chikki 5 bachchon mein barabar baanti. Har bachche ko kitni chikki milegi?", "en": "Now 6 chikkis are shared equally among 5 children. How much chikki does each child get?" }, "hindi": { "hi": "Ab 6 chikki 5 bachchon mein barabar baanti gayi. Toh har bachche ke hisse kitni chikki aayegi?", "en": "Now 6 chikkis were shared equally among 5 children. So how much chikki comes to each child?" }, "reask": { "hi": "6 chikki 5 bachchon mein barabar baanti, toh har bachche ko kitni chikki milegi?", "en": "6 chikkis shared equally among 5 children: how much chikki does each child get?" },
+      "key": "6/5", "did": { "hi": "6 chikki 5 bachchon mein baant kar har ek ka hissa nikala", "en": "shared 6 chikkis among 5 children and found each one's share" },
+      "accept": ["6/5 chikki", "1 1/5", "1 aur 1/5", "ek poori aur 1/5", "chhah bata paanch"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "bada",
-      "why": { "hi": "ab har bachche ko 3/8 roti: 3 tukde wahi, par 1/8 ka tukda 1/4 se chhota, toh 3/8 < 3/4", "en": "now each child gets 3/8: still 3 pieces, but a 1/8 piece is smaller than a 1/4 piece, so 3/8 < 3/4" }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 8, "shade": 3, "whole": "roti"} }
+      "wrongIfMis": "5/6",
+      "why": { "hi": "chikki 6 aur bachche 5, toh hissa 1 se zyada: 6/5, yaani 1 aur 1/5; dono ek hi hain", "en": "6 chikkis and 5 children, so over 1: 6/5, that is 1 and 1/5; the same" }, "whyShort": { "hi": "baanti jaane wali chikki upar, bachche neeche", "en": "the chikkis shared on top, the children below" }, "whyAlt": { "hi": "Pehle har bachche ko ek poori chikki do; ek chikki bachti hai, uske 5 barabar hisse karo toh har ek ko 1/5 aur: 1 aur 1/5, yaani 6/5.", "en": "First give each child one whole chikki; one chikki is left, cut it into 5 equal parts and each gets 1/5 more: 1 and 1/5, that is 6/5." },
+      "simpler": { "hi": "Socho, chikki bachchon se zyada hain ya kam, aur bhinn mein upar kya aayega, neeche kya.", "en": "Think whether there are more chikkis or more children, and what goes on top of the fraction, what below." },
+      "board": { "template": "compare@1", "params": { "left": { "title": "Chikki", "items": ["6 chikki"] }, "right": { "title": "Bachche", "items": ["5 bachche"] } } }, "viewCaption": { "hi": "Board par baayein chikki ki ginti hai, aur daayein bachchon ki.", "en": "On the board the number of chikkis is on the left, and the number of children on the right." },
+      "answerBoard": { "template": "compare@1", "params": { "left": { "title": "Chikki", "items": ["6 chikki"] }, "right": { "title": "Bachche", "items": ["5 bachche"] } } }
      },
-     "simpler": { "hi": "Upar woh cheezein jo baanti ja rahi hain, neeche baantne wale. 3 roti aur 4 bachche toh 3/4, 5 laddoo aur 2 bachche toh 5/2.", "en": "The things being shared go on top, the sharers below. 3 rotis and 4 children give 3/4; 5 laddoos and 2 children give 5/2." }
+     "simpler": { "hi": "Jo cheez baanti ja rahi hai, uski ginti upar aati hai, aur kitne log baant rahe hain, woh neeche.", "en": "The number of things being shared goes on top, and how many people share them goes below." }
     },
     {
      "id": "e3",
-     "convey": "fractions measure lengths: 1 m ribbon in 2 equal parts → one part = 1/2 m; 1 m = 100 cm → 100 ÷ 2 = 50 cm; the child does the 5-part row",
+     "convey": "fractions measure lengths: 1 m ribbon in 2 equal parts → one part = 1/2 m = 100 ÷ 2 = 50 cm; the card: the same metre in 5 equal parts, 2 of them in cm (both scales on the card's own board)",
      "mustSay": [
       { "hi": "1 metre", "en": "1 metre" },
-      { "hi": "aadha metre", "en": "half a metre" },
       { "hi": "100 cm", "en": "100 cm" }
      ],
-     "board": { "template": "fraction-line@1", "params": {"dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 2]]} },
-     "point": { "hi": "Yeh 1 metre ki ribbon hai, 0 se 1 tak. Upar woh 2 barabar hisson mein bati hai, neeche 5 mein. Upar ka ek hissa aadha metre hai. 1 metre mein 100 cm hote hain, toh aadha metre 100 ÷ 2, yaani 50 cm hai.", "en": "This is a 1 metre ribbon, from 0 to 1. Above it is in 2 equal parts, below in 5. One part above is half a metre. A metre has 100 cm, so half a metre is 100 ÷ 2, that is 50 cm." },
+     "board": { "template": "fraction-line@1", "params": { "den": 2, "from": 0, "to": 1, "marks": [{ "num": 1, "label": "1/2" }] } }, "viewCaption": { "hi": "Yahan wahi 1 metre ki ribbon ek patti ki tarah hai, 2 barabar hisson mein, aur ek hisse par 1/2 likha hai.", "en": "Here the same 1 metre ribbon is a strip, in 2 equal parts, with 1/2 written on one part." },
+     "point": { "hi": "Yeh line 1 metre ki ribbon hai, 0 se 1 tak, yaani 100 cm. Ise 2 barabar hisson mein kaato toh har hissa 1/2 metre hai, aur 100 ÷ 2 = 50 cm.", "en": "This line is a 1 metre ribbon, from 0 to 1, that is 100 cm. Cut it into 2 equal parts and each part is 1/2 metre, and 100 ÷ 2 = 50 cm." }, "pointAlt": { "hi": "Darzi ki 1 metre ki tape socho, jis par 100 cm likhe hain. Use beech se modo toh dono hisse barabar, har ek 1/2 metre, aur mod 50 cm par aata hai.", "en": "Think of a tailor's 1 metre tape with 100 cm marked on it. Fold it in the middle and the two parts are equal, each 1/2 metre, and the fold comes at 50 cm." },
      "ask": {
-      "prompt": { "hi": "Neeche wahi 1 metre 5 barabar hisson mein bata hai. Aise 2 hisse milakar kitne cm honge?", "en": "Below, the same 1 metre is in 5 equal parts. How many cm do 2 such parts make together?" },
-      "key": "40 cm",
-      "accept": ["40", "40 centimetre", "40 centimetres", "2/5 metre"],
-      "why": { "hi": "metre ka paanchva hissa 100 ÷ 5 = 20 cm hai, toh 2 hisse 2 × 20 = 40 cm hain", "en": "a fifth of a metre is 100 ÷ 5 = 20 cm, so 2 parts are 2 × 20 = 40 cm" }, "answerBoard": { "template": "fraction-line@1", "params": {"dens": [2, 5], "from": 0, "to": 1, "marks": [[2, 5]]} }, "wrongIfMis": "20 cm"
+      "prompt": { "hi": "Ab wahi 1 metre ki ribbon 5 barabar hisson mein kaato. Aise 2 hisse milakar kitne cm honge?", "en": "Now cut the same 1 metre ribbon into 5 equal parts. How many cm do 2 such parts make together?" }, "hindi": { "hi": "Wahi 1 metre ki ribbon ab 5 barabar hisson mein kaati. Inmein se 2 hisse jodo toh kitne cm banenge?", "en": "The same 1 metre ribbon is now cut into 5 equal parts. Put 2 of them together: how many cm is that?" }, "reask": { "hi": "1 metre ke 5 barabar hisson mein se 2 hisse kitne cm ke hain?", "en": "How many cm are 2 of the 5 equal parts of 1 metre?" },
+      "key": "40 cm", "did": { "hi": "metre ke 5 barabar hisson mein se 2 ko cm mein badla", "en": "turned 2 of a metre's 5 equal parts into cm" },
+      "accept": ["40", "40 centimetre", "40 centimetres", "chaalis cm"],
+      "wrongIfMis": "20 cm",
+      "why": { "hi": "metre ka ek hissa 100 ÷ 5 = 20 cm, toh 2 hisse 20 + 20 = 40 cm", "en": "one part of a metre is 100 ÷ 5 = 20 cm, so 2 parts are 20 + 20 = 40 cm" }, "whyShort": { "hi": "100 cm ke 5 barabar hisse 20-20 cm", "en": "5 equal parts of 100 cm are 20 cm each" }, "whyAlt": { "hi": "5 hisse milkar 100 cm, toh ek hissa 20 cm, kyunki 5 × 20 = 100; do hisse 20 + 20 = 40 cm.", "en": "5 parts make 100 cm, so one part is 20 cm, since 5 × 20 = 100; two parts are 20 + 20 = 40 cm." },
+      "simpler": { "hi": "Pehle socho, 1 metre ke 5 barabar hisse kitne cm ke honge; phir 2 hisse jodo.", "en": "First think how many cm each of 5 equal parts of 1 metre is; then add 2 parts." },
+      "board": { "template": "fraction-line@1", "params": { "dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 2]] } }, "viewCaption": { "hi": "Yahan wahi 1 metre do pattiyon ki tarah hai: ek 2 barabar hisson mein, ek 5 mein.", "en": "Here the same 1 metre is two strips: one in 2 equal parts, one in 5." },
+      "answerBoard": { "template": "fraction-line@1", "params": { "dens": [2, 5], "from": 0, "to": 1, "marks": [[1, 2], [2, 5]] } }
      },
      "simpler": { "hi": "1 metre mein 100 cm hote hain. 2 barabar hisse kiye, toh har hissa 100 ÷ 2 = 50 cm.", "en": "1 metre has 100 cm. In 2 equal parts, each part is 100 ÷ 2 = 50 cm." }
     }
    ],
    "workedExample": {
-    "problem": {
-     "hi": "5 laddoo 3 bachchon mein barabar baante gaye. Har bachche ko kitna laddoo mila?",
-     "en": "5 laddoos are shared equally among 3 children. How much does each child get?"
-    }, "simpler": { "hi": "Pehle har bachche ko ek poora laddoo do. Phir bache hue 2 laddoo ko 3 barabar hisson mein baanto.", "en": "First give each child one whole laddoo. Then share the 2 leftover laddoos into 3 equal parts." },
-    "givens": [
-     { "hi": "kul 5 laddoo hain", "en": "there are 5 laddoos in all" },
-     { "hi": "3 bachche barabar baant rahe hain", "en": "3 children share them equally" }
-    ],
-    "find": { "hi": "har bachche ka hissa, laddoo ke fraction mein", "en": "each child's share, as a fraction of a laddoo" },
+    "problem": { "hi": "5 laddoo 3 bachchon mein barabar baantne hain. Har bachche ko kitna laddoo milega?", "en": "5 laddoos are to be shared equally among 3 children. How much laddoo does each child get?" }, "problemAlt": { "hi": "Socho tumhare paas 5 laddoo hain aur 3 dost. Sabko bilkul barabar dena hai, chahe laddoo todne padein.", "en": "Picture having 5 laddoos and 3 friends. Everyone must get exactly the same, even if the laddoos have to be broken." }, "simpler": { "hi": "Ek chhoti baat se socho: 1 laddoo 2 bachchon mein baanto toh har ek ko aadha milta hai. Yahan bhi har laddoo ko bachchon mein baantna hai.", "en": "Think of something small first: share 1 laddoo between 2 children and each gets half. Here too, each laddoo is shared among the children." },
+    "givens": [{ "hi": "kul 5 laddoo hain, aur 3 bachche barabar baant rahe hain", "en": "there are 5 laddoos in all, and 3 children share them equally" }],
+    "find": { "hi": "har bachche ka hissa, laddoo ke bhinn mein", "en": "each child's share, as a fraction of a laddoo" },
     "steps": [
      {
-      "do": { "hi": "Har laddoo ke 3 barabar hisse karo", "en": "Make 3 equal parts of every laddoo" },
-      "result": "har hissa 1/3 laddoo",
-      "why": { "hi": "3 bachche hain, toh har laddoo se har bachche ko ek hissa mile", "en": "there are 3 children, so every child gets one part from every laddoo" },
-      "simpler": { "hi": "3 bachche hain, toh har laddoo ke 3 barabar hisse karo. Har hissa 1/3 laddoo hai.", "en": "There are 3 children, so make 3 equal parts of each laddoo. Each part is 1/3 laddoo." }
+      "ask": { "prompt": { "hi": "Har laddoo ke kitne barabar hisse karoge?", "en": "How many equal parts will you make of each laddoo?" }, "hindi": { "hi": "Ek-ek laddoo ko kitne barabar hisson mein todoge?", "en": "Into how many equal parts will you break each laddoo?" }, "key": "3 hisse", "accept": ["3", "teen", "teen hisse", "three", "3 barabar hisse", "bachchon jitne", "three parts"], "right": { "hi": "Haan, 3 hisse, kyunki bachche 3 hain.", "en": "Yes, 3 parts, because there are 3 children." } },
+      "do": { "hi": "Har laddoo ke bachchon jitne barabar hisse karo", "en": "Cut each laddoo into as many equal parts as there are children" },
+      "result": "har laddoo ke 3 barabar hisse",
+      "why": { "hi": "har bachche ko har laddoo se ek hissa milna hai", "en": "each child is to get one part of every laddoo" },
+      "simpler": { "hi": "Socho, har laddoo kitne logon mein baantna hai.", "en": "Think how many people each laddoo is shared among." }
      },
      {
-      "do": { "hi": "Saare hisse jodo: 5 laddoo, har laddoo mein 3 hisse", "en": "Total the parts: 5 laddoos, 3 parts in each" },
-      "result": "5 × 3 = 15 hisse, har hissa 1/3",
-      "why": { "hi": "har laddoo se 3 hisse bane", "en": "each laddoo gave 3 parts" },
-      "simpler": { "hi": "Har laddoo se 3 hisse bane, aur laddoo 5 hain. Toh kul 5 × 3 = 15 hisse.", "en": "Each laddoo gave 3 parts, and there are 5 laddoos. So there are 5 × 3 = 15 parts in all." }
-     },
-     {
-      "do": { "hi": "15 hisse 3 bachchon mein barabar baanto", "en": "Share the 15 parts equally among 3 children" },
-      "result": "15 ÷ 3 = 5 hisse har bachche ko",
-      "why": { "hi": "baantna barabar hai, toh sabko utne hi hisse milte hain", "en": "the sharing is equal, so everyone gets the same number of parts" },
-      "simpler": { "hi": "15 hisse 3 bachchon mein barabar baanto. Har bachche ko 15 ÷ 3 = 5 hisse milte hain.", "en": "Share the 15 parts equally among 3 children. Each child gets 15 ÷ 3 = 5 parts." }
+      "do": { "hi": "Har laddoo se har bachche ko ek hissa do", "en": "Give each child one part from every laddoo" },
+      "result": "har laddoo se har bachche ko 1/3",
+      "why": { "hi": "teeno ko har laddoo se barabar milna chahiye", "en": "all three must get the same from every laddoo" },
+      "simpler": { "hi": "Har laddoo ke hisse teeno bachchon ko ek-ek karke do.", "en": "Hand out each laddoo's parts to the three children one by one." }
      }
     ],
     "yourStep": {
-     "prompt": { "hi": "Har bachche ko 1/3 laddoo wale 5 hisse mile. Yeh kul kitna laddoo hai, fraction mein?", "en": "Each child got 5 parts of 1/3 laddoo each. How much laddoo is that in all, as a fraction?" },
-     "key": "5/3",
+     "prompt": { "hi": "Tumhari baari: 5 laddoo se ek bachche ko kul kitna laddoo mila, bhinn mein?", "en": "Your turn: from the 5 laddoos, how much laddoo did one child get in all, as a fraction?" }, "hindi": { "hi": "Ab tum batao: 5 laddoo se ek bachche ke paas kul kitna laddoo aaya, bhinn mein?", "en": "Now you tell me: from the 5 laddoos, how much laddoo came to one child in all, as a fraction?" }, "reask": { "hi": "5 laddoo 3 bachchon mein baante, toh ek bachche ko kul kitna laddoo mila?", "en": "5 laddoos shared among 3 children: how much laddoo did one child get in all?" },
+     "key": "5/3", "did": { "hi": "5 laddoo 3 bachchon mein baant kar ek ka hissa bhinn mein likha", "en": "shared 5 laddoos among 3 children and wrote one share as a fraction" },
      "accept": ["5/3 laddoo", "1 2/3", "1 aur 2/3", "ek poora aur 2/3", "paanch bata teen"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "3/5",
-     "simpler": { "hi": "Har hissa 1/3 laddoo hai aur ek bachche ko 5 hisse mile. Upar hisson ki ginti likho, neeche 3.", "en": "Each part is 1/3 laddoo and one child got 5 parts. Write the number of parts on top and 3 below." }, "why": { "hi": "har hissa 1/3 laddoo hai aur 5 hisse mile, toh 5/3 laddoo", "en": "each part is 1/3 of a laddoo and the child got 5 parts, so 5/3" }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 5, "title": "5/3 laddoo"} }
+     "simpler": { "hi": "Ek bachche ke paas har laddoo se ek hissa hai. Gino laddoo kitne the, aur socho har hissa kitna bada hai.", "en": "One child has one part from every laddoo. Count how many laddoos there were, and think how big each part is." },
+     "why": { "hi": "har laddoo se 1/3, aur laddoo 5, toh 5/3, yaani 1 aur 2/3; dono ek hi hain", "en": "1/3 from each laddoo, and 5 laddoos, so 5/3, that is 1 and 2/3; the same" }, "whyAlt": { "hi": "Pehle har bachche ko ek poora laddoo do; 2 laddoo bachte hain, unke 3-3 hisse karo toh har ek ko 2/3 aur milta hai: 1 aur 2/3, yaani 5/3.", "en": "First give each child one whole laddoo; 2 laddoos are left, cut them into 3 parts each and every child gets 2/3 more: 1 and 2/3, that is 5/3." },
+     "board": { "template": "equal-groups@1", "params": { "groups": 5, "each": 3 } }, "viewCaption": { "hi": "Yahan har laddoo jaal ki ek pankti hai, 3 barabar hisson mein bata hua.", "en": "Here each laddoo is one row of the grid, split into 3 equal parts." },
+     "answerBoard": { "template": "equal-groups@1", "params": { "groups": 5, "each": 3, "title": "5/3 laddoo" } }
     },
-    "answer": { "hi": "har bachche ko 5/3 laddoo milta hai, yaani 1 poora laddoo aur 2/3", "en": "each child gets 5/3 of a laddoo, that is 1 whole laddoo and 2/3 more" },
-    "why": {
-     "hi": "har bachche ko har laddoo se 1/3 mila aur laddoo 5 the; laddoo bachchon se zyada, isliye hissa 1 se zyada",
-     "en": "each child got 1/3 from each of 5 laddoos; there are more laddoos than children, so the share is over 1"
-    },
-    "board": { "template": "equal-groups@1", "params": {"groups": 5, "each": 3} }
+    "answer": { "hi": "har bachche ko 5/3 laddoo milta hai, yaani 1 poora aur 2/3", "en": "each child gets 5/3 of a laddoo, that is 1 whole and 2/3" },
+    "why": { "hi": "laddoo bachchon se zyada the, isliye hissa 1 se zyada aaya", "en": "there were more laddoos than children, so the share came out over 1" },
+    "board": { "template": "compare@1", "params": { "left": { "title": "Laddoo", "items": ["5 laddoo"] }, "right": { "title": "Bachche", "items": ["3 bachche"] } } }, "viewCaption": { "hi": "Board par baayein laddoo ki ginti hai, aur daayein bachchon ki.", "en": "On the board the number of laddoos is on the left, and the number of children on the right." }
    },
    "checks": [
     {
      "id": "c1",
-     "prompt": { "hi": "Kuch chikki 5 doston mein barabar baanti gayi aur har dost ko 3/5 chikki mili. Kul kitni chikki thi?", "en": "Some chikkis were shared equally among 5 friends, and each friend got 3/5 of a chikki. How many chikkis were there?" },
-     "key": "3",
-     "accept": ["3 chikki", "teen", "three", "teen chikki"],
+     "prompt": { "hi": "Kuch roti 5 doston mein barabar baanti gayi, aur har dost ko 3/5 roti mili. Kul kitni roti thi?", "en": "Some rotis were shared equally among 5 friends, and each friend got 3/5 of a roti. How many rotis were there?" }, "hindi": { "hi": "Kuch roti 5 doston mein barabar baanti, aur har dost ke hisse 3/5 roti aayi. Toh kul kitni roti thi?", "en": "Some rotis were shared equally among 5 friends, and 3/5 of a roti came to each friend. So how many rotis were there in all?" }, "reask": { "hi": "5 doston mein baantne par har ek ko 3/5 roti mili, toh kul kitni roti thi?", "en": "Shared among 5 friends, each got 3/5 of a roti: how many rotis were there?" },
+     "key": "3 roti", "did": { "hi": "har dost ke hisse se kul roti ki ginti nikali", "en": "worked out how many rotis there were from each friend's share" },
+     "accept": ["3", "teen", "teen roti", "three", "three rotis", "3 rotiyan"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "5",
-     "board": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 0, "whole": "bar"} },
-     "why": { "hi": "har chikki se har dost ko 1/5, toh 3/5 matlab 3 chikkiyon se ek-ek hissa: kul 3 chikki", "en": "each friend got 1/5 of every chikki, so 3/5 is one part from each of 3 chikkis: 3 in all" },
-     "simpler": { "hi": "Har chikki 5 doston mein bati, toh har dost ko har chikki se ek hissa mila. Ab socho, 3/5 jitne hisse kitni chikkiyon se aaye honge.", "en": "Each chikki was shared among 5 friends, so each friend got one part from every chikki. Now think how many chikkis the parts of 3/5 came from." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 5, "shade": 3, "whole": "bar"} }
+     "board": { "template": "fraction-parts@1", "params": { "parts": 5, "shade": 0, "whole": "bar" } }, "viewCaption": { "hi": "Yahan ek roti gol dikh rahi hai, 5 barabar hisson mein bati.", "en": "Here one roti shows as a circle, in 5 equal parts." },
+     "why": { "hi": "har roti se har dost ko 1/5 mila; 3/5 matlab 3 hisse, toh 3 roti thi", "en": "each friend got 1/5 from every roti; 3/5 means 3 parts, so there were 3 rotis" }, "whyShort": { "hi": "har roti se sirf ek 1/5 hissa milta", "en": "each roti gives only one 1/5 part" }, "whyAlt": { "hi": "Agar 5 dost har roti se ek-ek 1/5 lete hain, toh 3/5 tabhi banta hai jab roti 3 hon.", "en": "If 5 friends each take one 1/5 from every roti, 3/5 only comes when there are 3 rotis." },
+     "answerBoard": { "template": "fraction-parts@1", "params": { "parts": 5, "shade": 3, "whole": "bar" } }, "answerViewCaption": { "hi": "Gol roti ke 5 barabar hisson mein se 3 mein rang hai: yahi ek dost ka 3/5 hai, har roti se ek hissa.", "en": "Of the round roti's 5 equal parts, 3 are coloured: that is one friend's 3/5, one part from each roti." },
+     "simpler": { "hi": "Har roti se har dost ko ek hissa milta hai. Ab socho, 3/5 jitne hisse kitni rotiyon se aaye honge.", "en": "Each friend gets one part from every roti. Now think how many rotis the parts of 3/5 came from." }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "5 metre ribbon 4 banners mein barabar baanti gayi. Kya har banner ko 1 metre se kam ribbon milegi?", "en": "5 metres of ribbon are shared equally among 4 banners. Will each banner get less than 1 metre of ribbon?" },
-     "key": "no",
-     "accept": ["nahi", "na", "no", "nahi, 1 metre se zyada milegi"],
+     "prompt": { "hi": "5 metre ribbon 4 banners mein barabar baanti. Har banner ko 1 metre se kam ribbon milegi ya zyada?", "en": "5 metres of ribbon are shared equally among 4 banners. Will each banner get less than 1 metre of ribbon, or more?" }, "hindi": { "hi": "5 metre ribbon 4 banners mein barabar baanti gayi. Toh har banner ko 1 metre se kam ribbon milegi ya zyada?", "en": "5 metres of ribbon were shared equally among 4 banners. So will each banner get less than 1 metre, or more?" }, "reask": { "hi": "5 metre ribbon 4 banners mein baantne par har banner ko 1 metre se kam milegi ya zyada?", "en": "Sharing 5 metres of ribbon among 4 banners, does each get less than 1 metre or more?" },
+     "key": "zyada", "did": { "hi": "ribbon ke hisse ko 1 metre se milaakar parkha", "en": "checked a share of ribbon against 1 metre" },
+     "accept": ["zyada milegi", "1 metre se zyada", "more", "more than 1 metre", "5/4 metre", "1 se zyada", "zyada hai"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
-     "wrongIfMis": "yes",
-     "board": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } },
-     "why": { "hi": "ribbon ke metre banners se zyada hain, toh har banner ko 5/4 m milta hai, yaani 1 metre se zyada; isliye nahi", "en": "there are more metres than banners, so each banner gets 5/4 m, which is more than 1 metre; so no" },
-     "simpler": { "hi": "Ribbon 5 metre hai aur banners 4. Har banner ko 1 metre do, aur dekho ribbon bachti hai ya nahi.", "en": "There are 5 metres of ribbon and 4 banners. Give each banner 1 metre, and see whether any ribbon is left." }, "answerBoard": { "template": "compare@1", "params": {"left": {"title": "Ribbon", "items": ["5 metre"]}, "right": {"title": "Banners", "items": ["4 banners"]}} }
+     "wrongIfMis": "kam",
+     "board": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } }, "viewCaption": { "hi": "Board par baayein ribbon ki lambai hai, aur daayein banners ki ginti.", "en": "On the board the ribbon's length is on the left, and the number of banners on the right." },
+     "why": { "hi": "ribbon ke metre banners se zyada hain, toh har banner ko 5/4 metre, jo 1 metre se zyada hai", "en": "there are more metres than banners, so each banner gets 5/4 metre, which is more than 1 metre" }, "whyShort": { "hi": "metre 5 hain, banners sirf 4", "en": "there are 5 metres, only 4 banners" }, "whyAlt": { "hi": "Har banner ko pehle 1 metre do: 4 metre lag gaye aur 1 metre abhi bacha hai, toh sabko 1 metre se zyada milega.", "en": "Give each banner 1 metre first: 4 metres are used and 1 metre is still left, so each gets more than 1 metre." },
+     "answerBoard": { "template": "compare@1", "params": { "left": { "title": "Ribbon", "items": ["5 metre"] }, "right": { "title": "Banners", "items": ["4 banners"] } } },
+     "simpler": { "hi": "Har banner ko 1 metre do, aur dekho ribbon bachti hai ya nahi.", "en": "Give each banner 1 metre, and see whether any ribbon is left." }
     },
     {
      "id": "c3",
-     "prompt": {
-      "hi": "4 roti 6 bachchon mein barabar baanti gayi. {friend} ne likha ki har bachche ko 6/4 roti mili. Sahi hissa kya hai?",
-      "en": "4 rotis are shared equally among 6 children. {friend} wrote that each child got 6/4 of a roti. What is the correct share?"
-     },
-     "key": "4/6",
-     "accept": ["4/6 roti", "2/3", "2/3 roti", "do tihaai"],
+     "prompt": { "hi": "3 roti 8 bachchon mein barabar baanti gayi. {friendM} ne likha ki har bachche ko 8/3 roti mili. Sahi hissa kya hai?", "en": "3 rotis are shared equally among 8 children. {friendM} wrote that each child got 8/3 of a roti. What is the correct share?" }, "hindi": { "hi": "3 roti 8 bachchon mein barabar baanti, aur {friendM} ne likha ki har ek ko 8/3 roti mili. Asal mein har bachche ko kitni roti mili?", "en": "3 rotis were shared equally among 8 children, and {friendM} wrote that each got 8/3 of a roti. How much roti did each child really get?" }, "reask": { "hi": "3 roti 8 bachchon mein barabar baantne par har bachche ko kitni roti milti hai?", "en": "When 3 rotis are shared equally among 8 children, how much roti does each child get?" },
+     "key": "3/8", "did": { "hi": "ek dost ki ulti likhi bhinn theek ki", "en": "put right a fraction a friend wrote upside down" },
+     "accept": ["3/8 roti", "teen bata aath"],
      "targets": "c6-maths-ch07-t01-m-share-flipped",
-     "wrongIfMis": "6/4",
-     "board": { "template": "fraction-parts@1", "params": {"parts": 6, "shade": 0, "whole": "roti"} },
-     "why": { "hi": "baanti jaane wali 4 roti upar aati hain aur 6 bachche neeche, yaani 4/6", "en": "the 4 rotis being shared sit on top and the 6 children below, so 4/6" },
-     "simpler": { "hi": "Har roti 6 barabar hisson mein kati hai. Jo cheez baanti ja rahi hai woh upar aati hai, aur baantne wale neeche.", "en": "Each roti is cut into 6 equal parts. The thing being shared goes on top, and the sharers go below." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 6, "shade": 4, "whole": "roti"} }
+     "wrongIfMis": "8/3",
+     "board": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 0, "whole": "roti" } }, "viewCaption": { "hi": "Yahan ek roti patti ki tarah khuli hai, 8 barabar hisson mein.", "en": "Here one roti is opened out as a strip, in 8 equal parts." },
+     "why": { "hi": "har roti se 1/8, aur 3 roti upar, 8 bachche neeche: 3/8", "en": "1/8 from each roti, with the 3 rotis on top and the 8 children below: 3/8" }, "whyShort": { "hi": "baanti gayi roti upar, bachche neeche", "en": "the rotis shared on top, the children below" }, "whyAlt": { "hi": "8/3 toh 1 se zyada hota, par roti bachchon se kam hain, isliye hissa 1 se kam hona chahiye: 3/8.", "en": "8/3 would be more than 1, but there are fewer rotis than children, so the share must be less than 1: 3/8." },
+     "answerBoard": { "template": "fraction-parts@1", "params": { "parts": 8, "shade": 3, "whole": "roti" } }, "answerViewCaption": { "hi": "Patti ke 8 barabar hisson mein se 3 mein rang hai: har roti se ek hissa, yaani 3/8.", "en": "Of the strip's 8 equal parts, 3 are coloured: one part from each roti, that is 3/8." },
+     "simpler": { "hi": "Har roti 8 barabar hisson mein kati hai. Jo cheez baanti ja rahi hai woh upar aati hai, baantne wale neeche.", "en": "Each roti is cut into 8 equal parts. The thing being shared goes on top, the sharers below." }
     }
    ],
    "ladder": [{"itemId": "c6-maths-ch07-t01-i07", "why": "2 chikkis among 3 → 2/3, then judge it against half: is the share sensible"}, {"itemId": "c6-maths-ch07-t01-i08", "why": "a 1 m ribbon in 4 equal pieces → 1/4 m and 25 cm: fractions as lengths"}, {"itemId": "c6-maths-ch07-t01-rl-h3", "why": "harder: 7 m among 4 banners → more things than sharers → 7/4 m, more than 1"}],
    "remediation": [
     {
      "targets": "c6-maths-ch07-t01-m-share-flipped",
-     "move": "bar model: each roti drawn as a bar in 5 equal parts, one part per child in every bar → each child 1/5 from each roti → 1/5 + 1/5 = 2/5; fewer rotis than children → share below 1 whole → 5/2 is impossible",
-     "say": { "hi": "Har roti ke utne barabar hisse karo jitne bachche hain, aur har bachche ko har roti se ek hissa do. Phir gino ek bachche ko kitne hisse mile.", "en": "Cut every roti into as many equal parts as there are children, and give each child one part from every roti. Then count how many parts one child got." },
-     "simpler": { "hi": "Har bachche ko har roti se ek tukda milta hai. Phir ek bachche ke tukde gino.", "en": "Every child gets a piece from every roti. Then count one child's pieces." },
-     
+     "move": "bar model on its own board: 2 rotis, each in 5 equal parts, one part per child coloured in each → each child gets 1/5 from each roti → 2/5; fewer rotis than children → share below 1 whole; the then-card: 4 rotis among 7 children (left to the child)",
+     "board": { "template": "wholes@1", "params": { "wholes": [{ "parts": 5, "shade": 1, "title": "Roti" }, { "parts": 5, "shade": 1, "title": "Roti" }] } },
+     "viewCaption": { "hi": "Yahan dono roti seedhi patti ki tarah ek ke neeche ek hain, har ek 5 barabar hisson mein, aur har roti ka ek hissa rangin.", "en": "Here the two rotis lie as straight strips, one under the other, each in 5 equal parts, with one part of each coloured." },
+     "say": { "hi": "2 roti 5 bachchon mein: har roti ke 5 barabar hisse karo, aur har bachche ko har roti se ek hissa do. Phir gino, ek bachche ko kitne hisse mile.", "en": "2 rotis among 5 children: cut each roti into 5 equal parts, and give each child one part from every roti. Then count how many parts one child got." },
+     "simpler": { "hi": "Har roti se har bachche ko ek-ek hissa do, aur phir ek bachche ke hisse gino.", "en": "Give every child one part from each roti, and then count one child's parts." }, "sayAlt": { "hi": "Likhne se pehle ek baat jaancho: roti bachchon se kam hon, toh kisi ko poori roti nahi milti, aur hissa 1 se kam hota hai. Ulti likhi bhinn 1 se zyada ho jaati hai, isliye woh galat hai.", "en": "Before writing, check one thing: if there are fewer rotis than children, nobody gets a whole roti, and the share is less than 1. A fraction written upside down comes out more than 1, so it is wrong." },
      "then": {
-      "prompt": { "hi": "4 roti 7 bachchon mein barabar baanti gayi. Har bachche ke hisse ki bhinn mein upar kaunsa number aayega: 7 ya 4?", "en": "4 rotis are shared equally among 7 children. In the fraction for each child's share, which number goes on top: 7 or 4?" },
-      "key": "4",
-      "accept": ["4 upar", "chaar", "four", "4/7"],
+      "prompt": { "hi": "4 roti 7 bachchon mein barabar baanti gayi. Har bachche ko kitni roti mili?", "en": "4 rotis were shared equally among 7 children. How much roti did each child get?" }, "hindi": { "hi": "4 roti 7 bachchon mein barabar baanti. Toh har bachche ke hisse kitni roti aayi?", "en": "4 rotis were shared equally among 7 children. So how much roti came to each child?" }, "reask": { "hi": "4 roti 7 bachchon mein baantne par har bachche ko kitni roti mili?", "en": "Sharing 4 rotis among 7 children, how much roti did each child get?" },
+      "key": "4/7",
+      "accept": ["4/7 roti", "chaar bata saat"],
       "targets": "c6-maths-ch07-t01-m-share-flipped",
-      "wrongIfMis": "7",
-      "board": { "template": "fraction-parts@1", "params": {"parts": 7, "shade": 0, "whole": "roti"} },
-      "why": { "hi": "har roti se 1/7, toh 4 roti se 4/7: upar roti ki ginti 4, neeche bachche 7", "en": "1/7 from each roti, so 4/7 from 4 rotis: the 4 rotis on top, the 7 children below" },
-      "simpler": { "hi": "Har roti ke 7 hisse hain, aur har bachche ko har roti se ek hissa milta hai. Ab gino, roti kitni hain.", "en": "Each roti has 7 parts, and every child gets one part from every roti. Now count how many rotis there are." }, "answerBoard": { "template": "fraction-parts@1", "params": {"parts": 7, "shade": 4, "whole": "roti"} }
+      "wrongIfMis": "7/4",
+      "board": { "template": "fraction-parts@1", "params": { "parts": 7, "shade": 0, "whole": "roti" } }, "viewCaption": { "hi": "Yahan ek roti patti ki tarah khuli hai, 7 barabar hisson mein.", "en": "Here one roti is opened out as a strip, in 7 equal parts." },
+      "why": { "hi": "har roti se 1/7, aur roti 4, toh 4/7; roti upar, bachche neeche", "en": "1/7 from each roti, and 4 rotis, so 4/7; rotis on top, children below" }, "whyShort": { "hi": "roti ki ginti upar, bachche neeche", "en": "the number of rotis on top, children below" }, "whyAlt": { "hi": "Har roti ke 7 hisse karo aur har bachche ko har roti se ek do: chaar roti se chaar hisse, yaani 4/7.", "en": "Cut each roti into 7 parts and give each child one from every roti: four rotis give four parts, that is 4/7." },
+      "answerBoard": { "template": "fraction-parts@1", "params": { "parts": 7, "shade": 4, "whole": "roti" } }, "answerViewCaption": { "hi": "Patti ke 7 barabar hisson mein se 4 mein rang hai: har roti se ek hissa, yaani 4/7 roti.", "en": "Of the strip's 7 equal parts, 4 are coloured: one part from each roti, that is 4/7 of a roti." },
+      "simpler": { "hi": "Har roti ke 7 hisse hain, aur har bachcha har roti se ek hissa leta hai. Socho, ek bachche ke paas kitne hisse honge.", "en": "Each roti has 7 parts, and every child takes one part from every roti. Think how many parts one child will have." }
      }
     }
    ],
-   "bridgeToNext": null
+   "bridgeToNext": null, "covered": { "hi": "Aakhir mein kai cheezein barabar baanti: cheezein upar, baantne wale neeche, jaise 3 roti 4 bachchon mein 3/4.", "en": "Last we shared several things equally: things on top, sharers below, like 3 rotis among 4 as 3/4." }
   }
  ], "teachback": { "prompt": { "hi": "Do ek jaisi roti 3 bachchon mein barabar baanti gayi, aur waisi hi 2 roti 5 bachchon mein. Kis group ke har bachche ko zyada roti mili: 3 bachchon wale ya 5 wale?", "en": "Two identical rotis were shared equally among 3 children, and 2 more just like them among 5 children. In which group did each child get more roti: the 3 children's or the 5's?" }, "hindi": { "hi": "Do roti 3 bachchon ne barabar baanti, aur bilkul waisi 2 roti 5 bachchon ne. Kis group mein har bachche ke hisse zyada roti aayi, 3 bachchon wale mein ya 5 wale mein?", "en": "Two rotis were shared equally by 3 children, and 2 rotis just like them by 5 children. In which group did more roti come to each child, the group of 3 or the group of 5?" },
    "key": "3 bachchon wala group", "did": { "hi": "do groups mein baanti roti ke hisse nikal kar unki tulna ki", "en": "worked out the shares of roti in two groups and compared them" },
