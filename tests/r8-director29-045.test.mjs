@@ -85,3 +85,18 @@ describe("P3: two rungs and two cues", () => {
     assert.ok(fields.some((f) => /remediation\[0\]\.(?:sayAlt|simpler)$/.test(f)), `the remediation's wordings are on the then-card's ladder: ${fields}`);
   });
 });
+
+describe("P4: a second request at the greeting starts the lesson", () => {
+  test("helpSpentCold reads row 4 where the \"nothing easier\" line came before anything was taught", () => {
+    for (const [p, t] of [["stuck", "c4"], ["stuck", "c5t02"], ["stuck", "c6"], ["offtopic", "c4"], ["steering", "c4"], ["steering", "c5t02"], ["steering", "c6"]])
+      assert.ok(flagged(p, t, "helpSpentCold").has(4), `${p} ${t}`);
+  });
+  test("startAnyway: code's three forms of six words or fewer, and a compile hole where a script has none", async () => {
+    const { FALLBACK_JOINTS, helpJointHoles, helpJoint } = await import("../server/director/help.js");
+    assert.equal(FALLBACK_JOINTS.startAnyway.length, 3);
+    for (const f of FALLBACK_JOINTS.startAnyway) assert.ok(f.hi.split(/\s+/).length <= 6 && f.en.split(/\s+/).length <= 6, f.hi);
+    assert.ok(helpJointHoles({ joints: {} }).some((h) => h.joint === "startAnyway"));
+    assert.ok(!helpJointHoles({ joints: { startAnyway: [{ hi: "Chalo.", en: "Come on." }] } }).some((h) => h.joint === "startAnyway"));
+    assert.equal(helpJoint({ joints: {} }, "startAnyway").by, "code");
+  });
+});

@@ -268,6 +268,8 @@ export const D27_PREDICATES = {
     if (parts.some((p) => p.part === "simpler" && p.beat === a.beat)) return null;
     // (dc-r8-director29 Brain 045 P3: a request on the worked problem whose step is asked is helped on that step — its simpler)
     if (stepToldAfterSimpler(L, r, i, ctx.script)) return null;
+    // (dc-r8-director29 Brain 045 P4: a second request at the greeting is answered by the lesson's start — joints.startAnyway, then the hook)
+    if ((r.seams ?? []).some((x) => x.joint === "startAnyway")) return null;
     if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);

@@ -46,7 +46,17 @@ export function stepToldAfterSimpler(L, r, i, script) {
   return (L.rows ?? []).slice(0, i).filter((x) => x.who === "teacher").some((x) => low(x.text).includes(simpler.slice(0, 40)));
 }
 
+const TAUGHT = new Set(["point", "card", "returnCard", "workedProblem", "stepAsk", "remediation", "help", "quickAsk", "quick", "verdict", "missVerdict", "key"]);
+
 export const D30_PREDICATES = {
+  /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,
+   *  c5-t02, c6: a second request at the greeting). */
+  helpSpentCold(L, r, i) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
+    const UNIT = /^(?:e\d+|rem:|then:|worked|check|c\d)/;
+    const taught = (L.rows ?? []).slice(0, i).some((x) => x.who === "teacher" && (x.pageParts ?? []).some((p) => ["body", "card", "simpler", "stepAsk", "quick"].includes(p.part) && UNIT.test(String(p.beat ?? ""))));
+    return taught ? null : "the \"nothing easier\" line with nothing taught before it";
+  },
   /** P3: at an asked worked step a give-up or a clarify gets the step's simpler first; the step is told only at the second request or after
    *  a wrong answer (c4 stuck 36; c5-t01 stuck 20; c5-t02 stuck 20, offtopic 16, steering 28; c6 stuck 20, offtopic 16, steering 28). */
   stepToldEarly(L, r, i, ctx) {

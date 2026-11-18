@@ -52,7 +52,7 @@ export const SEAM_TABLE = [
   // (the Hindi switch opens the turn it is asked on — said by the language pass, recorded here)
   ["start", "hindiSwitch", "hindiSwitch"],
   // (dc-r8-director25 H4: help's joints open the turn help says them on — the decision's, recorded here)
-  ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"], ["start", "helpToCard", "helpToCard"],
+  ["start", "startAnyway", "startAnyway"], ["start", "helpSpent", "helpSpent"], ["start", "afterKeyGoOn", "afterKeyGoOn"], ["start", "helpToCard", "helpToCard"],
   // (Brain 044 T5: after a key, the "nothing easier" line, then the after-key return into the earlier card)
   ["helpSpent", "returnCard", "backTo"], ["helpSpent", "afterKeyGoOn", "afterKeyGoOn"], ["helpSpent", "helpToCard", "helpToCard"],
   // (her go-ahead to try first, into the card)
@@ -82,7 +82,7 @@ export function invitedJustNow(kit, state, lang = "hinglish") {
   const lastT = low([...(state.recent ?? [])].filter((t) => t.who === "teacher").at(-1)?.text ?? "");
   return !!lastT && forms.some((f) => lastT.endsWith(low(f)));
 }
-const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard"]);
+const HELP_JOINT_KINDS = new Set(["helpSpent", "afterKeyGoOn", "helpToCard", "startAnyway"]);
 export const seamJoint = (left, right) => TABLE.get(`${left}>${right}`) ?? null;
 
 const FILLER = /^(achha|acha|theek hai|thik hai|chalo|toh|haan|okay|ok|so|right|alright)\s*[,!.]\s*/i;

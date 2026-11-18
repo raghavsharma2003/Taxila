@@ -44,6 +44,9 @@ export const FALLBACK_JOINTS = Object.freeze({
   // (dc-r8-director28 Brain 044 T7, Learning 017 writes the script's own: a wrong answer to an asked step hears that it was not it — four words
   // or fewer, no answer named — before the step is told)
   stepMiss: Object.freeze([{ hi: "Nahi, woh nahi.", en: "No, not that." }, { hi: "Yeh nahi hai.", en: "That's not it." }, { hi: "Nahi, aisa nahi.", en: "Not quite that." }]),
+  // (dc-r8-director29 Brain 045 P4: a second request at the greeting starts the lesson — Learning 018 writes joints.startAnyway, three forms of
+  // six words or fewer; these are code's until it does)
+  startAnyway: Object.freeze([{ hi: "Chalo, main batati hoon.", en: "Come on, I'll show you." }, { hi: "Koi baat nahi, shuru karte hain.", en: "That's fine, let's begin." }, { hi: "Chalo, saath mein dekhte hain.", en: "Come on, let's see together." }]),
 });
 
 const CARD_KINDS = new Set(["card", "check", "then_card", "your_step", "teachback"]);
@@ -209,7 +212,8 @@ export function helpJointHoles(script) {
   // a worked example — brain/seams.js CODE_SEAM_FORMS when the script has none)
   // (Brain 044 T7: stepMiss, the "not that" before a told step after a wrong answer to an asked step)
   // (Brain 044 T3: workedInvite is not read — no hole for it)
-  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "stepMiss"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
+  // (Brain 045 P4: startAnyway, the line that starts the lesson after a second request at the greeting)
+  for (const k of [...HELP_JOINTS, "beforeWorked", "tiredBye", "stepMiss", "startAnyway"]) if (!(Array.isArray(script?.joints?.[k]) && script.joints[k].length)) out.push({ joint: k, why: "missing (code's fallback forms are said)" });
   const hs = script?.joints?.hindiSwitch;
   if (Array.isArray(hs) && hs.some((f) => /(?<![\p{L}])hindi(?![\p{L}])/iu.test(String(f?.hi ?? f ?? "")))) out.push({ joint: "hindiSwitch", why: "its forms promise Hindi, not easier words" });
   return out;

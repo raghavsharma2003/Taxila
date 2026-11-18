@@ -3697,10 +3697,12 @@ export function step(prev, input) {
   // (Brain 044 T1/T5: a second request after the greeting's simpler wording — there is no easier wording of the greeting: the "nothing easier"
   // line, then the lesson starts with the hook, the first point and its card)
   if (greetAgain && out?.state?.lastMove && !["safeguard", "wrap", "break"].includes(String(out.state.lastMove.kind ?? ""))) {
-    const j = helpJoint(scriptFor(input.kit)?.script, "helpSpent", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.helpSpent ?? 0 });
+    // (dc-r8-director29 Brain 045 P4: the line that starts the lesson — joints.startAnyway, a lead not counted in the 75 — never "nothing easier",
+    // which is never said before something has been taught)
+    const j = helpJoint(scriptFor(input.kit)?.script, "startAnyway", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.startAnyway ?? 0 });
     if (j?.text) {
-      out.state.helpJointN = { ...(out.state.helpJointN ?? {}), helpSpent: (prev.helpJointN?.helpSpent ?? 0) + 1 };
-      out.state.lastMove = { ...out.state.lastMove, sayFirst: [j.text, ...(out.state.lastMove.sayFirst ?? [])], helpJoint: { kind: "helpSpent", form: j.text, by: j.by }, help: { part: "greet", request: columnName(input0, prev), rung: null, card: "goOn", joint: "helpSpent", board: null } };
+      out.state.helpJointN = { ...(out.state.helpJointN ?? {}), startAnyway: (prev.helpJointN?.startAnyway ?? 0) + 1 };
+      out.state.lastMove = { ...out.state.lastMove, sayFirst: [j.text, ...(out.state.lastMove.sayFirst ?? [])], helpJoint: { kind: "startAnyway", form: j.text, by: j.by }, help: { part: "greet", request: columnName(input0, prev), rung: null, card: "goOn", joint: "startAnyway", board: null } };
       if (out.move) out.move = { ...out.state.lastMove };
     }
   }

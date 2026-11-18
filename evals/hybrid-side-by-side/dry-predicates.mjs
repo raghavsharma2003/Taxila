@@ -1069,7 +1069,8 @@ export function asideLeadWords(r) {
   const LEAD = new Set(["asideReply", "aiReply", "park"]);
   // (d29 final, main's ruling on 044: the "nothing easier" line leading a turn is a lead like her aside reply — 15 words at most, not counted
   // in the turn's 75; it is its own sentence, so its words are the form's)
-  if (sm[0]?.right === "helpSpent" && sm[0].form && norm(r.text).startsWith(norm(sm[0].form))) return Math.min(ASIDE_LEAD_MAX, words(sm[0].form));
+  // (dc-r8-director29 Brain 045 P4: and the line that starts the lesson after a second request at the greeting)
+  if (["helpSpent", "startAnyway"].includes(sm[0]?.right) && sm[0].form && norm(r.text).startsWith(norm(sm[0].form))) return Math.min(ASIDE_LEAD_MAX, words(sm[0].form));
   if (!sm.length || !LEAD.has(sm[0].right)) return 0;
   const t = norm(r.text), pp = r.pageParts ?? [];
   // (the lead runs to the first part the record pages — the joint after her reply rides with it)
