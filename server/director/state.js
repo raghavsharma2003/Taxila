@@ -4527,23 +4527,33 @@ function quickAgain(prev, input, h) {
   s.lastUi = ui;
   return { state: s, move: m, moduleCommands: [], ui, end: false, proposal: directorProposal(m, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
 }
-/** v6.11 G2: can Studio draw a switch from one board to another inside one turn (its own heldBoard, on a line long enough to hold both)? */
-function switchFits(from, to) {
+/** d29 join: the board up as the seam hands it to Studio (keepRef, keepPage: the page last drawn for it) — a turn that starts over the
+ *  board up keeps that page still (no motion), so a fit asked with the board up is asked the same way; {} when it cannot be drawn. */
+function upKeep(board) {
+  const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board, unit: "up" }, style: { band: "B3", lang: "hinglish" } }, line: { text: "a b" } }, {});
+  return r?.lastRef && r.lastPage?.ops?.length ? { keepRef: r.lastRef, keepPage: r.lastPage } : {};
+}
+/** v6.11 G2: can Studio draw a switch from one board to another inside one turn (its own heldBoard, on a line long enough to hold both)?
+ *  `upKept`: `from` is the board already up (held still until the switch, as the real turn holds it). */
+function switchFits(from, to, { upKept = false } = {}) {
   try {
     if (!from?.template || !to?.template || JSON.stringify(from) === JSON.stringify(to)) return true;
     const text = `${"a ".repeat(60)}${"b ".repeat(60)}`;
-    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: from, unit: "from", switchTo: { board: to, unit: "to", atChar: 120 } }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, {});
+    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: from, unit: "from", switchTo: { board: to, unit: "to", atChar: 120 } }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, upKept ? upKeep(from) : {});
     return !r || (r.screens?.length ?? 1) >= 2;
   } catch { return true; }
 }
-/** Brain 044 T1: can Studio draw these boards one after another in one turn (its own heldBoard: the first up, each next a switch)? */
+/** Brain 044 T1: can Studio draw these boards one after another in one turn (its own heldBoard: the first up, each next a switch)?
+ *  boards[0] is the board up (or null): when it is there it is held still, as the seam keeps it (d29 join: drawn fresh with its
+ *  motion, the up page cost the op budget a real turn never spends — dry steady c4 66). */
 function switchesFit(boards) {
   try {
+    const upKept = !!boards[0]?.template;
     const bs = boards.filter((b) => b?.template).filter((b, k, a) => k === 0 || JSON.stringify(b) !== JSON.stringify(a[k - 1]));
-    if (bs.length < 3) return bs.length < 2 || switchFits(bs[0], bs[1]);
+    if (bs.length < 3) return bs.length < 2 || switchFits(bs[0], bs[1], { upKept });
     const text = bs.map((_, k) => `${"abcdefgh"[k]} `.repeat(50)).join("");
     const sws = bs.slice(1).map((b, k) => ({ board: b, unit: `u${k + 1}`, atChar: (k + 1) * 100 }));
-    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: bs[0], unit: "u0", switchTo: sws.at(-1), switches: sws }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, {});
+    const r = studioHeldBoard({ intent: { kind: "whiteboard", held: { board: bs[0], unit: "u0", switchTo: sws.at(-1), switches: sws }, style: { band: "B3", lang: "hinglish" } }, line: { text } }, upKept ? upKeep(bs[0]) : {});
     return !r || (r.screens?.length ?? 1) >= bs.length;
   } catch { return true; }
 }
