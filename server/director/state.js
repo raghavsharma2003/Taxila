@@ -4900,7 +4900,11 @@ function splitTeach(out, input, cap, extra = 0) {
   // (Brain 044 T1: a point and its card that fit in words share the turn only where Studio can draw every board change in it — the board up,
   // the point's, the card's; dry steady c4 94: a bridge, the point and its card on three boards drew one page)
   const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
-  if ((u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + 8 + extra + first <= cap) && drawable()) return out;
+  if (process.env.DBG_FIT) console.error("DBG_FIT", s.turn, move.scriptBeat?.beatId, JSON.stringify({ w: wordsIn(body, card), u: u && { margin: u.margin, cap: u.cap }, cap, extra, first, draw: drawable(), boards: [s.heldUp?.board?.template, move.scriptBeat?.board?.template, move.cardBeat?.board?.template] }));
+  // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
+  // 75 in all, counted as said; the 8 words of slack kept for her framing are not added to a point and its card after a close)
+  const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && extra > 0 && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;
+  if ((u ? wordsIn(body, card) + u.margin <= (u.cap ?? L2_CAP) : wordsIn(body, card) + slack + extra + first <= cap) && drawable()) return out;
   let teach = quickTeach(out, input, { ...move, splitTeach: true, ...(checkinFor(s, move) ? { checkinOk: true } : {}) }, extra);
   // (dc-r8-director28 Brain 044 T1: a point split from its card with no quick question in its place — the two do not fit and the script keeps no
   // quick question that fits — ends on its check-in, and the row says so: counted, 0 on the pilots once Learning 017's cuts are in)

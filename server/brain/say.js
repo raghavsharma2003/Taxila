@@ -1366,7 +1366,7 @@ export function holdAuthored(out, args, plan = out?.guard?.[PLAN]) {
   const { missing, order } = authoredLostOf(out.reply, plan);
   if (!missing.length && order) return out;
   const what = [...missing.map((i) => `${plan[i].part} "${String(plan[i].text).slice(0, 80)}"`), ...(order ? [] : ["the parts out of order"])].join("; ");
-  if (STRICT_AUTHORED()) throw new Error(`authored part lost on a scripted turn (${args?.state?.lastMove?.scriptBeat?.skillId ?? "?"}:${args?.state?.lastMove?.scriptBeat?.beatId ?? "?"}): ${what} | said: ${String(out.reply).slice(0, 300)}`);
+  if (STRICT_AUTHORED()) throw new Error(`authored part lost on a scripted turn (${args?.state?.lastMove?.scriptBeat?.skillId ?? "?"}:${args?.state?.lastMove?.scriptBeat?.beatId ?? "?"}): ${what} | said: ${String(out.reply).slice(0, 300)} | plan: ${plan.map((p) => `${p.part} "${String(p.text).slice(0, 50)}"`).join(" / ")}${process.env.DBG_PLAN ? ` | move: ${JSON.stringify({ r: args?.state?.lastMove?.rendered, sf: args?.state?.lastMove?.sayFirst, k: args?.state?.lastMove?.kind, sr: args?.state?.lastMove?.stepReply, held: args?.state?.lastMove?.heldSaid, ms: args?.state?.lastMove?.mustSay })}` : ""}`);
   console.warn(`[lesson] authored part lost on a scripted turn, restored: ${what}`);
   if (!missing.length) return { ...out, guard: { ...out.guard, authoredOrder: false } };
   const g = { ...out.guard };
@@ -3029,7 +3029,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (the model's own words on a code-rendered turn: only a framing sentence, and only when no verdict leads)
       // (v6 R5, director8 c6 T51/T73: "Pehla joda: 24 cm plus 18 cm barabar 42 cm." before the step derived it): her framing on a
       // scripted worked or remediation turn carries no number; the code lines carry them, in order
-      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) ? ss[0] : null;
+      // (d29 final, Learning 017's worked examples: an asked step's ask.right — "Haan, gaps; khambe toh bas jagahein hain." — carries no number,
+      // so a draft that opens on it was taken as her frame and the line was planned twice: a frame is never one of the code lines)
+      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) && !workedLines.some((l) => authoredKey(l) === authoredKey(ss[0])) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
       // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
       // (dc-r8-director22 J2: always after a miss verdict — hers or code's frame — never only when her own verdict sentence led)
