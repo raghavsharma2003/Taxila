@@ -111,6 +111,16 @@ denial stands in the same place relative to the words it denies (leading "nahi,"
 the code cannot tell, the reply goes to the model, never to `correct`. G4 tests every yes / no card's wrong
 answer said three ways.
 
+And it takes an order reversed: an ordering card keyed `4/9, 4/7, 4/5` graded `4/5, 4/7, 4/9` correct (the
+comparing-fractions fix pass, 2026-11-18; the script now names the reversed order as its wrong answer, which is
+checked first, and that is a patch, not a cure). A key or form that lists two or more values is an ordered
+list: the same values in another order are a different answer. G4 tests the reverse of every such key.
+
+**G8. The named wrong answer may be said more than one way.** `wrongIfMis` is one string, so `barabar` routes
+to the mix-up and `dono barabar` does not (it is marked plain wrong and the remediation never fires). Take a
+list as well as a string (`wrongIfMis: ["barabar", "dono barabar", "same"]`; the checker and
+`shared/contracts.ts` with it), and read `dono` / `both` / `sab` as filler beside an equal word.
+
 **G1 also covers English number words.** `seven` for 7 and `twenty six` for 26 are graded incorrect today; the
 shared reader reads both (`numbersIn("twenty six")` = 26). They join the probe table and G4's forms.
 
