@@ -160,11 +160,11 @@
      "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}]} }, "viewCaption": { "hi": "Yeh patti yahan ek number line ban gayi hai, 0 se 1 tak, aath barabar gap. Pehle gap ke ant mein 1/8 ka mark hai.", "en": "The strip has become a number line here, from 0 to 1, eight equal gaps. At the end of the first gap is the 1/8 mark." },
      "point": { "hi": "Is patti ka rangin tukda 1/8 hai: 8 saare tukde ginta hai, bache hue 7 nahi.", "en": "This strip's coloured piece is 1/8: the 8 counts all the pieces, not the 7 left over." }, "pointAlt": { "hi": "Ek kitaab ke 8 barabar panne socho, aur ek panna phat gaya. Woh panna kitaab ka 1/8 tha, kyunki kitaab 8 pannon se bani thi; bache hue 7 panne uska naam nahi badalte.", "en": "Picture a book of 8 equal pages, and one page tore out. That page was 1/8 of the book, because the book was made of 8 pages; the 7 pages left do not change its name." },
      "ask": {
-      "prompt": { "hi": "Doosri patti ke 6 barabar tukde hain. Raju ne 1 tukda kaat kar le liya, 5 bache. Raju kehta hai usne patti ka 1/5 liya, kyunki 5 tukde bache. Kya Raju sahi hai?", "en": "The second strip has 6 equal pieces. Raju cut off 1 piece and took it, 5 were left. Raju says he took 1/5 of the strip, because 5 pieces were left. Is Raju right?" }, "reask": { "hi": "6 barabar tukdon wali patti se 1 tukda kata aur 5 bache, toh kya Raju ne patti ka 1/5 liya?", "en": "If 1 piece was cut from a strip of 6 equal pieces and 5 were left, did Raju take 1/5 of the strip?" },
-      "key": "No",
-      "accept": ["nahi", "nahin", "no", "galat", "nahi, 1/6 hai", "no, it is 1/6", "Raju galat hai", "nahi, 1/6", "1/6", "1/6 hai", "Raju sahi nahi hai", "sahi nahi", "galat hai"],
+      "prompt": { "hi": "Doosri patti ke 6 barabar tukde hain. Raju ne 1 tukda liya, 5 bache. Raju kehta hai usne 1/5 liya, kyunki 5 bache. Raju ne asal mein kaunsa fraction liya?", "en": "The second strip has 6 equal pieces. Raju took 1 piece, 5 were left. Raju says he took 1/5, because 5 were left. What fraction did Raju really take?" }, "reask": { "hi": "6 barabar tukdon wali patti se Raju ne 1 tukda kaata aur 5 bache, toh Raju ne patti ka kaunsa fraction liya?", "en": "Raju cut 1 piece from a strip of 6 equal pieces and 5 were left: what fraction of the strip did Raju take?" },
+      "key": "1/6",
+      "accept": ["ek-chhatha", "ek chhatha", "ek chhatwa", "one sixth", "one-sixth", "1 by 6", "one by six", "one upon six", "1/6 hai", "nahi, 1/6", "nahi, 1/6 hai", "Raju galat hai, 1/6", "ek bata chhe"],
       "targets": "c4-maths-ch05-t01-m-part-part",
-      "wrongIfMis": "Yes",
+      "wrongIfMis": "1/5",
       "why": { "hi": "Raju ka tukda patti ke 6 tukdon mein se 1 hai, toh 1/6, 1/5 nahi; bache hue 5 tukde naam nahi badalte", "en": "Raju's piece is 1 of the strip's 6 pieces, so 1/6, not 1/5; the 5 pieces left do not change the name" }, "whyShort": { "hi": "Raju ka tukda 6 tukdon mein se 1, yaani 1/6", "en": "Raju's piece is 1 of 6 pieces, so 1/6" }, "whyAlt": { "hi": "kaatne se pehle patti ke 6 tukde the, aur Raju ka tukda unmein se ek hai; kitne bache, isse naam nahi badalta", "en": "before the cut the strip had 6 pieces, and Raju's piece is one of them; how many are left does not change the name" }, "simpler": { "hi": "Kaatne se pehle doosri patti mein kitne tukde the, woh gino. Phir use Raju ke 5 se milao.", "en": "Count how many pieces the second strip had before the cut. Then compare that with Raju's 5." }, "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 6, "shade": 1, "label": "?"}]} }, "viewCaption": { "hi": "Raju wali patti yahan number line ke neeche hai: 0 se 1 tak, chhe barabar gap. Line ke upar wahi aath gap hain, aur un par 1/8 ka mark.", "en": "Raju's strip is below the number line here: 0 to 1, six equal gaps. Above the line are the same eight gaps, with the 1/8 mark on them." },
       "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 6, "shade": 1, "label": "1/6"}]} }
      },
@@ -278,7 +278,7 @@
    "bridgeToNext": { "hi": "Ab ek cheez ki jagah bahut saari cheezein lenge, jaise laddoo, aam ya kanche, aur unka fraction nikalenge. Niyam wahi rahega: sab barabar.", "en": "Next, in place of one thing we take lots of things, like laddoos, mangoes or marbles, and find fractions of them. The rule stays the same: everything equal.", "simpler": {"hi": "Ab bahut saari cheezon ka fraction dekhenge.", "en": "Now we look at fractions of lots of things."} }
   },
   {
-   "skillId": "c4-maths-ch05-t01-s2", "covered": { "hi": "Phir group ka fraction aaya: neeche wala number barabar group ginta hai, aur ek group ki ginti jawab hai.", "en": "Then the fraction of a group: the bottom number counts the equal groups, and one group's count is the answer." },
+   "skillId": "c4-maths-ch05-t01-s2", "covered": { "hi": "Phir group ka fraction: neeche wala number barabar group ginta hai, aur 1/3 mein ek group ki ginti jawab hai.", "en": "Then a group's fraction: the bottom number counts equal groups, and for 1/3, one group's count is the answer." },
    "hook": {
     "convey": "12 laddoos (or 12 biscuits), 2 sharers, fair share → each share = half of the set; a fraction can be of a whole set, the set being the one whole",
     "interestSlots": [
@@ -307,10 +307,12 @@
        "chheh",
        "chha",
        "six",
-       "6 laddoo"
+       "6 laddoo",
+       "chhe laddoo",
+       "6 milenge"
       ],
       "why": { "hi": "12 laddoo 2 barabar group mein jaayein toh har group mein 6, aur 2 × 6 = 12", "en": "12 laddoos in 2 equal groups puts 6 in each, and 2 × 6 = 12" }, "whyShort": { "hi": "2 barabar group, har ek mein 6 laddoo", "en": "2 equal groups, 6 laddoos in each" }, "whyAlt": { "hi": "laddoo ek-ek karke do group mein rakho toh har group mein 6 aate hain; 6 aur 6 milkar 12", "en": "put the laddoos one at a time into two groups and each group gets 6; 6 and 6 make 12" },
-      "simpler": { "hi": "Board par laddoo teen line mein hain, har line mein 4. Har line ko beech se do-do mein baanto, aur ek taraf ke laddoo gino.", "en": "On the board the laddoos are in three rows of 4. Split each row in the middle, two and two, and count the laddoos on one side." },
+      "simpler": { "hi": "Board par laddoo teen qatar mein hain, har qatar mein 4. Har qatar ko beech se do-do mein baanto, aur ek taraf ke laddoo gino.", "en": "On the board the laddoos are in three rows of 4. Split each row in the middle, two and two, and count the laddoos on one side." },
       "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 4, "shade": 0, "labels": false, "hideResult": true} }, "viewCaption": { "hi": "Yeh wahi 12 laddoo hain: 3 qatarein, har qatar mein 4. Inhe ek-ek karke do group mein rakhna hai.", "en": "These are the same 12 laddoos, three rows of four. They are to go into two groups one at a time." }, "pictureBoard": { "template": "equal-groups@1", "params": {"groups": 2, "each": 1, "hideResult": true} }, "pictureCaption": { "hi": "Yeh baantne ki pehli baari hai: do group, aur har group mein ek laddoo. Isi tarah baari-baari ek-ek laddoo daalte raho, jab tak saare 12 laddoo khatam na ho jaayein.", "en": "This is the first turn of sharing: two groups, one laddoo in each. Keep dropping in one laddoo at a time, taking turns, until all 12 laddoos are used up." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":2,"each":6} }
      },
      "simpler": { "hi": "Ek chhoti ginti se socho: chaar laddoo do bachchon mein barabar bate, toh dono ko do-do mile. Do aur do jodo toh chaar wapas, aur ek bachche ke do laddoo hi chaar ka aadha hain.", "en": "Think with a small count: four laddoos shared equally by two children gives each two. Put two and two together and the four are back, and one child's two laddoos are half of four." }
@@ -324,7 +326,7 @@
      "ask": {
       "prompt": { "hi": "24 ka 1/3 lena hai. Board ke 6 group mein se kitne group uthaoge?", "en": "We want 1/3 of 24. How many of the board's 6 groups do you pick up?" }, "reask": { "hi": "24 aam ke 6 barabar group mein se, 24 ka 1/3 lene ke liye kitne group uthaoge?", "en": "Of the 6 equal groups of 24 mangoes, how many groups do you pick up to take 1/3 of 24?" },
       "key": "2",
-      "accept": ["do", "two", "2 group", "do group", "2 groups"],
+      "accept": ["do", "two", "2 group", "do group", "2 groups", "do group uthaunga", "2 group uthaunga", "do group uthaungi"],
       "why": { "hi": "6 group ko jod kar 3 barabar bade group banao: har bade group mein 2 group, yaani 8 aam", "en": "join the 6 groups into 3 equal bigger groups: each bigger group holds 2 groups, which is 8 mangoes" }, "whyShort": { "hi": "6 group se 3 bade group, har ek mein 2", "en": "6 groups make 3 bigger groups, 2 in each" }, "whyAlt": { "hi": "3 bachche 6 group baantein toh har bachche ko 2 group milte hain, 4 aur 4 aam, yaani 8", "en": "if 3 children share the 6 groups, each child gets 2 groups, 4 and 4 mangoes, which is 8" },
       "simpler": { "hi": "6 group ko 3 bachchon mein ek-ek karke baanto. Ek bachche ke paas kitne group aaye, woh gino.", "en": "Hand out the 6 groups to 3 children, one at a time. Count how many groups one child gets." },
       "board": { "template": "equal-groups@1", "params": {"groups": 6, "each": 4} }, "viewCaption": { "hi": "Jaal mein chhe qatarein hain, har qatar ek group, aur kul 24 aam. Ek qatar uthana matlab ek group uthana.", "en": "The grid has six rows, each row a group, and 24 mangoes in all. Picking up one row means picking up one group." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 8} }
@@ -340,8 +342,8 @@
      "ask": {
       "prompt": { "hi": "Socho, yeh 20 kanche kuch bachchon mein barabar bate, aur har bachche ko 5 mile. 5 kanche saare 20 kanchon ka kaunsa fraction hain?", "en": "Imagine these 20 marbles were shared equally among some children, and each child got 5. What fraction of all 20 marbles are 5 marbles?" },
       "key": "1/4", "askWhole": true,
-      "accept": ["one upon four", "one fourth", "one quarter", "ek-chauthaai", "ek chauthaai", "1 by 4"],
-      "why": { "hi": "4 × 5 = 20, toh 20 kanche 4 bachchon mein barabar batte hain; har bachche ke 5 kanche 1/4 hain", "en": "4 × 5 = 20, so 20 marbles go equally to 4 children; each child's 5 marbles are 1/4" }, "whyShort": { "hi": "4 × 5 = 20, toh 4 bachche, har ek ka 1/4", "en": "4 × 5 = 20, so 4 children, each gets 1/4" }, "whyAltAsHelp": true, "whyAlt": { "hi": "20 ka aadha 10, aur 10 ka aadha 5; toh 5 kanche aadhe ka bhi aadha hain", "en": "half of 20 is 10, and half of 10 is 5; so 5 marbles are half of a half" }, "simpler": { "hi": "Gino, 20 tak pahunchne ke liye 5 kitni baar jodna padta hai. Utne hi barabar group bante hain.", "en": "Count how many times you add 5 to reach 20. That is how many equal groups there are." },
+      "accept": ["one upon four", "one fourth", "one quarter", "ek-chauthaai", "ek chauthaai", "1 by 4", "chauthaai", "one by four", "ek bata chaar"],
+      "why": { "hi": "4 × 5 = 20, toh 20 kanche 4 bachchon mein barabar batte hain; har bachche ke 5 kanche 1/4 hain", "en": "4 × 5 = 20, so 20 marbles go equally to 4 children; each child's 5 marbles are 1/4" }, "whyShort": { "hi": "4 × 5 = 20, toh 4 bachche, har ek ka 1/4", "en": "4 × 5 = 20, so 4 children, each gets 1/4" }, "whyAlt": { "hi": "20 ka aadha 10, aur 10 ka aadha 5; toh 5 kanche aadhe ka bhi aadha hain", "en": "half of 20 is 10, and half of 10 is 5; so 5 marbles are half of a half" }, "simpler": { "hi": "Gino, 20 tak pahunchne ke liye 5 kitni baar jodna padta hai. Utne hi barabar group bante hain.", "en": "Count how many times you add 5 to reach 20. That is how many equal groups there are." },
       "board": { "template": "equal-groups@1", "params": {"sizes": [10, 10]} }, "viewCaption": { "hi": "Jaal mein 20 kanche hain: do qatarein, har qatar mein 10. Har kanche ka apna khana hai, toh gin kar group banana aasaan hai.", "en": "The grid holds 20 marbles, two rows of ten. Each marble has its own box, so grouping them by counting is easy." }, "answerBoard": { "template": "equal-groups@1", "params": { "groups": 4, "each": 5 } }
      },
      "simpler": { "hi": "Dono group ke kanche jodo: 10 aur 10, poore 20 kanche. Do barabar group saare kanche bana dete hain, isliye har group kanchon ka aadha hai.", "en": "Add the two groups' marbles: 10 and 10, all 20 marbles. Two equal groups make up all the marbles, so each group is half of them." }
@@ -353,7 +355,7 @@
     "find": { "hi": "1/3 wale group mein kitni pencil", "en": "how many pencils are in the 1/3 group" },
     "steps": [
      {
-      "ask": {"prompt": { "hi": "15 pencil ko 3 barabar group mein baantoge, ya 3-3 pencil ke group banaoge?", "en": "Share the 15 pencils into 3 equal groups, or make groups of 3?" }, "reask": { "hi": "15 pencil ka 1/3 nikaalne ke liye kaunsa theek hai: 3-3 pencil ke group banana, ya 15 pencil ke 3 barabar group banana?", "en": "To find 1/3 of 15 pencils, which is right: making groups of 3 pencils, or making 3 equal groups of the 15?" }, "key": "3 barabar group", "accept": ["3 barabar group", "3 group", "teen group", "teen barabar group", "3 barabar group mein", "3 barabar group banaunga", "3 barabar group banaungi", "3 groups", "three groups", "3 equal groups", "three equal groups", "pehla", "pehla wala"], "right": {"hi": "Haan, 3 barabar group, aur unmein se ek group lena hai.", "en": "Yes, 3 equal groups, and we take one of them."}},
+      "ask": {"prompt": { "hi": "15 pencil ko 3 barabar group mein baantoge, ya 3-3 pencil ke group banaoge?", "en": "Share the 15 pencils into 3 equal groups, or make groups of 3?" }, "reask": { "hi": "15 pencil ka 1/3 nikaalne ke liye kaunsa theek hai: 15 pencil ke 3 barabar group banana, ya 3-3 pencil ke group banana?", "en": "To find 1/3 of 15 pencils, which is right: making 3 equal groups of the 15, or making groups of 3 pencils?" }, "key": "teen barabar group", "accept": ["3 barabar group", "3 group", "teen group", "3 barabar group mein", "3 barabar group banaunga", "3 barabar group banaungi", "3 groups", "three groups", "3 equal groups", "three equal groups", "3 group banaunga", "3 group mein", "3 barabar group mein baantunga", "3 barabar group mein baantungi", "15 ko 3 group mein"], "right": {"hi": "Haan, 3 barabar group, aur unmein se ek group lena hai.", "en": "Yes, 3 equal groups, and we take one of them."}},
       "told": { "hi": "1/3 ka neeche wala 3 group ginta hai, toh 15 pencil ko 3 barabar group mein baantte hain, aur ek group lete hain.", "en": "The 3 at the bottom of 1/3 counts the groups, so we share the 15 pencils into 3 equal groups and take one group." },
       "do": { "hi": "1/3 ka neeche wala number group ginta hai", "en": "The bottom number of 1/3 counts the groups" },
       "result": "3 barabar group, unmein se 1 group lena",
@@ -368,7 +370,8 @@
       "paanch",
       "five",
       "5 pencil",
-      "5 pencils"
+      "5 pencils",
+      "paanch pencil"
      ],
      "simpler": { "hi": "Pencil ek-ek karke 3 group mein rakho, baari-baari. Saari khatam, toh ek group gin lo.", "en": "Put the pencils one at a time into 3 groups, taking turns. When they are gone, count one group." },
      "board": { "template": "shade-grid@1", "params": {"rows": 5, "cols": 3, "shade": 0, "labels": false, "hideResult": true} }, "viewCaption": { "hi": "Board par 15 pencil hain, har pencil ka apna khana. Inhe baari-baari ek-ek karke 3 group mein rakho, jab tak saari pencil khatam na ho jaayein.", "en": "The board has 15 pencils, each in its own box. Put them into 3 groups one at a time, taking turns, until all the pencils are used up." }, "pictureBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 1, "hideResult": true} }, "pictureCaption": { "hi": "Yeh baantne ki pehli baari hai: teen group, aur har group mein ek pencil. Isi tarah baari-baari ek-ek pencil daalte raho, jab tak saari 15 pencil khatam na ho jaayein.", "en": "This is the first turn of sharing: three groups, one pencil in each. Keep dropping in one pencil at a time, taking turns, until all 15 pencils are used up." }, "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":5} }
@@ -386,26 +389,33 @@
       "ek-tihaai",
       "ek tihaai",
       "one-third",
-      "one third"
+      "one third",
+      "1 by 3",
+      "one upon three",
+      "one by three",
+      "ek bata teen",
+      "1/3 hai",
+      "ek plate",
+      "teesra hissa"
      ],
      "targets": "c4-maths-ch05-t01-m-part-part",
      "wrongIfMis": "1/2",
      "board": { "template": "shade-grid@1", "params": {"rows": 3, "cols": 6, "shade": 0, "labels": false, "hideResult": true} }, "viewCaption": { "hi": "Yeh 18 laddoo ek jaal mein hain: teen qatarein, har qatar mein chhe. Har qatar ko ek plate samjho.", "en": "These 18 laddoos are in a grid: three rows, six in each. Take each row as one plate." }, "pictureBoard": { "template": "equal-groups@1", "params": {"groups": 3, "each": 6, "hideResult": true} }, "pictureCaption": { "hi": "Yeh teen plate hain, aur 18 laddoo inmein barabar rakhe hain. Ravi inmein se ek plate uthata hai.", "en": "These are the three plates, with the 18 laddoos shared equally on them. Ravi picks up one of these plates." },
-     "why": { "hi": "18 laddoo 3 barabar plate mein the, har plate mein 6; Ravi ne 1 plate li, yaani 1/3", "en": "the 18 laddoos were on 3 equal plates, 6 on each; Ravi took 1 plate, so 1/3" }, "whyShort": { "hi": "Ravi ne 3 barabar plate mein se 1 li", "en": "Ravi took 1 of 3 equal plates" }, "whyAltAsHelp": true, "whyAlt": { "hi": "3 barabar plate mein se Ravi ke paas ek plate hai; har plate mein kitne laddoo hain, isse fraction nahi badalta", "en": "Ravi has 1 of the 3 equal plates; how many laddoos sit on a plate does not change the fraction" },
+     "why": { "hi": "18 laddoo 3 barabar plate mein the, har plate mein 6; Ravi ne 1 plate li, yaani 1/3", "en": "the 18 laddoos were on 3 equal plates, 6 on each; Ravi took 1 plate, so 1/3" }, "whyShort": { "hi": "Ravi ne 3 barabar plate mein se 1 li", "en": "Ravi took 1 of 3 equal plates" }, "whyAlt": { "hi": "3 barabar plate mein se Ravi ke paas ek plate hai; har plate mein kitne laddoo hain, isse fraction nahi badalta", "en": "Ravi has 1 of the 3 equal plates; how many laddoos sit on a plate does not change the fraction" },
      "answerBoard": { "template": "equal-groups@1", "params": {"groups":3,"each":6} }, "answerViewCaption": { "hi": "Jaal ki teen qatarein teen plate hain, har qatar mein 6 laddoo. Ravi ne ek qatar uthayi, yaani teen mein se ek, 1/3.", "en": "The grid's three rows are the three plates, with 6 laddoos in each row. Ravi took one row, one of three, 1/3." },
      "simpler": { "hi": "Laddoo mat gino, plate gino. Pehle saari plate gino, phir Ravi ki.", "en": "Don't count laddoos, count plates. First count all the plates, then Ravi's." }
     },
     {
      "id": "c2",
-     "prompt": { "hi": "16 kanche 4 group mein bate: 7, 3, 3 aur 3. Rani kehti hai 7 wala group saare kanchon ke 1/4 se bada hai. Kya Rani sahi hai?", "en": "16 marbles went into 4 groups: 7, 3, 3 and 3. Rani says the group of 7 is more than 1/4 of all the marbles. Is Rani right?" }, "reask": { "hi": "16 kanchon ke 7, 3, 3 aur 3 wale group mein, kya 7 wala group saare kanchon ke 1/4 se bada hai?", "en": "With 16 marbles in groups of 7, 3, 3 and 3, is the group of 7 more than 1/4 of all the marbles?" },
-     "key": "Yes", "did": { "hi": "16 kanchon ka 1/4 soch kar 7 wale group ko jaancha", "en": "worked out 1/4 of 16 marbles to test the group of 7" },
-     "accept": ["haan", "han", "yes", "haan, 7 zyada hai", "yes, 7 is more than a quarter"],
+     "prompt": { "hi": "16 kanche 4 group mein bate: 7, 3, 3 aur 3. 7 wala group saare kanchon ke 1/4 se kam hai, 1/4 ke barabar, ya 1/4 se zyada?", "en": "16 marbles went into 4 groups: 7, 3, 3 and 3. Is the group of 7 less than 1/4 of all the marbles, equal to 1/4, or more than 1/4?" }, "reask": { "hi": "16 kanchon ke 7, 3, 3 aur 3 wale group mein, 7 wala group saare kanchon ke 1/4 se kam hai, barabar hai, ya zyada?", "en": "With 16 marbles in groups of 7, 3, 3 and 3, is the group of 7 less than 1/4 of all the marbles, equal to it, or more?" },
+     "key": "zyada", "did": { "hi": "16 kanchon ka 1/4 soch kar 7 wale group ko jaancha", "en": "worked out 1/4 of 16 marbles to test the group of 7" },
+     "accept": ["zyada hai", "1/4 se zyada", "1/4 se zyada hai", "jyada", "1/4 se bada", "bada", "bada hai", "more", "more than 1/4", "more than a quarter", "ek-chauthaai se zyada", "chauthaai se zyada", "7 zyada hai"],
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
-     "wrongIfMis": "No",
+     "wrongIfMis": "barabar",
      "board": { "template": "equal-groups@1", "params": {"sizes": [7, 3, 3, 3]} }, "viewCaption": { "hi": "Har group ab ek qatar hai, aur sab qatarein ek hi kinare se shuru hoti hain: ek qatar mein 7 kanche, baaki teen mein 3-3. Har qatar ke aakhir mein uski ginti likhi hai.", "en": "Each group is now a row, and all the rows start from the same edge: one row has 7 marbles, the other three have 3 each. Each row's count is written at its end." },
-     "why": { "hi": "charon group barabar hote toh 16 ka 1/4 hota 4; 7 usse zyada hai, toh Rani sahi hai", "en": "if all four groups were equal, 1/4 of 16 would be 4; 7 is more than that, so Rani is right" }, "whyShort": { "hi": "16 ka 1/4 hai 4, aur 7 usse zyada", "en": "1/4 of 16 is 4, and 7 is more" }, "whyAlt": { "hi": "agar 7 kanche 1/4 hote, toh charon group mein 7 hote aur kanche 16 se kahin zyada ho jaate; par kul 16 hi hain, isliye 7 wala group 1/4 se bada hai", "en": "if 7 marbles were 1/4, all four groups would hold 7 and there would be far more than 16 marbles; but there are only 16, so the group of 7 is more than 1/4" },
+     "why": { "hi": "charon group barabar hote toh har ek 16 ka 1/4 hota, yaani 4; 7 usse zyada hai", "en": "if all four groups were equal, each would be 1/4 of 16, that is 4; 7 is more than that" }, "whyShort": { "hi": "16 ka 1/4 hai 4, aur 7 usse zyada", "en": "1/4 of 16 is 4, and 7 is more" }, "whyAlt": { "hi": "agar 7 kanche 1/4 hote, toh aise chaar group mein 28 kanche hote; par kul 16 hi hain, isliye 7 wala group 1/4 se zyada hai", "en": "if 7 marbles were 1/4, four such groups would hold 28 marbles; but there are only 16, so the group of 7 is more than 1/4" },
      "answerBoard": { "template": "equal-groups@1", "params": {"sizes": [7, 3, 3, 3], "equalTo": {"groups": 4, "each": 4}} },
-     "simpler": { "hi": "Socho, 16 kanche 4 barabar group mein hote toh har group kitna bada hota. Phir use 7 se milao.", "en": "Think how big each group would be if the 16 marbles were in 4 equal groups. Then compare that with 7." }
+     "simpler": { "hi": "Socho, 16 kanche 4 barabar group mein hote toh har group mein kitne kanche hote. Phir use 7 se milao.", "en": "Think how many marbles each group would hold if the 16 were in 4 equal groups. Then compare that with 7." }
     }
    ],
    "ladder": [
@@ -440,7 +450,7 @@
      "then": {
       "prompt": { "hi": "30 kele 6 thailon mein barabar bhare, aur 1 thaila kisi ko de diya. Woh thaila saare kelon ka 1/5 hai ya 1/6?", "en": "30 bananas fill 6 bags equally, and 1 bag is given away. Is that bag 1/5 or 1/6 of all the bananas?" }, "reask": { "hi": "30 kele ke 6 barabar thailon mein se jo 1 thaila gaya, woh saare kelon ka 1/5 hai ya 1/6?", "en": "Of 30 bananas in 6 equal bags, is the 1 bag that went 1/5 or 1/6 of all the bananas?" },
       "key": "1/6",
-      "accept": ["one upon six", "one sixth", "one-sixth", "ek-chhatha", "ek chhatha", "1 by 6", "1/6 hai"],
+      "accept": ["one upon six", "one sixth", "one-sixth", "ek-chhatha", "ek chhatha", "1 by 6", "1/6 hai", "1/6 wala", "one by six", "ek bata chhe"],
       "targets": "c4-maths-ch05-t01-m-part-part",
       "wrongIfMis": "1/5",
       "board": { "template": "equal-groups@1", "params": {"groups": 6, "each": 5, "hideResult": true} }, "viewCaption": { "hi": "Yahan har thaila jaal ki ek qatar hai: chhe qatarein, har qatar mein paanch kele.", "en": "Here each bag is one row of the grid: six rows, five bananas in each row." },
@@ -452,14 +462,14 @@
     {
      "targets": "c4-maths-ch05-t01-m-unequal-parts",
      "move": "own board (12 toffees dealt into 3 groups of 4); the dealing test as a general method: deal all the things one at a time into 3 groups, taking turns; one group's size is 1/3; a group not that size is not 1/3; then the then-card's 21 pencils given 9, 6, 6: who has exactly 1/3 (nobody)",
-     "say": { "hi": "Board par 12 toffee baari-baari 3 group mein daali, toh har group mein 4 aayi: 12 ka 1/3 yahi 4 hai.", "en": "On the board, 12 toffees were dealt by turns into 3 groups, and 4 landed in each: 1/3 of 12 is that 4." }, "sayAlt": { "hi": "Socho, roti ke 8 tukde 3 bachchon mein bate: ek ko 4, baaki do ko 2-2. 4 tukde toh roti ka aadha hain, 1/3 nahi, kyunki 4 aur 4 milkar 8 bante hain.", "en": "Picture 8 pieces of roti shared among 3 children: one gets 4, the other two 2 each. The 4 pieces are half the roti, not 1/3, because 4 and 4 make 8.", "board": { "template": "equal-groups@1", "params": { "sizes": [4,2,2] } }, "viewCaption": { "hi": "Har bachche ke roti ke tukde ab ek qatar hain, teeno qatarein ek hi kinare se shuru: ek qatar 4 tukdon ki hai, aur baaki dono qatarein usse chhoti.", "en": "Each child's roti pieces are now a row, all three rows starting from the same edge: one row has 4 pieces, and the other two rows are shorter." } },
+     "say": { "hi": "Board par 12 toffee baari-baari 3 group mein daali, toh har group mein 4 aayi: 12 ka 1/3 yahi 4 hai.", "en": "On the board, 12 toffees were dealt by turns into 3 groups, and 4 landed in each: 1/3 of 12 is that 4." }, "sayAlt": { "hi": "Socho, roti ke 8 barabar tukde 3 bachchon mein bate: ek ko 4, baaki do ko 2-2. 4 tukde toh roti ka aadha hain, 1/3 nahi, kyunki 4 aur 4 milkar 8 bante hain.", "en": "Picture 8 equal pieces of roti shared among 3 children: one gets 4, the other two 2 each. The 4 pieces are half the roti, not 1/3, because 4 and 4 make 8.", "board": { "template": "equal-groups@1", "params": { "sizes": [4,2,2] } }, "viewCaption": { "hi": "Har bachche ke roti ke tukde ab ek qatar hain, teeno qatarein ek hi kinare se shuru: ek qatar 4 tukdon ki hai, aur baaki dono qatarein usse chhoti.", "en": "Each child's roti pieces are now a row, all three rows starting from the same edge: one row has 4 pieces, and the other two rows are shorter." } },
      "board": { "template": "equal-groups@1", "params": { "groups": 3, "each": 4 } }, "viewCaption": { "hi": "Teen group ab ek jaal mein hain: har qatar ek group hai, aur har qatar mein chaar toffee.", "en": "The three groups are now in a grid: each row is a group, with four toffees in each row." },
      "simpler": { "hi": "Board par teeno group mein 4-4 toffee hain, kyunki baari-baari daali. Jis group mein utni na hon, woh 1/3 nahi.", "en": "On the board each of the three groups has 4 toffees, because they were dealt by turns. A group without that many is not 1/3." },
      
      "then": {
       "prompt": { "hi": "21 pencil 3 doston mein bati: 9, 6 aur 6. Kiske paas theek 1/3 hai: 9 wale ke, 6 wale ke, ya kisi ke nahi?", "en": "21 pencils went to 3 friends: 9, 6 and 6. Who has exactly 1/3: the one with 9, one with 6, or nobody?" },
       "key": "kisi ke paas nahi",
-      "accept": ["kisi ke nahi", "kisi ke paas nahi", "kisi ke paas bhi nahi", "koi nahi", "kisi ke bhi nahi", "nobody", "no one", "none"],
+      "accept": ["kisi ke nahi", "kisi ke paas nahi", "kisi ke paas bhi nahi", "koi nahi", "kisi ke bhi nahi", "nobody", "no one", "none", "kisi ke paas 1/3 nahi", "kisi ke bhi paas nahi", "kisi ke paas theek 1/3 nahi"],
       "targets": "c4-maths-ch05-t01-m-unequal-parts",
       "wrongIfMis": "9 wale ke",
       "board": { "template": "equal-groups@1", "params": {"sizes": [9, 6, 6]} }, "viewCaption": { "hi": "Har dost ki pencil ab ek qatar hain, teeno qatarein ek hi kinare se shuru: ek qatar mein 9, baaki do mein 6-6. Dekho, teeno qatarein kahan khatam hoti hain.", "en": "Each friend's pencils are now a row, all three rows starting from the same edge: one row has 9, the other two have 6 each. See where each of the three rows ends." },
@@ -510,18 +520,24 @@
      }, "viewCaption": { "hi": "Wahi patti ab ek circle ban gayi hai: do barabar tukde, ek mein rang. Rangin tukda aur bina rang ka tukda ek jitne bade hain.", "en": "The same strip is now a circle: two equal pieces, one coloured. The coloured piece and the uncoloured one are the same size." },
      "point": { "hi": "Yeh patti 2 barabar tukdon mein bati hai. Rangin tukda iska aadha hai, 1/2. Dekho, rang theek beech tak jaata hai.", "en": "This strip is split into 2 equal pieces. The coloured piece is half of it, 1/2. See, the colour goes exactly to the middle." }, "pointAlt": { "hi": "Is patti ko theek beech se modo, toh dono taraf bilkul barabar aati hain. Ek taraf ka tukda aadhi patti hai, 1/2, aur rangin tukda wahi hai.", "en": "Fold this strip exactly in the middle and the two sides match. One side's piece is half the strip, 1/2, and the coloured piece is that one." },
      "ask": {
-      "prompt": { "hi": "Isi patti ko ab 4 barabar tukdon mein kaato. Kya tab ek tukda is aadhe se bada hoga?", "en": "Now cut this same strip into 4 equal pieces. Will one piece then be bigger than this half?" }, "reask": { "hi": "Ek patti ko 4 barabar tukdon mein kaatein, toh kya ek tukda us patti ke aadhe se bada hoga?", "en": "If a strip is cut into 4 equal pieces, will one piece be bigger than half that strip?" },
-      "key": "No",
+      "prompt": { "hi": "Isi patti ko ab 4 barabar tukdon mein kaato. Tab ek tukda is aadhe se bada hoga, aadhe ke barabar, ya aadhe se chhota?", "en": "Now cut this same strip into 4 equal pieces. Will one piece then be bigger than this half, equal to it, or smaller than the half?" }, "reask": { "hi": "Ek patti ko 4 barabar tukdon mein kaatein, toh ek tukda us patti ke aadhe se bada hoga, barabar, ya chhota?", "en": "If a strip is cut into 4 equal pieces, will one piece be bigger than half that strip, equal to it, or smaller?" },
+      "key": "aadhe se chhota",
       "accept": [
-       "nahi",
-       "nahin",
-       "no",
-       "nahi, chhota hoga",
        "chhota",
-       "no, smaller"
+       "chhota hoga",
+       "aadhe se chhota hoga",
+       "chhota hai",
+       "kam",
+       "aadhe se kam",
+       "smaller",
+       "smaller than half",
+       "less",
+       "less than half",
+       "1/4",
+       "1/4 hoga"
       ],
       "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
-      "wrongIfMis": "Yes",
+      "wrongIfMis": "aadhe se bada",
       "why": { "hi": "patti 4 mein kati ho toh har tukda, 2 mein kati patti ke tukde ka aadha hota hai", "en": "cut into 4, each piece is half of a piece of the strip cut into 2" }, "whyShort": { "hi": "4 mein kati patti ka tukda, 2 wale ka aadha", "en": "a piece of 4 is half a piece of 2" }, "whyAlt": { "hi": "aadhi patti ko do mein kaato toh har tukda 1/4 banta hai; 1/4 wala tukda aadhe ke andar aa jaata hai, bahar nahi nikalta", "en": "cut the half strip in two and each piece is 1/4; the 1/4 piece fits inside the half, it never sticks out" },
       "simpler": { "hi": "Pehli patti ka rangin aadha dekho, aur gino ki doosri patti ke kitne tukde us aadhe mein sama jaate hain.", "en": "Look at the coloured half of the first strip, and count how many pieces of the second strip fit inside that half." },
       "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 4, "shade": 0, "label": "?"}]} }, "viewCaption": { "hi": "Yahan ek hi number line hai, 0 se 1 tak: line ke upar do barabar gap aur beech mein 1/2 ka mark, line ke neeche chaar barabar gap.", "en": "Here is one number line, from 0 to 1: two equal gaps above the line with the 1/2 mark in the middle, four equal gaps below it." }, "answerBoard": { "template": "fraction-bars@1", "params": {"bars":[{"parts":2,"shade":1,"label":"1/2"},{"parts":4,"shade":1,"label":"1/4"}]} }
@@ -601,24 +617,24 @@
      "id": "c2",
      "prompt": { "hi": "Ek chocolate 8 bachchon mein barabar bati, aur utni hi badi doosri chocolate 2 bachchon mein. Farhan 8 waalon mein hai, Gita 2 waalon mein. Farhan ka tukda Gita ke tukde se zyada hai ya kam?", "en": "One chocolate is shared equally by 8 children, and another just as big by 2. Farhan is with the 8, Gita with the 2. Is Farhan's piece more or less than Gita's?" }, "reask": { "hi": "8 mein bati chocolate ka Farhan ka tukda, 2 mein bati utni hi badi chocolate ke Gita ke tukde se zyada hai ya kam?", "en": "Is Farhan's piece of a chocolate shared by 8 more or less than Gita's piece of one just as big shared by 2?" },
      "key": "Farhan ka tukda kam", "did": { "hi": "8 mein bati aur 2 mein bati chocolate ke tukde milaaye", "en": "compared pieces of chocolates shared by 8 and by 2" },
-     "accept": ["kam", "kam hai", "less", "chhota", "chhota hai", "smaller"],
+     "accept": ["kam", "kam hai", "less", "chhota", "chhota hai", "smaller", "farhan ka kam", "farhan ka tukda kam hai", "farhan ka chhota", "farhan ka tukda chhota", "gita ka zyada", "gita ka tukda bada", "gita ka bada", "less than gita", "farhan's is less", "farhan's is smaller", "kam milega", "Farhan ko kam mila"],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "zyada",
-     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 0, "label": "?"}, {"parts": 2, "shade": 0, "label": "?"}]} }, "viewCaption": { "hi": "Dono chocolate ab do ek jitne bade circle hain: ek aath barabar tukdon mein, ek do mein.", "en": "The two chocolates are now two circles of the same size: one in eight equal pieces, one in two." },
-     "why": { "hi": "8 mein bati chocolate ka har tukda 1/8 hai, 2 mein bati ka 1/2; 1/8 chhota hai, toh Farhan ka tukda kam", "en": "shared by 8, each piece is 1/8; shared by 2, it is 1/2; 1/8 is smaller, so Farhan's piece is less" }, "whyShort": { "hi": "Farhan ka tukda 1/8, Gita ka 1/2; 1/8 chhota", "en": "Farhan's piece is 1/8, Gita's 1/2; 1/8 is smaller" }, "whyAltAsHelp": true, "whyAlt": { "hi": "Gita ki chocolate sirf 2 bachchon mein bati, toh use aadhi chocolate mili; Farhan ko 8 mein se ek patla tukda mila", "en": "Gita's chocolate was shared by only 2 children, so she got half a chocolate; Farhan got one thin piece out of 8" },
-     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 1, "label": "1/8"}, {"parts": 2, "shade": 1, "label": "1/2"}]} }, "answerViewCaption": { "hi": "Line ke upar aath barabar gap hain aur pehla mark 1/8 par, line ke neeche do gap aur mark 1/2 par. 1/8 ka mark 0 ke bahut paas hai, isliye Farhan ka tukda kam hai.", "en": "Above the line are eight equal gaps with the first mark at 1/8, below it two gaps with the mark at 1/2. The 1/8 mark is very close to 0, so Farhan's piece is smaller." },
-     "simpler": { "hi": "Board par dono patti dekho: pehli patti 8 tukdon mein, doosri patti 2 mein. Farhan ka ek tukda aur Gita ka ek tukda milao.", "en": "Look at both strips on the board: the first in 8 pieces, the second in 2. Compare one of Farhan's pieces with one of Gita's." }
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "title": "Gita"}]} }, "viewCaption": { "hi": "Gita wali chocolate yahan ek patti hai, 2 barabar tukdon mein. Farhan wali chocolate board par nahi hai.", "en": "Gita's chocolate is a strip here, in 2 equal pieces. Farhan's chocolate is not on the board." },
+     "why": { "hi": "Farhan ki chocolate 8 mein bati, toh uska tukda 1/8; Gita ki 2 mein, toh uska 1/2; 1/8 chhota hai", "en": "Farhan's chocolate was shared by 8, so his piece is 1/8; Gita's by 2, so hers is 1/2; 1/8 is smaller" }, "whyShort": { "hi": "Farhan ka tukda 1/8, Gita ka 1/2; 1/8 chhota", "en": "Farhan's piece is 1/8, Gita's 1/2; 1/8 is smaller" }, "whyAlt": { "hi": "Gita ki chocolate sirf 2 bachchon mein bati, toh use aadhi chocolate mili; Farhan ko 8 mein se ek patla tukda mila", "en": "Gita's chocolate was shared by only 2 children, so she got half a chocolate; Farhan got one thin piece out of 8" },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 2, "shade": 1, "title": "Gita"}, {"parts": 8, "shade": 1, "title": "Farhan"}]} }, "answerViewCaption": { "hi": "Dono chocolate ab ek jitni lambi patti hain. Gita ka rangin tukda aadhi patti hai, aur Farhan ka rangin tukda usse bahut chhota hai, isliye Farhan ka tukda kam.", "en": "The two chocolates are now strips of the same length. Gita's coloured piece is half the strip, and Farhan's coloured piece is much smaller, so Farhan's piece is less." },
+     "simpler": { "hi": "Board par Gita wali chocolate 2 tukdon mein hai. Socho, wahi chocolate 8 tukdon mein kat-ti toh ek tukda kaisa dikhta, phir dono tukde milao.", "en": "On the board Gita's chocolate is in 2 pieces. Think how one piece would look if that same chocolate were cut into 8, then compare the two pieces." }
     },
     {
      "id": "c3",
-     "prompt": { "hi": "Board par teen ek jaisi chocolate hain: pehli 4 barabar tukdon mein kati, doosri 10 mein, teesri 7 mein. Har chocolate ka ek tukda lo, 1/4, 1/10 aur 1/7, aur inhe sabse chhote se sabse bade tak lagao.", "en": "The board has three identical chocolates: the first cut into 4 equal pieces, the second into 10, the third into 7. Take one piece of each, 1/4, 1/10 and 1/7, and put them in order from smallest to biggest." }, "reask": { "hi": "Teen ek jaisi chocolate ke 1/4, 1/10 aur 1/7 tukdon ko sabse chhote se sabse bade tak kaise lagaoge?", "en": "How do you put the 1/4, 1/10 and 1/7 pieces of three identical chocolates in order, smallest to biggest?" },
+     "prompt": { "hi": "Teen ek jaisi chocolate hain: board wali 4 barabar tukdon mein kati, doosri 10 mein, teesri 7 mein. Har chocolate ka ek tukda lo, 1/4, 1/10 aur 1/7, aur inhe sabse chhote se sabse bade tak lagao.", "en": "There are three identical chocolates: the one on the board cut into 4 equal pieces, the second into 10, the third into 7. Take one piece of each, 1/4, 1/10 and 1/7, and put them in order from smallest to biggest." }, "reask": { "hi": "Teen ek jaisi chocolate ke 1/4, 1/10 aur 1/7 tukdon ko sabse chhote se sabse bade tak kaise lagaoge?", "en": "How do you put the 1/4, 1/10 and 1/7 pieces of three identical chocolates in order, smallest to biggest?" },
      "key": "1/10, 1/7, 1/4", "did": { "hi": "teen chocolate ke tukde chhote se bade tak lagaye: 1/10, 1/7, 1/4", "en": "ordered three chocolate pieces from smallest to biggest: 1/10, 1/7, 1/4" },
      "accept": ["1/10 1/7 1/4", "tenth, seventh, quarter", "ek-dasvaan, ek-saatvaan, ek-chauthaai"],
      "targets": "c4-maths-ch05-t01-m-bigger-denominator-bigger",
      "wrongIfMis": "1/4, 1/7, 1/10",
-     "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 4, "shade": 0, "label": ""}, {"parts": 10, "shade": 0, "label": ""}, {"parts": 7, "shade": 0, "label": ""}]} }, "viewCaption": { "hi": "Teeno chocolate ab ek jitne bade teen gole hain: pehla 4 barabar tukdon mein, doosra 10 mein, teesra 7 mein. Har gole ka ek tukda dekho aur unki chaudai aapas mein milao.", "en": "The three chocolates are now three circles of the same size: the first in 4 equal pieces, the second in 10, the third in 7. Look at one piece of each circle and compare how wide they are." },
+     "board": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "title": "1/4"}]} }, "viewCaption": { "hi": "Board wali chocolate yahan ek patti hai, 4 barabar tukdon mein. Baaki do chocolate board par nahi hain.", "en": "The board's chocolate is a strip here, in 4 equal pieces. The other two chocolates are not on the board." },
      "why": { "hi": "chocolate jitne zyada tukdon mein kate, tukda utna chhota; isliye pehle 1/10, phir 1/7, phir 1/4", "en": "the more pieces a chocolate is cut into, the smaller the piece, so 1/10 first, then 1/7, then 1/4" }, "whyShort": { "hi": "zyada tukde, chhota tukda: 1/10, phir 1/7, phir 1/4", "en": "more pieces, smaller piece: 1/10, then 1/7, then 1/4" }, "whyAlt": { "hi": "socho 10 dost, 7 dost aur 4 dost ek-ek chocolate baant rahe hain; 10 dost waalon ka tukda sabse chhota, 4 dost waalon ka sabse bada", "en": "picture 10 friends, 7 friends and 4 friends each sharing a chocolate; the 10 friends get the smallest piece, the 4 friends the biggest" },
-     "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 10, "shade": 1, "label": "1/10"}, {"parts": 7, "shade": 1, "label": "1/7"}, {"parts": 4, "shade": 1, "label": "1/4"}]} }, "answerViewCaption": { "hi": "Har gole ka ek tukda rangeen hai: 10 tukdon wale gole ka tukda sabse patla, phir 7 wale ka, aur 4 wale ka sabse chauda. Isliye kram hai 1/10, 1/7, 1/4.", "en": "One piece of each circle is coloured: the 10-piece circle's piece is the thinnest, then the 7-piece circle's, and the 4-piece circle's is the widest. So the order is 1/10, 1/7, 1/4." },
+     "answerBoard": { "template": "wholes@1", "params": {"wholes": [{"parts": 4, "shade": 1, "title": "1/4"}, {"parts": 10, "shade": 1, "title": "1/10"}, {"parts": 7, "shade": 1, "title": "1/7"}]} }, "answerViewCaption": { "hi": "Teeno chocolate ab ek jitni lambi patti hain, har ek ka ek tukda rangin: 10 tukdon wali ka tukda sabse patla, phir 7 wali ka, aur 4 wali ka sabse chauda. Isliye kram hai 1/10, 1/7, 1/4.", "en": "The three chocolates are now strips of the same length, one piece of each coloured: the 10-piece one's is the thinnest, then the 7-piece one's, and the 4-piece one's the widest. So the order is 1/10, 1/7, 1/4." },
      "simpler": { "hi": "Har tukde ka neeche wala number dekho: woh batata hai chocolate kitne barabar tukdon mein kati. Phir patle tukde se mote tak lagao.", "en": "Look at each piece's bottom number: it tells how many equal pieces the chocolate was cut into. Then go from the thinnest piece to the thickest." }
     }
    ],
