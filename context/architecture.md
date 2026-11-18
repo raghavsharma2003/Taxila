@@ -699,3 +699,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-read-what-changed-before-a-run` (2026-11-18): The one failing row of director30 was a point sentence a script gained that round and nobody read against its board: every part whose text changed since the last judged run is read against its board and card before the next run, from a list the checker prints
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-dry-read-finds-what-predicates-miss` (2026-11-18): Four walk faults from one round's rules passed every gated predicate and were found only by main reading three steady dry lessons turn by turn
+- `fd-staged-scripts-older-format` (2026-11-18): The 30 staged scripts are an older format: about 160 to 170 failing lines each against the pilots' standard, one authoring agent per script to bring one up

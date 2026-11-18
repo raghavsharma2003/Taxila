@@ -29805,6 +29805,48 @@
    "at": "2026-11-18",
    "title": "The one failing row of director30 was a point sentence a script gained that round and nobody read against its board: every part whose text changed since the last judged run is read against its board and card before the next run, from a list the checker prints",
    "source": "inbox/r8-main-51.json"
+  },
+  {
+   "id": "ms-r8-d31-dry",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "Dry run of the four pilots and the first three staged scripts on integration 86 (28 lessons, no model): every gated predicate 0; no turn over 75 words; all 28 picture turns draw the board named; steady check-ins 7, 5, 6, 4 and 4, 5, 7",
+   "source": "inbox/r8-main-52.json"
+  },
+  {
+   "id": "dc-r8-reask-two-whole-forms",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A re-ask is the card's authored re-ask or the whole card, alternating; a part of a question is never said alone; a request to hear the question always gets the question",
+   "source": "inbox/r8-main-52.json"
+  },
+  {
+   "id": "dc-r8-return-waits-for-followup",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A due return to a parked aside waits for a remediation's follow-up card and is said after that card's verdict",
+   "source": "inbox/r8-main-52.json"
+  },
+  {
+   "id": "rj-r8-reask-last-clause-alone",
+   "kind": "rejection",
+   "at": "2026-11-18",
+   "title": "Saying only a card's last question clause as a third re-ask form: 11 of 21 such turns in the dry matrix dangled or asked about the wrong figure",
+   "source": "inbox/r8-main-52.json"
+  },
+  {
+   "id": "fd-dry-read-finds-what-predicates-miss",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "Four walk faults from one round's rules passed every gated predicate and were found only by main reading three steady dry lessons turn by turn",
+   "source": "inbox/r8-main-52.json"
+  },
+  {
+   "id": "fd-staged-scripts-older-format",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "The 30 staged scripts are an older format: about 160 to 170 failing lines each against the pilots' standard, one authoring agent per script to bring one up",
+   "source": "inbox/r8-main-52.json"
   }
  ],
  "edges": [
@@ -47757,6 +47799,51 @@
    "src": "dc-r8-op-cap-stays",
    "rel": "measured_by",
    "dst": "ms-r8-director30"
+  },
+  {
+   "src": "dc-r8-director30",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-reask-two-whole-forms",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-reask-two-whole-forms",
+   "rel": "part_of",
+   "dst": "dc-r8-director30"
+  },
+  {
+   "src": "dc-r8-return-waits-for-followup",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-return-waits-for-followup",
+   "rel": "part_of",
+   "dst": "dc-r8-director30"
+  },
+  {
+   "src": "rj-r8-reask-last-clause-alone",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "rj-r8-reask-last-clause-alone",
+   "rel": "constrains",
+   "dst": "dc-r8-reask-two-whole-forms"
+  },
+  {
+   "src": "fd-dry-read-finds-what-predicates-miss",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "fd-staged-scripts-older-format",
+   "rel": "constrains",
+   "dst": "dc-r8-director30"
   }
  ]
 }

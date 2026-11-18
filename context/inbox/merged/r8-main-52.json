@@ -1,0 +1,92 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-d31-dry",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "Dry run of the four pilots and the first three staged scripts on integration 86 (28 lessons, no model): every gated predicate 0; no turn over 75 words; all 28 picture turns draw the board named; steady check-ins 7, 5, 6, 4 and 4, 5, 7"
+  },
+  {
+   "id": "dc-r8-reask-two-whole-forms",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A re-ask is the card's authored re-ask or the whole card, alternating; a part of a question is never said alone; a request to hear the question always gets the question"
+  },
+  {
+   "id": "dc-r8-return-waits-for-followup",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A due return to a parked aside waits for a remediation's follow-up card and is said after that card's verdict"
+  },
+  {
+   "id": "rj-r8-reask-last-clause-alone",
+   "kind": "rejection",
+   "at": "2026-11-18",
+   "title": "Saying only a card's last question clause as a third re-ask form: 11 of 21 such turns in the dry matrix dangled or asked about the wrong figure"
+  },
+  {
+   "id": "fd-dry-read-finds-what-predicates-miss",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "Four walk faults from one round's rules passed every gated predicate and were found only by main reading three steady dry lessons turn by turn"
+  },
+  {
+   "id": "fd-staged-scripts-older-format",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "The 30 staged scripts are an older format: about 160 to 170 failing lines each against the pilots' standard, one authoring agent per script to bring one up"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director30",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-reask-two-whole-forms",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-reask-two-whole-forms",
+   "rel": "part_of",
+   "dst": "dc-r8-director30"
+  },
+  {
+   "src": "dc-r8-return-waits-for-followup",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "dc-r8-return-waits-for-followup",
+   "rel": "part_of",
+   "dst": "dc-r8-director30"
+  },
+  {
+   "src": "rj-r8-reask-last-clause-alone",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "rj-r8-reask-last-clause-alone",
+   "rel": "constrains",
+   "dst": "dc-r8-reask-two-whole-forms"
+  },
+  {
+   "src": "fd-dry-read-finds-what-predicates-miss",
+   "rel": "measured_by",
+   "dst": "ms-r8-d31-dry"
+  },
+  {
+   "src": "fd-staged-scripts-older-format",
+   "rel": "constrains",
+   "dst": "dc-r8-director30"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-d31-dry` (2026-11-18): the dry matrix (no model, rule-based child, `--staged`) over the four pilots and the first three staged scripts (`c5-maths-ch02-t03`, `c4-maths-ch01-t02`, `c6-maths-ch07-t01`) × steady, stuck, offtopic, steering on integration 86 (Brain 046 Q1 to Q6, Learning 019, the three scripts authored to the pilots' standard, main's follow-up fixes): 28 lessons. `check-run.mjs` exit 0 on the seven-topic matrix and on the four-pilot matrix; every gated predicate 0, including this round's (`stepToldEarly`, `hindiSpentCold`, `replyCheckin`, `vpcLong`, `vpcBridge`, `reaskRunning`, `workedSeam`, `captionPart`, `whyShortSet`, `cellMissing`, `missAsVerdict`, `whyLeadRunning`, `reaskWhole`, `clarifyAsked`, `wrapAckTwice`); the adversarial probe lost 0 rows. No turn over 75 words on the seven-topic matrix (the four-pilot baseline has 1: a give-up at the greeting that runs the start line, hook, point and card). All 28 picture turns draw the board the plan named (`screen.counts` against `screen.preselected`, compared by hand by main). Turns ending on a comprehension check-in in the steady lessons: c4 7, c5-t01 5, c5-t02 6, c6 4; c5-t03 4, c4-ch01-t02 5, c6-ch07-t01 7 (director30 live, pilots: 4, 5, 4, 4). The rise is by rule: a skill's bridge is said with the verdict and ends on its check-in (so the verdict, point and card turn stays under 65 words), and a verdict said just before a due return ends on a check-in. Re-ask turns by form, 28 lessons: authored re-ask 141, whole card 80, short ask 51. Pending: `repeatedAuthored` 52, `cardNoFit` 1. Compile report: no new hole on the pilots from code; the three staged scripts lack `joints.helpToCard` (the code's forms are said). Method note: the reactive child's lines shift when the walk changes, so check-in counts between dry runs compare rules, not lessons.",
+  "decisions": "- `dc-r8-reask-two-whole-forms` (2026-11-18, main, part of `dc-r8-director30` item 5): when a card's question has to be said again, the walk alternates the card's authored re-ask and the whole card as written; the short ask stays only after help about the card's own figure; a request to hear the question (\"sawaal kya hai?\", \"phir se bolo\") always gets one of the two whole forms. Why: the rotation first built for \"no re-ask sentence two turns running\" used the card's last clause as a third form, and that clause depends on givens said before it (see `rj-r8-reask-last-clause-alone`). Cost accepted: a whole card is heard again within two turns in 22 places on the four-pilot dry matrix (6 before). **Reverses if** two judges hear the whole card said again as the teacher repeating herself → each card gets a second authored re-ask and the whole card is said again only on request.\n- `dc-r8-return-waits-for-followup` (2026-11-18, main): a due return to a parked aside never comes between a remediation and its follow-up card; it is said after that card's verdict, as a turn of its own. Why: in the first dry run of `c6-maths-ch07-t01` she corrected a wrong answer, re-explained, and ended the turn asking about cricket, with the follow-up card two turns later. A teacher finishes what she is correcting. **Reverses if** judges find a parked topic is now returned to so late that the promise reads as forgotten (promises below 3.5 in two topics for that cause) → the return is said before the remediation's turn instead, never inside it.",
+  "rejected": "- `rj-r8-reask-last-clause-alone` (2026-11-18): **tried** saying only the last question clause of a card as a third re-ask form, so that the same re-ask sentence is not heard two turns running (Brain 046 Q5). **What broke:** 21 turns on the seven-topic dry matrix said a last clause alone and 11 of them dangled or needed givens no longer said: after help about a 4-part roti, \"Uska ek hissa kaunsa fractional unit hai?\" asks about the wrong roti (the card is about the 8-part one); \"Ismein kitne hisson mein…\", \"Inmein se kitne fraction…\", \"Woh kitna chauda hai?\". Every gated predicate read 0 on it; main found it reading the steady lessons. Replaced by `dc-r8-reask-two-whole-forms` and the gated predicate `reaskWhole`."
+ }
+}
