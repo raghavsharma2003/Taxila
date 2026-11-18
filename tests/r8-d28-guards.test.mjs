@@ -27,7 +27,9 @@ import { draftsFor, authoredLost, scriptSentenceKeys, authoredSentencesOf } from
 const ROOT = new URL("..", import.meta.url).pathname;
 const RUN = "2026-11-17-director28a";
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
-const scriptOf = (t) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${t}.json`), "utf8"));
+// (d29 final: the guards are pinned on the pilots as director28 ran them — Learning 017 deleted the quick questions these rows were said with;
+// the guards themselves read any script)
+const scriptOf = (t) => { const sc = JSON.parse(readFileSync(join(ROOT, "tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28/scripts", `${t}.json`), "utf8")); delete sc.recordedRun; return sc; };
 const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2", "TAXILA_R7_SCRIPT_DIR", "TAXILA_STRICT_AUTHORED"];
 const KEEP = {};
 const on = () => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } setScriptForTest(); };
@@ -35,6 +37,7 @@ const off = () => { replyDeps.chat = chat; replyDeps.chatStream = chatStream; se
 
 /** Her line on the live run's teacher row `row` (0-based), walked on the run's child lines, from `draft`. */
 async function lineAt(persona, T, row, draft) {
+  setScriptForTest(T, scriptOf(T));
   const { kit, last } = await replay(RUN, persona, T, row + 1);
   replyDeps.chat = async () => ({ text: draft }); replyDeps.chatStream = replyDeps.chat;
   const state = last.state;
@@ -45,6 +48,7 @@ const at = (t, x) => t.indexOf(norm(x));
 /** Brain 044 T1/T5/T6 move today's live walk off the live run's rows: the teacher row (0-based) where the walk first reaches a state, on the
  *  run's child lines. */
 async function rowWhere(persona, T, pred) {
+  setScriptForTest(T, scriptOf(T));
   const { plans } = await replay(RUN, persona, T, 400);
   const p = plans.find((x) => pred(x.state));
   return p ? p.row : null;

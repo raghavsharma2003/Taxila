@@ -14,7 +14,9 @@ const RUN = "2026-11-17-director26";
 import { readFileSync } from "node:fs";
 import { setScriptForTest } from "../server/director/script.js";
 function without042(T) {
-  const s = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+  // (d29 final: the pilots as director28 ran them — Learning 017's cuts and reshaped worked examples move these replays off director26's rows)
+  const s = JSON.parse(readFileSync(new URL(`./fixtures/eval-results/hybrid-side-by-side/results/2026-11-17-director28/scripts/${T}.json`, import.meta.url), "utf8"));
+  delete s.recordedRun;
   for (const k of s.skills ?? []) { for (const e of k.explain ?? []) delete e.quick; for (const st of k.workedExample?.steps ?? []) delete st.ask; }
   return s;
 }
@@ -104,6 +106,10 @@ test("N1: 'pata nahi, aap batao' at the check-in on the last card's why (c5-t01 
 test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28) gets a word before the card", async () => on041("c5-maths-ch02-t02", async () => {
   const { plans } = await replay(RUN, "stuck", "c5-maths-ch02-t02", 29);
   const m = plans.at(-1).p.r.state.lastMove;
+  // (d29 final: with the point and its card now in one turn where they fit 75 — Brain 044 T1 — the replay can reach row 28 with the card
+  // already posed; a give-up on a live card with nothing unsaid is its key (help's close). On the point with its card waiting, as director26
+  // ran: the "nothing easier" line, then helpToCard leads the card)
+  if (plans.at(-1).before?.lastUi?.ask?.itemId) { assert.equal(m.help?.card, "close"); return; }
   assert.equal(m.help?.card, "ask");
   // (Brain 044 T5: the "nothing easier" line is the help, then helpToCard leads the card)
   assert.equal(m.help?.joint, "helpSpent");

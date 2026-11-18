@@ -9,7 +9,8 @@ import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 
 const T = "c5-maths-ch02-t02";
-const board = { template: "fraction-parts@1", params: { parts: 8, shade: 1, whole: "bar" } };
+// (d29 final: Learning 017 redrew c5-t02's boards part by part — the bar board whose own second view is its circle is now the 4-part one)
+const board = { template: "fraction-parts@1", params: { parts: 4, shade: 1, whole: "bar" } };
 
 test("a caption is said over the view it was written for, and not over another kind of view", () => {
   const kit = kitFromFile(getTopic(T));

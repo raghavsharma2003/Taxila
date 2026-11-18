@@ -220,9 +220,11 @@ describe("T1: a point and its card share a turn", () => {
     for (const [p, t] of [["stuck", "c6"], ["offtopic", "c6"], ["steering", "c6"], ["steady", "c6"], ["stuck", "c4"], ["steering", "c5t02"]]) assert.ok(flagged(p, t, "switchFirst").has(4), `${p} ${t}`);
   });
   test("pointNoFit counts a point that ends on its check-in because it and its card do not fit (pending until Learning 017; noFit on the row)", () => {
-    const r = { who: "teacher", text: "Point. Yahan tak theek hai?", noFit: "point" };
+    const r = { who: "teacher", text: "Point. Yahan tak theek hai?", noFit: "point", seams: [{ right: "point" }, { right: "checkin" }] };
     assert.ok(D29_PREDICATES.pointNoFit({ rows: [r] }, r));
     assert.equal(D29_PREDICATES.pointNoFit({ rows: [r] }, { ...r, noFit: undefined }), null);
+    // (d29 final, offtopic c5-t02 36: a turn that says no point — her answer to the child's AI question, the point held — is not read)
+    assert.equal(D29_PREDICATES.pointNoFit({ rows: [r] }, { ...r, seams: [{ right: "aiQuestion" }] }), null);
   });
 });
 
