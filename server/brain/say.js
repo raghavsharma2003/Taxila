@@ -1250,8 +1250,13 @@ export function fallbackReply(state, item) {
     if (!p5Flag("LEADSLOT")) return q;
     const lead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel),
       rePose: state.pinItem === item.id && (state.pinRun ?? 0) > 1, lang });
-    if (!lead) return q;
-    return composeTurn(state.ctx.address === "aap" && lang !== "english" ? toAap(lead) : lead, q);
+    // (d29 final, adversarial steering 16 ×4: on a scripted turn what the walk says first — help's "nothing easier" line and its go-on line,
+    // a bridge — is said before the fallback's lead and the card, never dropped with her draft)
+    const sf = state.lastMove?.scriptBeat ? (state.lastMove?.sayFirst ?? []).map((x) => String(x).trim()).filter(Boolean).join(" ") : "";
+    // (help's own words lead a help turn: no fallback lead between them and the card — it stood between the go-on line and its return)
+    if (!lead || (sf && state.lastMove?.help)) return sf ? `${sf} ${q}` : q;
+    const lq = composeTurn(state.ctx.address === "aap" && lang !== "english" ? toAap(lead) : lead, q);
+    return sf ? `${sf} ${lq}` : lq;
   }
   const lines = FALLBACK[lang === "english" ? "english" : "hinglish"];
   // round 7 (main's full-run judgement #9: "Ek baar phir se batao, kya kaha tumne?" on a heard "pata nahi"): the re-ask is only
@@ -2467,8 +2472,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // round 3: a re-pose STILL only the question after every model repair gets the fixed code lead (conversation/
     // fallback-lead.js: the kit hint's statements when safe and not said yet, else a generic nudge she has not said this
     // lesson), never the bare question: owner-2 R3 on prod 4 of 90 turns. Code lines, never prompt text (nothing to recite).
+    // (d29 final, adversarial steering 16: a help turn whose own words — the "nothing easier" line, its go-on — are said first is no bare
+    // re-pose: no fixed lead between them and the card)
+    const helpSaid = !!state.lastMove?.help && !!state.lastMove?.sayFirst?.length;
     if (R3 && item && pinned && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
-      && problems(reply).includes("bare")) {
+      && problems(reply).includes("bare") && !helpSaid) {
       const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
       if (fixedLead) {
         const joined = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, askEnd);
@@ -2481,7 +2489,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // round 7 (main's block 2 #11): a card she already read word for word, and the model STILL gave back only the card after
     // the samecard repair: never a bare re-read. The fixed code lead she has not said yet goes before it (as above).
     if (R3 && cardRepeat && item && (rePose || helpAsk) && !whyProbe && !item.diagnostic && !CLOSING_MOVES.has(kindNow) && !checkin && !guard.caught.includes("floor")
-      && isBare(reply, promptFor(item, lang), ui.ask.text)) {
+      && isBare(reply, promptFor(item, lang), ui.ask.text) && !helpSaid) {
       const fixedLead = fallbackLead({ request: state.lastMove?.request ?? null, hint: hintStatements(item, state.lastMove?.hintLevel), rePose: true, lang, avoid: earlier });
       if (fixedLead) { reply = composeTurn(address === "aap" && lang !== "english" ? toAap(fixedLead) : fixedLead, ui.ask.text); guard.codeLead = true; }
     }
@@ -3056,7 +3064,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     } else if (point && kindNow === "explain") {
       // v6.1 R7: the point is said in its authored words (her paraphrase of it is model-written teaching); one short framing
       // clause of hers may lead in
-      const li = ss.find((x) => clean(x) && !/\d/.test(x) && !RULE_SAID.test(x)); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true;
+      // (d29 final, adversarial steady c4 68: her lead-in is never a sentence of the point itself — it was said first, then dropped as a double)
+      const pointKs = new Set(sentences(point).map((x) => authoredKey(x)));
+      const li = ss.find((x) => clean(x) && !/\d/.test(x) && !RULE_SAID.test(x) && !pointKs.has(authoredKey(x)) && !pointKs.has(authoredKey(oneClause(x)))); body = [...(li ? [oneClause(li)] : []), dot(point)]; guard.pointSaid = true;
     } else if (state.lastMove?.simpler) {
       // v6.1 R8: the live card's authored simpler on "pata nahi" / "samajh nahi aaya" (never a model-written hint)
       body = sentences(norm(state.lastMove.simpler)).map(norm).filter(Boolean).map(dot);
