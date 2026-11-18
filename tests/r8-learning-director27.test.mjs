@@ -97,10 +97,15 @@ test("016 C: every remediation has a board its say speaks or is a 'socho' tellin
     else { imagine++; assert.match(r.say.hi, /\bsocho\b/i, `${at}: no board, and not an imagine telling`); }
     if (r.sayAlt?.board) assert.ok(BF.scriptBoardSpoken(ask(r.sayAlt.hi, r.sayAlt.board)), `${at}: sayAlt board unspoken`);
   }
-  assert.deepEqual([own, imagine], [19 + 5, 8]); // (the four pilots 19 + 8; c5-maths-ch02-t03, live since dc-r8-director31: 5 with a board)
+  // (the count is of remediation items over the five live scripts, D27_PILOTS: [with a board, "socho" tellings with none]. The four pilots
+//  were 19 + 8 and c5-maths-ch02-t03 adds 5 + 0; the 020 rewrites (dc-r8-director31) gave two more remediations a board, so the four are
+//  21 + 6. Listed: the 6 are c5-t01 s3 rem1, c6-t01 s1 rem1, s2 rem0, s2 rem1, s3 rem0, s3 rem1, every one a "Socho" telling.)
+  assert.deepEqual([own, imagine], [21 + 5, 6]);
   // (C2: the count-marks board drew the 11 lower ticks its card asks the child to count)
   const cm = S["c5-maths-ch02-t01"].skills[0].remediation[0];
-  assert.ok(!(cm.board.params.dens ?? []).includes(12) && cm.board.params.den === 7);
+  // (dc-r8-director31: the 020 rewrite replaced the 7-gap board with the tailor's 4-marks-5-gaps board, den 5; the rule stands: the board never
+  //  draws the 12 gaps its then-card asks the child to count)
+  assert.ok(!(cm.board.params.dens ?? []).includes(12) && cm.board.params.den !== 12 && cm.board.params.den === 5);
   // (C3: c5-t02 skill 3's third remediation: the 3-and-8 board is the say's; the tanks have none)
   const g = S["c5-maths-ch02-t02"].skills[2].remediation[2];
   assert.deepEqual(g.board.params.bars.map((b) => b.parts), [3, 8]);
