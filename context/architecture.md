@@ -690,3 +690,8 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-fit-limit-is-the-walks-arithmetic` (2026-11-18): A fit limit written for the scripts must be the walk's own arithmetic: remediation pairs written to 49 words split at 61 because the walk allows five words for the miss and the longest joint, which was seven or eight words
 - `fd-fit-check-must-draw-the-turn` (2026-11-18): A check that asks Studio whether a turn's boards fit must hand it exactly what the turn draws: one board too many, or the board up drawn fresh instead of held, turned turns that drew correctly into check-ins
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-predicate-read-plan-not-screen` (2026-11-18): A predicate that reads the plan and not what was drawn passes a wrong picture: all four steering lessons drew another card's board on a picture turn, in the dry run and the live run, with every gated predicate at 0
+- `fd-cut-to-fit-reads-as-notes` (2026-11-18): Cutting remediations and short reasons to a word limit produced lines two judges read as notes, not speech; a fit limit needs a said-aloud read after the cut

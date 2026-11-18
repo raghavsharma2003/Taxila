@@ -29742,6 +29742,34 @@
    "at": "2026-11-18",
    "title": "Released e18ceef with scripts/release.mjs: web taxila-web--se18ceef-hjpy (was taxila-web--sc12dbb6-0npg), worker + canary/nightly jobs on taxila-worker:e18ceef (was c12dbb6); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs e18ceef --rollback.",
    "source": "inbox/release-e18ceef.json"
+  },
+  {
+   "id": "ms-r8-director29",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "director29 (16 live lessons on release 50's code, four Opus judges): no topic passes; every axis at 3.5 or above in all four topics for the first time; each topic fails on one or two rows (5 contradictions, 2 unsaid boards in the run), four of them the same picture turn",
+   "source": "inbox/r8-main-49.json"
+  },
+  {
+   "id": "dc-r8-director29",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A picture turn draws the board the walk named and a predicate reads what was drawn; a worked step's easier wording and a remediation's second wordings are rungs before a key; a second request at the greeting starts the lesson; the child's own try is an allowed ending; lines are written to be said before they are fitted",
+   "source": "inbox/r8-main-49.json"
+  },
+  {
+   "id": "fd-predicate-read-plan-not-screen",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "A predicate that reads the plan and not what was drawn passes a wrong picture: all four steering lessons drew another card's board on a picture turn, in the dry run and the live run, with every gated predicate at 0",
+   "source": "inbox/r8-main-49.json"
+  },
+  {
+   "id": "fd-cut-to-fit-reads-as-notes",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "Cutting remediations and short reasons to a word limit produced lines two judges read as notes, not speech; a fit limit needs a said-aloud read after the cut",
+   "source": "inbox/r8-main-49.json"
   }
  ],
  "edges": [
@@ -47644,6 +47672,31 @@
    "src": "ms-r8-d29-dry",
    "rel": "part_of",
    "dst": "dc-r8-director28"
+  },
+  {
+   "src": "dc-r8-director29",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "dc-r8-director29",
+   "rel": "supersedes",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "fd-predicate-read-plan-not-screen",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "fd-cut-to-fit-reads-as-notes",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
   }
  ]
 }

@@ -1,0 +1,59 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director29",
+   "kind": "measurement",
+   "at": "2026-11-18",
+   "title": "director29 (16 live lessons on release 50's code, four Opus judges): no topic passes; every axis at 3.5 or above in all four topics for the first time; each topic fails on one or two rows (5 contradictions, 2 unsaid boards in the run), four of them the same picture turn"
+  },
+  {
+   "id": "dc-r8-director29",
+   "kind": "decision",
+   "at": "2026-11-18",
+   "title": "A picture turn draws the board the walk named and a predicate reads what was drawn; a worked step's easier wording and a remediation's second wordings are rungs before a key; a second request at the greeting starts the lesson; the child's own try is an allowed ending; lines are written to be said before they are fitted"
+  },
+  {
+   "id": "fd-predicate-read-plan-not-screen",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "A predicate that reads the plan and not what was drawn passes a wrong picture: all four steering lessons drew another card's board on a picture turn, in the dry run and the live run, with every gated predicate at 0"
+  },
+  {
+   "id": "fd-cut-to-fit-reads-as-notes",
+   "kind": "finding",
+   "at": "2026-11-18",
+   "title": "Cutting remediations and short reasons to a word limit produced lines two judges read as notes, not speech; a fit limit needs a said-aloud read after the cut"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director29",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "dc-r8-director29",
+   "rel": "supersedes",
+   "dst": "dc-r8-director28"
+  },
+  {
+   "src": "fd-predicate-read-plan-not-screen",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "fd-cut-to-fit-reads-as-notes",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  },
+  {
+   "src": "dc-r8-op-cap-stays",
+   "rel": "measured_by",
+   "dst": "ms-r8-director29"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director29` (2026-11-18): 16 lessons (4 pilot topics × steady, stuck, offtopic, steering), Director only, reactive child, joins off, int/r6 integration 84, commit 50abc534a (release 50's code), one invocation, 1,325 model calls, about $0.97. Method: four Opus judges (high effort), one per topic, each reading 4 lessons by hand against 16 clauses fixed before the run; the predicate check over the live rows read 0 on every gated line and missed the picture rows (it reads the plan, not the screen). Hand counts (c4, c5-t01, c5-t02, c6): beats 143/145, 133/133, 164/164, 156/156; verdicts 91/91, 92/92, 113/113, 106/106; misgrades 0; false keys 0; words against the board 1, 1 (main's reading of steering 14, which the judge recorded as a caption fault), 2, 1; unsaid boards by the strict reading 0, 1, 1, 0 (director28: 6, 19, 3, 5). Axes, director28 → director29: listening 3.5→3.5, 3→3.5, 3→3.5, 3.5→3.5; worked example 4→4, 4→4, 4→3.5, 3.5→4; class level 4 in all; screen and speech 4→4, 3.5→4, 3→3.5, 4→4; register 3.5 in all; promises 3.5, 3→3.5, 3.5, 3.5. Check-in turns in the steady lessons 6, 6, 5, 6 (director28: 16, 11, 8, 10); steady lessons 99, 99, 103, 103 rows (141, 125, 141, 121). Quick questions and invitations heard: 0. Points or remediations whose board shows the card's question or is untrue: 0 in all four (24 in director28). Turns over 75 words: 7, all the first teaching turn led by the nothing-easier line. Rows marked noFit for the op cap: 3, none in a steady lesson. Results and reports: `evals/hybrid-side-by-side/results/2026-11-18-director29/`.\n",
+  "decisions": "- `dc-r8-director29` (2026-11-18, main loop; supersedes `dc-r8-director28`, whose turn shapes, boards and help precondition stand): director29's judges applied to the clauses fixed before the run. Decided: (1) one function decides the board a picture turn is of (the part helped, or the answered card's answer board after a key), Studio's held panel draws that board, the caption is that board's authored one or none, and a gated predicate reads the drawn facts against the named board; (2) the page's start comes from one function on every path, the easier-words line being a lead; (3) at an asked worked step a give-up gets the step's simpler wording before the step is told, a remediation's second wordings are help for its follow-up card before that card's key, and a key is never the answer to an aside or a yes; (4) a second request at the greeting gets one authored start line and the lesson starts, and the nothing-easier line is never said before something is taught; (5) the short reason is allowed after a right answer whatever came before, and a worked close drops its why when the next card would not fit; (6) five allowed endings (the child's own try at a card is one), an aside reply never ends on a check-in on any path, a park line gets its joint; (7) the short ask only when the question was said the turn before; (8) record fixes; (9) Learning 018: captions checked against the view drawn and against asked steps in words, an answer caption per follow-up card, remediations written to be said (said beats fitted: one that cannot be said inside the limit stands alone). One deviation from the clauses: clause 3's remedy for a cold nothing-easier line (follow it with the key's why in new words) was not built, because the line was cold where no key exists, at the greeting; item 4 is the remedy. Reverses if: a picture turn in director30 draws a board that is not the one named (then the picture leaves the held-board path); two judges find the step's easier wording slows a child who gave up (then the step is told at the first give-up); two judges find the start line brushes the child aside (then the greeting is rewritten); two judges find the verdict-point-card turns too much in one breath (then that turn's limit is 65 words). Two topics passing every line with every axis at 3.5 releases the staged scripts three at a time, each judged before the next three. Orders: `docs/patches/to-brain/045-director29-picture-rungs-start.md`, `docs/patches/to-learning/018-director29-captions-and-said-lines.md`.\n"
+ }
+}
