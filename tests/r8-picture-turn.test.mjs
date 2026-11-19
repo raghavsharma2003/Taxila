@@ -34,13 +34,13 @@ const numsIn = (v) => (JSON.stringify(v).match(/\d+(?:\.\d+)?/g) ?? []).map(Numb
 
 /** The boards with no second view today, by template — why, and which of the pilots' boards. */
 const NO_VIEW = {
-  "shape@1": "a named outline with free-text labels (\"5 cm\", \"parimap 60 m\"): no numbers to lay out again",
-  "compare@1": "a word board: two titled lists; only a compare naming two whole cut into pieces has one (wholes)",
-  "fraction-line@1": "beyond one whole (to 2 or 3), a target to place, or a two-scale line whose marks are the key",
-  "fraction-bars@1": "three unnamed bars (no view without inventing a name), or a two-scale line view that does not lay out in the split's 320-wide panel (c5-t02 worked 1/6 and 1/3)",
-  "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question)",
-  "equal-groups@1": "unequal sizes [6, 3, 3] (no equal grid)",
-  "measured@1": "(none today: the six-sided strip lays out since v6.11)",
+  "shape@1": "a named outline with free-text labels (\"parimap 60 m\", \"baad 84 m\"): the perimeter is a label, not a length the template knows, and a rectangle's strip to scale would show its asked side by eye; a named pentagon has no lengths",
+  "compare@1": "a word board: two titled lists; only a compare naming two wholes cut into pieces (wholes) or listing lengths in one unit (Studio 014: scale) has one — c6's \"16 cm aur 9 cm\" items are two lengths each",
+  "fraction-line@1": "(none on the pilots since Studio 014: a line past 1, two scales past 1, or a target to place is drawn as whole strips end to end; a count key it would cut still has none)",
+  "fraction-bars@1": "(none on the pilots since Studio 014: three bars are three circles)",
+  "shade-grid@1": "a grid with nothing shaded and its total hidden (\"1/3 of 15\": the grid IS the question — grouping it any way is the answer or a split the card did not ask)",
+  "equal-groups@1": "(none on the pilots since Studio 014: unequal sizes are rows from one edge)",
+  "measured@1": "c6 s3 e3's 12 × 8 m garden (name, trace and a two-line mix-up): its unrolled view is built, but the held board itself does not lay out in the split's left panel (\"rectangle\" and \"perimeter\" meet at panel scale, the mix-up runs below the board)",
 };
 
 test("P6: pictureTurn — every pilot card and worked board gets its view, with a line naming only what the view draws, or no view and no line (never a line without a view)", () => {
@@ -87,7 +87,13 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // asked step's answer — for the pencils' grid and the two chocolates' bars: compare 4 → 2, shade-grid 5 → 6, wholes 21 → 22)
     // (Learning 020 rewrites, dc-r8-director31, 2026-11-18: one more fraction-parts board and one more equal-groups board, each with its view:
     // parts 10/10 → 11/11, equal-groups 6/9 → 7/10; every per-board assertion above still holds for them)
-    "fraction-parts@1": "11/11", "wholes@1": "22/22", "shade-grid@1": "1/6", "equal-groups@1": "7/10", "compare@1": "1/2",
+        // (Studio 014, dc-r8-director31 item 5, 2026-11-18: three unequal-groups boards get the rows view (equal-groups 7/10 → 10/10), three
+    // three-bar boards the three-circle view (bars 33 → 36), eighteen lines past 1 / with a target the strips view (line 43 → 61);
+    // every per-board assertion above holds for each, and no board that had a view changed it)
+    // (d32 reader fixes, 2026-11-19: c5-t02 s3 e3's point moved from a compare word table to bars of 3/5 and 3/8 (compare 1/2 → 0/1),
+    // and fraction cards moved between bars and wholes boards (bars 36 → 34, wholes 22 → 25), every one with its view; every per-board
+    // assertion above holds for each)
+    "fraction-parts@1": "11/11", "wholes@1": "25/25", "shade-grid@1": "1/6", "equal-groups@1": "10/10", "compare@1": "0/1",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -107,7 +113,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // (Learning 017 C, dc-r8-director28: c5-t02 S1 e2's point is drawn on both strips (fraction-parts 12 → 10, bars 35 → 36, with a
     // view); S2 e2's point on a 7-gap line (fraction-parts 10, line 60 → 61, with a view); c5-t01's redrawn remediation and point
     // boards stay lines)
-    "fraction-bars@1": "33/36", "fraction-line@1": "43/61", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    "fraction-bars@1": "34/34", "fraction-line@1": "61/61", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 
@@ -320,4 +326,37 @@ test("main on director22: a view whose captions cannot be said clean is still dr
     if (BF.QUIET_PICTURE_LINES.includes(pt.line)) quiet++;
   }
   assert.ok(viewed > 100 && quiet >= 1, `views ${viewed}, of which with the quiet line ${quiet}`);
+});
+
+// Studio 014 (dc-r8-director31 item 4): the view each of the seven scripts' card, check, follow-up, own-step and asked-step boards gets
+// (viewOf: the view pictureTurn draws), by board template → view template and name, and how many such cards the checker's rule 7
+// still lists (no second view and no authored pictureBoard). A change here is a change in what a picture request draws.
+test("Studio 014: the seven scripts' card boards — the view each gets, and what rule 7 still lists", async () => {
+  const { d32Cards, viewOf, noPictureCards } = await import("../scripts/lesson-scripts/check.mjs");
+  const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts-staged", "c6-maths-ch07-t01"]];
+  const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
+  const got = {};
+  for (const [d, T] of SEVEN) {
+    const s = JSON.parse(readFileSync(new URL(`../data/${d}/${T}.json`, import.meta.url), "utf8")), m = {};
+    for (const c of d32Cards(s)) {
+      if (!KINDS.has(c.kind)) continue;
+      const v = c.board?.template ? viewOf(c.board, c.at) : null, k = `${c.board?.template ?? "none"} → ${v ? `${v.template} ${v.view}` : "none"}`;
+      m[k] = (m[k] ?? 0) + 1;
+    }
+    got[T] = { ...Object.fromEntries(Object.entries(m).sort()), "rule 7": noPictureCards(s).length };
+  }
+  // (repinned d32, 2026-11-19, after the reader fixes, Studio's second views and the rule 7 picture boards: rule 7 lists 0 on six
+  // scripts and 1 on c4-ch05-t01, the one card PICTURE_NONE names with its reason (s2's pencils grid: any drawing of the groups is the
+  // key); c4-ch01-t02 13 → 0 and c6-ch06-t01 7 → 0 by authored pictureBoards and new views; the reader fixes moved some cards'
+  // boards between templates, and every board kept the per-board checks of P6)
+  assert.deepEqual(got, {
+    "c4-maths-ch05-t01": { "equal-groups@1 \u2192 equal-groups@1 rows": 2, "equal-groups@1 \u2192 shade-grid@1 grid": 3, "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 fraction-parts@1 round": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 2, "shade-grid@1 \u2192 fraction-parts@1 round": 1, "shade-grid@1 \u2192 none": 4, "wholes@1 \u2192 wholes@1 strips": 9, "wholes@1 \u2192 wholes@1 wholes": 3, "rule 7": 1 },
+    "c5-maths-ch02-t01": { "fraction-line@1 \u2192 fraction-bars@1 parts": 18, "fraction-line@1 \u2192 fraction-line@1 strips": 15, "rule 7": 0 },
+    "c5-maths-ch02-t02": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 16, "fraction-line@1 \u2192 fraction-bars@1 parts": 10, "wholes@1 \u2192 wholes@1 strips": 4, "rule 7": 0 },
+    "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 6, "rule 7": 0 },
+    "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 0 },
+    "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 9, "shape@1 \u2192 shape@1 radii": 8, "rule 7": 0 },
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 6, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 4, "fraction-line@1 \u2192 fraction-bars@1 parts": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 }
+  });
 });

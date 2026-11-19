@@ -28,7 +28,7 @@ import { fitLegible, scaleScript } from "./board-legible.js";
 import { scriptFacts, isMotionOp, shiftOp, lintScript, opGeometry } from "../../shared/whiteboard.js";
 import { preferPicture } from "./beat-card.js";
 import { resolveBoardRef } from "../forge/explainer/board-ref.js";
-import { expand } from "../forge/explainer/templates.js";
+import { expand, compareScaleOf } from "../forge/explainer/templates.js";
 import { splitSentences } from "../voice/sentences.js";
 import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
 import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
@@ -589,7 +589,7 @@ function wholesOfCompare(c) {
 
 /** The second views a pick names (artifact.altView): parts (bars), line, wholes, strips (wholes as bars), unrolled (a ruler),
  *  round (a circle), example (a smaller case of the same rule: a count key's own figure would show the count). */
-const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid"]);
+const ALT_VIEWS = new Set(["parts", "line", "wholes", "strips", "unrolled", "round", "example", "grid", "scale", "tester", "rows", "radii"]);
 /** The row a second view's line is written from (and judged against before her line exists). */
 // (round 8: NUM_HI, fracSay and lineStatesKey moved to server/forge/explainer/states-key.js — the templates use the key
 // predicate and this file imports templates.js; re-exported here so every caller is unchanged)
@@ -619,6 +619,40 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   // where the 8 had been. A quiet bar of several is named by its place, as a whole sentence: "doosri patti bhi barabar hisson
   // mein bati hai" — the part without its count, never a slot)
   const item = (x, i) => (quiet.has(x.parts) ? `${ord(i)} patti${i ? " bhi" : ""} barabar hisson mein bati hai${shadeOf(x)}` : v ? `${ord(i)} ${bar(x)}` : `ek ${bar(x)}`);
+  // (Studio 014 item 5: the strips view names its wholes and its parts, never a shaded count — an asked mark's count is its key)
+  if (ac.template === "fraction-line@1" && ac.as === "strips") {
+    const dens = Array.isArray(ac.dens) ? ac.dens : [ac.den], w = Number(ac.to ?? ac.wholes ?? 1), runs = Array.isArray(ac.marks) && ac.marks.length || ac.mark != null;
+    const n = NUM_HI[w] ?? String(w), sh = runs ? ", aur nishaan tak ke hisse rangin hain" : "";
+    const pw = w > 1 ? `${n} poori pattiyan, ek ke baad ek` : "ek poori patti";
+    if (dens.length === 2) return v ? `Ab isi ko do qataron mein dekho, har qatar mein ${pw}: upar wali ${nOf(dens[0])}barabar hisson mein, neeche wali ${nOf(dens[1])}barabar hisson mein${sh}`
+      : `Dekho, dono rekhayein ab pattiyon ki do qatarein hain, har qatar mein ${pw}${sh}`;
+    return v ? `Ab isi rekha ko pattiyon mein dekho: ${pw}, har patti ${nOf(dens[0])}barabar hisson mein${sh}`
+      : `Dekho, 0 se ${w} tak ki rekha ab ${w > 1 ? `${n} poori pattiyon mein hai, ek ke baad ek` : "ek poori patti hai"}; har patti ${nOf(dens[0])}barabar hisson mein${sh}`;
+  }
+  // (Studio 014 item 5: unequal groups as rows from one edge — the sizes the board writes)
+  if (ac.template === "equal-groups@1" && ac.as === "rows")
+    return v ? `Ab in groups ko qataron mein dekho, sab ek hi jagah se shuru: ${ac.sizes.join(", ")}` : `Dekho, har group ab ek qatar hai, sab qatarein ek hi jagah se shuru hoti hain: ${ac.sizes.join(", ")}`;
+  // (Studio 014 item 3: the radius drawn at three places — no claim that they are equal: that is what such a card asks)
+  if (ac.radii === 3) return v ? "Ab centre se kinaare tak teen alag jagah line kheench kar dekho" : "Dekho, centre se kinaare tak ki line ab teen jagah kheenchi hai";
+  // (Studio 014 item 2: the tester view names the angles as the board names them, and never which is less, equal or more)
+  if (ac.template === "angle@1" && ac.tester) {
+    const names = ac.angles.map((a) => a.name).filter(Boolean), one = ac.angles.length === 1;
+    const who = names.length === ac.angles.length && !one ? `${names.slice(0, -1).join(", ")} aur ${names.at(-1)}` : "";
+    // (the lesson's own act: "kone par tester rakho")
+    return v ? `Ab ${one ? "is kone" : who ? `${who}, har ek ke kone` : "har kone"} par tester rakh kar dekho`
+      : `Dekho, ${one ? "is kone par" : who ? `${who}: har kone par` : "har kone par"} tester rakha hai, halki rekha se`;
+  }
+  // (Studio 014 item 1: the to-scale view names the table's own words only — its titles and its lengths)
+  if (ac.template === "compare@1" && ac.scale) {
+    const sc = compareScaleOf(ac);
+    if (sc?.whole) { const w = sc.whole, list = w.pieces.map((p) => p.label).join(", ");
+      return v ? `Ab isi ko naap se dekho: ${w.label} ki ek patti, ${list} ke tukdon mein kati hui`
+        : `Dekho, ${w.title ? `${w.title} ` : ""}${w.label} ki ek lambi patti hai, aur ${list} ke hisse usi naap se kaate hain`; }
+    if (sc?.bars) { const list = sc.bars.map((b) => `${b.title ? `${b.title}, ` : ""}${b.label}`).join("; ");
+      const what = ["cm", "m", "km", "mm"].includes(sc.unit) ? "lambai" : "sankhya";
+      return v ? `Ab inhe naap se pattiyon mein dekho: ${list}` : `Dekho, har ${what} ek patti hai, naap ke hisaab se: ${list}`; }
+    return "";
+  }
   if (ac.template === "shade-grid@1") return v ? `Ab inhe ek jaal mein gino: ${ac.rows} qatarein hain, aur har qatar mein ${ac.cols}`
     : `Wahi ${NUM_HI[ac.rows] ?? ac.rows} group ab ek jaal mein hain: ${ac.rows} qatarein, har qatar mein ${ac.cols}`;
   if (ac.wholes) {
@@ -723,6 +757,8 @@ function keyless(call, keys, { ownParts = false } = {}) {
     const bars = call.bars.map((b) => (numKeys.includes(b.parts) ? { parts: 1, shade: 0, label: "?" } : isFrac(b.shade, b.parts) ? { ...b, label: "?" } : b));
     return { ...call, bars };
   }
+  // (Studio 014: the strips view writes no count of its own — its den is the line's; a count key it would cut is no view)
+  if (call.template === "fraction-line@1" && call.as === "strips") return (call.den && numKeys.includes(call.den)) || (Array.isArray(call.dens) && call.dens.some((d) => numKeys.includes(d))) ? null : call;
   if (call.template === "fraction-line@1") {
     if ((call.den && numKeys.includes(call.den)) || (Array.isArray(call.dens) && call.dens.some((d) => numKeys.includes(d)))) return null;
     const marks = (call.marks ?? []).filter((m) => (Array.isArray(m) ? !isFrac(m[0], m[1]) : !isFrac(m.num, call.den)));
@@ -775,6 +811,15 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     const g = c.template === "equal-groups@1" ? (eqSizes ? { groups: c.sizes.length, each: c.sizes[0] } : !Array.isArray(c.sizes) ? { groups: c.groups, each: c.each } : null) : null;
     if (g && Number.isInteger(g.groups) && g.groups >= 2 && g.groups <= 6 && Number.isInteger(g.each) && g.each >= 1 && g.each <= 10)
       return { template: "shade-grid@1", rows: g.groups, cols: g.each, shade: 0, labels: true, ...(c.hideResult ? { hideResult: true } : {}), view: "grid" };
+    // (Studio 014 item 5: unequal groups — "9, 6, 6", "7, 3, 3, 3" — have a second view too: each group a row of cells from one
+    // edge, so how they differ is how far each row runs; the sizes written as the board writes them)
+    if (c.template === "equal-groups@1" && Array.isArray(c.sizes) && !eqSizes && c.equalTo == null && c.sizes.length >= 2 && c.sizes.length <= 6 && c.sizes.every((n) => Number.isInteger(n) && n >= 1 && n <= 10))
+      return { template: "equal-groups@1", sizes: c.sizes, as: "rows", view: "rows" };
+    // (Studio 014 item 3: a circle whose radius the board draws — shape@1 with a radius label, measured@1 with r — has the same
+    // radius drawn at three places as its second view; a circle with no radius drawn has none)
+    if (c.template === "shape@1" && c.shape === "circle" && c.radius && !c.diameter && !c.chord && !c.arc)
+      return { template: "shape@1", shape: "circle", radius: c.radius, ...(c.centre ? { centre: c.centre } : {}), ...(c.name ? { name: c.name } : {}), radii: 3, view: "radii" };
+    if (c.template === "measured@1" && c.shape === "circle" && Number(c.r) > 0 && c.mixup == null) return { template: "measured@1", shape: "circle", unit: c.unit, r: c.r, radii: 3, view: "radii" };
     const ps = sidesOf(c);
     if (ps) {
       const sum = Math.round(ps.sides.reduce((a, b) => a + b, 0) * 10) / 10;
@@ -799,7 +844,10 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
       // (main v6.9 S11, c5-t02 steering 14: an unnamed bar is still a scale of the board — "?" 8 parts beside the named 1/4 is
       // the bar the card asks about; the line drew only the quarters. Every bar's scale is on the line, only the named marked)
       for (const b of c.bars) if (b && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && !dens.includes(b.parts)) dens.push(b.parts);
-      if (dens.length > 2) return null;
+      // (Studio 014 item 5: three bars of three sizes — a named one among them, c6-ch07 s2 c1 — are three circles of the same
+      // parts, the shading kept, no name written: a line cannot carry three scales)
+      if (dens.length > 2) return c.bars.length === 3 && c.bars.every((b) => b && Number.isInteger(b.parts) && b.parts >= 2 && b.parts <= 12 && Number.isInteger(b.shade ?? 0) && (b.shade ?? 0) >= 0 && (b.shade ?? 0) <= b.parts)
+        ? { template: "wholes@1", wholes: c.bars.map((b) => ({ parts: b.parts, equal: true, ...(b.shade ? { shade: b.shade } : {}) })), view: "wholes" } : null;
       if (dens.length === 1) return { template: "fraction-line@1", den: dens[0], from: 0, to: 1, marks: [...new Map(named.map((b) => [b.shade, { num: b.shade, label: `${b.shade}/${b.parts}` }])).values()], view: "line" };
       return { template: "fraction-line@1", dens, from: 0, to: 1, marks: named.map((b) => [b.shade, b.parts]), view: "line" };
     }
@@ -827,11 +875,20 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     // (a compare of two wholes in pieces — "Cake A: 3 tukde, 1 bada 2 chhote | Cake B: 3 tukde, sab barabar" — is drawn as
     // the two wholes themselves; one with fractions of its own still becomes bars, below)
     if (c.template === "compare@1") { const w2 = wholesOfCompare(c); if (w2) return w2; }
+    // (Studio 014 item 2, dc-r8-director31: an angles board's second view is the same angles with the right-angle tester laid
+    // on each — the act the class 4 lesson teaches; c4-ch01-t02's picture turns redrew the board and drew nothing new. A reflex
+    // angle, or an answer board's mark, has none)
+    if (c.template === "angle@1") return Array.isArray(c.angles) && c.angles.length && c.mark == null && c.angles.every((a) => Number.isInteger(a?.deg) && a.deg <= 180)
+      ? { template: "angle@1", angles: c.angles, tester: true, view: "tester" } : null;
     if (!["fraction-line@1", "compare@1"].includes(c.template)) return null;
     const frac = (t) => { const m = /^\s*(\d+)\s*\/\s*(\d+)\s*$/.exec(String(t ?? "")); return m && Number(m[2]) >= 1 && Number(m[2]) <= 12 && Number(m[1]) <= Number(m[2]) ? [Number(m[1]), Number(m[2])] : null; };
     const fs = [];   // [a, b], or { at: [a, b] } for the asked mark
     if (c.template === "fraction-line@1") {
-      if (c.target != null || Number(c.to ?? 1) > 1) return null;   // (beyond one whole, or a target to place: no bar view)
+      // (beyond one whole, two scales past 1, or a fraction to place: Studio 014 item 5 — the line's wholes as strips end to end)
+      if (c.target != null || Number(c.to ?? c.wholes ?? 1) > 1) {
+        const k = ["den", "dens", "to", "wholes", "marks", "mark", "hop"].filter((x) => c[x] !== undefined);
+        return !c.show ? { template: "fraction-line@1", ...Object.fromEntries(k.map((x) => [x, c[x]])), from: 0, as: "strips", view: "strips" } : null;
+      }
       // (a two-scale line names its marks as [a, b] pairs: [[1, 7], [1, 9]])
       for (const m of Array.isArray(c.marks) ? c.marks : []) {
         const f = Array.isArray(m) ? frac(`${m[0]}/${m[1]}`) : frac(m?.label ?? `${m?.num}/${c.den}`) ?? (Number.isInteger(m?.num) && m.num <= c.den ? [m.num, c.den] : null);
@@ -865,7 +922,12 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
       bars.push(!Array.isArray(f) ? { parts: b, shade: a, label: "?" } : isWithheld(a, b) ? { parts: b, shade: 0, label: "?" } : { parts: b, shade: a, label: key });
     }
     // (… and a line's 0 and 1 stay: the bars of a 0-1 line are drawn with its ends)
-    return bars.length >= 1 && bars.length <= 3 ? { template: "fraction-bars@1", bars, ...(c.template === "fraction-line@1" ? { ends: true } : {}) } : null;
+    if (bars.length >= 1 && bars.length <= 3) return { template: "fraction-bars@1", bars, ...(c.template === "fraction-line@1" ? { ends: true } : {}) };
+    // (Studio 014 item 1, dc-r8-director31: a table whose items are lengths in one unit — "Ribbon P 20 cm | Ribbon Q 12 cm",
+    // "Chocolate 16 cm | Hisse 6, 6, 2, 2 cm" — is drawn to scale: a bar per length, or the whole cut at its pieces. c6-ch07
+    // stuck 18 heard such a table read back as its picture)
+    if (c.template === "compare@1" && compareScaleOf(c)) return { template: "compare@1", left: c.left, right: c.right, scale: true, view: "scale" };
+    return null;
   } catch { return null; }
 }
 

@@ -775,7 +775,9 @@ export function v22Errors(s) {
       const a = figureOf(c.answerBoard), b = figureOf(board);
       // director11 D1: a judgement card may reveal the judged figure and then the equal one beside it (wholes appended)
       const appended = c.answerBoard?.template === "wholes@1" && board?.template === "wholes@1"
-        && figureOf({ template: "wholes@1", params: { wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
+        // (d32, main: the appended wholes keep the posed drawing's own shape; a circle posed and strips answered is a new figure)
+        && (c.answerBoard.params?.as ?? null) === (board.params?.as ?? null)
+        && figureOf({ template: "wholes@1", params: { ...(board.params?.as ? { as: board.params.as } : {}), wholes: (c.answerBoard.params?.wholes ?? []).slice(0, (board.params?.wholes ?? []).length) } }) === b;
       // (dc-r8-director28 item 6, Learning 017 C: a card that asks the child to count the marks of a line it names — the count-marks
       // card, "12 barabar gaps ke beech kitne marks?" — is posed over the line it starts from, never over the line whose ticks it asks
       // to count; its answerBoard adds that line. Allowed where the answer's lines begin with the posing board's and the key is a count.)
@@ -1417,11 +1419,15 @@ export const VIEW_KIND_WORDS = {
 export function boardKind(ref) {
   if (!ref?.template) return null;
   const t = ref.template, p = ref.params ?? ref;
+  // (Studio 014: a line's wholes as strips end to end are strips — pattiyan)
+  if (t === "fraction-line@1" && p.as === "strips") return "strip";
   if (t === "fraction-line@1" || t === "unrolled@1" || t === "number-line-hop@1") return "line";
   if (t === "fraction-bars@1") return "strip";
   if (t === "fraction-parts@1") return p.whole === "bar" ? "strip" : "circle";
   if (t === "wholes@1") return p.as === "bar" ? "strip" : "circle";
   if (t === "shade-grid@1" || t === "equal-groups@1") return "grid";
+  // (Studio 014: a compare table's to-scale view is bars — pattiyan)
+  if (t === "compare@1" && p.scale === true) return "strip";
   return "figure";
 }
 /** The second view a picture turn draws beside `ref` (pictureTurn, as tests/r8-picture-turn holds it): { template, view, kind } or null. */
@@ -1684,9 +1690,17 @@ export function d31Errors(s) {
  *     does not state; on a two-way card (the prompt has "ya", or the accepted forms name both options) a wording that names one
  *     option and not the other fails.
  *  Also: no `wrap.ack` form says "yaad rakh" (a promise she cannot keep). */
-export const D32_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
-/** Rule 7 (a picture has something to draw) waits for Studio 014's views: on for a topic listed here, with --d32, or when forced. */
-export const D32_PICTURES_READY = [];
+export const D32_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
+  // (the two staged scripts rewritten for director32, each read cold by an independent reader and fixed)
+  "c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+/** Rule 7 (a picture has something to draw): on for a topic listed here, with --d32, or when forced. Studio 014's views are in. */
+export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
+  "c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+/** Cards with no honest drawing: any picture of the thing would draw the card's own answer. A picture request there gets the
+ *  card's hint (to Brain 048 G5). Main lists each with its reason: { topicId, at, reason }. */
+export const PICTURE_NONE = [
+  { topicId: "c4-maths-ch05-t01", at: "c4-maths-ch05-t01-s2/workedExample.steps[0].ask", reason: "15 pencils into groups for 1/3: any drawing of the groups is the key (three equal groups)" },
+];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
 export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;
 /** Pairs said whole over POINT_TURN_MAX, each with its reason (as REM_WHOLE): { topicId, skillId, explainId, reason }. */
@@ -1867,7 +1881,12 @@ export function d32Errors(s, { force = false } = {}) {
   for (const w of listed) if (!turns.some((p) => p.listed === w && p.total > p.limit)) e.push(`POINT_WHOLE ${w.skillId} ${w.explainId}: listed but fits (or is gone); take it off the list`);
   if (listed.length > POINT_WHOLE_PER_SCRIPT) e.push(`POINT_WHOLE: ${listed.length} pairs listed for ${s.topicId}, more than ${POINT_WHOLE_PER_SCRIPT}: the limit is wrong for this script; say so to main (Learning 020 rule 6)`);
   // 7
-  if (force || D32_PICTURES_READY.includes(s?.topicId)) for (const x of noPictureCards(s)) e.push(`${x.at}: its board (${x.template ?? "none"}) has no second view: author a pictureBoard { template, params } with a pictureCaption (Learning 020 rule 7)`);
+  const none = PICTURE_NONE.filter((x) => x.topicId === s?.topicId);
+  if (force || D32_PICTURES_READY.includes(s?.topicId)) {
+    const bare = noPictureCards(s);
+    for (const n of none) if (!bare.some((x) => x.at === n.at)) e.push(`PICTURE_NONE ${n.at}: listed but the card has a picture now (or is gone); take it off the list`);
+  }
+  if (force || D32_PICTURES_READY.includes(s?.topicId)) for (const x of noPictureCards(s).filter((x) => !none.some((n) => n.at === x.at))) e.push(`${x.at}: its board (${x.template ?? "none"}) has no second view: author a pictureBoard { template, params } with a pictureCaption (Learning 020 rule 7)`);
   for (const c of cards) if (c.card.pictureBoard) {
     const pb = c.card.pictureBoard;
     if (!pb?.template || !BOARD_REFS[pb.template] || typeof (pb.params ?? null) !== "object") e.push(`${c.at}.pictureBoard: { template, params } with a known template (Learning 020 rule 7)`);

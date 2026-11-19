@@ -39,14 +39,25 @@ test("018 A.1: a caption naming the wrong kind of view fails (director29 c5-t02 
 });
 
 test("018 A.2: a worked caption naming an asked step's answer in words fails (c5-t01 \"gaps\", c6 \"ek chakkar\"); a given number is no answer", () => {
+  // (d32 reader fixes: c5-t01 S1's asked step now asks the gap count, key 4; the "gaps" case is kept on an inline fixture of the
+  // step as 018 found it — "khambe ginoge, ya gaps?", key "gaps" — and the new step is held the same way, "chaar" naming its 4)
   const s = fresh("c5-maths-ch02-t01");
+  s.skills[0].workedExample.steps[0].ask = { prompt: { hi: "Doori ke liye khambe ginoge, ya khambon ke beech ke gaps?", en: "For the distance, do you count the poles or the gaps between them?" },
+    key: "gaps", accept: ["gap", "beech ke gaps", "khambon ke beech ke gaps", "gaps ginenge", "the gaps", "gaps between"], right: { hi: "Haan, gaps; khambe toh bas jagahein hain.", en: "Yes, the gaps; the poles are only spots." } };
   s.skills[0].workedExample.viewCaption.hi = "Is patti ko raasta samjho: gaps ke beech ke teen marks teen khambe. Rangin gap ghar se pehle khambe tak ka raasta hai.";
   assert.ok(d30Errors(s).some((x) => /skills\[0\]\.workedExample\.viewCaption: names steps\[0\]\.ask's answer "gaps"/.test(x)));
+  const s4 = fresh("c5-maths-ch02-t01");
+  s4.skills[0].workedExample.viewCaption.hi = "Is patti ko raasta samjho: teen khambe ise chaar barabar hisson mein kaatte hain.";
+  assert.ok(workedCaptionHits(s4.skills[0].workedExample).some((h) => h.form === "4"), "the step's own answer, 4, said as chaar");
   const c6 = fresh("c6-maths-ch06-t01");
   c6.skills[2].workedExample.viewCaption.hi = "Rani ka ek chakkar yahan ek seedhi line ban gaya hai: 50 m, 30 m, 50 m, 30 m.";
   assert.ok(d30Errors(c6).some((x) => /names steps\[0\]\.ask's answer "ek chakkar"/.test(x)));
   // (number words are read as digits: "paanch" names an accepted "5"…)
+  // (d32: S2's asked step now asks the gap's size, key 1/5; the case is kept on an inline fixture of the step 018 found, whose
+  // accepted forms held "5" — "2/5 ka kaunsa number batata hai…?")
   const t1 = fresh("c5-maths-ch02-t01");
+  t1.skills[1].workedExample.steps.find((st) => st.ask).ask = { prompt: { hi: "2/5 ka kaunsa number batata hai ki line kitne barabar gaps mein kategi?", en: "Which number of 2/5 says how many equal gaps the line is cut into?" },
+    key: "neeche wala number", accept: ["neeche wala", "neeche wala 5", "neeche", "5", "paanch", "bottom", "the bottom number", "the 5"] };
   t1.skills[1].workedExample.viewCaption.hi = "Board par 0 se 1 tak ki line hai, paanch barabar gaps mein.";
   assert.ok(workedCaptionHits(t1.skills[1].workedExample).some((h) => h.form === "5"));
   // (…but not where the problem itself states it: c4 s1's "paanch barabar tukde" is the given 5)
@@ -85,7 +96,8 @@ test("018 A.3: every follow-up card and check whose answer board has a second vi
     if (x.view) { n++; assert.ok(x.card.answerViewCaption?.hi && x.card.answerViewCaption?.en, `${t} ${x.at}`); }
     else assert.equal(x.card.answerViewCaption, undefined, `${t} ${x.at}: no second view, no caption`);
   }
-  assert.equal(n, 48, "c4 10, c5-t01 12, c5-t02 14, c6 2, c5-t03 10 (live since dc-r8-director31)");
+  // (d32 reader fixes and Studio 014's second views, 2026-11-19: 48 → 57; every one of them carries its caption, the rule above)
+  assert.equal(n, 57, "c4 11, c5-t01 17, c5-t02 16, c6 2, c5-t03 11 (live since dc-r8-director31)");
   const s = fresh("c4-maths-ch05-t01");
   delete s.skills[0].checks[0].answerViewCaption;
   assert.ok(d30Errors(s).some((x) => /skills\[0\]\.c1\.answerViewCaption: what to look at/.test(x)));
