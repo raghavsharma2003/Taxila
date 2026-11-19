@@ -820,7 +820,20 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       const fv = F.map((cs) => cs[0]).find((c) => numberOf(c) === one);
       if ((wv || fv) && (risky || !unitOk(wv ?? fv))) return toModel("value_beside_words");
       if (wv) return misOf();
-      if (fv) return done("correct", "script_key");
+      // (048 follow-up, main's probe 3: "Sana ka 5 cm lamba" to a card keyed "5 cm" whose named wrong answer is "Sana" was graded
+      // right by its number. The number may be right while the reply says whose it is wrongly: a reply that holds every content
+      // word of a listed wrong answer, or — beside a word that says whose ("ka", "wala") — a word of another option of the prompt
+      // that no right form holds, is the model's to read)
+      if (fv) {
+        const formWords = new Set(F.flatMap((cs) => cs.flatMap((c) => c.words)));
+        const saysWrong = W.some((cs) => cs.some((c) => c.words.length && c.words.every((w) => R.words.includes(w))));
+        const whose = /(?:^|[^\p{L}\p{M}])(?:ka|ki|ke|wala|wali|wale|waala|waali|का|की|के|वाला|वाली|वाले)(?![\p{L}\p{M}])/iu.test(text);
+        const keyC0 = canon(target.key);
+        const otherOpt = optionsIn(prompt).map((o) => canon(R.deva ? deva(o) : o)).filter((o) => !sameAnswer(o, keyC0) && !F.some((cs) => cs.some((c) => sameAnswer(c, o))));
+        const otherWord = whose && R.words.some((w) => !formWords.has(w) && otherOpt.some((o) => o.words.includes(w)));
+        if (saysWrong || otherWord) return toModel("value_names_wrong");
+        return done("correct", "script_key");
+      }
     }
     // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
     const yn = (c) => c.seq.length > 0 && c.seq.every((x) => x.t === "haan" || x.t === "nahi");

@@ -60,6 +60,11 @@ test("048 probe table: every right answer said in Hindi, Devanagari or English w
     ["2", "mujhe bata do"], ["2", "मुझे बता दो"], ["25", "pachees se kam"], ["25", "पच्चीस नहीं"], ["3", "teen ya chaar"], ["1500 m", "pandrah sau cm"]];
   const leaks = wrong.map(([k, s, p]) => [k, s, grade(card(k, [], null, p), s)]).filter(([, , g]) => g === "correct");
   assert.deepEqual(leaks, []);
+  // (main's probe 3: the right number, said as the card's own wrong answer's — "Sana ka 5 cm lamba" — is never right; said plainly or as
+  // the asked one's, it stays right)
+  const SP = "Rahul ka hissa Sana ke hisse se kitne cm lamba hai?";
+  assert.notEqual(grade(card("5 cm", [], "Sana", SP), "Sana ka 5 cm lamba"), "correct");
+  for (const s of ["5", "5 cm", "paanch cm", "5 cm lamba", "Rahul ka 5 cm lamba"]) assert.equal(grade(card("5 cm", [], "Sana", SP), s), "correct", s);
 });
 
 test("048 G7: a sum is not a bag of numbers; a division turned round, a list reversed and a denial moved are other answers", () => {
@@ -259,6 +264,8 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
       }
       const wrongs = new Set();
       for (const w of wl) { spokenForms(w, { prompt }).forEach((f) => wrongs.add(f)); }
+      // (main's probe 3: a numeric key said as the named wrong answer's — "<wrongIfMis> ka <key>")
+      if (numberOf(canon(it.answer)) != null) for (const w of wl) if (numberOf(canon(w)) == null && canon(w).words.length) wrongs.add(`${w} ka ${it.answer}`);
       for (const r of rights) nearWrongs(r, prompt, rights).forEach((f) => wrongs.add(f));
       for (const f of wrongs) {
         // (a "wrong" form that is a listed right one, in either script, is no wrong form: "nahi sahi" moved is "sahi nahi")
