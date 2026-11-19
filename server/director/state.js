@@ -3477,7 +3477,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, ...(d.rung?.path ? { rungPath: d.rung.path } : {}), card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);

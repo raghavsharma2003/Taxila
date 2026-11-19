@@ -33,6 +33,7 @@ export function partStartOf(r, p) {
 }
 
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
+import { ownHelpLast } from "./d31-predicates.mjs";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
 
@@ -286,7 +287,10 @@ export const D30_PREDICATES = {
     // after help about another figure, where the short ask may not stand (P6))
     const o = cardObjAt(ctx?.script, r);
     if (!o?.reask && sentencesOf(r.card ?? "").length >= 2 && low(r.text).includes(low(r.card))
-      && ((String(ctx?.prevIntent ?? "") === "repeat" && HEAR_Q.test(String(ctx?.prevChild ?? ""))) || helpOtherFigure(r, ctx?.script))) return null;
+      && ((String(ctx?.prevIntent ?? "") === "repeat" && HEAR_Q.test(String(ctx?.prevChild ?? ""))) || helpOtherFigure(r, ctx?.script)
+        // (Brain 047 R2: everywhere the short ask may not stand — no own hint said straight before — a card with no reask is said whole)
+        // (a row with no seam record — before director23 — cannot say what preceded its question: read as before)
+        || ((r.seams ?? []).length > 0 && !ownHelpLast(r, ctx?.script)))) return null;
     if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
     return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
   },

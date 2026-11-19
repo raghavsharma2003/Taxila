@@ -9,7 +9,7 @@ import { asideReturnLine, asideReplyLine, asideSadLine, isSadAside, asideReplyFo
 import { responseShape } from "../director/requestTable.js";
 import { cardPageRefused, unitOf } from "./propose.js";
 import { cleanParts, joinParts, alignParts } from "./lineParts.js";
-import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS, otherFigureOf, sharesThing } from "./seams.js";
+import { applySeams, seamStart, seamForm, lessonKeyOf, JOIN_MAX_WORDS, CODE_SEAM_FORMS } from "./seams.js";
 import { normSentence as helpNorm, sentencesOf as helpSentences, helpJoint as helpJointOf } from "../director/help.js";
 /** A child who says she is tired (dc-r8-director27 P6.5). */
 const TIRED = /(?<![\p{L}])(?:thak\s+(?:gayi|gaya|gaye|gai|chuki|chuka)|thaki\s+hu|thaka\s+hu|tired|neend\s+aa\s+rahi|sleepy)(?![\p{L}])/iu;
@@ -259,15 +259,20 @@ export function returnNoteOf(said, topic, lang = "hinglish", alone = false) {
 }
 const RET_STOP = new Set(["maine", "mujhe", "mera", "meri", "mere", "aapko", "aapka", "tumhe", "hai", "hain", "tha", "thi", "kal", "aaj", "bahut", "kiya", "khela", "aur", "kya", "with", "that", "this", "have"]);
 /** v6.4 H2″: an aside's return line: 4-20 words, one content word of theirs, no digits or lesson words, no promise, no template. */
-/** Brain 046 Q5: the rungs that say a part in other words — often about another figure (a pizza, a roti) — after which the short ask is never
- *  said; the card's own re-ask is. */
-const ALT_RUNGS = new Set(["sayAlt", "pointAlt", "problemAlt"]);
-/** Whether this turn's help is about another figure than the card's: by its numbers (seams.js otherFigureOf), except the card's own ask.simpler,
- *  which counts the card's thing in numbers of its own (dry offtopic c4 56: 12 laddoos in three rows of 4); or another wording that names none
- *  of the card's things (c5-t02 steering 10: a pizza for a card about two strings). */
-function figureOther(help, card, state) {
-  const rung = String(state?.lastMove?.help?.rung ?? "");
-  return (otherFigureOf(help, card) && rung !== "ask.simpler") || (ALT_RUNGS.has(rung) && !sharesThing(help, card));
+/** Brain 047 R2 (dc-r8-director31 item 3): the short ask ("Ab phir se socho, jawab kya hoga?") asks for the answer to the question in front of
+ *  the child — said only straight after the card's own hint or easier wording (`ask.simpler` of an explain card; the `simpler` of a check, a
+ *  follow-up card, the your-step or an asked step — never a remediation's, a point's or a problem's other wording), never after a picture's
+ *  caption, "Haan, pehle tum try karo." or a bridge, and never on a card whose question asks for an imagined change (`askWhole`). Decided by
+ *  the kind of help, not by comparing figures (046's figureOther goes). Her turn before ending on the card's question is the caller's test. */
+const OWN_SIMPLER = /(?:\.then|\.checks\[\d+\]|\.yourStep|\.steps\[\d+\])\.simpler$/;
+export function ownHelpRung(help) {
+  return !!help?.rung && (help.rung === "ask.simpler" || (help.rung === "simpler" && OWN_SIMPLER.test(String(help.rungPath ?? ""))));
+}
+function shortAskOk(state, kit, item) {
+  const lm = state?.lastMove ?? {};
+  if (lm.request === "visual" || lm.visual || lm.request === "selftry" || lm.bridgeSaid) return false;
+  if (!ownHelpRung(lm.help)) return false;
+  return !(item && rawCardOf(kit, item)?.askWhole);
 }
 export function returnLineOk(x, said, topic) {
   const t = String(x ?? "").trim();
@@ -3578,10 +3583,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // follows it — Learning's reask, else its question — never "Ab phir se socho, jawab kya hoga?")
       // (dc-r8-director30 Brain 046 Q5, c5-t02 steering 10: help said from another wording of the part — a remediation's sayAlt, a point's
       // pointAlt, a problem's problemAlt — is about another figure, a pizza for a card about two strings, whatever numbers it names)
-      const otherFigure = figureOther(body.filter((x) => norm(x) !== norm(card ?? "")).join(" "), card, state);
-      if (otherFigure) guard.reaskFigure = true;
+      // (Brain 047 R2: by the kind of help — the card's own hint or easier wording, straight before it; director31 c4 stuck 18, steering 30;
+      // c4-ch01-t02 steady 86, stuck 44, 60, offtopic 56, steering 52; c5-t02 steering 16; c6 stuck 74, steering 20; c5-t03 steering 14,
+      // offtopic 14)
+      const shortHere = shortAskOk(state, kit, item);
+      if (!shortHere) guard.shortAskBarred = true;
       const prevQ = prevT ? lastQ(prevT.text) : "";
-      if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && !otherFigure) {
+      if (prevT && /[?？]$/.test(tq) && keyS(prevQ) === keyS(tq) && shortHere) {
         const short = norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state));
         guard.reaskShort = { part: tail === card || guard.cardQuestionOnly ? "card" : "stepAsk", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code" };
         tail = short;
@@ -3615,7 +3623,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (rule 2, dry steady c4-ch01-t02 14, c4-ch05-t01 14, stuck c4-ch01-t02 16: a request to hear the question — "sawaal kya hai?",
         // "phir se bolo" — gets the question, never the short ask; with no other form that differs, the card is said again as it is)
         const askedQ = ["repeat", "which"].includes(String(state.lastMove?.request ?? "")) && HEAR_Q.test(String(childText ?? ""));
-        const shortOk = !askedQ && !figureOther(helpNow, card, state);
+        const shortOk = !askedQ && shortAskOk(state, kit, item); void helpNow;
         const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
         const pick = [["reask", reask], ["short", shortT], ["whole", whole], ["clause", clause]].find(([, t]) => t && /[?？]$/.test(lastQ(t)) && keyS(lastQ(t)) !== keyS(prevQ));
         if (pick) {

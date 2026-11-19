@@ -118,3 +118,32 @@ describe("R8: a Hindi request with the help spent, off a live card", () => {
     assert.ok(!d2.joint && d2.hindiWhole);
   });
 });
+
+describe("R2: the short ask, by the kind of help", () => {
+  const ROWS = [["stuck", "c4", 18], ["steering", "c4", 30], ["steady", "c4ch01", 86], ["stuck", "c4ch01", 44], ["stuck", "c4ch01", 60], ["offtopic", "c4ch01", 56],
+    ["steering", "c4ch01", 52], ["steering", "c5t02", 16], ["stuck", "c6", 74], ["steering", "c6", 20], ["steering", "c5t03", 14], ["offtopic", "c5t03", 14]];
+  test("shortAskKind is gated and reads the order's twelve rows", () => {
+    assert.ok(!PENDING.has("shortAskKind"));
+    for (const [p, t, row] of ROWS) assert.ok(flagged(p, t, "shortAskKind").has(row), `${p} ${t} ${row}`);
+  });
+  test("shortAskKind reads none where the short ask follows the card's own easier wording after a turn that ended on the card", () => {
+    // (c4 steering 30: a give-up's help ended on the point's other wording; the same row ending on the card's own ask.simpler stands)
+    const { rows, script } = lesson("steering", "c4");
+    const r = rows[30], e3 = script.skills[0].explain.find((b) => b.id === "e3").ask;
+    const short = r.text.split(/(?<=[.!?])\s+/).at(-1);
+    const text = `${e3.simpler.hi} ${short}`;
+    const own = { ...r, text, pageParts: [{ part: "simpler", from: 0, beat: "e3" }, { part: "card", from: text.indexOf(short), beat: "e3" }] };
+    assert.ok(!lessonFlags({ rows: [...rows.slice(0, 30), own], script }).some((f) => f.predicate === "shortAskKind" && f.row === 30));
+    // (and askWhole bars it: Learning 020 marks a card whose question asks for an imagined change)
+    const s2 = structuredClone(script); s2.skills[0].explain.find((b) => b.id === "e3").ask.askWhole = true;
+    assert.ok(lessonFlags({ rows: [...rows.slice(0, 30), own], script: s2 }).some((f) => f.predicate === "shortAskKind" && f.row === 30));
+  });
+  test("ownHelpRung: the card's own ask.simpler, a check's, a follow-up card's, the your-step's or an asked step's simpler — not a remediation's, a point's or a problem's", async () => {
+    const { ownHelpRung } = await import("../server/brain/say.js");
+    assert.ok(ownHelpRung({ rung: "ask.simpler", rungPath: "skills[0].explain[2].ask.simpler" }));
+    for (const p of ["skills[0].checks[1].simpler", "skills[0].remediation[0].then.simpler", "skills[1].workedExample.yourStep.simpler", "skills[1].workedExample.steps[0].simpler"])
+      assert.ok(ownHelpRung({ rung: "simpler", rungPath: p }), p);
+    for (const [rung, p] of [["simpler", "skills[0].remediation[0].simpler"], ["sayAlt", "skills[0].remediation[0].sayAlt"], ["pointAlt", "skills[0].explain[0].pointAlt"], ["simpler", "skills[0].explain[0].simpler"], ["problemAlt", "skills[0].workedExample.problemAlt"], ["simpler", "skills[1].workedExample.simpler"]])
+      assert.ok(!ownHelpRung({ rung, rungPath: p }), p);
+  });
+});
