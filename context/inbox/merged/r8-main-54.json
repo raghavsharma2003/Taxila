@@ -1,0 +1,132 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-script-grade-probe",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Script cards graded in code, probed by main: on release 53's grader 22 of 27 right answers said in spoken Hindi, Devanagari or without the option's noun are marked incorrect; after to-brain 048 a 55-row probe of right and nearest-wrong answers has 0 faults and the gate over 205 cards has 0 right forms marked wrong and 0 wrong forms marked right"
+  },
+  {
+   "id": "ms-r8-cold-readers",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Seven independent cold reads of the director32 scripts (one Opus reader a script, keys solved by hand, replies run through the grader): no wrong key in any script; right answers refused by accept lists in all seven; false or overstated rules, cards settled by their board, and wrong answers taken by word order in several"
+  },
+  {
+   "id": "ms-r8-d32-dry",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Round d32 dry matrix on the merged code: seven topics by four rule-based children, every gated predicate 0, suites 0 failing"
+  },
+  {
+   "id": "fd-r8-script-grade-deaf-to-spoken-hindi",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "The script-card grader compared a child's reply only with Latin Hinglish forms and a 40-word number table: a right answer said as \"do\", \"pandrah sau\", \"seven\", in Devanagari, or as an option without its noun was marked wrong in code, in production, and no paid run could show it because the simulated child types Latin"
+  },
+  {
+   "id": "fd-r8-wordset-grading-takes-wrong-answers",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "Comparing an answer with an accept form as an unordered set of words, signs dropped, takes wrong answers as right: \"24 × 18\" for \"24 + 18 + 24 + 18\", a division turned round, an order reversed, a denial moved"
+  },
+  {
+   "id": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "A reader who did not write the script, solves every card and runs replies through the grader finds classes of fault the checker, the author and main all passed: accept lists, boards that answer the card, help rungs that state the asked step"
+  },
+  {
+   "id": "dc-r8-script-grade-as-spoken",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A script card hears the answer the way a child says it: one number reader in both scripts, sums and orders compared as written, an option without its noun, and whatever the code cannot tell goes to the model, never to correct"
+  },
+  {
+   "id": "dc-r8-picture-none-list",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A card with no honest drawing is listed (PICTURE_NONE) and a picture request there gets the card's hint; an authored pictureBoard is drawn before the board's own second view"
+  },
+  {
+   "id": "dc-r8-agent-trailers",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A build agent's commits carry the Co-Authored-By line of the model that wrote them; main no longer rewrites them to its own"
+  },
+  {
+   "id": "rj-r8-kor-for-tester-edge",
+   "kind": "rejection",
+   "at": "2026-11-19",
+   "title": "Giving the paper tester's edge its own word (\"kor\") to keep it apart from the circle's rim: a word a class 4 child may not know, for a clash no turn has"
+  },
+  {
+   "id": "rj-r8-circle-posed-strips-answered",
+   "kind": "rejection",
+   "at": "2026-11-19",
+   "title": "Posing a fraction as a circle and answering with two aligned strips to get past the same-figure rule: the checker compared the appended wholes without their shape"
+  }
+ ],
+ "edges": [
+  {
+   "src": "fd-r8-script-grade-deaf-to-spoken-hindi",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "fd-r8-wordset-grading-takes-wrong-answers",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "caused_by",
+   "dst": "fd-r8-script-grade-deaf-to-spoken-hindi"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "caused_by",
+   "dst": "fd-r8-wordset-grading-takes-wrong-answers"
+  },
+  {
+   "src": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "rel": "measured_by",
+   "dst": "ms-r8-cold-readers"
+  },
+  {
+   "src": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "rel": "constrains",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "part_of",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "measured_by",
+   "dst": "ms-r8-d32-dry"
+  },
+  {
+   "src": "rj-r8-kor-for-tester-edge",
+   "rel": "measured_by",
+   "dst": "ms-r8-cold-readers"
+  },
+  {
+   "src": "rj-r8-circle-posed-strips-answered",
+   "rel": "constrains",
+   "dst": "dc-r8-picture-none-list"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-script-grade-probe` (2026-11-19, main): `classifyFast` called directly with a script card's target (`mode: \"item\"`, `item.scriptCheck`), typed, no model. **Before** (release 53's code): 27 right answers, 22 marked `incorrect (script_key)`: \"do\" / \"do hain\" / \"do hisse\" and \"दो\" for 2, \"तीन\" for 3, \"pandrah sau\" and \"पंद्रह सौ\" for 1500, \"ek sau tees\" for 130, \"chhah sau\" for 600, \"pachees\" / \"पच्चीस\" for 25, \"ikkees\" for 21, \"एक बटा चार\" for 1/4, \"12 wali\" and \"बारह वाली\" for \"12 wali patti\"; later probes added \"seven\" for 7 and \"twenty six\" for 26 (incorrect), and key 84 with the accept form \"24 + 18 + 24 + 18\" grading \"24 × 18\" and \"24 + 18\" **correct**. The shared reader `server/grading/spoken-number.js` read every one of those numbers correctly; the script branch did not call it. **After** to-brain 048 (`server/grading/script-answer.js`): main's 55-row probe of right answers and their nearest wrong ones in Latin and Devanagari, 0 faults (one false key found on the first pass, \"Sana ka 5 cm lamba\" for key \"5 cm\" on a card whose wrong answer is Sana, fixed and re-run); the gate `tests/r8-script-cards-hear.test.mjs` over the seven scripts' 205 cards builds each right answer's spoken forms in code: 3,564 right forms, 3,560 correct, 0 incorrect or mix-up (4 read as a request earlier in the function); 4,862 wrong forms, 0 correct, 1,949 sent to the model. Not measured: a real recogniser's text for a real child (the forms are built from the reader's own tables), and how the model grades what the code sends it.\n- `ms-r8-cold-readers` (2026-11-18 to 19): the five live scripts and the two rewritten staged ones, each read by one Opus agent at high effort that had not seen the script's history, under one brief (`BRIEF-reader.md` in the session scratchpad; the method is in `dc-r8-director31` item 7): solve every keyed card from its words and board, read every stated rule against the keys, draw every second view and authored picture, and run eight to ten natural phrasings of each right answer through `classifyFast` (about 140 and about 330 replies in the two reports that give a count). Result: the readers solved 211 keyed cards across the seven scripts (30, 34, 34, 29, 30, 27, 27) and every key agreed with the reader's own solve; every script had accept lists that refuse a right answer a child would say; the reports name, among others, one overstated rule (c5-t02 \"hisse alag size ke hon, toh ginti se faisla nahi hota\"), one rule the script's own cards deny (staged c4 angles, \"string ki lambai kabhi nahi badalti\"), a help rung that states the asked step's answer (three worked `problemAlt` lines in c5-t02), checks whose posing board settles them by eye (c5-t02 s1, staged c6 fractional units s2, the right-angle mark on two staged c4 cards), a ruler picture ticked so that it points at the named wrong answer, and four cards whose \"nahi, X\" accept form takes the wrong answer \"X nahi\". One fix agent a script applied the findings under main's rulings; all seven then pass `check.mjs` with rule 7 on. n = 7 reads, one reader each: no second reader checked what the first missed.\n- `ms-r8-d32-dry` (2026-11-19, main; `evals/hybrid-side-by-side.mjs --matrix --director-only --reactive --dry --staged`, merged code at `ffefe9821`): on the final dry matrix (seven topics by four children, 28 lessons, offline) the live check exits 0: 133 of 138 predicates read 0, and the other five are counted, not gated (a sentence of a card said in two turns running where the card is asked again, 18 rows; a verdict-point-card turn of 66 words, 7; a re-ask with no authored form, 5; a park cut by the child ending the lesson, 1; a point that does not fit its turn, 1). Of the 35 picture requests in it, 4 drew the card's authored picture, 24 the board's second view, and 7 (the steering child asking a second time at once) got the card's hint.",
+  "decisions": "- `dc-r8-script-grade-as-spoken` (2026-11-19, main; order `docs/patches/to-brain/048-script-cards-hear-hindi-as-spoken.md`): on a script card (1) numbers in the reply, the key and the accept forms are read by the one shared reader, in Latin Hindi, Devanagari and English, with \"do\" as two only where it stands as a number; (2) a sum is compared as an expression, order free only under + and ×; a list of values is ordered; a denial counts only where it stands; (3) an option said without its shared noun is that option when exactly one option fits; (4) a reply in Devanagari is compared with the forms brought to Devanagari; (5) `wrongIfMis` may list the ways the wrong answer is said; (6) **whenever the code cannot tell, the reply goes to the model and never to correct**: a Devanagari reply that matches nothing, a right number beside the wrong answer's name, a form whose brackets decide it. **Why:** a right answer marked wrong hurts a child once, and it was happening to every child who answers in Hindi; a wrong answer marked right is a false key and fails the lesson. **What would reverse it:** a judged voice run showing the model crediting wrong Devanagari answers at these cards → the forms are authored in both scripts and the code grades them; the gate or a judged run finding one reply that fits two options → the dropped-noun rule is withdrawn and short forms are listed by hand again; any wrong answer graded right by one of these rules → that rule is withdrawn and the reply goes to the model.\n- `dc-r8-picture-none-list` (2026-11-19, main; part of `dc-r8-director31` item 5): `scripts/lesson-scripts/check.mjs` holds `PICTURE_NONE`, the cards where any drawing of the thing would draw the card's answer (one so far: c4-maths-ch05-t01 skill 2, the grouping step); rule 7 passes them, a listed card that gains a picture fails so the list cannot go stale, and a picture request there gets the card's hint as help. A card's authored `pictureBoard` is drawn before its board's own second view. The answer-board rule's appended-wholes allowance needs the same shape on both boards. **What would reverse it:** two judges hearing the hint in answer to a picture request as a refusal → the card is rewritten until a drawing exists that does not answer it; more than three cards a script on the list → the script poses too much in words and its boards are redone.\n- `dc-r8-agent-trailers` (2026-11-19, main): a build agent's commits keep the `Co-Authored-By` line its own harness gives it (the model that wrote the change); main's commits carry main's. Main had been rewriting agents' trailers to its own before each push; several agents declined the instruction as a false attribution, and they were right. **What would reverse it:** an owner directive on how commits are attributed.",
+  "rejected": "- `rj-r8-kor-for-tester-edge` (2026-11-19): **tried** ruling that the paper tester's straight edge be called \"kor\" in the staged class 4 angles script so that \"kinaara\" would mean only the circle's rim. **What broke:** nothing measured; main reversed it on reading the result: \"kor\" is a word a class 4 child may not know, and the independent reader had found no single turn in which the two meanings meet (the tester is in skills 1 and 2, the circle in skill 3). The edge is \"seedha kinaara\" now. A word is split in two only where a turn holds both meanings.\n- `rj-r8-circle-posed-strips-answered` (2026-11-19): **tried** (a fix agent, to satisfy the rule that an answer board draws the same figure as the board the card is posed on) posing six class 5 equal-fraction cards on one fraction drawn as a circle and answering with two aligned strips. **What broke:** the checker passed it only because its appended-wholes allowance compared the answer's first wholes without their shape, so a circle answered by strips passed and a strip answered by strips failed; and the cards' reasons speak of \"patti\" over a circle. The cards pose on a strip and the allowance needs the same shape on both boards."
+ }
+}

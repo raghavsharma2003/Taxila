@@ -709,3 +709,9 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-main-read-misses-rules-and-joints` (2026-11-18): Main's script and dry reads check lines against boards and miss two classes: a stated rule that is false as mathematics, and a joint said in the wrong place; both were in front of main before director31 and were found by judges
 - `fd-design-does-not-exempt-gate` (2026-11-18): A behaviour described to judges as by design before a run (the caption read back over a board with no second view) still counts against the gate line it breaks
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-r8-script-grade-deaf-to-spoken-hindi` (2026-11-19): The script-card grader compared a child's reply only with Latin Hinglish forms and a 40-word number table: a right answer said as "do", "pandrah sau", "seven", in Devanagari, or as an option without its noun was marked wrong in code, in production, and no paid run could show it because the simulated child types Latin
+- `fd-r8-wordset-grading-takes-wrong-answers` (2026-11-19): Comparing an answer with an accept form as an unordered set of words, signs dropped, takes wrong answers as right: "24 × 18" for "24 + 18 + 24 + 18", a division turned round, an order reversed, a denial moved
+- `fd-r8-cold-reader-finds-what-checker-and-main-did-not` (2026-11-19): A reader who did not write the script, solves every card and runs replies through the grader finds classes of fault the checker, the author and main all passed: accept lists, boards that answer the card, help rungs that state the asked step

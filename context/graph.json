@@ -29903,6 +29903,83 @@
    "at": "2026-11-18",
    "title": "Released eea8d7c with scripts/release.mjs: web taxila-web--seea8d7c-46uo (was taxila-web--sd9d9d17-zrim), worker + canary/nightly jobs on taxila-worker:eea8d7c (was d9d9d17); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs eea8d7c --rollback.",
    "source": "inbox/release-eea8d7c.json"
+  },
+  {
+   "id": "ms-r8-script-grade-probe",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Script cards graded in code, probed by main: on release 53's grader 22 of 27 right answers said in spoken Hindi, Devanagari or without the option's noun are marked incorrect; after to-brain 048 a 55-row probe of right and nearest-wrong answers has 0 faults and the gate over 205 cards has 0 right forms marked wrong and 0 wrong forms marked right",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "ms-r8-cold-readers",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Seven independent cold reads of the director32 scripts (one Opus reader a script, keys solved by hand, replies run through the grader): no wrong key in any script; right answers refused by accept lists in all seven; false or overstated rules, cards settled by their board, and wrong answers taken by word order in several",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "ms-r8-d32-dry",
+   "kind": "measurement",
+   "at": "2026-11-19",
+   "title": "Round d32 dry matrix on the merged code: seven topics by four rule-based children, every gated predicate 0, suites 0 failing",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "fd-r8-script-grade-deaf-to-spoken-hindi",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "The script-card grader compared a child's reply only with Latin Hinglish forms and a 40-word number table: a right answer said as \"do\", \"pandrah sau\", \"seven\", in Devanagari, or as an option without its noun was marked wrong in code, in production, and no paid run could show it because the simulated child types Latin",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "fd-r8-wordset-grading-takes-wrong-answers",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "Comparing an answer with an accept form as an unordered set of words, signs dropped, takes wrong answers as right: \"24 × 18\" for \"24 + 18 + 24 + 18\", a division turned round, an order reversed, a denial moved",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "kind": "finding",
+   "at": "2026-11-19",
+   "title": "A reader who did not write the script, solves every card and runs replies through the grader finds classes of fault the checker, the author and main all passed: accept lists, boards that answer the card, help rungs that state the asked step",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "dc-r8-script-grade-as-spoken",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A script card hears the answer the way a child says it: one number reader in both scripts, sums and orders compared as written, an option without its noun, and whatever the code cannot tell goes to the model, never to correct",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "dc-r8-picture-none-list",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A card with no honest drawing is listed (PICTURE_NONE) and a picture request there gets the card's hint; an authored pictureBoard is drawn before the board's own second view",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "dc-r8-agent-trailers",
+   "kind": "decision",
+   "at": "2026-11-19",
+   "title": "A build agent's commits carry the Co-Authored-By line of the model that wrote them; main no longer rewrites them to its own",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "rj-r8-kor-for-tester-edge",
+   "kind": "rejection",
+   "at": "2026-11-19",
+   "title": "Giving the paper tester's edge its own word (\"kor\") to keep it apart from the circle's rim: a word a class 4 child may not know, for a clash no turn has",
+   "source": "inbox/r8-main-54.json"
+  },
+  {
+   "id": "rj-r8-circle-posed-strips-answered",
+   "kind": "rejection",
+   "at": "2026-11-19",
+   "title": "Posing a fraction as a circle and answering with two aligned strips to get past the same-figure rule: the checker compared the appended wholes without their shape",
+   "source": "inbox/r8-main-54.json"
   }
  ],
  "edges": [
@@ -47955,6 +48032,61 @@
    "src": "dc-r8-return-waits-for-followup",
    "rel": "measured_by",
    "dst": "ms-r8-director31"
+  },
+  {
+   "src": "fd-r8-script-grade-deaf-to-spoken-hindi",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "fd-r8-wordset-grading-takes-wrong-answers",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "measured_by",
+   "dst": "ms-r8-script-grade-probe"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "caused_by",
+   "dst": "fd-r8-script-grade-deaf-to-spoken-hindi"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "caused_by",
+   "dst": "fd-r8-wordset-grading-takes-wrong-answers"
+  },
+  {
+   "src": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "rel": "measured_by",
+   "dst": "ms-r8-cold-readers"
+  },
+  {
+   "src": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "rel": "constrains",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "part_of",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "measured_by",
+   "dst": "ms-r8-d32-dry"
+  },
+  {
+   "src": "rj-r8-kor-for-tester-edge",
+   "rel": "measured_by",
+   "dst": "ms-r8-cold-readers"
+  },
+  {
+   "src": "rj-r8-circle-posed-strips-answered",
+   "rel": "constrains",
+   "dst": "dc-r8-picture-none-list"
   }
  ]
 }
