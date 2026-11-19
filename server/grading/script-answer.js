@@ -184,8 +184,16 @@ function items(raw) {
  * The normal form of a text. @returns {{ seq: {k: string, t: string}[], nums: string[], words: string[], units: string[],
  * neg: boolean, ops: boolean, deva: boolean }}
  */
+/** d32 (Brain, the 048 grader on "No hai na"): a closing tag after an answer — "hai na", "na?", "haina", ", right?" — asks for agreement; it is
+ *  never a denial and never part of the answer. "nahi" stays a denial: "4 nahi hai na" is "4 nahi". A reply that is only a tag is left whole. */
+const TAG_END = /(?:[\s,]+(?:hai\s*na+|haina+|na+|है\s*ना|ना)\s*[?？]*|\s*,\s*right\s*[?？]|\s+right\s*[?？])[\s.!।]*$/iu;
+export function untag(raw) {
+  const s = String(raw ?? "");
+  const t = s.replace(TAG_END, "");
+  return t !== s && /[\p{L}\p{N}]/u.test(t) ? t : s;
+}
 export function canon(raw) {
-  const it = items(raw);
+  const it = items(untag(raw));
   let seq = [];
   it.forEach((x, i) => {
     if (x.k === "num") { seq.push({ k: "num", t: `#${x.v}` }); return; }

@@ -48,16 +48,22 @@ function spell(n, lang) {
 
 test("048 probe table: every right answer said in Hindi, Devanagari or English words is graded right (main, 2026-11-18)", () => {
   const P = "Kaunsi patti lambi hai: 8 wali patti ya 12 wali patti?";
+  const YN = "Ek chhota tukda pizza ka ek-tihaai hai, haan ya nahi?", KM = "1/8 ka hissa 1/2 se kam hai ya zyada?";
   const rows = [["2", "do"], ["2", "do hain"], ["2", "do hisse"], ["2", "दो"], ["3", "तीन"], ["1500", "pandrah sau"], ["1500", "पंद्रह सौ"], ["130", "ek sau tees"],
     ["130", "एक सौ तीस"], ["600", "chhah sau"], ["25", "pachees"], ["25", "पच्चीस"], ["1/4", "एक बटा चार"], ["12 wali patti", "12 wali", P], ["12 wali patti", "बारह वाली", P],
     ["3", "teen"], ["3", "mujhe lagta hai teen"], ["4", "chaar hai na"], ["1500 m", "pandrah sau metre"], ["21", "ikkees"], ["1/2", "aadha"], ["2/8", "do bata aath"],
-    ["7", "seven"], ["26", "twenty six"], ["1/4", "ek bata chaar"], ["25", "twenty five"], ["600", "छह सौ"]];
+    ["7", "seven"], ["26", "twenty six"], ["1/4", "ek bata chaar"], ["25", "twenty five"], ["600", "छह सौ"],
+    // (d32: a closing "hai na" / "na?" / "haina" / ", right?" after an answer is a tag asking for agreement, never a denial)
+    ["No", "No hai na", YN], ["No", "nahi hai na", YN], ["No", "No haina", YN], ["No", "nahi, right?", YN], ["4", "4 hai na"], ["4", "4 haina"],
+    ["kam", "kam hai na", KM]];
   const bad = rows.map(([k, s, p]) => [k, s, grade(card(k, [], null, p), s)]).filter(([, , g]) => g !== "correct");
   assert.deepEqual(bad, []);
   // and the nearest wrong answers, said the same ways, are never right
   const wrong = [["2", "teen"], ["2", "तीन"], ["2", "three"], ["1500", "pandrah"], ["1500", "solah sau"], ["130", "ek sau bees"], ["25", "chhabbees"], ["25", "छब्बीस"],
     ["1/4", "चार बटा एक"], ["1/4", "ek bata teen"], ["12 wali patti", "8 wali", P], ["12 wali patti", "आठ वाली", P], ["2/8", "1/4"], ["7", "six"], ["26", "twenty seven"],
-    ["2", "mujhe bata do"], ["2", "मुझे बता दो"], ["25", "pachees se kam"], ["25", "पच्चीस नहीं"], ["3", "teen ya chaar"], ["1500 m", "pandrah sau cm"]];
+    ["2", "mujhe bata do"], ["2", "मुझे बता दो"], ["25", "pachees se kam"], ["25", "पच्चीस नहीं"], ["3", "teen ya chaar"], ["1500 m", "pandrah sau cm"],
+    // (d32: "nahi" before the tag stays a denial)
+    ["4", "4 nahi hai na"], ["kam", "kam nahi hai na", KM], ["Yes", "nahi hai na", YN], ["No", "haan hai na", YN]];
   const leaks = wrong.map(([k, s, p]) => [k, s, grade(card(k, [], null, p), s)]).filter(([, , g]) => g === "correct");
   assert.deepEqual(leaks, []);
   // (main's probe 3: the right number, said as the card's own wrong answer's — "Sana ka 5 cm lamba" — is never right; said plainly or as

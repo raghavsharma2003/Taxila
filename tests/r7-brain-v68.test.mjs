@@ -297,9 +297,11 @@ describe("r7-brain-v68.test.mjs", () => {
           }
           const counts = Object.values(per), total = counts.reduce((a, b) => a + b, 0);
           if (counts.length < 3) bad.push(`${topic}: ${counts.length} check-in forms ${JSON.stringify(per)}`);
-          // (d32 step 0: 048's grader sends c4 steady 20's "No hai na" — a denial at a fraction card — to the model, so the replay takes the
-          // run's recorded read there and walks off the recorded path; rotateOf then reads the recorded lines, not the replayed ones, as
-          // her last four turns. On that diverged path one form is 19 of 37: the bound there is 55%, everywhere else half)
+          // (d32 step 0, re-read in d32d: not the tag. With "hai na" read as a tag the c4 replay still leaves the recorded path: the replay is a
+          // card behind the run from steady row 9 (it asks e2 where the run asked e1, e3 where the run asked e2), so steady 21's "No hai na"
+          // meets e3, keyed 2/3, where "No" is a denial of the asked value: the model's, so the run's recorded "correct" is taken for e3 and the
+          // walk goes on from there; rotateOf then reads the recorded lines as her last turns. On that path one form is 19 of 37: the bound
+          // there is 55%, everywhere else half)
           const cap = topic === "c4" ? 0.55 : 0.5;
           if (total && Math.max(...counts) > total * cap) bad.push(`${topic}: one form over ${cap * 100}% ${JSON.stringify(per)}`);
         }
