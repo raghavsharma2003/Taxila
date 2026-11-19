@@ -132,7 +132,7 @@ export function structureErrors(s, kit) {
     if (k.checks.length < 2 || k.checks.length > 3) e.push(at("2-3 checks"));
     for (const c of k.checks) {
       if (!mis.has(c.targets)) e.push(at(`${c.id} targets ${c.targets}, not a kit misconception`));
-      if (!c.key || !c.wrongIfMis || c.wrongIfMis === c.key) e.push(at(`${c.id} key and the misconception's answer`));
+      if (!c.key || !wrongsOf(c).length || wrongsOf(c).includes(String(c.key).trim())) e.push(at(`${c.id} key and the misconception's answer`));
       if (leaks(c.prompt, c.key)) e.push(at(`${c.id} prompt prints its key`));
       const p = c.board?.params ?? {};
       if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
@@ -171,7 +171,7 @@ const keyedErrors = (a, at, mis) => {
   if (a.key == null || String(a.key).trim() === "") e.push(`${at}: no key`);
   else if (leaks(a.prompt?.hi ?? "", a.key) || leaks(a.prompt?.en ?? "", a.key)) e.push(`${at}: prompt prints its key`);
   if (a.targets !== undefined && !mis.has(a.targets)) e.push(`${at}: targets ${a.targets}, not a kit misconception`);
-  if (a.wrongIfMis !== undefined && String(a.wrongIfMis).trim() === String(a.key).trim()) e.push(`${at}: wrongIfMis equals the key`);
+  if (a.wrongIfMis !== undefined && wrongsOf(a).includes(String(a.key).trim())) e.push(`${at}: wrongIfMis equals the key`);
   return e;
 };
 
@@ -183,6 +183,8 @@ const keyedErrors = (a, at, mis) => {
  * every remediation has a board or a then.board.
  */
 const SKIP = new Set(["board", "convey", "move", "targets", "key", "accept", "wrongIfMis", "itemId", "id"]);
+/** 048 G8: a card's named wrong answer(s): `wrongIfMis` is one string or a list of the ways it is said ("barabar", "dono barabar"). */
+export const wrongsOf = (c) => (Array.isArray(c?.wrongIfMis) ? c.wrongIfMis : c?.wrongIfMis != null ? [c.wrongIfMis] : []).map((x) => String(x ?? "").trim()).filter(Boolean);
 const NAME_RE = /(?<![\p{L}])(?:Asha|Riya)(?![\p{L}])/u;
 const GAP_RE = [/(?:^|\s|[=:(])\?(?=\s|$|[.,)])/, /\?\s*(?:cm|m|km|kg|g)\b/];
 const firstNum = (k) => (String(k ?? "").match(/\d+(?:\/\d+|\.\d+)?/) ?? [null])[0];
@@ -410,7 +412,7 @@ export function remediationKeyErrors(s) {
   const whole = (v) => { const m = String(v ?? "").trim().match(/^(\d+)(?:\s*[\p{L}]{1,6})?$/u); return m && Number(m[1]) >= 2 ? m[1] : null; };
   const hasNum = (t, c) => new RegExp(`(^|[^\\d/.])${c.replace(/[./]/g, "\\$&")}([^\\d/]|$)`).test(` ${t} `);
   // (director16 ruling: keys of ALL later cards stay forbidden; distractors only within the SAME skill)
-  const valuesOf = (kk, list, distractors = true) => list.flatMap(([id, c]) => [["key", c.key], ...(distractors ? [["distractor", c.wrongIfMis]] : [])]
+  const valuesOf = (kk, list, distractors = true) => list.flatMap(([id, c]) => [["key", c.key], ...(distractors ? wrongsOf(c).map((w) => ["distractor", w]) : [])]
     .map(([kind, v]) => ({ where: `${kk.skillId}/${id}`, card: c, kind, v: core(v), w: kind === "key" ? whole(v) : null })));
   s.skills.forEach((k, si) => {
     const later = s.skills.slice(si + 1).flatMap((kk) => valuesOf(kk, cardsOf(kk), false));
@@ -881,7 +883,7 @@ export function structureErrorsV2(s, kit) {
     for (const c of k.checks) {
       e.push(...keyedErrors({ ...c }, at(c.id), mis));
       if (!c.targets) e.push(at(`${c.id}: targets`));
-      if (!c.wrongIfMis) e.push(at(`${c.id}: wrongIfMis`));
+      if (!wrongsOf(c).length) e.push(at(`${c.id}: wrongIfMis`));
       const p = c.board?.params ?? {};
       if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
     }
@@ -2809,8 +2811,8 @@ export function placeValueKeyErrors(s) {
     const values = new Set(ns.flatMap((n) => [...n].map((ch, i) => (ch === d ? Number(d) * 10 ** (n.length - 1 - i) : null)).filter((v) => v != null)));
     if (!values.size) continue;
     if (!values.has(key)) e.push(`${where}: its key ${c.key} is not the value of the ${d} in ${ns.join(" / ")} (${[...values].join(" or ")}): solve the card`);
-    const w = valOf(c.wrongIfMis);
-    if (w != null && values.has(w) && w !== key) e.push(`${where}: its wrongIfMis ${c.wrongIfMis} is a right value of the ${d} in ${ns.join(" / ")}`);
+    for (const w0 of wrongsOf(c)) { const w = valOf(w0);
+    if (w != null && values.has(w) && w !== key) e.push(`${where}: its wrongIfMis ${w0} is a right value of the ${d} in ${ns.join(" / ")}`); }
   }
   return e;
 }

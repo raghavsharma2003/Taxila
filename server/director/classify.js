@@ -19,6 +19,8 @@ import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
+import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK } from "../grading/script-answer.js";
+import { toDevanagari } from "../voice/translit/index.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
 // ───────────── the signals block (W2-E BR2; TEACHER-BRAIN TB4, §14.2-14.3; owner of this block: W2-E) ─────────────
@@ -579,30 +581,8 @@ export const helpOf = (chipId) => (typeof chipId === "string" && Object.hasOwn(H
 const STRAY_SHARE = 0.25;
 const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
 
-// v4 W4: the same answer in other words ("after 1/3" = "1/3 ke baad"): the numbers and the content words, with English and
-// Hinglish direction / size words on one footing and fillers left out, as an unordered set
-const WORD_SAME = { after: "baad", before: "pehle", between: "beech", bigger: "bada", larger: "bada", greater: "bada", smaller: "chhota",
-  less: "chhota", more: "zyada", equal: "barabar", same: "barabar", yes: "haan", no: "nahi", nahin: "nahi", han: "haan", ha: "haan" };
-const WORD_FILL = new Set(["ke", "ki", "ka", "se", "mein", "me", "par", "hai", "hain", "the", "a", "an", "of", "is", "it", "to", "and", "aur", "wala", "wali", "na", "toh", "to"]);
-const wordSet = (x) => new Set((String(x ?? "").toLowerCase().match(/\d+(?:\.\d+)?(?:\/\d+)?|[\p{L}]+/gu) ?? []).map((w) => WORD_SAME[w] ?? w).filter((w) => !WORD_FILL.has(w)));
-export function sameWords(a, b) {
-  const A = wordSet(a), B = wordSet(b);
-  if (!A.size || A.size !== B.size) return false;
-  for (const w of A) if (!B.has(w)) return false;
-  return true;
-}
 /** dc-r7-script-walk-v3 K2: script cards graded in code (TAXILA_R7_SCRIPT_GRADE=off: the model as before). */
 export const scriptGradeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT_GRADE ?? ""));
-const HI_NUMS = { shunya: 0, ek: 1, do: 2, teen: 3, chaar: 4, char: 4, paanch: 5, panch: 5, chhah: 6, chhe: 6, chah: 6, saat: 7, aath: 8, nau: 9, das: 10,
-  gyarah: 11, barah: 12, baarah: 12, terah: 13, chaudah: 14, pandrah: 15, solah: 16, satrah: 17, atharah: 18, unnees: 19, bees: 20, tees: 30, chalis: 40, chaalis: 40,
-  pachaas: 50, pachas: 50, saath: 60, sattar: 70, assi: 80, nabbe: 90, sau: 100 };
-/** "ek bata chaar" → "1/4", "bees" → "20" (whole words only). */
-export function hindiNumbers(t) {
-  const w = (x) => HI_NUMS[String(x).toLowerCase()];
-  return String(t ?? "").replace(/\b([a-z]+)\s+(?:bata|by|upon)\s+([a-z]+)\b/gi, (m, a, b) => (w(a) != null && w(b) != null ? `${w(a)}/${w(b)}` : m))
-    .replace(/\b[a-z]+\b/gi, (x) => (w(x) != null && x.toLowerCase() !== "do" ? String(w(x)) : x));
-}
-const denies0 = (t) => /(?:^|[^\p{L}])(?:not|nahi|nahin|nhi|no|nope|galat|wrong|isn'?t)(?![\p{L}])/iu.test(String(t));
 export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
   // A help request is never graded and never read for stop words or a don't-know (no evidence, no flags) — unless
@@ -732,7 +712,11 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // review v1: norm() drops apostrophes, so "soldiers'" equalled "soldier's" on an apostrophe-placement item and was
     // credited as the key. An exact match must also put every apostrophe in the same place; otherwise the model reads it.
     const aposSig = (s) => (String(s ?? "").toLowerCase().replace(/[’`]/g, "'").match(/[\p{L}\p{N}]*'[\p{L}\p{N}]*/gu) ?? []).join(" ");
-    const sameApos = (k) => aposSig(k) === aposSig(text);
+    // 048 G7: on a script card an exact match also keeps its operators (norm drops them: "3 + 3" matched the form "3 × 3",
+    // "30 × 6" the form "30 ÷ 6"); a kit item keeps today's match
+    const scriptCard = !!(target.item && (target.item.scriptAsk || target.item.scriptCheck || target.item.scriptThen || target.item.quick));
+    const opSig = (s) => (scriptCard ? canon(s).seq.filter((x) => x.k === "op").map((x) => x.t).join(" ") : "");
+    const sameApos = (k) => aposSig(k) === aposSig(text) && opSig(k) === opSig(text);
     if (target.key && norm(target.key) === t && sameApos(target.key)) return done("correct", "exact");
     // an acceptable entry counts as the key only when it is a complete answer; one the parts data marks partial is
     // partial, one it marks wrong is not credited (V1.1: 947 of 1,631 rater-agreed acceptable entries were partial)
@@ -755,8 +739,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
         if (src === "exact_hedged") flags.dontKnow = false;
         const c = norm(cand);
         if (!c) continue;
-        if (target.key && norm(target.key) === c && aposSig(target.key) === aposSig(cand)) return done("correct", src);
-        const h = (target.also || []).find((k) => k && norm(k) === c && aposSig(k) === aposSig(cand));
+        if (target.key && norm(target.key) === c && aposSig(target.key) === aposSig(cand) && opSig(target.key) === opSig(cand)) return done("correct", src);
+        const h = (target.also || []).find((k) => k && norm(k) === c && aposSig(k) === aposSig(cand) && opSig(k) === opSig(cand));
         if (h) { const lab = target.alsoLabel?.[h]; if (lab === "partial") return done("partial", src); if (lab !== "wrong") return done("correct", src); }
         const o = target.options?.find((x) => norm(x.text) === c);
         if (o) { const m = fromMatch(optionTag(o, target), target); return done(m.outcome, src, m); }
@@ -771,43 +755,98 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // key and accept forms — they name no listed wrong answer, so a miss is never a misconception)
   const sg = target.mode === "item" && !other && scriptGradeOn() ? target.item?.scriptAsk ?? target.item?.scriptCheck ?? target.item?.scriptThen ?? (target.item?.quick ? {} : null) : null;
   if (sg && !flags.dontKnow && !request) {
-    // (Hindi number words, "bees" = 20, "ek bata chaar" = 1/4: the reactive child's and a real child's forms)
-    const st = hindiNumbers(text);
-    const firstNumOf = (x) => String(x ?? "").match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/)?.[0]?.replace(/\s+/g, "") ?? null;
-    const unitless = (x) => norm(String(x ?? "").replace(/\b(?:cm|m|km|mm|metre|metres|meter|meters|centimetre|kg|g|rupees|rs)\b\.?/gi, ""));
-    const forms = [target.key, ...(target.also || [])].filter(Boolean);
-    const n = firstNumOf(st), nums = String(st).match(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g) ?? [];
-    // v4 W4 (director6: "after 1/3" to a card keyed "between 0 and 1/3" whose listed wrong answer IS "after 1/3" was graded
-    // right twice, by its lone number): the order is exact form → the listed wrong answer → the same words → by value, and by
-    // value only for a key that is a number (with a unit at most)
-    const wrong = sg.wrongIfMis ? String(sg.wrongIfMis) : null;
+    // 048 (script cards hear the answer the way a child says it): reply, key, accept forms and the listed wrong answer(s) are
+    // compared on ONE normal form (server/grading/script-answer.js): numbers by the one reader (spoken-number.js) in Latin
+    // Hindi, Devanagari and English words, the equal words and fillers of both scripts on one footing (v4 W4's sameWords),
+    // a sum as an expression, a denial where it stands, a list of values in its order (G7). Whatever the code cannot tell
+    // goes to the model, never to `correct`.
+    const R = canon(text);
+    const prompts = [target.item?.prompt_hi, target.item?.prompt_en].filter(Boolean);
+    const prompt = lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en;
+    const forms = [target.key, ...(target.also || [])].filter((k) => k != null && String(k).trim());
+    const wrongs = wrongList(sg.wrongIfMis);
+    // G2: a reply with Devanagari letters is compared in Devanagari too (the forms through toDevanagari)
+    const deva = (k) => toDevanagari(String(k), { force: true, fallback: "rules" });
+    const canons = (list) => list.map((k) => [canon(k), ...(R.deva ? [canon(deva(k))] : [])]);
+    const F = canons(forms), W = canons(wrongs);
     const misOf = () => (sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets }) : done("incorrect", "script_key"));
-    if (forms.some((k) => norm(k) === norm(st) || unitless(k) === unitless(st))) return done("correct", "script_key");
-    if (wrong && (norm(wrong) === norm(st) || unitless(wrong) === unitless(st))) return misOf();
-    if (wrong && sameWords(wrong, st)) return misOf();
-    if (forms.some((k) => sameWords(k, st))) return done("correct", "script_key");
-    const numericKey = (k) => !/\p{L}/u.test(unitless(k).replace(/\d+(?:\.\d+)?(?:\s*\/\s*\d+)?/g, ""));
+    const toModel = (why) => ({ result: null, flags, text, scriptUnsure: why });
+    // v4 W4 (director6: "after 1/3" to a card keyed "between 0 and 1/3" whose listed wrong answer IS "after 1/3" was graded
+    // right twice, by its lone number): the order is exact form → the listed wrong answer → the same answer → by value, and
+    // by value only for a form that is a number (with a unit at most)
+    const ops = (x) => x.seq.filter((y) => y.k === "op").map((y) => y.t).join(" ");
+    const exact = (k) => norm(k) === norm(text) && ops(canon(k)) === ops(R);
+    if (forms.some(exact)) return done("correct", "script_key");
+    if (wrongs.some(exact)) return misOf();
+    if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();
+    if (F.some((cs) => cs.some((c) => sameAnswer(c, R)))) return done("correct", "script_key");
+    const keyC = canon(target.key);
+    const fracs = R.nums.filter((x) => x.includes("/"));
     // (Learning, staged batch: "Zyada kisne khaya: Gopi ne ya Anjali ne?" is keyed by the name; a child who answers with the
     // fraction the prompt states beside a name — "6/7" — answered with that name, the way "the bigger one" maps to a choice.
     // Only for a key that is not a number, only one fraction said, and only when exactly one name carries that value)
-    if (!numericKey(target.key) && nums.length === 1 && nums[0].includes("/")) {
+    if (numberOf(keyC) == null && R.nums.length === 1 && fracs.length === 1 && !R.neg && !R.ops) {
       const named = nameFractions(lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en);
-      const val = fractionValue(nums[0]);
+      const val = fractionValue(fracs[0].slice(1));
       const hits = named.filter((x) => val != null && x.value === val);
       if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length) {
         const name = hits[0].name.toLowerCase();
         const says = (k) => norm(k).split(/\s+/).includes(name);
         if (forms.some(says)) return done("correct", "script_key");
-        if (wrong && says(wrong)) return misOf();
+        if (wrongs.some(says)) return misOf();
         return done("incorrect", "script_key");
       }
     }
-    if (wrong && numericKey(wrong) && n && nums.length === 1 && firstNumOf(wrong) === n) return misOf();
-    if (forms.some((k) => numericKey(k) && n && nums.length === 1 && firstNumOf(k) === n && !denies0(st))) return done("correct", "script_key");
+    // G3: the noun may be dropped ("12 wali" for "12 wali patti"): the one option of the prompt the reply names
+    {
+      const opts = optionsIn(prompt);
+      if (opts.length >= 2) {
+        const oc = opts.map((o) => canon(R.deva ? deva(o) : o));
+        const i = pickOption(R, oc);
+        if (i >= 0) {
+          const o = canon(opts[i]);
+          if (W.some((cs) => sameAnswer(cs[0], o))) return misOf();
+          if (F.some((cs) => sameAnswer(cs[0], o))) return done("correct", "script_key");
+        }
+      }
+    }
+    // G1: by value, one number said (any script) against a form that is one number. A unit the form does not have, or a word
+    // that changes what is said about the number ("25 se kam", "3 ya 4"), is the model's to read.
+    const one = R.nums.length === 1 && !R.ops && !R.neg ? R.nums[0] : null;
+    const unitOk = (c) => !R.units.length || !c.units.length || R.units.every((u) => c.units.includes(u));
+    const risky = R.words.some((w) => RISK.has(w));
+    if (one != null) {
+      const wv = W.map((cs) => cs[0]).find((c) => numberOf(c) === one);
+      const fv = F.map((cs) => cs[0]).find((c) => numberOf(c) === one);
+      if ((wv || fv) && (risky || !unitOk(wv ?? fv))) return toModel("value_beside_words");
+      if (wv) return misOf();
+      // (048 follow-up, main's probe 3: "Sana ka 5 cm lamba" to a card keyed "5 cm" whose named wrong answer is "Sana" was graded
+      // right by its number. The number may be right while the reply says whose it is wrongly: a reply that holds every content
+      // word of a listed wrong answer, or — beside a word that says whose ("ka", "wala") — a word of another option of the prompt
+      // that no right form holds, is the model's to read)
+      if (fv) {
+        const formWords = new Set(F.flatMap((cs) => cs.flatMap((c) => c.words)));
+        const saysWrong = W.some((cs) => cs.some((c) => c.words.length && c.words.every((w) => R.words.includes(w))));
+        const whose = /(?:^|[^\p{L}\p{M}])(?:ka|ki|ke|wala|wali|wale|waala|waali|का|की|के|वाला|वाली|वाले)(?![\p{L}\p{M}])/iu.test(text);
+        const keyC0 = canon(target.key);
+        const otherOpt = optionsIn(prompt).map((o) => canon(R.deva ? deva(o) : o)).filter((o) => !sameAnswer(o, keyC0) && !F.some((cs) => cs.some((c) => sameAnswer(c, o))));
+        const otherWord = whose && R.words.some((w) => !formWords.has(w) && otherOpt.some((o) => o.words.includes(w)));
+        if (saysWrong || otherWord) return toModel("value_names_wrong");
+        return done("correct", "script_key");
+      }
+    }
     // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
-    const yesNoKey = /^(?:yes|no|haan|nahi|nahin)$/i.test(String(target.key).trim());
-    const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(String(st).trim());
-    if ((nums.length === 1 || String(st).trim().split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) return done("incorrect", "script_key");
+    const yn = (c) => c.seq.length > 0 && c.seq.every((x) => x.t === "haan" || x.t === "nahi");
+    const yesNoKey = yn(keyC);
+    // G7: a denial the forms do not place the same way: the model reads it (a bare yes / no to a yes / no card stays code's)
+    if (R.neg && !(yesNoKey && yn(R))) return toModel("denial");
+    // G2: a Devanagari reply is never wrong in code for its spelling; a number that differs from a number key is still wrong
+    if (R.deva) {
+      if (one != null && numberOf(keyC) != null && !risky) return done("incorrect", "script_key");
+      if (!(yesNoKey && yn(R))) return toModel("devanagari");
+    }
+    const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(text);
+    if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) return done("incorrect", "script_key");
   }
   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
   // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number

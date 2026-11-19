@@ -13,7 +13,7 @@ import { newLearnerState } from "../../server/comprehension/fuse.js";
 export const rowsOf = (run, persona, T) => JSON.parse(readFileSync(new URL(`./eval-results/hybrid-side-by-side/results/${run}/${persona}-${T.replace("-maths", "")}.json`, import.meta.url), "utf8")).director;
 
 /** → { kit, rows, plans: [{ row, p, state }] } walked through planTurn up to teacher row `upto` (1-based). */
-export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
+export async function replay(run, persona, T, upto, { onPlan = null, heard = false } = {}) {
   const rows = rowsOf(run, persona, T);
   const kit = kitFromFile(getTopic(T)), classLevel = Number(/^c(\d)/.exec(T)[1]);
   const CHILD = { id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: classLevel }, LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
@@ -29,7 +29,9 @@ export async function replay(run, persona, T, upto, { onPlan = null } = {}) {
     const text = rows[i].text;
     s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
     const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
-    const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel, typed: true });
+    // (048: `heard` passes the teacher's recorded line as the turn path does, so a line that answers HER other question — "Yeh hissa
+    // saaf hua?" → "mujhe lagta hai haan" — is not graded against a card the replayed walk has open; off by default)
+    const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel, typed: true, ...(heard ? { heard: rows[i - 1]?.text ?? "" } : {}) });
     // (the model's read as the run recorded it: its outcome, and its request type after " · ")
     const [o, rq] = String(rows[i].read).split(" · ");
     const c = fast.result ?? { outcome: o.trim(), confidence: 0.9, source: "replay", flags: { ...fast.flags }, ...(rq ? { request: { type: rq.trim() } } : {}) };
