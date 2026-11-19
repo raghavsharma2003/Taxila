@@ -174,3 +174,107 @@ describe("R3: a yes at an asked step; no question three turns running", () => {
     assert.ok(!lessonFlags({ rows: [...rows.slice(0, 98), r], script: s }).some((f) => f.predicate === "teachbackKeyBoard" && f.row === 98));
   });
 });
+
+describe("R4: a reason is not a request", () => {
+  test("helpOtherPart and workedCheckin are gated and read director31 c6 steering 32, and no other row of the run", () => {
+    assert.ok(!PENDING.has("helpOtherPart") && !PENDING.has("workedCheckin"));
+    for (const name of ["helpOtherPart", "workedCheckin"]) {
+      assert.ok(flagged("steering", "c6", name).has(32), name);
+      for (const p of ["steady", "stuck", "offtopic", "steering"]) for (const t of Object.keys(TOPIC)) {
+        const rows = [...flagged(p, t, name)].filter((r) => !(p === "steering" && t === "c6" && r === 32));
+        assert.deepEqual(rows, [], `${name} ${p} ${t}`);
+      }
+    }
+  });
+  test("the fast reader: a line about how she thought asks for nothing; an imperative ask for easier still does", async () => {
+    const { readIntent, alsoReading } = await import("../server/conversation/lexicon.js");
+    for (const t of ["maine pehle chhota wala socha, phir bada", "maine 3 se bhaag kiya", "maine pehle chhota wala gina"]) {
+      assert.equal(readIntent(t)?.type ?? null, null, t);
+      assert.ok(!(alsoReading(t) ?? []).includes("easier"), t);
+    }
+    for (const t of ["chhota wala", "thoda aasan karo", "maine socha thoda easy karo"]) assert.equal(readIntent(t)?.type, "easier", t);
+  });
+  test("at an asked step, a reason the model reads as easier gets the step's question again — never another part's easier wording", async () => {
+    const { replay } = await import("./fixtures/replay.mjs");
+    const { classifyFast, targetFor } = await import("../server/director/classify.js");
+    const { findItem } = await import("../server/director/items.js");
+    const { planTurn } = await import("../server/brain/turn.js");
+    const { newLearnerState } = await import("../server/comprehension/fuse.js");
+    const { kit, plans } = await replay("2026-11-18-director31", "steering", TOPIC.c6, 1e9);
+    const at = plans.find((p) => p.state.lastMove?.stepAsk?.prompt);
+    assert.ok(at, "the walk asks a worked step");
+    const CHILD = { id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: 6 }, LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
+    const planWith = async (text, type) => {
+      const s = { ...at.state, seq: (at.state.seq ?? 0) + 1, recent: [...(at.state.recent ?? []), { who: "child", text }] };
+      const item = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const fast = classifyFast({ target: targetFor(s, kit, item), childText: text, lang: "hinglish", classLevel: 6, typed: true });
+      const c = fast.result ?? { outcome: "no_evidence", confidence: 0.9, source: "test", flags: { ...fast.flags }, request: { type } };
+      return (await planTurn(s, c, { kit, child: CHILD, lesson: LESSON, activeItem: item, moduleOnly: false, moduleEvents: [], answer: text, childText: text, leaked: false,
+        live: Promise.resolve({ state: newLearnerState({ childId: CHILD.id, classLevel: 6 }), maxSeq: 0 }), carried: [], now: 9_000_000 })).r.state.lastMove;
+    };
+    const step = `${at.state.lastMove.stepAsk.skillId}:worked:step${at.state.lastMove.stepAsk.step + 1}`;
+    for (const type of ["easier", "harder"]) {
+      const m = await planWith("maine pehle chhota wala socha, phir bada", type);
+      assert.ok(m.stepAsk?.prompt, `${type}: the step's question again`);
+      assert.match(String(m.scriptBeat?.beatId ?? ""), /^worked/, `${type}: on the worked example`);
+      assert.ok(!m.help || m.help.part === step, `${type}: help from ${m.help?.part}`);
+    }
+    // (a real ask for easier words at the step gets the step's own easier wording)
+    const e = await planWith("thoda aasan karo", "easier");
+    assert.equal(e.help?.part, step);
+  });
+});
+
+describe("R5: help answers the mistake", () => {
+  const live = (t) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${t}.json`), "utf8"));
+  test("after a miss with its own hint said, a card marked whyAltAsHelp gets its second reason next, over its posing board, never the key", async () => {
+    const { pickHelp, helpPart, addSaid } = await import("../server/director/help.js");
+    const { compiledFor } = await import("../server/director/compile.js");
+    let n = 0;
+    for (const t of ["c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"]) {
+      const sc = live(t);
+      for (const p of compiledFor(sc).parts) {
+        const hp = helpPart(sc, p.id); if (!hp) continue;
+        const raw = hp.path.split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], sc);
+        const h1 = pickHelp({ script: sc, part: p.id, request: "hint", said: [], misses: 1 });
+        if (!raw?.simpler) continue;
+        if (!h1?.rung) continue;
+        if (raw?.simpler) assert.notEqual(h1.rung.field, "whyAltHelp", `${p.id}: the card's own hint first`);
+        const h2 = pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2 });
+        if (raw?.whyAltAsHelp === true && raw.whyAlt) {
+          assert.equal(h2?.rung?.field, "whyAltHelp", p.id);
+          assert.deepEqual(h2.board, hp.board ?? null, `${p.id}: the posing board`);
+          assert.equal(h2.card, "keep");
+          n++;
+        } else assert.notEqual(h2?.rung?.field, "whyAltHelp", p.id);
+      }
+    }
+    assert.ok(n >= 5, `${n} cards`);
+  });
+  test("a give-up or a clarify at a bridge goes on to the next point and its card — the bridge is not said again in other words", async () => {
+    const { pickHelp } = await import("../server/director/help.js");
+    const sc = live("c5-maths-ch02-t01");
+    const id = `${sc.skills[0].skillId}:bridge`;
+    for (const request of ["give_up", "clarify"]) {
+      const h = pickHelp({ script: sc, part: id, request, said: [] });
+      assert.equal(h.card, "goOn", request); assert.equal(h.rung, null, request); assert.ok(h.bridgeOn, request);
+    }
+  });
+});
+
+describe("R7: a told worked step is said as its sentence", () => {
+  test("scriptWorkedStepLine says the step's `told`; a step without one is today's join and a compile hole", async () => {
+    const { scriptWorkedStepLine } = await import("../server/director/script.js");
+    const { compileScript: compile } = await import("../server/director/compile.js");
+    const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c4-maths-ch05-t01.json"), "utf8"));
+    const st = sc.skills[0].workedExample.steps[0];
+    assert.equal(scriptWorkedStepLine(st), st.told.hi.trim());
+    assert.doesNotMatch(scriptWorkedStepLine(st), /: .*, kyunki /);
+    const bare = { ...st }; delete bare.told;
+    assert.match(scriptWorkedStepLine(bare), /kyunki/);
+    const s2 = structuredClone(sc); delete s2.skills[0].workedExample.steps[0].told;
+    const holes = (x) => (compile(x).missing ?? []).filter((h) => (h.rules ?? [h.rule]).includes("worked_step/told"));
+    assert.equal(holes(sc).length, 0);
+    assert.equal(holes(s2).length, 1);
+  });
+});

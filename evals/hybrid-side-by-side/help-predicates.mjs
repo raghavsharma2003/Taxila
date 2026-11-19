@@ -50,7 +50,7 @@ function helpIndex(ctx) {
   const walkC = (o) => { if (Array.isArray(o)) return o.forEach(walkC); if (o && typeof o === "object") { for (const f of ["prompt", "reask"]) { const v = o[f];
     for (const t of typeof v === "string" ? [v] : [v?.hi, v?.en]) for (const x of sentencesOf(t)) cardSents.add(normSentence(x)); } for (const v of Object.values(o)) walkC(v); } };
   walkC(script.skills ?? []);
-  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn"].flatMap((k) => script.joints?.[k] ?? [])]
+  const joints = new Set([...Object.values(FALLBACK_JOINTS).flat(), ...["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn", "startAnyway"].flatMap((k) => script.joints?.[k] ?? [])]
     .flatMap((f) => [f?.hi, f?.en, typeof f === "string" ? f : null]).filter(Boolean).map(normSentence));
   // (Learning 016: a rung may name the child's friend — "{friend} galat hai" — which she says with the name filled: a slot sentence matches
   // any one or two words in the slot's place)
@@ -309,6 +309,11 @@ export const HELP_PREDICATES = {
     const part = helpPart(ctx.script, h.part);
     if (!part) return null;
     const ladder = ladderOf(ctx.script, part, { keyed: h.keyed });
+    // (Brain 047 R5: after a miss, a card marked whyAltAsHelp has its second reason on its ladder, after its own hint)
+    if (h.request === "hint" && !h.keyed && at(ctx.script, `${part.path}.whyAltAsHelp`) === true) {
+      const wa = ladderOf(ctx.script, part, { keyed: true })[0];
+      if (wa?.field === "whyAlt") ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, wa);
+    }
     const mine = new Set(ladder.map((x) => x.path));
     const said = saidBefore(L, i);
     const rungText = (x) => (typeof x.value === "string" ? [x.value] : [x.value?.hi, x.value?.en]).filter(Boolean);
@@ -326,7 +331,11 @@ export const HELP_PREDICATES = {
   // said a remediation's other wording over the skill's first check card for the same mix-up; help.js had lent it that card's board, and
   // this predicate compared against the lent board)
   helpBoard(L, r, i, ctx) {
-    if (!helpTurnOf(L, r, i, ctx)) return null;
+    const h = helpTurnOf(L, r, i, ctx);
+    if (!h) return null;
+    // (Brain 047 R5: a card's second reason said as a miss's help is said over the card's posing board — its answer board may show the key)
+    const hp = h.request === "hint" && !h.keyed ? helpPart(ctx.script, h.part) : null;
+    const asHelp = hp && at(ctx.script, `${hp.path}.whyAltAsHelp`) === true ? `${hp.path}.whyAlt` : null;
     const ix = helpIndex(ctx);
     const t = norm(r.text);
     for (const s of sentencesOf(t)) {
@@ -335,7 +344,7 @@ export const HELP_PREDICATES = {
       const rem = /^(.*\.remediation\[\d+\])\.(?:sayAlt|simpler)$/.exec(hit.path);
       // (the rung's own board — a wording Learning drew a board for — else its part's; a remediation's part board is its own `board`, else
       // none: the board up)
-      const own = hit.board ?? (rem ? at(ctx.script, `${rem[1]}.board`) : null);
+      const own = hit.path === asHelp ? hp.board ?? null : hit.board ?? (rem ? at(ctx.script, `${rem[1]}.board`) : null);
       const want = own && typeof own === "object" ? own : rem ? boardUpBefore(L, i) : null;
       if (!want) continue;
       const b = boardAt(r, t.indexOf(s));

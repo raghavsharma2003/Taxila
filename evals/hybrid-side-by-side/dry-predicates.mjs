@@ -185,6 +185,8 @@ export const PREDICATES = {
     if (KEY_SAID.test(ctx.prevT.text) && ctx.prevPrevT && KEY_SAID.test(ctx.prevPrevT.text) && !cardIn(ctx.prevPrevT)) return null;
     // (main's R3 on the merged H4 + L2 tree: a clarify at the hook's check-in is answered by the first point, and its card with it)
     if (String(ctx.prevT.move ?? "") === "hook") return null;
+    // (Brain 047 R5: a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
+    if ((r.seams ?? []).some((x) => x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (main's R3: a clarify at a keyed card's check-in — the check-in L2 puts after a right answer's verdict when the next part waits
     // included — is help on the card just answered (H4 item 6): the why's other wording if unsaid, else one afterKeyGoOn form and the lesson
     // goes on, its next card with it. Exempt exactly as giveUpCheckin exempts it: the turn the walk recorded as keyed help, and a card in it
@@ -307,7 +309,10 @@ export const PREDICATES = {
           const w = f.split(" ");
           for (let a = 0; a < w.length; a++) for (let b = w.length; b - a > best && b - a >= 5; b--) {
             const run = w.slice(a, b);
-            if (run.filter((x) => /\p{L}{2,}/u.test(x)).length >= 3 && T.includes(` ${run.join(" ")} `) && !saidOther.some((o) => o.includes(` ${run.join(" ")} `))) { best = b - a; of = w.length; break; }
+            // (d32 047 R7: a run across her sentence boundary — "nahi hai." then a told step "Neeche wala number saare …" — whose words after the
+            // first, or before the last, are another unit said whole is that unit's: dry stuck c4 42)
+            const inOther = (x) => x.length >= 4 && saidOther.some((o) => o.includes(` ${x.join(" ")} `));
+            if (run.filter((x) => /\p{L}{2,}/u.test(x)).length >= 3 && T.includes(` ${run.join(" ")} `) && !saidOther.some((o) => o.includes(` ${run.join(" ")} `)) && !inOther(run.slice(1)) && !inOther(run.slice(0, -1))) { best = b - a; of = w.length; break; }
           }
         }
         if (best < 5) continue;
@@ -556,6 +561,8 @@ export function authoredUnits(script) {
     if (we) {
       add(`${S} worked problem`, we.problem); add(`${S} worked simpler`, we.simpler); (we.givens ?? []).forEach((g, k) => add(`${S} worked given ${k + 1}`, g));
       (we.steps ?? []).forEach((st, k) => add(`${S} worked step ${k + 1} simpler`, st.simpler));
+      // (Brain 047 R7: a told step is said as its authored `told` sentence — a unit of its own)
+      (we.steps ?? []).forEach((st, k) => add(`${S} worked step ${k + 1} told`, st.told));
       add(`${S} yourStep card`, we.yourStep?.prompt); add(`${S} yourStep simpler`, we.yourStep?.simpler);
     }
     for (const c of sk.checks ?? []) { add(`${S} ${c.id} card`, c.prompt); add(`${S} ${c.id} simpler`, c.simpler); }
@@ -725,7 +732,8 @@ export const ORDER_LAWS = {
     // lesson goes on)
     if (helpGoOnSaid(r, ctx)) return null;
     // (dc-r8-director27 P3: a bridge's help all said — the helpSpent line, then the lesson goes on from the bridge, as help decides)
-    if ((r.seams ?? []).some((x) => x.joint === "helpSpent") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
+    // (Brain 047 R5: a give-up or a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
+    if ((r.seams ?? []).some((x) => x.joint === "helpSpent" || x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (Brain 044 T1: after the greeting's simpler wording, a request gets the "nothing easier" line and the lesson starts — hook, point, card)

@@ -279,6 +279,12 @@ export function compileScript(script, plan = null) {
     const c = at(script, p.path);
     if (c?.why && !c.whyShort) holes.push({ part: p.id, kind: p.kind, rule: `${p.kind}/right`, field: "whyShort", path: `${p.path}.whyShort` });
   }
+  // (Brain 047 R7: a told worked step is said as its authored `told` sentence; a step without one is said as today's join, "do: result,
+  // kyunki why" — a hole for Learning)
+  for (const p of parts.filter((x) => x.kind === "worked_step" && /\.steps\[\d+\]$/.test(String(x.path)))) {
+    const st = at(script, p.path);
+    if (st?.do && !(st.told && (st.told.hi || st.told.en))) holes.push({ part: p.id, kind: p.kind, rule: "worked_step/told", field: "told", path: `${p.path}.told` });
+  }
   // (Brain 047 R8, dc-r8-director31 item 1: a card with no `hindi` form is no hole — a form is written only where an honest plainer sentence
   // exists; a Hindi request there gets the switch line and the card's unsaid help, then the whole card: help.js pickHelp)
   // (main's R7 on the merged tree: the wrap's closing question — a script without `wrap.ask` is said with code's fallback form)

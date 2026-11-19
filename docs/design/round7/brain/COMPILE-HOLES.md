@@ -6,7 +6,7 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (5 live, 29 staged). Missing fields: 2016. Rule holes: 17829. Doubles: 0.
+**Scripts:** 34 (5 live, 29 staged). Missing fields: 2206. Rule holes: 18019. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
@@ -29,47 +29,48 @@
 | then_card whyAlt | 136 | the why's second wording, said after a key's check-in |
 | then_card whyShort | 136 | a follow-up card's why cut to its core (10 words or fewer); missing: the verdict and its why stand alone, as before |
 | worked_step problemAlt | 81 | the worked problem's second telling: the first rung of its help ladder |
+| worked_step told | 190 |  |
 | wrap ask | 27 | the wrap's closing question, three forms (how the lesson felt): the first turn of the wrap ends on it. Fallback: code's first form |
 | your_step whyAlt | 81 | the why's second wording, said after a key's check-in |
 
 ## Per script
 
-| Script | Where | Parts | Cells | Missing | card ask.simpler | card whyAlt | card whyShort | check whyAlt | check whyShort | point pointAlt | remediation board | remediation sayAlt | then_card whyAlt | then_card whyShort | worked_step problemAlt | wrap ask | your_step whyAlt | Doubles |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch05-t01 | live | 63 | 1935 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c5-maths-ch02-t03 | live | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c4-maths-ch01-t02 | staged | 59 | 1809 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c4-maths-ch03-t01 | staged | 60 | 1836 | 72 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c4-maths-ch03-t02 | staged | 57 | 1746 | 71 | 7 | 7 | 7 | 8 | 8 | 7 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c4-maths-ch04-t01 | staged | 66 | 2025 | 85 | 9 | 9 | 9 | 9 | 9 | 9 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c4-maths-ch04-t02 | staged | 57 | 1737 | 67 | 8 | 8 | 8 | 7 | 7 | 8 | 2 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c4-maths-ch06-t01 | staged | 61 | 1863 | 72 | 9 | 9 | 9 | 8 | 8 | 9 | 1 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c4-maths-ch07-t01 | staged | 60 | 1827 | 70 | 9 | 9 | 9 | 7 | 7 | 9 | 1 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c4-maths-ch09-t01 | staged | 67 | 2052 | 82 | 10 | 10 | 10 | 9 | 9 | 10 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c4-maths-ch14-t01 | staged | 49 | 1494 | 55 | 6 | 6 | 6 | 7 | 7 | 6 | 1 | 3 | 3 | 3 | 3 | 1 | 3 | 0 |
-| c5-maths-ch01-t01 | staged | 57 | 1746 | 67 | 8 | 8 | 8 | 9 | 9 | 8 | 1 | 3 | 3 | 3 | 3 | 1 | 3 | 0 |
-| c5-maths-ch03-t01 | staged | 58 | 1764 | 71 | 8 | 8 | 8 | 6 | 6 | 8 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c5-maths-ch03-t02 | staged | 67 | 2052 | 87 | 9 | 9 | 9 | 8 | 8 | 9 | 7 | 7 | 7 | 7 | 3 | 1 | 3 | 0 |
-| c5-maths-ch05-t01 | staged | 62 | 1899 | 77 | 8 | 8 | 8 | 8 | 8 | 8 | 4 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c5-maths-ch13-t01 | staged | 58 | 1782 | 70 | 7 | 7 | 7 | 9 | 9 | 7 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c5-maths-ch13-t02 | staged | 63 | 1935 | 76 | 8 | 8 | 8 | 9 | 9 | 8 | 1 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c6-maths-ch02-t01 | staged | 61 | 1854 | 73 | 8 | 8 | 8 | 7 | 7 | 8 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c6-maths-ch02-t02 | staged | 61 | 1854 | 71 | 8 | 8 | 8 | 8 | 8 | 8 | 4 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c6-maths-ch02-t03 | staged | 63 | 1917 | 77 | 8 | 8 | 8 | 7 | 7 | 8 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c6-maths-ch02-t04 | staged | 64 | 1944 | 75 | 9 | 9 | 9 | 7 | 7 | 9 | 3 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c6-maths-ch05-t01 | staged | 65 | 1980 | 79 | 8 | 8 | 8 | 8 | 8 | 8 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c6-maths-ch07-t01 | staged | 58 | 1773 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c6-maths-ch07-t03 | staged | 64 | 1944 | 77 | 10 | 10 | 10 | 7 | 7 | 10 | 4 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c6-maths-ch07-t04 | staged | 66 | 2007 | 79 | 9 | 9 | 9 | 8 | 8 | 9 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c6-maths-ch07-t05 | staged | 62 | 1890 | 75 | 8 | 8 | 8 | 8 | 8 | 8 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c6-maths-ch08-t01 | staged | 64 | 1944 | 77 | 8 | 8 | 8 | 7 | 7 | 8 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
-| c7-maths-ch02-t01 | staged | 57 | 1728 | 64 | 7 | 7 | 7 | 7 | 7 | 7 | 3 | 4 | 4 | 4 | 3 | 1 | 3 | 0 |
-| c7-maths-ch03-t01 | staged | 66 | 2007 | 79 | 9 | 9 | 9 | 8 | 8 | 9 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
-| c7-maths-ch05-t01 | staged | 62 | 1908 | 81 | 7 | 7 | 7 | 9 | 9 | 7 | 7 | 7 | 7 | 7 | 3 | 1 | 3 | 0 |
-| c7-maths-ch05-t02 | staged | 65 | 1980 | 81 | 9 | 9 | 9 | 7 | 7 | 9 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
+| Script | Where | Parts | Cells | Missing | card ask.simpler | card whyAlt | card whyShort | check whyAlt | check whyShort | point pointAlt | remediation board | remediation sayAlt | then_card whyAlt | then_card whyShort | worked_step problemAlt | worked_step told | wrap ask | your_step whyAlt | Doubles |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| c4-maths-ch05-t01 | live | 63 | 1935 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c5-maths-ch02-t03 | live | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch01-t02 | staged | 59 | 1809 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch03-t01 | staged | 60 | 1836 | 78 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch03-t02 | staged | 57 | 1746 | 77 | 7 | 7 | 7 | 8 | 8 | 7 | 5 | 5 | 5 | 5 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch04-t01 | staged | 66 | 2025 | 91 | 9 | 9 | 9 | 9 | 9 | 9 | 6 | 6 | 6 | 6 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch04-t02 | staged | 57 | 1737 | 73 | 8 | 8 | 8 | 7 | 7 | 8 | 2 | 4 | 4 | 4 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch06-t01 | staged | 61 | 1863 | 78 | 9 | 9 | 9 | 8 | 8 | 9 | 1 | 4 | 4 | 4 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch07-t01 | staged | 60 | 1827 | 76 | 9 | 9 | 9 | 7 | 7 | 9 | 1 | 4 | 4 | 4 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch09-t01 | staged | 67 | 2052 | 88 | 10 | 10 | 10 | 9 | 9 | 10 | 2 | 5 | 5 | 5 | 3 | 6 | 1 | 3 | 0 |
+| c4-maths-ch14-t01 | staged | 49 | 1494 | 61 | 6 | 6 | 6 | 7 | 7 | 6 | 1 | 3 | 3 | 3 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch01-t01 | staged | 57 | 1746 | 73 | 8 | 8 | 8 | 9 | 9 | 8 | 1 | 3 | 3 | 3 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch03-t01 | staged | 58 | 1764 | 77 | 8 | 8 | 8 | 6 | 6 | 8 | 5 | 5 | 5 | 5 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch03-t02 | staged | 67 | 2052 | 93 | 9 | 9 | 9 | 8 | 8 | 9 | 7 | 7 | 7 | 7 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch05-t01 | staged | 62 | 1899 | 83 | 8 | 8 | 8 | 8 | 8 | 8 | 4 | 6 | 6 | 6 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch13-t01 | staged | 58 | 1782 | 76 | 7 | 7 | 7 | 9 | 9 | 7 | 2 | 5 | 5 | 5 | 3 | 6 | 1 | 3 | 0 |
+| c5-maths-ch13-t02 | staged | 63 | 1935 | 82 | 8 | 8 | 8 | 9 | 9 | 8 | 1 | 6 | 6 | 6 | 3 | 6 | 1 | 3 | 0 |
+| c6-maths-ch02-t01 | staged | 61 | 1854 | 81 | 8 | 8 | 8 | 7 | 7 | 8 | 5 | 5 | 5 | 5 | 3 | 8 | 1 | 3 | 0 |
+| c6-maths-ch02-t02 | staged | 61 | 1854 | 80 | 8 | 8 | 8 | 8 | 8 | 8 | 4 | 4 | 4 | 4 | 3 | 9 | 1 | 3 | 0 |
+| c6-maths-ch02-t03 | staged | 63 | 1917 | 85 | 8 | 8 | 8 | 7 | 7 | 8 | 6 | 6 | 6 | 6 | 3 | 8 | 1 | 3 | 0 |
+| c6-maths-ch02-t04 | staged | 64 | 1944 | 83 | 9 | 9 | 9 | 7 | 7 | 9 | 3 | 5 | 5 | 5 | 3 | 8 | 1 | 3 | 0 |
+| c6-maths-ch05-t01 | staged | 65 | 1980 | 88 | 8 | 8 | 8 | 8 | 8 | 8 | 6 | 6 | 6 | 6 | 3 | 9 | 1 | 3 | 0 |
+| c6-maths-ch07-t01 | staged | 58 | 1773 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c6-maths-ch07-t03 | staged | 64 | 1944 | 84 | 10 | 10 | 10 | 7 | 7 | 10 | 4 | 4 | 4 | 4 | 3 | 7 | 1 | 3 | 0 |
+| c6-maths-ch07-t04 | staged | 66 | 2007 | 88 | 9 | 9 | 9 | 8 | 8 | 9 | 5 | 5 | 5 | 5 | 3 | 9 | 1 | 3 | 0 |
+| c6-maths-ch07-t05 | staged | 62 | 1890 | 83 | 8 | 8 | 8 | 8 | 8 | 8 | 5 | 5 | 5 | 5 | 3 | 8 | 1 | 3 | 0 |
+| c6-maths-ch08-t01 | staged | 64 | 1944 | 86 | 8 | 8 | 8 | 7 | 7 | 8 | 6 | 6 | 6 | 6 | 3 | 9 | 1 | 3 | 0 |
+| c7-maths-ch02-t01 | staged | 57 | 1728 | 73 | 7 | 7 | 7 | 7 | 7 | 7 | 3 | 4 | 4 | 4 | 3 | 9 | 1 | 3 | 0 |
+| c7-maths-ch03-t01 | staged | 66 | 2007 | 88 | 9 | 9 | 9 | 8 | 8 | 9 | 5 | 5 | 5 | 5 | 3 | 9 | 1 | 3 | 0 |
+| c7-maths-ch05-t01 | staged | 62 | 1908 | 87 | 7 | 7 | 7 | 9 | 9 | 7 | 7 | 7 | 7 | 7 | 3 | 6 | 1 | 3 | 0 |
+| c7-maths-ch05-t02 | staged | 65 | 1980 | 88 | 9 | 9 | 9 | 7 | 7 | 9 | 6 | 6 | 6 | 6 | 3 | 7 | 1 | 3 | 0 |
 
 ## Rule holes per rule
 
@@ -119,6 +120,7 @@
 | point/hindi/spent | 222 |
 | check/after_key | 210 |
 | check/right | 210 |
+| worked_step/told | 190 |
 | your_step/after_key | 162 |
 | remediation/clarify/fresh | 136 |
 | remediation/clarify/heard | 136 |

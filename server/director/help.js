@@ -330,6 +330,13 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true };
   }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
+  // (Brain 047 R5: help answers the mistake. After a miss — the card's own hint said — on a card whose script marks its second reason safe to say without the key
+  // — `whyAltAsHelp: true`, checked by the checker's rule 9 — that reason is the next rung after the card's own hint, before the point's other
+  // wording: c5-t03 steering 34 to 36; c6-ch07-t01 stuck 62, offtopic 50 to 52, steering 16 to 18; c4-ch01-t02 steady 8 to 10)
+  if (request === "hint" && isCard && !keyed && !closed && rawAt(part.path)?.whyAltAsHelp === true) {
+    const wa = ladderSpec(script, part, { keyed: true })[0];
+    if (wa?.field === "whyAlt" && wa.present) ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
+  }
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(closed && !keyed ? { closed: true } : {}) };
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
@@ -349,6 +356,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const rung = help ? { ...help, text: help.text.charAt(0).toUpperCase() + help.text.slice(1) } : { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null };
     return { ...base, rung, board: rung.board, card: "hindiForm", key: null, joint: null, hindiForm: hf, ...(part.kind === "worked_step" ? { stepAsked: true } : {}), ...(again ? { hindiAgain: true } : {}) };
   }
+  // (Brain 047 R5: a give-up or a clarify at a bridge's check-in goes on to the next point and its card — the bridge is not said again in
+  // other words: c5-t01 stuck 54 to 56, offtopic 48 to 50; c6-ch07-t01 steady 24 to 26, stuck 54 to 56; c6 stuck 52 to 54). One word to the
+  // child first (N1): the script's startAnyway, "Chalo, main batati hoon.")
+  if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "startAnyway", { lang: L, lessonKey, n: jointN.startAnyway ?? 0 }), bridgeOn: true };
   if (unsaid) {
     const t0 = String(unsaid.text).trim();
     const rung = { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null };

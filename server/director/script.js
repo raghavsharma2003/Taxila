@@ -438,6 +438,9 @@ export function scriptWorkedLinesV2(w, lang = "hinglish") {
   if (!givens.length || givens.some((g) => !g)) return null;
   const lines = [dot(`${W.given}: ${givens.join(", ")}`)];
   for (const st of w.steps ?? []) {
+    // (Brain 047 R7: a step's authored `told` sentence is how it is said; today's join is the fallback, a compile hole)
+    const told = st.told ? saidIn(st.told, lang) : null;
+    if (told && String(told).trim()) { lines.push(dot(String(told).replace(/\s+/g, " ").trim())); continue; }
     const d = saidIn(st.do, lang), y = saidIn(st.why, lang);
     if (!d || !String(st.result ?? "").trim()) return null;
     lines.push(dot(`${d.charAt(0).toUpperCase()}${d.slice(1)}: ${String(st.result).trim()}${y ? `, ${BECAUSE[lang] ?? BECAUSE.hinglish} ${y}` : ""}`));
@@ -446,6 +449,10 @@ export function scriptWorkedLinesV2(w, lang = "hinglish") {
 }
 /** v4 W2: one worked step as one spoken line, "Do: result, kyunki why." (null when the step has no do or result). */
 export function scriptWorkedStepLine(st, lang = "hinglish") {
+  // (Brain 047 R7: c5-t03 stuck 24, offtopic 62; c6-ch07-t01 stuck 24, steady 74; c4 stuck 44 — the step said as "do: result, kyunki why";
+  // Learning 020 writes a `told` sentence for every step: it is said, the join is the fallback)
+  const told = st?.told ? saidIn(st.told, lang) : null;
+  if (told && String(told).trim()) return dot(String(told).replace(/\s+/g, " ").trim());
   // (director7 dry: "jodo.: 7 + 9 = 16 m, kyunki Ek kone se…": the authored fields' own end stops and capitals are joined away)
   const d = joinable(saidIn(st?.do, lang)), y = joinable(saidIn(st?.why, lang), { lower: true });
   if (!d || !String(st?.result ?? "").trim()) return null;

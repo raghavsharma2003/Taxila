@@ -173,7 +173,7 @@ export function alsoReading(text, primary = null) {
     if (r) found.add(r === "confused" || r === "clarify" ? "simpler" : r);
   }
   if (SLOWER_TOO.test(t)) found.add("slower");
-  if ((EASIER.test(t) || EASIER_TOO.test(t)) && !TOLD_HOW.test(t)) found.add("easier");
+  if ((EASIER.test(t) && !TOLD_HOW.test(t)) || EASIER_TOO.test(t)) found.add("easier");
   if (TIRED_TOO.test(t)) found.add("frustration");
   const p = primary === "confused" || primary === "clarify" || primary === "another" ? "simpler" : primary;
   const out = ["frustration", "boredom", "easier", "slower", "simpler"].filter((x) => found.has(x) && x !== p).slice(0, 2);
@@ -260,7 +260,8 @@ export function readIntent(text) {
   if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
   if (KNOW.test(t) || (p5Flag("R4CONV") && KNOW_R4.test(t))) return hit("know");
   if (HARDER.test(t) && !TOLD_HOW.test(t)) return hit("harder");
-  if ((EASIER.test(t) || (p5Flag("R4CONV") && EASIER_TOO.test(t))) && !TOLD_HOW.test(t)) return hit("easier");
+  // (a told reason never reads as "easier" by its words alone; an imperative ask for easier, "thoda easy karo", still does)
+  if ((EASIER.test(t) && !TOLD_HOW.test(t)) || (p5Flag("R4CONV") && EASIER_TOO.test(t))) return hit("easier");
   if (FRUSTRATION.test(t)) return hit("frustration");
   if (BOREDOM.test(t)) return hit("boredom");
   if (REPEAT.test(t)) return hit("repeat");
