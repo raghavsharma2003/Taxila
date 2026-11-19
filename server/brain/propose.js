@@ -319,7 +319,9 @@ export function pagesOfParts(move, list, line) {
       // (a part a return's turn held back: on the board of the turn that held it)
       case "held": return move?.heldBeat?.board ? move.heldBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "simpler": return move?.simplerBeat?.board ? move.simplerBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
-      case "alt": case "card": return move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+      // (Brain 048 G5: on a pictureBoard turn the card — or the asked step — is on its own board, the page after the picture's)
+      case "alt": case "card": return move?.picture === "pictureBoard" && move?.pictureOwn?.board ? move.pictureOwn : move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+      case "stepAsk": case "quick": if (move?.picture === "pictureBoard" && move?.pictureOwn?.board) return move.pictureOwn; return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
       case "body": return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : null;
       case "aside": return null;
       // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up
@@ -584,7 +586,21 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   // (dc-r8-director29 Brain 045 P1, steering row 14 in all four pilots: a picture turn is of the board the walk named — pictureBoardOf — and
   // that board is the held board from the turn's first word, the panel Studio draws; never the lesson's held unit by default)
   const picB = pictureBoardOf(move);
-  if (picB) { const h = { board: picB.board, unit: picB.unit ?? curUnit, ...(move.pictureAlone ? { noView: true } : {}) }; if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up }); return h; }
+  if (picB) {
+    const h = { board: picB.board, unit: picB.unit ?? curUnit, ...(move.pictureAlone ? { noView: true } : {}) };
+    // (Brain 048 G5: a card's authored pictureBoard is its own page — its caption under it — and the card's question is on the card's own
+    // board, the next page, as a second view's alt page is followed by the card's)
+    if (move.picture === "pictureBoard" && move.pictureOwn?.board && list?.length) {
+      const t0 = String(line ?? "").replace(/\s+/g, " ").trim();
+      const c = offsetsOf(list).filter((p) => String(p.text ?? "").trim()).find((p) => ["card", "stepAsk", "quick"].includes(p.part));
+      if (c && c.start > 0 && c.start < t0.length && !sameBoard(move.pictureOwn.board, picB.board)) {
+        h.unit = `${h.unit}#picture`;
+        h.switchTo = { board: move.pictureOwn.board, unit: unitOf(move.pictureOwn) ?? curUnit, atChar: c.start, atClause: clauseAt(t0, c.start) };
+      }
+    } else if (move.picture === "pictureBoard") h.unit = `${h.unit}#picture`;
+    if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up });
+    return h;
+  }
   // (dc-r8-director26, the record — c5-t01 steering 14: a picture asked for after a key is of the answered board, the close's answer board)
   const answeredPic = move?.request === "visual" && sb?.answerBoard && sb.board ? sb.board : null;
   const closeB = move?.closeBeat?.board ? move.closeBeat : null;

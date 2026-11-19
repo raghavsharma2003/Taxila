@@ -67,7 +67,50 @@ function stepAskRun(r, ctx) {
 }
 /** R4: the part a row's question is (its last card, asked step or quick question part), as { part, beat }. */
 const askBeatOf = (r) => { const p = [...(r?.pageParts ?? [])].reverse().find((x) => ["card", "stepAsk", "quick"].includes(x.part)); return p ? { part: p.part, beat: String(p.beat ?? "") } : null; };
+/** Brain 048 G5/G6: a picture request's refusal — "there is nothing to draw", "no second picture", in either language. */
+const PICTURE_REFUSAL = /(?:doosri\s+tasveer\s+(?:abhi\s+)?nahi|tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi|kuch\s+(?:naya\s+)?(?:draw|banane)\s+(?:ko|ke\s+liye)\s+nahi|nothing\s+(?:new\s+)?to\s+draw|can'?t\s+draw|no\s+second\s+picture|isn'?t\s+another\s+picture)/i;
+const capKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+/** Every authored caption sentence in a script (viewCaption, answerViewCaption, pictureCaption, both languages), normalised. */
+function captionsOf(script, o) {
+  if (o.g6caps) return o.g6caps;
+  const out = new Set();
+  const walk = (x) => { if (Array.isArray(x)) x.forEach(walk); else if (x && typeof x === "object") for (const [k, v] of Object.entries(x)) {
+    if (["viewCaption", "answerViewCaption", "pictureCaption"].includes(k) && v) for (const t of [v.hi, v.en, typeof v === "string" ? v : null]) for (const q of sentencesOf(t)) { const c = capKey(q); if (c.split(" ").length >= 3) out.add(c); }
+    else walk(v); } };
+  walk(script);
+  return (o.g6caps = out);
+}
 export const D31_PREDICATES = {
+  /** Brain 048 G5: a picture turn draws something new — never the board that was already on screen, with no view beside it (the turn's
+   *  drawn board against the board up her turn before, as pictureDrawn reads the plan's board against the drawn one; a held take that kept
+   *  the board up counts as the same). The card's hint said as help is no picture turn. Gated. */
+  pictureSame(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.held?.picture) return null;
+    const p = r.held.picture;
+    if (p.view || r.held.layout?.split || (r.held.pages ?? []).some((g) => g.beside)) return null;
+    const now = r.screen?.boardRef ? JSON.stringify(r.screen.boardRef) : null;
+    const up = ctx?.prevT?.screen?.boardRef ? JSON.stringify(ctx.prevT.screen.boardRef) : null;
+    if ((now && up && now === up) || (r.held.drawn === "kept" && !now)) return `the picture drew the board already on screen (${r.screen?.template ?? r.held.pages?.[0]?.template ?? "?"}), nothing new`;
+    return null;
+  },
+  /** Brain 048 G5: a picture request is never answered with a refusal ("there is nothing to draw", "no second picture"). Gated. */
+  pictureRefused(L, r, i, ctx) {
+    if (r.who !== "teacher") return null;
+    const asked = r.cell?.column === "picture" || !!r.held?.picture;
+    return asked && PICTURE_REFUSAL.test(String(r.text ?? "")) ? "a picture request answered with a refusal line" : null;
+  },
+  /** Brain 048 G6: one line about a picture — never the card's authored caption and the engine's own line for the view both, nor two
+   *  caption seams, in one turn. Gated. */
+  pictureTwoLines(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.held?.picture) return null;
+    const t = capKey(r.text);
+    const caps = [...captionsOf(ctx?.script, ctx.o)].filter((c) => t.includes(c));
+    const eng = r.held.picture.line ? sentencesOf(r.held.picture.line).map(capKey).filter((c) => c.split(" ").length >= 3 && t.includes(c) && !caps.includes(c)) : [];
+    const seams = (r.seams ?? []).filter((x) => x.right === "caption").length;
+    if (caps.length && eng.length) return `the script's caption and the engine's line both said: "${eng[0].slice(0, 50)}"`;
+    if (seams > 1) return `${seams} caption lines in one turn`;
+    return null;
+  },
   /** Brain 047 R4: whatever the reader returns, help is never taken from a part other than the live one — the one her turn before asked
    *  (director31 c6 steering 32: a reason at an asked step got e3's easier wording). Gated. */
   helpOtherPart(L, r, i, ctx) {

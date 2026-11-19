@@ -3096,7 +3096,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // question alone: dry stuck c6-ch07-t01 18)
     const upBoard = state?.heldUp?.board ?? state.lastMove?.scriptBeat?.board ?? null;
     const noSecond = visualAsk && !alt && !!upBoard && !(() => { try { return altCall(upBoard); } catch { return null; } })();
-    const authoredCap = visualAsk && ((heldPic ? !!state.lastMove.altLine : !!alt) || noSecond) ? viewCaptionOf(kit, state, lang, { drawn: viewKindOf(alt) }) : null;
+    // (Brain 048 G5: a card's authored pictureBoard is drawn alone and its pictureCaption is the picture's one line — state.js pictureKindOf)
+    const pictureCap = visualAsk && state.lastMove?.pictureCaption ? String(state.lastMove.pictureCaption) : null;
+    const authoredCap = pictureCap ?? (visualAsk && ((heldPic ? !!state.lastMove.altLine : !!alt) || noSecond) ? viewCaptionOf(kit, state, lang, { drawn: viewKindOf(alt) }) : null);
     if (authoredCap) guard.viewCaption = true;
     const asked = !visualAsk ? null
       : authoredCap ? authoredCap

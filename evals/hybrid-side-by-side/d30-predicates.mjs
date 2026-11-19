@@ -8,6 +8,8 @@ export function pictureNamedFlag(L, r, i, ctx) {
     if (r.who !== "teacher") return null;
     const pic = !!r.held?.picture || /·\s*visual/.test(String(ctx?.prevRead ?? ""));
     if (!pic || !r.held) return null;
+    // (Brain 048 G5: a picture request with nothing new to draw is answered as help — the card's hint, paged as help is; no picture is drawn)
+    if (r.cell?.picture === "hint" && !r.held.picture) return null;
     const pre = r.screen?.preselected ?? null;
     const panel = r.held.layout?.panels?.find((p) => p.role === "held") ?? null;
     const drawn = panel?.template ?? r.held.pages?.[0]?.template ?? null;

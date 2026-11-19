@@ -17,7 +17,7 @@
 // The route classifies, updates the learner model, then calls step with the updated skill snapshot.
 // branchesFor() runs step() on a synthetic right and wrong reply: the voice lane's "if right / if not"
 // lines are the director's own next moves, never a second guess at them.
-import { heldBoard as studioHeldBoard } from "../stagecraft/board-first.js";
+import { heldBoard as studioHeldBoard, pictureTurn as studioPictureTurn } from "../stagecraft/board-first.js";
 import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
@@ -3283,7 +3283,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "noFit", "closeShort"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3403,6 +3403,40 @@ function cardPartOf(kit, { itemId = null, beat = null } = {}) {
   if (/^e\d+$/.test(b) && (m?.[2] || beat?.kind === "explain")) return `${S}:${b}:card`;
   return b ? `${S}:check:${b}` : null;
 }
+/** Brain 048 G5: whether a board has a second view — the checker's own test (scripts/lesson-scripts/check.mjs viewOf, rule 7): Studio's
+ *  pictureTurn over the board held alone. */
+function boardHasView(ref, at = "x") {
+  if (!ref?.template) return false;
+  try {
+    const ask = { intent: { intentId: `g5:${at}`, lessonId: "g5", kind: "whiteboard", style: { band: "B3" }, boardRef: ref,
+      scriptBeat: { kind: "check", ownBoard: true, answers: [] }, held: { board: ref, unit: at }, request: { kind: "show" } }, line: { text: "" }, mode: "fresh" };
+    return !!studioPictureTurn(ask, {})?.view;
+  } catch { return false; }
+}
+/** Brain 048 G5: what a picture request at a live card (or an asked step) draws, in order — the card's authored `pictureBoard` with its
+ *  `pictureCaption`; then the board's own second view; then nothing new: the card's hint, said as help over its posing board (a card on the
+ *  checker's PICTURE_NONE list has neither, so it is always here). Each is drawn once per card: a second request gets the next.
+ *  → { kind: "pictureBoard" | "view" | "hint", part, card, board } or null (no picture request, no live card or step, a keyed or closed card:
+ *  the paths before G5 stand). */
+export function pictureKindOf(prev, input) {
+  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !prev || prev.safeguard) return null;
+  if (columnName(input, prev) !== "picture" || input.cls?.request?.visual === "game") return null;
+  const c = input.cls ?? {};
+  if (c.flags?.distress || c.flags?.wantsToStop || c.request?.see?.subject) return null;
+  const where = (() => { try { return helpPartOf(prev, input); } catch { return null; } })();
+  if (!where?.part || where.keyed || where.closed) return null;
+  const script = scriptFor(input.kit)?.script;
+  const part = (() => { try { return helpPart(script, where.part); } catch { return null; } })();
+  if (!part || !["card", "check", "then_card", "your_step", "worked_step"].includes(part.kind)) return null;
+  const raw = (() => { try { return String(part.path ?? "").split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script); } catch { return null; } })();
+  const card = part.kind === "worked_step" ? (part.step ? raw?.ask : null) : raw;
+  if (!card?.prompt) return null;
+  const shown = prev.picShown?.[part.id] ?? [];
+  const board = card.board ?? part.board ?? null;
+  if (card.pictureBoard?.template && !shown.includes("pictureBoard")) return { kind: "pictureBoard", part, card, board };
+  if (board?.template && !shown.includes("view") && boardHasView(board, part.id)) return { kind: "view", part, card, board };
+  return { kind: "hint", part, card, board };
+}
 /** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk
  *  graded the answer). null: no help asked. A safety read, a stop or a goodbye is never help (the safety paths are frozen). */
 function helpRequestOf(prev, input) {
@@ -3426,6 +3460,9 @@ function helpRequestOf(prev, input) {
   // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn. Brain 044 T6: her reply never
   // stands alone now — it goes on into the live part in the same turn — so no turn reaches this)
   if (prev.lastMove?.leadAlone && prev.splitHold) return null;
+  // (Brain 048 G5: a picture request with nothing new to draw at the card — no pictureBoard unshown, no second view unshown — is help: the
+  // card's hint over its posing board, never "there is nothing to draw" and never the same board drawn again as if new)
+  if (col === "picture") return pictureKindOf(prev, input)?.kind === "hint" ? "clarify" : null;
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
@@ -3486,7 +3523,7 @@ const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "p
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
   // over the help. A picture is that turn's; help says its own wording)
-  "visual", "representation", "altLine", "altView", "see"];
+  "visual", "representation", "altLine", "altView", "see", "picture", "pictureCaption", "pictureOwn"];
 const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delete o[k]; if (o.sayFirst && !o.heldSaid) delete o.sayFirst; return o; };
 /** Count a help joint said (forms rotate by it), and record the decision on the state. */
 function noteHelp(s, d) {
@@ -3931,7 +3968,10 @@ export function step(prev, input) {
         : input.cls?.asideReply ? "aside_reply" : null;
   // (Brain 044 T8: a line on a quick question is addressed as the quick question, whatever help said — c5-t01 steady 8, offtopic 32; c6 steady 8)
   const cell0h = helped && cell0 && !/:quick$/.test(String(cell0.part ?? "")) ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
-  const cell = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
+  const cell1 = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
+  // (Brain 048 G5: what a picture request got, on the record — the card's pictureBoard, the board's second view, or the card's hint as help)
+  const picGot = cell1?.column === "picture" && input?.event === "turn" ? out?.state?.lastMove?.picture ?? (out?.state?.lastMove?.help || out?.state?.lastMove?.helpJoint ? "hint" : null) : null;
+  const cell = picGot ? { ...cell1, picture: picGot } : cell1;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
     out.state.said = helped && out.state.lastMove?.simpler ? addSaid(said, out.state.lastMove.simpler, out.state.turn ?? 0) : said;
@@ -4295,6 +4335,23 @@ function step0(prev, input) {
     else if (s.stayOn?.turn === s.turn && s.stayOn.beat?.board) { const { posingBoard: pb, answerBoard: _ab, ...b0 } = s.stayOn.beat; move.scriptBeat = pb ? { ...b0, board: pb } : { ...s.stayOn.beat }; }
     else if (card) move.scriptBeat = card;
     else if (!move.scriptBeat && s.walk) { const cur = currentBeatRef(s, input.kit); if (cur?.board) move.scriptBeat = cur; }
+    // (Brain 048 G5: the card's authored pictureBoard is drawn first, alone, its pictureCaption the one line; then the board's own second
+    // view; each once per card — s.picShown. Nothing new left is help, answered before the walk: helpRequestOf)
+    const pk = keyedAns ? null : pictureKindOf(prev, input);
+    if (pk && pk.kind !== "hint") {
+      s.picShown = { ...(s.picShown ?? {}), [pk.part.id]: [...new Set([...(s.picShown?.[pk.part.id] ?? []), pk.kind])] };
+      move.picture = pk.kind;
+      if (pk.kind === "pictureBoard") {
+        const { posingBoard: _pb, answerBoard: _ab, ownBoard: _ob, ...b0 } = move.scriptBeat ?? {};
+        // (the card's question is said on the card's own board, the page after the picture's: pictureOwn)
+        const own = move.cardBeat?.board ? move.cardBeat : move.scriptBeat?.board ? { ...move.scriptBeat } : pk.board ? { ...b0, board: pk.board } : null;
+        if (own) move.pictureOwn = own;
+        move.scriptBeat = { ...b0, board: pk.card.pictureBoard, pictureBoard: true };
+        move.pictureAlone = true;
+        const cap = pk.card.pictureCaption ? String(saidIn(pk.card.pictureCaption, s.ctx?.lang ?? "hinglish") ?? "").replace(/\s+/g, " ").trim() : "";
+        if (cap) move.pictureCaption = cap;
+      }
+    }
   }
   // v4: a move that re-poses a live script card with no beat of its own (a hint, a repair) shows that card's own board (a
   // follow-up's then.board, a check's board), never the beat the walk last drew

@@ -51,7 +51,7 @@ const PROFILE = {
   // aaya" right after her first re-explanation, so a second clarify on one part is walked)
   stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, clarify2: { clarifyPoint: [9], clarifyWorked: [17] }, leaveAfter: 32 },
   offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 32 },
-  steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, leaveAfter: 24 },
+  steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, pictureTwice: true, leaveAfter: 24 },
 };
 
 /** The turns a harness should run per persona: past its leaveAfter, so the "bye" is played (H1.1: steady 40 + 1). */
@@ -102,6 +102,8 @@ const LINES = {
   clarifyPoint: ["samajh nahi aaya"],
   clarifyWorked: ["yeh step samajh nahi aaya"],
   clarifyAgain: ["phir bhi samajh nahi aaya"],
+  // (Brain 048 G5: the steering child asks for a second picture of the same card at once — the second view, or the card's hint)
+  pictureAgain: ["ek aur picture dikhao"],
   returned: ["sixer, jab ball seedha bahar jaati hai", "batting sabse achhi lagti hai", "jab Virat chauka maarta hai, woh", "fielding karna, catch pakadna"],
   // (dc-r8-director20 harness: the answer fits her return question — what happened, what they like doing, who, what they like most)
   returnedWhat: ["maine do sixer maare the", "hum match jeet gaye the", "maine ek catch pakda tha"],
@@ -177,7 +179,7 @@ export function intentOf({ kind, event, text }) {
   if (kind === "right") return "right";
   if (kind === "wrong") return "miss";
   if (kind === "reason") return "reason";
-  const ev = { clarifyPoint: "clarify", clarifyWorked: "clarify", clarifyAgain: "clarify", returned: "aside_reply", picture: "picture", hindi: "hindi",
+  const ev = { clarifyPoint: "clarify", clarifyWorked: "clarify", clarifyAgain: "clarify", pictureAgain: "picture", returned: "aside_reply", picture: "picture", hindi: "hindi",
     selftry: "try_first", cricket: "aside", whichq: "repeat", repeat: "repeat" }[event];
   if (ev) return ev;
   if (/samajh nahi aaya/.test(t)) return "clarify";
@@ -225,6 +227,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
   const misses = new Map();
   let quickN = 0;                                 // Brain 042: quick questions and asked steps answered so far
   let returnN = 0;
+  let pictureAgain = false;                       // Brain 048 G5: a picture was asked: the steering child asks for another
   let clarifyAgain = false;                       // a clarify was said: the next reply says it again                                // v6.11 J2: the n-th answer to her return question in this lesson
   const whichAsked = new Map();                   // director9: "which question?" per card, capped so no persona loops
   const answered = new Set();                     // H1.2: cards answered right are not answered again
@@ -249,6 +252,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
       if (!stays && turn >= P.leaveAfter && turn >= MIN_TURNS && (!openCard || turn >= P.leaveAfter + LEAVE_WAIT || toEnd)) return say({ text: pick(rng, LINES.leave), kind: "leave" });
       // (the turn right after her re-explanation of a clarify: "phir bhi samajh nahi aaya", once)
       if (clarifyAgain) { clarifyAgain = false; return say({ text: LINES.clarifyAgain[0], kind: "event", event: "clarifyAgain" }); }
+      if (pictureAgain) { pictureAgain = false; return say({ text: LINES.pictureAgain[0], kind: "event", event: "pictureAgain" }); }
       if (at.has(turn)) { pending.push(at.get(turn)); at.delete(turn); }
       // (v6.11 J2: her return question about the aside is answered, before any event or card: the child's reply to what she asked)
       if (input.returned) {
@@ -270,6 +274,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         if (i >= 0) {
           const [ev] = pending.splice(i, 1);
           if (ev === "clarifyPoint" || ev === "clarifyWorked") clarifyAgain = true;
+          if (ev === "picture" && P.pictureTwice) pictureAgain = true;
           return say({ text: pick(rng, LINES[ev]), kind: ev === "dontknow" ? "dontknow" : "event", event: ev });
         }
       }

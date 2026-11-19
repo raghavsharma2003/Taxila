@@ -491,11 +491,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}), ...(H.switches ? { switches: H.switches.map((w) => ({ unit: w.unit, atChar: w.atChar })) } : {}) },
           // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
           layout: hb?.layout ?? null,
-          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none" } } : {}) };
+          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none", ...(picHb && picTake.line ? { line: String(picTake.line) } : {}) } } : {}) };
         // (v6.10 P6's predicate: a picture line spoken with no view drawn — counted on the row, as the gate's picture count)
         const pf = pictureTruth(tGuard?.parts?.list ?? [], { view: heldRec.picture?.view ?? null, layout: heldRec.layout });
         if (pf) heldRec = { ...heldRec, pictureNoView: true };
-        if (hb?.screen) screen = { kind: "whiteboard", by: "held", template: hb.template ?? hb.screen.template ?? null, boardRef: H.switchTo && hb.lastRef === refKey(H.switchTo.board) ? H.switchTo.board : H.board,
+        if (hb?.screen) screen = { kind: "whiteboard", by: "held", template: hb.template ?? hb.screen.template ?? null, boardRef: H.switchTo && hb.lastRef === refKey(H.switchTo.board) && !visualNow ? H.switchTo.board : H.board, /* (Brain 048 G5: a picture turn paged picture → card names the picture it drew) */
           counts: hb.screen.counts ?? null, numbers: hb.screen.numbers ?? null, onScreen: hb.screen.onScreen ?? null, drawn: heldRec.drawn, ...(hb.altView ? { altView: hb.altView } : {}) };
       }
       // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
@@ -589,6 +589,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const partBoards = { close: bOf(lmB.closeBeat), closed: bOf(lmB.closedBeat ?? lmB.closeBeat), bridge: lmB.bridgeBeat?.scriptBoard ? bOf(lmB.bridgeBeat) : [], simpler: helpB ?? bOf(lmB.simplerBeat ?? lmB.scriptBeat),
       alt: bOf(lmB.cardBeat), card: bOf(lmB.cardBeat), body: bOf(lmB.scriptBeat), held: bOf(lmB.heldBeat ?? lmB.scriptBeat),
       quick: bOf(lmB.scriptBeat), quickReply: [], stepAsk: bOf(lmB.scriptBeat) };
+    // (Brain 048 G5: a pictureBoard turn's question — card, asked step or quick question — is on its own board, the page after the picture)
+    if (lmB.picture === "pictureBoard" && lmB.pictureOwn?.board) for (const k of ["alt", "card", "quick", "stepAsk"]) partBoards[k] = bOf(lmB.pictureOwn);
     // (dc-r8-director26 C1: two told steps on one turn — each step's own line is recorded under its own step, the first under stepFrom)
     const stepLines = lmB.stepFrom ? (lmB.rendered ?? []).map((x) => String(x).replace(/\s+/g, " ").trim()) : [];
     // (a frame part — "Pehla kadam dekho." — is the step it opens: the last step matched so far, else the first)

@@ -37,7 +37,7 @@ function skillOf(r, script) {
 function captionsOf(script) {
   const out = new Set();
   const walk = (o) => { if (!o || typeof o !== "object") return; if (Array.isArray(o)) return o.forEach(walk);
-    for (const k of ["viewCaption", "answerViewCaption"]) for (const t of [o[k]?.hi, o[k]?.en]) if (t) for (const x of sentencesOf(t)) out.add(normSentence(x));
+    for (const k of ["viewCaption", "answerViewCaption", "pictureCaption"]) for (const t of [o[k]?.hi, o[k]?.en]) if (t) for (const x of sentencesOf(t)) out.add(normSentence(x));
     for (const v of Object.values(o)) walk(v); };
   walk(script);
   return out;
