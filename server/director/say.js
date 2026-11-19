@@ -224,7 +224,7 @@ export function screenProblem(text, ui, module, { coming = false } = {}) {
 // there was something to TAP. A sentence that points at the screen or the board must name what is there.
 // any sentence that names the screen or the board points at it ("screen par", "screen ke four parts", "on the board"); the
 // owner replay of release 13 (2026-10-11, turn 3: "Game: screen ke four parts dekhiye") slipped the narrower par/pe form
-const POINT_AT = /\b(?:screen|whiteboard)\b|(?<!\b(?:cbse|icse|state|school|cricket|rbse|bihar|up)\s)\bboard\b(?!\s+(?:exams?|pariksha|games?|ke\s+exam))|स्क्रीन|(?<!(?:सीबीएसई|स्कूल)\s)बोर्ड(?!\s+(?:परीक्षा|एग्जाम))/iu;
+const POINT_AT = /\b(?:screen|whiteboard)\b|(?<!\b(?:cbse|icse|state|school|cricket|rbse|bihar|up|ludo|carrom|chess|dart|notice|snakes?\s+(?:and|aur)\s+ladders?)\s)\bboard\b(?!\s+(?:exams?|pariksha|games?|ke\s+exam))|स्क्रीन|(?<!(?:सीबीएसई|स्कूल)\s)बोर्ड(?!\s+(?:परीक्षा|एग्जाम))/iu;
 const PLAY_CLAIM = /\b(?:games?|khel\w*|activity|play\w*)\b|गेम|खेल/iu;
 const CLAIM_STOP = new Set("screen board whiteboard dekho dekhiye dekhte dekh look there here yahan wahan abhi tumhe tumhara aapko aapka dikh raha rahi kaunsa kaunsi kitne kitna batao bataiye socho phir pehle aage left right upar neeche game khel".split(" "));
 const stem = (w) => w.toLowerCase().normalize("NFKC").slice(0, 5);

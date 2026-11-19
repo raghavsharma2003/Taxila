@@ -64,7 +64,10 @@ export function helpOtherFigure(r, script = null) {
   const alts = (() => { const out = []; const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") for (const [k, v] of Object.entries(o)) { if (["sayAlt", "pointAlt", "problemAlt"].includes(k)) out.push(low(said(v)).slice(0, 40)); else walk(v); } }; walk(script ?? {}); return out.filter((x) => x.length >= 20); })();
   if (alts.some((a) => low(help).includes(a)) && !sharesThing(help, String(r.card))) return true;
   // (the card's own ask.simpler counts the card's thing in numbers of its own: about the card — dry offtopic c4 56)
-  const own = (script?.skills ?? []).flatMap((k) => (k.explain ?? []).map((b) => low(said(b.ask?.simpler)).slice(0, 40))).filter((x) => x.length >= 20);
+  // (d32 step 0, staged c6-ch07-t01 steady 50: and a worked yourStep's, a check's and a remediation follow-up's own simpler — "Jitne zyada
+  // dost, utna chhota hissa. Hissa 1/6 se bada chahiye …" at "2, 4 ya 7?" is about the card)
+  const own = (script?.skills ?? []).flatMap((k) => [...(k.explain ?? []).map((b) => b.ask?.simpler), k.workedExample?.yourStep?.simpler, ...(k.checks ?? []).map((c) => c.simpler),
+    ...(k.remediation ?? []).map((x) => x.then?.simpler)].map((v) => low(said(v)).slice(0, 40))).filter((x) => x.length >= 20);
   if (own.some((a) => low(help).includes(a))) return false;
   return otherFigureOf(help, String(r.card));
 }

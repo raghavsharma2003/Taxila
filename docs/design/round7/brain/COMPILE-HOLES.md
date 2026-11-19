@@ -12,7 +12,7 @@
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: board_up 333. Cells left as holes with no fallback: 0.
 
-**Not applicable:** 378 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 375 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
 ## Missing fields, all scripts
 
@@ -41,7 +41,7 @@
 | c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t03 | live | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
-| c4-maths-ch01-t02 | staged | 58 | 1782 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch01-t02 | staged | 59 | 1809 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 72 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
 | c4-maths-ch03-t02 | staged | 57 | 1746 | 71 | 7 | 7 | 7 | 8 | 8 | 7 | 5 | 5 | 5 | 5 | 3 | 1 | 3 | 0 |
 | c4-maths-ch04-t01 | staged | 66 | 2025 | 85 | 9 | 9 | 9 | 9 | 9 | 9 | 6 | 6 | 6 | 6 | 3 | 1 | 3 | 0 |
@@ -422,13 +422,19 @@ None.
 
 ## Authored parts over 45 words (dc-r8-director25 L2: Learning's to shorten)
 
-A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 106 parts in 27 scripts (words: Hinglish / English).
+A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 110 parts in 29 scripts (words: Hinglish / English).
 
 | Script | Where | Part | Words | Opens |
 |---|---|---|---|---|
+| c4-maths-ch05-t01 | live | skills[0].remediation[1].sayAlt | 47 / 42 | Ek roti 8 barabar tukdon mein kati socho. … |
 | c4-maths-ch05-t01 | live | skills[1].explain[e3].pointAlt | 47 / 41 | Ise paison se socho: 20 rupaye ke 10-10 … |
-| c5-maths-ch02-t02 | live | skills[0].explain[e1].ask.viewCaption | 53 / 58 | Yahan dono patti ki jagah 0 se 1 … |
+| c5-maths-ch02-t01 | live | skills[2].remediation[0].then.viewCaption | 41 / 47 | Ab pattiyon ki do qatarein hain: pehli qatar … |
+| c5-maths-ch02-t02 | live | skills[0].explain[e1].ask.viewCaption | 46 / 52 | Yahan 0 se 1 tak ek number line … |
 | c5-maths-ch02-t02 | live | skills[0].workedExample.simpler | 46 / 38 | Ise baantne ki tarah socho: ek chocolate do … |
+| c5-maths-ch02-t02 | live | skills[0].checks[c2].answerViewCaption | 45 / 46 | Teen ek jaisi patti hain: ek 12 barabar … |
+| c6-maths-ch06-t01 | live | skills[1].checks[c2].prompt | 38 / 47 | Laal card 16 cm lamba, 9 cm chauda … |
+| c4-maths-ch01-t02 | staged | skills[1].explain[e1].point | 39 / 49 | Tester ka kona angle ke kone par rakho, … |
+| c4-maths-ch01-t02 | staged | teachback.prompt | 40 / 46 | Ek square tile ki har bhuja 30 cm … |
 | c4-maths-ch03-t01 | staged | skills[1].explain[e2].point | 46 / 45 | Jis number ka ekai ka ank 0, 2, … |
 | c4-maths-ch03-t02 | staged | skills[0].explain[e1].point | 41 / 48 | Dekho, pattern hai 4, 7, 10, 13. 4 … |
 | c4-maths-ch03-t02 | staged | skills[2].explain[e1].point | 51 / 46 | Maachis ki teeliyon se jude squares dekho. 1 … |
@@ -489,8 +495,6 @@ A turn of more than one part breaks at the last seam before 45 words; a single p
 | c6-maths-ch05-t01 | staged | skills[2].explain[e2].point | 48 / 45 | 6 ke multiples 6, 12, 18 se shuru … |
 | c6-maths-ch05-t01 | staged | skills[2].explain[e3].point | 54 / 53 | Light A har 4 second par jalti hai … |
 | c6-maths-ch05-t01 | staged | skills[2].workedExample.problem | 47 / 44 | Kavya apne tulsi ke paudhe ko har 6 … |
-| c6-maths-ch07-t01 | staged | skills[2].explain[e2].point | 46 / 47 | 3 roti aur 4 bachche: roti kam hain, … |
-| c6-maths-ch07-t01 | staged | skills[2].explain[e2].pointAlt | 35 / 46 | Pehle dekho cheezein zyada hain ya log. 3 … |
 | c6-maths-ch07-t03 | staged | skills[0].hook.interestSlots[0].use | 47 / 46 | Do ek jaisi roti hain. Ek roti 3 … |
 | c6-maths-ch07-t03 | staged | skills[1].explain[e2].point | 49 / 41 | Ab patti ke 12 barabar tukde hain aur … |
 | c6-maths-ch07-t03 | staged | skills[2].explain[e2].point | 55 / 53 | 16/24 ke upar aur neeche ko 2 se … |
@@ -581,11 +585,11 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | Script | Where | Cards | Without hindi | afterWorked missing | Step wordings stating the answer |
 |---|---|---|---|---|---|
 | c4-maths-ch05-t01 | live | 30 | 27 |  | 0 |
-| c5-maths-ch02-t01 | live | 34 | 31 |  | 0 |
+| c5-maths-ch02-t01 | live | 34 | 32 |  | 0 |
 | c5-maths-ch02-t02 | live | 34 | 32 |  | 0 |
-| c5-maths-ch02-t03 | live | 29 | 26 |  | 0 |
+| c5-maths-ch02-t03 | live | 29 | 27 |  | 0 |
 | c6-maths-ch06-t01 | live | 30 | 27 |  | 0 |
-| c4-maths-ch01-t02 | staged | 28 | 0 |  | 0 |
+| c4-maths-ch01-t02 | staged | 28 | 26 |  | 0 |
 | c4-maths-ch03-t01 | staged | 24 | 24 | yes | 0 |
 | c4-maths-ch03-t02 | staged | 23 | 23 | yes | 0 |
 | c4-maths-ch04-t01 | staged | 27 | 27 | yes | 0 |
@@ -605,7 +609,7 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | c6-maths-ch02-t03 | staged | 24 | 24 | yes | 0 |
 | c6-maths-ch02-t04 | staged | 24 | 24 | yes | 0 |
 | c6-maths-ch05-t01 | staged | 25 | 25 | yes | 0 |
-| c6-maths-ch07-t01 | staged | 27 | 0 |  | 0 |
+| c6-maths-ch07-t01 | staged | 27 | 25 |  | 0 |
 | c6-maths-ch07-t03 | staged | 24 | 24 | yes | 0 |
 | c6-maths-ch07-t04 | staged | 25 | 25 | yes | 1 |
 | c6-maths-ch07-t05 | staged | 24 | 24 | yes | 0 |
@@ -649,6 +653,7 @@ Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/remediation[0].then
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/remediation[1].then
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/remediation[2].then
+- c5-maths-ch02-t01 c5-maths-ch02-t01-s1/c2
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/c3
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/workedExample.steps[0].ask
 - c5-maths-ch02-t01 c5-maths-ch02-t01-s1/workedExample.yourStep
@@ -718,6 +723,7 @@ Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/e3.ask
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/remediation[0].then
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/remediation[1].then
+- c5-maths-ch02-t03 c5-maths-ch02-t03-s2/c2
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/c3
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/workedExample.steps[0].ask
 - c5-maths-ch02-t03 c5-maths-ch02-t03-s2/workedExample.yourStep
@@ -759,3 +765,54 @@ Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi
 - c6-maths-ch06-t01 c6-maths-ch06-t01-s3/workedExample.steps[0].ask
 - c6-maths-ch06-t01 c6-maths-ch06-t01-s3/workedExample.yourStep
 - c6-maths-ch06-t01 teachback
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/e1.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/c1
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/c2
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/c3
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/workedExample.steps[0].ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e1.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e2.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c1
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c2
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c3
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/workedExample.steps[0].ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/workedExample.yourStep
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e1.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e2.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c1
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c2
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c3
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/workedExample.steps[0].ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/workedExample.yourStep
+- c4-maths-ch01-t02 teachback
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/e1.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/e2.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/e3.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/remediation[0].then
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/remediation[1].then
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/c1
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/c2
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/workedExample.steps[0].ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s1/workedExample.yourStep
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/e1.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/e2.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/remediation[0].then
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/c1
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/c3
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/workedExample.steps[0].ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s2/workedExample.yourStep
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/e1.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/e2.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/e3.ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/remediation[0].then
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/c1
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/c3
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/workedExample.steps[0].ask
+- c6-maths-ch07-t01 c6-maths-ch07-t01-s3/workedExample.yourStep
+- c6-maths-ch07-t01 teachback

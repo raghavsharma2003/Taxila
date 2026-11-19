@@ -27,7 +27,7 @@ import { registerBroken, toAap } from "../director/register.js";
 import { arithmeticSlip, selfPosedVerdict } from "./arith.js";
 import { saidMust, joinable, scriptFor, jointOf, saidIn, scriptIdOf } from "../director/script.js";
 import { fillFriend } from "../director/friend.js";
-import { praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
+import { pointsAtScreen, praiseProblem, claimsMistake, stripPraise, stripClaim, screenProblem, stripScreenRefs, emptyStage, leaksStage, stripStage, saysCantShow, stripCantShow, askParity, endOnAsk, joinAsk, lastQuestionOnly, wrapsUp, stripWrap, correctsRight, stripCorrection, childAsks } from "../director/say.js";
 import { mixedUnitComparison, withoutMixedUnits } from "../director/units.js";
 import { screenContradiction, stripStrayParts } from "../director/modules.js";
 import { isBare, repeatsEarlier, tidy, leadWithoutQuestion, sentences } from "../conversation/guards.js";
@@ -3340,7 +3340,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // it is dropped as hers, the authored line is said)
     // (P1: the parts a return's turn held back are authored and said as written — never "unpointed" — after her reply to the child)
     const heldK0 = new Set((state.lastMove?.heldSaid ?? []).map((x) => norm(dot(x)).toLowerCase()));
-    const first = (state.lastMove?.sayFirst ?? []).map(dot).map((x) => (heldK0.has(norm(x).toLowerCase()) ? x : unpointed(x)));
+    // (d32 step 0, staged c4-ch01-t02 row 4 ×4: the hook "Ludo board ke kone dekho." lost its "dekho" — a hook sends their eyes to a thing in
+    // their world; it is unpointed only where it points at the screen)
+    const first = (state.lastMove?.sayFirst ?? []).map(dot).map((x) => (heldK0.has(norm(x).toLowerCase()) || (state.lastMove?.hookSaid && !pointsAtScreen(x)) ? x : unpointed(x)));
     // v6 (main, director8 hand judges: 10 / 4 / 45 firm contradictions, the checker saw 1 / 0 / 0): everything about the card
     // they just answered is said FIRST and together (the verdict with its reason, a give-up, the worked answer), so it is one
     // segment on THAT card's board; then a missed card's close (its own board); then the bridge (its own segment); then a parked
@@ -3372,7 +3374,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.2 T1 (main, director10 c4 stuck T15: chocolate, roti and cakes in one turn): at most one close per turn: the worked close,
     // else a give-up, else a missed card's close (a stale one is dropped, never stacked)
     let [g2, d2, c2] = [gaveS, doneS, closedS];
-    if (d2) { if (g2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; if (c2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; g2 = null; c2 = null; }
+    if (d2) { if (g2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; if (c2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; g2 = null; c2 = null;
+      // (d32 step 0, staged c4-ch01-t02 stuck 42: a wrong answer to the worked example's yes-or-no step, given up — the worked close
+      // replaced "Nahi, <why>." and the miss had no "Nahi": the close opens on the miss word in place of "Iska jawab hai")
+      if (guard.ynFact && missed) d2 = d2.replace(/^(?:Iska jawab hai|The answer here is)\s+/, lang === "english" ? "No, " : "Nahi, "); }
     else if (g2 && c2) { c2 = null; guard.closeDropped = (guard.closeDropped ?? 0) + 1; }
     // v6.2 T2 (director10 c5-t01 ×5, c4 ×2): each why is said once — not again in this turn, nor straight after her last turn said it
     {

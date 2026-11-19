@@ -835,6 +835,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
         return done("correct", "script_key");
       }
     }
+    // (d32 step 0, staged c6-ch07-t01 offtopic 14: "27 ko 6 se bhaag" to a step keyed "30 ko 6 se bhaag" went to the model and, dry,
+    // was no answer: a reply said the way a right form is said — the same words, operators and places, with no denial — whose
+    // numbers differ is the wrong answer in code)
+    if (R.nums.length && !R.neg) {
+      const shape = (c) => c.seq.filter((x) => x.k !== "unit").map((x) => (x.k === "num" ? "#" : x.t)).join(" ");
+      const rs = shape(R);
+      if (F.some((cs) => cs.some((c) => c.nums.length === R.nums.length && shape(c) === rs && c.nums.join(" ") !== R.nums.join(" ")))) return done("incorrect", "script_key");
+    }
     // (an acknowledgement — "haan", "achha", "ok" — is not an answer, unless the card's own key is a yes / no)
     const yn = (c) => c.seq.length > 0 && c.seq.every((x) => x.t === "haan" || x.t === "nahi");
     const yesNoKey = yn(keyC);

@@ -207,6 +207,11 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   // (Brain 044: c4 steady's replayed lines run out before the closing question on today's rules; c5-t01 steady reaches it)
   // (Brain 046 Q1: a yes or an aside at an asked step no longer tells it — director26's recorded lines leave the walk before the closing
   // question in every steady lesson; director30's steady c5-t01 reaches it)
+  // (d32 step 0: Learning's d32 rewrite of c5-t01 changed its cards, and director30's recorded lines no longer reach the closing question on
+  // the live script — nor on the run's own copy, which d31's walk had already moved off it. The replay walks the script as it stood before
+  // the d32 rewrite, kept as a fixture: the last one these lines reach the closing question on)
+  setScriptForTest("c5-maths-ch02-t01", JSON.parse(readFileSync(new URL("./fixtures/scripts/c5-maths-ch02-t01.d31.json", import.meta.url), "utf8")));
+  try {
   const { kit, plans } = await replay("2026-11-18-director30", "steady", "c5-maths-ch02-t01", 400);
   const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");
   assert.ok(asked, "the walk reaches the closing question");
@@ -234,4 +239,5 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   assert.equal(w.kind, "wrap");
   const acks = tb && (await import("../server/director/script.js")).scriptFor(kit).script.wrap.ack.map((f) => f.hi);
   assert.ok(w.wrapAck && acks.some((a) => String(w.rendered?.[0] ?? "").startsWith(String(a).slice(0, 12))), JSON.stringify(w.rendered));
+  } finally { setScriptForTest(); }
 });

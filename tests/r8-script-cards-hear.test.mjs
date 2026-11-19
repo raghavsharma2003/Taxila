@@ -312,3 +312,15 @@ test("048: the reader's own tables spell what the reader reads (the gate and the
     if (w) assert.equal(spokenNumber(w), n, `${lang} ${w}`);
   }
 });
+
+test("d32 step 0: a reply said the way a right form is said, with other numbers, is the wrong answer in code (staged c6-ch07-t01 offtopic 14)", () => {
+  const item = { id: "script:x:stepask:0", answer: "30 ko 6 se bhaag", acceptable: ["30 ÷ 6", "6 se bhaag", "bhaag"], scriptAsk: { wrongIfMis: null, targets: null }, prompt_hi: "Ganna kitne barabar hisson mein bata, yeh kis hisaab se nikaaloge?" };
+  const t = { mode: "item", item, key: item.answer, also: item.acceptable, ideas: [], misconceptions: [], open: false };
+  const g = (x) => classifyFast({ target: t, childText: x, typed: true })?.result?.outcome ?? null;
+  assert.equal(g("27 ko 6 se bhaag"), "incorrect");
+  assert.equal(g("27 ÷ 6"), "incorrect");
+  assert.equal(g("30 ko 6 se bhaag"), "correct");
+  assert.equal(g("30 ÷ 6"), "correct");
+  // (a denial is still the model's to read)
+  assert.equal(g("27 ko 6 se bhaag nahi"), null);
+});
