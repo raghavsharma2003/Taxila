@@ -793,7 +793,8 @@ export interface KeyedAsk {
   accept?: string[];
   /** the kit misconception a wrong answer most likely shows (its remediation runs), if any */
   targets?: string | null;
-  wrongIfMis?: string | null;
+  /** 048 G8: one string, or a list of the ways the same wrong answer is said ("barabar", "dono barabar") */
+  wrongIfMis?: string | string[] | null;
   /** v2.1: a follow-up card's board */
   board?: BoardRef | null;
   /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
@@ -873,7 +874,8 @@ export interface CheckQuestionV2 {
   key: string;
   accept?: string[];
   targets: string;
-  wrongIfMis: string;
+  /** the answer a child holding that misconception gives; 048 G8: or a list of the ways it is said */
+  wrongIfMis: string | string[];
   board?: BoardRef | null;
   /** v6: why the key is right (see KeyedAsk.why) */
   why?: Said;
