@@ -132,3 +132,22 @@ describe("G6: one line about a picture", () => {
     assert.ok(!sharesLine("Accha, chalo.", "Dekho, do sankhya rekhayein, ek ke neeche ek."));
   });
 });
+
+describe("047 R6: the turn's fit", () => {
+  const at = (persona, file, topic, name) => {
+    const j = JSON.parse(readFileSync(join(RUN, `${persona}-${file}.json`), "utf8"));
+    const script = JSON.parse(readFileSync(join(RUN, "scripts", `${topic}.json`), "utf8"));
+    return new Set(lessonFlags({ rows: j.director, script }).filter((f) => f.predicate === name).map((f) => f.row));
+  };
+  test("firstTeachLong is gated and reads director31's six first teaching turns at 76 to 80 (row 4 of stuck and steering in c5-t02, c5-t03, c6-ch07-t01)", () => {
+    assert.ok(PREDICATES.firstTeachLong && !PENDING.has("firstTeachLong"));
+    for (const p of ["stuck", "steering"]) for (const [f, t] of [["c5-ch02-t02", "c5-maths-ch02-t02"], ["c5-ch02-t03", "c5-maths-ch02-t03"], ["c6-ch07-t01", "c6-maths-ch07-t01"]])
+      assert.deepEqual([...at(p, f, t, "firstTeachLong")], [4], `${p} ${f}`);
+    assert.equal(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "firstTeachLong").size, 0);
+  });
+  test("vpcUnlisted (counted) reads director31 c5-t03 steady 52 and c5-t02 steady 76: over 65 with the short reason, and not listed whole", () => {
+    assert.ok(PENDING.has("vpcUnlisted"));
+    assert.ok(at("steady", "c5-ch02-t03", "c5-maths-ch02-t03", "vpcUnlisted").has(52));
+    assert.ok(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "vpcUnlisted").has(76));
+  });
+});

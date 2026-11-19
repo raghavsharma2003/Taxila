@@ -36,6 +36,7 @@ export function partStartOf(r, p) {
 
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
+import { POINT_WHOLE, FIRST_TEACH_MAX } from "../../scripts/lesson-scripts/check.mjs";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
 
@@ -318,6 +319,26 @@ export const D30_PREDICATES = {
   vpcLong(L, r, i, ctx) {
     if (r.who !== "teacher" || !vpcOf(r) || wordsOf(r.text) <= 65) return null;
     return fullWhyIn(ctx?.script, r) ? `a verdict, a point and a card in ${wordsOf(r.text)} words with the full why, where the card has a short one` : null;
+  },
+  /** Brain 047 R6, counted (pending until the walk splits such a turn): a verdict-point-card turn over 65 words with the short reason. */
+  vpcUnlisted(L, r, i, ctx) {
+    if (r.who !== "teacher" || !vpcOf(r) || wordsOf(r.text) <= 65 || fullWhyIn(ctx?.script, r)) return null;
+    // (Brain 047 R6: with Learning 020's cuts every other verdict-point-card turn fits; one over 65 with the short reason is a fault unless its
+    // point is listed whole — POINT_WHOLE in the checker, said as the verdict and its reason ending on a check-in, then the point and its card)
+    const pt = (r.pageParts ?? []).find((p) => p.part === "point" || p.part === "body");
+    const sk = String(r.check?.itemId ?? "").split(":")[1] ?? "";
+    const listed = POINT_WHOLE.some((w) => w.topicId === ctx?.script?.topicId && (!sk || w.skillId === sk) && (!pt?.beat || w.explainId === pt.beat));
+    return listed ? null : `a verdict, a point and a card in ${wordsOf(r.text)} words with the short reason, and the point not listed whole`;
+  },
+  /** Brain 047 R6: the first teaching turn after the start line — hook, point and card, the start line counted — is held to 75 words
+   *  (FIRST_TEACH_MAX; director31: 6 rows at 76 to 80). Gated. */
+  firstTeachLong(L, r, i) {
+    if (r.who !== "teacher") return null;
+    const sm = (r.seams ?? []).map((x) => x.right);
+    if (!sm.includes("hook") || !sm.includes("point")) return null;
+    if ((L?.rows ?? []).slice(0, i).some((x) => x.who === "teacher" && (x.seams ?? []).some((y) => y.right === "point"))) return null;
+    const n = wordsOf(r.text);
+    return n > FIRST_TEACH_MAX ? `the first teaching turn is ${n} words > ${FIRST_TEACH_MAX}` : null;
   },
   /** Q4: a skill's bridge never rides in a turn that holds a verdict, a point and a card — it goes with the verdict (c4 steady 42, stuck 64,
    *  steering 56). Gated. */
