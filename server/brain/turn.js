@@ -1799,7 +1799,7 @@ export async function planTurn(base, cls, c) {
     // (dc-r8-director27 Brain 043 R1: the walk chose the card's short why — its why and what came next did not fit in one turn, the short
     // form did — and the verdict says it in the why's place)
     ...((() => { const L = next.ctx?.lang ?? "hinglish"; const sh = next.lastMove?.whyShort ? scriptWhyShortOf(kit, activeItem, L) : null; const w = sh ?? scriptWhyOf(kit, activeItem, L); return w ? { why: w, ...(sh ? { whyShort: true } : {}) } : {}; })()),
-    ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: String((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
+    ...((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen)?.wrongIfMis ? { wrongIfMis: ((w) => (Array.isArray(w) ? w.map(String) : String(w)))((activeItem.scriptAsk ?? activeItem.scriptCheck ?? activeItem.scriptThen).wrongIfMis) } : {}) };
   else delete next.lastGraded;
   // What a right answer's acknowledgement must not name as the result (G-PRAISE-2): the key and the wrong options shown.
   const wrongShown = next.lastVerdict === "correct" ? wrongAnswersOf(gradedTarget) : [];

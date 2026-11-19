@@ -324,3 +324,11 @@ test("d32 step 0: a reply said the way a right form is said, with other numbers,
   // (a denial is still the model's to read)
   assert.equal(g("27 ko 6 se bhaag nahi"), null);
 });
+
+test("048 follow-up: a form whose brackets decide it never matches in code a reply said without them — the model reads it", () => {
+  const item = { id: "script:x:ask:e1", answer: "2 × (lambai + chaudai)", acceptable: ["2 × (lambai + chaudai)"], scriptAsk: { wrongIfMis: "lambai + chaudai", targets: null }, prompt_hi: "Rectangle ka parimap kaise nikaaloge?" };
+  const t = { mode: "item", item, key: item.answer, also: item.acceptable, ideas: [], misconceptions: [], open: false };
+  const r = (x) => classifyFast({ target: t, childText: x, typed: true });
+  assert.equal(r("2 × (lambai + chaudai)").result?.outcome, "correct");
+  for (const x of ["2 × lambai + chaudai", "2 into lambai plus chaudai"]) { assert.equal(r(x).result, null, x); assert.equal(r(x).scriptUnsure, "brackets", x); }
+});

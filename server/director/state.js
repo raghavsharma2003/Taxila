@@ -650,7 +650,8 @@ const friendly = (item) => {
   if (!item) return item;
   const f = (x) => fillFriend(x, friendOf);
   // (Learning, c5-t02: the friend can be a card's key or its listed wrong pick, so graded fields are filled with the same name)
-  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: f(m.wrongIfMis) } : m);
+  // (048 G8: wrongIfMis may be a list — each form filled, the list kept)
+  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: Array.isArray(m.wrongIfMis) ? m.wrongIfMis.map(f) : f(m.wrongIfMis) } : m);
   return { ...item, prompt_en: f(item.prompt_en), prompt_hi: f(item.prompt_hi), answer: f(item.answer), acceptable: (item.acceptable ?? []).map(f),
     ...(item.scriptAsk ? { scriptAsk: meta(item.scriptAsk) } : {}), ...(item.scriptCheck ? { scriptCheck: meta(item.scriptCheck) } : {}), ...(item.scriptThen ? { scriptThen: meta(item.scriptThen) } : {}) };
 };

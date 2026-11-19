@@ -715,7 +715,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // 048 G7: on a script card an exact match also keeps its operators (norm drops them: "3 + 3" matched the form "3 × 3",
     // "30 × 6" the form "30 ÷ 6"); a kit item keeps today's match
     const scriptCard = !!(target.item && (target.item.scriptAsk || target.item.scriptCheck || target.item.scriptThen || target.item.quick));
-    const opSig = (s) => (scriptCard ? canon(s).seq.filter((x) => x.k === "op").map((x) => x.t).join(" ") : "");
+    // (048 follow-up: and its brackets — "2 × (lambai + chaudai)" is not "2 × lambai + chaudai")
+    const opSig = (s) => (scriptCard ? `${canon(s).seq.filter((x) => x.k === "op").map((x) => x.t).join(" ")}${/[()]/.test(String(s ?? "")) ? " ()" : ""}` : "");
     const sameApos = (k) => aposSig(k) === aposSig(text) && opSig(k) === opSig(text);
     if (target.key && norm(target.key) === t && sameApos(target.key)) return done("correct", "exact");
     // an acceptable entry counts as the key only when it is a complete answer; one the parts data marks partial is
@@ -775,10 +776,14 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // right twice, by its lone number): the order is exact form → the listed wrong answer → the same answer → by value, and
     // by value only for a form that is a number (with a unit at most)
     const ops = (x) => x.seq.filter((y) => y.k === "op").map((y) => y.t).join(" ");
-    const exact = (k) => norm(k) === norm(text) && ops(canon(k)) === ops(R);
+    const exact = (k) => norm(k) === norm(text) && ops(canon(k)) === ops(R) && /[()]/.test(String(k)) === /[()]/.test(String(text));
     if (forms.some(exact)) return done("correct", "script_key");
     if (wrongs.some(exact)) return misOf();
     if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();
+    // (048 follow-up: a form whose brackets decide it — "2 × (lambai + chaudai)" — never matches in code a reply said without them: "2 × lambai +
+    // chaudai" is another sum. The model reads it)
+    const BRACKETED = /\([^()]*[+\-×x*÷/][^()]*\)/i;
+    if (!/[()]/.test(text) && forms.some((k, j) => BRACKETED.test(String(k)) && F[j].some((c) => sameAnswer(c, R)))) return toModel("brackets");
     if (F.some((cs) => cs.some((c) => sameAnswer(c, R)))) return done("correct", "script_key");
     const keyC = canon(target.key);
     const fracs = R.nums.filter((x) => x.includes("/"));

@@ -2906,7 +2906,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // - a right answer's reason is the card's AUTHORED why (turn.js lastGraded.why), else none: her reason goes, code says it
     // - a sentence of hers that states a rule ("… kyunki …", "… hota hai") is no part of a turn whose teaching is authored
     // - any sentence of hers that states the card's listed wrong answer (wrongIfMis) as true goes
-    const wims = [graded0?.wrongIfMis, (item?.scriptAsk ?? item?.scriptCheck ?? item?.scriptThen)?.wrongIfMis].filter((x) => x != null && String(x).trim()).map((x) => String(x).trim().toLowerCase());
+    // (048 G8: a list-valued wrongIfMis is every way the wrong answer is said — none of them is stated as true; never "a,b" as one string)
+    const wims = [graded0?.wrongIfMis, (item?.scriptAsk ?? item?.scriptCheck ?? item?.scriptThen)?.wrongIfMis].flatMap((x) => (Array.isArray(x) ? x : [x])).filter((x) => x != null && String(x).trim()).map((x) => String(x).trim().toLowerCase());
     const statesMis = (x) => { const t = ` ${String(x).toLowerCase()} `; return wims.some((w) => new RegExp(`(?<![\\p{L}\\p{N}/])${w.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&")}(?![\\p{L}\\p{N}/])`, "u").test(t))
       && !/(?<![\p{L}])(?:nahi|nahin|not|galat|sahi\s+nahi)(?![\p{L}])/iu.test(t); };
     { const n0 = ss.length; ss = ss.filter((x) => !statesMis(x)); if (ss.length < n0) guard.misStated = n0 - ss.length; }
