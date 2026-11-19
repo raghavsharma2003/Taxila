@@ -54,9 +54,20 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
   }
   // the seven scripts' tables: lengths in one unit get the view, a table of two kinds or of words has none
   const titles = (b) => `${b.ref.params.left.title} | ${b.ref.params.right.title}`;
-  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Chocolate | Hisse", "Ganna | Ek hissa", "Rahul | Sana", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse"]);
-  for (const b of got.filter((b) => !b.v)) assert.equal(compareScaleOf(b.ref.params), null, `${b.at}: ${titles(b)}`);
-  assert.ok(["Bhuja | Tester", "Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "3 bachche | 5 bachche"].every((t) => got.some((b) => !b.v && titles(b) === t)));
+  // (repinned d32, 2026-11-19: the c6-ch07 reader fixes renamed two tables — "Rahul ki ribbon | Sana ki ribbon", and remediation 1's
+  // own board "Lambi ribbon | Chhoti ribbon" — and c4-ch01-t02 no longer has its "Bhuja | Tester" table. c4-ch01-t02 s3 e2's authored
+  // picture, the roti's two centre-to-edge distances 8 cm | 10 cm, was a word table; it is now held to scale (scale: true), two bars)
+  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse", "Roti: ek taraf | Doosri taraf"]);
+  // (one table of lengths has no view, and is named: c6-ch07 s1 c1's chocolate, now held to scale and cut 6, 2, 6, 2 cm in the order it
+  // broke. Its view is built, but the split beside the held board is refused at panel scale — with 6,6,2,2 it lays out — so a
+  // picture request on it draws the card's authored pictureBoard, a 0-16 cm scale. Studio to say whether the view should lay out)
+  const PANEL_REFUSED = new Set(["c6-maths-ch07-t01.skills[0].checks[0].board"]);
+  for (const at of PANEL_REFUSED) {
+    const b = got.find((x) => x.at === at);
+    assert.ok(b && !b.v && compareScaleOf(b.ref.params) && BF.altCall(b.ref)?.view === "scale", `${at}: a scale view is built, not laid out`);
+  }
+  for (const b of got.filter((b) => !b.v && !PANEL_REFUSED.has(b.at))) assert.equal(compareScaleOf(b.ref.params), null, `${b.at}: ${titles(b)}`);
+  assert.ok(["Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "3 bachche | 5 bachche"].every((t) => got.some((b) => !b.v && titles(b) === t)));
 });
 
 test("compare@1 scale: the whole and its pieces — 16 cm cut at 6, 6, 2, 2 — is one bar cut at the pieces' lengths, in proportion", () => {
@@ -149,8 +160,10 @@ test("fraction-line@1 strips (item 5): a line past 1, with two scales past 1, or
 });
 
 test("fraction-bars@1 three bars (item 5): three circles of the same parts side by side, the shading kept, no name written", () => {
+  // (d32 reader fixes, 2026-11-19: the seven scripts hold 5 such boards (four posing, one then-card), down from 8: cards moved from
+  // three bars to wholes boards; each one left still gets its three circles)
   const got = boards("fraction-bars@1").filter((b) => !b.at.includes("answerBoard") && b.ref.params.bars.length === 3);
-  assert.ok(got.length >= 8);
+  assert.ok(got.length >= 5, `${got.length}`);
   for (const b of got) {
     assert.deepEqual(viewOf(b.ref, b.at), { template: "wholes@1", view: "wholes", kind: "circle" }, b.at);
     const pt = viewed(b.ref, "wholes");
