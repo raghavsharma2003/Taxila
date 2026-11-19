@@ -83,7 +83,11 @@ test("019 A.3: an asked step's easier wording never states the step's answer (di
   const t2 = fresh("c5-maths-ch02-t02");
   t2.skills[0].workedExample.steps[0].simpler.hi = "Ek patti kam logon mein bate ya zyada mein: kam logon wala hissa bada hota hai.";
   assert.ok(d31Errors(t2).some((x) => /s1\/workedExample\.steps\[0\]\.simpler: states the step's answer "kam"/.test(x)));
+  // (d32 reader fixes: c6 s2's asked step now asks what to do with 24 and 18, key "jodkar do guna", and its easier wording states
+  // neither; the director30 case is kept on an inline fixture of the step as it stood, "aadhe chakkar mein kaun si bhujayein?")
   const c6 = fresh("c6-maths-ch06-t01");
+  c6.skills[1].workedExample.steps[0].ask = { prompt: { hi: "Kone se saamne wale kone tak, aadhe chakkar mein kaun si bhujayein aati hain?", en: "From a corner to the opposite one, which sides are in half a round?" },
+    key: "ek lambai aur ek chaudai", accept: ["lambai aur chaudai", "lambi aur chhoti bhuja", "ek lambi aur ek chhoti bhuja", "ek lambi ek chhoti", "24 aur 18", "24 cm aur 18 cm", "ek lambai ek chaudai", "length and breadth", "one length and one breadth", "the length and the breadth", "24 and 18"] };
   c6.skills[1].workedExample.steps[0].simpler.hi = "Tape ek kone se chalao: pehle lambi bhuja, phir mud ke chhoti bhuja. Ab tum saamne wale kone par ho.";
   // (the limit, said in docs/status/learning.md: c6 s2's giveaway lays the two sides out in order, "pehle lambi bhuja, phir … chhoti
   // bhuja", and no accepted form is in it word for word; it was rewritten by hand. A wording that does say an accepted form is caught)
@@ -130,9 +134,10 @@ test("019 A.4: --since lists every changed part with its board and key; an uncha
   const c = changedParts(s, old);
   assert.equal(c.length, 1);
   assert.equal(c[0].at, "s3 e3 point");
-  assert.equal(c[0].board.template, "compare@1");
+  // (d32 020, 2026-11-19: the point is drawn as bars of 3/5 and 3/8, no longer a compare@1 word table)
+  assert.equal(c[0].board.template, "fraction-bars@1");
   const lines = sinceReport(s, old);
-  assert.match(lines[0], /^s3 e3 point \[point\] over compare@1 \{"left":\{"title":"3\/5"/);
+  assert.match(lines[0], /^s3 e3 point \[point\] over fraction-bars@1 \{"bars":\[\{"parts":5,"shade":3,"label":"3\/5"/);
   assert.match(lines[1], /point: "Ginti barabar ho.*" → "Ginti barabar ho/);
   // (a card is listed with its key; a script not in the commit lists every part as new)
   const t = fresh("c5-maths-ch02-t02"); t.skills[2].explain[2].ask.reask = { hi: "2/9 ya 2/5, kaunsa zyada hai?", en: "2/9 or 2/5, which is more?" };
