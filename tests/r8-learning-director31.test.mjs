@@ -1,6 +1,6 @@
 // Learning 020 Part 1 (dc-r8-director31; docs/patches/to-learning/020-director31-hindi-rules-and-rewrites.md): the checker's new rule set,
 // d32Errors. One test per rule, each on a small inline script fragment that fails it and one that passes it; and one that holds the
-// seven scripts at the standard to exactly today's check while D32_READY is empty and no --d32 is passed.
+// seven scripts to the gate now that D32_READY and D32_PICTURES_READY list them all.
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -23,20 +23,28 @@ const frag = ({ card = {}, skill = {}, top = {} } = {}) => ({
 const run = (s) => d32Errors(s, { force: true });
 const ruled = (s, n) => run(s).filter((x) => x.includes(`Learning 020 rule ${n})`) || x.includes(`Learning 020 rule ${n},`));
 
-test("020 the gate: on for the five live scripts (the picture rule waits for Studio 014 in D32_PICTURES_READY), off for the two staged ones until they are rewritten", () => {
+// (repinned d32, 2026-11-19: the two staged scripts were rewritten and Studio 014 gave the boards their views, so D32_READY and
+// D32_PICTURES_READY hold all seven and the picture rule no longer waits. The gate is kept honest by a staged script outside the lists:
+// off on the gate, and the rules still bite when forced)
+test("020 the gate: on for the five live scripts and the two rewritten staged ones, the picture rule with them; off for a script not listed", () => {
   const live = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
   const staged = ["c4-maths-ch01-t02", "c6-maths-ch07-t01"];
-  assert.deepEqual(D32_READY, live);
-  assert.deepEqual(D32_PICTURES_READY, []); // (rule 7 waits for Studio 014)
-  const scripts = [...live.map((t) => scriptOf(t)), ...staged.map((t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8")))];
+  assert.deepEqual(D32_READY, [...live, ...staged]);
+  assert.deepEqual(D32_PICTURES_READY, [...live, ...staged]); // (rule 7 is on for all seven)
+  const stagedOf = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8"));
+  const scripts = [...live.map((t) => scriptOf(t)), ...staged.map(stagedOf)];
   for (const s of scripts) {
     Object.defineProperty(s, "__interests", { value: INTERESTS, enumerable: false });
-    const isLive = live.includes(s.topicId);
-    assert.equal(isD32(s), isLive, s.topicId);
-    assert.deepEqual(d32Errors(s), [], s.topicId); // (live: clean on the gate; staged: the gate is off)
-    if (isLive) assert.equal(structureErrors(s, kitTopic(s.topicId)).length, 0, s.topicId);
-    assert.ok(run(s).length > 0, `${s.topicId}: the rules do bite when forced (rule 7 at least)`);
+    assert.equal(isD32(s), true, s.topicId);
+    assert.deepEqual(d32Errors(s), [], s.topicId); // (clean on the gate)
+    assert.deepEqual(run(s), [], `${s.topicId}: clean when forced too, rule 7 included`);
+    assert.equal(structureErrors(s, kitTopic(s.topicId)).length, 0, s.topicId);
   }
+  const off = stagedOf("c4-maths-ch03-t01");
+  Object.defineProperty(off, "__interests", { value: INTERESTS, enumerable: false });
+  assert.equal(isD32(off), false, "a staged script not yet rewritten is off");
+  assert.deepEqual(d32Errors(off), [], "off on the gate");
+  assert.ok(run(off).length > 0, "the rules do bite on it when forced");
 });
 
 test("020 rule 1: a hindi form that shares most of its content words with the card fails; another sentence passes; samkon fails", () => {
