@@ -70,6 +70,9 @@ export const D28_PREDICATES = {
   /** Q2: no turn of a worked example ends on a check-in — only a told step's simpler (help on a step) may end on one. */
   workedCheckin(L, r, i, ctx) {
     if (r.who !== "teacher" || !endsOnCheckin(r)) return null;
+    // (Brain 047 R4: no check-in between a worked example's problem and its close, on any path — her turn before asked a step, and this one
+    // ends on a check-in: director31 c6 steering 32, a reason read as a request for easier words)
+    if ((ctx?.prevT?.pageParts ?? []).some((p) => p.part === "stepAsk") && !/^(?:wrap|safeguard|break|done)$/.test(String(r.move?.kind ?? r.move ?? ""))) return "a check-in while a worked example's step is asked";
     const pp = parts(r);
     if (pp.some((p) => p.part === "simpler")) return null;
     // (a worked example that asks no step — a script before Learning 016, the 30 staged — is told as before)

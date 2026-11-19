@@ -5,6 +5,8 @@
 //   shortAskKind  R2: the short ask said other than straight after the card's own hint or easier wording, after a turn that ended on the
 //                 card's question, on a card that does not ask for an imagined change
 //   stepAskRunning R3: the same asked step's or closing question's sentence ending three of her turns running
+//   helpOtherPart R4: help said from a part other than the one her turn before asked
+//   (and d28's workedCheckin reads a check-in said while a worked example's step is asked)
 import { cardObjAt } from "./d30-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -63,7 +65,19 @@ function stepAskRun(r, ctx) {
   const qs = (ctx.o.stepQs ??= stepQuestionsOf(ctx.script));
   return qs.has(q) ? { q, has: qs.get(q) } : null;
 }
+/** R4: the part a row's question is (its last card, asked step or quick question part), as { part, beat }. */
+const askBeatOf = (r) => { const p = [...(r?.pageParts ?? [])].reverse().find((x) => ["card", "stepAsk", "quick"].includes(x.part)); return p ? { part: p.part, beat: String(p.beat ?? "") } : null; };
 export const D31_PREDICATES = {
+  /** Brain 047 R4: whatever the reader returns, help is never taken from a part other than the live one — the one her turn before asked
+   *  (director31 c6 steering 32: a reason at an asked step got e3's easier wording). Gated. */
+  helpOtherPart(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT) return null;
+    const q = askBeatOf(ctx.prevT);
+    if (!q) return null;
+    const same = (b) => (q.part === "stepAsk" || /^worked/.test(q.beat) ? /^worked/.test(b) : b === q.beat);
+    const bad = (r.pageParts ?? []).filter((p) => ["simpler", "help"].includes(p.part)).find((p) => !same(String(p.beat ?? "")));
+    return bad ? `help from ${bad.beat} while ${q.beat} was asked` : null;
+  },
   /** Brain 047 R3: no asked step's question and no closing question ends three of her turns running — it alternates with its authored reask
    *  (director31 c5-t01 stuck 16 to 22; c5-t02 stuck 16 to 22, offtopic 14 to 18, steering 28 to 32; c6 stuck 18 to 22, offtopic 14 to 18;
    *  c5-t03 stuck 16 to 22; c6-ch07-t01 stuck 16 to 22; c4-ch01-t02 offtopic 10 to 16). Gated. */

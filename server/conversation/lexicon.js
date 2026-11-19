@@ -150,6 +150,10 @@ const BACK_WHOLE = /^(?:didi[\s,]+)?(?:aa\s*(?:gaya|gayi|gya|gyi)|आ\s*गय[�
 /** Round 3: words that ask HER to do something (show, draw, explain, tell): a turn with one is a request, not a mid-thought. */
 const ASKS_HER = /\b(?:dikhao|dikhaiye|dikha\s+do|dikha\s+dijiye|samjhao|samjhaiye|banao|banaiye|sunao|sunaiye|batao|bataiye|draw|show|explain|tell)\b/i;
 /** Round 3: an easier ask in the forms the battery's two-needs lines use ("kya thoda easy kar sakte ho?", "aasan karo"). */
+// (Brain 047 R4, dc-r8-director31 item 5: a reason is not a request — "maine pehle chhota wala socha, phir bada" at an asked step was read as
+// "easier" (its "chhota wala"): a line about how she thought, in her own past tense, asks for nothing)
+const TOLD_HOW = /(?<![\p{L}])(?:maine|maine\s+toh|mai\s+ne|humne|i)\s+(?:\S+\s+){0,5}?(?:socha|sochi|soche|socha\s+tha|kiya|kia|ki\s+thi|gina|gini|ginaa|dekha|dekhi|joda|jodi|banaya|banayi|nikala|thought|did|counted|added|tried|looked)(?![\p{L}])/iu;
+export const toldHow = (t) => TOLD_HOW.test(String(t ?? ""));
 const EASIER_TOO = /\b(?:(?:thoda|zara|bit)\s+)?(?:easy|aasan|asaan|simple)\s+(?:kar|karo|karke|kijiye|bana|banao)\b|\bmake\s+it\s+(?:easier|simpler)\b/i;
 const SLOWER_TOO = /\b(?:slowly|slower|dheere|dheere\s+dheere|aaram\s+se)\b/i;
 const TIRED_TOO = /\b(?:thak\s+(?:gaya|gayi|gaye)|thaka\s+hua|tired|thakaan)\b/i;
@@ -169,7 +173,7 @@ export function alsoReading(text, primary = null) {
     if (r) found.add(r === "confused" || r === "clarify" ? "simpler" : r);
   }
   if (SLOWER_TOO.test(t)) found.add("slower");
-  if (EASIER.test(t) || EASIER_TOO.test(t)) found.add("easier");
+  if ((EASIER.test(t) || EASIER_TOO.test(t)) && !TOLD_HOW.test(t)) found.add("easier");
   if (TIRED_TOO.test(t)) found.add("frustration");
   const p = primary === "confused" || primary === "clarify" || primary === "another" ? "simpler" : primary;
   const out = ["frustration", "boredom", "easier", "slower", "simpler"].filter((x) => found.has(x) && x !== p).slice(0, 2);
@@ -255,8 +259,8 @@ export function readIntent(text) {
   if (n >= 3 && !/[?？]/.test(t) && THINK_START.test(t) && !GO_ON.test(t) && !(p5Flag("R3CONV") && ASKS_HER.test(t))) return hit("thinking");
   if (SKIP.test(t) || (p5Flag("R3CONV") && SKIP_R3.test(t))) return hit("skip");
   if (KNOW.test(t) || (p5Flag("R4CONV") && KNOW_R4.test(t))) return hit("know");
-  if (HARDER.test(t)) return hit("harder");
-  if (EASIER.test(t) || (p5Flag("R4CONV") && EASIER_TOO.test(t))) return hit("easier");
+  if (HARDER.test(t) && !TOLD_HOW.test(t)) return hit("harder");
+  if ((EASIER.test(t) || (p5Flag("R4CONV") && EASIER_TOO.test(t))) && !TOLD_HOW.test(t)) return hit("easier");
   if (FRUSTRATION.test(t)) return hit("frustration");
   if (BOREDOM.test(t)) return hit("boredom");
   if (REPEAT.test(t)) return hit("repeat");

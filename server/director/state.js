@@ -2424,6 +2424,10 @@ function p5RequestMove(s, input, item, req, labels) {
       return { ...helpMove(s, input, item, "know"), request: "know" };
     }
     case "harder": case "easier": {
+      // (Brain 047 R4: whatever the reader returns, help is never taken from a part other than the live one — at an asked worked step the
+      // walk asks the step's question again; teaching another point there said a check-in inside the worked example: director31 c6
+      // steering 32)
+      if (s.walk?.stepAsk || s.lastMove?.stepAsk) return null;
       if (!item || s.phase !== "practice") return req.type === "harder" ? { ...helpMove(s, input, item, "know"), request: "harder" } : teachAgainPlan(s, kit, "another");
       s.skipped.push(item.id);                                   // left, no verdict: it was never their answer
       if (req.type === "easier") s.easier = true;
