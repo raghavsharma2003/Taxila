@@ -335,3 +335,12 @@ export function bareOfDecisive(key, text, prompt = "") {
   if (word.length > 2 && String(prompt).toLowerCase().includes(word.replace(/s$/, ""))) return null;
   return word;
 }
+
+// 048 G1 (script cards hear Hindi as spoken): the reader's own word tables, for the script-card grader's tokeniser
+// (server/grading/script-answer.js) and the G4 gate's spoken forms, so neither keeps a second list that can drift from this one.
+// Read-only views; the reader above is unchanged.
+export const READER_TABLES = Object.freeze({
+  en1: EN1, en10: EN10, hi99: HI99, dev: DEV, scale: SCALE, den: DEN, special: SPECIAL, prefix: PREFIX, over: OVER, doVerbStems: DO_VERB_STEMS, weak: WEAK,
+  /** the Devanagari spelling fold the reader keys on (nukta dropped, candrabindu = anusvara) */
+  devKey,
+});

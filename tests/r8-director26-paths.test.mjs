@@ -159,7 +159,10 @@ test("J1: a right verdict into the worked problem (c6 steady 16) takes beforeWor
 }));
 
 test("R1: c5-t02 steady 118 — the mix-up remediated in the first skill, met again in the third, gets the third skill's remediation", async () => on041("c5-maths-ch02-t02", async () => {
-  const { plans } = await replay(RUN, "steady", "c5-maths-ch02-t02", 119);
+  // (048 repin: the script card's reader now hears a hedged "mujhe lagta hai haan" as the card's named wrong answer "yes"; row 62's child said
+  // it to her recorded check-in "Yeh hissa saaf hua?" while the replayed walk had s2 e2 open, which moved this path off its rows. The replay
+  // now passes her recorded line as `heard`, as the turn path does, so an answer to her other question is not graded against the card)
+  const { plans } = await replay(RUN, "steady", "c5-maths-ch02-t02", 119, { heard: true });
   const m = plans.at(-1).p.r.state.lastMove;
   assert.equal(m.scriptBeat?.kind, "remediation", JSON.stringify(m.scriptBeat));
   assert.equal(m.scriptBeat.skillId, "c5-maths-ch02-t02-s3");
