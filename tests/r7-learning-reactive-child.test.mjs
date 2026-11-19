@@ -42,8 +42,11 @@ for (const persona of PERSONAS) {
       for (const r of run.slice(0, MIN_TURNS)) {
         if (r.kind === "right") seen.right++;
         if (r.kind === "wrong") { seen.wrong++; if (r.wrongFrom) seen.wrongFromMis++; }
-        if (r.event) events.add(r.event);
+        if (r.event && r.event !== "pictureAgain") events.add(r.event);
       }
+      // (Brain 048 G5: the steering child asks for a second picture straight after its first — the second view, or the card's hint)
+      if (persona === "steering") { const k = run.findIndex((r) => r.event === "picture"); assert.equal(run[k + 1]?.event, "pictureAgain", `${persona}/${seed}: no second picture`); }
+      else assert.ok(!run.some((r) => r.event === "pictureAgain"), `${persona}/${seed}: a second picture`);
       for (const ev of EVENTS) assert.ok(run.slice(0, MIN_TURNS).some((r) => r.event === ev), `${persona}/${seed}: no ${ev} in ${MIN_TURNS} turns`);
     }
     assert.ok(seen.right > 0 && seen.wrong > 0 && seen.wrongFromMis > 0, JSON.stringify(seen));
