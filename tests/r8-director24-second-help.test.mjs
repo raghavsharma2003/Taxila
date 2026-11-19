@@ -24,11 +24,11 @@ describe("r8-director24-second-help (H4)", () => {
   const cls = (o, request = null) => ({ outcome: o, confidence: 0.9, flags: {}, ...(request ? { request } : {}) });
   // (what she says is what the said set is built from: her turn's words, as the turn's text — here the move's help words and the card)
   const heard = (r) => ({ ...r, state: { ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: [r.state.lastMove?.simpler, r.state.lastMove?.gave?.why, r.ui?.ask?.text].filter(Boolean).join(" ") }] } });
-  const atCard = () => {
-    const K = kitFromFile(getTopic(T));
-    let r = step(initLessonState({ topicId: T, kit: K, ctx: { firstName: "Riya", lang: "hinglish", classLevel: 5, ageBand: "10-15", lessonKey: "h4" }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
+  const atCard = (topic = T, card = e1) => {
+    const K = kitFromFile(getTopic(topic));
+    let r = step(initLessonState({ topicId: topic, kit: K, ctx: { firstName: "Riya", lang: "hinglish", classLevel: 5, ageBand: "10-15", lessonKey: "h4" }, seed: 7, now: 0 }), { event: "start", kit: K, now: 0 });
     for (let i = 0; i < 10 && !r.state.activeItemId; i++) r = step(r.state, { event: "turn", kit: K, cls: cls("no_evidence"), text: "theek hai", now: (r.state.turn + 1) * 20_000 });
-    return { K, r: { ...r, state: { ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: `${e1.point.hi} ${r.ui.ask.text}` }] } } };
+    return { K, r: { ...r, state: { ...r.state, recent: [...(r.state.recent ?? []), { who: "teacher", text: `${card.point.hi} ${r.ui.ask.text}` }] } } };
   };
   const say = (K, r, text, c) => heard(step(r.state, { event: "turn", kit: K, cls: c, text, now: (r.state.turn + 1) * 20_000 }));
   const ladder = [e1.ask.simpler, e1.pointAlt, e1.simpler].filter(Boolean).map((x) => x.hi);
@@ -68,11 +68,18 @@ describe("r8-director24-second-help (H4)", () => {
 
   // (repinned d31 on Brain 046 Q2: the card has a `hindi` form (Learning 019) — the first request is that form alone; each request after it
   // climbs the same ladder, then the form again; with nothing unsaid, the form again — never a key, never the "nothing easier" line, the
-  // question stays. The rule kept: a Hindi request climbs the card's ladder and never gets a key)
+  // question stays. The rule kept: a Hindi request climbs the card's ladder and never gets a key.
+  // (repinned d32: c5-t01 s1 e1 became a value question and lost its hindi form in the reader fixes, so the rule is shown on the first
+  // live card that still has one, c4-maths-ch05-t01 s1 e1, with the same three-rung ladder)
   test("a Hindi request climbs the same ladder and never gets a key: the hindi form first, the ladder with it, then the form, and the question", () => {
-    const { K, r } = atCard();
+    const T2 = "c4-maths-ch05-t01";
+    const sc2 = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T2}.json`, import.meta.url), "utf8"));
+    const e1 = sc2.skills[0].explain[0];
+    const ladder = [e1.ask.simpler, e1.pointAlt, e1.simpler].filter(Boolean).map((x) => x.hi);
+    const { K, r } = atCard(T2, e1);
     const card = r.state.activeItemId;
     const hindi = { type: "language", lang: "hindi" };
+    assert.equal(card, `script:${sc2.skills[0].skillId}:ask:e1`, "the first card is s1 e1");
     assert.ok(e1.ask.hindi?.hi, "this card has its hindi form");
     let x = r;
     for (let k = 0; k <= ladder.length; k++) {
