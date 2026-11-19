@@ -140,6 +140,12 @@ function fullWhyIn(script, r) {
   }
   return null;
 }
+/** Brain 047 R2: a row that says a card with no `reask` whole where the short ask may not stand (it has a seam record and no own hint straight
+ *  before its question). */
+export function reaskNoFormAt(r, ctx) {
+  const o = cardObjAt(ctx?.script, r);
+  return !!o && !o.reask && !!r?.card && low(r.text).includes(low(r.card)) && (r.seams ?? []).length > 0 && !ownHelpLast(r, ctx?.script);
+}
 /** Brain 046 Q5: the question a turn ends on — its last sentence, where it asks. */
 const lastAsk = (r) => { const ss = String(r?.text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/); const q = ss.at(-1) ?? ""; return /[?？]\s*$/.test(q) ? low(q) : null; };
 /** Brain 046 Q6: the script object a compile part id names ("S:e2:card", "S:e2:point", "S:rem:0:then", "S:rem:0", "S:check:c1",
@@ -287,12 +293,20 @@ export const D30_PREDICATES = {
     // after help about another figure, where the short ask may not stand (P6))
     const o = cardObjAt(ctx?.script, r);
     if (!o?.reask && sentencesOf(r.card ?? "").length >= 2 && low(r.text).includes(low(r.card))
-      && ((String(ctx?.prevIntent ?? "") === "repeat" && HEAR_Q.test(String(ctx?.prevChild ?? ""))) || helpOtherFigure(r, ctx?.script)
-        // (Brain 047 R2: everywhere the short ask may not stand — no own hint said straight before — a card with no reask is said whole)
-        // (a row with no seam record — before director23 — cannot say what preceded its question: read as before)
-        || ((r.seams ?? []).length > 0 && !ownHelpLast(r, ctx?.script)))) return null;
+      && ((String(ctx?.prevIntent ?? "") === "repeat" && HEAR_Q.test(String(ctx?.prevChild ?? ""))) || helpOtherFigure(r, ctx?.script))) return null;
+    // (Brain 047 R2: everywhere the short ask may not stand — no own hint said straight before — a card with no reask is said whole, one
+    // sentence or more; counted by reaskNoForm, pending, until every card has its reask. A row with no seam record — before director23 —
+    // cannot say what preceded its question: read as before)
+    if (reaskNoFormAt(r, ctx)) return null;
     if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
     return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
+  },
+  /** Brain 047 R2's fallback, counted: a card with no `reask` said whole again two turns running where the short ask may not stand (no own hint
+   *  straight before) — the card has no other form (Learning 020's first pass left some cards without one). Pending. */
+  reaskNoForm(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT || !r.card) return null;
+    const q = lastAsk(r);
+    return q && q === lastAsk(ctx.prevT) && reaskNoFormAt(r, ctx) ? `the whole card again two turns running: it has no reask ("${q.slice(0, 50)}")` : null;
   },
   /** dc-r8-director30 Brain 046 Q4: a verdict, a point and a card in one turn over 65 words says the card's short reason where it has one
    *  (c4 steady 42, stuck 64, steering 56; c5-t02 stuck 74, offtopic 52). Gated. */

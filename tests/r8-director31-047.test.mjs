@@ -147,3 +147,30 @@ describe("R2: the short ask, by the kind of help", () => {
       assert.ok(!ownHelpRung({ rung, rungPath: p }), p);
   });
 });
+
+describe("R3: a yes at an asked step; no question three turns running", () => {
+  test("stepAskRunning is gated and reads the order's rows", () => {
+    assert.ok(!PENDING.has("stepAskRunning"));
+    for (const [p, t, row] of [["stuck", "c5t01", 22], ["stuck", "c5t02", 22], ["offtopic", "c5t02", 18], ["steering", "c5t02", 32], ["stuck", "c6", 22], ["offtopic", "c6", 18],
+      ["stuck", "c5t03", 22], ["stuck", "c6ch07", 22], ["offtopic", "c4ch01", 16]]) assert.ok(flagged(p, t, "stepAskRunning").has(row), `${p} ${t} ${row}`);
+  });
+  test("stepAskRunning reads none where the step's question alternates with its reask", () => {
+    const { rows, script } = lesson("stuck", "c5t01");
+    const s = structuredClone(script);
+    const n = s.skills.findIndex((k) => (k.workedExample?.steps ?? []).some((st) => st.ask?.prompt));
+    const st = s.skills[n].workedExample.steps.find((x) => x.ask?.prompt);
+    st.ask.reask = { hi: "Raaste ki doori ke liye tum kya ginoge, khambe ya gaps?", en: "For the distance, what will you count?" };
+    const rs = structuredClone(rows.slice(0, 23));
+    const q = String(rows[22].text).trim();
+    rs[20] = { ...rs[20], text: String(rs[20].text).replace(q, st.ask.reask.hi) };
+    assert.ok(flagged("stuck", "c5t01", "stepAskRunning", { rows: rows.slice(0, 23), script: s }).has(22));
+    assert.ok(!flagged("stuck", "c5t01", "stepAskRunning", { rows: rs, script: s }).has(22));
+  });
+  test("teachbackKeyBoard lets the closing question's reask name the key among its options, as the question does", () => {
+    const { rows, script } = lesson("steady", "c5t02");
+    const s = structuredClone(script);
+    s.teachback.reask = { hi: "7/10 aur 7/12, dono ek jaisi patti ke hain; inmein se chhota kaun hai?", en: "7/10 and 7/12: which is smaller?" };
+    const r = { ...rows[98], text: `12/7 sahi nahi hai. ${s.teachback.reask.hi}` };
+    assert.ok(!lessonFlags({ rows: [...rows.slice(0, 98), r], script: s }).some((f) => f.predicate === "teachbackKeyBoard" && f.row === 98));
+  });
+});

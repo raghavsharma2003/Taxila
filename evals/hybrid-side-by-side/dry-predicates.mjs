@@ -777,7 +777,8 @@ export const ORDER_LAWS = {
     const key = tb?.key != null ? String(tb.key).trim() : "";
     if (!key) return null;
     // (the turn that asks the teach-back may name the key among its options: the check starts on the turn after it)
-    const q = [tb.prompt?.hi, tb.prompt?.en].filter(Boolean).map((x) => key3(x));
+    // (Brain 047 R3: and its authored reask, which the question asked again alternates with)
+    const q = [tb.prompt?.hi, tb.prompt?.en, tb.reask?.hi, tb.reask?.en].filter(Boolean).map((x) => key3(x));
     if (!ctx.o.tbAsked) { if (q.some((x) => x && key3(r.text).includes(x.slice(0, 40)))) ctx.o.tbAsked = true; return null; }
     // (dc-r8-director27 P4: the question asked again after its hint may name the key among its options, as its first asking does)
     if (q.some((x) => x && key3(r.text).includes(x.slice(0, 40)))) return null;
@@ -1036,7 +1037,7 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 // (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
 // (Brain 044: pointNoFit and workedNoFit count what does not fit on today's scripts — gated once Learning 017's cuts are merged)
-export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+export const PENDING = new Set(["twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {

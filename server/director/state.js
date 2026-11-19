@@ -944,7 +944,9 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     ...(stepReply ? { stepReply } : {}), ...sayFirst };
   if (j < steps.length) {
     const a = steps[j].ask;
-    const prompt = fillFriend(String(saidIn(a.prompt, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf);
+    // (Brain 047 R3: the step asked again straight after it was asked — a yes, an aside, a picture — alternates with its authored reask, as a
+    // card does: director31 c5-t01, c5-t02, c6, c5-t03, c6-ch07-t01 stuck 16 to 22 said the same question four turns running)
+    const prompt = stepAskAgain(input.kit, s.lastMove?.stepAsk, { skillId, step: j, prompt: fillFriend(String(saidIn(a.prompt, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf) }, lang).prompt;
     w.workedStep = j; w.stepAsk = { step: j };
     const qi = friendly(scriptStepAskItem(skillId, j, a));
     s.quickItem = qi; s.activeItemId = qi.id;
@@ -955,6 +957,18 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
   s.scriptCard = item; s.phase = "practice";
   activate(s, item);
   return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, item, probe: probeFor(item), ...ref("worked", "worked", we.board) });
+}
+/** Brain 047 R3: an asked step's question said again — `next` ({ skillId, step, prompt }) — where her turn before asked the same step (`prevSa`):
+ *  its authored `reask` when her turn before said the question as written, the question as written when it said the reask. A step with no
+ *  reask is asked as written. */
+function stepAskAgain(kit, prevSa, next, lang) {
+  if (!next || !prevSa || prevSa.skillId !== next.skillId || prevSa.step !== next.step) return next;
+  const a = skillScriptOf(kit, next.skillId)?.workedExample?.steps?.[next.step]?.ask;
+  const k = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  const p = fillFriend(String(saidIn(a?.prompt, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf);
+  const r = a?.reask ? fillFriend(String(saidIn(a.reask, lang) ?? "").replace(/\s+/g, " ").trim(), friendOf) : "";
+  if (!r || !p) return next;
+  return { ...next, prompt: k(prevSa.prompt) === k(r) ? p : k(prevSa.prompt) === k(p) ? r : next.prompt };
 }
 /** Whether a move is a segment of an asked worked example (its told lines and its question: an asked step, or the child's own step). */
 const segmentMove = (move, ui, kit) => !!move?.stepAsk || (move?.kind === "worked_example" && !!move.rendered?.length && /:ask:worked$/.test(String(ui?.ask?.itemId ?? ""))
@@ -2649,7 +2663,11 @@ function teachback(s, input) {
     const gaveUpEnd = GIVE_UP_WORDS.test(String(input?.text ?? "")) && !SAYS_A_REASON.test(String(input?.text ?? "")) && !["correct", "incorrect", "partial", "misconception"].includes(String(cls?.outcome ?? ""));
     const tbD = pickHelp({ script: authoredEnd(kit), part: TEACHBACK_PART, request: "hint", said: saidNowOf(s), lang: lang === "english" ? "english" : "hinglish" });
     if (tbD?.rung?.text) {
-      const q = saidIn(tb.prompt, lang);
+      // (Brain 047 R3: the closing question asked again alternates with its authored reask — director31 c5-t02 steady 96 to 98, c6 steady 94
+      // to 96 said it whole twice running)
+      const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ").toLowerCase();
+      const q0 = saidIn(tb.prompt, lang), qr = tb.reask ? saidIn(tb.reask, lang) : null;
+      const q = qr && String(qr).trim() && q0 && herLast.includes(String(q0).replace(/\s+/g, " ").trim().toLowerCase()) ? qr : q0;
       if (q && String(q).trim()) {
         return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [endLine(tbD.rung.text), endLine(q)], renderedKinds: ["help", "closingQuestion"], authoredEnd: "teachback", ...(gaveUpEnd ? { endGaveUp: true } : { endVerdict: "not_yet" }),
           ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
@@ -3529,7 +3547,7 @@ function helpStay(prev, input, d) {
     // (dc-r8-director29 Brain 045 P3: help at an asked worked step — the step's simpler, then the step's question again; the step stays asked)
     // (Brain 046: never with the try-first line of a turn before — dry stuck c5-t01 30, a give-up after "let me try" heard the go-ahead again)
     const { itemId: _i, stepAgain: _sa, ...rest } = base;
-    move = { ...rest, kind: "reteach", ...f, stepAsk: { ...prev.lastMove.stepAsk } };
+    move = { ...rest, kind: "reteach", ...f, stepAsk: stepAskAgain(input.kit, prev.lastMove.stepAsk, { ...prev.lastMove.stepAsk }, prev.ctx?.lang ?? "hinglish") };
     ui = prev.lastUi;
     s.activeItemId = prev.activeItemId; if (prev.quickItem) s.quickItem = prev.quickItem;
   } else {
@@ -3767,7 +3785,7 @@ export function step(prev, input) {
       const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
       out.state.quickItem = qi; out.state.activeItemId = qi.id;
       const { stayCheckin: _s, checkinOk: _c, ...lmP } = out.state.lastMove;
-      out.state.lastMove = { ...lmP, stepAsk: { ...sa } };
+      out.state.lastMove = { ...lmP, stepAsk: stepAskAgain(input.kit, sa, { ...sa }, prev.ctx?.lang ?? "hinglish") };
       if (out.move) out.move = { ...out.state.lastMove };
     }
   }

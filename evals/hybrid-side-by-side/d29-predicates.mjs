@@ -30,7 +30,7 @@
 //   quickHelpCard  T5: a request at a quick question gets help on the point, then the quick question again or the card — never a check-in
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
-import { partStartOf, helpOtherFigure } from "./d30-predicates.mjs";
+import { partStartOf, helpOtherFigure, reaskNoFormAt } from "./d30-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -213,13 +213,15 @@ export const D29_PREDICATES = {
   },
   /** Small: a second wrong answer in a row is not met with the question said word for word as her turn before ended (c4 steady 86,
    *  offtopic 52; c5-t01 steering 54). Both turns follow a wrong answer; the question is each turn's last sentence. */
-  reaskTwice(L, r, i) {
+  reaskTwice(L, r, i, ctx) {
     const rows = L.rows ?? [];
     if (r.who !== "teacher" || !WRONG_READS.has(readOf(rows[i - 1]))) return null;
     let j = i - 2; while (j >= 0 && rows[j].who !== "teacher") j--;
     if (j < 1 || !WRONG_READS.has(readOf(rows[j - 1]))) return null;
     // (dc-r8-director29 Brain 045 P6: after help about another figure the card's own re-ask is the rule, not the short ask)
     if (helpOtherFigure(r)) return null;
+    // (Brain 047 R2: a card with no reask is said whole where the short ask may not stand — counted by reaskNoForm)
+    if (reaskNoFormAt(r, ctx)) return null;
     const q = lastSentence(r.text), q0 = lastSentence(rows[j].text);
     return /[?？]$/.test(q) && keyText(q) === keyText(q0) ? "the question said again word for word straight after a second wrong answer" : null;
   },
