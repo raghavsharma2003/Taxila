@@ -103,3 +103,32 @@ describe("G5/G6 predicates", () => {
     assert.equal(PREDICATES.pictureTwoLines([], row("Yahan dono pattiyan ek hi number line par hain. Kaunsa bada hai?"), 1, ctx(null, script)), null);
   });
 });
+
+describe("G6: one line about a picture", () => {
+  test("where the script supplies the caption, the engine's line for the view is not also said, nor her sentence written from it (director31 steering c5-t03 14, replayed)", async () => {
+    const { replay, runScriptOf } = await import("./fixtures/replay.mjs");
+    const { textReply, replyDeps } = await import("../server/brain/say.js");
+    const { instructionsFor } = await import("../server/compiler/instructions.js");
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const RUN = "2026-11-18-director31", TT = "c5-maths-ch02-t03";
+    const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
+    const chat = replyDeps.chat;
+    try {
+      const sc = runScriptOf(RUN, TT); delete sc.recordedRun; setScriptForTest(TT, sc);
+      const { kit, plans } = await replay(RUN, "steering", TT, 15);
+      const pl = plans.find((p) => p.state.lastMove?.request === "visual");
+      assert.ok(pl, "the picture turn");
+      const engine = "Dekho, do sankhya rekhayein, ek ke neeche ek.";
+      const st = { ...pl.state, lastMove: { ...pl.state.lastMove, altLine: engine, altView: "line" } };
+      replyDeps.chat = async () => ({ text: "Do sankhya rekhayein hain, ek ke neeche ek. Ab socho." });
+      const r = (await textReply({ instructions: instructionsFor(st, kit), state: st, kit, childText: pl.child, history: [], ui: pl.p.r.ui, module: null })).reply;
+      assert.match(r, /^Dono patti yahan ek number line par hain/, "the script's caption leads");
+      assert.doesNotMatch(r, /rekhayein/i, "no second line about the picture");
+    } finally { replyDeps.chat = chat; setScriptForTest(); if (KEEP !== undefined) process.env.TAXILA_R7_SCRIPT = KEEP; }
+  });
+  test("sharesLine: two content words of the engine's line", async () => {
+    const { sharesLine } = await import("../server/brain/say.js");
+    assert.ok(sharesLine("Do sankhya rekhayein hain, ek ke neeche ek.", "Dekho, do sankhya rekhayein, ek ke neeche ek."));
+    assert.ok(!sharesLine("Accha, chalo.", "Dekho, do sankhya rekhayein, ek ke neeche ek."));
+  });
+});

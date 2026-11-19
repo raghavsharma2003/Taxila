@@ -866,6 +866,15 @@ export const withoutDiagnosis = (t) => sentences(t).filter((x) => !DIAGNOSIS.tes
 /** round 7 (director2 c6: "Ab ginें"): a Roman word carrying Devanagari vowel signs is written out in Roman. */
 const MATRA = { "\u093E": "a", "\u093F": "i", "\u0940": "i", "\u0941": "u", "\u0942": "u", "\u0947": "e", "\u0948": "ai", "\u094B": "o", "\u094C": "au", "\u0902": "n", "\u0901": "n", "\u0947\u0902": "ein", "\u094B\u0902": "on", "\u093E\u0902": "aan", "\u0940\u0902": "een" };
 export const unmixWords = (t) => String(t ?? "").replace(/(\p{Script=Latin}+)([\u0900-\u0903\u093A-\u094F]+)/gu, (_, w, m) => w + (MATRA[m] ?? [...m].map((c) => MATRA[c] ?? "").join("")));
+/** Brain 048 G6: words that describe a drawn view (its kind, its marks, its parts), and whether a sentence shares two or more content words
+ *  with the engine's own line for the view. */
+const VIEW_WORDS = /(?<![\p{L}])(?:rekh(?:a|ayein|aon)|line|lines|patti|pattiyan|pattiyon|gol|circle|circles|bars?|strips?|scale|tasveer|picture|chitra|drawing|nishaan|mark|marks|view)(?![\p{L}])/iu;
+export function sharesLine(x, line) {
+  if (!line) return false;
+  const W = (t) => new Set(String(t).toLowerCase().split(/[^\p{L}\p{N}/]+/u).filter((w) => w.length > 2 && !/^(?:hai|hain|aur|par|mein|yeh|wahi|dekho|the|and|this|ek|do)$/.test(w)));
+  const a = W(x), b = W(line);
+  return [...a].filter((w) => b.has(w)).length >= 2;
+}
 /** round 7 (director2 c6 steering: "picture ko words mein dekho" twice): "see it in words" is never said; she has them imagine it. */
 // (main, director2: "kalpana karo" / "imagine" is the same failure: a picture asked, words given) the phrase goes, never a stand-in
 const IN_WORDS = /\b(?:(?:picture|tasveer|photo|diagram)\s+ko\s+)?words\s+mein\s+(?:dekho|dekhte\s+hain|samjho|socho)\b\s*[:,—-]?\s*|\b(?:see|picture)\s+it\s+in\s+words\b\s*[:,—-]?\s*|\b(?:kalpana\s+karo|imagine(?:\s+it)?|man\s+mein\s+socho)\b\s*[:,—-]?\s*/gi;
@@ -3126,7 +3135,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       : boardWords(state.lastMove?.scriptBeat?.board, lang, item?.answer) ?? (lang === "english" ? "Let's see it in a picture." : "Chalo, ise picture mein dekhte hain.");
     // (dc-r8-director25 L2 item 5: the picture's line is recorded as a caption in the seam record)
     if (asked) guard.captionLine = asked;
-    if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).slice(0, 1); guard.boardWords = true; }
+    // (Brain 048 G6: where the script supplies the picture's line — viewCaption, answerViewCaption, pictureCaption — it is the one line about the
+    // picture: no sentence of hers that describes a view (written from the engine's own line for it, "do sankhya rekhayein …") is also said)
+    if (asked) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see)/i.test(x) && !/[?？]/.test(x) && !/\d/.test(x)).filter((x) => !(authoredCap && (VIEW_WORDS.test(x) || sharesLine(x, state.lastMove?.altLine)))).slice(0, 1); guard.boardWords = true; }
     else if (heldPic) { ss = ss.filter((x) => !/(?:screen|board|dekho|yahan|look|see|picture|tasveer|chitra)/i.test(x)); guard.noPicture = true; }
     const clean = (x) => x && !/[?？]/.test(x) && words(x) <= 14 && !foreignOf(x).length;
     const oneClause = (x) => { const c = String(x).split(/[,;:—–]|\s-\s/)[0]; return dot(words(c) >= 3 ? c : x); };
