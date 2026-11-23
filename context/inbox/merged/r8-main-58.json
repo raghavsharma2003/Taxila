@@ -1,0 +1,48 @@
+{
+ "nodes": [
+  {
+   "id": "fd-r8-round-test-list-missed-a-walker",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "The round's hand-kept list of 336 test files passed with 0 failing while the whole suite (758 files) had one failing: an old fixture script walked through the new code, which reached a path none of the 36 dry lessons reach"
+  },
+  {
+   "id": "dc-r8-go-on-line-before-aside-return",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "After a key with its help spent, when a return to the child's side-topic is due in the same turn, she says the go-on line and then the return; \"I can't put this more simply\" is never said before a return, on any path"
+  },
+  {
+   "id": "dc-r8-agents-run-the-whole-suite",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "A build round's last agent runs the whole unit suite the gate runs (the leak check's list), not a list of the files the round touched"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-go-on-line-before-aside-return",
+   "rel": "caused_by",
+   "dst": "fd-r8-round-test-list-missed-a-walker"
+  },
+  {
+   "src": "dc-r8-go-on-line-before-aside-return",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-agents-run-the-whole-suite",
+   "rel": "caused_by",
+   "dst": "fd-r8-round-test-list-missed-a-walker"
+  },
+  {
+   "src": "fd-r8-round-test-list-missed-a-walker",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  }
+ ],
+ "md": {
+  "decisions": "- `dc-r8-go-on-line-before-aside-return` (2026-11-23, main; completes to-brain 049 B6's item from 047 R5 and replaces the seam pass's earlier choice for this turn): a child has heard a card's key and its other wording and gives up again; nothing is left to say, and a return to her side-topic is due. The turn is the script's go-on line and the return's question (\"Koi baat nahi, chalo aage badhte hain. Waise, cricket mein …?\"). The \"nothing easier\" line is not said before a return on any path: where no key has been said and no go-on line applies, nothing stands in its place. Built in `server/brain/seams.js` (8a8966fb5); `spentThenReturn` is gated and the old fixture `tests/fixtures/scripts-point-card-one-turn` reaches the path. **Why:** a judge heard \"I can't say this more simply\" followed at once by cricket as the teacher dropping the child (director31, c4-ch01-t02 stuck 68); the seam pass had been keeping that line and dropping the go-on line because an earlier judge heard \"abhi aage badhte hain. Ab cricket ki baat karte hain\" as a contradiction, when the return was a statement. The return is now a question that opens \"Waise,\", which a go-on line can precede. **What would reverse it:** a judge hearing the go-on line and the return together as a contradiction again; then each script gets a short consolation form with no \"we go on\" in it for this turn, and code says that.\n- `dc-r8-agents-run-the-whole-suite` (2026-11-23, main): the last agent of a build round runs the same list the gate's leak check runs (every unit suite, two at a time, in batches) before it reports; a list of touched files is for the inner loop only. **Why:** `fd-r8-round-test-list-missed-a-walker`: the miss cost one gate cycle and was found only because the gate is not the agents' list. **What would reverse it:** the whole suite growing past what an agent can run in a session; then the list is generated (every test that imports `server/director`, `server/brain` or the predicates), never kept by hand.",
+  "measurements": "- `fd-r8-round-test-list-missed-a-walker` (2026-11-23, finding): the d33 build agents ran a list of 336 test files (4,176 pass, 0 fail). The gate's leak check (758 suites, 4 processes, seed 20261123) failed one: `tests/r8-main-034.test.mjs`, which walks a pre-round fixture script through today's code. Three causes: the fixture had no `joints.yourTurn` (data; added); `hindiCard` refused the invitation that ends a third turn running at one question (predicate; brought to to-brain 049 B4); and \"nothing easier\" before an aside's return was still reachable where the return is decided after the walk (code; fixed, `dc-r8-go-on-line-before-aside-return`). The 36 dry lessons did not reach that path: their spoken text is identical before and after the fix."
+ }
+}

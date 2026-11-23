@@ -30197,6 +30197,34 @@
    "at": "2026-11-23",
    "title": "After two single build agents each ran out of context on to-brain 049, its remaining items were split between two agents in separate worktrees by file ownership and merged with one trivial conflict",
    "source": "inbox/r8-main-57.json"
+  },
+  {
+   "id": "fd-r8-round-test-list-missed-a-walker",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "The round's hand-kept list of 336 test files passed with 0 failing while the whole suite (758 files) had one failing: an old fixture script walked through the new code, which reached a path none of the 36 dry lessons reach",
+   "source": "inbox/r8-main-58.json"
+  },
+  {
+   "id": "dc-r8-go-on-line-before-aside-return",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "After a key with its help spent, when a return to the child's side-topic is due in the same turn, she says the go-on line and then the return; \"I can't put this more simply\" is never said before a return, on any path",
+   "source": "inbox/r8-main-58.json"
+  },
+  {
+   "id": "dc-r8-agents-run-the-whole-suite",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "A build round's last agent runs the whole unit suite the gate runs (the leak check's list), not a list of the files the round touched",
+   "source": "inbox/r8-main-58.json"
+  },
+  {
+   "id": "ms-release-84458a2",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "Released 84458a2 with scripts/release.mjs: web taxila-web--s84458a2-ykql (was taxila-web--s0d6f47c-8oip), worker + canary/nightly jobs on taxila-worker:84458a2 (was 0d6f47c); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 84458a2 --rollback.",
+   "source": "inbox/release-84458a2.json"
   }
  ],
  "edges": [
@@ -48539,6 +48567,26 @@
    "src": "fd-r8-given-only-on-told-path",
    "rel": "constrains",
    "dst": "dc-r8-d33-staged-topics"
+  },
+  {
+   "src": "dc-r8-go-on-line-before-aside-return",
+   "rel": "caused_by",
+   "dst": "fd-r8-round-test-list-missed-a-walker"
+  },
+  {
+   "src": "dc-r8-go-on-line-before-aside-return",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-agents-run-the-whole-suite",
+   "rel": "caused_by",
+   "dst": "fd-r8-round-test-list-missed-a-walker"
+  },
+  {
+   "src": "fd-r8-round-test-list-missed-a-walker",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
   }
  ]
 }
