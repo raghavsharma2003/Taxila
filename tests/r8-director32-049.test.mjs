@@ -198,7 +198,7 @@ describe("B5: a right verdict before a due return ends on the return's question;
     assert.ok(flagged("offtopic", "c6ch07", "returnInsideWorked").has(56));
   });
 });
-describe("B4: a question is heard at most two turns running (the predicate; the walk is not built yet)", () => {
+describe("B4: a question is heard at most two turns running", () => {
   test("questionThreeRunning reads director32's rows: stuck 20/22, offtopic 18, steering 32, c4 offtopic 62", () => {
     const want = [["stuck", "c5t01", 22], ["stuck", "c5t02", 22], ["stuck", "c5t03", 22], ["stuck", "c6", 22], ["stuck", "c6ch07", 22],
       ["offtopic", "c5t02", 18], ["offtopic", "c6", 18], ["steering", "c5t01", 32], ["steering", "c5t02", 32], ["steering", "c6", 32], ["offtopic", "c4", 62]];
@@ -208,3 +208,54 @@ describe("B4: a question is heard at most two turns running (the predicate; the 
     assert.equal(flagged("stuck", "c5t01", "questionThreeRunning", { rows: lesson("stuck", "c5t01").rows, script: null }).size, 0);
   });
 });
+
+// ---- Brain 049 B4, the walk (server/director/question-run.js) and the endings it adds
+import { questionPathOf, endsOnYourTurn, runOfTwo, yourTurnForms, yourTurnPass } from "../server/director/question-run.js";
+describe("B4: the third turn at one question ends on joints.yourTurn; the fourth asks it in the other form", () => {
+  const sc = { joints: { yourTurn: [{ hi: "Ab tum batao.", en: "Now you tell me." }, { hi: "Chalo, ab tumhari baari.", en: "Your turn now." }, { hi: "Jo socha hai, woh bol do.", en: "Say it." }] },
+    skills: [{ checks: [{ id: "c1", prompt: "{friendF} ke paas 3 aam hain. Kitne aam hain?", reask: "{friendF} ke kitne aam hain?" }] }] };
+  const card = "Zoya ke paas 3 aam hain. Kitne aam hain?", reask = "Zoya ke kitne aam hain?";
+  test("either form of a question, its {slot} filled, is one question", () => {
+    assert.equal(questionPathOf(sc, `Nahi. ${card}`), questionPathOf(sc, `Socho. ${reask}`));
+    assert.ok(questionPathOf(sc, card));
+    assert.equal(runOfTwo(sc, [card, `Socho. ${reask}`]), questionPathOf(sc, card));
+    assert.equal(runOfTwo(sc, [card, "Ab tum batao."]), null);
+    assert.deepEqual(yourTurnForms(sc), ["Ab tum batao.", "Chalo, ab tumhari baari.", "Jo socha hai, woh bol do."]);
+    assert.ok(endsOnYourTurn(sc, "Socho, 3 gino. Chalo, ab tumhari baari.") && !endsOnYourTurn(sc, reask));
+  });
+  const turn = (recent, lastMove = {}, extra = {}) => ({ recent: recent.map((text) => ({ who: "teacher", text })), lastMove, ...extra });
+  const out = () => ({ state: { lastMove: { kind: "hint" }, ctx: {} }, move: { kind: "hint" }, ui: { ask: { itemId: "script:s1:c1", text: card } } });
+  test("the third turn running is marked yourTurn (rotated), the question said last kept for the fourth", () => {
+    const o = yourTurnPass(turn([card, `Socho. ${reask}`]), out(), sc);
+    assert.equal(o.state.lastMove.yourTurn, "Ab tum batao.");
+    assert.equal(o.state.lastMove.yourTurnAfter, reask);
+    assert.equal(yourTurnPass(turn([card, reask]), out(), sc, "phir se bolo").state.lastMove.yourTurn, undefined, "a request to hear the question gets it");
+    assert.equal(yourTurnPass(turn(["Kuch aur?", reask]), out(), sc).state.lastMove.yourTurn, undefined, "two turns are no run of three");
+  });
+  test("the fourth turn, after a said invitation, carries askNot (no second invitation); the fields never carry on", () => {
+    const pl = { yourTurn: "Ab tum batao.", yourTurnAfter: reask };
+    const o = yourTurnPass(turn([reask, "Socho, 3 gino. Ab tum batao."], pl, { yourTurnN: 0 }), out(), sc);
+    assert.equal(o.state.lastMove.askNot, reask);
+    assert.equal(o.state.lastMove.yourTurn, undefined);
+    assert.equal(o.state.yourTurnN, 1, "the next invitation takes the next form");
+    const o2 = out(); o2.state.lastMove = { kind: "hint", yourTurn: "x", askNot: "y" };
+    assert.equal(yourTurnPass(turn(["a.", "b."]), o2, sc).state.lastMove.askNot, undefined);
+  });
+  const T = (text, extra = {}) => ({ who: "teacher", text, ...extra }), C = (text) => ({ who: "child", text });
+  test("yourTurnNotThird reads the invitation only where her two turns before ended on its question; endsOnQuestion accepts it", () => {
+    const ok = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T("Socho, gino. Ab tum batao.")];
+    assert.deepEqual(lessonFlags({ rows: ok, script: sc }).filter((f) => ["yourTurnNotThird", "endsOnQuestion"].includes(f.predicate)), []);
+    const bad = [T(card), C("5"), T("Achha. Kuch aur dekhte hain?"), C("6"), T("Socho, gino. Ab tum batao.")];
+    assert.deepEqual(lessonFlags({ rows: bad, script: sc }).filter((f) => f.predicate === "yourTurnNotThird").map((f) => f.row), [4]);
+  });
+  test("questionThreeRunning is gated, and the turn after an invitation is read against the question before it", () => {
+    assert.ok(!PENDING.has("questionThreeRunning"));
+    const three = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T(`Nahi. ${card}`)];
+    assert.deepEqual([...flagged(null, null, "questionThreeRunning", { rows: three, script: sc })], [4]);
+    const again = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T("Socho. Ab tum batao."), C("7"), T(`Nahi. ${reask}`)];
+    assert.deepEqual([...flagged(null, null, "reaskSameAfterHelp", { rows: again, script: sc })], [6]);
+    const other = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T("Socho. Ab tum batao."), C("7"), T(`Nahi. ${card}`)];
+    assert.deepEqual([...flagged(null, null, "questionThreeRunning", { rows: other, script: sc })], []);
+  });
+});
+

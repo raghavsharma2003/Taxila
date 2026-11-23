@@ -156,6 +156,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
+import { yourTurnPass } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -4039,6 +4040,9 @@ export function step(prev, input) {
   }
   // (d31 046 follow-up 4: a remediation said alone ends on its check-in — returnEndsHeld no longer puts a due return after it; the return
   // waits for the follow-up card's verdict)
+  // (Brain 049 B4: a question is heard at most two of her turns running — the third ends on a joints.yourTurn form, the fourth asks it in the
+  // form not said last: question-run.js)
+  if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
   return out;
 }
 function stepCells(prev, input) {

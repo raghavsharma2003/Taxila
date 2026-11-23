@@ -34,6 +34,7 @@ export function partStartOf(r, p) {
   }
 }
 
+import { endsOnYourTurn } from "../../server/director/question-run.js";
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
 import { POINT_WHOLE, FIRST_TEACH_MAX } from "../../scripts/lesson-scripts/check.mjs";
@@ -294,7 +295,10 @@ export const D30_PREDICATES = {
     // (and the card's `hindi` form said to a request for Hindi is no re-ask: the order keeps it out of the rotation — the form is said as
     // written, whatever question it ends on; dry steady c5-t01 36, c3's form ends on the card's own question)
     if (String(ctx?.prevIntent ?? "") === "hindi" && hindiFormSaid(ctx?.script, r)) return null;
-    const q = lastAsk(r), p = lastAsk(ctx.prevT);
+    // (Brain 049 B4: across her invitation turn — joints.yourTurn, which asks nothing — the turn after it is read against the question-turn
+    // before it: the order makes that turn the question again, never the same sentence)
+    const pT = endsOnYourTurn(ctx.script, ctx.prevT.text) && ctx.prevPrevT ? ctx.prevPrevT : ctx.prevT;
+    const q = lastAsk(r), p = lastAsk(pT);
     if (!q || q !== p || q.split(" ").length < 4) return null;
     // (d31 046 follow-up: a card of two or more sentences with no reask has one self-contained form, the whole card — its last sentence
     // alone is never said (reaskWhole). Said whole again, it is the answer to a request to hear the question (rule 2), or the re-ask
@@ -306,7 +310,7 @@ export const D30_PREDICATES = {
     // sentence or more; counted by reaskNoForm, pending, until every card has its reask. A row with no seam record — before director23 —
     // cannot say what preceded its question: read as before)
     if (reaskNoFormAt(r, ctx)) return null;
-    if (low(r.card) !== low(ctx.prevT.card ?? "") && String(r.check?.itemId ?? "") !== String(ctx.prevT.check?.itemId ?? "-")) return null;
+    if (low(r.card) !== low(pT.card ?? "") && String(r.check?.itemId ?? "") !== String(pT.check?.itemId ?? "-")) return null;
     return `the same re-ask two turns running: "${q.slice(0, 60)}"`;
   },
   /** Brain 047 R2's fallback, counted: a card with no `reask` said whole again two turns running where the short ask may not stand (no own hint

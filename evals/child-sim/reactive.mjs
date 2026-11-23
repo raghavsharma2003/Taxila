@@ -35,7 +35,9 @@ export const WHICH_MAX = 2;
  *  "tell", "what", "how many", "which", "find", "write"). director9: "…fraction mein batao." was never answered. */
 // (v6.4, main on director12 c5-t02 stuck: "…chhote se bade ke kram mein lagao." was never answered: the imperatives that pose a
 // task — lagao, karo, jodo, bharo, chuno, gino, milao, dikhao — pose a question too)
-export const ASK_RE = /\?|\b(?:batao|bataiye|bolo|boliye|likho|likhiye|nikalo|lagao|lagaiye|(?<!yaad\s)karo|kariye|jodo|bharo|chuno|gino|milao|dikhao|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write|put|arrange|order)\b/i;
+// (Brain 049 B4: her invitation turn — joints.yourTurn, "Chalo, ab tumhari baari.", "Ab tumhara jawab sunti hoon." — asks for the answer to the
+// question her turns before asked: the child hears it as asked)
+export const ASK_RE = /\?|\b(?:tumhari\s+baari|jawab\s+sunti|baat\s+sunti|bol\s+do|khud\s+bolo|batao|bataiye|bolo|boliye|likho|likhiye|nikalo|lagao|lagaiye|(?<!yaad\s)karo|kariye|jodo|bharo|chuno|gino|milao|dikhao|socho aur batao|kitn[aei]|kaun(?:sa|si|se)?|kya hoga|kahan|tell me|what|how many|how much|which|find|write|put|arrange|order)\b/i;
 const posed = (teacher) => ASK_RE.test(String(teacher ?? ""));
 export const PERSONAS = Object.freeze(["steady", "stuck", "offtopic", "steering"]);
 export const EVENTS = Object.freeze(["dontknow", "picture", "cricket", "hindi", "selftry"]);

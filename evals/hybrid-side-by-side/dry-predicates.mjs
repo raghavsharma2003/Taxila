@@ -11,6 +11,7 @@ import { asideTopic } from "../../server/director/state.js";
 import { seamJoint, joinProblem } from "../../server/brain/seams.js";
 import { FALLBACK } from "../../server/brain/say.js";
 import { FALLBACK_JOINTS } from "../../server/director/help.js";
+import { endsOnYourTurn } from "../../server/director/question-run.js";
 const GO_ON_FALLBACK = FALLBACK_JOINTS.afterKeyGoOn ?? [];
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
@@ -785,6 +786,9 @@ export const ORDER_LAWS = {
       // (Brain 046 Q6: every teacher row has its cell — a reply that asks for no column is recorded "yes" or "other", which help never reads)
       "yes>other": "a yes asks for nothing: recorded with no help column",
       "ack>other": "an acknowledgement asks for nothing: recorded with no help column",
+      // (Brain 049 B4: an acknowledgement — "theek hai", "achha" — is read by recordCellOf's plain-yes words as "yes", which asks for no help
+      // column either; the dry child says one to her invitation turn, joints.yourTurn, and to a check-in)
+      "ack>yes": "an acknowledgement asks for nothing: recordCellOf records its plain-yes words as yes, no help column",
       "done>other": "'done' asks for nothing: recorded with no help column",
       "reason>other": "her reason after a key or a verdict is heard and not graded: recorded with no help column",
     };
@@ -1065,10 +1069,10 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (each law leaves this set in the commit that fixes it: O1 and O2 — the return's held part said whole, on its own board)
 // (d28 fix F2: parkCutByChildEnd is a count, never a gate — a park the child's own stop or bye overtook)
 // (Brain 044: pointNoFit and workedNoFit count what does not fit on today's scripts — gated once Learning 017's cuts are merged)
-// (Brain 049 B4: questionThreeRunning is counted, not gated, until the walk's yourTurn ending is built — it flags director32's rows (stuck
-// 16 to 22, offtopic 14 to 18, steering 28 to 32, c4 offtopic 58 to 62: tests/r8-director32-049); a first walk build, the third turn's
-// question replaced by a joints.yourTurn form, left the fourth turn's re-ask running into reaskRunning and reaskSameAfterHelp and was taken out)
-export const PENDING = new Set(["questionThreeRunning", "vpcUnlisted", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+// (Brain 049 B4: questionThreeRunning is gated — the walk's yourTurn ending is built (server/director/question-run.js); it flags director32's
+// rows (stuck 16 to 22, offtopic 14 to 18, steering 28 to 32, c4 offtopic 58 to 62: tests/r8-director32-049), and reaskRunning /
+// reaskSameAfterHelp read the turn after an invitation against the question-turn before it)
+export const PENDING = new Set(["vpcUnlisted", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
@@ -1165,11 +1169,14 @@ PREDICATES.longTwoPart = (L, r) => {
 /** dc-r8-director25 L2: no turn ends with nothing for the child to answer while the lesson goes on — it ends on a question (a card, a
  *  check-in, her return or aside question) or on the card's own words. The wrap's goodbye, a break and the safety turn are not this
  *  rule's. Gated. */
-PREDICATES.endsOnQuestion = (L, r, i) => {
+PREDICATES.endsOnQuestion = (L, r, i, ctx) => {
   if (/^(?:wrap|safeguard|break)$/.test(String(r.move ?? ""))) return null;
   if (!(L.rows ?? []).slice(i + 1).some((x) => x.who === "child")) return null;
   const t = String(r.text ?? "").trim();
   if (!t || /[?？]\s*$/.test(t)) return null;
+  // (Brain 049 B4: the third turn running at one question ends on the script's invitation, joints.yourTurn — an allowed ending, read where it
+  // stands by d32's yourTurnNotThird)
+  if (endsOnYourTurn(ctx?.script ?? null, t)) return null;
   // (a card left live for the child to try — "Haan, pehle tum try karo." — is theirs to answer)
   if (r.check?.itemId && !r.check?.gave) return null;
   if (r.card && cardIn(r) && low(t).endsWith(low(sentencesOf(r.card).at(-1) ?? "").replace(/[.!?।]+$/, "").slice(-30)) ) return null;

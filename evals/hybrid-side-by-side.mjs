@@ -26,6 +26,19 @@ import { instructionsFor } from "../server/compiler/instructions.js";
 import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
 import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
 import { useStaged, snapshotStaged } from "./hybrid-side-by-side/staged.mjs";
+import { endsOnYourTurn } from "../server/director/question-run.js";
+/** Brain 049 B6, the record: held.picture.line is the picture's line as she said it — her alt line where the turn said one (the staged
+ *  c4-ch01-t02 steady 18, steering 14 recorded Studio's caption, which was not said), else Studio's line where the turn says it. */
+const picLineSaid = (reply, alt, line) => { const k = (x) => String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?।]+$/, ""); const r = k(reply);
+  return [alt, line].find((x) => x && k(x) && r.includes(k(x))) ? String([alt, line].find((x) => x && k(x) && r.includes(k(x)))).trim() : null; };
+
+/** Brain 049 B6, the record: a wrong answer to an asked step hears the script's stepMiss form ("Yeh jawab nahi hai.") before the step is
+ *  told — the walk glues it to the step's line, so the seam pass saw one part; its seam entry is written here (c5-t03 offtopic 62). */
+const stepMissSeams = (seams, miss, reply) => {
+  const k = (x) => String(x ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  if (!miss || !Array.isArray(seams) || !seams.length || seams[0].left !== "start" || !k(reply).startsWith(k(miss))) return seams;
+  return [{ left: "start", right: "stepMiss", joint: null, form: String(miss).trim(), by: "authored" }, { ...seams[0], left: "stepMiss" }, ...seams.slice(1)];
+};
 const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
 import { createReactiveChild, maxTurnsFor, TO_END_MAX, LEAVE_WAIT as LEAVE_WAIT_H } from "./child-sim/reactive.mjs";
 import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers, imaginedOut, answerGiven } from "./hybrid-side-by-side/checks.mjs";
@@ -268,7 +281,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (S1: a card re-asked by its question alone — its last sentence — is on the table too)
       const qOf = (c) => nrm(c).split(/(?<=[.!?।])\s+/).filter(Boolean).at(-1) ?? "";
       // (dc-r8-director22 W: a card asked by its question alone — the reask with its givens named — is on the table too)
-      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) || (!!qOf(lastT.card) && nrm(lastT.text).endsWith(qOf(lastT.card))) || !!lastT.cardQ
+      // (Brain 049 B4: her invitation turn — joints.yourTurn — asks for the answer to the card her turns before asked: it is on the table)
+      const cardSaid = lastT?.card ? nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30)) || (!!qOf(lastT.card) && nrm(lastT.text).endsWith(qOf(lastT.card))) || !!lastT.cardQ || endsOnYourTurn(scriptFor(kit)?.script ?? null, lastT.text)
           // (d31 046 follow-up: the short ask — "Ab phir se socho, jawab kya hoga?" — asks for the card's answer: the card is on the table, and a
           // yes/no card is not answered "haan, samajh aaya" as if her line were a check-in — the re-ask rotation's dry steady c4-ch01-t02 19)
           || (lastT.seams ?? []).some((x) => x.right === "reaskShort")

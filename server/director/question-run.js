@@ -1,0 +1,140 @@
+// Brain 049 B4 (docs/patches/to-brain/049-director32-hindi-pictures-own-reason.md): a question is heard at most two of her turns running.
+// One reading of "the same question", shared by the walk (state.js yourTurnPass) and the predicates that read the record
+// (evals/hybrid-side-by-side/d32-predicates.mjs questionThreeRunning, dry-predicates.mjs's turn-ending and re-ask laws):
+//   a question is every form the script writes for one object with a `prompt` (prompt, reask, hindi; hi and en), keyed by its last
+//   question sentence; a turn is "at" that question when its own last sentence is one of those keys. A `{slot}` in a form ({friend},
+//   {friendF}) matches any words, so a filled turn is read against the unfilled script.
+// The third turn running at one question ends on one of the script's `joints.yourTurn` forms instead (an invitation that asks nothing);
+// the fourth asks the question again, in the form that was not the last one said.
+
+const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+const SLOT = "zzslotzz";
+const qKey = (t) => low(String(t ?? "").replace(/\{\w+\}/g, ` ${SLOT} `)).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+/).filter(Boolean);
+const formsOf = (x) => (x && typeof x === "object" ? [x.hi, x.en] : [x]).filter((y) => typeof y === "string" && y.trim());
+
+/** A text's closing question sentence (its last sentence, ending "?"), or null. */
+export function closingQuestion(text) {
+  const q = sentencesOf(text).at(-1) ?? "";
+  return /[?？]\s*$/.test(q) ? q : null;
+}
+
+const CACHE = new WeakMap();
+/** Every question the script writes → its path: { exact: Map<key, path>, slotted: [{ re, path }] }. The first path to write a key keeps it. */
+export function questionPaths(script) {
+  if (!script || typeof script !== "object") return { exact: new Map(), slotted: [] };
+  const hit = CACHE.get(script);
+  if (hit) return hit;
+  const exact = new Map(), slotted = [], seen = new Set();
+  const walk = (o, path) => {
+    if (Array.isArray(o)) return o.forEach((x, n) => walk(x, `${path}[${n}]`));
+    if (!o || typeof o !== "object") return;
+    if (o.prompt) for (const f of ["prompt", "reask", "hindi"]) for (const t of formsOf(o[f])) {
+      const q = closingQuestion(t);
+      const k = q ? qKey(q) : null;
+      if (!k || seen.has(k)) continue;
+      seen.add(k);
+      if (k.includes(SLOT)) slotted.push({ re: new RegExp(`^${k.split(SLOT).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("[\\p{L}\\p{N}/ ]+?")}$`, "u"), path });
+      else exact.set(k, path);
+    }
+    for (const [k, v] of Object.entries(o)) if (v && typeof v === "object") walk(v, `${path}.${k}`);
+  };
+  walk(script, "");
+  const out = { exact, slotted };
+  CACHE.set(script, out);
+  return out;
+}
+/** The script path of the question a text ends on, or null (no closing question, or one the script does not write). */
+export function questionPathOf(script, text) {
+  const q = closingQuestion(text);
+  if (!q) return null;
+  const k = qKey(q), P = questionPaths(script);
+  if (P.exact.has(k)) return P.exact.get(k);
+  return P.slotted.find((x) => x.re.test(k))?.path ?? null;
+}
+/** The script's `joints.yourTurn` forms in a lesson language (Hindi and Hinglish say `hi`): string[]. */
+export function yourTurnForms(script, lang = "hinglish") {
+  return (script?.joints?.yourTurn ?? []).map((f) => (typeof f === "string" ? f : lang === "english" ? f?.en ?? f?.hi : f?.hi ?? f?.en)).filter((x) => typeof x === "string" && x.trim()).map((x) => x.replace(/\s+/g, " ").trim());
+}
+/** Whether a text ends on one of the script's yourTurn forms (either language). */
+export function endsOnYourTurn(script, text) {
+  const last = qKey(sentencesOf(text).at(-1) ?? "");
+  if (!last) return false;
+  return [...yourTurnForms(script, "hinglish"), ...yourTurnForms(script, "english")].some((f) => { const k = qKey(sentencesOf(f).at(-1) ?? f); return !!k && k === last; });
+}
+/** Whether the third of three turns may end on a yourTurn form: the two teacher texts before it ended on one question (its path), or null. */
+export function runOfTwo(script, before2) {
+  if (before2.length < 2) return null;
+  const a = questionPathOf(script, before2[0]), b = questionPathOf(script, before2[1]);
+  return a && a === b ? a : null;
+}
+
+/** A child's request to hear the question again (brain/say.js askedForIt's words). */
+export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
+const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot"];
+const dropB4 = (m) => { if (!m || typeof m !== "object") return m; const o = { ...m }; for (const k of B4_FIELDS) delete o[k]; return o; };
+/** The walk's B4 pass over one turn (state.js step, last): the turn's move is marked
+ *  - `yourTurn` (the form, rotated) on the third turn running at one question — brain/say.js ends the turn on it in place of the question;
+ *    `yourTurnAfter` keeps the question sentence said last, and an asked step keeps the wording said last (so the fourth turn's
+ *    stepAskAgain takes the other);
+ *  - `askNot` on the turn after an invitation, at the same question: the sentence said before the invitation, which brain/say.js's
+ *    re-ask rotation reads as her turn before's question (no sentence is said two question-turns running).
+ *  The fields never carry from one move to the next (help builds its move from the last one). → out, changed in place. */
+export function yourTurnPass(prev, out, script, childText = "") {
+  const s = out?.state;
+  if (!s?.lastMove || !script) return out;
+  s.lastMove = dropB4(s.lastMove);
+  if (out.move) out.move = dropB4(out.move);
+  const lm = s.lastMove;
+  // (which of her last two turns answered a request for Hindi with the part's form: such a turn is no turn of a run, read or made)
+  // (and a request to hear the question — "sawaal kya hai?", "phir se bolo" — is answered with it: an invitation is no answer to it)
+  const exempt = !!(lm.hindiForm || lm.help?.hindiForm) || HEAR_Q.test(String(childText ?? ""));
+  const hiPrev = prev?.b4Hindi ?? [false, false];
+  s.b4Hindi = [!!hiPrev[1], exempt];
+  const pl0 = prev?.lastMove ?? {};
+  // (an invitation counts — for the rotation and for the turn after it — only where her turn said it: brain/say.js may have ended it otherwise)
+  const lastText = String((prev?.recent ?? []).filter((t) => t.who === "teacher").at(-1)?.text ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+  const saidInv = !!pl0.yourTurn && lastText.endsWith(String(pl0.yourTurn).replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "") + ".");
+  if (saidInv) s.yourTurnN = (prev?.yourTurnN ?? 0) + 1;
+  const set = (f) => { Object.assign(s.lastMove, f); if (out.move) Object.assign(out.move, f); };
+  // (the turn after a said invitation, at the same question, whatever it answers: the question said before the invitation is not said again)
+  // (the closing question — the teach-back — is said by the walk itself, the last of its rendered lines: the invitation and the other form
+  // are put there)
+  const tbQ = lm.kind === "teachback" && lm.authoredEnd === "teachback" && Array.isArray(lm.rendered) && lm.rendered.length ? String(lm.rendered.at(-1)) : null;
+  const tbSet = (line, kind) => set({ rendered: [...lm.rendered.slice(0, -1), line], renderedKinds: [...(lm.renderedKinds ?? lm.rendered.map(() => null)).slice(0, lm.rendered.length - 1), kind] });
+  if (saidInv && pl0.yourTurnAfter && tbQ) {
+    const k = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "");
+    if (questionPathOf(script, tbQ) === questionPathOf(script, pl0.yourTurnAfter) && k(closingQuestion(tbQ)) === k(pl0.yourTurnAfter)) {
+      const tb = script.teachback ?? {};
+      const L = s.ctx?.lang === "english" ? "en" : "hi";
+      const other = [tb.prompt, tb.reask].map((x) => (x && typeof x === "object" ? x[L] ?? x.hi ?? x.en : x)).filter((x) => typeof x === "string" && x.trim()).map((x) => x.replace(/\s+/g, " ").trim())
+        .find((x) => k(closingQuestion(x)) !== k(pl0.yourTurnAfter));
+      if (other) tbSet(other, "closingQuestion");
+    }
+    return out;
+  }
+  if (saidInv && pl0.yourTurnAfter) {
+    const nowText0 = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
+    const p0 = nowText0 ? questionPathOf(script, nowText0) : null;
+    if (p0 && questionPathOf(script, pl0.yourTurnAfter) === p0) set({ askNot: pl0.yourTurnAfter });
+    return out;
+  }
+  // (a request for Hindi answered with the part's `hindi` form is answered as asked — the form is said as written, out of the re-ask
+  // rotation, as reaskRunning reads it (Brain 047 R8); it is no turn of the run)
+  if (exempt || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
+  const nowText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
+  const nowPath = nowText ? questionPathOf(script, nowText) : null;
+  if (!nowPath) return out;
+  // (the turn after a said invitation asks the question again: never a second invitation)
+  if (saidInv) return out;
+  const lang = s.ctx?.lang === "english" ? "english" : "hinglish";
+  const forms = yourTurnForms(script, lang);
+  if (!forms.length) return out;
+  const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? "")).slice(-2);
+  if (hiPrev[0] || hiPrev[1] || runOfTwo(script, her) !== nowPath) return out;
+  const n = s.yourTurnN ?? 0;
+  set({ yourTurn: forms[n % forms.length], yourTurnAfter: closingQuestion(her[1]) });
+  if (tbQ) tbSet(forms[n % forms.length], "yourTurn");
+  if (lm.stepAsk && pl0.stepAsk && pl0.stepAsk.skillId === lm.stepAsk.skillId && pl0.stepAsk.step === lm.stepAsk.step) set({ stepAsk: { ...lm.stepAsk, prompt: pl0.stepAsk.prompt } });
+  return out;
+}

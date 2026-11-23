@@ -11,6 +11,8 @@
 //   verdictCheckinBeforeReturn B5: a right verdict ending on a check-in with the return to a parked aside her next turn
 //   returnInsideWorked  B5: a return to a parked aside while a worked example's step is asked
 //   helpNotOwn          B3: the second help at a card the point's other wording while the card's marked `whyAlt` is unsaid
+import { questionPathOf, endsOnYourTurn, runOfTwo, HEAR_Q } from "../../server/director/question-run.js";
+import { hindiFormSaid } from "./d30-predicates.mjs";
 import { helpPart, hindiFormOf, at as atPath, ladderOf, ladderSpec, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -45,6 +47,14 @@ function questionForms(script) {
   walk(script, "");
   return out;
 }
+/** Brain 049 B4: a turn that answers a request for Hindi with the part's `hindi` form — said as written, out of the re-ask rotation (Brain 047
+ *  R8, reaskRunning's reading) — or a request to hear the question, is no turn of a run of one question. */
+function hindiTurn(L, j, script) {
+  const c = L.rows[j - 1];
+  if (c?.who !== "child") return false;
+  // (and a turn answering a request to hear the question: an invitation is no answer to it — the walk's question-run.js HEAR_Q)
+  return (String(c.intent ?? "") === "hindi" && hindiFormSaid(script, L.rows[j])) || HEAR_Q.test(String(c.text ?? ""));
+}
 /** The char where a row's closing question starts (its last sentence ending "?"), or -1. */
 function questionAt(r) {
   const t = String(r?.text ?? "").replace(/\s+/g, " ").trim();
@@ -58,18 +68,29 @@ export const D32_PREDICATES = {
    *  offtopic 14 to 18 (c5-t02, c6), steering 28 to 32 (c5-t01, c5-t02, c6), c4 offtopic 58 to 62. Gated. */
   questionThreeRunning(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx?.script) return null;
-    const F = (ctx.o.d32Q ??= questionForms(ctx.script));
-    const qOf = (x) => { const k = lastAsk(x); return k ? F.get(k) ?? null : null; };
+    // (one reading with the walk's: server/director/question-run.js — a {slot} in a form matches the filled words; questionForms kept for
+    // its readers)
+    void questionForms;
+    const qOf = (x) => questionPathOf(ctx.script, x?.text);
     const q = qOf(r);
     if (!q) return null;
     let n = 1;
+    if (hindiTurn(L, i, ctx.script)) return null;
     for (let j = i - 1; j >= 0 && n < 3; j--) {
       const y = L.rows[j];
       if (y.who !== "teacher") continue;
-      if (qOf(y) !== q) break;
+      if (qOf(y) !== q || hindiTurn(L, j, ctx.script)) break;
       n++;
     }
     return n >= 3 ? `the question ${q} ends three of her turns running` : null;
+  },
+  /** Brain 049 B4: the new ending — a turn ending on a joints.yourTurn form (an invitation that asks nothing) — only on the third turn
+   *  running at one question: her two turns before it ended on that question, in either form. Gated. */
+  yourTurnNotThird(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.script || !endsOnYourTurn(ctx.script, r.text)) return null;
+    const two = [];
+    for (let j = i - 1; j >= 0 && two.length < 2; j--) if (L.rows[j].who === "teacher") two.unshift(j);
+    return two.length === 2 && !two.some((j) => hindiTurn(L, j, ctx.script)) && runOfTwo(ctx.script, two.map((j) => L.rows[j].text)) ? null : "a turn ends on the invitation (joints.yourTurn) where her two turns before did not end on one question";
   },
   /** Brain 049 B2: a picture request is never answered by a key — with nothing left to draw it gets the noPicture line, the card's unsaid hint
    *  if one is left, and the card's question (director32 steering 16 in c5-t01, c5-t02, c6: "Is sawaal ka jawab 1/11 hai…"). Gated. */
@@ -111,7 +132,10 @@ export const D32_PREDICATES = {
   reaskSameAfterHelp(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx?.prevT) return null;
     const q = lastAsk(r);
-    if (!q || q !== lastAsk(ctx.prevT)) return null;
+    // (Brain 049 B4: her invitation turn — joints.yourTurn, no question — stands between two question-turns and hides neither: the turn after
+    // it is read against the question said before it)
+    const pT = endsOnYourTurn(ctx.script, ctx.prevT.text) ? ctx.prevPrevT : ctx.prevT;
+    if (!q || q !== lastAsk(pT)) return null;
     // (a question with no other authored wording — a card or asked step with no `reask`, a script hole — is reaskNoForm's, counted there)
     return (ctx.o.noReaskQs ??= noReaskQuestions(ctx.script)).has(q) ? null : `the same closing question as her turn before: "${q.slice(0, 60)}"`;
   },
@@ -164,6 +188,10 @@ export const D32_PREDICATES = {
   /** Brain 049 B5: a return is never placed inside a worked example — it waits for the close (director32 c6-ch07 offtopic 54). Gated. */
   returnInsideWorked(L, r, i, ctx) {
     if (r.who !== "teacher" || !r.returnSaid) return null;
+    // (the child's own question about her taste, answered with her AI line and its question back — director23 A2's ruling: the step is held
+    // for the turn after their reply — is the child's aside, not her return placed there: the dry offtopic c5-t02 and c6 20, reached once
+    // B4's invitation changed the reactive child's next line. Main's to rule if A2 and B5 disagree)
+    if ((r.seams ?? []).some((x) => x.right === "aiQuestion") && /(?<![\p{L}])(?:aap|aapko|tum|tumhe)(?![\p{L}])/iu.test(String(L.rows[i - 1]?.text ?? ""))) return null;
     const lastP = (ctx?.prevT?.pageParts ?? []).at(-1)?.part;
     if (lastP === "stepAsk" || /:worked:step\d+/.test(String(r.cell?.part ?? ""))) return "a return asked while a worked step is asked";
     // (the part the lesson goes back to after the return: a worked example's step or the child's own step — the return was inside it)
