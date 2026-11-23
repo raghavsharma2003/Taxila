@@ -1015,6 +1015,24 @@ export async function boardErrors(s, kit) {
     if (bad.length) errors.push(`${k.skillId}/${b.id}: ${bad.map((c) => `${c.id} ${JSON.stringify(c.detail)}`).join(" | ")}`);
     else if (failed.length) w6.push(`${k.skillId}/${b.id}`);
   }
+  // (main, d33: an authored picture is drawn only when a child asks for it, so nothing above builds it. The two-pass read of a new staged
+  // script found a closing question's `pictureBoard` that does not draw (equal-groups of 9 a group, over the template's 8): its caption
+  // would be said over nothing. Every `pictureBoard`, wherever it sits, must resolve and expand to a script with something in it)
+  const pics = [];
+  (function walk(o, at) {
+    if (!o || typeof o !== "object") return;
+    if (Array.isArray(o)) { o.forEach((x, i) => walk(x, `${at}[${i}]`)); return; }
+    if (o.pictureBoard && typeof o.pictureBoard === "object") pics.push({ at: `${at}.pictureBoard`, board: o.pictureBoard });
+    for (const [k, v] of Object.entries(o)) if (k !== "pictureBoard") walk(v, at ? `${at}.${k}` : k);
+  })(s, "");
+  for (const { at, board } of pics) {
+    try {
+      const r = resolveBoardRef(board, { kit });
+      if (!r.ok) { errors.push(`${at}: does not draw (${r.why})`); continue; }
+      const ops = expand(r.call)?.script?.ops ?? expand(r.call)?.script ?? null;
+      if (!ops || (Array.isArray(ops) && !ops.length)) errors.push(`${at}: draws nothing`);
+    } catch (err) { errors.push(`${at}: does not draw (${String(err?.message ?? err).slice(0, 120)})`); }
+  }
   return { errors, w6 };
 }
 
