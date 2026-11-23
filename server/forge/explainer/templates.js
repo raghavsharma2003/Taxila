@@ -586,7 +586,10 @@ function fractionLine(c, tl) {
     return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)", ...mixFact } };
   }
   if (tgt != null) {
-    tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
+    // (main, c5-maths-ch02-t01 reader: the fraction to find, centred at x 200, sat exactly over the line's middle tick — the
+    // tick for 1 on a 0-2 line, for 1/2 on a 0-1 line — and read as a pointer to where it is. It is the board's title: in the
+    // title row, start-aligned left of the line's 0 end, over no tick)
+    tl.add({ op: "text", at: [x0 - 22, 70], text: `${tgt}/${den}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
     const g = lineGrammar();
     if (g.error) return g;
     return { claims, counts: counts([]), facts: { ...facts, ...mixFact, find: `${tgt}/${den}`, where: "? (child works it out)" } };
@@ -627,7 +630,10 @@ function fractionLine2(c, tl) {
     // (round 8: the stacked label clears its tick: above, its centre 50 over the line; below, under the whole numbers)
     tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 50 : 70)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
   }
-  if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
+  // (a lone fraction to find is the board's title, left of the line's 0 end as on the one-denominator line, never centred
+  // over the middle tick; "a vs b" spans several ticks and names a comparison, not a place)
+  if (asks.length === 1) tl.add({ op: "text", at: [x0 - 22, 46], text: `${asks[0][0]}/${asks[0][1]}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
+  else if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
   const counts = { lines: dens.map((d) => ({ gaps: d * w, ...(w > 1 ? { gapsPerWhole: d } : {}), ticks: d * w + 1, innerTicks: d * w - 1 })),
     ...(pts.length ? { marks: pts.map(([a, d]) => ({ at: `${a}/${d}`, label: `${a}/${d}` })) } : {}) };
   return { claims: [], counts, facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
