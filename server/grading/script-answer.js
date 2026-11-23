@@ -146,7 +146,9 @@ function items(raw) {
     const prev = a[i - 1], next = a[i + 1];
     const verb = prev && (prev.k === "op" || (prev.k === "raw" && !prev.c && DO_VERBS.has(prev.t)));
     // ("do guna" is twice: a "do" right before an operator is the number; one right after it is the verb, "bhaag do")
-    const beside = isN(prev) || isN(next) || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
+    // (050, main's reader: "3 ko do se guna" — a "do" before "se" and an operator is the number, as "do guna" is)
+    const beforeSeOp = next?.k === "raw" && /^(?:se|से)$/.test(next.t) && a[i + 2]?.k === "op";
+    const beside = isN(prev) || isN(next) || beforeSeOp || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
       || ((prev?.c === "over" || (prev?.k === "raw" && /^(?:aur|and)$/.test(prev.t))) && isN(a[i - 2]));
     x.c = !verb && (beside || i === firstContent || (prev && prev.k === "raw" && LEAD.has(prev.t))) ? "n" : null;
     // (a "do" that is no number is the verb: "bata do", "bhaag do"; it says nothing about the answer)
@@ -204,6 +206,7 @@ export function untag(raw) {
 // (main, 050 follow-up: "Rahul kam" took the form "Rahul se kam" — the whole comparison family, both scripts' equal words already folded)
 const CMP = new Set(["bada", "chhota", "zyada", "kam", "lamba", "lambi", "lambe", "pehle", "baad", "aage", "peeche"].map(fold));
 const THAN = new Set(["se", "than", fold("से")]);
+const DOUBLE = new Set(["double", "dugna", "duguna", "doguna", "dugni", "twice", "दुगना", "दोगुना", "डबल"].map(fold));
 export function canon(raw) {
   const it = items(untag(raw));
   const cmp = it.some((x) => x.k === "raw" && x.t && CMP.has(SAME.get(fold(x.t)) ?? fold(x.t)));
@@ -224,6 +227,10 @@ export function canon(raw) {
     if (NEG.has(f)) { seq.push({ k: "neg", t: f === "galat" || f === "wrong" ? "galat" : "nahi" }); return; }
     if ((f === "na" || f === fold("ना")) && !seq.length) { seq.push({ k: "neg", t: "nahi" }); return; }
     if (cmp && THAN.has(f0)) { seq.push({ k: "w", t: "se" }); return; }
+    // ("before 1/5" is "1/5 se pehle": the English word carries the "se" Hindi says)
+    if (f0 === "before" && it.some((y) => y.k === "num")) { seq.push({ k: "w", t: "pehle" }, { k: "w", t: "se" }); return; }
+    // (050, main: "double" / "dugna" is "2 se guna" — one equal-words pair, a number and its operator)
+    if (DOUBLE.has(f0)) { seq.push({ k: "num", t: "#2" }, { k: "op", t: "×" }); return; }
     if (FILL.has(f)) return;
     seq.push({ k: "w", t: f });
   });
@@ -274,6 +281,19 @@ export function sameAnswer(a, b) {
 export function undenied(c) {
   const seq = (c?.seq ?? []).filter((x) => x.k !== "neg");
   return { ...c, seq, nums: seq.filter((x) => x.k === "num").map((x) => x.t), words: seq.filter((x) => x.k === "w").map((x) => x.t), neg: false };
+}
+
+/**
+ * 050 W3: the words of a spoken reply that carry no answer — helping verbs and endings, pointing words — closed, and never an
+ * operation word (jodo, ghatao, guna, bhaag are operators, not words, in the normal form). A card drops only those its forms do
+ * not use as content (classify.js decides that per card).
+ */
+export const NO_ANSWER_WORDS = new Set(["karo", "karna", "karenge", "kar", "karte", "karunga", "karungi", "hoga", "hogi", "hai", "hain", "chalo", "chalenge", "chalna",
+  "jayenge", "jaana", "aayega", "lagega", "lagenge", "chahiye", "dena", "denge", "padega", "upar", "neeche", "isko", "usko", "yahan", "bhi", "toh", "phir", "ko", "hum"].map(fold));
+/** The normal form with the given words taken out (050 W3). */
+export function withoutWords(c, drop) {
+  const seq = (c?.seq ?? []).filter((x) => !(x.k === "w" && drop.has(x.t)));
+  return { ...c, seq, nums: seq.filter((x) => x.k === "num").map((x) => x.t), words: seq.filter((x) => x.k === "w").map((x) => x.t) };
 }
 
 /** A form that is one number (with a unit at most): its value token, else null. */

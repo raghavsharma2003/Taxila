@@ -16,7 +16,7 @@ import { classifyFast } from "../server/director/classify.js";
 import { scriptAskItem, scriptCheckItem, scriptThenItem, scriptQuickItem, scriptStepAskItem } from "../server/director/script.js";
 import { fillFriendDeep } from "../server/director/friend.js";
 import { READER_TABLES as T, spokenNumber } from "../server/grading/spoken-number.js";
-import { canon, sameAnswer, numberOf, optionsIn, wrongList, undenied } from "../server/grading/script-answer.js";
+import { canon, sameAnswer, numberOf, optionsIn, wrongList, undenied, NO_ANSWER_WORDS } from "../server/grading/script-answer.js";
 import { toDevanagari } from "../server/voice/translit/index.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -513,5 +513,38 @@ test("050 (main): beside a comparison word \"se\" is content — \"X se kam\" an
     }
   }
   console.log(`# 050 se-wall: ${shape} forms of the shape, ${tried} replies tried`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 W3: the plain ways of saying a word key are right by one rule; the wall — every card's wrong answers and other options, dressed in every filler, never right", () => {
+  const W3 = [["guna", "do se guna karo"], ["guna", "upar ko bhi 2 se guna karenge"], ["guna", "double karo"], ["guna", "dugna kar do"], ["guna", "isko bhi 2 se guna karenge"],
+    ["gap", "do gap chalenge"], ["gap", "2 gap"], ["baad", "baad mein"], ["baad", "beech ke baad aayega"]];
+  for (const [c, s] of W3) assert.equal(grade(P050[c], s), "correct", s);
+  // the wrong answers a child would give, dressed, never right
+  for (const [c, s] of [["gap", "5 gap chalo"], ["gap", "5 gap chalenge"], ["guna", "2 jodo"], ["guna", "upar 2 jodo karenge"], ["guna", "3 hi rahega"], ["guna", "3 se guna karenge"],
+    ["zyada", "ek kaafi"], ["zyada", "ek tukda kaafi hoga"], ["baad", "beech se pehle"], ["baad", "pehle aayega"], ["baad", "pehle"]]) assert.notEqual(grade(P050[c], s), "correct", s);
+  // incomplete but not wrong: the model's
+  for (const s of ["guna karenge", "upar bhi same", "multiply"]) assert.equal(grade(P050.guna, s), "model", s);
+  const words = [...NO_ANSWER_WORDS].filter((w) => /^[a-z]+$/.test(w));
+  const dress = (x) => [...words.flatMap((w) => [`${x} ${w}`, `${w} ${x}`]), `upar ${x} karenge`, `isko bhi ${x} karo`, `phir ${x} chalenge`, `${x} karna hoga`, `toh ${x} hai`];
+  const leaks = []; let cards = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const kc = canon(String(it.answer));
+    if (numberOf(kc) != null || (kc.seq.length && kc.seq.every((x) => x.t === "haan" || x.t === "nahi"))) continue;
+    cards++;
+    const prompt = it.prompt_hi ?? it.prompt_en;
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    // (an option the prompt reader cut short — "wala number" of "…upar wala number ya neeche wala?" — that a right form holds whole is the
+    // right option, not a wrong one: dressing it in "upar" says the key)
+    const cutRight = (o) => { const c = canon(o); const k = canon(String(it.answer)); return c.seq.length && c.words.length < k.words.length && c.words.every((w) => k.words.includes(w)) && c.nums.join() === k.nums.join() && !c.ops && !c.neg; };
+    const bad = [...wrongList(metaOf(it).wrongIfMis), ...optionsIn(prompt).filter((o) => !rc.some((r) => sameAnswer(r, canon(o))) && !cutRight(o))];
+    for (const b of bad) for (const f of dress(b)) {
+      if (rc.some((r) => sameAnswer(r, canon(f)))) continue;
+      tried++;
+      if (grade(it, f) === "correct") leaks.push(`${name} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f)}`);
+    }
+  }
+  console.log(`# 050 W3 wall: ${cards} word-keyed cards, ${tried} dressed wrong replies`);
+  assert.ok(tried > 1000, `the wall ran (${tried})`);
   assert.deepEqual(leaks, []);
 });

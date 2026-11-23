@@ -19,7 +19,7 @@ import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
-import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied, unitKind } from "../grading/script-answer.js";
+import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied, unitKind, NO_ANSWER_WORDS, withoutWords } from "../grading/script-answer.js";
 import { toDevanagari } from "../voice/translit/index.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
@@ -877,7 +877,10 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
           const ocs = opts.map((x) => canon(x));
           const has = (c, t) => c.seq.some((y) => y.t === t);
           const apart = ocs.map((c, k) => [...new Set(c.seq.map((y) => y.t))].filter((t) => ocs.every((x, j) => j === k || !has(x, t))));
-          const holds = (c, k) => apart[k].length > 0 && apart[k].every((t) => has(c, t)) && apart.every((d, j) => j === k || !d.some((t) => has(c, t)));
+          // (a deciding token is a number or a word of place or comparison — RISK's closed list: "baad", "pehle", "zyada"; a noun such as
+          // "number" in an option cut short — "…upar wala number ya neeche wala?" read as "wala number" — decides nothing)
+          const decides = (k) => apart[k].some((t) => t.startsWith("#") || RISK.has(t));
+          const holds = (c, k) => apart[k].length > 0 && decides(k) && apart[k].every((t) => has(c, t)) && apart.every((d, j) => j === k || !d.some((t) => has(c, t)));
           // (only where the forms hold ONE option between them: "kam" and "Gopi ke paas zyada" are both right to "Neha ka kam ya zyada?",
           // and hold both options — the words of a form that names another subject turn its comparison round)
           const one = (L) => { const h = new Set(); L.forEach((cs) => ocs.forEach((x, k) => { if (sameAnswer(cs[0], x) || holds(cs[0], k)) h.add(k); })); return h.size === 1 ? [...h][0] : -1; };
@@ -932,6 +935,35 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const yesNoKey = yn(keyC);
     // G7: a denial the forms do not place the same way: the model reads it (a bare yes / no to a yes / no card stays code's)
     if (R.neg && !(yesNoKey && yn(R))) return toModel("denial");
+    // 050 W3: the plain ways of saying a word key — "do se guna karo", "upar ko bhi 2 se guna karenge", "beech ke baad aayega" — are the
+    // form once the words that carry no answer (NO_ANSWER_WORDS) are dropped on both sides. A card drops only the words none of its
+    // right or listed wrong forms, nor an option of its prompt, holds as content (a form made of such words alone, an option they alone
+    // decide, a word only a wrong form holds); and a card where the drop would make a listed wrong answer or another option of the
+    // prompt a right form drops nothing.
+    if (!R.neg && !R.deva && numberOf(keyC) == null && !yesNoKey) {
+      const allF = F.map((cs) => cs[0]), allW = W.map((cs) => cs[0]);
+      const opts3 = optionsIn(prompt).map((o) => canon(o));
+      const content = new Set();
+      for (const c of [...allF, ...allW]) if (c.seq.length && c.seq.every((x) => x.k === "w" && NO_ANSWER_WORDS.has(x.t))) c.words.forEach((w) => content.add(w));
+      const oSets = opts3.map((c) => new Set(c.seq.map((y) => y.t)));
+      opts3.forEach((c, k) => { const apart = [...oSets[k]].filter((t) => oSets.every((o, j) => j === k || !o.has(t))); if (apart.length && apart.every((t) => NO_ANSWER_WORDS.has(t))) apart.forEach((t) => content.add(t)); });
+      // (a word a right form holds that the prompt offers in a choice — "upar wala number ya neeche wala?" — is the answer itself)
+      if (/\s(?:ya|or|या)\s/i.test(String(prompt ?? ""))) {
+        const pw = new Set(canon(prompt).words);
+        for (const c of allF) for (const w of c.words) if (NO_ANSWER_WORDS.has(w) && pw.has(w)) content.add(w);
+      }
+      const fWords = new Set(allF.flatMap((c) => c.words));
+      for (const c of allW) for (const w of c.words) if (NO_ANSWER_WORDS.has(w) && !fWords.has(w)) content.add(w);
+      const drop = new Set([...NO_ANSWER_WORDS].filter((w) => !content.has(w)));
+      const red = (c) => withoutWords(c, drop);
+      const rF = allF.map(red);
+      const others = opts3.filter((o) => !allF.some((f) => sameAnswer(f, o)));
+      const unsafe = [...allW, ...others].some((c) => { const r = red(c); return rF.some((f) => sameAnswer(f, r)); });
+      if (!unsafe) {
+        const rR = red(R);
+        if (rF.some((f) => sameAnswer(f, rR)) && !allW.some((w) => sameAnswer(red(w), rR))) return done("correct", "script_key");
+      }
+    }
     // G2: a Devanagari reply is never wrong in code for its spelling; a number that differs from a number key is still wrong
     if (R.deva) {
       if (one != null && numberOf(keyC) != null && !risky) return done("incorrect", "script_key");
