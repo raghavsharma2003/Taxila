@@ -3527,7 +3527,7 @@ function helpDecision(prev, input, request, said) {
   if (!where) return null;
   const script = scriptFor(input.kit)?.script;
   const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {} });
+    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null });
   return d ? { ...d, friend: friendOf } : null;
 }
 /** The beat a wording belongs to (its part's), with the board the decision gives it: the move's simplerBeat. */
@@ -3738,7 +3738,7 @@ function helpBefore(prev, input, said) {
     // (Brain 044 Small: the wrong answers to this question so far — its card's and its quick question's — and this one)
     const misses = missesOn(prev, part, liveId) + 1;
     const d0 = pickHelp({ script: scriptFor(input.kit)?.script, part, request: "hint", said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, misses });
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, misses, last: prev.answerAt?.[part] ?? null });
     if (!d0) return null;
     const d = { ...d0, friend: friendOf, liveId };
     return { decision: d, input: helpInput(input, d, liveId), hint: true };
@@ -3887,6 +3887,12 @@ export function step(prev, input) {
     if (helpRequestOf(p1, input)) prev = p1;
   }
   const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
+  // (main's ruling of 2026-11-23 on to-brain 049 B3: the child's most recent answer at each script card, by its help part — what help.js
+  // ownReasonFits reads to say a card's marked whyAlt only after its named wrong answer. A request or a give-up is no answer)
+  { const liveA = input?.event === "turn" ? prev?.lastUi?.ask?.itemId ?? null : null;
+    const oc = String(input?.cls?.outcome ?? "");
+    const pA = liveA && String(liveA).startsWith("script:") && ["correct", "incorrect", "partial", "misconception"].includes(oc) ? (() => { try { return cardPartOf(input.kit, { itemId: liveA }); } catch { return null; } })() : null;
+    if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed } } }; }
   const pre = helpBefore(prev, input, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
@@ -4100,6 +4106,7 @@ export function step(prev, input) {
   // (Brain 049 B4: a question is heard at most two of her turns running — the third ends on a joints.yourTurn form, the fourth asks it in the
   // form not said last: question-run.js)
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
+  if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   return out;
 }
 function stepCells(prev, input) {

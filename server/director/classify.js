@@ -808,7 +808,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const deva = (k) => toDevanagari(String(k), { force: true, fallback: "rules" });
     const canons = (list) => list.map((k) => [canon(k), ...(R.deva ? [canon(deva(k))] : [])]);
     const F = canons(forms), W = canons(wrongs);
-    const misOf = () => (sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets }) : done("incorrect", "script_key"));
+    // (main's ruling of 2026-11-23 on to-brain 049 B3: the listed wrong answer is marked as such — a card that names one but no misconception
+    // grades it incorrect, and its marked whyAlt is said only after it: help.js ownReasonFits)
+    const misOf = () => (sg.targets ? done("misconception", "script_key", { misconceptionId: sg.targets, wrongListed: true }) : done("incorrect", "script_key", { wrongListed: true }));
     const toModel = (why) => ({ result: null, flags, text, scriptUnsure: why });
     // v4 W4 (director6: "after 1/3" to a card keyed "between 0 and 1/3" whose listed wrong answer IS "after 1/3" was graded
     // right twice, by its lone number): the order is exact form → the listed wrong answer → the same answer → by value, and

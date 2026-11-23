@@ -15,6 +15,7 @@
 // A rung whose field the script lacks is a missing rung (compile-report.mjs lists it as a hole); code never fills it with a sentence.
 import { compiledFor } from "./compile.js";
 import { saidIn, joinable } from "./script.js";
+import { wrongList } from "../grading/script-answer.js";
 
 /** The requests help answers. A "hint" is a wrong answer's (or an unremedied mix-up's) help on a live card. */
 export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint", "picture"]);
@@ -331,7 +332,18 @@ export function cardPromptOf(script, part) {
   return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
 }
 export const KEY_AFTER_MISSES = 5;
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
+/** Main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked `whyAlt` (`whyAltAsHelp: true`) is written to the child who gave the
+ *  card's named wrong answer (`wrongIfMis`) — many name it ("3 kehne mein …", "28 mein do metre …"). It is said as help only when the
+ *  child's most recent answer at that card was that answer: the grader's listed wrong answer (`wrongListed`), or `misconception` for the
+ *  card's own `targets`; where the card names no wrong answer, any miss. `last` is the walk's record of that answer (state.js answerAt):
+ *  { outcome, misconceptionId, wrongListed } | null. */
+export function ownReasonFits(node, last) {
+  if (!node || node.whyAltAsHelp !== true || !last) return false;
+  if (!["incorrect", "partial", "misconception"].includes(String(last.outcome ?? ""))) return false;
+  if (!wrongList(node.wrongIfMis).length) return true;
+  return !!last.wrongListed || (!!node.targets && last.outcome === "misconception" && last.misconceptionId === node.targets);
+}
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -377,7 +389,14 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (Brain 049 B3: the order is the same after a miss or a request — a clarify, a give-up, a Hindi request answered as help, a picture with
   // nothing left to draw: the card's simpler, its marked whyAlt, the point's other wording, the key. director32 c5-t03 steering 16, c4-ch01
   // stuck 62: a request at a marked card got the point's other wording with the card's own reason unsaid)
-  if (["hint", "clarify", "give_up", "picture"].includes(request) && isCard && !keyed && !closed && rawAt(part.path)?.whyAltAsHelp === true) {
+  // (main's ruling of 2026-11-23 on to-brain 049 B3: only after the card's named wrong answer — its most recent answer there. A request
+  // with no answer yet, a give-up, another wrong answer, a request after a right answer or a key: the order before B3 — the card's simpler,
+  // the point's other wording, the key — and the marked whyAlt is not said, keyed or closed included. Dry c4-ch05-t01 steady 96 to 98: a
+  // clarify after a right answer was told "3 kehne mein …", an answer the child never gave)
+  const marked = isCard && rawAt(part.path)?.whyAltAsHelp === true;
+  const ownFits = marked && ownReasonFits(rawAt(part.path), last);
+  if (marked && !ownFits) for (let n = ladder.length - 1; n >= 0; n--) if (ladder[n].path === `${part.path}.whyAlt`) ladder.splice(n, 1);
+  if (["hint", "clarify", "give_up", "picture"].includes(request) && ownFits && !keyed && !closed) {
     const wa = ladderSpec(script, part, { keyed: true })[0];
     if (wa?.field === "whyAlt" && wa.present) ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
   }
