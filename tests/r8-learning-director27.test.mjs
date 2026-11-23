@@ -10,18 +10,11 @@ const words = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.
 const norm = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 const S = Object.fromEntries(D27_PILOTS.map((t) => [t, scriptOf(t)]));
 
-// (Studio 015 item 4, 2026-11-23: a bars board whose view drew the same wholes round has no view now; its card is listed for a
-// pictureBoard and a caption written for that view names a view no longer drawn — Learning 021's lines to fix. Those lines only
-// are set aside; every other line still fails)
-const STUDIO015_LOST = /has no second view: author a pictureBoard|but the view drawn is none over|the answer board has no second view; write none/;
-const not015 = (es) => es.filter((e) => !STUDIO015_LOST.test(String(e)));
-
 test("016: the checker passes the four pilots, and its new rules are quiet on them", async () => {
   for (const t of D27_PILOTS) {
     assert.deepEqual(d27Errors(S[t]), [], t);
     const r = await checkTopic(t);
-    const rest = not015([...r.structure, ...r.boards, ...r.runtime]);
-    assert.ok(r.ok || !rest.length, `${t}: ${rest.slice(0, 5).join(" | ")}`);
+    assert.ok(r.ok, `${t}: ${[...r.structure, ...r.boards, ...r.runtime].slice(0, 5).join(" | ")}`);
   }
 });
 

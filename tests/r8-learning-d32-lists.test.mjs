@@ -17,12 +17,6 @@ const load = (d, t) => {
 };
 const S = Object.fromEntries(SEVEN.map(([d, t]) => [t, load(d, t)]));
 
-// (Studio 015 item 4, 2026-11-23: a bars board whose view drew the same wholes round has no view now; its card is listed for a
-// pictureBoard and a caption written for that view names a view no longer drawn — Learning 021's lines to fix. Those lines only
-// are set aside; every other line still fails)
-const STUDIO015_LOST = /has no second view: author a pictureBoard|but the view drawn is none over|the answer board has no second view; write none/;
-const not015 = (es) => es.filter((e) => !STUDIO015_LOST.test(String(e)));
-
 test("d32 lists: D32_READY and D32_PICTURES_READY hold the same seven topics, each once", () => {
   const seven = SEVEN.map(([, t]) => t).sort();
   assert.deepEqual([...D32_READY].sort(), seven);
@@ -47,8 +41,8 @@ test("d32 lists: every PICTURE_NONE entry names a card that exists and has neith
 test("d32 lists: all seven scripts pass d32Errors on the gate, with rule 7 on (and forced)", () => {
   for (const [t, s] of Object.entries(S)) {
     assert.ok(isD32(s) && D32_PICTURES_READY.includes(t), t);
-    assert.deepEqual(not015(d32Errors(s)), [], t);
-    assert.deepEqual(not015(d32Errors(s, { force: true })), [], `${t} forced`);
+    assert.deepEqual(d32Errors(s), [], t);
+    assert.deepEqual(d32Errors(s, { force: true }), [], `${t} forced`);
   }
   // (rule 7 bites: a listed script whose bare card loses its PICTURE_NONE entry would fail — shown by taking the picture off a card)
   const s = JSON.parse(JSON.stringify(S["c6-maths-ch07-t01"]));

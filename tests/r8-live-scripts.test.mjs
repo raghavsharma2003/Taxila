@@ -16,12 +16,6 @@ const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5
 const STAGED = ["c4-maths-ch01-t02"];
 const ls = (d) => readdirSync(new URL(`../data/${d}/`, import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
-// (Studio 015 item 4, 2026-11-23: a bars board whose view drew the same wholes round has no view now; its card is listed for a
-// pictureBoard and a caption written for that view names a view no longer drawn — Learning 021's lines to fix. Those lines only
-// are set aside; every other line still fails)
-const STUDIO015_LOST = /has no second view: author a pictureBoard|but the view drawn is none over|the answer board has no second view; write none/;
-const not015 = (es) => es.filter((e) => !STUDIO015_LOST.test(String(e)));
-
 test("data/lesson-scripts holds exactly the six live scripts; c5-maths-ch02-t03 and c6-maths-ch07-t01 are no longer staged", () => {
   assert.deepEqual(ls("lesson-scripts"), LIVE);
   for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01"]) assert.ok(!ls("lesson-scripts-staged").includes(t), `${t} is not staged`);
@@ -35,10 +29,9 @@ test("each live script is held to the full standard by the checker's own lists, 
   for (const t of LIVE) {
     const s = scriptOf(t);
     assert.ok(isD27(s) && isD29(s), `${t}: under every pilot rule`);
-    for (const [name, f] of Object.entries({ d27Errors, d29Errors, d30Errors, d31Errors })) assert.deepEqual(not015(f(s)), [], `${t} ${name}`);
+    for (const [name, f] of Object.entries({ d27Errors, d29Errors, d30Errors, d31Errors })) assert.deepEqual(f(s), [], `${t} ${name}`);
     const r = await checkTopic(t);
-    const rest = not015([...r.structure, ...r.boards, ...r.runtime]);
-    assert.ok(r.ok || !rest.length, `${t}: ${rest.slice(0, 5).join(" | ")}`);
+    assert.ok(r.ok, `${t}: ${[...r.structure, ...r.boards, ...r.runtime].slice(0, 5).join(" | ")}`);
   }
 });
 

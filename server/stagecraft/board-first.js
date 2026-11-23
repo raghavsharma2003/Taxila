@@ -1159,11 +1159,6 @@ function heldViewCall(ask, variant = 0) {
     const quiet = new Set(keys.filter((k) => /^\d+$/.test(String(k).trim()) && drawn.has(Number(k))).map(Number));
     const ac0 = altCall(h.board, { line: "", withheld: [], keys: keys.filter((k) => !quiet.has(Number(k))), ownParts: true });
     if (!ac0) return null;
-    // (Studio 015 item 4: a view that draws the same wholes the board draws as bars, only round, adds nothing: c6-ch07 offtopic 30
-    // "the bars as wholes, beside the bars", steering 14 "the 15 cm bar as a whole", c5-t03 stuck 18 the first fold drawn once
-    // more. The held board stands alone; the card authors a pictureBoard. The other way — round wholes laid out as bars — keeps
-    // its view: a bar's parts lie along one length, where they can be lined up and measured, which a circle's cannot)
-    if (viewAddsNothing(h.board, ac0)) return null;
     // (the quiet scale is drawn UNNAMED — label "", never "?" — and a view that would be only the board's own quiet scale adds
     // nothing: the held board stands alone)
     if (quiet.size && Array.isArray(ac0.bars)) {
@@ -1173,34 +1168,6 @@ function heldViewCall(ask, variant = 0) {
     const { view, ...call } = ac0;
     return { call, view: ALT_VIEWS.has(view) ? view : "parts", line: altSay(ac0, variant, { quiet }), lineOf: (k) => altSay(ac0, k, { quiet }) };
   } catch { return null; }
-}
-/** The wholes a board (or a view's call) draws, each on its own, side by side: [{ parts, shade, equal }] — fraction bars,
- *  fraction parts, wholes@1 (round or as bars), a one-row grid (a strip). Any other board: null. PURE. */
-export function wholesDrawn(ref) {
-  const t = ref?.template, p = ref?.params ?? ref ?? {};
-  const one = (parts, shade, equal = true) => (Number.isInteger(parts) ? { parts, shade: Number.isInteger(shade) ? shade : 0, equal } : null);
-  let ws = null;
-  if (t === "fraction-bars@1" && Array.isArray(p.bars)) ws = p.bars.map((b) => one(b?.parts, b?.shade));
-  else if (t === "fraction-parts@1") ws = [one(p.parts, p.shade)];
-  else if (t === "wholes@1" && Array.isArray(p.wholes)) ws = p.wholes.map((w) => one(w?.parts, w?.shade, w?.equal !== false));
-  else if (t === "shade-grid@1" && p.rows === 1 && !Array.isArray(p.block)) ws = [one(p.cols, p.shade)];
-  return ws && ws.length && ws.every(Boolean) ? ws : null;
-}
-/** Is this call's whole drawn round (a circle), not as a bar? */
-const roundOf = (c) => (c?.template === "wholes@1" && c.as !== "bar") || (c?.template === "fraction-parts@1" && c.whole !== "bar");
-/** Studio 015 item 4: the view `call` of the board `ref` draws its wholes again, round where the board draws them as bars —
- *  nothing new (pictureTurn then has no view). PURE. */
-export function viewAddsNothing(ref, call) {
-  const held = ref?.params ? { template: ref.template, ...ref.params } : ref;
-  return sameWholes(held, call) && roundOf(call) && !roundOf(held);
-}
-/** Studio 015 item 4: does the view `call` draw exactly the wholes `ref` draws — the same count, each the same parts, shading
- *  and equal-ness (in any order) — so that only the outline changes, bar for round? PURE. */
-export function sameWholes(ref, call) {
-  const a = wholesDrawn(ref), b = wholesDrawn(call);
-  if (!a || !b || a.length !== b.length) return false;
-  const key = (w) => `${w.parts}/${w.shade}/${w.equal}`;
-  return a.map(key).sort().join() === b.map(key).sort().join();
 }
 /**
  * main v6.10 P6 (director18: 9 of 16 picture turns spoke a picture line over a board "kept" with no view — the line and the

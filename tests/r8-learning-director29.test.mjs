@@ -8,25 +8,16 @@ import assert from "node:assert/strict";
 import { scriptOf, d30Errors, d30Report, answerCards, captionViews, viewOf, boardKind, wrongKinds, workedCaptionHits, fitOf,
   REM_CARD_MAX, REM_WHOLE, remWhole, D29_PILOTS, START_ANYWAY_MAX } from "../scripts/lesson-scripts/check.mjs";
 
-import * as BF from "../server/stagecraft/board-first.js";
-
 const fresh = (t) => JSON.parse(JSON.stringify(scriptOf(t)));
-// (Studio 015 item 4, 2026-11-23: a bars board whose view drew the same wholes round has no view now. Its captions, written for
-// that view, are Learning 021's to replace: the lines they leave are set aside here, every other line still fails)
-const lost015 = (ref) => { const ac = ref?.template ? BF.altCall(ref, { ownParts: true }) : null; return !!ac && BF.viewAddsNothing(ref, ac); };
-const STUDIO015_LOST = /has no second view: author a pictureBoard|but the view drawn is none over|the answer board has no second view; write none/;
 const S = Object.fromEntries(D29_PILOTS.map((t) => [t, scriptOf(t)]));
 
 test("018: the four pilots pass the new rules", () => {
-  for (const [t, s] of Object.entries(S)) assert.deepEqual(d30Errors(s).filter((e) => !STUDIO015_LOST.test(e)), [], t);
+  for (const [t, s] of Object.entries(S)) assert.deepEqual(d30Errors(s), [], t);
 });
 
 test("018 A.1: the view kind is pictureTurn's — bars draw a line or wholes, a line draws bars, a roti's parts draw a strip", () => {
   assert.equal(viewOf({ template: "fraction-bars@1", params: { bars: [{ parts: 8, shade: 1, label: "1/8" }] } }).kind, "line");
-  // (Studio 015 item 4: unnamed bars drawn again as circles of the same parts add nothing — no view; three bars likewise)
-  assert.equal(viewOf({ template: "fraction-bars@1", params: { bars: [{ parts: 8, shade: 0, label: "" }, { parts: 2, shade: 0, label: "" }] } }), null);
-  assert.equal(viewOf({ template: "fraction-bars@1", params: { bars: [{ parts: 8, shade: 1, label: "1/8" }, { parts: 2, shade: 1, label: "1/2" }] } }).kind, "line", "two named bars: their line");
-  assert.equal(viewOf({ template: "wholes@1", params: { wholes: [{ parts: 4 }, { parts: 8 }] } }).kind, "strip", "round wholes: as bars, along one length");
+  assert.equal(viewOf({ template: "fraction-bars@1", params: { bars: [{ parts: 8, shade: 0, label: "" }, { parts: 2, shade: 0, label: "" }] } }).kind, "circle");
   assert.equal(viewOf({ template: "fraction-line@1", params: { den: 7, from: 0, to: 1 } }).kind, "strip");
   assert.equal(viewOf({ template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "roti" } }).kind, "strip");
   assert.equal(boardKind({ template: "measured@1", params: { shape: "rect", unit: "m", w: 9, h: 6 } }), "figure");
@@ -37,12 +28,10 @@ test("018 A.1: the view kind is pictureTurn's — bars draw a line or wholes, a 
 test("018 A.1: a caption naming the wrong kind of view fails (director29 c5-t02 stuck 18: a line said over bars whose view is wholes)", () => {
   const s = fresh("c5-maths-ch02-t02");
   const we = s.skills[0].workedExample;
-  // (Studio 015 item 4: the S1 worked board's view — the same two bars as circles — is no more; its caption is read against the
-  // held board, bars, alone)
-  assert.equal(viewOf(we.board), null, "the S1 worked board has no second view");
+  assert.equal(viewOf(we.board).kind, "circle", "the S1 worked board's second view is wholes");
   we.viewCaption = { hi: "Yahan dono chocolate ki jagah 0 se 1 ki number line hai: line ke upar 8 barabar gap, line ke neeche 2.", en: "Here the two chocolates are a number line from 0 to 1: 8 equal gaps above the line, 2 below." };
   const e = d30Errors(s);
-  assert.ok(e.some((x) => /skills\[0\]\.workedExample\.viewCaption: names a line, but the view drawn is none over a strip board/.test(x)), e.join("\n"));
+  assert.ok(e.some((x) => /skills\[0\]\.workedExample\.viewCaption: names a line, but the view drawn is a circle \(wholes\)/.test(x)), e.join("\n"));
   // (and on a board with no view, the caption is true of the held board alone: c6 s3 e3's unrolled line)
   const c6 = fresh("c6-maths-ch06-t01");
   c6.skills[2].explain[2].viewCaption.hi = "Plot ka poora kinaara ek line par khula hai: 12 m, 8 m, 12 m, 8 m, kul 40 m.";
@@ -105,11 +94,10 @@ test("018 A.3: every follow-up card and check whose answer board has a second vi
   let n = 0;
   for (const [t, s] of Object.entries(S)) for (const x of answerCards(s)) {
     if (x.view) { n++; assert.ok(x.card.answerViewCaption?.hi && x.card.answerViewCaption?.en, `${t} ${x.at}`); }
-    else if (!lost015(x.card.answerBoard)) assert.equal(x.card.answerViewCaption, undefined, `${t} ${x.at}: no second view, no caption`);
+    else assert.equal(x.card.answerViewCaption, undefined, `${t} ${x.at}: no second view, no caption`);
   }
   // (d32 reader fixes and Studio 014's second views, 2026-11-19: 48 → 57; every one of them carries its caption, the rule above)
-  // (Studio 015 item 4, 2026-11-23: 60 → 50 — ten answer boards' views drew the same bars as circles and are no more)
-  assert.equal(n, 50, "the six live scripts' answer boards with a second view");
+  assert.equal(n, 60, "c4 11, c5-t01 17, c5-t02 16, c6 2, c5-t03 11 (live since dc-r8-director31), c6-ch07-t01 3 (live since director32)");
   const s = fresh("c4-maths-ch05-t01");
   delete s.skills[0].checks[0].answerViewCaption;
   assert.ok(d30Errors(s).some((x) => /skills\[0\]\.c1\.answerViewCaption: what to look at/.test(x)));

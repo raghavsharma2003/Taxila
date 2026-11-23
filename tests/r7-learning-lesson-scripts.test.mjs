@@ -6,12 +6,6 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { allTopics, checkTopic, leaks, scriptOf } from "../scripts/lesson-scripts/check.mjs";
 
-// (Studio 015 item 4, 2026-11-23: a bars board whose view drew the same wholes round has no view now; its card is listed for a
-// pictureBoard and a caption written for that view names a view no longer drawn — Learning 021's lines to fix. Those lines only
-// are set aside; every other line still fails)
-const STUDIO015_LOST = /has no second view: author a pictureBoard|but the view drawn is none over|the answer board has no second view; write none/;
-const not015 = (es) => es.filter((e) => !STUDIO015_LOST.test(String(e)));
-
 test("the three pilot scripts are present", () => {
   for (const t of ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c6-maths-ch06-t01"]) assert.ok(allTopics().includes(t), t);
 });
@@ -19,7 +13,7 @@ test("the three pilot scripts are present", () => {
 for (const t of allTopics()) {
   test(`${t}: structure, Studio's whiteboard gate and Brain's validator all pass`, async () => {
     const r = await checkTopic(t);
-    assert.deepEqual({ structure: not015(r.structure), boards: r.boards, runtime: r.runtime }, { structure: [], boards: [], runtime: [] });
+    assert.deepEqual({ structure: r.structure, boards: r.boards, runtime: r.runtime }, { structure: [], boards: [], runtime: [] });
   });
 }
 

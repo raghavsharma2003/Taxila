@@ -73,9 +73,7 @@ test("held board, picture: the second view is drawn BESIDE the held board on one
   void kit;
   for (const [ref, keys, view, line] of [
     [PIZZA, ["No"], "strips", /^Dekho, Pizza ke 3 alag-alag tukde hain$/],
-    // (Studio 015 item 4: a bar in parts drawn round again adds nothing — no view; the round whole's view, the same parts laid
-    // along a bar, is the split pinned here)
-    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "circle" } }, ["3/4"], "parts", /^Wahi poora ab patti mein hai: 4 barabar hisse$/],
+    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol mein hai: 4 barabar hisse$/],
     [LINE69, ["Ravi"], "parts", /^Dekho, yeh do barabar pattiyaan hain: ek 6 barabar hisson mein, aur ek 9 barabar hisson mein$/],
     [RECT, ["46 cm"], "unrolled", /^Is rectangle ki 4 bhujayein seedhi karke ek line par rakhi hain: 14 cm, 9 cm, 14 cm, 9 cm; kul lambai kitni hai$/],
   ]) {
@@ -168,13 +166,13 @@ test("Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar (la
   assert.ok(c.ok, JSON.stringify(c.failed));
   // (a named bar still has its value checked)
   assert.equal(expand({ template: "fraction-bars@1", bars: [{ parts: 3, shade: 0, label: "2/3" }] }).ok, false);
-  // under the held board: the unnamed bars stand alone. (Studio 015 item 4, 2026-11-23: their view — circles of 3 and 10, the same
-  // parts, nothing shaded — drew the bars again round, nothing new: no split, no view, no picture line; the card authors a pictureBoard)
+  // under the held board: the split's left panel is the unnamed bars; the view beside is circles of 3 and 10, nothing named
   const ask = { intent: { intentId: "d11", lessonId: "d11", kind: "whiteboard", style: { band: "B3" }, boardRef: ref, scriptBeat: { kind: "check", ownBoard: true, answers: ["2/3"] }, held: { board: ref, unit: "s2:e4" }, request: { kind: "picture" } }, line: { text: "" }, mode: "fresh" };
   const r = BF.heldBoard(ask, {});
-  assert.ok(r?.ok && r.script, "the held board draws");
-  assert.ok(!r.split && r.altView == null && r.altLine == null, "no view beside it");
-  assert.ok(!r.script.ops.some((o) => o.op === "text" && /\d+\s*\/\s*\d+/.test(o.text)), "no fraction named");
+  assert.ok(r?.split);
+  assert.equal(r.altView, "wholes");
+  assert.equal(r.altLine, "Dekho, pehle mein 3 barabar tukde hain, aur doosre mein 10 barabar tukde hain");
+  assert.ok(!r.script.ops.some((o) => o.op === "text" && /\d+\s*\/\s*\d+/.test(o.text)), "no fraction named on either panel");
   // (a shaded unnamed bar's view keeps its shading and names nothing either)
   const shaded = BF.altCall({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 2, label: "" }, { parts: 10, shade: 3, label: "" }] } }, { keys: ["2/3"] });
   assert.equal(shaded.template, "wholes@1");
