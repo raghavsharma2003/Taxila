@@ -73,7 +73,7 @@
       "accept": ["5", "5 cm wala", "5 cm wala hissa", "5 cm ka hissa", "5 cm wala hai", "5 wala", "5 wala hissa", "5 cm wala tukda", "paanch", "paanch cm", "paanch cm wala", "paanch wala", "5 centimetre", "5 centimetre wala", "five", "five cm", "the 5 cm part", "the 5 cm piece"],
       "targets": "c6-maths-ch07-t01-m-unequal-parts",
       "wrongIfMis": "teeno",
-      "why": { "hi": "15 cm ka 1/3, 15 ÷ 3 = 5 cm hota hai, aur hisson mein sirf 5 cm wala utna lamba hai", "en": "1/3 of 15 cm is 15 ÷ 3 = 5 cm, and only the 5 cm part is that long" }, "whyShort": { "hi": "patti ke teen barabar hisse 5-5 cm ke hote", "en": "the strip's three equal parts would be 5 cm each" }, "whyAlt": { "hi": "Hisse teen hain, par ek jitne lambe nahi; chhote-bade hisse gin kar har ek ko 1/3 nahi keh sakte.", "en": "There are three parts, but they are not the same length; we can't call each unequal part 1/3 just by counting them." }, "whyAltAsHelp": true,
+      "why": { "hi": "15 cm ka 1/3, 15 ÷ 3 = 5 cm; 7, 5, 3 mein sirf 5 cm wala utna lamba", "en": "1/3 of 15 cm is 15 ÷ 3 = 5 cm; of 7, 5, 3 only 5 cm is that long" }, "whyShort": { "hi": "patti ke teen barabar hisse 5-5 cm ke hote", "en": "the strip's three equal parts would be 5 cm each" }, "whyAlt": { "hi": "Hisse teen hain, par ek jitne lambe nahi; chhote-bade hisse gin kar har ek ko 1/3 nahi keh sakte.", "en": "There are three parts, but they are not the same length; we can't call each unequal part 1/3 just by counting them." }, "whyAltAsHelp": true,
       "simpler": { "hi": "Pehle socho, yahi patti teen barabar hisson mein kaatte toh har hissa kitna lamba hota. Phir dekho kaunsa hissa utna lamba hai.", "en": "First think how long each part would be if this strip were cut into three equal parts. Then see which part is that long." },
       "pictureBoard": { "template": "unrolled@1", "params": { "unit": "cm", "sides": [7, 5, 3], "total": 15 } }, "pictureCaption": { "hi": "Yahan wahi patti seedhi rakhi hai: hisse ek ke baad ek, apni lambai jitne, aur neeche poori patti 15 cm.", "en": "Here the same strip is laid straight: its parts one after another, each as long as it is, and below it the whole strip, 15 cm." },
       "answerBoard": { "template": "wholes@1", "params": { "as": "bar", "wholes": [{ "parts": 3, "title": "A: 4, 4, 4 cm" }, { "parts": 3, "equal": false, "title": "B: 6, 3, 3 cm" }, { "parts": 3, "shade": 1, "title": "15 cm: 5, 5, 5 cm" }] } }
@@ -251,10 +251,13 @@
       "targets": "c6-maths-ch07-t01-m-bigger-denominator",
       "wrongIfMis": "1/3",
       "why": { "hi": "10 doston wala hissa sabse chhota, phir 5 wala, phir 3 wala, toh 1/10 sabse chhota", "en": "the 10 friends' part is smallest, then the 5's, then the 3's, so 1/10 is the smallest" }, "whyShort": { "hi": "zyada barabar hisse, toh chhota hissa", "en": "more equal parts, so a smaller part" }, "whyAlt": { "hi": "3 sabse chhota number hai, par patti 3 doston mein bate toh har dost ka hissa sabse bada hota hai, sabse chhota nahi.", "en": "3 is the smallest number, but when the strip is shared by 3 friends each share is the biggest, not the smallest." }, "whyAltAsHelp": true,
-      "simpler": { "hi": "Har patti ka ek hissa dekho, aur socho kis patti ko sabse zyada doston ne baanta.", "en": "Look at one part of each strip, and think which strip was shared by the most friends." },
-      "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 10, "shade": 1, "label": "1/10" }, { "parts": 5, "shade": 1, "label": "1/5" }, { "parts": 3, "shade": 1, "label": "1/3" }] } }
+      "simpler": { "hi": "Socho, kaunsi chocolate sabse zyada doston ne baanti, aur wahan ek dost ko kitna mila.", "en": "Think which chocolate was shared by the most friends, and how much one friend got there." },
+      "board": { "template": "compare@1", "params": { "left": { "title": "Ek hi size ki chocolate", "items": ["3 doston mein", "10 doston mein", "5 doston mein"] }, "right": { "title": "Sabse chhota", "items": ["kaunsa hissa"] } } },
+      "viewCaption": { "hi": "Board par baayein likha hai ki ek hi size ki chocolate kitne doston mein bati, aur daayein sawaal: sabse chhota hissa.", "en": "On the board, on the left, how many friends the same-size chocolate is shared among, and on the right the question: the smallest part." },
+      "pictureBoard": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 3, "shade": 1, "label": "1/3" }, { "parts": 5, "shade": 1, "label": "1/5" }] } },
+      "pictureCaption": { "hi": "Yahan do ek jaisi pattiyan hain: ek 3 doston mein bati, ek 5 mein; rang wala hissa ek dost ka hai.", "en": "Here are two same-size strips: one shared among 3 friends, one among 5; the coloured part is one friend's." }
      },
-     "simpler": { "hi": "Patti jitne zyada doston mein bate, har dost ka hissa utna chhota. Har patti ke barabar hisse dekho.", "en": "The more friends share a strip, the smaller each friend's part. Look at the equal parts of each strip." }
+     "simpler": { "hi": "Teeno chocolate ek hi size ki hain. Zyada dost baantein, toh har dost ke haath chhota hissa aata hai.", "en": "All three chocolates are the same size. When more friends share, each friend gets a smaller part." }
     }
    ],
    "workedExample": {
@@ -267,7 +270,8 @@
       "do": { "hi": "Har option mein ek dost ka hissa likho", "en": "Write one friend's part in each option" },
       "result": "1/2, 1/4 aur 1/7",
       "why": { "hi": "patti apne doston mein barabar bati hai", "en": "the strip is shared equally among its friends" },
-      "simpler": { "hi": "Hissa 1/3 aur 1/6 se milana hai. Socho, har option mein kaunsi cheez nikaalni hogi jise in dono se milaa sako.", "en": "The share has to be set against 1/3 and 1/6. Think what you must work out in each option that you can set against both." }, "told": { "hi": "Pehle har option mein ek dost ka hissa likhte hain: 2 doston mein 1/2, 4 mein 1/4, aur 7 mein 1/7.", "en": "First we write one friend's share in each option: among 2 friends 1/2, among 4 1/4, and among 7 1/7." }
+      "simpler": { "hi": "Hissa 1/3 aur 1/6 se milana hai. Socho, har option mein kaunsi cheez nikaalni hogi jise in dono se milaa sako.", "en": "The share has to be set against 1/3 and 1/6. Think what you must work out in each option that you can set against both." }, "told": { "hi": "Pehle har option mein ek dost ka hissa likhte hain: 2 doston mein 1/2, 4 mein 1/4, aur 7 mein 1/7.", "en": "First we write one friend's share in each option: among 2 friends 1/2, among 4 1/4, and among 7 1/7." },
+      "resultBoard": { "template": "compare@1", "params": { "left": { "title": "Dost", "items": ["2 dost", "4 dost", "7 dost"] }, "right": { "title": "Har dost ka hissa", "items": ["1/2", "1/4", "1/7"] } } }
      },
      {
       "do": { "hi": "Ab har hissa 1/3 aur 1/6 dono se jaancho", "en": "Now check each share against both 1/3 and 1/6" },
@@ -447,7 +451,8 @@
       "do": { "hi": "Har laddoo ke bachchon jitne barabar hisse karo", "en": "Cut each laddoo into as many equal parts as there are children" },
       "result": "har laddoo ke 3 barabar hisse",
       "why": { "hi": "har bachche ko har laddoo se ek hissa milna hai", "en": "each child is to get one part of every laddoo" },
-      "simpler": { "hi": "Har laddoo se har bachche ko barabar hissa dena hai. Socho, ek laddoo ke kitne barabar hisse karoge taaki sabko ek mile.", "en": "Each child must get an equal part of every laddoo. Think how many equal parts you'll make of one laddoo so everyone gets one." }, "told": { "hi": "Har laddoo ke 3 barabar hisse karenge, kyunki bachche 3 hain aur har bachche ko har laddoo se hissa chahiye.", "en": "We make 3 equal parts of each laddoo, because there are 3 children and each child needs a part of every laddoo." }
+      "simpler": { "hi": "Har laddoo se har bachche ko barabar hissa dena hai. Socho, ek laddoo ke kitne barabar hisse karoge taaki sabko ek mile.", "en": "Each child must get an equal part of every laddoo. Think how many equal parts you'll make of one laddoo so everyone gets one." }, "told": { "hi": "Har laddoo ke 3 barabar hisse karenge, kyunki bachche 3 hain aur har bachche ko har laddoo se hissa chahiye.", "en": "We make 3 equal parts of each laddoo, because there are 3 children and each child needs a part of every laddoo." },
+      "resultBoard": { "template": "wholes@1", "params": { "wholes": [{ "parts": 3, "title": "Ek laddoo" }] } }
      },
      {
       "do": { "hi": "Har laddoo se har bachche ko ek hissa do", "en": "Give each child one part from every laddoo" },
