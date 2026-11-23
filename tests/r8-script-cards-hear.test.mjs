@@ -126,7 +126,8 @@ test("048 G2: a Devanagari reply is compared in Devanagari and is never wrong in
 
 // ───────────── G4: every keyed card of the scripts ─────────────
 // (director32: c6-maths-ch07-t01 went live and is walked from data/lesson-scripts with the others)
-const STAGED = ["c4-maths-ch01-t02"];
+// (d33, 2026-11-23: the two new staged scripts written to Learning 021 join the walk)
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const STAGED_DIR = join(ROOT, process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts-staged");
 function scripts() {
   const live = join(ROOT, "data/lesson-scripts");
@@ -287,7 +288,8 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
   t.diagnostic(`scripts ${counts.scripts}, cards ${counts.cards}, right forms ${counts.right} (correct ${counts.rightCorrect}, model ${counts.rightModel}), ` +
     `wrong forms ${counts.wrongTried} (model ${counts.wrongModel}), cards with no forms ${counts.noForms.length}${counts.noForms.length ? `: ${counts.noForms.join("; ")}` : ""}`);
   if (process.env.G4_PRINT) console.log(JSON.stringify(counts));
-  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts (c6-maths-ch07-t01 live since director32) and the staged rewrite");
+  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts (c6-maths-ch07-t01 live since director32) and the three staged rewrites (d33, 2026-11-23)");
+  assert.equal(STAGED.length, 3, "d33, 2026-11-23: c4-maths-ch01-t02, c4-maths-ch06-t01, c6-maths-ch07-t03");
   assert.deepEqual(rightBad, [], "a right answer graded wrong or as the mix-up");
   assert.deepEqual(wrongBad, [], "a wrong answer graded right (a false key)");
 });
