@@ -1960,13 +1960,29 @@ function shape(c, tl) {
     return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}),
       ...(c.chord ? { chord: "drawn" } : {}), ...(c.arc ? { arc: "drawn" } : {}) } };
   }
+  // (Studio 015 item 3: `tester: { on, corner, turned }` — Studio 014's right-angle tester laid at corner `corner` (0-3) of copy
+  // `on` of a rectangle or square: square to the page (`turned: false`: on a turned tile its edges miss the tile's) or turned
+  // with the shape (`turned: true`: its edges along the tile's two sides — it fits))
+  const ts = c.tester;
+  if (ts !== undefined && (!["rectangle", "square"].includes(c.shape) || !ts || typeof ts !== "object" || !isInt(ts.on ?? 0, 0, copies - 1) || !isInt(ts.corner, 0, 3) || typeof ts.turned !== "boolean"))
+    return { error: "shape_tester" };
   const R = copies === 1 ? 100 : 70;
+  let testerFact = null;
   for (let k = 0; k < copies; k++) {
     const cx = copies === 1 ? 200 : 105 + k * 190, cy = 140;
     const pts = corners(c.shape, cx, cy, R, k ? 25 : 0);
     tl.add({ id: `p${k}`, op: "polygon", points: pts, weight: 2, ...(k ? { ink: "accent" } : {}) }, 1100, { gap: k ? 320 : 120 });
     pts.forEach((p) => tl.add({ op: "circle", c: p, r: 3.5, fill: "mark", ink: "mark", weight: 1 }, 110, { gap: 40 }));
     if (names[k]) tl.add({ op: "text", at: [cx, 268], text: names[k], size: "m", ink: k ? "accent" : undefined }, 360, { gap: 120 });
+    if (ts && (ts.on ?? 0) === k) {
+      const P = pts[ts.corner], nx = pts[(ts.corner + 1) % 4], pv = pts[(ts.corner + 3) % 4];
+      const unit = (a) => { const d = Math.hypot(a[0] - P[0], a[1] - P[1]) || 1; return [(a[0] - P[0]) / d, (a[1] - P[1]) / d]; };
+      const T = 0.32 * Math.min(Math.hypot(nx[0] - P[0], nx[1] - P[1]), Math.hypot(pv[0] - P[0], pv[1] - P[1]));
+      const [u, v] = ts.turned ? [unit(nx), unit(pv)] : [[Math.sign(cx - P[0]) || 1, 0], [0, Math.sign(cy - P[1]) || 1]];
+      const q = (a, b) => [round1(P[0] + T * (a * u[0] + b * v[0])), round1(P[1] + T * (a * u[1] + b * v[1]))];
+      tl.add({ id: "tester", op: "polygon", points: [q(0, 0), q(1, 0), q(1, 1), q(0, 1)], ink: "soft", weight: 2 }, 600, { gap: 300 });
+      testerFact = ts.turned ? "a right-angle tester laid on a corner, turned with the shape" : "a right-angle tester laid on a corner, square to the page";
+    }
     if (copies === 1) {
       // a side and a corner named, leaders from outside the shape
       const [a, b] = [pts[0], pts[1]];
@@ -1984,7 +2000,7 @@ function shape(c, tl) {
     }
   }
   const k = SIDES[c.shape];
-  return { counts: { sides: k, corners: k }, facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}) } };
+  return { counts: { sides: k, corners: k }, facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}), ...(testerFact ? { tester: testerFact } : {}) } };
 }
 
 function symmetry(c, tl) {

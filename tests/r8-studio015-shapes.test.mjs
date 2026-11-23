@@ -113,3 +113,30 @@ test("item 2: a slack string — the circle of the string's length except betwee
   assert.equal(expand({ template: "shape@1", ...p, radius: "radius" }).ok, false);
   assert.equal(expand({ template: "shape@1", ...p, diameter: "24 cm" }).ok, false);
 });
+
+test("item 3: the tester on a turned tile — Studio 014's right-angle corner at a corner of a copy, square to the page (it misses the turned tile's edges) or turned with the shape (it fits)", () => {
+  const ang = (a, b) => Math.atan2(b[1] - a[1], b[0] - a[0]);
+  const par = (a, b) => { const d = Math.abs(((a - b) % Math.PI + Math.PI) % Math.PI); return Math.min(d, Math.PI - d) < 0.01; };
+  for (const shape of ["rectangle", "square"]) for (const corner of [0, 1, 2, 3]) for (const turned of [true, false]) {
+    const sc = ok({ template: "shape@1", shape, copies: 2, names: ["tile", "ghumi tile"], tester: { on: 1, corner, turned } });
+    const tile = sc.ops.find((o) => o.id === "p1").points, t = sc.ops.find((o) => o.id === "tester");
+    assert.equal(t.op, "polygon");
+    assert.equal(t.ink, "soft", "lighter than the tile");
+    const [q0, q1, q2, q3] = t.points, P = tile[corner];
+    assert.ok(Math.hypot(q0[0] - P[0], q0[1] - P[1]) < 0.2, "its corner on the tile's corner");
+    // a square: four equal sides, a right angle at its corner
+    const s1 = Math.hypot(q1[0] - q0[0], q1[1] - q0[1]), s2 = Math.hypot(q3[0] - q0[0], q3[1] - q0[1]);
+    assert.ok(Math.abs(s1 - s2) < 0.3 && Math.abs(Math.cos(ang(q0, q1) - ang(q0, q3))) < 0.01);
+    const along = par(ang(q0, q1), ang(P, tile[(corner + 1) % 4])) && par(ang(q0, q3), ang(P, tile[(corner + 3) % 4]));
+    const page = par(ang(q0, q1), 0) && par(ang(q0, q3), Math.PI / 2);
+    if (turned) assert.ok(along, `${shape} ${corner}: turned with the tile, its edges along the tile's`);
+    else { assert.ok(page, "square to the page"); assert.ok(!along, `${shape} ${corner}: on the turned tile it does not fit`); }
+    assert.ok(texts(sc).every((w) => ["tile", "ghumi tile"].includes(w)), "no word naming fits or not");
+  }
+  // on the unturned tile, square to the page is turned with the shape: it fits either way
+  const flat = ok({ template: "shape@1", shape: "rectangle", tester: { on: 0, corner: 0, turned: false } });
+  const ft = flat.ops.find((o) => o.id === "tester").points, fp = flat.ops.find((o) => o.id === "p0").points;
+  assert.ok(Math.abs(ft[1][1] - fp[0][1]) < 0.2 && Math.abs(ft[3][0] - fp[0][0]) < 0.2);
+  assert.equal(expand({ template: "shape@1", shape: "triangle", tester: { on: 0, corner: 0, turned: true } }).ok, false);
+  assert.equal(expand({ template: "shape@1", shape: "square", tester: { on: 1, corner: 0, turned: true } }).ok, false, "no copy 1 on a one-copy board");
+});
