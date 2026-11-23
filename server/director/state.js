@@ -3489,7 +3489,9 @@ function helpPartOf(prev, input) {
     const a = (() => { try { return cellAddressOf(prev, input); } catch { return null; } })();
     if (a?.part && /:bridge$/.test(a.part)) return { part: a.part, keyed: false };
   }
-  if (prev?.keyedPart && !prev.lastUi?.ask?.itemId) return { part: prev.keyedPart, keyed: true };
+  // (an asked worked step is the part she is on, whatever card was keyed before it: the replay of director31 steering c6 with to-brain 049
+  // B6's split walked a help turn's key into the worked example, and the keyed card outlived it — help at the step went to that card)
+  if (prev?.keyedPart && !prev.lastUi?.ask?.itemId && !prev.lastMove?.stepAsk?.prompt) return { part: prev.keyedPart, keyed: true };
   // (dc-r8-director27 P3: a card answered right, its verdict and why said, no card posed since — a request there is help on that card, its
   // why's other wording first, but no key was said as help: it is not keyed, and nothing left is helpSpent, never the go-on line)
   if (prev?.closedPart && !prev.lastUi?.ask?.itemId) return { part: prev.closedPart, keyed: false, closed: true };
@@ -5084,7 +5086,7 @@ function splitLongOnce(out, input, opt = {}) {
   // (to-brain 049 B6, carried from 047 R6: a turn of a right verdict, its reason, a new point and its card that would pass 65 words is split at
   // the point — the verdict and its reason now, the point and its card the next turn. director32 c4 steady 86; c5-t01 steady 14, 72, offtopic
   // 12, steering 26; c5-t03 steady 6, stuck 10, offtopic 8; c6-ch07 steady 66)
-  if (l2On() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn && hasClose && !move.gave && move.point && ui?.ask?.itemId && !move.returned?.topic
+  if (l2On() && vpcSplitOn() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn && hasClose && !move.gave && move.point && ui?.ask?.itemId && !move.returned?.topic
     && String(input.cls?.outcome ?? "") === "correct") {
     const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
     const bi = parts.findIndex((p) => p.k === "body");
@@ -5135,6 +5137,8 @@ export const L2_CAP = 75;
 /** to-brain 049 B6: the most words a turn of a right verdict, its reason, a new point and its card may run to; over it the turn splits at the
  *  point. VPC_SLACK: what she says beside the counted parts (measured on the dry matrix: the count runs short of what is said). */
 export const VPC_MAX = 65, VPC_SLACK = 0;
+/** to-brain 049 B6's split, on unless TAXILA_VPC_SPLIT=off (a replay of a run recorded before it walks that run's turns: W1's director30 lines). */
+export const vpcSplitOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_VPC_SPLIT ?? ""));
 /** Brain 043 R4: the most words a right verdict's frame and its joint to the why take (brain/say.js FRAMES.right, three words, and
  *  ", kyunki" or ". Dekho,"). */
 export const VERDICT_FRAME_WORDS = 4;

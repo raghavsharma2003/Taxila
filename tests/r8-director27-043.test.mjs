@@ -22,7 +22,7 @@ import { CTX } from "./fixtures/kit.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const scriptOf = (t) => JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${t}.json`), "utf8"));
-const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2", "TAXILA_R7_SCRIPT_DIR"];
+const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2", "TAXILA_R7_SCRIPT_DIR", "TAXILA_VPC_SPLIT"];
 const KEEP = {};
 /** A lesson walked with the card's own reader: each line is classified against the item on the table, as the dry harness reads it. */
 /** d29 final: Learning 017 deleted every explain beat's quick question (a point and its card share a turn) and reshaped the worked examples;
@@ -51,7 +51,9 @@ const cardOf = (sc, cb) => {
 };
 
 describe("Brain 043: the walk", () => {
-  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } setScriptForTest(); });
+  // (re-pinned to to-brain 049 B6: a right verdict, its reason, a point and its card over 65 words now split at the point, so the walk
+  // reaches the point's quick question — Brain 042 Q1, the shape these tests pin — only with that split off)
+  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } process.env.TAXILA_VPC_SPLIT = "off"; setScriptForTest(); });
   afterEach(() => { setScriptForTest(); for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
 
   test("R1: where the why and the next point do not fit and the short why does, the short why is said with the point and its quick question", () => {

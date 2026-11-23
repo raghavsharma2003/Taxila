@@ -52,7 +52,9 @@ test("P1: every listed row is read by one of the three", () => {
 });
 
 test("P3 requestHelped: a request gets help for the part she is on — not a back-to line and a card, the next step, nor the previous card's help", () => {
-  readsOn(["requestHelped"], [["c5-t01", "stuck", 30], ["c5-t01", "steering", 18], ["c5-t01", "stuck", 44], ["c5-t01", "steady", 80], ["c5-t01", "steady", 82],
+  // (c5-t01 steady 82 — a give-up at a bridge's check-in led on by the go-on joint — re-pinned to to-brain 049 B6: the go-on joint is now
+  // that turn's lead, in the greeting's start line's place; see the P5 goOnAfterKey test below)
+  readsOn(["requestHelped"], [["c5-t01", "stuck", 30], ["c5-t01", "steering", 18], ["c5-t01", "stuck", 44], ["c5-t01", "steady", 80],
     ["c6", "stuck", 58], ["c6", "offtopic", 54], ["c5-t02", "stuck", 42]]);
 });
 
@@ -76,6 +78,9 @@ test("the predicates' readers: a remediation's own board is its first recorded b
   assert.deepEqual(pages.map((p) => [p.from, p.board.template]), [[0, "wholes@1"], [20, "fraction-bars@1"]]);
 });
 
-test("P5 goOnAfterKey reads the key from the record: the go-on line with no key said as help (c5-t01 steady 82, at a bridge's check-in)", () => {
-  readsOn(["goOnAfterKey"], [["c5-t01", "steady", 82]]);
+// (re-pinned to to-brain 049 B6: a give-up or a clarify at a bridge's check-in goes on led by the go-on joint — the greeting's start line
+// was said there — so c5-t01 steady 82, the go-on line at a bridge's check-in, is the order's shape now and no law reads it)
+test("P5 goOnAfterKey: the go-on line at a bridge's give-up (c5-t01 steady 82) is to-brain 049 B6's lead, read by neither goOnAfterKey nor requestHelped", () => {
+  assert.ok(PREDICATES.goOnAfterKey && !PENDING.has("goOnAfterKey"));
+  assert.ok(!flagsOf("c5-t01", "steady").some((f) => ["goOnAfterKey", "requestHelped"].includes(f.predicate) && f.row === 82));
 });
