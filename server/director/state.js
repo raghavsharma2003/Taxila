@@ -4549,7 +4549,10 @@ function step0(prev, input) {
       && !(GO_ON.test(String(input.text ?? "")) && responseShape("move_on", "aside_pending") === "move_on");
     // (d31 046 follow-up 4: a return that waited for a remediation's follow-up card is due at that card's verdict, the walk going back to the
     // card it was parked on — inside a worked example too: the staged c6-ch07-t01's dry steady 42 → 44)
+    // (Brain 049 B5: never inside a worked example — with the card gone back to a worked step or the child's own step, the return waits for
+    // the close: director32 c6-ch07 offtopic 54 → 56)
     const thenDone = String(prev.activeItemId ?? "").includes(":then:") && live !== prev.activeItemId && !String(live ?? "").includes(":then:") && !s.splitHold
+      && !/:ask:worked|:worked/.test(String(live ?? ""))
       && !["incorrect", "misconception"].includes(String(input.cls?.outcome ?? "")) && !move.request && !input.cls?.request?.type;
     const due = boundary || thenDone ? (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at
       && (live !== e.onItem || move.kind === "break" || parkOverdue(s, e) || thenDone)) : null;
@@ -5173,16 +5176,22 @@ function returnApart(out, input = null) {
   // it, "Haan, cricket — woh mujhe yaad hai."; the return question comes next turn, alone. Without it her line went unheard for a turn:
   // r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai', on the merged H4 + L2 tree)
   const saidNow = input?.text && move.returned?.said && String(move.returned.said).trim() === String(input.text).trim();
+  // (Brain 049 B5, reversing director30's ruling that the return is a turn of its own: after a right verdict — no key given — the turn is the
+  // verdict and its reason, the back-to-your-topic joint and the return's question; no check-in. Her reply to the child's answer goes on into
+  // the held part as before. director32: an ending outside the five allowed in all seven topics, c4 steady 46, 56, 70 …)
+  // (a worked example's close is a right verdict too — the child's own step answered right: the return comes at the close, never inside)
+  const rightNow = !saidNow && !move.gave && String(move.verdict ?? "right") !== "not_yet";
   // (the aside is not served on this turn: it stays due, and the next boundary — the held half, heldTurn — returns it on a turn of its
   // own; a request answered first keeps it due, never lost)
   const t0 = String(move.returned.topic);
-  s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
+  if (!rightNow) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
   // (her one line to an aside the child said again — asideAgain, a taste question, a sad aside — answers what the child said on this
   // turn: it rides on the half said now, never on the held one: r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai')
   const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs", ...NOW_LINES];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}),
     ...(saidNow && !move.asideAgain && !move.tasteAsked ? { asideAgain: { topic: String(move.returned.topic) } } : {}) };
+  if (rightNow) { close.returned = { ...move.returned }; close.gaveCheck = false; }
   // (d31 046 follow-up, the dry offtopic c6-ch06-t01 34 → 38: the skill's bridge goes with the close, ending on its check-in, as it does with
   // no return due — never held into her reply's turn after the return, where it and the next point ran past their card's 75 words and the
   // reply's turn ended on a check-in, replyCheckin)

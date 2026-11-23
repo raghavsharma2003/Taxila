@@ -184,3 +184,17 @@ describe("B3: the card's own other reason as the second help; a problem restated
     assert.equal(d.rung?.path, `skills[1].checks[${sk.checks.indexOf(c)}].simpler`);
   });
 });
+
+describe("B5: a right verdict before a due return ends on the return's question; a return never inside a worked example", () => {
+  test("verdictCheckinBeforeReturn and returnInsideWorked are gated", () => {
+    for (const k of ["verdictCheckinBeforeReturn", "returnInsideWorked"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("verdictCheckinBeforeReturn reads the order's rows (c4 steady 46; c5-t01 steady 40, steering 36; c5-t02 steady 42, steering 36; c5-t03 steady 40, offtopic 46; c6 steady 38, steering 36; c6-ch07 stuck 48, offtopic 54, steering 38; c4-ch01 offtopic 20)", () => {
+    const want = [["steady", "c4", 46], ["steady", "c5t01", 40], ["steering", "c5t01", 36], ["steady", "c5t02", 42], ["steering", "c5t02", 36], ["steady", "c5t03", 40],
+      ["offtopic", "c5t03", 46], ["steady", "c6", 38], ["steering", "c6", 36], ["stuck", "c6ch07", 48], ["offtopic", "c6ch07", 54], ["steering", "c6ch07", 38], ["offtopic", "c4ch01", 20]];
+    for (const [p, t, n] of want) assert.ok(flagged(p, t, "verdictCheckinBeforeReturn").has(n), `${p} ${t} ${n}`);
+  });
+  test("returnInsideWorked reads c6-ch07 offtopic 56 (the return after a remediation inside the worked example)", () => {
+    assert.ok(flagged("offtopic", "c6ch07", "returnInsideWorked").has(56));
+  });
+});

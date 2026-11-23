@@ -333,7 +333,10 @@ export const PREDICATES = {
    *  stuck 34 were never returned to. */
   parkReturned(L, r, i, ctx) {
     const f = parkFate(L, r, i, ctx);
-    return f && !f.cut ? f.why : null;
+    if (!f || f.cut) return null;
+    // (Brain 049 B5: a park made inside a worked example waits for the example's close — read as kept when a return follows that close)
+    if (/:worked(?::|$)/.test(String(r.cell?.part ?? "")) && L.rows.slice(i + 1).some((x) => x.who === "teacher" && x.returnSaid)) return null;
+    return f.why;
   },
   /** d28 fix F2 (main loop's decision on the 043 dry run, offtopic c4 66 → 70, steering c4 48 → 52): the child's own ending overtakes a
    *  park — she adds nothing about the aside to her goodbye. A park cut by the child's stop or bye before its return was due is not a
@@ -372,6 +375,9 @@ export const PREDICATES = {
     // ends the turn, and a remediation or a point comes before it)
     const sm = (r.seams ?? []).map((x) => x.right);
     if (rest.length && sm.at(-1) === "return" && ["remediation", "point", "bridge"].includes(sm.at(-2)) && (ctx.retRes ?? []).some((re) => re.test(ss.at(-1)))) return null;
+    // (Brain 049 B5 reverses director30's "a return is a turn of its own" after a right verdict: the verdict and its reason, then the return's
+    // question, end the turn)
+    if (rest.length && sm.at(-1) === "return" && sm.includes("verdict") && !sm.some((x) => ["card", "key", "point", "stepAsk", "checkin"].includes(x))) return null;
     if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
     return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
   },

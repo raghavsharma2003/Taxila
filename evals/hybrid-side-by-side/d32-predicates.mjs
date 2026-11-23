@@ -8,6 +8,8 @@
 //   hindiPromiseNoForm  B1: a Hindi switch line on a turn whose part has no `hindi` form
 //   reaskSameAfterHelp  B1: a turn's closing question the same sentence as her turn before's closing question
 //   keyBeforeHint       B3: a key at a card whose authored `simpler` is unsaid, before its third miss
+//   verdictCheckinBeforeReturn B5: a right verdict ending on a check-in with the return to a parked aside her next turn
+//   returnInsideWorked  B5: a return to a parked aside while a worked example's step is asked
 //   helpNotOwn          B3: the second help at a card the point's other wording while the card's marked `whyAlt` is unsaid
 import { helpPart, hindiFormOf, at as atPath, ladderOf, ladderSpec, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 
@@ -118,5 +120,25 @@ export const D32_PREDICATES = {
     if (!wt) return null;
     const before = L.rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => normSentence(x.text)).join(" | ");
     return helpSentences(wt).some((x) => before.includes(normSentence(x))) ? null : `the point's other wording at ${id.split(":").slice(-2).join(":")}, its marked whyAlt unsaid`;
+  },
+  /** Brain 049 B5: a right verdict before a due return ends on the return's question — never on a check-in with the return her next turn,
+   *  alone (director32: c4 steady 46, 56, 70, stuck 68, offtopic 54, 74; c5-t01 steady 40 …; all seven topics). Gated. */
+  verdictCheckinBeforeReturn(L, r, i) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "verdict") || !(r.seams ?? []).some((x) => x.right === "checkin")) return null;
+    // (her next turns up to the return: help on the check-in may come between — c4 steady 46, a give-up, 48, then the return at 50 — but no card)
+    for (const x of L.rows.slice(i + 1).filter((y) => y.who === "teacher").slice(0, 3)) {
+      if (x.returnSaid && (x.seams ?? [])[0]?.right === "return") return "a right verdict ending on a check-in, the return on its own turn after it";
+      if ((x.pageParts ?? []).some((p) => ["card", "stepAsk", "quick"].includes(p.part)) || (x.seams ?? []).some((y) => y.right === "verdict")) return null;
+    }
+    return null;
+  },
+  /** Brain 049 B5: a return is never placed inside a worked example — it waits for the close (director32 c6-ch07 offtopic 54). Gated. */
+  returnInsideWorked(L, r, i, ctx) {
+    if (r.who !== "teacher" || !r.returnSaid) return null;
+    const lastP = (ctx?.prevT?.pageParts ?? []).at(-1)?.part;
+    if (lastP === "stepAsk" || /:worked:step\d+/.test(String(r.cell?.part ?? ""))) return "a return asked while a worked step is asked";
+    // (the part the lesson goes back to after the return: a worked example's step or the child's own step — the return was inside it)
+    const back = L.rows.slice(i + 1).filter((y) => y.who === "teacher").slice(0, 2).flatMap((y) => y.pageParts ?? []).find((p) => ["card", "stepAsk", "returnCard"].includes(p.part));
+    return back && /^worked/.test(String(back.beat ?? "")) ? `a return inside a worked example (back to ${back.beat})` : null;
   },
 };
