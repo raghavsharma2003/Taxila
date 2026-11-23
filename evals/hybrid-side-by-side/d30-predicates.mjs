@@ -132,7 +132,9 @@ export function hindiFormSaid(script, r) {
   return low(r?.text).includes(piece.trim().slice(0, 60));
 }
 /** Brain 046 Q4: a turn that holds a right verdict, a new point and its card (a close, a point, a card — the turn's seams). */
-const vpcOf = (r) => { const sm = (r?.seams ?? []).map((x) => x.right); const v = sm.indexOf("verdict"), p = sm.indexOf("point"), c = sm.lastIndexOf("card"); return v >= 0 && p > v && c > p; };
+/** to-brain 049 B6.1, main's ruling of 2026-11-23: a verdict, reason, point and card turn is said whole up to this many words. */
+export const VPC_WHOLE_MAX = 70;
+export const vpcOf = (r) => { const sm = (r?.seams ?? []).map((x) => x.right); const v = sm.indexOf("verdict"), p = sm.indexOf("point"), c = sm.lastIndexOf("card"); return v >= 0 && p > v && c > p; };
 const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 /** The card a row's close closes, with its full why said in the row: { card, why } or null. */
 function fullWhyIn(script, r) {
@@ -327,8 +329,10 @@ export const D30_PREDICATES = {
     return fullWhyIn(ctx?.script, r) ? `a verdict, a point and a card in ${wordsOf(r.text)} words with the full why, where the card has a short one` : null;
   },
   /** Brain 047 R6, counted (pending until the walk splits such a turn): a verdict-point-card turn over 65 words with the short reason. */
+  // (to-brain 049 B6.1, main's ruling of 2026-11-23: such a turn is said whole up to 70 words — gated above 70, a turn of that kind over 70
+  // not split; the turns of 66 to 70 said whole are counted by vpcWhole, d33-predicates)
   vpcUnlisted(L, r, i, ctx) {
-    if (r.who !== "teacher" || !vpcOf(r) || wordsOf(r.text) <= 65 || fullWhyIn(ctx?.script, r)) return null;
+    if (r.who !== "teacher" || !vpcOf(r) || wordsOf(r.text) <= VPC_WHOLE_MAX || fullWhyIn(ctx?.script, r)) return null;
     // (Brain 047 R6: with Learning 020's cuts every other verdict-point-card turn fits; one over 65 with the short reason is a fault unless its
     // point is listed whole — POINT_WHOLE in the checker, said as the verdict and its reason ending on a check-in, then the point and its card)
     const pt = (r.pageParts ?? []).find((p) => p.part === "point" || p.part === "body");

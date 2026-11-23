@@ -39,7 +39,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -5110,8 +5110,19 @@ function splitLongOnce(out, input, opt = {}) {
     && String(input.cls?.outcome ?? "") === "correct") {
     const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
     const bi = parts.findIndex((p) => p.k === "body");
+    // (main's ruling of 2026-11-23, item 1: said WHOLE up to 70 words; over 70 it splits at the point, and the first part ends on a go-on joint
+    // that is a statement — joints.afterKeyGoOn's forms with no consolation and no question named (help.js goOnPlain), brain/say.js says it
+    // in place of a check-in. A script with no such form: the turn is not split here)
     if (bi > 0 && parts[0].k === "close" && parts.slice(bi).some((p) => p.k === "card") && parts.reduce((a, p) => a + p.n, 0) + VPC_SLACK > VPC_MAX) {
-      const b = breakL2(out, input, closeWords, bi); if (b) { b.move.noFit = "vpc"; return b; }
+      const L = s.ctx?.lang === "english" ? "english" : "hinglish";
+      const j = goOnPlain(scriptFor(input.kit)?.script, { lang: L, lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.afterKeyGoOn ?? 0 });
+      const b = j?.text ? breakL2(out, input, closeWords, bi) : null;
+      if (b) {
+        b.move.noFit = "vpc"; b.move.vpcGoOn = j.text;
+        b.state.helpJointN = { ...(b.state.helpJointN ?? {}), afterKeyGoOn: (s.helpJointN?.afterKeyGoOn ?? 0) + 1 };
+        if (b.state.lastMove) { b.state.lastMove.noFit = "vpc"; b.state.lastMove.vpcGoOn = j.text; }
+        return b;
+      }
     }
   }
   if (l2On() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn) { const b = breakL2(out, input, closeWords); if (b) return b; }
@@ -5156,7 +5167,8 @@ function splitLongOnce(out, input, opt = {}) {
 export const L2_CAP = 75;
 /** to-brain 049 B6: the most words a turn of a right verdict, its reason, a new point and its card may run to; over it the turn splits at the
  *  point. VPC_SLACK: what she says beside the counted parts (measured on the dry matrix: the count runs short of what is said). */
-export const VPC_MAX = 65, VPC_SLACK = 0;
+// (main's ruling of 2026-11-23 on to-brain 049 B6.1: such a turn is said whole up to 70 words — 65 split 39 turns in the 24 dry lessons)
+export const VPC_MAX = 70, VPC_SLACK = 0;
 /** to-brain 049 B6's split, on unless TAXILA_VPC_SPLIT=off (a replay of a run recorded before it walks that run's turns: W1's director30 lines). */
 export const vpcSplitOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_VPC_SPLIT ?? ""));
 /** Brain 043 R4: the most words a right verdict's frame and its joint to the why take (brain/say.js FRAMES.right, three words, and

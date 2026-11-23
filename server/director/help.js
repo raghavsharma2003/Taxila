@@ -255,8 +255,22 @@ export function helpJoint(script, kind, { lang = "hinglish", lessonKey = null, n
   const t = String(texts[(startOf(lessonKey, kind) + n) % texts.length]).trim();
   return { kind, text: t.charAt(0).toUpperCase() + t.slice(1), by };
 }
+/** to-brain 049, main's ruling of 2026-11-23 (items 1 and 4): the go-on joint where nothing was keyed — a right verdict split from its point,
+ *  a bridge's give-up — takes only a form that is a plain statement: it names no question ("sawaal", "jawab"), promises nothing ("dobara",
+ *  "phir aayenge", "phir milegi", "baad mein", "yahin rakhte hain": those are for after a key), and, after a right answer, holds no
+ *  consolation ("koi baat nahi", "mushkil"); at a give-up a consolation is fine. No such form: null (the walk does not split / says no joint). */
+const GO_ON_NAMES = /\b(?:sawaal|jawab|dobara|phir\s+(?:aaye?n?ge?|aayegi|mile(?:ga|gi|nge)|dekhenge|milte)|aage\s+phir|baad\s+mein|yahin\s+rakh\w*|question|answer|again|come\s+back|later|see\s+this)\b/i;
+const GO_ON_CONSOLES = /\b(?:koi\s+baat\s+nahi?n?|mushkil|that'?s\s+(?:okay|fine)|no\s+problem|don'?t\s+worry)\b/i;
+export function goOnPlain(script, { lang = "hinglish", lessonKey = null, n = 0, consolation = false } = {}) {
+  const { forms, by } = helpJointForms(script, "afterKeyGoOn");
+  const texts = forms.map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim())
+    .filter((t) => !GO_ON_NAMES.test(t) && (consolation || !GO_ON_CONSOLES.test(t)));
+  if (!texts.length) return null;
+  const t = String(texts[(startOf(lessonKey, "afterKeyGoOn") + n) % texts.length]).trim();
+  return { kind: "afterKeyGoOn", text: t.charAt(0).toUpperCase() + t.slice(1), by, plain: true };
+}
 
-/** A card's key said as the worked answer: the key and its why as one statement (a yes-or-no key: its why alone, never a verdict word). */
+/** A card's key said as the worked answer:the key and its why as one statement (a yes-or-no key: its why alone, never a verdict word). */
 export function keyLine(part, lang = "hinglish") {
   if (!part || part.key == null || String(part.key).trim() === "") return null;
   const en = lang === "english";

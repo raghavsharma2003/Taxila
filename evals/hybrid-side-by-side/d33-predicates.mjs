@@ -8,6 +8,7 @@
 //   keyCheckinBareCard  the next card straight after a key's check-in, with no joint
 //   spentThenReturn  "nothing easier" followed in the same turn by an aside's return
 //   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
+import { vpcOf, VPC_WHOLE_MAX } from "./d30-predicates.mjs";
 const DEKHO = /(?<![\p{L}])Dekho,/gu;
 /** "Dekho," said in a row's text. */
 const dekhoIn = (r) => (String(r?.text ?? "").match(DEKHO) ?? []).length;
@@ -34,6 +35,21 @@ export const D33_PREDICATES = {
     if (dekhoIn(r) > 1) return `"Dekho," twice in one turn`;
     const k = hers.slice(-4).reverse().findIndex((x) => dekhoIn(x));
     return k >= 0 ? `"Dekho," again ${k + 1} of her turns after the last` : null;
+  },
+  /** to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from its point (the row's noFit "vpc") ends on a go-on joint that
+   *  is a statement, never on a comprehension check-in (as built at 65 words: 39 such check-ins in the 24 dry lessons, each straight after a
+   *  right answer). Gated. */
+  splitEndsOnCheckin(L, r) {
+    if (r.who !== "teacher" || r.noFit !== "vpc") return null;
+    const t = String(r.text ?? "").trim();
+    return /\?\s*$/.test(t) ? `a right verdict split from its point ends on a question: "${t.slice(-50)}"` : null;
+  },
+  /** main's ruling of 2026-11-23: a verdict, reason, point and card turn of 66 to 70 words, said whole (counted; over 70 it is split —
+   *  vpcUnlisted, gated). */
+  vpcWhole(L, r) {
+    if (r.who !== "teacher" || !vpcOf(r)) return null;
+    const n = String(r.text ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    return n > 65 && n <= VPC_WHOLE_MAX ? `a verdict, reason, point and card said whole in ${n} words` : null;
   },
   /** B6 (047 R7): the return uses what the child said — a return (or her question after the AI line) never asks what their aside already
    *  told, and "yeh tumne bataya tha" is said only of something told before (director32: c4 offtopic 56; c5-t01 steady 42, steering 38;

@@ -3612,6 +3612,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const lastS = [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...body].filter((x) => norm(x)).at(-1);
       if (lastS && !/[?？]\s*$/.test(norm(lastS))) { tail = rotateOf((kindNow === "worked_example" ? WORKED_ASK : beatAsk(kit))[L0], state); guard.l2Checkin = true; }
     }
+    // (to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from the point it led into — the walk's noFit "vpc" — ends on the
+    // go-on joint the walk chose, a statement (state.js splitLongOnce, help.js goOnPlain), never on a check-in: after a right answer she gives
+    // the reason and goes on. The one place besides the yourTurn invitation where a statement tail stands)
+    if (l2Live && state.lastMove?.noFit === "vpc" && state.lastMove?.vpcGoOn && !asideQ && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
+      tail = dot(norm(state.lastMove.vpcGoOn)); guard.vpcGoOn = tail; guard.l2Checkin = false;
+    }
     // (Brain 044 Small, director28 c4 steady 84/86, offtopic 50/52, c5-t01 steering 52/54: a second miss in a row got a new hint and then
     // the same question word for word as the turn before — the question said in her last turn is not said again straight after a miss:
     // a short ask for their answer takes its place, the script's own `missAgainAsk` joint where it has one, else code's)
@@ -3725,7 +3731,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
         ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : stepToldK?.has(keyS(x)) ? { kind: "workedStep" } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) || (guard.yourTurn && tail === guard.yourTurn) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
+        { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) || (guard.yourTurn && tail === guard.yourTurn) || (guard.vpcGoOn && tail === guard.vpcGoOn) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);
