@@ -34,3 +34,17 @@ describe("B6.2: \"Dekho,\" at most three times a lesson, never within four of he
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Dekho, yeh." }, { who: "child", text: "haan" }] }), /Dekho/);
   });
 });
+
+describe("B6.3: the return uses what the child said", () => {
+  // (counted, not gated: the return's question and the "yeh tumne bataya tha" line are chosen in brain/say.js — returnQuestion,
+  // againInHerWords — which this build does not touch; main's)
+  test("returnAsksAgain is counted", () => { assert.ok(PREDICATES.returnAsksAgain && PENDING.has("returnAsksAgain")); });
+  test("returnAsksAgain reads director32 c4 offtopic 56; c5-t01 steady 42, steering 38; c5-t03 offtopic 48; c6 steering 38; c4-ch01 offtopic 50", () => {
+    assert.ok(flagged("offtopic", "c4", "returnAsksAgain").has(56));
+    assert.ok(flagged("steady", "c5t01", "returnAsksAgain").has(42));
+    assert.ok(flagged("steering", "c5t01", "returnAsksAgain").has(38));
+    assert.ok(flagged("offtopic", "c5t03", "returnAsksAgain").has(48));
+    assert.ok(flagged("steering", "c6", "returnAsksAgain").has(38));
+    assert.ok(flagged("offtopic", "c4ch01", "returnAsksAgain").has(50));
+  });
+});
