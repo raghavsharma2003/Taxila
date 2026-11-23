@@ -201,7 +201,8 @@ export function untag(raw) {
 }
 // (to-brain 050, main's reader on c5-ch02-t03 s1 c2: "1/2 chhota hai" — 1/2 is the smaller — met the form "1/2 se chhota" once "se" went as a
 // filler. Beside a comparison word, "se" / "than" says which side is compared, so it is kept, as one word)
-const CMP = new Set(["bada", "chhota", "zyada", "kam"]);
+// (main, 050 follow-up: "Rahul kam" took the form "Rahul se kam" — the whole comparison family, both scripts' equal words already folded)
+const CMP = new Set(["bada", "chhota", "zyada", "kam", "lamba", "lambi", "lambe", "pehle", "baad", "aage", "peeche"].map(fold));
 const THAN = new Set(["se", "than", fold("से")]);
 export function canon(raw) {
   const it = items(untag(raw));
@@ -280,7 +281,9 @@ export const numberOf = (c) => (c && c.nums.length === 1 && !c.words.length && !
 
 /** Words beside a lone number that change what the reply says about it ("25 se kam", "8 ke baad", "3 ya 4"). */
 export const RISK = new Set(["bada", "chhota", "zyada", "kam", "pehle", "baad", "beech", "aage", "peeche", "upar", "neeche", "than", "ya", "or", "या", "baaki",
-  "total", "kul", "har", "barabar", "dono", "pehla", "doosra", "aakhri", "last", "first", "second"].map(fold));
+  "total", "kul", "har", "barabar", "dono", "pehla", "doosra", "aakhri", "last", "first", "second",
+  // (050: "se" is a word only beside a comparison — "2 cm se lamba" is longer than 2 cm, not 2 cm)
+  "se"].map(fold));
 
 /** wrongIfMis as a list (G8: a string or a list of strings). */
 export const wrongList = (w) => (Array.isArray(w) ? w : w != null ? [w] : []).map((x) => String(x ?? "").trim()).filter(Boolean);
@@ -317,7 +320,10 @@ export function pickOption(reply, opts) {
   const R = new Set(reply.seq.map((x) => x.t));
   const apart = sets.map((s, i) => [...s].filter((t) => sets.every((o, j) => j === i || !o.has(t))));
   if (apart.some((d) => !d.length)) return -1;
+  // (050: an option compared "with se" — "1/2 se chhota" — is not named by a reply that says the thing compared without it: "1/2 chhota hai"
+  // says the other way round; "chhota" alone still names it)
+  const turned = (i) => sets[i].has("se") && !R.has("se") && [...R].some((t) => !CMP.has(t));
   const hits = sets.map((s, i) => i).filter((i) => apart[i].every((t) => R.has(t)) && apart.every((d, j) => j === i || !d.some((t) => R.has(t)))
-    && [...R].every((t) => sets[i].has(t)));
+    && [...R].every((t) => sets[i].has(t)) && !turned(i));
   return hits.length === 1 ? hits[0] : -1;
 }

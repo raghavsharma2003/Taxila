@@ -488,3 +488,30 @@ test("050 W4: a two-option prompt answered by its option's own words is graded b
   const same = card("bada wala", [], null, "Kaunsa: bada tukda ya bada hissa?");
   assert.notEqual(grade(same, "bada"), "incorrect");
 });
+
+test("050 (main): beside a comparison word \"se\" is content — \"X se kam\" and \"X kam\" never match each other in code; walls over every form of that shape", () => {
+  const r = card("kam", ["Rahul se kam", "kam hai"], "zyada", "Mohan ne Rahul se kam khaya, zyada, ya barabar?");
+  assert.notEqual(grade(r, "Rahul kam"), "correct");
+  assert.equal(grade(r, "Rahul se kam"), "correct");
+  const h = card("smaller", ["chhota", "1/2 se chhota"], "bigger", "Is line par 5/12, 1/2 se bada hai ya 1/2 se chhota?");
+  for (const s of ["1/2 chhota hai", "1/2 chhota"]) assert.notEqual(grade(h, s), "correct", s);
+  assert.equal(grade(h, "1/2 se chhota"), "correct");
+  const CMPW = "kam|zyada|jyada|bada|badi|bade|chhota|chhoti|chhote|lamba|lambi|lambe|pehle|baad|aage|peeche|more|less|bigger|smaller|before|after";
+  const withSe = new RegExp(`^(.*\\S)\\s+se\\s+(${CMPW})(\\b.*)$`, "i"), without = new RegExp(`^(.*\\S)\\s+(${CMPW})(\\b.*)$`, "i");
+  const leaks = []; let shape = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    for (const f of rights) {
+      let m = f.match(withSe), say = null;
+      if (m) say = `${m[1]} ${m[2]}${m[3]}`;
+      else if ((m = f.match(without)) && !/\bse$/i.test(m[1])) say = `${m[1]} se ${m[2]}${m[3]}`;
+      if (!say) continue;
+      shape++;
+      if (rc.some((x) => sameAnswer(x, canon(say))) || rights.includes(say)) continue;
+      tried++;
+      if (grade(it, say) === "correct") leaks.push(`${name} ${where} form ${JSON.stringify(f)} said ${JSON.stringify(say)}`);
+    }
+  }
+  console.log(`# 050 se-wall: ${shape} forms of the shape, ${tried} replies tried`);
+  assert.deepEqual(leaks, []);
+});
