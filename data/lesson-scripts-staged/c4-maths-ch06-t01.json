@@ -2375,17 +2375,17 @@
     {
      "id": "c3",
      "prompt": {
-      "hi": "Ek dupatta 1 metre ka hai, aur ek ribbon 90 centimetre ki. Inmein lamba kaun hai, dupatta ya ribbon?",
-      "en": "A scarf is 1 metre, and a ribbon 90 centimetres. Which of them is longer, the scarf or the ribbon?"
+      "hi": "Ek dupatta 1 metre ka hai, ek ribbon 90 centimetre ki, aur ek dori 95 centimetre ki. Inmein sabse lamba kaun hai: dupatta, ribbon ya dori?",
+      "en": "A scarf is 1 metre, a ribbon 90 centimetres, and a string 95 centimetres. Which of them is the longest: the scarf, the ribbon or the string?"
      },
      "reask": {
-      "hi": "1 metre ka dupatta aur 90 centimetre ki ribbon: inmein lamba kaun hai?",
-      "en": "A 1 metre scarf and a 90 centimetre ribbon: which of them is longer?"
+      "hi": "1 metre ka dupatta, 90 centimetre ki ribbon, 95 centimetre ki dori: inmein sabse lamba kaun hai?",
+      "en": "A 1 metre scarf, a 90 centimetre ribbon, a 95 centimetre string: which of them is the longest?"
      },
      "key": "dupatta",
      "did": {
-      "hi": "metre wali aur centimetre wali do cheezon mein lambi cheez pehchaani",
-      "en": "picked the longer of two things given in metres and in centimetres"
+      "hi": "metre aur centimetre wali teen cheezon mein sabse lambi pehchaani",
+      "en": "picked the longest of three things in metres and centimetres"
      },
      "accept": [
       "dupatta lamba hai",
@@ -2398,10 +2398,20 @@
       "1 metre wala dupatta",
       "ek metre wala",
       "dupatta hai",
-      "dupatta zyada lamba"
+      "dupatta zyada lamba",
+      "dupatta sabse lamba",
+      "dupatta sabse lamba hai"
      ],
      "targets": "c4-maths-ch06-t01-m-m-is-10cm",
-     "wrongIfMis": "ribbon",
+     "wrongIfMis": [
+      "dori",
+      "dori wali",
+      "dori sabse lambi",
+      "dori sabse lambi hai",
+      "95 centimetre wali",
+      "the string",
+      "string"
+     ],
      "board": {
       "template": "compare@1",
       "params": {
@@ -2412,16 +2422,17 @@
         ]
        },
        "right": {
-        "title": "Ribbon",
+        "title": "Ribbon aur dori",
         "items": [
-         "90 cm"
+         "ribbon: 90 cm",
+         "dori: 95 cm"
         ]
        }
       }
      },
      "viewCaption": {
-      "hi": "Board par dupatte aur ribbon ki lambai likhi hai: dupatta 1 metre, ribbon 90 centimetre.",
-      "en": "The board lists the scarf's and the ribbon's lengths: the scarf 1 metre, the ribbon 90 centimetres."
+      "hi": "Board par teen cheezon ki lambai likhi hai: dupatta 1 metre, ribbon 90 centimetre, dori 95 centimetre.",
+      "en": "The board lists three lengths: the scarf 1 metre, the ribbon 90 centimetres, the string 95 centimetres."
      },
      "pictureBoard": {
       "template": "number-line-scale@1",
@@ -2442,16 +2453,16 @@
       "en": "Here is one metre stick, 0 to 100 in centimetres: one whole metre is this much."
      },
      "why": {
-      "hi": "dupatta 1 metre, yaani 100 centimetre hai, jo 90 centimetre se zyada hai",
-      "en": "the scarf is 1 metre, that is 100 centimetres, more than 90 centimetres"
+      "hi": "dupatta 1 metre, yaani 100 centimetre hai, jo dori ke 95 aur ribbon ke 90 centimetre se zyada hai",
+      "en": "the scarf is 1 metre, that is 100 centimetres, more than the string's 95 and the ribbon's 90 centimetres"
      },
      "whyShort": {
-      "hi": "dupatta 100 centimetre, ribbon 90",
-      "en": "scarf 100 centimetres, ribbon 90"
+      "hi": "dupatta 100 centimetre, dori 95, ribbon 90",
+      "en": "scarf 100 centimetres, string 95, ribbon 90"
      },
      "whyAlt": {
-      "hi": "tumne sirf number milaaye, 90 aur 1; par metre ki lakdi par 90 ka nishaan beech mein hi aa jaata hai, lakdi uske aage bhi jaati hai",
-      "en": "you compared only the numbers, 90 and 1; but on the metre stick the 90 mark comes partway along, and the stick goes on past it"
+      "hi": "tumne sirf number milaaye, 95, 90 aur 1; 1 metre ko centimetre mein likho, phir teeno milao",
+      "en": "you compared only the numbers, 95, 90 and 1; write 1 metre in centimetres, then compare all three"
      },
      "whyAltAsHelp": true,
      "answerBoard": {
@@ -2464,9 +2475,10 @@
         ]
        },
        "right": {
-        "title": "Ribbon",
+        "title": "Ribbon aur dori",
         "items": [
-         "90 cm"
+         "ribbon: 90 cm",
+         "dori: 95 cm"
         ]
        },
        "mark": {
@@ -2475,8 +2487,8 @@
       }
      },
      "simpler": {
-      "hi": "1 metre ko centimetre mein likho. Phir use 90 ke saath rakh kar dekho.",
-      "en": "Write 1 metre in centimetres. Then set it beside 90."
+      "hi": "1 metre ko centimetre mein likho. Phir use 95 aur 90 ke saath rakh kar dekho.",
+      "en": "Write 1 metre in centimetres. Then set it beside 95 and 90."
      }
     }
    ],
