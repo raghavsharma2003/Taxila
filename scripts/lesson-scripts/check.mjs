@@ -919,7 +919,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s));
   return e;
 }
 
@@ -2057,6 +2057,76 @@ export function operationPairs(s) {
   });
   return out;
 }
+/** Rule 3: the parts a board draws, one count per drawn thing (a bar, a whole, a line, a grid, a set of groups). */
+export function partCountsOf(b) {
+  const p = b?.params ?? {}, n = (x) => (Number.isInteger(Number(x)) && Number(x) > 0 ? Number(x) : null), out = [];
+  const span = Number(p.to ?? 1) - Number(p.from ?? 0);
+  switch (b?.template) {
+    case "fraction-parts@1": out.push(n(p.parts)); break;
+    case "fraction-bars@1": for (const x of p.bars ?? []) out.push(n(x?.parts)); break;
+    case "wholes@1": for (const x of p.wholes ?? []) out.push(n(Array.isArray(x?.parts) ? x.parts.length : x?.parts)); break;
+    case "shade-grid@1": out.push(n(Number(p.rows) * Number(p.cols))); break;
+    case "equal-groups@1": out.push(n(p.groups)); break;
+    case "fraction-line@1": for (const d of p.dens ?? [p.den]) out.push(n(Number(d) * span)); break;
+    case "number-line-scale@1": out.push(n(Number(p.step) > 0 ? span / Number(p.step) : null)); break;
+    default: break;
+  }
+  return out.filter((x) => x != null);
+}
+// (the child is told to cut: an imperative or an ask, "kaato", "baantoge", "hisse karne hain"; a given, "kati hai", "kaatkar", is not)
+const CUT_DO = "(?:kaat|baant|tod|mod)(?:o|oge|ogi|ein|en|enge|engi|na|ni|ne)|kar(?:o|oge|ogi|na|ni|ne|ein|en|enge)";
+const CUT_HI = new RegExp(`(\\d+)\\s+(?:barabar\\s+)?(?:tukd\\p{L}*|hiss\\p{L}*|bhaag\\p{L}*|gaps?|parts?)\\s+(?:(?:mein|me)\\s+)?(?:${CUT_DO})(?![\\p{L}])`, "iu");
+const CUT_EN = /(?:^|[.!?]\s+)(?:now\s+|then\s+)?(?:cut|divide|fold|split|share)\s[^.?!]*?\binto\s+(\d+)\b/iu;
+const COUNT_HI = /(?<![\p{L}])kitn(?:e|i|a)\s+(?:barabar\s+)?(?:gap|hiss|tukd|bhaag|khaan|part|piece|ghar)\p{L}*/iu;
+const COUNT_EN = /\bhow many\s+(?:equal\s+)?(?:gaps|parts|pieces|sections|spaces|squares)\b/iu;
+/** Rule 3: cards whose posing board draws their answer: [{ at, kind: "cut" | "count", n, board }]. A cut card tells the child to
+ *  cut (fold, share) into N over a board that already draws N parts; a count card asks how many gaps / parts with a whole-number
+ *  key over a board that draws exactly that many. */
+export function boardAnswerCards(s) {
+  const out = [];
+  for (const c of d32Cards(s)) {
+    const counts = partCountsOf(c.board), hi = String(c.card.prompt?.hi ?? ""), en = String(c.card.prompt?.en ?? "");
+    if (!counts.length) continue;
+    const cut = Number((hi.match(CUT_HI) ?? en.match(CUT_EN) ?? [])[1]);
+    if (cut && counts.includes(cut)) { out.push({ at: c.at, kind: "cut", n: cut, board: c.board, prompt: hi }); continue; }
+    const key = Number(String(c.card.key ?? "").trim());
+    if ((COUNT_HI.test(hi) || COUNT_EN.test(en)) && Number.isInteger(key) && key > 0 && counts.includes(key)) out.push({ at: c.at, kind: "count", n: key, board: c.board, prompt: hi });
+  }
+  return out;
+}
+/** Rule 3's B lines (`--d33`): the cards boardAnswerCards catches, for main to confirm before the rule is an error. */
+export const boardAnswerLines = (s) => boardAnswerCards(s).map((x) => `B ${x.at} [${x.kind} ${x.n}] over ${boardLine(x.board)}: ${x.prompt}`);
+/** Rule 5: the two new joints, three forms each. */
+export const D33_JOINTS = ["noPicture", "yourTurn"];
+export const D33_JOINT_FORMS = 3, D33_JOINT_MAX = 13; // (under 14 words)
+const NUMBER_SAID = /\d|(?<![\p{L}])(?:teen|chaar|char|paanch|chhe|chheh|saat|aath|nau|das|aadha|aadhi|aadhe|two|three|four|five|six|seven|eight|nine|ten|half)(?![\p{L}])/iu;
+const PROMISE = /(?<![\p{L}])(?:phir|baad\s+mein|baad\s+me|yaad|later|remember|next\s+time|again)(?![\p{L}])/iu;
+export function d33JointErrors(s, { required = false } = {}) {
+  const e = [], j = s?.joints ?? {};
+  for (const kind of D33_JOINTS) {
+    const forms = j[kind];
+    if (forms == null) { if (required) e.push(`joints.${kind}: ${D33_JOINT_FORMS} forms { hi, en } (Learning 021 rule 5)`); continue; }
+    if (!Array.isArray(forms) || forms.length !== D33_JOINT_FORMS) { e.push(`joints.${kind}: ${D33_JOINT_FORMS} forms (got ${Array.isArray(forms) ? forms.length : 0}) (Learning 021 rule 5)`); continue; }
+    forms.forEach((f, i) => {
+      formsOk(e, `joints.${kind}[${i}]`, f, { question: false, max: D33_JOINT_MAX });
+      for (const l of ["hi", "en"]) {
+        const t = String(f?.[l] ?? ""), at = `joints.${kind}[${i}]${l === "en" ? " (en)" : ""}`;
+        if (!t) continue;
+        if (kind === "noPicture" && NUMBER_SAID.test(t)) e.push(`${at}: names a number ("${t.match(NUMBER_SAID)[0]}"); there is no other drawing, and it names no answer (Learning 021 rule 5)`);
+        if (kind === "noPicture" && PROMISE.test(t)) e.push(`${at}: "${t.match(PROMISE)[0]}" promises something; it promises nothing (Learning 021 rule 5)`);
+      }
+    });
+    const seen = new Set();
+    forms.forEach((f, i) => { const n = d27Norm(f?.hi ?? ""); if (n && seen.has(n)) e.push(`joints.${kind}[${i}]: the same form twice (Learning 021 rule 5)`); seen.add(n); });
+  }
+  return e.map((x) => (/Learning 021/.test(x) ? x : `${x} (Learning 021 rule 5)`));
+}
+/** Learning 021's errors: rule 5's joints wherever they are written (required, and rule 3, for a topic in D33_READY or forced). */
+export function d33Errors(s, { force = false } = {}) {
+  const on = force || isD33(s), e = d33JointErrors(s, { required: on });
+  if (on) for (const x of boardAnswerCards(s)) e.push(`${x.at}: its posing board (${x.board?.template}) already draws the ${x.n} ${x.kind === "cut" ? "parts the card tells the child to cut into" : "parts the card asks the child to count"}: pose it over a board that leaves the ${x.kind === "cut" ? "cut" : "count"} to the child, or list it in PICTURE_NONE with no picture (Learning 021 rule 3)`);
+  return e;
+}
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2120,6 +2190,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (args.includes("--standard")) for (const t of topics) if (!STANDARD_STAGED.includes(t)) STANDARD_STAGED.push(t);
   // (Learning 020: --d32 holds the named scripts to the 020 rules for this run only, as D32_READY does for good)
   if (args.includes("--d32")) for (const t of topics) { if (!D32_READY.includes(t)) D32_READY.push(t); if (!D32_PICTURES_READY.includes(t)) D32_PICTURES_READY.push(t); }
+  // (Learning 021: --d33 holds the named scripts to the 021 rules for this run only, as D33_READY does for good)
+  if (args.includes("--d33")) for (const t of topics) if (!D33_READY.includes(t)) D33_READY.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
@@ -2141,6 +2213,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     if (args.includes("--rules")) for (const m of d32Listing(scriptOf(t))) console.log(`  ${m}`);
     // (Learning 021 rules 2 and 4: the whyAlt-as-help lines and the operation pairs; listings, never a gate)
     if (args.includes("--rules")) for (const m of [...whyAltHelpLines(scriptOf(t)), ...operationPairs(scriptOf(t))]) console.log(`  ${m}`);
+    // (Learning 021 rule 3: the cards whose posing board draws their answer, for main to confirm)
+    if (args.includes("--d33") || args.includes("--rules")) for (const m of boardAnswerLines(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {

@@ -5,7 +5,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { answerForms, safetyHits, safetyErrors, SAFETY_STAGED_KNOWN, SAFETY_SEEN, whyAltHelpLines, operationPairs, operationsOf } from "../scripts/lesson-scripts/check.mjs";
+import { answerForms, safetyHits, safetyErrors, SAFETY_STAGED_KNOWN, SAFETY_SEEN, whyAltHelpLines, operationPairs, operationsOf,
+  boardAnswerCards, boardAnswerLines, partCountsOf, d33Errors, d33JointErrors, D33_READY, isD33, D33_JOINTS } from "../scripts/lesson-scripts/check.mjs";
 import { scanSafety } from "../server/director/safety.js";
 
 const HI = (hi, en = "x") => ({ hi, en });
@@ -110,4 +111,73 @@ test("021 rule 4: a point, remediation or covered sentence naming an operation i
 test("021 rule 4, real script: c6-maths-ch06-t01's \"guna sirf farsh batata hai\" is paired with the later 2 × (lambai + chaudai)", () => {
   const o = operationPairs(S["c6-maths-ch06-t01"]);
   assert.ok(o.some((x) => x.startsWith("O c6-maths-ch06-t01-s1/remediation[1].sayAlt [multiply]:") && x.includes("→ c6-maths-ch06-t01-s2/explain[1].pointAlt:") && x.includes("2 × (lambai + chaudai)")), o.join("\n"));
+});
+
+// ---- 3 a posing board that is its own answer (B lines; an error behind D33_READY / --d33)
+const BAR = (...parts) => ({ template: "fraction-bars@1", params: { bars: parts.map((p) => ({ parts: p, shade: 0, label: "" })) } });
+const LINE = (dens) => ({ template: "fraction-line@1", params: { dens, from: 0, to: 1 } });
+const posed = (prompt, board, key = "aadhe se chhota") => frag({ card: { prompt: HI(prompt), key, accept: [], board } });
+
+test("021 rule 3: the parts a board draws are counted per drawn thing", () => {
+  assert.deepEqual(partCountsOf(BAR(2, 4)), [2, 4]);
+  assert.deepEqual(partCountsOf(LINE([7, 8])), [7, 8]);
+  assert.deepEqual(partCountsOf({ template: "fraction-line@1", params: { den: 4, from: 0, to: 2 } }), [8]);
+  assert.deepEqual(partCountsOf({ template: "shade-grid@1", params: { rows: 2, cols: 3 } }), [6]);
+  assert.deepEqual(partCountsOf({ template: "angle@1", params: {} }), []);
+});
+
+test("021 rule 3: a cut the card tells the child to make, already drawn, is caught; a given cut and an undrawn one are not", () => {
+  const cut = "Isi patti ko ab 4 barabar tukdon mein kaato. Tab ek tukda aadhe se chhota hoga ya bada?";
+  assert.deepEqual(boardAnswerCards(posed(cut, BAR(2, 4))).map((x) => [x.at, x.kind, x.n]), [["t-frag-s1/e1", "cut", 4]]);
+  assert.deepEqual(boardAnswerCards(posed(cut, BAR(2))), []);
+  assert.deepEqual(boardAnswerCards(posed("Doosri patti 4 barabar hisson mein kati hai. Ek hissa bada hai ya chhota?", BAR(2, 4))), []);
+  assert.equal(boardAnswerCards(posed("Is 15 cm ki patti ke 3 barabar hisse karne hain. Har hissa kitne cm?", BAR(3), "5 cm")).length, 1);
+});
+
+test("021 rule 3: a count card whose board draws exactly the key's number of parts is caught; another count is not", () => {
+  const q = "Us taraf kitne barabar gaps bane hain?";
+  assert.deepEqual(boardAnswerCards(posed(q, LINE([7, 8]), "8")).map((x) => [x.kind, x.n]), [["count", 8]]);
+  assert.deepEqual(boardAnswerCards(posed(q, LINE([7]), "8")), []);
+  assert.deepEqual(boardAnswerCards(posed("Kitne tukde rangeen hain?", BAR(6), "1/6")), []); // (a fraction key is not a count)
+});
+
+const KNOWN_B = ["c4-maths-ch05-t01-s3/e1", "c5-maths-ch02-t01-s1/e2", "c5-maths-ch02-t01-s1/workedExample.steps[0].ask"];
+test("021 rule 3, real scripts: the three known boards are caught (c4 s3 e1; c5-t01 s1 e2 and the s1 asked step); the list is pinned for main", () => {
+  const all = Object.values(S).flatMap((s) => boardAnswerCards(s).map((x) => x.at));
+  for (const k of KNOWN_B) assert.ok(all.includes(k), k);
+  // (the full list the rule catches today, 2026-11-23, for main to confirm before a script is put on D33_READY)
+  assert.deepEqual(all.sort(), [...KNOWN_B, "c6-maths-ch07-t01-s1/e2", "c6-maths-ch07-t01-s3/e3"].sort());
+  assert.match(boardAnswerLines(S["c4-maths-ch05-t01"])[0], /^B c4-maths-ch05-t01-s3\/e1 \[cut 4\] over fraction-bars@1/);
+});
+
+test("021 rule 3 and 5: D33_READY is empty, so no script fails today; forced (as --d33), the caught cards are errors", () => {
+  assert.deepEqual(D33_READY, []);
+  for (const s of Object.values(S)) { assert.equal(isD33(s), false); assert.deepEqual(d33Errors(s), [], s.topicId); }
+  const e = d33Errors(S["c4-maths-ch05-t01"], { force: true });
+  assert.ok(e.some((x) => x.startsWith("c4-maths-ch05-t01-s3/e1: its posing board (fraction-bars@1) already draws the 4 parts") && x.includes("Learning 021 rule 3")), e.join("\n"));
+  assert.ok(e.some((x) => x.startsWith("joints.noPicture: 3 forms")), "forced, the new joints are required");
+});
+
+// ---- 5 joints.noPicture, joints.yourTurn
+const J = (noPicture, yourTurn) => frag({ top: { joints: { noPicture, yourTurn } } });
+const GOOD_NP = [HI("Iska koi aur chitra nahi hai.", "There is no other drawing of this."), HI("Is sawaal ka bas yahi board hai.", "This board is the only one for this question."), HI("Yahan doosra chitra nahi hai.", "There is no second picture here.")];
+const GOOD_YT = [HI("Ab tumhari baari, apna jawab bolo.", "Your turn now, say your answer."), HI("Tum batao, main sun rahi hoon.", "You tell me, I am listening."), HI("Jo socha hai, woh bolo.", "Say what you thought.")];
+
+test("021 rule 5: well-formed noPicture and yourTurn pass; absent is fine off D33_READY and required on it", () => {
+  assert.deepEqual(D33_JOINTS, ["noPicture", "yourTurn"]);
+  assert.deepEqual(d33JointErrors(J(GOOD_NP, GOOD_YT), { required: true }), []);
+  assert.deepEqual(d33JointErrors(frag()), []);
+  assert.deepEqual(d33JointErrors(frag(), { required: true }).map((x) => x.split(":")[0]), ["joints.noPicture", "joints.yourTurn"]);
+});
+
+test("021 rule 5: three forms; each a statement under 14 words in hi and en; noPicture names no number and promises nothing", () => {
+  const e = (np, yt = GOOD_YT) => d33JointErrors(J(np, yt));
+  assert.match(e(GOOD_NP.slice(0, 2))[0], /joints\.noPicture: 3 forms \(got 2\)/);
+  assert.match(e(GOOD_NP, [GOOD_YT[0], GOOD_YT[1], HI("Ab tum batao?", "You tell?")])[0], /joints\.yourTurn\[2\]: asks nothing/);
+  assert.match(e([GOOD_NP[0], GOOD_NP[1], HI("Yahan 4 hisse hain.", "There are no other drawings.")])[0], /noPicture\[2\]: names a number \("4"\)/);
+  assert.match(e([GOOD_NP[0], GOOD_NP[1], HI("Yeh baad mein dikhaungi.", "No other drawing.")])[0], /"baad mein" promises/);
+  for (const w of ["phir", "yaad"]) assert.ok(e([GOOD_NP[0], GOOD_NP[1], HI(`Chitra ${w} nahi.`, "No other drawing.")]).some((x) => x.includes(`"${w}" promises`)), w);
+  const long = HI(Array.from({ length: 14 }, () => "shabd").join(" ") + ".", "Short.");
+  assert.match(e([GOOD_NP[0], GOOD_NP[1], long])[0], /noPicture\[2\]: 14 words > 13/);
+  assert.match(e(GOOD_NP, [GOOD_YT[0], GOOD_YT[1], HI("", "x")])[0], /yourTurn\[2\]: empty/);
 });
