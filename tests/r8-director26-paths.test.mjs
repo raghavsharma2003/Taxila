@@ -179,7 +179,8 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
   // (her return in the script's own form — "usmein sabse mazedaar kya hai?" — is a liking question: the phrase form answers it)
   assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, "Achha, toh tumhe chauka sabse achha lagta hai.");
   assert.equal(asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", asked: "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", words: ["batting"] }).line,
-    "Achha, toh tumhe batting sabse achha lagta hai.");
+    // (re-pinned, to-brain 049 B6: the reply takes the child's own ending — "achhi lagti" said, "achhi lagti" heard)
+    "Achha, toh tumhe batting sabse achhi lagti hai.");
 });
 
 // (dc-r8-director27 Brain 042 E3 superseded this row's rule — the card's own second view, its posing board's — and dc-r8-director29 Brain 045 P1

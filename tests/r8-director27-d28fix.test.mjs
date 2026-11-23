@@ -27,7 +27,8 @@ const BRIEF = { firstName: "Riya", classLevel: 4, ageBand: "10-15", languagePref
   vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
 const RETURN_Q = "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?";
 const SAID = "batting sabse achhi lagti hai";
-const REPLY = /^Achha, toh tumhe batting sabse achha lagta hai\./;
+// (re-pinned, to-brain 049 B6: the reply takes the child's own ending — "achhi lagti" said, "achhi lagti" heard)
+const REPLY = /^Achha, toh tumhe batting sabse achhi lagti hai\./;
 
 /** c4 walked on today's script with right answers until the walk says the skill's bridge first (state.js sayFirst). */
 function atBridge() {
