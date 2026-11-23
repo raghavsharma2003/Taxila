@@ -4939,8 +4939,11 @@ export function whyRepeated(out, kit) {
   // (to-brain 049 B6, a reason not said in two turns running at a worked close — director32 c6 steady 24 → 26, c6-ch07 steering 26 → 28,
   // c5-t03 steady 74 → 76: her step turn said it in its own words. The sentences of her turn before that ask nothing, sharing 60% of the
   // why's content words, four at least, said it)
-  { const cw0 = contentWords(why);
-    const said0 = new Set(contentWords(herLast.split(/(?<=[.!?])\s+/).filter((x) => !/\?\s*$/.test(x)).join(" ")));
+  // (d33 integration, dry offtopic c6-ch07 48: "1/3" and "1/6" said before are the 3 and 6 of the why — the words are read as the
+  // predicate reads them, a fraction's numbers apart, each word once: 8 of 11 shared, where whole tokens counted 6 of 13)
+  { const cwU = (t) => [...new Set(contentWords(String(t ?? "").replace(/\//g, " ")))];
+    const cw0 = cwU(why);
+    const said0 = new Set(cwU(herLast.split(/(?<=[.!?])\s+/).filter((x) => !/\?\s*$/.test(x)).join(" ")));
     const sh = cw0.filter((w) => said0.has(w));
     if (cw0.length && sh.length >= 4 && sh.length / cw0.length >= 0.6) return true; }
   const we = (scriptFor(kit)?.script?.skills ?? []).map((k) => k.workedExample).find((w) => w && low(saidIn(w.why, lang)) === low(why));
