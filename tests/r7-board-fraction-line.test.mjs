@@ -118,7 +118,7 @@ test("a fraction-line title (the fraction to find) sits over no tick of the line
   }
 });
 
-// (2026-11-23, main: c5-maths-ch02-t01 s2's asked step "2/5 ke liye 0 se 1 ki line ko kitne barabar gaps mein kaatoge?" (key 5)
+// (2026-11-23, main: c5-maths-ch02-t01 s2's asked step "2/5 ke liye 0 se 1 ki line mein kitne barabar gaps banenge?" (key 5)
 // stood on an uncut fraction-bars strip because no board drew an UNCUT 0-1 line. den 1 is that line, and nothing else)
 test("the bare line (den 1): 0 and 1 at its ends, no tick between, passes the gate with the cut withheld; nothing else rides on it", async () => {
   const { altCall } = await import("../server/stagecraft/board-first.js");
@@ -130,7 +130,8 @@ test("the bare line (den 1): 0 and 1 at its ends, no tick between, passes the ga
   assert.equal(ops.filter((o) => o.op === "line").length, 0, "no tick between 0 and 1: nothing is cut");
   assert.ok(!ops.some((o) => o.op === "circle" || o.op === "arrow" || o.op === "text"), "no dot, hop or label beyond the ends");
   assert.deepEqual(x.facts.counts.lines, [{ gaps: 1, ticks: 2, innerTicks: 0 }]);
-  const said = "2/5 ke liye 0 se 1 ki line ko kitne barabar gaps mein kaatoge?";
+  // (director33: the prompt no longer asks what the child "will cut" — her answer "5 gaps mein kaatungi" opened a safety turn)
+  const said = "2/5 ke liye 0 se 1 ki line mein kitne barabar gaps banenge?";
   const g = gateWhiteboard(retimeToLine(x.script, said), { reply: said, speechMs: speech(said), withhold: { values: ["5", "paanch"] } });
   assert.ok(g.pass, JSON.stringify(g.checks.filter((c) => !c.pass)));
   // (its second view is none: an uncut bar would add nothing the line does not show)

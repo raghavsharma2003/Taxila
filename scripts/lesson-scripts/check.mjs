@@ -2012,6 +2012,8 @@ export const SAFETY_STAGED_KNOWN = [];
 /** Words a judged run saw set off the safety turn as a right answer, though scanSafety does not mark them: { word, seen }. */
 export const SAFETY_SEEN = [
   { word: "blade", seen: "director32 c4-maths-ch01-t02 steering rows 45-48: the accept form \"chhote blade wali\" said as a right answer opened the safety turn twice (the model's distress read; scanSafety does not mark it)" },
+  { word: "kaatungi", seen: "director33 c5-maths-ch02-t01 steady rows 49-52: the accept form \"5 gaps mein kaatungi\" (\"I will cut it into 5 gaps\"), said as a right answer to \"kitne barabar gaps mein kaatoge?\", opened the safeguarding turn twice (the model's distress read; scanSafety does not mark it)" },
+  { word: "kaatunga", seen: "the same word in the masculine (main's reading, not seen in a run): director33 c5-maths-ch02-t01 steady rows 49-52" },
 ];
 const seenWordIn = (t) => SAFETY_SEEN.find((w) => new RegExp(`(?<![\\p{L}])${w.word}(?![\\p{L}])`, "iu").test(t)) ?? null;
 /** Every key, accept form and named wrong answer of a script: [{ at, field, form }]. Cards are named as d32Cards names them;
