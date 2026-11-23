@@ -17,7 +17,9 @@ test("the fraction beside the key's name is right; beside the listed wrong name 
   assert.equal(grade("6/7"), "correct");
   assert.equal(grade("12/14"), "correct", "by value");
   assert.equal(grade("5/6"), "misconception");
-  assert.equal(grade("1/2"), "incorrect");
+  // (to-brain 050 W1: re-pinned. A fraction beside no name of the prompt names no option and is no listed wrong answer: at a card
+  // keyed by a name, code has no reason it can name, so the model reads it — never `correct`)
+  assert.equal(grade("1/2"), undefined);
   assert.equal(grade("Anjali"), "correct");
 });
 
