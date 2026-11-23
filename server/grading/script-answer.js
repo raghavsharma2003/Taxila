@@ -148,7 +148,9 @@ function items(raw) {
     // ("do guna" is twice: a "do" right before an operator is the number; one right after it is the verb, "bhaag do")
     // (050, main's reader: "3 ko do se guna" — a "do" before "se" and an operator is the number, as "do guna" is)
     const beforeSeOp = next?.k === "raw" && /^(?:se|से)$/.test(next.t) && a[i + 2]?.k === "op";
-    const beside = isN(prev) || isN(next) || beforeSeOp || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
+    // ("baarah mein se das": the part after "N mein se" is a number)
+    const afterMeinSe = prev?.k === "raw" && /^(?:se|से)$/.test(prev.t) && a[i - 2]?.k === "raw" && /^(?:mein|me|में)$/.test(a[i - 2].t) && isN(a[i - 3]);
+    const beside = isN(prev) || isN(next) || beforeSeOp || afterMeinSe || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
       || ((prev?.c === "over" || (prev?.k === "raw" && /^(?:aur|and)$/.test(prev.t))) && isN(a[i - 2]));
     x.c = !verb && (beside || i === firstContent || (prev && prev.k === "raw" && LEAD.has(prev.t))) ? "n" : null;
     // (a "do" that is no number is the verb: "bata do", "bhaag do"; it says nothing about the answer)
@@ -180,6 +182,17 @@ function items(raw) {
       continue;
     }
     res.push(x);
+  }
+  // (050, main: "baarah mein se das" — ten out of twelve — is the fraction 10/12; so is "12 mein 10" said alone or before "hisse".
+  // Whole numbers only, the part no more than the whole; "30 mein 6 kitni baar" stays words)
+  const isW = (x) => x?.k === "num" && /^\d+$/.test(x.v);
+  for (let i = 0; i + 2 < res.length; i++) {
+    const [N, mein, a, b] = res.slice(i, i + 4);
+    if (!isW(N) || mein.k !== "raw" || !/^(?:mein|me|में)$/.test(mein.t)) continue;
+    const se = a?.k === "raw" && /^(?:se|से)$/.test(a.t);
+    const M = se ? b : a, after = res[i + (se ? 4 : 3)];
+    const tailOk = se || !after || (after.k === "raw" && /^(?:hisse|hissa|हिस्से|हिस्सा)$/.test(after.t));
+    if (isW(M) && +N.v > 0 && +M.v <= +N.v && tailOk) res.splice(i, se ? 4 : 3, { k: "num", v: `${+M.v}/${+N.v}` });
   }
   // "30 ko 6 se bhaag" is 30 ÷ 6 (G7: the order is part of it)
   for (let i = 0; i + 4 < res.length; i++) {

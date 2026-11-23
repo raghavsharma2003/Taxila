@@ -586,3 +586,13 @@ test("050 units (main's fourth reader): where the unit is the choice, a bare num
   console.log(`# 050 unit-choice wall: ${cards} cards`);
   assert.deepEqual(leaks, []);
 });
+
+test("050 (main): \"N mein se M\" — M out of N — is the fraction M/N, in digits, words and Devanagari; never wrong in code for its wording", () => {
+  const c = card("10/12", ["10 bata 12"], null, "Kitna hissa?");
+  for (const s of ["baarah mein se das", "12 mein se 10", "12 mein se 10 hisse", "12 mein 10", "बारह में से दस"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["12 mein se 9", "baarah mein se do", "10 mein se 12"]) assert.notEqual(grade(c, s), "correct", s);
+  // ("30 mein 6 kitni baar" is a division said in words, never a fraction)
+  const div = card("30 ko 6 se bhaag", ["30 mein 6 kitni baar"], "6 ÷ 30");
+  assert.equal(grade(div, "30 mein 6 kitni baar"), "correct");
+  assert.notEqual(grade(div, "6 mein 30 kitni baar"), "correct");
+});
