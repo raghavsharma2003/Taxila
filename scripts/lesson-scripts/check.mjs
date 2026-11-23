@@ -1587,7 +1587,9 @@ export function d30Report(s) {
 export const AFTER_WORKED_MAX = 6;
 /** Scripts outside the live ones held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged
  *  (c5-maths-ch02-t03 left it for D29_PILOTS when it went live, dc-r8-director31 item 10; c6-maths-ch07-t01 in director32). */
-export const STANDARD_STAGED = ["c4-maths-ch01-t02"];
+export const STANDARD_STAGED = ["c4-maths-ch01-t02",
+  // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
+  "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 /** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */
 export const HINDI_FORM_ENGLISH = /\b(and|or|but|so|the|are|was|were|of|what|which|who|how|many|much|equal|equally|part|parts|piece|pieces|colou?r|colou?red|shaded?|same|total|left|count|whole|half|bigger|smaller|biggest|smallest|more|less|than|answer|find|first|second|third|then|now|yes|right|wrong|side|sides|length|breadth|width|cost|times|each|every|between|after|before|top|bottom|distance|share|shared|divide|divided|add|subtract|multiply|correct|think|tell|cut|eat|ate|eaten|take|took|give|gave|walk|walked|run|ran|fence|wire|round|rounds)\b/i;
 /** Every card the child answers, with where it is (A.1). */
@@ -1721,16 +1723,22 @@ export function d31Errors(s) {
  *  Also: no `wrap.ack` form says "yaad rakh" (a promise she cannot keep). */
 export const D32_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
   // (the two staged scripts rewritten for director32, each read cold by an independent reader and fixed)
-  "c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+  "c4-maths-ch01-t02", "c6-maths-ch07-t01",
+  // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
+  "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 /** Rule 7 (a picture has something to draw): on for a topic listed here, with --d32, or when forced. Studio 014's views are in. */
 export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
-  "c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+  "c4-maths-ch01-t02", "c6-maths-ch07-t01",
+  // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
+  "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 /** Cards with no honest drawing: any picture of the thing would draw the card's own answer. A picture request there gets the
  *  card's hint (to Brain 048 G5). Main lists each with its reason: { topicId, at, reason }. */
 export const PICTURE_NONE = [
   { topicId: "c4-maths-ch05-t01", at: "c4-maths-ch05-t01-s2/workedExample.steps[0].ask", reason: "15 pencils into groups for 1/3: any drawing of the groups is the key (three equal groups)" },
   // (d33 two-pass read: the worked board's second view lays the sides in a line with "?" for their total, which is the step's answer; `noView`)
   { topicId: "c6-maths-ch06-t01", at: "c6-maths-ch06-t01-s1/workedExample.steps[0].ask", reason: "what to find first for the fence: the view totals the sides as \"?\", which is the key (the perimeter)" },
+  // (d33 rewrite, 2026-11-23: the step carries `noView`)
+  { topicId: "c4-maths-ch01-t02", at: "c4-maths-ch01-t02-s1/workedExample.steps[0].ask", reason: "the tester laid square on the slanting tile says 'turn it', and a turned tester is the step's answer" },
 ];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
 export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;
@@ -1988,7 +1996,9 @@ export function d32Listing(s) {
  *     the first later sentence in the script (document order) that names the same one.
  *  5  `joints.noPicture` (no other drawing: names no number, promises nothing) and `joints.yourTurn` (an invitation, not a
  *     question): three { hi, en } forms each, statements under 14 words; checked when present, required in D33_READY. */
-export const D33_READY = [];
+// (2026-11-23, main: each written to Learning 021, read cold in two passes and fixed; the six live, then three staged)
+export const D33_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
+  "c6-maths-ch07-t01", "c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 export const isD33 = (s) => D33_READY.includes(s?.topicId);
 /** Staged, unserved scripts whose forms trip the safety reader, each rewritten before it is served: { topicId, at, form }. */
 export const SAFETY_STAGED_KNOWN = [];
