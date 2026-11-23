@@ -60,8 +60,8 @@
     "en": "As soon as this measuring is done, we will surely talk about {aside}."
    },
    {
-    "hi": "{aside} ki baat bhi hogi, bas yeh kaam poora ho jaaye.",
-    "en": "We'll talk about {aside} too, once this bit of work is done."
+    "hi": "{aside} ki baat bhi hogi, yeh naap le lene ke baad.",
+    "en": "We'll talk about {aside} too, after we take this measure."
    },
    {
     "hi": "{aside} ki baat thodi der mein karenge.",
@@ -588,14 +588,20 @@
       "pictureBoard": {
        "template": "number-line-scale@1",
        "params": {
-        "from": 1,
-        "to": 8,
-        "step": 1
+        "from": 0,
+        "to": 3,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "patta yahan se"
+         }
+        ]
        }
       },
       "pictureCaption": {
-       "hi": "Yahan scale ka sirf woh tukda hai jo patte ke neeche aata hai, 1 se 8 tak.",
-       "en": "Here is only the part of the scale that lies under the leaf, from 1 to 8."
+       "hi": "Yahan scale ka shuru wala tukda bada karke hai: patta 1 ke nishaan se shuru hota hai, 0 se nahi.",
+       "en": "Here the start of the scale is drawn big: the leaf starts at the 1 mark, not at 0."
       },
       "why": {
        "hi": "1 se 8 tak 1-1 centimetre ke 7 khaane hain, yaani 8 − 1 = 7 centimetre",
@@ -670,8 +676,8 @@
       "en": "On the board is Golu's broken scale: it starts at the 4 mark, not at 0."
      },
      "point": {
-      "hi": "Golu ka scale toot gaya, ab woh 4 se shuru hota hai. Toote scale par bhi naap sakte hain: aakhri nishaan mein se cheez ka apna shuru ka nishaan ghatao.",
-      "en": "Golu's scale broke, and now it starts at 4. A broken scale still measures: take the thing's own start mark away from its end mark."
+      "hi": "Golu ka scale toot gaya, ab woh 4 se shuru hota hai. Uske khaane bhi 1-1 centimetre ke hain: cheez jahan se shuru ho, wahin se khaane gino.",
+      "en": "Golu's scale broke; now it starts at 4. Its spaces are 1 centimetre each too: count the spaces from where the thing starts."
      },
      "pointAlt": {
       "hi": "Toote scale par khaane wahi hain, har ek 1 centimetre ka. Bas ginti 0 se nahi, 4 se shuru hoti hai, isliye shuru ka nishaan dekh kar chalna padta hai.",
@@ -719,19 +725,26 @@
        "en": "On the board is the broken scale, 4 to 14, with one end of the pencil at the 4 mark."
       },
       "pictureBoard": {
-       "template": "unrolled@1",
+       "template": "number-line-scale@1",
        "params": {
-        "sides": [
-         4,
-         8
-        ],
-        "unit": "cm",
-        "total": "?"
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 0,
+          "label": "pencil yahan se"
+         },
+         {
+          "value": 8,
+          "label": "yahan tak"
+         }
+        ]
        }
       },
       "pictureCaption": {
-       "hi": "Yahan toota tukda wapas juda hai: 0 se 4 tak 4 centimetre, phir pencil ke 8 centimetre, aur neeche poori lambai ka sawaal.",
-       "en": "Here the broken piece is joined back: 4 centimetres from 0 to 4, then the pencil's 8 centimetres, and below, the whole length asked."
+       "hi": "Yahan Golu ki pencil ek poore scale par hai, 0 se 8 tak: uske neeche 8 khaane aate hain.",
+       "en": "Here Golu's pencil lies on a whole scale, 0 to 8: 8 spaces lie under it."
       },
       "why": {
        "hi": "4 se aage 8 khaane chalo toh 12 aata hai, kyunki 4 + 8 = 12",
@@ -777,12 +790,12 @@
    ],
    "workedExample": {
     "problem": {
-     "hi": "Golu ka toota scale 3 ke nishaan se shuru hota hai. Uspar ek tehni 5 ke nishaan se 12 ke nishaan tak rakhi hai. Tehni ki lambai nikaalni hai.",
-     "en": "Golu's broken scale starts at the 3 mark. A twig lies on it from the 5 mark to the 12 mark. We want the twig's length."
+     "hi": "Golu ka toota scale 4 ke nishaan se shuru hota hai. Uspar ek tehni 5 ke nishaan se 12 ke nishaan tak rakhi hai. Tehni ki lambai nikaalni hai.",
+     "en": "Golu's broken scale starts at the 4 mark. A twig lies on it from the 5 mark to the 12 mark. We want the twig's length."
     },
     "problemAlt": {
-     "hi": "Board par Golu ka toota scale hai, jo 3 se shuru hota hai. Tehni uske 5 wale nishaan se 12 wale nishaan tak hai.",
-     "en": "On the board is Golu's broken scale, which starts at 3. The twig goes from its 5 mark to its 12 mark."
+     "hi": "Board par Golu ka toota scale hai, jo 4 se shuru hota hai. Tehni uske 5 wale nishaan se 12 wale nishaan tak hai.",
+     "en": "On the board is Golu's broken scale, which starts at 4. The twig goes from its 5 mark to its 12 mark."
     },
     "simpler": {
      "hi": "Pehle ek chhoti baat yaad karo: 0 se 7 tak wali pencil 7 centimetre thi. Yahan na scale 0 se shuru hota hai, na tehni.",
@@ -790,8 +803,8 @@
     },
     "givens": [
      {
-      "hi": "Scale 3 ke nishaan se shuru hota hai. Tehni ka ek sira 5 ke nishaan par hai, aur doosra 12 ke nishaan par.",
-      "en": "The scale starts at the 3 mark. One end of the twig is at the 5 mark, and the other at the 12 mark."
+      "hi": "Scale 4 ke nishaan se shuru hota hai. Tehni ka ek sira 5 ke nishaan par hai, aur doosra 12 ke nishaan par.",
+      "en": "The scale starts at the 4 mark. One end of the twig is at the 5 mark, and the other at the 12 mark."
      }
     ],
     "find": {
@@ -848,25 +861,25 @@
        "pictureBoard": {
         "template": "number-line-scale@1",
         "params": {
-         "from": 3,
-         "to": 8,
+         "from": 4,
+         "to": 9,
          "step": 1,
          "marks": [
           {
-           "value": 3,
+           "value": 4,
            "label": "scale ka shuru"
           }
          ]
         }
        },
        "pictureCaption": {
-        "hi": "Yahan scale ka shuru wala tukda bada karke hai: scale 3 ke nishaan se shuru hota hai.",
-        "en": "Here the start of the scale is drawn larger: the scale starts at the 3 mark."
+        "hi": "Yahan scale ka shuru wala tukda bada karke hai: scale 4 ke nishaan se shuru hota hai.",
+        "en": "Here the start of the scale is drawn larger: the scale starts at the 4 mark."
        }
       },
       "told": {
-       "hi": "Tehni 5 se shuru hoti hai, scale ke 3 se nahi. Isliye 12 mein se 5 ghatayenge.",
-       "en": "The twig starts at 5, not at the scale's 3. So we take 5 away from 12."
+       "hi": "Tehni 5 se shuru hoti hai, scale ke 4 se nahi. Isliye 12 mein se 5 ghatayenge.",
+       "en": "The twig starts at 5, not at the scale's 4. So we take 5 away from 12."
       },
       "do": {
        "hi": "Aakhri nishaan mein se tehni ka shuru ka nishaan ghatao",
@@ -910,8 +923,8 @@
      "board": {
       "template": "number-line-scale@1",
       "params": {
-       "from": 3,
-       "to": 13,
+       "from": 4,
+       "to": 14,
        "step": 1,
        "marks": [
         {
@@ -926,8 +939,8 @@
       }
      },
      "viewCaption": {
-      "hi": "Board par toota scale hai, 3 se 13 tak, aur tehni 5 ke nishaan se 12 ke nishaan tak.",
-      "en": "On the board is the broken scale, 3 to 13, and the twig from the 5 mark to the 12 mark."
+      "hi": "Board par toota scale hai, 4 se 14 tak, aur tehni 5 ke nishaan se 12 ke nishaan tak.",
+      "en": "On the board is the broken scale, 4 to 14, and the twig from the 5 mark to the 12 mark."
      },
      "pictureBoard": {
       "template": "number-line-scale@1",
@@ -953,8 +966,8 @@
      "answerBoard": {
       "template": "number-line-scale@1",
       "params": {
-       "from": 3,
-       "to": 13,
+       "from": 4,
+       "to": 14,
        "step": 1,
        "marks": [
         {
@@ -984,8 +997,8 @@
     "board": {
      "template": "number-line-scale@1",
      "params": {
-      "from": 3,
-      "to": 13,
+      "from": 4,
+      "to": 14,
       "step": 1,
       "marks": [
        {
@@ -1000,16 +1013,16 @@
      }
     },
     "viewCaption": {
-     "hi": "Board par Golu ka toota scale hai, 3 se 13 tak, aur us par ek tehni rakhi hai.",
-     "en": "On the board is Golu's broken scale, 3 to 13, with a twig lying on it."
+     "hi": "Board par Golu ka toota scale hai, 4 se 14 tak, aur us par ek tehni rakhi hai.",
+     "en": "On the board is Golu's broken scale, 4 to 14, with a twig lying on it."
     }
    },
    "checks": [
     {
      "id": "c1",
      "prompt": {
-      "hi": "Ek rubber scale par 5 ke nishaan se 9 ke nishaan tak rakha hai. Rubber kitne centimetre ka hai?",
-      "en": "An eraser lies on the scale from the 5 mark to the 9 mark. How many centimetres is the eraser?"
+      "hi": "Scale par rakhe rubber ka ek sira 5 par hai, doosra 9 par. Rubber kitne centimetre ka hai?",
+      "en": "A rubber on the scale has one end at 5 and the other at 9. How many centimetres is the rubber?"
      },
      "hindi": {
       "hi": "Rubber 5 se 9 tak pada hai. Toh rubber ki lambai kitni hui?",
@@ -1047,11 +1060,11 @@
        "marks": [
         {
          "value": 5,
-         "label": "yahan se"
+         "label": "ek sira"
         },
         {
          "value": 9,
-         "label": "yahan tak"
+         "label": "doosra sira"
         }
        ]
       }
@@ -1217,12 +1230,12 @@
     {
      "id": "c3",
      "prompt": {
-      "hi": "Cricket bat ka grip toote scale par 6 ke nishaan se 15 ke nishaan tak hai. Grip kitna lamba hai?",
-      "en": "A cricket bat's grip lies on a broken scale from the 6 mark to the 15 mark. How long is the grip?"
+      "hi": "Bat ka grip toote scale se naapa: grip 6 se shuru hokar 15 par khatam hota hai. Grip kitna lamba hai?",
+      "en": "The bat's grip was measured with a broken scale: the grip starts at 6 and ends at 15. How long is the grip?"
      },
      "hindi": {
-      "hi": "Bat ke handle par lipta grip 6 wale nishaan se 15 wale tak jaata hai. Woh kitne centimetre ka hua?",
-      "en": "The grip wrapped on the bat's handle runs from the 6 mark to the 15 one. How many centimetres is it?"
+      "hi": "Bat pakadne wali jagah 6 wale nishaan se 15 wale tak hai. Woh jagah kitne centimetre ki hai?",
+      "en": "The place where you hold the bat runs from the 6 mark to the 15 mark. How many centimetres is that place?"
      },
      "reask": {
       "hi": "Toote scale par 6 se 15 tak wale grip ki lambai kitni hai?",
@@ -1256,11 +1269,11 @@
        "marks": [
         {
          "value": 6,
-         "label": "yahan se"
+         "label": "grip shuru"
         },
         {
          "value": 15,
-         "label": "yahan tak"
+         "label": "grip khatam"
         }
        ]
       }
@@ -1374,8 +1387,12 @@
      },
      "then": {
       "prompt": {
-       "hi": "Ek chabi toote scale par 6 ke nishaan se 10 ke nishaan tak hai. Chabi kitni lambi hai?",
-       "en": "A key lies on a broken scale from the 6 mark to the 10 mark. How long is the key?"
+       "hi": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+       "en": "On the broken scale the key starts at 6 and ends at 10. How long is the key?"
+      },
+      "hindi": {
+       "hi": "Chabi 6 wale nishaan se 10 wale tak padi hai. Woh kitne centimetre ki hai?",
+       "en": "The key lies from the 6 mark to the 10 mark. How many centimetres is it?"
       },
       "reask": {
        "hi": "Toote scale par 6 se 10 tak rakhi chabi kitne centimetre ki hai?",
@@ -1406,11 +1423,11 @@
         "marks": [
          {
           "value": 6,
-          "label": "yahan se"
+          "label": "shuru"
          },
          {
           "value": 10,
-          "label": "yahan tak"
+          "label": "ant"
          }
         ]
        }
@@ -1540,8 +1557,8 @@
       "en": "This is a metre stick. It is marked in centimetres from 0 to 100: 0, 20, 40, 60, 80, 100. So 1 metre has 100 centimetres."
      },
      "pointAlt": {
-      "hi": "Tumhara 30 centimetre ka scale socho. Aise teen scale aur thoda sa aur jodo, tab jaakar ek metre ki lakdi banti hai, poore 100 centimetre.",
-      "en": "Think of your 30 centimetre scale. Three of them and a little more make one metre stick, a full 100 centimetres."
+      "hi": "Socho, ek-ek centimetre ke sau chhote khaane ek qatar mein lage hon. Itni lambi lakdi ek metre hai, poore 100 centimetre.",
+      "en": "Picture a hundred small one-centimetre spaces in a row. A stick that long is one metre, a full 100 centimetres."
      },
      "ask": {
       "prompt": {
@@ -1651,7 +1668,7 @@
     },
     {
      "id": "e2",
-     "convey": "a long tape marked only every 10 cm: the whole metres are where 0, 1, 2 are written, ten small spaces of 10 cm in each metre; read a length as the metres passed and the small spaces after; the card: a rope to 1 metre and 4 small spaces",
+     "convey": "a long tape marked only every 10 cm: the whole metres are where 0, 1, 2 are written, ten small spaces of 10 cm in each metre; read a length as the metres passed and the small spaces after; the card: a curtain to 1 metre and 4 small spaces",
      "mustSay": [
       {
        "hi": "feeta",
@@ -1683,16 +1700,16 @@
      },
      "ask": {
       "prompt": {
-       "hi": "Ek rassi feete par 0 se is nishaan tak aati hai. Rassi kitni lambi hai, metre aur centimetre mein?",
-       "en": "A rope reaches on the tape from 0 to this mark. How long is the rope, in metres and centimetres?"
+       "hi": "Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+       "en": "A curtain reaches on the tape from 0 to this mark. How long is the curtain, in metres and centimetres?"
       },
       "hindi": {
-       "hi": "Feete par rassi 0 se shuru hokar is nishaan par khatam hoti hai. Metre aur centimetre mein yeh kitni lambi hai?",
-       "en": "On the tape the rope starts at 0 and ends at this mark. How long is it in metres and centimetres?"
+       "hi": "Feete par parda 0 se shuru hokar is nishaan par khatam hota hai. Metre aur centimetre mein yeh kitna lamba hai?",
+       "en": "On the tape the curtain starts at 0 and ends at this mark. How long is it in metres and centimetres?"
       },
       "reask": {
-       "hi": "Feete par 0 se is nishaan tak wali rassi kitne metre aur kitne centimetre ki hai?",
-       "en": "How many metres and centimetres is the rope from 0 to this mark on the tape?"
+       "hi": "Feete par 0 se is nishaan tak wala parda kitne metre aur kitne centimetre ka hai?",
+       "en": "How many metres and centimetres is the curtain from 0 to this mark on the tape?"
       },
       "key": "1 metre 40 cm",
       "accept": [
@@ -1706,7 +1723,7 @@
        "1 m 40 cm",
        "one metre forty centimetres",
        "one metre forty",
-       "rassi 1 metre 40 centimetre ki hai",
+       "parda 1 metre 40 centimetre ka hai",
        "140 centimetre",
        "ek sau chaalis centimetre",
        "140 cm"
@@ -1744,8 +1761,8 @@
        "en": "Here is the metre stick, as long as one metre of the tape, with a mark at every 10 centimetres."
       },
       "why": {
-       "hi": "rassi 1 metre wale nishaan se 4 chhote khaane aage hai, har ek 10 centimetre, toh 1 metre 40 centimetre",
-       "en": "the rope goes 4 small spaces past the 1 metre mark, each 10 centimetres, so 1 metre 40 centimetres"
+       "hi": "parda 1 metre wale nishaan se 4 chhote khaane aage hai, har ek 10 centimetre, toh 1 metre 40 centimetre",
+       "en": "the curtain goes 4 small spaces past the 1 metre mark, each 10 centimetres, so 1 metre 40 centimetres"
       },
       "whyShort": {
        "hi": "1 metre, phir 4 chhote khaane, yaani 40 centimetre",
@@ -2036,8 +2053,8 @@
      },
      {
       "told": {
-       "hi": "Ab 300 mein se 40 ghatao: 260 centimetre rassi bachi.",
-       "en": "Now take 40 from 300: 260 centimetres of rope are left."
+       "hi": "300 mein se 40 gaye, toh 260 centimetre rassi bachi.",
+       "en": "40 taken from 300 leaves 260 centimetres of rope."
       },
       "do": {
        "hi": "300 mein se 40 ghatao",
@@ -2646,25 +2663,25 @@
      },
      "then": {
       "prompt": {
-       "hi": "Sabse lambi kaun hai: 1 metre 5 centimetre ki rassi, 70 centimetre ki dori, ya 90 centimetre ka danda?",
-       "en": "Which is the longest: a 1 metre 5 centimetre rope, a 70 centimetre string, or a 90 centimetre pole?"
+       "hi": "Inmein sabse lamba kaun hai: 1 metre 5 centimetre ka pipe, 70 centimetre ki dori, ya 90 centimetre ka danda?",
+       "en": "Which of these is the longest: a 1 metre 5 centimetre pipe, a 70 centimetre string, or a 90 centimetre pole?"
       },
       "reask": {
-       "hi": "1 metre 5 centimetre ki rassi, 70 centimetre ki dori, 90 centimetre ka danda: sabse lambi cheez kaunsi?",
-       "en": "A 1 metre 5 centimetre rope, a 70 centimetre string, a 90 centimetre pole: which is the longest?"
+       "hi": "1 metre 5 centimetre ka pipe, 70 centimetre ki dori, 90 centimetre ka danda: inmein sabse lamba kaun?",
+       "en": "A 1 metre 5 centimetre pipe, a 70 centimetre string, a 90 centimetre pole: which of these is the longest?"
       },
-      "key": "rassi",
+      "key": "pipe",
       "accept": [
-       "rassi sabse lambi",
-       "rassi sabse lambi hai",
-       "rassi hai",
-       "rassi wali",
-       "the rope",
-       "rope",
-       "1 metre 5 centimetre wali",
-       "1 metre 5 centimetre wali rassi",
-       "rassi lambi hai",
-       "rope is longest"
+       "pipe sabse lamba",
+       "pipe sabse lamba hai",
+       "pipe hai",
+       "pipe wala",
+       "the pipe",
+       "pipe",
+       "1 metre 5 centimetre wala",
+       "1 metre 5 centimetre wala pipe",
+       "pipe lamba hai",
+       "pipe is longest"
       ],
       "targets": "c4-maths-ch06-t01-m-concat-units",
       "wrongIfMis": "danda",
@@ -2672,7 +2689,7 @@
        "template": "compare@1",
        "params": {
         "left": {
-         "title": "Rassi",
+         "title": "Pipe",
          "items": [
           "1 metre 5 cm"
          ]
@@ -2687,8 +2704,8 @@
        }
       },
       "viewCaption": {
-       "hi": "Board par teen cheezon ki lambai likhi hai: rassi, dori aur danda.",
-       "en": "The board lists three things' lengths: the rope, the string and the pole."
+       "hi": "Board par teen cheezon ki lambai likhi hai: pipe, dori aur danda.",
+       "en": "The board lists three things' lengths: the pipe, the string and the pole."
       },
       "pictureBoard": {
        "template": "number-line-scale@1",
@@ -2709,12 +2726,12 @@
        "en": "Here is one metre stick, 0 to 100 centimetres: both the string and the pole can be measured on it."
       },
       "why": {
-       "hi": "rassi 1 metre 5 centimetre, yaani 105 centimetre hai, jo danda ke 90 aur dori ke 70 se zyada hai",
-       "en": "the rope is 1 metre 5 centimetres, that is 105 centimetres, more than the pole's 90 and the string's 70"
+       "hi": "pipe 1 metre 5 centimetre, yaani 105 centimetre hai, jo danda ke 90 aur dori ke 70 se zyada hai",
+       "en": "the pipe is 1 metre 5 centimetres, that is 105 centimetres, more than the pole's 90 and the string's 70"
       },
       "whyShort": {
-       "hi": "rassi 105 centimetre, sabse zyada",
-       "en": "rope 105 centimetres, the most"
+       "hi": "pipe 105 centimetre, sabse zyada",
+       "en": "pipe 105 centimetres, the most"
       },
       "whyAlt": {
        "hi": "1 metre 5 centimetre ko 15 padhne se metre bas 10 centimetre ban gaya; ek metre toh poore 100 centimetre ka hai",
@@ -2842,22 +2859,22 @@
        "template": "compare@1",
        "params": {
         "left": {
-         "title": "Pitch ki chaudai",
+         "title": "1 centimetre",
          "items": [
-          "3 lambe kadam"
+          "ek ungli ki chaudai"
          ]
         },
         "right": {
-         "title": "Mummy ka 1 kadam",
+         "title": "1 metre",
          "items": [
-          "lagbhag 1 metre"
+          "Papa ya Mummy ka lamba kadam"
          ]
         }
        }
       },
       "viewCaption": {
-       "hi": "Board par pitch ki chaudai Mummy ke lambe kadamon mein likhi hai, aur ek kadam ka naap.",
-       "en": "The board lists the pitch's width in Mummy's long strides, and the size of one stride."
+       "hi": "Board par dono naap likhe hain: ek centimetre ek ungli jitna chauda, ek metre Papa ya Mummy ka ek lamba kadam.",
+       "en": "The board lists both measures: a centimetre as wide as a finger, a metre one long stride of Papa's or Mummy's."
       },
       "pictureBoard": {
        "template": "number-line-scale@1",
@@ -3206,8 +3223,8 @@
        }
       },
       "simpler": {
-       "hi": "Pencil ke saath ungliyan ek ke baad ek rakhna socho. Woh kuch ungliyon mein khatam ho jaati hai.",
-       "en": "Think of laying fingers one after another along the pencil. It is done within a few fingers."
+       "hi": "Pencil ke saath ungliyan ek ke baad ek rakhna socho. Woh ek lambe kadam se bahut pehle khatam ho jaati hai.",
+       "en": "Imagine laying fingers one after another along the pencil. It ends long before one long stride."
       }
      },
      "simpler": {
@@ -3869,8 +3886,8 @@
      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
      "move": "own board: the two benchmarks; an eraser said in metres would be 4 of Papa's long strides, as long as a room → hold a thing against a finger and a stride before saying its unit; then a big tree's height, which unit",
      "say": {
-      "hi": "Sirf number mat suno, unit bhi suno. 4 metre ka rubber Papa ke 4 lambe kadam jitna hota, kamre jitna. Pehle cheez ko ungli aur kadam se milao.",
-      "en": "Hear the unit, not just the number. A 4 metre eraser would be 4 of Papa's long strides, room-long. Hold a thing against a finger and a stride first."
+      "hi": "Sirf number mat suno, unit bhi suno. 4 metre ka rubber toh poore kamre jitna lamba hota. Pehle cheez ko ungli aur kadam se milao.",
+      "en": "Don't just hear the number, hear the unit too. A 4 metre rubber would be as long as a whole room. First hold the thing against a finger and a stride."
      },
      "board": {
       "template": "compare@1",
@@ -4047,8 +4064,8 @@
        "en": "the tree is many long strides tall"
       },
       "whyAlt": {
-       "hi": "chhoti unit ungli jitni hai; ped ko ungli-ungli karke naapo toh ginti saikdon mein jaati",
-       "en": "the small unit is a finger's size; measure the tree finger by finger and the count runs into hundreds"
+       "hi": "chhoti unit ungli jitni hai; ped ko ungli-ungli karke naapo toh ginti hazaar se bhi upar jaati",
+       "en": "the small unit is a finger wide; measure the tree finger by finger and the count goes past a thousand"
       },
       "whyAltAsHelp": true,
       "answerBoard": {
@@ -4110,12 +4127,12 @@
    "chaar lagengi"
   ],
   "why": {
-   "hi": "2 metre = 200 centimetre, aur 50, 100, 150, 200: chaar ribbon",
-   "en": "2 metres = 200 centimetres, and 50, 100, 150, 200: four ribbons"
+   "hi": "2 metre = 200 centimetre; har ribbon 50, yaani aadha metre: ek metre mein do, toh chaar ribbon",
+   "en": "2 metres = 200 centimetres; each ribbon is 50, half a metre: two in a metre, so four ribbons"
   },
   "simpler": {
-   "hi": "Pehle border ko centimetre mein likho. Phir 50-50 karke gino.",
-   "en": "First write the border in centimetres. Then count in fifties."
+   "hi": "Har ribbon aadha metre ki hai. Ek metre mein aisi kitni aati hain, pehle yeh socho.",
+   "en": "Each ribbon is half a metre. First think how many fit in one metre."
   },
   "board": {
    "template": "compare@1",
