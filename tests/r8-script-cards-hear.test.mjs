@@ -1,6 +1,6 @@
 // To Brain 048 G4 (docs/patches/to-brain/048-script-cards-hear-hindi-as-spoken.md): a script card hears the answer the way a
 // child says it. Every keyed card of every live script (data/lesson-scripts/) and the two staged rewrites
-// (c4-maths-ch01-t02, c6-maths-ch07-t01; from LESSON_SCRIPTS_DIR, default data/lesson-scripts-staged) is answered in the
+// (c4-maths-ch01-t02; c6-maths-ch07-t01 live since director32; from LESSON_SCRIPTS_DIR, default data/lesson-scripts-staged) is answered in the
 // spoken forms of its right answer (digits, Latin Hindi, Devanagari and English number words from the READER'S OWN tables,
 // fractions said four ways, yes / no said six ways, an option without its shared noun, the key in Devanagari) and of its
 // named wrong answer(s) and their nearest neighbours (another number, the fraction turned over, the other option, a sum with
@@ -125,7 +125,8 @@ test("048 G2: a Devanagari reply is compared in Devanagari and is never wrong in
 });
 
 // ───────────── G4: every keyed card of the scripts ─────────────
-const STAGED = ["c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+// (director32: c6-maths-ch07-t01 went live and is walked from data/lesson-scripts with the others)
+const STAGED = ["c4-maths-ch01-t02"];
 const STAGED_DIR = join(ROOT, process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts-staged");
 function scripts() {
   const live = join(ROOT, "data/lesson-scripts");
@@ -286,7 +287,7 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
   t.diagnostic(`scripts ${counts.scripts}, cards ${counts.cards}, right forms ${counts.right} (correct ${counts.rightCorrect}, model ${counts.rightModel}), ` +
     `wrong forms ${counts.wrongTried} (model ${counts.wrongModel}), cards with no forms ${counts.noForms.length}${counts.noForms.length ? `: ${counts.noForms.join("; ")}` : ""}`);
   if (process.env.G4_PRINT) console.log(JSON.stringify(counts));
-  assert.equal(counts.scripts, 5 + STAGED.length, "five live scripts and the two staged rewrites");
+  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts (c6-maths-ch07-t01 live since director32) and the staged rewrite");
   assert.deepEqual(rightBad, [], "a right answer graded wrong or as the mix-up");
   assert.deepEqual(wrongBad, [], "a wrong answer graded right (a false key)");
 });
@@ -299,7 +300,7 @@ test("048: the accept forms G7 made safe again refuse the wrong answers they onc
   for (const s of ["24 + 18 + 24 + 18", "18 + 24 + 18 + 24"]) assert.equal(grade(per, s), "correct", s);
   for (const s of ["24 × 18", "24 + 18", "24 + 18 + 24", "24 x 18", "jodkar guna", "jodkar teen guna"]) assert.notEqual(grade(per, s), "correct", s);
   // fractional units: "30 ÷ 6" and its kin took "30 × 6", "30 + 6" and the division turned round
-  const div = find(`${process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts-staged"}/c6-maths-ch07-t01.json`, (it) => it.answer === "30 ko 6 se bhaag");
+  const div = find("data/lesson-scripts/c6-maths-ch07-t01.json", (it) => it.answer === "30 ko 6 se bhaag");
   for (const f of ["30 ÷ 6", "30 ko 6 se divide", "30 divided by 6", "30 mein 6 kitni baar"]) { assert.ok(div.acceptable.includes(f), f); assert.equal(grade(div, f), "correct", f); }
   for (const s of ["30 × 6", "30 + 6", "6 ÷ 30", "6 ko 30 se divide", "6 divided by 30", "6 mein 30 kitni baar", "30 - 6", "6 ko 30 se bhaag", "6/30"]) assert.notEqual(grade(div, s), "correct", s);
   // angles: "nahi, right angle hai" took the claim it denies, "right angle nahi hai"

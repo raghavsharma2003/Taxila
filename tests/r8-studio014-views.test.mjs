@@ -10,7 +10,7 @@ import { viewOf } from "../scripts/lesson-scripts/check.mjs";
 import { LIMITS } from "../shared/whiteboard.js";
 
 const SCRIPTS = [["data/lesson-scripts", "c4-maths-ch05-t01"], ["data/lesson-scripts", "c5-maths-ch02-t01"], ["data/lesson-scripts", "c5-maths-ch02-t02"],
-  ["data/lesson-scripts", "c5-maths-ch02-t03"], ["data/lesson-scripts", "c6-maths-ch06-t01"], ["data/lesson-scripts-staged", "c4-maths-ch01-t02"], ["data/lesson-scripts-staged", "c6-maths-ch07-t01"]];
+  ["data/lesson-scripts", "c5-maths-ch02-t03"], ["data/lesson-scripts", "c6-maths-ch06-t01"], ["data/lesson-scripts-staged", "c4-maths-ch01-t02"], ["data/lesson-scripts", "c6-maths-ch07-t01"]];
 /** Every board of the seven scripts (cards, asks, checks, worked boards, answer boards), by template. */
 function boards(template) {
   const out = [];

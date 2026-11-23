@@ -71,7 +71,7 @@ describe("3: the closing check-in and the wrap", () => {
     const { kitFromFile } = await import("../server/content/kits.js");
     const { getTopic } = await import("../server/content/curriculum.js");
     const T = "c6-maths-ch07-t01";
-    const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts-staged", `${T}.json`), "utf8"));
+    const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${T}.json`) /* live since director32 */, "utf8"));
     setScriptForTest(T, sc);
     const KEEP = process.env.TAXILA_R7_SCRIPT; delete process.env.TAXILA_R7_SCRIPT;
     try {

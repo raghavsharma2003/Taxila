@@ -334,7 +334,7 @@ test("main on director22: a view whose captions cannot be said clean is still dr
 test("Studio 014: the seven scripts' card boards — the view each gets, and what rule 7 still lists", async () => {
   const { d32Cards, viewOf, noPictureCards } = await import("../scripts/lesson-scripts/check.mjs");
   const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
-    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts-staged", "c6-maths-ch07-t01"]];
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
   const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
   const got = {};
   for (const [d, T] of SEVEN) {
@@ -350,6 +350,7 @@ test("Studio 014: the seven scripts' card boards — the view each gets, and wha
   // scripts and 1 on c4-ch05-t01, the one card PICTURE_NONE names with its reason (s2's pencils grid: any drawing of the groups is the
   // key); c4-ch01-t02 13 → 0 and c6-ch06-t01 7 → 0 by authored pictureBoards and new views; the reader fixes moved some cards'
   // boards between templates, and every board kept the per-board checks of P6)
+  // (director32: c6-maths-ch07-t01 s2 c3 re-posed over a compare@1 board with a one-whole pictureBoard, its bars gone: wholes 4 → 3, none 6 → 7)
   assert.deepEqual(got, {
     "c4-maths-ch05-t01": { "equal-groups@1 \u2192 equal-groups@1 rows": 2, "equal-groups@1 \u2192 shade-grid@1 grid": 3, "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 fraction-parts@1 round": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 2, "shade-grid@1 \u2192 fraction-parts@1 round": 1, "shade-grid@1 \u2192 none": 4, "wholes@1 \u2192 wholes@1 strips": 9, "wholes@1 \u2192 wholes@1 wholes": 3, "rule 7": 1 },
     "c5-maths-ch02-t01": { "fraction-line@1 \u2192 fraction-bars@1 parts": 18, "fraction-line@1 \u2192 fraction-line@1 strips": 15, "rule 7": 0 },
@@ -357,6 +358,6 @@ test("Studio 014: the seven scripts' card boards — the view each gets, and wha
     "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 6, "rule 7": 0 },
     "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 0 },
     "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 9, "shape@1 \u2192 shape@1 radii": 8, "rule 7": 0 },
-    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 6, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 4, "fraction-line@1 \u2192 fraction-bars@1 parts": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 }
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 7, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 3, "fraction-line@1 \u2192 fraction-bars@1 parts": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 }
   });
 });

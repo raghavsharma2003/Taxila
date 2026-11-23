@@ -39,7 +39,7 @@ test("017 B (was 016 A1): a quick question only where its point and card do not 
       assert.ok(!mine.some((x) => card.includes(x)), `${at}: shares a form with its card`);
     }
   }
-  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3 + 3 + 3 + 3, "every beat of the live scripts (the four pilots, then c5-maths-ch02-t03's 3 + 3 + 3, live since dc-r8-director31)");
+  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3 + 3 + 3 + 3 + 3 + 2 + 3, "every beat of the live scripts (the four pilots, then c5-maths-ch02-t03's 3 + 3 + 3, live since dc-r8-director31, then c6-maths-ch07-t01's 3 + 2 + 3, live since director32)");
   assert.equal(kept, 0, "every pilot pair fits, so no pilot keeps a quick");
 });
 
@@ -100,7 +100,7 @@ test("016 C: every remediation has a board its say speaks or is a 'socho' tellin
   // (the count is of remediation items over the five live scripts, D27_PILOTS: [with a board, "socho" tellings with none]. The four pilots
 //  were 19 + 8 and c5-maths-ch02-t03 adds 5 + 0; the 020 rewrites (dc-r8-director31) gave two more remediations a board, so the four are
 //  21 + 6. Listed: the 6 are c5-t01 s3 rem1, c6-t01 s1 rem1, s2 rem0, s2 rem1, s3 rem0, s3 rem1, every one a "Socho" telling.)
-  assert.deepEqual([own, imagine], [21 + 5, 6]);
+  assert.deepEqual([own, imagine], [21 + 5 + 4, 6]); // (+ 4: c6-maths-ch07-t01, live since director32, every remediation with its own board)
   // (C2: the count-marks board drew the 11 lower ticks its card asks the child to count)
   const cm = S["c5-maths-ch02-t01"].skills[0].remediation[0];
   // (dc-r8-director31: the 020 rewrite replaced the 7-gap board with the tailor's 4-marks-5-gaps board, den 5; the rule stands: the board never

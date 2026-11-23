@@ -7,8 +7,8 @@ import { scriptOf, d29Errors, fitOf, fitReport, D29_PILOTS, HOOK_MAX, POINT_CARD
 const S = Object.fromEntries(D29_PILOTS.map((t) => [t, scriptOf(t)]));
 const fresh = (t) => structuredClone(S[t]);
 
-test("017: the live scripts (the four pilots and c5-maths-ch02-t03, dc-r8-director31) are under the rules and pass them", () => {
-  assert.deepEqual([...D29_PILOTS].sort(), ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"]);
+test("017: the live scripts (the four pilots, c5-maths-ch02-t03 from dc-r8-director31, c6-maths-ch07-t01 from director32) are under the rules and pass them", () => {
+  assert.deepEqual([...D29_PILOTS].sort(), ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"]);
   for (const [t, s] of Object.entries(S)) assert.deepEqual(d29Errors(s), [], t);
 });
 

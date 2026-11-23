@@ -26,11 +26,13 @@ const ruled = (s, n) => run(s).filter((x) => x.includes(`Learning 020 rule ${n})
 // (repinned d32, 2026-11-19: the two staged scripts were rewritten and Studio 014 gave the boards their views, so D32_READY and
 // D32_PICTURES_READY hold all seven and the picture rule no longer waits. The gate is kept honest by a staged script outside the lists:
 // off on the gate, and the rules still bite when forced)
-test("020 the gate: on for the five live scripts and the two rewritten staged ones, the picture rule with them; off for a script not listed", () => {
+// (repinned director32: c6-maths-ch07-t01 went live; the lists keep their order, the script is read from data/lesson-scripts)
+test("020 the gate: on for the six live scripts and the rewritten staged one, the picture rule with them; off for a script not listed", () => {
   const live = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
-  const staged = ["c4-maths-ch01-t02", "c6-maths-ch07-t01"];
-  assert.deepEqual(D32_READY, [...live, ...staged]);
-  assert.deepEqual(D32_PICTURES_READY, [...live, ...staged]); // (rule 7 is on for all seven)
+  const staged = ["c4-maths-ch01-t02"];
+  assert.deepEqual(D32_READY, [...live, ...staged, "c6-maths-ch07-t01"]);
+  assert.deepEqual(D32_PICTURES_READY, [...live, ...staged, "c6-maths-ch07-t01"]); // (rule 7 is on for all seven)
+  live.push("c6-maths-ch07-t01");
   const stagedOf = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8"));
   const scripts = [...live.map((t) => scriptOf(t)), ...staged.map(stagedOf)];
   for (const s of scripts) {

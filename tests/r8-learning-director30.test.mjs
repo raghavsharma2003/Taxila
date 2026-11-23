@@ -19,7 +19,8 @@ test("019 A.1, as 020 rule 1 left it: a hindi form is optional (a card with no h
   for (const [t, s] of Object.entries(S)) {
     const cards = hindiCards(s);
     // (a floor on each script's size: the four pilots 30 or more; c5-maths-ch02-t03, live as judged in dc-r8-director31, has 29)
-    assert.ok(cards.length >= (t === "c5-maths-ch02-t03" ? 29 : 30), `${t}: ${cards.length} cards`);
+    // (c6-maths-ch07-t01, live as judged in director32, has 27)
+    assert.ok(cards.length >= ({ "c5-maths-ch02-t03": 29, "c6-maths-ch07-t01": 27 }[t] ?? 30), `${t}: ${cards.length} cards`);
     for (const { at, card } of cards) {
       if (!card.hindi) continue; // (optional now)
       assert.ok(card.hindi?.hi && card.hindi?.en, `${t} ${at}`);
