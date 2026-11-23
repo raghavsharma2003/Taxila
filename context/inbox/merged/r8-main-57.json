@@ -1,0 +1,108 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-d33-dry",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "Round d33 dry matrix on the merged code (nine topics by four children, 36 lessons, no model): every gated predicate 0 of 159, four counted; suites 336 files, 4,176 pass, 0 fail; turns ending on a check-in in a steady lesson 4, 4, 8, 3, 3, 3 (live) and 3, 3, 3 (staged)"
+  },
+  {
+   "id": "dc-r8-vpc-whole-to-70",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "A verdict, its reason, the next point and its card are said as one turn up to 70 words; only above 70 is the turn split, and its first part ends on a go-on statement, never a check-in"
+  },
+  {
+   "id": "dc-r8-own-reason-after-its-miss",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "A card's own other reason is the second help only when the child's last answer at that card was the card's named wrong answer; every other child gets the hint, the point's other wording, then the key"
+  },
+  {
+   "id": "rj-r8-split-vpc-at-66",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Splitting every verdict-point-card turn of 66 words or more at the point (to-brain 049 B6): the first part had to end somewhere, ended on a check-in, and put \"samajh aaya?\" after 39 right answers in the dry matrix"
+  },
+  {
+   "id": "fd-r8-own-reason-said-to-wrong-child",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "Built as ordered (after any miss or request), the card's own reason was said to a child who had answered right and then asked for help, and to one who had not answered at all: a sentence about a mistake she never made"
+  },
+  {
+   "id": "fd-r8-given-only-on-told-path",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A worked example's given that is written only in an asked step's told line is never spoken to the child who answers that step right: found by main reading a dry steady lesson (the strides in c4-maths-ch06-t01 skill 3), after two cold reads and the checker had passed it"
+  },
+  {
+   "id": "fd-r8-parallel-agents-merged-with-one-conflict",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "After two single build agents each ran out of context on to-brain 049, its remaining items were split between two agents in separate worktrees by file ownership and merged with one trivial conflict"
+  }
+ ],
+ "edges": [
+  {
+   "src": "ms-r8-d33-dry",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-vpc-whole-to-70",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "dc-r8-vpc-whole-to-70",
+   "rel": "caused_by",
+   "dst": "rj-r8-split-vpc-at-66"
+  },
+  {
+   "src": "dc-r8-vpc-whole-to-70",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-split-vpc-at-66",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "dc-r8-own-reason-after-its-miss",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "dc-r8-own-reason-after-its-miss",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-reason-said-to-wrong-child"
+  },
+  {
+   "src": "dc-r8-own-reason-after-its-miss",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-own-reason-said-to-wrong-child",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "fd-r8-given-only-on-told-path",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "fd-r8-given-only-on-told-path",
+   "rel": "constrains",
+   "dst": "dc-r8-d33-staged-topics"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-d33-dry` (2026-11-23): the merged round d33 code (`main/d33-code`, all of to-brain 049 with main's three rulings, to-brain 050, the nine final scripts) walked offline with stubbed lines: nine topics (six live, three staged) × steady, stuck, offtopic, steering = 36 lessons, no model call. `check-run.mjs` exit 0 on both halves; 155 of 159 predicates read 0, and the other four are counted, not gated: a verdict, reason, point and card said whole in 66 to 70 words (10 rows), a card sentence said in two turns running where the card is asked again (8), a re-ask with no authored form (6), a worked step's reason said again by an authored line (6). New gated predicates each first shown flagging their director32 rows in the fixtures: `hindiPromiseNoForm`, `reaskSameAfterHelp`, `pictureKey`, `pictureGoneBeforeAsk`, `helpNotOwn`, `keyBeforeHint`, `questionThreeRunning`, `yourTurnNotThird`, `verdictCheckinBeforeReturn`, `returnInsideWorked`, `vpcUnlisted` (above 70 words), `splitEndsOnCheckin`, `dekhoOver`, `returnAsksAgain`, `whyAltNoMiss`. 45 picture requests: 13 the card's authored picture, 23 the board's second view, 8 the hint with the no-other-drawing line, 1 that line and the question alone; none a key. Turns ending on a check-in in a steady lesson: 4, 4, 8, 3, 3, 3 in the live six (director32: 4, 5, 6, 4, 2, 4) and 3, 3, 3 in the staged three. Steady second helps at a card: the card's own reason once or twice a lesson, the point's other wording 0 times. Suites (336 test files, two at a time): 4,176 pass, 0 fail, 1 TODO. The grader gate reads 9 scripts, 260 cards: 5,414 right forms, 0 graded wrong; 8,053 wrong forms, 0 graded right. Not measured: anything a model says (the dry lines are stubs), a judge's ear, a real child. Method and per-lesson table: scratch `d33z/MEASURE.md`, copied into the director33 results folder with the run.",
+  "decisions": "- `dc-r8-vpc-whole-to-70` (2026-11-23, main; replaces to-brain 049 B6's first bullet): the turn that carries a right verdict, its reason, the next point and the next card is said whole up to 70 words. Above 70 it is split at the point, and the first part ends on a go-on statement (\"Ab aage dekhte hain.\" forms), never a check-in. The checker's script limits keep such turns at or under 70, so the dry matrix has 0 splits; turns of 66 to 70 are counted (`vpcWhole`, 10 rows). **Why:** the split as ordered needed an ending for its first half, and the only available ending was a check-in: it put \"samajh aaya?\" after 39 right answers, the exact ending five rounds of work had removed. **What would reverse it:** two judges in one run naming a 66 to 70 word verdict-point-card turn as a monologue; then the script limit for that turn drops by five words and points are cut to fit, and the turn is still not split.\n- `dc-r8-own-reason-after-its-miss` (2026-11-23, main; narrows to-brain 049 B3 and `dc-r8-director32` item 4): a card's marked `whyAlt` (the sentence that says what the named wrong answer got wrong) is the second help only when the child's most recent graded answer at that card was that named wrong answer (or, where the card names none, any miss at that card). A request or a give-up after that answer still qualifies; a child who has not answered, answered right, or gave some other wrong answer gets the card's hint, then the point's other wording, then the key. The walk records the last graded answer per card; `whyAltNoMiss` is gated at 0. **Why:** the sentence is about one particular mistake; said to anyone else it accuses her of something she did not do. **What would reverse it:** two judges finding that help after a different wrong answer still misses the child's mistake; then own reasons are written per wrong answer in the scripts (data), not widened in code.",
+  "rejected": "- `rj-r8-split-vpc-at-66` (2026-11-23): **tried** (to-brain 049 B6 as ordered, built by the first integration agent) splitting every turn of 66 words or more that holds a verdict, its reason, a point and a card, at the point. **What broke:** the first half (verdict and reason) had no question to end on, so it ended on a comprehension check-in: 39 right answers in the dry matrix were followed by \"samajh aaya?\", and the lessons gained two turns each. Replaced by `dc-r8-vpc-whole-to-70`."
+ }
+}

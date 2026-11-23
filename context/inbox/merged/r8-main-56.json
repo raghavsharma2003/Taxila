@@ -1,0 +1,200 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-d33-reads",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "Round d33 cold reads: nine scripts each read by an independent Opus reader in two new passes (rules against the later method; every board and picture built); 269 keys solved, all agree; every script had kind-A findings, none of them a key"
+  },
+  {
+   "id": "ms-r8-word-key-probe",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "Main's probe of the script grader at word-keyed cards: 11 natural right answers at 4 cards, 10 graded incorrect and 1 sent to the model; after to-brain 050, 0 incorrect; no wrong answer correct over 7,455 dressed wrong replies"
+  },
+  {
+   "id": "fd-r8-word-key-misgrade",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "Where a card's key is words, the code grader called any unmatched short reply wrong (\"do se guna karo\" for \"2 se guna\"), took a denial, a turned comparison and a wrong unit as right, and called spoken working wrong; no judged run could show it, because the scripted child answers with the key"
+  },
+  {
+   "id": "dc-r8-script-grade-wrong-only-when-known",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "At a script card the code says \"incorrect\" only for a reason it can name (the listed wrong answer, the other option, a right form with other numbers, a number key's other number, another unit); everything else goes to the model (to-brain 050)"
+  },
+  {
+   "id": "fd-r8-two-way-cards-defeat-own-reason-help",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "On a two-way card, help that says what the wrong answer got wrong leaves only the key: four readers found it independently once every card carried its own reason as help"
+  },
+  {
+   "id": "dc-r8-own-reason-needs-a-real-question",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "A card whose own reason is said as help asks for a value or offers three options; at most four two-way cards a lesson, and none carries the mark"
+  },
+  {
+   "id": "fd-r8-safety-turn-from-model-read",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "The safety check-in on the right answer \"chhote blade wali\" (director32) came from the model's reading of the child's line, not from the code predicate, which does not mark the word: no checker can call it"
+  },
+  {
+   "id": "dc-r8-safety-seen-list",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "The checker refuses, in any answer form, a word that has set off a safety turn on a right answer in a judged run (a list that grows only from runs); cards are written so that the natural right answer holds no weapon or tool word"
+  },
+  {
+   "id": "rj-r8-drop-views-that-repeat",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Offering no second view where it would draw the same wholes again (Studio 015 item 4): it took the view from 48 cards and failed 150 captions on the evidence of two judged rows; reverted the same hour"
+  },
+  {
+   "id": "fd-r8-picture-not-built-by-checker",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "An authored picture is drawn only when a child asks, so nothing built it: a new script's closing picture did not draw (9 a group over the template's 8) and the checker passed it"
+  },
+  {
+   "id": "dc-r8-noview-and-pictures-draw",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "Every authored picture must draw (checker); a card whose board's second view is its own answer carries `noView` and is listed with its reason; a picture request there gets the no-other-drawing line and the hint"
+  },
+  {
+   "id": "dc-r8-d33-staged-topics",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "The two new staged lessons are c4-maths-ch06-t01 (centimetres and metres) and c6-maths-ch07-t03 (equivalent fractions); the class 4 one is the next chapter, not a graph neighbour of a live topic, because no staged class 4 script is one"
+  },
+  {
+   "id": "fd-r8-new-lesson-first-draft-was-sums",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A new lesson written to a brief that lists faults to avoid came back as lists of sums in two of three skills; it took two reads and two rebuilds, and what fixed it was saying what the child does (measures her notebook, estimates her room), not what the script must not contain"
+  },
+  {
+   "id": "dc-r8-director33-clauses",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "Clauses fixed before director33: the live perimeter lesson stating a false rule again leaves service until two clean reads; the class 4 shapes lesson failing a third run is set aside and its kit re-planned as two lessons"
+  }
+ ],
+ "edges": [
+  {
+   "src": "fd-r8-word-key-misgrade",
+   "rel": "measured_by",
+   "dst": "ms-r8-word-key-probe"
+  },
+  {
+   "src": "fd-r8-word-key-misgrade",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-reads"
+  },
+  {
+   "src": "dc-r8-script-grade-wrong-only-when-known",
+   "rel": "caused_by",
+   "dst": "fd-r8-word-key-misgrade"
+  },
+  {
+   "src": "dc-r8-script-grade-wrong-only-when-known",
+   "rel": "measured_by",
+   "dst": "ms-r8-word-key-probe"
+  },
+  {
+   "src": "dc-r8-script-grade-wrong-only-when-known",
+   "rel": "part_of",
+   "dst": "dc-r8-script-grade-as-spoken"
+  },
+  {
+   "src": "fd-r8-two-way-cards-defeat-own-reason-help",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-reads"
+  },
+  {
+   "src": "dc-r8-own-reason-needs-a-real-question",
+   "rel": "caused_by",
+   "dst": "fd-r8-two-way-cards-defeat-own-reason-help"
+  },
+  {
+   "src": "dc-r8-own-reason-needs-a-real-question",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-safety-turn-from-model-read",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "fd-r8-safety-turn-from-model-read",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-safety-seen-list",
+   "rel": "caused_by",
+   "dst": "fd-r8-safety-turn-from-model-read"
+  },
+  {
+   "src": "dc-r8-safety-seen-list",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-drop-views-that-repeat",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-not-built-by-checker",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-reads"
+  },
+  {
+   "src": "dc-r8-noview-and-pictures-draw",
+   "rel": "caused_by",
+   "dst": "fd-r8-picture-not-built-by-checker"
+  },
+  {
+   "src": "dc-r8-noview-and-pictures-draw",
+   "rel": "part_of",
+   "dst": "dc-r8-picture-none-list"
+  },
+  {
+   "src": "dc-r8-d33-staged-topics",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-new-lesson-first-draft-was-sums",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-reads"
+  },
+  {
+   "src": "fd-r8-new-lesson-first-draft-was-sums",
+   "rel": "constrains",
+   "dst": "dc-r8-d33-staged-topics"
+  },
+  {
+   "src": "dc-r8-director33-clauses",
+   "rel": "part_of",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-cold-reader-finds-what-checker-and-main-did-not",
+   "rel": "measured_by",
+   "dst": "ms-r8-d33-reads"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-d33-reads` (2026-11-23): nine lesson scripts (the six live, the staged `c4-maths-ch01-t02`, and two new staged ones, `c4-maths-ch06-t01` and `c6-maths-ch07-t03`), each read after its author's pass by an Opus reader at high effort who had not seen it, under the d32 reader brief plus two passes: every rule and operation sentence the checker lists read against everything the lesson teaches after it, and every posing board, second view and authored picture built and looked at. One reader a script; the new measuring lesson was read twice (after its first draft and after a rebuild). Each reader solved every key (34, 29, 30, 34, 27, 30, 28 on the seven; 28 and 29 on the new ones: 269, every key agreed), graded about 300 spoken right and wrong forms a script through the code grader, and built 40 to 90 boards a script. Findings marked A (would fail the lesson) in every script, none of them a wrong key: right answers graded incorrect in all nine (the grader, `fd-r8-word-key-misgrade`); a wrong answer graded correct in five; a sentence false against the lesson's later method or its own drawings in six (the class 4 shapes lesson's tester rule against every tester view; \"7 marks, 8 gaps\" without saying which ticks are marks; a caption naming corner letters the board does not draw); a board or picture that gives its card away in seven; a picture that did not draw in one. Not measured: a real child, a real voice, the walk's turn order (the readers read scripts, not lessons). Reports: `scratchpad/d33L/reader-*.md` at the time; the findings and main's rulings are in the fix agents' task lines and the scripts' commit messages on `main/d33-learning`.\n- `ms-r8-word-key-probe` (2026-11-23): main, with the gate's own `grade` helper (`classifyFast`, no model), on int/r6 `ba3d5df61`: four word-keyed cards (\"2 gap chalo\", \"2 se guna\", \"ek se zyada\", \"beech ke baad\"), 11 natural right phrasings: 10 `incorrect`, 1 to the model. After to-brain 050 (`main/d33-grade`, 11 commits to `eb056846b`): 0 `incorrect` (7 `correct`, 4 to the model); a second table of 29 rows (denials, a turned comparison, units, spoken working, a unit word alone) reads as ruled. The agent's walls in `tests/r8-script-cards-hear.test.mjs` (23 tests): 41 word-keyed cards in the seven scripts then gated; 62 cards and 7,455 wrong replies dressed in filler words, 0 `correct`; 81 unit-keyed cards and 891 wrong-unit replies, 0 `correct`; 152 accept forms of the shape \"A se <comparison>\". Over the gate's own forms the change moved 10 replies from `incorrect` to the model and 37 from the model to `incorrect`; no listed wrong answer changed. Not measured: the model's grading of the replies now sent to it; latency.",
+  "decisions": "- `dc-r8-script-grade-wrong-only-when-known` (2026-11-23, main; order `docs/patches/to-brain/050-script-grade-says-wrong-only-when-it-knows.md`): at a script card the code grader says `incorrect` only when it can name why: the reply is the listed wrong answer; it names the one option of the prompt that is not a right form; it is a right form said with other numbers; the key is a number and the reply is another number; it carries a unit no right form carries. A denial of a right form, a comparison turned round (\"Rahul kam\" for \"Rahul se kam\") and a bare number where right and wrong differ only by unit go to the model. The plain ways of saying a word key (helping verbs, pointing words, double / dugna) are `correct` by one rule with a closed filler list, guarded per card. **Why:** `fd-r8-word-key-misgrade`: a real child would be told \"Nahi\" for a right answer, the fault the gate counts as a misgrade, and no run with a scripted child can show it. **What would reverse it:** two replies in a judged run or a real sitting that the model graded wrong at a word-keyed card where code would have been right → those cards get a number key or stated options; a filler-list match that makes a wrong answer `correct` in any run → the W3 rule is withdrawn and word keys rely on accept lists and the model.\n- `dc-r8-own-reason-needs-a-real-question` (2026-11-23, main): a card whose own other reason is said as the second help (`whyAltAsHelp`) asks for a value or offers three options. A two-way card keeps no mark, and a lesson has at most four. Applied in the nine scripts' fix passes (c6-ch07-t01: six cards and the closing question changed; c5-t03, c4, c6-ch07-t03 likewise). **Why:** `fd-r8-two-way-cards-defeat-own-reason-help`. **What would reverse it:** two judges finding the three-way and value cards above class level or contrived in the same run → the two-way card returns with a hint that is not about the wrong answer, and item 4 of `dc-r8-director32` is narrowed to cards that are not two-way.\n- `dc-r8-safety-seen-list` (2026-11-23, main; amends item 9 of `dc-r8-director32`, see the judgement's amendments): the checker's safety rule is a list (`SAFETY_SEEN`) of words that set off a safety turn on a right answer in a judged run; a key, accept form or named wrong answer holding one is an error. Cards are written so that a child's natural right answer holds no weapon or tool word (the scissors card became two books). **Why:** `fd-r8-safety-turn-from-model-read`; the safety code is frozen and was not read into or changed. **What would reverse it:** the owner unfreezing the safety work, at which point the right fix is in the reader of the child's line, not in the scripts.\n- `dc-r8-noview-and-pictures-draw` (2026-11-23, main): the checker builds every authored `pictureBoard` and fails one that does not draw; a card whose board's second view draws its own answer carries `noView: true`, has no authored picture, and is on `PICTURE_NONE` with its reason (six cards after this round); the walk then says the no-other-drawing line and the card's hint. **Why:** `fd-r8-picture-not-built-by-checker`, and two readers finding views that total or lay out the very thing asked. **What would reverse it:** clause 37 of the director33 prompt (two judges finding the no-other-drawing line a dead end) → those cards' hints are authored as drawings.\n- `dc-r8-d33-staged-topics` (2026-11-23, main): the two new staged lessons for director33 are `c4-maths-ch06-t01` and `c6-maths-ch07-t03`. Learning 021 Part 4 asked for topics next in the syllabus graph to a live one; `c6-maths-ch07-t03` is (its prerequisite `c5-maths-ch02-t03` is live); no staged class 4 script is, so the class 4 one is the next chapter after the live `c4-maths-ch05-t01`. Both were rewritten from old drafts, read cold and fixed (the measuring lesson twice), and main read the changed cards. **What would reverse it:** either failing director33 for its script → it stays staged and the next batch waits for a brief that states what the child does in each skill (`fd-r8-new-lesson-first-draft-was-sums`).\n- `dc-r8-director33-clauses` (2026-11-23, main, fixed in `scratchpad/judge-d33/make-prompt.py` before the build finished): beside the clauses taken from `dc-r8-director32`'s reversal conditions, two are new: `c6-maths-ch06-t01` stating a false rule again → it leaves service until two cold reads in a row find its rule list clean; `c4-maths-ch01-t02` failing a third judged run → it is set aside and its kit re-planned as two shorter lessons (angles; the circle) before anyone rewrites it again. **What would reverse it:** nothing before the run; the clauses are the point of fixing them first.",
+  "rejected": "- `rj-r8-drop-views-that-repeat` (2026-11-23): **tried** (to-studio 015 item 4, ordered by main from one judge's two rows) a rule in the view code that offers no second view where it would draw the same wholes again (bars as circles of the same parts). **What broke:** it removed the view from 48 cards across seven scripts and failed 150 authored captions; the evidence was two rows of one topic. Reverted the same hour (`ab38d26a1`). The named cards got authored pictures in the script pass instead. A rule that takes a drawing away from many cards needs more than one judge's rows."
+ }
+}
