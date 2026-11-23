@@ -1068,8 +1068,12 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (Brain 049 B4: questionThreeRunning is counted, not gated, until the walk's yourTurn ending is built — it flags director32's rows (stuck
 // 16 to 22, offtopic 14 to 18, steering 28 to 32, c4 offtopic 58 to 62: tests/r8-director32-049); a first walk build, the third turn's
 // question replaced by a joints.yourTurn form, left the fourth turn's re-ask running into reaskRunning and reaskSameAfterHelp and was taken out)
-export const PENDING = new Set(["questionThreeRunning", "vpcUnlisted", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+export const PENDING = new Set(["questionThreeRunning", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
+/** to-brain 049 B6: a right verdict split from the point it led into (the row's noFit "vpc") goes on to that point and its card whatever the
+ *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed
+ *  right. The laws that read a request as about her turn before's part do not read the turn after such a split. */
+const VPC_GOES_ON = new Set(["giveUpAnswered", "requestAnswered", "requestHelped", "clarifyCard", "pictureCaption", "orderStays"]);
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
   const heads = {};
@@ -1087,7 +1091,7 @@ export function lessonFlags({ rows, script }) {
     if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; ctx.prevIntent = r.intent ?? null; ctx.prevFlags = r.readFlags ?? []; return; }
     ctx.returnDue = !!r.returnSaid;
     ctx.keyOpenBefore = ctx.keyOpen;
-    for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
+    for (const [name, f] of Object.entries(PREDICATES)) { if (ctx.prevT?.noFit === "vpc" && VPC_GOES_ON.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;

@@ -145,8 +145,9 @@ describe("047 R6: the turn's fit", () => {
       assert.deepEqual([...at(p, f, t, "firstTeachLong")], [4], `${p} ${f}`);
     assert.equal(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "firstTeachLong").size, 0);
   });
-  test("vpcUnlisted (counted) reads director31 c5-t03 steady 52 and c5-t02 steady 76: over 65 with the short reason, and not listed whole", () => {
-    assert.ok(PENDING.has("vpcUnlisted"));
+  // (re-pinned to to-brain 049 B6: the walk now splits such a turn at the point, and vpcUnlisted is gated)
+  test("vpcUnlisted (gated) reads director31 c5-t03 steady 52 and c5-t02 steady 76: over 65 with the short reason, and not listed whole", () => {
+    assert.ok(!PENDING.has("vpcUnlisted"));
     assert.ok(at("steady", "c5-ch02-t03", "c5-maths-ch02-t03", "vpcUnlisted").has(52));
     assert.ok(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "vpcUnlisted").has(76));
   });

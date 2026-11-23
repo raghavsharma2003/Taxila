@@ -3472,6 +3472,9 @@ function helpRequestOf(prev, input) {
   // (after her reply said alone before a worked segment there is no part to help: the segment comes — heldTurn. Brain 044 T6: her reply never
   // stands alone now — it goes on into the live part in the same turn — so no turn reaches this)
   if (prev.lastMove?.leadAlone && prev.splitHold) return null;
+  // (to-brain 049 B6: after a right verdict split from the point it led into, the point and its card come next whatever the child says —
+  // heldTurn; there is no part to help: the card is closed right)
+  if (prev.lastMove?.noFit === "vpc" && prev.splitHold) return null;
   // (Brain 048 G5: a picture request with nothing new to draw at the card — no pictureBoard unshown, no second view unshown — is help: the
   // card's hint over its posing board, never "there is nothing to draw" and never the same board drawn again as if new)
   // (Brain 049 B2: it is a picture request of its own — help.js never answers it with a key, and says the script's noPicture line first)
@@ -3640,7 +3643,16 @@ function helpStay(prev, input, d) {
   noteHelp(s, d);
   // (Brain 046 Q2: the Hindi form is this turn's words for the card; the card the walk keeps — its text read and asked again — is its own)
   s.lastMove = move; s.moveVoiced = false; s.lastUi = d.card === "hindiForm" ? prev.lastUi : ui;
-  return { state: s, move, moduleCommands: [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  const res = { state: s, move, moduleCommands: [], ui, end: false, proposal: directorProposal(move, { ui, guidance: s.guidance, purpose: s.purpose }), ...describe(s, input.kit) };
+  // (to-brain 049 B6: a turn of parts breaks at 75 words everywhere, a help turn too — dry steering c4 16, the noPicture line, a then-card's
+  // four-sentence simpler and the card, 78 words: breakL2 keeps help whole with its card, and a help turn never reached it. Over 75, the help
+  // ends on its check-in and the card is the next turn, as splitTeach splits a point from its card)
+  if (l2On() && d.card === "keep" && move.kind === "hint" && move.simpler && ui?.ask?.text && !recordedWalk(input)
+    && wordsIn(move.sayFirst ?? [], move.simpler, ui.ask.text) > L2_CAP) {
+    const sp = splitTeach(res, input, -1);
+    if (sp !== res) { if (sp.state.splitHold) sp.state.splitHold.helpSplit = true; return { ...sp, ...describe(sp.state, input.kit) }; }
+  }
+  return res;
 }
 /** The input a help decision hands the walk: a close lets the card go its own way (helpClose: the walk's key, its closing split); a
  *  turn that goes on reaches the walk as a yes at the check-in; a card asked as the card's question again. */
@@ -3852,6 +3864,12 @@ export function step(prev, input) {
   }
   // (dc-r8-director25 H4: the said set, and the one help decision of this turn — before the walk for a request that stays on its part,
   // after it for a hint, a card asked or a turn that goes on)
+  // (to-brain 049 B6: help split from its card over 75 words — a request or a give-up at the help's check-in is help on that card, live again:
+  // dry steering c4 18, a give-up there was answered by the card alone)
+  if (prev?.splitHold?.helpSplit && input?.event === "turn") {
+    const p1 = { ...prev, activeItemId: prev.splitHold.activeItemId ?? undefined, lastUi: prev.splitHold.ui, splitHold: undefined };
+    if (helpRequestOf(p1, input)) prev = p1;
+  }
   const said = input?.event === "turn" ? saidNowOf(prev) : prev?.said;
   const pre = helpBefore(prev, input, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
@@ -5035,6 +5053,17 @@ function splitLongOnce(out, input, opt = {}) {
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
   // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)
   const splitCloseOptIn = closing.some(Boolean) && process.env.TAXILA_R7_SPLIT_CLOSE === "on";
+  // (to-brain 049 B6, carried from 047 R6: a turn of a right verdict, its reason, a new point and its card that would pass 65 words is split at
+  // the point — the verdict and its reason now, the point and its card the next turn. director32 c4 steady 86; c5-t01 steady 14, 72, offtopic
+  // 12, steering 26; c5-t03 steady 6, stuck 10, offtopic 8; c6-ch07 steady 66)
+  if (l2On() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn && hasClose && !move.gave && move.point && ui?.ask?.itemId && !move.returned?.topic
+    && String(input.cls?.outcome ?? "") === "correct") {
+    const parts = partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0);
+    const bi = parts.findIndex((p) => p.k === "body");
+    if (bi > 0 && parts[0].k === "close" && parts.slice(bi).some((p) => p.k === "card") && parts.reduce((a, p) => a + p.n, 0) + VPC_SLACK > VPC_MAX) {
+      const b = breakL2(out, input, closeWords, bi); if (b) { b.move.noFit = "vpc"; return b; }
+    }
+  }
   if (l2On() && !recorded && !gaveTurn && !unfit && !splitCloseOptIn) { const b = breakL2(out, input, closeWords); if (b) return b; }
   if (!bridgeTurn && !gaveTurn && !unfit && (!closing.some(Boolean) || process.env.TAXILA_R7_SPLIT_CLOSE !== "on")) return splitTeach(out, input, cap, closeWords);
   // (L: a bridge said with the next unit's first point and card counts its words too)
@@ -5075,6 +5104,9 @@ function splitLongOnce(out, input, opt = {}) {
 // past the decision's own 170-row limit; at 75 words 131 to 165 rows and 27 to 33 check-ins, and the turns the director25 judges called
 // monologue, 76 words and over, still break. dc-r8-l2-break-at-75.)
 export const L2_CAP = 75;
+/** to-brain 049 B6: the most words a turn of a right verdict, its reason, a new point and its card may run to; over it the turn splits at the
+ *  point. VPC_SLACK: what she says beside the counted parts (measured on the dry matrix: the count runs short of what is said). */
+export const VPC_MAX = 65, VPC_SLACK = 0;
 /** Brain 043 R4: the most words a right verdict's frame and its joint to the why take (brain/say.js FRAMES.right, three words, and
  *  ", kyunki" or ". Dekho,"). */
 export const VERDICT_FRAME_WORDS = 4;
@@ -5455,7 +5487,7 @@ function heldTurn(prev, input) {
   if (!h || input.event !== "turn" || input.branch) return null;
   const c = input.cls;
   // (Brain 042: a request for Hindi after her reply said alone before a worked segment — the language from now on, and the segment)
-  if (prev.lastMove?.leadAlone && c?.request?.type === "language" && !c.flags?.distress && scriptOn()) {
+  if ((prev.lastMove?.leadAlone || prev.lastMove?.noFit === "vpc") && c?.request?.type === "language" && !c.flags?.distress && scriptOn()) {
     const s = structuredClone(prev);
     s.turn += 1;
     s.ctx = { ...s.ctx, lang: c.request.lang ?? "hindi", langPinned: true };
@@ -5486,7 +5518,10 @@ function heldTurn(prev, input) {
   // (dc-r8-director25 H4: a clarify or a give-up after a key's check-in — the why's other wording, else "we'll meet this again" and the
   // lesson goes on — is help on the card just keyed, decided before the walk; the L2/C1 and H2 branches that said it here are gone)
   const retAns = prev.returnAsked && c?.asideReply && !c?.help;
-  if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
+  // (to-brain 049 B6: a request or a "pata nahi" at a right verdict split from its point is answered by the point and its card, held — the
+  // verdict's card is closed right, and the new point is the next thing to teach)
+  const vpcHeld = prev.lastMove?.noFit === "vpc" && (!!c?.request || !!c?.help || lost);
+  if (((c?.request?.type === "uptake" && !c.help) || (!h.teach && lost) || retAns || vpcHeld) && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun) {
     const s = structuredClone(prev);
     s.turn += 1;
     // (dc-r8-director25 L2 item 1: lost after a close whose return was due — the held half is a boundary: the return comes now, on a turn
