@@ -7,7 +7,15 @@
 import { missesOnQuestion } from "./d29-predicates.mjs";
 import { hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { compiledFor } from "../../server/director/compile.js";
-import { helpPart, ladderOf, sameSentence, normSentence, sentencesOf, at, FALLBACK_JOINTS, keyLine } from "../../server/director/help.js";
+import { helpPart, ladderOf, sameSentence, normSentence, sentencesOf, at, FALLBACK_JOINTS, keyLine, goOnPlain } from "../../server/director/help.js";
+/** main's ruling of 2026-11-23 on to-brain 049 B6.4: a bridge's give-up (or clarify) is led by a go-on form that names no question and
+ *  promises nothing; where the script has none, the turn goes on to the next point and its card with no joint (the staged and live
+ *  c6-ch07 scripts: every afterKeyGoOn form promises). The laws that ask for a word to the child first excuse that turn. */
+export function bareBridgeGoOn(r, ctx) {
+  const col = String(r?.cell?.column ?? "");
+  if (!["give_up", "clarify"].includes(col) || !/:bridge$/.test(String(r?.cell?.part ?? "")) || !ctx?.script) return false;
+  return !goOnPlain(ctx.script, { consolation: true }) && !(r.seams ?? []).some((x) => x.left === "start" && x.joint);
+}
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const low = (t) => norm(t).toLowerCase();
@@ -398,6 +406,7 @@ export const HELP_PREDICATES = {
   giveUpAnswered(L, r, i, ctx) {
     const h = helpTurnOf(L, r, i, ctx);
     if (!h || !["give_up", "clarify"].includes(h.request)) return null;
+    if (bareBridgeGoOn(r, ctx)) return null;
     // (dc-r8-director27 Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes; a
     // give-up on a quick question gets its `say` and the card, on an asked step the step told)
     if (ctx.prevT?.leadAlone) return null;

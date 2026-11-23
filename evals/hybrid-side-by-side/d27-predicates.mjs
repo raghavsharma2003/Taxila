@@ -16,6 +16,7 @@
 // P5, joints:
 //   returnLed        a card said again after other parts were said since its last telling (a return) is led by the back-to joint or the
 //                    after-key return form
+import { bareBridgeGoOn } from "./help-predicates.mjs";
 import { stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
 import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
@@ -278,6 +279,8 @@ export const D27_PREDICATES = {
     if ((r.seams ?? []).some((x) => x.joint === "startAnyway")) return null;
     // (to-brain 049 B6: at a bridge's check-in the lesson goes on led by the go-on joint, afterKeyGoOn, in startAnyway's place — Brain 047 R5)
     if (/(?:^|:)bridge$/.test(String(a.beat ?? "")) && (r.seams ?? []).some((x) => x.joint === "afterKeyGoOn")) return null;
+    // (main's ruling of 2026-11-23: with no go-on form that promises nothing, the bridge's give-up goes on with no joint)
+    if (bareBridgeGoOn(r, ctx)) return null;
     if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);

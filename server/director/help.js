@@ -409,7 +409,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // child first (N1): the script's go-on joint, afterKeyGoOn — to-brain 049 B6: the greeting's start line, joints.startAnyway ("Theek hai, main
   // shuru karti hoon."), is said only at the greeting; at a bridge it was heard mid-lesson: director32 c4 stuck 62, c5-t01 stuck 64, c6-ch07
   // stuck 64)
-  if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 }), bridgeOn: true };
+  // (main's ruling of 2026-11-23, item 4: that go-on joint names no question and promises nothing — "is sawaal ko yahin rakhte hain", "is par
+  // hum dobara aayenge" are for after a key; a consolation is fine at a give-up. No such form: the turn goes on with no joint)
+  if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: goOnPlain(script, { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0, consolation: true }), bridgeOn: true };
   // (Brain 049 B2: a picture request with nothing left to draw — the card's pictureBoard and second view spent, or neither — is never a key
   // and never closes the card: the noPicture line, the card's unsaid help if one is left, then the card's question. It does not advance the
   // miss ladder. director32 steering 16 in c5-t01, c5-t02, c6 gave the key)

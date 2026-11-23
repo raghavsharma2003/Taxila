@@ -1,6 +1,7 @@
 // dc-r8-director26 (docs/patches/to-brain/040): the predicates written for director26's faults. Each was run over the director26 rows
 // the judges named for it and reads non-zero there (tests/r8-director26-predicates.test.mjs) before it is gated at 0 on the dry matrix.
 // Merged into dry-predicates.mjs's PREDICATES. Pure.
+import { bareBridgeGoOn } from "./help-predicates.mjs";
 import { FALLBACK } from "../../server/brain/say.js";
 import { stepToldAfterSimpler } from "./d30-predicates.mjs";
 import { toAap } from "../../server/director/register.js";
@@ -45,6 +46,8 @@ D26_PREDICATES.requestAnswered = function requestAnswered(L, r, i, ctx) {
   if (!ctx.script || r.who !== "teacher" || ENDS_N1.test(String(r.move?.kind ?? r.move ?? "")) && String(r.move?.kind ?? r.move ?? "") !== "teachback") return null;
   const col = String(r.cell?.column ?? "");
   if (col !== "give_up" && col !== "clarify") return null;
+  // (main's ruling of 2026-11-23, to-brain 049 B6.4: a bridge's give-up with no go-on form that promises nothing goes on with no joint)
+  if (bareBridgeGoOn(r, ctx)) return null;
   // (a worked step's request with its wordings spent goes on to the next step, on that step's own frame — J1: no promise there)
   if (/:worked:(?:problem|step\d+)$/.test(String(r.cell?.part ?? ""))) return null;
   // (dc-r8-director27 Brain 042: after her reply said alone before a worked segment there is no part to help — the segment comes)
