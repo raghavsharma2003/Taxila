@@ -251,9 +251,12 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // (Brain 042: a point's quick question or a worked step's asked question is no card — the child answers it from its key by persona)
       const quick = live?.quick ? { itemId: live.id, kind: live.quick.kind ?? "quick", key: String(live.answer), accept: live.acceptable ?? [] } : null;
       const card = live && !quick ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
-      const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: live.scriptAsk.wrongIfMis ?? null }
-        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null }
-        : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: live.scriptThen.wrongIfMis ?? null } : null;
+      // (d33 049 harness: Learning 021 writes some wrongIfMis as a LIST of the wrong answers a mix-up gives; the rule-based child
+      // says ONE of them, the first — joined, "aage,pehle mark par,mark par" was no answer and the reader rightly read it as other)
+      const oneWrong = (w) => (Array.isArray(w) ? (w[0] ?? null) : (w ?? null));
+      const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: oneWrong(live.scriptAsk.wrongIfMis) }
+        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: oneWrong(live.scriptCheck.wrongIfMis) }
+        : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: oneWrong(live.scriptThen.wrongIfMis) } : null;
       const sb = s.lastMove?.scriptBeat;
       // (v6.10 harness, main on director18: the child sim answered cards that had not been said — c5-t01 offtopic 24, steady 50, stuck
       // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
@@ -458,8 +461,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     // met with an affirmation and no not-right)
     const meta = activeItem?.scriptAsk ?? activeItem?.scriptCheck ?? activeItem?.scriptThen ?? null;
     const saidN = String(text).toLowerCase().replace(/\s+/g, " ").trim();
-    const wim = meta?.wrongIfMis ? String(meta.wrongIfMis).toLowerCase().replace(/\s+/g, " ").trim() : null;
-    const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
+    const wims = (Array.isArray(meta?.wrongIfMis) ? meta.wrongIfMis : meta?.wrongIfMis ? [meta.wrongIfMis] : []).map((w) => String(w).toLowerCase().replace(/\s+/g, " ").trim());
+    const wrongCalledRight = !!activeItem && ((graded === "correct" && wims.length > 0 && (wims.includes(saidN) || wims.includes(saidN.replace(/\s*(?:hai na|hai)$/, ""))))
       || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
     // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
     // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's

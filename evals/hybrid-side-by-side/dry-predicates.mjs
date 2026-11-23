@@ -695,13 +695,17 @@ export const ORDER_LAWS = {
     const sk = skillOfRow(r, ctx);
     let why = null;
     const pend = ctx.o.pend;
+    // (Brain 045 P3 / 047: an asked worked step — a step with its own ask.prompt — is said as its question; it is told only after the child's
+    // try. Its question said again after a request is the part said, not displaced: the dry stuck c4 40 to 44 on Learning 021's scripts,
+    // whose s1 step 1 is asked, read the step's question as no part and flagged the turns that asked it)
+    const TEACH_OR_ASK = (p) => TEACH.has(p.part) || p.part === "stepAsk";
     if (pend) {
-      const said = (r.pageParts ?? []).some((p) => TEACH.has(p.part) && beatOfPart(p) === pend.beat);
+      const said = (r.pageParts ?? []).some((p) => TEACH_OR_ASK(p) && beatOfPart(p) === pend.beat);
       if (!said && !ctx.o.said.has(`${pend.sk}|${pend.beat}`)) why = `${pend.beat} displaced at row ${pend.row} by ${pend.by}, not said here`;
       ctx.o.pend = null;
     }
     const live = liveBeatOf(r);
-    if (live && sk && !ctx.o.said.has(`${sk}|${live}`) && !(r.pageParts ?? []).some((p) => TEACH.has(p.part) && beatOfPart(p) === live)) {
+    if (live && sk && !ctx.o.said.has(`${sk}|${live}`) && !(r.pageParts ?? []).some((p) => TEACH_OR_ASK(p) && beatOfPart(p) === live)) {
       const by = returnOf(r, ctx) ? "a return" : AI_LINE.test(String(r.text ?? "")) ? "the AI line" : /·/.test(ctx.prevRead ?? "") ? `a request reply (${String(ctx.prevRead).split("·")[1].trim()})` : null;
       if (by) ctx.o.pend = { beat: live, sk, row: i, by };
     }
@@ -896,7 +900,10 @@ export const ORDER_LAWS = {
       if (want && forms && !s.joint && !r.seams.some((x) => x !== s && x.joint === want)) return `${s.left} → ${s.right} takes ${want}, none said`;
       // (dc-r8-director27 P3: after a key with nothing left, the back-to seam takes the after-key return form — one joint, both things)
       // (Brain 046 Q5: a worked example's close into the next card takes afterWorked — read by workedSeam)
-      if (s.joint && s.joint !== want && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      // (Brain 049 B2: a picture request with nothing left to draw leads with the script's own noPicture line — a joint the walk puts first,
+      // as it puts help's joints: the seam table has no row for it, so its seam is read here: at the start, and one of the script's forms)
+      const noPic = s.joint === "noPicture" && s.left === "start" && s.right === "noPicture" && (ctx.script?.joints?.noPicture ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      if (s.joint && s.joint !== want && !noPic && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }
     return null;

@@ -21,9 +21,18 @@ export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint
 /** Brain 049 B2: the line a picture request with nothing left to draw hears first — the script's `joints.noPicture` (Learning 021 writes three
  *  per script). Code has no form of its own: until a script has them, the line is not said and the rest of the turn stands.
  *  → { kind: "noPicture", text, by: "authored" } | null */
+// (d33 049, the dry steering c5-t01 16 on Learning 021's scripts: the form "Board par jo hai, wahi iski poori drawing hai." was said as
+// "jo hai, wahi …" — a joint is outside the turn's authored plan, and brain/say.js's screen pass unpoints a sentence that names the board.
+// The rotation passes over a form that points at the board or screen while another form is left; the brain pass is main's to look at)
+const POINTS_AT_BOARD = /(?<![\p{L}])(?:board|screen|whiteboard)\s+(?:par|pe|mein|me|ke|ki|ka)(?![\p{L}])|\bon the (?:board|screen)\b/iu;
 export function noPictureLine(script, { lang = "hinglish", lessonKey = null, n = 0 } = {}) {
   const own = script?.joints?.noPicture;
-  return Array.isArray(own) && own.length ? helpJoint(script, "noPicture", { lang, lessonKey, n }) : null;
+  if (!(Array.isArray(own) && own.length)) return null;
+  for (let k = 0; k < own.length; k++) {
+    const j = helpJoint(script, "noPicture", { lang, lessonKey, n: n + k });
+    if (j && !POINTS_AT_BOARD.test(j.text)) return j;
+  }
+  return helpJoint(script, "noPicture", { lang, lessonKey, n });
 }
 /** The joints help may say (Learning 014). Each script carries them as `joints.<kind>: [{hi, en}, …]`. */
 export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn"]);

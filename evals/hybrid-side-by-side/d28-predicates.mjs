@@ -127,6 +127,10 @@ export const D28_PREDICATES = {
   /** E3: a picture asked for after a key or a verdict is captioned in the script's own words. */
   pictureCaption(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx.script || !/·\s*visual/.test(String(ctx.prevRead ?? "")) || !ctx.prevT || ctx.prevT.card) return null;
+    // (Brain 049 B2: a picture asked for while a question is live — her turn before ended on an asked step's question or a quick question
+    // after the close — is a picture request at that question, B2's path and pictureSame's, not a picture after a key: the dry stuck c6 18
+    // on Learning 021's scripts, a request at s1's asked step 1 posed right after e3's verdict)
+    if (parts(ctx.prevT).some((p) => ["stepAsk", "quick"].includes(p.part))) return null;
     const closed = parts(ctx.prevT).some((p) => ["close", "closed"].includes(p.part)) || /(?:sahi jawab|jawab hai|jawab:|kyunki)/i.test(String(ctx.prevT.text ?? ""));
     if (!closed) return null;
     const caps = (ctx.o.d28Caps ??= captionsOf(ctx.script));

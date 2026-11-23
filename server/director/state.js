@@ -3535,7 +3535,14 @@ function helpBeat(kit, d, board) {
 }
 /** The words of a decision, said first: the wording, else the key, else the joint (friend slots filled). */
 // (Brain 049 B2: a picture request with nothing left to draw says the script's noPicture line first, then the card's unsaid help, if any)
-const helpWords = (d) => fillFriend([d.pictureLine?.text ?? "", d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
+// (d33 049 on Learning 021's scripts: the line is no part of the help — it rides in sayFirst as a joint, like a help joint, so the hint's own
+// board starts at the hint's first word and the line is said over the picture that is up. Folded into the help's words it drew the hint's
+// board from the line's first word: dry steering c4, c5-t01, c5-t02, c6 16, partOwnBoard and pageStart)
+const helpWords = (d) => fillFriend([d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
+const pictureLineFields = (d) => {
+  const t = d.pictureLine?.text ? fillFriend(d.pictureLine.text, d.friend ?? "").trim() : "";
+  return t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {};
+};
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
@@ -3568,10 +3575,10 @@ function helpFields(kit, d) {
   const board = helpBoardOf(d);
   // (Brain 046 Q2: a first request for Hindi with a Hindi form says no wording — the easier-words line, then the form as the question)
   if (!words && d.hindiForm) return { help: helpMark(d), hindiForm: d.hindiForm };
-  // (Brain 049 B2: a picture request with nothing left and no noPicture line written yet: no words of help — the card's question alone)
-  if (!words) return { help: helpMark(d) };
+  // (Brain 049 B2: a picture request with nothing left: the noPicture line, if the script has one, and the card's question)
+  if (!words) return { help: helpMark(d), ...pictureLineFields(d) };
   return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: helpMark(d),
-    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}) };
+    simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}), ...pictureLineFields(d) };
 }
 /**
  * A help turn that stays on the part (the card stays live, or no card is asked yet, or the card is closed with its key): built from the
@@ -3827,6 +3834,7 @@ function stepTryAgain(prev, input) {
 export function step(prev, input) {
   recordedNow = recordedWalk(input);
   backToWords = backToWordsOf(input?.kit);
+  afterWorkedWords = afterWorkedWordsOf(input?.kit);
   // (dc-r8-director28 Brain 044 T1: after the greeting's simpler wording, the next turn is the hook, the first point and its card — a second
   // request there is answered by the teaching it asks for; the greeting has no other wording)
   const input0 = input;
@@ -5091,6 +5099,12 @@ let backToWords = 7;
 function backToWordsOf(kit) {
   try { return Math.max(7, ...(scriptFor(kit)?.script?.joints?.backTo ?? []).map((f) => wordsIn(saidIn0(f, "hinglish") ?? ""))); } catch { return 7; }
 }
+// (d33 049, the dry steady c4 92 on Learning 021's scripts: a worked example's close, then its afterWorked joint — "Chalo, ab tumhari apni
+// baari." — then the next card, counted without the joint, ran to 76 words: the joint is the seam pass's and was not counted)
+let afterWorkedWords = 6;
+function afterWorkedWordsOf(kit) {
+  try { return Math.max(6, ...(scriptFor(kit)?.script?.joints?.afterWorked ?? []).map((f) => wordsIn(saidIn0(f, "hinglish") ?? ""))); } catch { return 6; }
+}
 /** d31: a card's question already in her said set (said on an earlier turn, not her last). */
 function cardSaidBefore(s, card, id = null) {
   const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").toLowerCase();
@@ -5130,7 +5144,7 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
     // (a card asked before comes back with its joint or frame: about seven words)
     // (d31: and a card whose question is in the said set — posedAt is undone by the split paths, as brain/say.js reads a return: the staged
     // c4-ch01-t02's dry steady 74 counted its returning card with no joint)
-    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + ((s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn) || cardSaidBefore(s, ui.ask.text, ui.ask.itemId) ? backToWords : 0) : 0 }].filter((p) => p.n > 0);
+    { k: "card", n: ui?.ask?.text ? wordsIn(ui.ask.text) + ((s.posedAt?.[ui.ask.itemId] != null && s.posedAt[ui.ask.itemId] < s.turn) || cardSaidBefore(s, ui.ask.text, ui.ask.itemId) ? backToWords : move.workedDone && !move.point ? afterWorkedWords : 0) : 0 }].filter((p) => p.n > 0);
   if (parts.length && lead) parts[0] = { ...parts[0], n: parts[0].n + lead };
   // (a miss verdict and the remediation it leads into are one answer — the order law: the remediation comes straight after the answer
   // it remedies; no seam between them)
@@ -5337,7 +5351,13 @@ function splitTeach(out, input, cap, extra = 0) {
   // (d29 final, main's item 6: a point said first in its turn — nothing before it — has its board drawn fresh at the turn's first word: nothing
   // up is erased, so Studio is asked for the point's board and the card's alone)
   const pointLeads = extra === 0 && first === 0 && !move.bridgeSaid && !move.heldSaid?.length && !move.asideAck && !move.returnReply && !move.hookSaid;
-  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([pointLeads ? null : s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]);
+  // (d33 049, the dry offtopic c4 68 on Learning 021's scripts: a remediation on its own board — five bags of seven — and its follow-up card
+  // on another — six bags of five — after the answered card's grid: Studio draws no switch after the first equal-groups page, the turn drew
+  // one page and said the remediation over the grid. A remediation and its card share the turn only where every board change is drawn;
+  // else the remediation ends on its check-in and the card is the next turn, as over 60 words)
+  const remDrawable = () => move.scriptBeat?.kind !== "remediation" || !move.scriptBeat?.board || !move.cardBeat?.board
+    || switchesFit([s.heldUp?.board ?? move.closeBeat?.board ?? null, move.scriptBeat.board, move.cardBeat.board]);
+  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || (move.scriptBeat?.kind === "remediation" ? remDrawable() : move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([pointLeads ? null : s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]));
   // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
   // 75 in all, counted as said; A.1: the hook, the first point and its card, 75. The 8 words of slack kept for her framing are not added)
   const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && (extra > 0 || move.hookSaid) && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;

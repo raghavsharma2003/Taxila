@@ -323,7 +323,13 @@ export const HELP_PREDICATES = {
     const mine = new Set(ladder.map((x) => x.path));
     const said = saidBefore(L, i);
     const rungText = (x) => (typeof x.value === "string" ? [x.value] : [x.value?.hi, x.value?.en]).filter(Boolean);
-    const first = ladder.find((x) => { const ss = rungText(x).flatMap(sentencesOf).map(normSentence); return ss.length && !ss.some((k) => inSet(k, said)); });
+    // (Brain 049 B3: a card's own hint is spent only when every sentence of it was said — one sentence near another part's, written the
+    // same way ("Ek jitni dor ke jitne zyada barabar hisse, …" beside "Ek hi raste ke …"), leaves it unsaid, as help.js reads it. The dry
+    // matrix on Learning 021's scripts: c6-ch07 steady 48, offtopic 56 and c5-t01 stuck 56 said the card's own hint first, as the order
+    // asks, and this read it as spent by a near sentence and wanted the whyAlt)
+    const own = (x) => x.path === `${part.path}.simpler`;
+    const allSaid = (x) => rungText(x).some((t) => { const ks = sentencesOf(t).map(normSentence).filter(Boolean); return ks.length && ks.every((k) => inSet(k, said)); });
+    const first = ladder.find((x) => { const ss = rungText(x).flatMap(sentencesOf).map(normSentence); return ss.length && !(own(x) ? allSaid(x) : ss.some((k) => inSet(k, said))); });
     const used = sentencesOf(r.text).map((s) => ({ s, hit: ix.rungs.get(normSentence(s)) })).filter((x) => x.hit);
     const other = used.find((x) => !mine.has(x.hit.path));
     if (other) return `help for another part (${h.part}${h.keyed ? ", keyed" : ""}): "${other.s.slice(0, 50)}" is ${other.hit.path}`;
@@ -340,7 +346,10 @@ export const HELP_PREDICATES = {
     const h = helpTurnOf(L, r, i, ctx);
     if (!h) return null;
     // (Brain 047 R5: a card's second reason said as a miss's help is said over the card's posing board — its answer board may show the key)
-    const hp = h.request === "hint" && !h.keyed ? helpPart(ctx.script, h.part) : null;
+    // (Brain 049 B3: the same after any request — a clarify, a give-up, a Hindi request answered as help: the marked whyAlt is the
+    // second rung of every unkeyed help and is said over the posing board. The dry matrix on Learning 021's scripts, where every card is
+    // marked, said it after a give-up six times over the posing board, as the walk should, and this read the answer board as its own)
+    const hp = !h.keyed && !h.closed ? helpPart(ctx.script, h.part) : null;
     const asHelp = hp && at(ctx.script, `${hp.path}.whyAltAsHelp`) === true ? `${hp.path}.whyAlt` : null;
     const ix = helpIndex(ctx);
     const t = norm(r.text);
