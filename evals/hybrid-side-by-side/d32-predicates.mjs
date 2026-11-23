@@ -5,6 +5,9 @@
 //   pictureGoneBeforeAsk B2: a page change between a picture's first word and the turn's question
 //   pictureNoLine       B2 (pictureSame's "none" path): a picture request with nothing drawn, at a script with joints.noPicture, and none
 //                       of its forms said
+//   hindiPromiseNoForm  B1: a Hindi switch line on a turn whose part has no `hindi` form
+//   reaskSameAfterHelp  B1: a turn's closing question the same sentence as her turn before's closing question
+import { helpPart, hindiFormOf } from "../../server/director/help.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -14,6 +17,19 @@ const sentencesOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?
 const pictureAsked = (r) => r?.who === "teacher" && (r.cell?.column === "picture" || !!r.held?.picture);
 /** Whether a row says a key: a key seam, or a close part on its page. */
 const saysKey = (r) => (r?.seams ?? []).some((x) => x.right === "key") || (r?.pageParts ?? []).some((p) => p.part === "close");
+/** A row's closing question, keyed, or null. */
+const lastAsk = (r) => { const q = sentencesOf(r?.text).at(-1) ?? ""; return /[?？]\s*$/.test(q) ? qKey(q) : null; };
+/** The last question sentences (keyed) of every question a script writes with no `reask` (a card's ask, a check, a follow-up card, the
+ *  your-step, an asked step's ask, the closing question): Set<key>. */
+function noReaskQuestions(script) {
+  const out = new Set();
+  const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
+  const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (!o || typeof o !== "object") return;
+    if (o.prompt && !o.reask) { const k = lastAsk({ text: said(o.prompt) }); if (k) out.add(k); }
+    Object.values(o).forEach(walk); };
+  walk(script);
+  return out;
+}
 /** The char where a row's closing question starts (its last sentence ending "?"), or -1. */
 function questionAt(r) {
   const t = String(r?.text ?? "").replace(/\s+/g, " ").trim();
@@ -47,5 +63,23 @@ export const D32_PREDICATES = {
     if (!forms.length) return null;
     const t = qKey(r.text);
     return forms.some((f) => f && t.includes(f)) ? null : `nothing drawn (${r.cell.picture}) and no noPicture line said`;
+  },
+  /** Brain 049 B1: "Achha, ab Hindi mein kehti hoon." only where the part she is on has a `hindi` form (director32: c5-t01 steady 38, stuck 8,
+   *  offtopic 32, steering 8; c5-t03 steady 36, stuck 8, steering 8; c6, c6-ch07, c4-ch01 all four). Gated. */
+  hindiPromiseNoForm(L, r, i, ctx) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.joint === "hindiSwitch" || x.right === "hindiSwitch")) return null;
+    const id = String(r.cell?.part ?? "").replace(/:quick$/, ":checkin").replace(/(:worked:step\d+):ask$/, "$1");
+    let form = null;
+    try { form = hindiFormOf(ctx?.script, helpPart(ctx?.script, id)); } catch { form = null; }
+    return form ? null : `the Hindi switch line at ${id.split(":").slice(-2).join(":") || "?"}, which has no hindi form`;
+  },
+  /** Brain 049 B1: never the same question sentence ending two of her turns running, any path (director32 stuck 6 -> 8 in c5-t01, c5-t02,
+   *  c5-t03, c6, c6-ch07; steering 6 -> 8 in c5-t03, c6-ch07). Gated. */
+  reaskSameAfterHelp(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT) return null;
+    const q = lastAsk(r);
+    if (!q || q !== lastAsk(ctx.prevT)) return null;
+    // (a question with no other authored wording — a card or asked step with no `reask`, a script hole — is reaskNoForm's, counted there)
+    return (ctx.o.noReaskQs ??= noReaskQuestions(ctx.script)).has(q) ? null : `the same closing question as her turn before: "${q.slice(0, 60)}"`;
   },
 };

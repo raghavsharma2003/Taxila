@@ -77,3 +77,40 @@ describe("B2: a picture request with nothing left to draw", () => {
     assert.equal(d0.pictureLine, null);
   });
 });
+
+describe("B1: the Hindi switch line only where a form exists; never the same question sentence twice running", () => {
+  test("hindiPromiseNoForm and reaskSameAfterHelp are gated", () => {
+    for (const k of ["hindiPromiseNoForm", "reaskSameAfterHelp"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("hindiPromiseNoForm reads the order's rows (c4 offtopic 32; c5-t01 steady 38, stuck 8, offtopic 32, steering 8; c5-t03 steady 36, stuck 8, steering 8; c6, c6-ch07, c4-ch01 all four)", () => {
+    const want = [["offtopic", "c4", 32], ["steady", "c5t01", 38], ["stuck", "c5t01", 8], ["offtopic", "c5t01", 32], ["steering", "c5t01", 8],
+      ["steady", "c5t03", 36], ["stuck", "c5t03", 8], ["steering", "c5t03", 8]];
+    for (const [p, t, n] of want) assert.ok(flagged(p, t, "hindiPromiseNoForm").has(n), `${p} ${t} ${n}`);
+    for (const t of ["c6", "c6ch07", "c4ch01"]) for (const p of ["steady", "stuck", "offtopic", "steering"]) assert.equal(flagged(p, t, "hindiPromiseNoForm").size, 1, `${p} ${t}`);
+  });
+  test("reaskSameAfterHelp reads stuck 6 -> 8 in c5-t01, c5-t02, c5-t03, c6, c6-ch07 and steering 6 -> 8 in c5-t03, c6-ch07", () => {
+    for (const t of ["c5t01", "c5t02", "c5t03", "c6", "c6ch07"]) assert.ok(flagged("stuck", t, "reaskSameAfterHelp").has(8), `stuck ${t}`);
+    for (const t of ["c5t03", "c6ch07"]) assert.ok(flagged("steering", t, "reaskSameAfterHelp").has(8), `steering ${t}`);
+  });
+  test("reaskSameAfterHelp leaves a question with no other authored wording to reaskNoForm", () => {
+    const script = { skills: [{ checks: [{ prompt: { hi: "Kitne kone hain?" } }] }] };
+    const row = { who: "teacher", text: "Dhyaan se dekho. Kitne kone hain?" };
+    assert.equal(PREDICATES.reaskSameAfterHelp([], row, 2, { script, o: {}, prevT: { who: "teacher", text: "Kitne kone hain?" } }), null);
+    const s2 = { skills: [{ checks: [{ prompt: { hi: "Kitne kone hain?" }, reask: { hi: "Is shape mein kone kitne hain?" } }] }] };
+    assert.ok(PREDICATES.reaskSameAfterHelp([], row, 2, { script: s2, o: {}, prevT: { who: "teacher", text: "Kitne kone hain?" } }));
+  });
+  test("pickHelp: a Hindi request at a card with a form is a Hindi request; without one, a help request (no switch line, never a key)", async () => {
+    const { pickHelp } = await import("../server/director/help.js");
+    const script = lesson("stuck", "c5t01").script;
+    const sk = script.skills[0], e = sk.explain.find((b) => b.ask?.prompt);
+    const part = `${sk.skillId}:${e.id}:card`;
+    const d = pickHelp({ script, part, request: "hindi", said: [] });
+    assert.equal(d.request, "give_up");
+    assert.ok(d.hindiAsked && !d.hindiForm);
+    const s2 = structuredClone(script);
+    s2.skills[0].explain.find((b) => b.id === e.id).ask.hindi = { hi: "Seedhi boli mein: pehla mark kaunsa hai?", en: "Plainly: which is the first mark?" };
+    const d2 = pickHelp({ script: s2, part, request: "hindi", said: [] });
+    assert.equal(d2.request, "hindi");
+    assert.equal(d2.card, "hindiForm");
+  });
+});

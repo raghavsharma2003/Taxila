@@ -750,7 +750,10 @@ function walkNextV2(s, input, prefix, sk) {
       if (gsDue && String(gsDue).trim() && !scriptFor(kit)?.script?.recordedRun) {
         w.i -= 1;
         // (it ends on the greeting's own question, asked again — the last question of her greeting)
-        const greetQ = String([...(s.recent ?? [])].find((t) => t.who === "teacher")?.text ?? "").split(/(?<=[.!?\u0964])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? null;
+        const greetQ0 = String([...(s.recent ?? [])].find((t) => t.who === "teacher")?.text ?? "").split(/(?<=[.!?\u0964])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? null;
+        // (Brain 049 B1: never the same question sentence two turns running — the greeting's own "whether to begin" (code's, brain/say.js) is
+        // asked again in its other form; a warm-up card is asked as it was)
+        const greetQ = greetQ0 ? GREET_AGAIN[String(greetQ0).trim().toLowerCase()] ?? greetQ0 : null;
         return plan("hook", join(prefix, SH.scriptHook({ bridge: false })), { format: "F4", content: [`today: ${gsDue}`], sayFirst: [String(gsDue).trim()], greetHelp: true, ...(greetQ ? { greetAsk: greetQ } : { stayCheckin: true, checkinOk: true }), ...ref("hook", "hook") });
       }
       // (Brain 044 T1: the hook never ends a turn — the hook, the first point and its card are one turn; where they do not fit, the point's quick
@@ -1097,7 +1100,10 @@ function parkGate(s, kit, input, e) {
   // again before it was returned is returned NOW, once — her one line on what they said; one already returned gets the short line
   // (P1, dc-r8-director20 c4 offtopic 37: an aside said again AFTER its return got a second return with no park before it — it gets the
   // short line instead; only one said again before its return is returned now)
-  if (had && had.id != null && !had.servedAt && responseShape("aside_again", "*") === "return_once") {
+  // (Brain 049 B5: a return is never placed inside a worked example — with a step asked, the aside said again gets the short line and its
+  // return waits for the close: the staged c4-ch01-t02's dry offtopic 18, a return asked over an asked step whose answer then got no reply)
+  const inWorked = !!s.lastMove?.stepAsk || String(s.lastMove?.kind ?? "") === "worked_example";
+  if (had && had.id != null && !had.servedAt && !inWorked && responseShape("aside_again", "*") === "return_once") {
     // (said again after it was returned: one more return, on what they said now — then the short line from here on)
     s.servedNow = { topic: String(had.topic), share: !!had.share, said: String(input?.text ?? "") || had.said || null };
     return (s.later ?? []).map((x) => (x.id === had.id ? { ...x, servedAt: s.turn, ...(had.servedAt ? { again: true } : {}) } : x));
@@ -3275,6 +3281,8 @@ const partOf = (st, mv) => { const b = mv?.scriptBeat; return `${st?.activeItemI
  *  reason for an answer she gave (she does not know how, it felt so), not a give-up. */
 const SAYS_A_REASON = /(?<![\p{L}])(?:bas\s+laga|mujhe\s+laga|guess\s+kiya|aise\s+hi\s+laga)(?![\p{L}])/iu;
 const GIVE_UP_WORDS = /(?<![\p{L}])(?:pata\s+nahi|nahi\s+pata|aap\s+(?:hi\s+)?batao|tum\s+batao|i\s+(?:don'?t|do\s+not)\s+know|give\s+up|chhodo|nahi\s+aata)(?![\p{L}])/iu;
+/** Brain 049 B1: code's "whether to begin" (brain/say.js's greeting question) in its other form, asked after a request at the greeting. */
+const GREET_AGAIN = Object.freeze({ "chalo, shuru karein?": "Toh shuru karte hain?", "shall we start?": "Shall we begin, then?", "chalo, shuru karen?": "Toh shuru karte hain?" });
 /** dc-r8-director20 L3: "samajh nahi aaya" or "pata nahi" to the greeting — the script's greetSimpler is said before the hook. */
 const greetSimplerDue = (lastMove, input) => lastMove?.kind === "greet"
   && (SAYS_CLARIFY.test(String(input?.text ?? "")) || GIVE_UP_WORDS.test(String(input?.text ?? "")) || ["clarify", "another", "confused"].includes(input?.cls?.request?.type));
@@ -3482,6 +3490,11 @@ function helpPartOf(prev, input) {
   // (dc-r8-director26 N1: with no part recorded, the part is the last she said — a card her last turn closed, with no card posed since,
   // is the card just keyed)
   if (!a?.part) {
+    // (Brain 049 B1: a card asked again by a return's reply — the record lost its address — is still the live card: help is on it. The
+    // staged c4-ch01-t02's dry offtopic 36, a Hindi request at the your-step after a return, got the switch line and the reask)
+    const live = prev?.lastUi?.ask?.itemId ?? null;
+    const lp = live && String(live).startsWith("script:") ? (() => { try { return cardPartOf(input.kit, { itemId: live }); } catch { return null; } })() : null;
+    if (lp) return { part: lp, keyed: false };
     const lm = prev?.lastMove ?? {};
     const cb = lm.closedBeat ?? lm.closeBeat ?? null;
     const k = cb && !prev.lastUi?.ask?.itemId ? cardPartOf(input.kit, { beat: cb }) : null;
@@ -3525,7 +3538,10 @@ const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "p
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
   // over the help. A picture is that turn's; help says its own wording)
-  "visual", "representation", "altLine", "altView", "see", "picture", "pictureCaption", "pictureOwn"];
+  "visual", "representation", "altLine", "altView", "see", "picture", "pictureCaption", "pictureOwn",
+  // (Brain 049 B1, the staged c4-ch01-t02's dry offtopic 36: a Hindi request straight after her reply to a return's answer kept that turn's
+  // aside acknowledgement, and brain/say.js said the return's card again over the help — the acknowledgement is that turn's)
+  "asideAck"];
 const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delete o[k]; if (o.sayFirst && !o.heldSaid) delete o.sayFirst; return o; };
 /** Count a help joint said (forms rotate by it), and record the decision on the state. */
 function noteHelp(s, d) {
@@ -3540,7 +3556,7 @@ function noteHelp(s, d) {
 /** dc-r8-director26 B1: the board a decision's words are said over — the one pickHelp returned (a key's answer board), or null: the board
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
-const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, ...(d.bridgeOn ? { bridgeOn: true } : {}), ...(d.rung?.path ? { rungPath: d.rung.path } : {}), card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}),
+const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, ...(d.bridgeOn ? { bridgeOn: true } : {}), ...(d.rung?.path ? { rungPath: d.rung.path } : {}), card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}), ...(d.hindiAsked ? { hindiAsked: true } : {}),
   ...(d.request === "picture" ? { picture: d.rung ? "hint" : "none", ...(d.pictureLine ? { pictureLine: d.pictureLine.text } : {}) } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
@@ -3563,9 +3579,11 @@ function helpStay(prev, input, d) {
   s.turn += 1;
   s.cardUnsaid = undefined; s.asideReplyDue = undefined; s.returnAsked = undefined; s.returnAnswer = undefined; s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   const req = input.cls?.request;
-  if (d.request === "hindi" && req?.type === "language") {
+  // (Brain 049 B1: a Hindi request answered as help — no form at the part — still makes Hindi the lesson's mode; only the switch line is
+  // not said, and it is not counted)
+  if ((d.request === "hindi" || d.hindiAsked) && req?.type === "language") {
     s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true, plainWords: /\b(?:simple|aasan|asaan|easy|saral|seedhi|sidhi)\b/i.test(String(input.text ?? "")) || (s.ctx.plainWords && req.lang === s.ctx.lang) };
-    if (!d.joint) s.langN = (s.langN ?? 0) + 1;
+    if (!d.joint && !d.hindiAsked) s.langN = (s.langN ?? 0) + 1;
   }
   const base = stripHelp(carried(prev.lastMove));
   const f = helpFields(input.kit, d);
@@ -3725,7 +3743,7 @@ function helpHeld(prev, input, d) {
   s.turn += 1;
   s.splitHold = undefined; s.cardUnsaid = undefined; s.priorItemId = prev.lastMove ? prev.lastMove.itemId ?? null : undefined;
   const req = input.cls?.request;
-  if (d.request === "hindi" && req?.type === "language") { s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true }; if (!d.joint) s.langN = (s.langN ?? 0) + 1; }
+  if ((d.request === "hindi" || d.hindiAsked) && req?.type === "language") { s.ctx = { ...s.ctx, lang: req.lang ?? "hindi", langPinned: true }; if (!d.joint && !d.hindiAsked) s.langN = (s.langN ?? 0) + 1; }
   // (Brain 047 R8: a Hindi request with the point's help spent asks the held card with nothing before it but the switch line — the help mark
   // says so)
   const f = d.rung || d.joint ? helpFields(input.kit, d) : { help: helpMark(d) };
@@ -3759,7 +3777,7 @@ function helpAfter(prev, input, out, pre) {
     return out;
   }
   const req = input.cls?.request;
-  if (d.request === "hindi" && req?.type === "language" && out.state.ctx?.lang !== (req.lang ?? "hindi")) out.state.ctx = { ...out.state.ctx, lang: req.lang ?? "hindi", langPinned: true };
+  if ((d.request === "hindi" || d.hindiAsked) && req?.type === "language" && out.state.ctx?.lang !== (req.lang ?? "hindi")) out.state.ctx = { ...out.state.ctx, lang: req.lang ?? "hindi", langPinned: true };
   if (d.card === "close") out.state.lastMove = { ...lm, help: mark };
   else if (d.card === "ask") out.state.lastMove = { ...stripHelp(lm), ...(d.rung || d.joint ? helpFields(input.kit, d) : { help: mark }), ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
   else if (d.joint) {
@@ -3794,7 +3812,8 @@ function stepTryAgain(prev, input) {
   const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
   s.quickItem = qi; s.activeItemId = qi.id;
   const lm = prev.lastMove;
-  const m = { kind: "worked_example", shape: lm.shape, request: "selftry", stepAgain: true, stepAsk: { ...sa }, skillId: sa.skillId, format: lm.format,
+  // (Brain 049 B1: never the same question sentence two turns running — the step's other wording, as stepAskAgain alternates it)
+  const m = { kind: "worked_example", shape: lm.shape, request: "selftry", stepAgain: true, stepAsk: stepAskAgain(input.kit, sa, { ...sa }, prev.ctx?.lang ?? "hinglish"), skillId: sa.skillId, format: lm.format,
     ...(lm.scriptBeat ? { scriptBeat: lm.scriptBeat } : {}), ...(lm.methods ? { methods: lm.methods } : {}), ...(lm.prefs ? { prefs: lm.prefs } : {}) };
   s.lastMove = m; s.moveVoiced = false;
   const ui = { status: "your_turn", ...(prev.lastUi?.later ? { later: prev.lastUi.later } : {}) };
@@ -4092,7 +4111,9 @@ function step0(prev, input) {
         friendOf = s.ctx?.firstName ?? "";
         const qi = friendly(scriptStepAskItem(sa.skillId, sa.step, a));
         s.quickItem = qi; s.activeItemId = qi.id;
-        const m = { kind: "worked_example", shape: prev.lastMove.shape, skillId: prev.lastMove.skillId, format: prev.lastMove.format, stuck: true, request: "repeat", stepAsk: { ...sa },
+        // (Brain 049 B1, reversing 047 R3's "the question as written" here: a request to hear the question gets it in the wording not said
+        // the turn before — the step's reask after its question, its question after the reask)
+        const m = { kind: "worked_example", shape: prev.lastMove.shape, skillId: prev.lastMove.skillId, format: prev.lastMove.format, stuck: true, request: "repeat", stepAsk: stepAskAgain(input.kit, sa, { ...sa }, prev.ctx?.lang ?? "hinglish"),
           ...(prev.lastMove.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
         const ui0 = { status: "your_turn" };
         s.lastMove = m; s.moveVoiced = false; s.lastUi = ui0;

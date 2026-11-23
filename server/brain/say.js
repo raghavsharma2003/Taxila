@@ -3519,7 +3519,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const helped = (!!state.lastMove?.simpler || (graded && verdict === "not_yet")) && !guard.altOnly && !NON_ANSWER.has(String(state.lastMove?.request ?? "")) && state.lastMove?.request !== "visual";
       // (2.4 S2, main on director21: Learning's reask — the question alone with its givens named — where the last sentence cannot stand
       // alone; after the second miss the whole card is said)
-      const askMark = rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
+      // (Brain 049 B1: the card's Hindi form is this turn's question, said as it is — never replaced by the card's reask; the staged
+      // c4-ch01-t02's dry offtopic 36 said the reask after the switch line)
+      const askMark = state.lastMove?.hindiForm ? null : rawCardOf(kit, item)?.reask ?? item?.scriptCheck?.ask ?? item?.scriptThen?.ask ?? item?.scriptAsk?.askLine ?? null;
       // (a reask's {friend} slot is filled as the card's is — state.js friendly)
       // (dc-r8-director23 harness: a one-sentence card with no reask is asked by the clause after its colon when that clause is a question
       // of its own — "…ruka: woh 0 se kitne kilometre par hai?")

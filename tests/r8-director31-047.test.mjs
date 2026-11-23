@@ -26,7 +26,9 @@ const flagged = (persona, t, name, L = lesson(persona, t)) => new Set(lessonFlag
 const noForms = (script) => { const s = structuredClone(script); const walk = (o) => { if (Array.isArray(o)) return o.forEach(walk); if (o && typeof o === "object") { delete o.hindi; Object.values(o).forEach(walk); } }; walk(s); return s; };
 
 describe("R8: a Hindi request at a card with no form", () => {
-  test("pickHelp: the card's unsaid help first (no line, no form); with its help spent, the whole card — never the \"nothing easier\" line, never a key", async () => {
+  // (Brain 049 B1 changes R8's spent half: a Hindi request at a card with no form is a help request — with its help spent, the honest "nothing
+  // easier" line and the card kept, its question in the wording not said the turn before; never the switch line, never the key)
+  test("pickHelp: the card's unsaid help first (no line, no form); with its help spent, the \"nothing easier\" line and the card kept — never a key", async () => {
     const { pickHelp, addSaid, ladderOf, helpPart } = await import("../server/director/help.js");
     const script = noForms(lesson("offtopic", "c4").script);
     const sk = script.skills[0], c = sk.checks.find((x) => x.prompt);
@@ -38,11 +40,10 @@ describe("R8: a Hindi request at a card with no form", () => {
     let said = [];
     for (const r of ladderOf(script, helpPart(script, part))) said = addSaid(said, r.value.hi, 1);
     const d2 = pickHelp({ script, part, request: "hindi", said });
-    assert.ok(!d2.joint, "never the nothing-easier line");
+    assert.equal(d2.joint?.kind, "helpSpent", "the honest nothing-easier line");
     assert.ok(!d2.key, "never the key");
-    assert.equal(d2.card, "hindiForm");
-    assert.equal(d2.hindiForm, c.prompt.hi.replace(/\s+/g, " ").trim(), "the whole card");
-    assert.equal(d2.hindiWhole, true);
+    assert.equal(d2.card, "keep");
+    assert.ok(!d2.hindiForm && d2.request !== "hindi" && d2.hindiAsked, "a help request: no switch line");
   });
   test("an asked step with no form: its simpler, then the step's question whole — a Hindi request is no cue to tell the step", async () => {
     const { pickHelp, addSaid } = await import("../server/director/help.js");
@@ -55,17 +56,19 @@ describe("R8: a Hindi request at a card with no form", () => {
     assert.equal(d1.card, "keep");
     assert.ok(d1.rung?.text);
     const d2 = pickHelp({ script, part, request: "hindi", said: addSaid([], sk.workedExample.steps[j].simpler.hi, 1) });
-    assert.equal(d2.card, "hindiForm");
+    assert.equal(d2.card, "keep", "Brain 049 B1: the step stays asked, after the nothing-easier line");
     assert.equal(d2.stepAsked, true);
-    assert.equal(d2.hindiForm, sk.workedExample.steps[j].ask.prompt.hi.replace(/\s+/g, " ").trim());
+    assert.equal(d2.joint?.kind, "helpSpent");
+    assert.ok(!d2.hindiForm);
   });
-  test("hindiSpentCold is gated and reads the \"nothing easier\" line to a Hindi request at a card with no form (director31 c4 offtopic 32, as answered before 047)", () => {
+  // (Brain 049 B1 reverses its no-form half: at a card with no form that line, with the help spent, is the honest answer)
+  test("hindiSpentCold is gated and does not read the \"nothing easier\" line at a card with no form (Brain 049 B1)", () => {
     assert.ok(!PENDING.has("hindiSpentCold"));
     const { rows, script } = lesson("offtopic", "c4");
     const r = rows[32];
     const spent = script.joints.helpSpent[0].hi;
     const rs = [...rows.slice(0, 32), { ...r, text: `${spent} ${r.card}`, seams: [{ left: "start", right: "help", joint: "helpSpent", form: spent, by: "authored" }, { left: "help", right: "card", joint: null }] }];
-    assert.ok(flagged("offtopic", "c4", "hindiSpentCold", { rows: rs, script: noForms(script) }).has(32));
+    assert.ok(!flagged("offtopic", "c4", "hindiSpentCold", { rows: rs, script: noForms(script) }).has(32));
     assert.ok(!flagged("offtopic", "c4", "hindiSpentCold").has(32), "the run's own row: the form was said");
   });
   test("no compile hole for a card with no form; a switch line that names Hindi is no hole", async () => {
@@ -99,7 +102,8 @@ describe("R1: back to the earlier question, by the card's identity", () => {
 });
 
 describe("R8: a Hindi request with the help spent, off a live card", () => {
-  test("at a closed card the lesson goes on (no line, no key); at a point its card is asked", async () => {
+  // (Brain 049 B1: a help request there — with the help spent the "nothing easier" line, then the lesson goes on, or the point's card)
+  test("at a closed card the lesson goes on (the nothing-easier line, no key); at a point its card is asked", async () => {
     const { pickHelp, addSaid, ladderOf, helpPart } = await import("../server/director/help.js");
     const script = noForms(lesson("offtopic", "c4").script);
     const sk = script.skills[0], c = sk.checks.find((x) => x.prompt);
@@ -108,14 +112,14 @@ describe("R8: a Hindi request with the help spent, off a live card", () => {
     for (const r of ladderOf(script, helpPart(script, part), { keyed: true })) said = addSaid(said, r.value.hi, 1);
     const d = pickHelp({ script, part, request: "hindi", said, closed: true });
     assert.equal(d.card, "goOn");
-    assert.ok(!d.joint && !d.key && d.hindiWhole);
+    assert.ok(d.joint?.kind === "helpSpent" && !d.key && d.hindiAsked);
     const e = sk.explain.find((b) => b.ask && b.pointAlt && b.simpler);
     const pp = `${sk.skillId}:${e.id}:point`;
     let s2 = [];
     for (const r of ladderOf(script, helpPart(script, pp))) s2 = addSaid(s2, r.value.hi, 1);
     const d2 = pickHelp({ script, part: pp, request: "hindi", said: s2 });
     assert.equal(d2.card, "ask");
-    assert.ok(!d2.joint && d2.hindiWhole);
+    assert.ok(d2.joint?.kind === "helpSpent" && d2.hindiAsked);
   });
 });
 

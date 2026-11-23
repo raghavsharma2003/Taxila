@@ -81,7 +81,8 @@ describe("Q2: a request for Hindi gets Hindi", () => {
       assert.ok(lessonFlags({ rows, script: withHindi(script) }).some((f) => f.predicate === "hindiSpentCold" && f.row === 32), t);
       // (today's script has no form: the fallback is counted apart, pending)
       // (Brain 047 R8: at a card with no form the line is the fault too — hindiSpentHole is folded into hindiSpentCold)
-      assert.ok(flagged("offtopic", t, "hindiSpentCold").has(32), `${t} no form`);
+      // (Brain 049 B1 reverses it: with no form and the help spent, the line is the honest answer)
+      assert.ok(!flagged("offtopic", t, "hindiSpentCold").has(32), `${t} no form`);
     }
   });
   test("pickHelp: the first request for Hindi at a card is its hindi form alone; the second, the card's unsaid help then the form; none, as before", async () => {

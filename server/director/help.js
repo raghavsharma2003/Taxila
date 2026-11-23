@@ -306,12 +306,19 @@ export function cardPromptOf(script, part) {
   return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
 }
 export const KEY_AFTER_MISSES = 5;
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
-  if (!HELP_REQUESTS.includes(request)) return null;
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0 }) {
+  if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
+  // (Brain 049 B1: a request for Hindi is a request for Hindi only where the part's question has a `hindi` form — a live card or an asked
+  // step that keeps one. Anywhere else it is a help request, answered as a give-up is: the part's unsaid help, no switch line, no sentence
+  // that names Hindi; with every help spent the "nothing easier" line and the question again — never a key. director32: the switch line,
+  // then the card's help in the same Hinglish, at a card with no form in all seven topics. Learning 021 adds forms; nothing here assumes one)
+  const formHere = asked === "hindi" && !keyed && !closed && (CARD_KINDS.has(part.kind) || (part.kind === "worked_step" && part.step)) && !!hindiFormOf(script, part);
+  const hindiHelp = asked === "hindi" && !formHere;
+  const request = hindiHelp ? "give_up" : asked;
   // (a request for Hindi reads the Hinglish forms; the lesson's language otherwise)
-  const L = request === "hindi" ? "hinglish" : lang;
+  const L = asked === "hindi" ? "hinglish" : lang;
   const isCard = CARD_KINDS.has(part.kind);
   // (a hint is a wrong answer's help: on a live card only)
   if (request === "hint" && !isCard) return null;
@@ -329,14 +336,13 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const r0 = ladderOf(script, part)[0];
     const t = r0 && r0.field === "simpler" ? saidIn(r0.value, L) : null;
     const spent = !t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said));
-    if (spent && request === "hindi") { const whole = cardPromptOf(script, part);
-      return whole ? { part: part.id, kind: part.kind, keyed: false, request, rung: { field: "whole", path: part.path, text: "", board: part.board ?? null }, board: part.board ?? null, card: "hindiForm", key: null, joint: null, hindiForm: whole, hindiWhole: true, stepAsked: true } : null; }
+    if (spent && hindiHelp) return { part: part.id, kind: part.kind, keyed: false, request, hindiAsked: true, rung: null, board: part.board ?? null, card: "keep", key: null, stepAsked: true, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
     // (Brain 049 B2: a picture request with nothing left keeps the step asked — the noPicture line and the step's question; never told)
     if (spent && request === "picture") return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: part.board ?? null, card: "keep", key: null, joint: null, stepAsked: true, pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) };
     if (spent) return null;
     const t0 = String(t).trim();
     const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
-    return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true,
+    return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true, ...(hindiHelp ? { hindiAsked: true } : {}),
       ...(request === "picture" ? { pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) } : {}) };
   }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
@@ -348,7 +354,7 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     if (wa?.field === "whyAlt" && wa.present) ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
   }
   const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
-  const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(closed && !keyed ? { closed: true } : {}) };
+  const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(hindiHelp ? { hindiAsked: true } : {}), ...(closed && !keyed ? { closed: true } : {}) };
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
   // line leads it (the language pass), the form is asked over the card's board; a second request on the same card gets the card's unsaid help
   // first, then the form again. Never the "nothing easier" line, never the point's other wording in its place: c4, c5-t02, c6 offtopic 32;
@@ -411,6 +417,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const goOn = helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 });
     return { ...base, rung: null, board: null, card: "goOn", key: null, joint: spentJ ?? goOn, ...(spentJ && goOn ? { then: goOn } : {}) };
   }
+  // (Brain 049 B1: a Hindi request at a card with no form and its help spent: the honest "nothing easier" line, then the card's question in
+  // the wording not said the turn before — never its key)
+  if (isCard && hindiHelp) return { ...base, rung: null, board: part.board ?? null, card: "keep", key: null, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
   if (isCard) {
     const key = keyLine(part, L);
     // (a card with no key written is let go as the walk lets it go: the lesson goes on)

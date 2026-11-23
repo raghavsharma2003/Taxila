@@ -352,7 +352,9 @@ export const D30_PREDICATES = {
   hindiSpentCold(L, r, i, ctx) {
     if (r.who !== "teacher" || String(ctx?.prevIntent ?? r.cell?.column ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
     if (!(r.seams ?? []).some((x) => x.joint === "helpSpent")) return null;
-    return `a request for Hindi answered with the "nothing easier" line${hindiFormAt(ctx?.script, r) ? "" : " (the card has no hindi form)"}`;
+    // (Brain 049 B1: at a card with no hindi form a Hindi request is a help request — with its help spent the honest "nothing easier" line
+    // and the question in its other wording is the answer; only a card that keeps a form is never answered so)
+    return hindiFormAt(ctx?.script, r) ? `a request for Hindi answered with the "nothing easier" line` : null;
   },
   /** P6: the short ask ("Ab phir se socho, jawab kya hoga?") only after help about the card's own figure — help about another figure is
    *  followed by the card's own re-ask (c5-t01 stuck 64, 70, offtopic 30). Gated. */
