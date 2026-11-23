@@ -812,6 +812,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
           const o = canon(opts[i]);
           if (W.some((cs) => sameAnswer(cs[0], o))) return misOf();
           if (F.some((cs) => sameAnswer(cs[0], o))) return done("correct", "script_key");
+          // (to-brain 050 W1 reason 2: the reply names one option, and exactly one OTHER option of the prompt is a right form: it named a wrong one)
+          const rightOpts = opts.map((x, j) => j).filter((j) => F.some((cs) => sameAnswer(cs[0], canon(opts[j]))));
+          if (rightOpts.length === 1 && rightOpts[0] !== i) return done("incorrect", "script_key");
         }
       }
     }
@@ -843,7 +846,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // (d32 step 0, staged c6-ch07-t01 offtopic 14: "27 ko 6 se bhaag" to a step keyed "30 ko 6 se bhaag" went to the model and, dry,
     // was no answer: a reply said the way a right form is said — the same words, operators and places, with no denial — whose
     // numbers differ is the wrong answer in code)
-    if (R.nums.length && !R.neg) {
+    // (050 W1: at a word key, a reply whose only number is the number of a right form is never wrong in code — "2" beside the form "6")
+    const onlyFormNum = numberOf(canon(target.key)) == null && R.nums.length === 1 && F.some((cs) => cs.some((c) => c.nums.includes(R.nums[0])));
+    if (R.nums.length && !R.neg && !onlyFormNum) {
       const shape = (c) => c.seq.filter((x) => x.k !== "unit").map((x) => (x.k === "num" ? "#" : x.t)).join(" ");
       const rs = shape(R);
       if (F.some((cs) => cs.some((c) => c.nums.length === R.nums.length && shape(c) === rs && c.nums.join(" ") !== R.nums.join(" ")))) return done("incorrect", "script_key");
@@ -859,7 +864,21 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       if (!(yesNoKey && yn(R))) return toModel("devanagari");
     }
     const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(text);
-    if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) return done("incorrect", "script_key");
+    if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) {
+      // to-brain 050 W1: at a card whose key is words (not a number, not a yes / no), code says wrong only for a reason it can name —
+      // the listed wrong answer or the same answer as one, an option of the prompt that is not the right one, a right form said with
+      // other numbers (all above), or a bare yes / no (an acknowledgement, as before: never here). Anything else unmatched is the
+      // model's: "do se guna karo", "2 gap aage jayenge", "baad mein" are right answers no form spells.
+      // W2: a key that is a number is as before; at a word key with a form that is a bare number ("6" beside "2 se guna"), one number
+      // said alone that is no number of any right form is wrong, as at a number key.
+      if (numberOf(keyC) == null && !yesNoKey) {
+        const lone = numberOf(R);
+        const formNums = new Set(F.flatMap((cs) => cs.flatMap((c) => c.nums)));
+        if (lone != null && !risky && F.some((cs) => numberOf(cs[0]) != null) && !formNums.has(lone)) return done("incorrect", "script_key");
+        return toModel("word_key");
+      }
+      return done("incorrect", "script_key");
+    }
   }
   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
   // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number

@@ -339,3 +339,61 @@ test("048 follow-up: a form whose brackets decide it never matches in code a rep
   assert.equal(r("2 × (lambai + chaudai)").result?.outcome, "correct");
   for (const x of ["2 × lambai + chaudai", "2 into lambai plus chaudai"]) { assert.equal(r(x).result, null, x); assert.equal(r(x).scriptUnsure, "brackets", x); }
 });
+
+// ───────────── to-brain 050: at a script card, code says "wrong" only when it knows ─────────────
+// (docs/patches/to-brain/050-script-grade-says-wrong-only-when-it-knows.md; main's probe on int/r6 ba3d5df61: every row below was `incorrect`)
+const P050 = {
+  guna: card("2 se guna", [], null, "Upar ke 3 ka kya karein?"),
+  gap: card("2 gap chalo", [], null, "2/5 ke liye kya karoge?"),
+  zyada: card("ek se zyada", [], null, "Ek tukda kaafi, ya zyada chahiye?"),
+  baad: card("beech ke baad", [], null, "4/6 beech se pehle hai ya baad mein?"),
+};
+const TABLE050 = [["guna", "do se guna karo"], ["guna", "upar ko bhi 2 se guna karenge"], ["guna", "double karo"], ["guna", "6"], ["gap", "2 gap aage jayenge"],
+  ["gap", "do gap chalenge"], ["gap", "2 gap"], ["zyada", "zyada chahiye"], ["zyada", "do tukde chahiye"], ["baad", "baad mein"], ["baad", "beech ke baad aayega"]];
+
+test("050 table: no right answer in main's table is `incorrect` (each is `correct` or the model's)", () => {
+  const bad = TABLE050.map(([c, s]) => [c, s, grade(P050[c], s)]).filter(([, , g]) => g !== "correct" && g !== "model");
+  assert.deepEqual(bad, []);
+});
+
+test("050 W1: at a word key an unmatched reply goes to the model as `word_key`; code says wrong only for the four named reasons", () => {
+  const raw = (item, say) => classifyFast({ target: { mode: "item", item, key: item.answer, also: item.acceptable || [] }, childText: say, typed: false, asrConfidence: 0.95 });
+  // unmatched, no reason: the model's, with the reason named
+  for (const s of ["2 gap aage jayenge", "guna karenge", "multiply"]) {
+    const c = s === "2 gap aage jayenge" ? P050.gap : P050.guna;
+    const r = raw(c, s);
+    assert.equal(r.result, null, s);
+    assert.equal(r.scriptUnsure, "word_key", s);
+  }
+  // reason 1: the listed wrong answer, or the same answer as one (the mix-up)
+  const mis = card("2 se guna", [], "2 jodo", "Upar ke 3 ka kya karein?");
+  assert.equal(grade(mis, "2 jodo"), "misconception");
+  assert.equal(grade(mis, "do jodo"), "misconception");
+  assert.equal(grade(mis, "2 jodo hai"), "misconception");
+  // reason 2: it names exactly one option of the prompt, and another option is the right form
+  const opt = card("Neha ka kaam", [], null, "Kiska kaam zyada hai: Neha ka kaam ya Ravi ka kaam?");
+  assert.equal(grade(opt, "Ravi"), "incorrect");
+  assert.equal(grade(opt, "Neha"), "correct");
+  // reason 3: said the way a right form is said, with other numbers (the d32 shape rule)
+  assert.equal(grade(P050.gap, "5 gap chalo"), "incorrect");
+  assert.equal(grade(P050.guna, "3 se guna"), "incorrect");
+  // reason 4: a bare yes / no to a card whose key is not one is an acknowledgement, never an answer — and never wrong in code
+  for (const s of ["haan", "ok", "achha"]) assert.notEqual(grade(P050.guna, s), "incorrect", s);
+  assert.notEqual(grade(P050.guna, "nahi"), "incorrect");
+  // a reply whose only number is the number of a right form is never wrong in code
+  for (const s of ["2 gap aage jayenge", "2", "do"]) assert.notEqual(grade(P050.gap, s), "incorrect", s);
+});
+
+test("050 W2: a key that is a number is graded as before; a word key with a bare-number form refuses another lone number", () => {
+  assert.equal(grade(card("25"), "30"), "incorrect");
+  assert.equal(grade(card("25"), "tees"), "incorrect");
+  assert.equal(grade(card("25"), "तीस"), "incorrect");
+  assert.equal(grade(card("25"), "pachees"), "correct");
+  assert.equal(grade(card("8", [], null, "Kitne hisse?"), "aath hisse"), "correct");
+  assert.equal(grade(card("8", [], null, "Kitne hisse?"), "saat hisse"), "incorrect");
+  const A = card("2 se guna", ["2 guna", "6", "3 × 2"], null, "Neeche 5 ka 10 hua. Upar ke 3 ka kya karein?");
+  assert.equal(grade(A, "6"), "correct");
+  assert.equal(grade(A, "7"), "incorrect");
+  // (the number of a right form is never wrong in code: "2" is the multiplier)
+  assert.notEqual(grade(A, "2"), "incorrect");
+});
