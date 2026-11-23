@@ -340,6 +340,11 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
     if (o.op === "rect") has.add("rectangle").add(Math.abs((o.w ?? 0) - (o.h ?? 0)) <= 2 ? "square" : "rectangle");
     // (a dot marking a point on a number line is not a shape: QA pass 14 run a20930e5, a number line refused for "rectangle")
     if ((o.op === "circle" && Number(o.r ?? 0) >= 12) || o.op === "ellipse" || o.op === "sector") has.add("circle");
+    // (Studio 015 item 1: a round outline that is not a circle — shape@1 oval / uneven / a slack string, one closed smooth
+    // stroke — answers "circle" only where her line asks whether it is one, or says it is not: "kya yeh circle hai?",
+    // "circle nahi hai". Said as a circle, it is still a circle named and not drawn)
+    if (o.op === "stroke" && Array.isArray(o.points) && o.points.length >= 24 && Math.hypot(o.points[0][0] - o.points.at(-1)[0], o.points[0][1] - o.points.at(-1)[1]) < 1.5
+      && /\bcircle\b[^.!?]*\?|\b(?:circle|gola|vritt)\s+(?:nahi|nahin|nahi\s+hai|nahin\s+hai)\b|\bnot\s+a\s+circle\b|\bisn'?t\s+a\s+circle\b/iu.test(String(reply ?? ""))) has.add("circle");
     if (o.op === "polygon" && Array.isArray(o.points)) {
       if (o.points.length === 3) has.add("triangle");
       if (rightAngled(o.points)) has.add("rectangle").add("square");
