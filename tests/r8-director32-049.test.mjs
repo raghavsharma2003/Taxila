@@ -152,10 +152,13 @@ describe("B3: the card's own other reason as the second help; a problem restated
     assert.ok(flagged("steady", "c6ch07", "keyBeforeHint").has(48));
     assert.ok(flagged("offtopic", "c6ch07", "keyBeforeHint").has(62));
   });
-  test("helpNotOwn reads a request at a marked card answered by the point's other wording (c5-t03 steering 16; c4-ch01 stuck 62, offtopic 56)", () => {
+  test("helpNotOwn reads a request at a marked card answered by the point's other wording after its named miss (c5-t03 steering 16; not c4-ch01 stuck 62, offtopic 56)", () => {
     assert.ok(flagged("steering", "c5t03", "helpNotOwn").has(16));
-    assert.ok(flagged("stuck", "c4ch01", "helpNotOwn").has(62));
-    assert.ok(flagged("offtopic", "c4ch01", "helpNotOwn").has(56));
+    // (re-pinned for main's ruling of 2026-11-23 on to-brain 049 B3: the own reason is required as second help only after the card's named
+    // wrong answer. c4-ch01 stuck 62 and offtopic 56 are give-ups at s2 e1 with no answer there yet: the point's other wording is the
+    // order before B3, right under the ruling. c5-t03 steering 16 follows "8", e2's miss at a card that names no wrong answer: still read)
+    assert.ok(!flagged("stuck", "c4ch01", "helpNotOwn").has(62));
+    assert.ok(!flagged("offtopic", "c4ch01", "helpNotOwn").has(56));
   });
   test("pickHelp: at a marked card a give-up's second help is its whyAlt, before the point's other wording", async () => {
     const { pickHelp, addSaid } = await import("../server/director/help.js");
@@ -164,7 +167,25 @@ describe("B3: the card's own other reason as the second help; a problem restated
     const b = sk.explain.find((x) => x.ask?.whyAltAsHelp && x.ask?.simpler && x.ask?.whyAlt);
     const part = `${sk.skillId}:${b.id}:card`;
     const said = addSaid([], typeof b.ask.simpler === "string" ? b.ask.simpler : b.ask.simpler.hi, 1);
-    for (const request of ["give_up", "clarify", "hint"]) assert.equal(pickHelp({ script, part, request, said }).rung?.field, "whyAltHelp", request);
+    // (re-pinned for main's ruling of 2026-11-23 on to-brain 049 B3: B3 said the marked whyAlt second after ANY request; the ruling says it
+    // only when the child's last answer at the card was its named wrong answer — else the simpler, the point's other wording, the key)
+    const named = { outcome: b.ask.targets ? "misconception" : "incorrect", misconceptionId: b.ask.targets ?? null, wrongListed: true };
+    for (const request of ["give_up", "clarify", "hint"]) assert.equal(pickHelp({ script, part, request, said, last: named }).rung?.field, "whyAltHelp", request);
+    for (const last of [null, { outcome: "correct" }, ...(b.ask.wrongIfMis ? [{ outcome: "incorrect", wrongListed: false }] : [])])
+      for (const request of ["give_up", "clarify", "hint"]) assert.notEqual(pickHelp({ script, part, request, said, last })?.rung?.field, "whyAltHelp", `${request} after ${JSON.stringify(last)}`);
+  });
+  test("main's ruling of 2026-11-23 on B3: ownReasonFits — the named wrong answer only; any miss where the card names none; whyAltNoMiss gated", async () => {
+    const { ownReasonFits } = await import("../server/director/help.js");
+    const card = { whyAltAsHelp: true, wrongIfMis: "3", targets: "m-x" };
+    assert.equal(ownReasonFits(card, { outcome: "misconception", misconceptionId: "m-x" }), true);
+    assert.equal(ownReasonFits({ ...card, targets: undefined }, { outcome: "incorrect", wrongListed: true }), true);
+    assert.equal(ownReasonFits(card, { outcome: "incorrect" }), false, "another wrong answer");
+    assert.equal(ownReasonFits(card, { outcome: "misconception", misconceptionId: "m-y" }), false, "another mix-up");
+    assert.equal(ownReasonFits(card, { outcome: "correct" }), false, "after a right answer");
+    assert.equal(ownReasonFits(card, null), false, "no answer yet");
+    assert.equal(ownReasonFits({ whyAltAsHelp: true }, { outcome: "incorrect" }), true, "no named wrong answer: any miss");
+    assert.equal(ownReasonFits({ wrongIfMis: "3" }, { outcome: "misconception", wrongListed: true }), false, "unmarked");
+    assert.ok(PREDICATES.whyAltNoMiss); assert.ok(!PENDING.has("whyAltNoMiss"));
   });
   test("ladderOf: the child's own step has no problemAlt rung", async () => {
     const { ladderSpec, helpPart } = await import("../server/director/help.js");

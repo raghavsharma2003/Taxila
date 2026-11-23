@@ -100,7 +100,11 @@ test("N1: 'pata nahi, aap batao' at the check-in on the last card's why (c5-t01 
     lastMove: { kind: "repair", splitClose: true, gaveCheck: true, closeBeat: cb, scriptBeat: cb } };
   const m = (await planAt(st, "pata nahi, aap batao", kit)).r.state.lastMove;
   assert.ok(m.help?.keyed, "help on the card just keyed");
-  assert.ok(m.help.rung === "whyAlt" || m.help.joint === "afterKeyGoOn", JSON.stringify(m.help));
+  // (re-pinned for main's ruling of 2026-11-23 on to-brain 049 B3: c3 is marked whyAltAsHelp, and its whyAlt is help — after the key too —
+  // only when the child's last answer at c3 was its named wrong answer; otherwise the order before B3, the card's simpler first)
+  const last = st.answerAt?.[`${S}:check:c3`] ?? null;
+  const named = !!last && (last.outcome === "misconception" || !!last.wrongListed);
+  assert.ok(m.help.rung === (named ? "whyAlt" : "simpler") || m.help.joint === "afterKeyGoOn", JSON.stringify(m.help));
   assert.notEqual(m.kind, "teachback", "not straight to the closing question");
 });
 

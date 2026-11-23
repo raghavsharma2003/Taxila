@@ -244,7 +244,11 @@ describe("R5: help answers the mistake", () => {
         if (!raw?.simpler) continue;
         if (!h1?.rung) continue;
         if (raw?.simpler) assert.notEqual(h1.rung.field, "whyAltHelp", `${p.id}: the card's own hint first`);
-        const h2 = pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2 });
+        // (re-pinned for main's ruling of 2026-11-23 on to-brain 049 B3: the marked whyAlt is the second help only after the card's named
+        // wrong answer — the miss here is that answer; another wrong answer gets the order before B3)
+        const named = { outcome: raw?.targets ? "misconception" : "incorrect", misconceptionId: raw?.targets ?? null, wrongListed: true };
+        const h2 = pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2, last: named });
+        if (raw?.whyAltAsHelp === true && raw.whyAlt && raw.wrongIfMis) assert.notEqual(pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2, last: { outcome: "incorrect" } })?.rung?.field, "whyAltHelp", `${p.id}: another wrong answer`);
         if (raw?.whyAltAsHelp === true && raw.whyAlt) {
           assert.equal(h2?.rung?.field, "whyAltHelp", p.id);
           assert.deepEqual(h2.board, hp.board ?? null, `${p.id}: the posing board`);

@@ -135,8 +135,14 @@ describe("T5: help is a hard precondition", () => {
     assert.equal(d.then?.kind, "afterKeyGoOn");
     assert.equal(d.card, "goOn");
     // (with the why's other wording unsaid, it is said first, as before)
-    const d2 = pickHelp({ script, part: id, keyed: true, request: "give_up", said: [] });
+    // (re-pinned for main's ruling of 2026-11-23 on to-brain 049 B3: c1 is marked whyAltAsHelp — its whyAlt is said first after the key only
+    // when the child's last answer at c1 was its named wrong answer; with no answer recorded, the order before B3: its simpler)
+    const raw = part.path.split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script);
+    const named = { outcome: raw.targets ? "misconception" : "incorrect", misconceptionId: raw.targets ?? null, wrongListed: true };
+    const d2 = pickHelp({ script, part: id, keyed: true, request: "give_up", said: [], last: named });
     assert.equal(d2.rung?.field, "whyAlt");
+    const d3 = pickHelp({ script, part: id, keyed: true, request: "give_up", said: [] });
+    assert.equal(raw.whyAltAsHelp === true ? d3.rung?.field : "simpler", "simpler");
   });
   test("pickHelp on a point with nothing unsaid: the \"nothing easier\" line, then helpToCard and the card", () => {
     const script = pilot("c4");
