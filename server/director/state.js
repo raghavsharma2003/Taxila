@@ -4941,7 +4941,8 @@ export function whyRepeated(out, kit) {
   // why's content words, four at least, said it)
   // (d33 integration, dry offtopic c6-ch07 48: "1/3" and "1/6" said before are the 3 and 6 of the why — the words are read as the
   // predicate reads them, a fraction's numbers apart, each word once: 8 of 11 shared, where whole tokens counted 6 of 13)
-  { const cwU = (t) => [...new Set(contentWords(String(t ?? "").replace(/\//g, " ")))];
+  // (and, as it, a word of three letters or fewer counts only as a number: staged c4-ch06-t01 steady 60, "do poore 100" — 6 of 10, not 6 of 11)
+  { const cwU = (t) => [...new Set(contentWords(String(t ?? "").replace(/\//g, " ")).filter((w) => /\d/.test(w) || w.length > 3))];
     const cw0 = cwU(why);
     const said0 = new Set(cwU(herLast.split(/(?<=[.!?])\s+/).filter((x) => !/\?\s*$/.test(x)).join(" ")));
     const sh = cw0.filter((w) => said0.has(w));
