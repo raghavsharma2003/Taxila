@@ -397,12 +397,18 @@ function unrolled(c, tl) {
     if (fig.shape === "rect") tl.add({ id: "fig", op: "rect", at: P[0], w: round1(P[2][0] - P[0][0]), h: round1(P[2][1] - P[0][1]), weight: 2 }, 700);
     else tl.add({ id: "fig", op: "polygon", points: P, weight: 2 }, 700);
   }
-  const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
+  // (main, a reader of [20, ?, 20, ?] = 70 cm: a hidden piece drawn to scale was 73 px beside 97 px for "20 cm", and three
+  // quarters of 20 is the card's answer. A hidden piece is drawn at one neutral length that never depends on its value — the
+  // mean of the shown pieces, or all equal when every piece is hidden — dashed, "not measured"; shown pieces stay to scale
+  // among themselves)
+  const shown = sides.filter((_, i) => !hide.has(i)), neutral = shown.length ? shown.reduce((a, b) => a + b, 0) / shown.length : 1;
+  const drawn = sides.map((v, i) => (hide.has(i) ? neutral : v));
+  const x0 = 30, W = 340, y = 120, sum = drawn.reduce((a, b) => a + b, 0);
   let x = x0;
   const xs = [x0];
   sides.forEach((v, i) => {
-    const x1 = round1(x + (v / sum) * W);
-    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
+    const x1 = round1(x + (drawn[i] / sum) * W);
+    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk", ...(hide.has(i) ? { dashed: true } : {}) }, 600, { gap: i ? 300 : 0 });
     tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
     // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
