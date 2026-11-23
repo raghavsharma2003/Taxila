@@ -67,3 +67,16 @@ describe("B6.4: the greeting's start line is said only at the greeting", () => {
     assert.equal(d?.joint?.kind, "afterKeyGoOn");
   });
 });
+
+describe("B6.5: a reason is not said in two turns running at a worked close", () => {
+  test("reasonTwice is gated, reasonTwiceAuthored counted", () => {
+    assert.ok(PREDICATES.reasonTwice && !PENDING.has("reasonTwice"));
+    assert.ok(PREDICATES.reasonTwiceAuthored && PENDING.has("reasonTwiceAuthored"));
+  });
+  test("reasonTwice reads director32 c5-t03 steady 76, c6 steady 26, c6-ch07 steering 28; reasonTwiceAuthored c4 steady 90", () => {
+    assert.ok(flagged("steady", "c5t03", "reasonTwice").has(76));
+    assert.ok(flagged("steady", "c6", "reasonTwice").has(26));
+    assert.ok(flagged("steering", "c6ch07", "reasonTwice").has(28));
+    assert.ok(flagged("steady", "c4", "reasonTwiceAuthored").has(90));
+  });
+});

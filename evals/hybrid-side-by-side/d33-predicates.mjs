@@ -3,6 +3,8 @@
 //   dekhoOver   "Dekho," more than three times in a lesson, or twice within four of her turns
 //   returnAsksAgain  a return (or her question after the AI line) asking what the child's aside already told, or "yeh tumne bataya tha" of
 //                    something she is hearing for the first time
+//   reasonTwice  at a worked example's close, a reason her step turn before said, said again (reasonTwiceAuthored, counted: a step's authored
+//                right line after a verdict with the same reason)
 //   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
 const DEKHO = /(?<![\p{L}])Dekho,/gu;
 /** "Dekho," said in a row's text. */
@@ -67,4 +69,36 @@ export const D33_PREDICATES = {
     const greet = String(ctx.prevT.move ?? "") === "greet" || (ctx.prevT.seams ?? []).some((x) => ["greetSimpler", "greetAsk", "greetIntro"].includes(x.right));
     return greet ? null : "the greeting's start line said after the greeting";
   },
+  /** B6 (047 R7): a reason is not said in two turns running at a worked close (director32 c4 steady 88 → 90; c5-t03 steady 56 → 58,
+   *  74 → 76; c5-t01 steady 76 → 78; c6 steady 24 → 26; c6-ch07 steering 26 → 28). The turn's first part — its verdict or step confirmation
+   *  and reason, up to "Toh poora jawab" — shares 60% of its content words (four at least) with her turn before, one of the two a worked
+   *  example's. Gated. */
+  reasonTwice(L, r, i, ctx) { return reasonRepeat(r, ctx, "close"); },
+  /** B6, its other shape, counted: a worked step's authored right line (`ask.right`) said straight after a verdict that gave the same reason
+   *  (dry c4 steady 88, offtopic 20, steering 38: "Haan, 5: barfi 5 barabar tukdon mein kati thi." after the card's why) — the words are the
+   *  script's; Learning's to rewrite, code does not cut an authored line. */
+  reasonTwiceAuthored(L, r, i, ctx) { return reasonRepeat(r, ctx, "step"); },
 };
+function reasonRepeat(r, ctx, want) {
+  {
+    const p = ctx?.prevT;
+    if (r.who !== "teacher" || !p) return null;
+    const sm = (r.seams ?? []).map((x) => x.right);
+    if (!sm.includes("verdict") && !sm.includes("stepConfirm")) return null;
+    // (at a worked close: this turn closes a worked example — "Toh poora jawab" — after her step turn, or confirms a step right after the
+    // verdict before it)
+    const close = /Toh poora jawab/.test(String(r.text ?? "")) && (p.seams ?? []).some((x) => ["workedStep", "stepConfirm"].includes(x.right));
+    const step = sm[0] === "stepConfirm" && (p.seams ?? []).some((x) => x.right === "verdict");
+    if (want === "close" ? !close : !step) return null;
+    const pp = r.pageParts ?? [];
+    let head = String(r.text ?? "").slice(0, pp[1]?.from ?? undefined);
+    head = head.split(/Toh poora jawab/)[0];
+    const cw = (t) => [...new Set(wordsOf(t).filter((w) => /\d/.test(w) || (w.length > 3 && !ASIDE_STOP.has(w) && !REASON_STOP.has(w))))];
+    // (her turn before's reasons: its sentences that ask nothing — its question and its card are what this turn answers, not a reason)
+    const said = String(p.text ?? "").split(/(?<=[.!?])\s+/).filter((x) => !/\?\s*$/.test(x) && !(p.card && low(p.card).includes(low(x)))).join(" ");
+    const mine = cw(head), before = new Set(cw(said));
+    const shared = mine.filter((w) => before.has(w));
+    return mine.length && shared.length >= 4 && shared.length / mine.length >= 0.6 ? `the reason said again (${shared.length}/${mine.length}: ${shared.slice(0, 5).join(" ")})` : null;
+  }
+}
+const REASON_STOP = new Set("sahi bilkul theek haan jawab dekho suno kyunki isliye matlab yaani hota hoti hote hua hue hain".split(" "));

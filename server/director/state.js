@@ -4893,6 +4893,13 @@ export function whyRepeated(out, kit) {
   if (!herLast) return false;
   const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
   if (herLast.includes(low(why).replace(/[.!?]+$/, "").slice(0, 40))) return true;
+  // (to-brain 049 B6, a reason not said in two turns running at a worked close — director32 c6 steady 24 → 26, c6-ch07 steering 26 → 28,
+  // c5-t03 steady 74 → 76: her step turn said it in its own words. The sentences of her turn before that ask nothing, sharing 60% of the
+  // why's content words, four at least, said it)
+  { const cw0 = contentWords(why);
+    const said0 = new Set(contentWords(herLast.split(/(?<=[.!?])\s+/).filter((x) => !/\?\s*$/.test(x)).join(" ")));
+    const sh = cw0.filter((w) => said0.has(w));
+    if (cw0.length && sh.length >= 4 && sh.length / cw0.length >= 0.6) return true; }
   const we = (scriptFor(kit)?.script?.skills ?? []).map((k) => k.workedExample).find((w) => w && low(saidIn(w.why, lang)) === low(why));
   const cw = contentWords(why);
   if (!we || cw.length < 3) return false;
