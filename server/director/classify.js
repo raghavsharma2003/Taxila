@@ -19,7 +19,7 @@ import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
-import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK } from "../grading/script-answer.js";
+import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied } from "../grading/script-answer.js";
 import { toDevanagari } from "../voice/translit/index.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
@@ -784,6 +784,12 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // chaudai" is another sum. The model reads it)
     const BRACKETED = /\([^()]*[+\-×x*÷/][^()]*\)/i;
     if (!/[()]/.test(text) && forms.some((k, j) => BRACKETED.test(String(k)) && F[j].some((c) => sameAnswer(c, R)))) return toModel("brackets");
+    // (050, main's reader: "2 se guna nahi", "nahi barabar" — a right form with a denial added — denies the answer or is ambiguous; never
+    // `correct` in code, whatever a form holding "nahi, …" matches as a bag of words)
+    if (R.neg) {
+      const R0 = undenied(R);
+      if (R0.seq.length && F.some((cs) => cs.some((c) => !c.neg && sameAnswer(c, R0)))) return toModel("denial");
+    }
     if (F.some((cs) => cs.some((c) => sameAnswer(c, R)))) return done("correct", "script_key");
     const keyC = canon(target.key);
     const fracs = R.nums.filter((x) => x.includes("/"));
@@ -794,8 +800,11 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       const named = nameFractions(lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en);
       const val = fractionValue(fracs[0].slice(1));
       const hits = named.filter((x) => val != null && x.value === val);
-      if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length) {
-        const name = hits[0].name.toLowerCase();
+      // (050 wall: only the fraction, said alone or beside that name — "8/12 zyada hai" to "Mohan ne Rahul se kam khaya, zyada, ya barabar?"
+      // says more than whose it is, and took the form "Mohan ne kam khaya" by its name)
+      const nm = hits[0]?.name.toLowerCase();
+      if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length && R.words.every((w) => w === nm)) {
+        const name = nm;
         const says = (k) => norm(k).split(/\s+/).includes(name);
         if (forms.some(says)) return done("correct", "script_key");
         if (wrongs.some(says)) return misOf();

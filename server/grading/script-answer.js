@@ -192,8 +192,13 @@ export function untag(raw) {
   const t = s.replace(TAG_END, "");
   return t !== s && /[\p{L}\p{N}]/u.test(t) ? t : s;
 }
+// (to-brain 050, main's reader on c5-ch02-t03 s1 c2: "1/2 chhota hai" — 1/2 is the smaller — met the form "1/2 se chhota" once "se" went as a
+// filler. Beside a comparison word, "se" / "than" says which side is compared, so it is kept, as one word)
+const CMP = new Set(["bada", "chhota", "zyada", "kam"]);
+const THAN = new Set(["se", "than", fold("से")]);
 export function canon(raw) {
   const it = items(untag(raw));
+  const cmp = it.some((x) => x.k === "raw" && x.t && CMP.has(SAME.get(fold(x.t)) ?? fold(x.t)));
   let seq = [];
   it.forEach((x, i) => {
     if (x.k === "num") { seq.push({ k: "num", t: `#${x.v}` }); return; }
@@ -205,6 +210,7 @@ export function canon(raw) {
     // (a denial keeps its word: "galat nahi" — not wrong — is never "galat")
     if (NEG.has(f)) { seq.push({ k: "neg", t: f === "galat" || f === "wrong" ? "galat" : "nahi" }); return; }
     if ((f === "na" || f === fold("ना")) && !seq.length) { seq.push({ k: "neg", t: "nahi" }); return; }
+    if (cmp && THAN.has(f0)) { seq.push({ k: "w", t: "se" }); return; }
     if (FILL.has(f)) return;
     seq.push({ k: "w", t: f });
   });
@@ -244,11 +250,17 @@ export function sameAnswer(a, b) {
   if (a.units.length && b.units.length && !setEq(a.units, b.units)) return false;
   const A = a.seq.filter((x) => x.k !== "unit"), B = b.seq.filter((x) => x.k !== "unit");
   if (!A.length || !B.length) return false;
-  if (a.ops || b.ops) return a.ops && b.ops && setEq(a.words, b.words) && sameExpr(A, B);
-  // a denial is the same only where it stands in the same place (G7)
+  // a denial is the same only where it stands in the same place (G7; 050: also in a sum — "2 se guna nahi" is never "2 se guna")
   if (a.neg || b.neg) return join(A) === join(B);
+  if (a.ops || b.ops) return a.ops && b.ops && setEq(a.words, b.words) && sameExpr(A, B);
   // the words as a set; the numbers in their order (G7: a list of values is ordered)
   return setEq(a.words, b.words) && a.nums.join(" ") === b.nums.join(" ");
+}
+
+/** 050: the normal form with its denial words taken out ("2 se guna nahi" → "2 se guna"), to see whether a reply denies a right form. */
+export function undenied(c) {
+  const seq = (c?.seq ?? []).filter((x) => x.k !== "neg");
+  return { ...c, seq, nums: seq.filter((x) => x.k === "num").map((x) => x.t), words: seq.filter((x) => x.k === "w").map((x) => x.t), neg: false };
 }
 
 /** A form that is one number (with a unit at most): its value token, else null. */

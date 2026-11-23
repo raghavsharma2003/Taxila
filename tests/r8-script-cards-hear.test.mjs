@@ -16,7 +16,7 @@ import { classifyFast } from "../server/director/classify.js";
 import { scriptAskItem, scriptCheckItem, scriptThenItem, scriptQuickItem, scriptStepAskItem } from "../server/director/script.js";
 import { fillFriendDeep } from "../server/director/friend.js";
 import { READER_TABLES as T, spokenNumber } from "../server/grading/spoken-number.js";
-import { canon, sameAnswer, numberOf, optionsIn, wrongList } from "../server/grading/script-answer.js";
+import { canon, sameAnswer, numberOf, optionsIn, wrongList, undenied } from "../server/grading/script-answer.js";
 import { toDevanagari } from "../server/voice/translit/index.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -396,4 +396,36 @@ test("050 W2: a key that is a number is graded as before; a word key with a bare
   assert.equal(grade(A, "7"), "incorrect");
   // (the number of a right form is never wrong in code: "2" is the multiplier)
   assert.notEqual(grade(A, "2"), "incorrect");
+});
+
+test("050 (main's reader, c5-ch02-t03): a right form with a denial added, and a comparison turned round, are never `correct` — over every card", () => {
+  const A = card("2 se guna", ["2 guna", "upar ko bhi 2 se guna karenge", "upar 2 se guna", "6", "3 × 2"], null, "Neeche 5 ka 10 hua. Upar ke 3 ka kya karein?");
+  for (const s of ["2 se guna nahi", "2 se guna nahi karenge", "2 guna nahi"]) assert.notEqual(grade(A, s), "correct", s);
+  const cmp = card("smaller", ["chhota", "1/2 se chhota", "5/12 chhota hai", "aadhe se kam"], "bigger", "Is line par 5/12, 1/2 se bada hai, chhota hai, ya barabar?");
+  for (const s of ["1/2 chhota hai", "aadha chhota hai", "5/12 bada hai"]) assert.notEqual(grade(cmp, s), "correct", s);
+  for (const s of ["1/2 se chhota", "5/12 chhota hai", "chhota"]) assert.equal(grade(cmp, s), "correct", s);
+  const neg = card("no", ["nahi", "nahi, dono barabar hain", "barabar hain", "dono barabar"], "yes", "{friend} ka kehna hai ki 1/4 aur 2/8 barabar nahi ho sakte. Kya yeh baat sahi hai, haan ya nahi?");
+  for (const s of ["nahi barabar", "nahi hain barabar", "nahi same"]) assert.notEqual(grade(neg, s), "correct", s);
+  // the walls, over every card of every script
+  const SWAP = { chhota: "bada", bada: "chhota", kam: "zyada", zyada: "kam", smaller: "bigger", bigger: "smaller", less: "more", more: "less" };
+  const leaks = []; let denied = 0, turned = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    const isRight = (f) => rc.some((r) => sameAnswer(r, canon(f)));
+    for (const r of rights) {
+      const c = canon(r);
+      if (c.neg || !c.seq.length || c.seq.every((x) => x.t === "haan" || x.t === "nahi")) continue;
+      // (a card that lists "nahi, X" as right — the child denying the friend — keeps "nahi X" right: that card's own choice)
+      const listsNahiX = rc.some((x) => x.neg && x.seq[0]?.k === "neg" && undenied(x).seq.length);
+      for (const f of [`${r} nahi`, ...(listsNahiX ? [] : [`nahi ${r}`]), `${r} nahi hai`]) { if (isRight(f)) continue; denied++; if (grade(it, f) === "correct") leaks.push(`${name} ${where} ${JSON.stringify(f)}`); }
+      const ws = r.split(/\s+/);
+      const k = ws.findIndex((w) => SWAP[w.toLowerCase()]);
+      if (k >= 0) {
+        const tries = [ws.map((w, j) => (j === k ? SWAP[w.toLowerCase()] : w)).join(" ")];
+        for (const f of tries) { if (isRight(f)) continue; turned++; if (grade(it, f) === "correct") leaks.push(`${name} ${where} ${JSON.stringify(f)}`); }
+      }
+    }
+  }
+  assert.ok(denied > 500 && turned > 10, `the walls ran (denied ${denied}, turned ${turned})`);
+  assert.deepEqual(leaks, []);
 });
