@@ -249,7 +249,8 @@ describe("R5: help answers the mistake", () => {
         const named = { outcome: raw?.targets ? "misconception" : "incorrect", misconceptionId: raw?.targets ?? null, wrongListed: true };
         const h2 = pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2, last: named });
         if (raw?.whyAltAsHelp === true && raw.whyAlt && raw.wrongIfMis) assert.notEqual(pickHelp({ script: sc, part: p.id, request: "hint", said: addSaid([], h1.rung.text, 1), misses: 2, last: { outcome: "incorrect" } })?.rung?.field, "whyAltHelp", `${p.id}: another wrong answer`);
-        if (raw?.whyAltAsHelp === true && raw.whyAlt) {
+        // (re-pinned for to-brain 051 C3: a marked card that names no wrong answer never says its whyAlt as help)
+        if (raw?.whyAltAsHelp === true && raw.whyAlt && raw.wrongIfMis) {
           assert.equal(h2?.rung?.field, "whyAltHelp", p.id);
           assert.deepEqual(h2.board, hp.board ?? null, `${p.id}: the posing board`);
           assert.equal(h2.card, "keep");
