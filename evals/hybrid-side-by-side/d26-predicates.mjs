@@ -88,6 +88,8 @@ D26_PREDICATES.goOnAfterKey = function goOnAfterKey(L, r, i, ctx) {
   if (!sm.some((x) => x.joint === "afterKeyGoOn")) return null;
   const a = ctx ? addressAt(L, r, i, ctx) : null;
   const keyed = a ? a.keyed : r.cell?.keyed;
+  // (to-brain 049 B6: a give-up or a clarify at a bridge's check-in goes on led by the go-on joint — the greeting's start line was said there)
+  if (a && /(?:^|:)bridge$/.test(String(a.beat ?? ""))) return null;
   return keyed ? null : `the go-on line with no key given (${a ? a.beat : r.cell?.part ?? "no part"}, ${r.cell?.column ?? "no column"})`;
 };
 /** J1 item 3 (c6 steady 16, 58, 86, stuck 34, offtopic 42, steering 40; c5-t02 steady 20, 72, 132, steering 42): a verdict runs into a

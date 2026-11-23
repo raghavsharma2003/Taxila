@@ -48,3 +48,22 @@ describe("B6.3: the return uses what the child said", () => {
     assert.ok(flagged("offtopic", "c4ch01", "returnAsksAgain").has(50));
   });
 });
+
+describe("B6.4: the greeting's start line is said only at the greeting", () => {
+  test("startLineNotGreeting is gated and reads director32 c4 stuck 62, c5-t01 stuck 64, c6-ch07 stuck 64", () => {
+    assert.ok(PREDICATES.startLineNotGreeting && !PENDING.has("startLineNotGreeting"));
+    assert.ok(flagged("stuck", "c4", "startLineNotGreeting").has(62));
+    assert.ok(flagged("stuck", "c5t01", "startLineNotGreeting").has(64));
+    assert.ok(flagged("stuck", "c6ch07", "startLineNotGreeting").has(64));
+    // (the start line after the greeting is its place: row 4 of stuck and steering)
+    assert.ok(!flagged("stuck", "c4", "startLineNotGreeting").has(4));
+  });
+  test("a give-up at a bridge's check-in goes on led by the go-on joint (afterKeyGoOn)", async () => {
+    const { pickHelp } = await import("../server/director/help.js");
+    const { readFileSync } = await import("node:fs");
+    const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t03.json", import.meta.url), "utf8"));
+    const d = pickHelp({ script, part: `${script.skills[0].skillId}:bridge`, request: "give_up", said: [] });
+    assert.equal(d?.card, "goOn");
+    assert.equal(d?.joint?.kind, "afterKeyGoOn");
+  });
+});

@@ -186,7 +186,8 @@ export const PREDICATES = {
     // (main's R3 on the merged H4 + L2 tree: a clarify at the hook's check-in is answered by the first point, and its card with it)
     if (String(ctx.prevT.move ?? "") === "hook") return null;
     // (Brain 047 R5: a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
-    if ((r.seams ?? []).some((x) => x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
+    // (to-brain 049 B6: led by the go-on joint, afterKeyGoOn — startAnyway is the greeting's)
+    if ((r.seams ?? []).some((x) => x.joint === "startAnyway" || x.joint === "afterKeyGoOn") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (main's R3: a clarify at a keyed card's check-in — the check-in L2 puts after a right answer's verdict when the next part waits
     // included — is help on the card just answered (H4 item 6): the why's other wording if unsaid, else one afterKeyGoOn form and the lesson
     // goes on, its next card with it. Exempt exactly as giveUpCheckin exempts it: the turn the walk recorded as keyed help, and a card in it
@@ -748,7 +749,8 @@ export const ORDER_LAWS = {
     if (helpGoOnSaid(r, ctx)) return null;
     // (dc-r8-director27 P3: a bridge's help all said — the helpSpent line, then the lesson goes on from the bridge, as help decides)
     // (Brain 047 R5: a give-up or a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
-    if ((r.seams ?? []).some((x) => x.joint === "helpSpent" || x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
+    // (to-brain 049 B6: the go-on joint, afterKeyGoOn, in startAnyway's place)
+    if ((r.seams ?? []).some((x) => x.joint === "helpSpent" || x.joint === "startAnyway" || x.joint === "afterKeyGoOn") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (Brain 044 T1: after the greeting's simpler wording, a request gets the "nothing easier" line and the lesson starts — hook, point, card)

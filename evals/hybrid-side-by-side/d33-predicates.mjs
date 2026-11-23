@@ -3,6 +3,7 @@
 //   dekhoOver   "Dekho," more than three times in a lesson, or twice within four of her turns
 //   returnAsksAgain  a return (or her question after the AI line) asking what the child's aside already told, or "yeh tumne bataya tha" of
 //                    something she is hearing for the first time
+//   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
 const DEKHO = /(?<![\p{L}])Dekho,/gu;
 /** "Dekho," said in a row's text. */
 const dekhoIn = (r) => (String(r?.text ?? "").match(DEKHO) ?? []).length;
@@ -54,5 +55,16 @@ export const D33_PREDICATES = {
       if (named) return `asks what they like in it after they said "${String(named.text).slice(0, 40)}"`;
     }
     return null;
+  },
+  /** B6: the greeting's start line is said only at the greeting — "Theek hai, main shuru karti hoon." at a bridge's give-up (director32 c4
+   *  stuck 62; c5-t01 stuck 64; c6-ch07 stuck 64) is the go-on joint. Gated. */
+  startLineNotGreeting(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.prevT) return null;
+    const start = (ctx.script?.joints?.startAnyway ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(low);
+    const said = (r.seams ?? []).some((x) => x.joint === "startAnyway" || x.right === "startAnyway")
+      || (start.length && String(r.text ?? "").split(/(?<=[.!?])\s+/).some((x) => start.includes(low(x))));
+    if (!said) return null;
+    const greet = String(ctx.prevT.move ?? "") === "greet" || (ctx.prevT.seams ?? []).some((x) => ["greetSimpler", "greetAsk", "greetIntro"].includes(x.right));
+    return greet ? null : "the greeting's start line said after the greeting";
   },
 };
