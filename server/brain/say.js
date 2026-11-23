@@ -1452,7 +1452,9 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     // (dc-r8-director26 J1 item 3: the worked problem said on this turn — the seam before it takes beforeWorked)
     // (dc-r8-director26 C1: the problem said with its first step — problemLines — is the worked problem said on this turn too)
     workedProblem: (() => { const sb = state?.lastMove?.scriptBeat; if (sb?.beatId !== "worked:problem" && !state?.lastMove?.problemLines) return null;
-      const we = (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === sb.skillId)?.workedExample; const t = we?.problem ? saidIn(we.problem, lang) : null; return t ? String(t).trim() : null; })(),
+      const we = (scriptFor(kit)?.script?.skills ?? []).find((x) => x.skillId === sb.skillId)?.workedExample; const t = we?.problem ? saidIn(we.problem, lang) : null;
+      // (049 item 2, the staged c6-ch07-t03: a problem with a {friendF} slot is said filled — read filled, as the turn says it)
+      return t ? String(fillFriend(t, state?.ctx?.firstName ?? "")).trim() : null; })(),
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
@@ -3155,7 +3157,11 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // scripted worked or remediation turn carries no number; the code lines carry them, in order
       // (d29 final, Learning 017's worked examples: an asked step's ask.right — "Haan, gaps; khambe toh bas jagahein hain." — carries no number,
       // so a draft that opens on it was taken as her frame and the line was planned twice: a frame is never one of the code lines)
-      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) && !workedLines.some((l) => authoredKey(l) === authoredKey(ss[0])) ? ss[0] : null;
+      // (049 item 2, the dry c6-ch06-t01 offtopic/stuck 20: a frame is never a SENTENCE of an authored part of this turn either — "Baad kinaare
+      // par hi lagti hai." is a told step's first sentence, compared against whole lines it was taken as her frame, said first, and the step
+      // was no longer said whole)
+      const authoredSs = new Set([...workedLines, point, card, state.lastMove?.cardPoint, ...(state.lastMove?.sayFirst ?? [])].filter(Boolean).flatMap((l) => sentences(String(l))).map((x) => authoredKey(x)));
+      const frame = !lead && clean(ss[0]) && !/\d/.test(ss[0]) && !RULE_SAID.test(ss[0]) && !workedLines.some((l) => authoredKey(l) === authoredKey(ss[0])) && !authoredSs.has(authoredKey(ss[0])) ? ss[0] : null;
       body = [...(frame ? [frame] : []), ...workedLines.map(norm)];
       // (2.4 J1: a miss verdict and a remediation met with no join — Learning's beforeRemediation joint between them)
       // (dc-r8-director22 J2: always after a miss verdict — hers or code's frame — never only when her own verdict sentence led)
