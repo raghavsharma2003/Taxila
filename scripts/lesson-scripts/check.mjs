@@ -1085,8 +1085,9 @@ export function blindPacket(topicId) {
  *    claim, no promise).
  *  The rules apply to the four pilots and to any script that declares one of the fields, so the 30 staged scripts are not failed
  *  for lacking them. */
-// (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged, the fifth live script, held to every pilot rule)
-export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03"];
+// (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged, the fifth live script, held to every pilot rule;
+// director32: c6-maths-ch07-t01 the sixth)
+export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
 export const D27_JOINTS = ["afterKeyReturn", "tiredBye"];
 export const QUICK_PROMPT_MAX = 14, QUICK_SAY_MAX = 12, ASK_PROMPT_MAX = 14, ASK_RIGHT_MAX = 15, WORKED_PROBLEM_MAX = 30, TOLD_STEP_MAX = 30, WORKED_OPEN_MAX = 75, COVERED_MAX = 20;
 export function isD27(s) {
@@ -1278,8 +1279,8 @@ export function d28Errors(s) {
  *  E. `joints.stepMiss`: three forms of 4 words or fewer, each saying the answer was not it, naming no answer, asking nothing.
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
-// (dc-r8-director31 item 10: every live script — the four pilots and c5-maths-ch02-t03, live as judged)
-export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03"];
+// (dc-r8-director31 item 10: every live script — the four pilots and c5-maths-ch02-t03, live as judged; director32: c6-maths-ch07-t01)
+export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
 export const D29_JOINTS = ["stepMiss", "startAnyway", "afterPark"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId) || STANDARD_STAGED.includes(s?.topicId); }
@@ -1560,8 +1561,8 @@ export function d30Report(s) {
  *      two are the same: the why names the other form. */
 export const AFTER_WORKED_MAX = 6;
 /** Scripts outside the live ones held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged
- *  (c5-maths-ch02-t03 left it for D29_PILOTS when it went live, dc-r8-director31 item 10). */
-export const STANDARD_STAGED = ["c4-maths-ch01-t02", "c6-maths-ch07-t01"];
+ *  (c5-maths-ch02-t03 left it for D29_PILOTS when it went live, dc-r8-director31 item 10; c6-maths-ch07-t01 in director32). */
+export const STANDARD_STAGED = ["c4-maths-ch01-t02"];
 /** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */
 export const HINDI_FORM_ENGLISH = /\b(and|or|but|so|the|are|was|were|of|what|which|who|how|many|much|equal|equally|part|parts|piece|pieces|colou?r|colou?red|shaded?|same|total|left|count|whole|half|bigger|smaller|biggest|smallest|more|less|than|answer|find|first|second|third|then|now|yes|right|wrong|side|sides|length|breadth|width|cost|times|each|every|between|after|before|top|bottom|distance|share|shared|divide|divided|add|subtract|multiply|correct|think|tell|cut|eat|ate|eaten|take|took|give|gave|walk|walked|run|ran|fence|wire|round|rounds)\b/i;
 /** Every card the child answers, with where it is (A.1). */
