@@ -152,6 +152,42 @@ export function correctedTail(text) {
   return tail && tail.split(/\s+/).length <= 8 ? (hedgeCore(tail) ?? tail) : null;
 }
 
+/**
+ * 050: is the arithmetic a reply shows true? "35 - 31 = 4", "35 minus 31 barabar 4", "6 × 5 = 30", "35 minus 31, 4" (a working
+ * then its result). true / false where the reply shows one sum and its result; null where it shows none the code can read.
+ * PURE.
+ */
+export function workingTrue(text) {
+  const seq = canon(text).seq.filter((x) => x.k !== "unit");
+  const val = (t) => { const v = t.slice(1); if (v.includes("/")) { const [a, b] = v.split("/").map(Number); return b ? a / b : NaN; } return Number(v); };
+  const toks = [];
+  for (const x of seq) {
+    if (x.k === "num") toks.push({ n: val(x.t) });
+    else if (x.k === "op") toks.push({ o: x.t });
+    else if (x.k === "w" && (x.t === "barabar" || x.t === "toh") && toks.length) toks.push({ o: "=" });
+  }
+  let eq = toks.findIndex((x) => x.o === "=");
+  if (eq < 0) {
+    // "35 minus 31, 4": two numbers in a row at the end, the last the result
+    const k = toks.length - 1;
+    if (k >= 3 && toks[k].n != null && toks[k - 1].n != null && toks.slice(0, k).some((x) => x.o)) { toks.splice(k, 0, { o: "=" }); eq = k; } else return null;
+  }
+  const left = toks.slice(0, eq), right = toks.slice(eq + 1);
+  if (right.some((x) => x.o === "=")) return null;
+  const evalOf = (ts) => {
+    if (!ts.length || ts.length % 2 === 0 || !ts.every((x, i) => (i % 2 ? x.o && x.o !== "=" : x.n != null && Number.isFinite(x.n)))) return null;
+    const terms = [ts[0].n], ops = [];
+    for (let i = 1; i < ts.length; i += 2) {
+      const o = ts[i].o, n = ts[i + 1].n;
+      if (o === "×") terms.push(terms.pop() * n); else if (o === "÷") terms.push(n ? terms.pop() / n : NaN); else { ops.push(o); terms.push(n); }
+    }
+    return ops.reduce((acc, o, i) => (o === "+" ? acc + terms[i + 1] : acc - terms[i + 1]), terms[0]);
+  };
+  const a = evalOf(left), b = evalOf(right);
+  if (a == null || b == null || !left.some((x) => x.o)) return null;
+  return Math.abs(a - b) < 1e-9;
+}
+
 /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
 function fromMatch(match, target) {
   if (match === "key") return { outcome: "correct" };
@@ -604,7 +640,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // v6.8 G1 (main, director16 c5-t01 stuck 63: "-1/7 km" graded right against "1/7 km" — the key match dropped the sign): an
   // answer said negative is never right for a key that is not; the sign is part of the value
   const NEG = /(?:^|[\s(])(?:[-−–]\s*(?=\d)|minus\b|negative\b|rin\b|ऋण)/iu;
-  const negSaid = NEG.test(` ${text}`);
+  // (050, main's third reader: "35 - 31 = 4" was read as a negative answer and graded wrong; a minus right after a number is the
+  // operation, never the answer's sign)
+  const negSaid = NEG.test(` ${text}`.replace(/(\d)\s*(?:[-−–]|minus\b)/giu, "$1 op "));
   const negKey = [target?.key, ...(target?.also ?? [])].filter(Boolean).some((k) => NEG.test(` ${String(k)}`));
   const done = (outcome, source, extra = {}) => {
     if (outcome === "correct" && negSaid && !negKey && source !== "chip") { outcome = "incorrect"; extra = { ...extra, signMismatch: true }; }
@@ -936,6 +974,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const said = text.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|toh|to)\s+)?([\d.,\/]+)/iu)?.[1];
     const saidV = said ? numberPhrases(said)?.[0] : null;
     const back = !hit ? null : saidV != null && Math.abs(saidV - kv) >= 1e-9 ? "other_answer" : reasonTakesBack(text, "", [kv], new Set(), promptN, { negation: false, cues: false });
+    // (050: working said with its result is right by that value only when the arithmetic shown is true — "35 - 18 = 4" is the model's)
+    if (hit && (!back || back === "question") && workingTrue(text) === false) return { result: null, flags, text, scriptUnsure: "working_untrue" };
     if (hit && (!back || back === "question")) return done("correct", "number_working");
     if (hit) return done("no_evidence", "number_taken_back");
     if (last != null) return { result: null, flags, text, numericMismatch: true };

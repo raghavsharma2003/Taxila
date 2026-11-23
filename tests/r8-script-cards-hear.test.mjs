@@ -455,3 +455,23 @@ test("050 units: where a right form carries a unit, the key's number said with a
   assert.ok(cards >= 3, `the wall found unit-keyed cards (${cards})`);
   assert.deepEqual(leaks, []);
 });
+
+test("050 working: spoken working that ends on the key's number is right when its sum is true, the model's when not; a minus between numbers is no sign", () => {
+  const c = card("4 m", ["4", "chaar", "4 metre", "chaar metre", "four"], "18 m", "Tumhari baari: maali ki 35 m baad mein se kitni bachegi?");
+  for (const s of ["35 - 31 = 4", "35 − 31 = 4", "35 minus 31, 4", "35 minus 31 barabar 4"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["35 - 18 = 4", "35 mein se 31 gaye, 4 bache"]) assert.notEqual(grade(c, s), "correct", s);
+  for (const s of ["35 - 18 = 4", "35 − 18 = 17", "35 mein se 31 gaye, 4 bache", "31 lagi toh 4 bachi"]) assert.notEqual(grade(c, s), "incorrect", s);
+  // (an answer said negative is still never the key: the v6.8 sign rule stands)
+  assert.notEqual(grade(c, "-4"), "correct");
+  const big = card("94 m", ["94", "94 metre"], null, "140 m mein se 46 m lagi. Kitni bachegi?");
+  for (const s of ["140 − 46 = 94", "140 minus 46 = 94"]) assert.equal(grade(big, s), "correct", s);
+});
+
+test("050 W1 (main's third reader, the perimeter script): \"do\" and \"ek\" in a word key's plain phrasings are never wrong in code", () => {
+  const find = (pred) => cardsOf(JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c6-maths-ch06-t01.json"), "utf8"))).find(([, it]) => pred(it))?.[1];
+  const dbl = find((it) => it.answer === "jodkar do guna"), lap = find((it) => it.answer === "ek chakkar");
+  assert.ok(dbl && lap);
+  for (const s of ["jodkar do guna karo", "jodo phir do guna karo", "pehle jodo phir do guna", "jod ka do guna karna hai", "jodkar double karo"]) assert.notEqual(grade(dbl, s), "incorrect", s);
+  for (const s of ["ek chakkar nikalna hoga", "pehle ek chakkar ki doori nikalni hogi", "ek round ki doori"]) assert.notEqual(grade(lap, s), "incorrect", s);
+  for (const s of ["24 + 18 + 24 + 18", "jodkar do guna"]) assert.equal(grade(dbl, s), "correct", s);
+});
