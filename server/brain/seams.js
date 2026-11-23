@@ -299,7 +299,19 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   if (info.helpJoint?.kind === "afterKeyGoOn" && info.helpJoint.form && intoReturn) {
     const goK = sentencesOf(info.helpJoint.form).map(low);
     const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => goK.includes(low(x))));
-    if (at >= 0 && at < kinds.indexOf(intoReturn)) {
+    // (to-brain 049 B6, 047 R5's third bullet — supersedes P5's choice for the aside's return: "nothing easier" is never followed in the
+    // same turn by an aside's return; before the return the go-on line is said in its place, as director/state.js helpAfter does when the
+    // walk's move carries the return. Here the return was decided after the walk, by say.js's due park: fixture c4-ch05-t01 stuck 46,
+    // "Isko main aur aasaan nahi keh paa rahi. Waise, cricket …")
+    if (at >= 0 && at < kinds.indexOf(intoReturn) && intoReturn === "return") {
+      if (info.helpJoint.spent?.form) {
+        const spK = sentencesOf(info.helpJoint.spent.form).map(low);
+        for (let n = 0; n <= at; n++) stripped[n] = { ...stripped[n], text: sentencesOf(stripped[n].text).filter((x) => !spK.includes(low(x))).join(" ") };
+        for (let n = at; n >= 0; n--) if (!stripped[n].text.trim()) stripped.splice(n, 1);
+        info = { ...info, helpJoint: { kind: info.helpJoint.kind, form: info.helpJoint.form, by: info.helpJoint.by } };
+        kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+      }
+    } else if (at >= 0 && at < kinds.indexOf(intoReturn)) {
       const rest = sentencesOf(stripped[at].text).filter((x) => !goK.includes(low(x)));
       // (before the aside's return the go-on line's "we go on" contradicts the return — c6 steering 32, its judge: "abhi aage badhte hain. Ab
       // cricket ki baat karte hain". The request is still answered: the helpSpent line, then the return)
@@ -308,6 +320,17 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
       if (spentJ?.text) stripped[at] = { ...stripped[at], text: [spentJ.text, ...rest].join(" ") };
       else if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
       info = { ...info, helpJoint: spentJ?.text ? { kind: "helpSpent", form: spentJ.text, by: spentJ.by } : info.helpJoint.spent ? { kind: "helpSpent", form: info.helpJoint.spent.form, by: info.helpJoint.spent.by } : null, goOnDropped: info.helpJoint.form, ...(intoReturn === "returnCard" ? { afterKeyReturn: true } : {}) };
+      kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
+    }
+  }
+  // (to-brain 049 B6, the same rule where help's joint is the "nothing easier" line alone — no key, so no go-on line: nothing in its place)
+  if (info.helpJoint?.kind === "helpSpent" && info.helpJoint.form && kinds.includes("return")) {
+    const spK = sentencesOf(info.helpJoint.form).map(low);
+    const at = stripped.findIndex((p) => sentencesOf(p.text).some((x) => spK.includes(low(x))));
+    if (at >= 0 && at < kinds.indexOf("return")) {
+      const rest = sentencesOf(stripped[at].text).filter((x) => !spK.includes(low(x)));
+      if (rest.length) stripped[at] = { ...stripped[at], text: rest.join(" ") }; else stripped.splice(at, 1);
+      info = { ...info, helpJoint: null };
       kinds = stripped.map((p, i) => kindOf(p, i, stripped, { ...info, carriers }));
     }
   }

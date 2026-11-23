@@ -292,7 +292,11 @@ export const D27_PREDICATES = {
     // line and helpToCard alone are not help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
     // (Brain 047 R8: a Hindi request at a card with no `hindi` form, its help spent: the switch line and the whole card)
     if (req === "hindi" && isSpent && r.card && !hindiFormAt(ctx.script, r) && low(r.text).includes(low(r.card))) return null;
-    if (hasJoint(r.text, ctx.script, ["helpSpent"])) return isSpent ? null : `a ${req} on ${a.beat} answered with the "nothing easier" line while its help is unsaid`;
+    // (to-brain 049 B6, 047 R5's third bullet: after a key with its help spent, before an aside's return in the same turn, the go-on line is
+    // said in the "nothing easier" line's place — server/director/state.js helpAfter, brain/seams.js — and is that turn's answer: fixture
+    // c4-ch05-t01 stuck 46)
+    if (isSpent && a.keyed) { const sm = r.seams ?? []; const g = sm.findIndex((x) => x.joint === "afterKeyGoOn"); if (g >= 0 && sm.slice(g + 1).some((x) => x.right === "return")) return null; }
+    if (hasJoint(r.text, ctx.script, ["helpSpent"])) return isSpent ? null :`a ${req} on ${a.beat} answered with the "nothing easier" line while its help is unsaid`;
     const other = parts.find((p) => p.part === "simpler");
     return `a ${req} on ${a.beat}${a.keyed ? " (after a key)" : ""} answered with ${other ? `help for ${other.beat}` : parts.length ? parts.filter((p) => !p.joint && !p.checkin).map((p) => `${p.part}@${p.beat}`).join(", ") || "a joint" : "no part"}`;
   },
