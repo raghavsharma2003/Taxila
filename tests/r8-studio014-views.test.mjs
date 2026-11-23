@@ -159,17 +159,21 @@ test("fraction-line@1 strips (item 5): a line past 1, with two scales past 1, or
   }
 });
 
-test("fraction-bars@1 three bars (item 5): three circles of the same parts side by side, the shading kept, no name written", () => {
-  // (d32 reader fixes, 2026-11-19: the seven scripts hold 5 such boards (four posing, one then-card), down from 8: cards moved from
-  // three bars to wholes boards; each one left still gets its three circles)
+test("fraction-bars@1 three bars (item 5): three circles of the same parts side by side, the shading kept, no name written — and since Studio 015 item 4 no view on the scripts: the same bars round add nothing", () => {
+  // (d32 reader fixes, 2026-11-19: the seven scripts hold 5 such boards (four posing, one then-card), down from 8)
+  // (Studio 015 item 4, 2026-11-23: the three circles draw the three bars' own parts and shading again, round — nothing new. The view
+  // is still built (altCall, what a three-bar ordering card would show round) but pictureTurn no longer draws it beside the bars)
   const got = boards("fraction-bars@1").filter((b) => !b.at.includes("answerBoard") && b.ref.params.bars.length === 3);
   assert.ok(got.length >= 5, `${got.length}`);
   for (const b of got) {
-    assert.deepEqual(viewOf(b.ref, b.at), { template: "wholes@1", view: "wholes", kind: "circle" }, b.at);
-    const pt = viewed(b.ref, "wholes");
-    const bars = b.ref.params.bars, ws = counts(pt.view.call).wholes;
-    assert.deepEqual(ws.map((x) => [x.parts, x.shaded]), bars.map((x) => [x.parts, x.shade ?? 0]), b.at);
-    assert.deepEqual(texts(pt.view.script), [], "no word on the view");
+    assert.equal(viewOf(b.ref, b.at), null, b.at);
+    const call = BF.altCall(b.ref, { ownParts: true });
+    assert.equal(call?.view, "wholes", b.at);
+    assert.ok(BF.viewAddsNothing(b.ref, call), b.at);
+    const { view, ...c } = call, x = expand(c);
+    assert.ok(x.ok);
+    assert.deepEqual(x.script.facts.counts.wholes.map((w) => [w.parts, w.shaded]), b.ref.params.bars.map((w) => [w.parts, w.shade ?? 0]), b.at);
+    assert.deepEqual(texts(x.script), [], "no word on it");
   }
 });
 

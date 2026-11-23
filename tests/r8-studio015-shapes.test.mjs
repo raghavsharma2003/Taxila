@@ -169,3 +169,42 @@ test("item 5: compare@1 — an item wrapping onto two lines never crosses the ti
   const plain = ok({ template: "compare@1", left: { title: "Ribbon P", items: ["20 cm", "12 cm"] }, right: { title: "Ribbon Q", items: ["12 cm", "8 cm"] } });
   assert.deepEqual(plain.ops.filter((o) => /^c\d\d$/.test(o.id)).map((o) => o.at[1]), [100, 100, 152, 152]);
 });
+
+test("item 4: a view is offered only when it adds something — the board's bars drawn again as circles (same parts, same shading) is no view; the cited turns, and the cards of the seven scripts that lose theirs", async () => {
+  const { d32Cards } = await import("../scripts/lesson-scripts/check.mjs");
+  const { readFileSync } = await import("node:fs");
+  // the three turns the judges named: c6-ch07 offtopic 30 (two unshaded bars → two circles), steering 14 (the 15 cm bar → one circle),
+  // c5-t03 stuck 18 (the first fold, a bar of 2 with 1 shaded → the same, round)
+  for (const ref of [{ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 0, label: "" }, { parts: 6, shade: 0, label: "" }] } },
+    { template: "wholes@1", params: { as: "bar", wholes: [{ parts: 3, title: "15 cm" }] } }, { template: "fraction-bars@1", params: { bars: [{ parts: 2, shade: 1, label: "" }] } }]) {
+    assert.equal(viewOf(ref), null, JSON.stringify(ref.params));
+    assert.equal(BF.pictureTurn(askOf(ref), {}).view, null);
+  }
+  // what still adds: named bars on one line, round wholes laid along a length, a line's bars, a grid of groups
+  assert.equal(viewOf({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 1, label: "1/3" }, { parts: 6, shade: 2, label: "2/6" }] } })?.view, "line");
+  assert.equal(viewOf({ template: "wholes@1", params: { wholes: [{ parts: 4, title: "1/4" }, { parts: 8 }] } })?.view, "strips");
+  assert.equal(viewOf({ template: "fraction-parts@1", params: { parts: 4, shade: 1, whole: "circle" } })?.view, "parts");
+  assert.equal(viewOf({ template: "equal-groups@1", params: { groups: 3, each: 4 } })?.view, "grid");
+  assert.ok(!BF.sameWholes({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 1 }] } }, { template: "fraction-parts@1", parts: 3, shade: 2 }), "other shading is something new");
+  // the cards (card, check, follow-up, asked step, own step) of the seven scripts whose board loses its view by this rule — each now
+  // on the checker's rule 7 list for a pictureBoard (none had one)
+  const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
+  const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]), got = {};
+  for (const [d, T] of SEVEN) {
+    const s = JSON.parse(readFileSync(new URL(`../data/${d}/${T}.json`, import.meta.url), "utf8"));
+    for (const c of d32Cards(s)) {
+      if (!KINDS.has(c.kind) || !c.board?.template) continue;
+      const ac = BF.altCall(c.board, { ownParts: true });
+      if (!ac || !BF.viewAddsNothing(c.board, ac)) continue;
+      assert.equal(viewOf(c.board, c.at), null, c.at);
+      (got[T] ??= []).push(c.at.replace(`${T}-`, ""));
+    }
+  }
+  assert.deepEqual(got, {
+    "c4-maths-ch05-t01": ["s1/remediation[1].then", "s1/c2", "s1/workedExample.steps[0].ask", "s1/workedExample.yourStep", "s3/e3", "s3/workedExample.steps[0].ask", "s3/workedExample.yourStep"],
+    "c5-maths-ch02-t02": ["s1/e2", "s1/remediation[0].then", "s1/workedExample.steps[0].ask", "s1/workedExample.yourStep", "s2/e4", "s2/remediation[0].then", "s2/remediation[1].then", "s2/remediation[2].then", "s2/c2", "s3/e3", "s3/remediation[0].then", "s3/remediation[1].then", "s3/remediation[2].then", "s3/c1", "s3/c2", "s3/workedExample.yourStep"],
+    "c5-maths-ch02-t03": ["s1/remediation[0].then", "s1/c1", "s1/workedExample.steps[0].ask", "s1/workedExample.yourStep", "s2/e2", "s2/remediation[0].then", "s2/remediation[1].then", "s2/c1", "s2/c2", "s2/c3", "s2/workedExample.steps[0].ask", "s2/workedExample.yourStep", "s3/e2", "s3/e3", "s3/remediation[0].then", "s3/remediation[1].then", "s3/c1", "s3/c3", "s3/workedExample.steps[0].ask", "s3/workedExample.yourStep"],
+    "c6-maths-ch07-t01": ["s1/e2", "s2/e1", "s2/e2", "s2/workedExample.yourStep", "s3/c1"],
+  });
+});
