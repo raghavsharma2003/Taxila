@@ -177,7 +177,10 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
   const { asideReplyLine } = await import("../server/brain/asideReplies.js");
   // (dc-r8-director27 P6.3, Learning 016: an aside said again gets the said-again form with the child's own words — c4 offtopic 20 and 32 said
   // "Achha, pichhli baar sixer maara." twice, word for word)
-  assert.equal(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [] }), "Haan, sixer maara, yeh tumne bataya tha.");
+  // (re-pinned to to-brain 049 and main's ruling of 2026-11-23, B6.3: "yeh tumne bataya tha" only of what the child told before — with nothing
+  // told before, the phrase form; with "sixer maara" in an earlier line of theirs, the said-again form)
+  assert.equal(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [] }), "Achha, pichhli baar sixer maara.");
+  assert.match(againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [{ who: "child", text: "maine sixer maara tha" }, { who: "teacher", text: "Achha." }] }), /sixer maara, yeh tumne bataya tha|phir se sixer maara/);
   // (her return in the script's own form — "usmein sabse mazedaar kya hai?" — is a liking question: the phrase form answers it)
   assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, "Achha, toh tumhe chauka sabse achha lagta hai.");
   assert.equal(asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", asked: "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", words: ["batting"] }).line,
@@ -214,9 +217,9 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   // the live script — nor on the run's own copy, which d31's walk had already moved off it. The replay walks the script as it stood before
   // the d32 rewrite, kept as a fixture: the last one these lines reach the closing question on)
   setScriptForTest("c5-maths-ch02-t01", JSON.parse(readFileSync(new URL("./fixtures/scripts/c5-maths-ch02-t01.d31.json", import.meta.url), "utf8")));
-  // (to-brain 049 B6: the verdict-point-card split adds turns director30's recorded child never answered — the lines run out before the
-  // closing question; this replay walks without it)
-  const vpc0 = process.env.TAXILA_VPC_SPLIT; process.env.TAXILA_VPC_SPLIT = "off";
+  // (to-brain 049 B6: the verdict-point-card split added turns director30's recorded child never answered. Re-pinned to main's ruling of
+  // 2026-11-23: with such a turn said whole up to 70 the replay reaches the closing question with the split on — no switch)
+  const vpc0 = process.env.TAXILA_VPC_SPLIT; delete process.env.TAXILA_VPC_SPLIT;
   try {
   const { kit, plans } = await replay("2026-11-18-director30", "steady", "c5-maths-ch02-t01", 400);
   const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");

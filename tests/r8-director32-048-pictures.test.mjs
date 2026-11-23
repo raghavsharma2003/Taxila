@@ -146,9 +146,12 @@ describe("047 R6: the turn's fit", () => {
     assert.equal(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "firstTeachLong").size, 0);
   });
   // (re-pinned to to-brain 049 B6: the walk now splits such a turn at the point, and vpcUnlisted is gated)
-  test("vpcUnlisted (gated) reads director31 c5-t03 steady 52 and c5-t02 steady 76: over 65 with the short reason, and not listed whole", () => {
+  // (re-pinned to to-brain 049 and main's ruling of 2026-11-23: such a turn is said whole up to 70 words — c5-t03 steady 52, 70 words, is
+  // vpcWhole's (counted) now; c5-t02 steady 76, 73 words, is still vpcUnlisted's)
+  test("vpcUnlisted (gated, over 70) reads director31 c5-t02 steady 76; c5-t03 steady 52 (70 words) is vpcWhole's", () => {
     assert.ok(!PENDING.has("vpcUnlisted"));
-    assert.ok(at("steady", "c5-ch02-t03", "c5-maths-ch02-t03", "vpcUnlisted").has(52));
+    assert.ok(at("steady", "c5-ch02-t03", "c5-maths-ch02-t03", "vpcWhole").has(52));
+    assert.ok(!at("steady", "c5-ch02-t03", "c5-maths-ch02-t03", "vpcUnlisted").has(52));
     assert.ok(at("steady", "c5-ch02-t02", "c5-maths-ch02-t02", "vpcUnlisted").has(76));
   });
 });

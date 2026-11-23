@@ -115,9 +115,9 @@ function walk(T) {
 }
 
 describe("Brain 042: the walk", () => {
-  // (re-pinned to to-brain 049 B6: a right verdict, its reason, a point and its card over 65 words now split at the point, so the walk
-  // reaches the point's quick question — Brain 042 Q1, the shape these tests pin — only with that split off)
-  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } process.env.TAXILA_VPC_SPLIT = "off"; setScriptForTest(); });
+  // (to-brain 049 B6 ran these with TAXILA_VPC_SPLIT=off: a verdict-point-card turn over 65 split at the point. Re-pinned to main's ruling
+  // of 2026-11-23: said whole up to 70, the walk reaches the point's quick question — Brain 042 Q1 — with the split on; no switch)
+  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } setScriptForTest(); });
   afterEach(() => { setScriptForTest(); for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
 
   test("Q1: a point whose card waits ends on its quick question, over the point's board; read by the card's reader; no verdict, no card evidence", () => {
