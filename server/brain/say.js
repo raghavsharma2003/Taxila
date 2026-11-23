@@ -186,8 +186,18 @@ const RETURN_TOLD_Q = {
 };
 /** The told return's forms, as said (evals: returnAlone reads them as a back-to return, as the script's asideReturn forms). */
 export const RETURN_TOLD_RE = /^(?:Tumne .{2,40} ki baat ki thi: woh kab ki baat hai\?|.{2,40} ki baat tumne ki thi: tab tumhare saath kaun tha\?|You told me about .{2,40}: when was that\?|You mentioned .{2,40}: who was with you then\?)$/i;
+/** to-brain 051 C6: a child's line that says when; a return question asking when; one asking what they like in it. */
+const TIME_SAID = /(?<![\p{L}])(?:kal|aaj|parso|parson|abhi|yesterday|today)(?![\p{L}])/iu;
+const ASKS_WHEN_Q = /(?:kab ki baat|kab hua|when was that|when did)/i;
+const ASKS_LIKE_Q = /(?:pasand|achha lag|achhi lag|sabse achha|sabse achhi|favou?rite|like (?:most|best)|enjoy most)/i;
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
+  // (to-brain 051 C6: the return asks nothing the child already told — not when, after an aside that said when ("kal maine cricket khela":
+  // director33 c5-t01 steady 40, c5-t03 steering 50); not what they like in it, after they answered her question what they like best
+  // (c6-ch07-t01 offtopic 68, after row 37))
+  const toldWhen = TIME_SAID.test(String(said ?? "")) || childLinesBefore(state).some((x) => TIME_SAID.test(x) && String(t).toLowerCase().split(/\s+/).some((w) => w.length > 2 && x.includes(w)));
+  const toldLike = !!state?.tasteAsked && (state.tasteAsked.turn ?? -1) < (state.turn ?? 0);
+  const fresh = (x) => !(toldWhen && ASKS_WHEN_Q.test(String(x ?? ""))) && !(toldLike && ASKS_LIKE_Q.test(String(x ?? "")));
   // (v6.11 G2, main on director19: a form with {said} put the child's own first-person words in her mouth, or lost them and left
   // "Uske baare mein…" pointing at nothing — {said} forms are not said; Learning re-authors the return on {aside} alone, D14)
   // (to-brain 049 B6.3, main's ruling of 2026-11-23: the aside named its thing — "kal maine cricket khela, sixer maara" — so the return does not
@@ -197,11 +207,12 @@ export const returnQuestion = (topic, lang = "hinglish", state = null, { said = 
     const raw0 = kit ? scriptFor(kit)?.script?.joints?.asideReturn : null;
     const fs = Array.isArray(raw0) ? raw0.filter((f) => !/\{said\}/.test(JSON.stringify(f))) : [];
     const j0 = fs.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: fs } }, "asideReturn", lang, { topic: asideInHerVoice(t), aside: asideInHerVoice(t) }), jointCount(state, "asideReturn")) : null;
-    const ok0 = (j0 ?? []).filter((x) => !/\{\w+\}/.test(x) && !ASKS_TOLD.test(x));
+    const ok0 = (j0 ?? []).filter((x) => !/\{\w+\}/.test(x) && !ASKS_TOLD.test(x) && fresh(x));
     if (ok0.length) return ok0[0];
     const lib0 = asideReturnLine(t, { lang, n: jointCount(state, "asideReturn") });
-    if (lib0 && !ASKS_TOLD.test(lib0)) return lib0;
-    return rotated(RETURN_TOLD_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(told))[0];
+    if (lib0 && !ASKS_TOLD.test(lib0) && fresh(lib0)) return lib0;
+    const toldQ = rotated(RETURN_TOLD_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(told));
+    return toldQ.find(fresh) ?? toldQ[0];
   }
   // (dc-r8-director20 R1: the return question is Learning's, by the aside's kind — data/lesson-aside-replies.json; the script's own
   // asideReturn joints, then code's, only when the library has none)
@@ -212,7 +223,7 @@ export const returnQuestion = (topic, lang = "hinglish", state = null, { said = 
   const noSaid = Array.isArray(raw) ? raw.filter((f) => !/\{said\}/.test(JSON.stringify(f))) : [];
   const j = noSaid.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: noSaid } }, "asideReturn", lang, { topic: asideInHerVoice(t), aside: asideInHerVoice(t) }), jointCount(state, "asideReturn")) : null;
   const ok = j?.filter((x) => !/\{\w+\}/.test(x));
-  if (ok?.length) return ok[0];
+  if (ok?.length) return ok.find(fresh) ?? ok[0];
   const lib = asideReturnLine(t, { lang, n: jointCount(state, "asideReturn") });
   if (lib) return lib;
   return rotated(RETURN_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(t))[0];

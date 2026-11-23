@@ -11,7 +11,10 @@
 //   shortAskNoAnswer      C4: a short ask in a turn whose help did not follow an answer (a clarify, a give-up, a request with no answer)
 //   hindiNoFormNoLine     C5: a language request at a card with no `hindi` form, at a script with `joints.easierWords`, and none of its forms
 //                         said
+//   returnAsksAgain       C6 (widens d33's): and a return that asks when, after an aside that said when ("kal", "aaj", …); a return that asks
+//                         what they like in it, to a child who told what they like
 import { atQuestionOf, endsOnYourTurn, endsOnShortAsk, runOfTwo } from "../../server/director/question-run.js";
+import { D33_PREDICATES } from "./d33-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -50,7 +53,33 @@ const childBefore = (L, i) => { for (let j = i - 1; j >= 0; j--) if (L.rows[j].w
 const ANSWER_READS = /^(?:correct|incorrect|misconception|partial|right|wrong)/;
 const answered = (c) => !!c && (["right", "miss", "partial"].includes(String(c.intent ?? "")) || ANSWER_READS.test(String(c.read ?? "")));
 
+/** A child's line that says when (C6: the return in code's forms does not ask it again). */
+export const TIME_WORD = /(?<![\p{L}])(?:kal|aaj|parso|parson|abhi|yesterday|today)(?![\p{L}])/iu;
+/** A question asking when. */
+const ASKS_WHEN = /(?:kab ki baat|kab hua|kab (?:khela|kiya|gaye)|when was that|when did)/i;
+/** A question asking what the child likes in it. */
+const ASKS_LIKE = /(?:pasand|achha lag|achhi lag|sabse achha|sabse achhi|favou?rite|like (?:most|best)|enjoy most)/i;
+const lastQOf = (t) => (String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?])\s+/).filter((x) => /\?\s*$/.test(x)).at(-1) ?? "");
+
 export const D34B_PREDICATES = {
+  /** to-brain 049 B6 (d33's), and to-brain 051 C6: a return never asks when after the aside said when (director33 c5-t01 steady 40, c5-t03
+   *  steering 50: "Tumne sixer ki baat ki thi: woh kab ki baat hai?" after "kal maine cricket khela"), nor what they like in it to a child who
+   *  told what they like (c6-ch07-t01 offtopic 68, after row 37's "sixer" to her question what they like best). Gated. */
+  returnAsksAgain(L, r, i, ctx) {
+    const was = D33_PREDICATES.returnAsksAgain(L, r, i, ctx);
+    if (was || r.who !== "teacher" || !r.returnSaid) return was;
+    const q = lastQOf(r.text);
+    if (!q) return null;
+    const rows = (L.rows ?? []).slice(0, i);
+    const asides = rows.filter((x) => x.who === "child" && ["aside", "aside_reply"].includes(String(x.intent ?? "")));
+    if (ASKS_WHEN.test(q)) { const t = asides.find((x) => TIME_WORD.test(String(x.text ?? ""))); if (t) return `asks when after the aside said it: "${String(t.text).slice(0, 40)}"`; }
+    if (ASKS_LIKE.test(q)) {
+      const k = rows.findIndex((x, n) => x.who === "child" && n > 0 && rows[n - 1].who === "teacher" && ASKS_LIKE.test(lastQOf(rows[n - 1].text)) && String(x.text ?? "").trim());
+      // (told: their answer to her own question what they like best — "mujhe cricket pasand hai" is no answer to what they like in it)
+      if (k >= 0) return `asks what they like in it after they told it: "${String(rows[k].text).slice(0, 40)}"`;
+    }
+    return null;
+  },
   /** to-brain 051 C4: a question ends at most two of her turns running by what the child hears (the wider count: d32's read only the forms
    *  ending "?" and let a Hindi turn and a request to hear it out). director33: c6 stuck 66; c4-ch01 steady 8, 10; c5-t01 offtopic 26, 28,
    *  stuck 38, 50; c5-t03 offtopic 26, 28, stuck 8; c4 offtopic 34, steering 10, 12, stuck 18; c4-ch06 stuck 8, 18, 42, offtopic 44;

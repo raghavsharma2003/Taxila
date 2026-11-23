@@ -126,6 +126,7 @@ function asideTurnOf(prev, out, lm) {
  *  form for a language request, a picture. */
 function helpIn(lm) {
   return !!(lm.simpler || lm.helpJoint || lm.hindiForm || lm.scriptBeat?.kind === "remediation" || lm.cell?.column === "picture"
+    || (lm.renderedKinds ?? []).some((k) => ["help", "simpler", "remediation"].includes(k))
     || lm.help?.request === "picture" || lm.picture || lm.pictureCaption || lm.visual);
 }
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
@@ -174,7 +175,7 @@ export function yourTurnPass(prev, out, script, childText = "") {
   }
   if (saidInv && pl0.yourTurnAfter) {
     const nowText0 = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
-    const p0 = nowText0 ? questionPathOf(script, nowText0) : null;
+    const a0 = nowText0 ? atQuestionOf(script, nowText0) : null, p0 = a0 && a0 !== "?short" ? a0 : null;
     if (p0 && questionPathOf(script, pl0.yourTurnAfter) === p0) set({ askNot: pl0.yourTurnAfter });
     return out;
   }
@@ -185,7 +186,9 @@ export function yourTurnPass(prev, out, script, childText = "") {
   if (HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
   if (asideTurnOf(prev, out, lm) || !helpIn(lm)) return out;
   const nowText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
-  const nowPath = nowText ? questionPathOf(script, nowText) : null;
+  // (to-brain 051 C4: a card that asks by an imperative is a question too)
+  const at0 = nowText ? atQuestionOf(script, nowText) : null;
+  const nowPath = at0 && at0 !== "?short" ? at0 : null;
   if (!nowPath) return out;
   // (the turn after a said invitation asks the question again: never a second invitation)
   if (saidInv) return out;

@@ -62,3 +62,37 @@ describe("C4: the cap counts what the child hears", () => {
     assert.equal(runOfTwo(script, [t, "Socho. Ab phir se socho, jawab kya hoga?"], "elsewhere"), null);
   });
 });
+
+describe("C6: the return, the wrap, the record, the harness", () => {
+  test("returnAsksAgain, widened, reads c5-t01 steady 40, c5-t03 steering 50, c6-ch07-t01 offtopic 68", () => {
+    reads("returnAsksAgain", [["steady", "c5t01", 40], ["steering", "c5t03", 50], ["offtopic", "c6ch07", 68]]);
+    assert.ok(!PENDING.has("returnAsksAgain"));
+  });
+  test("the return in code's told forms does not ask when after an aside that said when", async () => {
+    const { returnQuestion } = await import("../server/brain/say.js");
+    for (const n of [0, 1, 2, 3]) {
+      const q = returnQuestion("cricket", "hinglish", { turn: 9, later: [], recent: [], jointN: { asideReturn: n } }, { said: "kal maine cricket khela, sixer maara" });
+      assert.ok(!/kab ki baat/i.test(q), q);
+    }
+  });
+  test("the return does not ask what they like in it after they answered her question what they like best", async () => {
+    const { returnQuestion } = await import("../server/brain/say.js");
+    const q = returnQuestion("cricket", "hinglish", { turn: 30, tasteAsked: { topic: "virat", turn: 12, n: 1 }, later: [], recent: [] }, { said: "kal maine cricket khela, sixer maara" });
+    assert.ok(!/pasand|achha lag/i.test(q), q);
+  });
+  test("falseKeys: a share named with its group is a true share (c6-ch07-t01 steady 82)", async () => {
+    const { falseAnswerNumbers } = await import("../evals/hybrid-side-by-side/checks.mjs");
+    assert.deepEqual(falseAnswerNumbers("Haan, sahi hai: yaani 2 hisse: 3 mein 2/3, 5 mein 2/5, 4 mein 2/4.", { keys: new Set(["2/3"]) }), []);
+    assert.deepEqual(falseAnswerNumbers("Toh jawab 2/5 hai.", { keys: new Set(["2/3"]) }), ["2/5"]);
+  });
+  test("pictureMismatch knows the scale view (c6-ch07-t01 steering 16)", async () => {
+    const { pictureMismatch } = await import("../evals/hybrid-side-by-side/checks.mjs");
+    const r = lesson("steering", "c6ch07").rows[16];
+    assert.deepEqual(pictureMismatch(r.text, r.screen.boardRef, r.screen.altView), []);
+  });
+  test("the scripted child's hedge \"pata nahi, shayad wahi\" is a give-up", async () => {
+    const { intentOf } = await import("../evals/child-sim/reactive.mjs");
+    assert.equal(intentOf({ kind: "wrong", text: "pata nahi, shayad wahi" }), "give_up");
+    assert.equal(intentOf({ kind: "wrong", text: "3/4" }), "miss");
+  });
+});

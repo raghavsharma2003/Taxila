@@ -2748,7 +2748,11 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
   const reached = new Set(s.introduced ?? []);
   const bySkill = (sc?.skills ?? []).filter((k) => reached.has(k.skillId) && k.covered).map((k) => saidIn(k.covered, lang)).filter((x) => x && String(x).trim());
   const hasPerSkill = (sc?.skills ?? []).some((k) => k.covered);
-  const covered = stopping ? null : hasPerSkill ? (bySkill.length ? bySkill.join(" ") : null) : w?.covered ? saidIn(w.covered, lang) : null;
+  // (to-brain 051 C6: the wrap says the script's own `wrap.covered` where it has one — not the skills' lines joined, 66 and 70 words in
+  // director33 c5-t02 steady 124, c6 steady 90 — when the lesson reached every skill it sums up; else the reached skills' own lines, as before)
+  const allReached = (sc?.skills ?? []).length > 0 && (sc?.skills ?? []).every((k) => reached.has(k.skillId));
+  const whole = w?.covered && (allReached || !hasPerSkill) ? saidIn(w.covered, lang) : null;
+  const covered = stopping ? null : whole && String(whole).trim() ? whole : hasPerSkill ? (bySkill.length ? bySkill.join(" ") : null) : null;
   const bye = w?.goodbye ? saidIn(w.goodbye, lang) : null;
   if (bye && String(bye).trim()) {
     // (Learning's `wrap.ack` forms: one, rotated by the lesson's seed, when the child spoke after the closing key's check-in)
@@ -4064,7 +4068,10 @@ export function step(prev, input) {
         : input.cls?.asideReply ? "aside_reply" : null;
   // (Brain 044 T8: a line on a quick question is addressed as the quick question, whatever help said — c5-t01 steady 8, offtopic 32; c6 steady 8)
   const cell0h = helped && cell0 && !/:quick$/.test(String(cell0.part ?? "")) ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
-  const cell1 = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
+  // (to-brain 051 C6, the record: a park or an aside reply that goes on to a new point names the point said — director33 c4-ch06-t01 stuck 54,
+  // offtopic 50 named the card closed before the return)
+  const sbNow = lmNow.point && lmNow.scriptBeat?.kind === "explain" && lmNow.scriptBeat.skillId && lmNow.scriptBeat.beatId ? lmNow.scriptBeat : null;
+  const cell1 = acted ? { part: (["aside", "aside_reply"].includes(acted) && sbNow ? `${sbNow.skillId}:${sbNow.beatId}:point` : null) ?? cell0h?.part ?? null, column: acted } : cell0h;
   // (Brain 048 G5: what a picture request got, on the record — the card's pictureBoard, the board's second view, or the card's hint as help)
   // (Brain 049 B2: one of pictureBoard, view, hint, none — never hint on a turn whose move is a key)
   const lmPic = out?.state?.lastMove;
