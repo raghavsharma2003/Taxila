@@ -192,7 +192,9 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
       rungs = [rung("simpler", `${part.path}.simpler`, part.board), ...(rp !== part.path ? [rung("sayAlt", `${rp}.sayAlt`, rb), rung("simpler", `${rp}.simpler`, rb)] : [])]; break; }
     // (dc-r8-director27 P3: the worked example's own step is the worked example's — its wordings follow the step's own)
     case "your_step": { const wb = boardAt(script, `${part.worked}.board`) ?? part.board;
-      rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("problemAlt", `${part.worked}.problemAlt`, wb), rung("simpler", `${part.worked}.simpler`, wb)]; break; }
+      // (Brain 049 B3: a problem restated is not help at the child's own step — problemAlt is said at an asked step only; c4 stuck 46, c5-t02
+      // stuck 36, offtopic 24, c4-ch01 stuck 36, 38 restated the problem to a child giving the same wrong answer)
+      rungs = [rung("simpler", `${part.path}.simpler`, part.board), rung("simpler", `${part.worked}.simpler`, wb)]; break; }
     // (a worked step: its own simpler, then the worked problem's ladder — problemAlt, simpler (Brain 039 A2: "a worked problem or step:
     // problemAlt, simpler"). Main's R3 on the merged tree, c5-t01 stuck 44: a step's ladder of one rung left a second "samajh nahi aaya"
     // on the step with nothing — the walk went on to the your-step card unhelped while the problem's two other wordings were unsaid)
@@ -207,7 +209,7 @@ export function ladderSpec(script, part, { keyed = false } = {}) {
 }
 /** The rung fields a part kind's ladder names (for the compile report: a field the script lacks is a hole). */
 export const LADDER_FIELDS = Object.freeze({ point: ["pointAlt", "simpler"], checkin: ["pointAlt", "simpler"], card: ["ask.simpler", "pointAlt", "simpler"], check: ["simpler"],
-  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler", "problemAlt", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
+  then_card: ["simpler", "sayAlt", "simpler"], your_step: ["simpler", "simpler"], worked_problem: ["problemAlt", "simpler"], worked_step: ["simpler", "problemAlt", "simpler"], remediation: ["sayAlt", "simpler"], teachback: ["simpler"], keyed: ["whyAlt"] });
 
 /** The script-level joints help needs that a script lacks (Learning 014): helpSpent, afterKeyGoOn; and a hindiSwitch whose forms still
  *  promise Hindi, where the rewritten line promises easier words. → [{ joint, why }] */
@@ -349,11 +351,18 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // (Brain 047 R5: help answers the mistake. After a miss — the card's own hint said — on a card whose script marks its second reason safe to say without the key
   // — `whyAltAsHelp: true`, checked by the checker's rule 9 — that reason is the next rung after the card's own hint, before the point's other
   // wording: c5-t03 steering 34 to 36; c6-ch07-t01 stuck 62, offtopic 50 to 52, steering 16 to 18; c4-ch01-t02 steady 8 to 10)
-  if (request === "hint" && isCard && !keyed && !closed && rawAt(part.path)?.whyAltAsHelp === true) {
+  // (Brain 049 B3: the order is the same after a miss or a request — a clarify, a give-up, a Hindi request answered as help, a picture with
+  // nothing left to draw: the card's simpler, its marked whyAlt, the point's other wording, the key. director32 c5-t03 steering 16, c4-ch01
+  // stuck 62: a request at a marked card got the point's other wording with the card's own reason unsaid)
+  if (["hint", "clarify", "give_up", "picture"].includes(request) && isCard && !keyed && !closed && rawAt(part.path)?.whyAltAsHelp === true) {
     const wa = ladderSpec(script, part, { keyed: true })[0];
     if (wa?.field === "whyAlt" && wa.present) ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
   }
-  const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((s) => inSaid(s, said)));
+  // (Brain 049 B3: a card's own hint is spent only when she has said it — every sentence of it; one sentence near another part's — a
+  // remediation's follow-up card written the same way — leaves it unsaid. director32 c6-ch07 steady 48, offtopic 62: a mix-up met again
+  // got the key at its first miss, the card's own hint read as said from the then-card's)
+  const ownHint = (r) => isCard && (r.path === `${part.path}.simpler`);
+  const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !(ownHint(r) ? sentencesOf(r.text).every((s) => inSaid(s, said)) : sentencesOf(r.text).some((s) => inSaid(s, said))));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(hindiHelp ? { hindiAsked: true } : {}), ...(closed && !keyed ? { closed: true } : {}) };
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
   // line leads it (the language pass), the form is asked over the card's board; a second request on the same card gets the card's unsaid help

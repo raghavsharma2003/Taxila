@@ -7,7 +7,9 @@
 //                       of its forms said
 //   hindiPromiseNoForm  B1: a Hindi switch line on a turn whose part has no `hindi` form
 //   reaskSameAfterHelp  B1: a turn's closing question the same sentence as her turn before's closing question
-import { helpPart, hindiFormOf } from "../../server/director/help.js";
+//   keyBeforeHint       B3: a key at a card whose authored `simpler` is unsaid, before its third miss
+//   helpNotOwn          B3: the second help at a card the point's other wording while the card's marked `whyAlt` is unsaid
+import { helpPart, hindiFormOf, at as atPath, ladderOf, ladderSpec, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -81,5 +83,40 @@ export const D32_PREDICATES = {
     if (!q || q !== lastAsk(ctx.prevT)) return null;
     // (a question with no other authored wording — a card or asked step with no `reask`, a script hole — is reaskNoForm's, counted there)
     return (ctx.o.noReaskQs ??= noReaskQuestions(ctx.script)).has(q) ? null : `the same closing question as her turn before: "${q.slice(0, 60)}"`;
+  },
+  /** Brain 049 B3: a card's hint before its key — a key at a card with an authored `simpler` none of whose sentences she has said, except on
+   *  the card's third miss (director32: a mix-up met again keyed at its first miss — c6-ch07 steady 48, offtopic 62; c5-t01 offtopic 28).
+   *  Gated. */
+  keyBeforeHint(L, r, i, ctx) {
+    if (r.who !== "teacher" || !(r.seams ?? []).some((x) => x.right === "key")) return null;
+    const col = String(r.cell?.column ?? "");
+    if (!["wrong", "misconception"].includes(col)) return null;
+    const id = String(r.cell?.part ?? "");
+    const part = (() => { try { return helpPart(ctx?.script, id); } catch { return null; } })();
+    if (!part || !["card", "check", "then_card", "your_step"].includes(part.kind)) return null;
+    const own = atPath(ctx.script, `${part.path}.simpler`);
+    const t = own && typeof own === "object" ? own.hi ?? own.en : own;
+    if (!t || !String(t).trim()) return null;
+    const before = L.rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => normSentence(x.text)).join(" | ");
+    if (helpSentences(t).some((x) => before.includes(normSentence(x)))) return null;
+    const misses = L.rows.slice(0, i + 1).filter((x) => x.who === "teacher" && String(x.cell?.part ?? "") === id && ["wrong", "misconception"].includes(String(x.cell?.column ?? ""))).length;
+    return misses >= 3 ? null : `the key at ${id.split(":").slice(-2).join(":")} on miss ${misses}, its own hint unsaid`;
+  },
+  /** Brain 049 B3: the help order at a card — its `simpler`, then its `whyAlt` where the card is marked `whyAltAsHelp`, then the point's other
+   *  wording, then the key: the point's other wording (pointAlt) said as help while the marked whyAlt is unsaid is the fault. Gated. */
+  helpNotOwn(L, r, i, ctx) {
+    if (r.who !== "teacher") return null;
+    const id = String(r.cell?.part ?? "");
+    const part = (() => { try { return helpPart(ctx?.script, id); } catch { return null; } })();
+    if (!part || part.kind !== "card" || atPath(ctx.script, part.path)?.whyAltAsHelp !== true) return null;
+    const pa = atPath(ctx.script, `${part.point}.pointAlt`);
+    const pt = pa && typeof pa === "object" ? pa.hi ?? pa.en : pa;
+    const k = normSentence(r.text);
+    if (!pt || !helpSentences(pt).some((x) => k.includes(normSentence(x)))) return null;
+    const wa = atPath(ctx.script, `${part.path}.whyAlt`);
+    const wt = wa && typeof wa === "object" ? wa.hi ?? wa.en : wa;
+    if (!wt) return null;
+    const before = L.rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => normSentence(x.text)).join(" | ");
+    return helpSentences(wt).some((x) => before.includes(normSentence(x))) ? null : `the point's other wording at ${id.split(":").slice(-2).join(":")}, its marked whyAlt unsaid`;
   },
 };

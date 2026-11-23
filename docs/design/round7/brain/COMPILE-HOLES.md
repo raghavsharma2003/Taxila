@@ -6,7 +6,7 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (6 live, 28 staged). Missing fields: 2206. Rule holes: 18019. Doubles: 0.
+**Scripts:** 34 (6 live, 28 staged). Missing fields: 2206. Rule holes: 16966. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
@@ -121,7 +121,6 @@
 | check/after_key | 210 |
 | check/right | 210 |
 | worked_step/told | 190 |
-| your_step/after_key | 162 |
 | remediation/clarify/fresh | 136 |
 | remediation/clarify/heard | 136 |
 | remediation/clarify/spent | 136 |
@@ -147,18 +146,7 @@
 | remediation/picture/fresh | 111 |
 | remediation/picture/heard | 111 |
 | remediation/picture/spent | 111 |
-| your_step/clarify/fresh | 81 |
-| your_step/clarify/heard | 81 |
-| your_step/clarify/spent | 81 |
-| your_step/give_up/fresh | 81 |
-| your_step/give_up/heard | 81 |
-| your_step/give_up/spent | 81 |
-| your_step/hindi/fresh | 81 |
-| your_step/hindi/heard | 81 |
-| your_step/hindi/spent | 81 |
-| your_step/wrong/fresh | 81 |
-| your_step/wrong/heard | 81 |
-| your_step/wrong/spent | 81 |
+| your_step/after_key | 81 |
 | wrap/ask | 27 |
 
 ## Help's joints (dc-r8-director25 H4, Learning 014)

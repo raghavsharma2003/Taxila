@@ -143,3 +143,44 @@ describe("B2 (main's addition): a card marked noView never has its board's secon
     } finally { setScriptForTest(undefined); }
   });
 });
+
+describe("B3: the card's own other reason as the second help; a problem restated is no help at the child's own step; a mix-up met again gets the hint first", () => {
+  test("keyBeforeHint and helpNotOwn are gated", () => {
+    for (const k of ["keyBeforeHint", "helpNotOwn"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("keyBeforeHint reads c6-ch07 steady 48 and offtopic 62 (the key at a mix-up met again, its hint unsaid)", () => {
+    assert.ok(flagged("steady", "c6ch07", "keyBeforeHint").has(48));
+    assert.ok(flagged("offtopic", "c6ch07", "keyBeforeHint").has(62));
+  });
+  test("helpNotOwn reads a request at a marked card answered by the point's other wording (c5-t03 steering 16; c4-ch01 stuck 62, offtopic 56)", () => {
+    assert.ok(flagged("steering", "c5t03", "helpNotOwn").has(16));
+    assert.ok(flagged("stuck", "c4ch01", "helpNotOwn").has(62));
+    assert.ok(flagged("offtopic", "c4ch01", "helpNotOwn").has(56));
+  });
+  test("pickHelp: at a marked card a give-up's second help is its whyAlt, before the point's other wording", async () => {
+    const { pickHelp, addSaid } = await import("../server/director/help.js");
+    const script = structuredClone(lesson("steering", "c5t03").script);
+    const sk = script.skills.find((k) => (k.explain ?? []).some((b) => b.ask?.whyAltAsHelp && b.ask?.simpler && b.ask?.whyAlt));
+    const b = sk.explain.find((x) => x.ask?.whyAltAsHelp && x.ask?.simpler && x.ask?.whyAlt);
+    const part = `${sk.skillId}:${b.id}:card`;
+    const said = addSaid([], typeof b.ask.simpler === "string" ? b.ask.simpler : b.ask.simpler.hi, 1);
+    for (const request of ["give_up", "clarify", "hint"]) assert.equal(pickHelp({ script, part, request, said }).rung?.field, "whyAltHelp", request);
+  });
+  test("ladderOf: the child's own step has no problemAlt rung", async () => {
+    const { ladderSpec, helpPart } = await import("../server/director/help.js");
+    const script = lesson("stuck", "c4").script;
+    const sk = script.skills.find((k) => k.workedExample?.yourStep && k.workedExample?.problemAlt);
+    const fields = ladderSpec(script, helpPart(script, `${sk.skillId}:worked:yourStep`)).map((r) => r.path);
+    assert.ok(!fields.some((p) => /problemAlt$/.test(p)), fields.join(","));
+  });
+  test("pickHelp: a card's own hint one of whose sentences reads near one said for another card is still the hint, never the key", async () => {
+    const { pickHelp, addSaid } = await import("../server/director/help.js");
+    const script = lesson("steady", "c6ch07").script;
+    const sk = script.skills[1], c = sk.checks.find((x) => x.id === "c2");
+    const near = sk.remediation.find((r) => r.then?.simpler)?.then.simpler;
+    const said = addSaid([], typeof near === "string" ? near : near.hi, 1);
+    const d = pickHelp({ script, part: `${sk.skillId}:check:c2`, request: "hint", said, misses: 1 });
+    assert.equal(d.card, "keep");
+    assert.equal(d.rung?.path, `skills[1].checks[${sk.checks.indexOf(c)}].simpler`);
+  });
+});

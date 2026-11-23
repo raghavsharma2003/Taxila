@@ -250,8 +250,13 @@ export const HELP_PREDICATES = {
     const said = saidBefore(L, i);
     // (a key closes a card: its why may have been heard in the card's own help — the key is the close, not help)
     const keyK = (() => { const p = helpPart(ctx.script, h.part); const k = p ? keyLine(p) : null; return new Set(k ? sentencesOf(k.text).map(normSentence) : []); })();
+    // (Brain 049 B3: the card's own hint is said before its key, though a sentence of it reads near one said for another figure — the
+    // remediation's follow-up card written the same way; only the same sentence word for word is a repeat there)
+    const ownK = (() => { const p = helpPart(ctx.script, h.part); const v = p ? at(ctx.script, `${p.path}.simpler`) : null; const t = v && typeof v === "object" ? v.hi ?? v.en : v; return new Set(t ? sentencesOf(t).map(normSentence) : []); })();
+    const exact = new Set([...(said ?? [])].map((x) => (typeof x === "string" ? x : x?.k)).filter(Boolean));
     for (const { s, k } of helpSentences(r, ctx)) {
       if (!ix.authored.has(k) || keyK.has(k)) continue;
+      if (ownK.has(k) && !exact.has(k)) continue;
       const e = inSet(k, said);
       if (e) return `help (${h.request}) says a sentence she said at row ${e.row}: "${s.slice(0, 60)}"`;
     }
@@ -310,7 +315,8 @@ export const HELP_PREDICATES = {
     if (!part) return null;
     const ladder = ladderOf(ctx.script, part, { keyed: h.keyed });
     // (Brain 047 R5: after a miss, a card marked whyAltAsHelp has its second reason on its ladder, after its own hint)
-    if (h.request === "hint" && !h.keyed && at(ctx.script, `${part.path}.whyAltAsHelp`) === true) {
+    // (Brain 049 B3: after a request too — a clarify, a give-up, a Hindi request answered as help)
+    if (["hint", "clarify", "give_up", "hindi", "picture"].includes(h.request) && !h.keyed && at(ctx.script, `${part.path}.whyAltAsHelp`) === true) {
       const wa = ladderOf(ctx.script, part, { keyed: true })[0];
       if (wa?.field === "whyAlt") ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, wa);
     }
