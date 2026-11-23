@@ -2673,7 +2673,10 @@ function teachback(s, input) {
     // (d31, the staged c4-ch01-t02's dry steady 106, 108: a give-up on the closing question — "pata nahi, …" — is no wrong answer: it gets
     // the help or the key with no miss verdict before it, as a give-up on a card does; giveUpVerdict, requestAnswered)
     const gaveUpEnd = GIVE_UP_WORDS.test(String(input?.text ?? "")) && !SAYS_A_REASON.test(String(input?.text ?? "")) && !["correct", "incorrect", "partial", "misconception"].includes(String(cls?.outcome ?? ""));
-    const tbD = pickHelp({ script: authoredEnd(kit), part: TEACHBACK_PART, request: "hint", said: saidNowOf(s), lang: lang === "english" ? "english" : "hinglish" });
+    // (main's ruling of 2026-11-23 on to-brain 049 B3: the closing question's marked whyAlt only after a miss there — its last answer; a
+    // give-up is no answer)
+    if (["correct", "incorrect", "partial", "misconception"].includes(String(cls?.outcome ?? ""))) s.answerAt = { ...(s.answerAt ?? {}), [TEACHBACK_PART]: { outcome: cls.outcome, misconceptionId: cls.misconceptionId ?? null, wrongListed: !!cls.wrongListed } };
+    const tbD = pickHelp({ script: authoredEnd(kit), part: TEACHBACK_PART, request: "hint", said: saidNowOf(s), lang: lang === "english" ? "english" : "hinglish", last: s.answerAt?.[TEACHBACK_PART] ?? null });
     if (tbD?.rung?.text) {
       // (Brain 047 R3: the closing question asked again alternates with its authored reask — director31 c5-t02 steady 96 to 98, c6 steady 94
       // to 96 said it whole twice running)

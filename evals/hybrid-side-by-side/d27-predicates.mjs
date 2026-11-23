@@ -16,9 +16,9 @@
 // P5, joints:
 //   returnLed        a card said again after other parts were said since its last telling (a return) is led by the back-to joint or the
 //                    after-key return form
-import { bareBridgeGoOn } from "./help-predicates.mjs";
+import { bareBridgeGoOn, ownReasonDue } from "./help-predicates.mjs";
 import { stepToldAfterSimpler, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
-import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
+import { FALLBACK_JOINTS, helpPart, ladderOf, sentencesOf, normSentence, sameSentence, at } from "../../server/director/help.js";
 import { CODE_SEAM_FORMS } from "../../server/brain/seams.js";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
@@ -145,10 +145,13 @@ function bridgeSkillOf(r, script) {
   return skillIdOf(r, script);
 }
 /** Whether a part's help is spent: no rung of its ladder (after a key: the why's other wording, then the card's own ladder) unsaid. */
-function spent(script, partId, keyed, said) {
+function spent(script, partId, keyed, said, { ownDue = true } = {}) {
   const part = helpPart(script, partId);
   if (!part) return true;
-  const rungs = [...(keyed ? ladderOf(script, part, { keyed: true }) : []), ...ladderOf(script, part)];
+  // (main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked whyAlt is no help unless the child's last answer there was its named
+  // wrong answer — not due, it is no unsaid wording: help.js ownReasonFits)
+  const marked = at(script, `${part.path}.whyAltAsHelp`) === true;
+  const rungs = [...(keyed ? ladderOf(script, part, { keyed: true }) : []), ...ladderOf(script, part)].filter((x) => ownDue || !marked || x.path !== `${part.path}.whyAlt`);
   return !rungs.some((x) => { const ss = (typeof x.value === "string" ? [x.value] : [x.value?.hi, x.value?.en]).filter(Boolean).flatMap(sentencesOf).map(normSentence); return ss.length && !ss.some((k) => said.some((s) => sameSentence(k, s))); });
 }
 
@@ -284,7 +287,7 @@ export const D27_PREDICATES = {
     if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);
-    const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents) : true;
+    const isSpent = id ? spent(ctx.script, id, a.keyed || a.kind === "close", st.sents, { ownDue: ownReasonDue(L, i, ctx, id) }) : true;
     // (Brain 044 T5: the three things and nothing else — an unsaid wording, the key, the "nothing easier" line; the after-key return, the go-on
     // line and helpToCard alone are not help: c5-t01 stuck 30, steering 18, offtopic 62; c5-t02 stuck 30, steering 58)
     // (Brain 047 R8: a Hindi request at a card with no `hindi` form, its help spent: the switch line and the whole card)
