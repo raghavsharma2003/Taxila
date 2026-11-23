@@ -108,7 +108,19 @@ function returnIndexOf(k, topic, asked, lang) {
 // and 32 said "Achha, pichhli baar sixer maara." word for word to the same aside. The next form of that shape is said, else a word or plain
 // form she has not said)
 const avoidKey = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+// (Brain 049 B6, a reply in the child's gender: "Achha, toh tumhe batting sabse achha lagta hai." after "batting achhi lagti hai" — a form's
+// "achha lagta" takes the ending the child's own words gave the liking: achhi lagti (a feminine thing), achhe lagte (plural); dry c6-ch07
+// stuck 52, steering 44)
+const LIKE_ENDING = [[/(?<![\p{L}])(?:achhi|acchi|achi)\s+lagt[ia](?![\p{L}])/iu, "achhi lagti"], [/(?<![\p{L}])(?:achhe|acche|ache)\s+lagt[ea](?![\p{L}])/iu, "achhe lagte"]];
+export function likeInChildsEnding(line, said) {
+  const hit = LIKE_ENDING.find(([re]) => re.test(String(said ?? "")));
+  return hit && line ? String(line).replace(/(?<![\p{L}])achha\s+lagta(?![\p{L}])/giu, hit[1]) : line;
+}
 export function asideReplyLine(args = {}) {
+  const r = asideReplyLine1(args);
+  return r?.line ? { ...r, line: likeInChildsEnding(r.line, args.said) } : r;
+}
+function asideReplyLine1(args = {}) {
   const avoid = new Set((args.avoid ?? []).map((x) => avoidKey(typeof x === "string" ? x : x?.k)).filter(Boolean));
   const fresh = (line) => !!line && !String(line).split(/(?<=[.!?\u0964])\s+/).map(avoidKey).filter(Boolean).every((k) => avoid.has(k));
   // (Learning 016: the kind's againReplies — "Haan, {phrase}, yeh tumne bataya tha." — for an aside or a reply said a second time; `again`:
@@ -183,7 +195,8 @@ export function asideReturnForms() {
 /** Every form a reply may take, for the dry predicate: { word: [RegExp with a (word) group], plain: [string], sad: [string] }. */
 export function asideReplyForms() {
   const all = Object.values(KINDS);
-  const re = (f) => new RegExp(`^${esc(f).replace(/\\\{word\\\}|\{word\}/g, "(.{1,40}?)")}$`, "iu");
+  // (Brain 049 B6: a form's "achha lagta" is said in the child's own ending — likeInChildsEnding — and read in any of them)
+  const re = (f) => new RegExp(`^${esc(f).replace(/\\\{word\\\}|\{word\}/g, "(.{1,40}?)").replace(/achha(\\s\+|\s+)lagta/gi, "(?:achha$1lagta|achhi$1lagti|achhe$1lagte)")}$`, "iu");
   return {
     word: all.flatMap((k) => (k.replies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map(re),
     // (a {phrase} form is checked as a {word} form: one slot of the child's own words)

@@ -235,7 +235,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     else openFell = out?.error ?? "no line";
   }
   opening ??= (await textReply({ instructions: instructionsFor(s, kit), state: s, kit, childText: "", ui: r.ui, module: null })).reply;
-  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}), ...(r.state.knowsApplied?.length ? { because: r.state.knowsApplied } : {}) });
+  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(r.state.lastMove?.cell ? { cell: r.state.lastMove.cell } : {}), ...(openFell ? { fellBack: openFell } : {}), ...(r.state.knowsApplied?.length ? { because: r.state.knowsApplied } : {}) });
   s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
   let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
   // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
@@ -465,7 +465,9 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
     const graded = ["correct", "not_yet"].includes(next.lastVerdict) ? next.lastVerdict : null;
     const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
     // (H1.2: a right answer's verdict is an explicit affirmation; silence is not a verdict)
-    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(firstS) : NOT_RIGHT.test(firstS)) : null;
+    // (Brain 049 B6, the record: an asked worked step's confirmation — the walk's stepReply, right — is a verdict too: c5-t03 steady 16, 56, 74;
+    // its authored ask.right opens on "Haan, …", the step's yes)
+    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(firstS) : NOT_RIGHT.test(firstS)) : next.lastMove?.stepReply?.right ? (affirmsAnswer(firstS) || /^\s*(?:haan|ha+n|yes|ji\s+haan)\b/i.test(firstS)) : null;
     const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
     // (a keyed right answer graded not_yet, or met with a not-right lead that does not affirm: "Sahi, … barabar nahi hain" to the
     // key "nahi" is an affirmation, director6's 3 false counts)
@@ -508,7 +510,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
           intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}), ...(H.switches ? { switches: H.switches.map((w) => ({ unit: w.unit, atChar: w.atChar })) } : {}) },
           // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
           layout: hb?.layout ?? null,
-          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none", ...(picHb && picTake.line ? { line: String(picTake.line) } : {}) } } : {}) };
+          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none", ...(picHb && picLineSaid(reply, tGuard?.altLine, picTake.line) ? { line: picLineSaid(reply, tGuard?.altLine, picTake.line) } : {}) } } : {}) };
         // (v6.10 P6's predicate: a picture line spoken with no view drawn — counted on the row, as the gate's picture count)
         const pf = pictureTruth(tGuard?.parts?.list ?? [], { view: heldRec.picture?.view ?? null, layout: heldRec.layout });
         if (pf) heldRec = { ...heldRec, pictureNoView: true };
@@ -663,7 +665,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       // the move's whyShort, is what was said)
       ...(tGuard?.rightWhy === "short" || (tGuard?.rightWhy == null && next.lastMove?.whyShort) ? { whyShort: true } : {}), ...(tGuard?.workedInvite ? { workedInvite: tGuard.workedInvite } : {}),
       ...(next.lastMove?.quickReply ? { quickAnswer: { beat: `${next.lastMove.quickReply.skillId}:${next.lastMove.quickReply.beatId}`, right: !!next.lastMove.quickReply.right } } : {}),
-      ...(next.lastMove?.noFit ? { noFit: next.lastMove.noFit } : {}), ...(next.lastMove?.tasteAsked?.served && tGuard?.honestNow ? { returnSaid: true } : {}), ...(next.lastMove?.closeShort ? { closeShort: true } : {}), ...(next.lastMove?.stepReply ? { stepAnswer: { beat: `${next.lastMove.stepReply.skillId}:worked:step${next.lastMove.stepReply.step + 1}`, right: !!next.lastMove.stepReply.right, told: next.lastMove.stepReply.told ?? null } } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: tGuard.seams } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+      ...(next.lastMove?.noFit ? { noFit: next.lastMove.noFit } : {}), ...(next.lastMove?.tasteAsked?.served && tGuard?.honestNow ? { returnSaid: true } : {}), ...(next.lastMove?.closeShort ? { closeShort: true } : {}), ...(next.lastMove?.stepReply ? { stepAnswer: { beat: `${next.lastMove.stepReply.skillId}:worked:step${next.lastMove.stepReply.step + 1}`, right: !!next.lastMove.stepReply.right, told: next.lastMove.stepReply.told ?? null } } : {}), ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(tGuard?.asideEnd && tGuard?.honestNow ? { aiAsked: true } : {}), ...(tGuard?.cardQuestionOnly || tGuard?.cardHeldForTry ? { cardQ: true } : {}), ...(tGuard?.seams ? { seams: stepMissSeams(tGuard.seams, next.lastMove?.stepReply?.miss, reply) } : {}), ...(tGuard?.ynFact ? { keyFact: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
       gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
       ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
       // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)

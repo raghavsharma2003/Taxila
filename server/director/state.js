@@ -3381,6 +3381,13 @@ export function cellAddressOf(prev, input, colIn = null) {
   // decides nothing now, and the record is the part and the column)
   return { part, column };
 }
+/** Brain 049 B6: the part a teacher row names where the reading named none — the teachback's or the wrap's (what the child answered), else the
+ *  part her turn before was on, else the lesson's own kind of move. */
+function recordPartOf(prev, input) {
+  const lm = prev?.lastMove ?? {}, topic = scriptFor(input?.kit)?.script?.topicId ?? "lesson";
+  if (["teachback", "wrap", "greet", "hook"].includes(String(lm.kind ?? ""))) return `${topic}:${lm.kind}`;
+  return lm.cell?.part ?? `${topic}:${lm.kind ?? "lesson"}`;
+}
 /** The compile part of a bridge, from the skill it leads into (a bridge is said at the skill change; compile.js names it by the skill it
  *  leaves: skills[n].bridgeToNext). */
 function bridgePartOf(kit, intoSkill) {
@@ -4012,7 +4019,10 @@ export function step(prev, input) {
   // (Brain 049 B2: one of pictureBoard, view, hint, none — never hint on a turn whose move is a key)
   const lmPic = out?.state?.lastMove;
   const picGot = cell1?.column === "picture" && input?.event === "turn" ? (lmPic?.help?.request === "picture" ? lmPic.help.picture : lmPic?.picture ?? (lmPic?.gave ? "none" : lmPic?.help || lmPic?.helpJoint ? "hint" : null)) : null;
-  const cell = picGot ? { ...cell1, picture: picGot } : cell1;
+  const cell2 = picGot ? { ...cell1, picture: picGot } : cell1;
+  // (Brain 049 B6, the record: every teacher row names a part — an answer at the teachback or the wrap is that part's; a turn whose reading
+  // named none (a stop, an aside at practice) keeps the part her turn before was on)
+  const cell = cell2 && cell2.part == null ? { ...cell2, part: recordPartOf(prev, input) } : cell2;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)
     out.state.said = helped && out.state.lastMove?.simpler ? addSaid(said, out.state.lastMove.simpler, out.state.turn ?? 0) : said;
@@ -4032,6 +4042,12 @@ export function step(prev, input) {
       const closedRight = !out.ui?.ask?.itemId && !!lmK.closeBeat && columnName(input, prev) === "right" && !lmK.bridgeSaid && lmK.scriptBeat?.kind !== "bridge" && !lmK.point && !lmK.rendered?.length;
       out.state.closedPart = closedRight ? cardPartOf(input.kit, { itemId: prev?.activeItemId ?? lmK.itemId ?? null, beat: lmK.closedBeat ?? lmK.closeBeat }) ?? undefined : undefined;
     }
+  }
+  // (Brain 049 B6, the record: the greeting's own row names its part too)
+  if (out?.state?.lastMove?.kind === "greet" && input?.event !== "turn" && !out.state.lastMove.cell) {
+    const gc = { part: `${scriptFor(input?.kit)?.script?.topicId ?? "lesson"}:greet`, column: null };
+    out.state.lastMove = { ...out.state.lastMove, cell: gc };
+    if (out.move) out.move = { ...out.move, cell: gc };
   }
   if (out?.state?.lastMove && input?.event === "turn") {
     const { cell: _c0, ...lm1 } = out.state.lastMove;
