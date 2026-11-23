@@ -1,0 +1,8907 @@
+{
+ "topicId": "c4-maths-ch01-t02",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02:greet",
+    "column": null
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 918,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj hum kaagaz ke tester se kone jaanchenge, aur string se circle banayenge. Toh shuru karte hain?",
+   "move": "hook",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02:greet",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 77,
+     "beat": "hook",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "seams": [
+    {
+     "left": "start",
+     "right": "greetSimpler",
+     "joint": null
+    },
+    {
+     "left": "greetSimpler",
+     "right": "greetAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 861,
+   "replyReadyMs": 1779,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 918,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 891,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, main shuru karti hoon. Ludo board ke kone dekho. Aaj kaagaz do baar mod kar tester banayenge, aur aise kone jaanchenge. Yeh ek square hai. Iska har kona kitaab ke kone jaisa hai; aise kone ko right angle kehte hain. Is square ke saare kone ek jaise hain. Is square mein kul kitne right angle hain?",
+   "move": "explain",
+   "card": "Is square ke saare kone ek jaise hain. Is square mein kul kitne right angle hain?",
+   "cell": {
+    "part": "greet",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 131,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "corner": "right angle"
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "corner": "right angle"
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 227,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "corner": "right angle"
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "corner": "right angle"
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": null
+     },
+     {
+      "from": 131,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "startAnyway",
+     "joint": "startAnyway",
+     "form": "Theek hai, main shuru karti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "startAnyway",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 896,
+   "replyReadyMs": 1787,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 896,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "corner": "right angle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "corner": "right angle"
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "corner": "right angle"
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "4 hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 689,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi: square ke 4 kone hain aur har kona kitaab ke kone jaisa right angle hai. Do baar mode kaagaz ka kona right angle hai; yahi tester hai. Tester kisi kone mein bilkul fit ho, koi khaali jagah na bache, toh woh kona right angle hai. Yeh ek table ka kona hai. Kya table ka yeh kona right angle hai?",
+   "move": "explain",
+   "card": "Yeh ek table ka kona hai. Kya table ka yeh kona right angle hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:e1:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "corner": "right angle",
+        "name": "4 right angle"
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "corner": "right angle",
+       "name": "4 right angle"
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 86,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 90,
+          "name": "kitaab ka kona"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 90,
+         "name": "kitaab ka kona"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 242,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 115,
+          "name": "table ka kona"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 115,
+         "name": "table ka kona"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 86,
+      "template": "angle@1"
+     },
+     {
+      "from": 242,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:e2",
+      "atChar": 242
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s1:e2",
+       "atChar": 86
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s1:e2",
+       "atChar": 242
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1046,
+   "replyReadyMs": 1735,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1735,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "corner": "right angle",
+     "name": "4 right angle"
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "corner": "right angle",
+       "name": "4 right angle"
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 86,
+     "atClause": null,
+     "estMs": 6460,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 90,
+         "name": "kitaab ka kona"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 242,
+     "atClause": null,
+     "estMs": 17860,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 115,
+         "name": "table ka kona"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "corner": "right angle",
+      "name": "4 right angle"
+     }
+    },
+    "counts": {
+     "angles": [
+      115
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 115,
+        "name": "table ka kona"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "corner": "right angle",
+        "name": "4 right angle"
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 86,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 90,
+          "name": "kitaab ka kona"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 242,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 115,
+          "name": "table ka kona"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "galat",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek, kyunki table ke kone mein tester rakho toh beech mein khaali jagah bachegi, isliye woh kona right angle nahi hai. Yeh do ek jaise square hain: pehla seedha rakha hai, doosra ghumaya hua hai. Ghumane se square ki disha badli; uske kone ab kaise hain, yeh tester se jaanchenge. Kya ghumaye hue square ke kone ab bhi right angle hain?",
+   "move": "explain",
+   "card": "Kya ghumaye hue square ke kone ab bhi right angle hain?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:e2:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 115,
+          "name": "table ka kona"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 115,
+         "name": "table ka kona"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 134,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "seedha",
+         "ghumaya hua"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "seedha",
+        "ghumaya hua"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 296,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "seedha",
+         "ghumaya hua"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "seedha",
+        "ghumaya hua"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 134,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:e3",
+      "atChar": 134
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2365,
+   "replyReadyMs": 2366,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2366,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 115,
+       "name": "table ka kona"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 115,
+         "name": "table ka kona"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 134,
+     "atClause": null,
+     "estMs": 8740,
+     "beat": "e3",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "seedha",
+        "ghumaya hua"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 115,
+        "name": "table ka kona"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "seedha",
+       "ghumaya hua"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 115,
+          "name": "table ka kona"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 134,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "seedha",
+         "ghumaya hua"
+        ]
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "deny",
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "yes, they are",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 723,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Ghumaya hua square wahi square hai, toh uske kone ab bhi right angle hain. Chalo, ab ek sawaal hum dono saath mein karte hain. Sonu ki ek tile tirchi lagi hai. Usne tester seedha rakha toh fit nahi hua, aur Sonu bola: is tile ka kona right angle nahi hai. Tester tirchi tile ke kone par seedha rakhoge, ya tile ke saath ghuma kar?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "square",
+         "right angle"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "square",
+        "right angle"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 87,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 139,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 268,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 139,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:e3",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:worked",
+      "atChar": 139
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Chalo, ab ek sawaal hum dono saath mein karte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 3337,
+   "replyReadyMs": 4060,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 4060,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "square",
+      "right angle"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "square",
+        "right angle"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 139,
+     "atClause": null,
+     "estMs": 9880,
+     "beat": "worked:step1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "square",
+       "right angle"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "square",
+         "right angle"
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 139,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen",
+     "invented"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 808,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Tile tirchi lagi hai. Socho ki tester ka kona uske kone se kaise milega. Tile tirchi hai: uske kone par tester ko seedha hi rakhna theek hai, ya use bhi ghumana padega?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 22,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 73,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 2562,
+   "replyReadyMs": 3370,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3370,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 1043,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Ab tum batao.",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1:ask",
+    "column": "aside"
+   },
+   "stepAnswer": {
+    "beat": "c4-maths-ch01-t02-s1:worked:step1",
+    "right": false,
+    "told": false
+   },
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "park",
+     "joint": null
+    },
+    {
+     "left": "park",
+     "right": "aside",
+     "joint": null
+    }
+   ],
+   "replyMs": 2473,
+   "replyReadyMs": 3516,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2473,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "hmm, achha",
+   "read": "no_evidence",
+   "intent": "ack",
+   "classifyMs": 644,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Tester tirchi tile ke kone par seedha rakhoge, ya tile ke saath ghuma kar?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1:ask",
+    "column": "other"
+   },
+   "stepAnswer": {
+    "beat": "c4-maths-ch01-t02-s1:worked:step1",
+    "right": false,
+    "told": false
+   },
+   "pageParts": [
+    {
+     "part": "stepAsk",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 3942,
+   "replyReadyMs": 4586,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 3942,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "sawaal kya hai?",
+   "read": "no_evidence · repeat",
+   "intent": "repeat",
+   "classifyMs": 555,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Tile tirchi hai: uske kone par tester ko seedha hi rakhna theek hai, ya use bhi ghumana padega?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1:ask",
+    "column": "repeat"
+   },
+   "pageParts": [
+    {
+     "part": "stepAsk",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 3249,
+   "replyReadyMs": 3804,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3804,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen",
+    "dodged"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "intent": "aside",
+   "classifyMs": 1045,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1:ask",
+    "column": "aside"
+   },
+   "returnSaid": true,
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "aiAsked": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiQuestion",
+     "joint": null
+    }
+   ],
+   "replyMs": 2299,
+   "replyReadyMs": 3344,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3344,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "batting",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 1239,
+   "classifyPath": "model",
+   "readRaw": "no_evidence"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, toh tumhe batting sabse achha lagta hai. Chalo, ab padhai aage badhate hain. Tester tirchi tile ke kone par seedha rakhoge, ya tile ke saath ghuma kar?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1",
+    "column": "aside_reply"
+   },
+   "stepAnswer": {
+    "beat": "c4-maths-ch01-t02-s1:worked:step1",
+    "right": false,
+    "told": false
+   },
+   "pageParts": [
+    {
+     "part": "stepAsk",
+     "from": 84,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiReply",
+     "joint": null
+    },
+    {
+     "left": "aiReply",
+     "right": "stepAsk",
+     "joint": "afterAiLine",
+     "form": "Chalo, ab padhai aage badhate hain.",
+     "by": "authored"
+    }
+   ],
+   "j2": {
+    "line": "Achha, toh tumhe batting sabse achha lagta hai.",
+    "refused": []
+   },
+   "replyMs": 2989,
+   "replyReadyMs": 4228,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2989,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen",
+     "affirms"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Tester ko bhi tile jitna ghumao, taaki uska kona tile ke kone par aaye aur uske dono seedhe kinaare tile ki bhujaon ke saath padein. Ghuma kar rakhne par tester tile ke kone mein bilkul fit hua; beech mein koi khaali jagah nahi bachi. Tumhari baari: toh kya Sonu theek keh raha tha?",
+   "move": "worked_example",
+   "card": "Tumhari baari: toh kya Sonu theek keh raha tha?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:step1:ask",
+    "column": "give_up"
+   },
+   "stepAnswer": {
+    "beat": "c4-maths-ch01-t02-s1:worked:step1",
+    "right": false,
+    "told": true
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 133,
+     "beat": "worked:step2",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 235,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 3348,
+   "replyReadyMs": 3349,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3349,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screen",
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen",
+     "leak"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 968,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yahan tester tile ke saath ghuma kar uske kone par rakha hai, jaise humne abhi kiya. Ghuma kar rakhne par tester tile mein fit ho gaya; toh kya Sonu ki baat theek thi?",
+   "move": "reteach",
+   "card": "Tumhari baari: toh kya Sonu theek keh raha tha?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:yourStep",
+    "column": "picture",
+    "picture": "pictureBoard"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ],
+        "tester": {
+         "on": 1,
+         "corner": 0,
+         "turned": true
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ],
+       "tester": {
+        "on": 1,
+        "corner": 0,
+        "turned": true
+       }
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 85,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "tirchi lagi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "tirchi lagi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:worked#picture",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked#picture"
+    },
+    "layout": {
+     "split": false
+    },
+    "picture": {
+     "view": null,
+     "decided": "once"
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 4112,
+   "replyReadyMs": 5080,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 5080,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "tirchi lagi"
+     ],
+     "tester": {
+      "on": 1,
+      "corner": 0,
+      "turned": true
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ],
+      "tester": {
+       "on": 1,
+       "corner": 0,
+       "turned": true
+      }
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "tirchi lagi"
+      ],
+      "tester": {
+       "on": 1,
+       "corner": 0,
+       "turned": true
+      }
+     }
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen",
+     "samecard"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "theek nahi tha",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 755,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi: Sonu ka tester seedha tha aur tile tirchi, isliye fit nahi hua tha; ghumane se tile ka kona nahi badla. Toh poora jawab: tile ka kona right angle hai; Sonu ki baat theek nahi thi. Ab ek sawaal tum akele karo. Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "move": "practice",
+   "card": "Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:worked:yourStep",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "right angle"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "right angle"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 193,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "afterWorked"
+    },
+    {
+     "part": "card",
+     "from": 222,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 222,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:worked",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:c1",
+      "atChar": 222
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": "afterWorked",
+     "form": "Ab ek sawaal tum akele karo.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1300,
+   "replyReadyMs": 2055,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2055,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "tile",
+      "right angle"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "tile",
+        "right angle"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 222,
+     "atClause": null,
+     "estMs": 16340,
+     "beat": "c1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "tile",
+       "right angle"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "tile",
+         "right angle"
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 222,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "koi nahi",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 807,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh jawab nahi hai. Ise alag tareeke se dekhte hain. Square tile seedhi rakho, phir thoda-thoda ghumao, aur har baar kone par tester rakho. Ghumayi hui tile ki disha badalti hai, par tester har baar bilkul fit hota hai. Kitaab mein ek darwaze ki photo tirchi chhapi hai. Kya photo wale darwaze ke kone right angle hain?",
+   "move": "reteach",
+   "card": "Kitaab mein ek darwaze ki photo tirchi chhapi hai. Kya photo wale darwaze ke kone right angle hain?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c1",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 26,
+     "beat": "rem:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 59,
+     "beat": "rem:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "seedhi",
+         "ghumayi hui"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "seedhi",
+        "ghumayi hui"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 226,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "photo mein"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "photo mein"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 59,
+      "template": "shape@1"
+     },
+     {
+      "from": 226,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c1",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+      "atChar": 226
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+       "atChar": 59
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+       "atChar": 226
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh jawab nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise alag tareeke se dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1604,
+   "replyReadyMs": 2411,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2411,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch01-t02-m-tilted-not-right",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "kitaab",
+      "tirchi rakhi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:then:c4-maths-ch01-t02-m-tilted-not-right",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 59,
+     "atClause": null,
+     "estMs": 4180,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "seedhi",
+        "ghumayi hui"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 226,
+     "atClause": null,
+     "estMs": 15200,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "photo mein"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "darwaza",
+       "photo mein"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-tilted-not-right"
+     },
+     {
+      "from": 59,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "seedhi",
+         "ghumayi hui"
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-tilted-not-right"
+     },
+     {
+      "from": 226,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "photo mein"
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-tilted-not-right"
+     }
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao na",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 660,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Photo wala darwaza bhi wahi darwaza hai, bas tircha chhapa hai. Socho, tircha hone se kone par kya asar hota hai. Kya kitaab mein tirchi chhapi darwaze ki photo mein darwaze ke kone right angle hain?",
+   "move": "hint",
+   "card": "Kitaab mein ek darwaze ki photo tirchi chhapi hai. Kya photo wale darwaze ke kone right angle hain?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:rem:0:then",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "photo mein"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "photo mein"
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 64,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "photo mein"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "photo mein"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 114,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "photo mein"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "photo mein"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1434,
+   "replyReadyMs": 2094,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2094,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch01-t02-m-tilted-not-right",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "darwaza",
+      "photo mein"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:then:c4-maths-ch01-t02-m-tilted-not-right",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "darwaza",
+       "photo mein"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "darwaza",
+       "photo mein"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek, kyunki photo mein wahi darwaza sirf tircha chhapa hai, aur tircha hone se kone nahi badalte, toh uske kone right angle hain. Ab pehle wale sawaal ko phir se dekhte hain. Samose ki nok, pizza ke tukde ki nok aur tirchi kitaab ke kone mein right angle kaunsa hai?",
+   "move": "practice",
+   "card": "Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch01-t02-m-tilted-not-right",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "right angle"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "right angle"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 145,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 190,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 190,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:rem:c4-maths-ch01-t02-m-tilted-not-right",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:c1",
+      "atChar": 190
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Ab pehle wale sawaal ko phir se dekhte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1538,
+   "replyReadyMs": 1539,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1539,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "darwaza",
+      "right angle"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "darwaza",
+        "right angle"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 190,
+     "atClause": null,
+     "estMs": 12920,
+     "beat": "c1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "darwaza",
+       "right angle"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "darwaza",
+         "right angle"
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 190,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "koi nahi",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 644,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Har kone par tester rakh kar socho: jis kone mein tester poora baithe, koi khaali jagah na bache, wahi right angle hai. Ab phir se socho, jawab kya hoga?",
+   "move": "hint",
+   "card": "Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c1",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 25,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 145,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "reaskShort",
+     "joint": null
+    }
+   ],
+   "replyMs": 2046,
+   "replyReadyMs": 2690,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2690,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "kitaab",
+      "tirchi rakhi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c1",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "leak",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle main try karun?",
+   "read": "no_evidence · selftry",
+   "intent": "try_first",
+   "classifyMs": 839,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo. Toh sawaal yeh hai. Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "move": "practice",
+   "card": "Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c1",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 26,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "afterTryFirst"
+    },
+    {
+     "part": "card",
+     "from": 46,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    },
+    {
+     "left": "tryFirst",
+     "right": "card",
+     "joint": "afterTryFirst",
+     "form": "Toh sawaal yeh hai.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1239,
+   "replyReadyMs": 2078,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2078,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "kitaab",
+      "tirchi rakhi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c1",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "phir se bolo",
+   "read": "no_evidence · repeat",
+   "intent": "repeat",
+   "classifyMs": 910,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Samose ki nok, pizza ke tukde ki nok aur tirchi kitaab ke kone mein right angle kaunsa hai?",
+   "move": "practice",
+   "card": "Samose ki nok, pizza ke tukde ki nok, ya ek tirchi rakhi kitaab ka kona: inmein se right angle kaunsa hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c1",
+    "column": "repeat"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "tirchi rakhi"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "tirchi rakhi"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1888,
+   "replyReadyMs": 2798,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2798,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "kitaab",
+      "tirchi rakhi"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c1",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "tirchi rakhi"
+      ]
+     }
+    }
+   },
+   "guard": [
+    "samecard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kitaab",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi. Samose aur pizza ki nok patli hain; tirchi kitaab ka kona ghumane se nahi badla, woh right angle hai. Ek square carrom board ko ghuma kar tircha rakha. Zoya ka kehna hai ki ab uske sirf do kone right angle hain. Kya Zoya ka kehna theek hai?",
+   "move": "practice",
+   "card": "Ek square carrom board ko ghuma kar tircha rakha. Zoya ka kehna hai ki ab uske sirf do kone right angle hain. Kya Zoya ka kehna theek hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c1",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "right angle"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "right angle"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 115,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "carrom board",
+         "tircha rakha"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "carrom board",
+        "tircha rakha"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 115,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c1",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:c2",
+      "atChar": 115
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 902,
+   "replyReadyMs": 903,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 903,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "rectangle",
+     "copies": 2,
+     "names": [
+      "kitaab",
+      "right angle"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "rectangle",
+       "copies": 2,
+       "names": [
+        "kitaab",
+        "right angle"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 115,
+     "atClause": null,
+     "estMs": 7980,
+     "beat": "c2",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "carrom board",
+        "tircha rakha"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "rectangle",
+      "copies": 2,
+      "names": [
+       "kitaab",
+       "right angle"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "carrom board",
+       "tircha rakha"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "rectangle",
+        "copies": 2,
+        "names": [
+         "kitaab",
+         "right angle"
+        ]
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 115,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "carrom board",
+         "tircha rakha"
+        ]
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   },
+   "guard": [
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "No hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 726,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek: carrom board square hai, aur ghumane se uske chaaron kone right angle hi rehte hain, sirf do nahi. Ek square patang hawa mein tirchi ud rahi hai. Uske upar wale kone par tester patang ke saath ghuma kar rakho: kona kam khula niklega, bilkul fit hoga, ya zyada?",
+   "move": "practice",
+   "card": "Ek square patang hawa mein tirchi ud rahi hai. Uske upar wale kone par tester patang ke saath ghuma kar rakho: kona kam khula niklega, bilkul fit hoga, ya zyada?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c2",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "carrom board",
+         "4 right angle"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "carrom board",
+        "4 right angle"
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 119,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "patang",
+         "hawa mein"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "patang",
+        "hawa mein"
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 119,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c2",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s1:c3",
+      "atChar": 119
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1030,
+   "replyReadyMs": 1756,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1756,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "carrom board",
+      "4 right angle"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s1:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c3",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "carrom board",
+        "4 right angle"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 119,
+     "atClause": null,
+     "estMs": 7980,
+     "beat": "c3",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "patang",
+        "hawa mein"
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "carrom board",
+       "4 right angle"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "patang",
+       "hawa mein"
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "carrom board",
+         "4 right angle"
+        ]
+       }
+      },
+      "beat": "c3"
+     },
+     {
+      "from": 119,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "patang",
+         "hawa mein"
+        ]
+       }
+      },
+      "beat": "c3"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "baith jayega",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki patang square hai, toh tirchi udne par bhi uska har kona right angle hai; ghuma kar rakha tester bilkul fit hoga. Ab woh kone dekhenge jo tester mein fit nahi hote, jaise cake ki nok, aur unhe right angle se milayenge. Ab tak samajh aaya?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:check:c3",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "patang",
+         "bilkul fit"
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "patang",
+        "bilkul fit"
+       ]
+      }
+     }
+    },
+    {
+     "part": "bridge",
+     "from": 133,
+     "beat": "bridge",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "bridge",
+     "joint": null
+    },
+    {
+     "left": "bridge",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1346,
+   "replyReadyMs": 1347,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1347,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:bridge:bridge",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "patang",
+      "bilkul fit"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "shape@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "patang",
+       "bilkul fit"
+      ]
+     }
+    },
+    "counts": {
+     "sides": 4,
+     "corners": 4
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "patang",
+       "bilkul fit"
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 1036,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket, yeh tumne bataya tha. Ab wapas apni padhai par aate hain. Tester ka kona kone par, seedha kinaara bhuja par. Doosri bhuja seedhe kinaaron ke beech ho toh right angle se kam, doosre kinaare par toh barabar, paar ho toh zyada. Yeh cake ke tukde ki nok hai. Is par tester rakhoge, toh nok right angle se kam khuli niklegi ya zyada?",
+   "move": "explain",
+   "card": "Yeh cake ke tukde ki nok hai. Is par tester rakhoge, toh nok right angle se kam khuli niklegi ya zyada?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s1:bridge",
+    "column": "aside"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 73,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 60,
+          "name": "kam"
+         },
+         {
+          "deg": 90,
+          "name": "right angle"
+         },
+         {
+          "deg": 130,
+          "name": "zyada"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 60,
+         "name": "kam"
+        },
+        {
+         "deg": 90,
+         "name": "right angle"
+        },
+        {
+         "deg": 130,
+         "name": "zyada"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 240,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "cake ki nok"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "cake ki nok"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "shape@1"
+     },
+     {
+      "from": 73,
+      "template": "angle@1"
+     },
+     {
+      "from": 240,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s1:c3",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:e1",
+      "atChar": 240
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s2:e1",
+       "atChar": 73
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s2:e1",
+       "atChar": 240
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "aside",
+     "joint": null
+    },
+    {
+     "left": "aside",
+     "right": "point",
+     "joint": "afterAside",
+     "form": "Ab wapas apni padhai par aate hain.",
+     "by": "authored"
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2940,
+   "replyReadyMs": 3976,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2940,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "shape@1",
+    "params": {
+     "shape": "square",
+     "copies": 2,
+     "names": [
+      "patang",
+      "bilkul fit"
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "shape@1",
+     "board": {
+      "template": "shape@1",
+      "params": {
+       "shape": "square",
+       "copies": 2,
+       "names": [
+        "patang",
+        "bilkul fit"
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 73,
+     "atClause": null,
+     "estMs": 4940,
+     "beat": "e1",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 60,
+         "name": "kam"
+        },
+        {
+         "deg": 90,
+         "name": "right angle"
+        },
+        {
+         "deg": 130,
+         "name": "zyada"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 240,
+     "atClause": null,
+     "estMs": 16340,
+     "beat": "e1",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "cake ki nok"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "shape@1",
+     "params": {
+      "shape": "square",
+      "copies": 2,
+      "names": [
+       "patang",
+       "bilkul fit"
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      50
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 50,
+        "name": "cake ki nok"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "shape@1",
+       "params": {
+        "shape": "square",
+        "copies": 2,
+        "names": [
+         "patang",
+         "bilkul fit"
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 73,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 60,
+          "name": "kam"
+         },
+         {
+          "deg": 90,
+          "name": "right angle"
+         },
+         {
+          "deg": 130,
+          "name": "zyada"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 240,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "cake ki nok"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "long"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "kam khuli",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Doosri bhuja dono seedhe kinaaron ke beech se jaati hai. Angle khulne se bada hota hai, bhujaon ki lambai se nahi. A ki bhujayein chhoti hain, B ki lambi, par tester dono par bilkul fit hai: dono barabar. Board par do angle dekho: ek ki bhujayein 6 cm, doosre ki 12 cm. Kaunsa zyada khula hai?",
+   "move": "explain",
+   "card": "Board par do angle dekho: ek ki bhujayein 6 cm, doosre ki 12 cm. Kaunsa zyada khula hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:e1:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "cake ki nok"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "cake ki nok"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 73,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 90,
+          "name": "A",
+          "len": "short"
+         },
+         {
+          "deg": 90,
+          "name": "B"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 90,
+         "name": "A",
+         "len": "short"
+        },
+        {
+         "deg": 90,
+         "name": "B"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 221,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 73,
+      "template": "angle@1"
+     },
+     {
+      "from": 221,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:e2",
+      "atChar": 221
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s2:e2",
+       "atChar": 73
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s2:e2",
+       "atChar": 221
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2678,
+   "replyReadyMs": 2679,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2679,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 50,
+       "name": "cake ki nok"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "cake ki nok"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 73,
+     "atClause": null,
+     "estMs": 4940,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 90,
+         "name": "A",
+         "len": "short"
+        },
+        {
+         "deg": 90,
+         "name": "B"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 221,
+     "atClause": null,
+     "estMs": 15580,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 50,
+        "name": "cake ki nok"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      120,
+      60
+     ]
+    },
+    "numbers": [
+     "6",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 120,
+        "name": "6 cm",
+        "len": "short"
+       },
+       {
+        "deg": 60,
+        "name": "12 cm"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "cake ki nok"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 73,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 90,
+          "name": "A",
+          "len": "short"
+         },
+         {
+          "deg": 90,
+          "name": "B"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 221,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "screen",
+     "noconfirm"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "12 cm wala",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 975,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh jawab nahi hai. Ise doosri tarah samajhte hain. Do pencil ko angle ki tarah pakdo. Ab dono ke aage ek-ek pencil jodo: bhujayein lambi ho gayi, par khulna wahi raha, toh angle bhi wahi raha. Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "move": "reteach",
+   "card": "Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 26,
+     "beat": "rem:c4-maths-ch01-t02-m-arm-length",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 58,
+     "beat": "rem:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "do pencil",
+          "len": "short"
+         },
+         {
+          "deg": 50,
+          "name": "pencil jodo"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "do pencil",
+         "len": "short"
+        },
+        {
+         "deg": 50,
+         "name": "pencil jodo"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 200,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 58,
+      "template": "angle@1"
+     },
+     {
+      "from": 200,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+      "atChar": 200
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+       "atChar": 58
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+       "atChar": 200
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh jawab nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise doosri tarah samajhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1389,
+   "replyReadyMs": 2364,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2364,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:remediation:rem:c4-maths-ch01-t02-m-arm-length",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 120,
+       "name": "6 cm",
+       "len": "short"
+      },
+      {
+       "deg": 60,
+       "name": "12 cm"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:then:c4-maths-ch01-t02-m-arm-length",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 58,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "do pencil",
+         "len": "short"
+        },
+        {
+         "deg": 50,
+         "name": "pencil jodo"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 200,
+     "atClause": null,
+     "estMs": 14060,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 120,
+        "name": "6 cm",
+        "len": "short"
+       },
+       {
+        "deg": 60,
+        "name": "12 cm"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      110,
+      55
+     ]
+    },
+    "numbers": [
+     "8",
+     "16"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     },
+     {
+      "from": 58,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "do pencil",
+          "len": "short"
+         },
+         {
+          "deg": 50,
+          "name": "pencil jodo"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     },
+     {
+      "from": 200,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "16 cm wali",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 990,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Pencil wali baat yaad karo: pencil jodne se bhujayein lambi hui, par angle wahi raha. Board par 8 cm panno wali aur 16 cm panno wali kitaab khuli hai; kiska angle bada hai?",
+   "move": "hint",
+   "card": "Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 25,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 111,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1246,
+   "replyReadyMs": 2236,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2236,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch01-t02-m-arm-length",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 110,
+       "name": "8 cm",
+       "len": "short"
+      },
+      {
+       "deg": 55,
+       "name": "16 cm"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:then:c4-maths-ch01-t02-m-arm-length",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 1,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      110,
+      55
+     ]
+    },
+    "numbers": [
+     "8",
+     "16"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "16 cm wali",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 669,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Abhi yeh sahi nahi hai. 16 cm ke lambe panne dekh kar uska angle bada lagta hai; par angle panno ke beech ka khulna hai, unki lambai nahi. Chalo, ab tumhari baari.",
+   "move": "hint",
+   "card": "Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 24,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Abhi yeh sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "aside",
+     "joint": null
+    }
+   ],
+   "replyMs": 1502,
+   "replyReadyMs": 2171,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2171,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch01-t02-m-arm-length",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 110,
+       "name": "8 cm",
+       "len": "short"
+      },
+      {
+       "deg": 55,
+       "name": "16 cm"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:then:c4-maths-ch01-t02-m-arm-length",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      110,
+      55
+     ]
+    },
+    "numbers": [
+     "8",
+     "16"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "16 cm wali",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 768,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh theek nahi hai. Dono baahein V ki tarah phailao, phir haathon mein do lambi lakdiyan pakdo. Baahein lambi lagti hain, par kandhe par khulna wahi hai, toh angle bhi wahi. Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "move": "hint",
+   "card": "Do kitaabein khuli rakhi hain: ek ke panne 8 cm ke, doosri ke 16 cm ke. Kiska angle bada hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 26,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "do pencil",
+          "len": "short"
+         },
+         {
+          "deg": 50,
+          "name": "pencil jodo"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "do pencil",
+         "len": "short"
+        },
+        {
+         "deg": 50,
+         "name": "pencil jodo"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 102,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "do pencil",
+          "len": "short"
+         },
+         {
+          "deg": 50,
+          "name": "pencil jodo"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "do pencil",
+         "len": "short"
+        },
+        {
+         "deg": 50,
+         "name": "pencil jodo"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 180,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 26,
+      "template": "angle@1"
+     },
+     {
+      "from": 180,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+      "atChar": 180
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length#help",
+       "atChar": 26
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+       "atChar": 180
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh theek nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1396,
+   "replyReadyMs": 2164,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2164,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch01-t02-m-arm-length",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 110,
+       "name": "8 cm",
+       "len": "short"
+      },
+      {
+       "deg": 55,
+       "name": "16 cm"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:then:c4-maths-ch01-t02-m-arm-length",
+    "scripted": true,
+    "misses": 3,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 26,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 50,
+         "name": "do pencil",
+         "len": "short"
+        },
+        {
+         "deg": 50,
+         "name": "pencil jodo"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 180,
+     "atClause": null,
+     "estMs": 12160,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      110,
+      55
+     ]
+    },
+    "numbers": [
+     "8",
+     "16"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     },
+     {
+      "from": 26,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 50,
+          "name": "do pencil",
+          "len": "short"
+         },
+         {
+          "deg": 50,
+          "name": "pencil jodo"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     },
+     {
+      "from": 180,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch01-t02-m-arm-length"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "8 cm wali kitaab",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 633,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi: 8 cm wali kitaab zyada khuli hai aur 16 cm wali kam, toh 8 cm wali ka angle bada hai. Chalo, pehle wale sawaal ki taraf wapas aate hain. Board par do angle dekho: ek ki bhujayein 6 cm, doosre ki 12 cm. Kaunsa zyada khula hai?",
+   "move": "practice",
+   "card": "Board par do angle dekho: ek ki bhujayein 6 cm, doosre ki 12 cm. Kaunsa zyada khula hai?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch01-t02-m-arm-length",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ],
+        "mark": {
+         "index": 0
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ],
+       "mark": {
+        "index": 0
+       }
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 99,
+     "beat": "e2",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 150,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 150,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:rem:c4-maths-ch01-t02-m-arm-length",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:e2",
+      "atChar": 150
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Chalo, pehle wale sawaal ki taraf wapas aate hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 2611,
+   "replyReadyMs": 3244,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3244,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 110,
+       "name": "8 cm",
+       "len": "short"
+      },
+      {
+       "deg": 55,
+       "name": "16 cm"
+      }
+     ],
+     "mark": {
+      "index": 0
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 110,
+         "name": "8 cm",
+         "len": "short"
+        },
+        {
+         "deg": 55,
+         "name": "16 cm"
+        }
+       ],
+       "mark": {
+        "index": 0
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 150,
+     "atClause": null,
+     "estMs": 11780,
+     "beat": "e2",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 110,
+        "name": "8 cm",
+        "len": "short"
+       },
+       {
+        "deg": 55,
+        "name": "16 cm"
+       }
+      ],
+      "mark": {
+       "index": 0
+      }
+     }
+    },
+    "counts": {
+     "angles": [
+      120,
+      60
+     ]
+    },
+    "numbers": [
+     "6",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 120,
+        "name": "6 cm",
+        "len": "short"
+       },
+       {
+        "deg": 60,
+        "name": "12 cm"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 110,
+          "name": "8 cm",
+          "len": "short"
+         },
+         {
+          "deg": 55,
+          "name": "16 cm"
+         }
+        ],
+        "mark": {
+         "index": 0
+        }
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 150,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask",
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "chhah cm wala",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 602,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek, kyunki 6 cm wala zyada khula hai. Darwaza aur deewar bhi ek angle banate hain. Darwaza thoda kholo toh angle chhota, aur zyada kholo toh angle bada ho jaata hai. Board par ek gate hai jo 2 m chauda hai, aur ek darwaza jo 1 m chauda hai; dono khule hain. Kiska angle bada hai, ya dono barabar hain?",
+   "move": "explain",
+   "card": "Board par ek gate hai jo 2 m chauda hai, aur ek darwaza jo 1 m chauda hai; dono khule hain. Kiska angle bada hai, ya dono barabar hain?",
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:e2:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ],
+        "mark": {
+         "index": 0
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ],
+       "mark": {
+        "index": 0
+       }
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 54,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 30,
+          "name": "thoda kholo"
+         },
+         {
+          "deg": 100,
+          "name": "zyada kholo"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 30,
+         "name": "thoda kholo"
+        },
+        {
+         "deg": 100,
+         "name": "zyada kholo"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 182,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 40,
+          "name": "2 m"
+         },
+         {
+          "deg": 40,
+          "name": "1 m",
+          "len": "short"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 40,
+         "name": "2 m"
+        },
+        {
+         "deg": 40,
+         "name": "1 m",
+         "len": "short"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 54,
+      "template": "angle@1"
+     },
+     {
+      "from": 182,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:e3",
+      "atChar": 182
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch01-t02-s2:e3",
+       "atChar": 54
+      },
+      {
+       "unit": "c4-maths-ch01-t02-s2:e3",
+       "atChar": 182
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2762,
+   "replyReadyMs": 3364,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3364,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 120,
+       "name": "6 cm",
+       "len": "short"
+      },
+      {
+       "deg": 60,
+       "name": "12 cm"
+      }
+     ],
+     "mark": {
+      "index": 0
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch01-t02-s2:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 120,
+         "name": "6 cm",
+         "len": "short"
+        },
+        {
+         "deg": 60,
+         "name": "12 cm"
+        }
+       ],
+       "mark": {
+        "index": 0
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 54,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "e3",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 30,
+         "name": "thoda kholo"
+        },
+        {
+         "deg": 100,
+         "name": "zyada kholo"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 182,
+     "atClause": null,
+     "estMs": 12540,
+     "beat": "e3",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 40,
+         "name": "2 m"
+        },
+        {
+         "deg": 40,
+         "name": "1 m",
+         "len": "short"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 120,
+        "name": "6 cm",
+        "len": "short"
+       },
+       {
+        "deg": 60,
+        "name": "12 cm"
+       }
+      ],
+      "mark": {
+       "index": 0
+      }
+     }
+    },
+    "counts": {
+     "angles": [
+      40,
+      40
+     ]
+    },
+    "numbers": [
+     "2",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 40,
+        "name": "2 m"
+       },
+       {
+        "deg": 40,
+        "name": "1 m",
+        "len": "short"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 120,
+          "name": "6 cm",
+          "len": "short"
+         },
+         {
+          "deg": 60,
+          "name": "12 cm"
+         }
+        ],
+        "mark": {
+         "index": 0
+        }
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 54,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 30,
+          "name": "thoda kholo"
+         },
+         {
+          "deg": 100,
+          "name": "zyada kholo"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 182,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 40,
+          "name": "2 m"
+         },
+         {
+          "deg": 40,
+          "name": "1 m",
+          "len": "short"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "screen",
+    "mustsay",
+    "long",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "long",
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "barabar hain",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Gate aur darwaza dono ek jitne khule hain, aur angle khulne se banta hai. Ab ek sawaal milkar, kadam-kadam karke hal karte hain. Rani ki rangoli mein teen kone hain, P, Q aur R, aur P ki bhujayein sabse lambi hain. Hamein inmein sabse bada angle dhoondhna hai. Pehle P ko lo: uska khulna right angle se kam hai ya zyada?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 40,
+          "name": "2 m"
+         },
+         {
+          "deg": 40,
+          "name": "1 m",
+          "len": "short"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 40,
+         "name": "2 m"
+        },
+        {
+         "deg": 40,
+         "name": "1 m",
+         "len": "short"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 86,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 141,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 60,
+          "name": "P"
+         },
+         {
+          "deg": 90,
+          "name": "Q",
+          "len": "short"
+         },
+         {
+          "deg": 130,
+          "name": "R",
+          "len": "short"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 60,
+         "name": "P"
+        },
+        {
+         "deg": 90,
+         "name": "Q",
+         "len": "short"
+        },
+        {
+         "deg": 130,
+         "name": "R",
+         "len": "short"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 273,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 60,
+          "name": "P"
+         },
+         {
+          "deg": 90,
+          "name": "Q",
+          "len": "short"
+         },
+         {
+          "deg": 130,
+          "name": "R",
+          "len": "short"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 60,
+         "name": "P"
+        },
+        {
+         "deg": 90,
+         "name": "Q",
+         "len": "short"
+        },
+        {
+         "deg": 130,
+         "name": "R",
+         "len": "short"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch01-t02-s2:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "angle@1"
+     },
+     {
+      "from": 141,
+      "template": "angle@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch01-t02-s2:e3",
+     "switchTo": {
+      "unit": "c4-maths-ch01-t02-s2:worked",
+      "atChar": 141
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Ab ek sawaal milkar, kadam-kadam karke hal karte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1600,
+   "replyReadyMs": 1601,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1601,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step1",
+   "boardRef": {
+    "template": "angle@1",
+    "params": {
+     "angles": [
+      {
+       "deg": 40,
+       "name": "2 m"
+      },
+      {
+       "deg": 40,
+       "name": "1 m",
+       "len": "short"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 40,
+         "name": "2 m"
+        },
+        {
+         "deg": 40,
+         "name": "1 m",
+         "len": "short"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 141,
+     "atClause": null,
+     "estMs": 9500,
+     "beat": "worked:step1",
+     "template": "angle@1",
+     "board": {
+      "template": "angle@1",
+      "params": {
+       "angles": [
+        {
+         "deg": 60,
+         "name": "P"
+        },
+        {
+         "deg": 90,
+         "name": "Q",
+         "len": "short"
+        },
+        {
+         "deg": 130,
+         "name": "R",
+         "len": "short"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "angle@1",
+    "boardRef": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 40,
+        "name": "2 m"
+       },
+       {
+        "deg": 40,
+        "name": "1 m",
+        "len": "short"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "angles": [
+      60,
+      90,
+      130
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "angle@1",
+     "params": {
+      "angles": [
+       {
+        "deg": 60,
+        "name": "P"
+       },
+       {
+        "deg": 90,
+        "name": "Q",
+        "len": "short"
+       },
+       {
+        "deg": 130,
+        "name": "R",
+        "len": "short"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 40,
+          "name": "2 m"
+         },
+         {
+          "deg": 40,
+          "name": "1 m",
+          "len": "short"
+         }
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 141,
+      "board": {
+       "template": "angle@1",
+       "params": {
+        "angles": [
+         {
+          "deg": 60,
+          "name": "P"
+         },
+         {
+          "deg": 90,
+          "name": "Q",
+          "len": "short"
+         },
+         {
+          "deg": 130,
+          "name": "R",
+          "len": "short"
+         }
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ab main jaati hoon, bye",
+   "read": "no_evidence · goodbye",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 1090,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj ke liye itna hi, phir milte hain!",
+   "move": "wrap",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch01-t02-s2:worked:step1:ask",
+    "column": "stop"
+   },
+   "held": {
+    "unit": null,
+    "changed": true,
+    "kept": false,
+    "drawn": "cleared",
+    "pages": [],
+    "intent": {
+     "unit": null,
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "goodbye",
+     "joint": null
+    }
+   ],
+   "replyMs": 1,
+   "replyReadyMs": 1091,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1090,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}

@@ -30225,6 +30225,69 @@
    "at": "2026-11-23",
    "title": "Released 84458a2 with scripts/release.mjs: web taxila-web--s84458a2-ykql (was taxila-web--s0d6f47c-8oip), worker + canary/nightly jobs on taxila-worker:84458a2 (was 0d6f47c); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 84458a2 --rollback.",
    "source": "inbox/release-84458a2.json"
+  },
+  {
+   "id": "ms-r8-director33",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "director33: 36 lessons on release 56's code (6 live, 3 staged), 9 Opus judges by hand: 3 topics pass every gate line (c5-t03, c6-ch07-t01, staged c4-ch01-t02); three live lessons fail on one turn each (a drawing after \"no other drawing\"); live c5-t01 fails on worked-example boards and a safety turn fired in it; the two new staged lessons fail on script data",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "dc-r8-director33",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "After director33: the no-picture turn keeps the screen; the own reason only after its named wrong answer with no stand-in; every sentence after an answer is said over a board that shows it; the checker refuses what got through; the question cap counts what the child hears; staged batches stop until two runs in a row pass",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "fd-r8-order-contradicted-its-own-rule",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "The build order (to-brain 049 B2: the hint over its own board after the no-picture line) and the judges' rule (H2: a drawing after that line is a contradiction) were both written by main and contradicted each other; three live lessons failed the gate on the row, which was in the dry run for hours unread against the rule",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "fd-r8-boards-under-what-is-said-after-the-answer",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "Taking the answer off a posing board leaves the sentences said after the answer over a board that denies them: a step confirmed \"4 gap\" over two gaps, a value stated under a \"?\"; every read looked at each board under its question only",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "fd-r8-own-reason-misfires-without-a-named-wrong-answer",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A card's own reason said after any miss, where the card names no wrong answer, speaks of an answer the child never gave: fourteen rows in five topics; where the wrong answer is named it speaks to the child every time (c6 7 of 7, listening 4)",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "fd-r8-question-cap-counts-less-than-the-child-hears",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "The two-turns cap did not count the short ask, the Hindi form, a picture turn or an aside reply as the question: runs of three and four remain in seven topics, and \"Ab tum batao.\" after a park line is heard as an invitation to the side-topic",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "fd-r8-safety-turn-kaatungi",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A right answer \"5 gaps mein kaatungi\" in the live number-line lesson set off the safeguarding turn twice (the model's read of the child's line; safety frozen): the second accept form in two runs, and the verb of every fractions lesson",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "rj-r8-help-board-after-no-picture-line",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Saying the card's unsaid hint over the hint's own board after \"I have no other drawing of this\" (to-brain 049 B2): a new drawing appears under that line and the card's board is gone when she invites the answer; five lessons, the gate line in three live ones",
+   "source": "inbox/r8-main-59.json"
+  },
+  {
+   "id": "rj-r8-own-reason-after-any-miss",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Letting any miss stand in for the named wrong answer at a card that names none, so that its own reason could be help: she tells a child who said 7 that \"3/4 does not mean 3 gaps\"",
+   "source": "inbox/r8-main-59.json"
   }
  ],
  "edges": [
@@ -48587,6 +48650,96 @@
    "src": "fd-r8-round-test-list-missed-a-walker",
    "rel": "measured_by",
    "dst": "ms-r8-d33-dry"
+  },
+  {
+   "src": "dc-r8-director33",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "dc-r8-director33",
+   "rel": "supersedes",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-order-contradicted-its-own-rule",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "fd-r8-order-contradicted-its-own-rule",
+   "rel": "constrains",
+   "dst": "dc-r8-director33"
+  },
+  {
+   "src": "fd-r8-boards-under-what-is-said-after-the-answer",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "fd-r8-boards-under-what-is-said-after-the-answer",
+   "rel": "constrains",
+   "dst": "dc-r8-director33"
+  },
+  {
+   "src": "fd-r8-own-reason-misfires-without-a-named-wrong-answer",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "fd-r8-own-reason-misfires-without-a-named-wrong-answer",
+   "rel": "constrains",
+   "dst": "dc-r8-own-reason-after-its-miss"
+  },
+  {
+   "src": "fd-r8-question-cap-counts-less-than-the-child-hears",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "fd-r8-question-cap-counts-less-than-the-child-hears",
+   "rel": "constrains",
+   "dst": "dc-r8-director33"
+  },
+  {
+   "src": "fd-r8-safety-turn-kaatungi",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "fd-r8-safety-turn-kaatungi",
+   "rel": "constrains",
+   "dst": "dc-r8-safety-seen-list"
+  },
+  {
+   "src": "rj-r8-help-board-after-no-picture-line",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "rj-r8-help-board-after-no-picture-line",
+   "rel": "caused_by",
+   "dst": "fd-r8-order-contradicted-its-own-rule"
+  },
+  {
+   "src": "rj-r8-own-reason-after-any-miss",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "rj-r8-own-reason-after-any-miss",
+   "rel": "constrains",
+   "dst": "dc-r8-own-reason-after-its-miss"
+  },
+  {
+   "src": "dc-r8-vpc-whole-to-70",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
+  },
+  {
+   "src": "dc-r8-script-grade-wrong-only-when-known",
+   "rel": "measured_by",
+   "dst": "ms-r8-director33"
   }
  ]
 }
