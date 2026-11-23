@@ -1818,7 +1818,7 @@ const panelBox = (text, at) => { const b = textBox(text, "m", at), w = b.w / 0.8
  *  (`boxes`), inside the board — at the split panel's scale too. → its `at`, or null. */
 function radiusLabel(text, cx, cy, e, avoid, boxes) {
   const size = "s", dx = e[0] - cx, dy = e[1] - cy, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
-  for (const t of [0.5, 0.65, 0.35, 0.8, 0.2]) for (const off of [16, 22, 30, 40]) for (const s of ny <= 0 ? [1, -1] : [-1, 1]) {
+  for (const [t, off] of [0.5, 0.65, 0.35, 0.8, 0.2].flatMap((t) => [16, 22, 30, 40].map((o) => [t, o])).concat([0.5, 0.65, 0.8, 0.35, 0.9].flatMap((t) => [50, 60].map((o) => [t, o])))) for (const s of ny <= 0 ? [1, -1] : [-1, 1]) {
     const mx = cx + dx * t + nx * off * s, my = cy + dy * t + ny * off * s;
     const b0 = textBox(text, size), at = [round1(mx), round1(my - (b0.y + b0.h / 2))], box = panelBox(text, at);
     if (box.x < 4 || box.x + box.w > 396 || box.y < 4 || box.y + box.h > 296) continue;
@@ -1858,8 +1858,56 @@ function roundShape(c, tl) {
   if (c.name) tl.add({ op: "text", at: nAt, text: c.name, size: "s", ink: "accent" }, 500, { gap: 200 });
   return { counts: { sides: 0 }, facts: { ...o.facts, ...(c.name ? { name: c.name } : {}), ...(c.centre ? { centre: "marked" } : {}), ...(drawn.length ? { radiiDrawn: drawn.length } : {}) } };
 }
+/**
+ * Studio 015 item 2 (c4-ch01-t02's follow-up: a 12 cm string went slack while the pencil turned): `shape: "circle"` with
+ * `radius` (a label with its length, "12 cm") and `slack: { from, to, depth }` — the outline is the circle of the string's
+ * length except between the two angles (degrees, counter-clockwise from 3 o'clock), where it comes in towards the centre by
+ * up to `depth` (in the radius's unit, deepest midway): never outside the circle — a slack string lets the pencil come closer,
+ * not go further. `guide: true` draws the tight circle faint behind it. The radius is drawn at full length where the string
+ * was tight; `slackRadii: true` (the radii view) adds one into the dent, shorter, unlabelled (no number the board does not state).
+ */
+function slackShape(c, tl) {
+  for (const k of ["name", "centre", "radius"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  const s = c.slack, L = radiusOf(c.radius);
+  if (!L || !(L.n > 0)) return { error: "slack_radius" };
+  const from = Number(s?.from), to = Number(s?.to), depth = Number(s?.depth);
+  const span = (((to - from) % 360) + 360) % 360;
+  if (![from, to, depth].every(Number.isFinite) || span < 20 || span > 240 || !(depth > 0) || depth > L.n * 0.6) return { error: "slack" };
+  if (c.copies !== undefined && c.copies !== 1 || c.diameter || c.chord || c.arc) return { error: "slack_with" };
+  const cx = 200, cy = 138, R = 100, k = R / L.n;
+  const inDent = (deg) => (((deg - from) % 360) + 360) % 360 < span;
+  const r = (deg) => { if (!inDent(deg)) return L.n; const t = ((((deg - from) % 360) + 360) % 360) / span; return L.n - depth * Math.sin(Math.PI * t) ** 2; };
+  const at = (deg, len) => [round1(cx + len * k * Math.cos(rad(deg))), round1(cy - len * k * Math.sin(rad(deg)))];
+  // (the outline sampled every 5° and at the dent's own ends and middle; rounding toward the centre keeps it inside the circle)
+  const mid = from + span / 2;
+  const degs = [...new Set([...Array.from({ length: 72 }, (_, i) => i * 5), from, to, mid].map((d) => round1(((d % 360) + 360) % 360)))].sort((a, b) => a - b);
+  const inside = (deg) => {
+    let p = at(deg, r(deg));
+    for (let m = 0.05; Math.hypot(p[0] - cx, p[1] - cy) > R && m < 1; m += 0.05) { const t = rad(deg), q = r(deg) * k - m; p = [round1(cx + q * Math.cos(t)), round1(cy - q * Math.sin(t))]; }
+    return p;
+  };
+  const outline = [...degs.map(inside), inside(degs[0])];
+  if (c.guide === true) tl.add({ id: "guide", op: "circle", c: [cx, cy], r: R, ink: "soft", weight: 1 }, 700);
+  tl.add({ id: "o", op: "stroke", points: outline, weight: 2 }, 1100, { gap: c.guide === true ? 200 : 180 });
+  tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+  const full = mid + 150, avoid = [outline], boxes = [];
+  const cAt = c.centre ? [round1(Math.max(panelBox(c.centre, [0, 0]).w / 2 + 6, 62)), 282] : null, nAt = c.name ? [round1(400 - panelBox(c.name, [0, 0]).w / 2 - 6), 282] : null;
+  if (cAt) boxes.push(panelBox(c.centre, cAt));
+  if (nAt) boxes.push(panelBox(c.name, nAt));
+  const e0 = at(full, L.n);
+  tl.add({ id: "rad0", op: "arrow", from: [cx, cy], to: e0, ink: "accent", weight: 2 }, 520, { gap: 200 });
+  avoid.push([[cx, cy], e0]);
+  if (c.slackRadii === true) { const e1 = inside(mid); tl.add({ id: "rad1", op: "arrow", from: [cx, cy], to: e1, ink: "accent", weight: 2 }, 520, { gap: 160 }); avoid.push([[cx, cy], e1]); }
+  const p = radiusLabel(String(c.radius), cx, cy, e0, avoid, boxes);
+  if (!p) return { error: "slack_label_room" };
+  tl.add({ op: "text", at: p, text: String(c.radius), size: "s", ink: "accent" }, 420, { gap: 60 });
+  if (c.centre) tl.add({ op: "label", at: cAt, text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
+  if (c.name) tl.add({ op: "text", at: nAt, text: c.name, size: "s", ink: "accent" }, 500, { gap: 200 });
+  return { counts: { sides: 0, radius: String(c.radius) }, facts: { shape: "slack outline, inside the circle", radius: String(c.radius), ...(c.guide === true ? { guide: "the tight circle, faint" } : {}), ...(c.name ? { name: c.name } : {}) } };
+}
 function shape(c, tl) {
   if (c.shape === "oval" || c.shape === "uneven") return roundShape(c, tl);
+  if (c.shape === "circle" && c.slack !== undefined) return slackShape(c, tl);
   if (!(c.shape in SIDES)) return { error: "shape" };
   const copies = c.copies === 2 ? 2 : 1;
   for (const k of ["name", "side", "corner", "centre", "radius", "diameter", "chord", "arc"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };

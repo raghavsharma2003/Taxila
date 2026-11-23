@@ -634,6 +634,8 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
     return v ? `Ab in groups ko qataron mein dekho, sab ek hi jagah se shuru: ${ac.sizes.join(", ")}` : `Dekho, har group ab ek qatar hai, sab qatarein ek hi jagah se shuru hoti hain: ${ac.sizes.join(", ")}`;
   // (Studio 014 item 3: the radius drawn at three places — no claim that they are equal: that is what such a card asks)
   // (Studio 015 item 1: an oval's or an uneven shape's radii at three places, each its own length — said, not measured)
+  if (ac.template === "shape@1" && ac.slackRadii) return v ? "Ab centre se kinaare tak do line dekho: ek wahan jahan dori tani thi, ek wahan jahan dhili thi"
+    : "Dekho, ek line wahan tak hai jahan dori tani thi, aur doosri wahan tak jahan dori dhili ho gayi";
   if (ac.template === "shape@1" && ac.threeRadii) return v ? "Ab centre se kinaare tak teen alag jagah line kheench kar dekho, har line ki apni lambai hai"
     : "Dekho, centre se kinaare tak ki line ab teen jagah kheenchi hai, har ek apni lambai tak";
   if (ac.radii === 3) return v ? "Ab centre se kinaare tak teen alag jagah line kheench kar dekho" : "Dekho, centre se kinaare tak ki line ab teen jagah kheenchi hai";
@@ -820,6 +822,9 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
       return { template: "equal-groups@1", sizes: c.sizes, as: "rows", view: "rows" };
     // (Studio 014 item 3: a circle whose radius the board draws — shape@1 with a radius label, measured@1 with r — has the same
     // radius drawn at three places as its second view; a circle with no radius drawn has none)
+    // (Studio 015 item 2: a slack string's radii view — one radius at full length, one into the dent, shorter)
+    if (c.template === "shape@1" && c.shape === "circle" && c.slack !== undefined)
+      return c.radius ? { template: "shape@1", shape: "circle", radius: c.radius, slack: c.slack, ...(c.guide === true ? { guide: true } : {}), ...(c.centre ? { centre: c.centre } : {}), ...(c.name ? { name: c.name } : {}), slackRadii: true, view: "radii" } : null;
     if (c.template === "shape@1" && c.shape === "circle" && c.radius && !c.diameter && !c.chord && !c.arc)
       return { template: "shape@1", shape: "circle", radius: c.radius, ...(c.centre ? { centre: c.centre } : {}), ...(c.name ? { name: c.name } : {}), radii: 3, view: "radii" };
     // (Studio 015 item 1: an oval or an uneven round shape — the radii view at three places, each at its own length; the board's

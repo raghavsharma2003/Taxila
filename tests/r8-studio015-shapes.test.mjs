@@ -77,3 +77,39 @@ test("item 1: the W15 gate takes a round outline that is not a circle where her 
   assert.deepEqual(namedShapeMissing("Nahi, yeh circle nahi hai, kyunki kinaara barabar door nahi.", sc.ops, asked), []);
   assert.deepEqual(namedShapeMissing("Yeh roti ek circle hai.", sc.ops, asked), ["circle named, not drawn"]);
 });
+
+test("item 2: a slack string — the circle of the string's length except between the two angles, where it comes in by up to its depth; never outside the tight circle; the radii view adds a shorter radius into the dent", () => {
+  const p = { shape: "circle", radius: "12 cm", centre: "centre", slack: { from: 20, to: 110, depth: 4 }, guide: true, name: "dhili dori" };
+  for (const params of [p, { ...p, guide: undefined }, { ...p, slack: { from: 300, to: 60, depth: 6 } }, { ...p, slack: { from: 150, to: 330, depth: 2.5 } }]) {
+    const sc = ok({ template: "shape@1", ...params });
+    const ctr = sc.ops.find((o) => o.id === "ctr").c, outline = sc.ops.find((o) => o.id === "o"), full = sc.ops.find((o) => o.id === "rad0");
+    const R = len(full), ds = outline.points.map((q) => Math.hypot(q[0] - ctr[0], q[1] - ctr[1]));
+    // (the tight circle: the guide's radius, the full radius's length — its end rounded to a tenth)
+    const tight = sc.ops.find((o) => o.id === "guide")?.r ?? 100;
+    assert.ok(Math.abs(R - tight) < 0.1);
+    assert.ok(Math.max(...ds) <= tight, `never outside the tight circle: ${Math.max(...ds)} > ${tight}`);
+    // the dent is as deep as authored (in the radius's unit): 12 cm → R, depth d → R·d/12 nearer the centre at its deepest
+    assert.ok(Math.abs((R - Math.min(...ds)) / R * 12 - params.slack.depth) < 0.05, `deepest ${R - Math.min(...ds)} px`);
+    // outside the two angles the outline is the circle
+    const { from, to } = params.slack, span = ((to - from) % 360 + 360) % 360;
+    outline.points.forEach((q, i) => {
+      const deg = ((Math.atan2(ctr[1] - q[1], q[0] - ctr[0]) * 180) / Math.PI - from + 720) % 360;
+      if (deg > span + 0.5 && deg < 359.5) assert.ok(Math.abs(ds[i] - R) < 0.2, `point ${i} at ${deg}° past the dent is on the circle`);
+    });
+    assert.equal(!!sc.ops.find((o) => o.id === "guide" && o.op === "circle" && o.ink === "soft" && Math.abs(o.r - R) < 0.2), params.guide === true, "the guide: the tight circle, faint");
+    assert.ok(texts(sc).includes("12 cm"));
+    // the radii view: one radius at full length, one into the dent, shorter, unlabelled
+    const ref = { template: "shape@1", params };
+    assert.deepEqual(viewOf(ref), { template: "shape@1", view: "radii", kind: "figure" });
+    const v = BF.pictureTurn(askOf(ref), {});
+    assert.ok(v.script.ops.length <= LIMITS.maxOps);
+    const rads = v.view.script.ops.filter((o) => /^rad\d$/.test(o.id)).map(len);
+    assert.equal(rads.length, 2);
+    assert.ok(Math.abs(rads[0] - R) < 0.5 && Math.abs(rads[1] - (R - (R * params.slack.depth) / 12)) < 0.5, `${rads}`);
+    assert.deepEqual(texts(v.view.script).sort(), texts(sc).sort(), "the board's words only");
+  }
+  // refused: a dent deeper than 0.6 of the string, no length on the radius, a slack with a diameter
+  assert.equal(expand({ template: "shape@1", ...p, slack: { from: 20, to: 110, depth: 9 } }).ok, false);
+  assert.equal(expand({ template: "shape@1", ...p, radius: "radius" }).ok, false);
+  assert.equal(expand({ template: "shape@1", ...p, diameter: "24 cm" }).ok, false);
+});
