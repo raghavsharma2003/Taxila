@@ -117,3 +117,25 @@ test("a fraction-line title (the fraction to find) sits over no tick of the line
     assert.ok(box.x >= 0 && box.y >= 0, "on the board");
   }
 });
+
+// (2026-11-23, main: c5-maths-ch02-t01 s2's asked step "2/5 ke liye 0 se 1 ki line ko kitne barabar gaps mein kaatoge?" (key 5)
+// stood on an uncut fraction-bars strip because no board drew an UNCUT 0-1 line. den 1 is that line, and nothing else)
+test("the bare line (den 1): 0 and 1 at its ends, no tick between, passes the gate with the cut withheld; nothing else rides on it", async () => {
+  const { altCall } = await import("../server/stagecraft/board-first.js");
+  const x = expand({ template: "fraction-line@1", den: 1, from: 0, to: 1 });
+  assert.ok(x.ok, x.errors?.join(","));
+  const ops = x.script.ops, line = ops.find((o) => o.id === "line");
+  assert.deepEqual(line.rows, [["0", "1"]]);
+  assert.deepEqual(line.range, [0, 1]);
+  assert.equal(ops.filter((o) => o.op === "line").length, 0, "no tick between 0 and 1: nothing is cut");
+  assert.ok(!ops.some((o) => o.op === "circle" || o.op === "arrow" || o.op === "text"), "no dot, hop or label beyond the ends");
+  assert.deepEqual(x.facts.counts.lines, [{ gaps: 1, ticks: 2, innerTicks: 0 }]);
+  const said = "2/5 ke liye 0 se 1 ki line ko kitne barabar gaps mein kaatoge?";
+  const g = gateWhiteboard(retimeToLine(x.script, said), { reply: said, speechMs: speech(said), withhold: { values: ["5", "paanch"] } });
+  assert.ok(g.pass, JSON.stringify(g.checks.filter((c) => !c.pass)));
+  // (its second view is none: an uncut bar would add nothing the line does not show)
+  assert.equal(altCall({ template: "fraction-line@1", params: { den: 1, from: 0, to: 1 } }, { line: said, withheld: ["5"], keys: ["5"] }), null);
+  for (const p of [{ to: 2 }, { mark: 1 }, { marks: [{ num: 1 }] }, { hop: { num: 1 } }, { target: [1, 1] }, { target: [1, 1], show: true }, { mixup: "gaps" }])
+    assert.match(expand({ template: "fraction-line@1", den: 1, ...p }).errors.join(","), /fraction_line_bare/, JSON.stringify(p));
+  assert.equal(expand({ template: "fraction-line@1", den: 0 }).ok, false);
+});

@@ -67,6 +67,8 @@ export const RANGE = {
     if (Array.isArray(p.dens)) return p.den === undefined && p.dens.length === 2 && p.dens.every((d) => Number.isInteger(d) && d >= 2 && d <= 12)
       && [1, 2, 3].includes(p.to) && p.hop === undefined && p.mark === undefined && p.target === undefined
       && (p.marks ?? []).every((m) => Array.isArray(m) && p.dens.includes(m[1]) && Number.isInteger(m[0]) && m[0] >= 0 && m[0] <= m[1] * p.to);
+    // (2026-11-23, main: den 1 is the bare uncut 0-1 line, nothing on it — c5-maths-ch02-t01 s2's "kitne barabar gaps mein kaatoge?")
+    if (p.den === 1) return (p.to ?? 1) === 1 && (p.wholes ?? 1) === 1 && p.mark === undefined && p.target === undefined && p.hop === undefined && !p.show && p.mixup === undefined && !(p.marks ?? []).length;
     const inLine = (n) => Number.isInteger(n) && n >= 0 && n <= p.den * p.to;
     return p.den >= 2 && p.den <= 12 && [1, 2, 3].includes(p.to) && (p.marks ?? []).every((m) => inLine(m.num))
       && (p.hop === undefined || inLine(p.hop.num)) && (p.mark === undefined || inLine(p.mark)) && !(p.mark !== undefined && p.target !== undefined)
