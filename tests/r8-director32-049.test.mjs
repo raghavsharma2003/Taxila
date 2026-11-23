@@ -198,3 +198,13 @@ describe("B5: a right verdict before a due return ends on the return's question;
     assert.ok(flagged("offtopic", "c6ch07", "returnInsideWorked").has(56));
   });
 });
+describe("B4: a question is heard at most two turns running (the predicate; the walk is not built yet)", () => {
+  test("questionThreeRunning reads director32's rows: stuck 20/22, offtopic 18, steering 32, c4 offtopic 62", () => {
+    const want = [["stuck", "c5t01", 22], ["stuck", "c5t02", 22], ["stuck", "c5t03", 22], ["stuck", "c6", 22], ["stuck", "c6ch07", 22],
+      ["offtopic", "c5t02", 18], ["offtopic", "c6", 18], ["steering", "c5t01", 32], ["steering", "c5t02", 32], ["steering", "c6", 32], ["offtopic", "c4", 62]];
+    assert.deepEqual(want.filter(([p, t, n]) => !flagged(p, t, "questionThreeRunning").has(n)).map((x) => x.join(" ")), []);
+  });
+  test("it reads the script the lesson was run with (each run folder's scripts/), never today's", () => {
+    assert.equal(flagged("stuck", "c5t01", "questionThreeRunning", { rows: lesson("stuck", "c5t01").rows, script: null }).size, 0);
+  });
+});

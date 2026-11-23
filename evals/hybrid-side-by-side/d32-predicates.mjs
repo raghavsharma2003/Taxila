@@ -34,6 +34,17 @@ function noReaskQuestions(script) {
   walk(script);
   return out;
 }
+/** Brain 049 B4: every question the script writes, each of its forms (prompt, reask, hindi; hi and en) keyed by its last question sentence →
+ *  the question's path, so a question said in either form is one question: Map<key, path>. Read from the script the lesson was run with. */
+function questionForms(script) {
+  const out = new Map();
+  const forms = (x) => (x && typeof x === "object" ? [x.hi, x.en] : [x]).filter(Boolean);
+  const walk = (o, path) => { if (Array.isArray(o)) return o.forEach((x, n) => walk(x, `${path}[${n}]`)); if (!o || typeof o !== "object") return;
+    if (o.prompt) for (const f of ["prompt", "reask", "hindi"]) for (const t of forms(o[f])) { const k = lastAsk({ text: t }); if (k && !out.has(k)) out.set(k, path); }
+    for (const [k, v] of Object.entries(o)) if (v && typeof v === "object") walk(v, `${path}.${k}`); };
+  walk(script, "");
+  return out;
+}
 /** The char where a row's closing question starts (its last sentence ending "?"), or -1. */
 function questionAt(r) {
   const t = String(r?.text ?? "").replace(/\s+/g, " ").trim();
@@ -42,6 +53,24 @@ function questionAt(r) {
 }
 
 export const D32_PREDICATES = {
+  /** Brain 049 B4: a question is heard at most two of her turns running — card, asked step or closing question, either of its forms one question;
+   *  the third turn at it ends on a joints.yourTurn form. A picture turn counts. director32 stuck 16 to 22 (c5-t01, c5-t02, c5-t03, c6, c6-ch07),
+   *  offtopic 14 to 18 (c5-t02, c6), steering 28 to 32 (c5-t01, c5-t02, c6), c4 offtopic 58 to 62. Gated. */
+  questionThreeRunning(L, r, i, ctx) {
+    if (r.who !== "teacher" || !ctx?.script) return null;
+    const F = (ctx.o.d32Q ??= questionForms(ctx.script));
+    const qOf = (x) => { const k = lastAsk(x); return k ? F.get(k) ?? null : null; };
+    const q = qOf(r);
+    if (!q) return null;
+    let n = 1;
+    for (let j = i - 1; j >= 0 && n < 3; j--) {
+      const y = L.rows[j];
+      if (y.who !== "teacher") continue;
+      if (qOf(y) !== q) break;
+      n++;
+    }
+    return n >= 3 ? `the question ${q} ends three of her turns running` : null;
+  },
   /** Brain 049 B2: a picture request is never answered by a key — with nothing left to draw it gets the noPicture line, the card's unsaid hint
    *  if one is left, and the card's question (director32 steering 16 in c5-t01, c5-t02, c6: "Is sawaal ka jawab 1/11 hai…"). Gated. */
   pictureKey(L, r) {
