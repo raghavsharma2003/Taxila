@@ -1711,6 +1711,8 @@ export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5
  *  card's hint (to Brain 048 G5). Main lists each with its reason: { topicId, at, reason }. */
 export const PICTURE_NONE = [
   { topicId: "c4-maths-ch05-t01", at: "c4-maths-ch05-t01-s2/workedExample.steps[0].ask", reason: "15 pencils into groups for 1/3: any drawing of the groups is the key (three equal groups)" },
+  // (d33 two-pass read: the worked board's second view lays the sides in a line with "?" for their total, which is the step's answer; `noView`)
+  { topicId: "c6-maths-ch06-t01", at: "c6-maths-ch06-t01-s1/workedExample.steps[0].ask", reason: "what to find first for the fence: the view totals the sides as \"?\", which is the key (the perimeter)" },
 ];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
 export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;
@@ -1854,7 +1856,9 @@ export function askWholeCandidates(s) { return d32Cards(s).filter((c) => ASK_CHA
 const PICTURE_KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
 /** Rule 7: the cards a picture request would draw nothing new over: [{ at, template }]. */
 export function noPictureCards(s) {
-  return d32Cards(s).filter((c) => PICTURE_KINDS.has(c.kind) && !c.card.pictureBoard && !(c.board?.template && viewOf(c.board, c.at)))
+  // (main, d33: `noView: true` on a card takes its board's second view away where that view draws the card's own answer — c6 s1 worked
+  // step, whose view totals the sides as "?"; the walk honours the same flag. Such a card must be on PICTURE_NONE with its reason)
+  return d32Cards(s).filter((c) => PICTURE_KINDS.has(c.kind) && !c.card.pictureBoard && (c.card.noView === true || !(c.board?.template && viewOf(c.board, c.at))))
     .map((c) => ({ at: c.at, template: c.board?.template ?? null }));
 }
 const formsOk = (e, at, f, { question, max, rule } = {}) => {
