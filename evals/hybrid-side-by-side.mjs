@@ -406,6 +406,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null, learner = nu
       if (t.guard?.backTo && next) next = { ...next, backToN: (next.backToN ?? 0) + 1 };
       // (Brain 046 Q6: the verdict's lead-in to its why rotates — as brain/turn.js keeps it)
       if (t.guard?.whyJoint != null && next) next = { ...next, whyJoint: { last: t.guard.whyJoint, n: (next.whyJoint?.n ?? 0) + 1 } };
+      // (to-brain 049 B6, as brain/turn.js: the "Dekho," said in this lesson, counted — brain/say.js says it at most three times)
+      if (next && t.reply) next = { ...next, dekhoN: (next.dekhoN ?? 0) + (String(t.reply).match(/(?<![\p{L}])Dekho,/gu)?.length ?? 0) };
       if (t.guard?.jointsUsed?.length && next) { const jn = { ...(next.jointN ?? {}) }; for (const k of jointsSaid(t.guard, t.reply)) jn[k] = (jn[k] ?? 0) + 1; next = { ...next, jointN: jn }; }
       // (dc-r8-director22 R, as brain/turn.js: only when her turn ended on that question — a turn that posed a card asked the card)
       if (t.guard?.asideEnd && !ui?.ask) next = { ...next, asideReplyDue: true };

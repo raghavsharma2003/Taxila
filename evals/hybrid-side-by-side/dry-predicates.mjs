@@ -985,6 +985,8 @@ import { D31_PREDICATES } from "./d31-predicates.mjs";
 Object.assign(PREDICATES, D31_PREDICATES);
 import { D32_PREDICATES } from "./d32-predicates.mjs";
 Object.assign(PREDICATES, D32_PREDICATES);
+import { D33_PREDICATES } from "./d33-predicates.mjs";
+Object.assign(PREDICATES, D33_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

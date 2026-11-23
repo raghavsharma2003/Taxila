@@ -18,3 +18,19 @@ describe("B6.1: a turn of verdict, reason, point and card over 65 words is split
     for (const [p, n] of [["steady", 6], ["stuck", 10], ["offtopic", 8]]) assert.ok(flagged(p, "c5t03", "vpcUnlisted").has(n), `${p} ${n}`);
   });
 });
+
+describe("B6.2: \"Dekho,\" at most three times a lesson, never within four of her turns", () => {
+  test("dekhoOver is gated", () => { assert.ok(PREDICATES.dekhoOver && !PENDING.has("dekhoOver")); });
+  test("dekhoOver reads every director32 steady lesson (8 to 10 there)", () => {
+    for (const t of ["c4", "c5t01", "c5t02", "c5t03", "c6", "c6ch07", "c4ch01"]) assert.ok(flagged("steady", t, "dekhoOver").size >= 5, t);
+  });
+  test("the lead-in rotates its opener and says \"Dekho,\" only under the cap and four turns from the last", async () => {
+    const { rightWhyLead, DEKHO_MAX } = await import("../server/brain/say.js");
+    assert.equal(DEKHO_MAX, 3);
+    // ("Sahi jawab" never takes the colon, and the last form was ", kyunki": the second form is the one left)
+    const lead = (st) => rightWhyLead("Sahi jawab", "4 gap hain", st).text;
+    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0 }), /\. Dekho, 4 gap/);
+    assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3 }), /Dekho/);
+    assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Dekho, yeh." }, { who: "child", text: "haan" }] }), /Dekho/);
+  });
+});
