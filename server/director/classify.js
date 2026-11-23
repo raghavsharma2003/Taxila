@@ -818,6 +818,16 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // (050, main's fourth reader: a card keyed "30 metre" whose listed wrong answer is "30 centimetre" — the unit IS the choice — hears a
     // bare "30" / "tees" as neither: the number of both a right form and a listed wrong answer, said with no unit, is the model's)
     if (!R.units.length && R.nums.length && W.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R))) && F.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R)))) return toModel("unit_decides");
+    // (050, main's probe: "metre" alone to "Corridor 30 centimetre ka hai ya 30 metre ka?" keyed "30 metre" fell to the number key's last line
+    // and was graded wrong. A reply that is only a unit, where the listed wrong answer differs by its unit, is graded by that unit: a
+    // right form's unit no wrong answer carries is right, a wrong answer's unit no right form carries is the mix-up, anything else the model's)
+    if (R.units.length && !R.nums.length && !R.words.length && !R.ops && !R.neg && W.some((cs) => cs.some((c) => c.units.length))) {
+      const carries = (L) => L.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))));
+      const fu = carries(F), wu = carries(W);
+      if (fu && !wu) return done("correct", "script_key");
+      if (wu && !fu) return misOf();
+      return toModel("unit_only");
+    }
     if (forms.some(exact)) return done("correct", "script_key");
     if (wrongs.some(exact)) return misOf();
     if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();

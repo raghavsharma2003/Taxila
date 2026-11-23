@@ -596,3 +596,14 @@ test("050 (main): \"N mein se M\" — M out of N — is the fraction M/N, in dig
   assert.equal(grade(div, "30 mein 6 kitni baar"), "correct");
   assert.notEqual(grade(div, "6 mein 30 kitni baar"), "correct");
 });
+
+test("050 units (main's probe): where the choice is the unit, the unit said alone is graded by that unit; the bare number decides nothing", () => {
+  const m = card("30 metre", [], "30 centimetre", "Corridor 30 centimetre ka hai ya 30 metre ka?");
+  for (const s of ["metre", "metre ka", "30 metre ka", "metre mein", "30 metre"]) assert.equal(grade(m, s), "correct", s);
+  for (const s of ["centimetre", "cm", "centimetre ka", "30 centimetre"]) assert.equal(grade(m, s), "misconception", s);
+  for (const s of ["30", "tees"]) assert.equal(grade(m, s), "model", s);
+  const c = card("6 centimetre", [], "6 metre", "Pencil 6 centimetre ki hai ya 6 metre ki?");
+  for (const s of ["centimetre", "cm", "centimetre ki", "6 cm"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["metre", "metre ki", "6 metre"]) assert.equal(grade(c, s), "misconception", s);
+  for (const s of ["6", "chhah"]) assert.equal(grade(c, s), "model", s);
+});
