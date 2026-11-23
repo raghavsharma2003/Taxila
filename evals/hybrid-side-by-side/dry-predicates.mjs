@@ -922,7 +922,9 @@ export const ORDER_LAWS = {
       // (Brain 049 B2: a picture request with nothing left to draw leads with the script's own noPicture line — a joint the walk puts first,
       // as it puts help's joints: the seam table has no row for it, so its seam is read here: at the start, and one of the script's forms)
       const noPic = s.joint === "noPicture" && s.left === "start" && s.right === "noPicture" && (ctx.script?.joints?.noPicture ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
-      if (s.joint && s.joint !== want && !noPic && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      // (to-brain 051 C6: the invitation is recorded as its own seam kind with its form — one of the script's joints.yourTurn)
+      const inv = s.joint === "yourTurn" && s.right === "yourTurn" && (ctx.script?.joints?.yourTurn ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      if (s.joint && s.joint !== want && !noPic && !inv && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }
     return null;
@@ -1001,6 +1003,8 @@ import { D32_PREDICATES } from "./d32-predicates.mjs";
 Object.assign(PREDICATES, D32_PREDICATES);
 import { D33_PREDICATES } from "./d33-predicates.mjs";
 Object.assign(PREDICATES, D33_PREDICATES);
+import { D34B_PREDICATES } from "./d34b-predicates.mjs";
+Object.assign(PREDICATES, D34B_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

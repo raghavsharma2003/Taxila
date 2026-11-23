@@ -80,7 +80,8 @@ export function partsOf(r, script = null) {
   const out = pp.map((p, n) => {
     const end = pp[n + 1]?.from ?? t.length;
     const text = t.slice(p.from ?? 0, end).trim();
-    const joint = forms.has(low(text)) || isLeadText(text, r, script);
+    // (to-brain 051 C4: the invitation said after help that owned a board is said over the card's — the harness records its own board)
+    const joint = p.kind === "yourTurn" && p.own ? false : forms.has(low(text)) || isLeadText(text, r, script);
     let own;
     // (Brain 044 T4: a joint, a lead-in, a hook and a bridge own no board — they are said over what is up)
     if (CHECKIN_ONLY.test(text) || joint) own = null;

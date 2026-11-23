@@ -3740,7 +3740,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (rule 2, dry steady c4-ch01-t02 14, c4-ch05-t01 14, stuck c4-ch01-t02 16: a request to hear the question — "sawaal kya hai?",
         // "phir se bolo" — gets the question, never the short ask; with no other form that differs, the card is said again as it is)
         const askedQ = ["repeat", "which"].includes(String(state.lastMove?.request ?? "")) && HEAR_Q.test(String(childText ?? ""));
-        const shortOk = !askedQ && shortAskOk(state, kit, item); void helpNow;
+        // (to-brain 051 C4: the short ask only after help that followed an answer — after a clarify or a give-up with no answer, the question
+        // itself: director33 c5-t01 offtopic 24, "phir se socho" to a child who had not answered)
+        const shortOk = !askedQ && graded && verdict === "not_yet" && shortAskOk(state, kit, item); void helpNow;
         const shortT = shortOk ? norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state)) : null;
         const pick = [["reask", reask], ["short", shortT], ["whole", whole], ["clause", clause]].find(([k, t]) => t && (/[?？]$/.test(lastQ(t)) || k === "whole") && keyS(lastQ(t)) !== keyS(prevQ));
         if (pick) {
@@ -3758,7 +3760,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     }
     // (Brain 049 B4: the third of her turns running at one question ends on the script's invitation — the walk's yourTurn, state.js /
     // question-run.js — in place of the question; what the turn says before it stays)
-    if (state.lastMove?.yourTurn && tail && /[?？]\s*$/.test(norm(tail)) && !asideQ) { tail = dot(norm(state.lastMove.yourTurn)); guard.yourTurn = tail; guard.cardQuestionOnly = false; guard.reaskShort = undefined; body = body.filter((x) => !REPOSE_FRAME.test(x)); }
+    // (to-brain 051 C4: whatever form the question takes — a card that asks by an imperative, a short ask, an asked step; a Hindi request's
+    // form is said, then the invitation: the child asked for it)
+    if (state.lastMove?.yourTurn && tail && (/[?？]\s*$/.test(norm(tail)) || tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk) || (guard.reaskShort && tail === guard.reaskShort.text)) && !asideQ) {
+      if (state.lastMove?.hindiForm && tail === card) { body = [...body, tail]; guard.hindiFormSaid = tail; }
+      tail = dot(norm(state.lastMove.yourTurn)); guard.yourTurn = tail; guard.cardQuestionOnly = false; guard.reaskShort = undefined; body = body.filter((x) => !REPOSE_FRAME.test(x));
+    }
     const assembled = (asideQ ? [...replyP, ...prevPart, ...closedP, ...first, ...(quickS ? [quickS] : []), ...body, ...asideP] : [...replyP, ...prevPart, ...closedP, ...first, ...asideP, ...(quickS ? [quickS] : []), ...body, tail]).filter(Boolean).map(norm).join(" ").replace(/\s+/g, " ").trim();
     if (assembled && assembled !== norm(reply)) { reply = assembled; guard.assembled = true; }
     // v6.6 V1: nothing authored or code's left to say — her draft is never the line in its place: the beat's own authored line
@@ -3795,9 +3802,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         // (Brain 042 Q1: the answer to the quick question — no board of its own: the point's stays up until the card's first word)
         ...(quickS ? [{ part: "quickReply", text: quickS, kind: quickR.right ? "quickYes" : "quickSay" }] : []),
         // (main, with Studio's seam: the neutral joint after an aside reply is an aside part — the board waits for her first unit part)
-        ...body.map((x) => ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : stepToldK?.has(keyS(x)) ? { kind: "workedStep" } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
+        ...body.map((x) => guard.hindiFormSaid && x === guard.hindiFormSaid ? { part: "card", text: x } : ({ ...(hookK?.has(keyS(x)) ? { kind: "hook" } : stepOkK && keyS(x) === stepOkK ? { kind: "stepConfirm" } : stepToldK?.has(keyS(x)) ? { kind: "workedStep" } : {}), part: bridgeTextK.has(keyS(x)) ? "bridge" : heldNow.includes(x) ? "held" : guard.altOnly && x === asked ? "alt" : guard.asideResumeLine && x === guard.asideResumeLine ? "aside" : simplerK0?.has(keyS(x)) ? "simpler" : "body", text: x })),
         // (v6.11 G2: a closing split's check-in is no unit part — the board up stays under it)
-        { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) || (guard.yourTurn && tail === guard.yourTurn) || (guard.vpcGoOn && tail === guard.vpcGoOn) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : {}) },
+        { part: tail && guard.reaskShort && tail === guard.reaskShort.text ? guard.reaskShort.part : tail && (tail === card || guard.cardQuestionOnly) ? "card" : tail && guard.quickAsk && tail === guard.quickAsk ? "quick" : tail && guard.stepAsk && tail === guard.stepAsk ? "stepAsk" : state.lastMove?.splitClose || guard.l2Checkin || (guard.checkinTail && tail === guard.checkinTail) || (guard.yourTurn && tail === guard.yourTurn) || (guard.vpcGoOn && tail === guard.vpcGoOn) ? "aside" : "body", text: tail ?? "", ...(tail && guard.quickAsk && tail === guard.quickAsk ? { kind: "quickAsk" } : tail && guard.reaskShort && tail === guard.reaskShort.text ? { kind: "reaskShort" } : tail && guard.stepAsk && tail === guard.stepAsk ? { kind: "stepAsk" } : tail && guard.yourTurn && tail === guard.yourTurn ? { kind: "yourTurn" } : {}) },
         ...(asideQ ? [{ part: "aside", text: asideP.join(" ") }] : []),
       ]);
       if (joinParts(guard.lineParts) !== norm(reply)) guard.lineParts = alignParts(guard.lineParts, reply);

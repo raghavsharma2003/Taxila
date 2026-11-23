@@ -155,7 +155,9 @@ export function reaskNoFormAt(r, ctx) {
   const o = cardObjAt(ctx?.script, r);
   // (a card that asks for an imagined change — askWhole — never takes the short ask: with no reask, its whole is its only form, whatever help
   // came before; first walked by Brain 049 B5's dry, offtopic c4-ch05-t01 58)
-  return !!o && !o.reask && !!r?.card && low(r.text).includes(low(r.card)) && (r.seams ?? []).length > 0 && (!ownHelpLast(r, ctx?.script) || !!o.askWhole);
+  // (to-brain 051 C4: after a clarify or a give-up with no answer the short ask may not stand either — the question itself is said)
+  const noAnswer = !!ctx?.prevIntent && !["right", "miss", "partial"].includes(String(ctx.prevIntent));
+  return !!o && !o.reask && !!r?.card && low(r.text).includes(low(r.card)) && (r.seams ?? []).length > 0 && (!ownHelpLast(r, ctx?.script) || !!o.askWhole || noAnswer);
 }
 /** Brain 046 Q5: the question a turn ends on — its last sentence, where it asks. */
 const lastAsk = (r) => { const ss = String(r?.text ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/); const q = ss.at(-1) ?? ""; return /[?？]\s*$/.test(q) ? low(q) : null; };

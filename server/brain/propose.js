@@ -620,6 +620,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
     // (dc-r8-director28 Brain 044 T4: a joint, a lead-in, an opener, a bridge and a hook own no page — they are said over what is up, nothing if
     // nothing is up; the page of the part they lead into starts at that part's first word, on every path)
     if (p.joint || LEAD_KINDS.has(p.kind)) return null;
+    // (to-brain 051 C4: when the invitation — joints.yourTurn — is said, the board up is the card's: help that owned a board gives the card's
+    // back before it. A picture request keeps what it drew — the no-picture path's board is C1's)
+    if (p.kind === "yourTurn") return helpOwn && move?.cardBeat?.board && move?.help?.request !== "picture" && move?.request !== "visual" && !move?.visual ? on(move.cardBeat.board, curUnit) : null;
     switch (p.part) {
       case "aside": return null;
       // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up

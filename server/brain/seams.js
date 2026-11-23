@@ -367,6 +367,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     if (mine && !bad) form = /[.!।]$/.test(mine) ? mine : `${mine}.`;
     seams.push({ left: recLeft, right: k, joint: form ? j : null, ...(form ? { form, by: mine && !bad ? "model" : own?.length ? "authored" : "code", ...(bad ? { fellBack: bad } : {}) } : {}) });
     if (opener && i === opener.at) seams.at(-1).opener = opener.record;
+    // (to-brain 051 C6, the record: the invitation — joints.yourTurn — is its own seam kind, with its form)
+    if (k === "yourTurn" && !form) Object.assign(seams.at(-1), { joint: "yourTurn", form: p.text, by: "authored" });
     // (dc-r8-director26 J1: the back-to joint said where the go-on line was dropped carries the lesson on — its record says so)
     if (form && j === "backTo" && info.goOnDropped) seams.at(-1).goOn = true;
     recLeft = k;

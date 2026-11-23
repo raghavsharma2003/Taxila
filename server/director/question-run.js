@@ -62,13 +62,72 @@ export function endsOnYourTurn(script, text) {
   if (!last) return false;
   return [...yourTurnForms(script, "hinglish"), ...yourTurnForms(script, "english")].some((f) => { const k = qKey(sentencesOf(f).at(-1) ?? f); return !!k && k === last; });
 }
-/** Whether the third of three turns may end on a yourTurn form: the two teacher texts before it ended on one question (its path), or null. */
-export function runOfTwo(script, before2) {
+// to-brain 051 C4 (the cap counts what the child hears): a turn is "at" a question when it ends on any form the script writes for it —
+// a closing question, or the form's last sentence when the form asks by an imperative ("… order mein lagao.") — or on a short ask, which is
+// the pending question's.
+/** Code's short asks (brain/say.js MISS_AGAIN_ASK), both languages: the script's own `joints.missAgainAsk` forms are read beside them. */
+export const SHORT_ASK_FORMS = ["Ab phir se socho, jawab kya hoga?", "Toh ab batao, kya aayega?", "Ab ek baar aur try karo: kya jawab hai?",
+  "Think again, what's the answer?", "So now, what do you get?", "Try once more: what's the answer?"];
+const CACHE_LAST = new WeakMap();
+/** The last sentences of the script's question forms that end on no "?" (four words at least) → path: Map<key, path>. */
+function lastSentencePaths(script) {
+  if (!script || typeof script !== "object") return new Map();
+  const hit = CACHE_LAST.get(script);
+  if (hit) return hit;
+  const out = new Map();
+  const walk = (o, path) => {
+    if (Array.isArray(o)) return o.forEach((x, n) => walk(x, `${path}[${n}]`));
+    if (!o || typeof o !== "object") return;
+    if (o.prompt) for (const f of ["prompt", "reask", "hindi"]) for (const t of formsOf(o[f])) {
+      const s = sentencesOf(t).at(-1) ?? "";
+      if (!s || /[?？]\s*$/.test(s) || /\{\w+\}/.test(s)) continue;
+      const k = qKey(s);
+      if (k.split(" ").length >= 4 && !out.has(k)) out.set(k, path);
+    }
+    for (const [k, v] of Object.entries(o)) if (v && typeof v === "object") walk(v, `${path}.${k}`);
+  };
+  walk(script, "");
+  CACHE_LAST.set(script, out);
+  return out;
+}
+/** Whether a text ends on a short ask (code's or the script's `joints.missAgainAsk`). */
+export function endsOnShortAsk(script, text) {
+  const last = qKey(sentencesOf(text).at(-1) ?? "");
+  if (!last) return false;
+  const own = (script?.joints?.missAgainAsk ?? []).flatMap((f) => (typeof f === "string" ? [f] : [f?.hi, f?.en])).filter((x) => typeof x === "string");
+  return [...SHORT_ASK_FORMS, ...own].some((f) => qKey(sentencesOf(f).at(-1) ?? f) === last);
+}
+/** C4: the question a text is at — its path, "?short" for a short ask (the pending question's), or null. An invitation is at none. */
+export function atQuestionOf(script, text) {
+  if (!String(text ?? "").trim() || endsOnYourTurn(script, text)) return null;
+  const p = questionPathOf(script, text);
+  if (p) return p;
+  if (endsOnShortAsk(script, text)) return "?short";
+  return lastSentencePaths(script).get(qKey(sentencesOf(text).at(-1) ?? "")) ?? null;
+}
+/** Whether the third of three turns may end on a yourTurn form: the two teacher texts before it were at one question by C4's count (a short
+ *  ask is the pending question's; `pending`, when given, must be that question) → its path, or null. */
+export function runOfTwo(script, before2, pending = null) {
   if (before2.length < 2) return null;
-  const a = questionPathOf(script, before2[0]), b = questionPathOf(script, before2[1]);
-  return a && a === b ? a : null;
+  const a = atQuestionOf(script, before2[0]), b = atQuestionOf(script, before2[1]);
+  if (!a || !b) return null;
+  const named = [a, b].filter((x) => x !== "?short");
+  const path = named[0] ?? pending ?? "?short";
+  return named.every((x) => x === path) && (!pending || path === pending) ? path : null;
 }
 
+/** to-brain 051 C4: whether her turn parks an aside or replies to one (the walk's column, a park added, her aside acknowledgement, a return). */
+function asideTurnOf(prev, out, lm) {
+  if (["aside", "aside_reply"].includes(String(lm.cell?.column ?? ""))) return true;
+  if ((out?.state?.later?.length ?? 0) > (prev?.later?.length ?? 0)) return true;
+  return !!(lm.asideAck || lm.returnReply || lm.returned);
+}
+/** to-brain 051 C4: whether her turn has help in it — a wording (a hint, the easier wording, a remediation's), help's joint, the part's Hindi
+ *  form for a language request, a picture. */
+function helpIn(lm) {
+  return !!(lm.simpler || lm.helpJoint || lm.hindiForm || lm.scriptBeat?.kind === "remediation" || lm.cell?.column === "picture"
+    || lm.help?.request === "picture" || lm.picture || lm.pictureCaption || lm.visual);
+}
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
 export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
 const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot"];
@@ -119,9 +178,12 @@ export function yourTurnPass(prev, out, script, childText = "") {
     if (p0 && questionPathOf(script, pl0.yourTurnAfter) === p0) set({ askNot: pl0.yourTurnAfter });
     return out;
   }
-  // (a request for Hindi answered with the part's `hindi` form is answered as asked — the form is said as written, out of the re-ask
-  // rotation, as reaskRunning reads it (Brain 047 R8); it is no turn of the run)
-  if (exempt || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
+  // (to-brain 051 C4: the cap counts what the child hears — a request for Hindi answered with the part's `hindi` form is a turn of the run, and
+  // the third such turn ends on the invitation after the form (brain/say.js says the form, then the invitation); a request to hear the question
+  // gets it, and counts. The invitation is never said in a turn that parks an aside or replies to one, nor in a turn with no help in it: that
+  // turn ends on the question, and counts)
+  if (HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
+  if (asideTurnOf(prev, out, lm) || !helpIn(lm)) return out;
   const nowText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
   const nowPath = nowText ? questionPathOf(script, nowText) : null;
   if (!nowPath) return out;
@@ -131,7 +193,10 @@ export function yourTurnPass(prev, out, script, childText = "") {
   const forms = yourTurnForms(script, lang);
   if (!forms.length) return out;
   const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? "")).slice(-2);
-  if (hiPrev[0] || hiPrev[1] || runOfTwo(script, her) !== nowPath) return out;
+  // (to-brain 051 C4: her two turns before at this question by what the child heard — a Hindi turn, a short ask, a card that asks by an
+  // imperative, a picture turn, an aside reply that came back to it)
+  void hiPrev;
+  if (runOfTwo(script, her, nowPath) !== nowPath) return out;
   const n = s.yourTurnN ?? 0;
   set({ yourTurn: forms[n % forms.length], yourTurnAfter: closingQuestion(her[1]) });
   if (tbQ) tbSet(forms[n % forms.length], "yourTurn");
