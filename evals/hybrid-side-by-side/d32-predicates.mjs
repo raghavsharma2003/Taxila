@@ -13,6 +13,7 @@
 //   helpNotOwn          B3: the second help at a card the point's other wording while the card's marked `whyAlt` is unsaid
 import { questionPathOf, endsOnYourTurn, runOfTwo, HEAR_Q } from "../../server/director/question-run.js";
 import { hindiFormSaid } from "./d30-predicates.mjs";
+import { ownReasonDue } from "./help-predicates.mjs";
 import { helpPart, hindiFormOf, at as atPath, ladderOf, ladderSpec, sentencesOf as helpSentences, normSentence } from "../../server/director/help.js";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
@@ -164,6 +165,8 @@ export const D32_PREDICATES = {
     const id = String(r.cell?.part ?? "");
     const part = (() => { try { return helpPart(ctx?.script, id); } catch { return null; } })();
     if (!part || part.kind !== "card" || atPath(ctx.script, part.path)?.whyAltAsHelp !== true) return null;
+    // (main's ruling of 2026-11-23 on to-brain 049 B3: the own reason is required as second help only after the card's named wrong answer)
+    if (!ownReasonDue(L, i, ctx, id)) return null;
     const pa = atPath(ctx.script, `${part.point}.pointAlt`);
     const pt = pa && typeof pa === "object" ? pa.hi ?? pa.en : pa;
     const k = normSentence(r.text);

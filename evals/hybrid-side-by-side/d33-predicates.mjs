@@ -8,7 +8,11 @@
 //   keyCheckinBareCard  the next card straight after a key's check-in, with no joint
 //   spentThenReturn  "nothing easier" followed in the same turn by an aside's return
 //   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
+//   whyAltNoMiss  main's ruling of 2026-11-23 on B3: a card's marked whyAlt said as help when the child's last answer there was not its
+//                 named wrong answer
 import { vpcOf, VPC_WHOLE_MAX } from "./d30-predicates.mjs";
+import { helpTurnOf, lastAnswerAt } from "./help-predicates.mjs";
+import { helpPart, at, sentencesOf, normSentence } from "../../server/director/help.js";
 // (main's ruling of 2026-11-23, item 2: "Suno," took "Dekho,"'s place — the lead-in openers together at most four a lesson, no one more than
 // three, never two openers within four of her turns)
 const LEAD_OPENERS = ["Dekho", "Suno"];
@@ -123,7 +127,31 @@ export const D33_PREDICATES = {
    *  (dry c4 steady 88, offtopic 20, steering 38: "Haan, 5: barfi 5 barabar tukdon mein kati thi." after the card's why) — the words are the
    *  script's; Learning's to rewrite, code does not cut an authored line. */
   reasonTwiceAuthored(L, r, i, ctx) { return reasonRepeat(r, ctx, "step"); },
+  /** Main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked `whyAlt` (`whyAltAsHelp: true`, written to the child who gave its
+   *  named wrong answer) said as help while the child's most recent answer at that card was not that answer — a request with no answer yet,
+   *  a give-up, another wrong answer, a request after a right answer or a key (dry c4-ch05-t01 steady 96 to 98: "3 kehne mein …" to a clarify
+   *  after a right answer). Reads the script the lesson was run with. Gated. */
+  whyAltNoMiss(L, r, i, ctx) {
+    const why = whyAltNoMissOf(L, r, i, ctx);
+    return why ? why.why : null;
+  },
 };
+/** whyAltNoMiss's reading, with its kind: { kind: "noAnswer" | "giveUp" | "otherWrong" | "afterRightOrKey", why } | null. */
+export function whyAltNoMissOf(L, r, i, ctx) {
+  const h = helpTurnOf(L, r, i, ctx);
+  if (!h) return null;
+  const part = helpPart(ctx.script, h.part);
+  if (!part || at(ctx.script, `${part.path}.whyAltAsHelp`) !== true) return null;
+  const wa = at(ctx.script, `${part.path}.whyAlt`);
+  const ss = [wa?.hi, wa?.en, typeof wa === "string" ? wa : null].filter(Boolean).flatMap(sentencesOf).map((x) => normSentence(x.replace(/\{\w+\}/g, " "))).filter((k) => k.split(" ").length >= 4);
+  const T = normSentence(r.text);
+  if (!ss.some((k) => T.includes(k))) return null;
+  const last = lastAnswerAt(L, i, ctx, h.part);
+  if (last?.named) return null;
+  const kind = last?.right || (!last && h.keyed) ? "afterRightOrKey" : last ? "otherWrong" : h.request === "give_up" ? "giveUp" : "noAnswer";
+  const said = last ? `its last answer "${last.text.slice(0, 20)}" (${last.read})` : "no answer at it yet";
+  return { kind, why: `the marked whyAlt of ${h.part.split(":").slice(-2).join(":")} said as help (${h.request}${h.keyed ? ", keyed" : ""}), ${said}` };
+}
 function reasonRepeat(r, ctx, want) {
   {
     const p = ctx?.prevT;

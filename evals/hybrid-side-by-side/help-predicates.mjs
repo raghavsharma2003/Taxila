@@ -7,6 +7,7 @@
 import { missesOnQuestion } from "./d29-predicates.mjs";
 import { hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
 import { compiledFor } from "../../server/director/compile.js";
+import { canon, sameAnswer, wrongList } from "../../server/grading/script-answer.js";
 import { helpPart, ladderOf, sameSentence, normSentence, sentencesOf, at, FALLBACK_JOINTS, keyLine, goOnPlain } from "../../server/director/help.js";
 /** main's ruling of 2026-11-23 on to-brain 049 B6.4: a bridge's give-up (or clarify) is led by a go-on form that names no question and
  *  promises nothing; where the script has none, the turn goes on to the next point and its card with no joint (the staged and live
@@ -223,6 +224,38 @@ export function helpSentenceOf(ctx, sentence) {
 export const KEY_SAID_RE = KEY_SAID;
 /** A walk item id as a compile part id (exported for the order laws). */
 export const helpPartOfItem = (id, ctx) => partOfItem(id, ctx);
+/** Main's ruling of 2026-11-23 on to-brain 049 B3: the child's most recent answer at a card before row i — the child row graded an answer
+ *  (correct, incorrect, partial, misconception) whose card is the one her row before posed live (its walk item), else the card her row after
+ *  read it at — and whether it was the card's named wrong answer: the listed `wrongIfMis` (read as the grader reads it, server/grading/
+ *  script-answer.js), a `misconception` read at a card that names its `targets`, or any miss at a card that names no wrong answer.
+ *  → { j, read, text, right, named } | null (no answer at that card yet). Read from the script the lesson was run with. */
+export function lastAnswerAt(L, i, ctx, partId) {
+  const part = helpPart(ctx.script, partId);
+  if (!part) return null;
+  const node = at(ctx.script, part.path) ?? {};
+  for (let j = i - 1; j >= 0; j--) {
+    const c = L.rows[j];
+    if (c?.who !== "child") continue;
+    const read = String(c.read ?? "").split(" ")[0];
+    if (!["correct", "incorrect", "partial", "misconception"].includes(read)) continue;
+    const before = L.rows[j - 1], after = L.rows[j + 1];
+    const p = (before?.who === "teacher" && before.check?.itemId ? partOfItem(before.check.itemId, ctx) : null) ?? (after?.who === "teacher" ? String(after.cell?.part ?? "") : null);
+    if (p !== partId) continue;
+    const right = read === "correct";
+    const wrongs = wrongList(node.wrongIfMis);
+    const R = canon(c.text ?? "");
+    const listed = wrongs.some((w) => { const W = canon(w); return normSentence(w) === normSentence(c.text ?? "") || sameAnswer(W, R); });
+    const named = !right && (!wrongs.length || listed || (!!node.targets && read === "misconception"));
+    return { j, read, text: String(c.text ?? ""), right, named };
+  }
+  return null;
+}
+/** Whether a card's marked `whyAlt` is due as help at row i (the ruling above): marked, and its last answer was its named wrong answer. */
+export function ownReasonDue(L, i, ctx, partId) {
+  const part = helpPart(ctx.script, partId);
+  if (!part || at(ctx.script, `${part.path}.whyAltAsHelp`) !== true) return false;
+  return !!lastAnswerAt(L, i, ctx, partId)?.named;
+}
 /** Whether a turn says the key of the help turn's card: a "jawab" key, the walk's gave, or a yes-or-no key said as its why. */
 function keySays(r, h, ctx) {
   if (KEY_SAID.test(String(r.text ?? "")) || r.keyFact || r.check?.gave) return true;
@@ -324,7 +357,12 @@ export const HELP_PREDICATES = {
     const ladder = ladderOf(ctx.script, part, { keyed: h.keyed });
     // (Brain 047 R5: after a miss, a card marked whyAltAsHelp has its second reason on its ladder, after its own hint)
     // (Brain 049 B3: after a request too — a clarify, a give-up, a Hindi request answered as help)
-    if (["hint", "clarify", "give_up", "hindi", "picture"].includes(h.request) && !h.keyed && at(ctx.script, `${part.path}.whyAltAsHelp`) === true) {
+    // (main's ruling of 2026-11-23 on to-brain 049 B3: only after the card's named wrong answer, its last answer there — otherwise the
+    // order before B3, and the marked whyAlt is on no ladder of that card, keyed or closed: help.js ownReasonFits)
+    const marked = at(ctx.script, `${part.path}.whyAltAsHelp`) === true;
+    const due = marked && ownReasonDue(L, i, ctx, h.part);
+    if (marked && !due) for (let n = ladder.length - 1; n >= 0; n--) if (ladder[n].path === `${part.path}.whyAlt`) ladder.splice(n, 1);
+    if (["hint", "clarify", "give_up", "hindi", "picture"].includes(h.request) && !h.keyed && due) {
       const wa = ladderOf(ctx.script, part, { keyed: true })[0];
       if (wa?.field === "whyAlt") ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, wa);
     }
