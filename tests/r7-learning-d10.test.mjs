@@ -19,6 +19,10 @@ test("D10.2: an ask board never labels '?' a value its prompt states (c4 steady 
   const s = script("c4-maths-ch05-t01");
   const b = s.skills[2].explain[0];
   assert.match(b.ask.prompt.hi, /aadhe/);
+  // (d33, 2026-11-23: the rewrite poses this card over a wholes@1 board, which has no labelled bars; the card keeps its "aadhe", so
+  // the case is made by posing it over the fraction-bars board the rule reads, its half bar labelled "?")
+  assert.ok(!askBoardQuestionErrors(s).some((x) => /e1: its board labels a bar of 2 parts/.test(x)), "clean as written");
+  b.ask.board = { template: "fraction-bars@1", params: { bars: [{ parts: 2, shade: 1, label: "1/2" }] } };
   (b.ask.board ?? b.board).params.bars[0].label = "?";
   assert.ok(askBoardQuestionErrors(s).some((x) => /e1: its board labels a bar of 2 parts "\?" though its prompt states/.test(x)));
 });

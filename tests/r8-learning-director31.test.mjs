@@ -30,9 +30,12 @@ const ruled = (s, n) => run(s).filter((x) => x.includes(`Learning 020 rule ${n})
 test("020 the gate: on for the six live scripts and the rewritten staged one, the picture rule with them; off for a script not listed", () => {
   const live = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01"];
   const staged = ["c4-maths-ch01-t02"];
-  assert.deepEqual(D32_READY, [...live, ...staged, "c6-maths-ch07-t01"]);
-  assert.deepEqual(D32_PICTURES_READY, [...live, ...staged, "c6-maths-ch07-t01"]); // (rule 7 is on for all seven)
+  // (d33, 2026-11-23: the two new staged scripts, written to Learning 021 and read cold, join both lists after c6-maths-ch07-t01)
+  const d33 = ["c4-maths-ch06-t01", "c6-maths-ch07-t03"];
+  assert.deepEqual(D32_READY, [...live, ...staged, "c6-maths-ch07-t01", ...d33]);
+  assert.deepEqual(D32_PICTURES_READY, [...live, ...staged, "c6-maths-ch07-t01", ...d33]); // (rule 7 is on for all nine)
   live.push("c6-maths-ch07-t01");
+  staged.push(...d33);
   const stagedOf = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8"));
   const scripts = [...live.map((t) => scriptOf(t)), ...staged.map(stagedOf)];
   for (const s of scripts) {

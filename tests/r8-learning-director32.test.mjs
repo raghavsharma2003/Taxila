@@ -54,8 +54,10 @@ test("021 rule 1: a SAFETY_SEEN word (\"blade\", the director32 steering trip sc
 test("021 rule 1, real scripts: the six live scripts have no hit; c4-maths-ch01-t02's are the two blade forms of s2 remediation[0].then", () => {
   for (const t of LIVE) assert.deepEqual(safetyHits(S[t]), [], t);
   const h = safetyHits(S["c4-maths-ch01-t02"]).map((x) => `${x.at} ${x.form}`);
-  assert.deepEqual(h, ["c4-maths-ch01-t02-s2/remediation[0].then 4 cm blade wali", "c4-maths-ch01-t02-s2/remediation[0].then chhote blade wali"]);
-  assert.equal(safetyErrors(S["c4-maths-ch01-t02"]).length, 2); // (expected to fail until Part 2 E replaces the word)
+  // (d33, 2026-11-23: the rewrite replaced the blade word, so c4-maths-ch01-t02 has no hit now; that "chhote blade wali" is caught stays
+  //  pinned on the fragment in the test above)
+  assert.deepEqual(h, []);
+  assert.equal(safetyErrors(S["c4-maths-ch01-t02"]).length, 0);
 });
 
 test("021 rule 1, the staged batch: every hit outside c4-maths-ch01-t02 is on SAFETY_STAGED_KNOWN, and every entry is a live hit", () => {
@@ -110,7 +112,9 @@ test("021 rule 4: a point, remediation or covered sentence naming an operation i
 
 test("021 rule 4, real script: c6-maths-ch06-t01's \"guna sirf farsh batata hai\" is paired with the later 2 × (lambai + chaudai)", () => {
   const o = operationPairs(S["c6-maths-ch06-t01"]);
-  assert.ok(o.some((x) => x.startsWith("O c6-maths-ch06-t01-s1/remediation[1].sayAlt [multiply]:") && x.includes("→ c6-maths-ch06-t01-s2/explain[1].pointAlt:") && x.includes("2 × (lambai + chaudai)")), o.join("\n"));
+  // (d33, 2026-11-23: the rewrite dropped "guna sirf farsh batata hai"; the s1 remediation[1] sayAlt's guna, "lambai aur chaudai ka guna farsh
+  //  par bichhe 1 m wale square ginta hai", now pairs with the first later sentence naming a multiplication, its then-card's whyAlt "14 × 9 ...")
+  assert.ok(o.some((x) => x.startsWith("O c6-maths-ch06-t01-s1/remediation[1].sayAlt [multiply]:") && x.includes("guna farsh par") && x.includes("→ c6-maths-ch06-t01-s1/remediation[1].then.whyAlt:") && x.includes("14 × 9")), o.join("\n"));
 });
 
 // ---- 3 a posing board that is its own answer (B lines; an error behind D33_READY / --d33)
@@ -141,21 +145,38 @@ test("021 rule 3: a count card whose board draws exactly the key's number of par
   assert.deepEqual(boardAnswerCards(posed("Kitne tukde rangeen hain?", BAR(6), "1/6")), []); // (a fraction key is not a count)
 });
 
-const KNOWN_B = ["c4-maths-ch05-t01-s3/e1", "c5-maths-ch02-t01-s1/e2", "c5-maths-ch02-t01-s1/workedExample.steps[0].ask"];
-test("021 rule 3, real scripts: the three known boards are caught (c4 s3 e1; c5-t01 s1 e2 and the s1 asked step); the list is pinned for main", () => {
+// (d33, 2026-11-23: the rewrites cleared the five boards the rule caught — c4 s3 e1, c5-t01 s1 e2 and its s1 asked step, c6-ch07-t01 s1 e2
+//  and s3 e3 — so the real scripts catch none; the rule is shown biting on a real card by posing c4 s3 e1, which still tells the child to
+//  cut the strip into 4, over the old kind of board that already draws the 4)
+const C4_CUT_OVER_4 = () => {
+  const s = JSON.parse(JSON.stringify(S["c4-maths-ch05-t01"]));
+  const e1 = s.skills[2].explain[0];
+  assert.match(e1.ask.prompt.hi, /4 barabar tukdon mein kaat/);
+  e1.ask.board = { template: "fraction-bars@1", params: { bars: [{ parts: 2, shade: 1, label: "" }, { parts: 4, shade: 0, label: "" }] } };
+  return s;
+};
+test("021 rule 3, real scripts: the rewrites leave no board that is its own answer; a real cut card over a drawn cut is caught", () => {
   const all = Object.values(S).flatMap((s) => boardAnswerCards(s).map((x) => x.at));
-  for (const k of KNOWN_B) assert.ok(all.includes(k), k);
-  // (the full list the rule catches today, 2026-11-23, for main to confirm before a script is put on D33_READY)
-  assert.deepEqual(all.sort(), [...KNOWN_B, "c6-maths-ch07-t01-s1/e2", "c6-maths-ch07-t01-s3/e3"].sort());
-  assert.match(boardAnswerLines(S["c4-maths-ch05-t01"])[0], /^B c4-maths-ch05-t01-s3\/e1 \[cut 4\] over fraction-bars@1/);
+  assert.deepEqual(all, []);
+  const s = C4_CUT_OVER_4();
+  assert.deepEqual(boardAnswerCards(s).map((x) => [x.at, x.kind, x.n]), [["c4-maths-ch05-t01-s3/e1", "cut", 4]]);
+  assert.match(boardAnswerLines(s)[0], /^B c4-maths-ch05-t01-s3\/e1 \[cut 4\] over fraction-bars@1/);
 });
 
-test("021 rule 3 and 5: D33_READY is empty, so no script fails today; forced (as --d33), the caught cards are errors", () => {
-  assert.deepEqual(D33_READY, []);
-  for (const s of Object.values(S)) { assert.equal(isD33(s), false); assert.deepEqual(d33Errors(s), [], s.topicId); }
-  const e = d33Errors(S["c4-maths-ch05-t01"], { force: true });
+// (d33, 2026-11-23: D33_READY holds the nine rewrites — the six live, then the three staged — and every one is clean on it; a staged
+//  script not rewritten stays off and passes. Forced, a caught card is still an error, shown on the real cut card posed over its cut)
+test("021 rule 3 and 5: D33_READY holds the nine rewrites and none fails on it; forced (as --d33), the caught cards are errors", () => {
+  assert.deepEqual(D33_READY, [...LIVE, "c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"]);
+  for (const s of Object.values(S)) { assert.equal(isD33(s), true, s.topicId); assert.deepEqual(d33Errors(s), [], s.topicId); }
+  for (const t of ["c4-maths-ch06-t01", "c6-maths-ch07-t03"]) { const s = load("lesson-scripts-staged", t); assert.equal(isD33(s), true, t); assert.deepEqual(d33Errors(s), [], t); }
+  const off = load("lesson-scripts-staged", "c4-maths-ch03-t01");
+  assert.equal(isD33(off), false, "a staged script not rewritten is off");
+  assert.deepEqual(d33Errors(off), [], "off on the gate");
+  const e = d33Errors(C4_CUT_OVER_4(), { force: true });
   assert.ok(e.some((x) => x.startsWith("c4-maths-ch05-t01-s3/e1: its posing board (fraction-bars@1) already draws the 4 parts") && x.includes("Learning 021 rule 3")), e.join("\n"));
-  assert.ok(e.some((x) => x.startsWith("joints.noPicture: 3 forms")), "forced, the new joints are required");
+  // (d33, 2026-11-23: the rewritten c4 now carries both joints; that forced makes them required is shown on the staged script without them)
+  assert.ok(!e.some((x) => x.startsWith("joints.noPicture")), "c4 carries its joints now");
+  assert.ok(d33Errors(off, { force: true }).some((x) => x.startsWith("joints.noPicture: 3 forms")), "forced, the new joints are required");
 });
 
 // ---- 5 joints.noPicture, joints.yourTurn

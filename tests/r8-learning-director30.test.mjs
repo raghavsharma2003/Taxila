@@ -40,9 +40,15 @@ test("019 A.1: the form keeps the question's numbers and slots exactly and names
   assert.ok(hindiFormErrors(c2, "c2").some((x) => /the numbers of the question exactly \(question 1\/12, 12; form 12\)/.test(x)));
   c2.hindi = { hi: "Tumhari chocolate mein 12 barabar tukde hain, aur tumne 1/12 kha liya, toh 11 bache na?", en: "x?" };
   assert.ok(hindiFormErrors(c2, "c2").some((x) => /names the answer "11"|the numbers of the question exactly/.test(x)));
-  const e3 = s.skills[2].explain[2].ask; // {friend}
-  e3.hindi = { hi: "Ravi ka kehna hai ki 5 toh 2 se bada hai, isliye 1/5 wala tukda 1/2 wale se bada hai. Kya yeh theek hai?", en: "x?" };
-  assert.ok(hindiFormErrors(e3, "e3").some((x) => /the question's slots exactly/.test(x)));
+  // (d33, 2026-11-23: the c4 rewrite's s3 e3 has no {friend} slot now; the slot case moves to c5-t01's s2 c3, a {friend} card, with an
+  //  honest en so that only the hi's dropped slot is caught, and the same form with the slot kept as the control)
+  const e3 = fresh("c5-maths-ch02-t01").skills[1].checks[2]; // {friend}
+  assert.match(e3.prompt.hi, /\{friend\}/);
+  const en = "{friend} says 3/4 is two numbers, 3 and 4. On the line from 0 to 1, how many marks will you put your finger on to show 3/4?";
+  e3.hindi = { hi: "Ravi ka kehna hai ki 3/4 do number hain, 3 aur 4. 0 se 1 ki line par 3/4 dikhane ke liye kitne mark par ungli rakhoge?", en };
+  assert.ok(hindiFormErrors(e3, "e3").includes("e3.hindi: the question's slots exactly"), hindiFormErrors(e3, "e3").join(" | "));
+  e3.hindi = { hi: "{friend} ka kehna hai ki 3/4 do number hain, 3 aur 4. 0 se 1 ki line par 3/4 dikhane ke liye kitne mark par ungli rakhoge?", en };
+  assert.ok(!hindiFormErrors(e3, "e3").some((x) => /slots exactly/.test(x)), hindiFormErrors(e3, "e3").join(" | "));
   // (a word answer: c5-t02's "Neha ke paas kam" for a card that asks "kam ya zyada?")
   const t2 = fresh("c5-maths-ch02-t02"), then = t2.skills[1].remediation[0].then;
   then.hindi = { hi: "Do ek jaise ribbon hain, dono 7 barabar hisson mein kate. Neha ne ek se 3 liye aur Gopi ne doosre se 6, toh Neha ke paas kam hai ya zyada?", en: "x?" };

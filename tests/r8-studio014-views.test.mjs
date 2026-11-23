@@ -57,7 +57,10 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
   // (repinned d32, 2026-11-19: the c6-ch07 reader fixes renamed two tables — "Rahul ki ribbon | Sana ki ribbon", and remediation 1's
   // own board "Lambi ribbon | Chhoti ribbon" — and c4-ch01-t02 no longer has its "Bhuja | Tester" table. c4-ch01-t02 s3 e2's authored
   // picture, the roti's two centre-to-edge distances 8 cm | 10 cm, was a word table; it is now held to scale (scale: true), two bars)
-  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse", "Roti: ek taraf | Doosri taraf"]);
+  // (d33, 2026-11-23: the c4-ch01-t02 rewrite dropped the roti's "Roti: ek taraf | Doosri taraf" picture; its only table now is s3
+  // remediation[0]'s word table "String se | Haath se oval", which has no view, as a table of words should — pinned below; and the d33 rewrites dropped
+  // the "3 bachche | 5 bachche" table: a table of two kinds today is "Bachche | Roti", pinned below in its place)
+  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse"]);
   // (one table of lengths has no view, and is named: c6-ch07 s1 c1's chocolate, now held to scale and cut 6, 2, 6, 2 cm in the order it
   // broke. Its view is built, but the split beside the held board is refused at panel scale — with 6,6,2,2 it lays out — so a
   // picture request on it draws the card's authored pictureBoard, a 0-16 cm scale. Studio to say whether the view should lay out)
@@ -67,7 +70,7 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
     assert.ok(b && !b.v && compareScaleOf(b.ref.params) && BF.altCall(b.ref)?.view === "scale", `${at}: a scale view is built, not laid out`);
   }
   for (const b of got.filter((b) => !b.v && !PANEL_REFUSED.has(b.at))) assert.equal(compareScaleOf(b.ref.params), null, `${b.at}: ${titles(b)}`);
-  assert.ok(["Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "3 bachche | 5 bachche"].every((t) => got.some((b) => !b.v && titles(b) === t)));
+  assert.ok(["Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "Bachche | Roti", "String se | Haath se oval"].every((t) => got.some((b) => !b.v && titles(b) === t)));
 });
 
 test("compare@1 scale: the whole and its pieces — 16 cm cut at 6, 6, 2, 2 — is one bar cut at the pieces' lengths, in proportion", () => {
