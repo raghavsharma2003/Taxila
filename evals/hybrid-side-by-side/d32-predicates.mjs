@@ -138,7 +138,12 @@ export const D32_PREDICATES = {
     const lastP = (ctx?.prevT?.pageParts ?? []).at(-1)?.part;
     if (lastP === "stepAsk" || /:worked:step\d+/.test(String(r.cell?.part ?? ""))) return "a return asked while a worked step is asked";
     // (the part the lesson goes back to after the return: a worked example's step or the child's own step — the return was inside it)
-    const back = L.rows.slice(i + 1).filter((y) => y.who === "teacher").slice(0, 2).flatMap((y) => y.pageParts ?? []).find((p) => ["card", "stepAsk", "returnCard"].includes(p.part));
+    // (inside: the lesson goes back to a worked example under way. A return after a card's close whose next turn starts the worked example —
+    // says its problem — is before it, not inside: r8-main-034's steering 38, e4's verdict and the return, then the problem and step 1)
+    const after = L.rows.slice(i + 1).filter((y) => y.who === "teacher").slice(0, 2).flatMap((y) => y.pageParts ?? []);
+    const back = after.find((p) => ["card", "stepAsk", "returnCard"].includes(p.part));
+    const starts = after.findIndex((p) => String(p.beat ?? "") === "worked:problem");
+    if (starts >= 0 && (!back || starts < after.indexOf(back))) return null;
     return back && /^worked/.test(String(back.beat ?? "")) ? `a return inside a worked example (back to ${back.beat})` : null;
   },
 };

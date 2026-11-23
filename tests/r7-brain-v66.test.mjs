@@ -131,12 +131,15 @@ describe("r7-brain-v66.test.mjs", () => {
         }
         if (lm.gave?.answer || /(?:is sawaal ka|iska) (?:sahi )?jawab/i.test(out.reply)) bad.push(`${tag}: a Hindi request given the key`);
         if (!lm.help) { bad.push(`${tag}: no help decision (${lm.request})`); continue; }
-        if (lm.help.request !== "hindi") bad.push(`${tag}: help for ${lm.help.request}`);
+        // (to-brain 049 B1 reverses this pin where the card has no `hindi` form: a Hindi request there is a help request, answered as a
+        // give-up is — help.request "give_up", marked hindiAsked — with no switch line; where a form exists it is still a Hindi request)
+        if (lm.help.request !== "hindi" && !(lm.help.request === "give_up" && lm.help.hindiAsked)) bad.push(`${tag}: help for ${lm.help.request}`);
         if (lm.help.rung) {
           const head = norm(lm.simpler).split(" ").slice(0, 4).join(" ");
           if (!norm(out.reply).includes(head)) bad.push(`${tag}: the ${lm.help.rung} not said | ${out.reply.slice(0, 120)}`);
         } else if (lm.help.joint === "helpSpent") {
-          if (!norm(out.reply).startsWith(norm(lm.helpJoint.form))) bad.push(`${tag}: no easier-words line first | ${out.reply.slice(0, 80)}`);
+          // (Brain 044 T5: with a go-on line after it, the "nothing easier" line is helpJoint.spent — said first, the go-on line after)
+          if (!norm(out.reply).startsWith(norm(lm.helpJoint.spent?.form ?? lm.helpJoint.form))) bad.push(`${tag}: no easier-words line first | ${out.reply.slice(0, 80)}`);
           if (/hindi mein (?:bol|samjha|keh)/i.test(out.reply)) bad.push(`${tag}: a promise of Hindi with nothing new`);
         }
         // (a card live stays live: her turn ends on its question)

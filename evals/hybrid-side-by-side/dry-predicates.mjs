@@ -377,7 +377,12 @@ export const PREDICATES = {
     if (rest.length && sm.at(-1) === "return" && ["remediation", "point", "bridge"].includes(sm.at(-2)) && (ctx.retRes ?? []).some((re) => re.test(ss.at(-1)))) return null;
     // (Brain 049 B5 reverses director30's "a return is a turn of its own" after a right verdict: the verdict and its reason, then the return's
     // question, end the turn)
-    if (rest.length && sm.at(-1) === "return" && sm.includes("verdict") && !sm.some((x) => ["card", "key", "point", "stepAsk", "checkin"].includes(x))) return null;
+    // (to B5's letter: a RIGHT verdict — never a key, "Is sawaal ka jawab 11 hai, …", director25 c5-t01 steering 30 — and the return said in
+    // one of the script's back-to forms, joints.asideReturn, which name going back to the child's topic; a bare return question after the
+    // verdict, director25's nine rows "… yaani 2/3. Cricket mein tumhe kya karna sabse achha lagta hai?", has no back-to and still reads)
+    const GAVE_KEY = /(?:is sawaal ka|iska|pichhle sawaal ka) (?:sahi )?jawab|the answer (?:here )?(?:is|was)/i;
+    if (rest.length && sm.at(-1) === "return" && sm.includes("verdict") && !sm.some((x) => ["card", "key", "point", "stepAsk", "checkin"].includes(x))
+      && !GAVE_KEY.test(r.text) && (ctx.retRes ?? []).some((re) => re.test(ss.at(-1)))) return null;
     if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
     return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
   },
