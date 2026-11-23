@@ -295,10 +295,13 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
 test("048: the accept forms G7 made safe again refuse the wrong answers they once let in (the scripts' fix passes, 2026-11-18)", () => {
   const find = (path, pred) => { const s = JSON.parse(readFileSync(join(ROOT, path), "utf8")); const hit = cardsOf(s).find(([, it]) => pred(it)); assert.ok(hit, path); return hit[1]; };
   // perimeter: "24 + 18 + 24 + 18" took "24 × 18" and "24 + 18"
-  const per = find("data/lesson-scripts/c6-maths-ch06-t01.json", (it) => it.answer === "jodkar do guna");
+  // (main, d33: the step now asks what to do FIRST with 24 and 18 — key "jodenge", so that the doubling is the child's own step — and
+  // "24 + 18" is a right answer to it. That a sum is not a bag of numbers stays pinned on the synthetic card of the G7 test below; here
+  // the multiplication, the area mix-up this lesson is about, is still never right)
+  const per = find("data/lesson-scripts/c6-maths-ch06-t01.json", (it) => it.answer === "jodenge");
   assert.ok(per.acceptable.includes("24 + 18 + 24 + 18"));
-  for (const s of ["24 + 18 + 24 + 18", "18 + 24 + 18 + 24"]) assert.equal(grade(per, s), "correct", s);
-  for (const s of ["24 × 18", "24 + 18", "24 + 18 + 24", "24 x 18", "jodkar guna", "jodkar teen guna"]) assert.notEqual(grade(per, s), "correct", s);
+  for (const s of ["24 + 18 + 24 + 18", "18 + 24 + 18 + 24", "24 + 18", "jodenge"]) assert.equal(grade(per, s), "correct", s);
+  for (const s of ["24 × 18", "24 + 18 + 24", "24 x 18", "jodkar guna", "jodkar teen guna", "guna karenge"]) assert.notEqual(grade(per, s), "correct", s);
   // fractional units: "30 ÷ 6" and its kin took "30 × 6", "30 + 6" and the division turned round
   const div = find("data/lesson-scripts/c6-maths-ch07-t01.json", (it) => it.answer === "30 ko 6 se bhaag");
   for (const f of ["30 ÷ 6", "30 ko 6 se divide", "30 divided by 6", "30 mein 6 kitni baar"]) { assert.ok(div.acceptable.includes(f), f); assert.equal(grade(div, f), "correct", f); }
@@ -480,7 +483,8 @@ test("050 working: spoken working that ends on the key's number is right when it
 
 test("050 W1 (main's third reader, the perimeter script): \"do\" and \"ek\" in a word key's plain phrasings are never wrong in code", () => {
   const find = (pred) => cardsOf(JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c6-maths-ch06-t01.json"), "utf8"))).find(([, it]) => pred(it))?.[1];
-  const dbl = find((it) => it.answer === "jodkar do guna"), lap = find((it) => it.answer === "ek chakkar");
+  // (main, d33: the step's key is now "jodenge"; its plain phrasings with "do guna" are still right answers to it)
+  const dbl = find((it) => it.answer === "jodenge"), lap = find((it) => it.answer === "ek chakkar");
   assert.ok(dbl && lap);
   for (const s of ["jodkar do guna karo", "jodo phir do guna karo", "pehle jodo phir do guna", "jod ka do guna karna hai", "jodkar double karo"]) assert.notEqual(grade(dbl, s), "incorrect", s);
   for (const s of ["ek chakkar nikalna hoga", "pehle ek chakkar ki doori nikalni hogi", "ek round ki doori"]) assert.notEqual(grade(lap, s), "incorrect", s);
