@@ -1676,7 +1676,8 @@ export function d31Errors(s) {
  *  2  `joints.hindiSwitch` promises only Hindi: none of "aasaan", "seedhe", "doosre shabdon".
  *  3  A stated rule is true: no point, remediation, why, `covered` or wrap sentence says unequal pieces have no fraction name or
  *     that a fraction is named only when the parts are equal (RULE_FALSE). `--rules` prints every sentence of those fields with
- *     "tabhi", "sirf", "hamesha", "kabhi nahi", "nahi hota" as an R line for the independent reader (a listing, not an error).
+ *     "tabhi", "sirf", "hamesha", "kabhi nahi", "nahi hota", a bare closing contrast (", guna nahi."), or an
+ *     operation named with "sirf"/"nahi" as an R line for the independent reader (a listing, not an error; isRuleSentence).
  *  4  `reask` { hi, en } on every asked worked step and on the teachback: a second way of asking, ending on the question;
  *     `told` { hi, en } on every worked step: the sentence she says when she tells the step, asking nothing.
  *  5  No two cards of a script end on the same last sentence.
@@ -1796,6 +1797,16 @@ export function hintHits(c, fields) {
 export const RULE_FALSE = [/fraction\s+naam\s+nahi\s+(hota|hai)/i, /sirf\s+barabar\b.*\bfraction\s+(ka\s+)?naam/i, /tabhi\s+kehte\s+hain\s+jab\b.*\bbarabar/i,
   /\bno fraction name\b/i, /\bonly equal\b.*\bfraction name\b/i];
 export const RULE_WORDS = /(?<![\p{L}])(tabhi|sirf|hamesha|kabhi\s+nahi|nahi\s+hota)(?![\p{L}])/iu;
+/** The arithmetic operations a stated rule can be about (the hi words and their forms, and the symbols). */
+const RULE_OPS = /(?<![\p{L}])(guna|jod\p{L}*|jud\p{L}*|ghata\p{L}*|ghat\p{L}*|bhaag\p{L}*|bhag\p{L}*|baant\p{L}*|bant\p{L}*)(?![\p{L}])|[×÷]/iu;
+/** director32 (report-c6 A): "Parimap mein bhujayein jodte hain, guna nahi." has no trigger word and passed both reads, so a
+ *  sentence that ends on a bare contrast (", guna nahi.", ", jod nahi.", "… nahi hota.") or names an operation with "sirf" or
+ *  "nahi" is listed too. A listing for the reader, not an error: most such sentences are true. */
+const RULE_SHAPES = [RULE_WORDS, /,\s*[\p{L}-]+\s+nahi\s*[.!]?\s*$/iu, /(?<![\p{L}])nahi\s+(hota|hoti|hote)\s*[.!]?\s*$/iu];
+export function isRuleSentence(text) {
+  const t = String(text ?? "");
+  return RULE_SHAPES.some((re) => re.test(t)) || (RULE_OPS.test(t) && /(?<![\p{L}])(sirf|nahi)(?![\p{L}])/iu.test(t));
+}
 /** The sentences of the fields where a rule is stated (rule 3): [{ at, l, text }]. */
 export function ruleSentences(s) {
   const out = [], put = (at, f) => { for (const l of ["hi", "en"]) for (const x of sentencesOf(f?.[l])) out.push({ at, l, text: x }); };
@@ -1928,7 +1939,7 @@ export function d32Errors(s, { force = false } = {}) {
 /** The --rules listing: R lines (stated rules for the reader) and A lines (askWhole candidates for main). */
 export function d32Listing(s) {
   return [
-    ...ruleSentences(s).filter((x) => x.l === "hi" && RULE_WORDS.test(x.text)).map((x) => `R ${x.at}: ${x.text}`),
+    ...ruleSentences(s).filter((x) => x.l === "hi" && isRuleSentence(x.text)).map((x) => `R ${x.at}: ${x.text}`),
     ...askWholeCandidates(s).map((c) => `A ${c.at} over ${c.board?.template ?? "no board"}: ${c.card.prompt.hi}`),
   ];
 }
