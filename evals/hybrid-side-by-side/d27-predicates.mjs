@@ -219,7 +219,11 @@ export const D27_PREDICATES = {
     const st = stateAt(L, r, i, ctx);
     const { parts, pages, boardAt, boardBefore } = st.cur;
     const spans = [...(parts.length && parts[0].from > 0 ? [{ part: "none", beat: "", from: 0, end: parts[0].from, own: null }] : []), ...parts];
+    // (Brain 049 B2: a picture drawn at a request stays up until the question it was asked at has been said — on a pictureBoard turn the
+    // card or the asked step is said over the picture; its own board is the next turn's)
+    const picQ = (p) => r.cell?.picture === "pictureBoard" && ["card", "stepAsk", "quick", "alt"].includes(p.part);
     for (const p of spans) {
+      if (picQ(p)) continue;
       const shown = [boardAt(p.from), ...pages.filter((g) => g.from > p.from && g.from < p.end).map((g) => g.board)];
       if (p.own) {
         const bad = shown.find((b) => !sameB(b, p.own));
@@ -239,7 +243,7 @@ export const D27_PREDICATES = {
     const st = stateAt(L, r, i, ctx);
     const { parts, boardAt } = st.cur;
     for (const p of parts) {
-      if (p.part !== "card" || !p.own) continue;
+      if (p.part !== "card" || !p.own || r.cell?.picture === "pictureBoard") continue;
       const b = boardAt(p.from);
       if (!sameB(b, p.own)) return `the ${p.beat} card (at ${p.from}) said over ${brief(b)}, not its own ${brief(p.own)}`;
     }

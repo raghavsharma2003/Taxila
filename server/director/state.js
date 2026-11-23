@@ -3462,7 +3462,8 @@ function helpRequestOf(prev, input) {
   if (prev.lastMove?.leadAlone && prev.splitHold) return null;
   // (Brain 048 G5: a picture request with nothing new to draw at the card — no pictureBoard unshown, no second view unshown — is help: the
   // card's hint over its posing board, never "there is nothing to draw" and never the same board drawn again as if new)
-  if (col === "picture") return pictureKindOf(prev, input)?.kind === "hint" ? "clarify" : null;
+  // (Brain 049 B2: it is a picture request of its own — help.js never answers it with a key, and says the script's noPicture line first)
+  if (col === "picture") return pictureKindOf(prev, input)?.kind === "hint" ? "picture" : null;
   return col === "clarify" || col === "give_up" || col === "hindi" ? col : null;
 }
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
@@ -3516,7 +3517,8 @@ function helpBeat(kit, d, board) {
   return { ...base, ...beat, ...(board ? { board } : {}) };
 }
 /** The words of a decision, said first: the wording, else the key, else the joint (friend slots filled). */
-const helpWords = (d) => fillFriend([d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
+// (Brain 049 B2: a picture request with nothing left to draw says the script's noPicture line first, then the card's unsaid help, if any)
+const helpWords = (d) => fillFriend([d.pictureLine?.text ?? "", d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
   "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
@@ -3529,6 +3531,7 @@ const stripHelp = (m) => { const o = { ...m }; for (const k of HELP_STRIP) delet
 function noteHelp(s, d) {
   if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
   if (d.then) s.helpJointN = { ...(s.helpJointN ?? {}), [d.then.kind]: (s.helpJointN?.[d.then.kind] ?? 0) + 1 };
+  if (d.pictureLine) s.helpJointN = { ...(s.helpJointN ?? {}), noPicture: (s.helpJointN?.noPicture ?? 0) + 1 };
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
   // (a closed card's help that moves the lesson on — its card asked, the lesson going on, a key — leaves it)
   if (d.card !== "wait" && d.card !== "keep") s.closedPart = undefined;
@@ -3538,12 +3541,15 @@ function noteHelp(s, d) {
  *  that is up stays. It rides on the move's help mark, and the page builder (brain/propose.js heldOf) takes it from there and nowhere else. */
 const helpBoardOf = (d) => (d.key ? d.key.board ?? d.board : d.board) ?? null;
 const helpMark = (d) => ({ part: d.part, request: d.request, rung: d.rung?.field ?? null, ...(d.bridgeOn ? { bridgeOn: true } : {}), ...(d.rung?.path ? { rungPath: d.rung.path } : {}), card: d.card, ...(d.keyed ? { keyed: true } : {}), ...(d.closed ? { closed: true } : {}), ...(d.joint ? { joint: d.joint.kind } : {}), ...(d.then ? { then: d.then.kind } : {}), ...(d.stepAsked ? { stepAsked: true } : {}), ...(d.hindiForm ? { hindiForm: true } : {}), ...(d.hindiWhole ? { hindiWhole: true } : {}),
+  ...(d.request === "picture" ? { picture: d.rung ? "hint" : "none", ...(d.pictureLine ? { pictureLine: d.pictureLine.text } : {}) } : {}),
   board: helpBoardOf(d) });
 function helpFields(kit, d) {
   const words = helpWords(d);
   const board = helpBoardOf(d);
   // (Brain 046 Q2: a first request for Hindi with a Hindi form says no wording — the easier-words line, then the form as the question)
   if (!words && d.hindiForm) return { help: helpMark(d), hindiForm: d.hindiForm };
+  // (Brain 049 B2: a picture request with nothing left and no noPicture line written yet: no words of help — the card's question alone)
+  if (!words) return { help: helpMark(d) };
   return { simpler: words.charAt(0).toUpperCase() + words.slice(1), smaller: true, helpNew: true, help: helpMark(d),
     simplerBeat: helpBeat(kit, d, board), ...(d.joint ? { helpJoint: { kind: d.joint.kind, form: d.joint.text, by: d.joint.by } } : {}), ...(d.hindiForm ? { hindiForm: d.hindiForm } : {}) };
 }
@@ -3601,7 +3607,7 @@ function helpStay(prev, input, d) {
     if (d.keyed) s.activeItemId = undefined;
   }
   if (d.request === "hindi") move = { ...move, request: "language", ...(d.joint ? { noLangAck: true } : {}) };
-  else if (d.request === "clarify") move = { ...move, request: "clarify" };
+  else if (d.request === "clarify" || d.request === "picture") move = { ...move, request: "clarify" };
   noteHelp(s, d);
   // (Brain 046 Q2: the Hindi form is this turn's words for the card; the card the walk keeps — its text read and asked again — is its own)
   s.lastMove = move; s.moveVoiced = false; s.lastUi = d.card === "hindiForm" ? prev.lastUi : ui;
@@ -3640,7 +3646,8 @@ export function requestUnhelped(prev, input, out) {
   const h = lm.help ?? null;
   // (Brain 047 R8: a Hindi request with the part's help spent is answered by the switch line and the whole card, or the lesson going on)
   // (Brain 047 R5: a give-up or a clarify at a bridge's check-in is answered by the next point and its card)
-  if (h && (h.rung || h.card === "close" || h.joint === "helpSpent" || h.hindiForm || h.hindiWhole || h.bridgeOn)) return null;
+  // (Brain 049 B2: a picture request with nothing left is answered by the card's question, after the noPicture line where the script has it)
+  if (h && (h.rung || h.request === "picture" || h.card === "close" || h.joint === "helpSpent" || h.hindiForm || h.hindiWhole || h.bridgeOn)) return null;
   if (lm.gave?.answer || lm.quickReply || lm.stepReply) return null;
   // (the greeting's own simpler wording answers a request at the greeting; after it, the hook, the first point and its card are the next turn
   // whatever the child says — the greeting has no other wording)
@@ -3970,7 +3977,9 @@ export function step(prev, input) {
   const cell0h = helped && cell0 && !/:quick$/.test(String(cell0.part ?? "")) ? { part: helped.part, column: cell0.column, ...(helped.keyed ? { keyed: true } : {}), ...(helped.closed ? { closed: true } : {}) } : cell0;
   const cell1 = acted ? { part: cell0h?.part ?? null, column: acted } : cell0h;
   // (Brain 048 G5: what a picture request got, on the record — the card's pictureBoard, the board's second view, or the card's hint as help)
-  const picGot = cell1?.column === "picture" && input?.event === "turn" ? out?.state?.lastMove?.picture ?? (out?.state?.lastMove?.help || out?.state?.lastMove?.helpJoint ? "hint" : null) : null;
+  // (Brain 049 B2: one of pictureBoard, view, hint, none — never hint on a turn whose move is a key)
+  const lmPic = out?.state?.lastMove;
+  const picGot = cell1?.column === "picture" && input?.event === "turn" ? (lmPic?.help?.request === "picture" ? lmPic.help.picture : lmPic?.picture ?? (lmPic?.gave ? "none" : lmPic?.help || lmPic?.helpJoint ? "hint" : null)) : null;
   const cell = picGot ? { ...cell1, picture: picGot } : cell1;
   if (input?.event === "turn" && out?.state) {
     // (the wording help says this turn is said on it: in the set now, whatever the reply around it — the next turn adds her whole line)

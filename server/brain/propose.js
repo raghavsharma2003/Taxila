@@ -319,9 +319,11 @@ export function pagesOfParts(move, list, line) {
       // (a part a return's turn held back: on the board of the turn that held it)
       case "held": return move?.heldBeat?.board ? move.heldBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
       case "simpler": return move?.simplerBeat?.board ? move.simplerBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
-      // (Brain 048 G5: on a pictureBoard turn the card — or the asked step — is on its own board, the page after the picture's)
-      case "alt": case "card": return move?.picture === "pictureBoard" && move?.pictureOwn?.board ? move.pictureOwn : move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
-      case "stepAsk": case "quick": if (move?.picture === "pictureBoard" && move?.pictureOwn?.board) return move.pictureOwn; return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
+      // (Brain 049 B2, reversing 048 G5's page after the picture: a picture drawn at a request stays up until the question it was asked at
+      // has been said — the card, or the asked step, is said over the picture; the card's own board returns with the next turn. director32
+      // c6-ch07-t01 steady 18, stuck 18: the scale gave way to the compare board before the question)
+      case "alt": case "card": return move?.picture === "pictureBoard" && pictureBoardOf(move) ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.scriptBeat?.board ? move.scriptBeat : null;
+      case "stepAsk": case "quick": if (move?.picture === "pictureBoard" && pictureBoardOf(move)) return move.scriptBeat; return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : move?.closeBeat?.board ? move.closeBeat : null;
       case "body": return move?.scriptBeat?.board ? move.scriptBeat : move?.cardBeat?.board ? move.cardBeat : null;
       case "aside": return null;
       // (dc-r8-director27 Brain 042: the short yes or `quick.say` after a quick question has no board of its own — the point's stays up
@@ -588,16 +590,9 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
   const picB = pictureBoardOf(move);
   if (picB) {
     const h = { board: picB.board, unit: picB.unit ?? curUnit, ...(move.pictureAlone ? { noView: true } : {}) };
-    // (Brain 048 G5: a card's authored pictureBoard is its own page — its caption under it — and the card's question is on the card's own
-    // board, the next page, as a second view's alt page is followed by the card's)
-    if (move.picture === "pictureBoard" && move.pictureOwn?.board && list?.length) {
-      const t0 = String(line ?? "").replace(/\s+/g, " ").trim();
-      const c = offsetsOf(list).filter((p) => String(p.text ?? "").trim()).find((p) => ["card", "stepAsk", "quick"].includes(p.part));
-      if (c && c.start > 0 && c.start < t0.length && !sameBoard(move.pictureOwn.board, picB.board)) {
-        h.unit = `${h.unit}#picture`;
-        h.switchTo = { board: move.pictureOwn.board, unit: unitOf(move.pictureOwn) ?? curUnit, atChar: c.start, atClause: clauseAt(t0, c.start) };
-      }
-    } else if (move.picture === "pictureBoard") h.unit = `${h.unit}#picture`;
+    // (Brain 048 G5: a card's authored pictureBoard is a unit of its own. Brain 049 B2: it stays up through the card's question — no page
+    // after it in the turn; the card's own board (move.pictureOwn) is the next turn's)
+    if (move.picture === "pictureBoard") h.unit = `${h.unit}#picture`;
     if (STRICT_PAGES()) pagePredicates(h, [], String(line ?? ""), { up });
     return h;
   }

@@ -17,7 +17,14 @@ import { compiledFor } from "./compile.js";
 import { saidIn, joinable } from "./script.js";
 
 /** The requests help answers. A "hint" is a wrong answer's (or an unremedied mix-up's) help on a live card. */
-export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint"]);
+export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint", "picture"]);
+/** Brain 049 B2: the line a picture request with nothing left to draw hears first — the script's `joints.noPicture` (Learning 021 writes three
+ *  per script). Code has no form of its own: until a script has them, the line is not said and the rest of the turn stands.
+ *  → { kind: "noPicture", text, by: "authored" } | null */
+export function noPictureLine(script, { lang = "hinglish", lessonKey = null, n = 0 } = {}) {
+  const own = script?.joints?.noPicture;
+  return Array.isArray(own) && own.length ? helpJoint(script, "noPicture", { lang, lessonKey, n }) : null;
+}
 /** The joints help may say (Learning 014). Each script carries them as `joints.<kind>: [{hi, en}, …]`. */
 export const HELP_JOINTS = Object.freeze(["helpSpent", "afterKeyGoOn", "helpToCard", "afterKeyReturn"]);
 /** Code's forms for a joint a script has not authored yet: shapes a teacher says, few and plain. The script's own forms win. */
@@ -324,10 +331,13 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const spent = !t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said));
     if (spent && request === "hindi") { const whole = cardPromptOf(script, part);
       return whole ? { part: part.id, kind: part.kind, keyed: false, request, rung: { field: "whole", path: part.path, text: "", board: part.board ?? null }, board: part.board ?? null, card: "hindiForm", key: null, joint: null, hindiForm: whole, hindiWhole: true, stepAsked: true } : null; }
+    // (Brain 049 B2: a picture request with nothing left keeps the step asked — the noPicture line and the step's question; never told)
+    if (spent && request === "picture") return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: part.board ?? null, card: "keep", key: null, joint: null, stepAsked: true, pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) };
     if (spent) return null;
     const t0 = String(t).trim();
     const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
-    return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true };
+    return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true,
+      ...(request === "picture" ? { pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) } : {}) };
   }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   // (Brain 047 R5: help answers the mistake. After a miss — the card's own hint said — on a card whose script marks its second reason safe to say without the key
@@ -360,6 +370,15 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // other words: c5-t01 stuck 54 to 56, offtopic 48 to 50; c6-ch07-t01 steady 24 to 26, stuck 54 to 56; c6 stuck 52 to 54). One word to the
   // child first (N1): the script's startAnyway, "Chalo, main batati hoon.")
   if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "startAnyway", { lang: L, lessonKey, n: jointN.startAnyway ?? 0 }), bridgeOn: true };
+  // (Brain 049 B2: a picture request with nothing left to draw — the card's pictureBoard and second view spent, or neither — is never a key
+  // and never closes the card: the noPicture line, the card's unsaid help if one is left, then the card's question. It does not advance the
+  // miss ladder. director32 steering 16 in c5-t01, c5-t02, c6 gave the key)
+  if (request === "picture") {
+    const pictureLine = noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 });
+    const t0 = unsaid ? String(unsaid.text).trim() : "";
+    const rung = unsaid ? { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null } : null;
+    return { ...base, rung, board: rung?.board ?? part.board ?? null, card: isCard ? "keep" : "wait", key: null, joint: null, pictureLine };
+  }
   if (unsaid) {
     const t0 = String(unsaid.text).trim();
     const rung = { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null };
