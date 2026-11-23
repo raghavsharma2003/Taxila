@@ -1,0 +1,134 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director32",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "director32: 28 lessons on release 54's code (5 live, 2 rewritten staged), 7 Opus judges by hand: 5 topics pass every gate line (c4, c5-t01, c5-t02 by main's ruling, c5-t03, staged c6-ch07-t01); live c6 fails on a rule its own answers deny; the staged c4-ch01-t02 fails"
+  },
+  {
+   "id": "dc-r8-director32",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "After director32: a second staged lesson goes live; the Hindi switch line only where a Hindi form exists; a picture request never costs the card; the second help is the card's own other reason; a question at most two turns running; the cold read looks at method and at drawings"
+  },
+  {
+   "id": "fd-r8-rule-read-against-keys-not-method",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A rule sentence can be true against every answer key and still be denied by the method the same lesson teaches later: \"Parimap mein bhujayein jodte hain, guna nahi\" stood in the live perimeter script through at least five judged runs, an independent cold read and main's read of the rule list"
+  },
+  {
+   "id": "fd-r8-picture-request-cost-the-card",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A picture request that falls through to the help ladder when nothing is left to draw gives the key once the hints are spent: in three of seven steering lessons a child who asked to see something was told the answer, and the row recorded it as a hint"
+  },
+  {
+   "id": "fd-r8-floor-axes-six-runs",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "Listening and register have sat at the 3.5 floor in every topic for six judged runs while the count lines came clean: the causes the judges name are the same each run (help that misses the mistake, a question repeated, fixed forms heard too often, a return that ignores the child)"
+  },
+  {
+   "id": "rj-r8-hindi-switch-line-without-a-form",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Saying \"Hindi mein kehti hoon\" at a card with no Hindi form and following it with the card's unsaid help in the same Hinglish: six judges heard a promise not kept; promises 3 in one topic"
+  },
+  {
+   "id": "rj-r8-return-always-own-turn",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Keeping an aside's return a turn of its own, so that a right verdict just before it ends on a check-in: listed by seven judges in two runs as an ending outside the allowed five"
+  },
+  {
+   "id": "rj-r8-keys-only-second-reader",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "The pre-set remedy for a script that passes the cold read and still fails (a second reader with the keys only): not applied, because what got through was not a key"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director32",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "dc-r8-director32",
+   "rel": "supersedes",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "fd-r8-rule-read-against-keys-not-method",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "fd-r8-rule-read-against-keys-not-method",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "caused_by",
+   "dst": "dc-r8-picture-none-list"
+  },
+  {
+   "src": "fd-r8-floor-axes-six-runs",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-hindi-switch-line-without-a-form",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-hindi-switch-line-without-a-form",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-return-always-own-turn",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-return-always-own-turn",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-keys-only-second-reader",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director32` (2026-11-23): 28 lessons (the five live scripts and the two staged scripts rewritten after director31, `c4-maths-ch01-t02` and `c6-maths-ch07-t01`, × steady, stuck, offtopic, steering), Director only, reactive rule-based child typing Latin Hinglish, on int/r6 integration 88 (`50b784f8e`, release 54's code), one invocation, 2,226 model calls, about $1.66. Live predicate check exit 0, every gated predicate 0. Seven Opus judges at high effort, one per topic, each reading four lessons by hand against a prompt whose 35 clauses were fixed before the run. By hand: 0 misgrades in 666 keyed answers; 0 unsaid boards (strict reading) in six topics and 3 by the judge's count in c5-t02, ruled 0 by main (the board is the point's own; the judge's count is recorded beside the ruling); contradictions 0 in six topics and 2 in c4-ch01-t02 (a card asked over another card's circle; a second picture request answered with nothing new drawn, by main's ruling); false keys: one rule in 3 rows of the live c6 script, 0 elsewhere. Axes (floor 3.5): listening 3.5 and register 3.5 in all seven; worked example 3.5 to 4; class level 3.5 to 4; screen and speech 3.5 to 4.5; promises 3.5 to 4 in six, 3 in c4-ch01-t02. Pass: c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c5-ch02-t03, c6-ch07-t01 (staged). Fail: c6-ch06-t01 (script line), c4-ch01-t02 (staged). 35 picture requests: 24 drew a second view, 4 an authored picture, 7 were second requests that got help, 3 of those the key. One safety check-in fired on a right answer containing the script's word \"blade\". Not measured: Devanagari replies, a real voice, a real child. Files: `evals/hybrid-side-by-side/results/2026-11-23-director32/`; judgement `docs/design/round7/judgements/director32-2026-11-23.md`.",
+  "decisions": "- `dc-r8-director32` (2026-11-23, main, supersedes `dc-r8-director31`): thirteen items in `docs/design/round7/judgements/director32-2026-11-23.md`. In short: (1) `c6-maths-ch07-t01` goes live with two script lines changed after it was heard (a stated departure from live-as-judged), and the live perimeter lesson's false rule is corrected in the same release; (2) the Hindi switch line is said only where the card has a `hindi` form, and elsewhere a Hindi request is a request for help with no promise; (3) a picture request with nothing left to draw gets an honest line, the unsaid hint and the question, never the key; (4) the second help after a miss is the card's own other reason, and a mix-up met again gets the hint before the key; (5) a question is heard at most two turns running; (6) `c4-maths-ch01-t02` stays staged and is rewritten again; (7) a right verdict before a due return ends on the return's question (reverses the director30 ruling); (8) a picture stays up through its question, Studio draws an uneven round shape, and views that add nothing are replaced; (9) the checker refuses a key or accept form that trips the frozen safety reader; (10) the cold read gains two passes (rule sentences against the lesson's later method; posing boards looked at as pictures) and the checker lists the sentences; (11) the script list; (12) the items carried from to-brain 047; (13) two new staged scripts under the amended brief. **Why:** the count lines are clean in five topics and the judges name the same few causes for the floor axes in every report. **What would reverse it:** per item, in the judgement's last section; the general one: a pilot that passes here failing the next run for a cause in code stops the staged batches until two runs in a row pass.",
+  "rejected": "- `rj-r8-hindi-switch-line-without-a-form` (2026-11-23): **tried** (`dc-r8-director31` item 1 as built) answering a request for Hindi at a card with no `hindi` form with the switch line (\"Theek hai, Hindi mein kehti hoon.\"), the card's unsaid help and the card. **What broke:** the help is in the same Hinglish; six of seven judges heard a promise of Hindi with no Hindi after it, three lowered promises, and the staged class 4 angles lesson failed at promises 3. In five topics the turn also repeated the previous turn's re-ask word for word. Replaced by `dc-r8-director32` item 2.\n- `rj-r8-return-always-own-turn` (2026-11-23): **tried** (a director30 ruling) keeping the return to a child's side-topic a turn of its own, so a right verdict that falls just before it ends on a comprehension check-in. **What broke:** the check-in after a right answer is one of the endings the lessons were rebuilt to remove; seven judges listed these rows in director31 and again in director32, one of them inside a worked example. Replaced by `dc-r8-director32` item 7: the verdict's turn ends on the return's question.\n- `rj-r8-keys-only-second-reader` (2026-11-23): **set before the run** as the remedy if a script passed the independent read and main's and still failed on a rule or a giveaway. **Not applied:** the three things that got through (a rule denied by the lesson's later method, a card posed over its own answer, boards that let an answer be counted) are none of them a wrong key, and all 211 keys had already been solved and agreed. The read gains the two passes that aim at them instead (`dc-r8-director32` item 10)."
+ }
+}

@@ -29987,6 +29987,62 @@
    "at": "2026-11-23",
    "title": "Released 5fe357d with scripts/release.mjs: web taxila-web--s5fe357d-2r3s (was taxila-web--seea8d7c-46uo), worker + canary/nightly jobs on taxila-worker:5fe357d (was eea8d7c); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 5fe357d --rollback.",
    "source": "inbox/release-5fe357d.json"
+  },
+  {
+   "id": "ms-r8-director32",
+   "kind": "measurement",
+   "at": "2026-11-23",
+   "title": "director32: 28 lessons on release 54's code (5 live, 2 rewritten staged), 7 Opus judges by hand: 5 topics pass every gate line (c4, c5-t01, c5-t02 by main's ruling, c5-t03, staged c6-ch07-t01); live c6 fails on a rule its own answers deny; the staged c4-ch01-t02 fails",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "dc-r8-director32",
+   "kind": "decision",
+   "at": "2026-11-23",
+   "title": "After director32: a second staged lesson goes live; the Hindi switch line only where a Hindi form exists; a picture request never costs the card; the second help is the card's own other reason; a question at most two turns running; the cold read looks at method and at drawings",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "fd-r8-rule-read-against-keys-not-method",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A rule sentence can be true against every answer key and still be denied by the method the same lesson teaches later: \"Parimap mein bhujayein jodte hain, guna nahi\" stood in the live perimeter script through at least five judged runs, an independent cold read and main's read of the rule list",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "fd-r8-picture-request-cost-the-card",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "A picture request that falls through to the help ladder when nothing is left to draw gives the key once the hints are spent: in three of seven steering lessons a child who asked to see something was told the answer, and the row recorded it as a hint",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "fd-r8-floor-axes-six-runs",
+   "kind": "finding",
+   "at": "2026-11-23",
+   "title": "Listening and register have sat at the 3.5 floor in every topic for six judged runs while the count lines came clean: the causes the judges name are the same each run (help that misses the mistake, a question repeated, fixed forms heard too often, a return that ignores the child)",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "rj-r8-hindi-switch-line-without-a-form",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Saying \"Hindi mein kehti hoon\" at a card with no Hindi form and following it with the card's unsaid help in the same Hinglish: six judges heard a promise not kept; promises 3 in one topic",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "rj-r8-return-always-own-turn",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "Keeping an aside's return a turn of its own, so that a right verdict just before it ends on a check-in: listed by seven judges in two runs as an ending outside the allowed five",
+   "source": "inbox/r8-main-55.json"
+  },
+  {
+   "id": "rj-r8-keys-only-second-reader",
+   "kind": "rejection",
+   "at": "2026-11-23",
+   "title": "The pre-set remedy for a script that passes the cold read and still fails (a second reader with the keys only): not applied, because what got through was not a key",
+   "source": "inbox/r8-main-55.json"
   }
  ],
  "edges": [
@@ -48094,6 +48150,81 @@
    "src": "rj-r8-circle-posed-strips-answered",
    "rel": "constrains",
    "dst": "dc-r8-picture-none-list"
+  },
+  {
+   "src": "dc-r8-director32",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "dc-r8-director32",
+   "rel": "supersedes",
+   "dst": "dc-r8-director31"
+  },
+  {
+   "src": "fd-r8-rule-read-against-keys-not-method",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "fd-r8-rule-read-against-keys-not-method",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "fd-r8-picture-request-cost-the-card",
+   "rel": "caused_by",
+   "dst": "dc-r8-picture-none-list"
+  },
+  {
+   "src": "fd-r8-floor-axes-six-runs",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-hindi-switch-line-without-a-form",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-hindi-switch-line-without-a-form",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-return-always-own-turn",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "rj-r8-return-always-own-turn",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "rj-r8-keys-only-second-reader",
+   "rel": "constrains",
+   "dst": "dc-r8-director32"
+  },
+  {
+   "src": "dc-r8-script-grade-as-spoken",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
+  },
+  {
+   "src": "dc-r8-picture-none-list",
+   "rel": "measured_by",
+   "dst": "ms-r8-director32"
   }
  ]
 }
