@@ -18,6 +18,9 @@
 //                                                                     hold a staged script to the pilots' standard for this run
 //   node scripts/lesson-scripts/check.mjs <topicId> --d32 [--rules]   hold a script to Learning 020's rules for this run; --rules
 //                                                                     lists stated-rule sentences (R) and askWhole candidates (A)
+//   node scripts/lesson-scripts/check.mjs <topicId> --d33 [--rules]   hold a script to Learning 021's rules for this run and list
+//                                                                     the boards that answer their own card (B); --rules adds the
+//                                                                     whyAlt-as-help lines (H) and operation pairs (O)
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { execFileSync } from "node:child_process";
@@ -26,6 +29,8 @@ import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
 import { toSpoken } from "../../server/voice/spoken.js";
 // (Learning 018, A.1: the view a picture turn draws beside a board is read from the same call Studio draws it with — read-only)
 import { pictureTurn } from "../../server/stagecraft/board-first.js";
+// (Learning 021 rule 1: the frozen safety predicate the walk reads a child's reply with, imported, never copied or changed)
+import { scanSafety } from "../../server/director/safety.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -1034,6 +1039,8 @@ export async function checkTopic(topicId) {
   const s = scriptOf(topicId), kit = kitTopic(topicId);
   if ((s.version ?? 1) >= 2) Object.defineProperty(s, "__interests", { value: await interestWords(), enumerable: false });
   const S = structureErrors(s, kit);
+  // (Learning 021 rule 1: a safety matter, on for every script at once)
+  S.push(...safetyErrors(s));
   if (isV24(s)) S.push(...chapterSynonymErrors(topicId, allTopics().filter((t) => t !== topicId).map((t) => ({ topicId: t, s: scriptOf(t) })).concat([{ topicId, s }])));
   const W = kit ? await boardErrors(s, kit) : { errors: [], w6: [] };
   if (kit) W.errors.push(...await allBoardsResolve(s, kit));
@@ -1943,6 +1950,64 @@ export function d32Listing(s) {
     ...ruleSentences(s).filter((x) => x.l === "hi" && isRuleSentence(x.text)).map((x) => `R ${x.at}: ${x.text}`),
     ...askWholeCandidates(s).map((c) => `A ${c.at} over ${c.board?.template ?? "no board"}: ${c.card.prompt.hi}`),
   ];
+}
+/** Learning 021 Part 1 (dc-r8-director32 items 9, 2, 6, 10; docs/patches/to-learning/021-director32-own-reason-hindi-drawings-read.md).
+ *  1  A script never trips the safety reader: every key, accept form and named wrong answer (`wrongIfMis`, one or a list) of every
+ *     keyed object in a script (cards, checks, follow-ups, asked and own steps, the teachback, quick asks) is read by `scanSafety`
+ *     as a child's reply; a form it marks is an error (safetyErrors, in checkTopic for EVERY script, not a d33 opt-in). Hits in a
+ *     staged script that is not served are listed in SAFETY_STAGED_KNOWN instead (rewritten before it is served).
+ *     SAFETY_SEEN: words a judged run saw set off the safety turn as a right answer while scanSafety does not mark them (the
+ *     model's distress read did; the checker makes no model call): a form with one is an error too.
+ *  2  `--rules` H lines: every card's `whyAlt` against rule 9 (H+ passes and is unmarked; H- fails, with what it names; H0 none).
+ *  3  A posing board that is its own answer (boardAnswerCards): a card that tells the child to cut into N over a board that
+ *     draws N parts, or asks "kitne gap / hisse / tukde" with a number key over a board that draws exactly that many parts.
+ *     `--d33` lists them (B lines); an error only for a topic in D33_READY or named with --d33.
+ *  4  `--rules` O lines: every sentence of a point, a remediation or a `covered` line that names an arithmetic operation, with
+ *     the first later sentence in the script (document order) that names the same one.
+ *  5  `joints.noPicture` (no other drawing: names no number, promises nothing) and `joints.yourTurn` (an invitation, not a
+ *     question): three { hi, en } forms each, statements under 14 words; checked when present, required in D33_READY. */
+export const D33_READY = [];
+export const isD33 = (s) => D33_READY.includes(s?.topicId);
+/** Staged, unserved scripts whose forms trip the safety reader, each rewritten before it is served: { topicId, at, form }. */
+export const SAFETY_STAGED_KNOWN = [];
+/** Words a judged run saw set off the safety turn as a right answer, though scanSafety does not mark them: { word, seen }. */
+export const SAFETY_SEEN = [
+  { word: "blade", seen: "director32 c4-maths-ch01-t02 steering rows 45-48: the accept form \"chhote blade wali\" said as a right answer opened the safety turn twice (the model's distress read; scanSafety does not mark it)" },
+];
+const seenWordIn = (t) => SAFETY_SEEN.find((w) => new RegExp(`(?<![\\p{L}])${w.word}(?![\\p{L}])`, "iu").test(t)) ?? null;
+/** Every key, accept form and named wrong answer of a script: [{ at, field, form }]. Cards are named as d32Cards names them;
+ *  any other keyed object by its path under its skill. */
+export function answerForms(s) {
+  const out = [], named = new Map(d32Cards(s).map((c) => [c.card, c.at]));
+  const put = (at, o) => {
+    if (o.key != null && typeof o.key !== "object") out.push({ at, field: "key", form: String(o.key) });
+    (Array.isArray(o.accept) ? o.accept : []).forEach((f, i) => { if (f != null) out.push({ at, field: `accept[${i}]`, form: String(f) }); });
+    wrongsOf(o).forEach((f, i) => out.push({ at, field: Array.isArray(o.wrongIfMis) ? `wrongIfMis[${i}]` : "wrongIfMis", form: f }));
+  };
+  const walk = (o, path) => {
+    if (!o || typeof o !== "object") return;
+    if (!Array.isArray(o) && ("key" in o || "accept" in o || "wrongIfMis" in o)) put(named.get(o) ?? path, o);
+    for (const [k, v] of Object.entries(o)) walk(v, Array.isArray(o) ? `${path}[${k}]` : `${path}.${k}`);
+  };
+  for (const k of s?.skills ?? []) for (const [f, v] of Object.entries(k)) walk(v, `${k.skillId}/${f}`);
+  for (const [f, v] of Object.entries(s ?? {})) if (f !== "skills") walk(v, f);
+  return out;
+}
+/** Rule 1's hits: [{ at, field, form, by }]. */
+export function safetyHits(s) {
+  return answerForms(s).flatMap((x) => {
+    const r = scanSafety(x.form);
+    if (r.distress) return [{ ...x, by: `scanSafety ${r.kind}` }];
+    const w = seenWordIn(x.form);
+    return w ? [{ ...x, by: `"${w.word}" (SAFETY_SEEN)` }] : [];
+  });
+}
+export function safetyErrors(s) {
+  const e = [], hits = safetyHits(s), known = SAFETY_STAGED_KNOWN.filter((x) => x.topicId === s?.topicId);
+  const listed = (h) => known.some((k) => k.at === h.at && k.form === h.form);
+  for (const h of hits) if (!listed(h)) e.push(`${h.at}.${h.field} "${h.form}": the safety reader marks it as a child's reply (${h.by}); a right or named wrong answer never trips it: use another word (Learning 021 rule 1)`);
+  for (const k of known) if (!hits.some((h) => h.at === k.at && h.form === k.form)) e.push(`SAFETY_STAGED_KNOWN ${k.at} "${k.form}": listed but no longer a hit (or gone); take it off the list`);
+  return e;
 }
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
