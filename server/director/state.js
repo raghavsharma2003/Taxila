@@ -3423,7 +3423,8 @@ function boardHasView(ref, at = "x") {
 }
 /** Brain 048 G5: what a picture request at a live card (or an asked step) draws, in order — the card's authored `pictureBoard` with its
  *  `pictureCaption`; then the board's own second view; then nothing new: the card's hint, said as help over its posing board (a card on the
- *  checker's PICTURE_NONE list has neither, so it is always here). Each is drawn once per card: a second request gets the next.
+ *  checker's PICTURE_NONE list has neither, so it is always here; a card marked `noView` never has its view). Each is drawn once per card:
+ *  a second request gets the next.
  *  → { kind: "pictureBoard" | "view" | "hint", part, card, board } or null (no picture request, no live card or step, a keyed or closed card:
  *  the paths before G5 stand). */
 export function pictureKindOf(prev, input) {
@@ -3442,7 +3443,10 @@ export function pictureKindOf(prev, input) {
   const shown = prev.picShown?.[part.id] ?? [];
   const board = card.board ?? part.board ?? null;
   if (card.pictureBoard?.template && !shown.includes("pictureBoard")) return { kind: "pictureBoard", part, card, board };
-  if (board?.template && !shown.includes("view") && boardHasView(board, part.id)) return { kind: "view", part, card, board };
+  // (Brain 049 B2, main's addition: a card — for a worked step, its `ask` — marked `noView: true` has a board whose second view draws its own
+  // answer (c6-ch06-t01 skill 1's worked step lays the sides in a line with "?" for their total, the step's key): its view is never drawn —
+  // its pictureBoard if it has one, then the nothing-left-to-draw path)
+  if (board?.template && card.noView !== true && !shown.includes("view") && boardHasView(board, part.id)) return { kind: "view", part, card, board };
   return { kind: "hint", part, card, board };
 }
 /** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk

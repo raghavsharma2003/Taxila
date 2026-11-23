@@ -114,3 +114,32 @@ describe("B1: the Hindi switch line only where a form exists; never the same que
     assert.equal(d2.card, "hindiForm");
   });
 });
+
+describe("B2 (main's addition): a card marked noView never has its board's second view drawn", () => {
+  const T = "c4-maths-ch05-t01";
+  const picture = { event: "turn", text: "picture dikhao", cls: { outcome: "no_evidence", request: { type: "visual" } } };
+  const atCard = (S, e, shown = null) => ({ turn: 9, ctx: { lang: "hinglish" }, lastMove: { kind: "explain" }, lastUi: { status: "your_turn", ask: { itemId: `script:${S}:ask:${e}` } }, ...(shown ? { picShown: shown } : {}) });
+  test("noView: the pictureBoard if any, then nothing left to draw (help) — never the view; without the flag, the view as before", async () => {
+    const { setScriptForTest } = await import("../server/director/script.js");
+    const { pictureKindOf } = await import("../server/director/state.js");
+    const { kitFromFile } = await import("../server/content/kits.js");
+    const { getTopic } = await import("../server/content/curriculum.js");
+    const kit = kitFromFile(getTopic(T));
+    const pic = { ...picture, kit };
+    const S = `${T}-s1`;
+    try {
+      assert.equal(pictureKindOf(atCard(S, "e2"), pic).kind, "view", "the fixture card's board has a second view");
+      const s = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts", `${T}.json`), "utf8"));
+      const e2 = s.skills[0].explain.find((b) => b.id === "e2");
+      e2.ask.noView = true;
+      setScriptForTest(T, s);
+      assert.equal(pictureKindOf(atCard(S, "e2"), pic).kind, "hint", "no pictureBoard: straight to the nothing-left path");
+      e2.ask.pictureBoard = { template: "fraction-parts@1", params: { parts: 4, shade: 1, whole: "circle" } };
+      e2.ask.pictureCaption = { hi: "Yeh ek gol roti hai, chaar barabar tukdon mein.", en: "This is a round roti in four equal pieces." };
+      setScriptForTest(T, s);
+      const k1 = pictureKindOf(atCard(S, "e2"), pic);
+      assert.equal(k1.kind, "pictureBoard");
+      assert.equal(pictureKindOf(atCard(S, "e2", { [k1.part.id]: ["pictureBoard"] }), pic).kind, "hint", "after the pictureBoard: never the view");
+    } finally { setScriptForTest(undefined); }
+  });
+});
