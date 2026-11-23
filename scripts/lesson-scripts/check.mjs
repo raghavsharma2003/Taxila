@@ -21,11 +21,16 @@
 //   node scripts/lesson-scripts/check.mjs <topicId> --d33 [--rules]   hold a script to Learning 021's rules for this run and list
 //                                                                     the boards that answer their own card (B); --rules adds the
 //                                                                     whyAlt-as-help lines (H) and operation pairs (O)
+//   node scripts/lesson-scripts/check.mjs <topicId> --d34 [--rules]   hold a script to Learning 022's rules for this run and list the
+//                                                                     givens that change (G) and names on cards (N); --rules adds
+//                                                                     every fraction comparison sentence, computed (C)
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { BOARD_REFS } from "../../server/forge/explainer/board-ref.js";
+import { BOARD_REFS, resolveBoardRef } from "../../server/forge/explainer/board-ref.js";
+// (Learning 022 rule 1: a board is read for a "?" as it is drawn)
+import { expand as expandBoard } from "../../server/forge/explainer/templates.js";
 import { toSpoken } from "../../server/voice/spoken.js";
 // (Learning 018, A.1: the view a picture turn draws beside a board is read from the same call Studio draws it with — read-only)
 import { pictureTurn } from "../../server/stagecraft/board-first.js";
@@ -109,6 +114,8 @@ export function beatsOf(skill, version = 1) {
         ...skill.remediation.map((r, i) => [`rem${i + 1}.then.answer`, r.then]).filter(([, t]) => t?.answerBoard),
         ...(we.yourStep?.answerBoard ? [["we.answer", we.yourStep]] : [])]
         .map(([id, c]) => ({ id, board: c.answerBoard, line: `${c.key ?? ""} ${said(c.why)}`, withhold: null, check: false })),
+      // Learning 022 rule 2: a worked step's resultBoard is drawn after the step, under its told and its confirmation (it may show the result)
+      ...(we.steps ?? []).map((x, j) => (x.resultBoard ? { id: `we.step${j + 1}.result`, board: x.resultBoard, line: [said(x.told), said(x.ask?.right), x.result ?? ""].join(" "), withhold: null, check: false } : null)).filter(Boolean),
       // director8 (dc-r7-script-walk-v6, R1): the bridge is its own segment on its own authored board
       ...(skill.bridgeToNext && skill.bridgeBoard ? [{ id: "bridge", board: skill.bridgeBoard, line: said(skill.bridgeToNext), withhold: null, check: false }] : []),
     ].filter((b) => b.board);
@@ -707,7 +714,7 @@ export function jointErrors(s) {
   // (dc-r8-director25 H4: helpSpent and afterKeyGoOn, said by the help function when the ladder is empty; optional, so a script
   // written before them still passes) (dc-r8-director26 J1: beforeWorked, the lead into a worked problem; optional likewise)
   // (dc-r8-director26 N1, B2: helpToCard, a point's card after its wordings are spent; checkinStop, the stop menu; optional likewise)
-  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS, ...D29_JOINTS, ...D33_JOINTS, "afterWorked"].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
+  for (const k of Object.keys(j)) if (!jointKindsOf(s).includes(k) && !["helpSpent", "afterKeyGoOn", "beforeWorked", "helpToCard", "checkinStop", ...D27_JOINTS, ...D28_JOINTS, ...D29_JOINTS, ...D33_JOINTS, ...D34_JOINTS, "afterWorked"].includes(k)) e.push(`joints.${k}: not a joint kind (${jointKindsOf(s).join(", ")})`);
   return e;
 }
 
@@ -921,7 +928,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s), ...d34Errors(s));
   return e;
 }
 
@@ -2168,6 +2175,272 @@ export function d33Errors(s, { force = false } = {}) {
   if (on) for (const x of boardAnswerCards(s)) e.push(`${x.at}: its posing board (${x.board?.template}) already draws the ${x.n} ${x.kind === "cut" ? "parts the card tells the child to cut into" : "parts the card asks the child to count"}: pose it over a board that leaves the ${x.kind === "cut" ? "cut" : "count"} to the child, or list it in PICTURE_NONE with no picture (Learning 021 rule 3)`);
   return e;
 }
+/** Learning 022 Part 1 (dc-r8-director33 items 3, 4, 5, 7, 9; docs/patches/to-learning/022-director33-answer-boards-named-wrong-answers-checker.md).
+ *  1  A card posed over a "?" (a board label, mark or text item that draws "?") carries an `answerBoard`; an asked worked step, whose
+ *     card has no answerBoard at runtime, carries its `resultBoard` instead (qBoardCards).
+ *  2  A step's `told` (every step) or `ask.right` (an asked step) that states a count of gaps, parts, pieces or marks ("4 gap", "5 barabar
+ *     gaps") is said over a board that draws that many: the step's `resultBoard` when it has one (a NEW optional field on a worked step,
+ *     same shape as `board`, drawn after the step and gated like every board), else the worked example's `board`. A count above every
+ *     count the board draws, a "N barabar …" count that is none of them, or any sentence about gaps / parts over an uncut board is a hit
+ *     (stepCountHits). A board whose parts the checker cannot count (compare@1, angle@1 …) is not judged.
+ *  3  A sentence (anything said that is not a question) naming two fractions with a comparison ("A … B jitna nahi" read as A < B, "A, B
+ *     se kam / chhota", "se zyada / bada", "ke barabar", "barabar nahi", "tulya", "=", "<", ">") is computed (fractionComparisons);
+ *     a false one is a hit unless the sentence reports what someone thinks or says ("sochte", "lagta", "galat" …: listed, not judged).
+ *     `--rules` prints every one as a C line with its value.
+ *  4  A card marked `whyAltAsHelp` names its wrong answer in `wrongIfMis`.
+ *  5  A given that changes inside one problem: a named thing ("Golu ka scale") with a number in the same sentence, met again with
+ *     another number within one part (a point and its card, a worked example) or in the next part of the skill (explain beats,
+ *     the worked example, the checks, in order). Always a report line (G).
+ *  6  One name on more than two cards of one skill (a written name or `{friend}`): a report line (N); three or more names in one
+ *     lesson are listed as one N line too.
+ *  7  `joints.easierWords`: three { hi, en } forms, each 8 words or fewer, no "Hindi" / "हिंदी", no question, no digit.
+ *  Rules 1, 2, 3, 4 and 7 are errors for a topic in D34_READY or named with --d34; 5 and 6 are always report lines. */
+// (2026-11-23: empty; an author's script joins when main says)
+export const D34_READY = [];
+export const isD34 = (s) => D34_READY.includes(s?.topicId);
+const hasQ = (o) => {
+  if (typeof o === "string") return o.includes("?");
+  if (Array.isArray(o)) return o.some(hasQ);
+  if (o && typeof o === "object") return Object.values(o).some(hasQ);
+  return false;
+};
+/** Rule 1: whether a board draws a "?": a text or label of its expansion (a mark asked, "total?" left out) or, where it does not
+ *  expand, a string of its params. */
+export const boardDrawsQ = (b) => {
+  if (!b?.template) return false;
+  const r = resolveBoardRef(b);
+  if (!r.ok) return hasQ(b.params ?? {});
+  const x = expandBoard(r.call);
+  return x.ok ? (x.script?.ops ?? []).some((o) => /\?/.test(String(o.text ?? ""))) : hasQ(b.params ?? {});
+};
+const stepOf = (s, c) => {
+  const m = c.kind === "asked step" ? c.at.match(/workedExample\.steps\[(\d+)\]\.ask$/) : null;
+  return m ? s.skills.find((k) => k.skillId === c.skillId)?.workedExample?.steps?.[Number(m[1])] ?? null : null;
+};
+/** Rule 1's hits: [{ at, kind, board, prompt }] — cards posed over a "?" with no answer board (an asked step: no resultBoard). */
+export function qBoardCards(s) {
+  const out = [];
+  for (const c of d32Cards(s)) {
+    if (!boardDrawsQ(c.board)) continue;
+    const step = stepOf(s, c), answered = step ? !!step.resultBoard : !!c.card.answerBoard;
+    if (!answered) out.push({ at: c.at, kind: c.kind, board: c.board, prompt: String(c.card.prompt?.hi ?? "") });
+  }
+  return out;
+}
+// (rule 2: a count of gaps / parts / pieces / marks said as a number before its noun; "3 ke nishaan" names a mark, it counts none)
+const COUNT_NOUN = "(gaps?|hiss\\p{L}*|tukd\\p{L}*|parts?|pieces?|marks?|nishaan\\p{L}*)";
+const STEP_COUNT = new RegExp(`(?<![\\d/.])(\\d+)\\s+(barabar\\s+|equal\\s+)?${COUNT_NOUN}(?![\\p{L}])`, "giu");
+const GAP_TALK = /(?<![\p{L}])(?:gaps?|hiss\p{L}*|tukd\p{L}*|parts?|pieces?)(?![\p{L}])/iu;
+/** Rule 2: the counts a board draws for a step's sentence: { parts: [..], dens: [..] } (a line's parts per whole are its dens). */
+const drawnCounts = (b) => {
+  const parts = partCountsOf(b), p = b?.params ?? {};
+  const dens = b?.template === "fraction-line@1" ? (p.dens ?? [p.den]).map(Number).filter((x) => Number.isInteger(x) && x > 0) : [];
+  return { parts, dens };
+};
+/** Rule 2's hits: [{ at, field, board, boardAt, text, n, why }] for every worked step's told and every asked step's ask.right. */
+export function stepCountHits(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    const we = k.workedExample;
+    (we?.steps ?? []).forEach((x, j) => {
+      const board = x.resultBoard ?? we.board, boardAt = x.resultBoard ? "resultBoard" : "workedExample.board";
+      const { parts, dens } = drawnCounts(board);
+      if (!parts.length) return; // (a board whose parts are not counted here is not judged)
+      const max = Math.max(...parts), at = `${k.skillId}/workedExample.steps[${j}]`;
+      const fields = [["told", x.told], ...(x.ask ? [["ask.right", x.ask.right]] : [])];
+      for (const [f, v] of fields) for (const l of ["hi", "en"]) {
+        const t = String(v?.[l] ?? "");
+        if (!t) continue;
+        const field = `${f}${l === "en" ? " (en)" : ""}`;
+        let hit = false;
+        for (const m of t.matchAll(STEP_COUNT)) {
+          const n = Number(m[1]), mark = /^(?:marks?|nishaan)/i.test(m[3]), equal = !!m[2];
+          const fits = mark ? n <= max + 1 : equal ? parts.includes(n) || dens.includes(n) : n <= max;
+          if (!fits) { out.push({ at, field, board, boardAt, text: t, n, why: `"${m[0].trim()}" but the board draws ${parts.join(" / ")}${dens.length ? ` (${dens.join(" / ")} a whole)` : ""}` }); hit = true; }
+        }
+        if (!hit && max <= 1 && GAP_TALK.test(t)) out.push({ at, field, board, boardAt, text: t, n: null, why: `talks of ${t.match(GAP_TALK)[0]} over an uncut board` });
+      }
+    });
+  }
+  return out;
+}
+// (rule 3: a fraction is digits/digits; a whole "1" is not read, so "4/4 = 1" is no pair)
+const FRAC = /(?<![\d/.])(\d+)\s*\/\s*(\d+)(?![\d/])/g;
+const REPORTED = /(?<![\p{L}])(?:soch\p{L}*|lag(?:ta|ti|te)|lag\s+sakta|kehte|kehti|kehta|kaha|bola|boli|bole|galat\p{L}*|maan\p{L}*|agar|think\p{L}*|thought|seems?|wrong)(?![\p{L}])/iu;
+// (each comparison read right after its reference fraction B, up to three filler words between: [pattern, relation, negated relation])
+const FILL = "(?:\\s+(?!nahi|nahin)[\\p{L}]+){0,3}?";
+const COMPARES = [
+  [new RegExp(`^${FILL}\\s+jitn(?:a|i|e)(?:\\s+(?!nahi|nahin)\\p{L}+)?\\s+(?:nahi|nahin)(?![\\p{L}])`, "iu"), "<", null],
+  [new RegExp(`^${FILL}\\s+jitn(?:a|i|e)(?:\\s+(?:hi|hai|hain|ho|hota|hoti|hote)(?![\\p{L}])|\\s*[,.;:!]|\\s*$)`, "iu"), "=", null],
+  [new RegExp(`^\\s*(?:,\\s*)?(?:wale\\s+|wali\\s+|wala\\s+)?se\\s+(?:(?:thoda|thodi|bhi|aur|kaafi|bahut|zyada)\\s+)?(?:kam|chhot\\p{L}*)(?![\\p{L}])`, "iu"), "<", ">="],
+  [new RegExp(`^\\s*(?:,\\s*)?(?:wale\\s+|wali\\s+|wala\\s+)?se\\s+(?:(?:thoda|thodi|bhi|aur|kaafi|bahut)\\s+)?(?:zyada|jyada|adhik|bad[aie]|lamb[aie])(?![\\p{L}])`, "iu"), ">", "<="],
+  [/^\s*(?:,\s*)?(?:ke|ki)\s+barabar(?![\p{L}])/iu, "=", "!="],
+  [/^\s*(?:(?:dono|bhi|hain|hai)\s+)?(?:barabar|tulya)(?![\p{L}])/iu, "=", "!="],
+];
+const NEG_AFTER = /^\s*(?:hai\s+|hain\s+|hota\s+|hoti\s+|hote\s+)?(?:nahi|nahin)(?![\p{L}])/iu;
+const holds = (a, rel, b) => {
+  const x = a[0] * b[1], y = b[0] * a[1];
+  return { "<": x < y, ">": x > y, "=": x === y, "!=": x !== y, "<=": x <= y, ">=": x >= y }[rel];
+};
+/** Rule 3: every sentence (questions included, unjudged) naming two fractions with a comparison:
+ *  [{ at, text, a, rel, b, value: true | false | "reported" | "question" }]. */
+export function fractionComparisons(s) {
+  const out = [];
+  for (const x of scriptSentences(s)) {
+    if (/\.(?:prompt|reask|hindi)$|^joints\.|^terms|\/hook\./.test(x.at)) continue;
+    const q = /[?？]\s*$/.test(x.text);
+    // (one clause at a time: "…; chhota 1/3 se chhota" compares nothing with the 1/3 of the clause before)
+    for (const t of x.text.split(/\s*[;:]\s+/)) {
+      const fr = [...t.matchAll(FRAC)].map((m) => ({ v: [Number(m[1]), Number(m[2])], s: m.index, e: m.index + m[0].length, f: `${m[1]}/${m[2]}` }));
+      if (fr.length < 2) continue;
+      const put = (A, r, B) => { if (A.f !== B.f) out.push({ at: x.at, text: x.text, a: A.f, rel: r, b: B.f, value: q ? "question" : REPORTED.test(t) ? "reported" : holds(A.v, r, B.v) }); };
+      // (each fraction's comparison when it is the reference B: [match, rel, negRel] or null)
+      const ref = fr.map((B) => { for (const [re, rel, negRel] of COMPARES) { const m = t.slice(B.e).match(re); if (m) return { m, rel, negRel }; } return null; });
+      fr.forEach((B, i) => {
+        // ("=", "<", ">" alone between two fractions)
+        const next = fr[i + 1], sign = next ? t.slice(B.e, next.s).match(/^\s*([=<>])\s*$/) : null;
+        if (sign) { put(B, sign[1], next); return; }
+        const c = ref[i];
+        if (!c) return;
+        const end = B.e + c.m[0].length;
+        // (a fraction inside the filler is no reference: the comparison belongs to the nearer one)
+        if (fr.some((y) => y.s > B.e && y.s < end)) return;
+        const r = c.negRel && NEG_AFTER.test(t.slice(end)) ? c.negRel : c.rel;
+        // (A is the nearest fraction before B that is no reference itself — "1/3 se chhota par 1/6 se bada" compares an unnamed share
+        // with both — else, for a "se" reading, the first such after the comparison: "1/3 se chhota hissa 1/4 hai")
+        const free = (y, j) => !ref[j] && y !== B;
+        const before = fr.map((y, j) => [y, j]).filter(([y, j]) => j < i && free(y, j)).pop()?.[0];
+        const sym = /barabar|tulya/iu.test(c.m[0]), jitna = /jitn/iu.test(c.m[0]);
+        const after = sym || jitna ? null : fr.map((y, j) => [y, j]).find(([y, j]) => y.s >= end && free(y, j))?.[0];
+        const A = before ?? after;
+        if (A) put(A, r, B);
+      });
+    }
+  }
+  return out;
+}
+/** Rule 3's C lines (`--rules`). */
+export const comparisonLines = (s) => fractionComparisons(s).map((c) => `C ${c.at} [${c.a} ${c.rel} ${c.b}: ${c.value === true ? "true" : c.value === false ? "FALSE" : c.value}]: ${c.text}`);
+/** Rule 4's hits: cards marked whyAltAsHelp with no wrongIfMis. */
+export const markedNoWrong = (s) => d32Cards(s).filter((c) => c.card.whyAltAsHelp === true && !wrongsOf(c.card).length).map((c) => ({ at: c.at, whyAlt: String(c.card.whyAlt?.hi ?? "") }));
+// (rules 5 and 6: a written name is a capitalised word that is no common sentence opener, no kin word, no unit)
+const NOT_NAMES = new Set(["ek", "yeh", "ye", "woh", "wo", "is", "us", "isi", "usi", "in", "un", "har", "ab", "toh", "to", "kya", "kaun", "kaunsa", "kaunsi", "kitne", "kitna", "kitni",
+  "tumhare", "tumhari", "tumhara", "tum", "main", "mera", "meri", "mere", "hum", "humne", "aap", "dono", "do", "teen", "chaar", "paanch", "pehle", "phir", "haan", "nahi", "achha", "accha",
+  "dekho", "socho", "batao", "chalo", "suno", "agar", "jab", "jo", "jaise", "kyunki", "lekin", "par", "aur", "ya", "sahi", "galat", "bilkul", "shabash", "wah", "theek", "papa", "mummy",
+  "maa", "didi", "bhaiya", "dada", "dadi", "nana", "nani", "chacha", "teacher", "ma'am", "sir", "hindi", "english", "ncert", "cbse", "laal", "neela", "hara", "peela", "pehla", "doosra",
+  "aadha", "aadhi", "sabse", "kisi", "koi", "kuch", "sab", "pura", "poora", "puri", "poori", "the", "a", "an", "this", "that", "your", "my", "our", "now", "so", "yes", "no", "what", "how"]);
+const nameOk = (w) => /^\p{Lu}\p{Ll}+$/u.test(w) && !NOT_NAMES.has(w.toLowerCase());
+const cardNamesIn = (t) => {
+  const out = new Set(), x = String(t ?? "");
+  if (/\{friend\}/.test(x)) out.add("{friend}");
+  for (const sent of sentencesOf(x)) {
+    const w = sent.split(/[^\p{L}'{}]+/u).filter(Boolean);
+    w.forEach((v, i) => {
+      if (nameOk(v)) out.add(v);
+    });
+  }
+  return out;
+};
+const G_ADJ = new Set(["toota", "tooti", "toote", "naya", "nayi", "naye", "purana", "purani", "chhota", "chhoti", "bada", "badi", "lamba", "lambi", "apna", "apni", "apne", "wala", "wali", "wale", "ek"]);
+/** Rule 5: the named givens of a text: [{ thing, n, text }] — "<name> ka/ki/ke [adjective] <noun>" with the first number after it in the sentence. */
+const givensIn = (t) => {
+  const out = [];
+  for (const sent of sentencesOf(t)) {
+    const re = /(?<![\p{L}])(\p{Lu}\p{Ll}+|\{friend\})\s+(ka|ki|ke)\s+(\p{L}+)(?:\s+(\p{L}+))?/gu;
+    for (const m of sent.matchAll(re)) {
+      if (m[1] !== "{friend}" && !nameOk(m[1])) continue;
+      const noun = G_ADJ.has(m[3].toLowerCase()) && m[4] ? m[4] : m[3];
+      const rest = sent.slice(m.index + m[0].length), num = rest.match(/(?<![\d/.])(\d+(?:\.\d+)?)(?![\d/])/);
+      if (num) out.push({ thing: `${m[1]} ${m[2]} ${noun.toLowerCase()}`.replace(/ (?:ki|ke) /, " ka "), n: num[1], text: sent });
+    }
+  }
+  return out;
+};
+const hiOf = (o) => (o && typeof o === "object" ? [o.hi].filter(Boolean).join(" ") : "");
+/** Rule 5's parts of a skill in order: [{ at, texts: [[at, text]] }]. */
+const problemParts = (k) => {
+  const id = k.skillId, card = (at, c) => (c ? [[`${at}.prompt`, hiOf(c.prompt)]] : []), we = k.workedExample;
+  return [
+    ...(k.explain ?? []).map((b) => ({ at: `${id}/${b.id}`, texts: [[`${id}/${b.id}.point`, hiOf(b.point)], ...card(`${id}/${b.id}.ask`, b.ask)] })),
+    ...(we ? [{ at: `${id}/workedExample`, texts: [[`${id}/workedExample.problem`, hiOf(we.problem)], ...(we.givens ?? []).map((g, i) => [`${id}/workedExample.givens[${i}]`, typeof g === "string" ? g : hiOf(g)]),
+      ...(we.steps ?? []).flatMap((x, i) => [[`${id}/workedExample.steps[${i}].told`, hiOf(x.told)], ...card(`${id}/workedExample.steps[${i}].ask`, x.ask)]), ...card(`${id}/workedExample.yourStep`, we.yourStep)] }] : []),
+    ...(k.checks ?? []).map((c) => ({ at: `${id}/${c.id}`, texts: card(`${id}/${c.id}`, c) })),
+  ];
+};
+/** Rule 5's G lines: a named given met again with another number, within one part or in the next part. */
+export function givenChangeLines(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    const parts = problemParts(k).map((p) => ({ ...p, g: p.texts.flatMap(([at, t]) => givensIn(t).map((x) => ({ ...x, at }))) }));
+    const seen = new Set(), say = (a, b, where) => {
+      const key = `${a.at}|${b.at}|${a.thing}`;
+      if (seen.has(key)) return;
+      seen.add(key);
+      out.push(`G ${a.at} → ${b.at} (${where}): "${a.thing}" ${a.n} then ${b.n}: "${a.text}" / "${b.text}"`);
+    };
+    parts.forEach((p, i) => {
+      p.g.forEach((a, x) => p.g.slice(x + 1).forEach((b) => { if (a.thing === b.thing && a.n !== b.n) say(a, b, "one part"); }));
+      const q = parts[i + 1];
+      if (q) for (const a of p.g) for (const b of q.g) if (a.thing === b.thing && a.n !== b.n) say(a, b, "consecutive parts");
+    });
+  }
+  return out;
+}
+/** Rule 6's N lines: a name on more than two cards of one skill; and a name on more than two cards of the lesson across its skills. A
+ *  written name is a capitalised word on a card that the script never writes in lower case ("Line", "Roti" are common words) and
+ *  is no common opener; `{friend}` is one name (the walk fills it with one friend for the lesson). */
+export function nameLines(s) {
+  const out = [], lower = new Set();
+  for (const x of scriptSentences(s)) for (const w of x.text.split(/[^\p{L}]+/u)) if (/^\p{Ll}/u.test(w)) lower.add(w);
+  const bySkill = new Map(), byLesson = new Map();
+  for (const c of d32Cards(s)) {
+    const names = [...cardNamesIn(`${c.card.prompt?.hi ?? ""}`)].filter((n) => n === "{friend}" || !lower.has(n.toLowerCase()));
+    for (const n of names) {
+      const key = `${c.skillId ?? "teachback"}|${n}`;
+      bySkill.set(key, [...(bySkill.get(key) ?? []), c.at]);
+      byLesson.set(n, [...(byLesson.get(n) ?? []), c.at]);
+    }
+  }
+  for (const [key, ats] of bySkill) if (ats.length > 2) { const [sk, n] = key.split("|"); out.push(`N ${sk}: "${n}" on ${ats.length} cards of one skill: ${ats.join(", ")}`); }
+  for (const [n, ats] of byLesson) {
+    const skills = new Set(ats.map((a) => a.split("/")[0]));
+    if (ats.length > 2 && skills.size > 1) out.push(`N ${s?.topicId}: "${n}" on ${ats.length} cards in ${skills.size} skills (one name, more than one person?): ${ats.join(", ")}`);
+  }
+  return out;
+}
+/** Rule 7: joints.easierWords. */
+export const D34_JOINTS = ["easierWords"];
+export const D34_JOINT_FORMS = 3, D34_JOINT_MAX = 8;
+export function d34JointErrors(s, { required = false } = {}) {
+  const e = [], forms = s?.joints?.easierWords, r = " (Learning 022 rule 7)";
+  if (forms == null) { if (required) e.push(`joints.easierWords: ${D34_JOINT_FORMS} forms { hi, en }, a promise to say it in easier words${r}`); return e; }
+  if (!Array.isArray(forms) || forms.length !== D34_JOINT_FORMS) return [`joints.easierWords: ${D34_JOINT_FORMS} forms (got ${Array.isArray(forms) ? forms.length : 0})${r}`];
+  forms.forEach((f, i) => {
+    const at = `joints.easierWords[${i}]`, before = e.length;
+    formsOk(e, at, f, { question: false, max: D34_JOINT_MAX });
+    for (let x = before; x < e.length; x++) e[x] += r;
+    for (const l of ["hi", "en"]) {
+      const t = String(f?.[l] ?? ""), a = `${at}${l === "en" ? " (en)" : ""}`;
+      if (/(?<![\p{L}])hindi(?![\p{L}])|हिंदी|हिन्दी/iu.test(t)) e.push(`${a}: says "Hindi"; it promises easier words, not another language${r}`);
+      if (/\d/.test(t)) e.push(`${a}: a digit; it says nothing about the answer${r}`);
+    }
+  });
+  const seen = new Set();
+  forms.forEach((f, i) => { const n = d27Norm(f?.hi ?? ""); if (n && seen.has(n)) e.push(`joints.easierWords[${i}]: the same form twice${r}`); seen.add(n); });
+  return e;
+}
+/** Learning 022's errors: rule 7 wherever it is written; rules 1-4 and 7's requirement for a topic in D34_READY or forced. */
+export function d34Errors(s, { force = false } = {}) {
+  const on = force || isD34(s), e = d34JointErrors(s, { required: on });
+  if (!on) return e;
+  for (const x of qBoardCards(s)) e.push(`${x.at}: posed over a board that draws "?" (${x.board.template}) and has no ${x.kind === "asked step" ? "resultBoard on its step" : "answerBoard"}: give it the board that answers the "?" (Learning 022 rule 1)`);
+  for (const x of stepCountHits(s)) e.push(`${x.at}.${x.field}: ${x.why}; say it over a board that draws it (the step's resultBoard) or say what the ${x.boardAt} draws: "${x.text}" (Learning 022 rule 2)`);
+  for (const c of fractionComparisons(s).filter((y) => y.value === false)) e.push(`${c.at}: "${c.text}" says ${c.a} ${c.rel} ${c.b}, which is false (Learning 022 rule 3)`);
+  for (const x of markedNoWrong(s)) e.push(`${x.at}: marked whyAltAsHelp with no wrongIfMis: name the answer its whyAlt was written against, or take the mark off (Learning 022 rule 4)`);
+  return e;
+}
+/** Learning 022's lines for a reader: G (rule 5), N (rule 6), and the hits of rules 1-4 as Q / K / C / W lines when not errors. */
+export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s)];
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2233,6 +2506,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (args.includes("--d32")) for (const t of topics) { if (!D32_READY.includes(t)) D32_READY.push(t); if (!D32_PICTURES_READY.includes(t)) D32_PICTURES_READY.push(t); }
   // (Learning 021: --d33 holds the named scripts to the 021 rules for this run only, as D33_READY does for good)
   if (args.includes("--d33")) for (const t of topics) if (!D33_READY.includes(t)) D33_READY.push(t);
+  // (Learning 022: --d34 holds the named scripts to the 022 rules for this run only, as D34_READY does for good)
+  if (args.includes("--d34")) for (const t of topics) if (!D34_READY.includes(t)) D34_READY.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
@@ -2256,6 +2531,9 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     if (args.includes("--rules")) for (const m of [...whyAltHelpLines(scriptOf(t)), ...operationPairs(scriptOf(t))]) console.log(`  ${m}`);
     // (Learning 021 rule 3: the cards whose posing board draws their answer, for main to confirm)
     if (args.includes("--d33") || args.includes("--rules")) for (const m of boardAnswerLines(scriptOf(t))) console.log(`  ${m}`);
+    // (Learning 022: the comparison sentences, computed (C); the givens that change (G) and the names on cards (N): report lines)
+    if (args.includes("--rules")) for (const m of comparisonLines(scriptOf(t))) console.log(`  ${m}`);
+    if (args.includes("--d34") || args.includes("--rules")) for (const m of d34ReportLines(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {
