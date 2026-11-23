@@ -684,6 +684,23 @@
               "hi": "Yahan dono roti gol bani hain: pehli teen barabar hisson mein, doosri baarah mein, abhi koi rangeen nahi.",
               "en": "Here both rotis are drawn round: the first in three equal parts, the second in twelve, none coloured yet."
             },
+            "answerBoard": {
+              "template": "fraction-bars@1",
+              "params": {
+                "bars": [
+                  {
+                    "parts": 3,
+                    "shade": 2,
+                    "label": "2/3"
+                  },
+                  {
+                    "parts": 12,
+                    "shade": 8,
+                    "label": "8/12"
+                  }
+                ]
+              }
+            },
             "why": {
               "hi": "Mohit ke hisse chaar-chaar milao: 12 se 3 bade hisse, 8 se 2. 8/12 = 2/3, toh dono ne barabar khaaya",
               "en": "Join Mohit's parts in fours: 12 make 3 big parts, 8 make 2. 8/12 = 2/3, so both ate the same"
@@ -810,6 +827,28 @@
             "told": {
               "hi": "Dono ko 4 bade hisson mein laayenge: 8 aur 12 dono 4 barabar hisson mein mil jaate hain.",
               "en": "We bring both to 4 big parts: 8 and 12 both join equally into 4."
+            },
+            "resultBoard": {
+              "template": "fraction-bars@1",
+              "params": {
+                "bars": [
+                  {
+                    "parts": 8,
+                    "shade": 0,
+                    "label": ""
+                  },
+                  {
+                    "parts": 4,
+                    "shade": 0,
+                    "label": ""
+                  },
+                  {
+                    "parts": 12,
+                    "shade": 0,
+                    "label": ""
+                  }
+                ]
+              }
             }
           },
           {
@@ -829,6 +868,23 @@
             "told": {
               "hi": "Pehli patti ke do-do hisse milaye: 4 bade hisse bane, aur 6 rangeen mil kar 3.",
               "en": "We joined the first strip's parts in twos: 4 big parts formed, and the 6 coloured became 3."
+            },
+            "resultBoard": {
+              "template": "fraction-bars@1",
+              "params": {
+                "bars": [
+                  {
+                    "parts": 8,
+                    "shade": 6,
+                    "label": "6/8"
+                  },
+                  {
+                    "parts": 4,
+                    "shade": 3,
+                    "label": "3/4"
+                  }
+                ]
+              }
             }
           }
         ],
@@ -995,17 +1051,17 @@
         {
           "id": "c2",
           "prompt": {
-            "hi": "Farhan ne pizza ke 3 barabar hisson mein se 1 khaaya. Ritu ka waisa hi pizza 9 barabar hisson mein kata hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
-            "en": "Farhan ate 1 of a pizza's 3 equal parts. Ritu's pizza, just like it, is cut into 9 equal parts. To eat more than Farhan, at least how many parts must Ritu eat?"
+            "hi": "Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+            "en": "Farhan ate 1 of a chocolate's 3 equal parts. Ritu's chocolate, just like it, is split into 9 equal parts. To eat more than Farhan, at least how many parts must Ritu eat?"
           },
           "reask": {
-            "hi": "1/3 pizza se zyada ho, iske liye 9 hisson wale pizza ke kam se kam kitne hisse chahiye?",
-            "en": "To have more than 1/3 of a pizza, at least how many parts of the 9-part pizza are needed?"
+            "hi": "1/3 chocolate se zyada ho, iske liye 9 hisson wali chocolate ke kam se kam kitne hisse chahiye?",
+            "en": "To have more than 1/3 of a chocolate, at least how many parts of the 9-part chocolate are needed?"
           },
           "key": "4",
           "did": {
-            "hi": "Farhan se zyada pizza ke liye Ritu ke hisse gine",
-            "en": "counted Ritu's parts for more pizza than Farhan"
+            "hi": "Farhan se zyada chocolate ke liye Ritu ke hisse gine",
+            "en": "counted Ritu's parts for more chocolate than Farhan"
           },
           "accept": [
             "chaar",
@@ -1028,41 +1084,53 @@
           "targets": "c6-maths-ch07-t03-m-bigger-numbers-bigger",
           "wrongIfMis": "2",
           "board": {
-            "template": "compare@1",
+            "template": "wholes@1",
             "params": {
-              "left": {
-                "title": "Farhan",
-                "items": [
-                  "3 mein se 1 hissa"
-                ]
-              },
-              "right": {
-                "title": "Ritu",
-                "items": [
-                  "9 hisson mein se ?"
-                ]
-              }
+              "as": "bar",
+              "wholes": [
+                {
+                  "parts": 3,
+                  "shade": 1,
+                  "title": "Farhan"
+                },
+                {
+                  "parts": 9,
+                  "shade": 0,
+                  "title": "Ritu"
+                }
+              ]
             }
           },
           "viewCaption": {
-            "hi": "Board par likha hai: Farhan ne 3 hisson mein se 1 khaaya, aur Ritu ke 9 hisson ke saamne sawaal ka nishaan hai.",
-            "en": "The board says: Farhan ate 1 of 3 parts, and beside Ritu's 9 parts there is a question mark."
+            "hi": "Yahan dono chocolate gol bani hain: Farhan wali 3 barabar hisson mein, 1 rangeen; Ritu wali 9 mein, abhi koi rangeen nahi.",
+            "en": "Here both chocolates are drawn round: Farhan's in 3 equal parts, 1 coloured; Ritu's in 9, none coloured yet."
           },
-          "pictureBoard": {
-            "template": "fraction-parts@1",
+          "answerBoard": {
+            "template": "wholes@1",
             "params": {
-              "parts": 3,
-              "shade": 0,
-              "whole": "circle"
+              "as": "bar",
+              "wholes": [
+                {
+                  "parts": 3,
+                  "shade": 1,
+                  "title": "Farhan"
+                },
+                {
+                  "parts": 9,
+                  "shade": 4,
+                  "title": "Ritu"
+                }
+              ]
             }
           },
-          "pictureCaption": {
-            "hi": "Yahan Farhan wala pizza hai, 3 barabar hisson mein kata; abhi koi hissa rangeen nahi.",
-            "en": "Here is Farhan's pizza, cut into 3 equal parts; no part is coloured yet."
+          "answerViewCaption": {
+            "hi": "Yahan dono gol bani hain: Ritu ke 4 rangeen hisse Farhan ke 1 hisse se thode zyada hain.",
+            "en": "Here both are drawn round: Ritu's 4 coloured parts are a little more than Farhan's 1 part."
           },
+
           "why": {
-            "hi": "Farhan ka 1 hissa 9 wale pizza ke 3 hisson jitna hai; usse zyada ke liye kam se kam 4 hisse",
-            "en": "Farhan's 1 part is as much as 3 parts of the 9-part pizza; more than that needs at least 4 parts"
+            "hi": "Farhan ka 1 hissa Ritu ke 3 hisson jitna hai; usse zyada ke liye kam se kam 4 hisse",
+            "en": "Farhan's 1 part is as much as 3 of Ritu's parts; more than that needs at least 4 parts"
           },
           "whyShort": {
             "hi": "Farhan ka 1 hissa Ritu ke 3 jitna: toh 4",
@@ -1078,8 +1146,8 @@
             "en": "Think how many of Ritu's small parts Farhan's one big part is as much as. Then think how many are needed for more than that."
           },
           "hindi": {
-            "hi": "Farhan ka 1 hissa 3 hisson wale pizza ka hai, aur Ritu ke pizza mein 9 chhote hisse hain. Ritu kitne chhote hisse le ki uska Farhan se zyada ho?",
-            "en": "Farhan's 1 part is from a 3-part pizza, and Ritu's pizza has 9 small parts. How many small parts should Ritu take so hers is more than Farhan's?"
+            "hi": "Farhan ka 1 hissa 3 hisson wali chocolate ka hai, aur Ritu ki chocolate mein 9 chhote hisse hain. Ritu kitne chhote hisse le ki uska Farhan se zyada ho?",
+            "en": "Farhan's 1 part is from a 3-part chocolate, and Ritu's chocolate has 9 small parts. How many small parts should Ritu take so hers is more than Farhan's?"
           }
         }
       ],
@@ -1506,39 +1574,32 @@
             "targets": "c6-maths-ch07-t03-m-one-side",
             "wrongIfMis": "14/5",
             "board": {
-              "template": "compare@1",
+              "template": "fraction-bars@1",
               "params": {
-                "left": {
-                  "title": "Upar",
-                  "items": [
-                    "14",
-                    "?"
-                  ]
-                },
-                "right": {
-                  "title": "Neeche",
-                  "items": [
-                    "35",
-                    "5"
-                  ]
-                }
+                "bars": [
+                  {
+                    "parts": 5,
+                    "shade": 0,
+                    "label": ""
+                  }
+                ]
               }
             },
             "viewCaption": {
-              "hi": "Board par baayein upar ke number hain, 14 aur khaali jagah, aur daayein neeche ke, 35 aur 5.",
-              "en": "On the board, the top numbers are on the left, 14 and a blank, and the bottom ones on the right, 35 and 5."
+              "hi": "Yahan neeche 5 wale bhinn ki patti ek gol roti ki tarah bani hai: 5 barabar hisse, abhi koi rangeen nahi.",
+              "en": "Here the strip for the fraction with 5 at the bottom is drawn round like a roti: 5 equal parts, none coloured yet."
             },
-            "pictureBoard": {
-              "template": "fraction-parts@1",
+            "answerBoard": {
+              "template": "fraction-bars@1",
               "params": {
-                "parts": 5,
-                "shade": 0,
-                "whole": "bar"
+                "bars": [
+                  {
+                    "parts": 5,
+                    "shade": 2,
+                    "label": "2/5"
+                  }
+                ]
               }
-            },
-            "pictureCaption": {
-              "hi": "Yahan neeche 5 wale bhinn ki patti hai, 5 barabar hisson mein; abhi koi hissa rangeen nahi.",
-              "en": "Here is the strip for the fraction with 5 at the bottom, in 5 equal parts; no part is coloured yet."
             },
             "why": {
               "hi": "neeche 35 ÷ 7 = 5, toh upar bhi 14 ÷ 7 = 2: 2/5",
@@ -1642,13 +1703,35 @@
                     "parts": 4,
                     "shade": 3,
                     "label": ""
+                  },
+                  {
+                    "parts": 5,
+                    "shade": 0,
+                    "label": ""
                   }
                 ]
               }
             },
             "viewCaption": {
-              "hi": "Yahan wahi patti ek gol roti ki tarah bani hai: 4 barabar hisse, aur 3 rangeen.",
-              "en": "Here the same strip is drawn round like a roti: 4 equal parts, 3 coloured."
+              "hi": "Yahan dono pattiyan gol bani hain: pehli 4 barabar hisson mein, 3 rangeen; doosri 5 mein, abhi koi rangeen nahi.",
+              "en": "Here both strips are drawn round: the first in 4 equal parts, 3 coloured; the second in 5, none coloured yet."
+            },
+            "answerBoard": {
+              "template": "fraction-bars@1",
+              "params": {
+                "bars": [
+                  {
+                    "parts": 4,
+                    "shade": 3,
+                    "label": "3/4"
+                  },
+                  {
+                    "parts": 5,
+                    "shade": 4,
+                    "label": "4/5"
+                  }
+                ]
+              }
             },
             "why": {
               "hi": "20 hisson mein likho: 3/4 = 15/20 aur 4/5 = 16/20, toh 4/5 zyada",
@@ -2012,15 +2095,14 @@
               "right": {
                 "title": "Neeche",
                 "items": [
-                  "56",
-                  "?"
+                  "56"
                 ]
               }
             }
           },
           "viewCaption": {
-            "hi": "Board par baayein upar ke number hain, 40 aur 5, aur daayein neeche ke, 56 aur khaali jagah.",
-            "en": "On the board, the top numbers are on the left, 40 and 5, and the bottom ones on the right, 56 and a blank."
+            "hi": "Board par baayein upar ke number hain, 40 aur 5, aur daayein neeche ka number, 56.",
+            "en": "On the board, the top numbers are on the left, 40 and 5, and the bottom number on the right, 56."
           },
           "pictureBoard": {
             "template": "compare@1",
