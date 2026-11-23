@@ -429,3 +429,29 @@ test("050 (main's reader, c5-ch02-t03): a right form with a denial added, and a 
   assert.ok(denied > 500 && turned > 10, `the walls ran (denied ${denied}, turned ${turned})`);
   assert.deepEqual(leaks, []);
 });
+
+test("050 units: where a right form carries a unit, the key's number said with another unit is never `correct` (main's second and third readers)", () => {
+  const c = card("5 cm", ["5", "5 centimetre", "paanch cm", "5 cm ka", "five", "paanch"], null, "Ab ek 15 cm ki patti ke 3 barabar hisse karne hain. Har hissa kitne cm ka hoga?");
+  for (const s of ["5 metre", "5 m", "paanch metre"]) assert.equal(grade(c, s), "incorrect", s);
+  for (const s of ["5 square cm", "5 sq cm", "5 वर्ग सेंटीमीटर", "5 kg"]) assert.notEqual(grade(c, s), "correct", s);
+  for (const s of ["5", "5 cm", "paanch cm", "5 सेंटीमीटर", "5 centimetre"]) assert.equal(grade(c, s), "correct", s);
+  // the wall, over every card of every script whose key carries one of these units
+  const UNITS = ["cm", "m", "km", "g", "kg", "ml", "litre", "rupaye", "minute", "ghante", "square cm", "sq m"];
+  const KEY_UNIT = /^\s*(\d+(?:\/\d+)?)\s*(cm|m|km|g|kg|ml|litre|litres|l|rupaye|rs|minute|minutes|ghante|ghanta)\.?\s*$/i;
+  const leaks = []; let cards = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const m = String(it.answer).match(KEY_UNIT);
+    if (!m) continue;
+    cards++;
+    const ku = canon(String(it.answer)).units;
+    for (const u of UNITS) {
+      const f = `${m[1]} ${u}`;
+      if (canon(f).units.join() === ku.join()) continue;
+      tried++;
+      if (grade(it, f) === "correct") leaks.push(`${name} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f)}`);
+    }
+  }
+  console.log(`# 050 unit wall: ${cards} cards, ${tried} replies`);
+  assert.ok(cards >= 3, `the wall found unit-keyed cards (${cards})`);
+  assert.deepEqual(leaks, []);
+});

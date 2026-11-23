@@ -36,9 +36,16 @@ const ALL_WORDS = new Set(["dono", "donon", "both", "sab", "sabhi", "all"]);
 const UNIT0 = { cm: "cm", centimetre: "cm", centimetres: "cm", centimeter: "cm", centimeters: "cm", "सेंटीमीटर": "cm", mm: "mm", millimetre: "mm", millimeter: "mm",
   m: "m", metre: "m", metres: "m", meter: "m", meters: "m", "मीटर": "m", km: "km", kilometre: "km", kilometres: "km", kilometer: "km", kilometers: "km",
   "किलोमीटर": "km", kg: "kg", kilo: "kg", kilogram: "kg", kilograms: "kg", "किलो": "kg", "किलोग्राम": "kg", g: "g", gm: "g", gram: "g", grams: "g", "ग्राम": "g",
-  l: "l", litre: "l", litres: "l", liter: "l", liters: "l", "लीटर": "l", ml: "ml", rs: "rs", rupees: "rs", rupee: "rs", rupaye: "rs", "रुपये": "rs", "रुपए": "rs" };
+  l: "l", litre: "l", litres: "l", liter: "l", liters: "l", "लीटर": "l", ml: "ml", rs: "rs", rupees: "rs", rupee: "rs", rupaye: "rs", "रुपये": "rs", "रुपए": "rs",
+  // (050: time is a unit too — "5 minute" is not "5 ghante")
+  minute: "min", minutes: "min", mins: "min", "मिनट": "min", ghanta: "hr", ghante: "hr", ghanton: "hr", hour: "hr", hours: "hr", "घंटा": "hr", "घंटे": "hr" };
 const UNIT = new Map(Object.entries(UNIT0).map(([k, v]) => [fold(k), v]));
 const SHORT_UNIT = new Set(["m", "g", "l"]);   // a unit only right after a number
+// (050, main's reader on the perimeter script: "24 square cm" passed for "24 cm". A square word before a length unit makes another unit)
+const SQUARE = new Set(["square", "sq", "varg", "वर्ग"].map(fold));
+const LENGTH = new Set(["mm", "cm", "m", "km"]);
+/** The kind of a unit token (050: "metre" for "cm" is the same kind said wrongly; "sq cm" is another kind). */
+export const unitKind = (u) => (u.startsWith("sq") ? "area" : LENGTH.has(u) ? "len" : u === "g" || u === "kg" ? "mass" : u === "l" || u === "ml" ? "vol" : u === "min" || u === "hr" ? "time" : u === "rs" ? "money" : null);
 // operators (G7): + − × ÷ =, in symbols and words, both scripts
 const OP0 = { "+": "+", plus: "+", jod: "+", jodo: "+", jodna: "+", jodenge: "+", "जोड़": "+", "जोड़ो": "+", "प्लस": "+",
   "×": "×", "*": "×", guna: "×", gunaa: "×", times: "×", into: "×", multiply: "×", multiplied: "×", "गुणा": "×", "गुना": "×", "टाइम्स": "×",
@@ -199,14 +206,19 @@ const THAN = new Set(["se", "than", fold("से")]);
 export function canon(raw) {
   const it = items(untag(raw));
   const cmp = it.some((x) => x.k === "raw" && x.t && CMP.has(SAME.get(fold(x.t)) ?? fold(x.t)));
-  let seq = [];
+  let seq = [], square = false;
   it.forEach((x, i) => {
     if (x.k === "num") { seq.push({ k: "num", t: `#${x.v}` }); return; }
     if (x.k === "op") { seq.push({ k: "op", t: x.v }); return; }
     const t = x.t;
     if (!t || t === "," || t === "/" || t === "-" || x.verb) return;
     const f0 = fold(t), f = SAME.get(f0) ?? f0;
-    if (UNIT.has(f0) && (!SHORT_UNIT.has(f0) || it[i - 1]?.k === "num")) { seq.push({ k: "unit", t: UNIT.get(f0) }); return; }
+    const nx = it[i + 1]?.k === "raw" ? fold(it[i + 1].t) : null;
+    if (SQUARE.has(f0) && nx && UNIT.has(nx) && LENGTH.has(UNIT.get(nx))) { square = true; return; }
+    if (UNIT.has(f0) && (!SHORT_UNIT.has(f0) || it[i - 1]?.k === "num" || (square && SQUARE.has(fold(it[i - 1]?.t ?? ""))))) {
+      seq.push({ k: "unit", t: `${square ? "sq" : ""}${UNIT.get(f0)}` }); square = false; return;
+    }
+    square = false;
     // (a denial keeps its word: "galat nahi" — not wrong — is never "galat")
     if (NEG.has(f)) { seq.push({ k: "neg", t: f === "galat" || f === "wrong" ? "galat" : "nahi" }); return; }
     if ((f === "na" || f === fold("ना")) && !seq.length) { seq.push({ k: "neg", t: "nahi" }); return; }

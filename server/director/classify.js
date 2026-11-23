@@ -19,7 +19,7 @@ import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
-import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied } from "../grading/script-answer.js";
+import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied, unitKind } from "../grading/script-answer.js";
 import { toDevanagari } from "../voice/translit/index.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
@@ -784,6 +784,18 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // chaudai" is another sum. The model reads it)
     const BRACKETED = /\([^()]*[+\-×x*÷/][^()]*\)/i;
     if (!/[()]/.test(text) && forms.some((k, j) => BRACKETED.test(String(k)) && F[j].some((c) => sameAnswer(c, R)))) return toModel("brackets");
+    // (050, main's second reader: "5 metre" was right at a card keyed "5 cm" by its bare form "5", and "24 square cm" at one keyed "24 cm".
+    // Where a right form carries a unit, a reply whose unit no right form with its numbers carries is never right in code: the key's
+    // number with another unit of the key's kind is wrong; anything else of that kind is the model's)
+    if (R.units.length && F.some((cs) => cs.some((c) => c.units.length))) {
+      const carried = F.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u)) && c.nums.join(" ") === R.nums.join(" ")));
+      if (!carried) {
+        const k0 = canon(target.key);
+        if (numberOf(R) != null && numberOf(R) === numberOf(k0) && k0.units.length && R.units.every((u) => unitKind(u) && unitKind(u) === unitKind(k0.units[0]))) return done("incorrect", "script_key");
+        // (a unit some right form carries, with other numbers — "41 cm" to "40 cm" — is read on as before: by value)
+        if (!F.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))))) return toModel("unit");
+      }
+    }
     // (050, main's reader: "2 se guna nahi", "nahi barabar" — a right form with a denial added — denies the answer or is ambiguous; never
     // `correct` in code, whatever a form holding "nahi, …" matches as a bag of words)
     if (R.neg) {
