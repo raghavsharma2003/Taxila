@@ -16,7 +16,7 @@ import { classifyFast } from "../server/director/classify.js";
 import { scriptAskItem, scriptCheckItem, scriptThenItem, scriptQuickItem, scriptStepAskItem } from "../server/director/script.js";
 import { fillFriendDeep } from "../server/director/friend.js";
 import { READER_TABLES as T, spokenNumber } from "../server/grading/spoken-number.js";
-import { canon, sameAnswer, numberOf, optionsIn, wrongList } from "../server/grading/script-answer.js";
+import { canon, sameAnswer, numberOf, optionsIn, wrongList, undenied, NO_ANSWER_WORDS } from "../server/grading/script-answer.js";
 import { toDevanagari } from "../server/voice/translit/index.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -126,7 +126,8 @@ test("048 G2: a Devanagari reply is compared in Devanagari and is never wrong in
 
 // ───────────── G4: every keyed card of the scripts ─────────────
 // (director32: c6-maths-ch07-t01 went live and is walked from data/lesson-scripts with the others)
-const STAGED = ["c4-maths-ch01-t02"];
+// (d33, 2026-11-23: the two new staged scripts written to Learning 021 join the walk)
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const STAGED_DIR = join(ROOT, process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts-staged");
 function scripts() {
   const live = join(ROOT, "data/lesson-scripts");
@@ -287,7 +288,8 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
   t.diagnostic(`scripts ${counts.scripts}, cards ${counts.cards}, right forms ${counts.right} (correct ${counts.rightCorrect}, model ${counts.rightModel}), ` +
     `wrong forms ${counts.wrongTried} (model ${counts.wrongModel}), cards with no forms ${counts.noForms.length}${counts.noForms.length ? `: ${counts.noForms.join("; ")}` : ""}`);
   if (process.env.G4_PRINT) console.log(JSON.stringify(counts));
-  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts (c6-maths-ch07-t01 live since director32) and the staged rewrite");
+  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts (c6-maths-ch07-t01 live since director32) and the three staged rewrites (d33, 2026-11-23)");
+  assert.equal(STAGED.length, 3, "d33, 2026-11-23: c4-maths-ch01-t02, c4-maths-ch06-t01, c6-maths-ch07-t03");
   assert.deepEqual(rightBad, [], "a right answer graded wrong or as the mix-up");
   assert.deepEqual(wrongBad, [], "a wrong answer graded right (a false key)");
 });
@@ -295,10 +297,13 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
 test("048: the accept forms G7 made safe again refuse the wrong answers they once let in (the scripts' fix passes, 2026-11-18)", () => {
   const find = (path, pred) => { const s = JSON.parse(readFileSync(join(ROOT, path), "utf8")); const hit = cardsOf(s).find(([, it]) => pred(it)); assert.ok(hit, path); return hit[1]; };
   // perimeter: "24 + 18 + 24 + 18" took "24 × 18" and "24 + 18"
-  const per = find("data/lesson-scripts/c6-maths-ch06-t01.json", (it) => it.answer === "jodkar do guna");
+  // (main, d33: the step now asks what to do FIRST with 24 and 18 — key "jodenge", so that the doubling is the child's own step — and
+  // "24 + 18" is a right answer to it. That a sum is not a bag of numbers stays pinned on the synthetic card of the G7 test below; here
+  // the multiplication, the area mix-up this lesson is about, is still never right)
+  const per = find("data/lesson-scripts/c6-maths-ch06-t01.json", (it) => it.answer === "jodenge");
   assert.ok(per.acceptable.includes("24 + 18 + 24 + 18"));
-  for (const s of ["24 + 18 + 24 + 18", "18 + 24 + 18 + 24"]) assert.equal(grade(per, s), "correct", s);
-  for (const s of ["24 × 18", "24 + 18", "24 + 18 + 24", "24 x 18", "jodkar guna", "jodkar teen guna"]) assert.notEqual(grade(per, s), "correct", s);
+  for (const s of ["24 + 18 + 24 + 18", "18 + 24 + 18 + 24", "24 + 18", "jodenge"]) assert.equal(grade(per, s), "correct", s);
+  for (const s of ["24 × 18", "24 + 18 + 24", "24 x 18", "jodkar guna", "jodkar teen guna", "guna karenge"]) assert.notEqual(grade(per, s), "correct", s);
   // fractional units: "30 ÷ 6" and its kin took "30 × 6", "30 + 6" and the division turned round
   const div = find("data/lesson-scripts/c6-maths-ch07-t01.json", (it) => it.answer === "30 ko 6 se bhaag");
   for (const f of ["30 ÷ 6", "30 ko 6 se divide", "30 divided by 6", "30 mein 6 kitni baar"]) { assert.ok(div.acceptable.includes(f), f); assert.equal(grade(div, f), "correct", f); }
@@ -338,4 +343,273 @@ test("048 follow-up: a form whose brackets decide it never matches in code a rep
   const r = (x) => classifyFast({ target: t, childText: x, typed: true });
   assert.equal(r("2 × (lambai + chaudai)").result?.outcome, "correct");
   for (const x of ["2 × lambai + chaudai", "2 into lambai plus chaudai"]) { assert.equal(r(x).result, null, x); assert.equal(r(x).scriptUnsure, "brackets", x); }
+});
+
+// ───────────── to-brain 050: at a script card, code says "wrong" only when it knows ─────────────
+// (docs/patches/to-brain/050-script-grade-says-wrong-only-when-it-knows.md; main's probe on int/r6 ba3d5df61: every row below was `incorrect`)
+const P050 = {
+  guna: card("2 se guna", [], null, "Upar ke 3 ka kya karein?"),
+  gap: card("2 gap chalo", [], null, "2/5 ke liye kya karoge?"),
+  zyada: card("ek se zyada", [], null, "Ek tukda kaafi, ya zyada chahiye?"),
+  baad: card("beech ke baad", [], null, "4/6 beech se pehle hai ya baad mein?"),
+};
+const TABLE050 = [["guna", "do se guna karo"], ["guna", "upar ko bhi 2 se guna karenge"], ["guna", "double karo"], ["guna", "6"], ["gap", "2 gap aage jayenge"],
+  ["gap", "do gap chalenge"], ["gap", "2 gap"], ["zyada", "zyada chahiye"], ["zyada", "do tukde chahiye"], ["baad", "baad mein"], ["baad", "beech ke baad aayega"]];
+
+test("050 table: no right answer in main's table is `incorrect` (each is `correct` or the model's)", () => {
+  const bad = TABLE050.map(([c, s]) => [c, s, grade(P050[c], s)]).filter(([, , g]) => g !== "correct" && g !== "model");
+  assert.deepEqual(bad, []);
+});
+
+test("050 W1: at a word key an unmatched reply goes to the model as `word_key`; code says wrong only for the four named reasons", () => {
+  const raw = (item, say) => classifyFast({ target: { mode: "item", item, key: item.answer, also: item.acceptable || [] }, childText: say, typed: false, asrConfidence: 0.95 });
+  // unmatched, no reason: the model's, with the reason named
+  for (const s of ["2 gap aage jayenge", "guna karenge", "multiply"]) {
+    const c = s === "2 gap aage jayenge" ? P050.gap : P050.guna;
+    const r = raw(c, s);
+    assert.equal(r.result, null, s);
+    assert.equal(r.scriptUnsure, "word_key", s);
+  }
+  // reason 1: the listed wrong answer, or the same answer as one (the mix-up)
+  const mis = card("2 se guna", [], "2 jodo", "Upar ke 3 ka kya karein?");
+  assert.equal(grade(mis, "2 jodo"), "misconception");
+  assert.equal(grade(mis, "do jodo"), "misconception");
+  assert.equal(grade(mis, "2 jodo hai"), "misconception");
+  // reason 2: it names exactly one option of the prompt, and another option is the right form
+  const opt = card("Neha ka kaam", [], null, "Kiska kaam zyada hai: Neha ka kaam ya Ravi ka kaam?");
+  assert.equal(grade(opt, "Ravi"), "incorrect");
+  assert.equal(grade(opt, "Neha"), "correct");
+  // reason 3: said the way a right form is said, with other numbers (the d32 shape rule)
+  assert.equal(grade(P050.gap, "5 gap chalo"), "incorrect");
+  assert.equal(grade(P050.guna, "3 se guna"), "incorrect");
+  // reason 4: a bare yes / no to a card whose key is not one is an acknowledgement, never an answer — and never wrong in code
+  for (const s of ["haan", "ok", "achha"]) assert.notEqual(grade(P050.guna, s), "incorrect", s);
+  assert.notEqual(grade(P050.guna, "nahi"), "incorrect");
+  // a reply whose only number is the number of a right form is never wrong in code
+  for (const s of ["2 gap aage jayenge", "2", "do"]) assert.notEqual(grade(P050.gap, s), "incorrect", s);
+});
+
+test("050 W2: a key that is a number is graded as before; a word key with a bare-number form refuses another lone number", () => {
+  assert.equal(grade(card("25"), "30"), "incorrect");
+  assert.equal(grade(card("25"), "tees"), "incorrect");
+  assert.equal(grade(card("25"), "तीस"), "incorrect");
+  assert.equal(grade(card("25"), "pachees"), "correct");
+  assert.equal(grade(card("8", [], null, "Kitne hisse?"), "aath hisse"), "correct");
+  assert.equal(grade(card("8", [], null, "Kitne hisse?"), "saat hisse"), "incorrect");
+  const A = card("2 se guna", ["2 guna", "6", "3 × 2"], null, "Neeche 5 ka 10 hua. Upar ke 3 ka kya karein?");
+  assert.equal(grade(A, "6"), "correct");
+  assert.equal(grade(A, "7"), "incorrect");
+  // (the number of a right form is never wrong in code: "2" is the multiplier)
+  assert.notEqual(grade(A, "2"), "incorrect");
+});
+
+test("050 (main's reader, c5-ch02-t03): a right form with a denial added, and a comparison turned round, are never `correct` — over every card", () => {
+  const A = card("2 se guna", ["2 guna", "upar ko bhi 2 se guna karenge", "upar 2 se guna", "6", "3 × 2"], null, "Neeche 5 ka 10 hua. Upar ke 3 ka kya karein?");
+  for (const s of ["2 se guna nahi", "2 se guna nahi karenge", "2 guna nahi"]) assert.notEqual(grade(A, s), "correct", s);
+  const cmp = card("smaller", ["chhota", "1/2 se chhota", "5/12 chhota hai", "aadhe se kam"], "bigger", "Is line par 5/12, 1/2 se bada hai, chhota hai, ya barabar?");
+  for (const s of ["1/2 chhota hai", "aadha chhota hai", "5/12 bada hai"]) assert.notEqual(grade(cmp, s), "correct", s);
+  for (const s of ["1/2 se chhota", "5/12 chhota hai", "chhota"]) assert.equal(grade(cmp, s), "correct", s);
+  const neg = card("no", ["nahi", "nahi, dono barabar hain", "barabar hain", "dono barabar"], "yes", "{friend} ka kehna hai ki 1/4 aur 2/8 barabar nahi ho sakte. Kya yeh baat sahi hai, haan ya nahi?");
+  for (const s of ["nahi barabar", "nahi hain barabar", "nahi same"]) assert.notEqual(grade(neg, s), "correct", s);
+  // the walls, over every card of every script
+  const SWAP = { chhota: "bada", bada: "chhota", kam: "zyada", zyada: "kam", smaller: "bigger", bigger: "smaller", less: "more", more: "less" };
+  const leaks = []; let denied = 0, turned = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    const isRight = (f) => rc.some((r) => sameAnswer(r, canon(f)));
+    for (const r of rights) {
+      const c = canon(r);
+      if (c.neg || !c.seq.length || c.seq.every((x) => x.t === "haan" || x.t === "nahi")) continue;
+      // (a card that lists "nahi, X" as right — the child denying the friend — keeps "nahi X" right: that card's own choice)
+      const listsNahiX = rc.some((x) => x.neg && x.seq[0]?.k === "neg" && undenied(x).seq.length);
+      for (const f of [`${r} nahi`, ...(listsNahiX ? [] : [`nahi ${r}`]), `${r} nahi hai`]) { if (isRight(f)) continue; denied++; if (grade(it, f) === "correct") leaks.push(`${name} ${where} ${JSON.stringify(f)}`); }
+      const ws = r.split(/\s+/);
+      const k = ws.findIndex((w) => SWAP[w.toLowerCase()]);
+      if (k >= 0) {
+        const tries = [ws.map((w, j) => (j === k ? SWAP[w.toLowerCase()] : w)).join(" ")];
+        for (const f of tries) { if (isRight(f)) continue; turned++; if (grade(it, f) === "correct") leaks.push(`${name} ${where} ${JSON.stringify(f)}`); }
+      }
+    }
+  }
+  assert.ok(denied > 500 && turned > 10, `the walls ran (denied ${denied}, turned ${turned})`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 units: where a right form carries a unit, the key's number said with another unit is never `correct` (main's second and third readers)", () => {
+  const c = card("5 cm", ["5", "5 centimetre", "paanch cm", "5 cm ka", "five", "paanch"], null, "Ab ek 15 cm ki patti ke 3 barabar hisse karne hain. Har hissa kitne cm ka hoga?");
+  for (const s of ["5 metre", "5 m", "paanch metre"]) assert.equal(grade(c, s), "incorrect", s);
+  for (const s of ["5 square cm", "5 sq cm", "5 वर्ग सेंटीमीटर", "5 kg"]) assert.notEqual(grade(c, s), "correct", s);
+  for (const s of ["5", "5 cm", "paanch cm", "5 सेंटीमीटर", "5 centimetre"]) assert.equal(grade(c, s), "correct", s);
+  // the wall, over every card of every script whose key carries one of these units
+  const UNITS = ["cm", "m", "km", "g", "kg", "ml", "litre", "rupaye", "minute", "ghante", "square cm", "sq m"];
+  const KEY_UNIT = /^\s*(\d+(?:\/\d+)?)\s*(cm|m|km|g|kg|ml|litre|litres|l|rupaye|rs|minute|minutes|ghante|ghanta)\.?\s*$/i;
+  const leaks = []; let cards = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const m = String(it.answer).match(KEY_UNIT);
+    if (!m) continue;
+    cards++;
+    const ku = canon(String(it.answer)).units;
+    for (const u of UNITS) {
+      const f = `${m[1]} ${u}`;
+      if (canon(f).units.join() === ku.join()) continue;
+      tried++;
+      if (grade(it, f) === "correct") leaks.push(`${name} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f)}`);
+    }
+  }
+  // (main's fourth reader: the fault is general — every staged script too, not only the gate's two)
+  if (existsSync(STAGED_DIR)) for (const f of readdirSync(STAGED_DIR).filter((x) => x.endsWith(".json") && !STAGED.includes(x.replace(/\.json$/, "")))) {
+    let its; try { its = cardsOf(JSON.parse(readFileSync(join(STAGED_DIR, f), "utf8"))); } catch { continue; }
+    for (const [where, it] of its) {
+      const m = String(it.answer).match(KEY_UNIT);
+      if (!m) continue;
+      cards++;
+      const ku = canon(String(it.answer)).units;
+      for (const u of UNITS) { const f2 = `${m[1]} ${u}`; if (canon(f2).units.join() === ku.join()) continue; tried++; if (grade(it, f2) === "correct") leaks.push(`staged:${f} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f2)}`); }
+    }
+  }
+  console.log(`# 050 unit wall: ${cards} cards, ${tried} replies`);
+  assert.ok(cards >= 3, `the wall found unit-keyed cards (${cards})`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 working: spoken working that ends on the key's number is right when its sum is true, the model's when not; a minus between numbers is no sign", () => {
+  const c = card("4 m", ["4", "chaar", "4 metre", "chaar metre", "four"], "18 m", "Tumhari baari: maali ki 35 m baad mein se kitni bachegi?");
+  for (const s of ["35 - 31 = 4", "35 − 31 = 4", "35 minus 31, 4", "35 minus 31 barabar 4"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["35 - 18 = 4", "35 mein se 31 gaye, 4 bache"]) assert.notEqual(grade(c, s), "correct", s);
+  for (const s of ["35 - 18 = 4", "35 − 18 = 17", "35 mein se 31 gaye, 4 bache", "31 lagi toh 4 bachi"]) assert.notEqual(grade(c, s), "incorrect", s);
+  // (an answer said negative is still never the key: the v6.8 sign rule stands)
+  assert.notEqual(grade(c, "-4"), "correct");
+  const big = card("94 m", ["94", "94 metre"], null, "140 m mein se 46 m lagi. Kitni bachegi?");
+  for (const s of ["140 − 46 = 94", "140 minus 46 = 94"]) assert.equal(grade(big, s), "correct", s);
+});
+
+test("050 W1 (main's third reader, the perimeter script): \"do\" and \"ek\" in a word key's plain phrasings are never wrong in code", () => {
+  const find = (pred) => cardsOf(JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c6-maths-ch06-t01.json"), "utf8"))).find(([, it]) => pred(it))?.[1];
+  // (main, d33: the step's key is now "jodenge"; its plain phrasings with "do guna" are still right answers to it)
+  const dbl = find((it) => it.answer === "jodenge"), lap = find((it) => it.answer === "ek chakkar");
+  assert.ok(dbl && lap);
+  for (const s of ["jodkar do guna karo", "jodo phir do guna karo", "pehle jodo phir do guna", "jod ka do guna karna hai", "jodkar double karo"]) assert.notEqual(grade(dbl, s), "incorrect", s);
+  for (const s of ["ek chakkar nikalna hoga", "pehle ek chakkar ki doori nikalni hogi", "ek round ki doori"]) assert.notEqual(grade(lap, s), "incorrect", s);
+  for (const s of ["24 + 18 + 24 + 18", "jodkar do guna"]) assert.equal(grade(dbl, s), "correct", s);
+});
+
+test("050 W4: a two-option prompt answered by its option's own words is graded by which form that option is", () => {
+  assert.equal(grade(P050.baad, "baad mein"), "correct");
+  assert.equal(grade(P050.baad, "pehle"), "incorrect");
+  for (const s of ["pehle", "pehle hai", "beech se pehle"]) assert.notEqual(grade(P050.baad, s), "correct", s);
+  // where the forms between them hold both options (a form naming another subject turns the comparison round), code decides nothing
+  const two = card("Gopi se kam", ["kam", "Neha ka kam", "Gopi ke paas zyada"], "barabar", "Neha ne 3 liye, Gopi ne 6. Neha ka kam ya zyada?");
+  for (const s of ["zyada", "more", "ज़्यादा"]) assert.notEqual(grade(two, s), "correct", s);
+  assert.equal(grade(two, "kam"), "correct");
+  // two options sharing their deciding word: the model reads it
+  const same = card("bada wala", [], null, "Kaunsa: bada tukda ya bada hissa?");
+  assert.notEqual(grade(same, "bada"), "incorrect");
+});
+
+test("050 (main): beside a comparison word \"se\" is content — \"X se kam\" and \"X kam\" never match each other in code; walls over every form of that shape", () => {
+  const r = card("kam", ["Rahul se kam", "kam hai"], "zyada", "Mohan ne Rahul se kam khaya, zyada, ya barabar?");
+  assert.notEqual(grade(r, "Rahul kam"), "correct");
+  assert.equal(grade(r, "Rahul se kam"), "correct");
+  const h = card("smaller", ["chhota", "1/2 se chhota"], "bigger", "Is line par 5/12, 1/2 se bada hai ya 1/2 se chhota?");
+  for (const s of ["1/2 chhota hai", "1/2 chhota"]) assert.notEqual(grade(h, s), "correct", s);
+  assert.equal(grade(h, "1/2 se chhota"), "correct");
+  const CMPW = "kam|zyada|jyada|bada|badi|bade|chhota|chhoti|chhote|lamba|lambi|lambe|pehle|baad|aage|peeche|more|less|bigger|smaller|before|after";
+  const withSe = new RegExp(`^(.*\\S)\\s+se\\s+(${CMPW})(\\b.*)$`, "i"), without = new RegExp(`^(.*\\S)\\s+(${CMPW})(\\b.*)$`, "i");
+  const leaks = []; let shape = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    for (const f of rights) {
+      let m = f.match(withSe), say = null;
+      if (m) say = `${m[1]} ${m[2]}${m[3]}`;
+      else if ((m = f.match(without)) && !/\bse$/i.test(m[1])) say = `${m[1]} se ${m[2]}${m[3]}`;
+      if (!say) continue;
+      shape++;
+      if (rc.some((x) => sameAnswer(x, canon(say))) || rights.includes(say)) continue;
+      tried++;
+      if (grade(it, say) === "correct") leaks.push(`${name} ${where} form ${JSON.stringify(f)} said ${JSON.stringify(say)}`);
+    }
+  }
+  console.log(`# 050 se-wall: ${shape} forms of the shape, ${tried} replies tried`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 W3: the plain ways of saying a word key are right by one rule; the wall — every card's wrong answers and other options, dressed in every filler, never right", () => {
+  const W3 = [["guna", "do se guna karo"], ["guna", "upar ko bhi 2 se guna karenge"], ["guna", "double karo"], ["guna", "dugna kar do"], ["guna", "isko bhi 2 se guna karenge"],
+    ["gap", "do gap chalenge"], ["gap", "2 gap"], ["baad", "baad mein"], ["baad", "beech ke baad aayega"]];
+  for (const [c, s] of W3) assert.equal(grade(P050[c], s), "correct", s);
+  // the wrong answers a child would give, dressed, never right
+  for (const [c, s] of [["gap", "5 gap chalo"], ["gap", "5 gap chalenge"], ["guna", "2 jodo"], ["guna", "upar 2 jodo karenge"], ["guna", "3 hi rahega"], ["guna", "3 se guna karenge"],
+    ["zyada", "ek kaafi"], ["zyada", "ek tukda kaafi hoga"], ["baad", "beech se pehle"], ["baad", "pehle aayega"], ["baad", "pehle"]]) assert.notEqual(grade(P050[c], s), "correct", s);
+  // incomplete but not wrong: the model's
+  for (const s of ["guna karenge", "upar bhi same", "multiply"]) assert.equal(grade(P050.guna, s), "model", s);
+  const words = [...NO_ANSWER_WORDS].filter((w) => /^[a-z]+$/.test(w));
+  const dress = (x) => [...words.flatMap((w) => [`${x} ${w}`, `${w} ${x}`]), `upar ${x} karenge`, `isko bhi ${x} karo`, `phir ${x} chalenge`, `${x} karna hoga`, `toh ${x} hai`];
+  const leaks = []; let cards = 0, tried = 0;
+  for (const [name, path] of scripts()) for (const [where, it] of cardsOf(JSON.parse(readFileSync(path, "utf8")))) {
+    const kc = canon(String(it.answer));
+    if (numberOf(kc) != null || (kc.seq.length && kc.seq.every((x) => x.t === "haan" || x.t === "nahi"))) continue;
+    cards++;
+    const prompt = it.prompt_hi ?? it.prompt_en;
+    const rights = [it.answer, ...(it.acceptable ?? [])].map(String), rc = rights.map(canon);
+    // (an option the prompt reader cut short — "wala number" of "…upar wala number ya neeche wala?" — that a right form holds whole is the
+    // right option, not a wrong one: dressing it in "upar" says the key)
+    const cutRight = (o) => { const c = canon(o); const k = canon(String(it.answer)); return c.seq.length && c.words.length < k.words.length && c.words.every((w) => k.words.includes(w)) && c.nums.join() === k.nums.join() && !c.ops && !c.neg; };
+    const bad = [...wrongList(metaOf(it).wrongIfMis), ...optionsIn(prompt).filter((o) => !rc.some((r) => sameAnswer(r, canon(o))) && !cutRight(o))];
+    for (const b of bad) for (const f of dress(b)) {
+      if (rc.some((r) => sameAnswer(r, canon(f)))) continue;
+      tried++;
+      if (grade(it, f) === "correct") leaks.push(`${name} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f)}`);
+    }
+  }
+  console.log(`# 050 W3 wall: ${cards} word-keyed cards, ${tried} dressed wrong replies`);
+  assert.ok(tried > 1000, `the wall ran (${tried})`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 units (main's fourth reader): where the unit is the choice, a bare number of both a right form and a listed wrong answer decides nothing", () => {
+  const c = card("30 metre", ["30 m"], "30 centimetre", "Kamre ki lambai kitni hogi: 30 metre ya 30 centimetre?");
+  for (const s of ["30", "tees", "तीस"]) { const g = grade(c, s); assert.ok(g !== "correct" && g !== "misconception", `${s} → ${g}`); }
+  assert.equal(grade(c, "30 metre"), "correct");
+  assert.equal(grade(c, "30 centimetre"), "misconception");
+  // a wrong answer that differs by its number too ("6 cm" against "600 cm") is as before: the bare "6" is the mix-up
+  const d = card("600 cm", ["600"], "6 cm", "6 metre kitne cm?");
+  assert.equal(grade(d, "6"), "misconception");
+  assert.equal(grade(d, "600"), "correct");
+  // the wall, over every card of every script (live, staged) whose right form and listed wrong carry one number in two units
+  const leaks = []; let cards = 0;
+  const dirs = [join(ROOT, "data/lesson-scripts"), ...(existsSync(STAGED_DIR) ? [STAGED_DIR] : [])];
+  for (const dir of dirs) for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+    let its; try { its = cardsOf(JSON.parse(readFileSync(join(dir, f), "utf8"))); } catch { continue; }
+    for (const [where, it] of its) {
+      const F = [it.answer, ...(it.acceptable ?? [])].map((x) => canon(String(x))).filter((x) => x.units.length && numberOf(x) != null);
+      const W = wrongList(metaOf(it).wrongIfMis).map(canon).filter((x) => x.units.length && numberOf(x) != null);
+      const both = F.map(numberOf).filter((n) => W.some((w) => numberOf(w) === n && w.units.join() !== F.find((x) => numberOf(x) === n).units.join()));
+      if (!both.length) continue;
+      cards++;
+      for (const n of new Set(both)) { const g = grade(it, n.slice(1)); if (g === "correct" || g === "misconception") leaks.push(`${f} ${where} said ${n.slice(1)} → ${g}`); }
+    }
+  }
+  console.log(`# 050 unit-choice wall: ${cards} cards`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 (main): \"N mein se M\" — M out of N — is the fraction M/N, in digits, words and Devanagari; never wrong in code for its wording", () => {
+  const c = card("10/12", ["10 bata 12"], null, "Kitna hissa?");
+  for (const s of ["baarah mein se das", "12 mein se 10", "12 mein se 10 hisse", "12 mein 10", "बारह में से दस"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["12 mein se 9", "baarah mein se do", "10 mein se 12"]) assert.notEqual(grade(c, s), "correct", s);
+  // ("30 mein 6 kitni baar" is a division said in words, never a fraction)
+  const div = card("30 ko 6 se bhaag", ["30 mein 6 kitni baar"], "6 ÷ 30");
+  assert.equal(grade(div, "30 mein 6 kitni baar"), "correct");
+  assert.notEqual(grade(div, "6 mein 30 kitni baar"), "correct");
+});
+
+test("050 units (main's probe): where the choice is the unit, the unit said alone is graded by that unit; the bare number decides nothing", () => {
+  const m = card("30 metre", [], "30 centimetre", "Corridor 30 centimetre ka hai ya 30 metre ka?");
+  for (const s of ["metre", "metre ka", "30 metre ka", "metre mein", "30 metre"]) assert.equal(grade(m, s), "correct", s);
+  for (const s of ["centimetre", "cm", "centimetre ka", "30 centimetre"]) assert.equal(grade(m, s), "misconception", s);
+  for (const s of ["30", "tees"]) assert.equal(grade(m, s), "model", s);
+  const c = card("6 centimetre", [], "6 metre", "Pencil 6 centimetre ki hai ya 6 metre ki?");
+  for (const s of ["centimetre", "cm", "centimetre ki", "6 cm"]) assert.equal(grade(c, s), "correct", s);
+  for (const s of ["metre", "metre ki", "6 metre"]) assert.equal(grade(c, s), "misconception", s);
+  for (const s of ["6", "chhah"]) assert.equal(grade(c, s), "model", s);
 });

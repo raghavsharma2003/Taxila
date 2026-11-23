@@ -19,7 +19,7 @@ import { itemSetAside, itemSetAsideMode } from "./itemSetAside.js";
 import { isSteerChip, steerRequest, laterChipId } from "./steer.js";
 import { canonReading } from "../safety/fine.js";
 import { lessonIdiom, scoldOnly, lessonHyperbole, lessonBurn } from "../safety/idioms.js";
-import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK } from "../grading/script-answer.js";
+import { canon, sameAnswer, numberOf, wrongList, optionsIn, pickOption, RISK, undenied, unitKind, NO_ANSWER_WORDS, withoutWords } from "../grading/script-answer.js";
 import { toDevanagari } from "../voice/translit/index.js";
 export { lessonIdiom } from "../safety/idioms.js";
 
@@ -150,6 +150,42 @@ export function correctedTail(text) {
   if (!last) return null;
   const tail = t.slice(last.index + last[0].length).replace(/^[\s,.;!…:]+/, "").trim();
   return tail && tail.split(/\s+/).length <= 8 ? (hedgeCore(tail) ?? tail) : null;
+}
+
+/**
+ * 050: is the arithmetic a reply shows true? "35 - 31 = 4", "35 minus 31 barabar 4", "6 × 5 = 30", "35 minus 31, 4" (a working
+ * then its result). true / false where the reply shows one sum and its result; null where it shows none the code can read.
+ * PURE.
+ */
+export function workingTrue(text) {
+  const seq = canon(text).seq.filter((x) => x.k !== "unit");
+  const val = (t) => { const v = t.slice(1); if (v.includes("/")) { const [a, b] = v.split("/").map(Number); return b ? a / b : NaN; } return Number(v); };
+  const toks = [];
+  for (const x of seq) {
+    if (x.k === "num") toks.push({ n: val(x.t) });
+    else if (x.k === "op") toks.push({ o: x.t });
+    else if (x.k === "w" && (x.t === "barabar" || x.t === "toh") && toks.length) toks.push({ o: "=" });
+  }
+  let eq = toks.findIndex((x) => x.o === "=");
+  if (eq < 0) {
+    // "35 minus 31, 4": two numbers in a row at the end, the last the result
+    const k = toks.length - 1;
+    if (k >= 3 && toks[k].n != null && toks[k - 1].n != null && toks.slice(0, k).some((x) => x.o)) { toks.splice(k, 0, { o: "=" }); eq = k; } else return null;
+  }
+  const left = toks.slice(0, eq), right = toks.slice(eq + 1);
+  if (right.some((x) => x.o === "=")) return null;
+  const evalOf = (ts) => {
+    if (!ts.length || ts.length % 2 === 0 || !ts.every((x, i) => (i % 2 ? x.o && x.o !== "=" : x.n != null && Number.isFinite(x.n)))) return null;
+    const terms = [ts[0].n], ops = [];
+    for (let i = 1; i < ts.length; i += 2) {
+      const o = ts[i].o, n = ts[i + 1].n;
+      if (o === "×") terms.push(terms.pop() * n); else if (o === "÷") terms.push(n ? terms.pop() / n : NaN); else { ops.push(o); terms.push(n); }
+    }
+    return ops.reduce((acc, o, i) => (o === "+" ? acc + terms[i + 1] : acc - terms[i + 1]), terms[0]);
+  };
+  const a = evalOf(left), b = evalOf(right);
+  if (a == null || b == null || !left.some((x) => x.o)) return null;
+  return Math.abs(a - b) < 1e-9;
 }
 
 /** Map an option ("key" | "mN" | "other_wrong" …) to an outcome. */
@@ -604,7 +640,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
   // v6.8 G1 (main, director16 c5-t01 stuck 63: "-1/7 km" graded right against "1/7 km" — the key match dropped the sign): an
   // answer said negative is never right for a key that is not; the sign is part of the value
   const NEG = /(?:^|[\s(])(?:[-−–]\s*(?=\d)|minus\b|negative\b|rin\b|ऋण)/iu;
-  const negSaid = NEG.test(` ${text}`);
+  // (050, main's third reader: "35 - 31 = 4" was read as a negative answer and graded wrong; a minus right after a number is the
+  // operation, never the answer's sign)
+  const negSaid = NEG.test(` ${text}`.replace(/(\d)\s*(?:[-−–]|minus\b)/giu, "$1 op "));
   const negKey = [target?.key, ...(target?.also ?? [])].filter(Boolean).some((k) => NEG.test(` ${String(k)}`));
   const done = (outcome, source, extra = {}) => {
     if (outcome === "correct" && negSaid && !negKey && source !== "chip") { outcome = "incorrect"; extra = { ...extra, signMismatch: true }; }
@@ -777,6 +815,19 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // by value only for a form that is a number (with a unit at most)
     const ops = (x) => x.seq.filter((y) => y.k === "op").map((y) => y.t).join(" ");
     const exact = (k) => norm(k) === norm(text) && ops(canon(k)) === ops(R) && /[()]/.test(String(k)) === /[()]/.test(String(text));
+    // (050, main's fourth reader: a card keyed "30 metre" whose listed wrong answer is "30 centimetre" — the unit IS the choice — hears a
+    // bare "30" / "tees" as neither: the number of both a right form and a listed wrong answer, said with no unit, is the model's)
+    if (!R.units.length && R.nums.length && W.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R))) && F.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R)))) return toModel("unit_decides");
+    // (050, main's probe: "metre" alone to "Corridor 30 centimetre ka hai ya 30 metre ka?" keyed "30 metre" fell to the number key's last line
+    // and was graded wrong. A reply that is only a unit, where the listed wrong answer differs by its unit, is graded by that unit: a
+    // right form's unit no wrong answer carries is right, a wrong answer's unit no right form carries is the mix-up, anything else the model's)
+    if (R.units.length && !R.nums.length && !R.words.length && !R.ops && !R.neg && W.some((cs) => cs.some((c) => c.units.length))) {
+      const carries = (L) => L.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))));
+      const fu = carries(F), wu = carries(W);
+      if (fu && !wu) return done("correct", "script_key");
+      if (wu && !fu) return misOf();
+      return toModel("unit_only");
+    }
     if (forms.some(exact)) return done("correct", "script_key");
     if (wrongs.some(exact)) return misOf();
     if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();
@@ -784,6 +835,24 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // chaudai" is another sum. The model reads it)
     const BRACKETED = /\([^()]*[+\-×x*÷/][^()]*\)/i;
     if (!/[()]/.test(text) && forms.some((k, j) => BRACKETED.test(String(k)) && F[j].some((c) => sameAnswer(c, R)))) return toModel("brackets");
+    // (050, main's second reader: "5 metre" was right at a card keyed "5 cm" by its bare form "5", and "24 square cm" at one keyed "24 cm".
+    // Where a right form carries a unit, a reply whose unit no right form with its numbers carries is never right in code: the key's
+    // number with another unit of the key's kind is wrong; anything else of that kind is the model's)
+    if (R.units.length && F.some((cs) => cs.some((c) => c.units.length))) {
+      const carried = F.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u)) && c.nums.join(" ") === R.nums.join(" ")));
+      if (!carried) {
+        const k0 = canon(target.key);
+        if (numberOf(R) != null && numberOf(R) === numberOf(k0) && k0.units.length && R.units.every((u) => unitKind(u) && unitKind(u) === unitKind(k0.units[0]))) return done("incorrect", "script_key");
+        // (a unit some right form carries, with other numbers — "41 cm" to "40 cm" — is read on as before: by value)
+        if (!F.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))))) return toModel("unit");
+      }
+    }
+    // (050, main's reader: "2 se guna nahi", "nahi barabar" — a right form with a denial added — denies the answer or is ambiguous; never
+    // `correct` in code, whatever a form holding "nahi, …" matches as a bag of words)
+    if (R.neg) {
+      const R0 = undenied(R);
+      if (R0.seq.length && F.some((cs) => cs.some((c) => !c.neg && sameAnswer(c, R0)))) return toModel("denial");
+    }
     if (F.some((cs) => cs.some((c) => sameAnswer(c, R)))) return done("correct", "script_key");
     const keyC = canon(target.key);
     const fracs = R.nums.filter((x) => x.includes("/"));
@@ -794,8 +863,11 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       const named = nameFractions(lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en);
       const val = fractionValue(fracs[0].slice(1));
       const hits = named.filter((x) => val != null && x.value === val);
-      if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length) {
-        const name = hits[0].name.toLowerCase();
+      // (050 wall: only the fraction, said alone or beside that name — "8/12 zyada hai" to "Mohan ne Rahul se kam khaya, zyada, ya barabar?"
+      // says more than whose it is, and took the form "Mohan ne kam khaya" by its name)
+      const nm = hits[0]?.name.toLowerCase();
+      if (hits.length === 1 && new Set(named.map((x) => x.value)).size === named.length && R.words.every((w) => w === nm)) {
+        const name = nm;
         const says = (k) => norm(k).split(/\s+/).includes(name);
         if (forms.some(says)) return done("correct", "script_key");
         if (wrongs.some(says)) return misOf();
@@ -812,6 +884,27 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
           const o = canon(opts[i]);
           if (W.some((cs) => sameAnswer(cs[0], o))) return misOf();
           if (F.some((cs) => sameAnswer(cs[0], o))) return done("correct", "script_key");
+          // 050 W4: an option is a form by its deciding tokens too — "baad mein" (of "…pehle hai ya baad mein?") is the form "beech ke
+          // baad": the form holds every token that sets that option apart and none that sets another apart. Where an option is both a
+          // right and a wrong form, or none, nothing is decided here
+          const ocs = opts.map((x) => canon(x));
+          const has = (c, t) => c.seq.some((y) => y.t === t);
+          const apart = ocs.map((c, k) => [...new Set(c.seq.map((y) => y.t))].filter((t) => ocs.every((x, j) => j === k || !has(x, t))));
+          // (a deciding token is a number or a word of place or comparison — RISK's closed list: "baad", "pehle", "zyada"; a noun such as
+          // "number" in an option cut short — "…upar wala number ya neeche wala?" read as "wala number" — decides nothing)
+          const decides = (k) => apart[k].some((t) => t.startsWith("#") || RISK.has(t));
+          const holds = (c, k) => apart[k].length > 0 && decides(k) && apart[k].every((t) => has(c, t)) && apart.every((d, j) => j === k || !d.some((t) => has(c, t)));
+          // (only where the forms hold ONE option between them: "kam" and "Gopi ke paas zyada" are both right to "Neha ka kam ya zyada?",
+          // and hold both options — the words of a form that names another subject turn its comparison round)
+          const one = (L) => { const h = new Set(); L.forEach((cs) => ocs.forEach((x, k) => { if (sameAnswer(cs[0], x) || holds(cs[0], k)) h.add(k); })); return h.size === 1 ? [...h][0] : -1; };
+          const fOpt = one(F), wOpt = one(W);
+          const isForm = (k) => F.some((cs) => sameAnswer(cs[0], ocs[k])) || fOpt === k;
+          const isWrong = (k) => W.some((cs) => sameAnswer(cs[0], ocs[k])) || wOpt === k;
+          if (isWrong(i) && !isForm(i)) return misOf();
+          if (isForm(i) && !isWrong(i)) return done("correct", "script_key");
+          // (to-brain 050 W1 reason 2: the reply names one option, and exactly one OTHER option of the prompt is a right form: it named a wrong one)
+          const rightOpts = opts.map((x, j) => j).filter((j) => isForm(j) && !isWrong(j));
+          if (rightOpts.length === 1 && rightOpts[0] !== i && !isForm(i)) return done("incorrect", "script_key");
         }
       }
     }
@@ -843,7 +936,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // (d32 step 0, staged c6-ch07-t01 offtopic 14: "27 ko 6 se bhaag" to a step keyed "30 ko 6 se bhaag" went to the model and, dry,
     // was no answer: a reply said the way a right form is said — the same words, operators and places, with no denial — whose
     // numbers differ is the wrong answer in code)
-    if (R.nums.length && !R.neg) {
+    // (050 W1: at a word key, a reply whose only number is the number of a right form is never wrong in code — "2" beside the form "6")
+    const onlyFormNum = numberOf(canon(target.key)) == null && R.nums.length === 1 && F.some((cs) => cs.some((c) => c.nums.includes(R.nums[0])));
+    if (R.nums.length && !R.neg && !onlyFormNum) {
       const shape = (c) => c.seq.filter((x) => x.k !== "unit").map((x) => (x.k === "num" ? "#" : x.t)).join(" ");
       const rs = shape(R);
       if (F.some((cs) => cs.some((c) => c.nums.length === R.nums.length && shape(c) === rs && c.nums.join(" ") !== R.nums.join(" ")))) return done("incorrect", "script_key");
@@ -853,13 +948,56 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const yesNoKey = yn(keyC);
     // G7: a denial the forms do not place the same way: the model reads it (a bare yes / no to a yes / no card stays code's)
     if (R.neg && !(yesNoKey && yn(R))) return toModel("denial");
+    // 050 W3: the plain ways of saying a word key — "do se guna karo", "upar ko bhi 2 se guna karenge", "beech ke baad aayega" — are the
+    // form once the words that carry no answer (NO_ANSWER_WORDS) are dropped on both sides. A card drops only the words none of its
+    // right or listed wrong forms, nor an option of its prompt, holds as content (a form made of such words alone, an option they alone
+    // decide, a word only a wrong form holds); and a card where the drop would make a listed wrong answer or another option of the
+    // prompt a right form drops nothing.
+    if (!R.neg && !R.deva && numberOf(keyC) == null && !yesNoKey) {
+      const allF = F.map((cs) => cs[0]), allW = W.map((cs) => cs[0]);
+      const opts3 = optionsIn(prompt).map((o) => canon(o));
+      const content = new Set();
+      for (const c of [...allF, ...allW]) if (c.seq.length && c.seq.every((x) => x.k === "w" && NO_ANSWER_WORDS.has(x.t))) c.words.forEach((w) => content.add(w));
+      const oSets = opts3.map((c) => new Set(c.seq.map((y) => y.t)));
+      opts3.forEach((c, k) => { const apart = [...oSets[k]].filter((t) => oSets.every((o, j) => j === k || !o.has(t))); if (apart.length && apart.every((t) => NO_ANSWER_WORDS.has(t))) apart.forEach((t) => content.add(t)); });
+      // (a word a right form holds that the prompt offers in a choice — "upar wala number ya neeche wala?" — is the answer itself)
+      if (/\s(?:ya|or|या)\s/i.test(String(prompt ?? ""))) {
+        const pw = new Set(canon(prompt).words);
+        for (const c of allF) for (const w of c.words) if (NO_ANSWER_WORDS.has(w) && pw.has(w)) content.add(w);
+      }
+      const fWords = new Set(allF.flatMap((c) => c.words));
+      for (const c of allW) for (const w of c.words) if (NO_ANSWER_WORDS.has(w) && !fWords.has(w)) content.add(w);
+      const drop = new Set([...NO_ANSWER_WORDS].filter((w) => !content.has(w)));
+      const red = (c) => withoutWords(c, drop);
+      const rF = allF.map(red);
+      const others = opts3.filter((o) => !allF.some((f) => sameAnswer(f, o)));
+      const unsafe = [...allW, ...others].some((c) => { const r = red(c); return rF.some((f) => sameAnswer(f, r)); });
+      if (!unsafe) {
+        const rR = red(R);
+        if (rF.some((f) => sameAnswer(f, rR)) && !allW.some((w) => sameAnswer(red(w), rR))) return done("correct", "script_key");
+      }
+    }
     // G2: a Devanagari reply is never wrong in code for its spelling; a number that differs from a number key is still wrong
     if (R.deva) {
       if (one != null && numberOf(keyC) != null && !risky) return done("incorrect", "script_key");
       if (!(yesNoKey && yn(R))) return toModel("devanagari");
     }
     const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(text);
-    if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) return done("incorrect", "script_key");
+    if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) {
+      // to-brain 050 W1: at a card whose key is words (not a number, not a yes / no), code says wrong only for a reason it can name —
+      // the listed wrong answer or the same answer as one, an option of the prompt that is not the right one, a right form said with
+      // other numbers (all above), or a bare yes / no (an acknowledgement, as before: never here). Anything else unmatched is the
+      // model's: "do se guna karo", "2 gap aage jayenge", "baad mein" are right answers no form spells.
+      // W2: a key that is a number is as before; at a word key with a form that is a bare number ("6" beside "2 se guna"), one number
+      // said alone that is no number of any right form is wrong, as at a number key.
+      if (numberOf(keyC) == null && !yesNoKey) {
+        const lone = numberOf(R);
+        const formNums = new Set(F.flatMap((cs) => cs.flatMap((c) => c.nums)));
+        if (lone != null && !risky && F.some((cs) => numberOf(cs[0]) != null) && !formNums.has(lone)) return done("incorrect", "script_key");
+        return toModel("word_key");
+      }
+      return done("incorrect", "script_key");
+    }
   }
   // V1.1: a key that IS a number is graded by value in code (evals/grading-truth: the model credited "-180" for 180°,
   // "15 ya 150" for 15 and failed "14/8" for 1 3/4). One readable number equal to the key → correct; one readable number
@@ -896,6 +1034,8 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const said = text.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|toh|to)\s+)?([\d.,\/]+)/iu)?.[1];
     const saidV = said ? numberPhrases(said)?.[0] : null;
     const back = !hit ? null : saidV != null && Math.abs(saidV - kv) >= 1e-9 ? "other_answer" : reasonTakesBack(text, "", [kv], new Set(), promptN, { negation: false, cues: false });
+    // (050: working said with its result is right by that value only when the arithmetic shown is true — "35 - 18 = 4" is the model's)
+    if (hit && (!back || back === "question") && workingTrue(text) === false) return { result: null, flags, text, scriptUnsure: "working_untrue" };
     if (hit && (!back || back === "question")) return done("correct", "number_working");
     if (hit) return done("no_evidence", "number_taken_back");
     if (last != null) return { result: null, flags, text, numericMismatch: true };

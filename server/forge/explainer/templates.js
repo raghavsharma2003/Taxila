@@ -12,7 +12,7 @@
 // expand(call, { band, lessonId, scriptId }) → { ok, script, facts, errors }: the script is normalised STRICTLY and
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
-import { normalizeScript, lintScript, textBox, textProblem, settledScript, opGeometry, braceLabelAt, ROLE, MEANING_ROLES } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, textBox, textProblem, settledScript, opGeometry, braceLabelAt, ROLE, MEANING_ROLES, seeded } from "../../../shared/whiteboard.js";
 import { placeNamed } from "./places.js";
 import { statesKeyAnyLang } from "./states-key.js";
 
@@ -72,10 +72,11 @@ function sizeFor(text, maxW) {
  * Write a label centred at (x, y) within `maxW`: one line at m or s, else split at the space nearest the middle into two
  * lines at s. Returns the op ids, or null when it cannot fit (the template then fails rather than overflow).
  */
-function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size, role } = {}) {
+/** How writeFit lays `text` out: [{ text, dy, size }] (one line, or two at ±dy), or null. */
+function fitPlan(text, maxW, size) {
   // `size: "s"` keeps a group of labels at one size (a column of a table never mixes sizes)
   const one = [...text].length > 24 ? null : size === "s" ? (textBox(text, "s").w <= maxW ? "s" : null) : sizeFor(text, maxW);
-  if (one) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: one, ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms, { gap, ...opts })];
+  if (one) return [{ text, dy: 0, size: one }];
   const words = text.split(/\s+/);
   if (words.length < 2) return null;
   let best = null;
@@ -87,9 +88,20 @@ function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink
   if (!best) return null;
   // (a line with a stacked fraction is taller: the two lines move apart to hold it)
   const half = Math.max(12, ...[best.a, best.b].map((t) => textBox(t, "s").h / 2 + 1));
+  return [{ text: best.a, dy: -half, size: "s" }, { text: best.b, dy: half, size: "s" }];
+}
+/** The vertical extent of a fitPlan written at y: { top, bottom } (board units). */
+function fitExtent(plan, y) {
+  const bs = plan.map((l) => textBox(l.text, l.size, [0, y + l.dy]));
+  return { top: Math.min(...bs.map((b) => b.y)), bottom: Math.max(...bs.map((b) => b.y + b.h)) };
+}
+function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size, role } = {}) {
+  const plan = fitPlan(text, maxW, size);
+  if (!plan) return null;
+  if (plan.length === 1) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: plan[0].size, ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms, { gap, ...opts })];
   return [
-    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y - half], text: best.a, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap, ...opts }),
-    tl.add({ op: "text", at: [x, y + half], text: best.b, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap: 0 }),
+    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y + plan[0].dy], text: plan[0].text, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap, ...opts }),
+    tl.add({ op: "text", at: [x, y + plan[1].dy], text: plan[1].text, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap: 0 }),
   ];
 }
 
@@ -385,12 +397,18 @@ function unrolled(c, tl) {
     if (fig.shape === "rect") tl.add({ id: "fig", op: "rect", at: P[0], w: round1(P[2][0] - P[0][0]), h: round1(P[2][1] - P[0][1]), weight: 2 }, 700);
     else tl.add({ id: "fig", op: "polygon", points: P, weight: 2 }, 700);
   }
-  const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
+  // (main, a reader of [20, ?, 20, ?] = 70 cm: a hidden piece drawn to scale was 73 px beside 97 px for "20 cm", and three
+  // quarters of 20 is the card's answer. A hidden piece is drawn at one neutral length that never depends on its value — the
+  // mean of the shown pieces, or all equal when every piece is hidden — dashed, "not measured"; shown pieces stay to scale
+  // among themselves)
+  const shown = sides.filter((_, i) => !hide.has(i)), neutral = shown.length ? shown.reduce((a, b) => a + b, 0) / shown.length : 1;
+  const drawn = sides.map((v, i) => (hide.has(i) ? neutral : v));
+  const x0 = 30, W = 340, y = 120, sum = drawn.reduce((a, b) => a + b, 0);
   let x = x0;
   const xs = [x0];
   sides.forEach((v, i) => {
-    const x1 = round1(x + (v / sum) * W);
-    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
+    const x1 = round1(x + (drawn[i] / sum) * W);
+    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk", ...(hide.has(i) ? { dashed: true } : {}) }, 600, { gap: i ? 300 : 0 });
     tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
     // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
@@ -574,7 +592,10 @@ function fractionLine(c, tl) {
     return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)", ...mixFact } };
   }
   if (tgt != null) {
-    tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
+    // (main, c5-maths-ch02-t01 reader: the fraction to find, centred at x 200, sat exactly over the line's middle tick — the
+    // tick for 1 on a 0-2 line, for 1/2 on a 0-1 line — and read as a pointer to where it is. It is the board's title: in the
+    // title row, start-aligned left of the line's 0 end, over no tick)
+    tl.add({ op: "text", at: [x0 - 22, 70], text: `${tgt}/${den}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
     const g = lineGrammar();
     if (g.error) return g;
     return { claims, counts: counts([]), facts: { ...facts, ...mixFact, find: `${tgt}/${den}`, where: "? (child works it out)" } };
@@ -615,7 +636,10 @@ function fractionLine2(c, tl) {
     // (round 8: the stacked label clears its tick: above, its centre 50 over the line; below, under the whole numbers)
     tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 50 : 70)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
   }
-  if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
+  // (a lone fraction to find is the board's title, left of the line's 0 end as on the one-denominator line, never centred
+  // over the middle tick; "a vs b" spans several ticks and names a comparison, not a place)
+  if (asks.length === 1) tl.add({ op: "text", at: [x0 - 22, 46], text: `${asks[0][0]}/${asks[0][1]}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
+  else if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
   const counts = { lines: dens.map((d) => ({ gaps: d * w, ...(w > 1 ? { gapsPerWhole: d } : {}), ticks: d * w + 1, innerTicks: d * w - 1 })),
     ...(pts.length ? { marks: pts.map(([a, d]) => ({ at: `${a}/${d}`, label: `${a}/${d}` })) } : {}) };
   return { claims: [], counts, facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };
@@ -925,8 +949,11 @@ function equalGroups(c, tl) {
       claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
     }
   }
-  tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { counts: { groups, each }, facts: { ...head, groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+  // (Studio 015 item 5: `showSum: false` — no sum line under the groups: "5 × 1 = 5" under five whole laddoos, c6-ch07 s3, is
+  // no step of the card's)
+  if (c.showSum !== undefined && typeof c.showSum !== "boolean") return { error: "groups_show_sum" };
+  if (c.showSum !== false) tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
+  return { counts: { groups, each }, facts: { ...head, groups, each, ...(c.showSum === false ? {} : { total: c.hideResult ? "? (child works it out)" : groups * each }) }, claims };
 }
 
 /**
@@ -1199,12 +1226,23 @@ function compare(c, tl) {
   // (Learning 007, c6-ch07-t05: a stacked mixed fraction — "2 1/2 litre" — is taller than a line of words, and the added
   // answer line ran into it at the fixed 52 pitch: the rows are spaced by the tallest cell's real height)
   const cells = [...left.items, ...right.items, ...(c.mark?.add != null ? [String(c.mark.add)] : [])];
-  const pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
+  let pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
+  // (Studio 015 item 5, c6-ch07 s3 e2 "5/2 laddoo, 1 se zyada": an item that wraps onto two lines, a stacked fraction in it, rose
+  // across the title's rule and the live gate refused the board (W2 text_clear_of_lines) at run time. The rows are laid from
+  // each cell's real extent: the first row starts clear of the rule, each row clear of the one above; a table that then runs
+  // off the board is refused here, at author time — never on the child's screen)
+  const RULE_Y = 62, GAP = 6;
+  for (const [i, side] of [left, right].entries()) { const pl = fitPlan(side.title, colW - 8, titleSize); if (pl && fitExtent(pl, 36).bottom > RULE_Y - 2) return { error: `title_crosses_rule:${i}` }; }
+  const ext = Array.from({ length: rows }, (_, r) => [left, right].map((side) => { const t = side.items[r]; if (!t) return null; const pl = fitPlan(t, colW - 8, itemSize); return pl ? fitExtent(pl, 0) : null; }).filter(Boolean));
+  const above = (r) => Math.max(0, ...ext[r].map((e) => -e.top)), below = (r) => Math.max(0, ...ext[r].map((e) => e.bottom));
+  const y0 = rows ? Math.max(100, RULE_Y + GAP + above(0)) : 100;
+  for (let r = 1; r < rows; r++) pitch = Math.max(pitch, below(r - 1) + GAP + above(r));
+  if (rows && y0 + (rows - 1) * pitch + below(rows - 1) > 290) return { error: "items_too_tall" };
   for (let r = 0; r < rows; r++) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, y0 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
   // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — the chosen column (or one item in it) ringed and ticked,
@@ -1220,7 +1258,7 @@ function compare(c, tl) {
     if (m.add != null) {
       const t = String(m.add).trim();
       if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
-      if (!writeFit(tl, t, x, 100 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
+      if (!writeFit(tl, t, x, y0 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
       marked = `${side.title}: ${t}`;
     } else {
       const target = m.item != null ? `c${i}${m.item}` : `h${i}`;
@@ -1752,7 +1790,162 @@ function corners(shape, cx, cy, R, turn = 0) {
   const t = rad(turn);
   return base.map(([x, y]) => [cx + x * Math.cos(t) - y * Math.sin(t), cy + x * Math.sin(t) + y * Math.cos(t)]);
 }
+/**
+ * Studio 015 item 1 (dc-r8-director32 item 8, c4-ch01-t02 "ek taraf 8 cm, doosri taraf 10 cm — kya yeh roti circle hai?"): a
+ * round shape that is NOT a circle. `shape: "oval"` (an ellipse) or `shape: "uneven"` (a closed smooth outline with no symmetry,
+ * the same every time for the same params), with `centre` and `radii`: up to three labels ("8 cm", "10 cm"), each a radius
+ * drawn from the centre to the outline AT ITS OWN LENGTH — the outline is built through them, so the picture is true of the
+ * numbers. An oval's two different radii are its half-axes (the longer across, the shorter up); a third lies between them, at
+ * the place on the outline that is that far. `threeRadii: true` is the radii view (Studio 014's, on these shapes): the board's
+ * radii and, up to three, radii to other places of the outline, each at its own length and unlabelled (no number the board
+ * does not state). The outline is one closed stroke (not a circle op: the W15 gate reads it as a round shape, not a circle).
+ */
+const radiusOf = (t) => { const m = /(\d+(?:\.\d+)?)\s*(cm|mm|km|m)?\b/.exec(String(t ?? "")); return m ? { n: Number(m[1]), unit: m[2] ?? "" } : null; };
+/** The outline's radius at `deg` (degrees, counter-clockwise from 3 o'clock) through control points [deg, r] (cosine
+ *  interpolation: smooth, and never beyond its two neighbours — no overshoot past the longest radius). */
+function polarThrough(ctrl) {
+  const pts = [...ctrl].map(([d, r]) => [((d % 360) + 360) % 360, r]).sort((a, b) => a[0] - b[0]);
+  return (deg) => {
+    const d = ((deg % 360) + 360) % 360;
+    let i = pts.findIndex((p) => p[0] > d);
+    if (i < 0) i = 0;
+    const b = pts[i], a = pts[(i - 1 + pts.length) % pts.length];
+    const span = ((b[0] - a[0]) + 360) % 360 || 360, t = (((d - a[0]) + 360) % 360) / span;
+    return a[1] + (b[1] - a[1]) * (1 - Math.cos(Math.PI * t)) / 2;
+  };
+}
+const UNEVEN_AT = [200, 340, 90], UNEVEN_EXTRA = [20, 60, 125, 160, 245, 290];
+/** → { r(deg) in the labels' unit, radii: [{ deg, len, label|null }] (the board's), more: [{ deg }] (the view's extra places), facts } | { error } */
+function roundOutline(c) {
+  const labels = c.radii === undefined ? [] : c.radii;
+  if (!Array.isArray(labels) || labels.length > 3 || labels.some((x) => !fitsLabel(x) || textProblem(String(x)))) return { error: "round_radii" };
+  const ls = labels.map(radiusOf);
+  if (ls.some((x) => !x || !(x.n > 0)) || new Set(ls.map((x) => x.unit)).size > 1) return { error: "round_radii_numbers" };
+  if (c.shape === "oval") {
+    const ns = ls.map((x) => x.n), a = Math.max(...ns), b = Math.min(...ns);
+    if (ns.length < 2) return { error: "oval_radii" };
+    if (a === b) return { error: "oval_is_circle" };
+    const r = (deg) => { const t = rad(deg); return (a * b) / Math.hypot(b * Math.cos(t), a * Math.sin(t)); };
+    let usedA = false, usedB = false;
+    const radii = [];
+    for (const [k, x] of ls.entries()) {
+      if (x.n === a && !usedA) { usedA = true; radii.push({ deg: 0, len: a, label: String(labels[k]) }); continue; }
+      if (x.n === b && !usedB) { usedB = true; radii.push({ deg: 90, len: b, label: String(labels[k]) }); continue; }
+      if (!(x.n > b && x.n < a)) return { error: "oval_radii" };
+      // (between the half-axes: the place in the lower left where the outline is that far from the centre)
+      const s2 = ((a * a * b * b) / (x.n * x.n) - b * b) / (a * a - b * b);
+      radii.push({ deg: 180 + (Math.asin(Math.sqrt(s2)) * 180) / Math.PI, len: x.n, label: String(labels[k]) });
+    }
+    const more = [225, 135, 300].filter((d) => radii.every((q) => Math.abs(q.deg - d) > 30)).slice(0, Math.max(0, 3 - radii.length)).map((deg) => ({ deg }));
+    return { r, radii, more, unit: ls[0].unit, facts: { shape: "oval, not a circle", radii: labels.join(", ") || "none" } };
+  }
+  // uneven: the board's radii at three set places; between them, places drawn from the params' own seed, inside the range of
+  // the board's lengths (a single length or equal lengths: up to a fifth shorter), so no length is longer than the longest drawn
+  const ns = ls.map((x) => x.n);
+  const hi = ns.length ? Math.max(...ns) : 10, lo = ns.length ? Math.min(Math.min(...ns), hi * 0.95) * (new Set(ns).size > 1 ? 0.9 : 0.8) : 8;
+  const rnd = seeded(`uneven|${labels.join("|")}|${c.name ?? ""}`);
+  const ctrl = [...ls.map((x, k) => [UNEVEN_AT[k], x.n]), ...UNEVEN_AT.slice(ls.length).map((d) => [d, lo + (hi - lo) * (0.3 + 0.6 * rnd())]),
+    ...UNEVEN_EXTRA.map((d) => [d, lo + (hi - lo) * rnd()])];
+  const r = polarThrough(ctrl);
+  const radii = ls.map((x, k) => ({ deg: UNEVEN_AT[k], len: x.n, label: String(labels[k]) }));
+  return { r, radii, more: UNEVEN_AT.slice(ls.length).map((deg) => ({ deg })), unit: ls[0]?.unit ?? "", facts: { shape: "uneven round, not a circle", radii: labels.join(", ") || "none" } };
+}
+/** The room a small label takes on a split's panel (0.8 of this board, words one size up): its "m" box over 0.8, centred. */
+const panelBox = (text, at) => { const b = textBox(text, "m", at), w = b.w / 0.8, h = b.h / 0.8; return { x: b.x + b.w / 2 - w / 2, y: b.y + b.h / 2 - h / 2, w, h }; };
+/** A label for the radius cx,cy → e: beside it, clear of every stroke drawn so far (`avoid`: polylines) and every label placed
+ *  (`boxes`), inside the board — at the split panel's scale too. → its `at`, or null. */
+function radiusLabel(text, cx, cy, e, avoid, boxes) {
+  const size = "s", dx = e[0] - cx, dy = e[1] - cy, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+  for (const [t, off] of [0.5, 0.65, 0.35, 0.8, 0.2].flatMap((t) => [16, 22, 30, 40].map((o) => [t, o])).concat([0.5, 0.65, 0.8, 0.35, 0.9].flatMap((t) => [50, 60].map((o) => [t, o])))) for (const s of ny <= 0 ? [1, -1] : [-1, 1]) {
+    const mx = cx + dx * t + nx * off * s, my = cy + dy * t + ny * off * s;
+    const b0 = textBox(text, size), at = [round1(mx), round1(my - (b0.y + b0.h / 2))], box = panelBox(text, at);
+    if (box.x < 4 || box.x + box.w > 396 || box.y < 4 || box.y + box.h > 296) continue;
+    if (avoid.some((pts) => polyHits(pts, box, 2)) || boxes.some((b) => boxesMeet(b, box))) continue;
+    return at;
+  }
+  return null;
+}
+function roundShape(c, tl) {
+  for (const k of ["name", "centre"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  if (c.copies !== undefined && c.copies !== 1) return { error: "round_copies" };
+  const o = roundOutline(c);
+  if (o.error) return o;
+  const cx = 200, cy = 138, R = 105;
+  const degs = Array.from({ length: 72 }, (_, i) => i * 5);
+  const k = R / Math.max(...degs.map(o.r), ...o.radii.map((q) => q.len));
+  const at = (deg, len) => [round1(cx + len * k * Math.cos(rad(deg))), round1(cy - len * k * Math.sin(rad(deg)))];
+  const outline = [...degs.map((d) => at(d, o.r(d))), at(0, o.r(0))];
+  tl.add({ id: "o", op: "stroke", points: outline, weight: 2 }, 1100);
+  tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+  const avoid = [outline];
+  const drawn = [...o.radii, ...(c.threeRadii === true ? o.more : [])].slice(0, 3);
+  const segs = drawn.map((q) => ({ ...q, e: at(q.deg, q.len ?? o.r(q.deg)) }));
+  segs.forEach((q, i) => { tl.add({ id: `rad${i}`, op: "arrow", from: [cx, cy], to: q.e, ink: "accent", weight: 2 }, 520, { gap: i ? 160 : 200 }); avoid.push([[cx, cy], q.e]); });
+  // (the centre's name bottom left, the shape's bottom right: placed first, so the radii's labels keep clear of them)
+  const boxes = [];
+  const cAt = c.centre ? [round1(Math.max(panelBox(c.centre, [0, 0]).w / 2 + 6, 62)), 282] : null, nAt = c.name ? [round1(400 - panelBox(c.name, [0, 0]).w / 2 - 6), 282] : null;
+  if (cAt) boxes.push(panelBox(c.centre, cAt));
+  if (nAt) boxes.push(panelBox(c.name, nAt));
+  for (const q of segs.filter((x) => x.label)) {
+    const p = radiusLabel(q.label, cx, cy, q.e, avoid, boxes);
+    if (!p) return { error: "round_label_room" };
+    tl.add({ op: "text", at: p, text: q.label, size: "s", ink: "accent" }, 420, { gap: 60 });
+    boxes.push(panelBox(q.label, p));
+  }
+  if (c.centre) tl.add({ op: "label", at: cAt, text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
+  if (c.name) tl.add({ op: "text", at: nAt, text: c.name, size: "s", ink: "accent" }, 500, { gap: 200 });
+  return { counts: { sides: 0 }, facts: { ...o.facts, ...(c.name ? { name: c.name } : {}), ...(c.centre ? { centre: "marked" } : {}), ...(drawn.length ? { radiiDrawn: drawn.length } : {}) } };
+}
+/**
+ * Studio 015 item 2 (c4-ch01-t02's follow-up: a 12 cm string went slack while the pencil turned): `shape: "circle"` with
+ * `radius` (a label with its length, "12 cm") and `slack: { from, to, depth }` — the outline is the circle of the string's
+ * length except between the two angles (degrees, counter-clockwise from 3 o'clock), where it comes in towards the centre by
+ * up to `depth` (in the radius's unit, deepest midway): never outside the circle — a slack string lets the pencil come closer,
+ * not go further. `guide: true` draws the tight circle faint behind it. The radius is drawn at full length where the string
+ * was tight; `slackRadii: true` (the radii view) adds one into the dent, shorter, unlabelled (no number the board does not state).
+ */
+function slackShape(c, tl) {
+  for (const k of ["name", "centre", "radius"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  const s = c.slack, L = radiusOf(c.radius);
+  if (!L || !(L.n > 0)) return { error: "slack_radius" };
+  const from = Number(s?.from), to = Number(s?.to), depth = Number(s?.depth);
+  const span = (((to - from) % 360) + 360) % 360;
+  if (![from, to, depth].every(Number.isFinite) || span < 20 || span > 240 || !(depth > 0) || depth > L.n * 0.6) return { error: "slack" };
+  if (c.copies !== undefined && c.copies !== 1 || c.diameter || c.chord || c.arc) return { error: "slack_with" };
+  const cx = 200, cy = 138, R = 100, k = R / L.n;
+  const inDent = (deg) => (((deg - from) % 360) + 360) % 360 < span;
+  const r = (deg) => { if (!inDent(deg)) return L.n; const t = ((((deg - from) % 360) + 360) % 360) / span; return L.n - depth * Math.sin(Math.PI * t) ** 2; };
+  const at = (deg, len) => [round1(cx + len * k * Math.cos(rad(deg))), round1(cy - len * k * Math.sin(rad(deg)))];
+  // (the outline sampled every 5° and at the dent's own ends and middle; rounding toward the centre keeps it inside the circle)
+  const mid = from + span / 2;
+  const degs = [...new Set([...Array.from({ length: 72 }, (_, i) => i * 5), from, to, mid].map((d) => round1(((d % 360) + 360) % 360)))].sort((a, b) => a - b);
+  const inside = (deg) => {
+    let p = at(deg, r(deg));
+    for (let m = 0.05; Math.hypot(p[0] - cx, p[1] - cy) > R && m < 1; m += 0.05) { const t = rad(deg), q = r(deg) * k - m; p = [round1(cx + q * Math.cos(t)), round1(cy - q * Math.sin(t))]; }
+    return p;
+  };
+  const outline = [...degs.map(inside), inside(degs[0])];
+  if (c.guide === true) tl.add({ id: "guide", op: "circle", c: [cx, cy], r: R, ink: "soft", weight: 1 }, 700);
+  tl.add({ id: "o", op: "stroke", points: outline, weight: 2 }, 1100, { gap: c.guide === true ? 200 : 180 });
+  tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+  const full = mid + 150, avoid = [outline], boxes = [];
+  const cAt = c.centre ? [round1(Math.max(panelBox(c.centre, [0, 0]).w / 2 + 6, 62)), 282] : null, nAt = c.name ? [round1(400 - panelBox(c.name, [0, 0]).w / 2 - 6), 282] : null;
+  if (cAt) boxes.push(panelBox(c.centre, cAt));
+  if (nAt) boxes.push(panelBox(c.name, nAt));
+  const e0 = at(full, L.n);
+  tl.add({ id: "rad0", op: "arrow", from: [cx, cy], to: e0, ink: "accent", weight: 2 }, 520, { gap: 200 });
+  avoid.push([[cx, cy], e0]);
+  if (c.slackRadii === true) { const e1 = inside(mid); tl.add({ id: "rad1", op: "arrow", from: [cx, cy], to: e1, ink: "accent", weight: 2 }, 520, { gap: 160 }); avoid.push([[cx, cy], e1]); }
+  const p = radiusLabel(String(c.radius), cx, cy, e0, avoid, boxes);
+  if (!p) return { error: "slack_label_room" };
+  tl.add({ op: "text", at: p, text: String(c.radius), size: "s", ink: "accent" }, 420, { gap: 60 });
+  if (c.centre) tl.add({ op: "label", at: cAt, text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
+  if (c.name) tl.add({ op: "text", at: nAt, text: c.name, size: "s", ink: "accent" }, 500, { gap: 200 });
+  return { counts: { sides: 0, radius: String(c.radius) }, facts: { shape: "slack outline, inside the circle", radius: String(c.radius), ...(c.guide === true ? { guide: "the tight circle, faint" } : {}), ...(c.name ? { name: c.name } : {}) } };
+}
 function shape(c, tl) {
+  if (c.shape === "oval" || c.shape === "uneven") return roundShape(c, tl);
+  if (c.shape === "circle" && c.slack !== undefined) return slackShape(c, tl);
   if (!(c.shape in SIDES)) return { error: "shape" };
   const copies = c.copies === 2 ? 2 : 1;
   for (const k of ["name", "side", "corner", "centre", "radius", "diameter", "chord", "arc"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
@@ -1805,13 +1998,29 @@ function shape(c, tl) {
     return { counts: { sides: 0 }, facts: { shape: c.name ?? "circle", ...(c.centre ? { centre: "marked" } : {}), ...(c.radius ? { radius: "drawn" } : {}), ...(c.diameter ? { diameter: "drawn" } : {}),
       ...(c.chord ? { chord: "drawn" } : {}), ...(c.arc ? { arc: "drawn" } : {}) } };
   }
+  // (Studio 015 item 3: `tester: { on, corner, turned }` — Studio 014's right-angle tester laid at corner `corner` (0-3) of copy
+  // `on` of a rectangle or square: square to the page (`turned: false`: on a turned tile its edges miss the tile's) or turned
+  // with the shape (`turned: true`: its edges along the tile's two sides — it fits))
+  const ts = c.tester;
+  if (ts !== undefined && (!["rectangle", "square"].includes(c.shape) || !ts || typeof ts !== "object" || !isInt(ts.on ?? 0, 0, copies - 1) || !isInt(ts.corner, 0, 3) || typeof ts.turned !== "boolean"))
+    return { error: "shape_tester" };
   const R = copies === 1 ? 100 : 70;
+  let testerFact = null;
   for (let k = 0; k < copies; k++) {
     const cx = copies === 1 ? 200 : 105 + k * 190, cy = 140;
     const pts = corners(c.shape, cx, cy, R, k ? 25 : 0);
     tl.add({ id: `p${k}`, op: "polygon", points: pts, weight: 2, ...(k ? { ink: "accent" } : {}) }, 1100, { gap: k ? 320 : 120 });
     pts.forEach((p) => tl.add({ op: "circle", c: p, r: 3.5, fill: "mark", ink: "mark", weight: 1 }, 110, { gap: 40 }));
     if (names[k]) tl.add({ op: "text", at: [cx, 268], text: names[k], size: "m", ink: k ? "accent" : undefined }, 360, { gap: 120 });
+    if (ts && (ts.on ?? 0) === k) {
+      const P = pts[ts.corner], nx = pts[(ts.corner + 1) % 4], pv = pts[(ts.corner + 3) % 4];
+      const unit = (a) => { const d = Math.hypot(a[0] - P[0], a[1] - P[1]) || 1; return [(a[0] - P[0]) / d, (a[1] - P[1]) / d]; };
+      const T = 0.32 * Math.min(Math.hypot(nx[0] - P[0], nx[1] - P[1]), Math.hypot(pv[0] - P[0], pv[1] - P[1]));
+      const [u, v] = ts.turned ? [unit(nx), unit(pv)] : [[Math.sign(cx - P[0]) || 1, 0], [0, Math.sign(cy - P[1]) || 1]];
+      const q = (a, b) => [round1(P[0] + T * (a * u[0] + b * v[0])), round1(P[1] + T * (a * u[1] + b * v[1]))];
+      tl.add({ id: "tester", op: "polygon", points: [q(0, 0), q(1, 0), q(1, 1), q(0, 1)], ink: "soft", weight: 2 }, 600, { gap: 300 });
+      testerFact = ts.turned ? "a right-angle tester laid on a corner, turned with the shape" : "a right-angle tester laid on a corner, square to the page";
+    }
     if (copies === 1) {
       // a side and a corner named, leaders from outside the shape
       const [a, b] = [pts[0], pts[1]];
@@ -1829,7 +2038,7 @@ function shape(c, tl) {
     }
   }
   const k = SIDES[c.shape];
-  return { counts: { sides: k, corners: k }, facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}) } };
+  return { counts: { sides: k, corners: k }, facts: { shape: c.name ?? c.shape, sides: k, corners: k, ...(copies === 2 ? { copies: 2, second: "same shape, turned" } : {}), ...(testerFact ? { tester: testerFact } : {}) } };
 }
 
 function symmetry(c, tl) {

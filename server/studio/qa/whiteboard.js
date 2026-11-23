@@ -306,7 +306,12 @@ function circleCutByLines(ops) {
   for (const c of ops.filter((o) => o.op === "circle" && o.r >= 30)) {
     const through = ops.filter((o) => (o.op === "line" || o.op === "stroke") && (() => {
       const pts = o.op === "line" ? [o.from, o.to] : [o.points[0], o.points.at(-1)];
-      const [a, b] = pts; const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1;
+      const [a, b] = pts; const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy);
+      // (Studio 015 item 2: a closed stroke — shape@1's slack outline over its guide circle, an oval, an uneven round — has its
+      // two ends at one point, so its "chord" has no length and its distance to every centre read 0: it is another outline, not
+      // a cut. A stroke cuts only where it is a straight stroke: every point near the chord between its ends)
+      if (L < 2) return false;
+      if (o.op === "stroke" && o.points.some((p) => Math.abs(dy * p[0] - dx * p[1] + b[0] * a[1] - b[1] * a[0]) / L > Math.max(6, L * 0.08))) return false;
       const dist = Math.abs(dy * c.c[0] - dx * c.c[1] + b[0] * a[1] - b[1] * a[0]) / L;   // centre to the line
       const near = (p) => Math.abs(Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) - c.r) <= c.r * 0.25 || Math.hypot(p[0] - c.c[0], p[1] - c.c[1]) <= 6;
       return dist <= 8 && near(a) && near(b);
@@ -340,6 +345,11 @@ export function namedShapeMissing(reply, ops, { asked = false } = {}) {
     if (o.op === "rect") has.add("rectangle").add(Math.abs((o.w ?? 0) - (o.h ?? 0)) <= 2 ? "square" : "rectangle");
     // (a dot marking a point on a number line is not a shape: QA pass 14 run a20930e5, a number line refused for "rectangle")
     if ((o.op === "circle" && Number(o.r ?? 0) >= 12) || o.op === "ellipse" || o.op === "sector") has.add("circle");
+    // (Studio 015 item 1: a round outline that is not a circle — shape@1 oval / uneven / a slack string, one closed smooth
+    // stroke — answers "circle" only where her line asks whether it is one, or says it is not: "kya yeh circle hai?",
+    // "circle nahi hai". Said as a circle, it is still a circle named and not drawn)
+    if (o.op === "stroke" && Array.isArray(o.points) && o.points.length >= 24 && Math.hypot(o.points[0][0] - o.points.at(-1)[0], o.points[0][1] - o.points.at(-1)[1]) < 1.5
+      && /\bcircle\b[^.!?]*\?|\b(?:circle|gola|vritt)\s+(?:nahi|nahin|nahi\s+hai|nahin\s+hai)\b|\bnot\s+a\s+circle\b|\bisn'?t\s+a\s+circle\b/iu.test(String(reply ?? ""))) has.add("circle");
     if (o.op === "polygon" && Array.isArray(o.points)) {
       if (o.points.length === 3) has.add("triangle");
       if (rightAngled(o.points)) has.add("rectangle").add("square");
