@@ -815,6 +815,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // by value only for a form that is a number (with a unit at most)
     const ops = (x) => x.seq.filter((y) => y.k === "op").map((y) => y.t).join(" ");
     const exact = (k) => norm(k) === norm(text) && ops(canon(k)) === ops(R) && /[()]/.test(String(k)) === /[()]/.test(String(text));
+    // (050, main's fourth reader: a card keyed "30 metre" whose listed wrong answer is "30 centimetre" — the unit IS the choice — hears a
+    // bare "30" / "tees" as neither: the number of both a right form and a listed wrong answer, said with no unit, is the model's)
+    if (!R.units.length && R.nums.length && W.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R))) && F.some((cs) => cs.some((c) => c.units.length && sameAnswer(c, R)))) return toModel("unit_decides");
     if (forms.some(exact)) return done("correct", "script_key");
     if (wrongs.some(exact)) return misOf();
     if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();

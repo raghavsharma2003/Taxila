@@ -451,6 +451,17 @@ test("050 units: where a right form carries a unit, the key's number said with a
       if (grade(it, f) === "correct") leaks.push(`${name} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f)}`);
     }
   }
+  // (main's fourth reader: the fault is general — every staged script too, not only the gate's two)
+  if (existsSync(STAGED_DIR)) for (const f of readdirSync(STAGED_DIR).filter((x) => x.endsWith(".json") && !STAGED.includes(x.replace(/\.json$/, "")))) {
+    let its; try { its = cardsOf(JSON.parse(readFileSync(join(STAGED_DIR, f), "utf8"))); } catch { continue; }
+    for (const [where, it] of its) {
+      const m = String(it.answer).match(KEY_UNIT);
+      if (!m) continue;
+      cards++;
+      const ku = canon(String(it.answer)).units;
+      for (const u of UNITS) { const f2 = `${m[1]} ${u}`; if (canon(f2).units.join() === ku.join()) continue; tried++; if (grade(it, f2) === "correct") leaks.push(`staged:${f} ${where} key=${JSON.stringify(it.answer)} said ${JSON.stringify(f2)}`); }
+    }
+  }
   console.log(`# 050 unit wall: ${cards} cards, ${tried} replies`);
   assert.ok(cards >= 3, `the wall found unit-keyed cards (${cards})`);
   assert.deepEqual(leaks, []);
@@ -546,5 +557,32 @@ test("050 W3: the plain ways of saying a word key are right by one rule; the wal
   }
   console.log(`# 050 W3 wall: ${cards} word-keyed cards, ${tried} dressed wrong replies`);
   assert.ok(tried > 1000, `the wall ran (${tried})`);
+  assert.deepEqual(leaks, []);
+});
+
+test("050 units (main's fourth reader): where the unit is the choice, a bare number of both a right form and a listed wrong answer decides nothing", () => {
+  const c = card("30 metre", ["30 m"], "30 centimetre", "Kamre ki lambai kitni hogi: 30 metre ya 30 centimetre?");
+  for (const s of ["30", "tees", "तीस"]) { const g = grade(c, s); assert.ok(g !== "correct" && g !== "misconception", `${s} → ${g}`); }
+  assert.equal(grade(c, "30 metre"), "correct");
+  assert.equal(grade(c, "30 centimetre"), "misconception");
+  // a wrong answer that differs by its number too ("6 cm" against "600 cm") is as before: the bare "6" is the mix-up
+  const d = card("600 cm", ["600"], "6 cm", "6 metre kitne cm?");
+  assert.equal(grade(d, "6"), "misconception");
+  assert.equal(grade(d, "600"), "correct");
+  // the wall, over every card of every script (live, staged) whose right form and listed wrong carry one number in two units
+  const leaks = []; let cards = 0;
+  const dirs = [join(ROOT, "data/lesson-scripts"), ...(existsSync(STAGED_DIR) ? [STAGED_DIR] : [])];
+  for (const dir of dirs) for (const f of readdirSync(dir).filter((x) => x.endsWith(".json"))) {
+    let its; try { its = cardsOf(JSON.parse(readFileSync(join(dir, f), "utf8"))); } catch { continue; }
+    for (const [where, it] of its) {
+      const F = [it.answer, ...(it.acceptable ?? [])].map((x) => canon(String(x))).filter((x) => x.units.length && numberOf(x) != null);
+      const W = wrongList(metaOf(it).wrongIfMis).map(canon).filter((x) => x.units.length && numberOf(x) != null);
+      const both = F.map(numberOf).filter((n) => W.some((w) => numberOf(w) === n && w.units.join() !== F.find((x) => numberOf(x) === n).units.join()));
+      if (!both.length) continue;
+      cards++;
+      for (const n of new Set(both)) { const g = grade(it, n.slice(1)); if (g === "correct" || g === "misconception") leaks.push(`${f} ${where} said ${n.slice(1)} → ${g}`); }
+    }
+  }
+  console.log(`# 050 unit-choice wall: ${cards} cards`);
   assert.deepEqual(leaks, []);
 });
