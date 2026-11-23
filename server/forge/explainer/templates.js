@@ -12,7 +12,7 @@
 // expand(call, { band, lessonId, scriptId }) → { ok, script, facts, errors }: the script is normalised STRICTLY and
 // linted (shared/whiteboard.js lintScript: inside the board, no overlapping text), so a template that cannot lay out
 // its data fails here, before a child sees it, and the ladder steps down.
-import { normalizeScript, lintScript, textBox, textProblem, settledScript, opGeometry, braceLabelAt, ROLE, MEANING_ROLES } from "../../../shared/whiteboard.js";
+import { normalizeScript, lintScript, textBox, textProblem, settledScript, opGeometry, braceLabelAt, ROLE, MEANING_ROLES, seeded } from "../../../shared/whiteboard.js";
 import { placeNamed } from "./places.js";
 import { statesKeyAnyLang } from "./states-key.js";
 
@@ -1752,7 +1752,114 @@ function corners(shape, cx, cy, R, turn = 0) {
   const t = rad(turn);
   return base.map(([x, y]) => [cx + x * Math.cos(t) - y * Math.sin(t), cy + x * Math.sin(t) + y * Math.cos(t)]);
 }
+/**
+ * Studio 015 item 1 (dc-r8-director32 item 8, c4-ch01-t02 "ek taraf 8 cm, doosri taraf 10 cm — kya yeh roti circle hai?"): a
+ * round shape that is NOT a circle. `shape: "oval"` (an ellipse) or `shape: "uneven"` (a closed smooth outline with no symmetry,
+ * the same every time for the same params), with `centre` and `radii`: up to three labels ("8 cm", "10 cm"), each a radius
+ * drawn from the centre to the outline AT ITS OWN LENGTH — the outline is built through them, so the picture is true of the
+ * numbers. An oval's two different radii are its half-axes (the longer across, the shorter up); a third lies between them, at
+ * the place on the outline that is that far. `threeRadii: true` is the radii view (Studio 014's, on these shapes): the board's
+ * radii and, up to three, radii to other places of the outline, each at its own length and unlabelled (no number the board
+ * does not state). The outline is one closed stroke (not a circle op: the W15 gate reads it as a round shape, not a circle).
+ */
+const radiusOf = (t) => { const m = /(\d+(?:\.\d+)?)\s*(cm|mm|km|m)?\b/.exec(String(t ?? "")); return m ? { n: Number(m[1]), unit: m[2] ?? "" } : null; };
+/** The outline's radius at `deg` (degrees, counter-clockwise from 3 o'clock) through control points [deg, r] (cosine
+ *  interpolation: smooth, and never beyond its two neighbours — no overshoot past the longest radius). */
+function polarThrough(ctrl) {
+  const pts = [...ctrl].map(([d, r]) => [((d % 360) + 360) % 360, r]).sort((a, b) => a[0] - b[0]);
+  return (deg) => {
+    const d = ((deg % 360) + 360) % 360;
+    let i = pts.findIndex((p) => p[0] > d);
+    if (i < 0) i = 0;
+    const b = pts[i], a = pts[(i - 1 + pts.length) % pts.length];
+    const span = ((b[0] - a[0]) + 360) % 360 || 360, t = (((d - a[0]) + 360) % 360) / span;
+    return a[1] + (b[1] - a[1]) * (1 - Math.cos(Math.PI * t)) / 2;
+  };
+}
+const UNEVEN_AT = [200, 340, 90], UNEVEN_EXTRA = [20, 60, 125, 160, 245, 290];
+/** → { r(deg) in the labels' unit, radii: [{ deg, len, label|null }] (the board's), more: [{ deg }] (the view's extra places), facts } | { error } */
+function roundOutline(c) {
+  const labels = c.radii === undefined ? [] : c.radii;
+  if (!Array.isArray(labels) || labels.length > 3 || labels.some((x) => !fitsLabel(x) || textProblem(String(x)))) return { error: "round_radii" };
+  const ls = labels.map(radiusOf);
+  if (ls.some((x) => !x || !(x.n > 0)) || new Set(ls.map((x) => x.unit)).size > 1) return { error: "round_radii_numbers" };
+  if (c.shape === "oval") {
+    const ns = ls.map((x) => x.n), a = Math.max(...ns), b = Math.min(...ns);
+    if (ns.length < 2) return { error: "oval_radii" };
+    if (a === b) return { error: "oval_is_circle" };
+    const r = (deg) => { const t = rad(deg); return (a * b) / Math.hypot(b * Math.cos(t), a * Math.sin(t)); };
+    let usedA = false, usedB = false;
+    const radii = [];
+    for (const [k, x] of ls.entries()) {
+      if (x.n === a && !usedA) { usedA = true; radii.push({ deg: 0, len: a, label: String(labels[k]) }); continue; }
+      if (x.n === b && !usedB) { usedB = true; radii.push({ deg: 90, len: b, label: String(labels[k]) }); continue; }
+      if (!(x.n > b && x.n < a)) return { error: "oval_radii" };
+      // (between the half-axes: the place in the lower left where the outline is that far from the centre)
+      const s2 = ((a * a * b * b) / (x.n * x.n) - b * b) / (a * a - b * b);
+      radii.push({ deg: 180 + (Math.asin(Math.sqrt(s2)) * 180) / Math.PI, len: x.n, label: String(labels[k]) });
+    }
+    const more = [225, 135, 300].filter((d) => radii.every((q) => Math.abs(q.deg - d) > 30)).slice(0, Math.max(0, 3 - radii.length)).map((deg) => ({ deg }));
+    return { r, radii, more, unit: ls[0].unit, facts: { shape: "oval, not a circle", radii: labels.join(", ") || "none" } };
+  }
+  // uneven: the board's radii at three set places; between them, places drawn from the params' own seed, inside the range of
+  // the board's lengths (a single length or equal lengths: up to a fifth shorter), so no length is longer than the longest drawn
+  const ns = ls.map((x) => x.n);
+  const hi = ns.length ? Math.max(...ns) : 10, lo = ns.length ? Math.min(Math.min(...ns), hi * 0.95) * (new Set(ns).size > 1 ? 0.9 : 0.8) : 8;
+  const rnd = seeded(`uneven|${labels.join("|")}|${c.name ?? ""}`);
+  const ctrl = [...ls.map((x, k) => [UNEVEN_AT[k], x.n]), ...UNEVEN_AT.slice(ls.length).map((d) => [d, lo + (hi - lo) * (0.3 + 0.6 * rnd())]),
+    ...UNEVEN_EXTRA.map((d) => [d, lo + (hi - lo) * rnd()])];
+  const r = polarThrough(ctrl);
+  const radii = ls.map((x, k) => ({ deg: UNEVEN_AT[k], len: x.n, label: String(labels[k]) }));
+  return { r, radii, more: UNEVEN_AT.slice(ls.length).map((deg) => ({ deg })), unit: ls[0]?.unit ?? "", facts: { shape: "uneven round, not a circle", radii: labels.join(", ") || "none" } };
+}
+/** The room a small label takes on a split's panel (0.8 of this board, words one size up): its "m" box over 0.8, centred. */
+const panelBox = (text, at) => { const b = textBox(text, "m", at), w = b.w / 0.8, h = b.h / 0.8; return { x: b.x + b.w / 2 - w / 2, y: b.y + b.h / 2 - h / 2, w, h }; };
+/** A label for the radius cx,cy → e: beside it, clear of every stroke drawn so far (`avoid`: polylines) and every label placed
+ *  (`boxes`), inside the board — at the split panel's scale too. → its `at`, or null. */
+function radiusLabel(text, cx, cy, e, avoid, boxes) {
+  const size = "s", dx = e[0] - cx, dy = e[1] - cy, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+  for (const t of [0.5, 0.65, 0.35, 0.8, 0.2]) for (const off of [16, 22, 30, 40]) for (const s of ny <= 0 ? [1, -1] : [-1, 1]) {
+    const mx = cx + dx * t + nx * off * s, my = cy + dy * t + ny * off * s;
+    const b0 = textBox(text, size), at = [round1(mx), round1(my - (b0.y + b0.h / 2))], box = panelBox(text, at);
+    if (box.x < 4 || box.x + box.w > 396 || box.y < 4 || box.y + box.h > 296) continue;
+    if (avoid.some((pts) => polyHits(pts, box, 2)) || boxes.some((b) => boxesMeet(b, box))) continue;
+    return at;
+  }
+  return null;
+}
+function roundShape(c, tl) {
+  for (const k of ["name", "centre"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };
+  if (c.copies !== undefined && c.copies !== 1) return { error: "round_copies" };
+  const o = roundOutline(c);
+  if (o.error) return o;
+  const cx = 200, cy = 138, R = 105;
+  const degs = Array.from({ length: 72 }, (_, i) => i * 5);
+  const k = R / Math.max(...degs.map(o.r), ...o.radii.map((q) => q.len));
+  const at = (deg, len) => [round1(cx + len * k * Math.cos(rad(deg))), round1(cy - len * k * Math.sin(rad(deg)))];
+  const outline = [...degs.map((d) => at(d, o.r(d))), at(0, o.r(0))];
+  tl.add({ id: "o", op: "stroke", points: outline, weight: 2 }, 1100);
+  tl.add({ id: "ctr", op: "circle", c: [cx, cy], r: 4, fill: "accent", ink: "accent", weight: 1 }, 200, { gap: 160 });
+  const avoid = [outline];
+  const drawn = [...o.radii, ...(c.threeRadii === true ? o.more : [])].slice(0, 3);
+  const segs = drawn.map((q) => ({ ...q, e: at(q.deg, q.len ?? o.r(q.deg)) }));
+  segs.forEach((q, i) => { tl.add({ id: `rad${i}`, op: "arrow", from: [cx, cy], to: q.e, ink: "accent", weight: 2 }, 520, { gap: i ? 160 : 200 }); avoid.push([[cx, cy], q.e]); });
+  // (the centre's name bottom left, the shape's bottom right: placed first, so the radii's labels keep clear of them)
+  const boxes = [];
+  const cAt = c.centre ? [round1(Math.max(panelBox(c.centre, [0, 0]).w / 2 + 6, 62)), 282] : null, nAt = c.name ? [round1(400 - panelBox(c.name, [0, 0]).w / 2 - 6), 282] : null;
+  if (cAt) boxes.push(panelBox(c.centre, cAt));
+  if (nAt) boxes.push(panelBox(c.name, nAt));
+  for (const q of segs.filter((x) => x.label)) {
+    const p = radiusLabel(q.label, cx, cy, q.e, avoid, boxes);
+    if (!p) return { error: "round_label_room" };
+    tl.add({ op: "text", at: p, text: q.label, size: "s", ink: "accent" }, 420, { gap: 60 });
+    boxes.push(panelBox(q.label, p));
+  }
+  if (c.centre) tl.add({ op: "label", at: cAt, text: c.centre, to: [cx - 3, cy + 3], ink: "soft" }, 600, { gap: 200 });
+  if (c.name) tl.add({ op: "text", at: nAt, text: c.name, size: "s", ink: "accent" }, 500, { gap: 200 });
+  return { counts: { sides: 0 }, facts: { ...o.facts, ...(c.name ? { name: c.name } : {}), ...(c.centre ? { centre: "marked" } : {}), ...(drawn.length ? { radiiDrawn: drawn.length } : {}) } };
+}
 function shape(c, tl) {
+  if (c.shape === "oval" || c.shape === "uneven") return roundShape(c, tl);
   if (!(c.shape in SIDES)) return { error: "shape" };
   const copies = c.copies === 2 ? 2 : 1;
   for (const k of ["name", "side", "corner", "centre", "radius", "diameter", "chord", "arc"]) if (c[k] !== undefined && !fitsLabel(c[k])) return { error: `label_${k}` };

@@ -633,6 +633,9 @@ function altSay(ac0, variant = 0, { quiet = new Set() } = {}) {
   if (ac.template === "equal-groups@1" && ac.as === "rows")
     return v ? `Ab in groups ko qataron mein dekho, sab ek hi jagah se shuru: ${ac.sizes.join(", ")}` : `Dekho, har group ab ek qatar hai, sab qatarein ek hi jagah se shuru hoti hain: ${ac.sizes.join(", ")}`;
   // (Studio 014 item 3: the radius drawn at three places — no claim that they are equal: that is what such a card asks)
+  // (Studio 015 item 1: an oval's or an uneven shape's radii at three places, each its own length — said, not measured)
+  if (ac.template === "shape@1" && ac.threeRadii) return v ? "Ab centre se kinaare tak teen alag jagah line kheench kar dekho, har line ki apni lambai hai"
+    : "Dekho, centre se kinaare tak ki line ab teen jagah kheenchi hai, har ek apni lambai tak";
   if (ac.radii === 3) return v ? "Ab centre se kinaare tak teen alag jagah line kheench kar dekho" : "Dekho, centre se kinaare tak ki line ab teen jagah kheenchi hai";
   // (Studio 014 item 2: the tester view names the angles as the board names them, and never which is less, equal or more)
   if (ac.template === "angle@1" && ac.tester) {
@@ -819,6 +822,10 @@ function altCall0(ref, { line = "", withheld = [], up = null } = {}) {
     // radius drawn at three places as its second view; a circle with no radius drawn has none)
     if (c.template === "shape@1" && c.shape === "circle" && c.radius && !c.diameter && !c.chord && !c.arc)
       return { template: "shape@1", shape: "circle", radius: c.radius, ...(c.centre ? { centre: c.centre } : {}), ...(c.name ? { name: c.name } : {}), radii: 3, view: "radii" };
+    // (Studio 015 item 1: an oval or an uneven round shape — the radii view at three places, each at its own length; the board's
+    // own labels only, the other places unlabelled. A board that already draws three radii has nothing more to show)
+    if (c.template === "shape@1" && (c.shape === "oval" || c.shape === "uneven") && (c.radii ?? []).length < 3)
+      return { template: "shape@1", shape: c.shape, ...(c.radii ? { radii: c.radii } : {}), ...(c.centre ? { centre: c.centre } : {}), ...(c.name ? { name: c.name } : {}), threeRadii: true, view: "radii" };
     if (c.template === "measured@1" && c.shape === "circle" && Number(c.r) > 0 && c.mixup == null) return { template: "measured@1", shape: "circle", unit: c.unit, r: c.r, radii: 3, view: "radii" };
     const ps = sidesOf(c);
     if (ps) {
