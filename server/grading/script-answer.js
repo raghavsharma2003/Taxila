@@ -36,9 +36,16 @@ const ALL_WORDS = new Set(["dono", "donon", "both", "sab", "sabhi", "all"]);
 const UNIT0 = { cm: "cm", centimetre: "cm", centimetres: "cm", centimeter: "cm", centimeters: "cm", "सेंटीमीटर": "cm", mm: "mm", millimetre: "mm", millimeter: "mm",
   m: "m", metre: "m", metres: "m", meter: "m", meters: "m", "मीटर": "m", km: "km", kilometre: "km", kilometres: "km", kilometer: "km", kilometers: "km",
   "किलोमीटर": "km", kg: "kg", kilo: "kg", kilogram: "kg", kilograms: "kg", "किलो": "kg", "किलोग्राम": "kg", g: "g", gm: "g", gram: "g", grams: "g", "ग्राम": "g",
-  l: "l", litre: "l", litres: "l", liter: "l", liters: "l", "लीटर": "l", ml: "ml", rs: "rs", rupees: "rs", rupee: "rs", rupaye: "rs", "रुपये": "rs", "रुपए": "rs" };
+  l: "l", litre: "l", litres: "l", liter: "l", liters: "l", "लीटर": "l", ml: "ml", rs: "rs", rupees: "rs", rupee: "rs", rupaye: "rs", "रुपये": "rs", "रुपए": "rs",
+  // (050: time is a unit too — "5 minute" is not "5 ghante")
+  minute: "min", minutes: "min", mins: "min", "मिनट": "min", ghanta: "hr", ghante: "hr", ghanton: "hr", hour: "hr", hours: "hr", "घंटा": "hr", "घंटे": "hr" };
 const UNIT = new Map(Object.entries(UNIT0).map(([k, v]) => [fold(k), v]));
 const SHORT_UNIT = new Set(["m", "g", "l"]);   // a unit only right after a number
+// (050, main's reader on the perimeter script: "24 square cm" passed for "24 cm". A square word before a length unit makes another unit)
+const SQUARE = new Set(["square", "sq", "varg", "वर्ग"].map(fold));
+const LENGTH = new Set(["mm", "cm", "m", "km"]);
+/** The kind of a unit token (050: "metre" for "cm" is the same kind said wrongly; "sq cm" is another kind). */
+export const unitKind = (u) => (u.startsWith("sq") ? "area" : LENGTH.has(u) ? "len" : u === "g" || u === "kg" ? "mass" : u === "l" || u === "ml" ? "vol" : u === "min" || u === "hr" ? "time" : u === "rs" ? "money" : null);
 // operators (G7): + − × ÷ =, in symbols and words, both scripts
 const OP0 = { "+": "+", plus: "+", jod: "+", jodo: "+", jodna: "+", jodenge: "+", "जोड़": "+", "जोड़ो": "+", "प्लस": "+",
   "×": "×", "*": "×", guna: "×", gunaa: "×", times: "×", into: "×", multiply: "×", multiplied: "×", "गुणा": "×", "गुना": "×", "टाइम्स": "×",
@@ -139,7 +146,11 @@ function items(raw) {
     const prev = a[i - 1], next = a[i + 1];
     const verb = prev && (prev.k === "op" || (prev.k === "raw" && !prev.c && DO_VERBS.has(prev.t)));
     // ("do guna" is twice: a "do" right before an operator is the number; one right after it is the verb, "bhaag do")
-    const beside = isN(prev) || isN(next) || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
+    // (050, main's reader: "3 ko do se guna" — a "do" before "se" and an operator is the number, as "do guna" is)
+    const beforeSeOp = next?.k === "raw" && /^(?:se|से)$/.test(next.t) && a[i + 2]?.k === "op";
+    // ("baarah mein se das": the part after "N mein se" is a number)
+    const afterMeinSe = prev?.k === "raw" && /^(?:se|से)$/.test(prev.t) && a[i - 2]?.k === "raw" && /^(?:mein|me|में)$/.test(a[i - 2].t) && isN(a[i - 3]);
+    const beside = isN(prev) || isN(next) || beforeSeOp || afterMeinSe || (next && (next.c === "scale" || next.c === "den" || next.k === "op")) || prev?.c === "scale"
       || ((prev?.c === "over" || (prev?.k === "raw" && /^(?:aur|and)$/.test(prev.t))) && isN(a[i - 2]));
     x.c = !verb && (beside || i === firstContent || (prev && prev.k === "raw" && LEAD.has(prev.t))) ? "n" : null;
     // (a "do" that is no number is the verb: "bata do", "bhaag do"; it says nothing about the answer)
@@ -172,6 +183,17 @@ function items(raw) {
     }
     res.push(x);
   }
+  // (050, main: "baarah mein se das" — ten out of twelve — is the fraction 10/12; so is "12 mein 10" said alone or before "hisse".
+  // Whole numbers only, the part no more than the whole; "30 mein 6 kitni baar" stays words)
+  const isW = (x) => x?.k === "num" && /^\d+$/.test(x.v);
+  for (let i = 0; i + 2 < res.length; i++) {
+    const [N, mein, a, b] = res.slice(i, i + 4);
+    if (!isW(N) || mein.k !== "raw" || !/^(?:mein|me|में)$/.test(mein.t)) continue;
+    const se = a?.k === "raw" && /^(?:se|से)$/.test(a.t);
+    const M = se ? b : a, after = res[i + (se ? 4 : 3)];
+    const tailOk = se || !after || (after.k === "raw" && /^(?:hisse|hissa|हिस्से|हिस्सा)$/.test(after.t));
+    if (isW(M) && +N.v > 0 && +M.v <= +N.v && tailOk) res.splice(i, se ? 4 : 3, { k: "num", v: `${+M.v}/${+N.v}` });
+  }
   // "30 ko 6 se bhaag" is 30 ÷ 6 (G7: the order is part of it)
   for (let i = 0; i + 4 < res.length; i++) {
     const [A, ko, B, se, op] = res.slice(i, i + 5);
@@ -192,19 +214,36 @@ export function untag(raw) {
   const t = s.replace(TAG_END, "");
   return t !== s && /[\p{L}\p{N}]/u.test(t) ? t : s;
 }
+// (to-brain 050, main's reader on c5-ch02-t03 s1 c2: "1/2 chhota hai" — 1/2 is the smaller — met the form "1/2 se chhota" once "se" went as a
+// filler. Beside a comparison word, "se" / "than" says which side is compared, so it is kept, as one word)
+// (main, 050 follow-up: "Rahul kam" took the form "Rahul se kam" — the whole comparison family, both scripts' equal words already folded)
+const CMP = new Set(["bada", "chhota", "zyada", "kam", "lamba", "lambi", "lambe", "pehle", "baad", "aage", "peeche"].map(fold));
+const THAN = new Set(["se", "than", fold("से")]);
+const DOUBLE = new Set(["double", "dugna", "duguna", "doguna", "dugni", "twice", "दुगना", "दोगुना", "डबल"].map(fold));
 export function canon(raw) {
   const it = items(untag(raw));
-  let seq = [];
+  const cmp = it.some((x) => x.k === "raw" && x.t && CMP.has(SAME.get(fold(x.t)) ?? fold(x.t)));
+  let seq = [], square = false;
   it.forEach((x, i) => {
     if (x.k === "num") { seq.push({ k: "num", t: `#${x.v}` }); return; }
     if (x.k === "op") { seq.push({ k: "op", t: x.v }); return; }
     const t = x.t;
     if (!t || t === "," || t === "/" || t === "-" || x.verb) return;
     const f0 = fold(t), f = SAME.get(f0) ?? f0;
-    if (UNIT.has(f0) && (!SHORT_UNIT.has(f0) || it[i - 1]?.k === "num")) { seq.push({ k: "unit", t: UNIT.get(f0) }); return; }
+    const nx = it[i + 1]?.k === "raw" ? fold(it[i + 1].t) : null;
+    if (SQUARE.has(f0) && nx && UNIT.has(nx) && LENGTH.has(UNIT.get(nx))) { square = true; return; }
+    if (UNIT.has(f0) && (!SHORT_UNIT.has(f0) || it[i - 1]?.k === "num" || (square && SQUARE.has(fold(it[i - 1]?.t ?? ""))))) {
+      seq.push({ k: "unit", t: `${square ? "sq" : ""}${UNIT.get(f0)}` }); square = false; return;
+    }
+    square = false;
     // (a denial keeps its word: "galat nahi" — not wrong — is never "galat")
     if (NEG.has(f)) { seq.push({ k: "neg", t: f === "galat" || f === "wrong" ? "galat" : "nahi" }); return; }
     if ((f === "na" || f === fold("ना")) && !seq.length) { seq.push({ k: "neg", t: "nahi" }); return; }
+    if (cmp && THAN.has(f0)) { seq.push({ k: "w", t: "se" }); return; }
+    // ("before 1/5" is "1/5 se pehle": the English word carries the "se" Hindi says)
+    if (f0 === "before" && it.some((y) => y.k === "num")) { seq.push({ k: "w", t: "pehle" }, { k: "w", t: "se" }); return; }
+    // (050, main: "double" / "dugna" is "2 se guna" — one equal-words pair, a number and its operator)
+    if (DOUBLE.has(f0)) { seq.push({ k: "num", t: "#2" }, { k: "op", t: "×" }); return; }
     if (FILL.has(f)) return;
     seq.push({ k: "w", t: f });
   });
@@ -244,11 +283,30 @@ export function sameAnswer(a, b) {
   if (a.units.length && b.units.length && !setEq(a.units, b.units)) return false;
   const A = a.seq.filter((x) => x.k !== "unit"), B = b.seq.filter((x) => x.k !== "unit");
   if (!A.length || !B.length) return false;
-  if (a.ops || b.ops) return a.ops && b.ops && setEq(a.words, b.words) && sameExpr(A, B);
-  // a denial is the same only where it stands in the same place (G7)
+  // a denial is the same only where it stands in the same place (G7; 050: also in a sum — "2 se guna nahi" is never "2 se guna")
   if (a.neg || b.neg) return join(A) === join(B);
+  if (a.ops || b.ops) return a.ops && b.ops && setEq(a.words, b.words) && sameExpr(A, B);
   // the words as a set; the numbers in their order (G7: a list of values is ordered)
   return setEq(a.words, b.words) && a.nums.join(" ") === b.nums.join(" ");
+}
+
+/** 050: the normal form with its denial words taken out ("2 se guna nahi" → "2 se guna"), to see whether a reply denies a right form. */
+export function undenied(c) {
+  const seq = (c?.seq ?? []).filter((x) => x.k !== "neg");
+  return { ...c, seq, nums: seq.filter((x) => x.k === "num").map((x) => x.t), words: seq.filter((x) => x.k === "w").map((x) => x.t), neg: false };
+}
+
+/**
+ * 050 W3: the words of a spoken reply that carry no answer — helping verbs and endings, pointing words — closed, and never an
+ * operation word (jodo, ghatao, guna, bhaag are operators, not words, in the normal form). A card drops only those its forms do
+ * not use as content (classify.js decides that per card).
+ */
+export const NO_ANSWER_WORDS = new Set(["karo", "karna", "karenge", "kar", "karte", "karunga", "karungi", "hoga", "hogi", "hai", "hain", "chalo", "chalenge", "chalna",
+  "jayenge", "jaana", "aayega", "lagega", "lagenge", "chahiye", "dena", "denge", "padega", "upar", "neeche", "isko", "usko", "yahan", "bhi", "toh", "phir", "ko", "hum"].map(fold));
+/** The normal form with the given words taken out (050 W3). */
+export function withoutWords(c, drop) {
+  const seq = (c?.seq ?? []).filter((x) => !(x.k === "w" && drop.has(x.t)));
+  return { ...c, seq, nums: seq.filter((x) => x.k === "num").map((x) => x.t), words: seq.filter((x) => x.k === "w").map((x) => x.t) };
 }
 
 /** A form that is one number (with a unit at most): its value token, else null. */
@@ -256,7 +314,9 @@ export const numberOf = (c) => (c && c.nums.length === 1 && !c.words.length && !
 
 /** Words beside a lone number that change what the reply says about it ("25 se kam", "8 ke baad", "3 ya 4"). */
 export const RISK = new Set(["bada", "chhota", "zyada", "kam", "pehle", "baad", "beech", "aage", "peeche", "upar", "neeche", "than", "ya", "or", "या", "baaki",
-  "total", "kul", "har", "barabar", "dono", "pehla", "doosra", "aakhri", "last", "first", "second"].map(fold));
+  "total", "kul", "har", "barabar", "dono", "pehla", "doosra", "aakhri", "last", "first", "second",
+  // (050: "se" is a word only beside a comparison — "2 cm se lamba" is longer than 2 cm, not 2 cm)
+  "se"].map(fold));
 
 /** wrongIfMis as a list (G8: a string or a list of strings). */
 export const wrongList = (w) => (Array.isArray(w) ? w : w != null ? [w] : []).map((x) => String(x ?? "").trim()).filter(Boolean);
@@ -293,7 +353,10 @@ export function pickOption(reply, opts) {
   const R = new Set(reply.seq.map((x) => x.t));
   const apart = sets.map((s, i) => [...s].filter((t) => sets.every((o, j) => j === i || !o.has(t))));
   if (apart.some((d) => !d.length)) return -1;
+  // (050: an option compared "with se" — "1/2 se chhota" — is not named by a reply that says the thing compared without it: "1/2 chhota hai"
+  // says the other way round; "chhota" alone still names it)
+  const turned = (i) => sets[i].has("se") && !R.has("se") && [...R].some((t) => !CMP.has(t));
   const hits = sets.map((s, i) => i).filter((i) => apart[i].every((t) => R.has(t)) && apart.every((d, j) => j === i || !d.some((t) => R.has(t)))
-    && [...R].every((t) => sets[i].has(t)));
+    && [...R].every((t) => sets[i].has(t)) && !turned(i));
   return hits.length === 1 ? hits[0] : -1;
 }
