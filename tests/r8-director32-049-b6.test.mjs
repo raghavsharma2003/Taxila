@@ -7,15 +7,39 @@ import { PENDING, PREDICATES } from "../evals/hybrid-side-by-side/dry-predicates
 import { flagged } from "./r8-director32-049.test.mjs";
 import { VPC_MAX, L2_CAP } from "../server/director/state.js";
 
-describe("B6.1: a turn of verdict, reason, point and card over 65 words is split at the point", () => {
-  test("vpcUnlisted is gated, and the walk's limit is 65 under the 75 of a turn of parts", () => {
+// (re-pinned for to-brain 049 and main's ruling of 2026-11-23: as built at 65 the split ended its first part on a check-in straight after a
+// right answer — 39 split turns in the 24 dry lessons. Such a turn is said whole up to 70; above 70 it splits at the point and its first
+// part ends on a go-on statement, never a check-in)
+describe("B6.1: a turn of verdict, reason, point and card is said whole up to 70 words; over it, split at the point on a go-on statement", () => {
+  test("vpcUnlisted is gated above 70, vpcWhole (66 to 70 said whole) counted, splitEndsOnCheckin gated; the walk's limit is 70", () => {
     assert.ok(PREDICATES.vpcUnlisted && !PENDING.has("vpcUnlisted"));
-    assert.equal(VPC_MAX, 65); assert.equal(L2_CAP, 75);
+    assert.ok(PREDICATES.vpcWhole && PENDING.has("vpcWhole"));
+    assert.ok(PREDICATES.splitEndsOnCheckin && !PENDING.has("splitEndsOnCheckin"));
+    assert.equal(VPC_MAX, 70); assert.equal(L2_CAP, 75);
   });
-  test("vpcUnlisted reads director32 c4 steady 86; c5-t01 steady 14, offtopic 12, steering 26; c5-t03 steady 6, stuck 10, offtopic 8", () => {
-    assert.ok(flagged("steady", "c4", "vpcUnlisted").has(86));
-    for (const [p, n] of [["steady", 14], ["offtopic", 12], ["steering", 26]]) assert.ok(flagged(p, "c5t01", "vpcUnlisted").has(n), `${p} ${n}`);
-    for (const [p, n] of [["steady", 6], ["stuck", 10], ["offtopic", 8]]) assert.ok(flagged(p, "c5t03", "vpcUnlisted").has(n), `${p} ${n}`);
+  // (the order's director32 rows are all 66 to 70 words: under the ruling each is said whole — vpcWhole counts them, vpcUnlisted no more)
+  test("the director32 rows (c4 steady 86; c5-t01 steady 14, offtopic 12, steering 26; c5-t03 steady 6, stuck 10, offtopic 8) are vpcWhole's", () => {
+    const rows = [["steady", "c4", 86], ["steady", "c5t01", 14], ["offtopic", "c5t01", 12], ["steering", "c5t01", 26], ["steady", "c5t03", 6], ["stuck", "c5t03", 10], ["offtopic", "c5t03", 8]];
+    for (const [p, t, n] of rows) assert.ok(flagged(p, t, "vpcWhole").has(n) && !flagged(p, t, "vpcUnlisted").has(n), `${p} ${t} ${n}`);
+  });
+  test("splitEndsOnCheckin reads a vpc split ending on a question, and not one ending on a statement", () => {
+    const L = { rows: [] };
+    assert.ok(PREDICATES.splitEndsOnCheckin(L, { who: "teacher", noFit: "vpc", text: "Haan, sahi hai, kyunki 4 gap hain. Yahan tak theek hai?" }));
+    assert.equal(PREDICATES.splitEndsOnCheckin(L, { who: "teacher", noFit: "vpc", text: "Haan, sahi hai, kyunki 4 gap hain. Theek hai, ab agli baat dekhte hain." }), null);
+  });
+  test("the go-on joint after a right answer is a statement: no consolation, no question named, no promise; none, no split", async () => {
+    const { goOnPlain } = await import("../server/director/help.js");
+    const { readFileSync } = await import("node:fs");
+    const sc = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${t}.json`, import.meta.url), "utf8"));
+    for (let n = 0; n < 4; n++) {
+      const j = goOnPlain(sc("c4-maths-ch05-t01"), { n });
+      assert.ok(j?.text && !/koi baat nahi|sawaal|dobara|phir aayenge/i.test(j.text), j?.text);
+    }
+    // (c6-ch07's every form promises — "phir aayenge", "dobara", "phir milegi": the turn is not split)
+    assert.equal(goOnPlain(sc("c6-maths-ch07-t01")), null);
+    // (at a give-up a consolation is fine; a question named or a promise is not)
+    const g = goOnPlain(sc("c6-maths-ch06-t01"), { consolation: true, n: 0 });
+    assert.ok(g && !/sawaal|yahin rakh/i.test(g.text));
   });
 });
 
@@ -33,12 +57,34 @@ describe("B6.2: \"Dekho,\" at most three times a lesson, never within four of he
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3 }), /Dekho/);
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Dekho, yeh." }, { who: "child", text: "haan" }] }), /Dekho/);
   });
+  // (main's ruling of 2026-11-23: "Suno," took "Dekho,"'s place — the lead-in openers together at most four, none more than three, never two
+  // within four of her turns)
+  test("the lead-in openers together: at most four a lesson, none within four turns of any other", async () => {
+    const { rightWhyLead, LEAD_MAX } = await import("../server/brain/say.js");
+    assert.equal(LEAD_MAX, 4);
+    const lead = (st) => rightWhyLead("Sahi jawab", "4 gap hain", st).text;
+    assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 2, jointN: { leadSuno: 2 } }), /Dekho,|Suno,/);
+    assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Suno, yeh." }, { who: "child", text: "haan" }] }), /Dekho,|Suno,/);
+    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3, jointN: { leadSuno: 0 } }), /\. Suno, 4 gap/);
+    const L = { rows: [{ who: "teacher", text: "Haan. Suno, a." }, { who: "teacher", text: "b" }, { who: "teacher", text: "Haan. Dekho, c." }] };
+    assert.ok(PREDICATES.dekhoOver(L, L.rows[2], 2));
+  });
 });
 
 describe("B6.3: the return uses what the child said", () => {
-  // (counted, not gated: the return's question and the "yeh tumne bataya tha" line are chosen in brain/say.js — returnQuestion,
-  // againInHerWords — which this build does not touch; main's)
-  test("returnAsksAgain is counted", () => { assert.ok(PREDICATES.returnAsksAgain && PENDING.has("returnAsksAgain")); });
+  // (re-pinned for to-brain 049 and main's ruling of 2026-11-23: built in brain/say.js — returnQuestion, honestTasteLine, againInHerWords —
+  // and gated; it still reads its director32 rows)
+  test("returnAsksAgain is gated", () => { assert.ok(PREDICATES.returnAsksAgain && !PENDING.has("returnAsksAgain")); });
+  test("the return does not ask what the aside told; \"yeh tumne bataya tha\" only of what was told before", async () => {
+    const { returnQuestion, againInHerWords, honestTasteLine, toldOf } = await import("../server/brain/say.js");
+    assert.equal(toldOf("cricket", "kal maine cricket khela, sixer maara"), "sixer");
+    const q = returnQuestion("cricket", "hinglish", null, { said: "kal maine cricket khela, sixer maara" });
+    assert.doesNotMatch(q, /sabse achha|kyun pasand|kya cheez|thoda aur batao|kya bata rahe the|baare mein batao|favourite/i);
+    assert.doesNotMatch(honestTasteLine("Virat", "hinglish", 1, [], true), /sabse achha|favourite/i);
+    // (heard first on the child's turn just before: no "yeh tumne bataya tha")
+    const st = { recent: [{ who: "child", text: "mujhe cricket pasand hai" }, { who: "teacher", text: "Achha." }, { who: "child", text: "kal sixer maara" }] };
+    assert.doesNotMatch(String(againInHerWords("kal sixer maara", "cricket", "hinglish", st) ?? ""), /tumne bataya tha/);
+  });
   test("returnAsksAgain reads director32 c4 offtopic 56; c5-t01 steady 42, steering 38; c5-t03 offtopic 48; c6 steering 38; c4-ch01 offtopic 50", () => {
     assert.ok(flagged("offtopic", "c4", "returnAsksAgain").has(56));
     assert.ok(flagged("steady", "c5t01", "returnAsksAgain").has(42));

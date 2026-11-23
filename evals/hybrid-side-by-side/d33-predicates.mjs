@@ -61,7 +61,7 @@ export const D33_PREDICATES = {
   },
   /** B6 (047 R7): the return uses what the child said — a return (or her question after the AI line) never asks what their aside already
    *  told, and "yeh tumne bataya tha" is said only of something told before (director32: c4 offtopic 56; c5-t01 steady 42, steering 38;
-   *  c5-t03 offtopic 48; c6 steering 38; c4-ch01 offtopic 50). Counted: the return's question and the again line are brain/say.js's. */
+   *  c5-t03 offtopic 48; c6 steering 38; c4-ch01 offtopic 50). Gated (main, 2026-11-23): brain/say.js returnQuestion, againInHerWords. */
   returnAsksAgain(L, r, i) {
     if (r.who !== "teacher") return null;
     const kids = (L.rows ?? []).slice(0, i).map((x, n) => ({ ...x, n })).filter((x) => x.who === "child");

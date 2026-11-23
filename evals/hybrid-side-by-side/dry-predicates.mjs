@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs";
 import { asideReplyForms, phraseOf, saidPhrase } from "../../server/brain/asideReplies.js";
 import { asideTopic } from "../../server/director/state.js";
 import { seamJoint, joinProblem } from "../../server/brain/seams.js";
-import { FALLBACK } from "../../server/brain/say.js";
+import { FALLBACK, RETURN_TOLD_RE } from "../../server/brain/say.js";
 import { FALLBACK_JOINTS } from "../../server/director/help.js";
 import { endsOnYourTurn } from "../../server/director/question-run.js";
 const GO_ON_FALLBACK = FALLBACK_JOINTS.afterKeyGoOn ?? [];
@@ -362,7 +362,9 @@ export const PREDICATES = {
     const ss = sentencesOf(r.text);
     if (ss.some((x) => SAD_LINES.has(key(x)))) return null;
     const ai = ss.findIndex((x) => AI_LINE.test(x));
-    const own = (x, n) => (ctx.retRes ?? []).some((re) => re.test(x)) || (ai >= 0 && (n === ai || n === ai + 1));
+    // (main's ruling of 2026-11-23, to-brain 049 B6.3: code's told return — the aside named its thing and every script form asks it again — is
+    // a back-to return as the script's forms are: brain/say.js RETURN_TOLD_RE)
+    const own = (x, n) => (ctx.retRes ?? []).some((re) => re.test(x)) || RETURN_TOLD_RE.test(String(x ?? "").trim()) || (ai >= 0 && (n === ai || n === ai + 1));
     // (main's R2 on the merged tree: H4's go-on line after a key — joints.afterKeyGoOn — is a joint, not a part: it may lead the return's
     // turn, before the return question and nothing else; a verdict, a key, a why or any teaching part in the return's turn is still flagged)
     // (a script written before Learning 014 has no afterKeyGoOn forms: code's fallback forms are said, and are the same joint)
@@ -384,9 +386,9 @@ export const PREDICATES = {
     // verdict, director25's nine rows "… yaani 2/3. Cricket mein tumhe kya karna sabse achha lagta hai?", has no back-to and still reads)
     const GAVE_KEY = /(?:is sawaal ka|iska|pichhle sawaal ka) (?:sahi )?jawab|the answer (?:here )?(?:is|was)/i;
     if (rest.length && sm.at(-1) === "return" && sm.includes("verdict") && !sm.some((x) => ["card", "key", "point", "stepAsk", "checkin"].includes(x))
-      && !GAVE_KEY.test(r.text) && (ctx.retRes ?? []).some((re) => re.test(ss.at(-1)))) return null;
+      && !GAVE_KEY.test(r.text) && ((ctx.retRes ?? []).some((re) => re.test(ss.at(-1))) || RETURN_TOLD_RE.test(String(ss.at(-1) ?? "").trim()))) return null;
     if (rest.length) return `a return said with "${rest[0].slice(0, 50)}"`;
-    return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x))) ? "a return question that is none of the script's asideReturn forms" : null;
+    return ai < 0 && !ss.some((x) => (ctx.retRes ?? []).some((re) => re.test(x)) || RETURN_TOLD_RE.test(String(x ?? "").trim())) ? "a return question that is none of the script's asideReturn forms" : null;
   },
   /** P1: a park's turn goes on into the live part (a park alone leaves the child nothing to do: c4 offtopic 22, c6 36). */
   parkGoesOn(L, r, i, ctx) {
@@ -1077,8 +1079,9 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // rows (stuck 16 to 22, offtopic 14 to 18, steering 28 to 32, c4 offtopic 58 to 62: tests/r8-director32-049), and reaskRunning /
 // reaskSameAfterHelp read the turn after an invitation against the question-turn before it)
 // (Brain 049 B6, merged by main: vpcUnlisted is gated — the split at 65 words is built; returnAsksAgain and reasonTwiceAuthored are counted)
-// (main's ruling of 2026-11-23: vpcUnlisted gated above 70; vpcWhole, the turns of 66 to 70 said whole, counted; splitEndsOnCheckin gated)
-export const PENDING = new Set(["vpcWhole", "returnAsksAgain", "reasonTwiceAuthored", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+// (main's ruling of 2026-11-23: vpcUnlisted gated above 70; vpcWhole, the turns of 66 to 70 said whole, counted; splitEndsOnCheckin gated;
+// returnAsksAgain gated — the return and the again line are built in brain/say.js)
+export const PENDING = new Set(["vpcWhole", "reasonTwiceAuthored", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** to-brain 049 B6: a right verdict split from the point it led into (the row's noFit "vpc") goes on to that point and its card whatever the
  *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed

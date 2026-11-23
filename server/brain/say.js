@@ -117,10 +117,20 @@ const TASTE_QS = {
   hinglish: [(t) => `Tumhara favourite kaun hai?`, (t) => `${capT(t)} ko tum kiske saath dekhte ho?`, (t) => `Tumne pehli baar ${t} ko kab dekha tha?`],
   english: [(t) => `Who is your favourite?`, (t) => `Who do you watch ${t} with?`, (t) => `When did you first watch ${t}?`],
 };
-export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = []) {
+export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], told = false) {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
   const L = lang === "english" ? "english" : "hinglish";
   const first = L === "english" ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?` : `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`;
+  // (to-brain 049 B6.3, main's ruling of 2026-11-23: the child already told what they like in it — dry c5-t01 and c6 offtopic 34, "Virat ki
+  // batting" then "Tumhe Virat ke baare mein sabse achha kya lagta hai?" — the honest line asks something they have not told: a taste
+  // question that asks no favourite and no liking)
+  if (told) {
+    const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
+    const qs = [TASTE_QS[L][2], TASTE_QS[L][1]].map((f) => f(t));
+    const q = qs.find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, ""))) ?? qs.at(-1);
+    const head = L === "english" ? "I'm an AI teacher, so I don't have favourites of my own." : "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti.";
+    return `${head} ${q}`;
+  }
   if (n <= 1) return first;
   const said = (asked ?? []).map((x) => String(x ?? "").toLowerCase()).join(" | ");
   const q = TASTE_QS[L].map((f) => f(t)).find((x) => !said.includes(x.toLowerCase().replace(/[?？]$/, "")));
@@ -149,11 +159,50 @@ export const jointCount = (state, kind) => (kind === "hindiSwitch" && lessonKeyO
   : kind === "backTo" ? (state?.backToN ?? 0) : (state?.jointN?.[kind] ?? 0));
 export const rotated = (xs, n) => (Array.isArray(xs) && xs.length ? [...xs.slice(n % xs.length), ...xs.slice(0, n % xs.length)] : xs);
 export const jointsAt = (kit, kind, lang, state, slots = {}) => rotated(jointOf(kit, kind, lang, slots), jointCount(state, kind));
+/** to-brain 049 B6.3, main's ruling of 2026-11-23: a return (or the honest line's question) that asks what the child likes in it or asks them to
+ *  tell about it — the questions an aside that named its thing has already answered (evals d33-predicates returnAsksAgain's LIKE_Q / TELL_Q). */
+const ASKS_TOLD = /(?:sabse (?:achha|achhi|mazedaar|pasand)|kyun pasand|kya cheez|kya-kya hota|aur kya bataoge|kuch aur bataoge|thoda aur batao|kya bata rahe the|kya batana chahoge|baare mein batao|favou?rite|like most|most fun|tell me (?:more )?about)/i;
+/** The lines the child said before the one now (her recent turns' other side, and the parked asides' own words), lower-cased. */
+function childLinesBefore(state, now = null) {
+  const xs = [...(state?.recent ?? []).filter((t) => t.who && t.who !== "teacher").map((t) => t.text), ...(state?.later ?? []).map((e) => e.said)]
+    .filter(Boolean).map((x) => String(x).replace(/\s+/g, " ").trim().toLowerCase());
+  const k = now ? xs.lastIndexOf(String(now).replace(/\s+/g, " ").trim().toLowerCase()) : -1;
+  return k >= 0 ? [...xs.slice(0, k), ...xs.slice(k + 1)] : xs;
+}
+/** A word the child named about a topic — a noun of theirs that is not the topic ("kal maine cricket khela, sixer maara" → "sixer"), from
+ *  `said` or, with none, from their earlier lines that name the topic. null when they named nothing. */
+export function toldOf(topic, said = null, state = null) {
+  const tw = new Set((String(topic ?? "").toLowerCase().match(/\p{L}{3,}/gu) ?? []));
+  const of = (x) => (String(x ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
+    .filter((w) => !tw.has(w) && !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !VERBISH.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w)).at(-1) ?? null;
+  if (said) return of(said);
+  const about = childLinesBefore(state).filter((x) => [...tw].some((w) => x.includes(w)));
+  return about.map(of).filter(Boolean).at(-1) ?? null;
+}
+/** Code's return when the aside named its thing and no form of the script's asks something it did not tell (B6.3). */
+const RETURN_TOLD_Q = {
+  hinglish: [(w) => `Tumne ${w} ki baat ki thi: woh kab ki baat hai?`, (w) => `${capT(w)} ki baat tumne ki thi: tab tumhare saath kaun tha?`],
+  english: [(w) => `You told me about ${w}: when was that?`, (w) => `You mentioned ${w}: who was with you then?`],
+};
+/** The told return's forms, as said (evals: returnAlone reads them as a back-to return, as the script's asideReturn forms). */
+export const RETURN_TOLD_RE = /^(?:Tumne .{2,40} ki baat ki thi: woh kab ki baat hai\?|.{2,40} ki baat tumne ki thi: tab tumhare saath kaun tha\?|You told me about .{2,40}: when was that\?|You mentioned .{2,40}: who was with you then\?)$/i;
 export const returnQuestion = (topic, lang = "hinglish", state = null, { said = null, kit = null } = {}) => {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "woh");
   // (v6.11 G2, main on director19: a form with {said} put the child's own first-person words in her mouth, or lost them and left
   // "Uske baare mein…" pointing at nothing — {said} forms are not said; Learning re-authors the return on {aside} alone, D14)
-  void said;
+  // (to-brain 049 B6.3, main's ruling of 2026-11-23: the aside named its thing — "kal maine cricket khela, sixer maara" — so the return does not
+  // ask what they like in it or ask them to tell about it: dry steering c5-t01 38. A form that asks something else, else code's told form)
+  const told = toldOf(t, said);
+  if (told) {
+    const raw0 = kit ? scriptFor(kit)?.script?.joints?.asideReturn : null;
+    const fs = Array.isArray(raw0) ? raw0.filter((f) => !/\{said\}/.test(JSON.stringify(f))) : [];
+    const j0 = fs.length ? rotated(jointOf({ ...kit, __joints: { asideReturn: fs } }, "asideReturn", lang, { topic: asideInHerVoice(t), aside: asideInHerVoice(t) }), jointCount(state, "asideReturn")) : null;
+    const ok0 = (j0 ?? []).filter((x) => !/\{\w+\}/.test(x) && !ASKS_TOLD.test(x));
+    if (ok0.length) return ok0[0];
+    const lib0 = asideReturnLine(t, { lang, n: jointCount(state, "asideReturn") });
+    if (lib0 && !ASKS_TOLD.test(lib0)) return lib0;
+    return rotated(RETURN_TOLD_Q[lang === "english" ? "english" : "hinglish"], jointCount(state, "asideReturn")).map((f) => f(told))[0];
+  }
   // (dc-r8-director20 R1: the return question is Learning's, by the aside's kind — data/lesson-aside-replies.json; the script's own
   // asideReturn joints, then code's, only when the library has none)
   // (dc-r8-director25 L2 item 1: the return question is one of the script's own `joints.asideReturn` forms, rotated by the lesson —
@@ -428,14 +477,20 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const clause = String(said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
   // (dc-r8-director27 P6.3: a reply she has said in this lesson is not said again — the next form)
   const avoid = saidLinesOf(state);
+  // (to-brain 049 B6.3, main's ruling of 2026-11-23: "Haan, sixer maara, yeh tumne bataya tha." only of what the child told before — dry c4
+  // offtopic 56, c5-t01 and c6 offtopic 40 said it of words heard first on the child's turn just before: an again form whose phrase is in
+  // none of their earlier lines is not said; the phrase form takes its place)
+  const before = childLinesBefore(state, said);
+  const toldOk = (line) => { const m = /(?:^|[.!?]\s+)haan, ([^.!?]{2,40}), yeh tumne bataya tha|you told me(?: about)? ([^.!?]{2,40})/i.exec(String(line ?? ""));
+    if (!m) return true; const ph = String(m[1] ?? m[2] ?? "").toLowerCase().trim(); return before.some((x) => x.includes(ph)); };
   // (an aside said again: Learning 016's againReplies first, with the child's own words — never the bare word form)
   const a = asideReplyLine({ said, topic, lang, n, words, avoid, again: true });
-  if (a?.form === "again" && a.line) return a.line;
+  if (a?.form === "again" && a.line && toldOk(a.line)) return a.line;
   const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid }) : null;
-  if (["phrase", "again"].includes(p?.form) && p.line) return p.line;
+  if (["phrase", "again"].includes(p?.form) && p.line && toldOk(p.line)) return p.line;
   const r = asideReplyLine({ said, topic, lang, n, words, avoid });
-  if (r?.form === "again" && r.line) return r.line;
-  return r?.form === "word" && r.line ? r.line : null;
+  if (r?.form === "again" && r.line && toldOk(r.line)) return r.line;
+  return r?.form === "word" && r.line && toldOk(r.line) ? r.line : null;
 }
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
@@ -3025,7 +3080,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // +calls per turn)
       // (R1 rule 3: a sad aside gets a sad line and no return question — the lesson goes on after it)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
       if (line && sad) { aside.push(line); guard.returnSaid = true; guard.returnSad = true; }
@@ -3478,7 +3533,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state)) : null;
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state)) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
@@ -3896,7 +3951,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const said0 = ret.said ?? "";
       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
       const sad = !ASKS_TASTE.test(said0) && (isSadAside(said0) || isSadAside(ret.topic));
-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
+      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state), herLines(state), !!toldOf(ret.topic, null, state)) : sad ? asideSadLine({ lang, n: state.turn ?? 0 }) : returnQuestion(ret.topic, lang, state, { said: ret.said, kit });
       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; if (sad) guard.returnSad = true; else guard.returnLine = line; } else guard.returnMissed = true;
     }
   }
