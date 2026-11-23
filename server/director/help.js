@@ -335,12 +335,13 @@ export const KEY_AFTER_MISSES = 5;
 /** Main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked `whyAlt` (`whyAltAsHelp: true`) is written to the child who gave the
  *  card's named wrong answer (`wrongIfMis`) — many name it ("3 kehne mein …", "28 mein do metre …"). It is said as help only when the
  *  child's most recent answer at that card was that answer: the grader's listed wrong answer (`wrongListed`), or `misconception` for the
- *  card's own `targets`; where the card names no wrong answer, any miss. `last` is the walk's record of that answer (state.js answerAt):
+ *  card's own `targets`. A card that names no wrong answer never fits (to-brain 051 C3: the "names none: any miss" branch is gone —
+ *  director33 c5-ch02-t03 "3/4 ka matlab 3 gap nahi hai" to a child who said 7). `last` is the walk's record of that answer (state.js answerAt):
  *  { outcome, misconceptionId, wrongListed } | null. */
 export function ownReasonFits(node, last) {
   if (!node || node.whyAltAsHelp !== true || !last) return false;
   if (!["incorrect", "partial", "misconception"].includes(String(last.outcome ?? ""))) return false;
-  if (!wrongList(node.wrongIfMis).length) return true;
+  if (!wrongList(node.wrongIfMis).length) return false;
   return !!last.wrongListed || (!!node.targets && last.outcome === "misconception" && last.misconceptionId === node.targets);
 }
 export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null }) {

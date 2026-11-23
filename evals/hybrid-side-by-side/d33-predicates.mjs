@@ -138,7 +138,9 @@ export const D33_PREDICATES = {
 };
 /** whyAltNoMiss's reading, with its kind: { kind: "noAnswer" | "giveUp" | "otherWrong" | "afterRightOrKey", why } | null. */
 export function whyAltNoMissOf(L, r, i, ctx) {
-  const h = helpTurnOf(L, r, i, ctx);
+  // (to-brain 051 C3: a picture request with nothing left to draw is help too — director33 c5-ch02-t03 steering 16)
+  const h = helpTurnOf(L, r, i, ctx) ?? (r.who === "teacher" && r.cell?.column === "picture" && ["hint", "none"].includes(r.cell?.picture) && r.cell?.part
+    ? { request: "picture", part: r.cell.part, keyed: !!r.cell.keyed } : null);
   if (!h) return null;
   const part = helpPart(ctx.script, h.part);
   if (!part || at(ctx.script, `${part.path}.whyAltAsHelp`) !== true) return null;

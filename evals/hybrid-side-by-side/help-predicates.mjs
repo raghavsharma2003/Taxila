@@ -245,7 +245,8 @@ export function lastAnswerAt(L, i, ctx, partId) {
     const wrongs = wrongList(node.wrongIfMis);
     const R = canon(c.text ?? "");
     const listed = wrongs.some((w) => { const W = canon(w); return normSentence(w) === normSentence(c.text ?? "") || sameAnswer(W, R); });
-    const named = !right && (!wrongs.length || listed || (!!node.targets && read === "misconception"));
+    // (to-brain 051 C3: a card that names no wrong answer never fits — the "names none: any miss" reading is gone)
+    const named = !right && !!wrongs.length && (listed || (!!node.targets && read === "misconception"));
     return { j, read, text: String(c.text ?? ""), right, named };
   }
   return null;
