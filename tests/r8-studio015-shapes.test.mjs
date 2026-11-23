@@ -5,7 +5,9 @@ import assert from "node:assert/strict";
 import { expand } from "../server/forge/explainer/templates.js";
 import * as BF from "../server/stagecraft/board-first.js";
 import { viewOf } from "../scripts/lesson-scripts/check.mjs";
-import { namedShapeMissing } from "../server/studio/qa/whiteboard.js";
+import { namedShapeMissing, gateWhiteboard } from "../server/studio/qa/whiteboard.js";
+import { retimeToLine } from "../server/stagecraft/board-sync.js";
+import { BOARD_WORDS } from "../server/forge/explainer/templates.js";
 import { LIMITS } from "../shared/whiteboard.js";
 
 const texts = (sc) => sc.ops.filter((o) => o.op === "text" || o.op === "label").map((o) => String(o.text));
@@ -112,6 +114,29 @@ test("item 2: a slack string — the circle of the string's length except betwee
   assert.equal(expand({ template: "shape@1", ...p, slack: { from: 20, to: 110, depth: 9 } }).ok, false);
   assert.equal(expand({ template: "shape@1", ...p, radius: "radius" }).ok, false);
   assert.equal(expand({ template: "shape@1", ...p, diameter: "24 cm" }).ok, false);
+});
+
+test("item 2 fix: the slack outline over its guide circle is another outline, not a cut — the board and its radii view pass the checker's whiteboard gate (W8 included); a circle cut by straight lines through its centre still fails W8", () => {
+  const params = { shape: "circle", radius: "12 cm", centre: "centre", slack: { from: 20, to: 110, depth: 4 }, guide: true, name: "dhili dori" };
+  const line = "Yeh dhili dori hai, 12 cm ki: centre se dekho, yahan dori andar aa gayi.";
+  // (as scripts/lesson-scripts/check.mjs boardErrors gates a board: retimed to her line, the template's own words allowed)
+  const gate = (sc) => gateWhiteboard(retimeToLine(sc, line), { reply: line, speechMs: 6000, withhold: { values: [] }, asked: true, extraWords: [...BOARD_WORDS] });
+  const failing = (sc) => gate(sc).checks.filter((c) => !c.pass && c.id !== "W6.timing" && !(c.id === "W19.settled" && c.detail?.every?.((d) => d === "W6.timing")));
+  const sc = ok({ template: "shape@1", ...params });
+  assert.ok(sc.ops.some((o) => o.id === "guide" && o.op === "circle"), "the guide is drawn");
+  assert.deepEqual(failing(sc).map((c) => `${c.id} ${JSON.stringify(c.detail)}`), [], "the slack board with its guide passes");
+  const v = BF.pictureTurn(askOf({ template: "shape@1", params }), {});
+  assert.ok(v.view.script.ops.length <= LIMITS.maxOps);
+  assert.deepEqual(failing(v.view.script).map((c) => `${c.id} ${JSON.stringify(c.detail)}`), [], "its radii view passes");
+  // a real cut: the guide circle with two diameters (lines), or one straight stroke through the centre, still fails W8
+  const g = sc.ops.find((o) => o.id === "guide"), [cx, cy] = g.c, r = g.r;
+  const diam = (id, t) => ({ op: "line", id, from: [cx - r * Math.cos(t), cy - r * Math.sin(t)], to: [cx + r * Math.cos(t), cy + r * Math.sin(t)], ink: "ink" });
+  const plain = sc.ops.filter((o) => o.id !== "o");
+  for (const extra of [[diam("d0", 0), diam("d1", Math.PI / 2)], [{ op: "stroke", id: "d2", points: Array.from({ length: 9 }, (_, i) => [cx - r + (2 * r * i) / 8, cy]), ink: "ink" }]]) {
+    const cut = { ...sc, ops: [...plain, ...extra.map((o) => ({ ...o, startMs: g.startMs, endMs: g.endMs }))] };
+    const w8 = failing(cut).find((c) => c.id === "W8.counts_match_line");
+    assert.ok(w8 && w8.detail.cutByLines.length >= 1, `a cut circle fails W8: ${JSON.stringify(failing(cut).map((c) => c.id))}`);
+  }
 });
 
 test("item 3: the tester on a turned tile — Studio 014's right-angle corner at a corner of a copy, square to the page (it misses the turned tile's edges) or turned with the shape (it fits)", () => {
