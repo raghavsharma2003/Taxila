@@ -9,9 +9,12 @@
 //   spentThenReturn  "nothing easier" followed in the same turn by an aside's return
 //   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
 import { vpcOf, VPC_WHOLE_MAX } from "./d30-predicates.mjs";
-const DEKHO = /(?<![\p{L}])Dekho,/gu;
-/** "Dekho," said in a row's text. */
-const dekhoIn = (r) => (String(r?.text ?? "").match(DEKHO) ?? []).length;
+// (main's ruling of 2026-11-23, item 2: "Suno," took "Dekho,"'s place — the lead-in openers together at most four a lesson, no one more than
+// three, never two openers within four of her turns)
+const LEAD_OPENERS = ["Dekho", "Suno"];
+const openerIn = (r, o) => (String(r?.text ?? "").match(new RegExp(`(?<![\\p{L}])${o},`, "gu")) ?? []).length;
+/** Lead-in openers said in a row's text. */
+const dekhoIn = (r) => LEAD_OPENERS.reduce((a, o) => a + openerIn(r, o), 0);
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const wordsOf = (t) => low(t).replace(/[^\p{L}\p{N}\s]+/gu, " ").split(" ").filter(Boolean);
@@ -27,14 +30,19 @@ const lastQ = (t) => (String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!
 
 export const D33_PREDICATES = {
   /** B6: "Dekho," at most three times a lesson, and never within four of her turns (director32: 8 to 10 in every steady lesson). Gated. */
+  // (main's ruling of 2026-11-23: every lead-in opener — "Dekho," and "Suno," — at most four together, none more than three, none within four)
   dekhoOver(L, r, i) {
     if (r.who !== "teacher" || !dekhoIn(r)) return null;
     const hers = (L.rows ?? []).slice(0, i).filter((x) => x.who === "teacher");
+    for (const o of LEAD_OPENERS) {
+      const n = hers.reduce((a, x) => a + openerIn(x, o), 0) + openerIn(r, o);
+      if (openerIn(r, o) && n > 3) return `"${o}," the ${n}th time in the lesson`;
+    }
     const before = hers.reduce((a, x) => a + dekhoIn(x), 0);
-    if (before + dekhoIn(r) > 3) return `"Dekho," the ${before + dekhoIn(r)}th time in the lesson`;
-    if (dekhoIn(r) > 1) return `"Dekho," twice in one turn`;
+    if (before + dekhoIn(r) > 4) return `a lead-in opener the ${before + dekhoIn(r)}th time in the lesson`;
+    if (dekhoIn(r) > 1) return `two lead-in openers in one turn`;
     const k = hers.slice(-4).reverse().findIndex((x) => dekhoIn(x));
-    return k >= 0 ? `"Dekho," again ${k + 1} of her turns after the last` : null;
+    return k >= 0 ? `a lead-in opener again ${k + 1} of her turns after the last` : null;
   },
   /** to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from its point (the row's noFit "vpc") ends on a go-on joint that
    *  is a statement, never on a comprehension check-in (as built at 65 words: 39 such check-ins in the 24 dry lessons, each straight after a

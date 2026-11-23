@@ -1417,7 +1417,7 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
   const list0 = out.guard?.parts?.list ?? out.guard?.lineParts;
   // (a turn with no parts — a break's offer, a stop — is one part of code's: its seam record says so)
   const whole = !list0?.length || joinParts(list0) !== String(out.reply ?? "").replace(/\s+/g, " ").trim();
-  if (whole) return { ...out, guard: { ...(out.guard ?? {}), seams: [{ left: "start", right: "whole", joint: null }] } };
+  if (whole) return { ...out, guard: { ...(out.guard ?? {}), seams: [{ left: "start", right: "whole", joint: null }], ...(out.guard?.leadJoints?.length ? { jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } : {}) } };
   const list = list0;
   const lang = state?.ctx?.lang === "english" ? "english" : "hinglish";
   const si = out.guard?.seamInfo ?? {};
@@ -1460,9 +1460,9 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
-  if (!r) return out;
+  if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;
   // (Brain 043 R2: the invitation said at the turn's end rotates as a joint does — counted when its words are in what she said)
-  const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : [])], ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
+  const g = { ...out.guard, seams: r.seams, jointsUsed: [...r.jointsUsed, ...(out.guard?.workedInvite ? ["workedInvite"] : []), ...(out.guard?.leadJoints ?? [])], ...r.said, lineParts: r.list, parts: { ...(out.guard.parts ?? {}), list: r.list } };
   for (const k of ["backTo", "beforeRemediation", "afterTryFirst", "afterAside", "afterAiLine"]) if (!r.said[k]) delete g[k];
   return { ...out, reply: r.reply, guard: g };
 }
@@ -1623,6 +1623,9 @@ function partObjectOf(sc, ref) {
  *  → { text, k } */
 /** to-brain 049 B6: the most "Dekho," a lesson says. */
 export const DEKHO_MAX = 3;
+/** main's ruling of 2026-11-23 on to-brain 049 B6.2: the lead-in openers ("Dekho,", "Suno,") together, at most this many a lesson. */
+export const LEAD_MAX = 4;
+const LEAD_OPENER = /(?<![\p{L}])(?:Dekho|Suno),/u;
 export function rightWhyLead(fr, why, state, kit = null) {
   const last2 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
   const w = joinable(why, { lower: true });
@@ -1630,11 +1633,17 @@ export function rightWhyLead(fr, why, state, kit = null) {
   // this lead-in. Its second form's opener rotates — "Dekho,", "Suno," or none — and "Dekho," is said only where it may be: state.dekhoN,
   // the lesson's count, written by brain/turn.js; "Suno," keeps the same four-turn distance)
   const last4 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? ""));
-  const near = (o) => last4.some((t) => new RegExp(`(?<![\\p{L}])${o},`, "u").test(t));
+  // (main's ruling of 2026-11-23, item 2: "Suno," took "Dekho,"'s place — up to six in a steady lesson. The lead-in openers together are at
+  // most four a lesson (LEAD_MAX), no one of them more than three (DEKHO_MAX), never two openers within four of her turns — any opener near
+  // bars every opener; otherwise the reason is said with no opener. state.dekhoN and state.jointN.leadSuno: brain/turn.js's counts)
+  const near = () => last4.some((t) => LEAD_OPENER.test(t));
   // (a script's own "Dekho," — a point, a caption — is said as written and counts: code's lead-in leaves it room, c4 steady 74 on the dry
   // matrix: an authored point's "Dekho," was the lesson's fourth)
-  const authored = (JSON.stringify(scriptFor(kit)?.script ?? {}).match(/(?<![\p{L}])Dekho,/gu) ?? []).length;
-  const opOk = (o) => !o || (!near(o) && (o !== "Dekho" || (state?.dekhoN ?? 0) < DEKHO_MAX - authored));
+  const sj = JSON.stringify(scriptFor(kit)?.script ?? {});
+  const authoredOf = (o) => (sj.match(new RegExp(`(?<![\\p{L}])${o},`, "gu")) ?? []).length;
+  const saidOf = (o) => (o === "Dekho" ? state?.dekhoN : state?.jointN?.leadSuno) ?? 0;
+  const all = ["Dekho", "Suno"].reduce((a, o) => a + saidOf(o) + authoredOf(o), 0);
+  const opOk = (o) => !o || (!near() && saidOf(o) + authoredOf(o) < DEKHO_MAX && all < LEAD_MAX);
   const ops = ["Dekho", "Suno", ""].map((_, j, xs) => xs[(j + (state?.whyJoint?.n ?? 0)) % xs.length]);
   const op = ops.find(opOk) ?? "";
   const j1 = op ? `${fr}. ${op}, ${w}` : `${fr}. ${String(w).charAt(0).toUpperCase()}${String(w).slice(1)}`;
@@ -2951,6 +2960,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
         const j = rightWhyLead(fr, why, state, kit);
         lead = dot(j.text);
         guard.whyJoint = j.k;
+        // (main's ruling of 2026-11-23: a "Suno," lead-in counts — brain/turn.js keeps it as state.jointN.leadSuno, read as state.sunoN's place)
+        if (/\. Suno, /.test(j.text)) { guard.leadSuno = "Suno,"; (guard.leadJoints ??= []).push("leadSuno"); }
       }
       // (Brain 043 R1: the card's short why, said in the why's place — the walk chose it, brain/turn.js lastGraded.whyShort)
       guard.rightWhy = why ? (graded0?.whyShort ? "short" : "authored") : "none";
