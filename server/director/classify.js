@@ -871,9 +871,24 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
           const o = canon(opts[i]);
           if (W.some((cs) => sameAnswer(cs[0], o))) return misOf();
           if (F.some((cs) => sameAnswer(cs[0], o))) return done("correct", "script_key");
+          // 050 W4: an option is a form by its deciding tokens too — "baad mein" (of "…pehle hai ya baad mein?") is the form "beech ke
+          // baad": the form holds every token that sets that option apart and none that sets another apart. Where an option is both a
+          // right and a wrong form, or none, nothing is decided here
+          const ocs = opts.map((x) => canon(x));
+          const has = (c, t) => c.seq.some((y) => y.t === t);
+          const apart = ocs.map((c, k) => [...new Set(c.seq.map((y) => y.t))].filter((t) => ocs.every((x, j) => j === k || !has(x, t))));
+          const holds = (c, k) => apart[k].length > 0 && apart[k].every((t) => has(c, t)) && apart.every((d, j) => j === k || !d.some((t) => has(c, t)));
+          // (only where the forms hold ONE option between them: "kam" and "Gopi ke paas zyada" are both right to "Neha ka kam ya zyada?",
+          // and hold both options — the words of a form that names another subject turn its comparison round)
+          const one = (L) => { const h = new Set(); L.forEach((cs) => ocs.forEach((x, k) => { if (sameAnswer(cs[0], x) || holds(cs[0], k)) h.add(k); })); return h.size === 1 ? [...h][0] : -1; };
+          const fOpt = one(F), wOpt = one(W);
+          const isForm = (k) => F.some((cs) => sameAnswer(cs[0], ocs[k])) || fOpt === k;
+          const isWrong = (k) => W.some((cs) => sameAnswer(cs[0], ocs[k])) || wOpt === k;
+          if (isWrong(i) && !isForm(i)) return misOf();
+          if (isForm(i) && !isWrong(i)) return done("correct", "script_key");
           // (to-brain 050 W1 reason 2: the reply names one option, and exactly one OTHER option of the prompt is a right form: it named a wrong one)
-          const rightOpts = opts.map((x, j) => j).filter((j) => F.some((cs) => sameAnswer(cs[0], canon(opts[j]))));
-          if (rightOpts.length === 1 && rightOpts[0] !== i) return done("incorrect", "script_key");
+          const rightOpts = opts.map((x, j) => j).filter((j) => isForm(j) && !isWrong(j));
+          if (rightOpts.length === 1 && rightOpts[0] !== i && !isForm(i)) return done("incorrect", "script_key");
         }
       }
     }

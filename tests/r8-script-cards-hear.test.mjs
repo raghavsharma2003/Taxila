@@ -475,3 +475,16 @@ test("050 W1 (main's third reader, the perimeter script): \"do\" and \"ek\" in a
   for (const s of ["ek chakkar nikalna hoga", "pehle ek chakkar ki doori nikalni hogi", "ek round ki doori"]) assert.notEqual(grade(lap, s), "incorrect", s);
   for (const s of ["24 + 18 + 24 + 18", "jodkar do guna"]) assert.equal(grade(dbl, s), "correct", s);
 });
+
+test("050 W4: a two-option prompt answered by its option's own words is graded by which form that option is", () => {
+  assert.equal(grade(P050.baad, "baad mein"), "correct");
+  assert.equal(grade(P050.baad, "pehle"), "incorrect");
+  for (const s of ["pehle", "pehle hai", "beech se pehle"]) assert.notEqual(grade(P050.baad, s), "correct", s);
+  // where the forms between them hold both options (a form naming another subject turns the comparison round), code decides nothing
+  const two = card("Gopi se kam", ["kam", "Neha ka kam", "Gopi ke paas zyada"], "barabar", "Neha ne 3 liye, Gopi ne 6. Neha ka kam ya zyada?");
+  for (const s of ["zyada", "more", "ज़्यादा"]) assert.notEqual(grade(two, s), "correct", s);
+  assert.equal(grade(two, "kam"), "correct");
+  // two options sharing their deciding word: the model reads it
+  const same = card("bada wala", [], null, "Kaunsa: bada tukda ya bada hissa?");
+  assert.notEqual(grade(same, "bada"), "incorrect");
+});
