@@ -2,6 +2,7 @@
 // its card — stuck 48 (a second "samajh nahi aaya" at a then-card's check-in answered with an earlier card: clarifyCard, orderStays)
 // and steering 34 (two give-ups at a check-in: the hint, then the hint again with the whole card: cardWholeAgain). This fixture keeps
 // that path in the gate whatever the pilots' sentence lengths are: Learning's c4 script (3e25c5c60) with e1's point cut to two sentences.
+// (since d33 the fixture carries joints.yourTurn: to-brain 049 B4's third turn at one question ends on one of those invitation forms)
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";

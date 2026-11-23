@@ -471,7 +471,13 @@ export const PREDICATES = {
     // (d29 final: a one-sentence card is asked by the clause after its colon when that clause is a question — dc-r8-director23, brain/say.js
     // tailQ: offtopic c6 36, "2 × (lambai + chaudai) lagao: is rectangle ke liye yeh kitna banta hai?")
     const tailQ = /[:;]\s+/.test(q) ? q.split(/[:;]\s+/).at(-1) : "";
-    if (!reasked && !low(r.text).includes(low(q).slice(0, 25)) && !(tailQ && /[?？]$/.test(tailQ) && low(r.text).includes(low(tailQ).slice(0, 25)))) return "a Hindi request on a card: the simpler, then no question";
+    if (!reasked && !low(r.text).includes(low(q).slice(0, 25)) && !(tailQ && /[?？]$/.test(tailQ) && low(r.text).includes(low(tailQ).slice(0, 25)))) {
+      // (main's ruling on to-brain 049 B4, d33: the third turn running at one question — a request turn counts — says the help and ends on
+      // a joints.yourTurn form, not the question. Read as yourTurnNotThird reads it (server/director/question-run.js runOfTwo): her two
+      // turns before ended on this question; never on a first or second turn at it. Fixture c4-ch05-t01 stuck 8)
+      if (endsOnYourTurn(ctx.script, r.text) && D32_PREDICATES.yourTurnNotThird(L, r, i, ctx) === null) return null;
+      return "a Hindi request on a card: the simpler, then no question";
+    }
     const ack = sentencesOf(r.text).find((x) => /hindi mein/i.test(x));
     const rest = low(r.text.replace(ack ?? "", "")).replace(low(p.card ?? ""), "");
     return ack && low(p.text).includes(rest.trim().slice(0, 40)) ? `"${ack}" with nothing changed` : null;

@@ -81,6 +81,25 @@ test("L3: a clarify at the greeting is answered with greetSimpler, then the hook
   assert.equal(of("Socho, ek roti."), 1);
 });
 
+// (main's ruling on to-brain 049 B4, d33: a Hindi request on the third turn running at one card says the help and ends on a joints.yourTurn
+// form — hindiCard accepts it there, and only there: fixture c4-ch05-t01 stuck 8)
+test("hindiCard: the invitation in the question's place on the third turn running at the card, never on the second", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const card = "Ek tukda rangin hai, ek bina rang ka. Toh rangin tukda 1/2 hai ya 1/1?";
+  const script = { joints: { yourTurn: [{ hi: "Ab tum batao.", en: "Now you tell me." }] }, skills: [{ id: "s1", explain: [{ id: "e1", card: { prompt: { hi: card } } }] }] };
+  const check = { itemId: "script:s1:ask:e1" };
+  const T = (text, parts, c = card) => ({ who: "teacher", text, card: c, check, pageParts: parts.map((part) => ({ part, beat: "e1" })), move: "hint" });
+  const C = (text, read, intent) => ({ who: "child", text, read, intent });
+  const third = T("Upar wala number sirf rangin tukde ginta hai. Ab tum batao.", ["simpler"]);
+  const of = (rows) => lessonFlags({ rows, script }).filter((x) => x.predicate === "hindiCard").map((x) => x.row);
+  // (the third turn running at the card: its two turns before ended on the card's question)
+  assert.deepEqual(of([T(`Roti dekho. ${card}`, ["body", "card"]), C("pata nahi", "no_evidence", "give_up"), T(`Socho, ek roti. ${card}`, ["simpler", "card"]),
+    C("hindi mein batao na", "no_evidence · language", "hindi"), third]), []);
+  // (the second turn at the card: the invitation is no answer there)
+  assert.deepEqual(of([T("Roti dekho. Kya samjhe?", ["body"]), C("haan", "no_evidence", "other"), T(`Roti dekho. ${card}`, ["body", "card"]),
+    C("hindi mein batao na", "no_evidence · language", "hindi"), third]), [4]);
+});
+
 // S1 (dc-r8-director20): the whole card said again after a hint (c4 stuck 8), "Ab isi par ek sawaal." with no card (c5-t01 stuck 48,
 // c6 stuck 62) and a turn ending on a close (c5-t01 stuck 32, a why-probe that asked nothing) are flagged on director20's rows
 test("S1: the re-ask predicates flag director20's rows", () => {
