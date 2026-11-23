@@ -194,3 +194,28 @@ test("item 5: compare@1 — an item wrapping onto two lines never crosses the ti
   const plain = ok({ template: "compare@1", left: { title: "Ribbon P", items: ["20 cm", "12 cm"] }, right: { title: "Ribbon Q", items: ["12 cm", "8 cm"] } });
   assert.deepEqual(plain.ops.filter((o) => /^c\d\d$/.test(o.id)).map((o) => o.at[1]), [100, 100, 152, 152]);
 });
+
+// (main: unrolled@1 drew a hidden piece to scale — [20, ?, 20, ?] = 70 cm put "?" at 73 px beside 97 px for "20 cm", and three
+// quarters of 20 is the answer, 15. A hidden piece is one neutral length that does not depend on its value, dashed)
+test("unrolled@1: a hidden piece is drawn at a neutral length, dashed, never at its true length; shown pieces keep their proportions", () => {
+  const strip = (sc) => JSON.stringify(sc.ops);
+  const piece = (sc, i) => sc.ops.find((o) => o.id === `s${i}`);
+  const L = (o) => o.to[0] - o.from[0];
+  // two boards that differ only in their hidden values (same total) draw the same ops
+  const a = ok({ template: "unrolled@1", unit: "cm", sides: [20, 15, 20, 15], hide: [1, 3], total: 70 });
+  const b = ok({ template: "unrolled@1", unit: "cm", sides: [20, 10, 20, 20], hide: [1, 3], total: 70 });
+  assert.equal(strip(a), strip(b), "the hidden values do not show in the drawing");
+  for (const i of [1, 3]) assert.equal(piece(a, i).dashed, true, `hidden piece ${i} is dashed`);
+  for (const i of [0, 2]) assert.ok(!piece(a, i).dashed, `shown piece ${i} is solid`);
+  // (with the total asked too, any hidden values draw the same)
+  assert.equal(strip(ok({ template: "unrolled@1", unit: "m", sides: [7, 9, 12], hide: [1], total: "?" })), strip(ok({ template: "unrolled@1", unit: "m", sides: [7, 4, 12], hide: [1], total: "?" })));
+  // shown pieces stay to scale among themselves: 7 : 12
+  const t = ok({ template: "unrolled@1", unit: "m", sides: [7, 9, 12], hide: [1], total: "?" });
+  assert.ok(Math.abs(L(piece(t, 0)) / L(piece(t, 2)) - 7 / 12) < 0.01, `${L(piece(t, 0))} : ${L(piece(t, 2))}`);
+  // every piece hidden (a square: four "?" and the total): drawn equal
+  const sq = ok({ template: "unrolled@1", unit: "cm", sides: [6, 6, 6, 6], hide: [0, 1, 2, 3], total: 24 });
+  const ls = [0, 1, 2, 3].map((i) => L(piece(sq, i)));
+  assert.ok(Math.max(...ls) - Math.min(...ls) < 0.2, `${ls}`);
+  // (eight pieces, half hidden, under the cap: ok() asserts LIMITS.maxOps)
+  ok({ template: "unrolled@1", unit: "cm", sides: [5, 3, 5, 3, 5, 3, 5, 3], hide: [1, 3, 5, 7], total: 32 });
+});

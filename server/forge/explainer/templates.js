@@ -397,12 +397,18 @@ function unrolled(c, tl) {
     if (fig.shape === "rect") tl.add({ id: "fig", op: "rect", at: P[0], w: round1(P[2][0] - P[0][0]), h: round1(P[2][1] - P[0][1]), weight: 2 }, 700);
     else tl.add({ id: "fig", op: "polygon", points: P, weight: 2 }, 700);
   }
-  const x0 = 30, W = 340, y = 120, sum = sides.reduce((a, b) => a + b, 0);
+  // (main, a reader of [20, ?, 20, ?] = 70 cm: a hidden piece drawn to scale was 73 px beside 97 px for "20 cm", and three
+  // quarters of 20 is the card's answer. A hidden piece is drawn at one neutral length that never depends on its value — the
+  // mean of the shown pieces, or all equal when every piece is hidden — dashed, "not measured"; shown pieces stay to scale
+  // among themselves)
+  const shown = sides.filter((_, i) => !hide.has(i)), neutral = shown.length ? shown.reduce((a, b) => a + b, 0) / shown.length : 1;
+  const drawn = sides.map((v, i) => (hide.has(i) ? neutral : v));
+  const x0 = 30, W = 340, y = 120, sum = drawn.reduce((a, b) => a + b, 0);
   let x = x0;
   const xs = [x0];
   sides.forEach((v, i) => {
-    const x1 = round1(x + (v / sum) * W);
-    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk" }, 600, { gap: i ? 300 : 0 });
+    const x1 = round1(x + (drawn[i] / sum) * W);
+    tl.add({ id: `s${i}`, op: "line", from: [round1(x), y], to: [x1, y], weight: 3, ink: i % 2 ? "accent" : "chalk", ...(hide.has(i) ? { dashed: true } : {}) }, 600, { gap: i ? 300 : 0 });
     tl.add({ op: "line", from: [x1, y - 9], to: [x1, y + 9], weight: 1 }, 160, { gap: 60 });
     // (a piece too short for its label has it below the line; the next above, so neighbours never overlap)
     // (roomy at the next size up: a split board writes small labels one size up — director19 c6 steady 18, the hexagon's six
@@ -586,7 +592,10 @@ function fractionLine(c, tl) {
     return { claims, counts: counts([{ at: `mark ${mark}`, label: "?" }]), facts: { line: facts.line, gaps: facts.gaps, asked: `mark number ${mark} from 0`, fraction: "? (child works it out)", ...mixFact } };
   }
   if (tgt != null) {
-    tl.add({ op: "text", at: [200, 70], text: `${tgt}/${den}`, size: "l", ink: "mark" }, 600, { gap: 900 });
+    // (main, c5-maths-ch02-t01 reader: the fraction to find, centred at x 200, sat exactly over the line's middle tick — the
+    // tick for 1 on a 0-2 line, for 1/2 on a 0-1 line — and read as a pointer to where it is. It is the board's title: in the
+    // title row, start-aligned left of the line's 0 end, over no tick)
+    tl.add({ op: "text", at: [x0 - 22, 70], text: `${tgt}/${den}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
     const g = lineGrammar();
     if (g.error) return g;
     return { claims, counts: counts([]), facts: { ...facts, ...mixFact, find: `${tgt}/${den}`, where: "? (child works it out)" } };
@@ -627,7 +636,10 @@ function fractionLine2(c, tl) {
     // (round 8: the stacked label clears its tick: above, its centre 50 over the line; below, under the whole numbers)
     tl.add({ op: "text", at: [X(a / d), y + dy * (side === 0 ? 50 : 70)], text: `${a}/${d}`, size: "m", ink: "mark" }, 400, { gap: 60 });
   }
-  if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
+  // (a lone fraction to find is the board's title, left of the line's 0 end as on the one-denominator line, never centred
+  // over the middle tick; "a vs b" spans several ticks and names a comparison, not a place)
+  if (asks.length === 1) tl.add({ op: "text", at: [x0 - 22, 46], text: `${asks[0][0]}/${asks[0][1]}`, size: "l", ink: "mark", align: "start" }, 600, { gap: 900 });
+  else if (asks.length) tl.add({ op: "text", at: [200, 46], text: asks.map(([a, d]) => `${a}/${d}`).join("  vs  "), size: "l", ink: "mark" }, 600, { gap: 900 });
   const counts = { lines: dens.map((d) => ({ gaps: d * w, ...(w > 1 ? { gapsPerWhole: d } : {}), ticks: d * w + 1, innerTicks: d * w - 1 })),
     ...(pts.length ? { marks: pts.map(([a, d]) => ({ at: `${a}/${d}`, label: `${a}/${d}` })) } : {}) };
   return { claims: [], counts, facts: { ...facts, ...(pts.length ? { points: pts.map(([a, d]) => `${a}/${d}`).join(", ") } : {}), ...(asks.length ? { compare: asks.map(([a, d]) => `${a}/${d}`).join(" vs "), which: "? (child works it out)" } : {}) } };

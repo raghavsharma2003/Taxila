@@ -88,3 +88,32 @@ test("two denominators on one line (Learning, comparing fractions): marks on eac
   assert.equal(expand({ template: "fraction-line@1", dens: [5, 5] }).ok, false);
   assert.equal(expand({ template: "fraction-line@1", dens: [5, 8], marks: [[3, 7]] }).ok, false, "a mark on neither den");
 });
+
+// (main, c5-maths-ch02-t01 reader: "7/4" and "5/3" sat over the tick for 1, "4/6", "2/5", "3/4", "1/9" over the middle tick, on
+// cards that ask where that fraction is: the fraction to find is the board's title, and its box is over no tick of the line)
+test("a fraction-line title (the fraction to find) sits over no tick of the line: left of the 0 end, in the title row", async () => {
+  const { textBox } = await import("../shared/whiteboard.js");
+  const script = JSON.parse(fs.readFileSync("data/lesson-scripts/c5-maths-ch02-t01.json", "utf8"));
+  const boards = [];
+  const walk = (x) => { if (x && typeof x === "object") { if (x.template === "fraction-line@1" && x.params?.target != null) boards.push(x.params); for (const k in x) walk(x[k]); } };
+  walk(script);
+  boards.push({ den: 4, from: 0, to: 2, target: [7, 4] }, { den: 3, from: 0, to: 2, target: [5, 3] }, { den: 9, from: 0, to: 1, target: [1, 9] }, { dens: [2, 3], from: 0, to: 1, target: [[1, 2]] });
+  for (const params of boards) {
+    const x = expand({ template: "fraction-line@1", ...params });
+    assert.ok(x.ok, JSON.stringify(params));
+    const ops = x.script.ops, line = ops.find((o) => o.id === "line");
+    const fr = (a, d) => `${a}/${d}`;
+    const asked = Array.isArray(params.dens) ? (params.target.length === 1 ? fr(...params.target[0]) : null) : fr(...params.target);
+    if (!asked) continue;
+    const title = ops.find((o) => o.op === "text" && o.text === asked);
+    assert.ok(title, `${JSON.stringify(params)}: its title`);
+    const box = textBox(title.text, title.size, title.at, title.align ?? "middle");
+    // every tick's x: the line's ends and wholes (from its range) and each inner tick
+    const x0 = line.at[0] + 12, x1 = line.at[0] + line.w - 12;
+    const ticks = [...Array.from({ length: line.range[1] - line.range[0] + 1 }, (_, i) => x0 + (i / (line.range[1] - line.range[0])) * (x1 - x0)),
+      ...ops.filter((o) => o.op === "line" && o.from[0] === o.to[0]).map((o) => o.from[0])];
+    const over = ticks.filter((t) => t >= box.x - 2 && t <= box.x + box.w + 2);
+    assert.deepEqual(over, [], `${JSON.stringify(params)}: "${asked}" box ${box.x}..${box.x + box.w} sits over ticks ${over}`);
+    assert.ok(box.x >= 0 && box.y >= 0, "on the board");
+  }
+});
