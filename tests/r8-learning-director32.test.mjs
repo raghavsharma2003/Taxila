@@ -5,7 +5,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
-import { answerForms, safetyHits, safetyErrors, SAFETY_STAGED_KNOWN, SAFETY_SEEN } from "../scripts/lesson-scripts/check.mjs";
+import { answerForms, safetyHits, safetyErrors, SAFETY_STAGED_KNOWN, SAFETY_SEEN, whyAltHelpLines, operationPairs, operationsOf } from "../scripts/lesson-scripts/check.mjs";
 import { scanSafety } from "../server/director/safety.js";
 
 const HI = (hi, en = "x") => ({ hi, en });
@@ -63,4 +63,51 @@ test("021 rule 1, the staged batch: every hit outside c4-maths-ch01-t02 is on SA
     assert.deepEqual(safetyErrors(s), [], t);
   }
   for (const k of SAFETY_STAGED_KNOWN) assert.ok(STAGED.includes(k.topicId) && !LIVE.includes(k.topicId) && k.topicId !== "c4-maths-ch01-t02", k.topicId);
+});
+
+// ---- 2 whyAlt as help (H lines)
+test("021 rule 2: H+ an unmarked whyAlt that passes rule 9, H- one that names the key or an accepted form, H0 none; a marked clean one is not listed", () => {
+  const one = (card) => whyAltHelpLines(frag({ card }));
+  assert.match(one({ whyAlt: HI("Tumne rangin tukde nahi, saare tukde gine.") })[0], /^H\+ t-frag-s1\/e1: passes rule 9, unmarked: Tumne/);
+  assert.match(one({ whyAlt: HI("Do mein se ek rangin hai, yaani 1/2.") })[0], /^H- t-frag-s1\/e1: fails rule 9: names "1\/2"/);
+  assert.match(one({ whyAlt: HI("Yeh aadha hai.") })[0], /^H- .*"aadha"/);
+  assert.deepEqual(one({}), ["H0 t-frag-s1/e1: no whyAlt"]);
+  assert.deepEqual(one({ whyAlt: HI("Tumne rangin tukde nahi, saare tukde gine."), whyAltAsHelp: true }), []);
+});
+
+test("021 rule 2, real scripts: one H line at most per card, and every H- names a form", () => {
+  for (const s of Object.values(S)) {
+    const h = whyAltHelpLines(s), ats = h.map((x) => x.split(":")[0]);
+    assert.equal(new Set(ats).size, ats.length, s.topicId);
+    for (const x of h.filter((y) => y.startsWith("H-"))) assert.match(x, /names "/, x);
+  }
+});
+
+// ---- 4 operation pairs (O lines)
+test("021 rule 4: operations are read in Hinglish, English and signs; \"jodi\" (a pair) and \"bante\" (are made) are not operations", () => {
+  assert.deepEqual(operationsOf("Bhujayein jodo."), ["add"]);
+  assert.deepEqual(operationsOf("140 − 46 = 94"), ["subtract"]);
+  assert.deepEqual(operationsOf("lambai aur chaudai ka guna"), ["multiply"]);
+  assert.deepEqual(operationsOf("2 × 3 aur 15 ÷ 3"), ["multiply", "divide"]);
+  assert.deepEqual(operationsOf("Roti barabar baanto."), ["divide"]);
+  assert.deepEqual(operationsOf("ek jodi joote; teen group bante hain"), []);
+});
+
+test("021 rule 4: a point, remediation or covered sentence naming an operation is printed with the first later sentence naming it", () => {
+  const s = frag({ skill: {
+    explain: [{ id: "e1", point: HI("Parimap ke liye bhujayein jodte hain, guna nahi."), ask: { prompt: HI("Kitna dhaaga?"), key: "1" } },
+      { id: "e2", point: HI("Ab dekho."), ask: { prompt: HI("2 × (3 + 4) kitna hai?"), key: "14" } }],
+    remediation: [{ targets: "m", say: HI("Farsh ke liye ghatao."), then: { prompt: HI("Ab?"), key: "1" } }],
+    covered: HI("Humne jodna seekha.") } });
+  const o = operationPairs(s);
+  assert.ok(o.includes("O t-frag-s1/explain[0].point [add]: Parimap ke liye bhujayein jodte hain, guna nahi. → t-frag-s1/explain[1].ask.prompt: 2 × (3 + 4) kitna hai?"), o.join("\n"));
+  assert.ok(o.includes("O t-frag-s1/explain[0].point [multiply]: Parimap ke liye bhujayein jodte hain, guna nahi. → t-frag-s1/explain[1].ask.prompt: 2 × (3 + 4) kitna hai?"));
+  assert.ok(o.includes("O t-frag-s1/remediation[0].say [subtract]: Farsh ke liye ghatao. → no later sentence names it"));
+  assert.ok(o.some((x) => x.startsWith("O t-frag-s1/covered [add]")));
+  assert.ok(!o.some((x) => x.includes("ask.prompt [")), "a card's prompt is not a source");
+});
+
+test("021 rule 4, real script: c6-maths-ch06-t01's \"guna sirf farsh batata hai\" is paired with the later 2 × (lambai + chaudai)", () => {
+  const o = operationPairs(S["c6-maths-ch06-t01"]);
+  assert.ok(o.some((x) => x.startsWith("O c6-maths-ch06-t01-s1/remediation[1].sayAlt [multiply]:") && x.includes("→ c6-maths-ch06-t01-s2/explain[1].pointAlt:") && x.includes("2 × (lambai + chaudai)")), o.join("\n"));
 });

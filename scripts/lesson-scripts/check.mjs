@@ -2009,6 +2009,54 @@ export function safetyErrors(s) {
   for (const k of known) if (!hits.some((h) => h.at === k.at && h.form === k.form)) e.push(`SAFETY_STAGED_KNOWN ${k.at} "${k.form}": listed but no longer a hit (or gone); take it off the list`);
   return e;
 }
+/** Rule 2's H lines: one per card. H+ its whyAlt passes rule 9 and is not marked whyAltAsHelp; H- it fails rule 9 (what it names);
+ *  H0 the card has no whyAlt. A marked whyAlt that passes is not listed (rule 9 holds it). */
+export function whyAltHelpLines(s) {
+  const out = [];
+  for (const c of d32Cards(s)) {
+    const w = c.card.whyAlt;
+    if (!w || !(w.hi || w.en)) { out.push(`H0 ${c.at}: no whyAlt`); continue; }
+    const hits = hintHits({ ...c, given: "" }, [["whyAlt", w]]);
+    if (hits.length) out.push(`H- ${c.at}: fails rule 9: names ${hits.map((h) => `"${h.form}"${h.l === "en" ? " (en)" : ""}`).join(", ")}${c.card.whyAltAsHelp === true ? " (marked)" : ""}: ${w.hi ?? w.en}`);
+    else if (c.card.whyAltAsHelp !== true) out.push(`H+ ${c.at}: passes rule 9, unmarked: ${w.hi ?? w.en}`);
+  }
+  return out;
+}
+/** Rule 4: the arithmetic operations a sentence names (Hinglish and English words, and the signs between numbers). */
+export const OPERATIONS = {
+  add: /(?<![\p{L}])(?:jod(?!iy|i(?![\p{L}]))\p{L}*|plus|add\p{L}*)(?![\p{L}])|[\d)]\s*\+\s*\(?\s*\d/iu,
+  subtract: /(?<![\p{L}])(?:ghata\p{L}*|ghate|ghatt\p{L}*|minus|subtract\p{L}*)(?![\p{L}])|[\d)]\s*[−–]\s*\(?\s*\d|[\d)]\s+-\s+\(?\s*\d/iu,
+  multiply: /(?<![\p{L}])(?:gun(?:a|aa|e|i|o)\p{L}*|multipl\p{L}*|times)(?![\p{L}])|[\d)]\s*[×x]\s*\(?\s*\d/iu,
+  divide: /(?<![\p{L}])(?:bhaa?g\s+(?:do|de|dena|diya|diye|karo|kiya|kar|karte|karna)|divid\p{L}*|baant\p{L}*)(?![\p{L}])|÷/iu,
+};
+export const operationsOf = (t) => Object.keys(OPERATIONS).filter((k) => OPERATIONS[k].test(String(t ?? "")));
+/** Every spoken Hindi sentence of a script in document order: [{ at, text }] (`at` under its skill id). */
+export function scriptSentences(s) {
+  const out = [];
+  const walk = (o, path) => {
+    if (!o || typeof o !== "object") return;
+    if (!Array.isArray(o) && typeof o.hi === "string") { for (const x of sentencesOf(o.hi)) out.push({ at: path, text: x }); return; }
+    for (const [k, v] of Object.entries(o)) walk(v, Array.isArray(o) ? `${path}[${k}]` : `${path}.${k}`);
+  };
+  for (const [f, v] of Object.entries(s ?? {})) {
+    if (f === "skills") for (const k of v ?? []) for (const [g, w] of Object.entries(k)) walk(w, `${k.skillId}/${g}`);
+    else walk(v, f);
+  }
+  return out;
+}
+const OP_SOURCE = /\/(?:explain\[\d+\]\.(?:point|pointAlt)|remediation\[\d+\]\.(?:say|sayAlt|simpler)|covered)$/;
+/** Rule 4's O lines: a point, remediation or covered sentence naming an operation, with the first later sentence naming it too. */
+export function operationPairs(s) {
+  const all = scriptSentences(s), out = [];
+  all.forEach((x, i) => {
+    if (!OP_SOURCE.test(x.at)) return;
+    for (const op of operationsOf(x.text)) {
+      const later = all.slice(i + 1).find((y) => OPERATIONS[op].test(y.text));
+      out.push(`O ${x.at} [${op}]: ${x.text} → ${later ? `${later.at}: ${later.text}` : "no later sentence names it"}`);
+    }
+  });
+  return out;
+}
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2091,6 +2139,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // (director18 D13: a manual-read list, never a gate — whys with no verb found after code's "kyunki")
     // (Learning 020 rules 3 and 8: stated-rule sentences for the independent reader, askWhole candidates for main; a listing, never a gate)
     if (args.includes("--rules")) for (const m of d32Listing(scriptOf(t))) console.log(`  ${m}`);
+    // (Learning 021 rules 2 and 4: the whyAlt-as-help lines and the operation pairs; listings, never a gate)
+    if (args.includes("--rules")) for (const m of [...whyAltHelpLines(scriptOf(t)), ...operationPairs(scriptOf(t))]) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {
