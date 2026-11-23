@@ -140,3 +140,32 @@ test("item 3: the tester on a turned tile — Studio 014's right-angle corner at
   assert.equal(expand({ template: "shape@1", shape: "triangle", tester: { on: 0, corner: 0, turned: true } }).ok, false);
   assert.equal(expand({ template: "shape@1", shape: "square", tester: { on: 1, corner: 0, turned: true } }).ok, false, "no copy 1 on a one-copy board");
 });
+
+test("item 5: equal-groups@1 showSum: false draws the groups with no sum line (c6-ch07 skill 3: five whole laddoos, no \"5 × 1 = 5\")", () => {
+  const sc = ok({ template: "equal-groups@1", groups: 5, each: 1, title: "5 laddoo", showSum: false });
+  assert.equal(sc.ops.filter((o) => o.op === "numwork").length, 0);
+  assert.deepEqual(sc.facts.counts, { groups: 5, each: 1 });
+  assert.ok(ok({ template: "equal-groups@1", groups: 5, each: 1 }).ops.some((o) => o.id === "eq"), "the sum line stays by default");
+  assert.equal(expand({ template: "equal-groups@1", groups: 5, each: 1, showSum: "no" }).ok, false);
+});
+
+test("item 5: compare@1 — an item wrapping onto two lines never crosses the title's rule: rows laid from each cell's real height, or refused at author time; the live gate passes it", async () => {
+  const { gateWhiteboard } = await import("../server/studio/qa/whiteboard.js");
+  const { opGeometry } = await import("../shared/whiteboard.js");
+  const call = { template: "compare@1", left: { title: "3 roti, 4 bachche", items: ["3/4 roti, 1 se kam"] }, right: { title: "5 laddoo, 2 bachche", items: ["5/2 laddoo, 1 se zyada"] } };
+  const sc = ok(call);
+  const rules = sc.ops.filter((o) => o.op === "line" && o.from[1] === o.to[1]);
+  for (const o of sc.ops.filter((x) => x.op === "text" && /^c|^o/.test(x.id) && !/^\d+ (roti|laddoo),|bachche$/.test(x.text))) {
+    const b = opGeometry(o).box;
+    for (const r of rules) assert.ok(!(b.y < r.from[1] && b.y + b.h > r.from[1] && b.x < r.to[0] && b.x + b.w > r.from[0]), `"${o.text}" crosses the rule`);
+  }
+  const g = gateWhiteboard(sc, { reply: "Board par dono baantne ke hisaab likhe hain.", speechMs: 4000, withhold: { values: [] }, asked: true });
+  assert.ok(g.checks.find((c) => c.id === "W2.text_clear_of_lines")?.pass, JSON.stringify(g.checks.filter((c) => !c.pass)));
+  // a table that cannot be laid without crossing or running off the board fails expand — the checker's resolve reports it
+  const tall = { template: "compare@1", left: { title: "A", items: ["3/4 roti, 1 se kam", "5/2 laddoo, 1 se zyada", "7/3 laddoo, 2 se zyada", "9/4 roti, 2 se zyada"] }, right: { title: "B", items: ["1/2 roti, 1 se kam", "5/3 laddoo, 1 se zyada", "8/3 laddoo, 2 se zyada", "9/5 roti, 1 se zyada"] } };
+  const x = expand(tall);
+  assert.equal(x.ok, false, "refused at author time");
+  // a plain table is laid exactly as before: its first row at 100, its pitch 52
+  const plain = ok({ template: "compare@1", left: { title: "Ribbon P", items: ["20 cm", "12 cm"] }, right: { title: "Ribbon Q", items: ["12 cm", "8 cm"] } });
+  assert.deepEqual(plain.ops.filter((o) => /^c\d\d$/.test(o.id)).map((o) => o.at[1]), [100, 100, 152, 152]);
+});

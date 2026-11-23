@@ -72,10 +72,11 @@ function sizeFor(text, maxW) {
  * Write a label centred at (x, y) within `maxW`: one line at m or s, else split at the space nearest the middle into two
  * lines at s. Returns the op ids, or null when it cannot fit (the template then fails rather than overflow).
  */
-function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size, role } = {}) {
+/** How writeFit lays `text` out: [{ text, dy, size }] (one line, or two at ±dy), or null. */
+function fitPlan(text, maxW, size) {
   // `size: "s"` keeps a group of labels at one size (a column of a table never mixes sizes)
   const one = [...text].length > 24 ? null : size === "s" ? (textBox(text, "s").w <= maxW ? "s" : null) : sizeFor(text, maxW);
-  if (one) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: one, ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms, { gap, ...opts })];
+  if (one) return [{ text, dy: 0, size: one }];
   const words = text.split(/\s+/);
   if (words.length < 2) return null;
   let best = null;
@@ -87,9 +88,20 @@ function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink
   if (!best) return null;
   // (a line with a stacked fraction is taller: the two lines move apart to hold it)
   const half = Math.max(12, ...[best.a, best.b].map((t) => textBox(t, "s").h / 2 + 1));
+  return [{ text: best.a, dy: -half, size: "s" }, { text: best.b, dy: half, size: "s" }];
+}
+/** The vertical extent of a fitPlan written at y: { top, bottom } (board units). */
+function fitExtent(plan, y) {
+  const bs = plan.map((l) => textBox(l.text, l.size, [0, y + l.dy]));
+  return { top: Math.min(...bs.map((b) => b.y)), bottom: Math.max(...bs.map((b) => b.y + b.h)) };
+}
+function writeFit(tl, text, x, y, maxW, opts = {}, { id, ms = 500, gap = 40, ink, size, role } = {}) {
+  const plan = fitPlan(text, maxW, size);
+  if (!plan) return null;
+  if (plan.length === 1) return [tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y], text, size: plan[0].size, ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms, { gap, ...opts })];
   return [
-    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y - half], text: best.a, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap, ...opts }),
-    tl.add({ op: "text", at: [x, y + half], text: best.b, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap: 0 }),
+    tl.add({ ...(id ? { id } : {}), op: "text", at: [x, y + plan[0].dy], text: plan[0].text, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap, ...opts }),
+    tl.add({ op: "text", at: [x, y + plan[1].dy], text: plan[1].text, size: "s", ...(ink ? { ink } : {}), ...(role ? { role } : {}) }, ms * 0.6, { gap: 0 }),
   ];
 }
 
@@ -925,8 +937,11 @@ function equalGroups(c, tl) {
       claims.push({ id: `g${k}`, c: [round1(hx + round1(x - hx)), round1(hy + round1(y - hy))] });
     }
   }
-  tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
-  return { counts: { groups, each }, facts: { ...head, groups, each, total: c.hideResult ? "? (child works it out)" : groups * each }, claims };
+  // (Studio 015 item 5: `showSum: false` — no sum line under the groups: "5 × 1 = 5" under five whole laddoos, c6-ch07 s3, is
+  // no step of the card's)
+  if (c.showSum !== undefined && typeof c.showSum !== "boolean") return { error: "groups_show_sum" };
+  if (c.showSum !== false) tl.add({ id: "eq", op: "numwork", at: [110, 240], layout: "equation", rows: [[String(groups), "×", String(each), "=", c.hideResult ? "?" : String(groups * each)]], weight: 2 }, 1000, { gap: 300 });
+  return { counts: { groups, each }, facts: { ...head, groups, each, ...(c.showSum === false ? {} : { total: c.hideResult ? "? (child works it out)" : groups * each }) }, claims };
 }
 
 /**
@@ -1199,12 +1214,23 @@ function compare(c, tl) {
   // (Learning 007, c6-ch07-t05: a stacked mixed fraction — "2 1/2 litre" — is taller than a line of words, and the added
   // answer line ran into it at the fixed 52 pitch: the rows are spaced by the tallest cell's real height)
   const cells = [...left.items, ...right.items, ...(c.mark?.add != null ? [String(c.mark.add)] : [])];
-  const pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
+  let pitch = Math.max(52, ...cells.map((t) => textBox(String(t), itemSize, [0, 0], "middle").h + 14));
+  // (Studio 015 item 5, c6-ch07 s3 e2 "5/2 laddoo, 1 se zyada": an item that wraps onto two lines, a stacked fraction in it, rose
+  // across the title's rule and the live gate refused the board (W2 text_clear_of_lines) at run time. The rows are laid from
+  // each cell's real extent: the first row starts clear of the rule, each row clear of the one above; a table that then runs
+  // off the board is refused here, at author time — never on the child's screen)
+  const RULE_Y = 62, GAP = 6;
+  for (const [i, side] of [left, right].entries()) { const pl = fitPlan(side.title, colW - 8, titleSize); if (pl && fitExtent(pl, 36).bottom > RULE_Y - 2) return { error: `title_crosses_rule:${i}` }; }
+  const ext = Array.from({ length: rows }, (_, r) => [left, right].map((side) => { const t = side.items[r]; if (!t) return null; const pl = fitPlan(t, colW - 8, itemSize); return pl ? fitExtent(pl, 0) : null; }).filter(Boolean));
+  const above = (r) => Math.max(0, ...ext[r].map((e) => -e.top)), below = (r) => Math.max(0, ...ext[r].map((e) => e.bottom));
+  const y0 = rows ? Math.max(100, RULE_Y + GAP + above(0)) : 100;
+  for (let r = 1; r < rows; r++) pitch = Math.max(pitch, below(r - 1) + GAP + above(r));
+  if (rows && y0 + (rows - 1) * pitch + below(rows - 1) > 290) return { error: "items_too_tall" };
   for (let r = 0; r < rows; r++) {
     for (const [i, side] of [left, right].entries()) {
       const t = side.items[r];
       if (!t) continue;
-      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, 100 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
+      if (!writeFit(tl, t, 20 + i * 190 + colW / 2, y0 + r * pitch, colW - 8, {}, { id: `c${i}${r}`, ms: 480, gap: i ? 60 : 220, size: itemSize })) return { error: `item_too_wide:${i}.${r}` };
     }
   }
   // round 8 (Learning's to-studio 006): an ANSWER board's `mark` — the chosen column (or one item in it) ringed and ticked,
@@ -1220,7 +1246,7 @@ function compare(c, tl) {
     if (m.add != null) {
       const t = String(m.add).trim();
       if (!t || t.includes("?") || [...t].length > 24 || !fitsLabel(t) || textProblem(t) || side.items.length >= 4) return { error: "mark_add" };
-      if (!writeFit(tl, t, x, 100 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
+      if (!writeFit(tl, t, x, y0 + side.items.length * pitch, colW - 36, {}, { id: "mark", ms: 480, gap: 300, size: itemSize, role: ROLE.answer })) return { error: "mark_add_too_wide" };
       marked = `${side.title}: ${t}`;
     } else {
       const target = m.item != null ? `c${i}${m.item}` : `h${i}`;
