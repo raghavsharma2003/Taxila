@@ -3781,7 +3781,7 @@ function helpHeld(prev, input, d) {
  * as help's; a card asked gets the wording first; a turn that goes on gets its joint first — never nothing.
  */
 function helpAfter(prev, input, out, pre) {
-  const d = pre?.decision ?? null;
+  let d = pre?.decision ?? null;
   if (!d || !out?.state?.lastMove || input?.event !== "turn") return out;
   const lm = out.state.lastMove;
   const mark = helpMark(d);
@@ -3804,6 +3804,12 @@ function helpAfter(prev, input, out, pre) {
   if (d.card === "close") out.state.lastMove = { ...lm, help: mark };
   else if (d.card === "ask") out.state.lastMove = { ...stripHelp(lm), ...(d.rung || d.joint ? helpFields(input.kit, d) : { help: mark }), ...(d.request === "hindi" ? { request: "language", ...(d.joint ? { noLangAck: true } : {}) } : {}) };
   else if (d.joint) {
+    // (to-brain 049 B6, 047 R5's third bullet: "nothing easier" is never followed in the same turn by an aside's return — c4-ch01-t02 stuck 68
+    // in director31: before a return the go-on line is said in its place)
+    if (lm.returned?.topic && d.joint.kind === "helpSpent") {
+      const g = d.then?.kind === "afterKeyGoOn" ? d.then : helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0 });
+      if (g?.text) d = { ...d, joint: g, then: null };
+    }
     const j = fillFriend(d.joint.text, friendOf);
     // (Brain 044 T5: after a key, the "nothing easier" line first, then the go-on line — the seam pass turns it into the after-key return before
     // an earlier card, or drops it before the aside's return; the help joint it records is the go-on line)
@@ -3886,6 +3892,21 @@ export function step(prev, input) {
       const { stayCheckin: _s, checkinOk: _c, ...lmP } = out.state.lastMove;
       out.state.lastMove = { ...lmP, stepAsk: stepAskAgain(input.kit, sa, { ...sa }, prev.ctx?.lang ?? "hinglish") };
       if (out.move) out.move = { ...out.state.lastMove };
+    }
+  }
+  // (to-brain 049 B6: a key's check-in never runs into the next card with no joint — director32 c5-t01 stuck 50, c6-ch07 offtopic 66: her key,
+  // or help on a keyed card, ended on a check-in, the child said yes, and the next card came bare. The go-on joint, afterKeyGoOn, leads it)
+  { const lm = out?.state?.lastMove;
+    const keyedBefore = !prev?.lastUi?.ask?.itemId && (!!prev?.lastMove?.gave?.answer || !!prev?.keyedPart || !!prev?.lastMove?.help?.keyed);
+    if (keyedBefore && input?.event === "turn" && scriptOn() && !recordedWalk(input) && lm && out.ui?.ask?.itemId && !input.cls?.request && !input.cls?.help
+      && !["correct", "incorrect", "partial", "misconception"].includes(String(input.cls?.outcome ?? "")) && !["safeguard", "wrap", "break", "worked_example"].includes(String(lm.kind ?? ""))
+      && !lm.point && !lm.rendered?.length && !lm.sayFirst?.length && !lm.bridgeSaid && !lm.returned && !lm.helpJoint && !lm.simpler && !lm.problemLines && !lm.asideAck && !lm.tasteAsked) {
+      const j = helpJoint(scriptFor(input.kit)?.script, "afterKeyGoOn", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.afterKeyGoOn ?? 0 });
+      if (j?.text) {
+        out.state.helpJointN = { ...(out.state.helpJointN ?? {}), afterKeyGoOn: (prev.helpJointN?.afterKeyGoOn ?? 0) + 1 };
+        out.state.lastMove = { ...lm, sayFirst: [j.text], helpJoint: { kind: "afterKeyGoOn", form: j.text, by: j.by } };
+        if (out.move) out.move = { ...out.state.lastMove };
+      }
     }
   }
   // (Brain 044 T1/T5: a second request after the greeting's simpler wording — there is no easier wording of the greeting: the "nothing easier"

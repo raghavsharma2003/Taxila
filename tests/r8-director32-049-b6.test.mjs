@@ -80,3 +80,18 @@ describe("B6.5: a reason is not said in two turns running at a worked close", ()
     assert.ok(flagged("steady", "c4", "reasonTwiceAuthored").has(90));
   });
 });
+
+describe("B6.6 and B6.7: a key's check-in and the next card; nothing easier and a return", () => {
+  test("keyCheckinBareCard is gated and reads director32 c5-t01 stuck 50, c6-ch07 offtopic 66", () => {
+    assert.ok(PREDICATES.keyCheckinBareCard && !PENDING.has("keyCheckinBareCard"));
+    assert.ok(flagged("stuck", "c5t01", "keyCheckinBareCard").has(50));
+    assert.ok(flagged("offtopic", "c6ch07", "keyCheckinBareCard").has(66));
+  });
+  test("spentThenReturn is gated and reads director31 c4-ch01-t02 stuck 68 (047 R5's third bullet)", async () => {
+    assert.ok(PREDICATES.spentThenReturn && !PENDING.has("spentThenReturn"));
+    const { checkRun } = await import("../evals/hybrid-side-by-side/check-run.mjs");
+    const run = new URL("./fixtures/eval-results/hybrid-side-by-side/results/2026-11-18-director31", import.meta.url).pathname;
+    const rows = checkRun(run).filter((f) => f.predicate === "spentThenReturn").map((f) => `${f.lesson} ${f.row}`);
+    assert.ok(rows.includes("stuck-c4-ch01-t02 68"), rows.join(", "));
+  });
+});

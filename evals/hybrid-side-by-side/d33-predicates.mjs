@@ -5,6 +5,8 @@
 //                    something she is hearing for the first time
 //   reasonTwice  at a worked example's close, a reason her step turn before said, said again (reasonTwiceAuthored, counted: a step's authored
 //                right line after a verdict with the same reason)
+//   keyCheckinBareCard  the next card straight after a key's check-in, with no joint
+//   spentThenReturn  "nothing easier" followed in the same turn by an aside's return
 //   startLineNotGreeting  the greeting's start line (joints.startAnyway) said anywhere but straight after the greeting
 const DEKHO = /(?<![\p{L}])Dekho,/gu;
 /** "Dekho," said in a row's text. */
@@ -74,6 +76,25 @@ export const D33_PREDICATES = {
    *  and reason, up to "Toh poora jawab" — shares 60% of its content words (four at least) with her turn before, one of the two a worked
    *  example's. Gated. */
   reasonTwice(L, r, i, ctx) { return reasonRepeat(r, ctx, "close"); },
+  /** B6, 047 R5's third bullet: "nothing easier" (helpSpent) is never followed in the same turn by an aside's return (director31 c4-ch01-t02
+   *  stuck 68). Gated. */
+  spentThenReturn(L, r) {
+    if (r.who !== "teacher") return null;
+    const sm = r.seams ?? [];
+    const k = sm.findIndex((x) => x.right === "helpSpent" || x.joint === "helpSpent");
+    return k >= 0 && (sm.slice(k + 1).some((x) => x.right === "return") || r.returnSaid) ? `"nothing easier" and then an aside's return` : null;
+  },
+  /** B6: a key's check-in never runs into the next card with no joint — her key (or help on a keyed card) ended on a check-in, and her next
+   *  turn opens on a card with nothing before it (director32 c5-t01 stuck 50; c6-ch07 offtopic 66). Gated. */
+  keyCheckinBareCard(L, r, i, ctx) {
+    const p = ctx?.prevT;
+    if (r.who !== "teacher" || !p) return null;
+    const s0 = (r.seams ?? [])[0];
+    if (!s0 || s0.left !== "start" || !["card", "returnCard"].includes(s0.right) || s0.joint) return null;
+    const ps = p.seams ?? [];
+    if (ps.at(-1)?.right !== "checkin" || p.check?.itemId && !p.check?.gave && p.card) return null;
+    return ps.some((x) => x.right === "key") || p.cell?.keyed ? "the next card straight after a key's check-in, with no joint" : null;
+  },
   /** B6, its other shape, counted: a worked step's authored right line (`ask.right`) said straight after a verdict that gave the same reason
    *  (dry c4 steady 88, offtopic 20, steering 38: "Haan, 5: barfi 5 barabar tukdon mein kati thi." after the card's why) — the words are the
    *  script's; Learning's to rewrite, code does not cut an authored line. */
