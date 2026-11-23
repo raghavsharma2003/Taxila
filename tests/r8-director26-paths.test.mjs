@@ -110,7 +110,9 @@ test("N1: 'mujhe nahi pata' on a point whose wordings are spent (c5-t02 stuck 28
   // (d29 final: with the point and its card now in one turn where they fit 75 — Brain 044 T1 — the replay can reach row 28 with the card
   // already posed; a give-up on a live card with nothing unsaid is its key (help's close). On the point with its card waiting, as director26
   // ran: the "nothing easier" line, then helpToCard leads the card)
-  if (plans.at(-1).before?.lastUi?.ask?.itemId) { assert.equal(m.help?.card, "close"); return; }
+  // (to-brain 049 B6: the right verdict at row 22 is now split from the point it led into, and the replay reaches row 28 on a card with a
+  // wording still unsaid — help says it, keeping the card; with none unsaid, the key)
+  if (plans.at(-1).before?.lastUi?.ask?.itemId) { assert.ok(["close", "keep"].includes(m.help?.card), m.help?.card); return; }
   assert.equal(m.help?.card, "ask");
   // (Brain 044 T5: the "nothing easier" line is the help, then helpToCard leads the card)
   assert.equal(m.help?.joint, "helpSpent");
@@ -212,6 +214,9 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   // the live script — nor on the run's own copy, which d31's walk had already moved off it. The replay walks the script as it stood before
   // the d32 rewrite, kept as a fixture: the last one these lines reach the closing question on)
   setScriptForTest("c5-maths-ch02-t01", JSON.parse(readFileSync(new URL("./fixtures/scripts/c5-maths-ch02-t01.d31.json", import.meta.url), "utf8")));
+  // (to-brain 049 B6: the verdict-point-card split adds turns director30's recorded child never answered — the lines run out before the
+  // closing question; this replay walks without it)
+  const vpc0 = process.env.TAXILA_VPC_SPLIT; process.env.TAXILA_VPC_SPLIT = "off";
   try {
   const { kit, plans } = await replay("2026-11-18-director30", "steady", "c5-maths-ch02-t01", 400);
   const asked = plans.find((x) => x.state.lastMove?.kind === "teachback" && x.state.lastMove?.authoredEnd !== "teachbackKey");
@@ -240,5 +245,5 @@ test("W1: the closing question answered right — the wrap opens on the verdict 
   assert.equal(w.kind, "wrap");
   const acks = tb && (await import("../server/director/script.js")).scriptFor(kit).script.wrap.ack.map((f) => f.hi);
   assert.ok(w.wrapAck && acks.some((a) => String(w.rendered?.[0] ?? "").startsWith(String(a).slice(0, 12))), JSON.stringify(w.rendered));
-  } finally { setScriptForTest(); }
+  } finally { setScriptForTest(); if (vpc0 === undefined) delete process.env.TAXILA_VPC_SPLIT; else process.env.TAXILA_VPC_SPLIT = vpc0; }
 });

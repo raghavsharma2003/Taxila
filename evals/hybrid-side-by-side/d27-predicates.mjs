@@ -276,6 +276,8 @@ export const D27_PREDICATES = {
     if (stepToldAfterSimpler(L, r, i, ctx.script)) return null;
     // (dc-r8-director29 Brain 045 P4: a second request at the greeting is answered by the lesson's start — joints.startAnyway, then the hook)
     if ((r.seams ?? []).some((x) => x.joint === "startAnyway")) return null;
+    // (to-brain 049 B6: at a bridge's check-in the lesson goes on led by the go-on joint, afterKeyGoOn, in startAnyway's place — Brain 047 R5)
+    if (/(?:^|:)bridge$/.test(String(a.beat ?? "")) && (r.seams ?? []).some((x) => x.joint === "afterKeyGoOn")) return null;
     if (/^worked$/.test(String(a.beat)) && parts.some((p) => p.part === "simpler" && /^worked:step\d+$/.test(String(p.beat)))) return null;
     if (KEY_SAID.test(String(r.text ?? "")) || r.check?.gave || r.keyFact) return null;
     const id = partIdOf(a, ctx.script);

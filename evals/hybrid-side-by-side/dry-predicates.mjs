@@ -187,7 +187,8 @@ export const PREDICATES = {
     // (main's R3 on the merged H4 + L2 tree: a clarify at the hook's check-in is answered by the first point, and its card with it)
     if (String(ctx.prevT.move ?? "") === "hook") return null;
     // (Brain 047 R5: a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
-    if ((r.seams ?? []).some((x) => x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
+    // (to-brain 049 B6: led by the go-on joint, afterKeyGoOn — startAnyway is the greeting's)
+    if ((r.seams ?? []).some((x) => x.joint === "startAnyway" || x.joint === "afterKeyGoOn") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (main's R3: a clarify at a keyed card's check-in — the check-in L2 puts after a right answer's verdict when the next part waits
     // included — is help on the card just answered (H4 item 6): the why's other wording if unsaid, else one afterKeyGoOn form and the lesson
     // goes on, its next card with it. Exempt exactly as giveUpCheckin exempts it: the turn the walk recorded as keyed help, and a card in it
@@ -749,7 +750,8 @@ export const ORDER_LAWS = {
     if (helpGoOnSaid(r, ctx)) return null;
     // (dc-r8-director27 P3: a bridge's help all said — the helpSpent line, then the lesson goes on from the bridge, as help decides)
     // (Brain 047 R5: a give-up or a clarify at a bridge's check-in goes on to the next point and its card, led by startAnyway)
-    if ((r.seams ?? []).some((x) => x.joint === "helpSpent" || x.joint === "startAnyway") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
+    // (to-brain 049 B6: the go-on joint, afterKeyGoOn, in startAnyway's place)
+    if ((r.seams ?? []).some((x) => x.joint === "helpSpent" || x.joint === "startAnyway" || x.joint === "afterKeyGoOn") && (ctx.prevT.pageParts ?? []).some((p) => p.beat === "bridge")) return null;
     // (dc-r8-director27 P3: the after-key return form, then the earlier card; P6.1: a request at the greeting gets the hook with the first point)
     if ((r.seams ?? []).some((x) => x.joint === "afterKeyReturn") || String(ctx.prevT.move ?? "") === "greet") return null;
     // (Brain 044 T1: after the greeting's simpler wording, a request gets the "nothing easier" line and the lesson starts — hook, point, card)
@@ -989,6 +991,8 @@ import { D31_PREDICATES } from "./d31-predicates.mjs";
 Object.assign(PREDICATES, D31_PREDICATES);
 import { D32_PREDICATES } from "./d32-predicates.mjs";
 Object.assign(PREDICATES, D32_PREDICATES);
+import { D33_PREDICATES } from "./d33-predicates.mjs";
+Object.assign(PREDICATES, D33_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
@@ -1072,8 +1076,13 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (Brain 049 B4: questionThreeRunning is gated — the walk's yourTurn ending is built (server/director/question-run.js); it flags director32's
 // rows (stuck 16 to 22, offtopic 14 to 18, steering 28 to 32, c4 offtopic 58 to 62: tests/r8-director32-049), and reaskRunning /
 // reaskSameAfterHelp read the turn after an invitation against the question-turn before it)
-export const PENDING = new Set(["vpcUnlisted", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+// (Brain 049 B6, merged by main: vpcUnlisted is gated — the split at 65 words is built; returnAsksAgain and reasonTwiceAuthored are counted)
+export const PENDING = new Set(["returnAsksAgain", "reasonTwiceAuthored", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
+/** to-brain 049 B6: a right verdict split from the point it led into (the row's noFit "vpc") goes on to that point and its card whatever the
+ *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed
+ *  right. The laws that read a request as about her turn before's part do not read the turn after such a split. */
+const VPC_GOES_ON = new Set(["giveUpAnswered", "requestAnswered", "requestHelped", "clarifyCard", "pictureCaption", "orderStays"]);
 /** The flags of one dry lesson: [{ row, predicate, why, text }]. */
 export function lessonFlags({ rows, script }) {
   const heads = {};
@@ -1091,7 +1100,7 @@ export function lessonFlags({ rows, script }) {
     if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; ctx.prevIntent = r.intent ?? null; ctx.prevFlags = r.readFlags ?? []; return; }
     ctx.returnDue = !!r.returnSaid;
     ctx.keyOpenBefore = ctx.keyOpen;
-    for (const [name, f] of Object.entries(PREDICATES)) { const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
+    for (const [name, f] of Object.entries(PREDICATES)) { if (ctx.prevT?.noFit === "vpc" && VPC_GOES_ON.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;

@@ -91,7 +91,7 @@ describe("Brain 042: the predicates read director27's rows", () => {
 });
 
 // ───────────── the walk ─────────────
-const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2"];
+const FLAGS = ["TAXILA_R7_SCRIPT", "TAXILA_R7_SPLIT", "TAXILA_R7_SPLIT_CLOSE", "TAXILA_L2", "TAXILA_VPC_SPLIT"];
 const KEEP = {};
 /** A lesson walked with the card's own reader: each line is classified against the item on the table, as the dry harness reads it. */
 /** d29 final: Learning 017 deleted every explain beat's quick question (a point and its card share a turn) and reshaped the worked examples;
@@ -115,7 +115,9 @@ function walk(T) {
 }
 
 describe("Brain 042: the walk", () => {
-  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } setScriptForTest(); });
+  // (re-pinned to to-brain 049 B6: a right verdict, its reason, a point and its card over 65 words now split at the point, so the walk
+  // reaches the point's quick question — Brain 042 Q1, the shape these tests pin — only with that split off)
+  beforeEach(() => { for (const k of FLAGS) { KEEP[k] = process.env[k]; delete process.env[k]; } process.env.TAXILA_VPC_SPLIT = "off"; setScriptForTest(); });
   afterEach(() => { setScriptForTest(); for (const k of FLAGS) { if (KEEP[k] === undefined) delete process.env[k]; else process.env[k] = KEEP[k]; } });
 
   test("Q1: a point whose card waits ends on its quick question, over the point's board; read by the card's reader; no verdict, no card evidence", () => {

@@ -392,8 +392,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   }
   // (Brain 047 R5: a give-up or a clarify at a bridge's check-in goes on to the next point and its card — the bridge is not said again in
   // other words: c5-t01 stuck 54 to 56, offtopic 48 to 50; c6-ch07-t01 steady 24 to 26, stuck 54 to 56; c6 stuck 52 to 54). One word to the
-  // child first (N1): the script's startAnyway, "Chalo, main batati hoon.")
-  if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "startAnyway", { lang: L, lessonKey, n: jointN.startAnyway ?? 0 }), bridgeOn: true };
+  // child first (N1): the script's go-on joint, afterKeyGoOn — to-brain 049 B6: the greeting's start line, joints.startAnyway ("Theek hai, main
+  // shuru karti hoon."), is said only at the greeting; at a bridge it was heard mid-lesson: director32 c4 stuck 62, c5-t01 stuck 64, c6-ch07
+  // stuck 64)
+  if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: helpJoint(script, "afterKeyGoOn", { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0 }), bridgeOn: true };
   // (Brain 049 B2: a picture request with nothing left to draw — the card's pictureBoard and second view spent, or neither — is never a key
   // and never closes the card: the noPicture line, the card's unsaid help if one is left, then the card's question. It does not advance the
   // miss ladder. director32 steering 16 in c5-t01, c5-t02, c6 gave the key)

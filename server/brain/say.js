@@ -1621,11 +1621,25 @@ function partObjectOf(sc, ref) {
  *  verdict before, which is rarely in those two. The form rotates by how many verdicts have taken one and is never the form of the verdict
  *  before: state.whyJoint, written by brain/turn.js from guard.whyJoint. The authored end's verdict takes the same rotation.)
  *  → { text, k } */
-export function rightWhyLead(fr, why, state) {
+/** to-brain 049 B6: the most "Dekho," a lesson says. */
+export const DEKHO_MAX = 3;
+export function rightWhyLead(fr, why, state, kit = null) {
   const last2 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
   const w = joinable(why, { lower: true });
-  const joints = [`${fr}, kyunki ${w}`, `${fr}. Dekho, ${w}`, `${fr}: ${w}`];
-  const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. Dekho, /.test(t) : /^[^.:]{3,25}: /.test(t));
+  // (to-brain 049 B6: "Dekho," at most three times a lesson and never within four of her turns — 8 to 10 in every steady lesson, all from
+  // this lead-in. Its second form's opener rotates — "Dekho,", "Suno," or none — and "Dekho," is said only where it may be: state.dekhoN,
+  // the lesson's count, written by brain/turn.js; "Suno," keeps the same four-turn distance)
+  const last4 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? ""));
+  const near = (o) => last4.some((t) => new RegExp(`(?<![\\p{L}])${o},`, "u").test(t));
+  // (a script's own "Dekho," — a point, a caption — is said as written and counts: code's lead-in leaves it room, c4 steady 74 on the dry
+  // matrix: an authored point's "Dekho," was the lesson's fourth)
+  const authored = (JSON.stringify(scriptFor(kit)?.script ?? {}).match(/(?<![\p{L}])Dekho,/gu) ?? []).length;
+  const opOk = (o) => !o || (!near(o) && (o !== "Dekho" || (state?.dekhoN ?? 0) < DEKHO_MAX - authored));
+  const ops = ["Dekho", "Suno", ""].map((_, j, xs) => xs[(j + (state?.whyJoint?.n ?? 0)) % xs.length]);
+  const op = ops.find(opOk) ?? "";
+  const j1 = op ? `${fr}. ${op}, ${w}` : `${fr}. ${String(w).charAt(0).toUpperCase()}${String(w).slice(1)}`;
+  const joints = [`${fr}, kyunki ${w}`, j1, `${fr}: ${w}`];
+  const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. (?:Dekho|Suno), /.test(t) : /^[^.:]{3,25}: /.test(t));
   const k0 = (seamStart(lessonKeyOf(state), "whyOpener") + (state?.whyJoint?.n ?? 0)) % 3;
   const prevJ = state?.whyJoint?.last ?? null;
   // ("Sahi jawab: <why>" reads as a key being given: that frame never takes the colon)
@@ -1728,7 +1742,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const v = state.lastMove.endGaveUp ? null : state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
     const endW = state.lastMove.endVerdict ? (state.lastMove.endWhy ? saidIn(state.lastMove.endWhy, L) : null) : state.lastGraded?.why;
     // (Brain 046 Q6: the end's verdict takes the why's rotating lead-in, as every right verdict does)
-    const endLead = v === "correct" && L !== "english" && endW && String(endW).trim() ? rightWhyLead(freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, ""), spokenMarks(endW, L), state) : null;
+    const endLead = v === "correct" && L !== "english" && endW && String(endW).trim() ? rightWhyLead(freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, ""), spokenMarks(endW, L), state, kit) : null;
     const close = endLead ? d(endLead.text) : v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${why(endW)}`)
       : v === "not_yet" ? notRightLead(String(childText ?? "").trim(), L, state) : null;
     const lines = (state.lastMove.rendered ?? []).map((x) => d(spokenMarks(x, L)));
@@ -2934,7 +2948,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (v6.7 R4, main on director15: always "<frame>, kyunki <why>": the joint varies — never the one of her last 2 turns)
       if (why && lang !== "english") {
         const fr = freshOf(FRAMES.right.hinglish, state).replace(/[.!?।—–\s-]+$/, "");
-        const j = rightWhyLead(fr, why, state);
+        const j = rightWhyLead(fr, why, state, kit);
         lead = dot(j.text);
         guard.whyJoint = j.k;
       }

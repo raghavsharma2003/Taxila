@@ -970,6 +970,8 @@ export async function lessonTurn(req, body, hooks = {}) {
     if (guard?.bodyHeld?.length && next) next.bodyUnsaid = guard.bodyHeld;
     // (Brain 046 Q6: a verdict's lead-in to its why rotates — the form said and how many have been said, read by brain/say.js)
     if (guard?.whyJoint != null && next) next.whyJoint = { last: guard.whyJoint, n: (next.whyJoint?.n ?? 0) + 1 };
+    // (to-brain 049 B6: the "Dekho," said in this lesson, counted — brain/say.js rightWhyLead says it at most three times)
+    if (next && teacherReply) next.dekhoN = (next.dekhoN ?? 0) + (String(teacherReply).match(/(?<![\p{L}])Dekho,/gu)?.length ?? 0);
     // (J1: backTo's forms rotate by how many times a card has come back)
     if (guard?.backTo && next) next.backToN = (next.backToN ?? 0) + 1;
     // (2.4 J1: each seam joint kind rotates by how many times it has been said)
