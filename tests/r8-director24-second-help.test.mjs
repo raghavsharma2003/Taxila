@@ -18,6 +18,9 @@ describe("r8-director24-second-help (H4)", () => {
   // (repinned d32: Learning 020 writes a `hindi` form only where an honest plainer sentence exists, and this card has none now — the walk is
   // given a copy of the live script whose first card carries one, in the test's own words; the rule pinned is the same)
   const sc = JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+  // (re-pinned d33, to-brain 049 B3: Learning 021 marks every card whyAltAsHelp, and B3 puts a marked card's whyAlt second on its ladder —
+  // pinned in r8-director32-049. This test pins H4's climb on a card with no marked reason: the copy's first card is unmarked)
+  delete sc.skills[0].explain[0].ask.whyAltAsHelp;
   sc.skills[0].explain[0].ask.hindi ??= { hi: "Seedhi boli mein poochhti hoon: is line par yeh nishaan kahan aayega?", en: "Plainly: where does this mark go on the line?" };
   beforeEach(() => { KEEP.s = process.env.TAXILA_R7_SCRIPT; process.env.TAXILA_R7_SCRIPT = "on"; setScriptForTest(); setScriptForTest(T, sc); });
   afterEach(() => { setScriptForTest(); if (KEEP.s === undefined) delete process.env.TAXILA_R7_SCRIPT; else process.env.TAXILA_R7_SCRIPT = KEEP.s; });
