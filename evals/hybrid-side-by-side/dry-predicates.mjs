@@ -923,7 +923,9 @@ export const ORDER_LAWS = {
       // as it puts help's joints: the seam table has no row for it, so its seam is read here: at the start, and one of the script's forms)
       const noPic = s.joint === "noPicture" && s.left === "start" && s.right === "noPicture" && (ctx.script?.joints?.noPicture ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
       // (to-brain 051 C6: the invitation is recorded as its own seam kind with its form — one of the script's joints.yourTurn)
-      const inv = s.joint === "yourTurn" && s.right === "yourTurn" && (ctx.script?.joints?.yourTurn ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      // (to-brain 051 C5: a language request's easierWords line leads the turn as help's joint, as noPicture does)
+      const ew = s.joint === "easierWords" && s.left === "start" && s.right === "easierWords" && (ctx.script?.joints?.easierWords ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      const inv = ew || s.joint === "yourTurn" && s.right === "yourTurn" && (ctx.script?.joints?.yourTurn ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
       if (s.joint && s.joint !== want && !noPic && !inv && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }

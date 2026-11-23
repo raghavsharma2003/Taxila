@@ -3560,6 +3560,8 @@ function helpBeat(kit, d, board) {
 // board from the line's first word: dry steering c4, c5-t01, c5-t02, c6 16, partOwnBoard and pageStart)
 const helpWords = (d) => fillFriend([d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
 const pictureLineFields = (d) => {
+  // (to-brain 051 C5: a language request's easierWords line rides the same way — first, as a joint)
+  if (d.easierLine?.text) { const e = fillFriend(d.easierLine.text, d.friend ?? "").trim(); if (e) return { sayFirst: [e], helpJoint: { kind: "easierWords", form: e, by: d.easierLine.by ?? "authored" } }; }
   const t = d.pictureLine?.text ? fillFriend(d.pictureLine.text, d.friend ?? "").trim() : "";
   return t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {};
 };
@@ -3579,6 +3581,7 @@ function noteHelp(s, d) {
   if (d.joint) s.helpJointN = { ...(s.helpJointN ?? {}), [d.joint.kind]: (s.helpJointN?.[d.joint.kind] ?? 0) + 1 };
   if (d.then) s.helpJointN = { ...(s.helpJointN ?? {}), [d.then.kind]: (s.helpJointN?.[d.then.kind] ?? 0) + 1 };
   if (d.pictureLine) s.helpJointN = { ...(s.helpJointN ?? {}), noPicture: (s.helpJointN?.noPicture ?? 0) + 1 };
+  if (d.easierLine) s.helpJointN = { ...(s.helpJointN ?? {}), easierWords: (s.helpJointN?.easierWords ?? 0) + 1 };
   s.keyedPart = d.card === "close" ? d.part : d.keyed && d.card === "wait" ? d.part : undefined;
   // (a closed card's help that moves the lesson on — its card asked, the lesson going on, a key — leaves it)
   if (d.card !== "wait" && d.card !== "keep") s.closedPart = undefined;
@@ -3754,7 +3757,13 @@ function helpBefore(prev, input, said) {
   if (!d0) return null;
   const liveId = prev.lastUi?.ask?.itemId ?? null;
   // (d31, the staged c4-ch01-t02's dry offtopic 32: a card's hindi form with a {friend} slot is said with the friend's name, as its prompt is)
-  const d = { ...d0, ...(d0.hindiForm ? { hindiForm: fillFriend(d0.hindiForm, friendOf) } : {}), liveId };
+  const d1 = { ...d0, ...(d0.hindiForm ? { hindiForm: fillFriend(d0.hindiForm, friendOf) } : {}), liveId };
+  // (to-brain 051 C5: a language request at a part with no `hindi` form opens with one form of the script's joints.easierWords — a promise of
+  // easier words, no word "Hindi" — then the help; until a script has them nothing is said, as before. With the help spent, the honest
+  // "nothing easier" line as before)
+  const ew = (d1.request === "hindi" || input.cls?.request?.type === "language") && !d1.hindiForm && d1.rung?.text && Array.isArray(scriptFor(input.kit)?.script?.joints?.easierWords) && scriptFor(input.kit).script.joints.easierWords.length
+    ? helpJoint(scriptFor(input.kit).script, "easierWords", { lang: prev.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, n: prev.helpJointN?.easierWords ?? 0 }) : null;
+  const d = ew ? { ...d1, easierLine: ew } : d1;
   // (dc-r8-director28 Brain 044 T5: a request at a quick question gets help on the point, then the card — never a check-in with the card
   // waiting: c5-t01 steady 8; c6 steady 8)
   if (prev.lastMove?.quick && prev.splitHold?.activeItemId && prev.splitHold.ui?.ask && (d.rung || d.joint) && ["wait", "keep"].includes(d.card)) return { decision: { ...d, card: "ask" }, held: true };

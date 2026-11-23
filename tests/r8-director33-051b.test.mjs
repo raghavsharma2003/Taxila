@@ -96,3 +96,21 @@ describe("C6: the return, the wrap, the record, the harness", () => {
     assert.equal(intentOf({ kind: "wrong", text: "3/4" }), "miss");
   });
 });
+
+describe("C5: a Hindi request where she has no Hindi", () => {
+  // (tests/fixtures/scripts-051b: c5-maths-ch02-t02 as live, with three joints.easierWords forms — Learning 022 writes them)
+  const EW = JSON.parse(readFileSync(join(ROOT, "tests/fixtures/scripts-051b/c5-maths-ch02-t02.json"), "utf8"));
+  test("hindiNoFormNoLine reads director33 c5-t02 steady 36 once the script has the joint, and nothing on a script without it", () => {
+    const rows = lesson("steady", "c5t02").rows;
+    const at = (script) => lessonFlags({ rows, script }).filter((f) => f.predicate === "hindiNoFormNoLine").map((f) => f.row);
+    assert.ok(at(EW).includes(36));
+    assert.deepEqual(at(lesson("steady", "c5t02").script), []);
+  });
+  test("a turn that opens with one of the forms reads clean", () => {
+    const script = EW;
+    const rows = [{ who: "child", text: "Hindi mein bolo", intent: "hindi" },
+      { who: "teacher", text: `${script.joints.easierWords[1].hi} Pehle socho. Kaunsa bada hai?`, seams: [{ left: "start", right: "easierWords" }], cell: { column: "hindi" } }];
+    assert.equal(PREDICATES.hindiNoFormNoLine({ rows }, rows[1], 1, { script, o: {} }), null);
+    assert.ok(PREDICATES.hindiNoFormNoLine({ rows }, { ...rows[1], text: "Pehle socho. Kaunsa bada hai?" }, 1, { script, o: {} }));
+  });
+});
