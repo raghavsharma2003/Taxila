@@ -3295,7 +3295,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3457,7 +3457,11 @@ export function pictureKindOf(prev, input) {
   // (Brain 049 B2, main's addition: a card — for a worked step, its `ask` — marked `noView: true` has a board whose second view draws its own
   // answer (c6-ch06-t01 skill 1's worked step lays the sides in a line with "?" for their total, the step's key): its view is never drawn —
   // its pictureBoard if it has one, then the nothing-left-to-draw path)
-  if (board?.template && card.noView !== true && !shown.includes("view") && boardHasView(board, part.id)) return { kind: "view", part, card, board };
+  // (to-brain 051 C1: a view that would draw the board already on screen, or the board it is a view of — same template and params after
+  // expansion — is spent: the request takes the no-picture path. director33 c6-ch07-t01 steering 16: the "scale" view of a compare board
+  // already drawn to scale)
+  const viewB = board?.template && card.noView !== true && !shown.includes("view") && boardHasView(board, part.id) ? viewBoardOf(board, part.id) : null;
+  if (viewB && !sameBoardRef(viewB, board) && !sameBoardRef(viewB, prev.heldUp?.board ?? null)) return { kind: "view", part, card, board };
   return { kind: "hint", part, card, board };
 }
 /** The request a turn makes of help, by the walk's reading of the child's line: clarify, give_up, hindi (a hint is read after the walk
@@ -3531,7 +3535,32 @@ function helpDecision(prev, input, request, said) {
   const script = scriptFor(input.kit)?.script;
   const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
     lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null });
-  return d ? { ...d, friend: friendOf } : null;
+  return d ? { ...noPictureKeeps(d, prev.heldUp?.board ?? null), friend: friendOf } : null;
+}
+/** to-brain 051 C1 (reverses 049 B2's "over the hint's own board"): a picture request with nothing left to draw keeps the board on screen at
+ *  the turn's start for the whole turn — no page change (the move's keepBoard). After the noPicture line, help is said only if the part it
+ *  comes from owns no board or its board is the one up; otherwise the turn is the line and the question, and the help stays unsaid.
+ *  director33 steering 16 in c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c6-ch06-t01, c4-ch06-t01: the line, then the hint's own board. */
+function noPictureKeeps(d, up) {
+  if (d?.request !== "picture") return d;
+  const own = d.rung ? d.rung.board ?? null : null;
+  const keep = !own || (!!up && sameBoardRef(own, up));
+  return { ...d, ...(keep ? {} : { rung: null, joint: null, then: null }), board: null, keepUp: true };
+}
+/** Two board refs are one board: the same template and params (keys in any order). */
+const canonRef = (v) => (Array.isArray(v) ? v.map(canonRef) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canonRef(v[k])])) : v);
+export const sameBoardRef = (a, b) => !!a?.template && !!b?.template && JSON.stringify(canonRef({ t: a.template, p: a.params ?? {} })) === JSON.stringify(canonRef({ t: b.template, p: b.params ?? {} }));
+/** to-brain 051 C1: the board a board's second view would draw ({ template, params } after expansion), or null (no view). */
+export function viewBoardOf(ref, at = "x") {
+  if (!ref?.template) return null;
+  try {
+    const ask = { intent: { intentId: `g5:${at}`, lessonId: "g5", kind: "whiteboard", style: { band: "B3" }, boardRef: ref,
+      scriptBeat: { kind: "check", ownBoard: true, answers: [] }, held: { board: ref, unit: at }, request: { kind: "show" } }, line: { text: "" }, mode: "fresh" };
+    const call = studioPictureTurn(ask, {})?.view?.call;
+    if (!call?.template) return null;
+    const { template, ...params } = call;
+    return { template, params };
+  } catch { return null; }
 }
 /** The beat a wording belongs to (its part's), with the board the decision gives it: the move's simplerBeat. */
 function helpBeat(kit, d, board) {
@@ -3557,7 +3586,8 @@ function helpBeat(kit, d, board) {
 const helpWords = (d) => fillFriend([d.rung?.text ?? d.key?.text ?? d.joint?.text ?? "", d.rung || d.key ? "" : d.then?.text ?? ""].filter(Boolean).join(" "), d.friend ?? "").trim();
 const pictureLineFields = (d) => {
   const t = d.pictureLine?.text ? fillFriend(d.pictureLine.text, d.friend ?? "").trim() : "";
-  return t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {};
+  // (to-brain 051 C1: the board on screen stays for the whole no-picture turn)
+  return { ...(t ? { sayFirst: [t], helpJoint: { kind: "noPicture", form: t, by: d.pictureLine.by ?? "authored" } } : {}), ...(d.keepUp ? { keepBoard: true } : {}) };
 };
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",

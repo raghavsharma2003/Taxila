@@ -1001,6 +1001,9 @@ import { D32_PREDICATES } from "./d32-predicates.mjs";
 Object.assign(PREDICATES, D32_PREDICATES);
 import { D33_PREDICATES } from "./d33-predicates.mjs";
 Object.assign(PREDICATES, D33_PREDICATES);
+// (to-brain 051 C1, C2: the screen stays on a no-picture turn; a step's answer is drawn when it is said — d34a-predicates.mjs)
+import { D34A_PREDICATES } from "./d34a-predicates.mjs";
+Object.assign(PREDICATES, D34A_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

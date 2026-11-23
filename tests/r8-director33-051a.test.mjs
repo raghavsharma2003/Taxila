@@ -35,3 +35,24 @@ describe("C3: the own reason only after its named wrong answer", () => {
     for (const [k, rows] of Object.entries(want)) { const [p, t] = k.split("|"); assert.deepEqual(flagged(p, t, "whyAltNoMiss"), rows, k); }
   });
 });
+
+describe("C1: the no-picture turn keeps the screen", () => {
+  test("noPictureThenBoard and viewSameAsBoard are gated", () => {
+    for (const k of ["noPictureThenBoard", "viewSameAsBoard"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("noPictureThenBoard reads director33 steering 16 in c4-ch05-t01, c5-ch02-t01, c5-ch02-t02, c6-ch06-t01, c4-ch06-t01", () => {
+    for (const t of ["c4-ch05-t01", "c5-ch02-t01", "c5-ch02-t02", "c6-ch06-t01", "c4-ch06-t01"]) assert.deepEqual(flagged("steering", t, "noPictureThenBoard"), [16], t);
+    for (const t of ["c5-ch02-t03", "c6-ch07-t01"]) assert.deepEqual(flagged("steering", t, "noPictureThenBoard"), [], t);
+  });
+  test("viewSameAsBoard reads director33 c6-ch07-t01 steering 16 (the scale view of a compare board drawn to scale)", () => {
+    assert.deepEqual(flagged("steering", "c6-ch07-t01", "viewSameAsBoard"), [16]);
+    for (const t of ["c4-ch05-t01", "c5-ch02-t01", "c5-ch02-t02", "c6-ch06-t01"]) assert.deepEqual(flagged("steering", t, "viewSameAsBoard"), [], t);
+  });
+  test("viewBoardOf / sameBoardRef: a compare board already to scale has a scale view that is itself", async () => {
+    const { viewBoardOf, sameBoardRef } = await import("../server/director/state.js");
+    const b = { template: "compare@1", params: { scale: true, left: { title: "Ribbon", items: ["24 cm"] }, right: { title: "Hisse", items: ["10 cm", "8 cm", "6 cm"] } } };
+    assert.ok(sameBoardRef(viewBoardOf(b), b));
+    assert.ok(!sameBoardRef({ template: "number-line-scale@1", params: { from: 6, to: 10, step: 1 } }, { template: "number-line-scale@1", params: { from: 2, to: 5, step: 1 } }));
+    assert.ok(sameBoardRef({ template: "a@1", params: { x: 1, y: 2 } }, { template: "a@1", params: { y: 2, x: 1 } }));
+  });
+});
