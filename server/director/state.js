@@ -897,7 +897,7 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
   const lead = [];
   let problemLines = 0, stepFrom = (w.workedStep ?? 0) + 1, stepReply = null, stepMissSaid = null;
   if (!w.workedPosed) {
-    w.workedPosed = true; w.workedStep = 0;
+    w.workedPosed = true; w.workedStep = 0; w.resultHeld = undefined;
     const problem = [saidIn(we.problem, lang)].filter(Boolean).map((x) => (/[.!?।]$/.test(x.trim()) ? x.trim() : `${x.trim()}.`));
     lead.push(...problem); problemLines = problem.length; stepFrom = 1;
   } else if (w.stepAsk) {
@@ -935,6 +935,9 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     if (line) lead.push(fillFriend(`${miss?.text ? `${miss.text} ` : ""}${String(line).replace(/\s+/g, " ").trim()}`, friendOf));
     w.workedStep = k + 1; stepFrom = k + 1;
     stepReply = { skillId, step: k, right, told: !right && !helped, ...(helped ? { helped: true } : {}), ...(stepMissSaid ? { miss: stepMissSaid } : {}), ...(right && line ? { line: fillFriend(String(line).replace(/\s+/g, " ").trim(), friendOf) } : {}) };
+    // (to-brain 051 C2: a step confirmed or told that carries a `resultBoard` is said over it from that sentence's first word, and it is the held
+    // board for the steps that follow until the child's own step's board — director33 c5-ch02-t01 steady 24: "Haan, 4 gap" over a line of two)
+    if (line && st?.resultBoard?.template) w.resultHeld = { skillId, step: k, board: st.resultBoard };
     s.beatEvidence = [...(s.beatEvidence ?? []), { kind: "stepAsk", skillId, beatId: `worked:step${k + 1}`, said: read?.said ?? null, right, read: read?.outcome ?? null, turn: s.turn }].slice(-60);
     if (helped) stepFrom = k + 2;
     }
@@ -955,14 +958,16 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
     w.workedStep = j; w.stepAsk = { step: j };
     const qi = friendly(scriptStepAskItem(skillId, j, a));
     s.quickItem = qi; s.activeItemId = qi.id;
-    return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, stuck: true, stepAsk: { skillId, step: j, prompt }, ...ref("worked", `worked:step${j + 1}`, we.board) });
+    return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, stuck: true, stepAsk: { skillId, step: j, prompt }, ...ref("worked", `worked:step${j + 1}`, heldResultOf(w, skillId) ?? we.board) });
   }
   // the child's own step
   w.workedStep = steps.length;
   s.scriptCard = item; s.phase = "practice";
   activate(s, item);
-  return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, item, probe: probeFor(item), ...ref("worked", "worked", we.board) });
+  return plan("worked_example", join(prefix, SH.scriptWorkedV2()), { ...base, item, probe: probeFor(item), ...ref("worked", "worked", heldResultOf(w, skillId) ?? we.board) });
 }
+/** to-brain 051 C2: the result board a confirmed or told step of this skill's worked example left up, or null (the worked example's board). */
+const heldResultOf = (w, skillId) => (w?.resultHeld?.skillId === skillId ? w.resultHeld.board : null);
 /** Brain 047 R3: an asked step's question said again — `next` ({ skillId, step, prompt }) — where her turn before asked the same step (`prevSa`):
  *  its authored `reask` when her turn before said the question as written, the question as written when it said the reask. A step with no
  *  reask is asked as written. */
@@ -3535,7 +3540,16 @@ function helpDecision(prev, input, request, said) {
   const script = scriptFor(input.kit)?.script;
   const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
     lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null });
-  return d ? { ...noPictureKeeps(d, prev.heldUp?.board ?? null), friend: friendOf } : null;
+  return d ? { ...noPictureKeeps(resultHeldHelp(d, prev, script), prev.heldUp?.board ?? null), friend: friendOf } : null;
+}
+/** to-brain 051 C2: help on a worked step after an earlier step's result board went up is said over that board (it is the held board for the
+ *  steps that follow), never back on the worked example's posing board. The step that carries the result keeps its posing board. */
+function resultHeldHelp(d, prev, script) {
+  const m = /^(.+):worked:step(\d+)$/.exec(String(d?.part ?? ""));
+  const held = m ? prev?.walk?.resultHeld : null;
+  if (!held || held.skillId !== m[1] || Number(m[2]) - 1 <= held.step) return d;
+  const we = (script?.skills ?? []).find((k) => k.skillId === m[1])?.workedExample;
+  return we?.board && sameBoardRef(d.board, we.board) ? { ...d, board: held.board, ...(d.rung ? { rung: { ...d.rung, board: held.board } } : {}) } : d;
 }
 /** to-brain 051 C1 (reverses 049 B2's "over the hint's own board"): a picture request with nothing left to draw keeps the board on screen at
  *  the turn's start for the whole turn — no page change (the move's keepBoard). After the noPicture line, help is said only if the part it

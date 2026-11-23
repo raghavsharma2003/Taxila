@@ -5,6 +5,9 @@ import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readdirSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { lessonFlags, PENDING, PREDICATES } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -54,5 +57,41 @@ describe("C1: the no-picture turn keeps the screen", () => {
     assert.ok(sameBoardRef(viewBoardOf(b), b));
     assert.ok(!sameBoardRef({ template: "number-line-scale@1", params: { from: 6, to: 10, step: 1 } }, { template: "number-line-scale@1", params: { from: 2, to: 5, step: 1 } }));
     assert.ok(sameBoardRef({ template: "a@1", params: { x: 1, y: 2 } }, { template: "a@1", params: { y: 2, x: 1 } }));
+  });
+});
+
+describe("C2: a step's answer is drawn when it is said", () => {
+  const FX = join(ROOT, "tests/fixtures/scripts-step-result-board");
+  test("stepSaidOverPosing is gated and reads 0 on director33 (no script carries a resultBoard yet)", () => {
+    assert.ok(PREDICATES.stepSaidOverPosing); assert.ok(!PENDING.has("stepSaidOverPosing"));
+    for (const p of ["steady", "stuck", "offtopic", "steering"]) for (const t of ["c5-ch02-t01", "c5-ch02-t02", "c4-ch05-t01"]) assert.deepEqual(flagged(p, t, "stepSaidOverPosing"), [], `${p} ${t}`);
+  });
+  test("stepSaidOverPosing reads a director33 row once its script carries the result board (c5-ch02-t01 steady 24: \"Haan, 4 gap\" over den 2)", () => {
+    const L = lesson("steady", "c5-ch02-t01");
+    const script = JSON.parse(readFileSync(join(FX, "c5-maths-ch02-t01.json"), "utf8"));
+    const rows = new Set(lessonFlags({ rows: L.rows, script }).filter((f) => f.predicate === "stepSaidOverPosing").map((f) => f.row));
+    assert.ok(rows.has(24), [...rows].join(","));
+  });
+  test("the fixture's c5-ch02-t01, walked dry: every confirmed or told step with a resultBoard is said over it, and no gated predicate reads", { timeout: 300_000 }, () => {
+    const script = JSON.parse(readFileSync(join(FX, "c5-maths-ch02-t01.json"), "utf8"));
+    assert.deepEqual(script.skills.slice(0, 2).map((k) => k.workedExample.steps[0].resultBoard?.params?.den), [4, 5]);
+    const out = mkdtempSync(join(tmpdir(), "taxila-051a-"));
+    try {
+      const env = { ...process.env, DATABASE_URL: "", DATABASE_URL_DIRECT: "", TAXILA_DB: "", TAXILA_R7_SCRIPT_DIR: FX };
+      delete env.NODE_TEST_CONTEXT;
+      execFileSync(process.execPath, [join(ROOT, "evals/hybrid-side-by-side.mjs"), "--matrix", "--director-only", "--reactive", "--topics", "c5-maths-ch02-t01", "--dry", "--out", out],
+        { cwd: ROOT, env, stdio: ["ignore", "ignore", "pipe"], timeout: 280_000, maxBuffer: 64 * 1024 * 1024 });
+      const files = readdirSync(out).filter((f) => f.endsWith(".json") && f !== "meter.json");
+      assert.equal(files.length, 4);
+      const flags = [];
+      let confirmed = 0;
+      for (const f of files) {
+        const j = JSON.parse(readFileSync(join(out, f), "utf8"));
+        for (const x of lessonFlags({ rows: j.director, script }).filter((y) => !PENDING.has(y.predicate))) flags.push(`${f} ${x.row} ${x.predicate}: ${x.why}`);
+        confirmed += j.director.filter((r) => r.who === "teacher" && /Haan, 4 gap: dono siron|Haan, 5: neeche wala 5/.test(String(r.text ?? ""))).length;
+      }
+      assert.deepEqual(flags, []);
+      assert.ok(confirmed >= 2, `confirmed steps walked: ${confirmed}`);
+    } finally { rmSync(out, { recursive: true, force: true }); }
   });
 });
