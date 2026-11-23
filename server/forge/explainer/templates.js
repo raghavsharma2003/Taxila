@@ -493,6 +493,15 @@ function fractionLine(c, tl) {
   if (Array.isArray(c.dens)) return fractionLine2(c, tl);
   const den = c.den, w = c.wholes ?? c.to ?? 1;
   if (c.from != null && c.from !== 0) return { error: "fraction_line_from" };
+  // (2026-11-23, main: the bare line, den 1: 0 to 1 with its two ends labelled and no tick between, the line before it is cut.
+  // c5-maths-ch02-t01 s2's asked step "2/5 ke liye 0 se 1 ki line ko kitne barabar gaps mein kaatoge?" is posed over it; it
+  // stood on an uncut fraction-bars strip because no board drew this. Narrow: one whole, nothing on it — a mark, marks, hop,
+  // show, target or mixup would need a cut it does not have, and is refused. Its second view is none: a bar has nothing to add)
+  if (den === 1) {
+    if (w !== 1 || c.mark != null || c.target != null || c.show || c.hop != null || c.mixup != null || (Array.isArray(c.marks) && c.marks.length)) return { error: "fraction_line_bare:den 1 is the uncut 0-1 line; it carries no mark, marks, hop, show, target or mixup, and one whole" };
+    tl.add({ id: "line", op: "numwork", at: [30, 190], layout: "number_line", rows: [["0", "1"]], range: [0, 1], w: 340, weight: 2 }, 1200);
+    return { claims: [], counts: { lines: [{ gaps: 1, ticks: 2, innerTicks: 0 }] }, facts: { line: "0 to 1", cut: "not yet: no tick between 0 and 1" } };
+  }
   if (!isInt(den, 2, 12) || !isInt(w, 1, 3) || den * w > 24) return { error: "fraction_line_range" };
   const N = den * w;
   const tgt = Array.isArray(c.target) && isInt(c.target[0], 0, N) && c.target[1] === den ? c.target[0] : null;

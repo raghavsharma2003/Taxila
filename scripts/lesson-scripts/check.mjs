@@ -67,6 +67,8 @@ export const RANGE = {
     if (Array.isArray(p.dens)) return p.den === undefined && p.dens.length === 2 && p.dens.every((d) => Number.isInteger(d) && d >= 2 && d <= 12)
       && [1, 2, 3].includes(p.to) && p.hop === undefined && p.mark === undefined && p.target === undefined
       && (p.marks ?? []).every((m) => Array.isArray(m) && p.dens.includes(m[1]) && Number.isInteger(m[0]) && m[0] >= 0 && m[0] <= m[1] * p.to);
+    // (2026-11-23, main: den 1 is the bare uncut 0-1 line, nothing on it — c5-maths-ch02-t01 s2's "kitne barabar gaps mein kaatoge?")
+    if (p.den === 1) return (p.to ?? 1) === 1 && (p.wholes ?? 1) === 1 && p.mark === undefined && p.target === undefined && p.hop === undefined && !p.show && p.mixup === undefined && !(p.marks ?? []).length;
     const inLine = (n) => Number.isInteger(n) && n >= 0 && n <= p.den * p.to;
     return p.den >= 2 && p.den <= 12 && [1, 2, 3].includes(p.to) && (p.marks ?? []).every((m) => inLine(m.num))
       && (p.hop === undefined || inLine(p.hop.num)) && (p.mark === undefined || inLine(p.mark)) && !(p.mark !== undefined && p.target !== undefined)
@@ -1739,6 +1741,11 @@ export const PICTURE_NONE = [
   { topicId: "c6-maths-ch06-t01", at: "c6-maths-ch06-t01-s1/workedExample.steps[0].ask", reason: "what to find first for the fence: the view totals the sides as \"?\", which is the key (the perimeter)" },
   // (d33 rewrite, 2026-11-23: the step carries `noView`)
   { topicId: "c4-maths-ch01-t02", at: "c4-maths-ch01-t02-s1/workedExample.steps[0].ask", reason: "the tester laid square on the slanting tile says 'turn it', and a turned tester is the step's answer" },
+  // (d33 fix pass, 2026-11-23: each card carries `noView` and no pictureBoard)
+  { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/e2", reason: "the child measures her own notebook with her fingers: there is nothing of hers to draw" },
+  { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/workedExample.steps[0].ask", reason: "which of three measures suits a roof: the three drawn to scale is the answer" },
+  { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/c3", reason: "the child estimates the room she is sitting in: there is nothing of hers to draw" },
+  { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/remediation[0].then", reason: "which unit for a tree's height: the tree drawn against a stride is the answer" },
 ];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
 export const HINDI_OVERLAP_MAX = 0.5, POINT_TURN_MAX = 62, FIRST_TEACH_MAX = 75, POINT_WHOLE_PER_SCRIPT = 2;

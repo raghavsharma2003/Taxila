@@ -57,7 +57,10 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
   // (repinned d32, 2026-11-19: the c6-ch07 reader fixes renamed two tables — "Rahul ki ribbon | Sana ki ribbon", and remediation 1's
   // own board "Lambi ribbon | Chhoti ribbon" — and c4-ch01-t02 no longer has its "Bhuja | Tester" table. c4-ch01-t02 s3 e2's authored
   // picture, the roti's two centre-to-edge distances 8 cm | 10 cm, was a word table; it is now held to scale (scale: true), two bars)
-  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse", "Roti: ek taraf | Doosri taraf"]);
+  // (d33, 2026-11-23: the c4-ch01-t02 rewrite dropped the roti's "Roti: ek taraf | Doosri taraf" picture; its only table now is s3
+  // remediation[0]'s word table "String se | Haath se oval", which has no view, as a table of words should — pinned below; and the d33 rewrites dropped
+  // the "3 bachche | 5 bachche" table: a table of two kinds today is "Bachche | Roti", pinned below in its place)
+  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse"]);
   // (one table of lengths has no view, and is named: c6-ch07 s1 c1's chocolate, now held to scale and cut 6, 2, 6, 2 cm in the order it
   // broke. Its view is built, but the split beside the held board is refused at panel scale — with 6,6,2,2 it lays out — so a
   // picture request on it draws the card's authored pictureBoard, a 0-16 cm scale. Studio to say whether the view should lay out)
@@ -67,7 +70,7 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
     assert.ok(b && !b.v && compareScaleOf(b.ref.params) && BF.altCall(b.ref)?.view === "scale", `${at}: a scale view is built, not laid out`);
   }
   for (const b of got.filter((b) => !b.v && !PANEL_REFUSED.has(b.at))) assert.equal(compareScaleOf(b.ref.params), null, `${b.at}: ${titles(b)}`);
-  assert.ok(["Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "3 bachche | 5 bachche"].every((t) => got.some((b) => !b.v && titles(b) === t)));
+  assert.ok(["Chikki | Bachche", "Laddoo | Bachche", "Ribbon | Banners", "laal card | neela card", "Bachche | Roti", "String se | Haath se oval"].every((t) => got.some((b) => !b.v && titles(b) === t)));
 });
 
 test("compare@1 scale: the whole and its pieces — 16 cm cut at 6, 6, 2, 2 — is one bar cut at the pieces' lengths, in proportion", () => {
@@ -197,10 +200,21 @@ test("shape@1 / measured@1 radii (item 3): a circle whose radius the board draws
     const x = expand(Object.fromEntries(Object.entries(call).filter(([k]) => k !== "view")));
     assert.ok(x.ok, x.errors.join());
     const arrows = x.script.ops.filter((o) => /^rad\d$/.test(o.id)), rim = x.script.ops.find((o) => o.op === "circle" && !o.fill);
-    assert.equal(arrows.length, 3);
-    for (const a of arrows) assert.ok(Math.abs(Math.hypot(a.to[0] - a.from[0], a.to[1] - a.from[1]) - rim.r) < 1, "centre to rim");
+    const len = (a) => Math.hypot(a.to[0] - a.from[0], a.to[1] - a.from[1]);
+    if (p.slack) {
+      // (2026-11-23, main: a slack-string circle — to-studio 015 item 2 — draws TWO radii by design: one at the string's full
+      // length, one into the dent, shorter (its lengths are pinned in tests/r8-studio015-shapes.test.mjs); c4-maths-ch01-t02 s3
+      // remediation[0].then. "Three radii" stands for every circle without `slack`)
+      assert.equal(arrows.length, 2, `${b.at}: a slack circle's radii view draws two radii`);
+      const [l0, l1] = arrows.map(len);
+      assert.ok(Math.abs(l0 - l1) > 1, `${b.at}: the two radii are of different lengths (${l0}, ${l1})`);
+      if (rim) assert.ok(Math.abs(Math.max(l0, l1) - rim.r) < 1, `${b.at}: the longer is the full string, centre to the tight circle`);
+    } else {
+      assert.equal(arrows.length, 3);
+      for (const a of arrows) assert.ok(Math.abs(len(a) - rim.r) < 1, "centre to rim");
+    }
     const ang = arrows.map((a) => Math.atan2(a.to[1] - a.from[1], a.to[0] - a.from[0]));
-    for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) assert.ok(Math.abs(Math.abs(ang[i] - ang[j]) - Math.PI) > 0.3, "no two radii make a diameter");
+    for (let i = 0; i < ang.length; i++) for (let j = i + 1; j < ang.length; j++) assert.ok(Math.abs(Math.abs(ang[i] - ang[j]) - Math.PI) > 0.3, "no two radii make a diameter");
     const held = expand({ template: b.ref.template, ...p }).script;
     assert.deepEqual([...new Set(texts(x.script))].sort(), [...new Set(texts(held))].sort(), `${b.at}: the board's words only`);
     assert.deepEqual(x.script.facts.counts, held.facts.counts);

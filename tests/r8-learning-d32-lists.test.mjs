@@ -9,7 +9,9 @@ import { D32_READY, D32_PICTURES_READY, PICTURE_NONE, d32Cards, d32Errors, viewO
 import { INTERESTS } from "../server/persona/signals.js";
 
 const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"],
-  ["lesson-scripts", "c5-maths-ch02-t03"], ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
+  ["lesson-scripts", "c5-maths-ch02-t03"], ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"],
+  // (d33, 2026-11-23: the two new staged scripts, written to Learning 021, read cold and fixed, join both lists)
+  ["lesson-scripts-staged", "c4-maths-ch06-t01"], ["lesson-scripts-staged", "c6-maths-ch07-t03"]];
 const load = (d, t) => {
   const s = JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
   Object.defineProperty(s, "__interests", { value: INTERESTS, enumerable: false });
@@ -17,7 +19,7 @@ const load = (d, t) => {
 };
 const S = Object.fromEntries(SEVEN.map(([d, t]) => [t, load(d, t)]));
 
-test("d32 lists: D32_READY and D32_PICTURES_READY hold the same seven topics, each once", () => {
+test("d32 lists: D32_READY and D32_PICTURES_READY hold the same nine topics, each once", () => {
   const seven = SEVEN.map(([, t]) => t).sort();
   assert.deepEqual([...D32_READY].sort(), seven);
   assert.deepEqual([...D32_PICTURES_READY].sort(), seven);
@@ -33,7 +35,9 @@ test("d32 lists: every PICTURE_NONE entry names a card that exists and has neith
     const c = d32Cards(S[n.topicId]).find((x) => x.at === n.at);
     assert.ok(c, `${n.at}: the card exists`);
     assert.equal(c.card.pictureBoard, undefined, `${n.at}: no pictureBoard`);
-    assert.ok(!(c.board?.template && viewOf(c.board, c.at)), `${n.at}: its board has no second view`);
+    // (d33, 2026-11-23: a card with `noView: true` has its board's second view taken away by the checker and the walk — c6-ch06-t01 s1
+    // worked step, c4-ch01-t02 s1 worked step, c4-ch06-t01's four s3 cards — so the flag stands for "no second view" here)
+    assert.ok(c.card.noView === true || !(c.board?.template && viewOf(c.board, c.at)), `${n.at}: its board has no second view`);
     assert.ok(noPictureCards(S[n.topicId]).some((x) => x.at === n.at), `${n.at}: rule 7 would list it`);
   }
 });
