@@ -1,0 +1,8077 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 758,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj hum fractions ko ek seedhi line par jagah denge. Chalo, shuru karein?",
+   "move": "hook",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01:greet",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 53,
+     "beat": "hook",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "seams": [
+    {
+     "left": "start",
+     "right": "greetSimpler",
+     "joint": null
+    },
+    {
+     "left": "greetSimpler",
+     "right": "greetAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1841,
+   "replyReadyMs": 2599,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2599,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "guard": [
+    "leak"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 707,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, pehle main dikhati hoon. Cricket pitch: ek stump 0 par, doosra 1 par. Batsman theek beech mein ruka; us jagah ka bhi number hai. Yeh rahi 0 se 1 tak ki line. Theek beech mein ek mark hai, toh line ke 2 barabar gaps ban gaye. Is mark ka naam hai 1/2. Line ki doosri taraf 3 barabar gaps hain. Wahan pehla mark kaunsa fraction hai?",
+   "move": "explain",
+   "card": "Line ki doosri taraf 3 barabar gaps hain. Wahan pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "greet",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 136,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 2,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/2"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 2,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/2"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 257,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": null
+     },
+     {
+      "from": 136,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 257,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e1",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:e1",
+      "atChar": 257
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "startAnyway",
+     "joint": "startAnyway",
+     "form": "Achha, pehle main dikhati hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "startAnyway",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 918,
+   "replyReadyMs": 1625,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1625,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 136,
+     "atClause": null,
+     "estMs": 9500,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 2,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/2"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 257,
+     "atClause": null,
+     "estMs": 20140,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/2"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 2,
+       "ticks": 3,
+       "innerTicks": 1
+      },
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/2",
+       "label": "1/2"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/2"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 136,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 2,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/2"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 257,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "3 sahi nahi hai. Ise ek baar aise sochte hain. Sadak 0 se 1 kilometre, 7 barabar gaps mein kati hai. Ek khilona pehle mark par ruka: woh ek pakki jagah hai, uska number 1/7 kilometre. Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "move": "reteach",
+   "card": "Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 17,
+     "beat": "rem:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 47,
+     "beat": "rem:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 184,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 47,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 184,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e1",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+      "atChar": 184
+     },
+     "switches": [
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+       "atChar": 47
+      },
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+       "atChar": 184
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise ek baar aise sochte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 739,
+   "replyReadyMs": 740,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 740,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      2,
+      3
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       2
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 47,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 184,
+     "atClause": null,
+     "estMs": 13680,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 47,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 184,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 1073,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Hindi mein kehti hoon. Doosri taraf bhi wahi sadak hai, bas 6 barabar gaps mein. Ek gap poore kilometre ka kaunsa fraction hai, yahi socho. 1 kilometre ki sadak 6 barabar gaps mein kati ho, toh pehle mark par ruka khilona 0 se kitne kilometre par hai?",
+   "move": "hint",
+   "card": "Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 34,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 92,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 151,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "hindiSwitch",
+     "joint": "hindiSwitch",
+     "form": "Theek hai, Hindi mein kehti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "hindiSwitch",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 933,
+   "replyReadyMs": 2006,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2006,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 and 6",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 601,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh jawab nahi hai. Socho, ruler par 0 ke baad pehli lakeer ek pakki jagah hai, aur uska ek number hai. Sadak par khilona bhi ek pakki jagah ruka, isliye us jagah ka number 1/7 kilometre hai. Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "move": "hint",
+   "card": "Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 26,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 110,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 198,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 26,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 198,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+      "atChar": 198
+     },
+     "switches": [
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers#help",
+       "atChar": 26
+      },
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+       "atChar": 198
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh jawab nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1112,
+   "replyReadyMs": 1713,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1713,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 26,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 198,
+     "atClause": null,
+     "estMs": 14440,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 26,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 198,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 and 6",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 614,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Ghar se khilone tak sadak ka bas ek gap hai, aur poori sadak mein aise 7 gap hain. Isliye khilona 7 mein se 1 gap par hai, yaani 1/7 kilometre. 1 kilometre ki sadak 6 barabar gaps mein kati ho, toh pehle mark par ruka khilona 0 se kitne kilometre par hai?",
+   "move": "hint",
+   "card": "Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 25,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 108,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 169,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 25,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 169,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+      "atChar": 169
+     },
+     "switches": [
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers#help",
+       "atChar": 25
+      },
+      {
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+       "atChar": 169
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1002,
+   "replyReadyMs": 1616,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1616,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 25,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 169,
+     "atClause": null,
+     "estMs": 13300,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 25,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     },
+     {
+      "from": 169,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-not-numbers"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 570,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Dono qatarein ek hi sadak hain, ghar se chai ki dukaan tak. Pehli qatar mein pehla gap rangin hai, aur doosri chhe barabar gaps mein kati hai, abhi bina rang ke. Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "move": "reteach",
+   "card": "Doosri taraf wahi sadak, 0 se 1, 6 barabar gaps mein hai. Khilona wahan pehle mark par ruka: kitne kilometre par?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "picture",
+    "picture": "view"
+   },
+   "pageParts": [
+    {
+     "part": "alt",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 162,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1",
+      "beside": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers"
+    },
+    "layout": {
+     "split": true,
+     "panels": [
+      {
+       "side": "left",
+       "role": "held",
+       "template": "fraction-line@1",
+       "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers"
+      },
+      {
+       "side": "right",
+       "role": "view",
+       "template": "fraction-bars@1",
+       "view": "parts"
+      }
+     ]
+    },
+    "picture": {
+     "view": "parts",
+     "decided": "once",
+     "line": "Yeh lo, isi cheez ki ek aur tasveer, ise dhyan se dekho"
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1000,
+   "replyReadyMs": 1570,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1570,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "altView": "parts",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek aur picture dikhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 911,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Is sawaal ka jawab 1/6 kilometre par hai, kyunki doosri taraf sadak 6 barabar gaps mein hai, aur pehla mark 0 se ek gap par, yaani 1/6 kilometre. Ab tak samajh aaya?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "picture",
+    "picture": "hint"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ],
+         [
+          1,
+          6
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ],
+        [
+         1,
+         6
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers#help",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers#help"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "key",
+     "joint": null
+    },
+    {
+     "left": "key",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1031,
+   "replyReadyMs": 1942,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1942,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ],
+      [
+       1,
+       6
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ],
+       [
+        1,
+        6
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      },
+      {
+       "at": "1/6",
+       "label": "1/6"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7",
+     "1/6"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ],
+       [
+        1,
+        6
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 991,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Khilona 6 barabar gaps wali sadak par 0 se bas ek gap chala; '6 mein se 1 gap' ko ek number mein bolte hain 1/6 kilometre. Yahan tak saaf hai?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "give_up",
+    "keyed": true
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-not-numbers",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ],
+         [
+          1,
+          6
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ],
+        [
+         1,
+         6
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1740,
+   "replyReadyMs": 2731,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1740,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ],
+      [
+       1,
+       6
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ],
+       [
+        1,
+        6
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      },
+      {
+       "at": "1/6",
+       "label": "1/6"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7",
+     "1/6"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ],
+       [
+        1,
+        6
+       ]
+      ]
+     }
+    }
+   },
+   "guard": [
+    "praise",
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1101,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain. Is par hum phir aayenge; tab tak pehle wala sawaal saath mein dekhte hain. Line ki doosri taraf 3 barabar gaps hain. Wahan pehla mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "Line ki doosri taraf 3 barabar gaps hain. Wahan pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:2:then",
+    "column": "give_up",
+    "keyed": true
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 59,
+     "beat": "e1",
+     "boards": [],
+     "own": null,
+     "lead": "afterKeyReturn"
+    },
+    {
+     "part": "card",
+     "from": 134,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 134,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-not-numbers",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:e1",
+      "atChar": 134
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "helpSpent",
+     "joint": "helpSpent",
+     "form": "Koi baat nahi, isse aasaan shabd abhi mere paas nahi hain.",
+     "by": "authored"
+    },
+    {
+     "left": "helpSpent",
+     "right": "returnCard",
+     "joint": "afterKeyReturn",
+     "form": "Is par hum phir aayenge; tab tak pehle wala sawaal saath mein dekhte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1045,
+   "replyReadyMs": 2146,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1101,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      6
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       7
+      ],
+      [
+       1,
+       6
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        6
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ],
+        [
+         1,
+         6
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 134,
+     "atClause": null,
+     "estMs": 9500,
+     "beat": "e1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       6
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ],
+       [
+        1,
+        6
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 2,
+       "ticks": 3,
+       "innerTicks": 1
+      },
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/2",
+       "label": "1/2"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/2"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         6
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ],
+         [
+          1,
+          6
+         ]
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 134,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karti hoon",
+   "read": "no_evidence · thinking",
+   "intent": "try_first",
+   "classifyMs": 720,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo.",
+   "move": "practice",
+   "card": "Line ki doosri taraf 3 barabar gaps hain. Wahan pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:e1:card",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    }
+   ],
+   "replyMs": 957,
+   "replyReadyMs": 1677,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1677,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      2,
+      3
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       2
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 2,
+       "ticks": 3,
+       "innerTicks": 1
+      },
+      {
+       "gaps": 3,
+       "ticks": 4,
+       "innerTicks": 2
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/2",
+       "label": "1/2"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/2"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ]
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/3 par",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki 3 barabar gaps, pehla mark ek gap par: 1/3. Wahi 0 se 1 ki line, par ab us par 6 marks hain. Marks mat gino, gaps gino: 7 barabar gaps. Toh 0 ke baad pehla mark hai 1/7. Ab line ki doosri taraf dekho: wahan 7 marks hain, sab ek-doosre se barabar door. Us taraf kitne barabar gaps bane hain?",
+   "move": "explain",
+   "card": "Ab line ki doosri taraf dekho: wahan 7 marks hain, sab ek-doosre se barabar door. Us taraf kitne barabar gaps bane hain?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:e1:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ],
+         [
+          1,
+          3
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         3
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 64,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 190,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         8
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        8
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 64,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 190,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e1",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:e2",
+      "atChar": 190
+     },
+     "switches": [
+      {
+       "unit": "c5-maths-ch02-t01-s1:e2",
+       "atChar": 64
+      },
+      {
+       "unit": "c5-maths-ch02-t01-s1:e2",
+       "atChar": 190
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2389,
+   "replyReadyMs": 2390,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2390,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      2,
+      3
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       2
+      ],
+      [
+       1,
+       3
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        2,
+        3
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         2
+        ],
+        [
+         1,
+         3
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 64,
+     "atClause": null,
+     "estMs": 4560,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 7,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/7"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 190,
+     "atClause": null,
+     "estMs": 15580,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        8
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         7
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       2,
+       3
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        2
+       ],
+       [
+        1,
+        3
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 7,
+       "ticks": 8,
+       "innerTicks": 6
+      },
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/7",
+       "label": "1/7"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/7"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       8
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        7
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         2,
+         3
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          2
+         ],
+         [
+          1,
+          3
+         ]
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 64,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 7,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/7"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 190,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         8
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          7
+         ]
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "answerinq",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "long",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "eight gaps",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Dekho, marks se gaps ek zyada: 7 marks, 8 gaps. Ab wahi 0 se 1, par line par 8 barabar gaps hain. Gap zyada, toh har gap pehle se chhota hai. Pehla mark 1/8 hai, 0 se ek gap door. Line ki doosri taraf wahi 0 se 1, 10 barabar gaps mein kata hai. 0 ke zyada paas kaun rukega: 1/8 ya 1/10?",
+   "move": "explain",
+   "card": "Line ki doosri taraf wahi 0 se 1, 10 barabar gaps mein kata hai. 0 ke zyada paas kaun rukega: 1/8 ya 1/10?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:e2:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         8
+        ],
+        "from": 0,
+        "to": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        8
+       ],
+       "from": 0,
+       "to": 1
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 68,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 8,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/8"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/8"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 200,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         8,
+         10
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          8
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        8,
+        10
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         8
+        ]
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 68,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 200,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e2",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:e3",
+      "atChar": 200
+     },
+     "switches": [
+      {
+       "unit": "c5-maths-ch02-t01-s1:e3",
+       "atChar": 68
+      },
+      {
+       "unit": "c5-maths-ch02-t01-s1:e3",
+       "atChar": 200
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 863,
+   "replyReadyMs": 864,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 864,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      7,
+      8
+     ],
+     "from": 0,
+     "to": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        7,
+        8
+       ],
+       "from": 0,
+       "to": 1
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 68,
+     "atClause": null,
+     "estMs": 4940,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 8,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/8"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 200,
+     "atClause": null,
+     "estMs": 16340,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        8,
+        10
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         8
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       7,
+       8
+      ],
+      "from": 0,
+      "to": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 8,
+       "ticks": 9,
+       "innerTicks": 7
+      },
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/8",
+       "label": "1/8"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/8"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       8,
+       10
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        8
+       ]
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         7,
+         8
+        ],
+        "from": 0,
+        "to": 1
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 68,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 8,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/8"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 200,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         8,
+         10
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          8
+         ]
+        ]
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 by 10",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki 10 gaps wala har gap 8 gaps wale se chhota hai, isliye 1/10 pehle ruk jaata hai, 0 ke paas. Ab ek sawaal milkar, ek-ek kadam karke dekhte hain. Ghar 0 par hai aur school 1 kilometre par. Beech raaste mein 3 bijli ke khambe barabar doori par hain. 3 khambe raaste ko kitne barabar gaps mein kaatte hain?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         8,
+         10
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          8
+         ],
+         [
+          1,
+          10
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        8,
+        10
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         8
+        ],
+        [
+         1,
+         10
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 111,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 163,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 266,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 163,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:e3",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:worked",
+      "atChar": 163
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Ab ek sawaal milkar, ek-ek kadam karke dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1970,
+   "replyReadyMs": 1970,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1970,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      8,
+      10
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       8
+      ],
+      [
+       1,
+       10
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        8,
+        10
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         8
+        ],
+        [
+         1,
+         10
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 163,
+     "atClause": null,
+     "estMs": 12160,
+     "beat": "worked:step1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       8,
+       10
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        8
+       ],
+       [
+        1,
+        10
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         8,
+         10
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          8
+         ],
+         [
+          1,
+          10
+         ]
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 163,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "noconfirm"
+    ],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 739,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Ghar se chalna shuru karo aur har gap par ek gino: khambon ke beech wale bhi, aur dono siron wale bhi. Ghar se school tak 1 kilometre ke raaste par 3 khambe barabar doori par hain; woh raaste ko kitne barabar gaps mein kaatte hain?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:worked:step1",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 103,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1746,
+   "replyReadyMs": 2485,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2485,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 875,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ki baat bhi hogi, bas yeh number line wala kaam khatam ho jaaye. Chalo, pehle yahan se aage badhte hain. 3 khambe raaste ko kitne barabar gaps mein kaatte hain?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:worked:step1:ask",
+    "column": "aside"
+   },
+   "stepAnswer": {
+    "beat": "c5-maths-ch02-t01-s1:worked:step1",
+    "right": false,
+    "told": false
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 73,
+     "beat": "worked:step1",
+     "boards": [],
+     "own": null,
+     "lead": "afterPark"
+    },
+    {
+     "part": "stepAsk",
+     "from": 113,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "park",
+     "joint": null
+    },
+    {
+     "left": "park",
+     "right": "stepAsk",
+     "joint": "afterPark",
+     "form": "Chalo, pehle yahan se aage badhte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1915,
+   "replyReadyMs": 2790,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1915,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   },
+   "guard": [
+    "quiz"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "incorrect",
+   "intent": "miss",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, kuch aur hai. 3 khambe raaste ko 4 barabar gaps mein kaatte hain: ghar se pehle khambe tak ek gap, aur aakhri khambe se school tak bhi ek. Doori gaps se naapte hain, khambon se nahi: khamba bas ek jagah hai, aur ghar se pehle khambe tak ka chalna ek gap hai. Tumhari baari: pehla khamba ghar se kitne kilometre par hai?",
+   "move": "worked_example",
+   "card": "Tumhari baari: pehla khamba ghar se kitne kilometre par hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:worked:step1:ask",
+    "column": "wrong"
+   },
+   "stepAnswer": {
+    "beat": "c5-maths-ch02-t01-s1:worked:step1",
+    "right": false,
+    "told": true
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 145,
+     "beat": "worked:step2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 265,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 996,
+   "replyReadyMs": 998,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 998,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/4 km",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi. Dekho, 4 barabar gaps mein har gap 1/4 kilometre ka hai, aur pehla khamba 0 se theek ek gap par khada hai. Toh poora jawab: pehla khamba ghar se 1/4 kilometre door hai. Ab tak samajh aaya?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:worked:yourStep",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/4"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/4"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 999,
+   "replyReadyMs": 1000,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1000,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/4",
+       "label": "1/4"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/4"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1325,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne cricket ki baat chhedi thi: usme tumhe sabse achha kya lagta hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": null,
+    "column": "yes",
+    "help": null
+   },
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "returnSaid": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "return",
+     "joint": null
+    }
+   ],
+   "replyMs": 1133,
+   "replyReadyMs": 2458,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1325,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/4",
+       "label": "1/4"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/4"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "batting",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 920,
+   "classifyPath": "model",
+   "readRaw": "no_evidence"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, toh tumhe batting sabse achha lagta hai. Ab wahin se aage badhte hain jahan ruke the. 0 se 1 ki is line ko 10 marks ne barabar baanta hai. 0 ke baad pehla mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "0 se 1 ki is line ko 10 marks ne barabar baanta hai. 0 ke baad pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:worked:problem",
+    "column": "aside_reply"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 93,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 93,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:worked",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:c1",
+      "atChar": 93
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "asideReply",
+     "joint": null
+    },
+    {
+     "left": "asideReply",
+     "right": "card",
+     "joint": "afterAside",
+     "form": "Ab wahin se aage badhte hain jahan ruke the.",
+     "by": "authored"
+    }
+   ],
+   "j2": {
+    "line": "Achha, toh tumhe batting sabse achha lagta hai.",
+    "refused": []
+   },
+   "replyMs": 1895,
+   "replyReadyMs": 2815,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1895,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 4,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/4"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 93,
+     "atClause": null,
+     "estMs": 6460,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 11,
+       "ticks": 12,
+       "innerTicks": 10
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 4,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/4"
+         }
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 93,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/10",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "1/10 sahi nahi hai. Ise alag tareeke se dekhte hain. Darzi ka ribbon 0 se 1 metre tak hai, aur us par 4 chalk ke marks hain. Marks 4 hain, par gap 5 bante hain, isliye pehla mark 1/5 metre par hai. Socho, wahi ribbon 12 barabar gaps mein kaat rahe ho. Beech mein kitne chalk ke marks lagenge?",
+   "move": "reteach",
+   "card": "Socho, wahi ribbon 12 barabar gaps mein kaat rahe ho. Beech mein kitne chalk ke marks lagenge?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:check:c1",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 20,
+     "beat": "rem:c5-maths-ch02-t01-m-count-marks",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 53,
+     "beat": "rem:c5-maths-ch02-t01-m-count-marks",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 5,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/5"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 5,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/5"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 198,
+     "beat": "then:c5-maths-ch02-t01-m-count-marks",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 5,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/5"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 5,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/5"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-count-marks",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 53,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:c1",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-count-marks",
+      "atChar": 53
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise alag tareeke se dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1100,
+   "replyReadyMs": 1101,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1101,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-count-marks",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 11,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-count-marks",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c5-maths-ch02-t01-m-count-marks",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 53,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c5-maths-ch02-t01-m-count-marks",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 5,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/5"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 5,
+       "ticks": 6,
+       "innerTicks": 4
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/5",
+       "label": "1/5"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/5"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 5,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/5"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-count-marks"
+     },
+     {
+      "from": 53,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 5,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/5"
+         }
+        ]
+       }
+      },
+      "beat": "then:c5-maths-ch02-t01-m-count-marks"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "gyarah",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek: 12 barabar gaps ke beech 11 marks hote hain, gaps se ek kam. Ab us sawaal par lautte hain jo humne pehle chhoda tha. 0 se 1 ki is line ko 10 marks ne barabar baanta hai. 0 ke baad pehla mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "0 se 1 ki is line ko 10 marks ne barabar baanta hai. 0 ke baad pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c5-maths-ch02-t01-m-count-marks",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         5,
+         12
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          5
+         ],
+         [
+          1,
+          12
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        5,
+        12
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         5
+        ],
+        [
+         1,
+         12
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 81,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 137,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 137,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:rem:c5-maths-ch02-t01-m-count-marks",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:c1",
+      "atChar": 137
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Ab us sawaal par lautte hain jo humne pehle chhoda tha.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1078,
+   "replyReadyMs": 1079,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1079,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      5,
+      12
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       5
+      ],
+      [
+       1,
+       12
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        5,
+        12
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         5
+        ],
+        [
+         1,
+         12
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 137,
+     "atClause": null,
+     "estMs": 10260,
+     "beat": "c1",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       5,
+       12
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        5
+       ],
+       [
+        1,
+        12
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 11,
+       "ticks": 12,
+       "innerTicks": 10
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         5,
+         12
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          5
+         ],
+         [
+          1,
+          12
+         ]
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 137,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/10",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, 1/10 theek nahi. Marks chhodo, gaps gino. 0 se 1 ki line par 10 marks se jitne gaps bane, wahi neeche wala number hai. Ab phir se socho, jawab kya hoga?",
+   "move": "hint",
+   "card": "0 se 1 ki is line ko 10 marks ne barabar baanta hai. 0 ke baad pehla mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:check:c1",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 23,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 48,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 125,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "mark": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "mark": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:c1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "reaskShort",
+     "joint": null
+    }
+   ],
+   "replyMs": 1791,
+   "replyReadyMs": 1792,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1792,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 11,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c1",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 11,
+       "ticks": 12,
+       "innerTicks": 10
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 1",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   },
+   "guard": [
+    "samecard",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/11 hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 685,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki 10 marks se line ke 11 barabar gaps bante hain, aur pehla mark ek gap par hai, yaani 1/11. Line ki ek taraf 4 barabar gaps hain, doosri taraf 12. Dono taraf ke marks mein 0 ke sabse paas wala mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "Line ki ek taraf 4 barabar gaps hain, doosri taraf 12. Dono taraf ke marks mein 0 ke sabse paas wala mark kaunsa fraction hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:check:c1",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/11"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/11"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 111,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         4,
+         12
+        ],
+        "from": 0,
+        "to": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        4,
+        12
+       ],
+       "from": 0,
+       "to": 1
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 111,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:c1",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:c2",
+      "atChar": 111
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 878,
+   "replyReadyMs": 1563,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1563,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 11,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/11"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 11,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/11"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 111,
+     "atClause": null,
+     "estMs": 8360,
+     "beat": "c2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        4,
+        12
+       ],
+       "from": 0,
+       "to": 1
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 11,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/11"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 4,
+       "ticks": 5,
+       "innerTicks": 3
+      },
+      {
+       "gaps": 12,
+       "ticks": 13,
+       "innerTicks": 11
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       4,
+       12
+      ],
+      "from": 0,
+      "to": 1
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 11,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/11"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 111,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         4,
+         12
+        ],
+        "from": 0,
+        "to": 1
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 by 12",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Dekho, 12 barabar gaps ka har gap 4 wale se chhota hai, isliye 1/12 wala pehla mark 0 ke sabse paas hai. Line 0 se 1 tak 9 barabar gaps mein hai. Kuch log sochte hain ki line par 1/9 ki koi jagah nahi hoti. 1/9 ki jagah 0 ke baad kaunsa mark hai?",
+   "move": "practice",
+   "card": "Line 0 se 1 tak 9 barabar gaps mein hai. Kuch log sochte hain ki line par 1/9 ki koi jagah nahi hoti. 1/9 ki jagah 0 ke baad kaunsa mark hai?",
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:check:c2",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         4,
+         12
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          4
+         ],
+         [
+          1,
+          12
+         ]
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        4,
+        12
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         4
+        ],
+        [
+         1,
+         12
+        ]
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 117,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 9,
+        "from": 0,
+        "to": 1,
+        "target": [
+         1,
+         9
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 9,
+       "from": 0,
+       "to": 1,
+       "target": [
+        1,
+        9
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 117,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:c2",
+     "switchTo": {
+      "unit": "c5-maths-ch02-t01-s1:c3",
+      "atChar": 117
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 3029,
+   "replyReadyMs": 3030,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3030,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "dens": [
+      4,
+      12
+     ],
+     "from": 0,
+     "to": 1,
+     "marks": [
+      [
+       1,
+       4
+      ],
+      [
+       1,
+       12
+      ]
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "dens": [
+        4,
+        12
+       ],
+       "from": 0,
+       "to": 1,
+       "marks": [
+        [
+         1,
+         4
+        ],
+        [
+         1,
+         12
+        ]
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 117,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "c3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 9,
+       "from": 0,
+       "to": 1,
+       "target": [
+        1,
+        9
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "dens": [
+       4,
+       12
+      ],
+      "from": 0,
+      "to": 1,
+      "marks": [
+       [
+        1,
+        4
+       ],
+       [
+        1,
+        12
+       ]
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 9,
+       "ticks": 10,
+       "innerTicks": 8
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/9"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 9,
+      "from": 0,
+      "to": 1,
+      "target": [
+       1,
+       9
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "dens": [
+         4,
+         12
+        ],
+        "from": 0,
+        "to": 1,
+        "marks": [
+         [
+          1,
+          4
+         ],
+         [
+          1,
+          12
+         ]
+        ]
+       }
+      },
+      "beat": "c3"
+     },
+     {
+      "from": 117,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 9,
+        "from": 0,
+        "to": 1,
+        "target": [
+         1,
+         9
+        ]
+       }
+      },
+      "beat": "c3"
+     }
+    ]
+   },
+   "guard": [
+    "leak",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "long"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "0 ke baad pehla mark",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 627,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai: 1/9 matlab 9 barabar gaps mein se 1 gap, toh 1/9 ki jagah 0 se ek gap par, pehle mark par hai. Ab 0 se ek se zyada gap chalenge, aur fraction ka upar wala number batayega kitne. Yahan tak saaf hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:check:c3",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 9,
+        "from": 0,
+        "to": 1,
+        "marks": [
+         {
+          "num": 1,
+          "label": "1/9"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 9,
+       "from": 0,
+       "to": 1,
+       "marks": [
+        {
+         "num": 1,
+         "label": "1/9"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "bridge",
+     "from": 111,
+     "beat": "bridge",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "held": {
+    "unit": "c5-maths-ch02-t01-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c5-maths-ch02-t01-s1:c3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "bridge",
+     "joint": null
+    },
+    {
+     "left": "bridge",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 943,
+   "replyReadyMs": 1570,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1570,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:bridge:bridge",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 9,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/9"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 9,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/9"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 9,
+       "ticks": 10,
+       "innerTicks": 8
+      }
+     ],
+     "marks": [
+      {
+       "at": "1/9",
+       "label": "1/9"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "1/9"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 9,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/9"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "thak gayi, bye",
+   "read": "no_evidence · goodbye",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 945,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Thakaan ho toh aaram karna bilkul theek hai. Aaj ke liye itna hi, phir milenge.",
+   "move": "wrap",
+   "card": null,
+   "cell": {
+    "part": "c5-maths-ch02-t01-s1:bridge",
+    "column": "stop"
+   },
+   "held": {
+    "unit": null,
+    "changed": true,
+    "kept": false,
+    "drawn": "cleared",
+    "pages": [],
+    "intent": {
+     "unit": null,
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "tiredBye",
+     "joint": null
+    },
+    {
+     "left": "tiredBye",
+     "right": "goodbye",
+     "joint": null
+    }
+   ],
+   "replyMs": 1,
+   "replyReadyMs": 946,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 945,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}
