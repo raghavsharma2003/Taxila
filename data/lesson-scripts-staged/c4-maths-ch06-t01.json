@@ -517,23 +517,19 @@
       "template": "number-line-scale@1",
       "params": {
        "from": 0,
-       "to": 10,
+       "to": 5,
        "step": 1,
        "marks": [
         {
          "value": 1,
-         "label": "yahan se"
-        },
-        {
-         "value": 8,
-         "label": "yahan tak"
+         "label": "cheez yahan se"
         }
        ]
       }
      },
      "viewCaption": {
-      "hi": "Board par ek scale hai, aur patta 1 ke nishaan se 8 ke nishaan tak rakha hai.",
-      "en": "On the board is a scale, with the patta laid from the 1 mark to the 8 mark."
+      "hi": "Board par scale ka shuru wala tukda hai, 0 se 5 tak, aur ek cheez 1 ke nishaan se shuru hoti hai.",
+      "en": "On the board is the first piece of a scale, 0 to 5, and a thing that starts at the 1 mark."
      },
      "point": {
       "hi": "Scale ka pehla khaana 0 aur 1 ke beech hota hai. Jo cheez 1 se shuru hoti hai, uske neeche woh pehla khaana aata hi nahi.",
@@ -1750,6 +1746,22 @@
        "en": "this tape's spaces are not 1 centimetre each like the scale's; here a metre's whole 100 centimetres make just ten spaces"
       },
       "whyAltAsHelp": true,
+      "answerBoard": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 14
+        }
+       }
+      },
       "simpler": {
        "hi": "Pehle dekho, nishaan kitne poore metre ke baad aata hai. Phir uske aage ke chhote khaane gino, har ek 10 centimetre ka.",
        "en": "First see how many whole metres the mark comes after. Then count the small spaces past it, each 10 centimetres."
@@ -1980,6 +1992,23 @@
       "told": {
        "hi": "Pehle 3 metre ko centimetre mein badlenge, 300 centimetre, kyunki kata tukda centimetre mein hai.",
        "en": "First we turn the 3 metres into centimetres, 300 centimetres, because the cut piece is in centimetres."
+      },
+      "resultBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Rassi",
+         "items": [
+          "3 metre = 300 cm"
+         ]
+        },
+        "right": {
+         "title": "Kata tukda",
+         "items": [
+          "40 cm"
+         ]
+        }
+       }
       },
       "do": {
        "hi": "3 metre ko centimetre mein badlo",
@@ -2253,14 +2282,14 @@
        "right": {
         "title": "Aadha metre",
         "items": [
-         "?"
+         "1 metre ka aadha"
         ]
        }
       }
      },
      "viewCaption": {
-      "hi": "Board par ek metre ka naap likha hai, aur aadhe metre ki jagah sawaal.",
-      "en": "The board lists the size of a metre, and a question in place of half a metre."
+      "hi": "Board par ek metre ka naap likha hai, aur saath mein ek metre ka aadha.",
+      "en": "On the board is the measure of one metre, and beside it half of one metre."
      },
      "pictureBoard": {
       "template": "fraction-parts@1",
@@ -2534,6 +2563,22 @@
        "en": "this tape's spaces are not 1 centimetre each like the scale's; a metre's 100 centimetres make only ten spaces here"
       },
       "whyAltAsHelp": true,
+      "answerBoard": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 13
+        }
+       }
+      },
       "simpler": {
        "hi": "Jahan 1 likha hai, uske baad ke chhote khaane gino. Das chhote khaane milkar ek poora metre bante hain.",
        "en": "Count the small spaces after where 1 is written. Ten small spaces make one whole metre."
@@ -3073,16 +3118,17 @@
          ]
         },
         "right": {
-         "title": "Sahi naap",
+         "title": "Sahi unit",
          "items": [
-          "?"
+          "metre",
+          "centimetre"
          ]
         }
        }
       },
       "viewCaption": {
-       "hi": "Board par pencil ki likhi hui lambai hai, aur sahi naap ki jagah sawaal.",
-       "en": "The board has the pencil's written length, and a question in place of the right measure."
+       "hi": "Board par pencil ki likhi hui lambai hai, aur do unit: metre aur centimetre.",
+       "en": "On the board is the pencil's written length, and two units: metre and centimetre."
       },
       "pictureBoard": {
        "template": "compare@1",
@@ -3107,18 +3153,40 @@
        "en": "Here the written 15 metre pencil and a 5 metre room, each at its own length: such a pencil would be three times the room."
       },
       "why": {
-       "hi": "15 metre toh Papa ke 15 lambe kadam hote, kamre se bhi lambe; pencil kuch ungliyon jitni hai, isliye 15 centimetre",
-       "en": "15 metres would be 15 of Papa's long strides, longer than a room; a pencil is a few fingers, so 15 centimetres"
+       "hi": "15 metre likhi pencil Papa ke 15 lambe kadam jitni hoti; pencil ungliyon se naapte hain, isliye sahi unit centimetre: 15 centimetre",
+       "en": "15 metres is 15 of Papa's long strides; a pencil is measured with fingers, so the right unit is centimetre"
       },
       "whyShort": {
-       "hi": "pencil kuch ungliyon jitni: 15 centimetre",
-       "en": "a pencil is a few fingers long: 15 centimetres"
+       "hi": "pencil ungliyon se naapte hain: 15 centimetre",
+       "en": "a pencil is measured with fingers: 15 centimetres"
       },
       "whyAlt": {
        "hi": "tumne likha hua naap waisa hi maan liya; 15 metre ka matlab Papa ke 15 lambe kadam, itni lambi pencil kisi bag mein nahi aati",
        "en": "you took the written measure as it stood; 15 metres means 15 of Papa's long strides, and a pencil that long fits in no bag"
       },
       "whyAltAsHelp": true,
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Pencil",
+         "items": [
+          "15 metre likhi"
+         ]
+        },
+        "right": {
+         "title": "Sahi unit",
+         "items": [
+          "metre",
+          "centimetre"
+         ]
+        },
+        "mark": {
+         "side": "right",
+         "item": 1
+        }
+       }
+      },
       "simpler": {
        "hi": "Pencil ke saath ungliyan ek ke baad ek rakhna socho. Woh kuch ungliyon mein khatam ho jaati hai.",
        "en": "Think of laying fingers one after another along the pencil. It is done within a few fingers."
@@ -3202,6 +3270,25 @@
       "told": {
        "hi": "Papa ke lambe kadam se, kyunki chhat bahut lambi hai.",
        "en": "With Papa's long stride, because the roof is very long."
+      },
+      "resultBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Naapne ki cheezein",
+         "items": [
+          "ungli",
+          "baalisht",
+          "Papa ka lamba kadam"
+         ]
+        },
+        "right": {
+         "title": "Chhat",
+         "items": [
+          "lambe kadam se"
+         ]
+        }
+       }
       },
       "do": {
        "hi": "Lambi cheez ko lambe kadam se naapo",
@@ -3425,14 +3512,15 @@
        "right": {
         "title": "Unit",
         "items": [
-         "?"
+         "centimetre",
+         "metre"
         ]
        }
       }
      },
      "viewCaption": {
-      "hi": "Board par school bus ki lambai ke saamne unit ki jagah sawaal hai.",
-      "en": "The board has the school bus's length with a question in place of the unit."
+      "hi": "Board par school bus ki lambai hai, aur do unit: centimetre aur metre.",
+      "en": "On the board is the school bus's length, and two units: centimetre and metre."
      },
      "pictureBoard": {
       "template": "compare@1",
@@ -3457,8 +3545,8 @@
       "en": "Here a finger's width and one long stride of Papa's are two strips, each as long as it really is."
      },
      "why": {
-      "hi": "bus Papa ke kai lambe kadam jitni lambi hai, isliye metre",
-      "en": "a bus is many of Papa's long strides long, so metres"
+      "hi": "bus ki lambai Papa ke kai lambe kadam jitni hai, isliye metre",
+      "en": "the bus's length is many of Papa's long strides, so metres"
      },
      "whyShort": {
       "hi": "bus kai lambe kadam jitni",
@@ -3469,6 +3557,28 @@
       "en": "the small unit is for things a few fingers long; measure a bus in fingers and the count would come near a thousand"
      },
      "whyAltAsHelp": true,
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "School bus",
+        "items": [
+         "lambai"
+        ]
+       },
+       "right": {
+        "title": "Unit",
+        "items": [
+         "centimetre",
+         "metre"
+        ]
+       },
+       "mark": {
+        "side": "right",
+        "item": 1
+       }
+      }
+     },
      "simpler": {
       "hi": "Papa ko bus ke ek sire se doosre sire tak chalte socho. Unhe kai lambe kadam lagte hain.",
       "en": "Picture Papa walking from one end of the bus to the other. It takes him many long strides."
@@ -3509,7 +3619,10 @@
       "it should be metres",
       "lagbhag 2 metre",
       "200 centimetre",
-      "do sau centimetre"
+      "do sau centimetre",
+      "unit",
+      "unit galat",
+      "unit galat hai"
      ],
      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
      "wrongIfMis": [
@@ -3529,16 +3642,17 @@
         ]
        },
        "right": {
-        "title": "Kya galat hai",
+        "title": "Galat",
         "items": [
-         "?"
+         "number",
+         "unit"
         ]
        }
       }
      },
      "viewCaption": {
-      "hi": "Board par darwaze ki kahi gayi oonchai hai, aur poochha hai ki usmein kya galat hai.",
-      "en": "The board has the door's stated height, and asks what is wrong in it."
+      "hi": "Board par darwaze ki kahi gayi oonchai hai, aur do cheezein jo galat ho sakti hain: number ya unit.",
+      "en": "On the board is the door's stated height, and two things that could be wrong: the number or the unit."
      },
      "pictureBoard": {
       "template": "compare@1",
@@ -3563,8 +3677,8 @@
       "en": "Here the stated height of 2 centimetres and Papa, about 170 centimetres, each at its own length: that height is just a tiny piece."
      },
      "why": {
-      "hi": "2 centimetre toh bas do ungliyon jitna hai; darwaza Papa se bhi ooncha hota hai, lagbhag 2 metre",
-      "en": "2 centimetres is just two fingers; a door is taller than Papa, about 2 metres"
+      "hi": "unit galat hai, number nahi: 2 centimetre bas do ungliyon jitna; darwaza Papa se ooncha hota hai, lagbhag 2 metre",
+      "en": "the unit is wrong, not the number: 2 centimetres is just two fingers; a door is taller than Papa, about 2 metres"
      },
      "whyShort": {
       "hi": "darwaza lagbhag 2 metre, centimetre nahi",
@@ -3575,6 +3689,28 @@
       "en": "2 centimetres would be just two fingers; a door like that would be for an ant, not for Papa"
      },
      "whyAltAsHelp": true,
+     "answerBoard": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Darwaza",
+        "items": [
+         "2 cm ooncha"
+        ]
+       },
+       "right": {
+        "title": "Galat",
+        "items": [
+         "number",
+         "unit"
+        ]
+       },
+       "mark": {
+        "side": "right",
+        "item": 1
+       }
+      }
+     },
      "simpler": {
       "hi": "Darwaze ke saamne Papa ko khada socho, aur dekho ki darwaza unse chhota hai ya bada.",
       "en": "Picture Papa standing at the door, and see whether the door is shorter than him or taller."
@@ -3662,7 +3798,7 @@
        "left": {
         "title": "Kamra",
         "items": [
-         "? lambe kadam"
+         "kitne lambe kadam"
         ]
        },
        "right": {
@@ -3875,18 +4011,19 @@
         "right": {
          "title": "Unit",
          "items": [
-          "?"
+          "centimetre",
+          "metre"
          ]
         }
        }
       },
       "viewCaption": {
-       "hi": "Board par neem ke ped ki oonchai ke saamne unit ki jagah sawaal hai.",
-       "en": "The board has the neem tree's height with a question in place of the unit."
+       "hi": "Board par neem ke ped ki oonchai hai, aur do unit: centimetre aur metre.",
+       "en": "On the board is the neem tree's height, and two units: centimetre and metre."
       },
       "why": {
-       "hi": "bada ped Papa ke kai lambe kadam jitna ooncha hota hai, isliye metre",
-       "en": "a big tree is as tall as many of Papa's long strides, so metres"
+       "hi": "neem ke bade ped ki oonchai Papa ke kai lambe kadam jitni hoti hai, isliye metre",
+       "en": "a big neem tree's height is many of Papa's long strides, so metres"
       },
       "whyShort": {
        "hi": "ped kai lambe kadam jitna ooncha",
@@ -3897,6 +4034,28 @@
        "en": "the small unit is a finger's size; measure the tree finger by finger and the count runs into hundreds"
       },
       "whyAltAsHelp": true,
+      "answerBoard": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Neem ka ped",
+         "items": [
+          "oonchai"
+         ]
+        },
+        "right": {
+         "title": "Unit",
+         "items": [
+          "centimetre",
+          "metre"
+         ]
+        },
+        "mark": {
+         "side": "right",
+         "item": 1
+        }
+       }
+      },
       "simpler": {
        "hi": "Papa ko ped ke neeche khada socho, aur dekho ki ped ungliyon jitna hai ya Papa ke kai kadam jitna.",
        "en": "Picture Papa standing under the tree, and see whether the tree is finger-sized or many of Papa's strides."
