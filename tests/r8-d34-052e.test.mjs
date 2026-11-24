@@ -179,7 +179,13 @@ describe("B5: aside replies of one frame are rotated", () => {
     const r = asideReplyLine({ ...a, recent: [prev] });
     assert.ok(r.line && replyFrameOf(r.line) !== f0, r.line);
     assert.ok(!/unke/.test(r.line), "never a people form about a game");
-    assert.equal(replyFrameOf(asideReplyLine(a).line), f0, "with no reply before it, as before");
+    // (re-pinned, d35 closing item 1: the library's replyKinds (Learning 023 rule 7) — "chauka" to a "sabse mazedaar" question is a liking,
+    // said in a liking form read from the file; rotation holds within those forms too)
+    const liking = JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).replyKinds.liking.map((f) => f.hi);
+    const first = asideReplyLine(a).line;
+    assert.ok(liking.includes(replyFrameOf(first)), `with no reply before it, a liking form: ${first}`);
+    const next = asideReplyLine({ ...a, recent: [first] }).line;
+    assert.ok(liking.includes(replyFrameOf(next)) && replyFrameOf(next) !== replyFrameOf(first), `the next liking form: ${next}`);
   });
   test("againInHerWords: an again form of any wording is said only of what the child told before (toldOk by form type)", async () => {
     const { againInHerWords } = await import("../server/brain/say.js");

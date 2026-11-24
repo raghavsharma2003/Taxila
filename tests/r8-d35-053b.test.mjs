@@ -56,18 +56,24 @@ describe("C2: a side-topic reply fits what the child said", () => {
     assert.equal(K("Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", "kal sixer maara"), "whenWhere");
     assert.equal(K("Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", "Virat"), "person");
   });
-  test("with the library as it is (no kind forms): the neutral forms — never a liking form to a person or a time", async () => {
+  test("with the library as it is (replyKinds since the merge): each kind in its own forms — never a liking form to a person or a time", async () => {
     const { asideReplyLine } = await import("../server/brain/asideReplies.js");
     const a = asideReplyLine({ said: "Virat", topic: "Sixer", asked: "Toh poora jawab: 3/5 = 9/15. Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", words: ["virat"] });
     assert.equal(a.kind, "person");
     assert.doesNotMatch(a.line, /achh[aie] lag|pasand|favourite/i, a.line);
     assert.match(a.line, /Virat/, "the child's own word, in their case");
+    // (re-pinned, d35 closing item 1: the merged library HAS replyKinds (Learning 023 rule 7), so each kind is said in its own forms, read
+    // from the file — a time in a whenWhere form, a favourite person (053 C2: "a person (who was there, a favourite)") in a person form, a
+    // liking in a liking form)
+    const RK = JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).replyKinds;
+    const lead = (kind, line) => RK[kind].some((f) => line.startsWith(f.hi.split("{")[0]));
+    assert.ok(lead("person", a.line), a.line);
     const w = asideReplyLine({ said: "kal shaam ko", topic: "cricket", asked: "Cricket kab khela tha?", words: ["shaam"] });
-    assert.equal(w.form, "plain", w.line);
-    // (a favourite asked of a person keeps the favourite form: it fits)
-    assert.match(asideReplyLine({ said: "Virat", topic: "cricket", asked: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?" }).line, /favourite/);
-    // (a liking asked and said: as before)
-    assert.match(asideReplyLine({ said: "batting", topic: "cricket", asked: "Cricket mein tumhe sabse achha kya lagta hai?", words: ["batting"] }).line, /achha lagta/);
+    assert.equal(w.kind, "whenWhere"); assert.ok(lead("whenWhere", w.line), w.line);
+    const fv = asideReplyLine({ said: "Virat", topic: "cricket", asked: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?" });
+    assert.equal(fv.kind, "person"); assert.ok(lead("person", fv.line), fv.line); assert.match(fv.line, /Virat/);
+    const lk = asideReplyLine({ said: "batting", topic: "cricket", asked: "Cricket mein tumhe sabse achha kya lagta hai?", words: ["batting"] });
+    assert.equal(lk.kind, "liking"); assert.ok(lead("liking", lk.line), lk.line);
   });
   test("with `replyKinds` in the library (Learning 023 rule 7, main's schema; fixture): each kind gets its own", async () => {
     const { asideReplyLine, setReplyKindFormsForTest, asideReplyForms } = await import("../server/brain/asideReplies.js");
@@ -338,10 +344,15 @@ describe("D: the record", () => {
     assert.match(src, /const recordPart = \(pp, lm\) => \(pp\.kind === "yourTurn" \? "yourTurn" : pp\.part === "simpler" && lm\?\.help\?\.rung === "whyAltHelp" \? "whyAlt" : pp\.part\)/);
     assert.match(src, /const o = \{ part: recordPart\(pp, lmB\),/);
   });
-  test("C2's re-read of d26's asideReplied: a word form to a person is the neutral form while the library has no person forms", () => {
-    const rows = [{ who: "teacher", text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?" }, { who: "child", text: "Virat" },
-      { who: "teacher", text: "Arre, Virat! Achha hua tumne bataya. Achha, ab padhai ki taraf mudte hain.", cell: { column: "aside_reply" } }];
+  test("C2's re-read of d26's asideReplied: with the library's person forms (merged), a word form to a person is flagged; a person form is not", () => {
+    // (re-pinned, d35 closing item 1: the exemption held only "while the library has no person forms"; the merged library has them)
+    const person = JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).replyKinds.person;
+    const rowsOf = (reply) => [{ who: "teacher", text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?" }, { who: "child", text: "Virat" },
+      { who: "teacher", text: `${reply} Achha, ab padhai ki taraf mudte hain.`, cell: { column: "aside_reply" } }];
     const ctx = { script: { skills: [] }, prevChild: "Virat", o: {} };
-    assert.equal(PREDICATES.asideReplied({ rows }, rows[2], 2, ctx), null);
+    const word = rowsOf("Arre, Virat! Achha hua tumne bataya.");
+    assert.ok(PREDICATES.asideReplied({ rows: word }, word[2], 2, ctx));
+    const own = rowsOf(person[0].hi.replace("{phrase}", "Virat"));
+    assert.equal(PREDICATES.asideReplied({ rows: own }, own[2], 2, ctx), null);
   });
 });

@@ -31,8 +31,9 @@ const SAID = "batting sabse achhi lagti hai";
 // (re-pinned, to-brain 049 B6: the reply takes the child's own ending — "achhi lagti" said, "achhi lagti" heard)
 // (re-pinned, to-brain 052 close: Learning rewrote the sport kind's phrase replies in data/lesson-aside-replies.json (e12517b3f), and 052
 // B5 rotates them: the reply is one of the file's phraseReplies frames, opening on the child's phrase and keeping 049 B6's ending — read from the file, not pasted)
-const REPLY = new RegExp(`^(?:${JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).kinds.sport.phraseReplies
-  .map((f) => f.hi.split("{phrase}")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})batting\\b.*achhi lagti`);
+// (re-pinned, d35 closing item 1: "batting sabse achhi lagti hai" is a liking — the merged library's replyKinds.liking forms, read from the file)
+const REPLY = new RegExp(`^(?:${JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).replyKinds.liking
+  .map((f) => f.hi.split("{phrase}")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})batting\\b`);
 
 /** c4 walked on today's script with right answers until the walk says the skill's bridge first (state.js sayFirst). */
 function atBridge() {

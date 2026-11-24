@@ -191,10 +191,12 @@ test("A4: an aside said again is replied to in the child's own words; the reply 
   const again = againInHerWords("kal maine cricket khela, sixer maara", "cricket", "hinglish", { recent: [{ who: "child", text: "maine sixer maara tha" }, { who: "teacher", text: "Achha." }] });
   assert.ok(sport.againReplies.map((f) => fill(f, "sixer maara")).includes(again), again);
   // (her return in the script's own form — "usmein sabse mazedaar kya hai?" — is a liking question: the phrase form answers it)
-  assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, fill(sport.phraseReplies[0], "chauka"));
+  // (re-pinned, d35 closing item 1: the merged library's replyKinds (Learning 023 rule 7, to-brain 053 C2) — a liking asked or said is
+  // answered in the first liking form, read from the file, with the child's own phrase)
+  const liking = JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).replyKinds.liking;
+  assert.equal(asideReplyLine({ said: "chauka", topic: "cricket", asked: "Ab cricket ki baat karte hain: usmein sabse mazedaar kya hai?", words: ["chauka"] }).line, fill(liking[0], "chauka"));
   assert.equal(asideReplyLine({ said: "batting sabse achhi lagti hai", topic: "cricket", asked: "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?", words: ["batting"] }).line,
-    // (re-pinned, to-brain 049 B6: the reply takes the child's own ending — "achhi lagti" said, "achhi lagti" heard)
-    fill(sport.phraseReplies[0], "batting").replace("achha lagta", "achhi lagti"));
+    fill(liking[0], "batting"));
 });
 
 // (dc-r8-director27 Brain 042 E3 superseded this row's rule — the card's own second view, its posing board's — and dc-r8-director29 Brain 045 P1

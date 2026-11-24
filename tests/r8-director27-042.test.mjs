@@ -204,7 +204,9 @@ describe("Brain 042: E2 and E4", () => {
     const sc = JSON.parse(readFileSync(join(ROOT, "data/lesson-scripts/c5-maths-ch02-t02.json"), "utf8"));
     const hook = sc.skills[0].hook.interestSlots[0].use.hi, point = sc.skills[0].explain[0].point.hi;
     const turn = `Achha, chalo shuru karte hain. ${hook} ${point} Ab tak samajh aaya?`;
-    const out = lengthGuard(turn, { authored: [hook, point], max: 40 });
+    // (re-pinned, d35 closing item 1: Learning 023's c5-t02 fix 10 shortened the hook and the point to 35 words, so a cap of 40 was met by
+    // dropping her closing ask alone; the cap is now the authored parts' own length, whatever the script's)
+    const out = lengthGuard(turn, { authored: [hook, point], max: `${hook} ${point}`.split(/\s+/).length });
     assert.ok(out.includes(point), "the first point is said");
     assert.ok(out.includes(hook), "the hook is said");
     assert.ok(!out.includes("Achha, chalo shuru karte hain."), "her own sentence goes first");
