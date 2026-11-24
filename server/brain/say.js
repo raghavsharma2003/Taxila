@@ -849,7 +849,10 @@ export function freshOf(xs0, state) {
   const xs = vk && Array.isArray(xs0) && xs0.length ? xs0.map((_, i, a) => a[(seamStart(lessonKeyOf(state), vk) + i) % a.length]) : xs0;
   const said = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-4).map((t) => String(t.text ?? "").toLowerCase());
   const head = (x) => String(x).toLowerCase().replace(/[.!?:]+$/, "");
-  return xs.find((x) => !said.some((t) => t.includes(head(x)))) ?? xs[0];
+  // (round d35: every form said in her last four turns — four misses running at one card, dry stuck c5-t03 42 and 44 — the form said
+  // longest ago, never the one her last turn said)
+  const ago = (x) => { const k = said.map((t) => t.includes(head(x))).lastIndexOf(true); return k < 0 ? -1 : k; };
+  return xs.find((x) => !said.some((t) => t.includes(head(x)))) ?? [...xs].sort((a, b) => ago(a) - ago(b))[0];
 }
 /** v6.8 R5 (main on director16: "Yahan tak theek hai?" ×53, two forms never said): a check-in's form spreads over all its forms — the
  *  lesson's seed and turn pick among the forms not said in her last 4 turns (freshOf always fell back to the first). */

@@ -2102,6 +2102,9 @@ function resume(s, input, item, prefix) {
   if (s.phase === "warmup") { s.phase = "teach"; return teach(s, input, prefix); }
   if (s.phase === "teach") return teach(s, input, prefix);
   if (s.phase === "practice") return poseNext(s, input, prefix);
+  // (round d35: a wrap held for a parked promise — round 7 T3, the closing question answered right with an aside's return due — goes on after
+  // the child's answer to that return too: dry steady c5-t03 84 to 86, the verdict and the return, then "Virat" got the closing question again)
+  if (s.wrapAfter) { const w = s.wrapAfter; s.wrapAfter = undefined; return toWrap(s, { prefix: w.prefix ?? undefined, kit: input.kit }); }
   if (s.phase === "teachback") return plan("teachback", join(prefix, SH.teachback({ protege: scriptIdOf(input.kit) ? null : s.ctx.protege })), { probe: "P1", format: "F7" });
   return toWrap(s, { kit: input.kit });
 }
