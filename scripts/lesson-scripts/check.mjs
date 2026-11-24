@@ -2198,8 +2198,9 @@ export function d33Errors(s, { force = false } = {}) {
  *     lesson are listed as one N line too.
  *  7  `joints.easierWords`: three { hi, en } forms, each 8 words or fewer, no "Hindi" / "हिंदी", no question, no digit.
  *  Rules 1, 2, 3, 4 and 7 are errors for a topic in D34_READY or named with --d34; 5 and 6 are always report lines. */
-// (2026-11-23: empty; an author's script joins when main says)
-export const D34_READY = [];
+// (2026-11-23: empty; an author's script joins when main says. 2026-11-24, d34: the nine scripts, fixed after director33, all pass)
+export const D34_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
+  "c6-maths-ch07-t01", "c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 export const isD34 = (s) => D34_READY.includes(s?.topicId);
 const hasQ = (o) => {
   if (typeof o === "string") return o.includes("?");

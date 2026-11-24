@@ -183,11 +183,14 @@ test("022 rule 7: three forms of 8 words or fewer, no \"Hindi\", no question, no
   assert.ok(j([EW[0], EW[1], HI("Main ise aur bhi zyada aasaan shabdon mein kehti hoon.", "Easier.")]).some((x) => /\d+ words > 8/.test(x)));
 });
 
-// ---- the gate: D34_READY empty, nothing new is an error off it; on it (or --d34), 1-4 and 7 are errors and 5, 6 are lines
-test("022: D34_READY starts empty and the nine scripts carry no d34 error off it; forced, rules 1-4 and 7 are errors", () => {
-  assert.deepEqual(D34_READY, []);
-  for (const s of Object.values(J)) { assert.equal(isD34(s), false, s.topicId); assert.deepEqual(d34Errors(s), [], s.topicId); }
-  const e = (t) => d34Errors(J[t], { force: true });
+// ---- the gate: off D34_READY nothing new is an error; on it (or --d34), 1-4 and 7 are errors and 5, 6 are lines
+// d34: D34_READY was empty (2026-11-23); it now holds the nine scripts, so the frozen ones are judged by it without force
+test("022: D34_READY is the nine scripts; a script off it carries no d34 error; on it, rules 1-4 and 7 are errors", () => {
+  assert.deepEqual([...D34_READY].sort(), [...LIVE, ...STAGED].sort());
+  assert.equal(isD34(frag()), false);
+  assert.deepEqual(d34Errors({ ...J["c4-maths-ch06-t01"], topicId: "t-off" }), [], "off the list, the frozen faults are no error");
+  for (const s of Object.values(J)) assert.equal(isD34(s), true, s.topicId);
+  const e = (t) => d34Errors(J[t]);
   assert.ok(e("c4-maths-ch06-t01").some((x) => /^c4-maths-ch06-t01-s2\/e2: posed over a board that draws "\?".*Learning 022 rule 1/.test(x)));
   assert.ok(e("c5-maths-ch02-t01").some((x) => /^c5-maths-ch02-t01-s1\/workedExample\.steps\[0\]\.ask\.right: "4 gap".*Learning 022 rule 2/.test(x)));
   assert.ok(e("c6-maths-ch07-t03").some((x) => /^c6-maths-ch07-t03-s2\/explain\[2\]\.point: .*2\/4 < 1\/3, which is false \(Learning 022 rule 3\)/.test(x)));
