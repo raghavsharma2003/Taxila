@@ -840,7 +840,12 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     const prompts = [target.item?.prompt_hi, target.item?.prompt_en].filter(Boolean);
     const prompt = lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en;
     const forms = [target.key, ...(target.also || [])].filter((k) => k != null && String(k).trim());
-    const wrongs = wrongList(sg.wrongIfMis);
+    // (to-brain 053 F: the card's named wrong answers — `wrongIfMis` (n 0) and each of `wrongAnswers` (n 1 to 3), with its accept forms — each
+    // read as a misconception, and which one recorded: `wrongNamed`. A card with no `wrongAnswers` reads as before)
+    const named = [{ n: 0, forms: wrongList(sg.wrongIfMis) }, ...(Array.isArray(sg.wrongAnswers) ? sg.wrongAnswers : []).slice(0, 3)
+      .map((w, k) => ({ n: k + 1, forms: [...wrongList(w?.answer), ...(Array.isArray(w?.accept) ? w.accept : [])].filter((x) => x != null && String(x).trim()) }))];
+    const wrongs = named.flatMap((x) => x.forms);
+    const wrongN = named.flatMap((x) => x.forms.map(() => x.n));
     // G2: a reply with Devanagari letters is compared in Devanagari too (the forms through toDevanagari)
     const deva = (k) => toDevanagari(String(k), { force: true, fallback: "rules" });
     const canons = (list) => list.map((k) => [canon(k), ...(R.deva ? [canon(deva(k))] : [])]);
@@ -849,7 +854,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // grades it incorrect, and its marked whyAlt is said only after it: help.js ownReasonFits)
     // (to-brain 051 C6, the record: a named wrong answer is read as what it is — `misconception`, with the mix-up it targets where the card names
     // one — never as plain wrong: director33 c4 steady 93, c6-ch07-t01 stuck 25, offtopic 17, a worked yourStep's wrongIfMis read incorrect)
-    const misOf = () => done("misconception", "script_key", { misconceptionId: sg.targets ?? null, wrongListed: true });
+    // (a named answer of `wrongAnswers` is its own mistake: no misconception id of the card's — the card's remediation answers its own
+    // `wrongIfMis` — and its reason is the help: help.js namedReasonOf)
+    const misOf = (j = 0) => { const n = wrongN[j] ?? 0; return done("misconception", "script_key", { misconceptionId: n === 0 ? sg.targets ?? null : null, wrongListed: true, ...(named.length > 1 ? { wrongNamed: n } : {}) }); };
     const toModel = (why) => ({ result: null, flags, text, scriptUnsure: why });
     // v4 W4 (director6: "after 1/3" to a card keyed "between 0 and 1/3" whose listed wrong answer IS "after 1/3" was graded
     // right twice, by its lone number): the order is exact form → the listed wrong answer → the same answer → by value, and
@@ -866,12 +873,12 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       const carries = (L) => L.some((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))));
       const fu = carries(F), wu = carries(W);
       if (fu && !wu) return done("correct", "script_key");
-      if (wu && !fu) return misOf();
+      if (wu && !fu) return misOf(Math.max(0, W.findIndex((cs) => cs.some((c) => c.units.length && R.units.every((u) => c.units.includes(u))))));
       return toModel("unit_only");
     }
     if (forms.some(exact)) return done("correct", "script_key");
-    if (wrongs.some(exact)) return misOf();
-    if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf();
+    if (wrongs.some(exact)) return misOf(wrongs.findIndex(exact));
+    if (W.some((cs) => cs.some((c) => sameAnswer(c, R)))) return misOf(W.findIndex((cs) => cs.some((c) => sameAnswer(c, R))));
     // (048 follow-up: a form whose brackets decide it — "2 × (lambai + chaudai)" — never matches in code a reply said without them: "2 × lambai +
     // chaudai" is another sum. The model reads it)
     const BRACKETED = /\([^()]*[+\-×x*÷/][^()]*\)/i;
@@ -914,7 +921,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
         const name = nm;
         const says = (k) => norm(k).split(/\s+/).includes(name);
         if (forms.some(says)) return done("correct", "script_key");
-        if (wrongs.some(says)) return misOf();
+        if (wrongs.some(says)) return misOf(wrongs.findIndex(says));
         return done("incorrect", "script_key");
       }
     }
@@ -926,7 +933,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
         const i = pickOption(R, oc);
         if (i >= 0) {
           const o = canon(opts[i]);
-          if (W.some((cs) => sameAnswer(cs[0], o))) return misOf();
+          if (W.some((cs) => sameAnswer(cs[0], o))) return misOf(W.findIndex((cs) => sameAnswer(cs[0], o)));
           if (F.some((cs) => sameAnswer(cs[0], o))) return done("correct", "script_key");
           // 050 W4: an option is a form by its deciding tokens too — "baad mein" (of "…pehle hai ya baad mein?") is the form "beech ke
           // baad": the form holds every token that sets that option apart and none that sets another apart. Where an option is both a
@@ -944,7 +951,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
           const fOpt = one(F), wOpt = one(W);
           const isForm = (k) => F.some((cs) => sameAnswer(cs[0], ocs[k])) || fOpt === k;
           const isWrong = (k) => W.some((cs) => sameAnswer(cs[0], ocs[k])) || wOpt === k;
-          if (isWrong(i) && !isForm(i)) return misOf();
+          if (isWrong(i) && !isForm(i)) return misOf(Math.max(0, W.findIndex((cs) => sameAnswer(cs[0], ocs[i]))));
           if (isForm(i) && !isWrong(i)) return done("correct", "script_key");
           // (to-brain 050 W1 reason 2: the reply names one option, and exactly one OTHER option of the prompt is a right form: it named a wrong one)
           const rightOpts = opts.map((x, j) => j).filter((j) => isForm(j) && !isWrong(j));
@@ -961,7 +968,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       const wv = W.map((cs) => cs[0]).find((c) => numberOf(c) === one);
       const fv = F.map((cs) => cs[0]).find((c) => numberOf(c) === one);
       if ((wv || fv) && (risky || !unitOk(wv ?? fv))) return toModel("value_beside_words");
-      if (wv) return misOf();
+      if (wv) return misOf(W.findIndex((cs) => cs[0] === wv));
       // (048 follow-up, main's probe 3: "Sana ka 5 cm lamba" to a card keyed "5 cm" whose named wrong answer is "Sana" was graded
       // right by its number. The number may be right while the reply says whose it is wrongly: a reply that holds every content
       // word of a listed wrong answer, or — beside a word that says whose ("ka", "wala") — a word of another option of the prompt

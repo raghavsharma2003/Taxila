@@ -246,7 +246,10 @@ function kindOf(p, i, list, info) {
   switch (p.part) {
     // (Brain 046 Q6, c5-t02 steady 98: the closing question's miss — graded by the end's own walk, with no lastVerdict — is a miss verdict
     // where its head reads as one, as the default case reads an authored end's verdict)
-    case "close": return (info.miss || (info.authoredEnd && VERDICT_HEAD.test(t) && !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "")))
+    // (to-brain 053 D: a yes-or-no key said as the fact after a miss — "Nahi, tile ka kona right angle hai; …" — is the key, recorded as one:
+    // director34 c4-ch01-t02 stuck 42 was logged missVerdict)
+    case "close": if (info.keyFact && i === list.findIndex((q) => q.part === "close")) return "key";
+      return (info.miss || (info.authoredEnd && VERDICT_HEAD.test(t) && !/^(?:haan|bilkul|sahi|yes|exactly|that's right)\b/i.test(t) && MISS_WORD.test(sentencesOf(t)[0] ?? "")))
       && i === list.findIndex((q) => q.part === "close") && MISS_WORD.test(t) ? "missVerdict" : "verdict";
     case "closed": return "closed";
     case "bridge": return "bridge";

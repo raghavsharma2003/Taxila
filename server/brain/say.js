@@ -1532,6 +1532,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
+    // (to-brain 053 D: the yes-or-no key said as its fact is recorded as a key)
+    keyFact: !!out.guard?.ynFact,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;
@@ -1733,8 +1735,11 @@ export function rightWhyLead(fr, why, state, kit = null) {
   const saidOf = (o) => (o === "Dekho" ? state?.dekhoN : state?.jointN?.leadSuno) ?? 0;
   const all = ["Dekho", "Suno"].reduce((a, o) => a + saidOf(o) + authoredOf(o), 0);
   const opOk = (o) => !o || (!near() && saidOf(o) + authoredOf(o) < DEKHO_MAX && all < LEAD_MAX);
-  const ops = ["Dekho", "Suno", ""].map((_, j, xs) => xs[(j + (state?.whyJoint?.n ?? 0)) % xs.length]);
-  const op = ops.find(opOk) ?? "";
+  // (to-brain 053 C1: code's lead-in "Suno," or "Dekho," is no longer said between a right verdict and its reason — seven topics in
+  // director34, e.g. c6 steady 74, stuck 14, 38, 76. Where the frame cannot take the reason after a colon, the reason is its own sentence
+  // with no opener; an opener authored inside a script's sentence stays. The caps above still read what a script says)
+  void opOk;
+  const op = "";
   const j1 = op ? `${fr}. ${op}, ${w}` : `${fr}. ${String(w).charAt(0).toUpperCase()}${String(w).slice(1)}`;
   const joints = [`${fr}, kyunki ${w}`, j1, `${fr}: ${w}`];
   const used = (j) => last2.some((t) => j === 0 ? /, kyunki /.test(t) : j === 1 ? /\. (?:Dekho|Suno), /.test(t) : /^[^.:]{3,25}: /.test(t));
@@ -2942,7 +2947,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
       const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow });
       j2Line = pick.line ?? null;
-      guard.j2 = { said: rr0.said, line: j2Line, form: pick.form };
+      guard.j2 = { said: rr0.said, line: j2Line, form: pick.form, ...(pick.kind ? { kind: pick.kind } : {}) };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
       ss = ss.filter((x) => !(k && x.toLowerCase().includes(k)));
     }

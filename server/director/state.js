@@ -653,7 +653,9 @@ const friendly = (item) => {
   const f = (x) => fillFriend(x, friendOf);
   // (Learning, c5-t02: the friend can be a card's key or its listed wrong pick, so graded fields are filled with the same name)
   // (048 G8: wrongIfMis may be a list — each form filled, the list kept)
-  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: Array.isArray(m.wrongIfMis) ? m.wrongIfMis.map(f) : f(m.wrongIfMis) } : m);
+  const meta0 = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: Array.isArray(m.wrongIfMis) ? m.wrongIfMis.map(f) : f(m.wrongIfMis) } : m);
+  // (to-brain 053 F: a card's other named wrong answers are graded fields too)
+  const meta = (m) => { const x = meta0(m); return x?.wrongAnswers?.length ? { ...x, wrongAnswers: x.wrongAnswers.map((w) => ({ ...w, answer: Array.isArray(w.answer) ? w.answer.map(f) : f(w.answer), accept: (w.accept ?? []).map(f) })) } : x; };
   return { ...item, prompt_en: f(item.prompt_en), prompt_hi: f(item.prompt_hi), answer: f(item.answer), acceptable: (item.acceptable ?? []).map(f),
     ...(item.scriptAsk ? { scriptAsk: meta(item.scriptAsk) } : {}), ...(item.scriptCheck ? { scriptCheck: meta(item.scriptCheck) } : {}), ...(item.scriptThen ? { scriptThen: meta(item.scriptThen) } : {}) };
 };
@@ -1263,7 +1265,9 @@ function walkRemedy(s, input, item) {
   // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
   // (O3, main on director21 c5-t02 stuck 16: "4/1", read incorrect, got a remediation — a remediation follows only the answer that shows
   // its misconception; a plain miss gets the wrong-answer cell, the card's simpler)
-  const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
+  // (to-brain 053 F: a card's other named wrong answer — `wrongAnswers`, read by the grader as wrongNamed ≥ 1 — is its own mistake; the card's
+  // remediation answers its `wrongIfMis`. Its own reason is the help: help.js. director34: a joining error got the cutting remediation)
+  const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" && !(input.cls?.wrongNamed > 0) ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
   // (dc-r8-director26 R1: "said once" is counted for each remediation — its skill and its mix-up — not for each mix-up id. c5-t02 steady 117
   // to 148: the same mix-up four times in the third skill, and that skill's own remediation never said, because the first skill's had been)
   if (!targets || (s.remedied ?? []).includes(remKeyOf(item.skillId, targets))) return null;
@@ -2759,16 +2763,27 @@ function lessonPick(s, list, salt = "") {
 /** to-brain 052 B5: what the child said to the wrap's closing question — she liked it, or found it hard — and whether an acknowledgement form
  *  meets it: to a liking, a form that thanks or takes it gladly, never one that only notes it ("samajh gayi", "sun liya"); to "mushkil tha",
  *  one that notes it, never a thank-you. Anything else: every form fits. */
-const WRAP_LIKED = /(?<![\p{L}])(?:maz(?:a|aa)|achh?(?:a|e|i)\s+(?:laga|lage|lagi|tha|the|thi)|pasand|badhiya|mast|fun|enjoy\w*|liked?|loved?|nice|great|accha\s+laga|acha\s+laga|sawaal\s+achh?e)(?![\p{L}])/iu;
+const WRAP_LIKED = /(?<![\p{L}])(?:aasaan|aasan|asaan|asan|easy|maz(?:a|aa)|achh?(?:a|e|i)\s+(?:laga|lage|lagi|tha|the|thi)|pasand|badhiya|mast|fun|enjoy\w*|liked?|loved?|nice|great|accha\s+laga|acha\s+laga|sawaal\s+achh?e)(?![\p{L}])/iu;
 const WRAP_HARD = /(?<![\p{L}])(?:mushkil|kathin|hard|difficult|tough|samajh\s+nahi)(?![\p{L}])/iu;
 const ACK_NOTES = /(?<![\p{L}])(?:samajh\s+gayi|sun\s+(?:liya|li)|pata\s+chal\s+gaya)(?![\p{L}])/iu;
 const ACK_THANKS = /(?<![\p{L}])(?:shukriya|thank)/iu;
+// (to-brain 053 C3: "Hmm" never opens the reply to a child who liked it — "aasaan laga", "maza aaya", "sawaal achhe the" — release 59's reader
+// lets the reply reach this choice, so it is tested with a stubbed model: tests/r8-d35-053b.test.mjs)
+const ACK_HMM = /^\s*hmm+\b[\s,.]*/iu;
 export function ackFits(form, said) {
   const t = String(said ?? "");
   const hard = WRAP_HARD.test(t), liked = !hard && WRAP_LIKED.test(t);
-  if (liked) return !ACK_NOTES.test(form);
+  if (liked) return !ACK_NOTES.test(form) && !ACK_HMM.test(form);
   if (hard) return !ACK_THANKS.test(form);
   return true;
+}
+/** The wrap's acknowledgements that fit what the child said; where none does for a child who liked it, a form that opens on "Hmm" is said
+ *  without it ("Hmm, batane ke liye shukriya." → "Batane ke liye shukriya.") when the rest fits. [] when nothing fits. */
+export function ackFitting(acks, said) {
+  const fit = (acks ?? []).filter((x) => ackFits(x, said));
+  if (fit.length) return fit;
+  const bare = (acks ?? []).filter((x) => ACK_HMM.test(x)).map((x) => { const r = String(x).replace(ACK_HMM, "").trim(); return r ? r.charAt(0).toUpperCase() + r.slice(1) : r; });
+  return bare.filter((x) => x && ackFits(x, said));
 }
 function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afterKey = false, second = null }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
@@ -2824,9 +2839,10 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
       // (to-brain 052 B5: the reply reads what the child said — "maza aaya", "sawaal achhe the" is not met with a form that takes a complaint
       // or a goodbye ("Hmm, theek hai, samajh gayi."), and "thoda mushkil tha" is not thanked: the forms that fit what she said, the lesson's
       // pick among them; none fits, the lesson's pick as before)
-      const fitting = acks2.filter((x) => ackFits(x, second.said));
+      const fitting = ackFitting(acks2, second.said);
       const pick2 = second.replied && !second.ack ? lessonPick(s, fitting.length ? fitting : acks2, "wrapAck") : null;
-      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? (fitting.length ? fitting : acks2).find((x) => x !== second.ackSaid) ?? acks2.find((x) => x !== second.ackSaid) ?? null : pick2;
+      // (to-brain 053 C3: where only the form turn one said fits, it is said again rather than a form that does not fit)
+      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? (fitting.length ? fitting : acks2).find((x) => x !== second.ackSaid) ?? (fitting.length ? pick2 : acks2.find((x) => x !== second.ackSaid)) ?? null : pick2;
       const ackS = second.ack ?? ack2;
       const lines2 = [ackS, bye].filter((x) => x && String(x).trim()).map(endLine);
       return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(ackS ? { wrapAck: endLine(ackS) } : {}),
@@ -4097,7 +4113,7 @@ export function step(prev, input) {
   { const liveA = input?.event === "turn" ? prev?.lastUi?.ask?.itemId ?? null : null;
     const oc = String(input?.cls?.outcome ?? "");
     const pA = liveA && String(liveA).startsWith("script:") && ["correct", "incorrect", "partial", "misconception"].includes(oc) ? (() => { try { return cardPartOf(input.kit, { itemId: liveA }); } catch { return null; } })() : null;
-    if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed } } }; }
+    if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed, ...(Number.isInteger(input.cls.wrongNamed) ? { wrongNamed: input.cls.wrongNamed } : {}) } } }; }
   // (to-brain 053 B3: a question heard four times — the fifth turn that would say it gives the card's key with its reason, or tells the step)
   const cap = heard ? heardCap(prev, input, heard, said) : null;
   if (cap?.input) input = cap.input;

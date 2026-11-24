@@ -778,6 +778,17 @@ export type BoardRef =
   | { template: string; params?: Record<string, unknown>; withhold?: "item" }
   | ({ template: string; withhold?: "item" } & Record<string, unknown>)
   | { auto: true };
+/** to-brain 053 F (Learning 023 Part 1 rule 2): a wrong answer a card names beside its `wrongIfMis` (which, with its `whyAlt`, stays the
+ *  first named answer), with its own reason. At most three on a card or follow-up card. The grader reads each as a misconception and records
+ *  which one; the reason is said once, as the first rung of help, to a child whose last answer at that card was that answer. */
+export interface NamedWrongAnswer {
+  /** the wrong answer, one string or the ways it is said */
+  answer: string | string[];
+  /** more ways the same wrong answer is said */
+  accept?: string[];
+  /** why that answer is not right, for the child who gave it; never states the card's key */
+  why: Said;
+}
 // ── script v2 (dc-r7-script-walk-v2, main's director4 judgement: "the walk is a clock, not a teacher") ──
 // version: 2. Every field the child HEARS or SEES is a Said (F1): code speaks the lesson language's form and never an
 // English-only field in a Hinglish lesson. Every explain beat ends in a keyed micro-question (F2): a beat is done only when
@@ -795,6 +806,8 @@ export interface KeyedAsk {
   targets?: string | null;
   /** 048 G8: one string, or a list of the ways the same wrong answer is said ("barabar", "dono barabar") */
   wrongIfMis?: string | string[] | null;
+  /** to-brain 053 F: more named wrong answers, each with its reason (at most three) */
+  wrongAnswers?: NamedWrongAnswer[];
   /** v2.1: a follow-up card's board */
   board?: BoardRef | null;
   /** v6: why the key is right, said after the answer when the card is closed ("…, kyunki <why>"); never starts "kyunki".
@@ -876,6 +889,8 @@ export interface CheckQuestionV2 {
   targets: string;
   /** the answer a child holding that misconception gives; 048 G8: or a list of the ways it is said */
   wrongIfMis: string | string[];
+  /** to-brain 053 F: more named wrong answers, each with its reason (at most three) */
+  wrongAnswers?: NamedWrongAnswer[];
   board?: BoardRef | null;
   /** v6: why the key is right (see KeyedAsk.why) */
   why?: Said;
