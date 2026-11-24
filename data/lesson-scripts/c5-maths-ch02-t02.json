@@ -368,7 +368,7 @@
      "simpler": { "hi": "Board par dono ke hisse ek jitne bade hain. Isliye yahan sirf hisson ki ginti batati hai kiske paas zyada hai.", "en": "On the board both have parts of the same size. So here only the count of parts tells who has more." },
      
      "then": {
-      "prompt": { "hi": "Do ek jaise ribbon, dono 7 barabar hisson mein. Neha ne ek se 3 liye, Gopi ne doosre se 6. Neha ka kam ya zyada?", "en": "Two same ribbons, each in 7 equal parts. Neha took 3 from one, Gopi 6 from the other. Is Neha's less or more?" }, "reask": { "hi": "Neha ne ek ribbon ka 3/7 liya aur Gopi ne utne hi lambe ribbon ka 6/7, toh Neha ka ribbon kam hai ya zyada?", "en": "Neha took 3/7 of a ribbon and Gopi 6/7 of a ribbon just as long, so is Neha's ribbon less or more?" },
+      "prompt": { "hi": "Do ek jaise ribbon, dono 7 barabar hisson mein. Neha ne 3 liye, Gopi ne 6. Neha ka ribbon Gopi se kam hai ya zyada?", "en": "Two same ribbons, each in 7 equal parts. Neha took 3, Gopi 6. Is Neha's ribbon less or more than Gopi's?" }, "reask": { "hi": "Neha ne ek ribbon ka 3/7 liya aur Gopi ne utne hi lambe ribbon ka 6/7, toh Neha ka ribbon kam hai ya zyada?", "en": "Neha took 3/7 of a ribbon and Gopi 6/7 of a ribbon just as long, so is Neha's ribbon less or more?" },
       "key": "Gopi se kam",
       "accept": ["Gopi se kam", "less", "kam", "kam hai", "Neha ke paas kam", "Gopi ke paas zyada", "less ribbon", "Neha ka kam"],
       "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
@@ -392,7 +392,7 @@
       "key": "1/2",
       "accept": ["2 hisson wali", "2 wali patti", "pehli patti", "1/2 wali", "aadhi wali", "one half", "pehli", "pehli wali", "pehli mein zyada", "pehli mein", "2 wali", "pehli patti mein zyada"],
       "targets": "c5-maths-ch02-t02-m-tops-only",
-      "wrongIfMis": "2/6",
+      "wrongIfMis": ["2/6", "doosri", "doosri patti", "6 wali"],
       "board": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 0, "label": ""}, {"parts": 6, "shade": 0, "label": ""}]} }, "viewCaption": { "hi": "Do ek jaise gol: ek 2 barabar hisson mein, doosra 6 mein. 6 wale gol ke kitne hisse 2 wale gol ke ek hisse mein samaate hain, yeh gino.", "en": "Two identical circles: one in 2 equal parts, the other in 6. Count how many parts of the 6-circle fit into one part of the 2-circle." },
       "why": { "hi": "1/2 theek aadhi patti hai, jabki 2/6 aadhi patti tak nahi pahunchta", "en": "1/2 is exactly half the strip, while 2/6 doesn't reach half" }, "whyShort": { "hi": "1/2 theek aadha, 2/6 aadhe tak nahi", "en": "1/2 is half, 2/6 is less than half" }, "whyAltAsHelp": true, "whyAlt": { "hi": "Yahan hisse ek size ke nahi hain, isliye do hisse ek hisse se zyada hon, yeh zaroori nahi: 6 mein kati patti ka har hissa bahut chhota hai.", "en": "Here the parts are not one size, so two parts need not be more than one part: each part of a strip cut into 6 is very small." },
       "answerBoard": { "template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": "1/2"}, {"parts": 6, "shade": 2, "label": "2/6"}]} }, "answerViewCaption": { "hi": "Line ke upar 2 gap hain aur mark 1/2 par, neeche 6 gap aur mark 2/6 par. 1/2 ka mark aage hai, isliye pehli patti mein rang zyada hai.", "en": "Above the line are 2 gaps with the mark at 1/2, below it 6 gaps with the mark at 2/6. The 1/2 mark is further along, so the first strip has more colour." },
