@@ -1743,6 +1743,13 @@ export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5
   "c4-maths-ch01-t02", "c6-maths-ch07-t01",
   // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
   "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
+/** Own steps posed with no board of their own although a step has a resultBoard (Learning 024 rule 1 skips them, with an info
+ *  line): the worked step's result board, which stays up, is the working the child needs. Main lists each with its reason:
+ *  { topicId, at, reason }. A listed step that has a board is an error, so the list cannot go stale. */
+export const OWN_BOARD_NONE = [
+  // (d36 cold read, main 2026-11-24: the rollout's 7-part "?" strip gave the denominator away; put back as in director35)
+  { topicId: "c6-maths-ch07-t03", at: "c6-maths-ch07-t03-s3/workedExample.yourStep", reason: "an own board here either shows the denominator the step asks for, or needs a compare table whose \"?\" cells the answer board fills, which the answer-board figure rule refuses; the working the child needs is the worked step's result board (14 ÷ 7, 49 ÷ 7), which stays up" },
+];
 /** Cards with no honest drawing: any picture of the thing would draw the card's own answer. A picture request there gets the
  *  card's hint (to Brain 048 G5). Main lists each with its reason: { topicId, at, reason }. */
 export const PICTURE_NONE = [
@@ -2871,7 +2878,8 @@ export function ownStepBoardHits(s) {
     const we = k.workedExample, y = we?.yourStep;
     if (!y) continue;
     const j = (we.steps ?? []).findIndex((x) => x?.resultBoard?.template);
-    if (j >= 0 && !y.board?.template) out.push({ at: `${k.skillId}/workedExample.yourStep`, step: j });
+    const at = `${k.skillId}/workedExample.yourStep`;
+    if (j >= 0 && !y.board?.template && !OWN_BOARD_NONE.some((x) => x.topicId === s?.topicId && x.at === at)) out.push({ at, step: j });
   }
   return out;
 }
@@ -2922,6 +2930,10 @@ export function answerValueLines(s) {
 export function d36Errors(s, { force = false } = {}) {
   if (!force && !isD36(s)) return [];
   const e = [];
+  for (const n of OWN_BOARD_NONE.filter((x) => x.topicId === s?.topicId)) {
+    const k = (s?.skills ?? []).find((x) => `${x.skillId}/workedExample.yourStep` === n.at);
+    if (!k?.workedExample?.yourStep || k.workedExample.yourStep.board?.template) e.push(`OWN_BOARD_NONE ${n.at}: listed but the step has a board of its own now (or is gone); take it off the list (Learning 024 rule 1)`);
+  }
   for (const x of ownStepBoardHits(s)) e.push(`${x.at}: no board of its own after a step's result board (the walk redraws the worked board at the step's first word) (workedExample.steps[${x.step}].resultBoard) (Learning 024 rule 1)`);
   for (const x of sharedReasonHits(s)) e.push(`${x.at}: "${x.sentence}" is ${x.other}'s sentence too: a named reason's sentence is one card's (Learning 024 rule 2)`);
   const f = firstTurnWithStart(s);
@@ -2929,7 +2941,7 @@ export function d36Errors(s, { force = false } = {}) {
   return e;
 }
 /** Learning 024's lines for an author: the rule-3 count with its start line (T36), the answer values no board draws (P). */
-export const d36ReportLines = (s) => { const f = firstTurnWithStart(s); return [...(f ? [`T36 ${f.at}: start ${f.start} (${f.startFrom}) + hook ${f.hook} + point ${f.point} + card ${f.card} = ${f.total} (limit ${f.limit})`] : []),
+export const d36ReportLines = (s) => { const f = firstTurnWithStart(s); return [...OWN_BOARD_NONE.filter((x) => x.topicId === s?.topicId).map((x) => `I36 ${x.at}: no board of its own, listed in OWN_BOARD_NONE (rule 1 skips it): ${x.reason}`), ...(f ? [`T36 ${f.at}: start ${f.start} (${f.startFrom}) + hook ${f.hook} + point ${f.point} + card ${f.card} = ${f.total} (limit ${f.limit})`] : []),
   ...answerValueLines(s).map((x) => `P ${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")}, which neither its posing board (${x.posing ?? "none"}) nor ${x.answerBoard ? `its answerBoard (${x.answerBoard})` : "an answerBoard (none)"} draws: "${x.text}"`)]; };
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {

@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { d36Errors, D36_READY, isD36, ownStepBoardHits, sharedReasonHits, firstTurnWithStart, answerValueLines, d36ReportLines, firstTurn,
+import { d36Errors, OWN_BOARD_NONE, D36_READY, isD36, ownStepBoardHits, sharedReasonHits, firstTurnWithStart, answerValueLines, d36ReportLines, firstTurn,
   d35Errors, D36_FIRST_MAX } from "../scripts/lesson-scripts/check.mjs";
 import { FALLBACK_JOINTS } from "../server/director/help.js";
 
@@ -43,6 +43,12 @@ test("024 rule 1: an own step with no board after a step's result board fails; w
   // (no step with a result board: an own step may be posed on the worked board)
   const s = PASS(); for (const x of s.skills[0].workedExample.steps) delete x.resultBoard;
   assert.deepEqual(ownStepBoardHits(s), []);
+});
+test("024 rule 1: a step in OWN_BOARD_NONE passes with no board; listed with a board of its own, it fails", () => {
+  const s = PASS(); s.topicId = "c6-maths-ch07-t03"; s.skills[0].skillId = "c6-maths-ch07-t03-s3";
+  assert.deepEqual(rule(1)(d36Errors(s, { force: true })), []);
+  s.skills[0].workedExample.yourStep.board = s.skills[0].workedExample.steps.at(-1).resultBoard;
+  assert.match(rule(1)(d36Errors(s, { force: true })).join("\n"), /OWN_BOARD_NONE c6-maths-ch07-t03-s3\/workedExample\.yourStep: listed but the step has a board/);
 });
 
 // ---- 2 a named reason's sentence is one card's
