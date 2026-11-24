@@ -30428,6 +30428,76 @@
    "at": "2026-11-24",
    "title": "Released 87d7380 with scripts/release.mjs: web taxila-web--s87d7380-16vf (was taxila-web--s610fe4d-1vgo), worker + canary/nightly jobs on taxila-worker:87d7380 (was 610fe4d); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 87d7380 --rollback.",
    "source": "inbox/release-87d7380.json"
+  },
+  {
+   "id": "ms-r8-director34",
+   "kind": "measurement",
+   "at": "2026-11-24",
+   "title": "director34: 36 lessons on release 58's code (7 live, 2 staged), 9 Opus judges by hand: all seven live lessons pass every gate line on the judges' counts and main's ruling 1 (by the letter of the rule main gave the judges, four of them fail on one to three script rows); staged c4-ch06-t01 passes, staged c6-ch07-t03 fails on 4 script rows; register 3.5 in all nine for the eighth run",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "dc-r8-director34",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "After director34: release 59 (a wrap reply is never graded); every worked step that states a value is said over a board that shows it; a second picture request gets a second picture or the reason, never a bare line; a card may name several wrong answers each with its reason; three walk paths (a give-up at a bridge, try-first and \"haan\", four hearings of a question); fixed forms; the cold read gains a pass; the prompt is checked by code",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "fd-r8-rule-wider-than-the-gate",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "The rule main gave the judges (\"count each step confirmed without a result board as a contradiction\") was wider than the gate's own definition (her words against the board); four judges counted by the gate and left the rows to main, who narrowed the rule after the run in the direction that passes: nine rows in five scripts, four live lessons' pass resting on the ruling",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "fd-r8-prompt-quoted-what-the-scripts-do-not-say",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "The judges' prompt quoted a script sentence that is not in the script, claimed no listed answer holds a cutting word when one does, and left the AI line's question out of its list of allowed endings: written from main's memory of the round, not from the files",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "fd-r8-wrap-reply-graded-in-production",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "Release 58 graded the child's reply to the wrap's question (\"thoda mushkil tha\") against the closing question and wrote it as a wrong answer: an evidence row per taught skill and a teach-back event in the learner model, on every lesson reaching the two-turn wrap; the offline walk read 0 because its reader calls no model; found by the automatic check on the paid run minutes after it ended, fixed in release 59",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "fd-r8-help-misses-wrong-answers-the-script-did-not-name",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "With the own reason kept to its named wrong answer (148 said, none after another answer), what holds listening at 3.5 is the child whose wrong answer the script did not name: five judges heard help about a different mistake (a miscount re-taught right angles; twelfths re-taught halves; 1/6 answered with 1/7)",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "fd-r8-register-flat-for-eight-runs",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "Register has been 3.5 in every topic for eight judged runs while every other axis moved; its largest cause in seven of nine reports is the length and shape of a turn (a first teaching turn of 67 to 74 words to a child who said \"pata nahi\"; a close and a card at 73), then fixed forms; fixing sentences has not moved it",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "rj-r8-no-picture-line-and-invitation-alone",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Answering a second picture request with the no-other-drawing line and \"Ab tum batao.\" where the hint owns a board that is not up: true to the screen, and heard by three judges as refusing a stuck child (8 of the 12 no-picture turns)",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "rj-r8-offline-zero-as-proof-of-a-reader-change",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Taking the offline walk's 0 as proof that a change to how an answer is read was safe: the offline reader calls no model and read every unmatched line as no evidence, so the path that only a model exercises went to production broken",
+   "source": "inbox/r8-main-61.json"
+  },
+  {
+   "id": "ms-release-9b35520",
+   "kind": "measurement",
+   "at": "2026-11-24",
+   "title": "Released 9b35520 with scripts/release.mjs: web taxila-web--s9b35520-s0m7 (was taxila-web--s87d7380-16vf), worker + canary/nightly jobs on taxila-worker:9b35520 (was 87d7380); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 9b35520 --rollback.",
+   "source": "inbox/release-9b35520.json"
   }
  ],
  "edges": [
@@ -49025,6 +49095,91 @@
    "src": "fd-r8-builders-resume-after-restart",
    "rel": "constrains",
    "dst": "dc-r8-agents-run-the-whole-suite"
+  },
+  {
+   "src": "dc-r8-director34",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "dc-r8-director34",
+   "rel": "supersedes",
+   "dst": "dc-r8-director33"
+  },
+  {
+   "src": "fd-r8-rule-wider-than-the-gate",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "fd-r8-prompt-quoted-what-the-scripts-do-not-say",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "fd-r8-wrap-reply-graded-in-production",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "fd-r8-help-misses-wrong-answers-the-script-did-not-name",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "fd-r8-register-flat-for-eight-runs",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "rj-r8-no-picture-line-and-invitation-alone",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "rj-r8-offline-zero-as-proof-of-a-reader-change",
+   "rel": "measured_by",
+   "dst": "ms-r8-director34"
+  },
+  {
+   "src": "fd-r8-rule-wider-than-the-gate",
+   "rel": "constrains",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "fd-r8-prompt-quoted-what-the-scripts-do-not-say",
+   "rel": "constrains",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "fd-r8-wrap-reply-graded-in-production",
+   "rel": "constrains",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "fd-r8-help-misses-wrong-answers-the-script-did-not-name",
+   "rel": "constrains",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "fd-r8-register-flat-for-eight-runs",
+   "rel": "constrains",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "dc-r8-director34",
+   "rel": "caused_by",
+   "dst": "rj-r8-no-picture-line-and-invitation-alone"
+  },
+  {
+   "src": "rj-r8-offline-zero-as-proof-of-a-reader-change",
+   "rel": "caused_by",
+   "dst": "fd-r8-wrap-reply-graded-in-production"
+  },
+  {
+   "src": "fd-r8-help-misses-wrong-answers-the-script-did-not-name",
+   "rel": "caused_by",
+   "dst": "dc-r8-own-reason-is-one-rung"
   }
  ]
 }
