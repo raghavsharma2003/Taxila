@@ -6,7 +6,7 @@
 
 **Missing fields** are counted once per field of the script, however many rules name it. **Rule holes** count every (part, column, help) cell that names a missing field.
 
-**Scripts:** 34 (7 live, 27 staged). Missing fields: 2045. Rule holes: 15666. Doubles: 0.
+**Scripts:** 34 (6 live, 28 staged). Missing fields: 2045. Rule holes: 15666. Doubles: 0.
 
 **Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.
 
@@ -14,7 +14,7 @@
 
 **Not applicable:** 369 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
 
-**Not missing a whyAlt:** 3 cards whose named wrong answers are all `wrongAnswers` entries (no `wrongIfMis`) carry their second reasons there, one per answer, each said only to the child who gave it (d35 follow-up 1; the checker exempts them). Not holes, not counted below: c4-maths-ch01-t02 skills[2].checks[1] (check); c4-maths-ch05-t01 skills[0].checks[1] (check); c5-maths-ch02-t03 skills[0].checks[1] (check).
+**Not missing a whyAlt:** 3 cards whose named wrong answers are all `wrongAnswers` entries (no `wrongIfMis`) carry their second reasons there, one per answer, each said only to the child who gave it (d35 follow-up 1; the checker exempts them). Not holes, not counted below: c4-maths-ch05-t01 skills[0].checks[1] (check); c5-maths-ch02-t03 skills[0].checks[1] (check); c4-maths-ch01-t02 skills[2].checks[1] (check).
 
 ## Missing fields, all scripts
 
@@ -40,13 +40,13 @@
 
 | Script | Where | Parts | Cells | Missing | card ask.simpler | card whyAlt | card whyShort | check whyAlt | check whyShort | point pointAlt | remediation board | remediation sayAlt | then_card whyAlt | then_card whyShort | worked_step problemAlt | worked_step told | wrap ask | your_step remediation | your_step whyAlt | Doubles |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch01-t02 | live | 59 | 1809 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch05-t01 | live | 63 | 1935 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t01 | live | 72 | 2214 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t02 | live | 73 | 2241 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c5-maths-ch02-t03 | live | 63 | 1926 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c6-maths-ch06-t01 | live | 65 | 1989 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 5 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c6-maths-ch07-t01 | live | 58 | 1773 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
+| c4-maths-ch01-t02 | staged | 59 | 1809 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 0 |
 | c4-maths-ch03-t01 | staged | 60 | 1836 | 78 | 8 | 8 | 8 | 8 | 8 | 8 | 2 | 5 | 5 | 5 | 3 | 6 | 1 | 0 | 3 | 0 |
 | c4-maths-ch03-t02 | staged | 57 | 1746 | 77 | 7 | 7 | 7 | 8 | 8 | 7 | 5 | 5 | 5 | 5 | 3 | 6 | 1 | 0 | 3 | 0 |
 | c4-maths-ch04-t01 | staged | 66 | 2025 | 91 | 9 | 9 | 9 | 9 | 9 | 9 | 6 | 6 | 6 | 6 | 3 | 6 | 1 | 0 | 3 | 0 |
@@ -161,13 +161,13 @@ A script without them is said with code's fallback forms (server/director/help.j
 
 | Script | Where | Joint | Hole |
 |---|---|---|---|
-| c4-maths-ch01-t02 | live | helpToCard | missing (code's fallback forms are said) |
 | c4-maths-ch05-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch02-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch02-t02 | live | helpToCard | missing (code's fallback forms are said) |
 | c5-maths-ch02-t03 | live | helpToCard | missing (code's fallback forms are said) |
 | c6-maths-ch06-t01 | live | helpToCard | missing (code's fallback forms are said) |
 | c6-maths-ch07-t01 | live | helpToCard | missing (code's fallback forms are said) |
+| c4-maths-ch01-t02 | staged | helpToCard | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | helpSpent | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | afterKeyGoOn | missing (code's fallback forms are said) |
 | c4-maths-ch03-t01 | staged | helpToCard | missing (code's fallback forms are said) |
@@ -517,13 +517,13 @@ Counts of parts over their limit: hook over 20 words; hook, first point and card
 
 | Script | Where | Hooks > 20 | First turns > 75 | Points > 61 | Quick kept | Remediations > 49 | Worked > 53 | workedInvite | stepMiss missing |
 |---|---|---|---|---|---|---|---|---|---|
-| c4-maths-ch01-t02 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c4-maths-ch05-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c5-maths-ch02-t01 | live | 0 | 0 | 0 | 0 | 2 | 0 |  |  |
 | c5-maths-ch02-t02 | live | 0 | 0 | 0 | 0 | 4 | 0 |  |  |
 | c5-maths-ch02-t03 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c6-maths-ch06-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c6-maths-ch07-t01 | live | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
+| c4-maths-ch01-t02 | staged | 0 | 0 | 0 | 0 | 0 | 0 |  |  |
 | c4-maths-ch03-t01 | staged | 6 | 6 | 2 | 0 | 2 | 3 |  | yes |
 | c4-maths-ch03-t02 | staged | 6 | 4 | 2 | 0 | 0 | 3 |  | yes |
 | c4-maths-ch04-t01 | staged | 6 | 4 | 0 | 0 | 4 | 3 |  | yes |
@@ -558,13 +558,13 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 
 | Script | Where | Cards | Without hindi | afterWorked missing | Step wordings stating the answer |
 |---|---|---|---|---|---|
-| c4-maths-ch01-t02 | live | 28 | 17 |  | 0 |
 | c4-maths-ch05-t01 | live | 30 | 18 |  | 0 |
 | c5-maths-ch02-t01 | live | 34 | 21 |  | 0 |
 | c5-maths-ch02-t02 | live | 34 | 26 |  | 0 |
 | c5-maths-ch02-t03 | live | 29 | 23 |  | 0 |
 | c6-maths-ch06-t01 | live | 30 | 18 |  | 0 |
 | c6-maths-ch07-t01 | live | 27 | 20 |  | 0 |
+| c4-maths-ch01-t02 | staged | 28 | 17 |  | 0 |
 | c4-maths-ch03-t01 | staged | 24 | 24 | yes | 0 |
 | c4-maths-ch03-t02 | staged | 23 | 23 | yes | 0 |
 | c4-maths-ch04-t01 | staged | 27 | 27 | yes | 0 |
@@ -594,23 +594,6 @@ Cards (explain cards, follow-up cards, checks, asked worked steps, the own step,
 | c7-maths-ch05-t02 | staged | 25 | 25 | yes | 1 |
 
 Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi request gets the card's unsaid help): 
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/e3.ask
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/remediation[0].then
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/c3
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e2.ask
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e3.ask
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/remediation[0].then
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c1
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c2
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c3
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/workedExample.yourStep
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e2.ask
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e3.ask
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/remediation[0].then
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c1
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c2
-- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/workedExample.yourStep
-- c4-maths-ch01-t02 teachback
 - c4-maths-ch05-t01 c4-maths-ch05-t01-s1/e2.ask
 - c4-maths-ch05-t01 c4-maths-ch05-t01-s1/e3.ask
 - c4-maths-ch05-t01 c4-maths-ch05-t01-s1/e4.ask
@@ -737,6 +720,23 @@ Cards at the standard with no `hindi` form (Learning 020 rule 1: a hole; a Hindi
 - c6-maths-ch07-t01 c6-maths-ch07-t01-s3/c3
 - c6-maths-ch07-t01 c6-maths-ch07-t01-s3/workedExample.yourStep
 - c6-maths-ch07-t01 teachback
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s1/c3
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e2.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c1
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c2
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/c3
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s2/workedExample.yourStep
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e2.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/e3.ask
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/remediation[0].then
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c1
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/c2
+- c4-maths-ch01-t02 c4-maths-ch01-t02-s3/workedExample.yourStep
+- c4-maths-ch01-t02 teachback
 - c4-maths-ch06-t01 c4-maths-ch06-t01-s1/e2.ask
 - c4-maths-ch06-t01 c4-maths-ch06-t01-s1/e3.ask
 - c4-maths-ch06-t01 c4-maths-ch06-t01-s1/c2
