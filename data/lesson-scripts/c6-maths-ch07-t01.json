@@ -118,7 +118,7 @@
       "do": { "hi": "Fractional unit ke neeche hisson ki ginti likho", "en": "Write the count of parts under the fractional unit" },
       "result": "neeche hisson ki ginti aati hai, lambai nahi",
       "why": { "hi": "fractional unit poore ke barabar hisson mein se ek hissa hai", "en": "a fractional unit is one of the whole's equal parts" },
-      "simpler": { "hi": "Neeche hisse ka size nahi aata, hisson ki ginti aati hai, jaise roti ke hisse gin kar uske ek hisse ka naam diya tha.", "en": "The bottom is not the size of a part but the count of parts, just as we named one part of the roti by counting its parts." }, "told": { "hi": "Dhyaan rakhna, fractional unit ke neeche hisse ki lambai 6 nahi aati; neeche woh ginti aati hai ki ganna kitne barabar hisson mein bata.", "en": "Careful: the part's length, 6, does not go under a fractional unit; the bottom is how many equal parts the sugarcane is in." }
+      "simpler": { "hi": "Neeche hisse ka size nahi aata; neeche yeh aata hai ki poora kitne barabar hisson mein bata.", "en": "The bottom is not the size of a part; the bottom is how many equal parts the whole is in." }, "told": { "hi": "Dhyaan rakhna, fractional unit ke neeche hisse ki lambai 6 nahi aati; neeche woh ginti aati hai ki ganna kitne barabar hisson mein bata.", "en": "Careful: the part's length, 6, does not go under a fractional unit; the bottom is how many equal parts the sugarcane is in." }
      }
     ],
     "yourStep": {
@@ -126,12 +126,14 @@
      "key": "1/5", "did": { "hi": "ganne ke ek hisse ka fractional unit uski lambai se nikala", "en": "worked out the fractional unit of one part of a sugarcane from its length" },
      "accept": ["one fifth", "ek bata paanch", "1 by 5", "ek-paanchvaan", "ek paanchvaan", "paanchvaan hissa"],
      "wrongIfMis": "1/6",
-     "simpler": { "hi": "Pehle 30 cm mein 6 cm ke hisse gino. Phir yaad karo, roti ke ek hisse ka naam uske barabar hisse gin kar kaise diya tha.", "en": "First count the 6 cm parts in 30 cm. Then remember how we named one part of the roti by counting its equal parts." },
-     "why": { "hi": "ganna 5 barabar hisson mein bata, aur ek hissa unmein se ek hai, toh 1/5", "en": "the sugarcane is in 5 equal parts, and one part is one of them, so 1/5" }, "whyAlt": { "hi": "Tumne hisse ki lambai, 6, neeche likh di; neeche toh yeh aata hai ki poora ganna kitne barabar hisson mein bata.", "en": "You put the part's length, 6, at the bottom; the bottom shows how many equal parts the whole sugarcane is in." }, "whyAltAsHelp": true,
-     "pictureBoard": { "template": "number-line-scale@1", "params": { "from": 0, "to": 30, "step": 10, "marks": [{ "value": 6, "label": "6 cm" }, { "value": 30, "label": "30 cm" }] } }, "pictureCaption": { "hi": "Yahan wahi ganna scale par hai: poora 30 cm, aur pehle 6 cm par ek hisse ka nishaan.", "en": "Here is the same sugarcane on the scale: the whole 30 cm, and a mark where the first 6 cm part ends." }
+     "simpler": { "hi": "Pehle gino ki 30 cm mein 6 cm ke kitne hisse aate hain. Phir dekho, board ki kaunsi patti mein utne hi barabar hisse hain.", "en": "First count how many 6 cm parts fit in 30 cm. Then see which strip on the board has that many equal parts." },
+     "why": { "hi": "ganna 5 barabar hisson mein bata, 6 mein nahi, aur ek hissa unmein se ek hai, toh 1/5", "en": "the sugarcane is in 5 equal parts, not 6, and one part is one of them, so 1/5" }, "whyAlt": { "hi": "Tumne hisse ki lambai, 6, neeche likh di; neeche toh yeh aata hai ki poora ganna kitne barabar hisson mein bata.", "en": "You put the part's length, 6, at the bottom; the bottom shows how many equal parts the whole sugarcane is in." }, "whyAltAsHelp": true,
+     "pictureBoard": { "template": "number-line-scale@1", "params": { "from": 0, "to": 30, "step": 10, "marks": [{ "value": 6, "label": "6 cm" }, { "value": 30, "label": "30 cm" }] } }, "pictureCaption": { "hi": "Yahan wahi ganna scale par hai: poora 30 cm, aur pehle 6 cm par ek hisse ka nishaan.", "en": "Here is the same sugarcane on the scale: the whole 30 cm, and a mark where the first 6 cm part ends." },
+     "board": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 6, "shade": 0, "label": "" }, { "parts": 5, "shade": 0, "label": "" }] } }, "viewCaption": { "hi": "Yahan do ek jitni lambi pattiyan hain: upar wali 6 barabar hisson mein, neeche wali 5 barabar hisson mein.", "en": "Here are two strips of the same length: the upper one in 6 equal parts, the lower one in 5 equal parts." },
+     "answerBoard": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 6, "shade": 0, "label": "" }, { "parts": 5, "shade": 1, "label": "1/5" }] } }
     },
     "answer": { "hi": "ek hissa poore ganne ka 1/5 hai", "en": "one part is 1/5 of the whole sugarcane" },
-    "why": { "hi": "30 ÷ 6 = 5 barabar hisse bane, aur neeche hisson ki ginti aati hai, hisse ki lambai nahi", "en": "30 ÷ 6 gives 5 equal parts, and the bottom is the count of parts, not a part's length" },
+    "why": { "hi": "30 ÷ 6 = 5, toh neeche 5 aata hai, 6 nahi", "en": "30 ÷ 6 = 5, so 5 goes at the bottom, not 6" },
     "board": { "template": "compare@1", "params": { "scale": true, "left": { "title": "Ganna", "items": ["30 cm"] }, "right": { "title": "Ek hissa", "items": ["6 cm"] } } }, "viewCaption": { "hi": "Board par ganna aur uska ek hissa apni lambai ki pattiyan hain: upar 30 cm, neeche 6 cm.", "en": "On the board the sugarcane and one of its parts are strips as long as they are: 30 cm above, 6 cm below." }
    },
    "checks": [
@@ -272,13 +274,14 @@
       "result": "1/2, 1/4 aur 1/7",
       "why": { "hi": "patti apne doston mein barabar bati hai", "en": "the strip is shared equally among its friends" },
       "simpler": { "hi": "Hissa 1/3 aur 1/6 se milana hai. Socho, har option mein kaunsi cheez nikaalni hogi jise in dono se milaa sako.", "en": "The share has to be set against 1/3 and 1/6. Think what you must work out in each option that you can set against both." }, "told": { "hi": "Pehle har option mein ek dost ka hissa likhte hain: 2 doston mein 1/2, 4 mein 1/4, aur 7 mein 1/7.", "en": "First we write one friend's share in each option: among 2 friends 1/2, among 4 1/4, and among 7 1/7." },
-      "resultBoard": { "template": "compare@1", "params": { "left": { "title": "Dost", "items": ["2 dost", "4 dost", "7 dost"] }, "right": { "title": "Har dost ka hissa", "items": ["1/2", "1/4", "1/7"] } } }
+      "resultBoard": { "template": "compare@1", "params": { "left": { "title": "Har dost ka hissa", "items": ["2 dost: 1/2", "4 dost: 1/4", "7 dost: 1/7"] }, "right": { "title": "Hissa aisa chahiye", "items": ["1/3 se chhota", "1/6 se bada"] } } }
      },
      {
       "do": { "hi": "Ab har hissa 1/3 aur 1/6 dono se jaancho", "en": "Now check each share against both 1/3 and 1/6" },
       "result": "hissa 1/3 se chhota bhi ho aur 1/6 se bada bhi",
       "why": { "hi": "sirf ek shart poori hona kaafi nahi", "en": "meeting only one of the two conditions is not enough" },
-      "simpler": { "hi": "Ek hi patti jitne zyada doston mein bate, har hissa utna chhota.", "en": "The more friends the same strip is shared among, the smaller each share." }, "told": { "hi": "Ab har hissa do baaton par jaanchna hai: woh 1/3 se chhota ho, aur 1/6 se bada.", "en": "Now each share is checked on two things: it must be smaller than 1/3, and bigger than 1/6." }
+      "simpler": { "hi": "Ek hi patti jitne zyada doston mein bate, har hissa utna chhota.", "en": "The more friends the same strip is shared among, the smaller each share." }, "told": { "hi": "Ab har hissa do baaton par jaanchna hai: woh 1/3 se chhota ho, aur 1/6 se bada.", "en": "Now each share is checked on two things: it must be smaller than 1/3, and bigger than 1/6." },
+      "resultBoard": { "template": "compare@1", "params": { "left": { "title": "Har dost ka hissa", "items": ["2 dost: 1/2", "4 dost: 1/4", "7 dost: 1/7"] }, "right": { "title": "Hissa aisa chahiye", "items": ["1/3 se chhota", "1/6 se bada"] } } }
      }
     ],
     "yourStep": {
@@ -288,10 +291,11 @@
      "targets": "c6-maths-ch07-t01-m-bigger-denominator",
      "wrongIfMis": ["7 dost", "7 doston mein", "saat dost", "saat doston mein", "7"],
      "simpler": { "hi": "2, 4 aur 7 teeno ke liye socho ki ek dost ka hissa kitna banta hai, aur kya woh 1/3 se chhota aur 1/6 se bada hai.", "en": "For each of 2, 4 and 7, think what one friend's share is, and whether it is under 1/3 and over 1/6." },
-     "why": { "hi": "4 doston mein har hissa 1/4, jo 1/6 se bada hai; 7 doston ka 1/7, 1/6 se bhi chhota", "en": "among 4 friends each share is 1/4, bigger than 1/6; 7 friends' 1/7 is smaller even than 1/6" }, "whyAlt": { "hi": "Tumne sirf yeh dekha ki hissa 1/3 se chhota ho; woh 1/6 se bada bhi chahiye, toh har option ka hissa 1/6 se bhi milao.", "en": "You checked only that the share is smaller than 1/3; it must also be bigger than 1/6, so compare each option's share with 1/6 too." }, "whyAltAsHelp": true,
-     "board": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 3, "shade": 0, "label": "" }, { "parts": 6, "shade": 0, "label": "" }] } }, "viewCaption": { "hi": "Yahan dono pattiyan do ek jaise poore ki tarah bani hain, ek 3 barabar hisson mein aur ek 6 mein.", "en": "Here the two strips are drawn as two identical wholes, one in 3 equal parts and one in 6." }
+     "why": { "hi": "4 doston mein har hissa 1/4 hai, aur 1/4 ki patti 1/3 aur 1/6 ki pattiyon ke beech aati hai", "en": "among 4 friends each share is 1/4, and the 1/4 strip falls between the 1/3 and 1/6 strips" }, "whyAlt": { "hi": "Tumne sirf yeh dekha ki hissa 1/3 se chhota ho; woh 1/6 se bada bhi chahiye, toh har option ka hissa 1/6 se bhi milao.", "en": "You checked only that the share is smaller than 1/3; it must also be bigger than 1/6, so compare each option's share with 1/6 too." }, "whyAltAsHelp": true,
+     "board": { "template": "wholes@1", "params": { "as": "bar", "wholes": [{ "parts": 3 }, { "parts": 6 }] } }, "viewCaption": { "hi": "Yahan dono pattiyan do ek jaise poore ki tarah bani hain, ek 3 barabar hisson mein aur ek 6 mein.", "en": "Here the two strips are drawn as two identical wholes, one in 3 equal parts and one in 6." },
+     "answerBoard": { "template": "wholes@1", "params": { "as": "bar", "wholes": [{ "parts": 3, "shade": 1, "title": "1/3" }, { "parts": 6, "shade": 1, "title": "1/6" }, { "parts": 4, "shade": 1, "title": "1/4" }] } }
     },
-    "answer": { "hi": "patti 4 doston mein baanto. Har hissa 1/4 hai, jo 1/3 se chhota aur 1/6 se bada hai", "en": "share the strip among 4 friends. Each part is 1/4, smaller than 1/3 and bigger than 1/6" },
+    "answer": { "hi": "patti 4 doston mein baanto; har dost ka hissa 1/4 hai", "en": "share the strip among 4 friends; each friend's share is 1/4" },
     "why": { "hi": "dost jitne zyada, hissa utna chhota; 1/2, 1/3 se bada hai aur 1/7, 1/6 se chhota, sirf 1/4 dono ke beech hai", "en": "the more friends, the smaller the part; 1/2 is bigger than 1/3, 1/7 smaller than 1/6, only 1/4 is between" },
     "board": { "template": "fraction-bars@1", "params": { "bars": [{ "parts": 3, "shade": 1, "label": "1/3" }, { "parts": 6, "shade": 1, "label": "1/6" }] } }, "viewCaption": { "hi": "Yahan dono pattiyan 0 se 1 ki ek line ban gayi hain, us par 1/3 aur 1/6 ke nishaan hain. 1/6 ka nishaan 0 ke zyada paas hai.", "en": "Here the two strips become one line from 0 to 1, with marks at 1/3 and 1/6. The 1/6 mark is closer to 0." }
    },
@@ -453,13 +457,14 @@
       "result": "har laddoo ke 3 barabar hisse",
       "why": { "hi": "har bachche ko har laddoo se ek hissa milna hai", "en": "each child is to get one part of every laddoo" },
       "simpler": { "hi": "Har laddoo se har bachche ko barabar hissa dena hai. Socho, ek laddoo ke kitne barabar hisse karoge taaki sabko ek mile.", "en": "Each child must get an equal part of every laddoo. Think how many equal parts you'll make of one laddoo so everyone gets one." }, "told": { "hi": "Har laddoo ke 3 barabar hisse karenge, kyunki bachche 3 hain aur har bachche ko har laddoo se hissa chahiye.", "en": "We make 3 equal parts of each laddoo, because there are 3 children and each child needs a part of every laddoo." },
-      "resultBoard": { "template": "wholes@1", "params": { "wholes": [{ "parts": 3, "title": "Ek laddoo" }] } }
+      "resultBoard": { "template": "wholes@1", "params": { "wholes": [{ "parts": 3, "shade": 1, "title": "Ek laddoo" }] } }
      },
      {
       "do": { "hi": "Har laddoo se har bachche ko ek hissa do", "en": "Give each child one part from every laddoo" },
       "result": "har laddoo se har bachche ko 1/3",
       "why": { "hi": "teeno ko har laddoo se barabar milna chahiye", "en": "all three must get the same from every laddoo" },
-      "simpler": { "hi": "Har laddoo ke hisse teeno bachchon ko ek-ek karke do.", "en": "Hand out each laddoo's parts to the three children one by one." }, "told": { "hi": "Ab har laddoo se har bachche ko ek hissa milta hai, yaani har laddoo ka 1/3.", "en": "Now each child gets one part from every laddoo, that is 1/3 of each laddoo." }
+      "simpler": { "hi": "Har laddoo ke hisse teeno bachchon ko ek-ek karke do.", "en": "Hand out each laddoo's parts to the three children one by one." }, "told": { "hi": "Ab har laddoo se har bachche ko ek hissa milta hai, yaani har laddoo ka 1/3.", "en": "Now each child gets one part from every laddoo, that is 1/3 of each laddoo." },
+      "resultBoard": { "template": "wholes@1", "params": { "wholes": [{ "parts": 3, "shade": 1, "title": "Ek laddoo" }] } }
      }
     ],
     "yourStep": {
@@ -469,11 +474,11 @@
      "targets": "c6-maths-ch07-t01-m-share-flipped",
      "wrongIfMis": "3/5",
      "simpler": { "hi": "Ek bachche ke paas har laddoo se ek hissa hai. Gino laddoo kitne the, aur socho har hissa kitna bada hai.", "en": "One child has one part from every laddoo. Count how many laddoos there were, and think how big each part is." },
-     "why": { "hi": "har laddoo se 1/3, aur laddoo 5, toh 5/3, yaani 1 aur 2/3; dono ek hi hain", "en": "1/3 from each laddoo, and 5 laddoos, so 5/3, that is 1 and 2/3; the same" }, "whyAlt": { "hi": "3/5 toh 1 se kam hota, par laddoo bachchon se zyada hain, toh har bachche ko kam se kam ek poora laddoo milta hai.", "en": "3/5 would be less than 1, but there are more laddoos than children, so each child gets at least one whole laddoo." }, "whyAltAsHelp": true,
+     "why": { "hi": "har laddoo se ek tihaai hissa, aur laddoo 5, toh 5/3, yaani 1 aur 2/3", "en": "a third from each laddoo, and 5 laddoos, so 5/3, that is 1 and 2/3" }, "whyAlt": { "hi": "3/5 toh 1 se kam hota, par laddoo bachchon se zyada hain, toh har bachche ko kam se kam ek poora laddoo milta hai.", "en": "3/5 would be less than 1, but there are more laddoos than children, so each child gets at least one whole laddoo." }, "whyAltAsHelp": true,
      "board": { "template": "equal-groups@1", "params": { "groups": 5, "each": 3, "showSum": false } }, "viewCaption": { "hi": "Yahan har laddoo jaal ki ek pankti hai, 3 barabar hisson mein bata hua.", "en": "Here each laddoo is one row of the grid, split into 3 equal parts." },
-     "answerBoard": { "template": "shade-grid@1", "params": { "rows": 5, "cols": 3, "block": [5, 1], "labels": false, "hideResult": true } }
+     "answerBoard": { "template": "equal-groups@1", "params": { "groups": 5, "each": 3, "showSum": false, "title": "5/3 = 1 aur 2/3" } }
     },
-    "answer": { "hi": "har bachche ko 5/3 laddoo milta hai, yaani 1 poora aur 2/3", "en": "each child gets 5/3 of a laddoo, that is 1 whole and 2/3" },
+    "answer": { "hi": "har bachche ko 5/3 laddoo milta hai", "en": "each child gets 5/3 of a laddoo" },
     "why": { "hi": "laddoo bachchon se zyada the, isliye hissa 1 se zyada aaya", "en": "there were more laddoos than children, so the share came out over 1" },
     "board": { "template": "compare@1", "params": { "left": { "title": "Laddoo", "items": ["5 laddoo"] }, "right": { "title": "Bachche", "items": ["3 bachche"] } } }, "viewCaption": { "hi": "Board par baayein laddoo ki ginti hai, aur daayein bachchon ki.", "en": "On the board the number of laddoos is on the left, and the number of children on the right." }
    },
