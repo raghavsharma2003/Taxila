@@ -176,7 +176,8 @@ export const REPLY_KINDS = Object.freeze(["person", "done", "liking", "whenWhere
 const Q_PERSON = /(?<![\p{L}])(?:kaun|kiske|kisko|kisne|kisse|who|whom)(?![\p{L}])/iu;
 const Q_WHEN_WHERE = /(?<![\p{L}])(?:kab|kahan|kahaan|kidhar|when|where)(?![\p{L}])/iu;
 const Q_DONE = /(?<![\p{L}])kya\s+(?:kiya|kari|kara|karte|karti|khela|khele|dekha|dekhe|khaya|khaye|banaya|hua)(?![\p{L}])|what\s+(?:did|happened|do\s+you\s+do)/iu;
-const Q_LIKING = /achh[aie]\s+(?:kya\s+)?lag|like|pasand|mazedaa?r|maza|favou?rite|best|badhiya/iu;
+// (d35 follow-up 5: "uski sabse achhi baat kya hai?" asks for a liking too)
+const Q_LIKING = /achh[aie]\s+(?:kya\s+)?lag|achh[aie]\s+baat|like|pasand|mazedaa?r|maza|favou?rite|best|badhiya/iu;
 // (the child's words: a person — the people kind's words, "ke saath", "with"; a time or a place; something done; a liking)
 const PEOPLE_WORDS = KINDS.people?.match ?? [];
 const A_PERSON = (t) => hasWord(t, PEOPLE_WORDS) || /(?<![\p{L}])(?:ke\s+saath|ke\s+sath|with)(?![\p{L}])/iu.test(t);
