@@ -30631,6 +30631,111 @@
    "at": "2026-11-24",
    "title": "Released 5149c5b with scripts/release.mjs: web taxila-web--s5149c5b-n9bh (was taxila-web--s9b35520-s0m7), worker + canary/nightly jobs on taxila-worker:5149c5b (was 9b35520); evidence GitHub Actions gates: success (build + 6 test shards); migrations skip. Rollback: node scripts/release.mjs 5149c5b --rollback.",
    "source": "inbox/release-5149c5b.json"
+  },
+  {
+   "id": "ms-r8-director35",
+   "kind": "measurement",
+   "at": "2026-11-24",
+   "title": "director35: 36 lessons on release 60, nine judges: four of nine topics pass the gate, five fail on the one line \"words against board\", each on a fault the round introduced; 0 misgrades in 895; register 3.5 in nine of nine",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "dc-r8-director35",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "After director35: a build is judged before it is released; release 61 takes the two faults out; one round changes scripts only, the next the walk only, both spent on register by cause",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "dc-r8-judge-before-release",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A round's build goes to production after its judged run, not before; a fix-only release may go first when it only removes a fault children are hearing",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "dc-r8-one-author-rounds",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A round changes the scripts or the walk, never both, so that a failure has one author (clause 63 of director35 fired); d36 scripts, d37 walk",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "dc-r8-hint-owns-only-its-own-board",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "At a picture request a hint's board is drawn as the picture only when the script gives the hint a board of its own that is not the board up or the card's posing board; otherwise the no-other-drawing line and the hint in words",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "dc-r8-own-step-has-a-board-of-its-own",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A child's own step states its own board wherever a step of its worked example has a result board; a sixth cold-read pass reads each own step and follow-up card against the board it is posed on",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "fd-r8-hint-board-was-the-cards-board",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "ownHintOf gave a hint with no board of its own the card's board: a second picture request was answered with the board already up in four lessons (director35, four judges)",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "fd-r8-own-step-posed-off-its-board",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "c4-maths-ch01-t02's own step says \"board par dekho, ghumaya tester…\" as the walk redraws the worked board with no tester: six rows in four lessons",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "fd-r8-wait-with-no-end",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "After a bare \"haan\" or the try-first line the walk waits with short asks and invitations for six to eleven turns while the question is neither said nor on the board (three steady lessons)",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "fd-r8-bridge-help-is-the-bridge-again",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "A bridge's easier wording, said as help at a check-in between skills, is the bridge with words taken out (five lessons, five judges)",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "fd-r8-turn-shape-is-the-largest-register-cause",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "Of the judges' 180 register rows in director35, 65 are the length or shape of a turn; help 34, script sentences and reasons 35, her closes and other 28, fixed forms 18",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "rj-r8-release-before-the-judged-run",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Releasing a round on tests, CI and the offline walk and judging it afterwards: two rounds running it put a fault in production that nine judges found within the hour",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "rj-r8-hint-owns-the-board-it-is-said-over",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Reading \"the hint owns a board\" as the board the hint is said over, and checking it with a predicate written from the same reading",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "rj-r8-own-step-posed-on-the-worked-board-by-default",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Letting the walk pose an own step with no board of its own on the worked board while its sentence points at a step's result",
+   "source": "inbox/r8-main-63.json"
+  },
+  {
+   "id": "rj-r8-unread-sentences-at-the-end-of-a-round",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Main writing script sentences at the end of a round with no cold read (c6-maths-ch07-t03's two bridge wordings): heard as the bridge again",
+   "source": "inbox/r8-main-63.json"
   }
  ],
  "edges": [
@@ -49468,6 +49573,116 @@
    "src": "fd-r8-guessed-named-answers",
    "rel": "constrains",
    "dst": "dc-r8-named-answer-skips-the-remediation"
+  },
+  {
+   "src": "dc-r8-director35",
+   "rel": "supersedes",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "dc-r8-director35",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "dc-r8-judge-before-release",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-hint-owns-only-its-own-board",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "fd-r8-hint-board-was-the-cards-board",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-own-step-posed-off-its-board",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-wait-with-no-end",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-bridge-help-is-the-bridge-again",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-turn-shape-is-the-largest-register-cause",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "dc-r8-judge-before-release",
+   "rel": "caused_by",
+   "dst": "rj-r8-release-before-the-judged-run"
+  },
+  {
+   "src": "dc-r8-hint-owns-only-its-own-board",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "rj-r8-hint-owns-the-board-it-is-said-over",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
+  },
+  {
+   "src": "rj-r8-own-step-posed-on-the-worked-board-by-default",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "constrains",
+   "dst": "dc-r8-own-step-answer-on-another-figure"
+  },
+  {
+   "src": "rj-r8-unread-sentences-at-the-end-of-a-round",
+   "rel": "caused_by",
+   "dst": "fd-r8-bridge-help-is-the-bridge-again"
+  },
+  {
+   "src": "fd-r8-bridge-help-is-the-bridge-again",
+   "rel": "constrains",
+   "dst": "dc-r8-every-bridge-has-an-easier-wording"
+  },
+  {
+   "src": "fd-r8-wait-with-no-end",
+   "rel": "constrains",
+   "dst": "dc-r8-four-hearings-cap-on-her-own-repeat"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
   }
  ]
 }

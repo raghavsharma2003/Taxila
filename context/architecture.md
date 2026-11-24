@@ -753,3 +753,9 @@ taxila-cin-pg over 30 days: ~11 connections, CPU average ~8% (peak 62%), memory 
 
 ## Merged inbox entries (write-up from the entry text)
 - `fd-r8-guessed-named-answers` (2026-11-24): Authors named wrong answers at volume from judgement, not from children (25 on 21 cards in one script, 14 in another, none heard in a run): cold readers judged most typical and found six reasons faulty (one gave the key, one false, four spoke to something the child did not do)
+
+
+## Merged inbox entries (write-up from the entry text)
+- `fd-r8-wait-with-no-end` (2026-11-24): After a bare "haan" or the try-first line the walk waits with short asks and invitations for six to eleven turns while the question is neither said nor on the board (three steady lessons)
+- `fd-r8-bridge-help-is-the-bridge-again` (2026-11-24): A bridge's easier wording, said as help at a check-in between skills, is the bridge with words taken out (five lessons, five judges)
+- `fd-r8-turn-shape-is-the-largest-register-cause` (2026-11-24): Of the judges' 180 register rows in director35, 65 are the length or shape of a turn; help 34, script sentences and reasons 35, her closes and other 28, fixed forms 18

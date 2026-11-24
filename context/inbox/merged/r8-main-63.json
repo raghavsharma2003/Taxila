@@ -1,0 +1,211 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r8-director35",
+   "kind": "measurement",
+   "at": "2026-11-24",
+   "title": "director35: 36 lessons on release 60, nine judges: four of nine topics pass the gate, five fail on the one line \"words against board\", each on a fault the round introduced; 0 misgrades in 895; register 3.5 in nine of nine"
+  },
+  {
+   "id": "dc-r8-director35",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "After director35: a build is judged before it is released; release 61 takes the two faults out; one round changes scripts only, the next the walk only, both spent on register by cause"
+  },
+  {
+   "id": "dc-r8-judge-before-release",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A round's build goes to production after its judged run, not before; a fix-only release may go first when it only removes a fault children are hearing"
+  },
+  {
+   "id": "dc-r8-one-author-rounds",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A round changes the scripts or the walk, never both, so that a failure has one author (clause 63 of director35 fired); d36 scripts, d37 walk"
+  },
+  {
+   "id": "dc-r8-hint-owns-only-its-own-board",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "At a picture request a hint's board is drawn as the picture only when the script gives the hint a board of its own that is not the board up or the card's posing board; otherwise the no-other-drawing line and the hint in words"
+  },
+  {
+   "id": "dc-r8-own-step-has-a-board-of-its-own",
+   "kind": "decision",
+   "at": "2026-11-24",
+   "title": "A child's own step states its own board wherever a step of its worked example has a result board; a sixth cold-read pass reads each own step and follow-up card against the board it is posed on"
+  },
+  {
+   "id": "fd-r8-hint-board-was-the-cards-board",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "ownHintOf gave a hint with no board of its own the card's board: a second picture request was answered with the board already up in four lessons (director35, four judges)"
+  },
+  {
+   "id": "fd-r8-own-step-posed-off-its-board",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "c4-maths-ch01-t02's own step says \"board par dekho, ghumaya tester…\" as the walk redraws the worked board with no tester: six rows in four lessons"
+  },
+  {
+   "id": "fd-r8-wait-with-no-end",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "After a bare \"haan\" or the try-first line the walk waits with short asks and invitations for six to eleven turns while the question is neither said nor on the board (three steady lessons)"
+  },
+  {
+   "id": "fd-r8-bridge-help-is-the-bridge-again",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "A bridge's easier wording, said as help at a check-in between skills, is the bridge with words taken out (five lessons, five judges)"
+  },
+  {
+   "id": "fd-r8-turn-shape-is-the-largest-register-cause",
+   "kind": "finding",
+   "at": "2026-11-24",
+   "title": "Of the judges' 180 register rows in director35, 65 are the length or shape of a turn; help 34, script sentences and reasons 35, her closes and other 28, fixed forms 18"
+  },
+  {
+   "id": "rj-r8-release-before-the-judged-run",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Releasing a round on tests, CI and the offline walk and judging it afterwards: two rounds running it put a fault in production that nine judges found within the hour"
+  },
+  {
+   "id": "rj-r8-hint-owns-the-board-it-is-said-over",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Reading \"the hint owns a board\" as the board the hint is said over, and checking it with a predicate written from the same reading"
+  },
+  {
+   "id": "rj-r8-own-step-posed-on-the-worked-board-by-default",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Letting the walk pose an own step with no board of its own on the worked board while its sentence points at a step's result"
+  },
+  {
+   "id": "rj-r8-unread-sentences-at-the-end-of-a-round",
+   "kind": "rejection",
+   "at": "2026-11-24",
+   "title": "Main writing script sentences at the end of a round with no cold read (c6-maths-ch07-t03's two bridge wordings): heard as the bridge again"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r8-director35",
+   "rel": "supersedes",
+   "dst": "dc-r8-director34"
+  },
+  {
+   "src": "dc-r8-director35",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "dc-r8-judge-before-release",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-hint-owns-only-its-own-board",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "part_of",
+   "dst": "dc-r8-director35"
+  },
+  {
+   "src": "fd-r8-hint-board-was-the-cards-board",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-own-step-posed-off-its-board",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-wait-with-no-end",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-bridge-help-is-the-bridge-again",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "fd-r8-turn-shape-is-the-largest-register-cause",
+   "rel": "measured_by",
+   "dst": "ms-r8-director35"
+  },
+  {
+   "src": "dc-r8-judge-before-release",
+   "rel": "caused_by",
+   "dst": "rj-r8-release-before-the-judged-run"
+  },
+  {
+   "src": "dc-r8-hint-owns-only-its-own-board",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "rj-r8-hint-owns-the-board-it-is-said-over",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
+  },
+  {
+   "src": "rj-r8-own-step-posed-on-the-worked-board-by-default",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
+  },
+  {
+   "src": "dc-r8-own-step-has-a-board-of-its-own",
+   "rel": "constrains",
+   "dst": "dc-r8-own-step-answer-on-another-figure"
+  },
+  {
+   "src": "rj-r8-unread-sentences-at-the-end-of-a-round",
+   "rel": "caused_by",
+   "dst": "fd-r8-bridge-help-is-the-bridge-again"
+  },
+  {
+   "src": "fd-r8-bridge-help-is-the-bridge-again",
+   "rel": "constrains",
+   "dst": "dc-r8-every-bridge-has-an-easier-wording"
+  },
+  {
+   "src": "fd-r8-wait-with-no-end",
+   "rel": "constrains",
+   "dst": "dc-r8-four-hearings-cap-on-her-own-repeat"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "caused_by",
+   "dst": "fd-r8-hint-board-was-the-cards-board"
+  },
+  {
+   "src": "dc-r8-one-author-rounds",
+   "rel": "caused_by",
+   "dst": "fd-r8-own-step-posed-off-its-board"
+  }
+ ],
+ "md": {
+  "measurements": "- `ms-r8-director35` (2026-11-24): the 35th judged run. 36 lessons (seven live scripts, two staged; steady, stuck, off-topic and steering rule-based children), Director only, on int/r6 `6f56fc8b7` (the code of release 60, `5149c5b`); 2,906 model calls, about $2.14 (2,631 metered at $1.934; 275 in a first invocation killed by a machine restart, at the same rate). Nine Opus judges at high effort, one topic each, by hand. **Gate:** pass every line: c4-ch05-t01, c5-ch02-t01, c5-ch02-t02 (each its second passing run) and the staged c6-ch07-t03 (its first). Fail on words against board only: c4-ch01-t02 6 rows (script: the own step points at a tester the board up does not draw); c5-ch02-t03, c6-ch06-t01, c6-ch07-t01 and the staged c4-ch06-t01 1 row each (walk: a picture request answered with the board already up). Misgrades 0 in 895 keyed answers; false keys 0 (the meter's one is a misread of \"1 aur 2/7\"); unsaid boards 0; no safety turn. **Axes** (director34 → director35, floor 3.5): listening 3.5 to 4 (rises in two topics, falls in two), worked example 3.5 to 4 (unchanged), class level 4, screen and speech 3 to 4.5 (falls in five, rises in one; c4-ch01-t02 is 3), register 3.5 in nine of nine for the ninth run, promises 3.5 to 4. **What the round's build did:** no worked step states a value its board does not draw in the live lessons; \"Suno,\"/\"Dekho,\" after a verdict 0 (3 to 9 a lesson before); 135 own reasons, every one after its named answer; 11 keys or told steps by the four-hearings cap, none to a child about to get there; 0 turns over 75 words, 256 over 60 (1 and 291). **Register rows by cause** (180, the judges' five a lesson): turn length or shape 65, script sentences and reasons 35, help 34, closes and other 28, fixed forms 18. The live predicate check: exit 1 on one row (steady c6-ch07-t01 32, `whyLeadRunning`); it read 0 on the four picture rows the judges counted. n = 36 lessons, 9 judges; method: `evals/hybrid-side-by-side.mjs --matrix --director-only --reactive`, judges' prompt and reports in `evals/hybrid-side-by-side/results/2026-11-24-director35/judges/`; judgement `docs/design/round7/judgements/director35-2026-11-24.md`. Not measured: real children; speech as heard; the fixes of release 61.",
+  "decisions": "- `dc-r8-director35` (2026-11-24, main; supersedes `dc-r8-director34`): the eleven items of `docs/design/round7/judgements/director35-2026-11-24.md`: judge before release; release 61 (the hint's board, the own step's board, c4-maths-ch01-t02 back to staged); a wait that says the question; the bridges' easier wordings rewritten; four authored second pictures; rounds of one author spent on register by cause; script rows and three checker rules and a sixth cold-read pass; reasons and keys as said; the harness; six lessons live, three staged. **Why:** `ms-r8-director35`. **Reverses if** a lesson that passed fails on something a one-author round introduced: then a second, independent reader or builder reviews every change against the judges' last rows before a run. Each item's own reversal condition is in the judgement.\n- `dc-r8-judge-before-release` (2026-11-24, main): the paid run and its judges read the release candidate; it goes to production when the live lessons pass, or with the failing change taken out. **Why:** `rj-r8-release-before-the-judged-run`. **Reverses if** holding a build keeps a fix for a fault children are hearing out of production for more than a day; then a release that only removes the fault goes first and anything that changes what she says waits for its run.\n- `dc-r8-one-author-rounds` (2026-11-24, main): round d36 changes scripts (and the checker) and no line of the walk; d37 the walk and no script. **Why:** clause 63 fired: four lessons that passed director34 fail in director35, three on the walk's change and one on the script's. **Reverses if** a scripts-only round is blocked by a walk fault both judges put in the walk; then that one fault is fixed alone.\n- `dc-r8-hint-owns-only-its-own-board` (2026-11-24, main; release 61): `hintBoard` only where the script gives the hint a board of its own that differs from the board up and from the card's posing board and does not settle the card; otherwise the script's no-other-drawing line, the hint in words, and the picture of the turn before left up. The predicate reads the drawn board, not the row's label. **Why:** `fd-r8-hint-board-was-the-cards-board`. **Reverses if** the next run's judges find a picture request answered with nothing new drawn; then the picture ladder becomes a list the script states per card.\n- `dc-r8-own-step-has-a-board-of-its-own` (2026-11-24, main; checker rule for d36, c4-maths-ch01-t02 fixed in c0d40c4ea): where any step of a worked example has a `resultBoard`, its `yourStep` carries a `board` (the author chooses what is up when the step is asked). **Why:** `fd-r8-own-step-posed-off-its-board`. **Reverses if** the rule forces a board that gives a step away; then the walk keeps the last result board up through the own step and the script may opt out.",
+  "rejected": "- `rj-r8-release-before-the-judged-run` (2026-11-24): **tried** releasing a round's build once tests, CI, the leak check and the offline walk passed, and running the judges on production's commit afterwards (releases 58 and 60). **What broke:** release 58 stored a child's goodbye as a wrong answer for three hours; release 60 carried two faults in four live lessons from 15:30 UTC until release 61 the same evening. Each was found by the judged run within the hour and by nothing before it.\n- `rj-r8-hint-owns-the-board-it-is-said-over` (2026-11-24): **tried** to-brain 053 A1 with `ownHintOf` returning the hint's own board or else its card's, and a predicate (`hintBoardNotDrawn`) built on the same function. **What broke:** every card with a board had a hint that \"owned\" one; a child asking for another picture got the board already up, and the honest no-other-drawing line was lost. The predicate read 0 and main read the dry rows' `hintBoard` label as the order working.\n- `rj-r8-own-step-posed-on-the-worked-board-by-default` (2026-11-24): **tried** (since the d35 checker change that lets an own step with no board carry any answer board) leaving c4-maths-ch01-t02's own step with no board while its prompt was rewritten to \"board par dekho, ghumaya tester…\". **What broke:** the walk redrew the worked board at the step's first word and the tester the sentence points at left the screen, in every lesson.\n- `rj-r8-unread-sentences-at-the-end-of-a-round` (2026-11-24): **tried** main writing c6-maths-ch07-t03's two bridge wordings after the cold reads were done (06b1ac3aa). **What broke:** its judge heard the help at that check-in as the bridge said again; the sentence passed the checker and was never read by anyone who had not written it."
+ }
+}

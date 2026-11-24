@@ -1,0 +1,10131 @@
+{
+ "topicId": "c4-maths-ch06-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01:greet",
+    "column": null
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 983,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj hum scale se lambai naapenge, metre aur centimetre mein. Toh shuru karte hain?",
+   "move": "hook",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01:greet",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 61,
+     "beat": "hook",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "seams": [
+    {
+     "left": "start",
+     "right": "greetSimpler",
+     "joint": null
+    },
+    {
+     "left": "greetSimpler",
+     "right": "greetAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 989,
+   "replyReadyMs": 1972,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1972,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 993,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, main batati hoon. Cricket bat ka handle bhi scale se naapte hain. Aaj dekhenge, naapna kahan se shuru hota hai. Scale par 0 se 1, 1 se 2, har khaana 1 centimetre ka hai. Pencil 0 se 7 tak rakhi hai: 7 khaane, toh 7 centimetre. Ab ek crayon 3 ke nishaan se 9 ke nishaan tak hai. Crayon kitna lamba hai?",
+   "move": "explain",
+   "card": "Ab ek crayon 3 ke nishaan se 9 ke nishaan tak hai. Crayon kitna lamba hai?",
+   "cell": {
+    "part": "greet",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 119,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 0,
+          "label": "yahan se"
+         },
+         {
+          "value": 7,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 0,
+         "label": "yahan se"
+        },
+        {
+         "value": 7,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 234,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": null
+     },
+     {
+      "from": 119,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 234,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:e1",
+      "atChar": 234
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "startAnyway",
+     "joint": "startAnyway",
+     "form": "Chalo, main batati hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "startAnyway",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1862,
+   "replyReadyMs": 2855,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1862,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 0,
+       "label": "yahan se"
+      },
+      {
+       "value": 7,
+       "label": "yahan tak"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 119,
+     "atClause": null,
+     "estMs": 7980,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 0,
+         "label": "yahan se"
+        },
+        {
+         "value": 7,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 234,
+     "atClause": null,
+     "estMs": 17860,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 0,
+        "label": "yahan se"
+       },
+       {
+        "value": 7,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "3",
+       "label": "yahan se"
+      },
+      {
+       "at": "9",
+       "label": "yahan tak"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "yahan se"
+       },
+       {
+        "value": 9,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 119,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 0,
+          "label": "yahan se"
+         },
+         {
+          "value": 7,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 234,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "9 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1095,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "9 cm sahi nahi hai. Ek aur tareeka dekhte hain. Nishaan nahi, khaane gino. 2 se 5 tak teen khaane hain: 2 se 3, 3 se 4, aur 4 se 5. Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "move": "reteach",
+   "card": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 20,
+     "beat": "rem:c4-maths-ch06-t01-m-edge-start",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 48,
+     "beat": "rem:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 5,
+        "step": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 5,
+       "step": 1
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 132,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 48,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 132,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+      "atChar": 132
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+       "atChar": 48
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+       "atChar": 132
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ek aur tareeka dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1177,
+   "replyReadyMs": 2272,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2272,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 3,
+       "label": "yahan se"
+      },
+      {
+       "value": 9,
+       "label": "yahan tak"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 48,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 5,
+       "step": 1
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 132,
+     "atClause": null,
+     "estMs": 11780,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "yahan se"
+       },
+       {
+        "value": 9,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "shuru"
+      },
+      {
+       "at": "10",
+       "label": "ant"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     },
+     {
+      "from": 48,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 5,
+        "step": 1
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     },
+     {
+      "from": 132,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 850,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, ab Hindi mein kehti hoon. Chabi ke neeche wale khaane 6 ke nishaan se ginna shuru karo. Chabi 6 wale nishaan se 10 wale tak padi hai. Woh kitne centimetre ki hai?",
+   "move": "hint",
+   "card": "Chabi 6 wale nishaan se 10 wale tak padi hai. Woh kitne centimetre ki hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 33,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 95,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "hindiSwitch",
+     "joint": "hindiSwitch",
+     "form": "Achha, ab Hindi mein kehti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "hindiSwitch",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2181,
+   "replyReadyMs": 3031,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3031,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 12,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "shuru"
+      },
+      {
+       "value": 10,
+       "label": "ant"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "shuru"
+      },
+      {
+       "at": "10",
+       "label": "ant"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "ask"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "10 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 886,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, 10 cm theek nahi. 10 par chabi rukti hai, par shuru 6 par hoti hai; pehle wale khaane chabi mein nahi aate. Ab tum batao, main sun rahi hoon.",
+   "move": "hint",
+   "card": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "whyAlt",
+     "from": 24,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "yourTurn",
+     "from": 114,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     },
+     "kind": "yourTurn"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "yourTurn",
+     "joint": "yourTurn",
+     "form": "Ab tum batao, main sun rahi hoon.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1478,
+   "replyReadyMs": 2364,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2364,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 12,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "shuru"
+      },
+      {
+       "value": 10,
+       "label": "ant"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "shuru"
+      },
+      {
+       "at": "10",
+       "label": "ant"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "10 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1133,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Seedhi par chadhna socho: doosri paidi se paanchvi paidi tak 3 baar chadhna padta hai, 5 baar nahi. Scale par bhi nishaanon ke beech ke khaane hi lambai hain. Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "move": "hint",
+   "card": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 25,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 5,
+        "step": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 5,
+       "step": 1
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 125,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 5,
+        "step": 1
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 5,
+       "step": 1
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 184,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 25,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 184,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+      "atChar": 184
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start#help",
+       "atChar": 25
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+       "atChar": 184
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1370,
+   "replyReadyMs": 2503,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2503,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 12,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "shuru"
+      },
+      {
+       "value": 10,
+       "label": "ant"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 25,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 5,
+       "step": 1
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 184,
+     "atClause": null,
+     "estMs": 12920,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "shuru"
+      },
+      {
+       "at": "10",
+       "label": "ant"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "shuru"
+       },
+       {
+        "value": 10,
+        "label": "ant"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     },
+     {
+      "from": 25,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 5,
+        "step": 1
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     },
+     {
+      "from": 184,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-edge-start"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 1035,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yahan toote scale ka shuru wala tukda bada karke hai: chabi 6 ke nishaan se shuru hoti hai, scale ke 2 se nahi. Toote scale par 6 se 10 tak rakhi chabi kitne centimetre ki hai?",
+   "move": "reteach",
+   "card": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "picture",
+    "picture": "pictureBoard"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 8,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "chabi yahan se"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 8,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "chabi yahan se"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 112,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "shuru"
+         },
+         {
+          "value": 10,
+          "label": "ant"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "shuru"
+        },
+        {
+         "value": 10,
+         "label": "ant"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start#picture",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start#picture"
+    },
+    "layout": {
+     "split": false
+    },
+    "picture": {
+     "view": null,
+     "decided": "once"
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 997,
+   "replyReadyMs": 2032,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2032,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 8,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "chabi yahan se"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 1
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 8,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "chabi yahan se"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 7,
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "chabi yahan se"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 8,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "chabi yahan se"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek aur picture dikhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 1089,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Iski aur koi drawing mere paas nahi hai. Lambai woh khaane hain jo cheez ke neeche aate hain. Cheez ke shuru se pehle wale khaane usmein nahi gine jaate. Apna jawab bolo, jaisa bhi lage.",
+   "move": "hint",
+   "card": "Toote scale par chabi ka shuru 6 par hai, aur ant 10 par. Chabi kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "picture",
+    "picture": "hint"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 41,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [],
+     "own": null
+    },
+    {
+     "part": "simpler",
+     "from": 94,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start#picture",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start#picture"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "noPicture",
+     "joint": "noPicture",
+     "form": "Iski aur koi drawing mere paas nahi hai.",
+     "by": "authored"
+    },
+    {
+     "left": "noPicture",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "yourTurn",
+     "joint": "yourTurn",
+     "form": "Apna jawab bolo, jaisa bhi lage.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 2237,
+   "replyReadyMs": 3326,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3326,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c4-maths-ch06-t01-m-edge-start",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 8,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "chabi yahan se"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:then:c4-maths-ch06-t01-m-edge-start",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 8,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "chabi yahan se"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 7,
+     "lines": [
+      {
+       "gaps": 6,
+       "ticks": 7,
+       "innerTicks": 5
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "chabi yahan se"
+      }
+     ]
+    },
+    "numbers": [
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 8,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "chabi yahan se"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "twoq",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "4 cm lambi",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Chabi ke neeche chaar khaane aate hain, 6 se 10 tak: 10 − 6 = 4. Ab pehle wale sawaal ko phir se dekhte hain. Ab ek crayon 3 ke nishaan se 9 ke nishaan tak hai. Crayon kitna lamba hai?",
+   "move": "practice",
+   "card": "Ab ek crayon 3 ke nishaan se 9 ke nishaan tak hai. Crayon kitna lamba hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-edge-start",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "6"
+         },
+         {
+          "value": 10,
+          "label": "4 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "6"
+        },
+        {
+         "value": 10,
+         "label": "4 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 85,
+     "beat": "e1",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 130,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 130,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:rem:c4-maths-ch06-t01-m-edge-start",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:e1",
+      "atChar": 130
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Ab pehle wale sawaal ko phir se dekhte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1025,
+   "replyReadyMs": 1027,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1027,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 2,
+     "to": 12,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "6"
+      },
+      {
+       "value": 10,
+       "label": "4 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 2,
+       "to": 12,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "6"
+        },
+        {
+         "value": 10,
+         "label": "4 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 130,
+     "atClause": null,
+     "estMs": 10640,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 2,
+      "to": 12,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 10,
+        "label": "4 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "3",
+       "label": "yahan se"
+      },
+      {
+       "at": "9",
+       "label": "yahan tak"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "yahan se"
+       },
+       {
+        "value": 9,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 2,
+        "to": 12,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "6"
+         },
+         {
+          "value": 10,
+          "label": "4 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 130,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karti hoon",
+   "read": "no_evidence · thinking",
+   "intent": "try_first",
+   "classifyMs": 812,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo.",
+   "move": "practice",
+   "card": "Ab ek crayon 3 ke nishaan se 9 ke nishaan tak hai. Crayon kitna lamba hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:e1:card",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "yahan se"
+         },
+         {
+          "value": 9,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "yahan se"
+        },
+        {
+         "value": 9,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    }
+   ],
+   "replyMs": 800,
+   "replyReadyMs": 1612,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1612,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 3,
+       "label": "yahan se"
+      },
+      {
+       "value": 9,
+       "label": "yahan tak"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "yahan se"
+       },
+       {
+        "value": 9,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "3",
+       "label": "yahan se"
+      },
+      {
+       "at": "9",
+       "label": "yahan tak"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "yahan se"
+       },
+       {
+        "value": 9,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "9 − 3 = 6",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 5,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki 3 se 9 tak 1-1 centimetre ke 6 khaane hain, yaani 9 − 3 = 6 centimetre. Scale ka pehla khaana 0 aur 1 ke beech hota hai. Jo cheez 1 se shuru hoti hai, uske neeche woh pehla khaana aata hi nahi. Ek patta scale par 1 ke nishaan se 8 ke nishaan tak hai. Patta kitna lamba hai?",
+   "move": "explain",
+   "card": "Ek patta scale par 1 ke nishaan se 8 ke nishaan tak hai. Patta kitna lamba hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:e1:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "3"
+         },
+         {
+          "value": 9,
+          "label": "6 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "3"
+        },
+        {
+         "value": 9,
+         "label": "6 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 91,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 5,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "cheez yahan se"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 5,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "cheez yahan se"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 213,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "yahan se"
+         },
+         {
+          "value": 8,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "yahan se"
+        },
+        {
+         "value": 8,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 91,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 213,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:e2",
+      "atChar": 213
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s1:e2",
+       "atChar": 91
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s1:e2",
+       "atChar": 213
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1288,
+   "replyReadyMs": 1293,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1293,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay",
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 3,
+       "label": "3"
+      },
+      {
+       "value": 9,
+       "label": "6 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "3"
+        },
+        {
+         "value": 9,
+         "label": "6 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 91,
+     "atClause": null,
+     "estMs": 7600,
+     "beat": "e2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 5,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "cheez yahan se"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 213,
+     "atClause": null,
+     "estMs": 17480,
+     "beat": "e2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "yahan se"
+        },
+        {
+         "value": 8,
+         "label": "yahan tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "3"
+       },
+       {
+        "value": 9,
+        "label": "6 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "1",
+       "label": "yahan se"
+      },
+      {
+       "at": "8",
+       "label": "yahan tak"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 1,
+        "label": "yahan se"
+       },
+       {
+        "value": 8,
+        "label": "yahan tak"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "3"
+         },
+         {
+          "value": 9,
+          "label": "6 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 91,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 5,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "cheez yahan se"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 213,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "yahan se"
+         },
+         {
+          "value": 8,
+          "label": "yahan tak"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "8 − 1 = 7",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. 8 − 1, yaani 7 centimetre. Golu ka scale toot gaya, ab woh 4 se shuru hota hai. Uske khaane bhi 1-1 centimetre ke hain: cheez jahan se shuru ho, wahin se khaane gino. Golu ki pencil 8 centimetre lambi hai. Woh uska ek sira 4 ke nishaan par rakhta hai. Doosra sira kis nishaan par aayega?",
+   "move": "explain",
+   "card": "Golu ki pencil 8 centimetre lambi hai. Woh uska ek sira 4 ke nishaan par rakhta hai. Doosra sira kis nishaan par aayega?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:e2:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "1"
+         },
+         {
+          "value": 8,
+          "label": "7 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "1"
+        },
+        {
+         "value": 8,
+         "label": "7 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 43,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 4,
+          "label": "yahan se"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 4,
+         "label": "yahan se"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 183,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 4,
+          "label": "yahan se"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 4,
+         "label": "yahan se"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 43,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:e3",
+      "atChar": 43
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1051,
+   "replyReadyMs": 1052,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1052,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay",
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 1,
+       "label": "1"
+      },
+      {
+       "value": 8,
+       "label": "7 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 1,
+         "label": "1"
+        },
+        {
+         "value": 8,
+         "label": "7 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 43,
+     "atClause": null,
+     "estMs": 3420,
+     "beat": "e3",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 4,
+         "label": "yahan se"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 1,
+        "label": "1"
+       },
+       {
+        "value": 8,
+        "label": "7 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "4",
+       "label": "yahan se"
+      }
+     ]
+    },
+    "numbers": [
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 4,
+        "label": "yahan se"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 1,
+          "label": "1"
+         },
+         {
+          "value": 8,
+          "label": "7 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 43,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 4,
+          "label": "yahan se"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "12 par",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi: 4 se aage 8 khaane chalo toh 12 aata hai: 4 + 8 = 12. Chalo, ab ek sawaal hum dono saath mein karte hain. Golu ka toota scale 4 ke nishaan se shuru hota hai. Uspar ek tehni 5 ke nishaan se 12 ke nishaan tak rakhi hai. Tehni ki lambai nikaalni hai. Tehni ki lambai ke liye 12 mein se kaunsa nishaan ghataoge?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 4,
+          "label": "4"
+         },
+         {
+          "value": 12,
+          "label": "12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 4,
+         "label": "4"
+        },
+        {
+         "value": 12,
+         "label": "12"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 67,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 119,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 261,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 119,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:e3",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:worked",
+      "atChar": 119
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Chalo, ab ek sawaal hum dono saath mein karte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1377,
+   "replyReadyMs": 1378,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1378,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 4,
+     "to": 14,
+     "step": 1,
+     "marks": [
+      {
+       "value": 4,
+       "label": "4"
+      },
+      {
+       "value": 12,
+       "label": "12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 4,
+         "label": "4"
+        },
+        {
+         "value": 12,
+         "label": "12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 119,
+     "atClause": null,
+     "estMs": 10260,
+     "beat": "worked:step1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 4,
+        "label": "4"
+       },
+       {
+        "value": 12,
+        "label": "12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "5",
+       "label": "tehni ka sira"
+      },
+      {
+       "at": "12",
+       "label": "tehni ka sira"
+      }
+     ]
+    },
+    "numbers": [
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "tehni ka sira"
+       },
+       {
+        "value": 12,
+        "label": "tehni ka sira"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 4,
+          "label": "4"
+         },
+         {
+          "value": 12,
+          "label": "12"
+         }
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 119,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "intent": "miss",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, kuch aur hai. Tehni 5 se shuru hoti hai, scale ke 4 se nahi. Isliye 12 mein se 5 ghatayenge. Tumhari baari: tehni kitni lambi hai?",
+   "move": "worked_example",
+   "card": "Tumhari baari: tehni kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:worked:step1:ask",
+    "column": "wrong"
+   },
+   "stepAnswer": {
+    "beat": "c4-maths-ch06-t01-s1:worked:step1",
+    "right": false,
+    "told": true
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 99,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "stepMiss",
+     "joint": null,
+     "form": "Nahi, kuch aur hai.",
+     "by": "authored"
+    },
+    {
+     "left": "stepMiss",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 974,
+   "replyReadyMs": 976,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 976,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 4,
+     "to": 14,
+     "step": 1,
+     "marks": [
+      {
+       "value": 5,
+       "label": "tehni ka sira"
+      },
+      {
+       "value": 12,
+       "label": "tehni ka sira"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "tehni ka sira"
+       },
+       {
+        "value": 12,
+        "label": "tehni ka sira"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "5",
+       "label": "tehni ka sira"
+      },
+      {
+       "at": "12",
+       "label": "tehni ka sira"
+      }
+     ]
+    },
+    "numbers": [
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "tehni ka sira"
+       },
+       {
+        "value": 12,
+        "label": "tehni ka sira"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe nahi pata",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 832,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Tehni ke ek sire se doosre sire tak ke khaane ek-ek karke gino. Toote scale par 5 se 12 tak rakhi tehni kitne centimetre ki hai?",
+   "move": "hint",
+   "card": "Tumhari baari: tehni kitni lambi hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:worked:yourStep",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 64,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "tehni ka sira"
+         },
+         {
+          "value": 12,
+          "label": "tehni ka sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "tehni ka sira"
+        },
+        {
+         "value": 12,
+         "label": "tehni ka sira"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:worked"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1127,
+   "replyReadyMs": 1959,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1959,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 4,
+     "to": 14,
+     "step": 1,
+     "marks": [
+      {
+       "value": 5,
+       "label": "tehni ka sira"
+      },
+      {
+       "value": 12,
+       "label": "tehni ka sira"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "tehni ka sira"
+       },
+       {
+        "value": 12,
+        "label": "tehni ka sira"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "5",
+       "label": "tehni ka sira"
+      },
+      {
+       "at": "12",
+       "label": "tehni ka sira"
+      }
+     ]
+    },
+    "numbers": [
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "tehni ka sira"
+       },
+       {
+        "value": 12,
+        "label": "tehni ka sira"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "7 cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 0,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Toh poora jawab: tehni 7 centimetre lambi hai, kyunki tehni 5 se 12 tak hai, aur 12 − 5 = 7, jo 5 se 12 tak ke khaanon ki ginti hai. Ab ek sawaal tum akele karo. Scale par rakhe rubber ka ek sira 5 par hai, doosra 9 par. Rubber kitne centimetre ka hai?",
+   "move": "practice",
+   "card": "Scale par rakhe rubber ka ek sira 5 par hai, doosra 9 par. Rubber kitne centimetre ka hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:worked:yourStep",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "5"
+         },
+         {
+          "value": 12,
+          "label": "7 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "5"
+        },
+        {
+         "value": 12,
+         "label": "7 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 153,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "afterWorked"
+    },
+    {
+     "part": "card",
+     "from": 182,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "ek sira"
+         },
+         {
+          "value": 9,
+          "label": "doosra sira"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "ek sira"
+        },
+        {
+         "value": 9,
+         "label": "doosra sira"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 182,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:worked",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:c1",
+      "atChar": 182
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": "afterWorked",
+     "form": "Ab ek sawaal tum akele karo.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1092,
+   "replyReadyMs": 1092,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1092,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 4,
+     "to": 14,
+     "step": 1,
+     "marks": [
+      {
+       "value": 5,
+       "label": "5"
+      },
+      {
+       "value": 12,
+       "label": "7 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 4,
+       "to": 14,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "5"
+        },
+        {
+         "value": 12,
+         "label": "7 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 182,
+     "atClause": null,
+     "estMs": 15200,
+     "beat": "c1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "ek sira"
+        },
+        {
+         "value": 9,
+         "label": "doosra sira"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 4,
+      "to": 14,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "5"
+       },
+       {
+        "value": 12,
+        "label": "7 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "5",
+       "label": "ek sira"
+      },
+      {
+       "at": "9",
+       "label": "doosra sira"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "ek sira"
+       },
+       {
+        "value": 9,
+        "label": "doosra sira"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 4,
+        "to": 14,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "5"
+         },
+         {
+          "value": 12,
+          "label": "7 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 182,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "ek sira"
+         },
+         {
+          "value": 9,
+          "label": "doosra sira"
+         }
+        ]
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai 4 cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 950,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. Rubber 5 se 9 tak rakha hai; uske neeche 9 − 5 = 4 khaane, yaani 4 centimetre. Laal crayon 0 se 7 tak hai, aur neela crayon 3 se 9 tak. Kaunsa crayon lamba hai, laal ya neela?",
+   "move": "practice",
+   "card": "Laal crayon 0 se 7 tak hai, aur neela crayon 3 se 9 tak. Kaunsa crayon lamba hai, laal ya neela?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:check:c1",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "5"
+         },
+         {
+          "value": 9,
+          "label": "4 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "5"
+        },
+        {
+         "value": 9,
+         "label": "4 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 91,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "neela se"
+         },
+         {
+          "value": 7,
+          "label": "laal tak"
+         },
+         {
+          "value": 9,
+          "label": "neela tak"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "neela se"
+        },
+        {
+         "value": 7,
+         "label": "laal tak"
+        },
+        {
+         "value": 9,
+         "label": "neela tak"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 91,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:c1",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:c2",
+      "atChar": 91
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1057,
+   "replyReadyMs": 2007,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2007,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 5,
+       "label": "5"
+      },
+      {
+       "value": 9,
+       "label": "4 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 5,
+         "label": "5"
+        },
+        {
+         "value": 9,
+         "label": "4 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 91,
+     "atClause": null,
+     "estMs": 7600,
+     "beat": "c2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "neela se"
+        },
+        {
+         "value": 7,
+         "label": "laal tak"
+        },
+        {
+         "value": 9,
+         "label": "neela tak"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 5,
+        "label": "5"
+       },
+       {
+        "value": 9,
+        "label": "4 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "3",
+       "label": "neela se"
+      },
+      {
+       "at": "7",
+       "label": "laal tak"
+      },
+      {
+       "at": "9",
+       "label": "neela tak"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2",
+     "3",
+     "4",
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "neela se"
+       },
+       {
+        "value": 7,
+        "label": "laal tak"
+       },
+       {
+        "value": 9,
+        "label": "neela tak"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 5,
+          "label": "5"
+         },
+         {
+          "value": 9,
+          "label": "4 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 91,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "neela se"
+         },
+         {
+          "value": 7,
+          "label": "laal tak"
+         },
+         {
+          "value": 9,
+          "label": "neela tak"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "laal lamba hai",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 865,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai: laal 0 se 7 tak hai, toh 7 centimetre; neela 3 se 9 tak, toh 9 − 3 = 6 centimetre. Bat ka grip ek aur toote scale se naapa: grip 6 se shuru hokar 15 par khatam hota hai. Grip kitna lamba hai?",
+   "move": "practice",
+   "card": "Bat ka grip ek aur toote scale se naapa: grip 6 se shuru hokar 15 par khatam hota hai. Grip kitna lamba hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:check:c2",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "neela se"
+         },
+         {
+          "value": 7,
+          "label": "laal: 7"
+         },
+         {
+          "value": 9,
+          "label": "neela: 6"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "neela se"
+        },
+        {
+         "value": 7,
+         "label": "laal: 7"
+        },
+        {
+         "value": 9,
+         "label": "neela: 6"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 99,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 5,
+        "to": 15,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "grip shuru"
+         },
+         {
+          "value": 15,
+          "label": "grip khatam"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 5,
+       "to": 15,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "grip shuru"
+        },
+        {
+         "value": 15,
+         "label": "grip khatam"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 99,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:c2",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s1:c3",
+      "atChar": 99
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1043,
+   "replyReadyMs": 1908,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1908,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c3",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 10,
+     "step": 1,
+     "marks": [
+      {
+       "value": 3,
+       "label": "neela se"
+      },
+      {
+       "value": 7,
+       "label": "laal: 7"
+      },
+      {
+       "value": 9,
+       "label": "neela: 6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s1:c3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c3",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 10,
+       "step": 1,
+       "marks": [
+        {
+         "value": 3,
+         "label": "neela se"
+        },
+        {
+         "value": 7,
+         "label": "laal: 7"
+        },
+        {
+         "value": 9,
+         "label": "neela: 6"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 99,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "c3",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 5,
+       "to": 15,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "grip shuru"
+        },
+        {
+         "value": 15,
+         "label": "grip khatam"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 10,
+      "step": 1,
+      "marks": [
+       {
+        "value": 3,
+        "label": "neela se"
+       },
+       {
+        "value": 7,
+        "label": "laal: 7"
+       },
+       {
+        "value": 9,
+        "label": "neela: 6"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "grip shuru"
+      },
+      {
+       "at": "15",
+       "label": "grip khatam"
+      }
+     ]
+    },
+    "numbers": [
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14",
+     "15"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "grip shuru"
+       },
+       {
+        "value": 15,
+        "label": "grip khatam"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 10,
+        "step": 1,
+        "marks": [
+         {
+          "value": 3,
+          "label": "neela se"
+         },
+         {
+          "value": 7,
+          "label": "laal: 7"
+         },
+         {
+          "value": 9,
+          "label": "neela: 6"
+         }
+        ]
+       }
+      },
+      "beat": "c3"
+     },
+     {
+      "from": 99,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 5,
+        "to": 15,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "grip shuru"
+         },
+         {
+          "value": 15,
+          "label": "grip khatam"
+         }
+        ]
+       }
+      },
+      "beat": "c3"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "nau cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1037,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, kyunki grip 6 se 15 tak hai: 15 − 6 = 9 khaane, toh 9 centimetre. Chhoti cheezein centimetre mein naapte hain. Ab dekhenge ki lambi cheezon ke liye metre kya hai, aur ek metre mein kitne centimetre. Yeh hissa saaf hua?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:check:c3",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c3",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 5,
+        "to": 15,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "6"
+         },
+         {
+          "value": 15,
+          "label": "9 khaane"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 5,
+       "to": 15,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "6"
+        },
+        {
+         "value": 15,
+         "label": "9 khaane"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "bridge",
+     "from": 79,
+     "beat": "bridge",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:c3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:c3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "bridge",
+     "joint": null
+    },
+    {
+     "left": "bridge",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1119,
+   "replyReadyMs": 2156,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2156,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:bridge:bridge",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 5,
+     "to": 15,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "6"
+      },
+      {
+       "value": 15,
+       "label": "9 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 15,
+        "label": "9 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "6"
+      },
+      {
+       "at": "15",
+       "label": "9 khaane"
+      }
+     ]
+    },
+    "numbers": [
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14",
+     "15"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 15,
+        "label": "9 khaane"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "aapko virat pasand hai?",
+   "read": "no_evidence · uptake",
+   "intent": "aside",
+   "classifyMs": 822,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein sabse achha kya lagta hai?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s1:bridge",
+    "column": "aside"
+   },
+   "held": {
+    "unit": "c4-maths-ch06-t01-s1:c3",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:c3"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "aiAsked": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiQuestion",
+     "joint": null
+    }
+   ],
+   "replyMs": 2260,
+   "replyReadyMs": 3082,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3082,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 5,
+     "to": 15,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "6"
+      },
+      {
+       "value": 15,
+       "label": "9 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": false,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 15,
+        "label": "9 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 11,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "6",
+       "label": "6"
+      },
+      {
+       "at": "15",
+       "label": "9 khaane"
+      }
+     ]
+    },
+    "numbers": [
+     "5",
+     "6",
+     "7",
+     "8",
+     "9",
+     "10",
+     "11",
+     "12",
+     "13",
+     "14",
+     "15"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 15,
+        "label": "9 khaane"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "mustsay",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "chauka",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "classifyMs": 1031,
+   "classifyPath": "fast",
+   "readRaw": "incorrect"
+  },
+  {
+   "who": "teacher",
+   "text": "Wah, chauka! Toh tumhara favourite yahi hai. Ab seekhne par wapas aate hain. Yeh ek metre ki lakdi hai. Ispar 0 se 100 tak centimetre likhe hain: 0, 20, 40, 60, 80, 100. Toh 1 metre mein 100 centimetre hote hain. Ek cricket bat is lakdi ke saath khada kiya, toh woh 0 se 70 ke nishaan tak aaya. Bat ek metre se kitne centimetre chhota hai?",
+   "move": "practice",
+   "card": "Ek cricket bat is lakdi ke saath khada kiya, toh woh 0 se 70 ke nishaan tak aaya. Bat ek metre se kitne centimetre chhota hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e1:card",
+    "column": "aside_reply"
+   },
+   "pageParts": [
+    {
+     "part": "held",
+     "from": 77,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 213,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 70,
+          "label": "bat yahan tak"
+         },
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 70,
+         "label": "bat yahan tak"
+        },
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 77,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 213,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s1:c3",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:e1",
+      "atChar": 213
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s2:e1",
+       "atChar": 77
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s2:e1",
+       "atChar": 213
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "aiReply",
+     "joint": null
+    },
+    {
+     "left": "aiReply",
+     "right": "point",
+     "joint": "afterAiLine",
+     "form": "Ab seekhne par wapas aate hain.",
+     "by": "authored"
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "j2": {
+    "line": "Wah, chauka! Toh tumhara favourite yahi hai.",
+    "refused": []
+   },
+   "replyMs": 1411,
+   "replyReadyMs": 2442,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2442,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 5,
+     "to": 15,
+     "step": 1,
+     "marks": [
+      {
+       "value": 6,
+       "label": "6"
+      },
+      {
+       "value": 15,
+       "label": "9 khaane"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 5,
+       "to": 15,
+       "step": 1,
+       "marks": [
+        {
+         "value": 6,
+         "label": "6"
+        },
+        {
+         "value": 15,
+         "label": "9 khaane"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 77,
+     "atClause": null,
+     "estMs": 4940,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 213,
+     "atClause": null,
+     "estMs": 15580,
+     "beat": "e1",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 70,
+         "label": "bat yahan tak"
+        },
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 5,
+      "to": 15,
+      "step": 1,
+      "marks": [
+       {
+        "value": 6,
+        "label": "6"
+       },
+       {
+        "value": 15,
+        "label": "9 khaane"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 6,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "70",
+       "label": "bat yahan tak"
+      },
+      {
+       "at": "100",
+       "label": "1 metre"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "20",
+     "40",
+     "60",
+     "80",
+     "100",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 100,
+      "step": 10,
+      "marks": [
+       {
+        "value": 70,
+        "label": "bat yahan tak"
+       },
+       {
+        "value": 100,
+        "label": "1 metre"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 5,
+        "to": 15,
+        "step": 1,
+        "marks": [
+         {
+          "value": 6,
+          "label": "6"
+         },
+         {
+          "value": 15,
+          "label": "9 khaane"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 77,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 213,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 70,
+          "label": "bat yahan tak"
+         },
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "phir se bolo",
+   "read": "no_evidence · repeat",
+   "intent": "repeat",
+   "classifyMs": 1077,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "70 ke nishaan tak aane wala bat ek metre se kitne centimetre chhota hai?",
+   "move": "practice",
+   "card": "Ek cricket bat is lakdi ke saath khada kiya, toh woh 0 se 70 ke nishaan tak aaya. Bat ek metre se kitne centimetre chhota hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e1:card",
+    "column": "repeat"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 70,
+          "label": "bat yahan tak"
+         },
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 70,
+         "label": "bat yahan tak"
+        },
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1263,
+   "replyReadyMs": 2340,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2340,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e1",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 100,
+     "step": 10,
+     "marks": [
+      {
+       "value": 70,
+       "label": "bat yahan tak"
+      },
+      {
+       "value": 100,
+       "label": "1 metre"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "number-line-scale@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 100,
+      "step": 10,
+      "marks": [
+       {
+        "value": 70,
+        "label": "bat yahan tak"
+       },
+       {
+        "value": 100,
+        "label": "1 metre"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "labels": 6,
+     "lines": [
+      {
+       "gaps": 10,
+       "ticks": 11,
+       "innerTicks": 9
+      }
+     ],
+     "marks": [
+      {
+       "at": "70",
+       "label": "bat yahan tak"
+      },
+      {
+       "at": "100",
+       "label": "1 metre"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "20",
+     "40",
+     "60",
+     "80",
+     "100",
+     "1"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 100,
+      "step": 10,
+      "marks": [
+       {
+        "value": 70,
+        "label": "bat yahan tak"
+       },
+       {
+        "value": 100,
+        "label": "1 metre"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "thirty",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek. Bat ke upar 70 se 100 tak 30 centimetre bacha. Yeh lamba feeta hai, jis par sirf 10-10 centimetre ke nishaan hain. Jahan metre ka number likha hai, wahan poora metre hota hai; do numberon ke beech das chhote khaane. Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+   "move": "explain",
+   "card": "Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e1:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 70,
+          "label": "bat yahan tak"
+         },
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 70,
+         "label": "bat yahan tak"
+        },
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 67,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 236,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "number-line-scale@1"
+     },
+     {
+      "from": 67,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 236,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e1",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:e2",
+      "atChar": 236
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s2:e2",
+       "atChar": 67
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s2:e2",
+       "atChar": 236
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1002,
+   "replyReadyMs": 1003,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1003,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay",
+     "noconfirm"
+    ]
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "number-line-scale@1",
+    "params": {
+     "from": 0,
+     "to": 100,
+     "step": 10,
+     "marks": [
+      {
+       "value": 70,
+       "label": "bat yahan tak"
+      },
+      {
+       "value": 100,
+       "label": "1 metre"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "number-line-scale@1",
+     "board": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 100,
+       "step": 10,
+       "marks": [
+        {
+         "value": 70,
+         "label": "bat yahan tak"
+        },
+        {
+         "value": 100,
+         "label": "1 metre"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 67,
+     "atClause": null,
+     "estMs": 4940,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 236,
+     "atClause": null,
+     "estMs": 16340,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "number-line-scale@1",
+     "params": {
+      "from": 0,
+      "to": 100,
+      "step": 10,
+      "marks": [
+       {
+        "value": 70,
+        "label": "bat yahan tak"
+       },
+       {
+        "value": 100,
+        "label": "1 metre"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 14",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 14
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "number-line-scale@1",
+       "params": {
+        "from": 0,
+        "to": 100,
+        "step": 10,
+        "marks": [
+         {
+          "value": 70,
+          "label": "bat yahan tak"
+         },
+         {
+          "value": 100,
+          "label": "1 metre"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 67,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 236,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 metre 4 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 915,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Ise alag tareeke se dekhte hain. Ek metre 10 centimetre nahi, poore 100 centimetre ka hai. Feete ka ek chhota khaana 10 centimetre hai; uske baad 90 centimetre aur aate hain, tab metre poora hota hai. Yeh hissa saaf hua?",
+   "move": "reteach",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 25,
+     "beat": "rem:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 58,
+     "beat": "rem:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "unrolled@1",
+       "params": {
+        "sides": [
+         10,
+         90
+        ],
+        "unit": "cm",
+        "total": 100
+       }
+      }
+     ],
+     "own": {
+      "template": "unrolled@1",
+      "params": {
+       "sides": [
+        10,
+        90
+       ],
+       "unit": "cm",
+       "total": 100
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 226,
+     "beat": "rem:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "unrolled@1",
+       "params": {
+        "sides": [
+         10,
+         90
+        ],
+        "unit": "cm",
+        "total": 100
+       }
+      }
+     ],
+     "own": {
+      "template": "unrolled@1",
+      "params": {
+       "sides": [
+        10,
+        90
+       ],
+       "unit": "cm",
+       "total": 100
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 58,
+      "template": "unrolled@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+      "atChar": 58
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ise alag tareeke se dekhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 2261,
+   "replyReadyMs": 3176,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 3176,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:remediation:rem:c4-maths-ch06-t01-m-m-is-10cm",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "mark": 14
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 58,
+     "atClause": null,
+     "estMs": 4180,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "template": "unrolled@1",
+     "board": {
+      "template": "unrolled@1",
+      "params": {
+       "sides": [
+        10,
+        90
+       ],
+       "unit": "cm",
+       "total": 100
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "unrolled@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 14
+     }
+    },
+    "counts": {
+     "sides": 2,
+     "sideValues": [
+      "10 cm",
+      "90 cm"
+     ]
+    },
+    "numbers": [
+     "10",
+     "90",
+     "100"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "unrolled@1",
+     "params": {
+      "sides": [
+       10,
+       90
+      ],
+      "unit": "cm",
+      "total": 100
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-m-is-10cm"
+     },
+     {
+      "from": 58,
+      "board": {
+       "template": "unrolled@1",
+       "params": {
+        "sides": [
+         10,
+         90
+        ],
+        "unit": "cm",
+        "total": 100
+       }
+      },
+      "beat": "then:c4-maths-ch06-t01-m-m-is-10cm"
+     }
+    ]
+   },
+   "guard": [
+    "leak",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe lagta hai haan",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1225,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Mez ki lambai feete par 0 se is nishaan tak hai. Metre aur centimetre mein, mez kitni lambi hui?",
+   "move": "practice",
+   "card": "Mez ki lambai feete par 0 se is nishaan tak hai. Metre aur centimetre mein, mez kitni lambi hui?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:rem:0",
+    "column": "yes"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 936,
+   "replyReadyMs": 2161,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1225,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch06-t01-m-m-is-10cm",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "mark": 13
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:then:c4-maths-ch06-t01-m-m-is-10cm",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 13",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 metre 3 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 976,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Abhi yeh sahi nahi hai. Tumne har chhota khaana 1 centimetre gina; is feete par ek chhota khaana 10 centimetre ka hota hai. Feete par 0 se is nishaan tak aane wali mez kitne metre aur centimetre ki hai?",
+   "move": "hint",
+   "card": "Mez ki lambai feete par 0 se is nishaan tak hai. Metre aur centimetre mein, mez kitni lambi hui?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "whyAlt",
+     "from": 24,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 124,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Abhi yeh sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1250,
+   "replyReadyMs": 2226,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2226,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch06-t01-m-m-is-10cm",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "mark": 13
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:then:c4-maths-ch06-t01-m-m-is-10cm",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 13",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 metre 3 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1140,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh theek nahi hai. Jahan 1 likha hai, uske baad ke chhote khaane gino. Das chhote khaane milkar ek poora metre bante hain. Tumhari baari hai, aaram se socho aur bolo.",
+   "move": "hint",
+   "card": "Mez ki lambai feete par 0 se is nishaan tak hai. Metre aur centimetre mein, mez kitni lambi hui?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 26,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 78,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     }
+    },
+    {
+     "part": "yourTurn",
+     "from": 130,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 13
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 13
+      }
+     },
+     "kind": "yourTurn"
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh theek nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "yourTurn",
+     "joint": "yourTurn",
+     "form": "Tumhari baari hai, aaram se socho aur bolo.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1156,
+   "replyReadyMs": 2296,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2296,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:check:then:c4-maths-ch06-t01-m-m-is-10cm",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "mark": 13
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:then:c4-maths-ch06-t01-m-m-is-10cm",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 13",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 13
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "130 cm",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek: 1 metre ke baad mez 3 chhote khaane aur jaati hai; 3 baar 10 yaani 30, kul 1 metre 30 centimetre. Chalo, pehle wale sawaal ki taraf wapas aate hain. Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+   "move": "practice",
+   "card": "Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:rem:0:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c4-maths-ch06-t01-m-m-is-10cm",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 13
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "marks": [
+        {
+         "num": 10,
+         "label": "1 metre"
+        }
+       ],
+       "hop": {
+        "num": 13
+       }
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 118,
+     "beat": "e2",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 169,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 169,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:rem:c4-maths-ch06-t01-m-m-is-10cm",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:e2",
+      "atChar": 169
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Chalo, pehle wale sawaal ki taraf wapas aate hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1038,
+   "replyReadyMs": 1039,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1039,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "marks": [
+      {
+       "num": 10,
+       "label": "1 metre"
+      }
+     ],
+     "hop": {
+      "num": 13
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "marks": [
+        {
+         "num": 10,
+         "label": "1 metre"
+        }
+       ],
+       "hop": {
+        "num": 13
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 169,
+     "atClause": null,
+     "estMs": 12540,
+     "beat": "e2",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "marks": [
+       {
+        "num": 10,
+        "label": "1 metre"
+       }
+      ],
+      "hop": {
+       "num": 13
+      }
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 14",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 14
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 13
+        }
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 169,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 metre 4 cm",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1243,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yeh jawab sahi nahi hai. Is feete ke khaane scale jaise 1-1 centimetre ke nahi hain; yahan ek metre ke poore 100 centimetre bas das khaanon mein bante hain. Feete par 0 se is nishaan tak wala parda kitne metre aur kitne centimetre ka hai?",
+   "move": "hint",
+   "card": "Ek parda feete par 0 se is nishaan tak aata hai. Parda kitna lamba hai, metre aur centimetre mein?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e2:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    },
+    {
+     "part": "whyAlt",
+     "from": 25,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 157,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "mark": 14
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "mark": 14
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Yeh jawab sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1264,
+   "replyReadyMs": 2507,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2507,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "mark": 14
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e2",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-line@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 14
+     }
+    },
+    "counts": {
+     "lines": [
+      {
+       "gaps": 20,
+       "gapsPerWhole": 10,
+       "ticks": 21,
+       "innerTicks": 19
+      }
+     ],
+     "marks": [
+      {
+       "at": "mark 14",
+       "label": "?"
+      }
+     ]
+    },
+    "numbers": [
+     "0",
+     "1",
+     "2"
+    ],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "mark": 14
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1 metre 40 cm hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 840,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki parda 1 metre wale nishaan se 4 chhote khaane aage hai, har ek 10 centimetre, toh 1 metre 40 centimetre. 1 metre 5 centimetre ka matlab: ek poora metre, yaani 100 centimetre, aur 5 centimetre aur. Toh 105 centimetre. Ek ribbon 2 metre 8 centimetre lambi hai. Ribbon kitne centimetre ki hai?",
+   "move": "explain",
+   "card": "Ek ribbon 2 metre 8 centimetre lambi hai. Ribbon kitne centimetre ki hai?",
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e2:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 14
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "marks": [
+        {
+         "num": 10,
+         "label": "1 metre"
+        }
+       ],
+       "hop": {
+        "num": 14
+       }
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 124,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "unrolled@1",
+       "params": {
+        "sides": [
+         100,
+         5
+        ],
+        "unit": "cm",
+        "total": 105
+       }
+      }
+     ],
+     "own": {
+      "template": "unrolled@1",
+      "params": {
+       "sides": [
+        100,
+        5
+       ],
+       "unit": "cm",
+       "total": 105
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 236,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Ribbon",
+         "items": [
+          "2 metre 8 cm"
+         ]
+        },
+        "right": {
+         "title": "1 metre",
+         "items": [
+          "100 cm"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ribbon",
+        "items": [
+         "2 metre 8 cm"
+        ]
+       },
+       "right": {
+        "title": "1 metre",
+        "items": [
+         "100 cm"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-line@1"
+     },
+     {
+      "from": 124,
+      "template": "unrolled@1"
+     },
+     {
+      "from": 236,
+      "template": "compare@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e2",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:e3",
+      "atChar": 236
+     },
+     "switches": [
+      {
+       "unit": "c4-maths-ch06-t01-s2:e3",
+       "atChar": 124
+      },
+      {
+       "unit": "c4-maths-ch06-t01-s2:e3",
+       "atChar": 236
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1183,
+   "replyReadyMs": 2023,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2023,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s2:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 10,
+     "to": 2,
+     "marks": [
+      {
+       "num": 10,
+       "label": "1 metre"
+      }
+     ],
+     "hop": {
+      "num": 14
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c4-maths-ch06-t01-s2:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "fraction-line@1",
+     "board": {
+      "template": "fraction-line@1",
+      "params": {
+       "den": 10,
+       "to": 2,
+       "marks": [
+        {
+         "num": 10,
+         "label": "1 metre"
+        }
+       ],
+       "hop": {
+        "num": 14
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 124,
+     "atClause": null,
+     "estMs": 8740,
+     "beat": "e3",
+     "template": "unrolled@1",
+     "board": {
+      "template": "unrolled@1",
+      "params": {
+       "sides": [
+        100,
+        5
+       ],
+       "unit": "cm",
+       "total": 105
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 236,
+     "atClause": null,
+     "estMs": 15960,
+     "beat": "e3",
+     "template": "compare@1",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ribbon",
+        "items": [
+         "2 metre 8 cm"
+        ]
+       },
+       "right": {
+        "title": "1 metre",
+        "items": [
+         "100 cm"
+        ]
+       }
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "compare@1",
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 10,
+      "to": 2,
+      "marks": [
+       {
+        "num": 10,
+        "label": "1 metre"
+       }
+      ],
+      "hop": {
+       "num": 14
+      }
+     }
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Ribbon",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "1 metre",
+       "items": 1,
+       "quantities": [
+        {
+         "n": 100,
+         "what": "cm"
+        }
+       ]
+      }
+     ]
+    },
+    "numbers": [
+     "1",
+     "2",
+     "8",
+     "100"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Ribbon",
+       "items": [
+        "2 metre 8 cm"
+       ]
+      },
+      "right": {
+       "title": "1 metre",
+       "items": [
+        "100 cm"
+       ]
+      }
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-line@1",
+       "params": {
+        "den": 10,
+        "to": 2,
+        "marks": [
+         {
+          "num": 10,
+          "label": "1 metre"
+         }
+        ],
+        "hop": {
+         "num": 14
+        }
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 124,
+      "board": {
+       "template": "unrolled@1",
+       "params": {
+        "sides": [
+         100,
+         5
+        ],
+        "unit": "cm",
+        "total": 105
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 236,
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Ribbon",
+         "items": [
+          "2 metre 8 cm"
+         ]
+        },
+        "right": {
+         "title": "1 metre",
+         "items": [
+          "100 cm"
+         ]
+        }
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "208 cm hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1188,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. 2 metre = 200 centimetre, aur 200 + 8 = 208 centimetre. Ab ek sawaal milkar, aaram se hal karte hain. Ek rassi 3 metre lambi hai. Usmein se 40 centimetre kaat diya. Kitni rassi bachi, metre aur centimetre mein? 40 centimetre ghatane se pehle 3 metre ka kya karoge?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:e3:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Ribbon",
+         "items": [
+          "2 metre 8 cm"
+         ]
+        },
+        "right": {
+         "title": "1 metre",
+         "items": [
+          "100 cm"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ribbon",
+        "items": [
+         "2 metre 8 cm"
+        ]
+       },
+       "right": {
+        "title": "1 metre",
+        "items": [
+         "100 cm"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 72,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 118,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Rassi",
+         "items": [
+          "3 metre"
+         ]
+        },
+        "right": {
+         "title": "Kata tukda",
+         "items": [
+          "40 cm"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Rassi",
+        "items": [
+         "3 metre"
+        ]
+       },
+       "right": {
+        "title": "Kata tukda",
+        "items": [
+         "40 cm"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 227,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Rassi",
+         "items": [
+          "3 metre"
+         ]
+        },
+        "right": {
+         "title": "Kata tukda",
+         "items": [
+          "40 cm"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Rassi",
+        "items": [
+         "3 metre"
+        ]
+       },
+       "right": {
+        "title": "Kata tukda",
+        "items": [
+         "40 cm"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "compare@1"
+     },
+     {
+      "from": 118,
+      "template": "compare@1"
+     }
+    ],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:e3",
+     "switchTo": {
+      "unit": "c4-maths-ch06-t01-s2:worked",
+      "atChar": 118
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Ab ek sawaal milkar, aaram se hal karte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1134,
+   "replyReadyMs": 2322,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2322,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:worked:worked:step1",
+   "boardRef": {
+    "template": "compare@1",
+    "params": {
+     "left": {
+      "title": "Ribbon",
+      "items": [
+       "2 metre 8 cm"
+      ]
+     },
+     "right": {
+      "title": "1 metre",
+      "items": [
+       "100 cm"
+      ]
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "compare@1",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Ribbon",
+        "items": [
+         "2 metre 8 cm"
+        ]
+       },
+       "right": {
+        "title": "1 metre",
+        "items": [
+         "100 cm"
+        ]
+       }
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 118,
+     "atClause": null,
+     "estMs": 9120,
+     "beat": "worked:step1",
+     "template": "compare@1",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Rassi",
+        "items": [
+         "3 metre"
+        ]
+       },
+       "right": {
+        "title": "Kata tukda",
+        "items": [
+         "40 cm"
+        ]
+       }
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "compare@1",
+    "boardRef": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Ribbon",
+       "items": [
+        "2 metre 8 cm"
+       ]
+      },
+      "right": {
+       "title": "1 metre",
+       "items": [
+        "100 cm"
+       ]
+      }
+     }
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Rassi",
+       "items": 1,
+       "quantities": [
+        {
+         "n": 3,
+         "what": "metre"
+        }
+       ]
+      },
+      {
+       "title": "Kata tukda",
+       "items": 1,
+       "quantities": [
+        {
+         "n": 40,
+         "what": "cm"
+        }
+       ]
+      }
+     ]
+    },
+    "numbers": [
+     "3",
+     "40"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Rassi",
+       "items": [
+        "3 metre"
+       ]
+      },
+      "right": {
+       "title": "Kata tukda",
+       "items": [
+        "40 cm"
+       ]
+      }
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Ribbon",
+         "items": [
+          "2 metre 8 cm"
+         ]
+        },
+        "right": {
+         "title": "1 metre",
+         "items": [
+          "100 cm"
+         ]
+        }
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 118,
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Rassi",
+         "items": [
+          "3 metre"
+         ]
+        },
+        "right": {
+         "title": "Kata tukda",
+         "items": [
+          "40 cm"
+         ]
+        }
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 1210,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, koi baat nahi. Hum aage chal sakte hain, thoda break le sakte hain, ya aaj ke liye stop kar sakte hain. Tum batao.",
+   "move": "break",
+   "card": null,
+   "cell": {
+    "part": "c4-maths-ch06-t01-s2:worked:step1:ask",
+    "column": "stop"
+   },
+   "held": {
+    "unit": "c4-maths-ch06-t01-s2:worked",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [],
+    "intent": {
+     "unit": "c4-maths-ch06-t01-s2:worked",
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "stopLine",
+     "joint": null
+    }
+   ],
+   "replyMs": 1,
+   "replyReadyMs": 1211,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1210,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}
