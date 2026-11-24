@@ -1570,6 +1570,10 @@ export function d30Errors(s) {
     e.push(`REM_WHOLE ${w.skillId} ${w.targets}: listed but fits (or is gone); take it off the list`);
   return e;
 }
+/** to-brain 052 B3 (ruling): a miss at an asked worked step is told the step; the step's named wrong answer is not read, so a `whyAlt` on
+ *  an asked step is a line nobody hears. A note (F line), never an error. */
+export const stepWhyAltLines = (s) => (s?.skills ?? []).flatMap((k) => (k.workedExample?.steps ?? []).map((x, j) => (x.ask?.whyAlt
+  ? `step whyAlt ${k.skillId.replace(/^.*-/, "")} steps[${j}]: an asked step's whyAlt is never said (a miss at an asked step is told the step; to-brain 052 B3)${x.ask.wrongIfMis ? ` — wrongIfMis "${x.ask.wrongIfMis}" is not read either` : ""}` : null)).filter(Boolean));
 /** Learning 018's lines for the F report: the captions' views, the answer boards with no second view, the remediations left whole. */
 export function d30Report(s) {
   const out = [], cv = captionViews(s).filter((b) => b.cap === "viewCaption" && b.caption);
@@ -2574,6 +2578,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // (Learning 017 A: the fit of every pair that shares a turn, measured; a remediation over its limit is reported, never failed)
     if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of fitReport(scriptOf(t))) console.log(`  F ${m}`);
     if (isD29(scriptOf(t))) for (const m of d30Report(scriptOf(t))) console.log(`  F ${m}`);
+    if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of stepWhyAltLines(scriptOf(t))) console.log(`  F ${m}`);
     // (Learning 019 A.4: every point, remediation, card and worked example whose spoken text changed since a named commit, with its
     // board and key: main reads each against its board and card before a run)
     if (opt("--since")) {

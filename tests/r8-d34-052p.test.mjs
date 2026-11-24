@@ -89,3 +89,16 @@ test("A4: a language request answered with the script's nothing-easier form (hel
   for (const f of script.joints.helpSpent) assert.equal(at({ ...spent, seams: [], text: `${f.hi} ${card}` }), null, f.hi);
   assert.ok(at({ ...spent, seams: [], text: card }));
 });
+
+// ── B3: an asked step's whyAlt is a note, not an error ──
+test("B3: the checker notes (F) every asked worked step carrying a whyAlt, and it is no error", async () => {
+  const { stepWhyAltLines, checkTopic } = await import("../scripts/lesson-scripts/check.mjs");
+  const s = live("c6-maths-ch07-t01");
+  const lines = stepWhyAltLines(s);
+  assert.equal(lines.length, s.skills.flatMap((k) => k.workedExample?.steps ?? []).filter((x) => x.ask?.whyAlt).length);
+  assert.ok(lines.length >= 1 && lines.every((l) => /^step whyAlt s\d steps\[\d+\]: .*052 B3/.test(l)), lines.join("\n"));
+  assert.equal((await checkTopic("c6-maths-ch07-t01")).ok, true);
+  const bare = structuredClone(s);
+  for (const k of bare.skills) for (const x of k.workedExample?.steps ?? []) if (x.ask) delete x.ask.whyAlt;
+  assert.deepEqual(stepWhyAltLines(bare), []);
+});
