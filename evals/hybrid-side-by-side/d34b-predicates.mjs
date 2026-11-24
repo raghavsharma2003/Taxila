@@ -126,6 +126,10 @@ export const D34B_PREDICATES = {
     if (String(c?.intent ?? "") !== "hindi" && String(r.cell?.column ?? "") !== "hindi") return null;
     if (seamsOf(r).includes("hindiSwitch")) return null;
     const t = qKey(r.text);
+    // (to-brain 052 A4: with the help spent she says the honest nothing-easier line (051 C5): a turn that says a joints.helpSpent form, read
+    // from the script, or carries its seam, is not flagged — offtopic-c6-ch07-t01 row 32)
+    const spent = (ctx.script.joints?.helpSpent ?? []).flatMap((f) => [f?.hi ?? (typeof f === "string" ? f : null), f?.en]).filter(Boolean).map(qKey);
+    if (seamsOf(r).includes("helpSpent") || spent.some((f) => f && t.includes(f))) return null;
     return forms.some((f) => f && t.includes(f)) ? null : "a language request at a card with no Hindi form, and no easierWords line";
   },
 };

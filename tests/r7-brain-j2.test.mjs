@@ -3,6 +3,7 @@
 // The dry matrix's returnReply predicate reads the turn (tests/r7-dry-matrix).
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { j2WordsOf } from "../server/brain/say.js";
 import { PREDICATES, TWINS } from "../evals/hybrid-side-by-side/dry-predicates.mjs";
 
@@ -12,12 +13,15 @@ import { PREDICATES, TWINS } from "../evals/hybrid-side-by-side/dry-predicates.m
 test("R1 predicate (was J2): a re-park, a form not Learning's or no lesson after the reply is flagged; a library form with their word is not", () => {
   const ctx = (child) => ({ prevT: { returnSaid: true, text: "Cricket mein tumhe sabse achha kya lagta hai?" }, prevChild: child });
   const f = (text, child = "jab Virat chauka maarta hai, woh") => PREDICATES.returnReply({}, { who: "teacher", text }, 0, ctx(child));
-  assert.equal(f("Achha, theek hai. Do roti, bilkul ek jaisi. Kaunsa tukda bada hai?"), null);
-  assert.equal(f("Achha, chauka! Theek hai. Do roti, bilkul ek jaisi."), null);
+  // (re-pinned, to-brain 052 C: the forms are read from Learning's file as it stands — e12517b3f rewrote them — not pasted here)
+  const sport = JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).kinds.sport;
+  const plain = sport.plain[0].hi, reply = (w) => sport.replies[0].hi.replace("{word}", w);
+  assert.equal(f(`${plain} Do roti, bilkul ek jaisi. Kaunsa tukda bada hai?`), null);
+  assert.equal(f(`${reply("chauka")} Do roti, bilkul ek jaisi.`), null);
   assert.match(f("Yeh baantna poora hote hi Virat ki baat zaroor karenge. Ek pizza ke 4 barabar slice the."), /parked again/);
   assert.match(f("Virat wala pal sach mein zabardast lagta hoga. Do roti, bilkul ek jaisi."), /no form of Learning's/);
-  assert.match(f("Achha, sixer! Theek hai. Do roti."), /no form of Learning's/, "a word they did not say");
-  assert.match(f("Achha, chauka! Theek hai."), /no lesson/);
+  assert.match(f(`${reply("sixer")} Do roti.`), /no form of Learning's/, "a word they did not say");
+  assert.match(f(reply("chauka")), /no lesson/);
 });
 
 test("twins: the predicate reads Learning's one list (data/lesson-twins.json), multi-word forms included", () => {

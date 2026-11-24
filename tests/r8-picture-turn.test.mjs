@@ -339,7 +339,7 @@ test("main on director22: a view whose captions cannot be said clean is still dr
 test("Studio 014: the seven scripts' card boards — the view each gets, and what rule 7 still lists", async () => {
   const { d32Cards, viewOf, noPictureCards } = await import("../scripts/lesson-scripts/check.mjs");
   const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
-    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
   const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
   const got = {};
   for (const [d, T] of SEVEN) {
@@ -364,11 +364,13 @@ test("Studio 014: the seven scripts' card boards — the view each gets, and wha
     "c4-maths-ch05-t01": { "equal-groups@1 \u2192 equal-groups@1 rows": 2, "equal-groups@1 \u2192 shade-grid@1 grid": 3, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 fraction-parts@1 round": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 2, "shade-grid@1 \u2192 fraction-parts@1 round": 1, "shade-grid@1 \u2192 none": 4, "wholes@1 \u2192 wholes@1 strips": 9, "wholes@1 \u2192 wholes@1 wholes": 4, "rule 7": 1 },
   // (2026-11-23, main: c5-t01 s2's worked board is the bare line, fraction-line@1 { den 1 }, no longer the uncut strip: the one
   //  card board with no view there is now "fraction-line@1 → none", carrying its authored pictureBoard as before)
+  // (re-pinned, to-brain 052: 1995ce88e, Learning 022 Part 2 A/D, posed c6-ch07-t01 s2 e2 over a compare@1 text board in place of its bars:
+  //  wholes 3 → 2, compare none 7 → 8; c4-maths-ch01-t02 is read from data/lesson-scripts, live)
     "c5-maths-ch02-t01": { "fraction-line@1 \u2192 none": 1, "fraction-line@1 \u2192 fraction-bars@1 parts": 19, "fraction-line@1 \u2192 fraction-line@1 strips": 13, "rule 7": 0 },
     "c5-maths-ch02-t02": { "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 wholes@1 wholes": 16, "fraction-line@1 \u2192 fraction-bars@1 parts": 9, "wholes@1 \u2192 wholes@1 strips": 5, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 },
     "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 6, "rule 7": 0 },
     "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 1 },
     "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 8, "shape@1 \u2192 shape@1 radii": 9, "rule 7": 1 },
-    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 7, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 3, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "rule 7": 0 },
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 8, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 2, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "rule 7": 0 },
   });
 });

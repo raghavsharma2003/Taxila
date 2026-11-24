@@ -10,8 +10,9 @@ import { boardDrawsQ, qBoardCards, stepCountHits, fractionComparisons, compariso
   d34JointErrors, d34Errors, d34ReportLines, D34_READY, isD34, D34_JOINTS, beatsOf } from "../scripts/lesson-scripts/check.mjs";
 
 const HI = (hi, en = "x") => ({ hi, en });
-const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
-const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
+// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd: seven live, two staged)
+const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01", "c4-maths-ch01-t02"];
+const STAGED = ["c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const load = (d, t) => JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
 const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ...STAGED.map((t) => [t, load("lesson-scripts-staged", t)])]);
 // d34: the scripts were fixed after director33; the fault cases read the FROZEN scripts as judged (J), the d34 cases read data/ (S).

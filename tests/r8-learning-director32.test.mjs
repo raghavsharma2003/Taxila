@@ -10,9 +10,10 @@ import { answerForms, safetyHits, safetyErrors, SAFETY_STAGED_KNOWN, SAFETY_SEEN
 import { scanSafety } from "../server/director/safety.js";
 
 const HI = (hi, en = "x") => ({ hi, en });
+// (the six live at director32; c4-maths-ch01-t02, live since to-brain 052, is read from data/lesson-scripts beside them in S)
 const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
 const load = (d, t) => JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
-const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ["c4-maths-ch01-t02", load("lesson-scripts-staged", "c4-maths-ch01-t02")]]);
+const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ["c4-maths-ch01-t02", load("lesson-scripts", "c4-maths-ch01-t02")]]); // (to-brain 052 D: live, b3c7e81fd)
 const STAGED = readdirSync(new URL("../data/lesson-scripts-staged/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, ""));
 /** A one-skill fragment; `card` overrides the first explain card, `skill` the skill, `top` the script. */
 const frag = ({ card = {}, skill = {}, top = {} } = {}) => ({
@@ -181,7 +182,7 @@ test("021 rule 3 and 5: D33_READY holds the nine rewrites and none fails on it; 
 
 // ---- 5 joints.noPicture, joints.yourTurn
 const J = (noPicture, yourTurn) => frag({ top: { joints: { noPicture, yourTurn } } });
-const GOOD_NP = [HI("Iska koi aur chitra nahi hai.", "There is no other drawing of this."), HI("Is sawaal ka bas yahi board hai.", "This board is the only one for this question."), HI("Yahan doosra chitra nahi hai.", "There is no second picture here.")];
+const GOOD_NP = [HI("Iska koi aur chitra nahi hai.", "There is no other drawing of this."), HI("Is sawaal ka bas yahi board hai.", "This board is the only one for this question."), HI("Yahan doosra chitra nahi hai.", "There is no other drawing here.")]; // (to-brain 052 A6: "no second picture" is the predicates' refusal shape)
 const GOOD_YT = [HI("Ab tumhari baari, apna jawab bolo.", "Your turn now, say your answer."), HI("Tum batao, main sun rahi hoon.", "You tell me, I am listening."), HI("Jo socha hai, woh bolo.", "Say what you thought.")];
 
 test("021 rule 5: well-formed noPicture and yourTurn pass; absent is fine off D33_READY and required on it", () => {

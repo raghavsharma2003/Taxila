@@ -10,7 +10,7 @@ import { viewOf } from "../scripts/lesson-scripts/check.mjs";
 import { LIMITS } from "../shared/whiteboard.js";
 
 const SCRIPTS = [["data/lesson-scripts", "c4-maths-ch05-t01"], ["data/lesson-scripts", "c5-maths-ch02-t01"], ["data/lesson-scripts", "c5-maths-ch02-t02"],
-  ["data/lesson-scripts", "c5-maths-ch02-t03"], ["data/lesson-scripts", "c6-maths-ch06-t01"], ["data/lesson-scripts-staged", "c4-maths-ch01-t02"], ["data/lesson-scripts", "c6-maths-ch07-t01"]];
+  ["data/lesson-scripts", "c5-maths-ch02-t03"], ["data/lesson-scripts", "c6-maths-ch06-t01"], ["data/lesson-scripts", "c4-maths-ch01-t02"], ["data/lesson-scripts", "c6-maths-ch07-t01"]];
 /** Every board of the seven scripts (cards, asks, checks, worked boards, answer boards), by template. */
 function boards(template) {
   const out = [];
@@ -60,7 +60,9 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
   // (d33, 2026-11-23: the c4-ch01-t02 rewrite dropped the roti's "Roti: ek taraf | Doosri taraf" picture; its only table now is s3
   // remediation[0]'s word table "String se | Haath se oval", which has no view, as a table of words should — pinned below; and the d33 rewrites dropped
   // the "3 bachche | 5 bachche" table: a table of two kinds today is "Bachche | Roti", pinned below in its place)
-  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon A | Ribbon B", "Ribbon P | Ribbon Q", "Ribbon | Hisse"]);
+  // (re-pinned, to-brain 052: 6037de250, d34 ruling 2, renamed c6-ch07-t01 s1 rem[1].then's table "Ribbon A | Ribbon B" to the laal and neeli
+  // ribbons its question names)
+  assert.deepEqual([...new Set(scaled.map(titles))].sort(), ["Ganna | Ek hissa", "Laal ribbon | Neeli ribbon", "Lambi ribbon | Chhoti ribbon", "Rahul ki ribbon | Sana ki ribbon", "Ribbon P | Ribbon Q", "Ribbon | Hisse"]);
   // (one table of lengths has no view, and is named: c6-ch07 s1 c1's chocolate, now held to scale and cut 6, 2, 6, 2 cm in the order it
   // broke. Its view is built, but the split beside the held board is refused at panel scale — with 6,6,2,2 it lays out — so a
   // picture request on it draws the card's authored pictureBoard, a 0-16 cm scale. Studio to say whether the view should lay out)
@@ -196,6 +198,10 @@ test("shape@1 / measured@1 radii (item 3): a circle whose radius the board draws
   for (const b of circles) {
     const p = b.ref.params, v = viewOf(b.ref, b.at), call = BF.altCall(b.ref);
     if (b.ref.template === "shape@1" && !p.radius) { assert.equal(call, null, `${b.at}: no radius drawn, no view`); continue; }
+    // (re-pinned, to-brain 052: 31383373a, Learning 022 A, gave c4-maths-ch01-t02 s3's asked step a resultBoard that draws the diameter,
+    // "do string", beside the radius. board-first gives a circle that already draws a diameter, a chord or an arc no radii view (three
+    // radii beside a drawn diameter would make one): no view, as the engine says)
+    if (b.ref.template === "shape@1" && (p.diameter || p.chord || p.arc)) { assert.notEqual(call?.view, "radii", `${b.at}: a drawn diameter, no radii view`); continue; }
     assert.equal(call?.view, "radii", b.at);
     const x = expand(Object.fromEntries(Object.entries(call).filter(([k]) => k !== "view")));
     assert.ok(x.ok, x.errors.join());

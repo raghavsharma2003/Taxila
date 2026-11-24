@@ -9,7 +9,7 @@ import { D32_READY, D32_PICTURES_READY, PICTURE_NONE, d32Cards, d32Errors, viewO
 import { INTERESTS } from "../server/persona/signals.js";
 
 const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"],
-  ["lesson-scripts", "c5-maths-ch02-t03"], ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"],
+  ["lesson-scripts", "c5-maths-ch02-t03"], ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts", "c4-maths-ch01-t02"] /* (to-brain 052 D: live) */, ["lesson-scripts", "c6-maths-ch07-t01"],
   // (d33, 2026-11-23: the two new staged scripts, written to Learning 021, read cold and fixed, join both lists)
   ["lesson-scripts-staged", "c4-maths-ch06-t01"], ["lesson-scripts-staged", "c6-maths-ch07-t03"]];
 const load = (d, t) => {

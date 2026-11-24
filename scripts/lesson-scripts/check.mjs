@@ -36,6 +36,11 @@ import { toSpoken } from "../../server/voice/spoken.js";
 import { pictureTurn } from "../../server/stagecraft/board-first.js";
 // (Learning 021 rule 1: the frozen safety predicate the walk reads a child's reply with, imported, never copied or changed)
 import { scanSafety } from "../../server/director/safety.js";
+// (to-brain 052 A5: the engine's own word count and its limit for the turn after a right answer, imported, never copied)
+import { wordsIn as engineWords, VPC_MAX } from "../../server/director/state.js";
+import { FRAMES } from "../../server/brain/say.js";
+// (to-brain 052 A6: the predicates' refusal pattern, from its one place)
+import { PICTURE_REFUSAL } from "../../evals/hybrid-side-by-side/d31-predicates.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -1121,7 +1126,8 @@ export function blindPacket(topicId) {
  *  for lacking them. */
 // (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged, the fifth live script, held to every pilot rule;
 // director32: c6-maths-ch07-t01 the sixth)
-export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
+// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
+export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02"];
 export const D27_JOINTS = ["afterKeyReturn", "tiredBye"];
 export const QUICK_PROMPT_MAX = 14, QUICK_SAY_MAX = 12, ASK_PROMPT_MAX = 14, ASK_RIGHT_MAX = 15, WORKED_PROBLEM_MAX = 30, TOLD_STEP_MAX = 30, WORKED_OPEN_MAX = 75, COVERED_MAX = 20;
 export function isD27(s) {
@@ -1314,7 +1320,8 @@ export function d28Errors(s) {
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
 // (dc-r8-director31 item 10: every live script — the four pilots and c5-maths-ch02-t03, live as judged; director32: c6-maths-ch07-t01)
-export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
+// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
+export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02"];
 export const D29_JOINTS = ["stepMiss", "startAnyway", "afterPark"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId) || STANDARD_STAGED.includes(s?.topicId); }
@@ -1565,6 +1572,10 @@ export function d30Errors(s) {
     e.push(`REM_WHOLE ${w.skillId} ${w.targets}: listed but fits (or is gone); take it off the list`);
   return e;
 }
+/** to-brain 052 B3 (ruling): a miss at an asked worked step is told the step; the step's named wrong answer is not read, so a `whyAlt` on
+ *  an asked step is a line nobody hears. A note (F line), never an error. */
+export const stepWhyAltLines = (s) => (s?.skills ?? []).flatMap((k) => (k.workedExample?.steps ?? []).map((x, j) => (x.ask?.whyAlt
+  ? `step whyAlt ${k.skillId.replace(/^.*-/, "")} steps[${j}]: an asked step's whyAlt is never said (a miss at an asked step is told the step; to-brain 052 B3)${x.ask.wrongIfMis ? ` — wrongIfMis "${x.ask.wrongIfMis}" is not read either` : ""}` : null)).filter(Boolean));
 /** Learning 018's lines for the F report: the captions' views, the answer boards with no second view, the remediations left whole. */
 export function d30Report(s) {
   const out = [], cv = captionViews(s).filter((b) => b.cap === "viewCaption" && b.caption);
@@ -1596,7 +1607,8 @@ export function d30Report(s) {
 export const AFTER_WORKED_MAX = 6;
 /** Scripts outside the live ones held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged
  *  (c5-maths-ch02-t03 left it for D29_PILOTS when it went live, dc-r8-director31 item 10; c6-maths-ch07-t01 in director32). */
-export const STANDARD_STAGED = ["c4-maths-ch01-t02",
+// (to-brain 052 D: c4-maths-ch01-t02 left it for D29_PILOTS when it went live, b3c7e81fd)
+export const STANDARD_STAGED = [
   // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
   "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 /** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */
@@ -2152,6 +2164,18 @@ export const D33_JOINTS = ["noPicture", "yourTurn"];
 export const D33_JOINT_FORMS = 3, D33_JOINT_MAX = 13; // (under 14 words)
 const NUMBER_SAID = /\d|(?<![\p{L}])(?:teen|chaar|char|paanch|chhe|chheh|saat|aath|nau|das|aadha|aadhi|aadhe|two|three|four|five|six|seven|eight|nine|ten|half)(?![\p{L}])/iu;
 const PROMISE = /(?<![\p{L}])(?:phir|baad\s+mein|baad\s+me|yaad|later|remember|next\s+time|again)(?![\p{L}])/iu;
+/** to-brain 052 A6: noPicture forms that read as a refusal and that main has not ruled on yet (the sentence is a child's, not the
+ *  builder's to rewrite): printed as a note (P line), an error for every other form. { topicId, i, lang, seen }. */
+export const NO_PICTURE_NOTE = [
+];
+const noPictureNoted = (s, i, l) => NO_PICTURE_NOTE.find((x) => x.topicId === s?.topicId && x.i === i && x.lang === l) ?? null;
+/** The noted forms, as lines for main; a listed form that no longer matches is an error in d33JointErrors' place (noPictureNoteErrors). */
+export const noPictureNoteLines = (s) => NO_PICTURE_NOTE.filter((x) => x.topicId === s?.topicId).map((x) => {
+  const t = String(s?.joints?.noPicture?.[x.i]?.[x.lang] ?? "");
+  return PICTURE_REFUSAL.test(t) ? `P joints.noPicture[${x.i}]${x.lang === "en" ? " (en)" : ""}: "${t}" reads as a refusal (PICTURE_REFUSAL; NO_PICTURE_NOTE, main to rule)` : null;
+}).filter(Boolean);
+export const noPictureNoteErrors = (s) => NO_PICTURE_NOTE.filter((x) => x.topicId === s?.topicId && !PICTURE_REFUSAL.test(String(s?.joints?.noPicture?.[x.i]?.[x.lang] ?? "")))
+  .map((x) => `NO_PICTURE_NOTE joints.noPicture[${x.i}] ${x.lang}: listed but no longer reads as a refusal (or is gone); take it off the list (to-brain 052 A6)`);
 export function d33JointErrors(s, { required = false } = {}) {
   const e = [], j = s?.joints ?? {};
   for (const kind of D33_JOINTS) {
@@ -2165,11 +2189,13 @@ export function d33JointErrors(s, { required = false } = {}) {
         if (!t) continue;
         if (kind === "noPicture" && NUMBER_SAID.test(t)) e.push(`${at}: names a number ("${t.match(NUMBER_SAID)[0]}"); there is no other drawing, and it names no answer (Learning 021 rule 5)`);
         if (kind === "noPicture" && PROMISE.test(t)) e.push(`${at}: "${t.match(PROMISE)[0]}" promises something; it promises nothing (Learning 021 rule 5)`);
+        if (kind === "noPicture" && PICTURE_REFUSAL.test(t) && !noPictureNoted(s, i, l)) e.push(`${at}: "${t.match(PICTURE_REFUSAL)[0]}" reads as a refusal (the predicates' PICTURE_REFUSAL); say what is on the board (to-brain 052 A6)`);
       }
     });
     const seen = new Set();
     forms.forEach((f, i) => { const n = d27Norm(f?.hi ?? ""); if (n && seen.has(n)) e.push(`joints.${kind}[${i}]: the same form twice (Learning 021 rule 5)`); seen.add(n); });
   }
+  e.push(...noPictureNoteErrors(s));
   return e.map((x) => (/Learning 021/.test(x) ? x : `${x} (Learning 021 rule 5)`));
 }
 /** Learning 021's errors: rule 5's joints wherever they are written (required, and rule 3, for a topic in D33_READY or forced). */
@@ -2441,10 +2467,45 @@ export function d34Errors(s, { force = false } = {}) {
   for (const x of stepCountHits(s)) e.push(`${x.at}.${x.field}: ${x.why}; say it over a board that draws it (the step's resultBoard) or say what the ${x.boardAt} draws: "${x.text}" (Learning 022 rule 2)`);
   for (const c of fractionComparisons(s).filter((y) => y.value === false)) e.push(`${c.at}: "${c.text}" says ${c.a} ${c.rel} ${c.b}, which is false (Learning 022 rule 3)`);
   for (const x of markedNoWrong(s)) e.push(`${x.at}: marked whyAltAsHelp with no wrongIfMis: name the answer its whyAlt was written against, or take the mark off (Learning 022 rule 4)`);
+  e.push(...vpcErrors(s, { force: true }));
   return e;
 }
+/** to-brain 052 A5: the turn after a right answer — the verdict, the card's short reason, the next point and its card — counted as the
+ *  engine counts it (server/director/state.js wordsIn: every token, so "+", "=" and "×" are words) and held to its VPC_MAX, over which the
+ *  engine splits the turn at the point. The opener is the longest right-verdict frame she may say (brain/say.js FRAMES.right), and the
+ *  engine adds one lead-in word ("kyunki", "Dekho,") before the reason. An error above VPC_MAX for a topic in D34_READY or forced; a part
+ *  on VPC_NOTE prints as a note (V line) for main to rule on. */
+export const VPC_LEAD_WORDS = 1;
+/** Parts over the engine's count that main has not ruled on yet: { topicId, skillId, explainId, seen }. */
+export const VPC_NOTE = [];
+const engineHi = (x) => engineWords(String(x?.hi ?? "").replace(/\{[a-zA-Z]+\}/g, "X"));
+export const VPC_OPENER_WORDS = Math.max(...FRAMES.right.hinglish.map((f) => engineWords(f)));
+/** The counts of every such turn: [{ skill, id, at, opener, reason, lead, point, card, total, limit, noted }]. */
+export function vpcTurns(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) (k.explain ?? []).forEach((b, j) => {
+    if (j === 0 || !b.ask) return;
+    const prev = k.explain[j - 1].ask;
+    if (!prev) return;
+    const reason = engineHi(prev.whyShort ?? prev.why), point = engineHi(b.point), card = engineHi(b.ask.prompt);
+    const total = VPC_OPENER_WORDS + reason + VPC_LEAD_WORDS + point + card;
+    const noted = VPC_NOTE.find((x) => x.topicId === s.topicId && x.skillId === k.skillId && x.explainId === b.id) ?? null;
+    out.push({ skill: k.skillId, id: b.id, at: `${k.skillId}/${b.id}`, opener: VPC_OPENER_WORDS, reason, lead: VPC_LEAD_WORDS, point, card, total, limit: VPC_MAX, noted });
+  });
+  return out;
+}
+const vpcParts = (p) => `opener ${p.opener} + short reason ${p.reason} + lead-in ${p.lead} + point ${p.point} + card ${p.card} = ${p.total}`;
+export function vpcErrors(s, { force = false } = {}) {
+  if (!force && !isD34(s)) return [];
+  const e = [], turns = vpcTurns(s);
+  for (const p of turns) if (p.total > p.limit && !p.noted) e.push(`${p.at}: the turn after a right answer is ${vpcParts(p)} words by the engine's count > ${p.limit}: the engine splits it at the point; cut the short reason or the point, never the card's givens (to-brain 052 A5)`);
+  for (const w of VPC_NOTE.filter((x) => x.topicId === s?.topicId)) if (!turns.some((p) => p.noted === w && p.total > p.limit)) e.push(`VPC_NOTE ${w.skillId} ${w.explainId}: listed but fits (or is gone); take it off the list`);
+  return e;
+}
+/** The noted parts, as lines for main. */
+export const vpcNoteLines = (s) => vpcTurns(s).filter((p) => p.noted && p.total > p.limit).map((p) => `V ${p.at}: the turn after a right answer is ${vpcParts(p)} > ${p.limit} by the engine's count (VPC_NOTE: ${p.noted.seen}; main to rule)`);
 /** Learning 022's lines for a reader: G (rule 5), N (rule 6), and the hits of rules 1-4 as Q / K / C / W lines when not errors. */
-export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s)];
+export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), ...vpcNoteLines(s), ...noPictureNoteLines(s)];
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2519,6 +2580,7 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // (Learning 017 A: the fit of every pair that shares a turn, measured; a remediation over its limit is reported, never failed)
     if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of fitReport(scriptOf(t))) console.log(`  F ${m}`);
     if (isD29(scriptOf(t))) for (const m of d30Report(scriptOf(t))) console.log(`  F ${m}`);
+    if (isD29(scriptOf(t)) || args.includes("--fit")) for (const m of stepWhyAltLines(scriptOf(t))) console.log(`  F ${m}`);
     // (Learning 019 A.4: every point, remediation, card and worked example whose spoken text changed since a named commit, with its
     // board and key: main reads each against its board and card before a run)
     if (opt("--since")) {

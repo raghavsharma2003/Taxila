@@ -14,7 +14,8 @@ import { countsOf, diffCounts, BASELINE } from "../evals/hybrid-side-by-side/cou
 const ROOT = new URL("..", import.meta.url).pathname;
 // (d32, Brain 047: the five live topics — c5-maths-ch02-t03 went live with dc-r8-director31; the baseline is their matrix;
 // director32: c6-maths-ch07-t01 went live, the sixth, and the baseline is the six topics' 24 lessons)
-const TOPICS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
+// (to-brain 052 D: c4-maths-ch01-t02 went live, the seventh; the counts baseline is rewritten in part E, not here)
+const TOPICS = ["c4-maths-ch05-t01", "c4-maths-ch01-t02", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
 
 test("G2: the dry matrix (24 lessons) reads 0 on every predicate", { timeout: 300_000 }, () => {
   const out = mkdtempSync(join(tmpdir(), "taxila-dry-"));
