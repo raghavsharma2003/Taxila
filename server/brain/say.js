@@ -3713,7 +3713,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from the point it led into — the walk's noFit "vpc" — ends on the
     // go-on joint the walk chose, a statement (state.js splitLongOnce, help.js goOnPlain), never on a check-in: after a right answer she gives
     // the reason and goes on. The one place besides the yourTurn invitation where a statement tail stands)
-    if (l2Live && ["vpc", "card"].includes(state.lastMove?.noFit) && state.lastMove?.vpcGoOn && !asideQ && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
+    if (l2Live && !!state.lastMove?.noFit && state.lastMove?.vpcGoOn && !asideQ && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
       tail = dot(norm(state.lastMove.vpcGoOn)); guard.vpcGoOn = tail; guard.l2Checkin = false;
     }
     // (Brain 044 Small, director28 c4 steady 84/86, offtopic 50/52, c5-t01 steering 52/54: a second miss in a row got a new hint and then
@@ -3789,6 +3789,14 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
           tail = card; guard.reaskShort = undefined; guard.cardQuestionOnly = false; guard.reaskRotated = "whole";
         }
       }
+    }
+    // (to-brain 053 B2: after try-first or a bare yes at a question just said, she waits — the short ask in the question's place, never the
+    // question whole again (question-run.js yourTurnPass marks the turn waitShort); the go-ahead to try stays before it. The short ask is not
+    // the card: no "Toh sawaal yeh hai." before it — it is recorded as her own line, kind reaskShort)
+    if (state.lastMove?.waitShort && !state.lastMove?.yourTurn && tail && !asideQ && (tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk) || /[?？]\s*$/.test(norm(tail)))) {
+      const short = norm(freshOf(jointsAt(kit, "missAgainAsk", lang, state) ?? MISS_AGAIN_ASK[lang === "english" ? "english" : "hinglish"], state));
+      guard.reaskShort = { part: "aside", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code", wait: true };
+      tail = short; guard.cardQuestionOnly = false; guard.stepAsk = undefined; guard.waitShort = true; body = body.filter((x) => !REPOSE_FRAME.test(x));
     }
     // (Brain 049 B4: the third of her turns running at one question ends on the script's invitation — the walk's yourTurn, state.js /
     // question-run.js — in place of the question; what the turn says before it stays)

@@ -138,6 +138,8 @@ export const D31_PREDICATES = {
     const sm = r.seams ?? [];
     const at = sm.findIndex((x) => x.right === "reaskShort");
     if (at < 0) return null;
+    // (to-brain 053 B2 reverses R2 for these: after try-first or a bare yes at the question just said, she waits with the short ask)
+    if (["try_first", "yes"].includes(String(r.cell?.column ?? ""))) return null;
     if (sm[at].left !== "help") return `the short ask after ${sm[at].left}`;
     const a = askedOf(ctx?.script, r);
     if (!a) return null;

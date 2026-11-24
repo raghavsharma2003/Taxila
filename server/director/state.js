@@ -40,7 +40,7 @@ import { equityProfile, lessonGuidance, teachPlanFor, fadeItem, fadedContent, wo
 import { renderWorked, chainOf as chainOfStep, stepLine as stepLineOf } from "./worked.js";
 import { INTERESTS as PERSONA_INTERESTS } from "../persona/signals.js";
 import { knowsBeats, knowsCompressAnswer, knowsHookSlot, knowsGreetSlot, knowsRemedy, knowsSayFirst, knowsMark, knowsPick } from "./knows-walk.js";
-import { pickHelp, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
+import { pickHelp, KEY_AFTER_MISSES, addSaid, TEACHBACK_PART, helpJoint, goOnPlain, helpPart, inSaid, sentencesOf as helpSentencesOf, normSentence as helpNormSentence } from "./help.js";
 import { scriptFor, scriptOn, skillScriptOf, scriptIdOf, walkBeats, scriptCheckItem, scriptThenItem, scriptWorkedLines, scriptAskItem, scriptWorkedLinesV2, scriptWorkedStepLine, scriptWorkedStepSmaller, scriptQuickItem, scriptStepAskItem, isQuickId, saidIn as saidIn0, saidMust, fillFriend, WHY_MAX_WORDS, joinable, jointOf } from "./script.js";
 import { allocateFormat, POINT_ID as FORMAT_POINT } from "../learner/formats.js";
 /** round 7 S2: worked examples rendered in code (TAXILA_R7_WORKED_CODE=off: the model words them, as before). */
@@ -157,7 +157,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { yourTurnPass } from "./question-run.js";
+import { yourTurnPass, atQuestionOf } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -3353,7 +3353,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3586,6 +3586,53 @@ function helpPartOf(prev, input) {
   const p0 = a?.part ? String(a.part).replace(/:quick$/, ":checkin").replace(/(:worked:step\d+):ask$/, "$1") : null;
   return p0 && !/:(?:greet|hook)$/.test(p0) ? { part: p0, keyed: false } : null;
 }
+/** to-brain 053 B3: how many of her turns heard each question of the script (a card's or an asked step's, by its path — question-run.js
+ *  atQuestionOf: every form, whole, re-ask, Hindi; a short ask is the question last said), her turn before counted → { [path]: n, "?last": path }.
+ *  Kept on the state turn by turn (s.qHeard). */
+function heardOf(prev, script) {
+  const h = { ...(prev?.qHeard ?? {}) };
+  const last = (prev?.recent ?? []).filter((t) => t.who === "teacher").at(-1)?.text ?? null;
+  if (!script || !last) return h;
+  const a = atQuestionOf(script, last);
+  const P = a === "?short" ? h["?last"] ?? null : a;
+  if (P && !/teachback/.test(P)) { h[P] = (h[P] ?? 0) + 1; h["?last"] = P; }
+  return h;
+}
+/** The child's turns at which a fifth hearing gives the answer: an answer that is not right, a give-up, a request to hear it again or in Hindi,
+ *  a yes or a try-first. Never a picture request (director32: a picture request never costs the card), a right answer, an aside or a stop. */
+const CAP_COLUMNS = new Set(["wrong", "misconception", "give_up", "clarify", "hindi", "yes", "try_first", "repeat", "which", "thinking"]);
+/** to-brain 053 B3 — director34 c4-ch01-t02 offtopic 10 to 30 (one step seven times), c5-t02 steering 6 to 20 (one follow-up card eight turns,
+ *  no key), c6 steering (one question six times in eight turns): where the live card's or asked step's question has been heard four times,
+ *  the turn that would say it a fifth time gives the card's key with its reason (as after the misses that give it) or tells the step.
+ *  → { pre } (the key's help decision) | { input } (the step: read as a give-up, the walk tells it) | null. */
+function heardCap(prev, input, heard, said) {
+  if (input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop) return null;
+  const col = columnName(input, prev);
+  if (!CAP_COLUMNS.has(col)) return null;
+  const script = scriptFor(input.kit)?.script;
+  const liveId = prev?.lastUi?.ask?.itemId ?? null;
+  const stepQ = prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose ? prev.lastMove.stepAsk.prompt : null;
+  const qText = liveId && String(liveId).startsWith("script:") ? prev.lastUi.ask.text : stepQ;
+  const P = qText ? atQuestionOf(script, qText) : null;
+  if (!P || P === "?short" || /teachback/.test(P) || (heard[P] ?? 0) < 4) return null;
+  if (liveId && String(liveId).startsWith("script:") && !stepQ) {
+    const part = cardPartOf(input.kit, { itemId: liveId });
+    if (!part) return null;
+    const d0 = pickHelp({ script, part, request: "hint", said, misses: KEY_AFTER_MISSES, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
+      lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[part] ?? null });
+    if (d0?.card !== "close") return null;
+    const wrong = col === "wrong" || col === "misconception";
+    const d = { ...d0, request: wrong ? "hint" : "give_up", friend: friendOf, liveId, heardCap: P };
+    return { P, pre: { decision: d, input: helpInput(input, d, liveId), hint: true } };
+  }
+  if (stepQ) {
+    const { request: _r, ...rest } = input.cls ?? {};
+    return { P, skipHelp: true, input: { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } }, heardCap: P } };
+  }
+  return null;
+}
+/** to-brain 053 B7: a request for Hindi that asks for an explanation as well. */
+const HINDI_EXPLAIN = /(?<![\p{L}])(?:samjha(?:o|iye|ye|do|dijiye|na)|samjha\s+d(?:o|ijiye|ena)|samjhaa(?:o|do)|samjhao|batao\s+kaise|kaise\s+(?:hota|karte|karein|hai)|explain)(?![\p{L}])/iu;
 /** pickHelp for this turn. → the decision with its request and part, or null. */
 function helpDecision(prev, input, request, said) {
   const where = helpPartOf(prev, input);
@@ -3599,17 +3646,21 @@ function helpDecision(prev, input, request, said) {
     const cb = prev.lastMove?.closeBeat ?? prev.lastMove?.closedBeat ?? null;
     const id = cb ? cardPartOf(input.kit, { beat: cb }) : null;
     const cp = id ? helpPart(script, id) : null;
-    // (its full reason, else its other reason — whichever she has not said: the verdict before the bridge often says the full one)
+    // (its full reason, unless she has said it — the verdict before the bridge often says the full one: then nothing is left, and the lesson
+    // goes on)
     const lang = prev.ctx?.lang === "english" ? "english" : "hinglish";
     const said0 = saidNowOf(prev);
-    for (const f of ["why", "whyAlt"]) {
-      const w = cp?.[f] ?? (f === "whyAlt" ? (() => { try { return String(cp.path).split(/\.|\[|\]/).filter(Boolean).reduce((o, k) => o?.[/^\d+$/.test(k) ? Number(k) : k], script)?.whyAlt; } catch { return null; } })() : null);
+    // (its full form only — the closed card's other reason is another part's ladder, never the bridge's help)
+    for (const f of ["why"]) {
+      const w = cp?.[f];
       const t = w ? String(saidIn(w, lang) ?? "").replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?]?$/, ".") : "";
       if (t.length > 1 && !helpSentencesOf(t).some((x) => inSaid(x, said0))) return { text: t, path: `${cp.path}.${f}` };
     }
     return null; } catch { return null; } })() : null;
   const d = pickHelp({ script, part: where.part, keyed: where.keyed, closed: !!where.closed, request, said, lang: prev.ctx?.lang === "english" ? "english" : "hinglish",
-    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null, bridgeAgain, closedWhy });
+    lessonKey: prev.ctx?.lessonKey ?? prev.ctx?.sessionId ?? prev.lessonId ?? null, jointN: prev.helpJointN ?? {}, last: prev.answerAt?.[where.part] ?? null, bridgeAgain, closedWhy,
+    // (to-brain 053 B7: a Hindi request that also asks for an explanation — "samjhao", "samjha do", "batao kaise")
+    explain: request === "hindi" && HINDI_EXPLAIN.test(String(input.text ?? "")) });
   return d ? { ...noPictureKeeps(resultHeldHelp(d, prev, script), prev.heldUp?.board ?? null), friend: friendOf } : null;
 }
 /** to-brain 051 C2: help on a worked step after an earlier step's result board went up is said over that board (it is the held board for the
@@ -3779,7 +3830,10 @@ function helpStay(prev, input, d) {
   // (to-brain 049 B6: a turn of parts breaks at 75 words everywhere, a help turn too — dry steering c4 16, the noPicture line, a then-card's
   // four-sentence simpler and the card, 78 words: breakL2 keeps help whole with its card, and a help turn never reached it. Over 75, the help
   // ends on its check-in and the card is the next turn, as splitTeach splits a point from its card)
-  if (l2On() && d.card === "keep" && move.kind === "hint" && move.simpler && ui?.ask?.text && !recordedWalk(input)
+  // (to-brain 053 B5 — director34 c5-t02 steady 36: a Hindi request at a card with no form, answered with the easier-words line and the hint,
+  // was split here and ended on "Ab tak samajh aaya?" with no question. A language request's help ends on the question: it is not split)
+  const langHelp = d.request === "hindi" || !!d.hindiAsked || input.cls?.request?.type === "language";
+  if (l2On() && !langHelp && d.card === "keep" && move.kind === "hint" && move.simpler && ui?.ask?.text && !recordedWalk(input)
     && wordsIn(move.sayFirst ?? [], move.simpler, ui.ask.text) > L2_CAP) {
     const sp = splitTeach(res, input, -1);
     if (sp !== res) { if (sp.state.splitHold) sp.state.splitHold.helpSplit = true; return { ...sp, ...describe(sp.state, input.kit) }; }
@@ -4021,9 +4075,15 @@ export function step(prev, input) {
     const oc = String(input?.cls?.outcome ?? "");
     const pA = liveA && String(liveA).startsWith("script:") && ["correct", "incorrect", "partial", "misconception"].includes(oc) ? (() => { try { return cardPartOf(input.kit, { itemId: liveA }); } catch { return null; } })() : null;
     if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed } } }; }
-  const pre = helpBefore(prev, input, said);
+  // (to-brain 053 B3: a question heard four times — the fifth turn that would say it gives the card's key with its reason, or tells the step)
+  const heard = input?.event === "turn" && scriptOn() && !recordedNow ? heardOf(prev, scriptFor(input.kit)?.script ?? null) : null;
+  const cap = heard ? heardCap(prev, input, heard, said) : null;
+  if (cap?.input) input = cap.input;
+  const pre = cap?.skipHelp ? null : cap?.pre ?? helpBefore(prev, input, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);
+  if (heard && out?.state) out.state.qHeard = heard;
+  if (cap?.P && out?.state?.lastMove) { out.state.lastMove = { ...out.state.lastMove, heardCap: cap.P }; if (out.move) out.move = { ...out.move, heardCap: cap.P }; }
   // (Brain 044: a picture asked for at an asked step is the step's picture — its caption, then the step's question again, the step still asked;
   // never a check-in inside the worked example: dry steady c6 18 once T1 moved the lesson there)
   if (input?.event === "turn" && scriptOn() && !recordedNow && prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose && columnName(input0, prev) === "picture"
@@ -4879,6 +4939,7 @@ function step0(prev, input) {
   // The move as a kernel proposal (proposal.js, W2-C #8): returned beside the move, never stored in the state.
   const proposal = directorProposal(move, { stopping: p.stopping, ui, guidance: s.guidance, purpose: s.purpose });
   let outF = splitLong({ state: s, move, moduleCommands, ui, end: s.phase === "done", proposal, ...describe(s, input.kit) }, input);
+  outF = closeGoesOn(outF, input);
   // v6.11 G2 (main on director19 c4 steering 6, stuck 22, c5-t01 steering 6, 12, stuck 48, offtopic 36, c5-t02 stuck 24): "samajh nahi
   // aaya" at a check-in is answered by the re-said teaching, ending on its check-in — the card waits for the next turn
   // (only when the turn re-says something: with nothing left to re-say, the card itself comes)
@@ -5246,11 +5307,8 @@ function splitLongOnce(out, input, opt = {}) {
       // (to-brain 053 B4 — director34 c4 steady 54, offtopic 52 and 70: a RIGHT answer whose close cannot share its turn with the next card ends
       // on the go-on line, as a right verdict split from its point does since 049 B6, never on a check-in; the card is the next turn whatever
       // the child says. A key's close keeps its check-in. A script with no plain go-on form: as before)
-      const right = !move.gave && String(input.cls?.outcome ?? "") === "correct";
-      const j = right ? goOnPlain(scriptFor(input.kit)?.script, { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.afterKeyGoOn ?? 0 }) : null;
-      const o = closeApart(out, "card");
-      if (j?.text) { o.move.vpcGoOn = j.text; o.state.lastMove.vpcGoOn = j.text; o.state.helpJointN = { ...(o.state.helpJointN ?? {}), afterKeyGoOn: (s.helpJointN?.afterKeyGoOn ?? 0) + 1 }; }
-      return o;
+      // (B4's go-on line is put on by closeGoesOn, after the split, for every path)
+      return closeApart(out, "card");
     }
   }
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
@@ -5394,7 +5452,9 @@ export function partsOfTurn(out, closeWords = 0, lead0 = 0) {
   // (her line on an aside, and the joint back to the lesson, lead the first part: about a dozen words)
   // (dc-r8-director26: help's joint said before a turn the walk goes on to — the go-on line — leads it too: input.helpLeadWords)
   // (Brain 044 T6: her reply to an aside and its joint back are not counted in the turn's 75 — help's go-on line is)
-  const lead = lead0;
+  // (to-brain 053 B6 — director34 c5-t02 steady 42, 84 words: her aside reply, the back-to line, a bridge, a point and a card. A turn that
+  // holds a bridge counts her aside reply and its joint back like any other part — about fifteen words, the most the record allows a lead)
+  const lead = lead0 + (bridge && (move.asideAck || move.returnReply) ? 15 : 0);
   // (dc-r8-director26 C1, main's ruling change 4: the problem said with its first step after a verdict takes the beforeWorked joint, about
   // ten words, before it: they count)
   const joint = move.problemLines && C > 0 ? 10 : 0;
@@ -5714,9 +5774,27 @@ function withoutFirstStep(out) {
   s.lastMove = m;
   return { ...out, move: m, state: s, proposal: directorProposal(m, { ui: out.ui, guidance: s.guidance, purpose: s.purpose }) };
 }
+/** to-brain 053 B4 (director34 c4 steady 54, offtopic 52 and 70): whatever split it — a close apart from a card whose board does not join, the
+ *  point's own split — a RIGHT answer's close said apart from the part it led into, with a card held for the next turn, ends on the go-on line
+ *  (a plain form, help.js goOnPlain) in place of its check-in, as a right verdict split from its point does since 049 B6; the held half comes
+ *  next whatever the child says (goesOnSplit). A key's close, a bridge's check-in (B1's) and a return keep their endings. */
+function closeGoesOn(out, input) {
+  const m = out?.move, s = out?.state;
+  if (!m?.splitClose || !s?.splitHold || m.vpcGoOn || m.gave || m.bridgeSaid || m.returned || m.quick || String(input?.cls?.outcome ?? "") !== "correct") return out;
+  if (!s.splitHold.ui?.ask?.itemId || recordedWalk(input) || !l2On()) return out;
+  const j = goOnPlain(scriptFor(input.kit)?.script, { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null, n: s.helpJointN?.afterKeyGoOn ?? 0 });
+  if (!j?.text) return out;
+  const nf = m.noFit && m.noFit !== "vpc" ? m.noFit : "card";
+  if (m.noFit === "vpc") return out;
+  out.move = { ...m, noFit: nf, vpcGoOn: j.text };
+  s.lastMove = { ...(s.lastMove ?? m), noFit: nf, vpcGoOn: j.text };
+  s.helpJointN = { ...(s.helpJointN ?? {}), afterKeyGoOn: (s.helpJointN?.afterKeyGoOn ?? 0) + 1 };
+  out.proposal = directorProposal(out.move, { ui: out.ui, guidance: s.guidance, purpose: s.purpose });
+  return out;
+}
 /** to-brain 049 B6 and 053 B4: a turn split after a right verdict that ended on the go-on line — the held half comes next whatever the child
  *  says (a right verdict split from its point, noFit "vpc"; a right answer's close apart from the next card, noFit "card" with its go-on). */
-const goesOnSplit = (lm) => lm?.noFit === "vpc" || (lm?.noFit === "card" && !!lm?.vpcGoOn);
+const goesOnSplit = (lm) => lm?.noFit === "vpc" || (!!lm?.noFit && !!lm?.vpcGoOn);
 /** The held half of a split turn, said now (any reply to "shall we go on?" but a safety read or a stop). null otherwise. */
 function heldTurn(prev, input) {
   const h = prev.splitHold;

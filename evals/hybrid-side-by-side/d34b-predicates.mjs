@@ -17,6 +17,8 @@ import { atQuestionOf, endsOnYourTurn, endsOnShortAsk, runOfTwo } from "../../se
 import { D33_PREDICATES } from "./d33-predicates.mjs";
 
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+/** to-brain 053 B2: her turn after try-first or a bare yes at the question just said — she waits (the short ask, then the invitation). */
+const b2Turn = (r) => ["try_first", "yes"].includes(String(r?.cell?.column ?? ""));
 const qKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 /** Seam kinds that are help: a hint or another wording, a picture's caption, a remediation, the noPicture or nothing-easier line, a Hindi
  *  form said for a language request (the switch line before it). */
@@ -94,6 +96,8 @@ export const D34B_PREDICATES = {
   /** to-brain 051 C4: the invitation only on a turn whose two turns before were at one question by the wider count. Gated. */
   yourTurnNotThird(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx?.script || !invites(ctx.script, r)) return null;
+    // (to-brain 053 B2: after try-first or a bare yes, the second such turn waits with the invitation, the short ask said the turn before)
+    if (b2Turn(r)) return null;
     const two = [];
     for (let j = i - 1; j >= 0 && two.length < 2; j--) if (L.rows[j].who === "teacher") two.unshift(L.rows[j]);
     return two.length === 2 && runOfTwo(ctx.script, two.map((x) => (invites(ctx.script, x) ? "" : x.text))) ? null
@@ -107,13 +111,15 @@ export const D34B_PREDICATES = {
   },
   /** to-brain 051 C4: the invitation is never said in a turn with no help in it (director33 c4-ch01 steady 30). Gated. */
   inviteNoHelp(L, r, i, ctx) {
-    if (r.who !== "teacher" || !ctx?.script || !invites(ctx.script, r) || asideTurn(r)) return null;
+    if (r.who !== "teacher" || !ctx?.script || !invites(ctx.script, r) || asideTurn(r) || b2Turn(r)) return null;
     return helpTurn(r) ? null : `the invitation in a turn with no help in it (${seamsOf(r).join(", ")})`;
   },
   /** to-brain 051 C4: a short ask ("Ab phir se socho, jawab kya hoga?") only after help that followed an answer — after a clarify or a give-up
    *  with no answer, the question itself (director33 c5-t01 offtopic 24). Gated. */
   shortAskNoAnswer(L, r, i, ctx) {
     if (r.who !== "teacher" || !ctx?.script || !endsOnShortAsk(ctx.script, r.text)) return null;
+    // (to-brain 053 B2: after try-first or a bare yes at the question just said, the short ask is the wait — no answer is due before it)
+    if (["try_first", "yes"].includes(String(r.cell?.column ?? ""))) return null;
     const c = childBefore(L, i);
     return answered(c) ? null : `a short ask after "${String(c?.text ?? "").slice(0, 30)}" (${String(c?.intent ?? c?.read ?? "?")}), no answer`;
   },

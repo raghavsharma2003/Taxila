@@ -131,7 +131,7 @@ function helpIn(lm) {
 }
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
 export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
-const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst"];
+const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst", "waitShort"];
 /** to-brain 052 B4 (ruling): code's pointed invitations, said where the script has no `joints.answerFirst` (rotated). */
 export const ANSWER_FIRST_FORMS = Object.freeze([{ hi: "Pehle is sawaal ka jawab do.", en: "First answer this question." },
   { hi: "Board wala sawaal abhi baaki hai, uska jawab do.", en: "The question on the board is still open, answer it." },
@@ -181,6 +181,29 @@ export function yourTurnPass(prev, out, script, childText = "") {
   const saidInv = !!pl0.yourTurn && lastText.endsWith(String(pl0.yourTurn).replace(/\s+/g, " ").trim().toLowerCase().replace(/[.!?]+$/, "") + ".");
   if (saidInv) s.yourTurnN = (prev?.yourTurnN ?? 0) + 1;
   const set = (f) => { Object.assign(s.lastMove, f); if (out.move) Object.assign(out.move, f); };
+  // (to-brain 053 B2 — director34 c4 steady 26 to 30, c4-ch01-t02 steady 26 to 30, c5-t03 steering 16 to 20, c5-t02 stuck 22, offtopic 24:
+  // after "Haan, pehle tum try karo." and after a bare "haan", "yes", "theek hai" at a card or an asked step whose question her turn before
+  // said (or stood for, by a short ask or an invitation), she does not say the question whole again: she waits — the short ask on the first
+  // such turn (`waitShort`, brain/say.js), the invitation on the next. They are turns at the question: the third running is the invitation
+  // whatever it is)
+  { const col = String(lm.cell?.column ?? "");
+    const qT = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
+    const a0 = (col === "try_first" || col === "yes") && qT && lm.kind !== "teachback" ? atQuestionOf(script, qT) : null;
+    const P = a0 && a0 !== "?short" ? a0 : null;
+    const her = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
+    const last = her.at(-1) ?? "";
+    const aL = P ? atQuestionOf(script, last) : null;
+    if (P && (aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) {
+      const lang = s.ctx?.lang === "english" ? "english" : "hinglish";
+      const forms = yourTurnForms(script, lang);
+      const second = !!pl0.waitShort || endsOnShortAsk(script, last) || runOfTwo(script, her.slice(-2), P) === P;
+      if (second && forms.length && !endsOnYourTurn(script, last)) {
+        const n = s.yourTurnN ?? 0;
+        set({ yourTurn: forms[n % forms.length], yourTurnAfter: closingQuestion(last) ?? closingQuestion(qT) });
+      } else set({ waitShort: true });
+      return out;
+    }
+  }
   // (the turn after a said invitation, at the same question, whatever it answers: the question said before the invitation is not said again)
   // (the closing question — the teach-back — is said by the walk itself, the last of its rendered lines: the invitation and the other form
   // are put there)

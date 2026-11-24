@@ -514,6 +514,8 @@ export const PREDICATES = {
   /** S1: no turn ends on a close with nothing for the child — a close is followed by the next part, a card or a check-in. */
   bareClose(L, r) {
     if (/^(?:wrap|safeguard|break)$/.test(String(r.move?.kind ?? r.move ?? "")) || cardIn(r) || /[?？]\s*$/.test(norm(r.text))) return null;
+    // (049 B6 and to-brain 053 B4: a right verdict's close split from what it led into ends on the go-on line — an allowed ending)
+    if (r.noFit === "vpc" || r.noFitGoOn) return null;
     const last = (r.pageParts ?? []).at(-1)?.part;
     return last === "close" || last === "closed" ? `the turn ends on a close: "${sentencesOf(r.text).at(-1)?.slice(0, 60)}"` : null;
   },
@@ -1180,9 +1182,12 @@ export function asideLeadWords(r) {
   const firstAt = pp.find((p) => !p.lead && p.part !== "aside")?.from ?? t.length;
   return Math.min(ASIDE_LEAD_MAX, words(t.slice(0, firstAt)));
 }
-PREDICATES.longTwoPart = (L, r) => {
+PREDICATES.longTwoPart = (L, r, i, ctx) => {
   if (/^(?:wrap|safeguard|break|greet)$/.test(String(r.move ?? ""))) return null;
-  const n = wordsNoCheckin(r.text) - asideLeadWords(r);
+  // (to-brain 053 B6: a turn that says a bridge counts her aside reply's lead like any other part — director34 c5-t02 steady 42, 84 words)
+  const bridged = ((ctx?.o ?? {}).bridgeKeys ??= (ctx?.script?.skills ?? []).map((k) => k.bridgeToNext).filter(Boolean).flatMap((b) => [b.hi, b.en, typeof b === "string" ? b : null]).filter(Boolean).flatMap((t) => sentencesOf(t)).map(key).filter((k) => k.split(" ").length >= 4))
+    .some((k) => key(r.text).includes(k));
+  const n = wordsNoCheckin(r.text) - (bridged ? 0 : asideLeadWords(r));
   // (dc-r8-l2-break-at-75: the break is at 75 words, server/director/state.js L2_CAP)
   if (n <= TWO_PART_CAP) return null;
   // (a joint — "Ab us sawaal par lautte hain …" — is the seam's, not a part)
@@ -1205,6 +1210,8 @@ PREDICATES.longTwoPart = (L, r) => {
  *  rule's. Gated. */
 PREDICATES.endsOnQuestion = (L, r, i, ctx) => {
   if (/^(?:wrap|safeguard|break)$/.test(String(r.move ?? ""))) return null;
+  // (049 B6 and to-brain 053 B4: a right verdict's close split from what it led into ends on the go-on line — an allowed ending)
+  if (r.noFit === "vpc" || r.noFitGoOn) return null;
   if (!(L.rows ?? []).slice(i + 1).some((x) => x.who === "child")) return null;
   const t = String(r.text ?? "").trim();
   if (!t || /[?？]\s*$/.test(t)) return null;

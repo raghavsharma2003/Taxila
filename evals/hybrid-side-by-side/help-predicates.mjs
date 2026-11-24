@@ -476,6 +476,8 @@ export const HELP_PREDICATES = {
    *  clarify or a wrong answer's hint answered with the key while a rung of the card's ladder is unsaid (H4 dry, c5-t02 stuck 22 and
    *  offtopic 28: the second miss on e2 got the key with e2's simpler unsaid; director25: the second-request rule's keys). */
   keyEarly(L, r, i, ctx) {
+    // (to-brain 053 B3: a question heard four times gives its key at the fifth, whatever the ladder still has — the row says heardCap)
+    if (r.heardCap) return null;
     const h = helpTurnOf(L, r, i, ctx);
     if (!h || h.keyed || h.request === "hindi") return null;
     const part = helpPart(ctx.script, h.part);

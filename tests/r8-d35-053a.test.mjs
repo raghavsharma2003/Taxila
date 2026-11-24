@@ -80,3 +80,56 @@ describe("A: a second picture request", () => {
     assert.equal(noPictureLine(script, { first: true, lang: "english" }).text, script.joints.noPicture[0].en);
   });
 });
+
+describe("B: three paths in the walk", () => {
+  test("the B predicates are gated", () => {
+    for (const k of ["bridgeGiveUpGoesOn", "cardWholeAfterTryOrYes", "questionFiveTimes", "closeNoFitCheckin", "easierWordsNoQuestion"]) { assert.ok(PREDICATES[k], k); assert.ok(!PENDING.has(k), k); }
+  });
+  test("bridgeGiveUpGoesOn reads director34 c4 steady 70, c5-t03 steady 26, c6-ch07-t01 steady 26 and stuck 56, c6-ch07-t03 stuck 56", () => {
+    assert.deepEqual(flaggedAll("bridgeGiveUpGoesOn"), ["steady c4-maths-ch05-t01 70", "steady c5-maths-ch02-t03 26", "steady c6-maths-ch07-t01 26", "stuck c6-maths-ch07-t01 56", "stuck c6-maths-ch07-t03 56"].sort());
+  });
+  test("closeNoFitCheckin reads director34 c4 steady 54, offtopic 52 and 70", () => {
+    assert.deepEqual(flaggedAll("closeNoFitCheckin"), ["offtopic c4-maths-ch05-t01 52", "offtopic c4-maths-ch05-t01 70", "steady c4-maths-ch05-t01 54"]);
+  });
+  test("easierWordsNoQuestion reads director34 c5-t02 steady 36", () => {
+    assert.deepEqual(flaggedAll("easierWordsNoQuestion"), ["steady c5-maths-ch02-t02 36"]);
+  });
+  test("cardWholeAfterTryOrYes reads the order's rows (c4 steady 28, 30; c4-ch01-t02 steady 28, 30; c5-t03 steering 20; c5-t02 stuck 22, offtopic 24)", () => {
+    const all = flaggedAll("cardWholeAfterTryOrYes");
+    for (const x of ["steady c4-maths-ch05-t01 28", "steady c4-maths-ch05-t01 30", "steady c4-maths-ch01-t02 28", "steady c4-maths-ch01-t02 30", "steering c5-maths-ch02-t03 20", "stuck c5-maths-ch02-t02 22", "offtopic c5-maths-ch02-t02 24"]) assert.ok(all.includes(x), `${x}\n${all.join("\n")}`);
+    assert.equal(all.length, 20, all.join("\n"));
+  });
+  test("questionFiveTimes reads c4-ch01-t02 offtopic (one step seven times) and c5-t02 steering (a follow-up card from row 18)", () => {
+    const all = flaggedAll("questionFiveTimes");
+    for (const x of ["offtopic c4-maths-ch01-t02 30", "steering c5-maths-ch02-t02 18", "steering c5-maths-ch02-t02 20", "steering c6-maths-ch06-t01 18"]) assert.ok(all.includes(x), `${x}\n${all.join("\n")}`);
+    assert.equal(all.length, 11, all.join("\n"));
+  });
+  test("the 75-word predicate reads B6's turn (c5-t02 steady 42: an aside reply, the back-to line, a bridge, a point and a card, 84 words)", () => {
+    assert.deepEqual(flagged("steady", "c5-maths-ch02-t02", "longTwoPart"), [42]);
+  });
+  test("B1: a first give-up at a bridge's check-in gets the bridge's simpler and the check-in; a second goes on", () => {
+    const script = scriptOf("c4-maths-ch05-t01");
+    const part = "c4-maths-ch05-t01-s2:bridge";
+    const d = pickHelp({ script, part, request: "give_up", said: [] });
+    assert.equal(d.card, "wait"); assert.equal(d.bridgeHelp, true);
+    assert.equal(d.rung.path, `${helpPart(script, part).path}.simpler`);
+    const d2 = pickHelp({ script, part, request: "give_up", said: [], bridgeAgain: true });
+    assert.equal(d2.card, "goOn"); assert.equal(d2.rung, null);
+  });
+  test("B1: with no bridge simpler, the closed card's full reason, then the check-in", () => {
+    const script = structuredClone(scriptOf("c4-maths-ch05-t01"));
+    delete script.skills[1].bridgeToNext.simpler;
+    const d = pickHelp({ script, part: "c4-maths-ch05-t01-s2:bridge", request: "clarify", said: [], closedWhy: { text: "Charon group barabar hote toh har ek 4 hota.", path: "x.why" } });
+    assert.equal(d.card, "wait"); assert.equal(d.rung.field, "closedWhy");
+    assert.match(d.rung.text, /^Charon group/);
+  });
+  test("B7: a Hindi request that asks to explain gets the card's unsaid hint before the form, ending on the form", () => {
+    const { rows, script } = lesson("stuck", "c6-maths-ch06-t01");
+    const said = saidTo(rows, 8);
+    const plain = pickHelp({ script, ...at(rows, 8), request: "hindi", said });
+    assert.ok(plain.hindiForm); assert.equal(plain.rung.field, "hindi");
+    const ex = pickHelp({ script, ...at(rows, 8), request: "hindi", said, explain: true });
+    assert.equal(ex.hindiForm, plain.hindiForm);
+    assert.ok(ex.rung.text && ex.rung.field !== "hindi", JSON.stringify(ex.rung));
+  });
+});

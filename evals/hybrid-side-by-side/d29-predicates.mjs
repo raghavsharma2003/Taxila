@@ -127,6 +127,8 @@ export const D29_PREDICATES = {
     if (!ask || String(ctx.prevIntent ?? "") !== "try_first" && !/selftry/.test(String(ctx.prevRead ?? ""))) return null;
     // (Brain 049 B1: the step's question may come in its other authored wording — the reask — not the sentence said the turn before)
     if ((r.pageParts ?? []).some((p) => p.part === "stepAsk")) return null;
+    // (to-brain 053 B2: try-first at a step just asked is waited on — the short ask, never the step whole again)
+    if ((r.seams ?? []).some((x) => x.right === "reaskShort" || x.joint === "reaskShort") || /[?？]\s*$/.test(String(r.text ?? "")) && ["try_first", "yes"].includes(String(r.cell?.column ?? ""))) return null;
     const t = String(ctx.prevT.text ?? "");
     const q = norm(t.slice(ask.from ?? 0, pp[pp.indexOf(ask) + 1]?.from ?? t.length));
     return q && norm(r.text).includes(q) ? null : `"let me try" at the asked ${ask.beat} answered without its question`;

@@ -377,7 +377,7 @@ export function ownReasonFits(node, last) {
   if (!wrongList(node.wrongIfMis).length) return false;
   return !!last.wrongListed || (!!node.targets && last.outcome === "misconception" && last.misconceptionId === node.targets);
 }
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -467,7 +467,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const saidKeys = new Set(keysOf(said));
     const saidOf = (x) => { if (!/\{\w+\}/.test(x)) return saidKeys.has(normSentence(x)); const piece = x.split(/\{\w+\}/).map(normSentence).sort((a, b) => b.length - a.length)[0]; return !!piece && [...saidKeys].some((k) => k.includes(piece)); };
     const again = sentencesOf(hf).every(saidOf);
-    const help = again && unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim(), board: unsaid.board ?? part.board ?? null } : null;
+    // (to-brain 053 B7 — director34 c6 stuck 8, offtopic 32: "thoda Hindi mein samjhao" asks for an explanation too — `explain`, read by
+    // state.js from the child's words: the switch line, the card's unsaid hint, then the form, ending on it; never the form bare)
+    const help = (again || explain) && unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim(), board: unsaid.board ?? part.board ?? null } : null;
     const rung = help ? { ...help, text: help.text.charAt(0).toUpperCase() + help.text.slice(1) } : { field: "hindi", path: hindiPathOf(script, part), text: "", board: part.board ?? null };
     return { ...base, rung, board: rung.board, card: "hindiForm", key: null, joint: null, hindiForm: hf, ...(part.kind === "worked_step" ? { stepAsked: true } : {}), ...(again ? { hindiAgain: true } : {}) };
   }
