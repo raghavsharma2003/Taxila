@@ -1748,7 +1748,7 @@ export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5
  *  { topicId, at, reason }. A listed step that has a board is an error, so the list cannot go stale. */
 export const OWN_BOARD_NONE = [
   // (d36 cold read, main 2026-11-24: the rollout's 7-part "?" strip gave the denominator away; put back as in director35)
-  { topicId: "c6-maths-ch07-t03", at: "c6-maths-ch07-t03-s3/workedExample.yourStep", reason: "an own board here either shows the denominator the step asks for, or needs a compare table whose \"?\" cells the answer board fills, which the answer-board figure rule refuses; the working the child needs is the worked step's result board (14 ÷ 7, 49 ÷ 7), which stays up" },
+  { topicId: "c6-maths-ch07-t03", at: "c6-maths-ch07-t03-s3/workedExample.yourStep", reason: "an own board here either shows the denominator the step asks for, or needs a compare table whose \"?\" cells the answer board fills, which the answer-board figure rule refuses; the walk asks the step over the worked board (28 ÷ 2 = 14, 98 ÷ 2 = 49), as in director35 where the topic passed; the step's words point at nothing that leaves the screen, and the ÷ 7 was said in the same turn" },
 ];
 /** Cards with no honest drawing: any picture of the thing would draw the card's own answer. A picture request there gets the
  *  card's hint (to Brain 048 G5). Main lists each with its reason: { topicId, at, reason }. */
