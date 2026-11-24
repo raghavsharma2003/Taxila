@@ -99,25 +99,27 @@ test("024 P: a check's reason stating a value neither its posing board nor an an
 // ---- the nine scripts as they are today (2026-11-24, main/d36): pinned so that an author's fix shows as a change
 const PIN = {
   //                   rule 1, rule 2, rule 3 (total), P
-  "c4-maths-ch05-t01": [0, 0, 64, 9],
-  "c5-maths-ch02-t01": [1, 0, 64, 7],
-  "c5-maths-ch02-t02": [0, 1, 66, 4],
-  "c5-maths-ch02-t03": [0, 0, 66, 3],
-  "c6-maths-ch06-t01": [1, 0, 66, 16],
-  "c6-maths-ch07-t01": [0, 0, 66, 16],
-  "c4-maths-ch01-t02": [1, 0, 58, 5],
-  "c4-maths-ch06-t01": [0, 0, 65, 12],
-  "c6-maths-ch07-t03": [2, 0, 66, 20],
+  // (re-pinned at d36's close, from the scripts as the round left them: every rule-1 and rule-2 hit fixed, every first turn at 60 or
+  // under, the P lines the answer boards cleared; the commit that moved each is in the close's repins note)
+  "c4-maths-ch05-t01": [0, 0, 59, 7],
+  "c5-maths-ch02-t01": [0, 0, 60, 4],
+  "c5-maths-ch02-t02": [0, 0, 60, 2],
+  "c5-maths-ch02-t03": [0, 0, 60, 2],
+  "c6-maths-ch06-t01": [0, 0, 60, 16],
+  "c6-maths-ch07-t01": [0, 0, 60, 15],
+  "c4-maths-ch01-t02": [0, 0, 58, 4],
+  "c4-maths-ch06-t01": [0, 0, 60, 11],
+  "c6-maths-ch07-t03": [0, 0, 60, 11],
 };
 test("024 on the nine scripts: rule 1, rule 2, the first turn with its start line and the P lines, per script", () => {
   const got = Object.fromEntries(Object.keys(PIN).map((t) => [t, [ownStepBoardHits(S[t]).length, sharedReasonHits(S[t]).length, firstTurnWithStart(S[t]).total, answerValueLines(S[t]).length]]));
   assert.deepEqual(got, PIN);
   for (const t of Object.keys(PIN)) assert.equal(rule(3)(d36Errors(S[t], { force: true })).length, PIN[t][2] > D36_FIRST_MAX ? 1 : 0, t);
-  // (director35 ruling 6's row, by name)
-  assert.deepEqual(sharedReasonHits(S["c5-maths-ch02-t02"]).map((x) => [x.at, x.other, x.sentence]),
-    [["c5-maths-ch02-t02-s2/e1.wrongAnswers[0].why", "c5-maths-ch02-t02-s1/e2.wrongAnswers[0].why", "Tumne dono number ulat diye."]]);
-  // (c0d40c4ea gave c4-ch01-t02 s1's own step its board; s3's is still the worked board's)
-  assert.deepEqual(ownStepBoardHits(S["c4-maths-ch01-t02"]).map((x) => x.at), ["c4-maths-ch01-t02-s3/workedExample.yourStep"]);
+  // (director35 ruling 6's row, by name: s2 e1's and s1 e2's reasons shared "Tumne dono number ulat diye." until d88b3eb4e; re-pinned
+  // at d36's close)
+  assert.deepEqual(sharedReasonHits(S["c5-maths-ch02-t02"]).map((x) => [x.at, x.other, x.sentence]), []);
+  // (c0d40c4ea gave c4-ch01-t02 s1's own step its board; cdb2de1c2 gave s3's its own)
+  assert.deepEqual(ownStepBoardHits(S["c4-maths-ch01-t02"]).map((x) => x.at), []);
 });
 
 test("024 item 4: c6-ch07-t03 s2 step 1's told \"8 × 7 = 56\" passes 023 rule 1 because 8 × 7 is working and the worked board draws \"56 page\"", () => {
@@ -128,11 +130,13 @@ test("024 item 4: c6-ch07-t03 s2 step 1's told \"8 × 7 = 56\" passes 023 rule 1
   assert.ok(!d35Errors(S["c6-maths-ch07-t03"], { force: true }).some((x) => x.includes("s2/workedExample.steps[0].told")));
 });
 
-test("024 CLI: --d36 fails a named script and prints T36; without it the output has no T36 and the exit is as before", () => {
+test("024 CLI: --d36 prints T36 for a named script; without it the output has no T36 and the exit is as before", () => {
+  // (re-pinned at d36's close: c5-maths-ch02-t02 failed rule 2 and rule 3 until 096c70a89 and d88b3eb4e; it now passes --d36. The
+  // failing path of each rule is held by its fixture test above)
   const a = run(["c5-maths-ch02-t02", "--d36"]);
-  assert.equal(a.code, 1);
+  assert.equal(a.code, 0);
   assert.match(a.out, /T36 c5-maths-ch02-t02-s1\/e1: start \d+ /);
-  assert.match(a.out, /\(Learning 024 rule 2\)/);
+  assert.doesNotMatch(a.out, /\(Learning 024 rule \d\)/);
   const b = run(["c5-maths-ch02-t02"]);
   assert.equal(b.code, 0);
   assert.doesNotMatch(b.out, /T36 |Learning 024/);
