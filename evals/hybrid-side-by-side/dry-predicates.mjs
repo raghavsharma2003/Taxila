@@ -1014,6 +1014,9 @@ Object.assign(PREDICATES, D34B_PREDICATES);
 // (to-brain 052, the engine builder's parts: the ladder after the own reason, … — d34c-predicates.mjs)
 import { D34C_PREDICATES, setEndsOnQuestion } from "./d34c-predicates.mjs";
 Object.assign(PREDICATES, D34C_PREDICATES);
+// (to-brain 053, builder B: the lead-in after a right verdict, the aside reply's kind, each named reason against its own answer — d35b-predicates.mjs)
+import { D35B_PREDICATES } from "./d35b-predicates.mjs";
+Object.assign(PREDICATES, D35B_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
@@ -1230,7 +1233,8 @@ PREDICATES.wrapTwoTurns = (L, r, i, ctx) => {
     // (the safety turn is frozen and comes first, whatever the lesson was doing)
     if (String(r.move ?? "") === "safeguard") return null;
     if (String(r.move ?? "") !== "wrap") return `her answer to the wrap's closing question was answered with ${String(r.move ?? "a turn")}, not the wrap's second turn`;
-    const acks = (sc?.wrap?.ack ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key);
+    // (to-brain 053 C3: a form that opens on "Hmm" is said without it to a child who liked the lesson — state.js ackFitting)
+    const acks = (sc?.wrap?.ack ?? []).flatMap((f) => [f?.hi, f?.en]).filter(Boolean).map(key).flatMap((a) => [a, a.replace(/^hmm+ /, "")]);
     if (acks.length && String(ctx.prevChild ?? "").trim() && !acks.some((a) => key(r.text).startsWith(a))) return "the wrap's second turn does not open on a wrap.ack form after her reply";
     return null;
   }

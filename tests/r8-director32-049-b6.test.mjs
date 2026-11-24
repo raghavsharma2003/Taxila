@@ -53,7 +53,8 @@ describe("B6.2: \"Dekho,\" at most three times a lesson, never within four of he
     assert.equal(DEKHO_MAX, 3);
     // ("Sahi jawab" never takes the colon, and the last form was ", kyunki": the second form is the one left)
     const lead = (st) => rightWhyLead("Sahi jawab", "4 gap hain", st).text;
-    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0 }), /\. Dekho, 4 gap/);
+    // (to-brain 053 C1 reverses this: code says no lead-in opener between a right verdict and its reason — the reason is its own sentence)
+    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0 }), /^Sahi jawab\. 4 gap/);
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3 }), /Dekho/);
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Dekho, yeh." }, { who: "child", text: "haan" }] }), /Dekho/);
   });
@@ -65,7 +66,8 @@ describe("B6.2: \"Dekho,\" at most three times a lesson, never within four of he
     const lead = (st) => rightWhyLead("Sahi jawab", "4 gap hain", st).text;
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 2, jointN: { leadSuno: 2 } }), /Dekho,|Suno,/);
     assert.doesNotMatch(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 0, recent: [{ who: "teacher", text: "Achha. Suno, yeh." }, { who: "child", text: "haan" }] }), /Dekho,|Suno,/);
-    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3, jointN: { leadSuno: 0 } }), /\. Suno, 4 gap/);
+    // (to-brain 053 C1: no "Suno," either)
+    assert.match(lead({ whyJoint: { n: 0, last: 0 }, dekhoN: 3, jointN: { leadSuno: 0 } }), /^Sahi jawab\. 4 gap/);
     const L = { rows: [{ who: "teacher", text: "Haan. Suno, a." }, { who: "teacher", text: "b" }, { who: "teacher", text: "Haan. Dekho, c." }] };
     assert.ok(PREDICATES.dekhoOver(L, L.rows[2], 2));
   });

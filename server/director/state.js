@@ -2756,16 +2756,27 @@ function lessonPick(s, list, salt = "") {
 /** to-brain 052 B5: what the child said to the wrap's closing question — she liked it, or found it hard — and whether an acknowledgement form
  *  meets it: to a liking, a form that thanks or takes it gladly, never one that only notes it ("samajh gayi", "sun liya"); to "mushkil tha",
  *  one that notes it, never a thank-you. Anything else: every form fits. */
-const WRAP_LIKED = /(?<![\p{L}])(?:maz(?:a|aa)|achh?(?:a|e|i)\s+(?:laga|lage|lagi|tha|the|thi)|pasand|badhiya|mast|fun|enjoy\w*|liked?|loved?|nice|great|accha\s+laga|acha\s+laga|sawaal\s+achh?e)(?![\p{L}])/iu;
+const WRAP_LIKED = /(?<![\p{L}])(?:aasaan|aasan|asaan|asan|easy|maz(?:a|aa)|achh?(?:a|e|i)\s+(?:laga|lage|lagi|tha|the|thi)|pasand|badhiya|mast|fun|enjoy\w*|liked?|loved?|nice|great|accha\s+laga|acha\s+laga|sawaal\s+achh?e)(?![\p{L}])/iu;
 const WRAP_HARD = /(?<![\p{L}])(?:mushkil|kathin|hard|difficult|tough|samajh\s+nahi)(?![\p{L}])/iu;
 const ACK_NOTES = /(?<![\p{L}])(?:samajh\s+gayi|sun\s+(?:liya|li)|pata\s+chal\s+gaya)(?![\p{L}])/iu;
 const ACK_THANKS = /(?<![\p{L}])(?:shukriya|thank)/iu;
+// (to-brain 053 C3: "Hmm" never opens the reply to a child who liked it — "aasaan laga", "maza aaya", "sawaal achhe the" — release 59's reader
+// lets the reply reach this choice, so it is tested with a stubbed model: tests/r8-d35-053b.test.mjs)
+const ACK_HMM = /^\s*hmm+\b[\s,.]*/iu;
 export function ackFits(form, said) {
   const t = String(said ?? "");
   const hard = WRAP_HARD.test(t), liked = !hard && WRAP_LIKED.test(t);
-  if (liked) return !ACK_NOTES.test(form);
+  if (liked) return !ACK_NOTES.test(form) && !ACK_HMM.test(form);
   if (hard) return !ACK_THANKS.test(form);
   return true;
+}
+/** The wrap's acknowledgements that fit what the child said; where none does for a child who liked it, a form that opens on "Hmm" is said
+ *  without it ("Hmm, batane ke liye shukriya." → "Batane ke liye shukriya.") when the rest fits. [] when nothing fits. */
+export function ackFitting(acks, said) {
+  const fit = (acks ?? []).filter((x) => ackFits(x, said));
+  if (fit.length) return fit;
+  const bare = (acks ?? []).filter((x) => ACK_HMM.test(x)).map((x) => { const r = String(x).replace(ACK_HMM, "").trim(); return r ? r.charAt(0).toUpperCase() + r.slice(1) : r; });
+  return bare.filter((x) => x && ackFits(x, said));
 }
 function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afterKey = false, second = null }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
@@ -2821,9 +2832,10 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
       // (to-brain 052 B5: the reply reads what the child said — "maza aaya", "sawaal achhe the" is not met with a form that takes a complaint
       // or a goodbye ("Hmm, theek hai, samajh gayi."), and "thoda mushkil tha" is not thanked: the forms that fit what she said, the lesson's
       // pick among them; none fits, the lesson's pick as before)
-      const fitting = acks2.filter((x) => ackFits(x, second.said));
+      const fitting = ackFitting(acks2, second.said);
       const pick2 = second.replied && !second.ack ? lessonPick(s, fitting.length ? fitting : acks2, "wrapAck") : null;
-      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? (fitting.length ? fitting : acks2).find((x) => x !== second.ackSaid) ?? acks2.find((x) => x !== second.ackSaid) ?? null : pick2;
+      // (to-brain 053 C3: where only the form turn one said fits, it is said again rather than a form that does not fit)
+      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? (fitting.length ? fitting : acks2).find((x) => x !== second.ackSaid) ?? (fitting.length ? pick2 : acks2.find((x) => x !== second.ackSaid)) ?? null : pick2;
       const ackS = second.ack ?? ack2;
       const lines2 = [ackS, bye].filter((x) => x && String(x).trim()).map(endLine);
       return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(ackS ? { wrapAck: endLine(ackS) } : {}),

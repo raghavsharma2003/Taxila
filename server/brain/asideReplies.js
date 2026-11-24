@@ -118,7 +118,9 @@ export function likeInChildsEnding(line, said) {
 }
 export function asideReplyLine(args = {}) {
   const r = asideReplyLine2(args);
-  return r?.line ? { ...r, line: likeInChildsEnding(r.line, args.said) } : r;
+  // (to-brain 053 C2: the kind of thing said rides on the pick, for the record)
+  const rk = r?.line && r.form !== "sad" && String(args.asked ?? "").trim() ? replyKindOf(args.asked, args.said) : null;
+  return r?.line ? { ...r, line: likeInChildsEnding(r.line, args.said), ...(rk ? { kind: rk } : {}) } : r;
 }
 function asideReplyLine1(args = {}) {
   const avoid = new Set((args.avoid ?? []).map((x) => avoidKey(typeof x === "string" ? x : x?.k)).filter(Boolean));
@@ -154,7 +156,7 @@ function asideReplyLine2(args = {}) {
 // (to-brain 052 B5: aside replies of one frame are rotated across a lesson — the frame her last aside reply was said in is not said again next:
 // dry offtopic c4-ch05-t01 48 and 56 "Wah, batting! … achhi lagti hai." then "Wah, chauka! … achha lagta hai."; c5-t02 44, 50; c6 30, 40)
 const normK = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
-const FRAME_RES = Object.values(KINDS).flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? [])]).flatMap((f) => [f?.hi, f?.en])
+const FRAME_RES = [...Object.values(KINDS), { byKind: DATA.byKind }, { byKind: DATA.replyKinds }].flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? []), ...["person", "done", "liking", "whenWhere"].flatMap((x) => [...(Array.isArray(k[x]) ? k[x] : []), ...(Array.isArray(k.byKind?.[x]) ? k.byKind[x] : [])])]).flatMap((f) => [f?.hi, f?.en])
   .filter((x) => typeof x === "string" && /\{(?:phrase|word)\}/.test(x))
   .map((f) => ({ f, re: new RegExp(`(?:^| )${normK(f.replace(/\{(?:phrase|word)\}/g, " SLOTX ")).split("slotx").map((x) => esc(x.trim())).join(" ?(?:.{1,40}?) ?").replace(/achha\\s\+lagta/g, "(?:achha|achhi|achhe)\\s+(?:lagta|lagti|lagte)")}(?: |$)`, "u") }));
 /** The frame (the form as written, with its slot) a turn of hers says an aside reply in, or null. */
@@ -166,10 +168,73 @@ const frameOfLine = (line) => replyFrameOf(line);
 const formShape = (f) => (/pichhli\s+baar|last\s+time|aisa\s+hua/i.test(f) ? "past" : /favou?rite/i.test(f) ? "fav" : /achha\s+lagta|like/i.test(f) ? "like" : f);
 /** The child's phrase from the last clause that names something ("fielding karna, catch pakadna" → "catch pakadna"), or null. */
 export const saidPhrase = (said) => String(said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? null;
+// (to-brain 053 C2, Learning 023 rule 7: a reply fits what the child said. The kind of thing said — `person` (who was there, a favourite),
+// `done` (a thing done), `liking`, `whenWhere` (a time or place) — is read from the return question she asked, and from the child's words
+// where the question does not settle it. director34 c5-t03 steady 48, steering 42: "Virat" to "tab tumhare saath kaun tha?" was told
+// "Wah, Virat! Toh yeh tumhe achha lagta hai.")
+export const REPLY_KINDS = Object.freeze(["person", "done", "liking", "whenWhere"]);
+const Q_PERSON = /(?<![\p{L}])(?:kaun|kiske|kisko|kisne|kisse|who|whom)(?![\p{L}])/iu;
+const Q_WHEN_WHERE = /(?<![\p{L}])(?:kab|kahan|kahaan|kidhar|when|where)(?![\p{L}])/iu;
+const Q_DONE = /(?<![\p{L}])kya\s+(?:kiya|kari|kara|karte|karti|khela|khele|dekha|dekhe|khaya|khaye|banaya|hua)(?![\p{L}])|what\s+(?:did|happened|do\s+you\s+do)/iu;
+const Q_LIKING = /achh[aie]\s+(?:kya\s+)?lag|like|pasand|mazedaa?r|maza|favou?rite|best|badhiya/iu;
+// (the child's words: a person — the people kind's words, "ke saath", "with"; a time or a place; something done; a liking)
+const PEOPLE_WORDS = KINDS.people?.match ?? [];
+const A_PERSON = (t) => hasWord(t, PEOPLE_WORDS) || /(?<![\p{L}])(?:ke\s+saath|ke\s+sath|with)(?![\p{L}])/iu.test(t);
+const A_WHEN_WHERE = /(?<![\p{L}])(?:kal|aaj|parso|parson|subah|shaam|sham|raat|dopahar|chhutti|chhuttiyon|sunday|saturday|monday|tuesday|wednesday|thursday|friday|ravivaar|itvaar|weekend|yesterday|today|tonight|morning|evening|ghar|school|park|ground|maidan|maidaan|stadium|gaon|gaanv|nani\s+ke\s+ghar|bazaar|market)(?![\p{L}])/iu;
+const A_DONE = /(?:aara|ela|kiya|kiye|dekha|dekhi|gaya|gayi|gaye|liya|liye|khaya|khaye|jeeta|jeeti|haara|haari|banaya|banayi|khela|khele|maara|mara)(?![\p{L}])/iu;
+const A_LIKING = /achh[aie]\s+lag|pasand|mazedaar|maza\s+aata|(?<![\p{L}])like/iu;
+/** A bare name: one or two words, each with a capital, no verb — "Virat", "Rohit Sharma". */
+const A_NAME = (t) => /^\p{Lu}\p{Ll}+(?:\s+\p{Lu}\p{Ll}+)?[.!]?$/u.test(String(t ?? "").trim());
+/** The kind of thing the child's answer to her return question is: "person" | "done" | "liking" | "whenWhere" | null (nothing settles it).
+ *  The question she asked decides first (its last sentence: who → person, when / where → whenWhere, what did you do → done, what do you
+ *  like → liking); a child who names a person or a time where a liking was asked is answering with that, and the reply follows them.
+ *  A question of no shape ("uske baare mein thoda aur batao na?") reads the kind from the child's words alone. */
+export function replyKindOf(asked = "", said = "") {
+  const q = String(asked ?? "").split(/(?<=[.!?\u0964])\s+/).filter((x) => /[?？]\s*$/.test(x)).at(-1) ?? "";
+  const a = String(said ?? "");
+  const byWords = () => (A_PERSON(a) ? "person" : A_WHEN_WHERE.test(a) ? "whenWhere" : A_DONE.test(a) ? "done" : A_LIKING.test(a) ? "liking" : null);
+  if (Q_PERSON.test(q)) return "person";
+  if (Q_WHEN_WHERE.test(q)) return "whenWhere";
+  if (Q_DONE.test(q)) return A_PERSON(a) ? "person" : "done";
+  if (Q_LIKING.test(q)) return A_PERSON(a) ? "person" : A_WHEN_WHERE.test(a) && !A_LIKING.test(a) ? "whenWhere" : "liking";
+  return byWords() ?? (q && A_NAME(a) ? "person" : null);
+}
+/** The library's forms for a reply kind (Learning 023 rule 7): the aside's own kind's list first, then "other"'s, then a top-level list —
+ *  `kinds.<aside kind>.<reply kind>`, `kinds.<aside kind>.byKind.<reply kind>`, `byKind.<reply kind>` or `replyKinds.<reply kind>`. [] until
+ *  one is written: the neutral forms are used then. */
+let KIND_FORMS_TEST = null;
+/** Tests only: a library's kind forms in place of the file's ({ kinds?: {…}, byKind?: {…} }); null restores the file. */
+export function setReplyKindFormsForTest(o = null) { KIND_FORMS_TEST = o; }
+export function replyKindForms(kind, asideKind = "other") {
+  if (!REPLY_KINDS.includes(kind)) return [];
+  const pick = (o) => (Array.isArray(o?.[kind]) ? o[kind] : Array.isArray(o?.byKind?.[kind]) ? o.byKind[kind] : []);
+  const K = KIND_FORMS_TEST?.kinds ?? KINDS, D = KIND_FORMS_TEST ?? DATA;
+  for (const o of [K[asideKind], K.other, { byKind: D.byKind }, { byKind: D.replyKinds }]) { const f = pick(o).filter((x) => x && (x.hi || x.en)); if (f.length) return f; }
+  return [];
+}
+/** The kinds of thing said that each existing phrase-form shape fits, until a kind has forms of its own: a liking asked or said takes the
+ *  "achha lagta" and favourite forms, a thing done the "pichhli baar" form, a favourite person the favourite form; a person who was there
+ *  and a time or place take none of them — a word form or a plain one. */
+const shapeFits = (shape, rk, q) => !rk || (shape === "like" ? rk === "liking" : shape === "fav" ? rk === "liking" || (rk === "person" && /favou?rite/i.test(String(q ?? ""))) : shape === "past" ? rk === "done" : true);
+/** The child's own casing of a word the picker lowered ("virat" → "Virat" where they said "Virat"). */
+const theirCase = (w, said) => { if (!w) return w; const m = new RegExp(`(?<![\\p{L}])${esc(w)}(?![\\p{L}])`, "iu").exec(String(said ?? "")); return m ? m[0] : w; };
 function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0, avoidFrame = null } = {}) {
   const avoided = (f) => !!avoidFrame && !!f && [f.hi, f.en].includes(avoidFrame);
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
+  // (to-brain 053 C2: the kind of thing said, and its own forms where the library has them — a {phrase} or {word} of theirs, or none)
+  const rk = String(asked ?? "").trim() ? replyKindOf(asked, said) : null;
+  const kf = rk ? replyKindForms(rk, asideKindOf(`${topic} ${said}`)) : [];
+  if (kf.length) {
+    const ph = saidPhrase(said) ?? phraseOf(said);
+    const wd = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
+    const ok = kf.map((f, j) => ({ f, j })).filter(({ f }) => { const t = formOf(f, lang); return !avoided(f) && (!/\{phrase\}/.test(t) || ph) && (!/\{word\}/.test(t) || wd); });
+    if (ok.length) {
+      const { f } = ok[(((n + skip) % ok.length) + ok.length) % ok.length];
+      const t = formOf(f, lang);
+      return { line: cap(fill(t, { phrase: ph, word: wd })), form: /\{phrase\}/.test(t) ? "phrase" : /\{word\}/.test(t) ? "word" : "plain", kind: rk };
+    }
+  }
   // (phraseReplies[i] answers returns[i]: the return her line asked, the child's own phrase back)
   let i = k?.phraseReplies?.length ? returnIndexOf(k, topic, asked, lang) : -1;
   // (dc-r8-director22 A: her question after the "Main AI teacher hoon" line is no return of the kind — its reply is the phrase form of the
@@ -204,13 +269,18 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
     const pool = [k, KINDS.other, ...Object.values(KINDS).filter((x) => x !== k && x !== KINDS.other && x !== KINDS.people)].filter((x, j, a) => x?.phraseReplies?.length && a.indexOf(x) === j);
     for (const x of pool) { const j = x.phraseReplies.findIndex((f) => !avoided(f) && shapeR(f) === shape); if (j >= 0) { kp = x; i = j; break; } }
   }
+  // (to-brain 053 C2: until a kind has forms of its own, a phrase form whose shape does not fit the kind of thing said is not said — a
+  // person who was there, a time or a place get a word form or a plain one, never "Toh yeh tumhe achha lagta hai.")
+  if (i >= 0 && rk && kp?.phraseReplies?.[i] && !shapeFits(formShape(formOf(kp.phraseReplies[i], lang)), rk, String(asked ?? "").split(/(?<=[.!?\u0964])\s+/).at(-1))) i = -1;
   const phrase = i >= 0 && kp?.phraseReplies?.[i] ? saidPhrase(said) ?? phraseOf(said) : null;
   // (skip: the forms after the first, in order — the phrase form's siblings of the same shape, then the word forms, then the plain ones)
   const sibs = phrase ? kp.phraseReplies.map((f, j) => ({ f, j })).filter(({ f, j }) => j !== i && formShape(formOf(f, lang)) === formShape(formOf(kp.phraseReplies[i], lang))).map(({ f }) => f) : [];
   if (phrase && skip === 0) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };
   if (phrase && skip <= sibs.length) return { line: cap(fill(formOf(sibs[skip - 1], lang), { phrase })), form: "phrase" };
   const s1 = phrase ? skip - sibs.length - 1 : skip;
-  const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
+  const word0 = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
+  // (a time or a place is no {word}: "Wah, shaam!" — the data's rule 1 — the plain form)
+  const word = rk === "whenWhere" ? null : rk ? theirCase(word0, said) : word0;
   if (word && s1 < (k?.replies?.length ?? 0)) { let f = pickN(k?.replies, n + Math.max(0, s1)); if (avoided(f)) f = pickN(k?.replies, n + Math.max(0, s1) + 1); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
   const p = pickN(k?.plain, n + Math.max(0, s1 - (word ? k?.replies?.length ?? 0 : 0)));
   return { line: p ? formOf(p, lang) : null, form: "plain" };
@@ -222,16 +292,21 @@ export function asideReturnForms() {
 }
 
 /** Every form a reply may take, for the dry predicate: { word: [RegExp with a (word) group], plain: [string], sad: [string] }. */
+/** Every reply-kind form (to-brain 053 C2), both languages: the file's, or a test's. */
+const kindFormTexts = () => { const K = KIND_FORMS_TEST?.kinds ?? KINDS, D = KIND_FORMS_TEST ?? DATA;
+  return [...Object.values(K), { byKind: D.byKind }, { byKind: D.replyKinds }].flatMap((o) => REPLY_KINDS.flatMap((k) => [...(Array.isArray(o?.[k]) ? o[k] : []), ...(Array.isArray(o?.byKind?.[k]) ? o.byKind[k] : [])]))
+    .flatMap((f) => [f?.hi, f?.en]).filter((x) => typeof x === "string" && x.trim()); };
 export function asideReplyForms() {
   const all = Object.values(KINDS);
+  const kf = kindFormTexts();
   // (Brain 049 B6: a form's "achha lagta" is said in the child's own ending — likeInChildsEnding — and read in any of them)
   const re = (f) => new RegExp(`^${esc(f).replace(/\\\{word\\\}|\{word\}/g, "(.{1,40}?)").replace(/achha(\\s\+|\s+)lagta/gi, "(?:achha$1lagta|achhi$1lagti|achhe$1lagte)")}$`, "iu");
   return {
-    word: all.flatMap((k) => (k.replies ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean).map(re),
+    word: [...all.flatMap((k) => (k.replies ?? []).flatMap((f) => [f.hi, f.en])), ...kf.filter((f) => /\{word\}/.test(f))].filter(Boolean).map(re),
     // (a {phrase} form is checked as a {word} form: one slot of the child's own words)
     // (Learning 016's againReplies, for an aside or a reply said a second time, are phrase forms too)
-    phrase: all.flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? [])].flatMap((f) => [f.hi, f.en])).filter(Boolean).map((f) => re(f.replace(/\{phrase\}/g, "{word}"))),
-    plain: all.flatMap((k) => (k.plain ?? []).flatMap((f) => [f.hi, f.en])).filter(Boolean),
+    phrase: [...all.flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? [])].flatMap((f) => [f.hi, f.en])), ...kf.filter((f) => /\{phrase\}/.test(f))].filter(Boolean).map((f) => re(f.replace(/\{phrase\}/g, "{word}"))),
+    plain: [...all.flatMap((k) => (k.plain ?? []).flatMap((f) => [f.hi, f.en])), ...kf.filter((f) => !/\{(?:word|phrase)\}/.test(f))].filter(Boolean),
     sad: (DATA.sad?.replies ?? []).flatMap((f) => [f.hi, f.en]).filter(Boolean),
   };
 }
