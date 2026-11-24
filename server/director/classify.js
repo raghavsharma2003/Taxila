@@ -105,6 +105,11 @@ export function multiPartKey(answer) {
 export function targetFor(s, kit, item) {
   const misList = (list, first) => [...list].sort((a, b) => (b.id === first) - (a.id === first))
     .map((m, i) => ({ tag: `m${i + 1}`, id: m.id, belief: m.belief, signs: m.signs || [] }));
+  // (d34 wrap reply: the wrap's second turn is due — her reply is to the wrap's own question, "Aaj ka kaam aasaan laga ya thoda mushkil?",
+  // never an answer to a card or the closing question: nothing is graded and no belief is read from it. Before, the wrap kept phase
+  // "teachback" and the reply fell through to the teach-back reader below, whose model label is "incorrect" when nothing is covered —
+  // "thoda mushkil tha" was a wrong teach-back on every taught skill once 052 B2 stopped teachbackReading from overriding it)
+  if (s.wrapTwo) return { mode: "none", misconceptions: [] };
   // (to-brain 052 B2: a script's closing question is graded as a card is — the cards' grader, by its key, its accepted forms (the spoken
   // fractions among them) and its named wrong answer, read as the mix-up it targets: state.js keeps them in s.teachbackGrade. Before, its own
   // reader took any line holding the key for right — a denial included — and never read the named wrong answer)

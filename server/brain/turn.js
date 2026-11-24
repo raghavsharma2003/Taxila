@@ -2165,7 +2165,8 @@ export function readByAsked(state, cls, text, kit = null) {
   if (tbRead) cls = { ...cls, outcome: tbRead, confidence: 1 };
   // (dc-r8-director23 R2, c5-t02 steady 141: a line after the closing key's check-in was graded "incorrect" — with the key said there is
   // nothing on the table to answer: never graded)
-  if ((state?.phase === "teachback" && state?.teachbackKeyed) || state?.phase === "done") cls = { ...cls, outcome: "no_evidence", confidence: 1, misconceptionId: undefined };
+  // (d34 wrap reply: and a reply to the wrap's own question — its second turn due — is the wrap's reply, never graded)
+  if ((state?.phase === "teachback" && state?.teachbackKeyed) || state?.phase === "done" || state?.wrapTwo) cls = { ...cls, outcome: "no_evidence", confidence: 1, misconceptionId: undefined };
   if (state?.phase === "teachback" && cls.request && !["stop", "goodbye", "end", "break"].includes(cls.request.type)) { const { request: _r, ...rest } = cls; cls = rest; }
   return cls;
 }
