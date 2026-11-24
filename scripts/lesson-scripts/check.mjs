@@ -36,6 +36,9 @@ import { toSpoken } from "../../server/voice/spoken.js";
 import { pictureTurn } from "../../server/stagecraft/board-first.js";
 // (Learning 021 rule 1: the frozen safety predicate the walk reads a child's reply with, imported, never copied or changed)
 import { scanSafety } from "../../server/director/safety.js";
+// (to-brain 052 A5: the engine's own word count and its limit for the turn after a right answer, imported, never copied)
+import { wordsIn as engineWords, VPC_MAX } from "../../server/director/state.js";
+import { FRAMES } from "../../server/brain/say.js";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -2441,10 +2444,45 @@ export function d34Errors(s, { force = false } = {}) {
   for (const x of stepCountHits(s)) e.push(`${x.at}.${x.field}: ${x.why}; say it over a board that draws it (the step's resultBoard) or say what the ${x.boardAt} draws: "${x.text}" (Learning 022 rule 2)`);
   for (const c of fractionComparisons(s).filter((y) => y.value === false)) e.push(`${c.at}: "${c.text}" says ${c.a} ${c.rel} ${c.b}, which is false (Learning 022 rule 3)`);
   for (const x of markedNoWrong(s)) e.push(`${x.at}: marked whyAltAsHelp with no wrongIfMis: name the answer its whyAlt was written against, or take the mark off (Learning 022 rule 4)`);
+  e.push(...vpcErrors(s, { force: true }));
   return e;
 }
+/** to-brain 052 A5: the turn after a right answer — the verdict, the card's short reason, the next point and its card — counted as the
+ *  engine counts it (server/director/state.js wordsIn: every token, so "+", "=" and "×" are words) and held to its VPC_MAX, over which the
+ *  engine splits the turn at the point. The opener is the longest right-verdict frame she may say (brain/say.js FRAMES.right), and the
+ *  engine adds one lead-in word ("kyunki", "Dekho,") before the reason. An error above VPC_MAX for a topic in D34_READY or forced; a part
+ *  on VPC_NOTE prints as a note (V line) for main to rule on. */
+export const VPC_LEAD_WORDS = 1;
+/** Parts over the engine's count that main has not ruled on yet: { topicId, skillId, explainId, seen }. */
+export const VPC_NOTE = [];
+const engineHi = (x) => engineWords(String(x?.hi ?? "").replace(/\{[a-zA-Z]+\}/g, "X"));
+export const VPC_OPENER_WORDS = Math.max(...FRAMES.right.hinglish.map((f) => engineWords(f)));
+/** The counts of every such turn: [{ skill, id, at, opener, reason, lead, point, card, total, limit, noted }]. */
+export function vpcTurns(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) (k.explain ?? []).forEach((b, j) => {
+    if (j === 0 || !b.ask) return;
+    const prev = k.explain[j - 1].ask;
+    if (!prev) return;
+    const reason = engineHi(prev.whyShort ?? prev.why), point = engineHi(b.point), card = engineHi(b.ask.prompt);
+    const total = VPC_OPENER_WORDS + reason + VPC_LEAD_WORDS + point + card;
+    const noted = VPC_NOTE.find((x) => x.topicId === s.topicId && x.skillId === k.skillId && x.explainId === b.id) ?? null;
+    out.push({ skill: k.skillId, id: b.id, at: `${k.skillId}/${b.id}`, opener: VPC_OPENER_WORDS, reason, lead: VPC_LEAD_WORDS, point, card, total, limit: VPC_MAX, noted });
+  });
+  return out;
+}
+const vpcParts = (p) => `opener ${p.opener} + short reason ${p.reason} + lead-in ${p.lead} + point ${p.point} + card ${p.card} = ${p.total}`;
+export function vpcErrors(s, { force = false } = {}) {
+  if (!force && !isD34(s)) return [];
+  const e = [], turns = vpcTurns(s);
+  for (const p of turns) if (p.total > p.limit && !p.noted) e.push(`${p.at}: the turn after a right answer is ${vpcParts(p)} words by the engine's count > ${p.limit}: the engine splits it at the point; cut the short reason or the point, never the card's givens (to-brain 052 A5)`);
+  for (const w of VPC_NOTE.filter((x) => x.topicId === s?.topicId)) if (!turns.some((p) => p.noted === w && p.total > p.limit)) e.push(`VPC_NOTE ${w.skillId} ${w.explainId}: listed but fits (or is gone); take it off the list`);
+  return e;
+}
+/** The noted parts, as lines for main. */
+export const vpcNoteLines = (s) => vpcTurns(s).filter((p) => p.noted && p.total > p.limit).map((p) => `V ${p.at}: the turn after a right answer is ${vpcParts(p)} > ${p.limit} by the engine's count (VPC_NOTE: ${p.noted.seen}; main to rule)`);
 /** Learning 022's lines for a reader: G (rule 5), N (rule 6), and the hits of rules 1-4 as Q / K / C / W lines when not errors. */
-export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s)];
+export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), ...vpcNoteLines(s)];
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],

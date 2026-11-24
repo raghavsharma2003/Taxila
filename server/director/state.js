@@ -4824,7 +4824,7 @@ function step0(prev, input) {
  * whole and unchanged, on the next turn (step: s.splitHold). TAXILA_R7_SPLIT=off: one turn, as before.
  */
 export const splitOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SPLIT ?? ""));
-const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split(/\s+/).filter(Boolean).length;
+export const wordsIn = (...xs) => xs.flat().filter(Boolean).map(String).join(" ").split(/\s+/).filter(Boolean).length;
 /** v6.11 G2: a clarify at a check-in — the turn is the re-said teaching and a check-in; its card is held for the next turn. */
 function holdCardForCheckin(out) {
   const { state: s, move, ui } = out;
