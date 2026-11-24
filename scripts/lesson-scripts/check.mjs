@@ -1751,6 +1751,8 @@ export const PICTURE_NONE = [
   // (Learning 024 cause 3, item 5: c6-maths-ch06-t01-s1/workedExample.steps[0].ask now has an authored picture — the fence's 35 m beside the bed's three sides, no total — and is off this list; its `noView` stays)
   // (d33 rewrite, 2026-11-23: the step carries `noView`)
   { topicId: "c4-maths-ch01-t02", at: "c4-maths-ch01-t02-s1/workedExample.steps[0].ask", reason: "the tester laid square on the slanting tile says 'turn it', and a turned tester is the step's answer" },
+  // (d36 cold read, 2026-11-24: the template draws no edge-to-edge line as two labelled halves, and three radii with no line leave the hint and the reason pointing at nothing; the posing board already draws the line)
+  { topicId: "c4-maths-ch01-t02", at: "c4-maths-ch01-t02-s3/workedExample.yourStep", reason: "the line through the centre as two 50 cm strings: no template draws it but the posing board's, and three radii without the line hide what the child adds" },
   // (d33 fix pass, 2026-11-23: each card carries `noView` and no pictureBoard)
   { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/e2", reason: "the child measures her own notebook with her fingers: there is nothing of hers to draw" },
   { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/workedExample.steps[0].ask", reason: "which of three measures suits a roof: the three drawn to scale is the answer" },
