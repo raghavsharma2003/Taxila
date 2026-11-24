@@ -196,3 +196,25 @@ test("022: D34_READY starts empty and the nine scripts carry no d34 error off it
   assert.ok(!e("c4-maths-ch06-t01").some((x) => /^G |Golu/.test(x)), "rule 5 is a line, never an error");
   assert.ok(d34ReportLines(J["c4-maths-ch06-t01"]).some((x) => x.startsWith("G ")));
 });
+
+// ---- d34: the nine scripts AS THEY STAND (data/), fixed after director33
+test("d34: each of the nine scripts passes with --d34 forced (no rule 1, 2, 3, 4 or 7 error)", () => {
+  for (const t of [...LIVE, ...STAGED]) assert.deepEqual(d34Errors(S[t], { force: true }), [], t);
+});
+
+test("d34: each fault director33 named is gone from today's scripts", () => {
+  const at = (t, xs) => ats(xs).map((x) => x.replace(`${t}-`, ""));
+  // rule 1: c4-maths-ch06-t01's "?" cards and c6-maths-ch07-t03's three now carry answer boards
+  assert.deepEqual(qBoardCards(S["c4-maths-ch06-t01"]), []);
+  assert.deepEqual(qBoardCards(S["c6-maths-ch07-t03"]), []);
+  // rule 2: c5-maths-ch02-t01's "4 gap" over den 2 (s1) and gaps over den 1 (s2)
+  assert.deepEqual(stepCountHits(S["c5-maths-ch02-t01"]), []);
+  // rule 3: c6-maths-ch07-t03 s2 e3's false "2/4 < 1/3"; no false comparison in any of the nine
+  assert.deepEqual(Object.values(S).flatMap((s) => fractionComparisons(s).filter((x) => x.value === false).map((x) => x.at)), []);
+  // rule 4: the marked cards with no named wrong answer
+  for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02", "c4-maths-ch05-t01", "c4-maths-ch06-t01"]) assert.deepEqual(at(t, markedNoWrong(S[t])), [], t);
+  // rule 5: Golu's scale, 4 then 3
+  assert.ok(!givenChangeLines(S["c4-maths-ch06-t01"]).some((x) => /Golu/.test(x)));
+  // rule 6: {friend} on three cards of skill 3
+  assert.ok(!nameLines(S["c4-maths-ch01-t02"]).some((x) => x.startsWith("N c4-maths-ch01-t02-s3: \"{friend}\" on 3 cards of one skill")));
+});
