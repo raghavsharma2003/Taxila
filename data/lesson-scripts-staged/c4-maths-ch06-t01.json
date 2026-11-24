@@ -365,8 +365,8 @@
      {
       "interest": "cricket",
       "use": {
-       "hi": "Cricket bat ka handle bhi scale se naap sakte hain. Aaj dekhenge ki naapna kahan se shuru karte hain.",
-       "en": "You can measure a cricket bat's handle with a scale too. Today we see where measuring starts."
+       "hi": "Cricket bat ka handle bhi scale se naapte hain. Aaj dekhenge, naapna kahan se shuru hota hai.",
+       "en": "A cricket bat's handle is measured with a scale too. Today we see where measuring starts."
       }
      }
     ]
@@ -408,8 +408,8 @@
       "en": "On the board is a scale, with the pencil laid from the 0 mark to the 7 mark."
      },
      "point": {
-      "hi": "Tumhare scale par 0 se 1, 1 se 2, aise har khaana 1 centimetre ka hai. Ek pencil 0 se 7 tak rakhi hai: 7 khaane, toh 7 centimetre.",
-      "en": "On your scale, 0 to 1, 1 to 2, each such space is 1 centimetre. A pencil lies from 0 to 7: 7 spaces, so 7 centimetres."
+      "hi": "Scale par 0 se 1, 1 se 2, har khaana 1 centimetre ka hai. Pencil 0 se 7 tak rakhi hai: 7 khaane, toh 7 centimetre.",
+      "en": "On the scale, 0 to 1, 1 to 2, each space is 1 centimetre. A pencil lies from 0 to 7: 7 spaces, so 7 centimetres."
      },
      "pointAlt": {
       "hi": "Socho, ek chinti 0 se chalti hai aur ek-ek khaana aage badhti hai. 7 tak pahunchne mein woh 7 khaane paar karti hai, isliye pencil 7 centimetre ki hai.",
@@ -951,6 +951,24 @@
       "en": "12 is only the end mark; the twig starts at 5, so the spaces before its start are not under it"
      },
      "whyAltAsHelp": true,
+     "wrongAnswers": [
+      {
+       "answer": "8 cm",
+       "accept": ["8", "8 centimetre", "aath", "aath centimetre", "12 − 4 = 8"],
+       "why": {
+        "hi": "Tumne scale ke 4 se gina, ya nishaan gine; tehni 5 se shuru hoti hai, aur ginti khaanon ki hoti hai.",
+        "en": "You counted from the scale's 4, or counted the marks; the twig starts at 5, and it is the spaces that are counted."
+       }
+      },
+      {
+       "answer": "6 cm",
+       "accept": ["6", "6 centimetre", "chhe", "chhe centimetre"],
+       "why": {
+        "hi": "Ginti mein ek khaana chhoot gaya; 5 se 12 tak har khaane par ungli rakhkar gino.",
+        "en": "One space was missed in the count; put a finger on each space from 5 to 12 and count."
+       }
+      }
+     ],
      "answerBoard": {
       "template": "number-line-scale@1",
       "params": {
@@ -2551,10 +2569,10 @@
    "remediation": [
     {
      "targets": "c4-maths-ch06-t01-m-m-is-10cm",
-     "move": "own board: one metre laid straight as 10 cm then 90 cm → 10 cm is one small piece of the 100; then a table read off the tape, 1 metre and 3 small spaces",
+     "move": "own board: one metre laid straight as 10 cm then 90 cm → each small space of the tape is one such 10 cm piece, not 1 cm, and the rest of the metre comes after it; then a table read off the tape, 1 metre and 3 small spaces",
      "say": {
-      "hi": "10 centimetre toh metre ka bas ek chhota tukda hai. Uske baad 90 centimetre aur aate hain, tab poore 100 centimetre ka ek metre banta hai.",
-      "en": "10 centimetres is only one small piece of a metre. After it come 90 centimetres more, and then a full 100 centimetres make one metre."
+      "hi": "Feete par har chhota khaana 10 centimetre ka hai, ek-ek centimetre ka nahi. Pehle khaane ke baad 90 centimetre aur aate hain, tab poora metre banta hai, 100 centimetre.",
+      "en": "On the tape each small space is 10 centimetres, not one centimetre. After the first space come 90 centimetres more, and then a whole metre is made, 100 centimetres."
      },
      "board": {
       "template": "unrolled@1",
@@ -3844,11 +3862,31 @@
       "saadhe aath metre",
       "saadhe nau metre"
      ],
+     "wrongAnswers": [
+      {
+       "answer": "100 metre",
+       "accept": ["sau metre"],
+       "why": {
+        "hi": "100 metre ke liye Papa ko 100 lambe kadam chalne padte; itna lamba toh khel ka maidan hota hai, kamra nahi.",
+        "en": "100 metres would take Papa 100 long strides; that long is a playground, not a room."
+       }
+      },
+      {
+       "answer": "50 metre",
+       "accept": ["pachaas metre"],
+       "why": {
+        "hi": "Itna bada kamra nahi hota ki Papa 50 lambe kadam chalein; deewar se deewar tak unke kadam gino.",
+        "en": "No room is so big that Papa walks 50 long strides in it; count his strides from wall to wall."
+       }
+      }
+     ],
      "wrongIfMis": [
-      "100 metre",
-      "sau metre",
-      "50 metre",
-      "pachaas metre"
+      "5 centimetre",
+      "4 centimetre",
+      "6 centimetre",
+      "3 centimetre",
+      "paanch centimetre",
+      "chaar centimetre"
      ],
      "targets": "c4-maths-ch06-t01-m-number-ignores-unit",
      "board": {
@@ -3881,8 +3919,8 @@
       "en": "a few long strides, so about a few metres"
      },
      "whyAlt": {
-      "hi": "100 metre matlab Papa ke 100 lambe kadam; itna lamba toh poora khel ka maidan hota hai, kamra nahi",
-      "en": "100 metres means 100 of Papa's long strides; that long is a whole playground, not a room"
+      "hi": "centimetre toh ungli jitna chhota naap hai; kamra Papa ke kai lambe kadam jitna lamba hai, aur ek kadam lagbhag ek metre",
+      "en": "a centimetre is a small measure, a finger wide; a room is many of Papa's long strides, and one stride is about a metre"
      },
      "whyAltAsHelp": true,
      "simpler": {
