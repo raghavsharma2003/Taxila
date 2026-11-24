@@ -2555,9 +2555,18 @@ export function drawnValues(b) {
     case "fraction-parts@1": shaded(p.parts, p.shade); break;
     case "fraction-bars@1": for (const y of p.bars ?? []) shaded(y?.parts, y?.shade); break;
     case "wholes@1": for (const y of p.wholes ?? []) shaded(Array.isArray(y?.parts) ? y.parts.length : y?.parts, y?.shade); break;
-    case "shade-grid@1": count(p.rows); count(p.cols); shaded(int(p.rows) * int(p.cols), p.shade); break;
+    case "shade-grid@1": {
+      // (a row or a column is a part: 15 pencils in 5 rows of 3 draw "1/3"; 5 laddoos as rows of thirds with a block of 5 shaded draw "5/3")
+      const R = int(p.rows), K = int(p.cols), sh = Array.isArray(p.block) ? int(p.block[0]) * int(p.block[1]) : int(p.shade);
+      count(R); count(K); shaded(R * K, sh);
+      if (R != null) frac(1, R);
+      if (K != null) frac(1, K);
+      if (sh > 0) { if (K != null) frac(sh, K); if (R != null) frac(sh, R); }
+      break;
+    }
     case "equal-groups@1": {
-      count(p.groups); count(p.each);
+      // (one group of the groups is a part: 3 groups of 5 draw "1/3")
+      count(p.groups); count(p.each); if (int(p.groups) != null) frac(1, int(p.groups));
       if (int(p.groups) != null && int(p.each) != null) count(int(p.groups) * int(p.each));
       for (const v of p.sizes ?? []) count(v);
       if (Array.isArray(p.sizes)) { count(p.sizes.length); count(p.sizes.reduce((a, v) => a + (int(v) ?? 0), 0)); }
@@ -2570,7 +2579,7 @@ export function drawnValues(b) {
       for (const m of p.marks ?? []) if (int(m?.num) != null) frac(int(m.num), int(m.den ?? p.den));
       break;
     }
-    case "number-line-scale@1": for (const m of p.marks ?? []) count(m?.value); break;
+    case "number-line-scale@1": for (const m of p.marks ?? []) count(m?.value); for (const n of partCountsOf(b)) count(n); break;
     case "measured@1": count(Array.isArray(p.sides) ? p.sides.length : p.shape === "triangle" ? 3 : 4); break;
     case "area-grid@1": count(4); if (int(p.w) != null && int(p.w) <= 12 && int(p.h) <= 8) { count(p.w); count(p.h); } break;
     case "shape@1": if (["square", "rect", "rectangle"].includes(p.shape)) count(4); else if (p.shape === "triangle") count(3); break;
@@ -2596,7 +2605,9 @@ export function statedValues(t) {
   return out;
 }
 // ("1" is one thing, one whole, one plate: never read)
-const isDrawn = (d, y) => (y.kind === "number" && y.v === "1") || (y.kind === "fraction" ? d.fracs.has(y.v) : y.kind === "mark" ? d.marks.has(y.v) : y.kind === "thing" ? d.things.has(y.v) : d.nums.has(y.v));
+// (a fraction that is a whole number is drawn where that number is: "5/5 = 1", "6/3" over a line labelled 1 and 2)
+const wholeOf = (f) => { const [a, b] = f.split("/").map(Number); return b > 0 && a % b === 0 ? String(a / b) : null; };
+const isDrawn = (d, y) => (y.kind === "number" && y.v === "1") || (y.kind === "fraction" && wholeOf(y.v) != null && d.nums.has(wholeOf(y.v))) || (y.kind === "fraction" ? d.fracs.has(y.v) : y.kind === "mark" ? d.marks.has(y.v) : y.kind === "thing" ? d.things.has(y.v) : d.nums.has(y.v));
 /** Rule 1's sentences: [{ at, kind, text, board, boardAt }] — every sentence said after an answer or told, with the board under it. */
 export function statedSentences(s) {
   const out = [], put = (at, kind, o, board, boardAt) => { const t = String(o?.hi ?? "").trim(); if (t && board) out.push({ at, kind, text: t, board, boardAt }); };
@@ -2624,8 +2635,9 @@ export function statedSentences(s) {
   return out;
 }
 /** Rule 1's hits: [{ at, kind, text, board, boardAt, missing: [said] }]. A card's reason over its own answerBoard is a printed line
- *  (undrawnValueNotes), not a hit: the measure on the nine scripts (HITS.md, 2026-11-24) read more than one in three of those false
- *  (a reference fraction in a comparison, "1/3 se chhota"; a tester the reason tells the child to imagine; a scale's spacing). */
+ *  (undrawnValueNotes, D lines), not a hit: the order names the four kinds of a worked example; a card's reason is read only where it
+ *  has no answer board (director34's c6-ch07-t03 s2 c2). Measured on the nine scripts (2026-11-24): of the D lines about a quarter
+ *  are false (a reference fraction in a comparison, "1/3 se chhota"; a named wrong answer, "5 cm nahi"); main to rule. */
 export const undrawnValueHits = (s) => undrawnValues(s).filter((x) => !(x.kind === "card reason" && x.boardAt === "answerBoard"));
 export const undrawnValueNotes = (s) => undrawnValues(s).filter((x) => x.kind === "card reason" && x.boardAt === "answerBoard");
 export function undrawnValues(s) {
@@ -2696,7 +2708,7 @@ export function verdictOpenHits(s) {
   return out;
 }
 // ---- rule 6: one frame once in a skill
-const frameWords = (t) => d32Norm(String(t ?? "").replace(/\d+(?:\s*[./]\s*\d+)?/g, " NUM ")).split(" ").filter(Boolean).map((w) => (/^num$/i.test(w) ? "#" : w));
+const frameWords = (t) => d32Norm(String(t ?? "").replace(/\d+(?:\s*[./]\s*\d+)?/g, " NUM ")).split(" ").filter(Boolean).map((w) => (/^num$/i.test(w) || /^\d+(?:[./]\d+)?$/.test(w) ? "#" : w));
 /** Rule 6's F6 lines: two reasons of one skill sharing D35_FRAME_RUN words running, numbers masked. */
 export function frameLines(s) {
   const out = [];
@@ -2707,10 +2719,13 @@ export function frameLines(s) {
       (Array.isArray(c.card.wrongAnswers) ? c.card.wrongAnswers : []).forEach((x, i) => { if (x?.why?.hi) rs.push({ at: `${c.at}.wrongAnswers[${i}].why`, text: x.why.hi }); });
     }
     const runs = rs.map((x) => { const w = frameWords(x.text), set = new Set(); for (let i = 0; i + D35_FRAME_RUN <= w.length; i++) set.add(w.slice(i, i + D35_FRAME_RUN).join(" ")); return set; });
-    const groups = new Map();
+    const groups = new Map(), cardOf = (at) => at.replace(/\.(?:why|whyShort|whyAlt|wrongAnswers\[\d+\]\.why)$/, "");
+    // (two reasons of one card — its why and its whyShort — are one reason in two lengths; a run of masked numbers and signs is arithmetic,
+    // not a frame: a run needs four words that are not numbers)
+    const frame = (g) => g.split(" ").filter((w) => w !== "#" && !/^\d+$/.test(w)).length >= 4;
     rs.forEach((x, i) => rs.forEach((y, j) => {
-      if (j <= i) return;
-      const shared = [...runs[i]].find((g) => runs[j].has(g));
+      if (j <= i || cardOf(x.at) === cardOf(y.at)) return;
+      const shared = [...runs[i]].find((g) => frame(g) && runs[j].has(g));
       if (shared) groups.set(shared, new Set([...(groups.get(shared) ?? []), i, j]));
     }));
     // (one line per frame: overlapping runs of one frame are one line, keyed by the reasons they join)
@@ -2748,14 +2763,20 @@ export function replyKindErrors(d) {
     });
     for (const k2 of Object.keys(rk)) if (!D35_REPLY_KINDS.includes(k2)) e.push(`replyKinds.${k2}: not a kind (${D35_REPLY_KINDS.join(", ")})${r}`);
   }
-  // (every reply form: a liking's words only under replyKinds.liking; the "twice" line nowhere. Return questions ask, they are not replies)
+  // (every reply form: a liking's words only under replyKinds.liking; the "twice" line nowhere. Return questions ask, they are not replies;
+  // phraseReplies[i] answers returns[i], so it is a liking form under a liking kind when its own return asks what the child likes)
+  const answersLiking = (path) => {
+    const m = path.match(/^kinds\.([^.]+)\.phraseReplies\[(\d+)\]$/);
+    const q = m ? String(d?.kinds?.[m[1]]?.returns?.[Number(m[2])]?.hi ?? "") : "";
+    return !!q && (LIKING_WORDS.test(q) || /(?<![\p{L}])sabse\s+achh/iu.test(q));
+  };
   const walk = (o, path) => {
     if (Array.isArray(o)) return o.forEach((v, i) => walk(v, `${path}[${i}]`));
     if (!o || typeof o !== "object") return;
     if (typeof o.hi === "string") {
       const t = o.hi;
       if (TWICE_LINE.test(t)) e.push(`${path}: "Yeh baat toh do baar aa gayi." goes${r}`);
-      if (LIKING_WORDS.test(t) && !/^replyKinds\.liking\[/.test(path) && !/\.returns\[\d+\]$/.test(path)) e.push(`${path}: a liking's words ("${t.match(LIKING_WORDS)[0]}") outside replyKinds.liking: "${t}"${r}`);
+      if (LIKING_WORDS.test(t) && !/^replyKinds\.liking\[/.test(path) && !/\.returns\[\d+\]$/.test(path) && !answersLiking(path)) e.push(`${path}: a liking's words ("${t.match(LIKING_WORDS)[0]}") outside replyKinds.liking: "${t}"${r}`);
       return;
     }
     for (const [k, v] of Object.entries(o)) if (k !== "match" && k !== "rules" && k !== "about") walk(v, path ? `${path}.${k}` : k);
