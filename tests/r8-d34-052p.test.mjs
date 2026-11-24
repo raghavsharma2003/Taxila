@@ -72,3 +72,20 @@ test("A6: a noted form prints as a P line and is no error; off the pattern it mu
   s.joints.noPicture[2] = { hi: "Board par wahi rekha hai, use dekho.", en: "The line on the board is the one; look at it." };
   assert.ok(d33JointErrors(s, { required: true }).some((x) => /^NO_PICTURE_NOTE joints\.noPicture\[2\] hi: listed but/.test(x)));
 });
+
+// ── A4: hindiNoFormNoLine and spent help ──
+test("A4: a language request answered with the script's nothing-easier form (help spent) reads clean; with neither form it is flagged", async () => {
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const script = live("c6-maths-ch07-t01");
+  assert.ok(script.joints.easierWords?.length && script.joints.helpSpent?.length);
+  const card = "60 cm ki ribbon ka 1/3 aur 30 cm ki ribbon ka 1/2: in dono mein kitne cm ka farak hai?";
+  const child = { who: "child", text: "Hindi mein bolo", intent: "hindi" };
+  // (offtopic-c6-ch07-t01 row 32 of the merged dry matrix: the honest line, then the card; by its seam and by its words alone)
+  const spent = { who: "teacher", text: `${script.joints.helpSpent[1].hi} ${card}`, cell: { column: "hindi" },
+    seams: [{ left: "start", right: "helpSpent", joint: "helpSpent", form: script.joints.helpSpent[1].hi, by: "authored" }, { left: "helpSpent", right: "card", joint: null }] };
+  const at = (r) => PREDICATES.hindiNoFormNoLine({ rows: [child, r] }, r, 1, { script, o: {} });
+  assert.equal(at(spent), null);
+  assert.equal(at({ ...spent, seams: [] }), null);
+  for (const f of script.joints.helpSpent) assert.equal(at({ ...spent, seams: [], text: `${f.hi} ${card}` }), null, f.hi);
+  assert.ok(at({ ...spent, seams: [], text: card }));
+});
