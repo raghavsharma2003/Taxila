@@ -3813,25 +3813,26 @@
       "2 centimetre"
      ],
      "board": {
-      "template": "compare@1",
+      "template": "number-line-scale@1",
       "params": {
-       "left": {
-        "title": "Darwaza",
-        "items": [
-         "2 cm ooncha"
-        ]
-       },
-       "right": {
-        "title": "Papa",
-        "items": [
-         "lagbhag 170 cm"
-        ]
-       }
+       "from": 0,
+       "to": 200,
+       "step": 100,
+       "marks": [
+        {
+         "value": 2,
+         "label": "2 cm"
+        },
+        {
+         "value": 170,
+         "label": "Papa 170"
+        }
+       ]
       }
      },
      "viewCaption": {
-      "hi": "Board par darwaze ki kahi gayi oonchai hai, 2 centimetre, aur Papa ki lambai, lagbhag 170 centimetre.",
-      "en": "On the board is the door's stated height, 2 centimetres, and Papa's height, about 170 centimetres."
+      "hi": "Board par centimetre ka scale hai, 0 se 200 tak: 2 par darwaze ki kahi gayi oonchai, aur 170 par Papa.",
+      "en": "The board shows a centimetre scale from 0 to 200: the door's stated height at 2, and Papa at 170."
      },
      "pictureBoard": {
       "template": "compare@1",
@@ -3868,6 +3869,28 @@
       "en": "2 centimetres would be just two fingers; a door like that would be for an ant, not for Papa"
      },
      "whyAltAsHelp": true,
+     "answerBoard": {
+      "template": "number-line-scale@1",
+      "params": {
+       "from": 0,
+       "to": 200,
+       "step": 100,
+       "marks": [
+        {
+         "value": 2,
+         "label": "2 cm"
+        },
+        {
+         "value": 170,
+         "label": "Papa 170"
+        },
+        {
+         "value": 200,
+         "label": "2 metre"
+        }
+       ]
+      }
+     },
      "simpler": {
       "hi": "Darwaze ke saamne Papa ko khada socho, aur dekho ki darwaza unse chhota hai ya bada.",
       "en": "Picture Papa standing at the door, and see whether the door is shorter than him or taller."
