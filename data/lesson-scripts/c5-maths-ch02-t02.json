@@ -302,10 +302,10 @@
     ],
     "yourStep": {
      "prompt": { "hi": "Tumhari baari: kam cake kisne khaya, Meena ne ya Raju ne?", "en": "Your turn: who ate less cake, Meena or Raju?" }, "reask": { "hi": "Meena ne cake ka 5/8 khaya aur Raju ne 3/8, toh kam cake kisne khaya?", "en": "Meena ate 5/8 of a cake and Raju 3/8, so who ate less cake?" },
-     "key": "Raju", "why": { "hi": "hisse sab barabar hain, aur Raju ne sirf 3 khaye jabki Meena ne 5", "en": "all the parts are equal, and Raju ate only 3 while Meena ate 5" }, "whyAlt": { "hi": "Meena ke 5 hisse hain aur Raju ke 3, aur sab hisse ek size ke. Toh Meena ne zyada khaya; sawaal yeh hai ki kam kisne khaya.", "en": "Meena has 5 parts and Raju 3, and all the parts are one size. So Meena ate more; the question is who ate less." },
+     "key": "Raju", "why": { "hi": "hisse sab barabar hain, aur Raju ne sirf 3 khaye jabki Meena ne 5", "en": "all the parts are equal, and Raju ate only 3 while Meena ate 5" }, "whyAlt": { "hi": "Neeche dono ka 8 hai, toh hisse ek size ke; par Meena ke 5 aur Raju ke 3, toh khaana barabar nahi.", "en": "Both have 8 at the bottom, so the parts are one size; but Meena has 5 and Raju 3, so they did not eat equal amounts." },
      "accept": ["Raju ne kam khaya", "Raju ne", "Raju ke", "Raju, 3/8", "3/8", "Raju ka 3/8", "Raju ne khaya", "Raju ne kam", "Raju ka kam", "Raju ne kam cake khaya", "Raju ka kam hai"],
      "targets": "c5-maths-ch02-t02-m-same-bottom-equal",
-     "wrongIfMis": ["Meena", "Meena ne", "Meena ne kam khaya"],
+     "wrongIfMis": ["barabar", "dono ne barabar"], "wrongAnswers": [{ "answer": "Meena", "accept": ["Meena ne", "Meena ne kam khaya"], "why": {"hi": "Meena ke 5 hisse aur Raju ke 3, sab ek size ke, toh Meena ne zyada khaya. Sawaal kam ka hai.", "en": "Meena has 5 parts and Raju 3, all one size, so Meena ate more. The question is about less."} }],
      "board": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1} }, "viewCaption": { "hi": "Yeh ek patti hai, 8 barabar hisson mein: line ka har gap yahan ek hissa hai, aur sab hisse ek hi size ke.", "en": "This is one strip in 8 equal parts: each gap of the line is one part here, and all the parts are one size." }, "answerBoard": { "template": "fraction-line@1", "params": {"den": 8, "from": 0, "to": 1, "marks": [{"num": 3, "label": "3/8"}, {"num": 5, "label": "5/8"}]} },
      "simpler": { "hi": "Dono ke hisse ek hi size ke hain, toh bas dono ki ginti milao.", "en": "Both have parts of one size, so just compare the two counts." }
     },
