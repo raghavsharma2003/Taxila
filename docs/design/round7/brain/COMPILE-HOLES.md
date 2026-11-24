@@ -12,7 +12,9 @@
 
 **Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: board_up 318, as_wrong 3. Cells left as holes with no fallback: 0.
 
-**Not applicable:** 366 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+**Not applicable:** 369 misconception cells on cards with no `targets` (cards that test no kit mix-up: a wrong answer takes the `wrong` column). Not holes, not fallbacks.
+
+**Not missing a whyAlt:** 3 cards whose named wrong answers are all `wrongAnswers` entries (no `wrongIfMis`) carry their second reasons there, one per answer, each said only to the child who gave it (d35 follow-up 1; the checker exempts them). Not holes, not counted below: c4-maths-ch01-t02 skills[2].checks[1] (check); c4-maths-ch05-t01 skills[0].checks[1] (check); c5-maths-ch02-t03 skills[0].checks[1] (check).
 
 ## Missing fields, all scripts
 
@@ -410,18 +412,15 @@ None.
 
 ## Authored parts over 45 words (dc-r8-director25 L2: Learning's to shorten)
 
-A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 107 parts in 26 scripts (words: Hinglish / English).
+A turn of more than one part breaks at the last seam before 45 words; a single part is never broken inside, so each of these is said whole, as one turn of its own. 104 parts in 25 scripts (words: Hinglish / English).
 
 | Script | Where | Part | Words | Opens |
 |---|---|---|---|---|
 | c4-maths-ch05-t01 | live | skills[0].remediation[1].sayAlt | 47 / 42 | Ek roti 8 barabar tukdon mein kati socho. … |
 | c4-maths-ch05-t01 | live | skills[1].explain[e3].pointAlt | 49 / 43 | Ise paison se socho: 20 rupaye ke 10-10 … |
 | c4-maths-ch05-t01 | live | skills[1].remediation[0].sayAlt | 49 / 48 | Agar saare thaile de diye jaayein, toh ek … |
-| c5-maths-ch02-t01 | live | skills[2].remediation[0].then.viewCaption | 44 / 49 | Ab line ki dono taraf pattiyan hain: ek … |
-| c5-maths-ch02-t01 | live | skills[2].remediation[1].then.viewCaption | 37 / 47 | Ab line ki dono taraf pattiyan hain, dono … |
 | c5-maths-ch02-t02 | live | skills[0].workedExample.simpler | 46 / 38 | Ise baantne ki tarah socho: ek chocolate do … |
 | c5-maths-ch02-t02 | live | skills[0].checks[c2].answerViewCaption | 45 / 46 | Teen ek jaisi patti hain: ek 12 barabar … |
-| c6-maths-ch06-t01 | live | skills[0].remediation[1].then.whyAlt | 46 / 47 | 24 cm tab bachta hai jab 150 mein … |
 | c6-maths-ch06-t01 | live | skills[1].checks[c2].prompt | 38 / 47 | Laal card 16 cm lamba, 9 cm chauda … |
 | c6-maths-ch06-t01 | live | skills[1].remediation[1].sayAlt | 48 / 46 | Graph paper par bana ek rectangle socho: uske … |
 | c4-maths-ch03-t01 | staged | skills[1].explain[e2].point | 46 / 45 | Jis number ka ekai ka ank 0, 2, … |

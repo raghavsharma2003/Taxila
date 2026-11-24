@@ -12,6 +12,19 @@ for (const [where, d] of dirs) for (const f of readdirSync(new URL(d, ROOT)).fil
   const s = JSON.parse(readFileSync(new URL(`${d}/${f}`, ROOT), "utf8"));
   rows.push({ where, s, c: compileScript(s) });
 }
+// (d35 closing item 2, d35 follow-up 1: a card whose named wrong answers are all `wrongAnswers` entries, no `wrongIfMis`, carries its second
+// reasons there, one per answer — the checker exempts it from `whyAlt` (check.mjs card()). Such a card is not missing a whyAlt: it is
+// taken out of the missing fields and the rule holes, and named in its own line.)
+const { wrongsOf } = await import("./check.mjs");
+const atPath = (o, path) => String(path).split(".").reduce((v, seg) => { const m = /^(\w+)(?:\[(\d+)\])?$/.exec(seg); if (!m || v == null) return undefined; const x = v[m[1]]; return m[2] != null ? (Array.isArray(x) ? x[Number(m[2])] : undefined) : x; }, o);
+const allNamed = (c) => !!c && !wrongsOf(c).length && Array.isArray(c.wrongAnswers) && c.wrongAnswers.length > 0 && !c.whyAlt;
+const coveredByWrongAnswers = [];
+for (const r of rows) {
+  const covered = (h) => h.field === "whyAlt" && /\.whyAlt$/.test(String(h.path)) && allNamed(atPath(r.s, String(h.path).replace(/\.whyAlt$/, "")));
+  for (const h of r.c.missing.filter(covered)) coveredByWrongAnswers.push(`${r.s.topicId} ${h.path.replace(/\.whyAlt$/, "")} (${h.kind})`);
+  r.c.missing = r.c.missing.filter((h) => !covered(h));
+  r.c.holes = r.c.holes.filter((h) => !covered(h));
+}
 const fieldKey = (h) => `${h.kind} ${h.field}`;
 const KEYS = [...new Set(rows.flatMap((r) => r.c.missing.map(fieldKey)))].sort();
 const byRule = {};
@@ -27,6 +40,7 @@ out.push("# C1 step 1: holes and doubles per script (generated)", "",
   `**Help** (dc-r8-director25 H4): a clarify, a give-up, a request for Hindi and a wrong answer's hint compile to one cell, server/director/help.js pickHelp: the first rung of the part's ladder none of whose sentences she has said, else (a card) its key and why over its answer board; a Hindi request never a key. Each rung a script lacks is listed below as a missing field; help skips it, so the key comes one rung sooner.`, "",
   `**Fallback cells:** every missing field's cells compile to a named fallback (today's behaviour) until Learning authors it: ${Object.entries(rows.flatMap((r) => r.c.fallbacks).reduce((m, x) => ({ ...m, [x.fallback]: (m[x.fallback] ?? 0) + 1 }), {})).map(([k, n]) => `${k} ${n}`).join(", ")}. Cells left as holes with no fallback: ${rows.reduce((n, r) => n + Object.values(r.c.cells).flatMap((cs) => Object.values(cs).flatMap((hs) => Object.values(hs))).filter((c) => c.hole).length, 0)}.`, "",
   `**Not applicable:** ${rows.reduce((n, r) => n + r.c.notApplicable.length, 0)} misconception cells on cards with no \`targets\` (cards that test no kit mix-up: a wrong answer takes the \`wrong\` column). Not holes, not fallbacks.`, "",
+  `**Not missing a whyAlt:** ${coveredByWrongAnswers.length} cards whose named wrong answers are all \`wrongAnswers\` entries (no \`wrongIfMis\`) carry their second reasons there, one per answer, each said only to the child who gave it (d35 follow-up 1; the checker exempts them). Not holes, not counted below${coveredByWrongAnswers.length ? `: ${coveredByWrongAnswers.join("; ")}` : ""}.`, "",
   "## Missing fields, all scripts", "", "| Part kind, field | Missing | What it is |", "|---|---|---|");
 const WHAT = {
   "worked_step simpler": "the worked problem's own simpler (its steps have one), for a clarify on the problem. Fallback: resay_show",
