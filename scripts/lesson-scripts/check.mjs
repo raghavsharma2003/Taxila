@@ -39,6 +39,8 @@ import { scanSafety } from "../../server/director/safety.js";
 // (to-brain 052 A5: the engine's own word count and its limit for the turn after a right answer, imported, never copied)
 import { wordsIn as engineWords, VPC_MAX } from "../../server/director/state.js";
 import { FRAMES } from "../../server/brain/say.js";
+// (Learning 024 rule 3: the walk's own start-line forms, said where a script has no joints.startAnyway; read, never copied)
+import { FALLBACK_JOINTS } from "../../server/director/help.js";
 // (to-brain 052 A6: the predicates' refusal pattern, from its one place)
 import { PICTURE_REFUSAL } from "../../evals/hybrid-side-by-side/d31-predicates.mjs";
 
@@ -935,7 +937,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s), ...d34Errors(s), ...d35Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s), ...d34Errors(s), ...d35Errors(s), ...d36Errors(s));
   return e;
 }
 
@@ -2840,6 +2842,93 @@ export function d35Errors(s, { force = false } = {}) {
 /** Learning 023's lines for a reader: F6 (rule 6), the rule-3 count of the first turn (T), rule 1's card reasons over an answer board (D). */
 export const d35ReportLines = (s) => { const f = firstTurn(s); return [...frameLines(s), ...(f ? [`T ${f.at}: first teaching turn hook ${f.hook} + point ${f.point} + card ${f.card} = ${f.total} (limit ${f.limit})`] : []),
   ...undrawnValueNotes(s).map((x) => `D ${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")} over its answerBoard (${x.board.template}), which does not draw ${x.missing.length > 1 ? "them" : "it"}: "${x.text}"`)]; };
+/** Learning 024 Part 1 (dc-r8-director35 item 7; ruling 2, mechanisms 2, 5, 7; docs/design/round7/judgements/director35-2026-11-24.md):
+ *  1  An own step states its board: where any step of a skill's `workedExample.steps` has a `resultBoard`, `workedExample.yourStep`
+ *     carries a `board` of its own (director35 c4-ch01-t02, six rows: the walk redraws the worked board at the own step's first word,
+ *     and "board par dekho, ghumaya tester…" was said as the tester left the screen). The rule that an own step WITH a board keeps its
+ *     `answerBoard` on the same figure (checkScript, "director10 cause #2") stays.
+ *  2  A named reason's sentence is one card's: no sentence of a `whyAlt` or a `wrongAnswers[].why` (hi; case, punctuation and spaces
+ *     aside, numbers kept) is in the `whyAlt` or a `wrongAnswers[].why` of another card, check, follow-up card or own step of the script
+ *     (c5-t02 "Tumne dono number ulat diye." in s1 e2 and s2 e1: the walk read the second as already said).
+ *  3  The first teaching turn is D36_FIRST_MAX words with its start line: Learning 023 rule 3's hook + point + card, plus the longest
+ *     start line the walk can put before them (the script's `joints.startAnyway`, else help.js FALLBACK_JOINTS.startAnyway), by the
+ *     engine's count. The four numbers are a T36 line.
+ *  4  (no rule: director35's c6-ch07-t03 s2 step 1 "8 × 7 = 56" passes 023 rule 1 because D35_WORKING takes "8 × 7" as working and
+ *     the worked board draws "56 page": the result is drawn, as the rule's letter asks.)
+ *  5  P lines, never errors: every follow-up card and check whose `why` / `whyShort` states a value (023 rule 1's reading) that
+ *     neither its posing board nor its `answerBoard` draws (mechanism 7) — one list for an author.
+ *  Rules 1-3 are errors for a topic in D36_READY or named with --d36; the T36 and P lines print only with --d36. */
+export const D36_READY = [];
+export const isD36 = (s) => D36_READY.includes(s?.topicId);
+export const D36_FIRST_MAX = 60;
+const D36_KINDS = ["card", "check", "follow-up", "own step"];
+// ---- rule 1: an own step states its board
+export function ownStepBoardHits(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    const we = k.workedExample, y = we?.yourStep;
+    if (!y) continue;
+    const j = (we.steps ?? []).findIndex((x) => x?.resultBoard?.template);
+    if (j >= 0 && !y.board?.template) out.push({ at: `${k.skillId}/workedExample.yourStep`, step: j });
+  }
+  return out;
+}
+// ---- rule 2: a named reason's sentence is one card's
+const d36SentNorm = (t) => d27Norm(t).replace(/\.(?!\d)/g, " ").replace(/\s+/g, " ").trim();
+/** Rule 2's hits: [{ at, other, sentence }] — `at` holds a sentence `other` (an earlier path, another card) holds too. */
+export function sharedReasonHits(s) {
+  const out = [], seen = new Map();
+  for (const c of d32Cards(s).filter((x) => D36_KINDS.includes(x.kind))) {
+    const rs = [];
+    if (String(c.card.whyAlt?.hi ?? "").trim()) rs.push([`${c.at}.whyAlt`, c.card.whyAlt.hi]);
+    (Array.isArray(c.card.wrongAnswers) ? c.card.wrongAnswers : []).forEach((x, i) => { if (String(x?.why?.hi ?? "").trim()) rs.push([`${c.at}.wrongAnswers[${i}].why`, x.why.hi]); });
+    for (const [at, t] of rs) for (const sent of sentencesOf(t)) {
+      const n = d36SentNorm(sent);
+      if (!n) continue;
+      const prev = seen.get(n);
+      if (!prev) { seen.set(n, { at, card: c.at }); continue; }
+      if (prev.card !== c.at) out.push({ at, other: prev.at, sentence: sent.trim() });
+    }
+  }
+  return out;
+}
+// ---- rule 3: the first teaching turn with its start line
+/** Rule 3: Learning 023's firstTurn plus `start` (the longest start-line form) and where the forms come from. */
+export function firstTurnWithStart(s) {
+  const f = firstTurn(s);
+  if (!f) return null;
+  const own = Array.isArray(s?.joints?.startAnyway) && s.joints.startAnyway.length ? s.joints.startAnyway : null;
+  const start = Math.max(0, ...(own ?? FALLBACK_JOINTS.startAnyway).map(engineHi));
+  return { ...f, start, startFrom: own ? "joints.startAnyway" : "help.js FALLBACK_JOINTS.startAnyway", total: f.hook + start + f.point + f.card, limit: D36_FIRST_MAX };
+}
+// ---- 5: follow-up cards and checks whose reason states a value neither board draws
+export function answerValueLines(s) {
+  const out = [], none = { nums: new Set(), fracs: new Set(), marks: new Set(), things: new Set() };
+  const union = (a, b) => Object.fromEntries(Object.keys(none).map((k) => [k, new Set([...a[k], ...b[k]])]));
+  for (const c of d32Cards(s).filter((x) => x.kind === "follow-up" || x.kind === "check")) {
+    const d = union(c.board ? drawnValues(c.board) : none, c.card.answerBoard ? drawnValues(c.card.answerBoard) : none);
+    for (const f of ["why", "whyShort"]) {
+      const t = String(c.card[f]?.hi ?? "").trim();
+      if (!t) continue;
+      const missing = [...new Set(statedValues(t).filter((y) => !isDrawn(d, y)).map((y) => y.said))];
+      if (missing.length) out.push({ at: `${c.at}.${f}`, kind: c.kind, missing, text: t, posing: c.board?.template ?? null, answerBoard: c.card.answerBoard?.template ?? null });
+    }
+  }
+  return out;
+}
+/** Learning 024's errors: rules 1-3 for a topic in D36_READY or forced. */
+export function d36Errors(s, { force = false } = {}) {
+  if (!force && !isD36(s)) return [];
+  const e = [];
+  for (const x of ownStepBoardHits(s)) e.push(`${x.at}: no board of its own after a step's result board (the walk redraws the worked board at the step's first word) (workedExample.steps[${x.step}].resultBoard) (Learning 024 rule 1)`);
+  for (const x of sharedReasonHits(s)) e.push(`${x.at}: "${x.sentence}" is ${x.other}'s sentence too: a named reason's sentence is one card's (Learning 024 rule 2)`);
+  const f = firstTurnWithStart(s);
+  if (f && f.total > f.limit) e.push(`${f.at}: the first teaching turn is start ${f.start} (${f.startFrom}) + hook ${f.hook} (${f.slot}) + point ${f.point} + card ${f.card} = ${f.total} words by the engine's count > ${f.limit}: cut the hook or the point's example, never the card's givens (Learning 024 rule 3)`);
+  return e;
+}
+/** Learning 024's lines for an author: the rule-3 count with its start line (T36), the answer values no board draws (P). */
+export const d36ReportLines = (s) => { const f = firstTurnWithStart(s); return [...(f ? [`T36 ${f.at}: start ${f.start} (${f.startFrom}) + hook ${f.hook} + point ${f.point} + card ${f.card} = ${f.total} (limit ${f.limit})`] : []),
+  ...answerValueLines(s).map((x) => `P ${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")}, which neither its posing board (${x.posing ?? "none"}) nor ${x.answerBoard ? `its answerBoard (${x.answerBoard})` : "an answerBoard (none)"} draws: "${x.text}"`)]; };
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2909,6 +2998,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (args.includes("--d34")) for (const t of topics) if (!D34_READY.includes(t)) D34_READY.push(t);
   // (Learning 023: --d35 holds the named scripts to the 023 rules for this run only, as D35_READY does for good)
   if (args.includes("--d35")) for (const t of topics) if (!D35_READY.includes(t)) D35_READY.push(t);
+  // (Learning 024: --d36 holds the named scripts to the 024 rules for this run only, as D36_READY does for good)
+  if (args.includes("--d36")) for (const t of topics) if (!D36_READY.includes(t)) D36_READY.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
@@ -2938,6 +3029,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     if (args.includes("--d34") || args.includes("--rules")) for (const m of d34ReportLines(scriptOf(t))) console.log(`  ${m}`);
     // (Learning 023: rule 6's frames (F6), the first turn's count (T), card reasons over an answer board (D): lines for a reader)
     if (args.includes("--d35") || args.includes("--rules")) for (const m of d35ReportLines(scriptOf(t))) console.log(`  ${m}`);
+    // (Learning 024: the first turn with its start line (T36) and the answer values no board draws (P): lines, only with --d36)
+    if (args.includes("--d36")) for (const m of d36ReportLines(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {
