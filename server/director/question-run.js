@@ -246,11 +246,14 @@ export function yourTurnPass(prev, out, script, childText = "") {
     const qText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
     const a1 = qText ? atQuestionOf(script, qText) : null, p1 = a1 && a1 !== "?short" ? a1 : null;
     const her1 = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
-    if (p1 && !tbQ && turnsAtQuestion(script, her1, p1) >= 2) {
+    // (d35 follow-up 4: the closing question too — graded as a card since 052 B2, its aside parked as a card's: the invitation is put in the
+    // question's place among the walk's rendered lines)
+    if (p1 && (!tbQ || lm.endAside) && turnsAtQuestion(script, her1, p1) >= 2) {
       const forms = answerFirstForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
       const n = s.answerFirstN ?? 0;
       s.answerFirstN = n + 1;
-      set({ answerFirst: forms[n % forms.length] });
+      if (tbQ) { if (forms.length) tbSet(forms[n % forms.length], "answerFirst"); }
+      else set({ answerFirst: forms[n % forms.length] });
     }
     return out;
   }

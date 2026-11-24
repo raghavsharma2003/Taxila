@@ -2412,6 +2412,13 @@ function p5RequestMove(s, input, item, req, labels) {
   // goes on with it as the prefix
   const withLead = (lead) => {
     if (item) return plan(moveKindFor(item), SH.leadThenPose({ item, lead }), { item, probe: probeFor(item), chips: optionChips(item), lead, request: req.type });
+    // (d35 follow-up 4: since 052 B2 the closing question is graded as a card; an aside parked at it goes the way an aside at a card goes —
+    // the park line, then the closing question (or 052 B4's pointed invitation by the count of turns at it: question-run.js), over its board.
+    // Dry steady c5-ch02-t03 rows 79 to 82 (d35 m1): the aside got a free line that did not say the question, the board cleared, and the
+    // next turn drew it again under a miss verdict)
+    const parkedNow = (s.later ?? []).some((e) => e.at === s.turn && e.servedAt == null);
+    const tbAsk = !item && parkedNow && !input.cls?.asideReply && ["uptake", "park"].includes(req.type) ? closingAskAgain(s, kit) : null;
+    if (tbAsk) return { ...tbAsk, lead, request: req.type };
     const p = resume(s, input, item, lead);
     return p && { ...p, lead, request: req.type };
   };
@@ -2679,6 +2686,24 @@ function teachbackHit(tb, text) {
   return [tb.key, ...(tb.accept ?? [])].filter((k) => k != null && String(k).trim()).some((k) => said.includes(norm(k)));
 }
 
+/** Brain 047 R3: the closing question asked again alternates with its authored reask — director31 c5-t02 steady 96 to 98, c6 steady 94 to 96
+ *  said it whole twice running. */
+function closingQuestionNow(s, tb, lang) {
+  const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ").toLowerCase();
+  const q0 = saidIn(tb.prompt, lang), qr = tb.reask ? saidIn(tb.reask, lang) : null;
+  return qr && String(qr).trim() && q0 && herLast.includes(String(q0).replace(/\s+/g, " ").trim().toLowerCase()) ? qr : q0;
+}
+/** d35 follow-up 4: the closing question asked again after an aside parked at it — no verdict, no help — over its own board; null when the
+ *  closing question is not open (no authored teach-back, or its key already said). */
+function closingAskAgain(s, kit) {
+  if (s.phase !== "teachback" || !s.teachbackScript || s.teachbackKeyed || s.teachbackPassed || s.wrapAfter) return null;
+  const tb = authoredEnd(kit)?.teachback;
+  if (!tb) return null;
+  const q = closingQuestionNow(s, tb, s.ctx.lang ?? "hinglish");
+  if (!q || !String(q).trim()) return null;
+  return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [endLine(q)], renderedKinds: ["closingQuestion"], authoredEnd: "teachback", endAside: true,
+    ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
+}
 function teachback(s, input) {
   const { cls, kit } = input;
   const tb = s.teachbackScript ? authoredEnd(kit)?.teachback : null;
@@ -2721,11 +2746,7 @@ function teachback(s, input) {
     if (["correct", "incorrect", "partial", "misconception"].includes(String(cls?.outcome ?? ""))) s.answerAt = { ...(s.answerAt ?? {}), [TEACHBACK_PART]: { outcome: cls.outcome, misconceptionId: cls.misconceptionId ?? null, wrongListed: !!cls.wrongListed } };
     const tbD = pickHelp({ script: authoredEnd(kit), part: TEACHBACK_PART, request: "hint", said: saidNowOf(s), lang: lang === "english" ? "english" : "hinglish", last: s.answerAt?.[TEACHBACK_PART] ?? null });
     if (tbD?.rung?.text) {
-      // (Brain 047 R3: the closing question asked again alternates with its authored reask — director31 c5-t02 steady 96 to 98, c6 steady 94
-      // to 96 said it whole twice running)
-      const herLast = String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ").toLowerCase();
-      const q0 = saidIn(tb.prompt, lang), qr = tb.reask ? saidIn(tb.reask, lang) : null;
-      const q = qr && String(qr).trim() && q0 && herLast.includes(String(q0).replace(/\s+/g, " ").trim().toLowerCase()) ? qr : q0;
+      const q = closingQuestionNow(s, tb, lang);
       if (q && String(q).trim()) {
         return plan("teachback", SH.teachback({ protege: null }), { probe: "P1", format: "F7", rendered: [endLine(tbD.rung.text), endLine(q)], renderedKinds: ["help", "closingQuestion"], authoredEnd: "teachback", ...(gaveUpEnd ? { endGaveUp: true } : { endVerdict: "not_yet" }),
           ...(tb.board ? { scriptBeat: { scriptId: scriptIdOf(kit), skillId: "end", beatId: "teachback", kind: "teachback", board: tb.board, mode: "fresh" } } : {}) });
@@ -4637,6 +4658,7 @@ function step0(prev, input) {
   if (p.hookSaid) move.hookSaid = true;
   if (p.authoredEnd) move.authoredEnd = p.authoredEnd;
   if (p.endVerdict) move.endVerdict = p.endVerdict;
+  if (p.endAside) move.endAside = true;
   // (dc-r8-director27 P4, P7: what each authored ending line is — the closing question's lead-in, its hint, the question — for the record)
   if (p.renderedKinds?.length) move.renderedKinds = [...p.renderedKinds];
   if (p.endKey) move.endKey = p.endKey;

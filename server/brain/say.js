@@ -508,6 +508,16 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   if (r?.form === "again" && r.line && toldOk(r)) return r.line;
   return r?.form === "word" && r.line && toldOk(r) ? r.line : null;
 }
+/** v6.11 J2 / dc-r8-director20 R1: Learning's reply to the child's answer to her return (`rr0`: { said, topic }), chosen by the aside's kind,
+ *  rotated by her turns. */
+function returnReplyPick(state, rr0, lang) {
+  const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
+  const asked = [...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
+  // (dc-r8-director27 P6.3: the child's answer is a line they already said in this lesson — the same aside again — Learning 016's againReplies)
+  const kidSaid = (state.recent ?? []).filter((t) => t.who === "child").slice(0, -1).map((t) => String(t.text ?? "").replace(/\s+/g, " ").trim().toLowerCase());
+  const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
+  return asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow });
+}
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
     .filter((w) => !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !LESSON_SAID.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w));
@@ -1842,7 +1852,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const why = (w) => (w && String(w).trim() ? (L === "english" ? `, because ${joinable(spokenMarks(w, L), { lower: true })}` : `, kyunki ${joinable(spokenMarks(w, L), { lower: true })}`) : "");
     const end = state.lastMove.authoredEnd;
     // (d31: a give-up on the closing question takes no verdict — state.js endGaveUp)
-    const v = state.lastMove.endGaveUp ? null : state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
+    // (d35 follow-up 4: an aside parked at the closing question takes no verdict: the park line, then the question — state.js endAside)
+    const v = state.lastMove.endGaveUp || state.lastMove.endAside ? null : state.lastMove.endVerdict ?? (end === "teachback" ? verdict : null);
     const endW = state.lastMove.endVerdict ? (state.lastMove.endWhy ? saidIn(state.lastMove.endWhy, L) : null) : state.lastGraded?.why;
     // (Brain 046 Q6: the end's verdict takes the why's rotating lead-in, as every right verdict does)
     const endLead = v === "correct" && L !== "english" && endW && String(endW).trim() ? rightWhyLead(freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, ""), spokenMarks(endW, L), state, kit) : null;
@@ -1878,9 +1889,15 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const kindOfLine = (x, n) => (tiredL && n === 0 && x === tiredL ? "tiredBye" : end === "teachback" ? state.lastMove.renderedKinds?.[n] ?? null : end === "wrapCovered" ? (ackL && n === 0 && x === ackL ? "wrapAck" : "covered") : end !== "wrap" ? null : ackL && n === 0 && x === ackL ? "wrapAck" : mine && x === mine ? "didSentence" : n === body.length - 1 ? "goodbye" : "covered");
     // (turn one ends on something she can answer: the wrap's closing question — main's R7, `wrap.ask` — never a comprehension check-in)
     const tail1 = end === "wrapCovered" ? (state.lastMove.wrapAsk ? d(state.lastMove.wrapAsk) : rotateOf(beatAsk(kit)[L], state)) : null;
-    const lp = cleanParts([{ part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
+    const parkedEnd = end === "teachback" && state.lastMove.endAside ? (state.later ?? []).find((p) => p.at === state.turn && p.servedAt == null) : null;
+    // (d35 follow-up 4: the wrap held for an aside's return — round d35 — opens on her reply to the child's answer to that return, as a card's
+    // turn does (j2, below): dry steady c5-ch02-t03 row 86 (d35 m1) went from "Virat" to what was covered with "Virat" unheard)
+    const rrEnd = ["wrapCovered", "wrap"].includes(end) && state.lastMove.returnReply?.said ? returnReplyPick(state, state.lastMove.returnReply, L) : null;
+    const lp = cleanParts([...(rrEnd?.line ? [{ part: "aside", text: rrEnd.line }] : []), ...(parkedEnd ? [{ part: "aside", text: freshOf(parkAckOf(state, L, kit).map((f) => f(parkedEnd.topic)), state) }] : []),
+      { part: onAnswer ? "body" : "close", text: [close, state.lastMove.endKey ? d(spokenMarks(state.lastMove.endKey, L)) : null].filter(Boolean).join(" ") },
       ...body.map((x, n) => ({ part: kindOfLine(x, n) === "help" ? "simpler" : "body", text: x, ...(kindOfLine(x, n) ? { kind: kindOfLine(x, n) } : {}) })), ...(tail1 ? [{ part: "aside", text: tail1, ...(state.lastMove.wrapAsk ? { kind: "wrapAsk" } : {}) }] : [])]);
-    return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), ...(mine ? { childSentence: mine } : {}), lineParts: lp, parts: { list: lp } } };
+    return { reply: joinParts(lp), guard: { authoredEnd: end, ...(endLead ? { whyJoint: endLead.k } : {}), ...(mine ? { childSentence: mine } : {}),
+      ...(rrEnd?.line ? { returnReplyLine: rrEnd.line, j2: { said: state.lastMove.returnReply.said, line: rrEnd.line, form: rrEnd.form, ...(rrEnd.kind ? { kind: rrEnd.kind } : {}) } } : {}), lineParts: lp, parts: { list: lp } } };
   }
   // (dc-r8-director25 L2 item 4, c6 offtopic 0: "Aaj cricket ground jaise rectangles ka perimeter dekhenge" — the greeting said the model's
   // words about the world. A scripted greeting is said by code: who she is and one question about the child — the warm-up card when the
@@ -2940,12 +2957,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       const rr0 = state.lastMove?.returnReply?.said ? state.lastMove.returnReply : aiAnswer;
       // (dc-r8-director20 R1: the reply is Learning's, chosen by the aside's kind — one {word} of theirs from the word picker, a plain
       // form when none fits or they asked her back, the sad set when it is sad; her draft's sentences about the aside go)
-      const rot = [...(state.recent ?? [])].filter((t) => t.who === "teacher").length + (state.seed ?? 0);
-      const asked = [...(state.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "";
-      // (dc-r8-director27 P6.3: the child's answer is a line they already said in this lesson — the same aside again — Learning 016's againReplies)
-      const kidSaid = (state.recent ?? []).filter((t) => t.who === "child").slice(0, -1).map((t) => String(t.text ?? "").replace(/\s+/g, " ").trim().toLowerCase());
-      const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
-      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow });
+      const pick = returnReplyPick(state, rr0, lang);
       j2Line = pick.line ?? null;
       guard.j2 = { said: rr0.said, line: j2Line, form: pick.form, ...(pick.kind ? { kind: pick.kind } : {}) };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];
