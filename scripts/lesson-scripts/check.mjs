@@ -151,7 +151,7 @@ export function structureErrors(s, kit) {
     if (k.checks.length < 2 || k.checks.length > 3) e.push(at("2-3 checks"));
     for (const c of k.checks) {
       if (!mis.has(c.targets)) e.push(at(`${c.id} targets ${c.targets}, not a kit misconception`));
-      if (!c.key || !wrongsOf(c).length || wrongsOf(c).includes(String(c.key).trim())) e.push(at(`${c.id} key and the misconception's answer`));
+      if (!c.key || (!wrongsOf(c).length && !(Array.isArray(c.wrongAnswers) && c.wrongAnswers.length)) || wrongsOf(c).includes(String(c.key).trim())) e.push(at(`${c.id} key and the misconception's answer`));
       if (leaks(c.prompt, c.key)) e.push(at(`${c.id} prompt prints its key`));
       const p = c.board?.params ?? {};
       if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
@@ -904,7 +904,7 @@ export function structureErrorsV2(s, kit) {
     for (const c of k.checks) {
       e.push(...keyedErrors({ ...c }, at(c.id), mis));
       if (!c.targets) e.push(at(`${c.id}: targets`));
-      if (!wrongsOf(c).length) e.push(at(`${c.id}: wrongIfMis`));
+      if (!wrongsOf(c).length && !(Array.isArray(c.wrongAnswers) && c.wrongAnswers.length)) e.push(at(`${c.id}: wrongIfMis`)); // d35 follow-up 1: or a wrongAnswers entry
       const p = c.board?.params ?? {};
       if (c.board?.template === "fraction-line@1" && (p.hop || (p.marks ?? []).length || (p.mark === undefined && !p.target && !p.dens))) e.push(at(`${c.id} check line shows instead of asking (use mark or target)`));
     }
@@ -3479,7 +3479,10 @@ export function d22Errors(s) {
   const BACK = /\b(woh|wo|yeh|ye|uska|uski|uske|iska|iski|iske|unka|inka|use|ise|it|that|this|they|he|she|them|its)\b/i;
   const card = (c, at) => {
     const r = [];
-    if (c?.why) r.push(...alt(c.why, c.whyAlt, `${at}.whyAlt`));
+    // (d35 follow-up 1: a card whose named wrong answers are all `wrongAnswers` entries, no `wrongIfMis`, carries its second reasons there,
+    // one per answer, each said only to the child who gave it; a `whyAlt` beside them would be said after a key to a child who never did)
+    const allNamed = !wrongsOf(c ?? {}).length && Array.isArray(c?.wrongAnswers) && c.wrongAnswers.length > 0;
+    if (c?.why && !(allNamed && !c.whyAlt)) r.push(...alt(c.why, c.whyAlt, `${at}.whyAlt`));
     const ss = sentencesOf(c?.prompt?.hi), last = ss.at(-1) ?? "";
     const needs = ss.length > 1 && (BACK.test(last) || last.split(/\s+/).length <= 5);
     if (c?.reask) {

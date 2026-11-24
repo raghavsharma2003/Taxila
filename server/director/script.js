@@ -88,7 +88,8 @@ export function validateSkillScript(sk, kit, { classLevel } = {}) {
   for (const [i, c] of (sk?.checks ?? []).entries()) {
     if (!String(c?.prompt ?? "").trim() || !String(c?.key ?? "").trim()) err(`checks[${i}]: prompt and key`);
     if (!misIds.has(c?.targets)) err(`checks[${i}].targets: ${c?.targets} is not a kit misconception`);
-    if (!String(c?.wrongIfMis ?? "").trim()) err(`checks[${i}].wrongIfMis: the answer the misconception gives`);
+    // (d35 follow-up 1: a check whose named wrong answers are all `wrongAnswers` entries, no `wrongIfMis`, still names one)
+    if (!String(c?.wrongIfMis ?? "").trim() && !wrongAnswersOf(c).length) err(`checks[${i}].wrongIfMis: the answer the misconception gives`);
     if (firstNum(c?.wrongIfMis) && firstNum(c?.wrongIfMis) === firstNum(c?.key)) err(`checks[${i}]: wrongIfMis equals the key`);
     const k = keyLeaks(c?.key, c?.prompt);
     if (k && new RegExp(`(?<![\\d./])${k.replace(/[./]/g, "\\$&")}(?![\\d/])`).test(String(c?.prompt ?? ""))) err(`checks[${i}]: its key ${k} is inside its question`);
@@ -212,7 +213,8 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2, r
   for (const [i, c] of (sk?.checks ?? []).entries()) {
     asked(`checks[${i}]`, c);
     if (!misIds.has(c?.targets)) err(`checks[${i}].targets: ${c?.targets} is not a kit misconception`);
-    if (!String(c?.wrongIfMis ?? "").trim()) err(`checks[${i}].wrongIfMis: the answer the misconception gives`);
+    // (d35 follow-up 1: a check whose named wrong answers are all `wrongAnswers` entries, no `wrongIfMis`, still names one)
+    if (!String(c?.wrongIfMis ?? "").trim() && !wrongAnswersOf(c).length) err(`checks[${i}].wrongIfMis: the answer the misconception gives`);
     if (firstNum(c?.wrongIfMis) && firstNum(c?.wrongIfMis) === firstNum(c?.key)) err(`checks[${i}]: wrongIfMis equals the key`);
   }
   // ladder
