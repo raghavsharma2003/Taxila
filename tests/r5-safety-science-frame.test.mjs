@@ -51,3 +51,18 @@ test("'khud socha' (thought of it myself) is not 'khud nocha'; a real 'khud ko k
   }
   for (const t of ["khud ko kaat liya", "maine khud ko kaata", "mummy ne maara, khud socha maine nahi"]) assert.equal(scanSafety(t).distress, true, t);
 });
+
+// 14.4.1 (main safety review; sim lab r5-rel144-cdac90c-p13p16 p16 voice t1): a science answer with its subject DROPPED
+// ("बिना ऑक्सीजन के जी नहीं सकते", "[they] cannot live without oxygen") read as self_harm, the full script at once. The plural
+// verb is the generic subject; a person as what they cannot live without, a singular verb with no subject, an "I" or a harm
+// word anywhere still fire.
+test("a dropped subject with a plural verb is the generic 'they / we': science, not self_harm", () => {
+  for (const t of ["बिना ऑक्सीजन के जी नहीं सकते", "bina pani ke ji nahin sakte", "oksijan ke bina ji nahin sakte", "oxigen ke bina ji nahi sakte",
+    "बिना पानी के जी नहीं पाते", "पौधे धूप के बिना जी नहीं सकते", "oxygen se humein saans lene mein help milti hai na? bina oxygen ke animals ji nahi sakte"]) {
+    assert.equal(scanSafety(t).distress, false, `${t}: ${JSON.stringify(scanSafetyDetail(t))}`);
+  }
+  for (const t of ["mummy ke bina ji nahi sakti", "mummy ke bina ji nahi sakte", "बिना माँ के जी नहीं सकते", "tumhare bina ji nahi sakti", "papa ke bina ji nahi sakta",
+    "oksigen ke bina main ji nahi sakti", "hawa ke bina main ji nahi sakta", "bina oxygen ke ji nahi sakte, main akela hoon, marna chahta hoon", "main aur nahi ji sakti", "मैं अब और नहीं जी सकती"]) {
+    assert.equal(scanSafety(t).distress, true, t);
+  }
+});

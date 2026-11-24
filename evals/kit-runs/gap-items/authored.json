@@ -1,0 +1,409 @@
+{
+  "items": [
+    {
+      "topicId": "c5-evs-ch04-t02",
+      "id": "c5-evs-ch04-t02-x01",
+      "skillId": "c5-evs-ch04-t02-s2",
+      "kind": "far_transfer",
+      "difficulty": 5,
+      "prompt_en": "In India we look right first before crossing. Meera visits a country where vehicles drive on the RIGHT side of the road. Which way should she look first there, and why?",
+      "prompt_hi": "India mein road cross karne se pehle hum pehle right dekhte hain. Meera ek aise desh jaati hai jahan gaadiyan road ke RIGHT side chalti hain. Wahan use pehle kis taraf dekhna chahiye, aur kyun?",
+      "answer": "Left first, because there the nearest traffic comes from the left.",
+      "acceptable": [
+        "left",
+        "left first",
+        "pehle left",
+        "pehle baayein",
+        "baayein taraf, kyunki paas wali traffic left se aati hai",
+        "look left first because nearest lane comes from the left"
+      ],
+      "hints": [
+        "Why do we look right first in India?",
+        "The side vehicles drive on decides where the nearest lane is.",
+        "Vehicles drive on the right, so the nearest traffic comes from the ___.",
+        "Left first: with right-side driving, the nearest lane's traffic comes from the left."
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c5-evs-ch04-t02",
+      "id": "c5-evs-ch04-t02-x02",
+      "skillId": "c5-evs-ch04-t02-s2",
+      "kind": "predict",
+      "difficulty": 4,
+      "prompt_en": "Two cars are the same distance from a zebra crossing. Car P moves slowly, car Q moves fast. Pooja steps out suddenly and both drivers brake at once. Predict: which car may not stop before reaching her, and why?",
+      "prompt_hi": "Do cars zebra crossing se barabar doori par hain. Car P dheere chal rahi hai, car Q tez. Pooja achaanak road par aati hai aur dono drivers turant brake dabate hain. Predict karo: kaunsi car shayad uske paas pahunchne se pehle nahi rukegi, aur kyun?",
+      "answer": "Car Q, because a faster vehicle needs more distance to stop.",
+      "acceptable": [
+        "Q",
+        "car Q",
+        "the fast car",
+        "tez wali car",
+        "car Q, kyunki tez gaadi ko rukne mein zyada doori lagti hai",
+        "the fast one needs a longer distance to stop"
+      ],
+      "hints": [
+        "Does a cycle stop on the spot when you brake?",
+        "Think about speed and the distance needed after braking.",
+        "The faster the car, the ___ the distance it needs to stop.",
+        "Car Q: a faster car rolls farther before stopping."
+      ],
+      "targetsMisconception": "c5-evs-ch04-t02-m2"
+    },
+    {
+      "topicId": "c5-evs-ch04-t02",
+      "id": "c5-evs-ch04-t02-x03",
+      "skillId": "c5-evs-ch04-t02-s3",
+      "kind": "error_spot",
+      "difficulty": 5,
+      "prompt_en": "Riya's plan for her walk home at dusk: 'My road has no footpath, so I will walk on the left edge with traffic behind me, wearing my dark blue kurta.' Find the 2 mistakes and correct them.",
+      "prompt_hi": "Riya ka shaam ko ghar jaane ka plan: 'Meri road par footpath nahi hai, isliye main left edge par chalungi, traffic mere peeche se aayegi, aur main apna dark blue kurta pehnungi.' Usme 2 galtiyan dhoondho aur sahi karo.",
+      "answer": "Walk on the right edge facing the traffic, and wear light or reflective clothes.",
+      "acceptable": [
+        "right side facing traffic and light coloured clothes",
+        "right edge par saamne se aati traffic dekhte hue chale, aur light ya reflective kapde pehne",
+        "walk facing traffic; wear bright or reflective clothes"
+      ],
+      "hints": [
+        "Can Riya see a vehicle coming from behind her?",
+        "Check which side she walks on and how visible she is at dusk.",
+        "Walk on the ___ edge facing traffic, and wear ___ clothes.",
+        "Right edge facing traffic, light or reflective clothes: she sees and is seen."
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c5-hindi-ch01-t01",
+      "id": "c5-hindi-ch01-t01-x01",
+      "skillId": "c5-hindi-ch01-t01-s3",
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "A new poem says: 'साँझ हुई, किरनें लौटीं, कलियाँ मुँद गईं चुपचाप।' How is its feeling different from the feeling of the poem 'किरन'?",
+      "prompt_hi": "एक नई कविता में है: 'साँझ हुई, किरनें लौटीं, कलियाँ मुँद गईं चुपचाप।' इसका भाव कविता 'किरन' के भाव से कैसे अलग है?",
+      "answer": "'किरन' में सुबह की रोशनी सबको जगाती है और नई, ख़ुशी भरी शुरुआत का भाव है; यहाँ शाम का शांत, चुपचाप सब कुछ सो जाने/आराम का भाव है।",
+      "acceptable": [
+        "किरन में जागना और ख़ुशी, यहाँ शांति और सोना",
+        "किरन में सुबह की नई शुरुआत, इसमें शाम को सब शांत होकर सो जाता है",
+        "kiran mein subah ki khushi aur jaagna, yahan shaam ki shaanti",
+        "किरन में कलियाँ खिलती हैं, यहाँ बंद हो जाती हैं — ख़ुशी भरी शुरुआत बनाम शांत अंत"
+      ],
+      "hints": [
+        "In 'किरन', what do the buds do, and in this poem?",
+        "Compare morning and evening: what starts, and what ends?",
+        "किरन: सब ___ जाता है; नई कविता: सब ___ हो जाता है।",
+        "किरन में जागने की ख़ुशी, यहाँ शाम की शांति: कलियाँ खिलीं बनाम मुँदीं।"
+      ],
+      "targetsMisconception": "c5-hindi-ch01-t01-mc-literal-only"
+    },
+    {
+      "topicId": "c5-hindi-ch01-t01",
+      "id": "c5-hindi-ch01-t01-x02",
+      "skillId": "c5-hindi-ch01-t01-s4",
+      "kind": "error_spot",
+      "difficulty": 5,
+      "prompt_en": "Someone wrote: 'सुबह कई कीरन आई, पत्तों पर ओस की बूँद चमकी और सारी कली खिल गई।' There are spelling and वचन mistakes. Say the whole sentence correctly.",
+      "prompt_hi": "किसी ने लिखा: 'सुबह कई कीरन आई, पत्तों पर ओस की बूँद चमकी और सारी कली खिल गई।' इसमें वर्तनी और वचन की ग़लतियाँ हैं। पूरा वाक्य सही बोलो।",
+      "answer": "सुबह कई किरनें आईं, पत्तों पर ओस की बूँदें चमकीं और सारी कलियाँ खिल गईं।",
+      "acceptable": [
+        "सुबह कई किरणें आईं, पत्तों पर ओस की बूँदें चमकीं और सारी कलियाँ खिल गईं।",
+        "subah kai kirnen aayin, patton par os ki boonden chamkin aur saari kaliyan khil gayin",
+        "सुबह कई किरनें आईं, ओस की बूँदें चमकीं, सारी कलियाँ खिल गईं"
+      ],
+      "hints": [
+        "'कई' and 'सारी' mean many: which nouns must change?",
+        "Fix कीरन's matra, make 3 nouns plural, then match the verbs.",
+        "कई कि___ आईं, ओस की बूँ___ चमकीं, सारी कलि___ खिल गईं।",
+        "किरनें, बूँदें, कलियाँ, and verbs आईं, चमकीं, खिल गईं for many."
+      ],
+      "targetsMisconception": "c5-hindi-ch01-t01-mc-plural"
+    },
+    {
+      "topicId": "c5-hindi-ch01-t01",
+      "id": "c5-hindi-ch01-t01-x03",
+      "skillId": "c5-hindi-ch01-t01-s2",
+      "kind": "far_transfer",
+      "difficulty": 4,
+      "prompt_en": "In the poem, द्वार means a door. A school wall says: 'पढ़ाई सफलता का द्वार है।' What does द्वार mean in this sentence?",
+      "prompt_hi": "कविता में द्वार का अर्थ दरवाज़ा है। स्कूल की दीवार पर लिखा है: 'पढ़ाई सफलता का द्वार है।' इस वाक्य में द्वार का क्या अर्थ है?",
+      "answer": "रास्ता या शुरुआत — पढ़ाई से होकर ही सफलता तक पहुँचते हैं।",
+      "acceptable": [
+        "रास्ता",
+        "शुरुआत",
+        "सफलता तक पहुँचने का रास्ता",
+        "raasta",
+        "pravesh ka raasta",
+        "जहाँ से सफलता में प्रवेश होता है"
+      ],
+      "hints": [
+        "Is there a real door made of wood here?",
+        "A door is how you get into a place.",
+        "पढ़ाई से होकर ___ तक पहुँचते हैं, इसलिए वह द्वार है।",
+        "द्वार = रास्ता: जैसे दरवाज़े से अंदर जाते हैं, पढ़ाई से सफलता तक।"
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c7-english-ch01-t01",
+      "id": "c7-english-ch01-t01-x01",
+      "skillId": "c7-english-ch01-t01-s1",
+      "kind": "near_transfer",
+      "difficulty": 5,
+      "prompt_en": "Read: 'Tanvi kept her hand down when the teacher asked who knew the answer. At home she wrote it in her notebook 3 times. Next day, before anyone else, she raised her hand.' How did Tanvi's feeling change, and which clue shows it?",
+      "prompt_hi": "Padho: 'Tanvi kept her hand down when the teacher asked who knew the answer. At home she wrote it in her notebook 3 times. Next day, before anyone else, she raised her hand.' Tanvi ki feeling kaise badli, aur kaunsa clue ye dikhata hai?",
+      "answer": "From shy or unsure to confident; she raised her hand first the next day.",
+      "acceptable": [
+        "from nervous to confident, she raised her hand before anyone else",
+        "shy se confident, kyunki next day sabse pehle haath uthaya",
+        "unsure to brave; raising her hand first",
+        "hesitant to confident"
+      ],
+      "hints": [
+        "What does keeping a hand down tell you about a person?",
+        "Compare her first action with her last action.",
+        "At first she felt ___; at the end she felt ___.",
+        "Shy to confident: the clue is raising her hand before anyone else."
+      ],
+      "targetsMisconception": "c7-english-ch01-t01-m-only-stated-feelings"
+    },
+    {
+      "topicId": "c7-english-ch01-t01",
+      "id": "c7-english-ch01-t01-x02",
+      "skillId": "c7-english-ch01-t01-s3",
+      "kind": "contrast",
+      "difficulty": 5,
+      "prompt_en": "From the sentence 'Ravi broke the window', make 2 questions: one asking who did it, and one asking what Ravi broke.",
+      "prompt_hi": "'Ravi broke the window' se 2 sawaal banao: ek jo pooche kisne kiya, aur ek jo pooche Ravi ne kya toda.",
+      "answer": "Who broke the window? What did Ravi break?",
+      "acceptable": [
+        "Who broke the window? / What did Ravi break?",
+        "who broke the window, what did ravi break"
+      ],
+      "hints": [
+        "When 'who' is the doer, does it need did?",
+        "Asking about the doer keeps statement order; asking the object needs did.",
+        "Who ___ the window? What ___ Ravi ___?",
+        "Who broke the window? What did Ravi break? After did, use base form."
+      ],
+      "targetsMisconception": "c7-english-ch01-t01-m-no-inversion"
+    },
+    {
+      "topicId": "c7-english-ch01-t01",
+      "id": "c7-english-ch01-t01-x03",
+      "skillId": "c7-english-ch01-t01-s4",
+      "kind": "near_transfer",
+      "difficulty": 4,
+      "prompt_en": "Fill each blank with a form of 'curious': 'Asha looked ___ at the old map. Her ___ took her to the library, where she found a ___ fact about her town.'",
+      "prompt_hi": "Har blank mein 'curious' ka sahi form bharo: 'Asha looked ___ at the old map. Her ___ took her to the library, where she found a ___ fact about her town.'",
+      "answer": "curiously, curiosity, curious",
+      "acceptable": [
+        "curiously; curiosity; curious",
+        "curiously curiosity curious"
+      ],
+      "hints": [
+        "Which blank tells how she looked, which names a thing?",
+        "Verb needs an adverb, 'Her' needs a noun, 'fact' needs an adjective.",
+        "looked ___ly; her curio___; a ___ fact.",
+        "Curiously (how), curiosity (thing), curious (describes fact)."
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c7-english-ch05-t01",
+      "id": "c7-english-ch05-t01-x01",
+      "skillId": "c7-english-ch05-t01-s2",
+      "kind": "practice",
+      "difficulty": 5,
+      "prompt_en": "Read: 'A girl from Jaipur named Tara / Rode a camel up the stair; / She painted the moon with butter / And combed the wind's long hair.' What is the rhyme scheme?",
+      "prompt_hi": "Padho: 'A girl from Jaipur named Tara / Rode a camel up the stair; / She painted the moon with butter / And combed the wind's long hair.' Iska rhyme scheme kya hai?",
+      "answer": "ABCB",
+      "acceptable": [
+        "A B C B",
+        "abcb"
+      ],
+      "hints": [
+        "Say the 4 end words aloud. Which ones sound alike?",
+        "Give a new letter to every new end sound.",
+        "Tara = A, stair = B, butter = ___, hair = ___.",
+        "ABCB: only stair and hair rhyme; Tara and butter are new sounds."
+      ],
+      "targetsMisconception": "c7-english-ch05-t01-m-scheme-always-aabb"
+    },
+    {
+      "topicId": "c7-english-ch05-t01",
+      "id": "c7-english-ch05-t01-x02",
+      "skillId": "c7-english-ch05-t01-s3",
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "Line P: 'He walked to work upon his hands.' Line Q: 'He drank a whole river before lunch.' Which line is funny because of an upside-down action, and which because of exaggeration?",
+      "prompt_hi": "Line P: 'He walked to work upon his hands.' Line Q: 'He drank a whole river before lunch.' Kaunsi line ulta kaam (upside-down action) se funny hai, aur kaunsi exaggeration se?",
+      "answer": "P is upside-down action; Q is exaggeration.",
+      "acceptable": [
+        "P upside-down, Q exaggeration",
+        "P ulta kaam, Q exaggeration",
+        "line P upside down and line Q exaggeration"
+      ],
+      "hints": [
+        "What should a man normally walk on?",
+        "One line flips the normal; one makes something impossibly big.",
+        "P flips ___ and hands; Q makes drinking far too ___.",
+        "P: upside-down (hands for feet). Q: exaggeration (a whole river)."
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c7-english-ch05-t01",
+      "id": "c7-english-ch05-t01-x03",
+      "skillId": "c7-english-ch05-t01-s4",
+      "kind": "error_spot",
+      "difficulty": 5,
+      "prompt_en": "Find and fix the 2 mistakes: 'Kabir sang good at the mela, then ran fastly to catch the last bus.'",
+      "prompt_hi": "2 galtiyan dhoondho aur theek karo: 'Kabir sang good at the mela, then ran fastly to catch the last bus.'",
+      "answer": "Kabir sang well at the mela, then ran fast to catch the last bus.",
+      "acceptable": [
+        "well and fast",
+        "sang well, ran fast",
+        "good → well, fastly → fast"
+      ],
+      "hints": [
+        "Both words describe actions. Are they the right forms?",
+        "Good's adverb is irregular; fast is already an adverb.",
+        "Kabir sang ___ and ran ___.",
+        "Sang well, ran fast: 'well' is good's adverb; 'fastly' is not a word."
+      ],
+      "targetsMisconception": "c7-english-ch05-t01-m-adj-for-adv"
+    },
+    {
+      "topicId": "c7-hindi-ch04-t01",
+      "id": "c7-hindi-ch04-t01-x01",
+      "skillId": "c7-hindi-ch04-t01-s1",
+      "kind": "why",
+      "difficulty": 5,
+      "prompt_en": "In a Jaipur colony, all courtyards and lanes were made pakka (cement). Now the lanes flood every monsoon, and in summer borewells dry up. What one cause explains both?",
+      "prompt_hi": "जयपुर की एक कॉलोनी में सारे आँगन और गलियाँ पक्की (सीमेंट की) कर दी गईं। अब हर बारिश में गलियों में पानी भर जाता है और गर्मी में बोरवेल सूख जाते हैं। दोनों का एक ही कारण क्या है?",
+      "answer": "बारिश का पानी पक्की ज़मीन में रिसकर नीचे नहीं जाता, बह जाता है, इसलिए भूजल नहीं भरता।",
+      "acceptable": [
+        "पानी ज़मीन में नहीं उतरता, बह जाता है",
+        "बारिश का पानी रोका-सँजोया नहीं गया",
+        "paani zameen mein nahi rista, beh jaata hai",
+        "सीमेंट से पानी भूजल तक नहीं पहुँचता"
+      ],
+      "hints": [
+        "Where can rainwater go when every surface is cement?",
+        "Flood and drought here come from the same careless handling of water.",
+        "पानी ज़मीन में ___ नहीं, इसलिए ऊपर बाढ़ और नीचे भूजल ___।",
+        "पानी रिसता नहीं, बह जाता है: बारिश में बाढ़, गर्मी में भूजल खाली।"
+      ],
+      "targetsMisconception": "c7-hindi-ch04-t01-mc-flood-drought"
+    },
+    {
+      "topicId": "c7-hindi-ch04-t01",
+      "id": "c7-hindi-ch04-t01-x02",
+      "skillId": "c7-hindi-ch04-t01-s2",
+      "kind": "far_transfer",
+      "difficulty": 5,
+      "prompt_en": "Each year a village takes 100 units of water out of the ground, but only 60 units of rain soak back in. After 5 years, how much has its groundwater fallen? Which comparison from the lesson fits?",
+      "prompt_hi": "एक गाँव हर साल ज़मीन से 100 इकाई पानी निकालता है, पर बारिश का केवल 60 इकाई पानी वापस ज़मीन में जाता है। 5 साल बाद भूजल कितना घट गया? पाठ की कौन-सी तुलना यहाँ ठीक बैठती है?",
+      "answer": "200 इकाई कम हुआ; गुल्लक की तुलना — जितना डालो उससे ज़्यादा निकालो तो गुल्लक खाली होती जाती है।",
+      "acceptable": [
+        "200 इकाई, गुल्लक",
+        "200 units, gullak",
+        "200, गुल्लक वाली तुलना",
+        "200 इकाई घटा, धरती गुल्लक जैसी है"
+      ],
+      "hints": [
+        "How much more goes out than comes in each year?",
+        "Find the yearly gap, then multiply by the years.",
+        "हर साल (100 − 60) = ___; 5 साल में ___; तुलना: ___।",
+        "40 × 5 = 200 इकाई कम; गुल्लक से डालने से ज़्यादा निकालना।"
+      ],
+      "targetsMisconception": "c7-hindi-ch04-t01-mc-tap-endless"
+    },
+    {
+      "topicId": "c7-hindi-ch04-t01",
+      "id": "c7-hindi-ch04-t01-x03",
+      "skillId": "c7-hindi-ch04-t01-s3",
+      "kind": "error_spot",
+      "difficulty": 5,
+      "prompt_en": "Fix the wrong words: 'गाँव में बाड़ आई तो खेत की बाढ़ टूट गई; गर्मी में जलचक्र इतना नीचे चला गया कि हैंडपंप सूख गए।'",
+      "prompt_hi": "ग़लत शब्द ठीक करो: 'गाँव में बाड़ आई तो खेत की बाढ़ टूट गई; गर्मी में जलचक्र इतना नीचे चला गया कि हैंडपंप सूख गए।'",
+      "answer": "गाँव में बाढ़ आई तो खेत की बाड़ टूट गई; गर्मी में भूजल इतना नीचे चला गया कि हैंडपंप सूख गए।",
+      "acceptable": [
+        "बाड़→बाढ़, बाढ़→बाड़, जलचक्र→भूजल",
+        "baadh aur baad ki jagah badlo, jalchakra ki jagah bhoojal",
+        "बाढ़ आई, बाड़ टूटी, भूजल नीचे गया"
+      ],
+      "hints": [
+        "Which word means flood, and which means fence?",
+        "Also ask: what lies under the ground and feeds handpumps?",
+        "गाँव में बा__ आई, खेत की बा__ टूटी, ___ नीचे गया।",
+        "बाढ़ (flood), बाड़ (fence), भूजल (ज़मीन के नीचे का पानी)।"
+      ],
+      "targetsMisconception": "c7-hindi-ch04-t01-mc-baadh-spelling"
+    },
+    {
+      "topicId": "c7-hindi-ch05-t01",
+      "id": "c7-hindi-ch05-t01-x01",
+      "skillId": "c7-hindi-ch05-t01-s2",
+      "kind": "far_transfer",
+      "difficulty": 5,
+      "prompt_en": "Read: 'मोहन ने सोचा, मामा की शादी में हफ़्ते भर मौज होगी। वहाँ दिनभर कुर्सियाँ ढोनी पड़ीं। लौटकर बोला, अगली बार घर रहूँगा।' How did Mohan's feeling change, and how is he like the narrator of 'नहीं होना बीमार'?",
+      "prompt_hi": "पढ़ो: 'मोहन ने सोचा, मामा की शादी में हफ़्ते भर मौज होगी। वहाँ दिनभर कुर्सियाँ ढोनी पड़ीं। लौटकर बोला, अगली बार घर रहूँगा।' मोहन की भावना कैसे बदली, और वह 'नहीं होना बीमार' के कथावाचक जैसा कैसे है?",
+      "answer": "उत्साह से निराशा/पछतावे में बदली; दोनों ने मज़े की कल्पना की, पर असलियत उलटी निकली, तो इच्छा बदल गई।",
+      "acceptable": [
+        "ख़ुशी से निराशा; सोचा कुछ, हुआ कुछ और",
+        "excited se disappointed, dono ki soch aur asliyat alag nikli",
+        "उम्मीद से पछतावा; कल्पना और असलियत में फ़र्क़"
+      ],
+      "hints": [
+        "What did Mohan expect, and what did he get?",
+        "Compare expectation with reality, for Mohan and for the narrator.",
+        "पहले ___ था, बाद में ___; दोनों में सोचा और हुआ अलग।",
+        "उत्साह से निराशा; दोनों की कल्पित मौज असल में तकलीफ़ निकली।"
+      ],
+      "targetsMisconception": null
+    },
+    {
+      "topicId": "c7-hindi-ch05-t01",
+      "id": "c7-hindi-ch05-t01-x02",
+      "skillId": "c7-hindi-ch05-t01-s3",
+      "kind": "contrast",
+      "difficulty": 4,
+      "prompt_en": "Fill each blank with होशियार/होशियारी or सुस्त/सुस्ती: 'नेहा बहुत ___ है; उसकी ___ सब जानते हैं, पर ___ के कारण वह दौड़ हार गई।'",
+      "prompt_hi": "हर ख़ाली जगह में होशियार/होशियारी या सुस्त/सुस्ती भरो: 'नेहा बहुत ___ है; उसकी ___ सब जानते हैं, पर ___ के कारण वह दौड़ हार गई।'",
+      "answer": "होशियार, होशियारी, सुस्ती",
+      "acceptable": [
+        "होशियार; होशियारी; सुस्ती",
+        "hoshiyaar, hoshiyaari, susti"
+      ],
+      "hints": [
+        "Which blank says what Neha is like, which names a thing?",
+        "Like बीमार → बीमारी: -ई makes the noun.",
+        "बहुत ___ है (कैसी?); उसकी ___ (क्या?); ___ के कारण (क्या?)।",
+        "होशियार (विशेषण), होशियारी और सुस्ती (भाववाचक संज्ञा, -ई से)।"
+      ],
+      "targetsMisconception": "c7-hindi-ch05-t01-mc-bhaav-class"
+    },
+    {
+      "topicId": "c7-hindi-ch05-t01",
+      "id": "c7-hindi-ch05-t01-x03",
+      "skillId": "c7-hindi-ch05-t01-s2",
+      "kind": "error_spot",
+      "difficulty": 5,
+      "prompt_en": "A friend says: 'The title नहीं होना बीमार is wrong, because the story is about a boy who wants to fall ill.' What is wrong with this, in one sentence?",
+      "prompt_hi": "एक दोस्त कहता है: 'शीर्षक नहीं होना बीमार ग़लत है, क्योंकि कहानी तो बीमार होना चाहने वाले लड़के की है।' इसमें क्या ग़लत है, एक वाक्य में बताओ।",
+      "answer": "शीर्षक कथावाचक का आख़िरी फ़ैसला बताता है: बीमारी की तकलीफ़ें देखकर उसकी इच्छा बदल गई, इसलिए अब वह बीमार नहीं होना चाहता।",
+      "acceptable": [
+        "उसकी इच्छा अंत में बदल गई, शीर्षक अंत की सीख है",
+        "shuru mein chahta tha par ant mein faisla kiya nahi hona beemar",
+        "शीर्षक उसकी बदली हुई इच्छा बताता है"
+      ],
+      "hints": [
+        "Does the boy want the same thing at the end?",
+        "A title can tell the ending lesson, not the opening wish.",
+        "शुरुआत में ___ चाहता था, पर अंत में ___।",
+        "शीर्षक अंतिम फ़ैसला है: तकलीफ़ें देखकर उसकी इच्छा उलट गई।"
+      ],
+      "targetsMisconception": "c7-hindi-ch05-t01-mc-illness-fun"
+    }
+  ]
+}

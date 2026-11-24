@@ -45,7 +45,7 @@ test("B06: Kaksha's Finish goes Home; flag off keeps today's picker for a 2-chil
 
 test("B02: Kaksha's Hello says what happens next; flag off keeps today's line", async () => {
   const hello = read("src/child/screens/Hello.tsx");
-  assert.match(hello, /young \? t\("storyStart"\) : kakshaEnabled\(\(me as \{ ui\?: \{ kaksha\?: boolean \} \}\)\.ui\?\.kaksha\) \? kt\("helloOlder"\) : t\("olderStart"\)/);
+  assert.match(hello, /young \? t\("storyStart"\) : kakshaEnabled\(\(me as \{ ui\?: \{ kaksha\?: boolean \} \}\)\.ui\?\.kaksha\) \? kt\("helloOlder", \{ T: rec\.name \}\) : t\("olderStart"\)/);
   const { KX } = await import("../src/ui-v3/kaksha/copy.ts");
   assert.doesNotMatch(KX.helloOlder.en, /already know|test|quiz|check what/i, "no promise of an assessment");
   assert.match(KX.helloOlder.en, /Nobody sees a score/);

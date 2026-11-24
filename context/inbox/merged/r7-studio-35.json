@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-held-board-v69-studio",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "Studio's half of main's v6.9 (director17). S10: the held board's split view is built only from the board's own parts (board-first altCall ownParts) — a bar cut into the live card's count key is left out, never drawn as an uncut '1 equal parts' bar, and no smaller example case is invented; no part left → the held board stands alone (c5-t01 e2: dens [4,8], key 8 → the quarters bar only; steering 14's sixths and sevenths keep both). S11: her picture line (altSay) says 'barabar' unless a whole is equal: false (an equal Cake had been 'alag-alag'), writes fractions as words (fracSay: ek-chauthai, ek-tihaai, 'do bata paanch'), never '(1/4)', ends with no stop (Brain ends it); a bars card's line view keeps an unnamed bar's scale (c5-t02: the 8-part '?' bar beside 1/4). A held turn draws only what the intent holds — a board prewarmed for the same intent is never drawn (pinned); reversal if director18 still shows an unsaid board: the seam refuses a board whose unit has no spoken part in the turn's line. Recording: heldBoard and artifact.layout = { split: false } | { split: true, panels: [held left, view right] }; Brain patch 019 records it as row.held.layout. forge-g2 play check: the steps that must happen (page ready, targets, advance) wait on readiness bounded by the check's deadline, not fixed 4-8 s caps. Pinned in tests/r8-held-board.test.mjs."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-held-board-v69-studio", "rel": "part_of", "dst": "dc-r7-held-board" },
+    { "src": "dc-r7-held-board-v69-studio", "rel": "inherits", "dst": "dc-r7-held-board-studio" },
+    { "src": "dc-r7-held-board-v69-studio", "rel": "constrains", "dst": "forge-g2-qa-gate" }
+  ]
+}

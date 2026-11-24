@@ -1,4 +1,4 @@
-// Content facade: topics, kits (verified file kit → cached mini-kit → generated mini-kit), id lookups,
+// Content facade: topics, kits (the verified file kit of each topic), id lookups,
 // and per-lesson kit PINNING.
 //
 // A lesson refers to its kit's item ids in every turn (activeItemId, the queue, evidence rows), so it must
@@ -10,12 +10,9 @@
 import { one, q } from "../db.js";
 import { getTopic, topicIdByPrefix } from "./curriculum.js";
 import { kitFromFile, kitIdIndex } from "./kits.js";
-import { cachedMiniKit, buildMiniKit } from "./minikit.js";
 
 export { getTopic, topicSequence } from "./curriculum.js";
 
-/** Mini-kits by topic id. File kits are not memoised here: kitFromFile re-checks mtime on each call. */
-const miniKits = new Map();
 /** Pinned kits by `${topicId}:${hash}` (bounded; asset_cache is the durable copy). */
 const pinned = new Map();
 const PINNED_MAX = 500;
@@ -37,19 +34,14 @@ function remember(key, kit) {
 }
 
 /**
- * The kit to START a lesson from (and for cross-lesson lookups). A verified file kit wins; otherwise a
- * cached mini-kit, otherwise one is generated when `generate` is true.
+ * The kit to START a lesson from (and for cross-lesson lookups): the verified file kit of the topic, or null. Every curriculum
+ * topic has one (tests/r7-audit-content-data.test.mjs), so nothing is generated: the on-the-fly mini-kit with model-written
+ * keys was removed in the audit of 2026-11-09 (CD-19). Callers may still pass { generate: false }; it has no effect.
  * @returns {Promise<import("../../shared/contracts").TopicKit | null>}
  */
-export async function getKit(topicId, { generate = true, trace } = {}) {
+export async function getKit(topicId) {
   const topic = getTopic(topicId);
-  if (!topic) return null;
-  const fileKit = kitFromFile(topic);
-  if (fileKit) return fileKit;
-  if (miniKits.has(topicId)) return miniKits.get(topicId);
-  const kit = (await cachedMiniKit(topic)) ?? (generate ? await buildMiniKit(topic, { trace }) : null);
-  if (kit) miniKits.set(topicId, kit);
-  return kit;
+  return topic ? kitFromFile(topic) : null;
 }
 
 /** Pin the kit a lesson starts on: kept in memory and written once to asset_cache, keyed by content hash. */
@@ -75,7 +67,7 @@ export async function pinnedKit(topicId, hash) {
   return body ? remember(key, body) : null;
 }
 
-/** Which topic a skill or misconception id belongs to (kit files first, then the mini-kit id prefix). */
+/** Which topic a skill or misconception id belongs to (kit files first, then the topic id the skill id starts with). */
 export function topicOf(id) {
   return kitIdIndex().get(id) ?? topicIdByPrefix(id);
 }

@@ -117,7 +117,7 @@ export async function speakStreamed(o) {
     } finally { ended = true; wakeConsumer?.(); }
   })();
 
-  let i = 0;
+  let i = 0, threw = false;
   try {
     const block = await cleared;
     if (block) { stopped = { why: block.why, clause: null }; ctl.abort(); }
@@ -134,8 +134,11 @@ export async function speakStreamed(o) {
       spoken.push(clause);
       i++;
     }
+  } catch (e) {
+    threw = true; // a synthesis error: the producer may be parked on a full queue, so it must be released (audit V-01)
+    throw e;
   } finally {
-    if (stopped || o.signal?.aborted) ctl.abort();
+    if (stopped || threw || o.signal?.aborted) ctl.abort();
     // a stopped reply does not wait for the model's stream to end (the caller aborts the model call with its own signal)
     if (!ctl.signal.aborted) await producer.catch(() => {}); else producer.catch(() => {});
     o.signal?.removeEventListener?.("abort", onAbort);

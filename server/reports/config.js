@@ -3,7 +3,9 @@
 // change alters what a parent reads (stored reports are keyed by it, so an operator re-render is a new row).
 
 /** Stored with every report; a template or rule change that alters parent text must bump it. */
-export const RENDER_VERSION = "pr-2";   // pr-2: delayed-success copy, no interest line, no-lesson header, dated re-checks only in the future
+export const RENDER_VERSION = "pr-5";   // pr-5: the term report (S14 Then → now, still learning)
+// was   // pr-4: S5 ways Taxila explained (monthly)
+// was   // pr-3: monthly cadence and its sections (S4, S6, S7, S9, S13, S16); weekly exam shape (S17)
 
 /**
  * The calibration gate (COMPREHENSION-ENGINE.md §7.1 K7: ≥ 0.9 delayed accuracy at 1 and 4 weeks, ECE ≤ 0.05,
@@ -12,7 +14,12 @@ export const RENDER_VERSION = "pr-2";   // pr-2: delayed-success copy, no intere
  */
 export const CALIBRATION = Object.freeze({ k7Passed: false });
 
-export const CADENCES = Object.freeze(["daily", "weekly"]);
+/**
+ * An open lesson with no engine row counts in a "so far" view for at most this long (audit LEARN-33: a lesson left open
+ * with no answer ran to "now" and added 5,760 minutes to the week by Friday). A lesson still running has rows soon.
+ */
+export const OPEN_SO_FAR_MAX_MIN = 60;
+export const CADENCES = Object.freeze(["daily", "weekly", "monthly", "term"]);
 export const LANGS = Object.freeze(["en", "hinglish", "hi"]);
 /** child.language_pref → report language. */
 export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish", hindi: "hi" });
@@ -23,12 +30,18 @@ export const LANG_OF_PREF = Object.freeze({ english: "en", hinglish: "hinglish",
  * Daily is pull-only in v1 (X11) and carries no home activity (PL6: at most one per week).
  */
 export const CAPS = Object.freeze({
-  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, body: 5 },
-  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, body: 5 },
+  daily: { strength: 1, row: 2, tricky: 1, interest: 0, home: 0, exam: 0, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, rest: 0, body: 5 },
+  // S15 (round 7 F): the routine-and-rest card, conditional, weekly and monthly only
+  weekly: { strength: 1, row: 2, tricky: 1, interest: 0, home: 1, exam: 1, hold: 0, hard: 0, curious: 0, routine: 0, next: 0, ways: 0, change: 0, still: 0, rest: 1, body: 5 },
+  // round 7 F (PARENT-REPORT §2, §9.2: one card per section): the monthly report in the app
+  monthly: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 0, still: 0, rest: 1, body: 20 },
+  // round 7 F batch R2 (PARENT-REPORT §2, §5 S14): the term learning story: the monthly sections over the term, plus
+  // Then → now (≤ 4 rows that passed RP-D6) and the still-learning line
+  term: { strength: 3, row: 6, tricky: 3, interest: 0, home: 1, exam: 0, hold: 1, hard: 1, curious: 1, routine: 1, next: 1, ways: 1, change: 4, still: 1, rest: 0, body: 26 },
 });
 
 /** Spoken-script budgets (PARENT-REPORT §9.1 weekly 60-90 s) at ~2.3 spoken words/s [U]. Over budget → throw. */
-export const VOICE_WORDS = Object.freeze({ daily: 110, weekly: 200 });
+export const VOICE_WORDS = Object.freeze({ daily: 110, weekly: 200, monthly: 200, term: 260 });
 /** And never longer than one /api/tts request takes (server/routes/tts.js MAX_TTS_CHARS), so speech is never cut. */
 export const VOICE_CHARS = 1200;
 
@@ -60,4 +73,26 @@ export const PRICE_MICRO_USD = Object.freeze({ "taxila-brain": { in: 4, out: 20 
  * 25k µ$ and a weekly one under 40k with room for the fast fallback; a failed call is charged its worst case.
  * Cost per child-month ≈ per-report cost × (A active days + 4.3 letters); A is not measured on real families.
  */
-export const JOB_BUDGET = Object.freeze({ daily: 25_000, weekly: 40_000 });
+export const JOB_BUDGET = Object.freeze({ daily: 25_000, weekly: 40_000, monthly: 40_000, term: 40_000 });
+
+// ───────────── round 7 F: monthly sections (PARENT-REPORT §5) [U] ─────────────
+/** S4: a check "after a gap" = an attempt whose previous contact with the skill was at least this many days earlier. */
+export const HOLD_GAP_DAYS = 7;
+/** S4 L0 line needs this many such checks; fewer (≥ 1) is the "still learning how it holds up" line. */
+export const HOLD_MIN_N = 3;
+/** S6 needs this many scored questions in the month before any line about hints. */
+export const HARD_MIN_N = 5;
+/** S9 needs this many lessons in the month. */
+export const ROUTINE_MIN_LESSONS = 2;
+/** S5 needs this many explain_format decisions in the month (one lesson never reads as a pattern) [U]. */
+export const WAYS_MIN_N = 4;
+
+// ───────────── round 7 F batch R2: the term report, S14 Then → now (PARENT-REPORT §4.3 RP-D6) [U] ─────────────
+/** A change row compares the term's first month that had this many scored first tries on a skill with its last such month. */
+export const CHANGE_MIN_N = 10;
+/** The two months are at least this far apart (RP-D6 "≥ 2 months apart"). */
+export const CHANGE_MIN_MONTHS = 2;
+/** Magnitude floor: the first-try rate rose by at least this much (the pre-declared direction is UP; a fall is never a row). */
+export const CHANGE_MIN_DELTA = 0.2;
+/** P(rate now > rate then) under independent Beta(1+k, 1+n−k) posteriors: ≥ .95, or ≥ .975 with more than 4 candidates. */
+export const CHANGE_P = 0.95, CHANGE_P_MANY = 0.975;

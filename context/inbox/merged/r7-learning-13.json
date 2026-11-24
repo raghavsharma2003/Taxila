@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-explain-format-allocator",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-how-this-child-learns): the explain format of each skill's first explain is chosen by a POPULATION allocator (server/learner/formats.js). It uses Thompson sampling over the kit's eligible formats (primary + secondary; F5 only for T1/T2), per topic type x band, with a 0.2 exploration floor. It is seeded by session:skill, so replay is exact. The Monte Carlo propensity is logged to decision_record (point explain_format, options {eligible, skillId, topicType, band}). A night job format.join:{child}:{day} scores each decision by the first scored, unaided, non-NA answer on that skill after it in the same lesson (first try = 1, else 0; none = no outcome). The scores are added to format_posterior, which never holds a child id. The Director wiring is Brain's (patch 008). No parent or child line says how a child learns best; per-child lines are counts of what Taxila did, hedged until real data exists (main 2026-11-04). Reverse if: the population posteriors stay flat after enough lessons (then the primary format is as good as any and the floor costs nothing to drop), or per-band cells are too sparse (then pool bands)."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

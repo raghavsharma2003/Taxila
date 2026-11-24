@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-opus-transport",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 (voice-tts-transport, QA D12): her speech travels as Opus on every link where the device can decode it. The server encodes at the frame writer (frames.js FRAME.opus = 6, one raw 20 ms packet, 24 kHz mono, ~24 kbps ≈ 3 KB/s against PCM's 48 and ADPCM's 12), so the cache, DragonHD, mini-tts and every mark on the PCM sample clock are unchanged; the last packet is zero-padded before the end frame, so the samples out are never fewer than the samples in. The device asks `codec=opus` first only where WebCodecs AudioDecoder supports 24 kHz mono Opus, with `adpcm` after it on a slow link; the server serves the first codec it can (opus needs the lazily loaded opusscript WASM encoder; until it loads, or with TAXILA_TTS_OPUS=off, the request gets ADPCM or PCM). A decoder error yields 20 ms of silence per packet, never a stall. Not yet measured on phones. Reverse (TAXILA_TTS_OPUS=off, or `?tts=adpcm|pcm` on a device) if live lessons show first-sound later on Opus than on PCM/ADPCM at the same link, or audible artefacts on her voice."
+  },
+  {
+   "id": "ms-r7-voice-opus-transport",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Opus TTS transport, model-free, 2026-11-05. CPU (evals/tts-transport/cpu.mjs, n = 8,742 20 ms frames of real teacher speech from the bake, one thread, Xeon 2.8 GHz, Node 22): encode 0.41 ms p50 / 0.68 ms p95 / 0.80 ms p99 per 20 ms frame, so ~47 real-time streams per core, ~23 per 0.5 vCPU; 2.9 KB/s on the wire against PCM's 48 KB/s. First audio (evals/tts-transport/first-audio.mjs, real Chromium WebCodecs, CDP throttling, a local server through the shipped frameWriter, no Azure call; time to the first 100 ms of decoded PCM and to the whole line, p50). 12 short lines (75 KB PCM): Slow 3G PCM 494 / ADPCM 437 / Opus 432 ms first, 1,843 / 759 / 522 ms whole; Fast 3G 181 / 168 / 158 first; 4G 68 / 67 / 67 first. 10 QA-D12-sized lines (693 KB PCM): Slow 3G first 496 / 436 / 432 ms, whole 12,770 / 3,513 / 1,228 ms (p90 24,840 / 6,558 / 2,073); Fast 3G whole 3,177 / 919 / 363 ms; 4G first 69 / 67 / 67, whole 609 / 204 / 360 ms (Opus paces its encoding, ~200 ms of audio per slice, so on a fast link a 14 s line finishes later than ADPCM while still arriving far ahead of real time). An earlier cut that encoded each pushed chunk synchronously sent its first byte only after the whole line was encoded (4G first audio 325 ms, and 199 ms of event loop blocked per 14 s line); the shipped writer always yields between slices. Not measured on real phones or live Azure lines."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-opus-transport",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-opus-transport",
+   "rel": "measured_by",
+   "dst": "ms-r7-voice-opus-transport"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-voice-opus-transport` — Opus for her speech on phones, encoded at the frame writer (2026-11-05)\n\nQA D12 measured her audio at 398–497 KB a line as raw PCM, and on Slow 3G 'Asha is talking' ran about 21 s past her last caption. Round 5 added IMA ADPCM (4:1, lossy) on ≤3g only.\n\nEvery server stage of her audio is PCM: the asset cache, both engines, viseme and word marks, the turn-audio fold, continuers. Switching each engine to Azure's own Ogg/Opus output would have meant two cache formats and re-timing every mark. So the encoding happens at the frame writer, where ADPCM already is, and the device decodes with WebCodecs, needing no Ogg demuxer because each frame is one raw packet.\n\nThe encoder is `opusscript` (MIT, libopus in WASM). Adding it is a dependency patch request to main; until it is installed the server simply never offers Opus. Tests: tests/r7-voice-opus.test.mjs, using an identity encoder and decoder to test framing, order and the sample clock.\n",
+  "measurements": "## `ms-r7-voice-opus-transport` — Opus transport: CPU and first audio (2026-11-05)\n\nMain's condition 2, measured before shipping. CPU: 0.41 ms p50, 0.68 ms p95 per 20 ms frame (n = 8,742 frames of real speech), ~23 real-time streams per 0.5 vCPU. First audio, throttled real Chromium: Opus matches or beats ADPCM on every profile (Slow 3G 432 vs 436 ms), and delivers a QA-D12-sized line 3× faster than ADPCM and 10× faster than PCM on Slow 3G (1.2 s vs 3.5 s vs 12.8 s). Found and fixed during the run: the first cut encoded synchronously, which held the first byte ~300 ms and blocked the event loop. Files: evals/tts-transport/results/{cpu,first-audio,first-audio-long}-2026-11-05.json.\n"
+ }
+}

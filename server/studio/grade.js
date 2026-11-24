@@ -167,20 +167,30 @@ export function studioEvidenceEvent(c) {
 export async function writeStudioEvidence(child, ev) {
   if (!ev) return { written: false, why: "no_event" };
   try {
-    const [{ tx }, { loadLive, commitLive, LIVE_FOLD_CTX }, { fuseEvidence, beliefFor }, W, { canWrite }, { facetStmts }] = await Promise.all([
+    const [{ tx, GUARD_FAILED }, { loadLive, commitLive, LIVE_FOLD_CTX, legacySkillState }, { fuseEvidence, beliefFor }, W, { canWrite }, { facetStmts }] = await Promise.all([
       import("../db.js"), import("../learner/live.js"), import("../comprehension/index.js"), import("../learner/writer.js"), import("../learner/mode.js"), import("../comprehension/store.js")]);
     if (!canWrite(child, "kt")) return { written: false, why: "mode" };
-    const live = await loadLive(child);
-    if (live.state.ledger.seen[ev.id] !== undefined || live.state.comp?.seen?.[ev.id]) return { written: false, why: "duplicate" };
-    const after = fuseEvidence(live.state, [ev], LIVE_FOLD_CTX);
-    const stmts = W.ledgerStmts(child, live.state.ledger, after.ledger, [ev]);
-    const moved = Object.keys(after.comp.skills).filter((id) => JSON.stringify(live.state.comp.skills[id]) !== JSON.stringify(after.comp.skills[id])).sort();
-    const facet = facetStmts(child, moved.map((id) => beliefFor(id, { ...after, now: Date.now() })));
-    const all = [W.lockStmt(child.id), W.modeGuardStmt(child.id, child.legal_mode), ...stmts, ...facet];
-    const out = await tx(all.map(({ layer: _l, rows: _r, ...x }) => x));
-    const seqs = stmts.map((st, i) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? out[i + 2]?.[0]?.seq ?? null : undefined)).filter((x) => x !== undefined);
-    commitLive(child, live.maxSeq, after, seqs);
-    return { written: seqs.some((s) => s != null) };
+    // fold, then commit only if nothing was written since the fold read (seq guard after the lock); else read and fold
+    // again; and project the changed skills into skill_state as the turn does (audit LEARN-26, Studio's half)
+    for (let attempt = 1; ; attempt++) {
+      const live = await loadLive(child);
+      if (live.state.ledger.seen[ev.id] !== undefined || live.state.comp?.seen?.[ev.id]) return { written: false, why: "duplicate" };
+      const after = fuseEvidence(live.state, [ev], LIVE_FOLD_CTX);
+      const stmts = W.ledgerStmts(child, live.state.ledger, after.ledger, [ev]);
+      const moved = Object.keys(after.comp.skills).filter((id) => JSON.stringify(live.state.comp.skills[id]) !== JSON.stringify(after.comp.skills[id])).sort();
+      const now = Date.now();
+      const facet = facetStmts(child, moved.map((id) => beliefFor(id, { ...after, now })));
+      const all = [W.lockStmt(child.id), W.modeGuardStmt(child.id, child.legal_mode), W.seqGuardStmt(child.id, live.maxSeq), ...stmts,
+        ...W.projectionStmts(child, live.state.ledger, after.ledger, now, legacySkillState), ...facet];
+      let out;
+      try { out = await tx(all.map(({ layer: _l, rows: _r, ...x }) => x)); } catch (e) {
+        if (e?.code === GUARD_FAILED && attempt < W.FOLD_RETRIES) continue;
+        throw e;
+      }
+      const seqs = stmts.map((st, i) => (/^with ins as \(insert into kt_evidence/.test(st.text) ? out[i + 3]?.[0]?.seq ?? null : undefined)).filter((x) => x !== undefined);
+      commitLive(child, live.maxSeq, after, seqs);
+      return { written: seqs.some((s) => s != null) };
+    }
   } catch (e) {
     console.warn("[studio] evidence write failed:", String(e?.message ?? e).slice(0, 120));
     return { written: false, why: "error" };

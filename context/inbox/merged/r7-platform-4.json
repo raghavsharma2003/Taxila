@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "rj-r7-create-copies-all-secrets",
+      "kind": "rejected",
+      "at": "2026-11-04",
+      "title": "Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads."
+    },
+    {
+      "id": "ms-r7-isolation-debt-cleared-2026-11-04",
+      "kind": "measurement",
+      "at": "2026-11-04",
+      "title": "Module-level env and global writes in tests/*.test.mjs: 21 at int/r6 5a5b2f45 when tests/test-isolation.test.mjs landed (Brain 11 TAXILA_R7_* lines in 8 files, Forge 7 in 3 files, 3 module-level globals). 2 after integration 3b (07185e93). 0 after integration 4 (6c3c3c95), and the known-debt list is now empty. Integration 4's single-process npm test: 4,265 tests, 0 fail (main)."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-staging-test-db-only", "rel": "guarded_by", "dst": "rj-r7-create-copies-all-secrets" }
+  ]
+}

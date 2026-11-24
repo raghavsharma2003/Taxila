@@ -1,4 +1,5 @@
-// The beat-by-beat board (round 4 content, v2 note "draws while she talks"; flag TAXILA_BEAT_BOARD, default off).
+// The beat-by-beat board (round 4 content, v2 note "draws while she talks"; on by default since round 7 C1 item 5,
+// TAXILA_BEAT_BOARD=0 turns it off).
 //
 // SketchMind's strength is packaging, not a different mechanism (docs/research/round4/products/TEARDOWN.md): one idea per
 // beat, typed cards, every topic opening on a picture, a "checkpoint ahead" chip and beats-done progress. Taxila already
@@ -13,7 +14,7 @@
 //              the chip announces it. The check itself stays Taxila's covert, verified-key check (never a Yes/No card).
 //   picture    a skill's first board prefers a picture candidate (preferPicture: the order of the code boards)
 // Pure; never throws.
-export const beatBoardOn = () => process.env.TAXILA_BEAT_BOARD === "1" || process.env.TAXILA_BEAT_BOARD === "on";
+export const beatBoardOn = () => process.env.TAXILA_BEAT_BOARD !== "0" && process.env.TAXILA_BEAT_BOARD !== "off";
 export const CARD_KINDS = Object.freeze(["picture", "formula", "steps", "example", "takeaway"]);
 const STEPS_TEMPLATES = new Set(["column-op@1", "place-value@1"]);
 

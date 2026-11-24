@@ -1,0 +1,243 @@
+{
+ "solved": 234,
+ "agreed": 226,
+ "findings": [
+  {
+   "id": "c3-hindi-ch04-t01-i13",
+   "verdict": "acceptable_wrong",
+   "prompt_en": "Say 'चिड़िया'. Is the first sound short or long — does it take छोटी इ (ि) or बड़ी ई (ी)?",
+   "key": {
+    "answer": "छोटी इ (ि) — चिड़िया",
+    "acceptable": [
+     "छोटी इ",
+     "chhoti i",
+     "ि",
+     "छोटी",
+     "chhoti",
+     "छोटी वाली",
+     "चिड़िया"
+    ]
+   },
+   "mine": "छोटी इ (ि) — चि",
+   "why": "acceptable contains ‘चिड़िया’ — the very word the prompt tells the child to say. The question asks short vs long matra; a child who only repeats ‘चिड़िया’, or says ‘बड़ी ई — चिड़िया’, would match and be marked right."
+  },
+  {
+   "id": "c3-hindi-ch09-t01-i08",
+   "verdict": "acceptable_wrong",
+   "prompt_en": "Find the naming words in: 'बच्चे टोकरी में फूल लाए'.",
+   "key": {
+    "answer": "बच्चे, टोकरी, फूल",
+    "acceptable": [
+     "bachche tokri phool",
+     "बच्चे टोकरी फूल",
+     "तीन शब्द"
+    ]
+   },
+   "mine": "बच्चे, टोकरी, फूल",
+   "why": "acceptable contains ‘तीन शब्द’. The task is to find the nouns (बच्चे, टोकरी, फूल); ‘तीन शब्द’ names none of them and is not an answer."
+  },
+  {
+   "id": "c8-hindi-ch05-t01-i08",
+   "verdict": "acceptable_wrong",
+   "prompt_en": "Finish the doha: 'काल करै सो आज कर, आज करै सो ___'.",
+   "key": {
+    "answer": "अब",
+    "acceptable": [
+     "ab",
+     "abhi",
+     "अभी"
+    ]
+   },
+   "mine": "अब",
+   "why": "acceptable contains ‘अभी’ / ‘abhi’. The item is ‘finish the doha’; Kabir's line is ‘आज करै सो अब’ (rhymes with ‘बहुरि करेगा कब’). ‘अभी’ is a paraphrase, not the doha's word, and breaks the rhyme/metre."
+  },
+  {
+   "id": "DIAG:c3-hindi-ch07-t01-mc-tra-split",
+   "verdict": "question_flawed",
+   "prompt_en": "{friendF} wrote \"प्रिय ___ सारा\" in the letter — which spelling of the word for friend is right?",
+   "key": {
+    "answer": "मित्र",
+    "acceptable": null
+   },
+   "mine": "मित्र",
+   "why": "prompt_en contains the raw template token ‘{friendF}’ while prompt_hi has the hard-coded name ‘रिया’. Either the English is shown unrendered, or it is rendered with a name that can differ from रिया, so the two languages disagree. Key (मित्र) itself is right."
+  },
+  {
+   "id": "c6-hindi-ch06-t01-rl-h3",
+   "verdict": "question_flawed",
+   "prompt_en": "A student says, ‘मैं अपनी दीदी से प्रेरणा लेती हूँ।’ Retell this about {friendF}, without quoting her. Complete: ‘रिया कहती है कि ___ ___ दीदी से प्रेरणा लेती है।’",
+   "key": {
+    "answer": "वह अपनी",
+    "acceptable": [
+     "वह अपनी दीदी से प्रेरणा लेती है",
+     "रिया कहती है कि वह अपनी दीदी से प्रेरणा लेती है"
+    ]
+   },
+   "mine": "वह अपनी",
+   "why": "prompt_en says ‘Retell this about {friendF}’ (raw template token) but both prompts then hard-code ‘रिया कहती है कि …’. If {friendF} renders as any name other than रिया the English contradicts itself and the Hindi. Key (वह अपनी) is right."
+  },
+  {
+   "id": "c4-hindi-ch10-t01-i01",
+   "verdict": "solver_wrong",
+   "prompt_en": "In the poem, who brought the new camera?",
+   "key": {
+    "answer": "चाचा",
+    "acceptable": [
+     "चाचा",
+     "चाचाजी",
+     "chacha",
+     "uncle"
+    ]
+   },
+   "mine": "पापा (अनुमान)",
+   "why": "Text-dependent retrieval (poem not in prompt). I guessed पापा; key says चाचा. Could not verify the key without the textbook."
+  },
+  {
+   "id": "c4-hindi-ch09-t01-i06",
+   "verdict": "solver_wrong",
+   "prompt_en": "What did Laddoo Dada decide — what should the sweets do, and what should people do?",
+   "key": {
+    "answer": "मिठाइयाँ अपने में शक्कर कम करें; लोग जीभ पर नियंत्रण रखें, अति न करें, मेहनत करें और स्वस्थ रहें",
+    "acceptable": [
+     "शक्कर कम करें",
+     "जीभ पर नियंत्रण",
+     "अति न करें",
+     "shakkar kam karein",
+     "jeebh par niyantran"
+    ]
+   },
+   "mine": "सब मिठाइयाँ अपनी-अपनी जगह अच्छी हैं, उन्हें आपस में झगड़ना नहीं चाहिए/मिलकर रहना चाहिए; और लोगों को मिठाई सीमित मात्रा में खानी चाहिए (अनुमान)",
+   "why": "Text-dependent retrieval (story not in prompt). My guess did not match the key (sweets reduce sugar; people control the tongue, avoid excess). Could not verify the key without the text."
+  },
+  {
+   "id": "c4-hindi-ch12-t01-i07",
+   "verdict": "solver_wrong",
+   "prompt_en": "In the end, why did the king take back the punishment?",
+   "key": {
+    "answer": "तेनाली ने कहा कि उसके यहाँ सिर तभी मुँड़ाते हैं जब माता-पिता नहीं रहते, और अब राजा ही उसके माता-पिता जैसे हैं — राजा डर गए कि कहीं उन पर विपत्ति न आए",
+    "acceptable": [
+     "राजा डर गए",
+     "राजा ही माता-पिता हैं",
+     "raja dar gaye",
+     "raja hi mata-pita hain",
+     "the king got scared"
+    ]
+   },
+   "mine": "क्योंकि राजा को अपनी ग़लती/सच्चाई समझ आ गई (अनुमान)",
+   "why": "Text-dependent (Tenali Rama story not in prompt). I gave a generic guess; key is story-specific. Not verified against the text."
+  },
+  {
+   "id": "c4-hindi-ch07-t01-i02",
+   "verdict": "solver_wrong",
+   "prompt_en": "The king knew he would not live long. Whom was he looking for?",
+   "key": {
+    "answer": "अपने बेटे के लिए एक सलाहकार की",
+    "acceptable": [
+     "सलाहकार",
+     "बेटे के लिए सलाहकार",
+     "salaahkaar",
+     "salahkar",
+     "advisor"
+    ]
+   },
+   "mine": "अपने उत्तराधिकारी (अगले राजा) की",
+   "why": "Text-dependent. I guessed ‘successor’; key says an advisor for his son. Not verified against the text."
+  },
+  {
+   "id": "c4-hindi-ch11-t01-i05",
+   "verdict": "solver_wrong",
+   "prompt_en": "The last line of Madan's poem was made from whose name?",
+   "key": {
+    "answer": "धन्नू शाह — जिस आदमी ने उसे राजमहल का रास्ता बताया",
+    "acceptable": [
+     "धन्नू शाह",
+     "dhannu shah",
+     "धन्नू शाह के नाम से"
+    ]
+   },
+   "mine": "(अनुमान) किसी व्यक्ति के नाम से — पाठ के बिना पक्का नहीं",
+   "why": "Text-dependent; I could not answer without the story. Key: धन्नू शाह (consistent with key of c4-hindi-ch11-t01-i07, which also names धन्नू शाह)."
+  },
+  {
+   "id": "c2-hindi-ch16-t01-i03",
+   "verdict": "solver_wrong",
+   "prompt_en": "The helpers came one by one. Who came to help right after Bittu?",
+   "key": {
+    "answer": "कुत्ता",
+    "acceptable": [
+     "kutta",
+     "dog",
+     "मोती"
+    ]
+   },
+   "mine": "(story not supplied) unknown — cannot answer without the text",
+   "why": "Text-dependent; prompt gives no story, I could not answer. Key: कुत्ता (acceptable मोती). Not verified."
+  },
+  {
+   "id": "c2-hindi-ch02-t01-i02",
+   "verdict": "solver_wrong",
+   "prompt_en": "Remember the poem: 'Chhota-sa hai ghar mera...' Which line comes next?",
+   "key": {
+    "answer": "आँगन में है धूप का डेरा",
+    "acceptable": [
+     "aangan mein hai dhoop ka dera",
+     "angan me hai dhup ka dera",
+     "धूप का डेरा"
+    ]
+   },
+   "mine": "(poem's next line not supplied) cannot answer without the text",
+   "why": "Text-dependent; next line of the poem is not derivable from the prompt. Key: ‘आँगन में है धूप का डेरा’. Not verified."
+  },
+  {
+   "id": "c3-hindi-ch13-t01-i05",
+   "verdict": "solver_wrong",
+   "prompt_en": "What do you think the road looks like now, after many years?",
+   "key": {
+    "answer": "दोनों तरफ़ बड़े-बड़े बरगद, ठंडी छाया, चिड़ियाँ",
+    "acceptable": [
+     "हरी-भरी",
+     "hari bhari",
+     "छाया वाली",
+     "बड़े पेड़",
+     "पेड़ों से भरी",
+     "ठंडी"
+    ]
+   },
+   "mine": "open prediction: अब पक्की/चौड़ी, गाड़ियों-दुकानों वाली (या टूटी-फूटी) होगी",
+   "why": "‘Predict’ item whose key is story-specific (banyan-lined, shady road). Without the story my open prediction (paved/busy road) does not match; the acceptable list would reject any prediction that is not about trees/shade. Fine only if the story is always told first."
+  }
+ ],
+ "hinglish": [
+  {
+   "id": "DIAG:c2-hindi-ch17-t01-mc-nasal-drop",
+   "phrase": "बारिश की ‘ड्रॉप’ कौन-सी है?",
+   "why": "English ‘drop’ in Devanagari dropped into a class-2 Hindi spelling item; no teacher says ‘बारिश की ड्रॉप’. It is there only to avoid saying बूँद; ‘बारिश में आसमान से जो टपकती है, वह कौन-सी है?’ would do the same job."
+  }
+ ],
+ "level": [
+  {
+   "id": "c9-hindi-ch11-t01-i06",
+   "why": "Class 9: ‘रानी खूब लड़ा’ vs ‘रानी खूब लड़ी’ — basic gender agreement, class 2-4 level."
+  },
+  {
+   "id": "c9-hindi-ch03-t01-i14",
+   "why": "Class 9: विशेष/बिशेष, बहुत/वहुत — primary-level spelling (class 3-5)."
+  },
+  {
+   "id": "c9-hindi-ch05-t01-i10",
+   "why": "Class 9: write ‘samudra’ in Devanagari — primary-level task (only आख़िरी चट्टान has any difficulty)."
+  },
+  {
+   "id": "DIAG:c8-hindi-ch02-t01-mc-gender-gauraiya",
+   "why": "Class 8: ‘गौरैया … उड़ गई / गया / गए’ — class 3-4 gender agreement. (Same for DIAG:c8-hindi-ch08-t01-mc-naye-agreement and c8-hindi-ch08-t01-i06, नया/नए/नई.) May be intended as a diagnostic for second-language Hindi learners; flagging in case it is not."
+  }
+ ],
+ "other_notes": [
+  "No key_wrong found: all 54 MCQ keys match my blind answers, and every non-text-dependent open item agrees in substance.",
+  "The 8 disagreements are all items that need the NCERT text and do not supply it (listed as solver_wrong, keys unverified). Other text-dependent items where my answer from memory matched the key: c4 ch02 (snail), c4 ch11 i06/i07, c5 ch03 (चाँद का कुरता), c5 ch04, c6 ch13 (जगदीशचंद्र बसु), c8 ch04 (भारतेंदु), c8 ch06 (एक टोकरी भर मिट्टी), c8 ch09 (गिरिजाकुमार माथुर), c9 ch04 (यतींद्र मिश्र/लता), c9 ch08 (रैदास pairs), c9 ch09 (ख-ग-घ-क).",
+  "Internal inconsistency in class 3 ch11 (जादुई पिटारा): retrieval c3-hindi-ch11-t01-i02 keys the things coming out of the box as ‘कहानी, पहेली, गुड़िया, सहेली’ (no खेल in answer or acceptable), while c3-hindi-ch11-t01-i06 and DIAG:c3-hindi-ch11-t01-mc-literal-magic both say ‘कहानियाँ, पहेलियाँ और खेल निकलते हैं’. A child answering ‘खेल’ to i02 would be marked wrong. One of the two needs to follow the poem.",
+  "Two-part questions whose acceptable list takes a single part (matcher-dependent, not counted as findings): c3-hindi-ch16-t01-i03 accepts ‘vikram’ or ‘प्रज्ञान’ alone for ‘names of the lander and the rover’ (also cannot detect a swapped assignment); c3-hindi-ch15-t01-i06 accepts ‘utar’ / ‘north’ alone; c7-hindi-ch10-t01-i03 and c7-hindi-ch06-t01-i05 accept any one of the three/four glosses.",
+  "Picture-dependent items with no picture in the data: c1-hindi-ch09-t01-i11 (point to आलू), c2-hindi-ch15-t01-i06 (which animals pull the plough). Answerable from general knowledge, but the prompt says ‘look at the picture’.",
+  "Hindi spelling/matras in prompts and keys otherwise checked clean (नुक़्ता, चंद्रबिंदु, ज्ञ/क्ष, ड़/ढ़ all consistent); grammar terms (संज्ञा, व्यक्तिवाचक, भाववाचक, प्रत्यय, अनुप्रास, रूपक, उपमा, मानवीकरण, यति, छाप/टेक) are used correctly."
+ ]
+}

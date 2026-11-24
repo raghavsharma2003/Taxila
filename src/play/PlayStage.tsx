@@ -5,7 +5,7 @@
 // The host owns nothing about truth: the family's pure law runs in the PlayController for instant consequences; the
 // raw acts go up through onAct / onLevelEnd and the server re-grades them. Her micro-lines arrive as `caption` (the
 // server's bank pick) and are shown only at a play turn-point (never while a finger is down).
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type RefObject } from "react";
 import type { ArtId, Door, Lang, Moment, PlayActEnvelope, PlayLevel, PlayWorldFamily } from "../../shared/play.ts";
 import { FLOORS } from "../../shared/play.ts";
 import { shellLook, voltArt } from "./core/volt-art.ts";
@@ -19,6 +19,7 @@ import { sound } from "./core/sound.ts";
 import { say } from "./copy.ts";
 import { word, type WordKey } from "./engines/words.ts";
 import { parseVoice, pressesFor, type VoiceIntent } from "./core/voice.ts";
+import { setVoiceSink, type GameAct } from "./core/voiceSink.ts";
 import { PlayMap } from "./world/PlayMap.tsx";
 import { engineFor } from "./engines/registry.ts";
 import { detectTier, tierFacts } from "./engines/core3d/tier.ts";
@@ -51,6 +52,8 @@ export interface PlayStageProps {
   doors?: PlayDoor[] | null;
   onDoor?(d: PlayDoor): void;
   world?: PlayWorldFamily | null;
+  /** round 8 H: the child's "why this game" line (the server's text; display only), shown above the goal */
+  why?: string | null;
   onEvent?(e: PlayEvent): void;
   reducedMotion?: boolean;
   sound?: boolean;
@@ -78,6 +81,7 @@ export function PlayStage(props: PlayStageProps) {
   const { level, lang } = props;
   const art = useMemo(() => voltArt(props.art, level.family, shellLook()), [props.art, level.family]);
   const rootRef = useRef<HTMLDivElement>(null);
+  const keep = usePipKeep(rootRef);
   const worldRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<FamilyView | EngineView | null>(null);
   const stageRef = useRef<StageHandle | null>(null);
@@ -105,6 +109,8 @@ export function PlayStage(props: PlayStageProps) {
   const entry = useMemo(() => (props.engine === "2d" ? null : engineFor(level.family, level.mode, level.goal)), [level.family, level.mode, level.goal, props.engine]);
   const [render, setRender] = useState<{ kind: "2d" | "3d" | "wait"; why: string; tier?: PlayTier; mod?: EngineModule | null; mount?: typeof MountStage3D }>(() => ({ kind: entry ? "wait" : "2d", why: entry ? "loading" : "no engine" }));
   const engineIdRef = useRef<string | null>(null);
+  // round 8 follow-up B: the engine the mounted 3D stage runs (a family switch must remount, never relevel another engine)
+  const stageEngineRef = useRef<string | null>(null);
   useEffect(() => {
     if (!entry) { setRender((r) => (r.kind === "2d" ? r : { kind: "2d", why: "no engine" })); return; }
     if (render.kind === "3d" && engineIdRef.current === entry.id) return;   // the world persists across levels
@@ -153,13 +159,15 @@ export function PlayStage(props: PlayStageProps) {
     const stage3d = stageRef.current && "core" in stageRef.current ? (stageRef.current as Stage3DHandle) : null;
     const spec = specRef.current;
     if (render.kind === "3d" && render.mod && render.mount && spec) {
+      // a family switch: until THIS level's engine is loaded (or the 2D view is chosen), the old engine is never re-levelled
+      if (!entry || engineIdRef.current !== entry.id) return;
       const deps: EngineDeps = { level, ctl, lang, spec, changed };
-      if (stage3d && stage3d.engine.relevel) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
+      if (stage3d && stage3d.engine.relevel && stageEngineRef.current === entry.id) { try { stage3d.core.progress.set("level", level.levelId, { level: "start" }); stage3d.engine.relevel(deps); viewRef.current = stage3d.engine; if (props.debug) exposeDebug(stage3d, ctl, logic); changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null }); return; } catch { /* remount below */ } }
       stageRef.current?.dispose(); stageRef.current = null; viewRef.current = null;
       const h = render.mount(host, render.mod.create, deps, { tier: render.tier === "3d-lite" ? "3d-lite" : "3d", young, reducedMotion: props.reducedMotion, sound: props.sound, musicAllowed: musicRef.current === "on", preserveDrawing: !!props.preserveDrawing, seed: level.seed,
         onFail: (why) => { onEvent.current?.({ type: "fail3d", why }); setRender({ kind: "2d", why }); } });
       if (h) {
-        stageRef.current = h; viewRef.current = h.engine;
+        stageRef.current = h; viewRef.current = h.engine; stageEngineRef.current = entry.id;
         if (props.debug) exposeDebug(h, ctl, logic);
         changed(); onEvent.current?.({ type: "ready", engine: entry?.id ?? null });
         if (props.demo || spec.dress.teacherMove === "ghost-first") setTimeout(() => (viewRef.current as EngineView | null)?.demo?.(), 900);
@@ -173,7 +181,7 @@ export function PlayStage(props: PlayStageProps) {
     const make = viewFor(level.family, level.mode);
     if (!make) { onEvent.current?.({ type: "fail", why: "no_family" }); return; }
     let view: FamilyView | null = null;
-    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed }); return view; },
+    const stage = mountStage(host, (api) => { view = make(api, { level, ctl, lang, changed, verb: props.verb ?? "fire" }); return view; },
       { art, young, reducedMotion: props.reducedMotion, sound: props.sound, onFail: (why) => onEvent.current?.({ type: "fail", why }) });
     stageRef.current = stage; viewRef.current = view;
     changed();
@@ -236,18 +244,29 @@ export function PlayStage(props: PlayStageProps) {
     };
   }
 
-  // a spoken act: parse, map to the controls on screen now, press them in order (tagged via "voice"); never mid-drag
-  const heardId = props.heard?.id;
-  useEffect(() => {
-    const h = props.heard, v = viewRef.current, ctl = ctlRef.current;
-    if (!h || !v || !ctl) return;
-    const intent = parseVoice(h.text, lang);
+  // a spoken act: parse, map to the controls on screen now, press them in order (tagged via "voice"); never mid-drag.
+  // Returns what it did, so the lesson can tell a game command from an answer (core/voiceSink.ts).
+  const actOn = (text: string): GameAct | null => {
+    const v = viewRef.current, ctl = ctlRef.current;
+    if (!v || !ctl) return null;
+    const intent = parseVoice(text, lang);
     const pressed = intent ? pressesFor(intent, v.controls()) : null;
-    if (pressed && ctl.atTurnPoint()) {
+    const took = !!pressed && ctl.atTurnPoint();
+    if (took) {
       ctl.withVia("voice", () => { for (const id of pressed) viewRef.current?.controls().find((c) => c.id === id)?.onPress(); });
       changed();
     }
-    onEvent.current?.({ type: "voice", voice: { text: h.text.slice(0, 80), intent, pressed: pressed && ctl.atTurnPoint() ? pressed : null } });
+    onEvent.current?.({ type: "voice", voice: { text: text.slice(0, 80), intent, pressed: took ? pressed : null } });
+    return intent ? { verb: intent.verb, pressed: took, text: text.slice(0, 80), game: `${level.family}/${level.mode}` } : null;
+  };
+  const actRef = useRef(actOn);
+  actRef.current = actOn;
+  // embedded in a lesson, utterances arrive synchronously through the sink (the runtime reads the ack at once)
+  useEffect(() => (props.embedded ? setVoiceSink((t) => actRef.current(t)) : undefined), [props.embedded]);
+  // standalone (the play route / dev), utterances still arrive as the heard prop
+  const heardId = props.heard?.id;
+  useEffect(() => {
+    if (props.heard) actOn(props.heard.text);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [heardId]);
 
@@ -265,7 +284,9 @@ export function PlayStage(props: PlayStageProps) {
   const solved = ctlRef.current?.solved ?? false;
 
   return (
-    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}>
+    <div ref={rootRef} className="pl-root" data-embedded={props.embedded ? "1" : undefined} data-art={art} data-dark={a.dark ? "1" : undefined} data-layout={layout} data-young={young ? "1" : undefined} data-testid="play-stage" data-family={level.family} data-mode={level.mode} data-render={render.kind} data-engine={render.kind === "3d" ? entry?.id : undefined}
+      data-doors={solved && !doorsInWorld && props.doors && props.doors.length > 0 ? "1" : undefined}
+      data-keep={keep ? "bottom-right" : undefined} style={keep ? ({ "--pl-keep-w": `${keep.w}px`, "--pl-keep-h": `${keep.h}px` } as CSSProperties) : undefined}>
       <header className="pl-top">
         <span className="pl-mark" aria-hidden="true" />
         <span className="pl-title">{props.title ?? familyTitle(level.family, lang)}</span>
@@ -285,6 +306,7 @@ export function PlayStage(props: PlayStageProps) {
         )}
       </div>
       <div className="pl-rail">
+        {props.why ? <p className="pl-why" data-testid="play-why">{props.why}</p> : null}
         <p className="pl-goal" data-testid="play-goal">{goal}</p>
         <div className="pl-readouts">{readouts.map((r) => <span key={r.k} className="pl-readout" data-role={r.role}><i>{r.k}</i><b>{r.v}</b></span>)}</div>
       </div>
@@ -292,7 +314,7 @@ export function PlayStage(props: PlayStageProps) {
         {groups.map(([g, cs]) => (
           <div key={g} className={`pl-row pl-row--${g}`} data-group={g}>
             {cs.map((c) => (
-              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled}
+              <button key={c.id} type="button" className={`pl-btn pl-btn--${c.kind ?? "secondary"}`} data-you={c.you ? "1" : undefined} disabled={c.disabled} aria-pressed={c.pressed === undefined ? undefined : c.pressed}
                 aria-label={c.aria ?? c.label} data-testid={`play-ctl-${c.id}`} onClick={() => { sound.unlock(); c.onPress(); changed(); }}>{c.label}</button>
             ))}
           </div>
@@ -310,6 +332,36 @@ export function PlayStage(props: PlayStageProps) {
       {showMap && props.world && <PlayMap world={props.world} art={art} lang={lang} onClose={() => setShowMap(false)} />}
     </div>
   );
+}
+
+/**
+ * r7: the bottom-right corner of the play box the teacher's PiP covers on a phone, as StudioStage names it on the closest
+ * [data-pip-keep] (CSS vars --pip-keep-w / --pip-keep-h, px, in the box's own coordinates). Read live, never recomputed:
+ * the attribute and vars follow App's slot; null when nothing is reserved (a wide screen, a standalone stage).
+ */
+export function usePipKeep(rootRef: RefObject<HTMLElement | null>): { w: number; h: number } | null {
+  const [keep, setKeep] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || typeof window === "undefined") return;
+    // the box element that carries (or will carry) the keep: the closest one now, else the Studio box the stage sits in
+    const host = (root.parentElement?.closest("[data-pip-keep]") ?? root.parentElement?.closest(".st-box")) as HTMLElement | null;
+    if (!host) return;
+    const read = () => {
+      if (!host.hasAttribute("data-pip-keep")) { setKeep((k) => (k ? null : k)); return; }
+      const cs = getComputedStyle(host);
+      const w = parseFloat(cs.getPropertyValue("--pip-keep-w")) || 0, h = parseFloat(cs.getPropertyValue("--pip-keep-h")) || 0;
+      const next = w > 0 && h > 0 ? { w: Math.ceil(w), h: Math.ceil(h) } : null;
+      setKeep((k) => (k?.w === next?.w && k?.h === next?.h ? k : next));
+    };
+    read();
+    const mo = new MutationObserver(read);
+    mo.observe(host, { attributes: true, attributeFilter: ["data-pip-keep", "style", "class"] });
+    const ro = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(read);
+    ro?.observe(host);
+    return () => { mo.disconnect(); ro?.disconnect(); };
+  }, [rootRef]);
+  return keep;
 }
 
 /** The family's title: the round-3 four from this table; any later family (kon, G2's nazariya, …) from its

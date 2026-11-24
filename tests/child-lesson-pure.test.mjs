@@ -55,7 +55,11 @@ test("open mic: only Older, only with a headset (or a passed probe), never after
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "Speaker" }, { kind: "audioinput", label: "Built-in Microphone" }]), false);
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "" }]), false, "no labels before permission → tap");
   assert.equal(hasHeadset([{ kind: "audiooutput", label: "Wired Headphones" }]), true);
-  assert.equal(hasHeadset([{ kind: "audiooutput", label: "boAt Rockerz (Bluetooth)" }]), true);
+  // audit V-33: "Bluetooth" alone is not a headset (a speaker is Bluetooth too): uncertain → tap-to-talk
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "boAt Rockerz (Bluetooth)" }]), false);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "Galaxy Buds2 (Bluetooth)" }]), true);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "JBL Flip 5 (Bluetooth)" }]), false);
+  assert.equal(hasHeadset([{ kind: "audiooutput", label: "Headset earpiece" }]), false, "Chrome on Android's name for the phone's own receiver");
   assert.equal(hasHeadset([{ kind: "videoinput", label: "Headset camera" }]), false);
   const base = { older: true, wanted: true, headset: true, echoDemoted: false };
   assert.equal(openMicAllowed(base), true);
@@ -154,9 +158,10 @@ test("captions: dashes are clause boundaries, short tails merge, at rest the las
   const list = clauses(q);
   assert.ok(list.every((c) => c.split(" ").length <= 12), JSON.stringify(list));
   assert.equal(list.at(-1), "likhne ya padhne mein?");
-  // 11 words without punctuation: no stranded 2-word tail.
+  // 11 words without punctuation (54 characters, over two lines at 360 px): two balanced chunks, no stranded 2-word tail.
   const long = clauses("ek do teen chaar paanch chheh saat aath nau das gyaarah");
-  assert.equal(long.length, 1);
+  assert.equal(long.length, 2);
+  assert.ok(long.every((c) => c.split(" ").length >= 4 && c.length <= 38), JSON.stringify(long));
   assert.equal(restingLine("Bahut accha. Ab batao, kaunsa bada hai — aadha ya teesra?"), "Ab batao, kaunsa bada hai — aadha ya teesra?");
   assert.equal(restingLine(""), "");
 });

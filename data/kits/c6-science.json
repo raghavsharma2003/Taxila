@@ -46,8 +46,8 @@
       "Thinks only scientists in labs can do science"
      ],
      "diagnostic": {
-      "prompt_en": "Riya wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
-      "prompt_hi": "Riya jaanna chahti hai ki kya garam jagah pe dahi jaldi jamta hai. Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
+      "prompt_en": "{friendF} wants to know whether curd sets faster in a warm place. What is the most scientific way for her to find out?",
+      "prompt_hi": "{friendF} jaanna chahti hai ki kya garam jagah pe dahi jaldi jamta hai. Pata karne ka sabse 'scientist wala' tareeka kaunsa hai?",
       "options": [
        {
         "text": "Read the answer in a book and simply memorise it",
@@ -189,7 +189,15 @@
      "verified": {
       "solverAnswer": "Warm place, because warmth speeds up the bacteria that set curd (a guess I then test).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i03",
@@ -213,7 +221,15 @@
      "verified": {
       "solverAnswer": "The ice on the steel plate melts first; the woollen shawl insulates the wrapped one so it melts last.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i04",
@@ -237,7 +253,15 @@
      "verified": {
       "solverAnswer": "Not yet known for sure; I only predicted. Warmth helps the bacteria in milk multiply and turn it to curd; test to check.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i05",
@@ -262,7 +286,15 @@
      "verified": {
       "solverAnswer": "A prediction can be wrong; the test still gave real evidence (wool keeps heat out/cold in) and she learned something.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i06",
@@ -287,7 +319,15 @@
      "verified": {
       "solverAnswer": "B is testable; A is opinion/taste that no test can settle.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i07",
@@ -311,7 +351,15 @@
      "verified": {
       "solverAnswer": "Question: why does the plant lean to the window? Predict: leans toward light. Test: turn the pot around / put in a dark spot and watch over days.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i08",
@@ -335,7 +383,15 @@
      "verified": {
       "solverAnswer": "Keep jaggery in a dry sealed jar and in damp air, same amount, compare after some days.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i09",
@@ -360,7 +416,15 @@
       "solverAnswer": "Ask a question, predict, test, observe, conclude (and cycle again).",
       "agrees": true,
       "note": "Resolved: prompt now fixes 'observe/notice' as the starting step, removing the ambiguity the blind solver hit. Observing results during the test is part of 'test'; key order unchanged."
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i10",
@@ -385,7 +449,15 @@
      "verified": {
       "solverAnswer": "He changed his prediction after seeing the result; predictions are written before and kept, then compared with result.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i11",
@@ -406,7 +478,15 @@
      "verified": {
       "solverAnswer": "Ask a question, predict, test fairly with warm vs cool bowls, observe, conclude, never just memorise.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i12",
@@ -430,15 +510,23 @@
      "verified": {
       "solverAnswer": "A guess has no reasoning behind it; a prediction is based on what we know and is tested.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-i13",
      "skillId": "c6-science-ch01-t01-s3",
      "kind": "practice",
      "difficulty": 1,
-     "prompt_en": "Before starting, Riya writes: 'I think the bowl in the warm place will set first.' Which step of science is this?",
-     "prompt_hi": "Shuru karne se pehle Riya likhti hai: 'Mujhe lagta hai garam jagah wala katora pehle jamega.' Ye science ka kaunsa step hai?",
+     "prompt_en": "Before starting, {friendF} writes: 'I think the bowl in the warm place will set first.' Which step of science is this?",
+     "prompt_hi": "Shuru karne se pehle {friendF} likhti hai: 'Mujhe lagta hai garam jagah wala katora pehle jamega.' Ye science ka kaunsa step hai?",
      "answer": "Making a prediction.",
      "acceptable": [
       "predicting",
@@ -454,7 +542,15 @@
      "verified": {
       "solverAnswer": "Predicting (hypothesis step).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t01-rl-o1",
@@ -699,8 +795,8 @@
       "Cannot say which change caused the result"
      ],
      "diagnostic": {
-      "prompt_en": "Asha wants to know which cloth dries fastest. Which plan is fair?",
-      "prompt_hi": "Asha jaanna chahti hai ki kaunsa kapda sabse jaldi sookhta hai. Kaunsa plan fair hai?",
+      "prompt_en": "{friendF} wants to know which cloth dries fastest. Which plan is fair?",
+      "prompt_hi": "{friendF} jaanna chahti hai ki kaunsa kapda sabse jaldi sookhta hai. Kaunsa plan fair hai?",
       "options": [
        {
         "text": "Cotton in sun, nylon in shade, wool indoors, all at once to save time",
@@ -818,7 +914,15 @@
      "verified": {
       "solverAnswer": "Change the type of cloth; keep same size, same water amount, same place/time.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i02",
@@ -869,15 +973,23 @@
      "verified": {
       "solverAnswer": "Spread open dries faster (more surface exposed).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i04",
      "skillId": "c6-science-ch01-t02-s3",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "Asha hangs cotton in the sun and nylon in the shade, and the cotton dries first. Before she decides, predict: can she say cotton dries faster than nylon?",
-     "prompt_hi": "Asha cotton dhoop mein aur nylon chhaon mein taangti hai, aur cotton pehle sookhta hai. Socho: kya woh keh sakti hai ki cotton nylon se jaldi sookhta hai?",
+     "prompt_en": "{friendF} hangs cotton in the sun and nylon in the shade, and the cotton dries first. Before she decides, predict: can she say cotton dries faster than nylon?",
+     "prompt_hi": "{friendF} cotton dhoop mein aur nylon chhaon mein taangti hai, aur cotton pehle sookhta hai. Socho: kya woh keh sakti hai ki cotton nylon se jaldi sookhta hai?",
      "answer": "No. Two things changed (cloth type and sun or shade), so the cotton may have dried first because of the sun. The test is unfair.",
      "acceptable": [
       "no",
@@ -896,7 +1008,15 @@
       "solverAnswer": "No; two things (cloth and place) differ so test is unfair.",
       "agrees": true,
       "note": "Resolved hint leak: hint 2 points to where each was hung without naming sun and shade."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i05",
@@ -911,7 +1031,7 @@
       "pata chale kis wajah se hua"
      ],
      "hints": [
-      "Ask what Asha could not tell in her cloth test",
+      "Ask what {friendF} could not tell in her cloth test",
       "Point to the two changes she made",
       "Prompt: if only one thing changes, the result must be because of ___",
       "Assert: one change means we know the cause"
@@ -920,7 +1040,15 @@
      "verified": {
       "solverAnswer": "So that we know which one change caused the result.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i06",
@@ -928,7 +1056,7 @@
      "kind": "contrast",
      "difficulty": 2,
      "prompt_en": "Plan A: three same-size cloths, same water, hung together in the sun. Plan B: three different-size cloths, one in sun, one in shade, one under a fan. Which plan fairly tests the type of cloth, and what makes the other unfair?",
-     "prompt_hi": "Plan A: teen same size ke kapde, same paani, saath mein dhoop mein. Plan B: teen alag size ke kapde, ek dhoop, ek chhaon, ek pankhe ke neeche. Kaunsa plan kapde ke type ka fair test hai, aur doosra unfair kyon hai?",
+     "prompt_hi": "Plan A: 3 same size ke kapde, same paani, saath mein dhoop mein. Plan B: 3 alag size ke kapde, ek dhoop, ek chhaon, ek pankhe ke neeche. Kaunsa plan kapde ke type ka fair test hai, aur doosra unfair kyon hai?",
      "answer": "Plan A is fair. Plan B changes the size and the place as well as the cloth type, so we can't tell what caused any difference.",
      "acceptable": [
       "A",
@@ -944,7 +1072,15 @@
      "verified": {
       "solverAnswer": "Plan A is fair; B changes size and place so unfair.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i07",
@@ -969,7 +1105,15 @@
      "verified": {
       "solverAnswer": "Not measured or recorded as observations; opinions/vague words instead of numbers like time.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i08",
@@ -993,7 +1137,15 @@
      "verified": {
       "solverAnswer": "Same ball, same drop height, same way of dropping; change only the surface; measure bounce height; repeat.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i09",
@@ -1019,15 +1171,23 @@
      "verified": {
       "solverAnswer": "No, rain is another changed factor. Grow plots with and without fertiliser, same wheat, soil, water, sun.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i10",
      "skillId": "c6-science-ch01-t02-s1",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "Riya's notes say: 'The cotton hanky dried in 30 minutes, the nylon one in 20 minutes, and the woollen one took 50 minutes.' Put this in a table and tell me which dried fastest.",
-     "prompt_hi": "Riya ke notes: 'Cotton rumaal 30 minute mein sookha, nylon 20 minute mein, aur woollen wala 50 minute mein.' Ise table mein likho aur batao sabse jaldi kaunsa sookha.",
+     "prompt_en": "{friendF}'s notes say: 'The cotton hanky dried in 30 minutes, the nylon one in 20 minutes, and the woollen one took 50 minutes.' Put this in a table and tell me which dried fastest.",
+     "prompt_hi": "{friendF} ke notes: 'Cotton rumaal 30 minute mein sookha, nylon 20 minute mein, aur woollen wala 50 minute mein.' Ise table mein likho aur batao sabse jaldi kaunsa sookha.",
      "answer": "Table: Cloth | Time to dry (min): Cotton 30, Nylon 20, Wool 50. Nylon dried fastest.",
      "acceptable": [
       "nylon",
@@ -1042,7 +1202,15 @@
      "verified": {
       "solverAnswer": "Table cloth vs time; nylon fastest (20 min).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i11",
@@ -1067,7 +1235,15 @@
      "verified": {
       "solverAnswer": "One result could be a fluke; repeating checks it is reliable.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i12",
@@ -1087,7 +1263,15 @@
      "verified": {
       "solverAnswer": "Change soap type; keep same water amount, same stirring, same container; record foam height.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-i13",
@@ -1111,7 +1295,15 @@
      "verified": {
       "solverAnswer": "One.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch01-t02-rl-o1",
@@ -1181,7 +1373,7 @@
      "kind": "near_transfer",
      "difficulty": 4,
      "prompt_en": "A school team tests three water filters. For each filter, they record the time taken for 200 mL of water to pass through: 45, 70 and 55 seconds. What two column headings make these readings clear?",
-     "prompt_hi": "School team teen water filters test karti hai. Har filter se 200 mL paani guzarne ka time 45, 70 aur 55 seconds hai. In readings ke liye do clear column headings kya honge?",
+     "prompt_hi": "School team 3 water filters test karti hai. Har filter se 200 mL paani guzarne ka time 45, 70 aur 55 seconds hai. In readings ke liye do clear column headings kya honge?",
      "answer": "Filter | Time taken (seconds)",
      "acceptable": [
       "Filter name | Time (s)",
@@ -1246,7 +1438,7 @@
      "kind": "why",
      "difficulty": 4,
      "prompt_en": "In a fair test, the same paper plane is launched from the same mark three times. Its flight distances differ slightly. Why repeat the launches instead of trusting the first distance?",
-     "prompt_hi": "Fair test mein same paper plane ko same mark se teen baar launch kiya. Har baar distance thoda alag aaya. Sirf pehli reading par bharosa karne ke bajay launches repeat kyun karte hain?",
+     "prompt_hi": "Fair test mein same paper plane ko same mark se 3 baar launch kiya. Har baar distance thoda alag aaya. Sirf pehli reading par bharosa karne ke bajay launches repeat kyun karte hain?",
      "answer": "To reduce the effect of chance variation and get a more reliable result.",
      "acceptable": [
       "to get a more reliable result",
@@ -1497,7 +1689,15 @@
      "verified": {
       "solverAnswer": "Herb: mint, wheat. Shrub: rose, hibiscus. Tree: mango, neem.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i03",
@@ -1523,7 +1723,15 @@
      "verified": {
       "solverAnswer": "A tree: it grows from a mango seed, so it will become a tree though it is small now.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i04",
@@ -1546,7 +1754,15 @@
      "verified": {
       "solverAnswer": "Coriander bends more easily (herb, soft stem).",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i05",
@@ -1571,7 +1787,15 @@
      "verified": {
       "solverAnswer": "Its stem is soft and not woody (herb); height does not decide it.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i06",
@@ -1596,7 +1820,15 @@
      "verified": {
       "solverAnswer": "Rose: branches from near the ground; guava tree: one trunk and branches higher up.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i07",
@@ -1619,7 +1851,15 @@
      "verified": {
       "solverAnswer": "A shrub.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i08",
@@ -1645,7 +1885,15 @@
      "verified": {
       "solverAnswer": "Lauki is a climber with a weak stem; frame supports it to climb.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i09",
@@ -1653,7 +1901,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Draw quick outlines of a herb, a shrub and a tree. Show how thick each stem is and where the branches start. Describe your drawings to me.",
-     "prompt_hi": "Herb, shrub aur tree ki teen chhoti drawing banao. Dikhao ki tana kitna mota hai aur daaliyan kahan se shuru hoti hain. Phir mujhe batao kya banaya.",
+     "prompt_hi": "Herb, shrub aur tree ki 3 chhoti drawing banao. Dikhao ki tana kitna mota hai aur daaliyan kahan se shuru hoti hain. Phir mujhe batao kya banaya.",
      "answer": "Herb: small plant with a thin green stem. Shrub: several woody stems branching from near the ground. Tree: tall, one thick woody trunk, branches starting high up.",
      "acceptable": [
       "herb thin stem",
@@ -1669,7 +1917,15 @@
      "verified": {
       "solverAnswer": "Herb thin soft stem; shrub moderately thick woody, branches from base; tree thick trunk, branches high up.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i10",
@@ -1694,7 +1950,15 @@
      "verified": {
       "solverAnswer": "Classify by stem: soft green = herb, woody branching at base = shrub, thick woody trunk with branches higher = tree, not by height.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i11",
@@ -1714,7 +1978,15 @@
      "verified": {
       "solverAnswer": "Look at stem: soft = herb; woody branching near ground = shrub; thick trunk with branches high up = tree.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i12",
@@ -1737,7 +2009,15 @@
      "verified": {
       "solverAnswer": "Creepers.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-i13",
@@ -1760,7 +2040,15 @@
      "verified": {
       "solverAnswer": "It will climb the stick (climber).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t01-rl-o1",
@@ -2135,7 +2423,15 @@
      "verified": {
       "solverAnswer": "Tap root: one main thick root with smaller side roots; fibrous: many similar thin roots from the stem base.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i03",
@@ -2160,7 +2456,15 @@
      "verified": {
       "solverAnswer": "Fibrous roots.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i04",
@@ -2183,7 +2487,15 @@
      "verified": {
       "solverAnswer": "Tap root.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i05",
@@ -2207,7 +2519,15 @@
      "verified": {
       "solverAnswer": "Parallel veins go with fibrous roots.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i06",
@@ -2231,7 +2551,15 @@
      "verified": {
       "solverAnswer": "Maize parallel veins, fibrous roots; hibiscus net veins, tap root.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i07",
@@ -2254,7 +2582,15 @@
      "verified": {
       "solverAnswer": "Fibrous.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i08",
@@ -2278,7 +2614,15 @@
      "verified": {
       "solverAnswer": "Net-like, because radish has a tap root (the radish itself).",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i09",
@@ -2301,7 +2645,15 @@
      "verified": {
       "solverAnswer": "Net leaf with tap root; parallel leaf with fibrous roots.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i10",
@@ -2326,7 +2678,15 @@
      "verified": {
       "solverAnswer": "Wrong: grass has parallel veins so fibrous roots.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i11",
@@ -2346,7 +2706,15 @@
      "verified": {
       "solverAnswer": "Look at leaf veins: net = tap root (mustard), parallel = fibrous (grass).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i12",
@@ -2369,7 +2737,15 @@
      "verified": {
       "solverAnswer": "Fibrous roots.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-i13",
@@ -2392,7 +2768,15 @@
      "verified": {
       "solverAnswer": "Many thin roots spread and grip soil, preventing erosion.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t02-rl-o1",
@@ -2771,7 +3155,15 @@
      "verified": {
       "solverAnswer": "Hump stores fat; long legs keep body away from hot sand; wide feet; long eyelashes against sand; water-saving.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i03",
@@ -2779,7 +3171,7 @@
      "kind": "predict",
      "difficulty": 2,
      "prompt_en": "Predict: a cactus and a money plant are both not watered for three weeks in a hot place. Which will still look healthy, and why?",
-     "prompt_hi": "Guess karo: cactus aur money plant dono ko garam jagah pe teen hafte paani nahi diya. Kaun sa abhi bhi theek dikhega, aur kyon?",
+     "prompt_hi": "Guess karo: cactus aur money plant dono ko garam jagah pe 3 hafte paani nahi diya. Kaun sa abhi bhi theek dikhega, aur kyon?",
      "answer": "The cactus: its thick fleshy stem stores water, and spines instead of broad leaves and a waxy coat cut down water loss.",
      "acceptable": [
       "cactus"
@@ -2794,7 +3186,15 @@
      "verified": {
       "solverAnswer": "Cactus; stores water in stem, thick waxy skin, spines reduce water loss.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i04",
@@ -2817,7 +3217,15 @@
      "verified": {
       "solverAnswer": "Snow slides off the sloping conical branches; flat tree would hold snow and break.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i05",
@@ -2841,7 +3249,15 @@
      "verified": {
       "solverAnswer": "Water beads up and rolls off.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i06",
@@ -2865,7 +3281,15 @@
      "verified": {
       "solverAnswer": "Fish breathes with gills in water; cannot get oxygen on land.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i07",
@@ -2888,7 +3312,15 @@
      "verified": {
       "solverAnswer": "Fish: gills, fins, streamlined; frog: lungs and moist skin, webbed feet, legs for land.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i08",
@@ -2913,7 +3345,15 @@
      "verified": {
       "solverAnswer": "Thick fur, padded large paws, strong legs for climbing, camouflage.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i09",
@@ -2938,7 +3378,15 @@
      "verified": {
       "solverAnswer": "Clothes are chosen by people and can change anytime; adaptation is an inherited body feature developed over many generations.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i10",
@@ -2946,7 +3394,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Draw a camel and label three features that help it in the desert, with a few words on how each helps.",
-     "prompt_hi": "Ek oont banao aur teen khoobiyan label karo jo registaan mein madad karti hain, har ek ke saath kuch shabd ki kaise madad karti hai.",
+     "prompt_hi": "Ek oont banao aur 3 khoobiyan label karo jo registaan mein madad karti hain, har ek ke saath kuch shabd ki kaise madad karti hai.",
      "answer": "Any three, e.g.: long legs, keep away from hot sand; padded feet, don't sink; long eyelashes, keep sand out; hump, stores fat.",
      "acceptable": [
       "legs",
@@ -2964,7 +3412,15 @@
      "verified": {
       "solverAnswer": "Hump (fat), long legs, broad padded feet, long eyelashes, nostrils.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i11",
@@ -2989,7 +3445,15 @@
      "verified": {
       "solverAnswer": "Hump stores fat not water; camel didn't grow it by wanting - adaptation arises over generations.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i12",
@@ -3009,7 +3473,15 @@
      "verified": {
       "solverAnswer": "Adaptation is a feature that helps survive in a habitat: camel hump fat, thick fur in cold, fins/gills in water.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-i13",
@@ -3033,7 +3505,15 @@
      "verified": {
       "solverAnswer": "Adaptation.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t03-rl-h2",
@@ -3323,7 +3803,15 @@
      "verified": {
       "solverAnswer": "Eats dead animals, cleaning environment.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i03",
@@ -3348,7 +3836,15 @@
      "verified": {
       "solverAnswer": "Insects increase; snakes decline or hunt other prey.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i04",
@@ -3373,7 +3869,15 @@
      "verified": {
       "solverAnswer": "Carcasses pile up and rot; stray dogs increase.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i05",
@@ -3397,7 +3901,15 @@
      "verified": {
       "solverAnswer": "Dogs feed on carcasses, increase, spread rabies and disease.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i06",
@@ -3421,7 +3933,15 @@
      "verified": {
       "solverAnswer": "Natural forest has more diversity; healthier stable ecosystem, resists pests/disease.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i07",
@@ -3446,7 +3966,15 @@
      "verified": {
       "solverAnswer": "Less pollination, so lower fruit and vegetable yield.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i08",
@@ -3470,7 +3998,15 @@
      "verified": {
       "solverAnswer": "Protects many plants, animals and habitat from cutting.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i09",
@@ -3494,7 +4030,15 @@
      "verified": {
       "solverAnswer": "Grass -> deer -> tiger; tigers starve or decline.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i10",
@@ -3519,7 +4063,15 @@
      "verified": {
       "solverAnswer": "Every creature has a role; vultures clean, earthworms enrich soil.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i11",
@@ -3540,7 +4092,15 @@
      "verified": {
       "solverAnswer": "Vulture decline led to rotting carcasses, dogs, disease; each species matters.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-i12",
@@ -3565,7 +4125,15 @@
      "verified": {
       "solverAnswer": "Plant trees, protect habitats, avoid pollution, no hunting.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch02-t04-rl-o2",
@@ -3917,7 +4485,15 @@
      "verified": {
       "solverAnswer": "Protein.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i03",
@@ -3942,7 +4518,15 @@
      "verified": {
       "solverAnswer": "Rice carbohydrate; dal protein; ghee fat; guava vitamins (C); roti carbohydrate.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i04",
@@ -3966,7 +4550,15 @@
      "verified": {
       "solverAnswer": "Dal has more protein.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i05",
@@ -3989,7 +4581,15 @@
      "verified": {
       "solverAnswer": "Amla, far more vitamin C.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i06",
@@ -4013,7 +4613,15 @@
      "verified": {
       "solverAnswer": "Protein builds new body parts and repairs; growing body needs it daily.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i07",
@@ -4038,7 +4646,15 @@
      "verified": {
       "solverAnswer": "Ghee is fat (more concentrated energy, 2x+ per gram, helps vitamins); sugar is a simple carbohydrate giving quick energy.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i08",
@@ -4060,7 +4676,15 @@
      "verified": {
       "solverAnswer": "Khichdi: carbohydrate (rice), protein (dal), vitamins/minerals/fibre (vegetables), a bit of fat.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i09",
@@ -4084,7 +4708,15 @@
      "verified": {
       "solverAnswer": "Players need protein for muscle repair, vitamins and minerals, water, not only energy.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i10",
@@ -4108,7 +4740,15 @@
      "verified": {
       "solverAnswer": "Energy: roti/rice; body building: dal/paneer; protective: vegetables/fruit.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i11",
@@ -4133,7 +4773,15 @@
      "verified": {
       "solverAnswer": "Wrong: dal, pulses, milk, paneer, soy, nuts give protein.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i12",
@@ -4153,7 +4801,15 @@
      "verified": {
       "solverAnswer": "Carbs/fats give energy, proteins build/repair, vitamins and minerals protect, fibre aids digestion, water.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-i13",
@@ -4178,7 +4834,15 @@
      "verified": {
       "solverAnswer": "Roughage is fibre in plant foods; not digested, helps bowel movement/avoid constipation.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t01-rl-o1",
@@ -4566,7 +5230,15 @@
       "solverAnswer": "Crush it on paper, rub, dry; a translucent oily patch that stays shows fat.",
       "agrees": true,
       "note": "Resolved safety: do-not-eat and peanut-allergy note added to the prompt and key."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i03",
@@ -4589,7 +5261,15 @@
      "verified": {
       "solverAnswer": "Potato turns blue-black; cucumber stays brown/yellow-orange (no starch).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i04",
@@ -4614,7 +5294,15 @@
      "verified": {
       "solverAnswer": "Rice water turns blue-black; sugar solution does not.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i05",
@@ -4639,7 +5327,15 @@
       "solverAnswer": "Coconut oil (and perhaps crushed coconut leaves a patch too since it has oil); water dries away.",
       "agrees": true,
       "note": "Resolved: prompt now says more than one may be right, matching the two-answer key."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i06",
@@ -4663,7 +5359,15 @@
      "verified": {
       "solverAnswer": "Water also makes a wet patch that disappears on drying; fat leaves a lasting patch.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i07",
@@ -4686,7 +5390,15 @@
      "verified": {
       "solverAnswer": "Milk: no starch (no blue-black), protein positive (violet); rice water: starch positive, no protein.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i08",
@@ -4710,7 +5422,15 @@
      "verified": {
       "solverAnswer": "Fat and protein, no starch.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i09",
@@ -4733,7 +5453,15 @@
      "verified": {
       "solverAnswer": "Rub chips on paper, dry; oily patch means fat.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i10",
@@ -4758,7 +5486,15 @@
      "verified": {
       "solverAnswer": "Potato: starch yes only; groundnut: fat yes, protein yes; egg white: protein only.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i11",
@@ -4782,7 +5518,15 @@
      "verified": {
       "solverAnswer": "One nutrient test doesn't exclude others; foods contain several nutrients; must do protein test.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i12",
@@ -4803,7 +5547,15 @@
       "solverAnswer": "Starch: drop iodine, blue-black. Fat: rub on paper, oily patch after drying. Safety: dont taste lab chemicals, iodine stains/poisonous, wash hands.",
       "agrees": true,
       "note": "Kept the author's content. Framed as the teacher's class demo; the key's safety rule already says chemical tests happen only with a teacher. The protein test (copper sulphate and caustic soda) is not in this item and stays teacher-only."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-i13",
@@ -4827,7 +5579,15 @@
      "verified": {
       "solverAnswer": "Violet (purple).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t02-rl-o1",
@@ -4902,8 +5662,8 @@
      "skillId": "c6-science-ch03-t02-s1",
      "kind": "near_transfer",
      "difficulty": 4,
-     "prompt_en": "Riya tests two unlabelled lunch samples with dilute iodine. Sample A turns blue-black; sample B stays brown. Which sample contains starch, and which observation supports your choice?",
-     "prompt_hi": "Riya do bina label wale lunch samples mein dilute iodine daalti hai. Sample A neela-kaala ho jata hai; sample B brown rehta hai. Starch kis sample mein hai, aur kaunsi observation se pata chala?",
+     "prompt_en": "{friendF} tests two unlabelled lunch samples with dilute iodine. Sample A turns blue-black; sample B stays brown. Which sample contains starch, and which observation supports your choice?",
+     "prompt_hi": "{friendF} do bina label wale lunch samples mein dilute iodine daalti hai. Sample A neela-kaala ho jata hai; sample B brown rehta hai. Starch kis sample mein hai, aur kaunsi observation se pata chala?",
      "answer": "Sample A; it turned blue-black",
      "acceptable": [
       "A, because it turned blue-black",
@@ -5101,8 +5861,8 @@
       "Wants to stay away from a friend with anaemia"
      ],
      "diagnostic": {
-      "prompt_en": "Riya's gums bleed and the doctor says she lacks vitamin C. How did she get this?",
-      "prompt_hi": "Riya ke masoodon se khoon aata hai aur doctor kehti hain use vitamin C ki kami hai. Use ye kaise hua?",
+      "prompt_en": "{friendF}'s gums bleed and the doctor says she lacks vitamin C. How did she get this?",
+      "prompt_hi": "{friendF} ke masoodon se khoon aata hai aur doctor kehti hain use vitamin C ki kami hai. Use ye kaise hua?",
       "options": [
        {
         "text": "She caught it from a friend sitting next to her",
@@ -5211,7 +5971,15 @@
      "verified": {
       "solverAnswer": "Night blindness: vitamin A; goitre: iodine; anaemia: iron; scurvy: vitamin C.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i03",
@@ -5236,7 +6004,15 @@
      "verified": {
       "solverAnswer": "Scurvy; prevented by fresh fruits/vitamin C foods like citrus.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i04",
@@ -5260,7 +6036,15 @@
      "verified": {
       "solverAnswer": "Child B, variety gives all nutrients.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i05",
@@ -5284,7 +6068,15 @@
      "verified": {
       "solverAnswer": "Bajra, millets drought tolerant.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i06",
@@ -5307,7 +6099,15 @@
      "verified": {
       "solverAnswer": "Prevent iodine deficiency/goitre.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i07",
@@ -5331,7 +6131,15 @@
      "verified": {
       "solverAnswer": "Ragi dosa with milk is closer to balanced; chips and cold drink are fat/sugar/salt with little nutrition.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i08",
@@ -5339,7 +6147,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Your friend often feels tired, looks pale and gets breathless while playing. A doctor finds she lacks iron. Suggest three foods she could eat more of.",
-     "prompt_hi": "Tumhari dost aksar thaki rehti hai, peeli dikhti hai aur khelte hue saans phoolti hai. Doctor ko pata chala use iron ki kami hai. Teen khaane batao jo use zyada khaane chahiye.",
+     "prompt_hi": "Tumhari dost aksar thaki rehti hai, peeli dikhti hai aur khelte hue saans phoolti hai. Doctor ko pata chala use iron ki kami hai. 3 khaane batao jo use zyada khaane chahiye.",
      "answer": "Any three: green leafy vegetables (palak, methi), jaggery, bajra or ragi, pulses and chana, dates, eggs or meat if she eats them; vitamin C foods like amla help the body absorb iron.",
      "acceptable": [
       "palak",
@@ -5357,7 +6165,15 @@
      "verified": {
       "solverAnswer": "Spinach (palak), jaggery, dal/rajma, meat/liver, dates.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i09",
@@ -5377,7 +6193,15 @@
      "verified": {
       "solverAnswer": "Bajra roti (energy, fibre), dal (protein), sabzi (vitamins), curd (calcium/protein), ghee.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i10",
@@ -5385,7 +6209,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Draw a table with three columns: nutrient, disease if missing, food that prevents it. Fill in rows for vitamin A, vitamin D and iron.",
-     "prompt_hi": "Teen column wali table banao: poshak tatva, kami se bimari, bachane wala khaana. Vitamin A, vitamin D aur iron ki rows bharo.",
+     "prompt_hi": "3 column wali table banao: poshak tatva, kami se bimari, bachane wala khaana. Vitamin A, vitamin D aur iron ki rows bharo.",
      "answer": "Vitamin A: night blindness: carrot, papaya, mango, green leafy vegetables. Vitamin D: rickets: sunlight, milk, eggs. Iron: anaemia: green leafy vegetables, jaggery, bajra, pulses.",
      "acceptable": [
       "A night blindness carrot",
@@ -5401,7 +6225,15 @@
      "verified": {
       "solverAnswer": "Vitamin A: night blindness: carrot, papaya, milk. Vitamin D: rickets: sunlight, milk, eggs. Iron: anaemia: spinach, jaggery.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i11",
@@ -5425,7 +6257,15 @@
      "verified": {
       "solverAnswer": "Only carbs and fat; no variety (proteins, vitamins, minerals, fibre); too much fat.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i12",
@@ -5446,7 +6286,15 @@
      "verified": {
       "solverAnswer": "Millets are nutritious (fibre, minerals), drought tolerant, need little water, good for farmers and health.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-i13",
@@ -5470,7 +6318,15 @@
      "verified": {
       "solverAnswer": "Vitamin D (rickets); sunlight.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t03-rl-o1",
@@ -5708,8 +6564,8 @@
       "Thinks travelling far adds quality"
      ],
      "diagnostic": {
-      "prompt_en": "Riya says imported kiwis must be healthier than the guavas in her local market because they come from far away. Is she right?",
-      "prompt_hi": "Riya kehti hai ki imported kiwi local bazaar ke amrood se zyada healthy honge kyonki door se aaye hain. Kya woh sahi hai?",
+      "prompt_en": "{friendF} says imported kiwis must be healthier than the guavas in her local market because they come from far away. Is she right?",
+      "prompt_hi": "{friendF} kehti hai ki imported kiwi local bazaar ke amrood se zyada healthy honge kyonki door se aaye hain. Kya woh sahi hai?",
       "options": [
        {
         "text": "Yes, food from far away is always better for us",
@@ -5799,7 +6655,7 @@
      "kind": "practice",
      "difficulty": 2,
      "prompt_en": "Pick three foods in your kitchen. Ask an adult or read the packet to find out where each came from.",
-     "prompt_hi": "Apne kitchen ki teen cheezein chuno. Kisi bade se poochh ke ya packet padh ke pata karo ki har ek kahan se aayi.",
+     "prompt_hi": "Apne kitchen ki 3 cheezein chuno. Kisi bade se poochh ke ya packet padh ke pata karo ki har ek kahan se aayi.",
      "answer": "Any three foods with a correct place of origin from a label or an adult, e.g. tea from Assam, apples from Himachal Pradesh, rice from Punjab.",
      "acceptable": [
       "tea Assam",
@@ -5816,7 +6672,15 @@
      "verified": {
       "solverAnswer": "Open-ended: origin of three foods.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i03",
@@ -5840,7 +6704,15 @@
      "verified": {
       "solverAnswer": "The apple from Himachal.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i04",
@@ -5864,7 +6736,15 @@
      "verified": {
       "solverAnswer": "Cold storage/refrigerated transport; adds energy, fuel, cost and pollution.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i05",
@@ -5887,7 +6767,15 @@
      "verified": {
       "solverAnswer": "Transport burns fuel releasing carbon dioxide and pollutants; storage/packaging too.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i06",
@@ -5910,7 +6798,15 @@
      "verified": {
       "solverAnswer": "May local seasonal mango; fresher, cheaper, less fuel, tastier. December far mangoes have long travel.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i07",
@@ -5933,7 +6829,15 @@
      "verified": {
       "solverAnswer": "Long (Assam to Jaipur is about 2000 km).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i08",
@@ -5941,7 +6845,7 @@
      "kind": "far_transfer",
      "difficulty": 4,
      "prompt_en": "Your school wants to cut food miles for its mid-day meal. Suggest three practical ideas.",
-     "prompt_hi": "Tumhara school mid-day meal ke food miles kam karna chahta hai. Teen practical idea batao.",
+     "prompt_hi": "Tumhara school mid-day meal ke food miles kam karna chahta hai. 3 practical idea batao.",
      "answer": "Any three: buy vegetables and grains from nearby farmers; use seasonal produce; grow a school kitchen garden; use local millets; reduce packaged foods.",
      "acceptable": [
       "local farmers",
@@ -5958,7 +6862,15 @@
      "verified": {
       "solverAnswer": "Buy local vegetables, seasonal food, school garden, local farmers, millets.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i09",
@@ -5981,7 +6893,15 @@
      "verified": {
       "solverAnswer": "Himachal to Chennai arrow longer; length stands for food miles/distance.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i10",
@@ -6005,7 +6925,15 @@
      "verified": {
       "solverAnswer": "Food miles are from where it was grown/produced to where eaten, whole journey.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i11",
@@ -6026,7 +6954,15 @@
      "verified": {
       "solverAnswer": "Local seasonal: fresher, less transport pollution, supports farmers; far is fine when it can't be grown nearby (e.g. tea, spices) or fresh need.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-i12",
@@ -6051,7 +6987,15 @@
      "verified": {
       "solverAnswer": "Pollution/fuel use, spoilage, higher cost, need for storage.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch03-t04-rl-o1",
@@ -6417,7 +7361,7 @@
      "kind": "practice",
      "difficulty": 1,
      "prompt_en": "Name three materials a magnet attracts and three it does not.",
-     "prompt_hi": "Teen materials batao jinhe magnet kheenchta hai aur teen jinhe nahi.",
+     "prompt_hi": "3 materials batao jinhe magnet kheenchta hai aur 3 jinhe nahi.",
      "answer": "Attracts: iron, nickel, cobalt (and steels containing iron). Does not attract (any three): aluminium, copper, brass, plastic, wood, glass, paper, rubber.",
      "acceptable": [
       "iron nickel cobalt",
@@ -6432,7 +7376,15 @@
      "verified": {
       "solverAnswer": "Attracted: iron, nickel, cobalt/steel. Not: plastic, wood, rubber, copper, aluminium.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i03",
@@ -6456,7 +7408,15 @@
      "verified": {
       "solverAnswer": "Aluminium foil: no; iron nail: yes; copper wire: no.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i04",
@@ -6480,7 +7440,15 @@
      "verified": {
       "solverAnswer": "No, brass is not magnetic.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i05",
@@ -6504,7 +7472,15 @@
      "verified": {
       "solverAnswer": "Yes, magnet acts through glass and water.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i06",
@@ -6528,7 +7504,15 @@
      "verified": {
       "solverAnswer": "Only some metals (iron, nickel, cobalt) are magnetic; aluminium isn't.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i07",
@@ -6552,7 +7536,15 @@
      "verified": {
       "solverAnswer": "Test with a magnet: the pin sticks, aluminium doesn't.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i08",
@@ -6576,7 +7568,15 @@
       "solverAnswer": "Use a magnet; steel tins stick, aluminium cans don't.",
       "agrees": true,
       "note": "Resolved hint leak: hint 2 no longer names the method."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i09",
@@ -6599,7 +7599,15 @@
      "verified": {
       "solverAnswer": "Iron (magnetite) particles.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i10",
@@ -6622,7 +7630,15 @@
      "verified": {
       "solverAnswer": "Attracted: iron nail, steel paper clip, nickel strip. Not: plastic scale, copper wire, eraser.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i11",
@@ -6646,7 +7662,15 @@
      "verified": {
       "solverAnswer": "Not all metals are magnetic; aluminium, copper, gold, silver aren't.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i12",
@@ -6666,7 +7690,15 @@
      "verified": {
       "solverAnswer": "Magnets pick up iron, nickel, cobalt things; many shiny metals (aluminium, copper) aren't magnetic.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-i13",
@@ -6692,7 +7724,15 @@
      "verified": {
       "solverAnswer": "Aluminium (or copper).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t01-rl-o2",
@@ -6730,7 +7770,7 @@
      "kind": "near_transfer",
      "difficulty": 4,
      "prompt_en": "A magnet attracts three identical-looking game tokens. When each token is turned over and tested again, only tokens P and R are attracted. Which tokens have a consistent magnetic test result?",
-     "prompt_hi": "Magnet teen ek-jaise dikhne wale game tokens ko attract karta hai. Har token ko palatkar dobara test karne par sirf P aur R attract hote hain. Kin tokens ka magnetic test result dono baar ek jaisa hai?",
+     "prompt_hi": "Magnet 3 ek-jaise dikhne wale game tokens ko attract karta hai. Har token ko palatkar dobara test karne par sirf P aur R attract hote hain. Kin tokens ka magnetic test result dono baar ek jaisa hai?",
      "answer": "P and R",
      "acceptable": [
       "R and P",
@@ -7073,7 +8113,15 @@
      "verified": {
       "solverAnswer": "N near S attract; N near N repel.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i03",
@@ -7097,7 +8145,15 @@
      "verified": {
       "solverAnswer": "At the two ends (poles).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i04",
@@ -7122,7 +8178,15 @@
       "solverAnswer": "Attract.",
       "agrees": true,
       "note": "Resolved safety: now an explicit thought experiment with a do-not-try warning. Science unchanged."
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i05",
@@ -7146,7 +8210,15 @@
      "verified": {
       "solverAnswer": "It floats/levitates above (repelled).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i06",
@@ -7169,7 +8241,15 @@
      "verified": {
       "solverAnswer": "Like poles repel pushing it up, balancing gravity.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i07",
@@ -7193,7 +8273,15 @@
      "verified": {
       "solverAnswer": "Bring each near a magnet pole/suspended; the one that repels is a magnet; or hang it freely, magnet settles N-S.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i08",
@@ -7217,7 +8305,15 @@
      "verified": {
       "solverAnswer": "Compare how many pins/clips each picks up, or distance at which it attracts.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i09",
@@ -7241,7 +8337,15 @@
      "verified": {
       "solverAnswer": "Like poles facing, so flip the carriage around.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i10",
@@ -7264,7 +8368,15 @@
      "verified": {
       "solverAnswer": "(a) arrows pulling together; (b) arrows pushing apart.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i11",
@@ -7289,7 +8401,15 @@
      "verified": {
       "solverAnswer": "Each half gets both N and S poles; poles cannot be separated.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i12",
@@ -7309,7 +8429,15 @@
      "verified": {
       "solverAnswer": "Two poles N and S; unlike attract, like repel; keep away from heat, dropping, keepers, away from phones/cards.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-i13",
@@ -7333,7 +8461,15 @@
      "verified": {
       "solverAnswer": "Repulsion; if it repels another magnet it is a magnet.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t02-rl-o1",
@@ -7464,8 +8600,8 @@
      "skillId": "c6-science-ch04-t02-s3",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "During a lab accident, a bar magnet snaps into two pieces. Riya says one piece has only a north pole. Why is she wrong? Answer in a short phrase.",
-     "prompt_hi": "Lab mein ek bar magnet tootkar do tukde ho gaya. Riya kehti hai ki ek tukde mein sirf north pole hoga. Woh galat kyun hai? Chhote phrase mein batao.",
+     "prompt_en": "During a lab accident, a bar magnet snaps into two pieces. {friendF} says one piece has only a north pole. Why is she wrong? Answer in a short phrase.",
+     "prompt_hi": "Lab mein ek bar magnet tootkar do tukde ho gaya. {friendF} kehti hai ki ek tukde mein sirf north pole hoga. Woh galat kyun hai? Chhote phrase mein batao.",
      "answer": "Each piece has both a north and a south pole",
      "acceptable": [
       "both pieces have two poles",
@@ -7606,8 +8742,8 @@
       "Ignores a needle that keeps swinging"
      ],
      "diagnostic": {
-      "prompt_en": "Riya reads her compass while it sits on an iron table next to a magnet. What should she do?",
-      "prompt_hi": "Riya lohe ki table pe, magnet ke paas rakhe compass ko padh rahi hai. Use kya karna chahiye?",
+      "prompt_en": "{friendF} reads her compass while it sits on an iron table next to a magnet. What should she do?",
+      "prompt_hi": "{friendF} lohe ki table pe, magnet ke paas rakhe compass ko padh rahi hai. Use kya karna chahiye?",
       "options": [
        {
         "text": "Nothing; a compass always shows north correctly",
@@ -7712,7 +8848,15 @@
      "verified": {
       "solverAnswer": "Face north (needle end): east is on your right.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i03",
@@ -7735,7 +8879,15 @@
      "verified": {
       "solverAnswer": "It swings back and settles pointing north-south again.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i04",
@@ -7758,7 +8910,15 @@
      "verified": {
       "solverAnswer": "It becomes a magnet and turns to point north-south on the floating cork.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i05",
@@ -7782,7 +8942,15 @@
      "verified": {
       "solverAnswer": "The needle deflects/turns toward the magnet (it points to the magnet's pole rather than north).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i06",
@@ -7806,7 +8974,15 @@
      "verified": {
       "solverAnswer": "It has become a magnet and Earth acts like a giant magnet, so it aligns north-south.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i07",
@@ -7830,7 +9006,15 @@
      "verified": {
       "solverAnswer": "Wooden table reading trustworthy; steel almirah (iron) disturbs the needle.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i08",
@@ -7854,7 +9038,15 @@
      "verified": {
       "solverAnswer": "Move away from iron/magnets, let needle settle, face north then east is right; find the wall facing that.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i09",
@@ -7878,7 +9070,15 @@
      "verified": {
       "solverAnswer": "Used a magnetic compass (floating lodestone/needle).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i10",
@@ -7903,7 +9103,15 @@
      "verified": {
       "solverAnswer": "East on the right.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i11",
@@ -7927,7 +9135,15 @@
      "verified": {
       "solverAnswer": "Needle points north because Earth acts like a giant magnet, not cold.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i12",
@@ -7948,7 +9164,15 @@
       "solverAnswer": "Magnetise a pin by stroking with a magnet in one direction, push through a cork/leaf, float in water; it aligns north-south like Earth's magnet.",
       "agrees": true,
       "note": "Resolved safety: adult handling the pin is now in the prompt and hints, not only the key."
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-i13",
@@ -7971,7 +9195,15 @@
      "verified": {
       "solverAnswer": "North (north-seeking) pole.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch04-t03-rl-o1",
@@ -8323,7 +9555,15 @@
      "verified": {
       "solverAnswer": "100 cm in 1 m; 10 mm in 1 cm.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i02",
@@ -8346,7 +9586,15 @@
      "verified": {
       "solverAnswer": "14.5 cm.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i03",
@@ -8396,15 +9644,23 @@
      "verified": {
       "solverAnswer": "Golu says 5.5 cm; the real length is 4.5 cm.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i05",
      "skillId": "c6-science-ch05-t01-s2",
      "kind": "predict",
      "difficulty": 3,
-     "prompt_en": "Predict: Riya reads the same mark on a scale once from the left, once from directly above and once from the right. Will all three readings be the same?",
-     "prompt_hi": "Guess karo: Riya scale ka ek hi nishaan ek baar left se, ek baar seedha upar se aur ek baar right se padhti hai. Kya teeno reading same aayengi?",
+     "prompt_en": "Predict: {friendF} reads the same mark on a scale once from the left, once from directly above and once from the right. Will all three readings be the same?",
+     "prompt_hi": "Guess karo: {friendF} scale ka ek hi nishaan ek baar left se, ek baar seedha upar se aur ek baar right se padhti hai. Kya teeno reading same aayengi?",
      "answer": "No; readings taken from the sides will be off, and only the reading from directly above is correct.",
      "acceptable": [
       "no",
@@ -8421,7 +9677,15 @@
      "verified": {
       "solverAnswer": "No; parallax error gives different readings.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i06",
@@ -8444,7 +9708,15 @@
      "verified": {
       "solverAnswer": "Handspans differ between people, not standard unit.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i07",
@@ -8467,7 +9739,15 @@
      "verified": {
       "solverAnswer": "A is correct; B slants and starts from edge, wrong.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i08",
@@ -8490,7 +9770,15 @@
      "verified": {
       "solverAnswer": "2000 cm.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i09",
@@ -8513,7 +9801,15 @@
      "verified": {
       "solverAnswer": "About 4000 steps.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i10",
@@ -8537,7 +9833,15 @@
      "verified": {
       "solverAnswer": "7.3 cm = 73 mm.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i11",
@@ -8561,7 +9865,15 @@
      "verified": {
       "solverAnswer": "2 m is about 6.5 feet, not 2 feet; units differ.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i12",
@@ -8569,7 +9881,7 @@
      "kind": "teachback",
      "difficulty": 4,
      "prompt_en": "Teach your younger sister three rules for measuring a pencil correctly with a scale.",
-     "prompt_hi": "Apni chhoti behen ko scale se pencil sahi naapne ke teen niyam sikhao.",
+     "prompt_hi": "Apni chhoti behen ko scale se pencil sahi naapne ke 3 niyam sikhao.",
      "answer": "Key ideas: lay the scale along the pencil, touching it; start from the zero mark, or another full mark and subtract; keep your eye directly above the reading; write the number with its unit.",
      "acceptable": [],
      "hints": [
@@ -8581,7 +9893,15 @@
      "verified": {
       "solverAnswer": "Start at 0 (or note start mark); lay scale along edge touching object; eye directly above the mark.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-i13",
@@ -8605,7 +9925,15 @@
      "verified": {
       "solverAnswer": "Metre.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t01-rl-o1",
@@ -8984,7 +10312,15 @@
      "verified": {
       "solverAnswer": "Measuring tape or a thread then a scale.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i03",
@@ -9008,7 +10344,15 @@
      "verified": {
       "solverAnswer": "More than 8 cm.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i04",
@@ -9032,7 +10376,15 @@
      "verified": {
       "solverAnswer": "No, a stretched rubber band is inaccurate.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i05",
@@ -9055,7 +10407,15 @@
      "verified": {
       "solverAnswer": "23 cm.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i06",
@@ -9079,7 +10439,15 @@
      "verified": {
       "solverAnswer": "Because the curve winds, the path is longer than the straight gap.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i07",
@@ -9104,7 +10472,15 @@
       "solverAnswer": "Straight 50 km; road 70 km; bus travels 70 km.",
       "agrees": true,
       "note": "Resolved: prompt_hi now asks which of the two distances the bus travels."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i08",
@@ -9127,7 +10503,15 @@
      "verified": {
       "solverAnswer": "Wrap a tape or thread around the trunk, then measure the thread on a scale.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i09",
@@ -9150,7 +10534,15 @@
      "verified": {
       "solverAnswer": "300 km.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i10",
@@ -9173,15 +10565,23 @@
      "verified": {
       "solverAnswer": "Wavy line; thread following wavy line; straightened thread next to scale.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i11",
      "skillId": "c6-science-ch05-t02-s2",
      "kind": "error_spot",
      "difficulty": 3,
-     "prompt_en": "Riya wraps a thread around a bangle but leaves gaps where the thread doesn't touch the bangle. She gets 18 cm. What might be wrong?",
-     "prompt_hi": "Riya chudi ke chaaron taraf dhaaga lapet-ti hai par kai jagah dhaaga chudi ko chhoota nahi, beech mein jagah reh jaati hai. Use 18 cm milta hai. Kya galat ho sakta hai?",
+     "prompt_en": "{friendF} wraps a thread around a bangle but leaves gaps where the thread doesn't touch the bangle. She gets 18 cm. What might be wrong?",
+     "prompt_hi": "{friendF} chudi ke chaaron taraf dhaaga lapet-ti hai par kai jagah dhaaga chudi ko chhoota nahi, beech mein jagah reh jaati hai. Use 18 cm milta hai. Kya galat ho sakta hai?",
      "answer": "The thread did not follow the bangle closely; where it bulged away, it made a bigger loop, so 18 cm is probably too long. She should wrap it snugly with no gaps or overlaps.",
      "acceptable": [
       "gaps",
@@ -9198,7 +10598,15 @@
       "solverAnswer": "Thread isn't snug, so reading is wrong (too long or inconsistent); gaps cause error; the thread should hug the bangle.",
       "agrees": true,
       "note": "Agrees; the effect of gaps (loose, too-long loop) is reasoned rather than certain; the key states it with 'probably', fine."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i12",
@@ -9218,7 +10626,15 @@
      "verified": {
       "solverAnswer": "Lay a thread along the road on the map, mark, straighten, measure, multiply by scale.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-i13",
@@ -9241,7 +10657,15 @@
      "verified": {
       "solverAnswer": "To measure its actual length on a straight scale.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t02-rl-o1",
@@ -9594,7 +11018,15 @@
      "verified": {
       "solverAnswer": "(a) linear/rectilinear (b) circular (c) oscillatory.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i02",
@@ -9627,15 +11059,15 @@
      "skillId": "c6-science-ch05-t03-s1",
      "kind": "predict",
      "difficulty": 2,
-     "prompt_en": "Predict: Riya sits in a moving bus and her friend Aman stands at the bus stop. Will Aman say Riya is moving? Will the boy sitting next to Riya say she is moving?",
-     "prompt_hi": "Guess karo: Riya chalti bus mein baithi hai aur Aman bus stop pe khada hai. Kya Aman kahega Riya chal rahi hai? Riya ke bagal wala ladka kya kahega?",
+     "prompt_en": "Predict: {friendF} sits in a moving bus and her friend Aman stands at the bus stop. Will Aman say {friendF} is moving? Will the boy sitting next to {friendF} say she is moving?",
+     "prompt_hi": "Guess karo: {friendF} chalti bus mein baithi hai aur Aman bus stop pe khada hai. Kya Aman kahega {friendF} chal rahi hai? {friendF} ke bagal wala ladka kya kahega?",
      "answer": "Aman says she is moving, because her position changes compared with the bus stop; the boy next to her says she is at rest, because her position doesn't change compared with him.",
      "acceptable": [
       "Aman yes, boy no",
       "depends on reference point"
      ],
      "hints": [
-      "Ask what each person compares Riya with",
+      "Ask what each person compares {friendF} with",
       "Point to the bus stop and the seat",
       "Prompt: compared with the stop she ___; compared with the boy she ___",
       "Assert: moving for Aman, at rest for the boy"
@@ -9644,7 +11076,15 @@
      "verified": {
       "solverAnswer": "Aman says yes; the boy beside her says no.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i04",
@@ -9668,7 +11108,15 @@
      "verified": {
       "solverAnswer": "Oscillatory (to and fro).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i05",
@@ -9692,7 +11140,15 @@
      "verified": {
       "solverAnswer": "It feels like your own train is moving; check against the ground/platform.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i06",
@@ -9716,7 +11172,15 @@
      "verified": {
       "solverAnswer": "A swing moves to and fro about a middle position.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i07",
@@ -9740,7 +11204,15 @@
      "verified": {
       "solverAnswer": "Fan tip: circular. Wheel axle: linear (straight).",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i08",
@@ -9762,7 +11234,15 @@
      "verified": {
       "solverAnswer": "Slide: linear. Clock hand tip: circular. Sitar string: oscillatory.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i09",
@@ -9786,7 +11266,15 @@
      "verified": {
       "solverAnswer": "(a) oscillatory (b) circular (c) linear; merry-go-round with up-down horses: circular and oscillatory.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i10",
@@ -9810,7 +11298,15 @@
      "verified": {
       "solverAnswer": "Linear straight arrow; circular arrow around a circle; oscillatory arrow back and forth.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i11",
@@ -9834,7 +11330,15 @@
      "verified": {
       "solverAnswer": "Motion is relative; tree moves relative to a passing train; need reference.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i12",
@@ -9854,7 +11358,15 @@
      "verified": {
       "solverAnswer": "Linear: slide; circular: roundabout; oscillatory: swing; reference point: fixed object.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-i13",
@@ -9877,7 +11389,15 @@
      "verified": {
       "solverAnswer": "Oscillatory.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch05-t03-rl-o1",
@@ -10227,7 +11747,15 @@
      "verified": {
       "solverAnswer": "Lustre is shininess of materials; e.g. gold, silver, steel.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i03",
@@ -10251,7 +11779,15 @@
      "verified": {
       "solverAnswer": "Salt and sugar dissolve; sand, chalk powder, oil do not.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i04",
@@ -10275,7 +11811,15 @@
      "verified": {
       "solverAnswer": "Log floats, hollow ball floats; nail and stone sink.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i05",
@@ -10298,7 +11842,15 @@
      "verified": {
       "solverAnswer": "Empty katori floats; when it fills with water it sinks.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i06",
@@ -10322,7 +11874,15 @@
      "verified": {
       "solverAnswer": "Floating depends on the material (density) not weight; wood is less dense than water, iron is denser.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i07",
@@ -10346,7 +11906,15 @@
      "verified": {
       "solverAnswer": "Hardness or breakability; plastic can bend/less brittle; tapping or dropping from low height on soft surface; weight.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i08",
@@ -10370,7 +11938,15 @@
      "verified": {
       "solverAnswer": "Frosted glass is translucent: lets light in but gives privacy.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i09",
@@ -10393,7 +11969,15 @@
      "verified": {
       "solverAnswer": "Floats of light material (cork, thermocol, plastic) that float; weights of heavy materials (lead, iron) to sink the net.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i10",
@@ -10417,7 +12001,15 @@
      "verified": {
       "solverAnswer": "Steel spoon: shiny yes, hard yes, dissolves no, floats no. Wooden spoon: not shiny, hard-ish, no, floats. Wax: dull/slightly, soft, no, floats.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i11",
@@ -10441,7 +12033,15 @@
      "verified": {
       "solverAnswer": "Looks don't decide; sugar dissolves, sand doesn't.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i12",
@@ -10461,7 +12061,15 @@
      "verified": {
       "solverAnswer": "Appearance, hardness, solubility, float/sink, transparency; tests: look, scratch, stir in water, put in water, hold to light.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-i13",
@@ -10483,7 +12091,15 @@
      "verified": {
       "solverAnswer": "Translucent.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t01-rl-o1",
@@ -10835,7 +12451,15 @@
      "verified": {
       "solverAnswer": "Transparent: glass, clear plastic sheet; opaque: wood, iron, cardboard.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i03",
@@ -10858,7 +12482,15 @@
      "verified": {
       "solverAnswer": "The metal pan is hot; plastic handle stays cooler because plastic is a poor conductor.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i04",
@@ -10881,7 +12513,15 @@
      "verified": {
       "solverAnswer": "Cotton would get wet; absorb water.",
       "agrees": true
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": true
     },
     {
      "id": "c6-science-ch06-t02-i05",
@@ -10905,7 +12545,15 @@
      "verified": {
       "solverAnswer": "Metal conducts heat to cook food; plastic would melt.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i06",
@@ -10929,7 +12577,15 @@
      "verified": {
       "solverAnswer": "Steel conducts heat/strong; wood poor conductor; steel for cooking, wood for stirring hot food.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i07",
@@ -10952,7 +12608,15 @@
      "verified": {
       "solverAnswer": "Glass would break; wood/metal strong and durable.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i08",
@@ -10975,7 +12639,15 @@
      "verified": {
       "solverAnswer": "Steel or unbreakable plastic: doesn't break.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i09",
@@ -11000,7 +12672,15 @@
      "verified": {
       "solverAnswer": "Steel spoon: shiny, not floating; wooden block: floats, not shiny; shiny plastic ball: both; stone: neither.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i10",
@@ -11023,7 +12703,15 @@
      "verified": {
       "solverAnswer": "Mixes objects (chair, bottle, spoon) with materials (wood, plastic, steel).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i11",
@@ -11044,7 +12732,15 @@
      "verified": {
       "solverAnswer": "Metal body conducts heat to cook food; plastic handle is a poor conductor so safe to hold.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-i12",
@@ -11069,7 +12765,15 @@
      "verified": {
       "solverAnswer": "Material; e.g. spoon, bucket.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch06-t02-rl-o2",
@@ -11344,8 +13048,8 @@
       "Trusts a hand that just came out of ice water"
      ],
      "diagnostic": {
-      "prompt_en": "Riya dipped her hand in ice water, then touched tap water and said it was warm. Is the tap water really warm?",
-      "prompt_hi": "Riya ne haath barf ke paani mein daala, phir nal ka paani chhua aur kaha garam hai. Kya nal ka paani sach mein garam hai?",
+      "prompt_en": "{friendF} dipped her hand in ice water, then touched tap water and said it was warm. Is the tap water really warm?",
+      "prompt_hi": "{friendF} ne haath barf ke paani mein daala, phir nal ka paani chhua aur kaha garam hai. Kya nal ka paani sach mein garam hai?",
       "options": [
        {
         "text": "Yes, her hand can tell the temperature exactly",
@@ -11393,7 +13097,15 @@
      "verified": {
       "solverAnswer": "Thermometer; degrees Celsius (°C).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i02",
@@ -11443,7 +13155,15 @@
      "verified": {
       "solverAnswer": "Cold-hand feels warm; warm-hand feels cool.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i04",
@@ -11466,7 +13186,15 @@
      "verified": {
       "solverAnswer": "Steel feels colder, but both are at the same room temperature; steel conducts heat from the hand faster.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i05",
@@ -11490,7 +13218,15 @@
      "verified": {
       "solverAnswer": "The bucket of warm water holds more heat and melts more ice.",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i06",
@@ -11513,7 +13249,15 @@
      "verified": {
       "solverAnswer": "Steel conducts heat away from your hand faster than wood, so feels colder though same temperature.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i07",
@@ -11537,7 +13281,15 @@
      "verified": {
       "solverAnswer": "Chai has higher temperature; the bucket holds more heat.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i08",
@@ -11561,7 +13313,15 @@
      "verified": {
       "solverAnswer": "Tiles and carpet are at the same room temperature; tiles conduct heat away from feet faster so feel colder.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i09",
@@ -11585,7 +13345,15 @@
      "verified": {
       "solverAnswer": "Wool is a poor conductor; it traps air and slows loss of body heat; sweaters don't make heat.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i10",
@@ -11607,7 +13375,15 @@
      "verified": {
       "solverAnswer": "0 at ice melting, 37 body, 45 hot Delhi afternoon, 100 boiling.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i11",
@@ -11631,7 +13407,15 @@
      "verified": {
       "solverAnswer": "Temperature is how hot, heat is the energy amount; hot chai has higher temperature though less heat.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i12",
@@ -11639,7 +13423,7 @@
      "kind": "teachback",
      "difficulty": 4,
      "prompt_en": "Explain to a younger child why we use a thermometer instead of our hand, using the three-bowl experiment.",
-     "prompt_hi": "Ek chhote bachche ko teen katori wale experiment se samjhao ki hum haath ki jagah thermometer kyon use karte hain.",
+     "prompt_hi": "Ek chhote bachche ko 3 katori wale experiment se samjhao ki hum haath ki jagah thermometer kyon use karte hain.",
      "answer": "Key ideas: a hand from cold water feels lukewarm water as warm, and a hand from warm water feels the same water as cool; so touch depends on the hand and is unreliable (and unsafe for very hot things); a thermometer gives the same number in °C for everyone.",
      "acceptable": [],
      "hints": [
@@ -11652,7 +13436,15 @@
      "verified": {
       "solverAnswer": "Hand in cold and warm bowls then in middle bowl feels different, so thermometer gives reliable reading.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-i13",
@@ -11676,7 +13468,15 @@
      "verified": {
       "solverAnswer": "0 °C.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t01-rl-o1",
@@ -12022,7 +13822,15 @@
      "verified": {
       "solverAnswer": "1 °C.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i03",
@@ -12045,7 +13853,15 @@
      "verified": {
       "solverAnswer": "37.4 °C.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i04",
@@ -12070,7 +13886,15 @@
      "verified": {
       "solverAnswer": "No; reading will change (falls) as the thermometer cools in air.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i05",
@@ -12095,7 +13919,15 @@
       "solverAnswer": "No; below its range (35 °C minimum).",
       "agrees": true,
       "note": "Resolved hint leak: hint 2 no longer states the comparison that gives the answer."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i06",
@@ -12119,7 +13951,15 @@
      "verified": {
       "solverAnswer": "Because outside the water it changes temperature and the reading changes.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i07",
@@ -12142,7 +13982,15 @@
      "verified": {
       "solverAnswer": "Clinical: 35 to 42 °C, body temperature, has a kink/ constriction so mercury stays; lab: -10 to 110 °C, general, no kink.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i08",
@@ -12166,7 +14014,15 @@
      "verified": {
       "solverAnswer": "Yes, a fever (about 38.5 °C).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i09",
@@ -12190,7 +14046,15 @@
      "verified": {
       "solverAnswer": "Lab thermometer; read with bulb in the liquid, bulb not touching the tumbler wall, eye level.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i10",
@@ -12213,7 +14077,15 @@
      "verified": {
       "solverAnswer": "3 divisions (33 is 3 above 30).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i11",
@@ -12238,7 +14110,15 @@
      "verified": {
       "solverAnswer": "Clinical range too low (max 42), would break; use lab thermometer or just careful.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i12",
@@ -12260,7 +14140,15 @@
       "solverAnswer": "Clean, shake the mercury down below 35, place under tongue or armpit, wait a minute or two, read at eye level, clean.",
       "agrees": true,
       "note": "Resolved safety: placement changed from under the tongue to the armpit, digital preferred, adult present. Science correct."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-i13",
@@ -12284,7 +14172,15 @@
      "verified": {
       "solverAnswer": "37 °C.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch07-t02-rl-o1",
@@ -12588,7 +14484,7 @@
      "kind": "practice",
      "difficulty": 1,
      "prompt_en": "Name the three states of water and give one example of each from your home.",
-     "prompt_hi": "Paani ki teen avasthaayein batao aur har ek ka ghar se ek example do.",
+     "prompt_hi": "Paani ki 3 avasthaayein batao aur har ek ka ghar se ek example do.",
      "answer": "Solid: ice (ice cubes in the freezer). Liquid: water (from the tap, in a lota). Gas: water vapour (invisible; it rises from wet clothes drying and from boiling water).",
      "acceptable": [
       "ice, water, water vapour",
@@ -12627,7 +14523,15 @@
      "verified": {
       "solverAnswer": "(a) melting (b) freezing (c) condensation.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i03",
@@ -12649,7 +14553,15 @@
      "verified": {
       "solverAnswer": "Amount same; shape changes (takes shape of container).",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i04",
@@ -12674,7 +14586,15 @@
      "verified": {
       "solverAnswer": "No: ice melts (change of state); sugar dissolves (mixing).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i05",
@@ -12697,7 +14617,15 @@
      "verified": {
       "solverAnswer": "Bulging above the top (water expands on freezing).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i06",
@@ -12720,7 +14648,15 @@
      "verified": {
       "solverAnswer": "Ice is less dense than water.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i07",
@@ -12744,7 +14680,15 @@
      "verified": {
       "solverAnswer": "Clear gap is the vapour (invisible); white cloud is tiny water droplets from condensing.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i08",
@@ -12766,7 +14710,15 @@
      "verified": {
       "solverAnswer": "Melting then freezing.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i09",
@@ -12789,7 +14741,15 @@
      "verified": {
       "solverAnswer": "Ice floats; the ice layer insulates; water below stays liquid.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i10",
@@ -12797,7 +14757,7 @@
      "kind": "translate_rep",
      "difficulty": 3,
      "prompt_en": "Draw ice, water and water vapour at the corners of a triangle. Label each arrow between them with the name of the change.",
-     "prompt_hi": "Ek triangle ke teen konon pe barf, paani aur bhaap banao. Inke beech ke har teer pe badlaav ka naam likho.",
+     "prompt_hi": "Ek triangle ke 3 konon pe barf, paani aur bhaap banao. Inke beech ke har teer pe badlaav ka naam likho.",
      "answer": "Ice → water: melting; water → ice: freezing; water → vapour: evaporation or boiling; vapour → water: condensation.",
      "acceptable": [
       "melting, freezing, evaporation, condensation"
@@ -12811,7 +14771,15 @@
      "verified": {
       "solverAnswer": "Ice to water: melting; water to ice: freezing; water to vapour: evaporation/boiling; vapour to water: condensation.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i11",
@@ -12835,7 +14803,15 @@
      "verified": {
       "solverAnswer": "Bubbles are water vapour, not air going in; white steam is tiny droplets not vapour.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i12",
@@ -12856,7 +14832,15 @@
      "verified": {
       "solverAnswer": "Melting is solid to liquid, same substance; dissolving is mixing in a liquid; sugar dissolves, ice melts.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-i13",
@@ -12879,7 +14863,15 @@
      "verified": {
       "solverAnswer": "100 °C.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t01-rl-o2",
@@ -13231,7 +15223,15 @@
      "verified": {
       "solverAnswer": "Water vapour turning into liquid on cooling; drops on cold glass, clouds, dew.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i03",
@@ -13255,7 +15255,15 @@
      "verified": {
       "solverAnswer": "Water droplets form on the outside.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i04",
@@ -13280,7 +15288,15 @@
      "verified": {
       "solverAnswer": "It slowly evaporates and the plate becomes dry.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i05",
@@ -13303,7 +15319,15 @@
      "verified": {
       "solverAnswer": "On the cold plate.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i06",
@@ -13327,7 +15351,15 @@
      "verified": {
       "solverAnswer": "Bottle is solid, water cant pass through; drops come from vapour in air condensing.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i07",
@@ -13351,7 +15383,15 @@
      "verified": {
       "solverAnswer": "Boiling at 100 °C throughout the liquid; evaporation at any temperature only at the surface.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i08",
@@ -13375,7 +15415,15 @@
      "verified": {
       "solverAnswer": "Dew; water vapour in the air condensed on cold surfaces.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i09",
@@ -13397,7 +15445,15 @@
      "verified": {
       "solverAnswer": "Sea water evaporates, vapour rises, condenses into clouds, wind carries them, rain over Odisha.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i10",
@@ -13420,7 +15476,15 @@
      "verified": {
       "solverAnswer": "Sea -> evaporation (sun) -> clouds (condensation) -> rain -> river -> sea.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i11",
@@ -13444,7 +15508,15 @@
      "verified": {
       "solverAnswer": "Evaporation not boiling; clothes dry even in shade or wind or warm air.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i12",
@@ -13465,7 +15537,15 @@
      "verified": {
       "solverAnswer": "Water vapour from air condenses on cold glass; prove by food colour inside, drops outside stay clear.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-i13",
@@ -13488,7 +15568,15 @@
      "verified": {
       "solverAnswer": "Condensation.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t02-rl-o2",
@@ -13839,7 +15927,15 @@
      "verified": {
       "solverAnswer": "Moving air speeds up evaporation of sweat which takes heat from the skin.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i03",
@@ -13863,7 +15959,15 @@
      "verified": {
       "solverAnswer": "Wide plate.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i04",
@@ -13887,7 +15991,15 @@
      "verified": {
       "solverAnswer": "Not as well; humid air slows evaporation.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i05",
@@ -13910,7 +16022,15 @@
      "verified": {
       "solverAnswer": "The one under the fan.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i06",
@@ -13933,7 +16053,15 @@
      "verified": {
       "solverAnswer": "Painted blocks evaporation; so cooling comes from evaporation not clay.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i07",
@@ -13957,7 +16085,15 @@
      "verified": {
       "solverAnswer": "Clay matka water is cooler because of evaporation from seeping water.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i08",
@@ -13979,7 +16115,15 @@
      "verified": {
       "solverAnswer": "As the water evaporates it takes heat from the forehead, cooling.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i09",
@@ -14002,15 +16146,23 @@
      "verified": {
       "solverAnswer": "Water evaporating from the mat takes heat from air; humid Kolkata air is already full of vapour so evaporation is slow.",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i10",
      "skillId": "c6-science-ch08-t03-s2",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "Riya's results: same amount of water, same place; a wide plate dried in 2 hours and a cup dried in 6 hours. Show this as a table or bar chart and state the conclusion.",
-     "prompt_hi": "Riya ke results: utna hi paani, same jagah; chaudi plate 2 ghante mein sookhi aur cup 6 ghante mein. Ise table ya bar chart mein dikhao aur nateeja likho.",
+     "prompt_en": "{friendF}'s results: same amount of water, same place; a wide plate dried in 2 hours and a cup dried in 6 hours. Show this as a table or bar chart and state the conclusion.",
+     "prompt_hi": "{friendF} ke results: utna hi paani, same jagah; chaudi plate 2 ghante mein sookhi aur cup 6 ghante mein. Ise table ya bar chart mein dikhao aur nateeja likho.",
      "answer": "Plate: 2 h; cup: 6 h. Conclusion: a larger surface area makes water evaporate faster.",
      "acceptable": [
       "plate 2 cup 6",
@@ -14025,7 +16177,15 @@
      "verified": {
       "solverAnswer": "Plate 2 h, cup 6 h; larger surface area dries faster.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i11",
@@ -14049,7 +16209,15 @@
      "verified": {
       "solverAnswer": "Two things changed (sun and shade as well as fan); unfair test.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i12",
@@ -14070,7 +16238,15 @@
      "verified": {
       "solverAnswer": "Tiny pores let water seep out; it evaporates, taking heat from the water inside, cooling it.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-i13",
@@ -14093,7 +16269,15 @@
      "verified": {
       "solverAnswer": "On a dry day.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch08-t03-rl-o1",
@@ -14416,7 +16600,15 @@
      "verified": {
       "solverAnswer": "Handpicking.",
       "agrees": true
-     }
+     },
+     "ge": 3,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 3.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c6-science-ch09-t01-i02",
@@ -14464,7 +16656,15 @@
      "verified": {
       "solverAnswer": "Heavier grain falls near; lighter husk blown farther.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i04",
@@ -14487,7 +16687,15 @@
      "verified": {
       "solverAnswer": "Pebbles stay in sieve; atta goes through.",
       "agrees": true
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": true
     },
     {
      "id": "c6-science-ch09-t01-i05",
@@ -14511,7 +16719,15 @@
      "verified": {
       "solverAnswer": "No; same size and similar weight; winnowing depends on weight difference.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i06",
@@ -14534,7 +16750,15 @@
      "verified": {
       "solverAnswer": "Grain is heavier.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i07",
@@ -14558,7 +16782,15 @@
      "verified": {
       "solverAnswer": "Sieving uses size difference; winnowing uses weight difference.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i08",
@@ -14581,7 +16813,15 @@
      "verified": {
       "solverAnswer": "Sieving; separating large stones/gravel from fine sand by size.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i09",
@@ -14604,7 +16844,15 @@
      "verified": {
       "solverAnswer": "Handpick stones, winnow (or blow) husk, sieve dust.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i10",
@@ -14628,7 +16876,15 @@
      "verified": {
       "solverAnswer": "Grain heap closer (heavier), husk heap farther (lighter).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i11",
@@ -14653,7 +16909,15 @@
      "verified": {
       "solverAnswer": "Sieve separates by size; same size cant be separated; use handpicking.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i12",
@@ -14673,7 +16937,15 @@
      "verified": {
       "solverAnswer": "Threshing separates grains from stalks; winnowing separates husk from grain.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-i13",
@@ -14696,7 +16968,15 @@
      "verified": {
       "solverAnswer": "Separating grain from the harvested stalks.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t01-rl-o2",
@@ -15015,7 +17295,15 @@
      "verified": {
       "solverAnswer": "By filtering with a sieve/strainer (chalni).",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i03",
@@ -15038,7 +17326,15 @@
      "verified": {
       "solverAnswer": "Mud settles at the bottom, clearer water on top (sedimentation).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i04",
@@ -15062,7 +17358,15 @@
      "verified": {
       "solverAnswer": "Yes, still salty.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i05",
@@ -15086,7 +17390,15 @@
      "verified": {
       "solverAnswer": "White salt crystals.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i06",
@@ -15110,7 +17422,15 @@
      "verified": {
       "solverAnswer": "Sand particles are bigger than filter pores; dissolved salt is tiny and passes through.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i07",
@@ -15133,7 +17453,15 @@
      "verified": {
       "solverAnswer": "Sand-water by filtration; salt water by evaporation.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i08",
@@ -15155,7 +17483,15 @@
      "verified": {
       "solverAnswer": "Hold lid or sieve/plate and drain (decantation/filtration).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i09",
@@ -15179,7 +17515,15 @@
      "verified": {
       "solverAnswer": "Shallow pans have large surface so evaporate faster; as water evaporates salt is left behind.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i10",
@@ -15202,7 +17546,15 @@
      "verified": {
       "solverAnswer": "Mud stays on the filter paper (residue); clear filtrate drips into glass.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i11",
@@ -15226,7 +17578,15 @@
      "verified": {
       "solverAnswer": "Filtering cant remove dissolved salt; need evaporation/condensation (distillation).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i12",
@@ -15234,7 +17594,7 @@
      "kind": "teachback",
      "difficulty": 4,
      "prompt_en": "Explain to a friend how to get cleaner water from muddy water using three methods in order, and whether it is then safe to drink.",
-     "prompt_hi": "Ek dost ko samjhao ki matmaile paani se teen tareekon se, sahi kram mein, saaf paani kaise milta hai, aur kya phir woh peene layak hai.",
+     "prompt_hi": "Ek dost ko samjhao ki matmaile paani se 3 tareekon se, sahi kram mein, saaf paani kaise milta hai, aur kya phir woh peene layak hai.",
      "answer": "Key ideas: sedimentation (let the mud settle), decantation (pour off the top), filtration (through cloth or filter paper); it may still have germs or dissolved substances, so boil or purify it before drinking.",
      "acceptable": [],
      "hints": [
@@ -15247,7 +17607,15 @@
      "verified": {
       "solverAnswer": "Sedimentation, decantation, filtration; then boil/purify before drinking; not yet safe.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-i13",
@@ -15270,7 +17638,15 @@
      "verified": {
       "solverAnswer": "Evaporation.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch09-t02-rl-o1",
@@ -15373,8 +17749,8 @@
      "skillId": "c6-science-ch09-t02-s2",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "Riya pours water containing fine, insoluble charcoal powder through filter paper. Why does the powder remain on the paper while water collects below?",
-     "prompt_hi": "Riya bareek, na ghulne wala charcoal powder mila paani filter paper se guzaarti hai. Powder paper par kyun reh jaata hai, jabki paani neeche jama hota hai?",
+     "prompt_en": "{friendF} pours water containing fine, insoluble charcoal powder through filter paper. Why does the powder remain on the paper while water collects below?",
+     "prompt_hi": "{friendF} bareek, na ghulne wala charcoal powder mila paani filter paper se guzaarti hai. Powder paper par kyun reh jaata hai, jabki paani neeche jama hota hai?",
      "answer": "The filter paper traps the insoluble particles but lets water pass through.",
      "acceptable": [
       "charcoal particles cannot pass through the filter, but water can",
@@ -15657,7 +18033,15 @@
      "verified": {
       "solverAnswer": "Living: cow, mango tree, mushroom. Non-living: bicycle, cloud, stone.",
       "agrees": true
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": true
     },
     {
      "id": "c6-science-ch10-t01-i03",
@@ -15681,7 +18065,15 @@
      "verified": {
       "solverAnswer": "The leaves fold/droop; shows response to touch.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i04",
@@ -15689,7 +18081,7 @@
      "kind": "predict",
      "difficulty": 2,
      "prompt_en": "Predict: you keep some dry chana in a dry box and some on wet cotton for three days. What will you see in each?",
-     "prompt_hi": "Guess karo: kuch sookhe chane sookhe dabbe mein aur kuch geeli rui pe teen din rakho. Dono mein kya dikhega?",
+     "prompt_hi": "Guess karo: kuch sookhe chane sookhe dabbe mein aur kuch geeli rui pe 3 din rakho. Dono mein kya dikhega?",
      "answer": "The chana on wet cotton swell and sprout; the ones in the dry box stay the same. Seeds are alive but resting.",
      "acceptable": [
       "wet ones sprout",
@@ -15705,7 +18097,15 @@
      "verified": {
       "solverAnswer": "Dry box: nothing; wet cotton: sprouts.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i05",
@@ -15728,7 +18128,15 @@
      "verified": {
       "solverAnswer": "Toward the window (light).",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i06",
@@ -15752,7 +18160,15 @@
      "verified": {
       "solverAnswer": "Car doesn't grow, reproduce, respire, respond like living things.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i07",
@@ -15776,7 +18192,15 @@
      "verified": {
       "solverAnswer": "Puppy grows, reproduces, responds; flame just burns fuel; not alive.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i08",
@@ -15784,7 +18208,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Is the mango tree in your colony living? Give three pieces of evidence.",
-     "prompt_hi": "Kya tumhari colony ka aam ka ped jeevit hai? Teen saboot do.",
+     "prompt_hi": "Kya tumhari colony ka aam ka ped jeevit hai? 3 saboot do.",
      "answer": "Yes. Any three: it grows taller and gets new leaves; it needs water and makes its own food; it respires; it flowers and makes fruits with seeds (reproduces); it responds to light; it will die one day.",
      "acceptable": [
       "grows",
@@ -15801,7 +18225,15 @@
      "verified": {
       "solverAnswer": "It grows, makes food, responds to light, reproduces by seeds, respires.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i09",
@@ -15826,7 +18258,15 @@
      "verified": {
       "solverAnswer": "Growth, reproduction, respiration/gases exchange, response, need for food/energy.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i10",
@@ -15851,7 +18291,15 @@
      "verified": {
       "solverAnswer": "Cow: all ticks. Mango tree: grows, needs food (makes own), respires, responds, reproduces. Car: all crosses.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i11",
@@ -15875,7 +18323,15 @@
      "verified": {
       "solverAnswer": "Plants are living (grow, respire, reproduce, respond); dry seeds are living but resting.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i12",
@@ -15895,7 +18351,15 @@
      "verified": {
       "solverAnswer": "Seed grows into plant when given water; toy car doesn't grow, respire, reproduce.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-i13",
@@ -15919,7 +18383,15 @@
      "verified": {
       "solverAnswer": "Bending toward light; leaves fold on touch; roots grow downward.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t01-rl-o1",
@@ -16260,7 +18732,7 @@
      "kind": "practice",
      "difficulty": 1,
      "prompt_en": "What three conditions do seeds need to germinate?",
-     "prompt_hi": "Beejon ko ankurit hone ke liye kaunsi teen cheezein chahiye?",
+     "prompt_hi": "Beejon ko ankurit hone ke liye kaunsi 3 cheezein chahiye?",
      "answer": "Water, air and suitable warmth.",
      "acceptable": [
       "water air warmth",
@@ -16301,7 +18773,15 @@
      "verified": {
       "solverAnswer": "One set with water, one dry; same seeds, same warmth, same place, only water changes.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i03",
@@ -16325,7 +18805,15 @@
      "verified": {
       "solverAnswer": "Yes, both sprout (no light needed).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i04",
@@ -16349,7 +18837,15 @@
      "verified": {
       "solverAnswer": "Wet cotton set (water-logged seeds lack air).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i05",
@@ -16373,7 +18869,15 @@
      "verified": {
       "solverAnswer": "The shelf set sprouts; fridge set slow or none.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i06",
@@ -16397,7 +18901,15 @@
      "verified": {
       "solverAnswer": "Seeds have stored food, no need for light until leaves.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i07",
@@ -16420,7 +18932,15 @@
      "verified": {
       "solverAnswer": "Light is needed for green colour (chlorophyll) and normal growth; in dark they get pale, tall.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i08",
@@ -16443,7 +18963,15 @@
      "verified": {
       "solverAnswer": "Soil has moisture for germination; seeds need water.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i09",
@@ -16468,15 +18996,23 @@
      "verified": {
       "solverAnswer": "Two sets on wet cotton, one in a warm place, one cool (fridge); same seeds, water; compare.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i10",
      "skillId": "c6-science-ch10-t02-s2",
      "kind": "translate_rep",
      "difficulty": 3,
-     "prompt_en": "Riya's sprouting record for 10 seeds on wet cotton: Day 1: 0, Day 2: 3, Day 3: 8, Day 4: 10. Her dry set stayed at 0 every day. Draw a bar or line graph and tell me what it shows.",
-     "prompt_hi": "Riya ka record, geeli rui pe 10 beej: Din 1: 0, Din 2: 3, Din 3: 8, Din 4: 10. Uska sookha set har din 0 raha. Bar ya line graph banao aur batao isse kya pata chalta hai.",
+     "prompt_en": "{friendF}'s sprouting record for 10 seeds on wet cotton: Day 1: 0, Day 2: 3, Day 3: 8, Day 4: 10. Her dry set stayed at 0 every day. Draw a bar or line graph and tell me what it shows.",
+     "prompt_hi": "{friendF} ka record, geeli rui pe 10 beej: Din 1: 0, Din 2: 3, Din 3: 8, Din 4: 10. Uska sookha set har din 0 raha. Bar ya line graph banao aur batao isse kya pata chalta hai.",
      "answer": "The wet set rises to 10 by day 4 while the dry set stays at 0; seeds need water to germinate.",
      "acceptable": [
       "wet set rises to 10",
@@ -16492,7 +19028,15 @@
      "verified": {
       "solverAnswer": "Bar/line graph rising to 10; with water seeds sprout, dry ones don't.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i11",
@@ -16515,7 +19059,15 @@
      "verified": {
       "solverAnswer": "Changed two things (water and temperature); unfair test.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i12",
@@ -16536,7 +19088,15 @@
      "verified": {
       "solverAnswer": "Seeds have stored food; need only water, air, warmth; under water they lack air and rot.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-i13",
@@ -16560,7 +19120,15 @@
      "verified": {
       "solverAnswer": "No.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t02-rl-o1",
@@ -16911,7 +19479,15 @@
      "verified": {
       "solverAnswer": "Egg, larva, pupa, adult.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i02",
@@ -16934,7 +19510,15 @@
      "verified": {
       "solverAnswer": "Eggs, tadpole, froglet, adult frog.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i03",
@@ -16982,7 +19566,15 @@
      "verified": {
       "solverAnswer": "Mosquito eggs, wriggling larvae and pupae.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i05",
@@ -17007,7 +19599,15 @@
      "verified": {
       "solverAnswer": "The back legs grow, front legs appear, tail shrinks, it becomes a froglet.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i06",
@@ -17031,7 +19631,15 @@
      "verified": {
       "solverAnswer": "Cycle is broken; no larvae develop.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i07",
@@ -17055,7 +19663,15 @@
      "verified": {
       "solverAnswer": "Tadpole lives in water breathing through gills; frog on land with lungs (metamorphosis).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i08",
@@ -17079,7 +19695,15 @@
      "verified": {
       "solverAnswer": "Tadpole water, gills, swims with tail; frog land and water, lungs/skin, legs for jumping.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i09",
@@ -17102,7 +19726,15 @@
      "verified": {
       "solverAnswer": "To remove standing water where mosquitoes breed; breaks the larva stage.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i10",
@@ -17124,7 +19756,15 @@
      "verified": {
       "solverAnswer": "Seeds carry the plant's traits, so they grow into plants like parents.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i11",
@@ -17147,7 +19787,15 @@
      "verified": {
       "solverAnswer": "Egg, larva, pupa in water; adult on air.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i12",
@@ -17170,7 +19818,15 @@
      "verified": {
       "solverAnswer": "Egg, tadpole, froglet, frog; tadpoles are baby frogs, not fish.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i13",
@@ -17191,7 +19847,15 @@
      "verified": {
       "solverAnswer": "Eggs, larvae, pupae in stagnant water; adults; clear standing water, cover tanks.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-i14",
@@ -17214,7 +19878,15 @@
      "verified": {
       "solverAnswer": "Metamorphosis.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch10-t03-rl-o1",
@@ -17591,7 +20263,15 @@
      "verified": {
       "solverAnswer": "Sunlight: plants make food; soil: grow crops; water: drinking.",
       "agrees": true
-     }
+     },
+     "ge": 3.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": true
     },
     {
      "id": "c6-science-ch11-t01-i03",
@@ -17616,7 +20296,15 @@
      "verified": {
       "solverAnswer": "No, stays dry (air in glass).",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i04",
@@ -17641,7 +20329,15 @@
       "solverAnswer": "Blown-up balloon side goes down slightly (air has weight) though effect is tiny.",
       "agrees": true,
       "note": "Resolved accuracy caveat: big balloons, light stick, balance-first step, and the key notes that only a small dip is expected."
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i05",
@@ -17666,7 +20362,15 @@
      "verified": {
       "solverAnswer": "Soil washed away (erosion), floods, landslides.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i06",
@@ -17689,7 +20393,15 @@
      "verified": {
       "solverAnswer": "Air in the glass takes up space and keeps water out.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i07",
@@ -17712,7 +20424,15 @@
      "verified": {
       "solverAnswer": "Both; air free, bottled water costs because of treatment and packaging; both nature resources.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i08",
@@ -17720,7 +20440,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Name three things a farmer uses from nature to grow rice.",
-     "prompt_hi": "Teen cheezein batao jo kisaan chawal ugane ke liye prakriti se leta hai.",
+     "prompt_hi": "3 cheezein batao jo kisaan chawal ugane ke liye prakriti se leta hai.",
      "answer": "Any three: soil, water (rain, rivers, groundwater), sunlight, air (and seeds).",
      "acceptable": [
       "soil",
@@ -17737,7 +20457,15 @@
      "verified": {
       "solverAnswer": "Soil, water, sunlight, air.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i09",
@@ -17762,7 +20490,15 @@
      "verified": {
       "solverAnswer": "They provide leaf plates, food, income; overuse destroys forests, so use sustainably.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i10",
@@ -17785,7 +20521,15 @@
      "verified": {
       "solverAnswer": "Forest: wood, fruits, medicines, honey, clean air, rain, animal homes.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i11",
@@ -17809,7 +20553,15 @@
      "verified": {
       "solverAnswer": "Air is a resource needed for life; dirty air harms health.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i12",
@@ -17830,7 +20582,15 @@
      "verified": {
       "solverAnswer": "Invert glass with tissue into water; tissue stays dry showing air occupies space.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-i13",
@@ -17853,7 +20613,15 @@
      "verified": {
       "solverAnswer": "Soil takes ages to form, grows food, needed by plants; once eroded hard to replace.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t01-rl-h1",
@@ -18173,7 +20941,15 @@
      "verified": {
       "solverAnswer": "Takes millions of years to form; used faster than formed, will run out.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i03",
@@ -18198,7 +20974,15 @@
      "verified": {
       "solverAnswer": "The water level falls; wells go dry.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i04",
@@ -18220,7 +21004,15 @@
      "verified": {
       "solverAnswer": "The petrol car.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i05",
@@ -18244,7 +21036,15 @@
      "verified": {
       "solverAnswer": "People pump out groundwater faster than rain refills it; also concrete surfaces block seepage.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i06",
@@ -18267,7 +21067,15 @@
      "verified": {
       "solverAnswer": "Sunlight: renewable, doesn't run out, clean; petrol: non-renewable, limited, pollutes.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i07",
@@ -18275,7 +21083,7 @@
      "kind": "near_transfer",
      "difficulty": 3,
      "prompt_en": "Give three ways your family can save water at home.",
-     "prompt_hi": "Teen tareeke batao jinse tumhara parivaar ghar pe paani bacha sakta hai.",
+     "prompt_hi": "3 tareeke batao jinse tumhara parivaar ghar pe paani bacha sakta hai.",
      "answer": "Any three: turn off the tap while brushing; take a bucket bath instead of a long shower; fix leaking taps; reuse water from washing vegetables or RO waste water for plants or cleaning; collect rainwater.",
      "acceptable": [
       "close tap while brushing",
@@ -18292,7 +21100,15 @@
      "verified": {
       "solverAnswer": "Turn off taps, fix leaks, reuse RO/vegetable-wash water, bucket bath, harvest rain.",
       "agrees": true
-     }
+     },
+     "ge": 4,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 4.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i08",
@@ -18316,7 +21132,15 @@
      "verified": {
       "solverAnswer": "Sea water is salty; unfit to drink or irrigate; removing salt is costly.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i09",
@@ -18339,7 +21163,15 @@
      "verified": {
       "solverAnswer": "Around 97 salt, 3 fresh, of which about 2 frozen (about 1 usable).",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i10",
@@ -18363,7 +21195,15 @@
      "verified": {
       "solverAnswer": "Forests take decades to regrow; cutting faster than regrowth destroys it.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i11",
@@ -18384,7 +21224,15 @@
      "verified": {
       "solverAnswer": "Renewable are replaced naturally (sunlight, wind); non-renewable run out (coal, petrol). Habits: save electricity/fuel, walk, save water.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-i12",
@@ -18409,7 +21257,15 @@
      "verified": {
       "solverAnswer": "Renewable: sunlight/wind; non-renewable: coal/petrol.",
       "agrees": true
-     }
+     },
+     "ge": 5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 5.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch11-t02-rl-o1",
@@ -18761,7 +21617,15 @@
      "verified": {
       "solverAnswer": "A group of stars forming a pattern: Saptarishi (Ursa Major), Orion.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i03",
@@ -18785,7 +21649,15 @@
      "verified": {
       "solverAnswer": "Looks like a tiny dot from far; stars look tiny because they're very far.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i04",
@@ -18808,7 +21680,15 @@
      "verified": {
       "solverAnswer": "High in the south (moved up/westward through the night).",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A5": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i05",
@@ -18831,7 +21711,15 @@
       "solverAnswer": "Circular arcs (trails) around the Pole Star; Pole Star stays almost still.",
       "agrees": true,
       "note": "Resolved safety: rooftop removed; now a window or courtyard with an adult. Science unchanged."
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i06",
@@ -18855,7 +21743,15 @@
      "verified": {
       "solverAnswer": "It lies almost exactly above Earth's north axis, so it always shows north.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i07",
@@ -18879,7 +21775,15 @@
      "verified": {
       "solverAnswer": "Sun is a star; alike: hot glowing gas, own light; Sun is much nearer so looks big and bright.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i08",
@@ -18903,7 +21807,15 @@
      "verified": {
       "solverAnswer": "Sunlight scatters in sky and its brightness hides faint stars; stars are still there.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i09",
@@ -18927,7 +21839,15 @@
      "verified": {
       "solverAnswer": "Find the Pole Star using Saptarishi and keep it ahead.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i10",
@@ -18951,7 +21871,15 @@
      "verified": {
       "solverAnswer": "Seven dots forming a ladle shape, two end stars point to Pole Star.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i11",
@@ -18975,7 +21903,15 @@
      "verified": {
       "solverAnswer": "Shooting star is a meteor, space rock burning in the atmosphere, not a star.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i12",
@@ -18995,7 +21931,15 @@
      "verified": {
       "solverAnswer": "Earth rotates making stars appear to move east to west; the Pole Star lies above Earth's axis so stays put.",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-i13",
@@ -19019,7 +21963,15 @@
      "verified": {
       "solverAnswer": "Saptarishi (Ursa Major/Big Dipper).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t01-rl-o2",
@@ -19377,7 +22329,15 @@
      "verified": {
       "solverAnswer": "Largest Jupiter; smallest Mercury.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i03",
@@ -19399,7 +22359,15 @@
      "verified": {
       "solverAnswer": "Any mnemonic e.g. My Very Easy Method Just Speeds Up Navigation.",
       "agrees": true
-     }
+     },
+     "ge": 4.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i04",
@@ -19423,7 +22391,15 @@
      "verified": {
       "solverAnswer": "The star twinkles; Venus (planet) shines steadily.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i05",
@@ -19446,7 +22422,15 @@
      "verified": {
       "solverAnswer": "Venus (thick atmosphere traps heat).",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i06",
@@ -19470,7 +22454,15 @@
      "verified": {
       "solverAnswer": "Winter; distance doesn't cause seasons.",
       "agrees": true
-     }
+     },
+     "ge": 7,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i07",
@@ -19494,7 +22486,15 @@
      "verified": {
       "solverAnswer": "We see different amounts of its sunlit half as it orbits Earth.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i08",
@@ -19518,7 +22518,15 @@
      "verified": {
       "solverAnswer": "Jupiter is bigger; Earth is closer to the Sun; Earth is rocky, Jupiter is mostly gas (hydrogen, helium).",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i09",
@@ -19542,7 +22550,15 @@
      "verified": {
       "solverAnswer": "No sunlight at night on Moon so no solar power, and extreme cold.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i10",
@@ -19565,7 +22581,15 @@
      "verified": {
       "solverAnswer": "About 8 minutes.",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "transfer",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i11",
@@ -19588,7 +22612,15 @@
      "verified": {
       "solverAnswer": "Mars.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i12",
@@ -19612,7 +22644,15 @@
      "verified": {
       "solverAnswer": "Seasons are due to Earth's tilt, not distance; Earth is nearest in January.",
       "agrees": true
-     }
+     },
+     "ge": 7,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i13",
@@ -19633,7 +22673,15 @@
      "verified": {
       "solverAnswer": "Star makes own light (Sun); planet reflects (Venus); Moon is a satellite that reflects sunlight.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-i14",
@@ -19657,7 +22705,15 @@
      "verified": {
       "solverAnswer": "Jupiter.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t02-rl-o1",
@@ -20034,7 +23090,15 @@
      "verified": {
       "solverAnswer": "Earth, Sun, solar system, Milky Way, universe.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i03",
@@ -20057,7 +23121,15 @@
      "verified": {
       "solverAnswer": "Hanle; dark sky without city light pollution.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i04",
@@ -20081,7 +23153,15 @@
      "verified": {
       "solverAnswer": "A tiny dim dot like other stars.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i05",
@@ -20103,7 +23183,15 @@
      "verified": {
       "solverAnswer": "After 100 years.",
       "agrees": true
-     }
+     },
+     "ge": 6.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 7,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i06",
@@ -20127,7 +23215,15 @@
      "verified": {
       "solverAnswer": "Because it is much closer than other stars.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i07",
@@ -20150,7 +23246,15 @@
      "verified": {
       "solverAnswer": "Solar system: Sun, planets, moons; it's a tiny part of the Milky Way, one of its billions of stars' systems.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i08",
@@ -20173,7 +23277,15 @@
      "verified": {
       "solverAnswer": "House, street, city, state, India, Earth, solar system, Milky Way, universe.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i09",
@@ -20197,7 +23309,15 @@
      "verified": {
       "solverAnswer": "Dark, clear, dry, high altitude sky with little light pollution.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i10",
@@ -20221,7 +23341,15 @@
      "verified": {
       "solverAnswer": "Concentric circles: Earth, solar system, Milky Way, universe.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "apply",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i11",
@@ -20246,7 +23374,15 @@
      "verified": {
       "solverAnswer": "Sun is average sized; many stars bigger; it looks bright because it is near.",
       "agrees": true
-     }
+     },
+     "ge": 6,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6.5,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i12",
@@ -20267,7 +23403,15 @@
      "verified": {
       "solverAnswer": "A galaxy of billions of stars shaped like a spiral; we are in one arm.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "reason",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-i13",
@@ -20290,7 +23434,15 @@
      "verified": {
       "solverAnswer": "Distance.",
       "agrees": true
-     }
+     },
+     "ge": 5.5,
+     "geSource": "claude-v2",
+     "geRaters": {
+      "claude-A6": 6,
+      "rubric": "6ef389e48b5d5752"
+     },
+     "demand": "recall",
+     "tooEasy": false
     },
     {
      "id": "c6-science-ch12-t03-rl-o1",
@@ -20423,8 +23575,8 @@
      "skillId": "c6-science-ch12-t03-s3",
      "kind": "why",
      "difficulty": 4,
-     "prompt_en": "During a power cut in Jaipur, Riya sees more stars than usual. Why were fewer stars visible when streetlights were on? Answer with the key idea.",
-     "prompt_hi": "Jaipur mein power cut ke dauraan Riya ko aam dino se zyada stars dikhte hain. Streetlights jalne par kam stars kyun dikhte the? Mukhya wajah batao.",
+     "prompt_en": "During a power cut in Jaipur, {friendF} sees more stars than usual. Why were fewer stars visible when streetlights were on? Answer with the key idea.",
+     "prompt_hi": "Jaipur mein power cut ke dauraan {friendF} ko aam dino se zyada stars dikhte hain. Streetlights jalne par kam stars kyun dikhte the? Mukhya wajah batao.",
      "answer": "Streetlight pollution brightens the sky and hides faint stars.",
      "acceptable": [
       "light pollution hides faint stars",

@@ -1,0 +1,203 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj rectangles, squares aur polygons ka perimeter karenge—cricket ground ki boundary jaisa. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1306
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, cricket choice chhodo. Socho boundary par poora ek round lagaya—tumhare hisaab se perimeter kya ginenge: andar ki jagah ya bahar ka kinaara? Golu ko samjhaana hai.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1652,
+   "replyReadyMs": 2958
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1220
+  },
+  {
+   "who": "teacher",
+   "text": "Perimeter matlab shape ke bahar ka poora kinaara—jaise rectangle ki boundary. Batao, hum andar ki jagah ginenge ya kinaara?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1350,
+   "replyReadyMs": 2570
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 894
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. Perimeter mein polygon ki har side ki length jodte hain. Rectangle ki sides kaun-kaun si hoti hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1307,
+   "replyReadyMs": 2201
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 847
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, parimap (perimeter) ke liye aakriti ke bahari kinare ki sabhi bhujayein jodte hain. Aayat ki bhujayein gino—kitni hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1407,
+   "replyReadyMs": 2254
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "no_evidence",
+   "classifyMs": 1092
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki 4 bhujayein hoti hain: 2 lambi aur 2 chhoti. Ab batao, perimeter mein kya karenge?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 3025,
+   "replyReadyMs": 4117,
+   "guard": [
+    "ignored"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "negates"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1175
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Diya hai: 3, 50 m aur 30 m. Pehle: 2 × (50 + 30) = 2 × 80 = 160 m. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1498,
+   "replyReadyMs": 2673
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1233
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, aayat ki 2 lambi bhujayein 50 m aur 2 chhoti bhujayein 30 m hain. 50 m kitni baar aata hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3053,
+   "replyReadyMs": 4286,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "measured@1",
+    "onScreen": {
+     "labels": "rectangle | perimeter | 50 m | 30 m",
+     "numbers": "50 30"
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1136
+  },
+  {
+   "who": "teacher",
+   "text": "50 m do baar aata hai, kyunki rectangle mein do lambi bhujayein hoti hain. Ab 30 m kitni baar aata hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2442,
+   "replyReadyMs": 3578,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "no_evidence",
+   "classifyMs": 1151
+  },
+  {
+   "who": "teacher",
+   "text": "50 plus 30 ko jodkar 80, phir 2 se guna karke ek round ka parimap 160 m bana. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 3445,
+   "replyReadyMs": 4596,
+   "guard": [
+    "underived"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1807
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho. Chun sakti ho: aage badhein, thoda viraam lein, ya aaj yahin samaapt karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1336,
+   "replyReadyMs": 3143
+  }
+ ],
+ "agent": []
+}

@@ -1,0 +1,124 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c7-maths-ch02-t01",
+    "archetype": "rule-machine@1",
+    "misconceptionId": "c7-maths-ch02-t01-m-words-order",
+    "skillId": "c7-maths-ch02-t01-s1",
+    "beat": "rem:c7-maths-ch02-t01-m-words-order",
+    "when": "remediation",
+    "check": "c7-maths-ch02-t01-s1:c1"
+  },
+  "archetype": "rule-machine@1",
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c7-maths-ch02-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "built": "machines",
+      "run": "CHALAO",
+      "want": "chahiye",
+      "got": "mila",
+      "coach": "Tiles chuno, machine bharo, phir CHALAO",
+      "runDone": "Factory band",
+      "step": "kadam",
+      "predict": "pehle socho",
+      "inverse": "ulta chalao",
+      "target": "lakshya",
+      "steps": "kadam",
+      "pick": "Shuru rakam chuno",
+      "works": "SAHI",
+      "fix": "dobara dekho"
+    },
+    "title": "Baat Se Machine",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Samosa Aur Chai",
+        "sub": "Bill ko machine mein badlo",
+        "rule": [
+          "×3",
+          "+15"
+        ],
+        "inputs": [
+          10,
+          15,
+          20
+        ],
+        "tiles": [
+          "×3",
+          "+15",
+          "-15",
+          "×2"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      },
+      {
+        "mode": "build",
+        "title": "Notebook Wala Din",
+        "sub": "Rakam ke saath kaam karo",
+        "rule": [
+          "×4",
+          "-45"
+        ],
+        "inputs": [
+          45,
+          50,
+          500
+        ],
+        "tiles": [
+          "×4",
+          "-45",
+          "-4",
+          "×45"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      },
+      {
+        "mode": "inverse",
+        "title": "Ulti Machine",
+        "sub": "Machine ko peeche se dekho",
+        "rule": [
+          "-8"
+        ],
+        "secret": 50,
+        "tiles": [
+          "+8",
+          "-8",
+          "-50",
+          "×2"
+        ],
+        "targets": "c7-maths-ch02-t01-m-words-order"
+      }
+    ]
+  },
+  "hash": "f9a649a654d7de3d2f1c6d6228ed6436",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "rule-machine@1",
+    "onScreen": {
+      "title": "Baat Se Machine",
+      "rounds": 3,
+      "first": "Samosa Aur Chai: Bill ko machine mein badlo"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T06:27:14.835Z"
+  }
+}

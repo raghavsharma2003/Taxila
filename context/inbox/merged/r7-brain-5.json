@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-methods-kept",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 A8, part 1 (PIPELINE §A Brain item 7, brain-steering-persistence). A code-first method lexicon (server/conversation/methods.js) reads how the child asked to be taught: steps (step by step, ek ek karke), short (chhota bolo, kam bolo), picture (pehle picture), try_first (khud try karne do, let me try) and slow (dheere bolo). It is request-shaped (whole turn, no digits, ≤ 12 words), and a graded answer is never read as a method. A method is kept for the lesson (s.methods, newest 3) and rides on every later move except safeguard and wrap. The compile renders it in the LAST section, just before the turn shape and never shed. Knobs: short caps her turn at 15 words (compile) and lowers the long-reply cap to 25 (say.js). try_first poses every no-help-yet question in the attempt-first format F8. picture and steps are notes for now. A turn that is only the ask gets the adapt move. The weak-intent policy fixes (multi-intent, frustration, skip-ahead, personal share) are the second part."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-brain-methods-kept (2026-11-04, stream A Brain)\n\nA child who says \"chhota bolo\" or \"step by step\" should get that for the rest of the lesson, not for one turn. Before, a method was kept only when the model note read one, as free text, in a droppable part of the move section that budget pressure could shed. Now the common methods are read in code, kept as ids, and rendered in the last section (position is mechanism: rules that must fire go last), where nothing sheds them. Two of them change behaviour in code: a word cap for short, and the attempt-first format for try_first. Reversal: if the last-section line crowds the turn-shape rule or pushes the section over its cap, move it into the shape line itself.\n"
+ }
+}

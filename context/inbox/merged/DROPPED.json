@@ -1,0 +1,77 @@
+{
+ "note": "Edges written in inbox files that could not be placed in the graph, with the reason (audit DOCS-17, repair 2026-11-09). `node scripts/context.mjs --check` accepts an edge that is in the graph or listed here.",
+ "dropped": [
+  {
+   "edge": {
+    "src": "dc-r4-direction-prakash-grownup-face",
+    "rel": "related",
+    "dst": "rj-restart-without-resume-2026-10-09"
+   },
+   "from": "r4-edges-fix.json",
+   "reason": "relation \"related\" has no honest mapping onto the seven relations"
+  },
+  {
+   "edge": {
+    "src": "dc-r4-single-teacher-asha",
+    "rel": "related",
+    "dst": "dc-r4-face-lamplight-flat"
+   },
+   "from": "r4-edges-fix.json",
+   "reason": "relation \"related\" has no honest mapping onto the seven relations"
+  },
+  {
+   "edge": {
+    "src": "dc-r5-studio-thaws-after-safeguard",
+    "rel": "related",
+    "dst": "dc-r144-safeguard-tiers"
+   },
+   "from": "r5-census-s2.json",
+   "reason": "relation \"related\" has no honest mapping onto the seven relations"
+  },
+  {
+   "edge": {
+    "src": "dec-r12-flight-recorder",
+    "rel": "measured_by",
+    "dst": "ms-r12-1-replay-proof-2026-10-11"
+   },
+   "from": "r12-1-t-server.json",
+   "reason": "endpoint not in the graph: dec-r12-flight-recorder"
+  },
+  {
+   "edge": {
+    "src": "owner-ship-five-2026-10-05",
+    "rel": "supersedes",
+    "dst": "owner-build-deploy-then-test-2026-10-05"
+   },
+   "from": "owner-ship-five.json",
+   "reason": "endpoint not in the graph: owner-build-deploy-then-test-2026-10-05"
+  },
+  {
+   "edge": {
+    "src": "teacher-brain-no-surveillance",
+    "rel": "extends",
+    "dst": "ct-no-voice-emotion-inference"
+   },
+   "from": "teacher-brain.json",
+   "reason": "\"extends\" maps to part_of, but the graph has no edge of the shape \"decision part_of constraint\""
+  },
+  {
+   "edge": {
+    "src": "teacher-character-pipeline",
+    "rel": "part_of",
+    "dst": "teacher-visual-3d-hero"
+   },
+   "from": "teacher-character.json",
+   "reason": "endpoint not in the graph: teacher-visual-3d-hero"
+  },
+  {
+   "edge": {
+    "src": "vs-voice-lr-over-text",
+    "rel": "related",
+    "dst": "vs-adapter-inside-signals-step"
+   },
+   "from": "voicesig.json",
+   "reason": "relation \"related\" has no honest mapping onto the seven relations"
+  }
+ ]
+}

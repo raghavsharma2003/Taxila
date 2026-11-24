@@ -37,9 +37,12 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { verdictFor, certificates } from "./certify.js";
+import { approvedVerdict, catalogueNeedsJudge, isReviewedDefault, neverServe } from "../studio/approved.js";
+import { passageFits } from "../studio/passage.js";
 import { playCertificates, playPassed } from "./compose.js";
 import { fitBoard, minPxAt } from "../../src/studio/boardFit.ts";
 import { boardFrame } from "../../src/studio/boardView.ts";
+import { normalizeScene, lintScene, CAPTION_SIZE } from "../../shared/scene.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.join(here, "..", "..");
@@ -91,6 +94,13 @@ export function trayGateHealth() {
 export const _setSkeletonCertificates = (t) => { skeletonMemo = t; };
 export const _setModuleCertificates = (t) => { moduleMemo = t; };
 /** Tests only: certify Studio v2 pieces as if relaid and judged at all three sizes (the merge mechanics behind the gate). */
+/**
+ * main's ruling (2026-11-10, after the re-certification): where a Studio v2 world is too small to play (the 360 px phone), its
+ * board twin — the engine's name and four kit key terms, no figure — is not a lesson visual; the gate REFUSES the piece and
+ * the child keeps the script's held board. Switch STUDIO_V2_TWIN_AT_SMALL ("on" serves the twin as before; default off).
+ * Reverse when the twin carries the piece's own figure and a separate judge passes it at p360.
+ */
+export const twinAtSmall = (env = process.env) => String(env.STUDIO_V2_TWIN_AT_SMALL ?? "off").trim().toLowerCase() === "on";
 let studioV2Test = false;
 export const _certifyStudioV2ForTests = (on) => { studioV2Test = !!on; };
 
@@ -176,7 +186,6 @@ export function studioV2Certified(topicId, piece, { young = false, certs = null 
 }
 
 const serveAt = (row, vp) => !!(row?.serveByViewport ?? row?.byViewport)?.[vp];
-const allThree = (row) => VP_CLASSES.every((v) => serveAt(row, v));
 
 /**
  * May this Studio artifact be shown in the tray of a device of class `vp`?
@@ -199,9 +208,24 @@ export function certifyForTray(artifact, ctx = {}) {
         const r = boardAt(artifact.script, box, { young });
         return out(r.ok, "whiteboard-fit", r.why);
       }
+      case "passage": {
+        // (round 7 PASSAGE.md: reading matter in real text — certified by predicate at the device's box: 16 px type, a line of
+        // 12+ characters, the 44 px page buttons and 2+ lines in view; a page taller than the box scrolls inside it)
+        const box = ctx.box ?? contractBox(vp, { young });
+        const r = passageFits(artifact, box, { young });
+        return out(r.ok, "passage-fit", r.why);
+      }
       case "stagecraft": {
         const sc = artifact.stagecraft ?? {};
         if (sc.rung === "board") return out(false, "none", "a Stagecraft board rung (boards come from the whiteboard path)");
+        // (main 2026-11-11: a piece the predicates or judges refused is never served — before every switch and the store)
+        if (sc.spec && neverServe(sc.archetype, sc.spec)) return out(false, "never", `${sc.archetype} refused by the approval lane (data/studio-approved/never.json)`);
+        // (main 2026-11-10: a world too small to play is refused at any rung — the twin is a word card, not a lesson visual)
+        if (!studioV2Test && !studioV2PlayableAt(vp, { young }) && !twinAtSmall()) return out(false, "studio-v2-small", `a Studio v2 world is too small to play at ${vp}: refused, the script's board stands (its twin is a word card)`);
+        // (the approval lane, STUDIO-11: a generated spec approved OFFLINE — its hash in data/studio-approved, rendered here at the
+        // three sizes and passed by a separate Claude judge — is shown at the sizes its render passed; the runtime calls no judge)
+        const ap = sc.rung === "generated_spec" ? approvedVerdict(sc.archetype, sc.spec) : null;
+        if (ap) { const at = !!ap.byViewport?.[vp]; return out(at, "approved", at ? `approved ${ap.approved}, rendered at ${vp}` : `approved ${ap.approved}, but not legible at ${vp}`); }
         if (sc.rung === "generated_spec" || !ctx.topicId) {
           const v = ctx.verdict;
           if (!v || v.unavailable) return out(false, "judge", "not judged at the child's sizes");
@@ -212,10 +236,18 @@ export function certifyForTray(artifact, ctx = {}) {
         const row = (ctx.certs ?? certificates())?.topics?.[ctx.topicId]?.[piece];
         if (!row) return out(false, "catalogue", `no certificate for ${ctx.topicId} ${piece}`);
         if (studioV2Test) return out(true, "catalogue", "tests: Studio v2 certified");
-        const twinAt = VP_CLASSES.filter((v) => !studioV2PlayableAt(v, { young }));
-        if (twinAt.length) return out(false, "catalogue", `Studio v2 ${piece} is only its board twin at ${twinAt.join(",")} (a 1000-unit world in that box): not the game at all three sizes`);
-        if (!allThree(row)) return out(false, "catalogue", `Studio v2 ${piece} not certified at all three sizes (${VP_CLASSES.filter((v) => !serveAt(row, v)).join(",")} fail)`);
-        return out(serveAt(row, vp), "catalogue", "certified at all three sizes");
+        // (main's ruling 2026-11-10: a catalogue piece is shown only with a judged pass in the approved store — the 20-topic
+        // sample found a content fault in 11 and a wrong key in 2; the reviewed engine default is code and needs none)
+        if (catalogueNeedsJudge() && sc.spec && !isReviewedDefault(sc.archetype, sc.spec) && !approvedVerdict(sc.archetype, sc.spec))
+          return out(false, "catalogue-judged", `${piece} for ${ctx.topicId} has no judged pass (rubric v1)`);
+        // round 7 decision D8 (amends dc-r4c-studio-v2-off-child-path): served wherever it is certified AT THE DEVICE'S
+        // CLASS (p412 phones, l1366 laptops), no longer only when certified at all three; where its 1000-unit world is too
+        // small to play (the 360 phone) it is served as its board twin (the stage draws the twin), or not at all
+        if (!serveAt(row, vp)) return out(false, "catalogue", `Studio v2 ${piece} not certified at ${vp}`);
+        if (studioV2PlayableAt(vp, { young })) return out(true, "catalogue", `certified at ${vp}`);
+        const twin = sc.boardTwin?.board ?? sc.board?.board ?? null;
+        return twin ? out(true, "catalogue-twin", `served as its board twin at ${vp} (a 1000-unit world in that box)`)
+          : out(false, "catalogue", `Studio v2 ${piece} is only its board twin at ${vp}, and it carries none`);
       }
       case "play": {
         const p = artifact.play ?? {};
@@ -236,6 +268,18 @@ export function certifyForTray(artifact, ctx = {}) {
         if (!v || v.unavailable) return out(false, "judge", "build not judged at the child's size");
         const ok = vp ? !!v.byViewport?.[vp] : !!v.pass;
         return out(ok, "judge", ok ? "judged at this size" : `judged: fails at ${vp}`);
+      }
+      case "scene": {
+        // round 7 M5a: a code-built scene is drawn contain-fit in the box; it is served where it is clean (normalised, its
+        // layout lint empty) and its captions (CAPTION_SIZE stage units) reach the floor at this box: 14 px young, 13 px older
+        const box = ctx.box ?? contractBox(vp, { young });
+        if (!box) return out(false, "scene-fit", "no box for this class");
+        const n = normalizeScene(artifact.scene);
+        const lint = n.ok ? lintScene(n.scene) : n.errors;
+        if (!n.ok || lint.length) return out(false, "scene-fit", `scene not clean: ${lint.slice(0, 3).join(",")}`);
+        const px = CAPTION_SIZE * Math.min(box.w / n.scene.stage.w, box.h / n.scene.stage.h);
+        const floor = young ? 14 : 13;
+        return out(px >= floor, "scene-fit", px >= floor ? `captions ${px.toFixed(1)} px` : `captions ${px.toFixed(1)} px < ${floor} px at ${vp}`);
       }
       case "image": {
         if (!/^data:image\/(?:png|jpeg);base64,/.test(String(artifact.src ?? ""))) return out(false, "image", "not a picture-lane image");

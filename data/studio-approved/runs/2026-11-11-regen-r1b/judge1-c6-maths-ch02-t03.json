@@ -1,0 +1,28 @@
+[
+  {
+    "id": "gen-c6-maths-ch02-t03-8c21872d",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.waves (all four waves); screen: lighthouse fixed at protractor centre",
+        "detail": "topic.mixup is 'Lines up the bottom edge of the protractor instead of putting its centre point on the vertex'. In every wave the scale is drawn already centred on the lighthouse (the vertex) and the child only turns the beam ('Roshni ko mod do, phir chhodo'). The child never places the protractor or finds the centre mark, so a child holding the vertex-off belief would play every round correctly and the belief is never shown going wrong."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.hits = \"milaan\" (screen: \"MILAAN 0/4\") vs spec.strings.hit = \"Sahi milan\"",
+        "detail": "The same word is spelt 'milaan' on the score label and 'milan' in the feedback; 'milaan' is a misspelling of 'milan'."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "screen l1366 and p412: scale labels \"110\" and \"100\"",
+        "detail": "The protractor labels 110 and 100 run together with no gap (reads as '110100' at l1366, and nearly touching at p412), so the child cannot cleanly read those tick values."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": false },
+    "notes": "Wave 4 sub 'Har khule mod ko dhyan se dekho' ('khule' = wide/open) with kind 'obtuse' may lean toward the answer; not counted as it does not state the rule outright."
+  }
+]

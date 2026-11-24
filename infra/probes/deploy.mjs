@@ -2,17 +2,17 @@
 //   node infra/probes/deploy.mjs            build the image, ensure the Central India environment, the private `probes`
 //                                           container and both scheduled jobs (nightly 03:10 UTC = 08:40 IST)
 //   node infra/probes/deploy.mjs --run [ci|eus2|all]   start an execution now, wait, print the region's last-run.json
-//   flags: --base URL (default production) · --skip-build (reuse the last image tag in node_modules/.cache)
+//   flags: --base URL (required, no default) · --skip-build (reuse the last image tag in node_modules/.cache)
 // The jobs are NEW resources; taxila-web is only read (its ACR credentials and environment id).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { ROOT, acrBuild, arm, loadEnv, sleep, until } from "../azure.mjs";
-import { PROD_BASE } from "../../tests/prod/lib.mjs";
+import { resolveBase } from "../../tests/prod/base.mjs";
 
 loadEnv();
 const argv = process.argv.slice(2);
 const opt = (f, d) => { const i = argv.indexOf(f); return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith("--") ? argv[i + 1] : d; };
 const API = "api-version=2024-03-01";
-const BASE = opt("--base", PROD_BASE);
+const BASE = resolveBase(opt("--base", process.env.TAXILA_BASE));
 const CACHE = ROOT + "node_modules/.cache/taxila-probe-image";
 const REGIONS = {
   ci: { job: "taxila-probe-ci", env: "taxila-probes-ci", location: "centralindia", region: "central-india" },

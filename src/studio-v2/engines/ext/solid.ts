@@ -8,7 +8,9 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, taskPill, textBlock } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, taskPill, textBlock, tally } from "./kit.ts";
+import { dots } from "../../core/dots.ts";
+import { rgbaOf, withAlpha } from "../../../theme/palette.ts";
 
 const LOCK = { x: 800, y: 530, w: 170, h: 62 };
 const SC = { x: 400, y: 390, s: 135 };
@@ -17,11 +19,14 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
   const T = spec.strings, accent = C.ion;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 193 + 29), setTask = taskPill(api);
+  /** A top pill's centre (h 60): below the host's task pill where it sits over the world (l1366: the count card was under it). */
+  const pillY = () => Math.max(190, api.chromeBottom() + 40);
   const g = { yaw: 0.6, pitch: 0.42, drag: false, last: [0, 0] as [number, number], moved: 0, marked: new Set<string>(), h: [] as number[][], answered: false, verdict: "", detail: "", revealT: 0, right: 0, n: 0, botTurn: 0 };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): SolidRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k]; Object.assign(g, { yaw: 0.6, pitch: 0.42, drag: false, moved: 0, marked: new Set<string>(), answered: false, verdict: "", detail: "", revealT: 0, botTurn: 0 });
       if (r.mode === "build") g.h = r.heights.map((row) => row.map(() => 0));
       setTask(`${T.round} ${k + 1}`, r.sub || r.title); api.event("round_start", { round: k + 1, mode: r.mode }); sfx.blip({ f: 262, f2: 524, dur: 0.3, type: "triangle", gain: 0.12 });
@@ -78,14 +83,14 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
     flow.tick(dt, 1.8);
     if (flow.state === "intro" && flow.stateT < 0.05) hud.show(true);
     if (g.answered) { g.yaw += dt * 0.6; g.revealT += dt; if (g.revealT > 3) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 193, 0); }
-  function lockBtn(ctx: Ctx, on: boolean, now: number) { ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.14)" : "rgba(22,26,36,.95)"; roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.lock, LOCK.x + LOCK.w / 2, LOCK.y + LOCK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
+  function lockBtn(ctx: Ctx, on: boolean, now: number) { ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .14) : withAlpha(C.bg2, .95); roundRect(ctx, LOCK.x, LOCK.y, LOCK.w, LOCK.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(C.volt, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); api.text(ctx, T.lock, LOCK.x + LOCK.w / 2, LOCK.y + LOCK.h / 2 + 2, { font: "display", size: 38, weight: 800, color: on ? C.volt : C.ink3, align: "center", baseline: "middle" }); }
   function cubeAt(ctx: Ctx, x: number, y: number, z: number, s: number, cx: number, cy: number, col: string) {
     const corners: V3[] = [[0, 0, 0], [1, 0, 0], [1, 1, 0], [0, 1, 0], [0, 0, 1], [1, 0, 1], [1, 1, 1], [0, 1, 1]].map(([a, b, c]) => rot([x + a, y + b, z + c]));
     const faces = [[0, 1, 2, 3], [4, 5, 6, 7], [0, 1, 5, 4], [3, 2, 6, 7], [0, 3, 7, 4], [1, 2, 6, 5]], norms: V3[] = [[0, 0, -1], [0, 0, 1], [0, -1, 0], [0, 1, 0], [-1, 0, 0], [1, 0, 0]];
-    faces.forEach((f, i) => { const n = rot(norms[i]); if (n[2] <= 0.01) return; const sh = 0.55 + 0.45 * Math.max(0, n[1] * 0.6 + n[2] * 0.6); ctx.fillStyle = hexA(col, sh); ctx.beginPath(); f.forEach((k, j) => { const [px, py] = scr(corners[k], s, cx, cy); if (j) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.45)"; ctx.lineWidth = 1.5; ctx.stroke(); });
+    faces.forEach((f, i) => { const n = rot(norms[i]); if (n[2] <= 0.01) return; const sh = 0.55 + 0.45 * Math.max(0, n[1] * 0.6 + n[2] * 0.6); ctx.fillStyle = hexA(col, sh); ctx.beginPath(); f.forEach((k, j) => { const [px, py] = scr(corners[k], s, cx, cy); if (j) ctx.lineTo(px, py); else ctx.moveTo(px, py); }); ctx.closePath(); ctx.fill(); ctx.strokeStyle = withAlpha(C.lo, .45); ctx.lineWidth = 1.5; ctx.stroke(); });
   }
   function viewGrid(ctx: Ctx, cells: number[][], x: number, y: number, size: number, col: string, outline: boolean) {
     cells.forEach((row, j) => row.forEach((v, i) => { if (!v) return; ctx.save(); if (outline) { ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.strokeRect(x + i * size + 1, y + j * size + 1, size - 2, size - 2); } else { ctx.fillStyle = hexA(col, 0.55); ctx.fillRect(x + i * size + 3, y + j * size + 3, size - 6, size - 6); } ctx.restore(); }));
@@ -99,34 +104,34 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
     if (r.mode === "count") {
       const V = view(r), light: V3 = [0.4, 0.7, 0.6];
       bloom(ctx, accent, SC.x, SC.y, 240, 0.12);
-      for (const f of [...V.faces].filter((q) => q.vis).sort((a, b) => a.z - b.z)) { const sh = 0.35 + 0.55 * Math.max(0, f.n[0] * light[0] + f.n[1] * light[1] + f.n[2] * light[2]); const mk = r.feature === "faces" && g.marked.has(`f${f.i}`); ctx.save(); ctx.fillStyle = mk ? hexA(C.volt, 0.55) : `rgba(${Math.round(90 + 120 * sh)},${Math.round(120 + 110 * sh)},${Math.round(180 + 60 * sh)},.92)`; ctx.beginPath(); f.f.forEach((k, j) => (j ? ctx.lineTo(V.S[k][0], V.S[k][1]) : ctx.moveTo(V.S[k][0], V.S[k][1]))); ctx.closePath(); ctx.fill(); ctx.restore(); }
-      for (const e of V.edges) { if (!e.vis) continue; const mk = r.feature === "edges" && g.marked.has(e.id); ctx.save(); ctx.strokeStyle = mk ? C.volt : "rgba(10,14,24,.8)"; ctx.lineWidth = mk ? 7 : 3; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(V.S[e.a][0], V.S[e.a][1]); ctx.lineTo(V.S[e.b][0], V.S[e.b][1]); ctx.stroke(); ctx.restore(); }
-      if (r.feature === "corners") V.S.forEach(([x, y], i) => { if (!V.vVis[i]) return; const mk = g.marked.has(`v${i}`); ctx.save(); ctx.fillStyle = mk ? C.volt : "rgba(255,255,255,.35)"; ctx.beginPath(); ctx.arc(x, y, mk ? 11 : 6, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
+      for (const f of [...V.faces].filter((q) => q.vis).sort((a, b) => a.z - b.z)) { const sh = 0.35 + 0.55 * Math.max(0, f.n[0] * light[0] + f.n[1] * light[1] + f.n[2] * light[2]); const mk = r.feature === "faces" && g.marked.has(`f${f.i}`); ctx.save(); ctx.fillStyle = mk ? hexA(C.volt, 0.55) : rgbaOf(Math.round(90 + 120 * sh), Math.round(120 + 110 * sh), Math.round(180 + 60 * sh), .92); ctx.beginPath(); f.f.forEach((k, j) => (j ? ctx.lineTo(V.S[k][0], V.S[k][1]) : ctx.moveTo(V.S[k][0], V.S[k][1]))); ctx.closePath(); ctx.fill(); ctx.restore(); }
+      for (const e of V.edges) { if (!e.vis) continue; const mk = r.feature === "edges" && g.marked.has(e.id); ctx.save(); ctx.strokeStyle = mk ? C.volt : withAlpha(C.solidEdge, .8); ctx.lineWidth = mk ? 7 : 3; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(V.S[e.a][0], V.S[e.a][1]); ctx.lineTo(V.S[e.b][0], V.S[e.b][1]); ctx.stroke(); ctx.restore(); }
+      if (r.feature === "corners") V.S.forEach(([x, y], i) => { if (!V.vVis[i]) return; const mk = g.marked.has(`v${i}`); ctx.save(); ctx.fillStyle = mk ? C.volt : withAlpha(C.hi, .35); ctx.beginPath(); ctx.arc(x, y, mk ? 11 : 6, 0, Math.PI * 2); ctx.fill(); ctx.restore(); });
       api.text(ctx, T[r.feature], 885, 230, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 210 });
       api.text(ctx, `${g.marked.size}`, 885, 290, { font: "display", size: 60, weight: 800, color: C.volt, align: "center", baseline: "middle" });
       api.text(ctx, T.marked, 885, 344, { size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle", maxWidth: 210 });
       textBlock(api, ctx, T[r.solid], SC.x, 600, 520, { size: 38, weight: 700, color: C.ink2 }, 1);
-      if (!done && g.moved === 0 && g.marked.size === 0) pill(api, ctx, T.turn, SC.x, 190, { color: C.volt, size: 38 });
-      if (done) pill(api, ctx, g.detail, SC.x, 190, { color: ok ? C.mint : C.amber, size: 38 });
+      if (!done && g.moved === 0 && g.marked.size === 0) pill(api, ctx, T.turn, SC.x, pillY(), { color: C.volt, size: 38 });
+      if (done) pill(api, ctx, g.detail, SC.x, pillY(), { color: ok ? C.mint : C.amber, size: 38 });
       lockBtn(ctx, !done && g.marked.size > 0, now);
     } else {
       const d = r.heights.length, w = r.heights[0].length, s = 60, cx = 290, cy = 440;
       const cubes: { x: number; y: number; z: number; depth: number }[] = []; g.h.forEach((row, z) => row.forEach((h, x) => { for (let y = 0; y < h; y++) { const c = rot([x - w / 2 + 0.5, y, z - d / 2 + 0.5]); cubes.push({ x, y, z, depth: c[2] }); } }));
-      ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.18)"; ctx.lineWidth = 1.5; for (let z = 0; z <= d; z++) { const a = scr(rot([-w / 2, 0, z - d / 2]), s, cx, cy), b = scr(rot([w / 2, 0, z - d / 2]), s, cx, cy); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } for (let x = 0; x <= w; x++) { const a = scr(rot([x - w / 2, 0, -d / 2]), s, cx, cy), b = scr(rot([x - w / 2, 0, d / 2]), s, cx, cy); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } ctx.restore();
-      for (const c of cubes.sort((a, b) => a.depth - b.depth)) cubeAt(ctx, c.x - w / 2, c.y, c.z - d / 2, s, cx, cy, "#7FB2FF");
+      ctx.save(); ctx.strokeStyle = withAlpha(C.hi, .18); ctx.lineWidth = 1.5; for (let z = 0; z <= d; z++) { const a = scr(rot([-w / 2, 0, z - d / 2]), s, cx, cy), b = scr(rot([w / 2, 0, z - d / 2]), s, cx, cy); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } for (let x = 0; x <= w; x++) { const a = scr(rot([x - w / 2, 0, -d / 2]), s, cx, cy), b = scr(rot([x - w / 2, 0, d / 2]), s, cx, cy); ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); } ctx.restore();
+      for (const c of cubes.sort((a, b) => a.depth - b.depth)) cubeAt(ctx, c.x - w / 2, c.y, c.z - d / 2, s, cx, cy, C.solidCube);
       const fa = scr(rot([0, 0, d / 2 + 1.4]), s, cx, cy); api.text(ctx, `${T.front} ↑`, clamp(fa[0], 140, 480), clamp(fa[1] + 24, 200, 600), { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle", decor: true });
-      g.h.forEach((row, z) => row.forEach((h, x) => { const X = PLAN.x + x * PLAN.cell, Y = PLAN.y + z * PLAN.cell; ctx.save(); ctx.fillStyle = h ? hexA("#7FB2FF", 0.15 + h * 0.2) : "rgba(22,26,36,.9)"; ctx.fillRect(X + 2, Y + 2, PLAN.cell - 4, PLAN.cell - 4); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.strokeRect(X + 2, Y + 2, PLAN.cell - 4, PLAN.cell - 4); ctx.restore(); if (h) api.text(ctx, String(h), X + PLAN.cell / 2, Y + PLAN.cell / 2 + 2, { font: "display", size: 38, weight: 800, color: C.ink, align: "center", baseline: "middle" }); }));
+      g.h.forEach((row, z) => row.forEach((h, x) => { const X = PLAN.x + x * PLAN.cell, Y = PLAN.y + z * PLAN.cell; ctx.save(); ctx.fillStyle = h ? hexA(C.solidCube, 0.15 + h * 0.2) : withAlpha(C.bg2, .9); ctx.fillRect(X + 2, Y + 2, PLAN.cell - 4, PLAN.cell - 4); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.strokeRect(X + 2, Y + 2, PLAN.cell - 4, PLAN.cell - 4); ctx.restore(); if (h) api.text(ctx, String(h), X + PLAN.cell / 2, Y + PLAN.cell / 2 + 2, { font: "display", size: 38, weight: 800, color: C.ink, align: "center", baseline: "middle" }); }));
       textBlock(api, ctx, T.plan, PLAN.x + (w * PLAN.cell) / 2, PLAN.y - 56, 250, { size: 38, weight: 600, color: C.ink2 }, 2, 1.0);
       const maxH = Math.max(3, ...g.h.flat()), mt = viewsMatch(r.heights, g.h), vs = 16;
       const blocks: [string, number[][], number[][], boolean][] = [[T.top, viewTop(r.heights), viewTop(g.h), mt.top], [T.front, colGrid(viewFront(r.heights), maxH), colGrid(viewFront(g.h), maxH), mt.front], [T.side, colGrid([...viewSide(r.heights)].reverse(), maxH), colGrid([...viewSide(g.h)].reverse(), maxH), mt.side]];
-      blocks.forEach(([lab, tgt, mine, ok2], i) => { const y0 = 180 + i * 116; api.text(ctx, lab, 830, y0 + 18, { size: 38, weight: 700, color: ok2 ? C.mint : C.ink2, baseline: "middle" }); const gx = 830, gy = y0 + 44; viewGrid(ctx, mine, gx, gy, vs, "#7FB2FF", false); viewGrid(ctx, tgt, gx, gy, vs, ok2 ? C.mint : C.sun, true); });
-      if (done) pill(api, ctx, g.detail, 300, 190, { color: ok ? C.mint : C.amber, size: 38 });
+      blocks.forEach(([lab, tgt, mine, ok2], i) => { const y0 = 180 + i * 116; api.text(ctx, lab, 830, y0 + 18, { size: 38, weight: 700, color: ok2 ? C.mint : C.ink2, baseline: "middle" }); const gx = 830, gy = y0 + 44; viewGrid(ctx, mine, gx, gy, vs, C.solidCube, false); viewGrid(ctx, tgt, gx, gy, vs, ok2 ? C.mint : C.sun, true); });
+      if (done) pill(api, ctx, g.detail, 300, pillY(), { color: ok ? C.mint : C.amber, size: 38 });
       lockBtn(ctx, !done && g.h.flat().some((v) => v > 0), now);
     }
     if (done) { if (ok) tick(ctx, 965, 470, C.mint, 1); else magnifier(ctx, 960, 470, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {
@@ -150,4 +155,4 @@ function create(api: EngineApi, spec: SolidSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const solid: EngineDef<SolidSpec> = { archetype: "solid-view@1", label: "Game · Solid Studio", accent: C.ion, create };
+export const solid: EngineDef<SolidSpec> = { archetype: "solid-view@1", label: "Game · Solid Studio", get accent() { return C.ion; }, create };

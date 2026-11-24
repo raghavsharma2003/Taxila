@@ -243,3 +243,18 @@
 @media (prefers-reduced-motion: reduce) {
   .sv *, .sv *::before, .sv *::after { animation: none !important; transition: none !important; }
 }
+
+/* ── /pricing (r7 app-pricing-subscription): plan cards from src/app/site.ts PLANS ── */
+.sv-page.sv-pricing { max-width: 1080px; }
+.sv-plans { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; }
+@media (min-width: 900px) { .sv-plans { grid-template-columns: repeat(3, 1fr); } }
+.sv-plan { display: grid; align-content: start; gap: 8px; }
+.sv-plan-name { font: 700 22px/1.2 var(--k-sans); color: var(--k-ink); }
+.sv-page .sv-plan-for { margin: 0; font-size: 15px; color: var(--k-ink-3); }
+.sv-page .sv-plan-price { margin: 10px 0 6px !important; color: var(--k-ink-2); font-size: 16px; }
+.sv-plan-price b { font: 700 34px/1 var(--k-sans); letter-spacing: -.02em; color: var(--k-ink); }
+.sv-plan-price--tbd b { font-size: 24px; color: var(--k-ion); }
+.sv-plan-list { margin-top: 6px; }
+.sv-plan-list li { font-size: 16px; }
+.sv-pricing-cta { justify-content: flex-start; }
+.sv-pricing-back { margin-top: 18px !important; }

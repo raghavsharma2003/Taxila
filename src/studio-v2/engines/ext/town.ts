@@ -13,14 +13,16 @@ import { bloom, magnifier, roundRect, tick, type Ctx } from "../../core/draw.ts"
 import { sfx } from "../../core/sfx.ts";
 import { drawIntro, drawStatCard, pill } from "../../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance } from "../../core/types.ts";
-import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock, wrap } from "./kit.ts";
+import { RoundFlow, backdrop, devaReady, fmtNum, taskPill, textBlock, wrap, tally } from "./kit.ts";
 import { drawGlyph } from "./glyphs.ts";
+import { dots } from "../../core/dots.ts";
+import { withAlpha } from "../../../theme/palette.ts";
 
 const BTN = { x: 800, y: 520, w: 170, h: 66 };
 const tcard = (i: number) => ({ x: 122 + (i % 2) * 330, y: 178 + Math.floor(i / 2) * 140, w: 318, h: 130 });
 const SL = { x0: 170, x1: 690, y: 580 };
 function create(api: EngineApi, spec: TownSpec): EngineInstance {
-  const T = spec.strings, accent = "#C9A7FF";
+  const T = spec.strings, accent = C.townAccent;
   let fontOk = true; if (/[ऀ-ॿ]/.test(JSON.stringify(spec))) { fontOk = false; void devaReady().then(() => { fontOk = true; }); }
   const botR = rng(api.seed * 191 + 23), setTask = taskPill(api);
   const g = {
@@ -31,8 +33,9 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
   };
   const hud = api.hud([{ key: "round", label: T.round }, { key: "done", label: T.done }]);
   const rd = (): TlRoundT => spec.rounds[Math.max(0, flow.round)];
+  let r0 = 0;   // right answers before this round: the HUD counts the round in play
   const flow = new RoundFlow(api, spec.rounds.length, {
-    onRound(k) {
+    onRound(k) { r0 = g.right;
       const r = spec.rounds[k];
       Object.assign(g, { hold: r.mode === "barter" ? r.start : "", moves: [], shake: -1, shakeT: 0, flyT: 1, price: r.mode === "market" ? r.cost * 2 : 0, slide: false, open: false, t: 0, ci: -1, prices: [], outcome: [], profit: 0, sold: 0, monthly: 0, running: false, runT: 0, pick: [], answered: false, verdict: "", detail: "", revealT: 0 });
       if (r.mode === "barter") g.plan = barterPlan(r) ?? [];
@@ -89,11 +92,11 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
     }
     if (r.mode === "savings" && g.running && !g.answered) { g.runT += dt; if (g.runT > r.years * 2 + 0.6) judge({ monthly: g.monthly }, savingsAfter(r, g.monthly) >= r.goal && g.monthly <= minMonthly(r) * 1.1 ? "right" : "wrong"); }
     if (g.answered) { g.revealT += dt; if (g.revealT > 3.2) flow.endRound(); }
-    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", `${g.right}/${g.n}`, { bump: true });
+    hud.set("round", `${Math.max(1, flow.round + 1)}/${spec.rounds.length}`); hud.set("done", tally(g.right - r0, 1), { bump: true });
   }
   function paintBg(c: Ctx) { backdrop(c, accent, 191, 0); }
   function button(ctx: Ctx, b: { x: number; y: number; w: number; h: number }, label: string, on: boolean, now: number, col: string = C.volt) {
-    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : "rgba(22,26,36,.95)"; roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.fillStyle = on ? hexA(col, 0.14) : withAlpha(C.bg2, .95); roundRect(ctx, b.x, b.y, b.w, b.h, 16); ctx.fill(); ctx.strokeStyle = on ? hexA(col, 0.7 + 0.3 * Math.sin(now * 4)) : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
     textBlock(api, ctx, label, b.x + b.w / 2, b.y + b.h / 2 + 2, b.w - 16, { size: 38, weight: 700, color: on ? col : C.ink3 }, 2, 1.05);
   }
   function readout(ctx: Ctx, label: string, value: string, y: number, color: string = C.ink) {
@@ -113,10 +116,10 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
     if (r.mode === "barter") {
       for (let i = 0; i < nCards(); i++) {
         const c = tcard(i), isM = i >= r.traders.length, t = r.traders[i], sh = g.shake === i ? Math.sin(g.shakeT * 60) * 8 * g.shakeT : 0;
-        ctx.save(); ctx.translate(sh, 0); ctx.fillStyle = "rgba(22,26,36,.95)"; roundRect(ctx, c.x, c.y, c.w, c.h, 16); ctx.fill(); ctx.strokeStyle = isM ? C.sun : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
+        ctx.save(); ctx.translate(sh, 0); ctx.fillStyle = withAlpha(C.bg2, .95); roundRect(ctx, c.x, c.y, c.w, c.h, 16); ctx.fill(); ctx.strokeStyle = isM ? C.sun : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore();
         drawGlyph(ctx, isM ? "coin" : t.glyph, c.x + 34 + sh, c.y + 65, 44, C.ink, hexA(isM ? C.sun : accent, 0.3));
         if (isM) { api.text(ctx, T.market, c.x + 66, c.y + 42, { size: 38, weight: 800, color: C.sun, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `⇄ ${T.coins}`, c.x + 66, c.y + 92, { size: 38, weight: 600, color: C.ink2, baseline: "middle", maxWidth: c.w - 72 }); }
-        else { api.text(ctx, t.name, c.x + 66 + sh, c.y + 30, { size: 38, weight: 800, color: C.ink, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.has} ${t.has}`, c.x + 66 + sh, c.y + 72, { size: 38, weight: 600, color: "#9FE7C4", baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.wants} ${t.wants}`, c.x + 66 + sh, c.y + 112, { size: 38, weight: 600, color: C.sun, baseline: "middle", maxWidth: c.w - 72 }); }
+        else { api.text(ctx, t.name, c.x + 66 + sh, c.y + 30, { size: 38, weight: 800, color: C.ink, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.has} ${t.has}`, c.x + 66 + sh, c.y + 72, { size: 38, weight: 600, color: C.townHas, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.wants} ${t.wants}`, c.x + 66 + sh, c.y + 112, { size: 38, weight: 600, color: C.sun, baseline: "middle", maxWidth: c.w - 72 }); }
       }
       readout(ctx, T.have, g.hold, 190, g.hold === r.goal ? C.mint : C.volt);
       readout(ctx, T.need, r.goal, 310);
@@ -124,7 +127,7 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
       button(ctx, { x: 790, y: 540, w: 190, h: 56 }, T.reset, !done && g.moves.length > 0, now, C.amber);
       if (g.flyT < 1) { const k = g.flyT; ctx.save(); ctx.globalAlpha = 1 - k; bloom(ctx, C.volt, lerp(450, 885, k), lerp(380, 236, k), 40, 0.6); ctx.restore(); }
     } else if (r.mode === "market") {
-      ctx.save(); ctx.fillStyle = "#3A2E26"; ctx.fillRect(140, 330, 260, 120); ctx.fillStyle = "#C9A7FF"; for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? "#FF8FB1" : "#FFD36B"; ctx.beginPath(); ctx.moveTo(140 + i * 44, 300); ctx.lineTo(184 + i * 44, 300); ctx.lineTo(184 + i * 44, 330); ctx.quadraticCurveTo(162 + i * 44, 346, 140 + i * 44, 330); ctx.fill(); } ctx.restore();
+      ctx.save(); ctx.fillStyle = C.townStall; ctx.fillRect(140, 330, 260, 120); ctx.fillStyle = C.townAccent; for (let i = 0; i < 6; i++) { ctx.fillStyle = i % 2 ? C.townAwningPink : C.townAwningGold; ctx.beginPath(); ctx.moveTo(140 + i * 44, 300); ctx.lineTo(184 + i * 44, 300); ctx.lineTo(184 + i * 44, 330); ctx.quadraticCurveTo(162 + i * 44, 346, 140 + i * 44, 330); ctx.fill(); } ctx.restore();
       const left = r.stock - g.sold; for (let i = 0; i < Math.min(left, 12); i++) drawGlyph(ctx, r.glyph, 170 + (i % 6) * 38, 380 + Math.floor(i / 6) * 40, 34, C.ink, hexA(C.sun, 0.4));
       api.text(ctx, `${T.stock} ${left}`, 270, 480, { font: "mono", size: 38, weight: 600, color: C.ink2, align: "center", baseline: "middle" });
       if (g.open) { const k = (g.t % STEP) / STEP, idx = g.ci; if (idx >= 0 && idx < r.buyers.length) { const x = lerp(720, 450, Math.min(1, k * 2.2)), leaving = k > 0.6, bought = g.outcome[idx]; const xx = leaving ? lerp(450, bought ? 450 : 760, (k - 0.6) / 0.4) : x, yy = leaving && bought ? lerp(390, 600, (k - 0.6) / 0.4) : 390; drawGlyph(ctx, "person", xx, yy, 70, C.ink, hexA(bought ? C.mint : accent, 0.35)); if (k > 0.45 && k < 0.85) pill(api, ctx, bought ? "✓" : T.noDeal, 520, 290, { color: bought ? C.mint : C.amber, size: 38 }); } }
@@ -138,7 +141,7 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
       const months = g.running || done ? Math.min(r.years * 12, Math.floor((g.runT / 2) * 12)) : 0;
       let bal = 0, interest = 0, start = 0; for (let m = 0; m < months; m++) { if (m % 12 === 0) start = bal; bal += g.monthly; if ((m + 1) % 12 === 0) { const add = Math.round((start * r.rate) / 100); interest += add; bal += add; } }
       const f = clamp(bal / (r.goal * 1.3), 0, 1), gy = 540 - (r.goal / (r.goal * 1.3)) * 330;
-      ctx.save(); ctx.fillStyle = "rgba(255,255,255,.06)"; roundRect(ctx, 300, 210, 160, 330, 16); ctx.fill(); const lg = ctx.createLinearGradient(0, 540, 0, 210); lg.addColorStop(0, "#C08A2B"); lg.addColorStop(1, "#FFD36B"); ctx.fillStyle = lg; roundRect(ctx, 300, 540 - f * 330, 160, f * 330, 16); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([10, 6]); ctx.beginPath(); ctx.moveTo(280, gy); ctx.lineTo(480, gy); ctx.stroke(); ctx.restore();
+      ctx.save(); ctx.fillStyle = withAlpha(C.hi, .06); roundRect(ctx, 300, 210, 160, 330, 16); ctx.fill(); const lg = ctx.createLinearGradient(0, 540, 0, 210); lg.addColorStop(0, C.townTowerBase); lg.addColorStop(1, C.townAwningGold); ctx.fillStyle = lg; roundRect(ctx, 300, 540 - f * 330, 160, f * 330, 16); ctx.fill(); ctx.strokeStyle = C.ink; ctx.lineWidth = 3; ctx.setLineDash([10, 6]); ctx.beginPath(); ctx.moveTo(280, gy); ctx.lineTo(480, gy); ctx.stroke(); ctx.restore();
       api.text(ctx, `${T.goal} ${rs(r.goal)}`, 490, gy, { font: "mono", size: 38, weight: 600, color: C.ink, baseline: "middle" });
       drawGlyph(ctx, "bank", 200, 300, 90, C.ink, hexA(accent, 0.3)); api.text(ctx, `${r.rate}%`, 200, 380, { font: "display", size: 40, weight: 800, color: accent, align: "center", baseline: "middle" });
       readout(ctx, T.saved, rs(bal), 190, bal >= r.goal ? C.mint : C.ink);
@@ -148,15 +151,15 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
       button(ctx, BTN, T.run, !done && !g.running && g.monthly > 0, now);
     } else {
       const cost = g.pick.reduce((a, i) => a + r.projects[i].cost, 0), helps = g.pick.reduce((a, i) => a + r.projects[i].helps, 0), over = cost > r.budget;
-      r.projects.forEach((pj, i) => { const c = tcard(i), on = g.pick.includes(i); if (on) bloom(ctx, C.volt, c.x + c.w / 2, c.y + c.h / 2, 120, 0.22); ctx.save(); ctx.fillStyle = on ? "rgba(203,255,77,.1)" : "rgba(22,26,36,.95)"; roundRect(ctx, c.x, c.y, c.w, c.h, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); drawGlyph(ctx, pj.glyph, c.x + 34, c.y + 65, 44, C.ink, hexA(on ? C.volt : accent, 0.3)); api.text(ctx, pj.name, c.x + 66, c.y + 38, { size: 38, weight: 800, color: C.ink, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.rupee}${pj.cost}`, c.x + 66, c.y + 92, { font: "display", size: 38, weight: 800, color: C.sun, baseline: "middle" }); drawGlyph(ctx, "group", c.x + 186, c.y + 90, 34, "#9FE7C4", "rgba(0,0,0,0)"); api.text(ctx, `${pj.helps}`, c.x + 210, c.y + 92, { size: 38, weight: 700, color: "#9FE7C4", baseline: "middle", maxWidth: c.w - 216 }); });
+      r.projects.forEach((pj, i) => { const c = tcard(i), on = g.pick.includes(i); if (on) bloom(ctx, C.volt, c.x + c.w / 2, c.y + c.h / 2, 120, 0.22); ctx.save(); ctx.fillStyle = on ? withAlpha(C.volt, .1) : withAlpha(C.bg2, .95); roundRect(ctx, c.x, c.y, c.w, c.h, 16); ctx.fill(); ctx.strokeStyle = on ? C.volt : C.line2; ctx.lineWidth = 3; ctx.stroke(); ctx.restore(); drawGlyph(ctx, pj.glyph, c.x + 34, c.y + 65, 44, C.ink, hexA(on ? C.volt : accent, 0.3)); api.text(ctx, pj.name, c.x + 66, c.y + 38, { size: 38, weight: 800, color: C.ink, baseline: "middle", maxWidth: c.w - 72 }); api.text(ctx, `${T.rupee}${pj.cost}`, c.x + 66, c.y + 92, { font: "display", size: 38, weight: 800, color: C.sun, baseline: "middle" }); drawGlyph(ctx, "group", c.x + 186, c.y + 90, 34, C.townHas, withAlpha(C.lo, 0)); api.text(ctx, `${pj.helps}`, c.x + 210, c.y + 92, { size: 38, weight: 700, color: C.townHas, baseline: "middle", maxWidth: c.w - 216 }); });
       readout(ctx, T.budget, `${T.rupee}${r.budget - cost}`, 190, over ? C.amber : C.ink);
       readout(ctx, T.families, `${helps}`, 320, C.mint);
       button(ctx, BTN, T.lock, !done && !over && g.pick.length > 0, now);
     }
     if (done) { pill(api, ctx, g.detail, 440, 150 + 460, { color: ok ? C.mint : C.amber, size: 38 }); if (ok) tick(ctx, 965, 470, C.mint, 1); else magnifier(ctx, 960, 470, C.amber, 1); }
     fx.drawWorld(ctx); ctx.restore(); fx.drawScreen(ctx);
-    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${flow.round + 1} / ${spec.rounds.length}`, title: r.title, sub: r.sub, accent });
-    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[`${g.right}/${g.n}`, T.done]] });
+    if (flow.state === "intro" || flow.introA > 0.01) drawIntro(api, ctx, { a: flow.introA, t: flow.stateT, kicker: `${T.round} ${dots(flow.round, spec.rounds.length)}`, title: r.title, sub: r.sub, accent });
+    if (flow.state === "end") drawStatCard(api, ctx, { a: flow.endA, head: `${T.round} ${flow.round + 1}`, ticked: true, stats: [[tally(g.right - r0, 1), T.done]] });
     if (flow.state === "final") drawStatCard(api, ctx, { a: flow.finalA, head: T.runDone, color: C.ion, stats: [[`${g.right}/${g.n}`, T.done]] });
   }
   function bot(): BotAction | null {
@@ -177,4 +180,4 @@ function create(api: EngineApi, spec: TownSpec): EngineInstance {
     board: () => ({ title: spec.title, lines: spec.rounds.map((x) => x.sub || x.title).slice(0, 3), figure: { kind: "none" }, accent }),
   };
 }
-export const town: EngineDef<TownSpec> = { archetype: "town-lab@1", label: "Simulation · Town Lab", accent: "#C9A7FF", create };
+export const town: EngineDef<TownSpec> = { archetype: "town-lab@1", label: "Simulation · Town Lab", get accent() { return C.townAccent; }, create };

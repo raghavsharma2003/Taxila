@@ -18,6 +18,7 @@ import { labelScriptProblem, sentenceShaped } from "../server/forge/explainer/tr
 import { screenContradiction, partsSaid, openItemOf, stripStrayParts } from "../server/director/modules.js";
 import { getKit } from "../server/content/index.js";
 import { initLessonState, step } from "../server/director/state.js";
+import { setScriptForTest } from "../server/director/script.js";
 import { interestSet, interestIdOf, HOOKS, DECOR, INTEREST_IDS } from "../server/forge/strings.js";
 
 const ROOT = new URL("..", import.meta.url);
@@ -71,7 +72,7 @@ describe("shared/whiteboard.js", () => {
 describe("explainer templates (rungs 4-5)", () => {
   test("every template expands to a strict-valid, lint-clean script with facts", () => {
     const calls = {
-      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "fraction-of@1": { a: 1, b: 2, c: 1, d: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
+      "fraction-parts@1": { whole: "bar", parts: 5, shade: 2 }, "fraction-line@1": { den: 5, target: [2, 5], show: true }, "fraction-of@1": { a: 1, b: 2, c: 1, d: 2 }, "combine-count@1": { a: 7, b: 5, op: "add" }, "number-line-hop@1": { start: 3, hops: [4, -2] },
       "column-op@1": { a: 4587, b: 2675, op: "add" }, "place-value@1": { value: 345678 }, "equal-groups@1": { groups: 4, each: 6 },
       "flow@1": { steps: ["bees", "pollination", "seeds", "oil", "farmer's income"] }, "cycle@1": { stages: ["evaporation", "condensation", "rain"] },
       "compare@1": { left: { title: "shrubs", items: ["woody stems"] }, right: { title: "trees", items: ["one thick trunk"] } },
@@ -82,6 +83,9 @@ describe("explainer templates (rungs 4-5)", () => {
       "symmetry@1": { line: "mirror line", dot: 3 },
       "area-grid@1": { w: 5, h: 3, mode: "area", unit: "cm" },
       "bar-chart@1": { bars: [{ label: "June", value: 140 }, { label: "July", value: 250 }, { label: "Aug", value: 230 }] },
+      "timeline@1": { events: [{ year: 1905, label: "Partition of Bengal" }, { year: 1919, label: "Jallianwala Bagh" }, { year: 1942, label: "Quit India" }] },
+      "table@1": { head: ["x", "y"], rows: [["0", "5"], ["1", "8"], ["2", "11"]], rule: "y = 3x + 5" },
+      "measured@1": { shape: "rect", w: 8, h: 5, unit: "cm" },
     };
     for (const t of TEMPLATES) {
       const x = expand({ template: t, ...calls[t] });
@@ -359,3 +363,8 @@ describe("W2-B fixer", () => {
     assert.equal(normalizeScript(cont, { strict: true, priorIds: ["frac"] }).ok, true);
   });
 });
+
+// This file walks real kits through the Director, which loads each topic's real lesson script into server/director/script.js's
+// per-topic cache (read once per topic per process). Under --experimental-test-isolation=none that cache outlives this file and a
+// later suite driving a mini-kit on the same topicId would walk the real script. Clear it as the last test (an after() runs too late).
+test("cleanup: the script cache this file filled is cleared for the next suite", () => { setScriptForTest(); });

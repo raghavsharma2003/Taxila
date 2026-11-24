@@ -1,0 +1,165 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket pitch jaisi number line par fractions ki jagah dhoondhenge. Zero se one ke beech ka aadha raasta kis number se dikhate hain?",
+   "move": "hook",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1548
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo aadha raasta sochte hain. Ghar zero par hai aur chai ki dukaan one par. Bilkul beech wale mark ka number kya hoga?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2314,
+   "replyReadyMs": 3862
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 719
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, step by step chalte hain. Ghar zero par aur dukaan one par socho; beech mein ruko to poora raasta nahi, uska aadha tay hua. Is aadhe raaste ko fraction mein kya bolte hain?",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2821,
+   "replyReadyMs": 3540
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1463
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chhota bolungi. Zero aur one ke beech ka aadha raasta kaunsa fraction hai?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2375,
+   "replyReadyMs": 3838
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 748
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle picture. beech mein ek rukne ki jagah hogi. Us jagah tak kitna raasta hua?",
+   "move": "explain",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2545,
+   "replyReadyMs": 3293
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Pata nahi, toh ek chhota step lete hain. Zero se one tak raasta do barabar gaps mein bata hai. Beech tak kitne gaps chaloge?",
+   "move": "hint",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2582,
+   "replyReadyMs": 2583
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 717
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, kuch aur baat karte hain. Cricket ki baat karein? Tumhe cricket mein kya pasand hai?",
+   "move": "break",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2439,
+   "replyReadyMs": 3156
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1418
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein batting, bowling ya fielding—tumhe kaunsa part zyada pasand hai? Batting mein timing, bowling mein line-length, fielding mein quick catches!",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 4688,
+   "replyReadyMs": 6106,
+   "fellBack": "diversion_set_aside"
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 760
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein batati hoon. Cricket ki baat chhodo; shoonya se ek tak ki rekha par beech wali jagah ko aadha kehte hain. Do barabar hisson mein se beech tak kitna hissa hua?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2910,
+   "replyReadyMs": 3670
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1277
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tum khud koshish karo. Main abhi koi ishara nahi dungi. Beech tak kitna hissa hua?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 2388,
+   "replyReadyMs": 3665
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 958
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho—koi baat nahi. Tum chun sakti ho: jaari rakhein, chhota break lein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2315,
+   "replyReadyMs": 3273,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ]
+  }
+ ]
+}

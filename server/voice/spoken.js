@@ -163,11 +163,23 @@ const MOBILE_RE = /(?<![\d+])(\+91[\s-]?|0)?([6-9]\d{4})[\s-]?(\d{5})(?!\d)/g;
 const TOLLFREE_RE = /(?<!\d)18(?:00|60)(?:[\s-]?\d){6,8}(?!\d)/g;
 const DIAL_RE = new RegExp(`(?<=(?:^|[^\\p{L}\\p{M}])(?:${LX.DIAL_CUES.map(escapeRe).join("|")})\\s+(?:(?:${LX.DIAL_LINKS.map(escapeRe).join("|")})\\s+)?)(\\d{3,8})(?!\\d|[.,]\\d)`, "giu");
 
+// "112 pe call karo": the dial cue AFTER the number (Hindi word order)
+const DIAL_AFTER_RE = new RegExp(`(?<![\\d.,])(\\d{3,8})(?=\\s+(?:(?:${LX.DIAL_LINKS.map(escapeRe).join("|")})\\s+)?(?:${LX.DIAL_CUES.map(escapeRe).join("|")})(?![\\p{L}\\p{M}]))`, "giu");
+const OPERATOR_NEAR = /[=+\-−×÷*/<>]/;
+
 function phones(text, W) {
   return text
-    .replace(MOBILE_RE, (m, pre) => `${pre?.startsWith("+") ? W.ops.plus + " " : ""}${digitsWords(m.replace(/^\+91/, "91"), W)}`)
+    .replace(MOBILE_RE, (m, pre, a, b, off, s) => {
+      // audit V-17: maths is not a phone number. "75000-25000 = 50000" (an operator beside it) and "60000 40000 se bada
+      // hai" (two round numbers) were read digit by digit
+      const before = s.slice(Math.max(0, off - 3), off), after = s.slice(off + m.length, off + m.length + 3);
+      if (!pre && (OPERATOR_NEAR.test(before.trim().slice(-1)) || OPERATOR_NEAR.test(after.trim().slice(0, 1)))) return m;
+      if (!pre && /00$/.test(a) && /00$/.test(b)) return m;
+      return `${pre?.startsWith("+") ? W.ops.plus + " " : ""}${digitsWords(m.replace(/^\+91/, "91"), W)}`;
+    })
     .replace(TOLLFREE_RE, (m) => digitsWords(m, W))
-    .replace(DIAL_RE, (m) => digitsWords(m, W));
+    .replace(DIAL_RE, (m) => digitsWords(m, W))
+    .replace(DIAL_AFTER_RE, (m) => digitsWords(m, W));
 }
 
 const FORMULA_RE = /(?<![\p{L}\p{M}\p{N}])((?:[A-Z][a-z]?(?:\d+|[₀-₉]+)?){1,10})(?![\p{L}\p{M}\p{N}]|\.\d)/gu;
@@ -190,7 +202,8 @@ function formulae(text, W) {
 
 // ───────────── the token walk ─────────────
 
-const LEX = /(\d{1,3}(?:,\d{2,3}(?!\d))+(?:\.\d+)?|\d+(?:\.\d+)?)|([⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)|([₀-₉]+)|([\p{L}\p{M}]+)|(\s+)|([\s\S])/gu;
+// π is its own token (audit V-17: "πr²" was one word and stayed a symbol)
+const LEX = /(\d{1,3}(?:,\d{2,3}(?!\d))+(?:\.\d+)?|\d+(?:\.\d+)?)|([⁰¹²³⁴⁵⁶⁷⁸⁹⁻]+)|([₀-₉]+)|((?:(?!π)[\p{L}\p{M}])+)|(\s+)|([\s\S])/gu;
 function lex(text) {
   const out = [];
   for (const m of text.matchAll(LEX)) {
@@ -339,6 +352,25 @@ function render(text, cell) {
       emitWords(mixedWords(raw, n, d));
       return i + 2;
     }
+    // audit V-17: a date d/m/yy(yy): "15/08/1947" → fifteen August nineteen forty-seven
+    if (isInt(raw) && +raw >= 1 && +raw <= 31 && t[i + 1]?.s === "/" && t[i + 2]?.k === "num" && isInt(t[i + 2].s) && +t[i + 2].s >= 1 && +t[i + 2].s <= 12
+      && t[i + 3]?.s === "/" && t[i + 4]?.k === "num" && /^(\d{2}|\d{4})$/.test(t[i + 4].s) && t[i - 1]?.s !== "/" && W.months) {
+      const y = t[i + 4].s;
+      const yw = y.length === 4 && /^1[1-9]\d\d$/.test(y) ? year(+y) : intWords(y, W);
+      emitWords(`${intWords(String(+raw), W)} ${W.months[+t[i + 2].s - 1]} ${yw}`);
+      return i + 5;
+    }
+    // audit V-17: a clock time written with a dot before the clock word: "9.30 baje" (not nine point three zero)
+    {
+      const dm = /^(\d{1,2})\.(\d{2})$/.exec(raw);
+      const nw = t[skip(i + 1)];
+      if (dm && +dm[1] <= 23 && +dm[2] <= 59 && nw?.k === "word" && LX.CLOCK_WORDS.includes(nw.s.toLowerCase())) {
+        let words = clock(+dm[1], +dm[2]);
+        if (W.time.clockWords?.includes(nw.s.toLowerCase()) && W.time.clockWord) words = words.replace(new RegExp(`\\s*${W.time.clockWord}$`), "");
+        emitWords(words);
+        return i + 1;
+      }
+    }
     // fraction: 3/4, 22/7 (a/b/c is a date: left alone below)
     if (isInt(raw) && t[i + 1]?.s === "/" && t[i + 2]?.k === "num" && isInt(t[i + 2].s) && +t[i + 2].s > 0 && t[i + 3]?.s !== "/" && t[i - 1]?.s !== "/") {
       emitWords(fracWords(+raw, +t[i + 2].s));
@@ -373,9 +405,11 @@ function render(text, cell) {
     }
     // year: in 1947, सन् 1857, 1526 AD
     if (/^1[1-9]\d\d$/.test(raw)) {
-      const p = t[i - 1]?.k === "sp" ? t[i - 2] : t[i - 1];
+      const pi = t[i - 1]?.k === "sp" ? i - 2 : i - 1, p = t[pi];
+      const pp = t[pi - 1]?.k === "sp" ? t[pi - 2] : t[pi - 1];
       const n = t[skip(i + 1)];
-      if ((p?.k === "word" && LX.YEAR_CUES.includes(p.s.toLowerCase())) || (n?.k === "word" && LX.YEAR_SUFFIXES.some((s) => s.replace(".", "") === n.s))) {
+      // audit V-17: a cue right after another number is maths ("Divide 5000 by 1250"), not a year
+      if ((p?.k === "word" && LX.YEAR_CUES.includes(p.s.toLowerCase()) && pp?.k !== "num") || (n?.k === "word" && LX.YEAR_SUFFIXES.some((s) => s.replace(".", "") === n.s))) {
         emitWords(year(+raw));
         return i + 1;
       }
@@ -535,7 +569,8 @@ function render(text, cell) {
 
     // binary operators between operands; "x" as times between two numbers
     const opName = OPS[tok.s] ?? ((tok.s === "x" || tok.s === "X") && t[i - 1]?.k === "sp" && t[i + 1]?.k === "sp" && t[i - 2]?.k === "num" && t[i + 2]?.k === "num" ? "times" : null);
-    if (opName && operand && rightIsOperand(i + 1) && !(tok.s === "-" && t[i - 1]?.k !== "sp" && !mathy)) {
+    // audit V-17: "5 + 3 = ?" says "equals" (the question is the operand)
+    if (opName && operand && (rightIsOperand(i + 1) || (tok.s === "=" && t[skip(i + 1)]?.s === "?")) && !(tok.s === "-" && t[i - 1]?.k !== "sp" && !mathy)) {
       const tpl = W.ops[opName];
       if (tpl.includes("{r}")) {
         const r = simpleRight(i + 1);
@@ -595,7 +630,26 @@ const RESIDUAL_RE = /\d+(?:\.\d+)?/g;
  * @param {string} text  written teacher text
  * @param {Parameters<typeof toSpoken>[1]} [opts]
  */
+/**
+ * Round 7 (name preview, F Learning's child.name_spoken, migration 038): the child's name said the way the parent spelled
+ * it ("Aa-rav"), whole word, any case. Audio only: speakable() output never reaches captions or stored turns. Pure.
+ * @param {string} text
+ * @param {{ written?: string, spoken?: string } | null | undefined} sayName
+ */
+/** The child row's name pair for sayChildName (null when the parent gave no spoken spelling). */
+export function sayNameOf(child) {
+  return child?.name_spoken && child?.first_name ? { written: String(child.first_name), spoken: String(child.name_spoken) } : null;
+}
+
+export function sayChildName(text, sayName) {
+  const w = String(sayName?.written ?? "").trim(), s = String(sayName?.spoken ?? "").trim();
+  if (!w || !s || w === s) return String(text);
+  const esc = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return String(text).replace(new RegExp(`(?<![\\p{L}\\p{M}\\p{N}])${esc}(?![\\p{L}\\p{M}\\p{N}])`, "giu"), s);
+}
+
 export function speakable(text, opts = {}) {
+  text = sayChildName(text, opts.sayName);
   const cell = cellFor(opts);
   const lang = cell.words === "hi" ? "hi" : "en";
   let x = toSpoken(text, opts);

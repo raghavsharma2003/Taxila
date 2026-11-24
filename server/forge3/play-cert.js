@@ -5,20 +5,21 @@
 // (server/forge3/qa/checks.js; class 4-5 at the 16 px floor). The verdict table is what compose() may offer at a size.
 //
 //   FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --harness <built harness dir> [--out server/forge3/certs/play.json]
-//     [--shots <dir>] [--seeds 2] [--only <family>]
+//     [--shots <dir>] [--shot-every 7] [--seeds 2] [--only <family>] [--no-focus]
 // Round 4 G1: a (family, mode) that a real-game engine renders (src/play/engines/registry.ts) is judged on BOTH renderers a
 // child can get: the 2D view (a 2D-tier device, the board twin) in every art direction, cells `<art>@c<band>` as before
 // (what forge3 compose reads), and the 3D engine in every theme of its art pack, cells `3d:<theme>@c<band>` (the harness
 // page is told which renderer to mount; the WebGL drawing buffer is kept so the pixel checks can read it). --only merges
 // into the existing table instead of replacing it.
 // Levels come from the play coverage file's entries as the play server serves them (coverageLevels below), so the table is
-// judged on the levels a child actually gets, in every art direction the family can wear.
+// judged on the levels a child actually gets, in every art direction the family can wear; plus (unless --no-focus) the level
+// served when the Director's focus names each mapped misconception (GAMES-01), when that level differs.
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { serveHarness, openJudge, launchLocal } from "./qa/render.js";
 import { PLAY_VIEWPORTS } from "./qa/viewports.js";
-import { QA_VERSION } from "./qa/checks.js";
+import { QA_VERSION, judgePiece } from "./qa/checks.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const PLAY_CERT_FILE = path.join(here, "certs", "play.json");
@@ -40,7 +41,7 @@ export function levelFor(logic, family, mode, { seed = 1, classLevel = 6, gramma
  * Served levels for a coverage entry, as the play server would serve them to a fresh child of the entry's class: the
  * same session body startSession builds (server/play/start.js), seeds n = 0..k-1, the picker's garam door.
  */
-export async function coverageLevels(entry, k = 2) {
+export async function coverageLevels(entry, k = 2, opts = {}) {
   const { currentLevel, entryKey, seedOf } = await import("../play/levels.js");
   const out = [];
   for (let n = 0; n < k; n++) {
@@ -48,6 +49,14 @@ export async function coverageLevels(entry, k = 2) {
     const s = { childId: `qa-${n}`, key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
       mis: {}, pL: undefined, n: 0, seed: seedOf(`qa-${n}`, key, 0), door: "garam", recent: [], hist: null };
     try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* a generator that throws serves nothing */ }
+  }
+  // GAMES-01: the level served after the lesson saw a mapped misconception (the Director's focus) can be a different shape
+  // (a judging strip pair, a no-CO2 leaf pair, a small key or scale); one per belief, when it differs from the above
+  if (opts.focus) for (const kit of Object.values(entry.misMap ?? {})) {
+    const key = entryKey(entry);
+    const s = { childId: "qa-0", key, skillId: entry.skillId, lessonId: null, classLevel: entry.classLevel, fade: 1, lang: "hinglish", childArt: null, lastArt: null,
+      mis: { [kit]: 0.7 }, focus: kit, pL: undefined, n: 0, seed: seedOf("qa-0", key, 0), door: "garam", recent: [], hist: null };
+    try { const lv = currentLevel(s, entry); if (lv && !out.some((x) => x.levelId === lv.levelId)) out.push(lv); } catch { /* serves nothing */ }
   }
   return out;
 }
@@ -75,6 +84,8 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   const out = arg("out", PLAY_CERT_FILE);
   const only = arg("only", null);
   const shots = arg("shots", null);
+  // a 2D sample is shot every Nth (default 7; 1 shoots them all, e.g. to look at every goal of one family)
+  const shotEvery = Math.max(1, Number(arg("shot-every", 7)) || 7);
   const seeds = Number(arg("seeds", "2")) || 2;
   const { FAMILY_ARTS } = await import("../../shared/play.ts");
   const { coverage } = await import("../play/levels.js");
@@ -91,12 +102,53 @@ if (import.meta.url === `file://${process.argv[1]}`) {
     for (const [k, v] of Object.entries(prior.pieces ?? {})) if (!k.startsWith(`${only}/`)) table.pieces[k] = v;
     table.samples = (prior.samples ?? []).filter((x) => !String(x.key ?? "").startsWith(`${only}/`));
   }
+  // --resume (with --only): a run cut short (the container restarts) keeps this family's samples already judged in the r7
+  // format (each records its box), rebuilds their cells from them, and skips those coverage entries; the table is
+  // written after every entry, so a restart loses at most the entry in flight
+  const resume = only && argv.includes("--resume") && prior;
+  const done = new Set();
+  if (resume) {
+    for (const x of prior.samples ?? []) {
+      if (!String(x.key ?? "").startsWith(`${only}/`) || !x.box) continue;
+      table.samples.push(x);
+      done.add(`${x.topicId}|${x.key}|${x.goal}`);
+      const band = (x.classLevel ?? 6) <= 5 ? 4 : 7;
+      const cell = ((table.pieces[x.key] ??= {})[`${x.art}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
+      cell.n++;
+      for (const [vp, ok] of Object.entries(x.byViewport ?? {})) if (!ok) cell.byViewport[vp] = false;
+      for (const f of x.fails ?? []) if (cell.fails.length < 12 && !cell.fails.includes(f)) cell.fails.push(f);
+    }
+    console.log(`resume: ${done.size} entries of ${only} already judged`);
+  }
+  const checkpoint = () => { fs.mkdirSync(path.dirname(out), { recursive: true }); fs.writeFileSync(out, JSON.stringify(table, null, 1)); };
   const force = (f) => judge.page.evaluate((x) => { window.__taxilaPlayRender = x; }, f);
   let shot = 0;
+  // r7: each size is judged on its own and then probed, so a certificate records the box the piece was judged in and
+  // which view mounted. A play cell certifies the GAME: a size where the stage handed play a box under MIN_BOX (the
+  // renderer's "layout" refusal) or where no play stage mounted fails as twin:<why>, never passes as the board twin.
+  const judgePlay = async (artifact, opt) => {
+    const views = [], probes = {};
+    for (const v of PLAY_VIEWPORTS) {
+      const r = await judge.judge(artifact, { ...opt, viewports: [v] });
+      const p = await judge.page.evaluate(() => {
+        const st = document.querySelector("[data-testid=play-stage]");
+        const host = st?.parentElement?.closest(".st-box") ?? document.querySelector(".st-box");
+        const b = host?.getBoundingClientRect();
+        return { box: b ? { w: Math.round(b.width), h: Math.round(b.height) } : null, game: !!st, render: st?.getAttribute("data-render") ?? null, keep: st?.getAttribute("data-keep") ?? null };
+      });
+      const view = r.views[0];
+      const refused = view.events.some((e) => e && e.type === "error" && e.message === "layout");
+      if (refused || !p.game) view.verdict = { ...view.verdict, pass: false, fails: [...view.verdict.fails, `twin:${refused ? "layout" : "no-stage"}`] };
+      probes[v.vp] = p;
+      views.push(view);
+    }
+    return { views, piece: judgePiece(views), probes };
+  };
   for (const entry of entries) {
     const key = `${entry.family}/${entry.mode}`;
+    if (done.has(`${entry.topicId}|${key}|${entry.goal}`)) continue;
     const band = entry.classLevel <= 5 ? 4 : 7;
-    const levels = await coverageLevels(entry, seeds);
+    const levels = await coverageLevels(entry, seeds, { focus: !argv.includes("--no-focus") });
     if (!levels.length) { table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, noLevel: true }); console.log(`${entry.topicId} ${key}: no served level`); continue; }
     for (const level of levels) for (const art of FAMILY_ARTS[entry.family] ?? []) {
       // judged as the child sees it: a PlayArtifact on the REAL Studio stage (PlayStudioRenderer → PlaySession) in the Desk's
@@ -107,13 +159,13 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       try { const b = logic.board(level, logic.init(level)); boardTwin = { board: { title: b.title, lines: b.lines } }; } catch { boardTwin = null; }
       const artifact = { kind: "play", stage: { w: 360, h: 576 }, play: { sessionId: "qa", family: level.family, mode: level.mode, skillId: level.skillId, topicId: level.topicId, art, levelId: level.levelId }, ...(boardTwin ? { boardTwin } : {}) };
       await force(engineFor(level.family, level.mode, level.goal) ? { render: "2d" } : null);
-      const r = await judge.judge(artifact, { viewports: PLAY_VIEWPORTS, young: entry.classLevel <= 5, playLevel: { level, art: { art, reason: "qa" } },
-        shotDir: shots && shot++ % 7 === 0 ? `${shots}/${key.replace("/", "_")}` : undefined, shotTag: `${entry.topicId}-${art}` });
+      const r = await judgePlay(artifact, { young: entry.classLevel <= 5, playLevel: { level, art: { art, reason: "qa" } },
+        shotDir: shots && shot++ % shotEvery === 0 ? `${shots}/${key.replace("/", "_")}` : undefined, shotTag: `${entry.topicId}-${art}` });
       const cell = ((table.pieces[key] ??= {})[`${art}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
       cell.n++;
       for (const v of r.views) if (!v.verdict.pass) { cell.byViewport[v.vp] = false; for (const f of v.verdict.fails) if (cell.fails.length < 12 && !cell.fails.includes(`${v.vp}:${f}`)) cell.fails.push(`${v.vp}:${f}`); }
       table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, levelId: level.levelId, art, classLevel: entry.classLevel, byViewport: r.piece.byViewport,
-        fails: r.piece.fails.slice(0, 6), minPx: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.minPx])), fill: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.fill])) });
+        fails: r.piece.fails.slice(0, 6), minPx: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.minPx])), fill: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.fill])), box: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.box])), game: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.game])) });
       console.log(`${entry.topicId} ${key} ${art} c${entry.classLevel}: ${JSON.stringify(r.piece.byViewport)} ${r.piece.fails.slice(0, 3).join(" ")}`);
     }
     // the real-game engine, in every theme of its art pack
@@ -123,7 +175,7 @@ if (import.meta.url === `file://${process.argv[1]}`) {
       for (const theme of ENGINE_THEMES[eng.id] ?? []) {
         await force({ render: "3d", theme });
         const artifact = { kind: "play", stage: { w: 360, h: 576 }, play: { sessionId: "qa", family: level.family, mode: level.mode, skillId: level.skillId, topicId: level.topicId, art: "raat", levelId: level.levelId } };
-        const r = await judge.judge(artifact, { viewports: PLAY_VIEWPORTS, young: entry.classLevel <= 5, playLevel: { level, art: { art: "raat", reason: "qa" } }, bootMs: 1800,
+        const r = await judgePlay(artifact, { young: entry.classLevel <= 5, playLevel: { level, art: { art: "raat", reason: "qa" } }, bootMs: 1800,
           shotDir: shots && shot++ % 3 === 0 ? `${shots}/${key.replace("/", "_")}-3d` : undefined, shotTag: `${entry.topicId}-${theme}` });
         const rendered = await judge.page.evaluate(() => document.querySelector("[data-render]")?.getAttribute("data-render") ?? null);
         const cell = ((table.pieces[key] ??= {})[`3d:${theme}@c${band}`] ??= { byViewport: Object.fromEntries(PLAY_VIEWPORTS.map((v) => [v.vp, true])), n: 0, fails: [] });
@@ -131,11 +183,12 @@ if (import.meta.url === `file://${process.argv[1]}`) {
         if (rendered !== "3d") { for (const v of PLAY_VIEWPORTS) cell.byViewport[v.vp] = false; if (!cell.fails.includes(`render:${rendered}`)) cell.fails.push(`render:${rendered}`); }
         for (const v of r.views) if (!v.verdict.pass) { cell.byViewport[v.vp] = false; for (const f of v.verdict.fails) if (cell.fails.length < 12 && !cell.fails.includes(`${v.vp}:${f}`)) cell.fails.push(`${v.vp}:${f}`); }
         table.samples.push({ topicId: entry.topicId, key, goal: entry.goal, levelId: level.levelId, art: `3d:${theme}`, engine: eng.id, rendered, classLevel: entry.classLevel, byViewport: r.piece.byViewport,
-          fails: r.piece.fails.slice(0, 6), minPx: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.minPx])), fill: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.fill])) });
+          fails: r.piece.fails.slice(0, 6), minPx: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.minPx])), fill: Object.fromEntries(r.views.map((v) => [v.vp, v.verdict.stats.fill])), box: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.box])), game: Object.fromEntries(Object.entries(r.probes).map(([vp, p]) => [vp, p.game])) });
         console.log(`${entry.topicId} ${key} 3d:${theme} c${entry.classLevel} (${rendered}): ${JSON.stringify(r.piece.byViewport)} ${r.piece.fails.slice(0, 3).join(" ")}`);
       }
     }
     await force(null);
+    checkpoint();
   }
   await judge.close(); await browser.close(); server.close();
   servingVerdicts(table);

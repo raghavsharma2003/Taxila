@@ -12,10 +12,11 @@ import { ExplainerShell } from "../core/explainer.ts";
 import type { TimelineConfig } from "../core/timeline.ts";
 import type { EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
 import { pill } from "../core/ui.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
 const INIT: Record<string, number> = { "title.a": 0, "triangle.a": 0, "sum.a": 0, "tear": 0, "align": 0, "morph": 0, "cam.zoom": 1, "cam.x": 500, "cam.y": 360, "lbl.straight": 0 };
 const CFG: TimelineConfig = { init: INIT, showable: ["title", "triangle", "sum"], labels: ["straight"], verbs: { tear: { prop: "tear", key: "to", min: 0, max: 1 }, align: { prop: "align", key: "to", min: 0, max: 1 }, morph: { prop: "morph", key: "to", min: 0, max: 1, ease: "inOutSine" } } };
-const COLS = [C.ion, C.sci, C.sun], P: XY = [500, 530], WR = 74;
+const COLS = (): string[] => [C.ion, C.sci, C.sun], P: XY = [500, 530], WR = 74;
 const ang = (a: XY, b: XY) => Math.atan2(-(b[1] - a[1]), b[0] - a[0]) / DEG;   // math angle (y up), degrees
 const n360 = (a: number) => ((a % 360) + 360) % 360;
 
@@ -36,13 +37,13 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
   function wedge(ctx: Ctx, v: XY, d: number, s: number, col: string, r = WR, label?: string) {
     ctx.save(); ctx.fillStyle = col; ctx.globalAlpha *= 0.85;
     ctx.beginPath(); ctx.moveTo(v[0], v[1]); ctx.arc(v[0], v[1], r, -d * DEG, -(d + s) * DEG, true); ctx.closePath(); ctx.fill();
-    ctx.globalAlpha /= 0.85; ctx.strokeStyle = "rgba(255,255,255,.7)"; ctx.lineWidth = 3; ctx.stroke();
+    ctx.globalAlpha /= 0.85; ctx.strokeStyle = withAlpha(C.hi, .7); ctx.lineWidth = 3; ctx.stroke();
     if (label) { const m = (d + s / 2) * DEG; api.text(ctx, label, v[0] + Math.cos(m) * (r + 34), v[1] - Math.sin(m) * (r + 34), { font: "mono", size: 38, weight: 700, color: col, align: "center", baseline: "middle" }); }
     ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
-    ctx.fillStyle = "#0B0D14"; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = "rgba(255,255,255,.035)"; ctx.lineWidth = 1; for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); } for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.fillStyle = C.anglesumGround; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = withAlpha(C.hi, .035); ctx.lineWidth = 1; for (let x = 40; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); } for (let y = 40; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
     if (sh.interactive) { drawInteractive(ctx, now); return; }
     const z = V("cam.zoom"), tA = V("triangle.a"), tear = V("tear"), al = V("align"), mo = V("morph");
     const k = Math.sin(mo * Math.PI), a = lerp(spec.triangle[0], 28, k), b = lerp(spec.triangle[1], 74, k);
@@ -50,7 +51,7 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
     ctx.save(); ctx.translate(500, 360); ctx.scale(z, z); ctx.translate(-500, -360);
     if (tA > 0.01) {
       ctx.save(); ctx.globalAlpha = tA * (1 - 0.65 * Math.max(tear, al));
-      ctx.fillStyle = "rgba(139,152,255,.08)"; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.lineJoin = "round";
+      ctx.fillStyle = withAlpha(C.ion, .08); ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.lineJoin = "round";
       ctx.beginPath(); ctx.moveTo(...pts[0]); ctx.lineTo(...pts[1]); ctx.lineTo(...pts[2]); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
       const cs = corners(pts), cen: XY = [(pts[0][0] + pts[1][0] + pts[2][0]) / 3, (pts[0][1] + pts[1][1] + pts[2][1]) / 3];
       // aligned targets on the straight line through P: B-wedge [0, b], C-wedge [b, b + c], A-wedge [b + c, 180]
@@ -58,13 +59,14 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
       cs.forEach((cw, i) => {
         const out: XY = [cw.v[0] + (cw.v[0] - cen[0]) * 0.18 * tear, cw.v[1] + (cw.v[1] - cen[1]) * 0.18 * tear];
         const e = ease.inOutCubic(al), pos: XY = [lerp(out[0], P[0], e), lerp(out[1], P[1], e)], d = lerp(cw.d, cw.d + (n360(targ[i] - cw.d + 180) - 180), e);
-        ctx.save(); ctx.globalAlpha = tA; wedge(ctx, pos, d, cw.s, COLS[i], WR, mo > 0.02 || V("sum.a") > 0.01 ? `${Math.round(cw.s)}°` : undefined); ctx.restore();
+        ctx.save(); ctx.globalAlpha = tA; wedge(ctx, pos, d, cw.s, COLS()[i], WR, mo > 0.02 || V("sum.a") > 0.01 ? `${Math.round(cw.s)}°` : undefined); ctx.restore();
       });
       if (al > 0.5) { ctx.save(); ctx.globalAlpha = (al - 0.5) * 2 * tA; ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(P[0] - 260, P[1]); ctx.lineTo(P[0] + 260, P[1]); ctx.stroke(); ctx.restore(); }
     }
     ctx.restore();
-    // the running sum lives in screen space (outside the camera), clear of the safe zones
-    if (tA > 0.01 && V("sum.a") > 0.01) { const cs = corners(pts), sum = cs.reduce((x, c) => x + c.s, 0); ctx.save(); ctx.globalAlpha = V("sum.a"); pill(api, ctx, `${cs.map((c) => Math.round(c.s)).join("° + ")}° = ${Math.round(sum)}°`, 500, 190, { color: C.mint }); ctx.restore(); }
+    // the running sum lives in screen space (outside the camera), below the straight line: the apex's angle label climbs
+    // to y ≈ 175 when the triangle is tall, so a pill up top sat on it (layout probe, 2026-11-11)
+    if (tA > 0.01 && V("sum.a") > 0.01) { const cs = corners(pts), sum = cs.reduce((x, c) => x + c.s, 0); ctx.save(); ctx.globalAlpha = V("sum.a"); pill(api, ctx, `${cs.map((c) => Math.round(c.s)).join("° + ")}° = ${Math.round(sum)}°`, 500, 588, { color: C.mint }); ctx.restore(); }
     if (V("lbl.straight") > 0.01) { ctx.save(); ctx.globalAlpha = V("lbl.straight"); ctx.strokeStyle = C.mint; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(P[0], P[1], WR + 20, Math.PI, 0); ctx.stroke(); api.text(ctx, T.straight, 500, 380, { font: "mono", size: 40, weight: 700, color: C.mint, align: "center" }); ctx.restore(); }
     const ti = V("title.a"); if (ti > 0.01) { ctx.save(); ctx.globalAlpha = ti; api.text(ctx, T.title, 500, 200, { font: "display", size: 96, weight: 800, align: "center", baseline: "middle" }); ctx.restore(); }
     api.fx.drawWorld(ctx);
@@ -72,10 +74,10 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
   function drawInteractive(ctx: Ctx, now: number) {
     const a = spec.task[0], b = spec.task[1], key = 180 - a - b;
     ctx.strokeStyle = C.ink; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(P[0] - 300, P[1]); ctx.lineTo(P[0] + 300, P[1]); ctx.stroke();
-    wedge(ctx, P, 0, b, COLS[1], WR + 30, `${b}°`);
-    wedge(ctx, P, 180 - a, a, COLS[0], WR + 30, `${a}°`);
+    wedge(ctx, P, 0, b, COLS()[1], WR + 30, `${b}°`);
+    wedge(ctx, P, 180 - a, a, COLS()[0], WR + 30, `${a}°`);
     const th = clamp(live.theta, b + 2, 178), cAng = th - b;
-    wedge(ctx, P, b, cAng, COLS[2], WR + 30);
+    wedge(ctx, P, b, cAng, COLS()[2], WR + 30);
     const ex: XY = [P[0] + Math.cos(th * DEG) * 250, P[1] - Math.sin(th * DEG) * 250];
     ctx.strokeStyle = live.answered ? (live.answered.verdict === "right" ? C.mint : C.amber) : C.volt; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(P[0], P[1]); ctx.lineTo(ex[0], ex[1]); ctx.stroke();
     if (!live.answered) { ctx.save(); ctx.strokeStyle = C.volt; ctx.lineWidth = 4; ctx.globalAlpha = live.dragging ? 1 : 0.6 + 0.4 * Math.sin(now * 4); ctx.beginPath(); ctx.arc(ex[0], ex[1], 30, 0, Math.PI * 2); ctx.stroke(); ctx.restore(); }
@@ -124,4 +126,4 @@ function create(api: EngineApi, spec: AngleSumSpec): EngineInstance {
     dispose: () => sh.dispose(),
   };
 }
-export const anglesum: EngineDef<AngleSumSpec> = { archetype: "angle-sum@1", label: "Animation · Triangles", accent: C.ion, create };
+export const anglesum: EngineDef<AngleSumSpec> = { archetype: "angle-sum@1", label: "Animation · Triangles", get accent() { return C.ion; }, create };

@@ -227,6 +227,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
   .pa-rail-item.is-active { background: var(--nib-soft); color: var(--nib); }
   .pa-rail-item.is-active svg { color: var(--nib); }
   .pa-rail-lock { margin-top: auto; align-self: flex-start; }
+  .pa-rail-signout { align-self: flex-start; }
   .pa-tabs { display: none; }
   .pa-top { position: static; border-bottom: 0; padding: var(--space-3) var(--space-6); }
   .pa-top .pa-switch, .pa-lock { display: none; }
@@ -248,7 +249,7 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
    on-nib: white on white. Restored here for every parent-corner pad (the PinPad is reused, not forked). */
 .pa .pin-key.btn-primary, .pa-gate .pin-key.btn-primary { background: var(--nib); color: var(--on-nib); border-color: var(--nib); }
 /* W2-A: the school test window row */
-.pa-test-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.pa-test-row { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .pa-field { display: flex; flex-direction: column; gap: 4px; font-size: var(--t-meta); color: var(--ink-2); min-width: 0; }
 .pa-field .input { min-height: 48px; }
 
@@ -375,3 +376,24 @@ html:has(.pa[data-tabs="off"]) { scroll-padding-top: 64px; }
 }
 /* the evidence drawer and every sheet opened from the corner */
 :is(.pa, .pa-gate).kx[data-kcalm] dialog.sheet { background: var(--k-deep); color: var(--k-ink); border: 1px solid var(--k-line-2); border-radius: 0; }
+
+/* round 7 F items 1-2: School card (where school is, the timetable) on Progress */
+.pa-school { display: flex; flex-direction: column; gap: var(--space-3); }
+.pa-school-subj .sch-label-row { margin-top: var(--space-2); }
+.pa-chapter-chip { min-width: 44px; padding: 0 10px; font-variant-numeric: tabular-nums; }
+.pa-timetable { display: flex; flex-direction: column; gap: var(--space-2); }
+.pa-tt-row { display: grid; grid-template-columns: 36px minmax(0, 1fr); align-items: center; gap: var(--space-2); }
+.pa-tt-day { padding-top: 2px; }
+.pa-tt-subjects { display: grid; gap: 4px; min-width: 0; }
+.pa-timetable .pa-tt-subjects .pa-tt-chip { padding: 0; font: 600 12px/1 var(--sch-mono); letter-spacing: 0; min-width: 0; overflow: hidden; white-space: nowrap; }
+
+/* r7 app-child-device-pairing (App): the pairing card on Children */
+.pair-card { display: grid; gap: var(--space-2); margin-top: var(--space-2); }
+.pair-code-box { display: grid; gap: var(--space-2); }
+.pair-code-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); }
+.pair-code { margin: 0; font: 700 34px/1 var(--k-mono, ui-monospace, monospace); letter-spacing: .12em; }
+.pair-code--gone { font-size: 22px; letter-spacing: 0; color: var(--ink-2); }
+.pair-qr { flex: none; border-radius: 6px; }
+.pair-qr--wait { background: var(--surface-2, transparent); }
+.pair-devices { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-1); }
+.pair-device { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }

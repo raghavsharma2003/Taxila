@@ -2,6 +2,7 @@
 // (server/azure.js overflowFor). TEST lesson 5d18d152 and production at 06 UTC on 2026-10-15 (51 of 361 taxila-fast calls)
 // were throttled by load sharing the eastus2 deployment, and a throttled reply is the fallback line the child hears.
 import { describe, test, beforeEach, afterEach } from "node:test";
+import { _resetDefaultLanes } from "../server/lanes.js";
 import assert from "node:assert/strict";
 import { chat, chatStream, overflowFor, isContentFilter } from "../server/azure.js";
 
@@ -14,6 +15,7 @@ beforeEach(() => {
     AZURE_OPENAI_API_KEY_OVERFLOW: "k-over", TAXILA_OVERFLOW_DEPLOYMENTS: "taxila-fast, taxila-brain" });
 });
 afterEach(() => {
+  _resetDefaultLanes();
   globalThis.fetch = realFetch;
   for (const k of ["AZURE_OPENAI_ENDPOINT", "AZURE_OPENAI_API_KEY", "AZURE_OPENAI_ENDPOINT_OVERFLOW", "AZURE_OPENAI_API_KEY_OVERFLOW", "TAXILA_OVERFLOW_DEPLOYMENTS"])
     if (env[k] === undefined) delete process.env[k]; else process.env[k] = env[k];

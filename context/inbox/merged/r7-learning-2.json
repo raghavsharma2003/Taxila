@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-question-jar",
+   "kind": "decision",
+   "title": "Round 7 F item 8: the Question jar (migration 037 question_jar). Brain's unserved s.later entries with a real topic (questions before shares, at most 5) are written at lesson end (learner/jar.js jarWriteStmts, idempotent per lesson + entry), with one teacher.promise (kind revisit) each. The next start's learner view carries jar: at most 2, the oldest learning question first, the same subject preferred. Serving it writes answerStmts and teacher.promise_kept (a new event; the Conductor drops the promise). The child home shows plan.jar {waiting}, and planner slots list promisesDue. Reverse if: the jar's hook makes openings stale (then cap it to learning questions under 7 days old).",
+   "at": "2026-11-04"
+  },
+  {
+   "id": "dc-r7-kit-grammar-target",
+   "kind": "decision",
+   "title": "Round 7 F, kit workflow acceptance (spend-gated): every class 4-7 English and Hindi grammar skill gets at least 6 verified, blind-solved sentence-train items that C2's build-vakya builds; grammar skills are tagged skill.kind 'grammar'. Today: 55 skills, 46 built, 284 short; about 540 calls, about $5 per full run, capped at 700. docs/design/round7/learning/KIT-WORKFLOW.md.",
+   "at": "2026-11-04"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-question-jar\nHer parked questions survive the lesson: migration 037, server/learner/jar.js, plan.jar, slot.promisesDue, teacher.promise_kept. Brain's call sites are in docs/patches/to-brain/004-question-jar.md. learner/mode.js classifies question_jar as M0 history.\n\n## dc-r7-kit-grammar-target\nC2 Games (via main) needs at least 6 sentence-length production items per grammar skill for the vakya game; this is now the kit workflow's acceptance. Spend-gated: nothing runs before the owner says yes.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

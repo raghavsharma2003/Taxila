@@ -105,4 +105,9 @@ export interface TeacherLink {
    * applyInstructions (so a turn that also carries instructions sends one session.update, not two).
    */
   setDelivery?(line: string | null, apply: boolean): void;
+  /**
+   * Hands-free: the merged turn after a revoke superseded the revoked one while it was in flight, so the server answers
+   * once and that answer is the merged turn's. The revoke's drop must not take it (audit V-05).
+   */
+  keepNextReply?(): void;
 }

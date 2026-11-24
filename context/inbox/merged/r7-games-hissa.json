@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-hissa",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "hissa (multiplying and dividing fractions and decimals) as one never-timed law family for class 7: fold (a sheet folded across and down, the overlap tagged by counting; rope pieces laid on a metre track), pour (a jug poured into full cups, the part-cup tagged as a fraction of a cup; fractions and decimals), grid (a tenths grid shaded both ways and the label's point placed; digits slid past a fixed point), story (a bar spent twice, the second fold on what is left; a recipe folded into shares per person). 5 topics: c7-maths-ch08-t01, c7-maths-ch08-t02, c7-maths-ch08-t03, c7-maths-ch12-t01, c7-maths-ch12-t02. Why: the five topics were served only by ITEM-ARENA. Reverse: a child pilot shows tags set by trial runs rather than by counting."
+  },
+  {
+   "id": "ms-r7-games-hissa-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "hissa play-cert (forge3-qa, p360/p412/l1366, game mounted): 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px); 64 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-hissa",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-hissa-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-hissa`\n\n**hissa** (multiplying and dividing fractions and decimals, class 7) is a law family. Nothing in it runs on a clock: every fold, shade, pour, slide and tag moves only on a touch, and the law answers only on run. It is a different mechanic from todo-jodo's strips (one bar cut into equal parts for naming, comparing and adding), guna's field (whole-number place-value area model and truck) and nishana (placing on a line). Every value is exact (integer numerators and denominators; decimals as tenths and hundredths).\n\n- **fold/of** (c7-maths-ch08-t01 s2): a unit sheet is folded across and shaded (the first fraction), then folded down and only the shaded part is taken (the second). The overlap is the product; the child tags it by counting pieces taken twice over pieces in the whole sheet (any equal tag; finer folds are allowed).\n- **fold/times** (c7-maths-ch08-t01 s1): w rope pieces of a/b m are laid end to end on a metre track marked in b parts, and the rope's length is tagged.\n- **pour/fit, pour/part, pour/deci** (c7-maths-ch08-t02 s1/s2/s3, c7-maths-ch12-t02 s3): a jug is poured into full cups one at a time; the jug refuses a cup it cannot fill. The part-cup left is tagged as a fraction OF A CUP; on run the rest pours into the last cup, the jug must be empty and the tag must be that cup's level. Pouring every full cup IS the division (how many fit), so it is not a shortcut.\n- **grid/mul** (c7-maths-ch12-t01 s2): a grid of units cut in tenths; a/10 shaded across, c/10 down. The overlap's small squares are counted onto a label and the child moves its decimal point.\n- **grid/shift** (c7-maths-ch12-t01 s1, c7-maths-ch12-t02 s2): digits on a place-value chart (hundreds to thousandths), the point fixed; the child slides the digits one place per push. A zero may be written at the end; it moves nothing.\n- **story/rest** (c7-maths-ch08-t03 s2): a bar (rupees or a ribbon) is folded and shaded for the first spend; the child picks the bar the second fold lies on (the piece left, or the whole) and folds and shades it.\n- **story/scale** (c7-maths-ch08-t03 s1): a recipe's amount is folded into one share per person it was for, and one share is laid into the pot per person eating now.\n\nMal-rules map only to the topic's own kit ids: keep-denominator, whole-both, mult-bigger (ch08-t01); div-smaller, no-flip, flip-first (ch08-t02); fraction-of-original, scale-flip (ch08-t03); point-03, times10-zero (ch12-t01); div-half, div-smaller, scale-one (ch12-t02). ÷ 10 / 100 / 1000 on the chart maps no belief (the kit has none for it).\n\nNot admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch08-t01-s3 (predicting bigger or smaller), c7-maths-ch08-t03-s3 (checking size and units), c7-maths-ch12-t01-s3 (estimating products), c7-maths-ch12-t02-s1 (a decimal ÷ a whole number, which is sharing, not how many fit). Kit beliefs with no honest set-up: last-op (the story's action is done, never chosen as an operation word), half-bigger.\n\n**Reverse if** a child pilot shows the tag is set by trying numbers until the run passes rather than by counting the sheet, the cups or the grid (watch for runs per level and tag changes between runs).\n",
+  "measurements": "## `ms-r7-games-hissa-cert`\n\nhissa play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 80/80 hissa samples pass at p360, p412 and l1366 with the game mounted (10 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-hissa.test.mjs, 64 tests. An independent checker uses plain integer arithmetic (numerators and denominators cross-multiplied, the chart in millionths) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.\n"
+ }
+}

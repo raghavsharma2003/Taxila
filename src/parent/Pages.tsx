@@ -2,18 +2,19 @@
 // profile, DELETE MY ACCOUNT), Help and safety, Change PIN (PRODUCT-DESIGN-V2 §6.5.5), and the public helpline page.
 // Every consent-grade act asks for the account password, and its errors sit on the password field in sentences (§4.7).
 // Pages that would hold nothing real yet (Monthly talk, Family, Plan, Saved lessons) are not linked at all (P6).
+import { PairCard } from "../app/PairCard.tsx";
 import { useEffect, useState, type ReactNode } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Art, Button, HoldButton, Icon, PinPad, Speaker, TileGroup } from "../ui/index.ts";
 import { teacherRecord } from "../ui/teacher/useTeacher.ts";
-import { loadMe, postJson, refreshMe, type ChildRow, type Me } from "../app/api.ts";
+import { loadMe, refreshMe, type ChildRow, type Me } from "../app/api.ts";
 import { bandForClass } from "../app/band.ts";
 import { Helplines } from "../app/Shell.tsx";
 import { isRelock, parentApi, type ParentMemory } from "./api.ts";
-import { BOARD_NAME, isPasswordError, parentError } from "./copy.ts";
+import { BOARD_NAME, consentEffect, isPasswordError, parentError } from "./copy.ts";
 import { PasswordAgain } from "./fields.tsx";
 import { useGate } from "./Gate.tsx";
-import { PageState, ParentShell, RowLink, useChildren } from "./Shell.tsx";
+import { PageState, ParentShell, RowLink, signOut, useChildren } from "./Shell.tsx";
 
 const teacherNameOf = (c: ChildRow) => (c as ChildRow & { teacher_name?: string | null }).teacher_name || teacherRecord(c.teacher_id, bandForClass(c.class_level)).name;
 
@@ -26,15 +27,16 @@ export function More() {
     <ParentShell title="More" child={current} kids={kids}>
       <h1 className="pa-h1">More</h1>
       <ul className="pa-list pa-more">
-        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note and the weekly letter">Notes</RowLink></li>
-        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language, words on screen">Controls</RowLink></li>
+        <li><RowLink to={`/parent/notes${qs}`} sub="Today's note, the weekly letter and the monthly report">Notes</RowLink></li>
+        <li><RowLink to={`/parent/teaching${qs}`} sub="What the teacher did in recent lessons, and why">How the teacher teaches</RowLink></li>
+        <li><RowLink to={`/parent/controls${qs}`} sub="Daily limit, lesson hours, language">Controls</RowLink></li>
         <li><RowLink to={`/parent/children${qs}`} sub="Add a child, switch child">Children</RowLink></li>
         <li><RowLink to={`/parent/data${qs}`} sub="Your choices, download, delete">Data and privacy</RowLink></li>
         <li><RowLink to={`/parent/help${qs}`} sub="Helplines, what happens if a child is worried, Forgot PIN">Help and safety</RowLink></li>
         <li><RowLink to={`/parent/pin${qs}`}>Change parent PIN</RowLink></li>
         <li><RowLink to="/trust">Our promises</RowLink></li>
       </ul>
-      <Button variant="quiet" onClick={async () => { await postJson("/api/auth/logout", {}).catch(() => {}); await refreshMe().catch(() => {}); nav("/"); }}>Sign out</Button>
+      <Button variant="quiet" onClick={() => signOut(nav)}>Sign out</Button>
     </ParentShell>
   );
 }
@@ -94,6 +96,8 @@ export function Children() {
                   <Button small variant="secondary" onClick={() => nav(`/parent?c=${k.id}`)}>See {k.first_name}'s week</Button>
                   <Button small variant="quiet" aria-expanded={open === k.id} onClick={() => setOpen(open === k.id ? null : k.id)}>Delete profile</Button>
                 </div>
+                {/* r7 app-child-device-pairing (App): the child's own phone or tablet, by a one-time code */}
+                <PairCard childId={k.id} name={k.first_name} />
                 {open === k.id && <DeleteChild child={k} onDone={(n) => { setGone(n); setOpen(null); reload(); }} />}
               </li>
             ))}
@@ -157,7 +161,7 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
         <Speaker src={`/api/parent/speak?what=consent&row=${c.purpose}`} label={`Listen: ${c.title}`} />
       </div>
       <p>Now: <strong>{now === null ? "Not answered" : now ? c.yes : c.no}</strong></p>
-      <p className="pa-effect">{now === false ? c.effectNo(teacherName) : c.effectYes}</p>
+      <p className="pa-effect">{consentEffect(now, c.effectYes, c.effectNo(teacherName))}</p>
       {!editing ? <Button small variant="secondary" onClick={() => { setEditing(true); setPick(now === null ? null : now ? "yes" : "no"); }}>Change</Button> : (
         <div className="pa-stack-sm">
           <TileGroup label={c.title} columns={2} value={pick} onChange={(v) => setPick(v as "yes" | "no")}
@@ -180,7 +184,7 @@ function Choice({ c, me, childId, teacherName, onSaved }: { c: (typeof CHOICES)[
  * consent's own promise: "You can see and delete each one"; a child's "please forget that" deletes this lesson's rows and
  * the ones she had in hand, the rest are here). The rows are shown as stored, labelled as the teacher AI's own note.
  */
-function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
+export function Memories({ child, teacherName }: { child: ChildRow; teacherName: string }) {
   const { relock } = useGate();
   const [m, setM] = useState<ParentMemory | null>(null);
   const [err, setErr] = useState<string | null>(null);

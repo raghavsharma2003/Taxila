@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "jd-r7-director7-2026-11-06",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "director7 (v4 walk, v2.2 scripts, H1.2; 16 lessons, 1,161 calls, ~$0.794) judged by 4 Claude judges by hand: beats taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, but contradictions 51 (code proxy 13) and ≥38 stated-number \"?\" board turns; screen axis 2, promises 2–2.5; 2 false keys spoken on closing a missed card."
+  },
+  {
+   "id": "dc-r7-script-walk-v5",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "Board/speech sync and child requests as moves: segment-tagged turns with board switches at segment boundaries (closure before switch, recap only over its own board); samajh nahi aaya / phir se bolo / try-first / picture as moves never grades; parks answered with real content before the wrap and language promise held; bridges spoken; one verdict sentence, keys from authored forms (keyInLang fix), close with why, ≤60-word turns; Studio never draws a stated number as \"?\", picture request always draws; v2.2 data fixes; per-segment contradiction checker; gate adds 0 false keys."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "measured_by",
+   "dst": "jd-r7-director7-2026-11-06"
+  },
+  {
+   "src": "dc-r7-script-walk-v5",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v4"
+  }
+ ],
+ "md": {
+  "measurements": "## `jd-r7-director7-2026-11-06`\n\nn = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering), 1,161 calls on taxila-fast (~$0.794), median lesson reply-ready p50 2.65 s (director6 3.00 s). Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on int/r6 8f461ae0b + Brain 32492218 (live v2.2 scripts, H1.2 child). Four Claude judges (one per topic, not blind) counted by hand. Totals: taught 162.5/168 (97%), verdicts 215/217 (99%), right called wrong 0, wrong called right 0, contradictions 51 (code proxy 13), stated-number \"?\" board turns ≥38, false keys spoken 2. Date 2026-11-06. Write-up: docs/design/round7/judgements/director7-2026-11-06.md.",
+  "decisions": "## `dc-r7-script-walk-v5`\n\n(board/speech sync, and child requests as moves)\n\nNothing here needs a format change beyond v2.2 (all four judges agree). **The reversal is not relevant**: the teaching layer passes.\n\n**Runtime** (Brain, with Studio):\n- **B1. One board per description.**\n  - A turn's speech is split into segments, each tagged with the board it describes: remediation say, then-card, closure, recap.\n  - Brain sends segment boundaries (clause index + board ref); Studio switches the board at each boundary, timed by Voice's word onsets (PR #62) or the clause boundary.\n  - The \"Toh poora jawab\" closure is spoken before the switch to the next card's board.\n  - A recap is spoken only when its board is the one on screen; otherwise it is dropped.\n- **B2. Child requests are moves, never grades.**\n  - \"samajh nahi aaya\" → a smaller re-explanation, in other words or on another board, not a repeat.\n  - \"phir se bolo\" or \"sawaal kya hai\" → re-pose the card, with no verdict.\n  - \"pehle main try karun\" → the next step is handed over as a card.\n  - A picture request → the live card's board is redrawn (never nothing).\n- **B3. Real returns.**\n  - A parked aside is answered with one line of real content before the wrap, tied back to the lesson when it fits. No stub.\n  - A language promise is a mode that holds for the lesson.\n- **B4. The authored bridge or hook is spoken** at every change of skill.\n- **B5. Render hygiene.**\n  - One verdict sentence per turn.\n  - Keys are spoken from the authored key or accept forms (the `keyInLang` fix, with a test over every key).\n  - A close says the answer and its why.\n  - A turn is at most about 60 words, except a worked step.\n  - Her lead-in never restates a wrong method as her own.\n\n**Studio:**\n- **S1.** Check and compare boards never draw a stated number as \"?\". Only the asked value is \"?\".\n- **S2.** Segment-timed board switching, as in B1.\n- **S3.** A picture request always draws the live card's board.\n\n**Data, v2.2 fixes** (Learning; no format change):\n- c4 s1-e3's ask fits its board.\n- c5-t02's remediation pairs differ from its check pairs.\n- c5-t01 s2 e2's point carries its must-say, and s3's then-card is written as speech.\n- c6 skill-1 then-cards use a fresh figure.\n\n**Harness** (Brain, with Learning):\n- the contradiction checker is per segment, against the board shown during that segment;\n- \"sawaal kya hai\" and \"phir se bolo\" are never counted as keyed answers;\n- the child's events fire only in context.\n\n**Next run: director8.** The same 16 lessons, and a cap sized from the dry run (about $0.85).\n\n**The gate:**\n- unchanged:\n  - ≥ 80% taught;\n  - ≥ 90% verdicts;\n  - 0 contradictions;\n  - 0 right called wrong;\n  - 0 wrong called right;\n  - every judge axis ≥ 3.5;\n- **plus: 0 false keys spoken.**\n\nLearning's staged batch and Studio's 011 stay held until director8 passes."
+ }
+}

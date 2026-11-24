@@ -118,8 +118,27 @@ export function perceive(d, x) {
       return how;
     }).catch(() => null);
   }
+  // Rule 6 (turn-replay 2026-11-06, dc-r7-code-spec; flag TAXILA_CODE_SPEC, default off): when the BYTES decided the turn
+  // (classifyFast has a result: an exact key, a script key, a request), classify() only adds the model distress read
+  // (classifyRead: the same result, or that result with distress set). The turn used to wait for that read (p50 ~800 ms)
+  // before it planned and wrote her reply. Now the reply for the code result's plan starts at once, in parallel with the read.
+  // Release is unchanged: the turn plans only after clsP (the distress read) settles, and uses this reply only through
+  // pickSpeculation's exact reply-key match. A distress read changes the plan (safeguard), so its key differs and the
+  // reply is discarded unused. Nothing here streams: no clause, no TTS, nothing reaches the client before the read.
+  if (fast?.result && x.textLane && !x.late && x.classified && codeSpecOn()) {
+    let done;
+    specs.push(new Promise((r) => { done = r; }).then((s) => s));
+    out.code = (async () => {
+      let c = fast.result;
+      if (x.childText && d.steerOn?.()) c = d.withAnswerMods(c, x.childText);
+      return exactSpec(d, x, c, now, specs, done);
+    })().catch(() => { done(null); return null; });
+  }
   return out;
 }
+
+/** Rule 6 is off unless TAXILA_CODE_SPEC=on (dc-r7-code-spec: on in the eval tree until a turn replay confirms it). */
+export const codeSpecOn = (env = process.env) => /^(on|1|true|yes)$/i.test(String(env.TAXILA_CODE_SPEC ?? ""));
 
 /** EXACT is off unless TAXILA_EXACT_SPEC=on (release flag; BUILD-PLAN §5: ships as today's behaviour). */
 export const exactSpecOn = (env = process.env) => /^(on|1|true|yes)$/i.test(String(env.TAXILA_EXACT_SPEC ?? ""));

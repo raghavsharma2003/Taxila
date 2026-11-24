@@ -27,7 +27,7 @@ const opts = (lookup, more = {}) => ({ lookup, cohortLooks: ["cand"], timeoutMs:
 const asOwner = async () => ({ email: "Owner@Example.test" });
 
 test("server: only a signed-in guardian on the list gets the cohort look; everyone else the global one", async () => {
-  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
+  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8", react: false };
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env(), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" });
   assert.deepEqual(await faceConfigFor(req("tx_session=abc"), { env: env({ TAXILA_FACE_LOOK_FOR: sha(OWNER) }), ...opts(asOwner) }), { ...base, look: "cand", cohort: "owner" }, "a hashed list works");
   assert.deepEqual(await faceConfigFor(req(""), { env: env(), ...opts(asOwner) }), base, "no session cookie");
@@ -86,7 +86,7 @@ const lamp2Env = (over = {}) => ({ TAXILA_FACE_LOOK_FOR: sha(OWNER), TAXILA_FACE
 test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, though the pack ships in public/", async () => {
   assert.deepEqual([...COHORT_FACE_LOOKS], ["lamp2"]);
   assert.ok(existsSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url)), "the pack ships");
-  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8" };
+  const base = { puppet2d: true, visemes: true, rev: "r8", look: "r8", react: false };
   const lamp2 = (lookup, cookie = "tx_session=abc", env = lamp2Env()) => faceConfigFor(req(cookie), { env, lookup, timeoutMs: 200 });
   assert.deepEqual(await lamp2(asOwner), { ...base, look: "lamp2", cohort: "owner" }, "a cohort account gets lamp2");
   assert.deepEqual(await lamp2(async () => ({ email: "parent@else.test" })), base, "a non-cohort account gets r8");
@@ -114,11 +114,12 @@ test("lamp2: the owner cohort's look; every other account (and a URL) gets r8, t
 
 test("lamp2: the key rig runs on the stage (no WebGL needed), calm in a safety turn, and never falls back to the vector", () => {
   const stage = readFileSync(new URL("../src/face-puppet/stage.ts", import.meta.url), "utf8");
-  assert.match(stage, /if \(rig instanceof KeyRig\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
+  // round 7: the calm face reaches the key rig on the main thread AND in its worker (RemoteRig kind "keys")
+  assert.match(stage, /if \(rig instanceof KeyRig \|\| \(rig instanceof RemoteRig && rig\.kind === "keys"\)\) rig\.calm = this\.driver\.inSafety;/, "the safety turn's calm face, every frame");
   assert.match(stage, /if \(pack\.rig !== "keys" && typeof WebGL2RenderingContext === "undefined"\) throw/);
-  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) \{ this\.driver\.visemes\.lead \+= KEY_LEAD_MS; this\.driver\.visemes\.extendedBilabials = true; \}/);
+  assert.match(stage, /if \(lookPack\(o\.look\)\.rig === "keys"\) this\.driver\.visemes\.lead \+= KEY_LEAD_MS;/);
   const face = readFileSync(new URL("../src/face-puppet/PuppetFace.tsx", import.meta.url), "utf8");
-  assert.match(face, /holdsOwnStill = \(look: PuppetLook \| null\): boolean => look === "lamp1" \|\| look === "lamp2";/);
+  assert.doesNotMatch(face, /<TutorFace/, "every fallback is her own still");
   for (const f of ["rest-medium", "rest-close", "body", "head"]) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${f}.webp`, import.meta.url)), f);
   const g = JSON.parse(readFileSync(new URL("../public/face-puppet/lamp2/geom.json", import.meta.url), "utf8"));
   for (const k of Object.keys(g.keys)) assert.ok(existsSync(new URL(`../public/face-puppet/lamp2/${k}.webp`, import.meta.url)), `key ${k}`);

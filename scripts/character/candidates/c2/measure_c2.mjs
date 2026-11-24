@@ -54,7 +54,7 @@ res.g9 = {};
 // budgets (bytes from the shipped files, tris / draws from the render, morphs from the loader)
 const BUD = { H: { mb: 6, tris: 45000, draws: 8, morphs: 82 }, Bplus: { mb: 2.2, tris: 18000, draws: 5, morphs: 58 }, Blite: { mb: 2.2, tris: 18000, draws: 5, morphs: 58 } };
 res.budgets = res.rows.map((r) => {
-  const mb = +(fs.statSync(`public/assets/teacher-candidates/c2/${r.tier}.glb`).size / 1e6).toFixed(2), b = BUD[r.tier];
+  const mb = +(fs.statSync(`art/character/candidates-built/c2/${r.tier}.glb`).size / 1e6).toFixed(2), b = BUD[r.tier];
   return { tier: r.tier, mb, tris: r.triangles, draws: r.draws, morphs: r.morphTargets, cap: b,
     pass: mb <= b.mb && r.triangles <= b.tris && r.draws <= b.draws, morphNote: r.morphTargets < b.morphs ? `ships ${r.morphTargets} of the contract's ${b.morphs} (no correctives authored)` : "" };
 });

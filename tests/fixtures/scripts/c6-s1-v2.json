@@ -1,0 +1,71 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "version": 2,
+ "status": "draft",
+ "terms": [{ "hi": "parimap", "en": "perimeter" }, { "hi": "bhuja", "en": "side" }],
+ "skills": [
+  {
+   "skillId": "c6-maths-ch06-t01-s1",
+   "hook": {
+    "convey": "closed shape → walk its edge from one corner back to the same corner → how far = perimeter",
+    "interestSlots": [
+     { "interest": "cricket", "use": { "hi": "Cricket ground ki boundary rope ke saath ek poora chakkar lagao, wahi corner jahan se shuru kiya tha", "en": "Walk once along the boundary rope of a cricket ground, back to the corner you started from" } },
+     { "interest": "nature", "use": { "hi": "Sabzi ke bagiche ki baad ke saath ek poora chakkar, jahan se shuru kiya wahin tak", "en": "Walk once along the fence of a vegetable garden, back to where you started" } }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "convey": "perimeter (parimap) = total length of the boundary → start at a corner, every side once, back to the start; triangle 4, 5, 6 cm → 15 cm",
+     "mustSay": [{ "hi": "parimap", "en": "perimeter" }, { "hi": "15 cm", "en": "15 cm" }],
+     "board": { "template": "measured@1", "params": { "shape": "triangle", "unit": "cm", "sides": [4, 5, 6], "trace": true } },
+     "point": { "hi": "triangle ki teeno bhujayein: 4 cm, 5 cm aur 6 cm", "en": "the triangle's three sides: 4 cm, 5 cm and 6 cm" },
+     "ask": { "prompt": { "hi": "Agar triangle ki bhujayein 3 cm, 4 cm aur 5 cm hon, toh parimap kitna hoga?", "en": "If a triangle's sides are 3 cm, 4 cm and 5 cm, what is its perimeter?" }, "key": "12 cm", "accept": ["12", "12 centimetre"], "targets": "c6-maths-ch06-t01-m-missing-sides", "wrongIfMis": "7 cm" }
+    },
+    {
+     "id": "e2",
+     "convey": "perimeter = AROUND (a length, cm or m); area = INSIDE; 6 cm by 4 cm card → edge 6 + 4 + 6 + 4 = 20 cm, not 6 × 4",
+     "mustSay": [{ "hi": "20 cm", "en": "20 cm" }],
+     "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 6, "h": 4, "trace": true } },
+     "point": { "hi": "rectangle ka kinara: upar 6 cm, daayein 4 cm, neeche 6 cm, baayein 4 cm", "en": "the rectangle's edge: top 6 cm, right 4 cm, bottom 6 cm, left 4 cm" },
+     "ask": { "prompt": { "hi": "Ek card 5 cm lamba aur 2 cm chauda hai. Uske kinare ki lambai kitni hogi?", "en": "A card is 5 cm long and 2 cm wide. How long is its edge?" }, "key": "14 cm", "accept": ["14"], "targets": "c6-maths-ch06-t01-m-area-perimeter", "wrongIfMis": "10 cm" }
+    }
+   ],
+   "workedExample": {
+    "problem": { "hi": "Ek paanch bhujaon wali kyaari ki bhujayein 4 m, 5 m, 3 m, 6 m aur 2 m hain. Uske chaaron taraf ek baar baad lagani hai, kitni baad lagegi?", "en": "A five-sided flower bed has sides 4 m, 5 m, 3 m, 6 m and 2 m. How much fencing goes once around it?" },
+    "givens": [{ "hi": "paanch bhujaon wali band shakal", "en": "a closed five-sided shape" }, { "hi": "bhujayein: 4 m, 5 m, 3 m, 6 m, 2 m", "en": "sides: 4 m, 5 m, 3 m, 6 m, 2 m" }],
+    "find": { "hi": "kyaari ka parimap, yaani ek chakkar ki baad", "en": "the flower bed's perimeter: fencing once around" },
+    "steps": [
+     { "do": { "hi": "pehli do bhujayein jodo", "en": "add the first two sides" }, "result": "4 + 5 = 9 m", "why": { "hi": "baad kinare ke saath chalti hai, har bhuja ek baar", "en": "the fence runs along the edge, each side once" } },
+     { "do": { "hi": "teesri bhuja jodo", "en": "add the third side" }, "result": "9 + 3 = 12 m", "why": { "hi": "abhi do bhujayein baaki hain", "en": "two sides are still left" } },
+     { "do": { "hi": "chauthi bhuja jodo", "en": "add the fourth side" }, "result": "12 + 6 = 18 m", "why": { "hi": "ek bhuja aur baaki hai", "en": "one side is still left" } }
+    ],
+    "yourStep": { "prompt": { "hi": "Ab aakhri bhuja tum jodo: 18 m mein 2 m jodne par kitna?", "en": "Now you add the last side: 18 m plus 2 m makes how much?" }, "key": "20 m", "accept": ["20"], "targets": "c6-maths-ch06-t01-m-missing-sides", "wrongIfMis": "18 m" },
+    "answer": { "hi": "20 m baad lagegi", "en": "20 m of fencing" },
+    "why": { "hi": "paanchon bhujayein ek-ek baar judi, aur jawab ek lambai hai, isliye m mein", "en": "all five sides added once each, and the answer is a length, so in m" },
+    "board": { "template": "shape@1", "params": { "shape": "pentagon" } }
+   },
+   "checks": [
+    { "id": "c1", "prompt": { "hi": "Ek L shape ke kamre ki 6 bhujayein hain: 8 m, 3 m, 5 m, 4 m, 3 m aur 7 m. Kamre ka parimap kitna hai?", "en": "An L-shaped room has 6 sides: 8 m, 3 m, 5 m, 4 m, 3 m and 7 m. What is the room's perimeter?" }, "key": "30 m", "accept": ["30", "30 metre"], "targets": "c6-maths-ch06-t01-m-missing-sides", "wrongIfMis": "23 m", "board": null },
+    { "id": "c2", "prompt": { "hi": "Ek card ki bhujayein 10 cm, 4 cm, 10 cm aur 4 cm hain. Uske kinare par ek chakkar ke liye kitni lace chahiye?", "en": "A card has sides 10 cm, 4 cm, 10 cm and 4 cm. How much lace goes once around its edge?" }, "key": "28 cm", "accept": ["28"], "targets": "c6-maths-ch06-t01-m-area-perimeter", "wrongIfMis": "40 cm", "board": null }
+   ],
+   "ladder": [
+    { "itemId": "c6-maths-ch06-t01-i03", "why": "first straight use: triangle, add all sides" },
+    { "itemId": "c6-maths-ch06-t01-i09", "why": "perimeter vs area from the situation" },
+    { "itemId": "c6-maths-ch06-t01-i10", "why": "error-spot: a left-out side" }
+   ],
+   "remediation": [
+    { "targets": "c6-maths-ch06-t01-m-missing-sides", "move": "ant walk with a running total after each side, until it is back at the start corner",
+      "say": { "hi": "Ek cheenti corner se chalti hai aur har bhuja ke baad apna total badhati hai. Jab tak wapas shuruaat wale corner par na aaye, chakkar poora nahi hota", "en": "An ant starts at a corner and adds to its total after every side. The round is not done until it is back at the start corner" },
+      "board": { "template": "shape@1", "params": { "shape": "hexagon", "names": ["A", "B", "C", "D", "E", "F"] } },
+      "then": { "prompt": { "hi": "Ek 6 bhujaon wale khet ki bhujayein 10 m, 4 m, 6 m, 5 m, 4 m aur 9 m hain. Uska parimap kitna hai?", "en": "A 6-sided field has sides 10 m, 4 m, 6 m, 5 m, 4 m and 9 m. What is its perimeter?" }, "key": "38 m", "accept": ["38"] } },
+    { "targets": "c6-maths-ch06-t01-m-area-perimeter", "move": "string on the edge vs tiles inside: the edge is a length, the inside is a covering",
+      "say": { "hi": "Parimap kinare par rakhi dori ki lambai hai. Andar ki jagah dhakna area hai, woh alag cheez hai", "en": "Perimeter is the length of a string laid on the edge. Covering the inside is area, a different thing" },
+      "board": { "template": "measured@1", "params": { "shape": "rect", "unit": "cm", "w": 5, "h": 3, "trace": true } },
+      "then": { "prompt": { "hi": "Ek label 5 cm lamba aur 3 cm chauda hai. Uske kinare par ek chakkar ka ribbon kitna lamba hoga?", "en": "A label is 5 cm long and 3 cm wide. How long is a ribbon once around its edge?" }, "key": "16 cm", "accept": ["16"] } }
+   ],
+   "bridgeToNext": { "hi": "Har bhuja jodna hamesha kaam karta hai. Ab rectangle aur square mein bhujayein jodi mein aati hain, toh ek chhota tareeka milega", "en": "Adding every side always works. Rectangles and squares have sides in pairs, so there is a shorter way" }
+  }
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-voicesig-internal",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 (voice-voicesig-acting): TAXILA_VOICESIG unset now means 'internal'. In our own lessons a computed knowledge state (fragileCorrect, effortfulGuess, searching, workingAloud) hands its tie-breaker (followUpProbe / gentlerHint / slowerPace) to the Director's planCtx.voice, while the adapter and evidence gate still run as shadow, so the learner model gets no evidence weight. 'shadow' restores the old default, 'on' uses the full children-evidence gate, and 'off' is the kill switch. Safety turns never act. The status page labels these states 'internal: ... not yet measured on children'. Precision on simulated data only: fragileCorrect 0.855, effortfulGuess 0.486, rapidGuess 0.737, heldBelief 0.591. Reverse (set TAXILA_VOICESIG=shadow) if internal lessons show the hints firing on children who were fine (gentler hint or slower pace for a confident child), or effortfulGuess acting too often given its 0.486 precision."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-voicesig-internal",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-voicesig-internal — knowledge-state hints act in our own lessons before the children bar (2026-11-04)\n\nThe voicesig seam computed states but nothing acted, because the shadow adapter needs a fitted calibration and none ships. Main's gap list asked for the hints on by default for internal use. The new default mode `internal` does that: the hint-bearing states are live for their hints only. The evidence path, which is the learner-model weight, stays shadow, so nothing a child is credited with changes. These hints are tie-breakers in the Director plan, not verdicts: a model never grades. The numbers so far come from simulated data only, and effortfulGuess is weak (0.486). Watching it in internal lessons is what this mode is for.\n\nReversal: `TAXILA_VOICESIG=shadow` (old behaviour), `off` (kill).\n"
+ }
+}

@@ -2,10 +2,10 @@
 // says whether an account exists); the emailed link opens /start/reset?token=, which sets a new password, ends every
 // other session of the account and signs this browser in. Errors sit on their field, in sentences.
 import { useState, type FormEvent } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, ErrorNote, Field } from "../ui/index.ts";
 import { ApiError, postJson, refreshMe } from "../app/api.ts";
-import { tw2 } from "../copy/en.ts";
+import { tr7, tw2 } from "../copy/en.ts";
 import { StepFrame } from "./Layout.tsx";
 import { authErrorOf, checkAuthFields, PasswordField, type FieldErrors } from "./fields.tsx";
 
@@ -34,7 +34,10 @@ export function ForgotStep() {
   return (
     <StepFrame step={null} title={tw2("auth.forgot.title")} why={sent ? undefined : tw2("auth.forgot.body")}>
       {sent ? (
-        <p className="t-lead" role="status" data-testid="forgot-sent">{tw2("auth.forgot.sent")}</p>
+        <>
+          <p className="t-lead" role="status" data-testid="forgot-sent">{tw2("auth.forgot.sent")}</p>
+          <Link to={`/signin${email ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="link-quiet" data-testid="forgot-code">{tr7("code.instead")}</Link>
+        </>
       ) : (
         <form className="stack" onSubmit={submit} noValidate>
           <Field label="Email" type="email" autoComplete="email" inputMode="email" value={email} error={fe.email}

@@ -1,6 +1,6 @@
 // c3 stage 3 (fork of c2/finish.mjs, itself a fork of scripts/character/finish.mjs): raw tier GLB + PNG maps -> shipped GLB (KTX2, meshopt) + budgets.
 //
-//   node scripts/character/candidates/c3/finish_c3.mjs <buildDir> c3 public/assets/teacher-candidates/c3
+//   node scripts/character/candidates/c3/finish_c3.mjs <buildDir> c3 art/character/candidates-built/c3
 // Differences: c3 ships albedo only (VRoid's stylised source has painted shading, no normal / wrinkle / packed maps;
 // the rig skips those paths), plus an eye atlas (iris + highlight) for the stylised eye path of the c3 rig fork.
 //

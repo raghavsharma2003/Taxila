@@ -1,0 +1,14 @@
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index de2a3ee..83f3a12 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -784,6 +784,9 @@ export async function lessonTurn(req, body, hooks = {}) {
+         // round 7 M4 (Studio's patch 009): the move's skill, so a Stagecraft piece decided for the skill before this move is
+         // never revealed under her line about another skill, and one still up leaves with this reply (seam.js slotFor)
+         skillId: r.move?.skillId ?? next.lastMove?.skillId ?? null,
++        // round 7 M5a (Studio's patch 010; main: answer leaks are zero-visible-failure): a keyed card or check is open this
++        // turn, so a code-built scene (which may show the card's answer, a word or a value) never comes up and one on screen leaves
++        itemOpen: !!(r.move?.itemId ?? next.activeItemId),
+         asking: !!r.move.itemId && ASKING_MOVES.has(r.move.kind),
+         // ship5 p4-content: the Director's tray holds only its template explain rung (W2-B): a Stagecraft piece may take it
+         rungTray: r.ui?.tray === "module" && next.module?.engine === RUNG_ENGINE,

@@ -11,6 +11,7 @@
 import type { Candidate, FamilyLogic, Facts, GenRequest, LabAct, Moment, PlayActEnvelope, PlayGrade, PlayLevel } from "../../../../shared/play.ts";
 import { gradeLevel, popUndo, pushUndo, type Undoable } from "../../core/replay.ts";
 import { mulberry32 } from "../../core/rng.ts";
+import { focusMal } from "../../core/pick.ts";
 import { BINARY_KINDS, LABS, outcomeOf, type LabDef } from "./labs.ts";
 
 export interface LabParams {
@@ -182,6 +183,16 @@ function malActs(level: PlayLevel<LabParams>, mal: string): LabAct[] | null {
   return believed !== predictOf(lab, setups) ? [...pre, { kind: "predict", choice: believed }] : null;
 }
 
+/** Does a prediction on this pair name `mal` alone: its belief predicts a winner that differs from the law's, and the first
+ *  mapped belief (in the lab's order, as `apply` attributes) whose belief predicts that same choice is `mal` itself? */
+function separates(lab: LabDef, setups: Record<string, string>[], mal: string, misMap: Record<string, string>): boolean {
+  const b = lab.beliefs.find((x) => x.mal === mal);
+  if (!b) return false;
+  const believed = predictOf(lab, setups, b.mult);
+  if (believed === predictOf(lab, setups)) return false;
+  return lab.beliefs.find((x) => x.mal in misMap && predictOf(lab, setups, x.mult) === believed)?.mal === mal;
+}
+
 function difficultyOf(p: LabParams, lab: LabDef): number {
   const g = { predict: 0.2, fair: 0.4, golu: 0.55 }[p.goal];
   return Math.min(1, g + 0.05 * lab.factors.length);
@@ -192,6 +203,7 @@ function generate(req: GenRequest): Candidate<LabParams>[] {
   const goal = (req.goal as LabParams["goal"]) ?? g.goal ?? "predict";
   const judge = g.judge ?? (goal === "predict" ? "predict" : "design");
   const rnd = mulberry32(req.seed), out: Candidate<LabParams>[] = [];
+  const fm = focusMal(req);
   for (const lab of labs) {
     const tests = (g.tests ?? lab.free).filter((x) => lab.factors.some((f) => f.id === x));
     for (const test of tests) {
@@ -208,7 +220,11 @@ function generate(req: GenRequest): Candidate<LabParams>[] {
         const oa = outcomeOf(lab, a), ob = outcomeOf(lab, b), matters = lab.model.mult[test]?.[lv.id] !== lab.model.mult[test]?.[lv2.id];
         const k = lab.outcome.kind;
         const visible = BINARY_KINDS.includes(k) ? oa !== ob : k === "time" || k === "size" ? Math.abs(oa - ob) >= 0.2 * Math.max(oa, ob) : Math.abs(oa - ob) >= 0.25 * lab.outcome.max;
-        if (matters && !visible) continue;
+        // GAMES-01: the one exception is the Director's focus belief. A pair where the law gives "same" but that belief (and
+        // no other mapped one) predicts a winner IS the test of that belief: patta's light-only (kit m3, "plants only need
+        // light, not carbon dioxide") is told apart from food-from-soil only by two leaves with no CO2, one in sunlight and
+        // one under black paper: neither makes starch (kit rl-h1: no glucose without CO2 even under a bright lamp).
+        if (matters && !visible && !(goal === "predict" && fm && separates(lab, [a, b], fm, req.misMap))) continue;
         let setups: Record<string, string>[];
         if (goal === "fair") setups = [a, { ...a }];
         else if (goal === "predict") setups = rnd() < 0.5 ? [a, b] : [b, a];

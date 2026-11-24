@@ -3,8 +3,8 @@
 // net.err with method, path, rid, status, ms, bytes and the JSON bodies (masked, capped). /api/trace/* is never recorded
 // (the recorder does not record itself). EventSource streams are recorded as net.sse (EventSource cannot set a header,
 // so the rid rides as the `_rid` query parameter). Any fault inside a wrapper falls back to the ORIGINAL call untouched.
-import { TRACE_RID_HEADER } from "../../shared/trace.ts";
-import { busy, emit, nextRid, noteServerDate, setTier } from "./bus.ts";
+import { TRACE_PID_HEADER, TRACE_RID_HEADER } from "../../shared/trace.ts";
+import { busy, emit, nextRid, noteServerDate, pid, setTier } from "./bus.ts";
 import { maskBody, maskString } from "./mask.ts";
 
 const BODY_CAP = 6000;
@@ -47,6 +47,7 @@ export function wrapFetch(orig: typeof fetch): typeof fetch {
         method = (init?.method ?? (input instanceof Request ? input.method : "GET")).toUpperCase();
         const headers = new Headers(init?.headers ?? (input instanceof Request ? input.headers : undefined));
         headers.set(TRACE_RID_HEADER, rid);
+        headers.set(TRACE_PID_HEADER, pid()); // PLAT-33: the server read it and nothing sent it
         call = [input, { ...init, headers }];
         const p = pathOf(u);
         busy(() => emit("net.req", { method, path: p, body: reqBody(init?.body) }, { rid }));
@@ -86,7 +87,7 @@ export function wrapEventSource(Orig: typeof EventSource): typeof EventSource {
       let target = url, rid = "", path = "";
       try {
         const u = apiPath(typeof url === "string" ? url : url.href);
-        if (u) { rid = nextRid(); u.searchParams.set("_rid", rid); target = u.href.replace(location.origin, ""); path = u.pathname; }
+        if (u) { rid = nextRid(); u.searchParams.set("_rid", rid); u.searchParams.set("_pid", pid()); target = u.href.replace(location.origin, ""); path = u.pathname; }
       } catch { target = url; }
       super(target, cfg);
       if (!path) return;

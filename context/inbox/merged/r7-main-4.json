@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {"id": "jd-r7-hybrid-pilot-2026-11-04", "kind": "measurement", "at": "2026-11-04",
+   "title": "Hybrid pilot (Director vs agent lane), judged in-session by the main loop (Claude), not blind. n = 2 scenarios × 2 lanes × 10 child turns, c6 perimeter, Hinglish, production deployments, no DB, ~$0.26. Reply-ready p50: steady Director 2033 ms / agent 3818 ms; offtopic 2569 / 3183; one agent turn 9533 ms (6 s timeout then fallback). Director better at lesson arc, steering and the stop check-in; agent better at honouring 'talk about something else' and natural acknowledgement. 11 defects found, most lane-independent: truncated English kit text spoken in a Hinglish lesson, change_topic read as 'explain differently', 'bye' ending without check-in, a false 'didn't hear', a worked example with no setup, an open question graded numerically, an open item abandoned, level collapse to counting-on for class 6 (agent), no return from diversion (agent), an offered choice ignored, a game described that the screen doesn't show. Full write-up: docs/design/round7/judgements/hybrid-pilot-2026-11-04.md."},
+  {"id": "dc-r7-hybrid-pilot-no-lane-yet", "kind": "decision", "at": "2026-11-04",
+   "title": "No lane is picked from the hybrid pilot. Brain fixes the pilot's defects as code invariants that hold for both lanes: the stop check-in on every goodbye, park-and-return on change_topic, card text spoken whole and in the lesson language, a level floor on remediation, never claiming not to have heard. Then the full 12-per-lane side-by-side runs. Reverse: the fixes cannot be made lane-independent, or the full run shows one lane clearly better."}
+ ],
+ "edges": [
+  {"src": "dc-r7-hybrid-pilot-no-lane-yet", "rel": "measured_by", "dst": "jd-r7-hybrid-pilot-2026-11-04"},
+  {"src": "dc-r7-hybrid-pilot-no-lane-yet", "rel": "part_of", "dst": "dc-r7-hybrid-brain"}
+ ],
+ "md": {
+  "measurements": "## jd-r7-hybrid-pilot-2026-11-04 (main loop judge, 2026-11-04)\n\nMethod: stream A's evals/hybrid-side-by-side.mjs at 8c42d580, production deployments (taxila-fast reply, grok-4-1-fast-non-reasoning classify, taxila-gpt6 agent), no DB, scripted Hinglish class-6 child on c6-maths-ch06-t01. n = 2 scenarios (steady, offtopic) × 2 lanes × 10 child turns; stuck not run (150-call cap). Judged by Claude in the main loop against OWNER-RESET-2026-10-04, reading every turn; not blind. Reply-ready p50: steady Director 2033 / agent 3818 ms; offtopic 2569 / 3183 ms; one agent turn 9533 ms. Findings and the 11 defects: docs/design/round7/judgements/hybrid-pilot-2026-11-04.md. Small n: a defect hunt, not a verdict.",
+  "decisions": "## dc-r7-hybrid-pilot-no-lane-yet (2026-11-04, main loop)\n\nThe pilot picks no lane. Most defects are lane-independent and belong in code as invariants for both lanes (the hybrid plan: the LLM words, code keeps invariants): the stop check-in on every goodbye, park-and-return on change_topic, card text spoken whole and in the lesson language, a level floor on remediation, never claiming not to have heard. After the fixes: the full 12-per-lane side-by-side (stuck, a class-4 child, a steering-heavy child added). Reversal: the fixes cannot be made lane-independent, or the full run shows one lane clearly better."
+ }
+}

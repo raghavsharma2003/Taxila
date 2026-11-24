@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-guna",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "guna (multi-digit multiplication and division) as one never-timed law family for classes 4-5: field (a field a × b cut into place-value strips whose pieces fill with their tiles, then a truck loaded with place-value crates, nine to a rack, that must weigh exactly the product; or the field's sides pulled to their nearest round lengths for an estimate), pack (a godown shared one round into every truck, a crate opened into ten of the next place when it cannot go round; the dock left must be less than a share), story (vehicles / packets / a jar set out, then the story runs: round up, round down, the leftover itself). 6 topics: c4-maths-ch13-t01, c4-maths-ch13-t02, c5-maths-ch06-t01, c5-maths-ch06-t02, c5-maths-ch09-t01, c5-maths-ch09-t02. Why: the six multiply / divide topics were served only by ITEM-ARENA. Reverse: a child pilot shows the tiles the field shows do the multiplying for the child, so the partial-product beliefs never surface."
+  },
+  {
+   "id": "ms-r7-games-guna-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "guna play-cert (forge3-qa, p360/p412/l1366, game mounted): every guna sample passes at every size; 65 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-guna",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-guna-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-guna`\n\n**guna** (multi-digit multiplication and division, classes 4-5) is a law family. Nothing in it runs on a clock: every cut, crate, deal and count moves only on a touch, and the law answers only on run. It is a different mechanic from todo-jodo's bundles (place-value adding / subtracting), nazariya's array (times-table facts) and kila (multiples, factors, divisibility).\n\n- **field/area** (c4-maths-ch13-t01, c5-maths-ch06-t01, c5-maths-ch06-t02 s1): the child cuts the field's sides into place-value strips (34 = 30 + 4). A piece whose two sides are each one place fills with its tiles (30 × 6 is 3 × 6 ten-tiles); any other piece stays bare, and the truck cannot drive until every piece is tiled. The truck's racks take crates of 1, 10, 100, 1000, 10000, nine to a rack, so the partial products are added with their regrouping. The weighbridge must read exactly a × b. There is no readout of the load.\n- **field/round** (c5-maths-ch06-t02 s3): the sides are pulled to a round length (only the two either side are allowed), then the truck is loaded with about that much. Each level rounds one side up and the other down, so neither \"always up\" nor \"always down\" wins.\n- **pack/share** (c4-maths-ch13-t02 s1/s3, c5-maths-ch09-t01 s1/s3): a godown's crates by place. A deal puts one crate into every truck, so the trucks are always equal. Opening a crate turns it into ten of the next place down, and that regrouping is the move. On send, the dock must hold less than one share. Every served level needs a crate opened somewhere above the ones.\n- **story** (c4-maths-ch13-t02 s3, c5-maths-ch09-t01 s2, c5-maths-ch09-t02):\n  - **all**: everyone must go; no one is left and no vehicle leaves empty.\n  - **full**: only full packets count.\n  - **left**: the jar gets exactly what will not fill a packet. The machine's packets show only on the run, so the jar is never checked by a preview.\n\nMal-rules map only to the topic's own kit ids: ones-only, no-carry, times-ten-adds-ten (c4), shift-error, place-by-place, forget-carry (c5-t01), zero-count (c5-t02), digitwise, remainder-ignored-in-story (c4-t02), remainder-too-big (c5-t01), always-drop, always-up, quotient-always (c5-t02).\n\nNot admitted (no honest mechanic here), so they stay with ITEM-ARENA: c4-maths-ch13-t02-s2 (repeated subtraction of big chunks), c5-maths-ch06-t01-s3 (the written column method), c5-maths-ch06-t02-s2 (doubling and halving). Kit beliefs with no honest set-up: drop-zero-quotient / zero-in-quotient (the trucks hold the crates, so a place cannot be dropped), remainder-as-decimal, ignore-remainder, mult-makes-bigger, double-both.\n\n**Reverse if** a child pilot shows that the field's tiles do the multiplying for the child, so the partial-product beliefs never show.\n",
+  "measurements": "## `ms-r7-games-guna-cert`\n\nguna play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** every guna sample passes at every size (counts in server/forge3/certs/play.json).\n- **Tests:** tests/r7-games-guna.test.mjs, 65 tests. An independent checker uses plain arithmetic (a * b, Math.floor(a / b), a % b, Math.ceil, its own nearest-round reading) on its own copy of the set-up, fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms (measured runs are a few ms).\n"
+ }
+}

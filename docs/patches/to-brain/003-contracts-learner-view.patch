@@ -1,0 +1,36 @@
+From: F Learning (round 7 F item 4)
+Subject: shared/contracts.ts: the learner-view types (server/learner/view.js) and the map's school chapter
+
+Append to shared/contracts.ts (additive; nothing existing changes). server/learner/view.js returns exactly this shape
+(JSDoc there mirrors it); tests/r7-learning-view.test.mjs pins it.
+
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -0,0 +1,27 @@
++// ───────────────────────────── learner view (round 7 F item 4; server/learner/view.js) ─────────────────────────────
++/** The child's ability on a subject's core strand, GE scale (class C runs GE C-1 .. C). */
++export interface StrandTheta {
++  strand: string; mu: number; sd: number; nObs: number;
++  /** what item selection uses: mu once nObs >= 2, else null (keep the class default C - 0.5) */
++  value: number | null;
++}
++export interface WeakFlag { weak: boolean; skills: string[]; reasons: ("topic" | "prereq" | "theta")[] }
++export interface MinutesLeft {
++  /** the family's daily limit / lesson hours apply (child_controls.limits_on, or TAXILA_DAY_LIMITS=on) */
++  limitsOn: boolean;
++  /** minutes left today under the limits; null when limits are off */
++  today: number | null;
++  /** today's planned live-lesson slot length (Conductor), or null */
++  slot: number | null;
++  by: "cap" | "hours" | null;
++  /** when `today` runs out (ISO); the mid-lesson wrap (D5) finishes the question after this, then wraps */
++  deadlineAt: string | null;
++}
++export interface LearnerView {
++  topicId: string; subject: string;
++  theta: StrandTheta | null;
++  thetas: Record<string, StrandTheta>;
++  weak: WeakFlag;
++  minutesLeft: MinutesLeft;
++}
++/** GET /api/child/map chapters also carry `school?: boolean`: the chapter the parent said school is on (round 7 F item 2). */

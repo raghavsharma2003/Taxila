@@ -15,6 +15,7 @@ export interface StudioV2PieceProps {
   archetype: string;
   spec: unknown;                         // the planner's spec as received; the host validates/repairs it again
   reducedMotion?: boolean;
+  young?: boolean;                       // classes 4-5: the host's young text floor (MIN_YOUNG)
   teacher?: HTMLElement | null;          // the in-house rig's PiP element (never a portrait)
   audio?: Record<string, string>;        // explainer narration clips (the teacher's own turn), measured timing in spec
   onEvent?: (e: StudioV2Event) => void;
@@ -41,10 +42,10 @@ export const StudioV2Piece = forwardRef<StudioV2PieceHandle, StudioV2PieceProps>
       else if (m.k === "engine_failed" || m.k === "fallback") send({ type: "fallback", archetype: m.archetype, name: m.name, data: m.data });
       else if (m.k === "event") send({ type: "event", archetype: m.archetype, name: m.name, data: m.data });
     };
-    const h = mountStudio(el, def, { spec: props.spec, motion: props.reducedMotion ? "reduce" : undefined, teacher: props.teacher, audio: props.audio, onMessage: forward });
+    const h = mountStudio(el, def, { spec: props.spec, motion: props.reducedMotion ? "reduce" : undefined, teacher: props.teacher, audio: props.audio, onMessage: forward, young: props.young });
     handle.current = h;
     const tick = window.setInterval(() => onEvent.current?.({ type: "facts", archetype: props.archetype, facts: h.facts() }), 1000);
     return () => { window.clearInterval(tick); h.dispose(); handle.current = null; };
-  }, [props.archetype, props.spec, props.reducedMotion, props.teacher, props.audio]);
+  }, [props.archetype, props.spec, props.reducedMotion, props.teacher, props.audio, props.young]);
   return <div ref={slot} style={{ position: "absolute", inset: 0 }} />;
 });

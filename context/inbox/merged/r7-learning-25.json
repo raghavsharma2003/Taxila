@@ -1,0 +1,18 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-term-report",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F batch R2 (PARENT-REPORT §2, §5 S14, §4.3 RP-D6): the term report. Cadence 'term' has two terms: T1 is Apr 1 to Sep 30, and T2 is Oct 1 to Mar 31, named by the year it starts (2026-T2). It carries the monthly sections over the term (header, strengths, rows, S4, S6, S7, S9, S5, tricky, S13 required, one home activity, S16), plus two new parts. S14 Then → now gives at most 4 rows. Per titled skill it compares the first-try rate in the term's first learning month that has ≥ 10 scored answers with its last such month, at least 2 months later. A row appears only when the rate ROSE (the pre-declared direction) by ≥ 0.2 and P(now > then) ≥ .95 under independent Beta(1+k, 1+n−k) posteriors. The threshold is .975 when more than 4 skills were compared. P is exact (closed form, server/reports/stats.js). A row shows the two months' counts and no verdict word. The still-learning line gives the count of every other practised topic, with no rate and no direction. check.js re-derives the months, counts, cited rows and the rule from raw rows, and the comparison count independently. The Conductor enqueues parent.term on the night fold of 30 Sep / 31 Mar. The Notes page gains a 'This term' tab. RENDER_VERSION is pr-5. Reverse if: real families' terms show the rule admits almost no rows (lower the n floor only with a new pre-registered rule), or parents read a row as a verdict."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-term-report", "rel": "part_of", "dst": "dc-r7-report-monthly-r1" }
+ ],
+ "md": {
+  "decisions": "## dc-r7-term-report (2026-11-05, F Learning)\n\nThe term report is the monthly report stretched over a school term, plus S14 'Then → now' and a still-learning count.\n\n**Window.** T1 runs from 1 Apr to 30 Sep and T2 from 1 Oct to 31 Mar. A term is named by the year it starts (`2026-T2`). Learning days run from 04:00 to 04:00 local time, as every other cadence does. The night fold of 30 Sep or 31 Mar enqueues `parent.term:{child}:{term}`, once per child and term.\n\n**S14 rule (RP-D6, fixed before any child's data).** For each titled skill, it takes the scored answers in the term and groups them by learning month. The first and last months with at least 10 answers must be at least 2 calendar months apart. A row needs the first-try-unaided rate to RISE by at least 0.2, with P(now > then) ≥ .95. That threshold becomes .975 when more than 4 skills were compared, which corrects for multiple comparisons. P comes from independent Beta(1+k, 1+n−k) posteriors, computed exactly by a closed-form sum. A test pins it against a seeded Monte Carlo. Rows are sorted by rise and capped at 4. A fall is never a row, and neither is a rise below the floor. The line shows only the two months and their counts ('in Oct, 3 of 12 … in Dec, 11 of 12'). The admitting rule lives in the 'how this is counted' copy, never in a verdict word.\n\n**Still learning.** The still-learning line counts every other titled skill with scored answers in the term. It says nothing about direction.\n\n**Checker.** check.js re-reads the term's rows and groups them by month with its own code. It recomputes the comparison count, months, n/k, the cited set, the rise and P.\n\n**Deferred: S18 (the child's own reflection quote and the parent's reply).** The child's words need Brain to collect the reflection in the lesson and record consent for showing them. The parent line needs a free-text slot, which the P-STRUCT gate forbids by design. Both wait for an owner call.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

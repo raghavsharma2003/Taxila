@@ -31,14 +31,14 @@ export const ROWS = Object.freeze({
   greet: { arc: ["warm", "warm", "curious"], pace: ["normal", "normal"], sentencePause: [200, 320], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.55 },
   hook: { arc: ["wonder", "wonder", "delighted"], pace: ["slow", "normal"], sentencePause: [300, 450], commaPause: [0, 0], lastPause: [450, 700], licence: ["breath", "hum"], fillers: "hook", base: 0.6 },
   explain: { arc: ["calm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [250, 450], commaPause: [0, 0], licence: ["breath"], fillers: "explain", base: 0.5 },
-  think_aloud: { arc: ["thinking", "thinking", "proud"], pace: ["slow", "slow"], lastPace: "brisk", sentencePause: [150, 500], commaPause: [150, 350], lastPause: [300, 450], licence: ["hum", "breath"], fillers: "think", base: 0.5 },
+  think_aloud: { arc: ["thinking", "thinking", "proud"], pace: ["slow", "slow"], lastPace: "brisk", sentencePause: [300, 500], commaPause: [0, 0], lastPause: [300, 450], licence: ["hum", "breath"], fillers: "think", base: 0.5 },
   pose: { arc: ["curious", "curious", "curious"], pace: ["normal", "normal"], sentencePause: [220, 360], commaPause: [0, 0], askPause: 300, licence: [], fillers: "pose", base: 0.5 },
   affirm: { arc: ["warm", "warm", "warm"], pace: ["brisk", "normal"], sentencePause: [180, 280], commaPause: [0, 0], licence: [], fillers: null, base: 0.45 },
   insight: { arc: ["curious", "delighted", "warm"], pace: ["normal", "normal"], sentencePause: [250, 400], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.6 },
   effort: { arc: ["warm", "proud", "proud"], pace: ["normal", "slow"], sentencePause: [220, 360], commaPause: [0, 0], licence: ["sigh_relief"], fillers: null, base: 0.55 },
-  correct: { arc: ["calm", "reassuring", "curious"], pace: ["slow", "slow"], sentencePause: [350, 500], commaPause: [0, 0], lastPause: [400, 650], licence: [], fillers: null, base: 0.45, pitch: -6 },
+  correct: { arc: ["calm", "reassuring", "curious"], pace: ["slow", "slow"], sentencePause: [350, 500], commaPause: [0, 0], lastPause: [400, 650], licence: [], fillers: null, base: 0.45, pitch: -8 },
   laughter: { arc: ["amused", "playful", "warm"], pace: ["brisk", "normal"], sentencePause: [220, 360], commaPause: [0, 0], lastPause: [300, 550], licence: ["chuckle", "laugh"], fillers: "laugh", base: 0.6 },
-  comfort: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [400, 600], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.4, cap: 0.4, pitch: -6 },
+  comfort: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [400, 600], commaPause: [0, 0], licence: ["breath"], fillers: null, base: 0.4, cap: 0.4, pitch: -8 },
   own_slip: { arc: ["warm", "warm", "warm"], pace: ["normal", "normal"], sentencePause: [220, 320], commaPause: [0, 0], licence: [], fillers: null, base: 0.4 },
   wrap: { arc: ["warm", "warm", "proud"], pace: ["normal", "normal"], sentencePause: [250, 400], commaPause: [0, 0], licence: [], fillers: "wrap", base: 0.5 },
   safety: { arc: ["calm", "calm", "calm"], pace: ["slow", "slow"], sentencePause: [300, 300], commaPause: [0, 0], licence: [], fillers: null, base: 0.3, cap: 0.3 },
@@ -46,7 +46,9 @@ export const ROWS = Object.freeze({
 
 /** Filler inventories (HUMAN-VOICE §5.2): closed, per language. Hesitant ones (umm) only in think-aloud. */
 export const FILLERS = Object.freeze({
-  hi: Object.freeze({ explain: ["तो", "देखो", "अच्छा"], hook: ["अच्छा", "देखो"], think: ["हम्म", "उम्म"], pose: ["अच्छा", "तो"], laugh: ["अरे"], wrap: ["चलो"] }),
+  // think: हम्म was heard in 1/3 DragonHD renders (voice v4 caps dm_hmm: the voice swallows it) and उम्म is unmeasured, so
+  // the think inventory uses lexical markers the voice renders 3/3 until an ear check clears a non-lexical one (round 7 B6)
+  hi: Object.freeze({ explain: ["तो", "देखो", "अच्छा"], hook: ["अच्छा", "देखो"], think: ["अच्छा", "चलो"], pose: ["अच्छा", "तो"], laugh: ["अरे"], wrap: ["चलो"] }),
   // Roman fillers for Roman-script Hinglish replies: read by the same en-IN voice, no single-word <lang hi-IN> switch
   // mid-sentence (fixer 2026-10-05, w2g-hinglish-roman-fillers; still on the owner's HV-9 blind page).
   hinglish: Object.freeze({ explain: ["toh", "dekho", "achha"], hook: ["achha", "dekho"], think: ["hmm", "umm"], pose: ["achha", "toh"], laugh: ["arre"], wrap: ["chalo"] }),

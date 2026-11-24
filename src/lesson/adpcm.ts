@@ -40,19 +40,25 @@ export const CODEC_KEY = "tx.flag.tts.codec";
  * API's effectiveType slow-2g / 2g / 3g, or Save-Data. Unknown (Safari, Firefox): PCM, as before. Read per TTS request, so a
  * link that changes speed mid-lesson changes codec from the next line on (each line's frames are one codec).
  */
-export function adpcmWanted(): boolean {
+/** The device / URL codec override (`?tts=opus|adpcm|pcm`, `auto` clears it), or null. Round 7 adds "opus". */
+export function codecOverride(): "opus" | "adpcm" | "pcm" | null {
   try {
     if (typeof location !== "undefined") {
       const v = new URLSearchParams(location.search).get("tts");
-      if (v === "adpcm" || v === "pcm") localStorage.setItem(CODEC_KEY, v);
+      if (v === "adpcm" || v === "pcm" || v === "opus") localStorage.setItem(CODEC_KEY, v);
       else if (v === "auto") localStorage.removeItem(CODEC_KEY);
     }
     const s = typeof localStorage !== "undefined" ? localStorage.getItem(CODEC_KEY) : null;
-    if (s === "adpcm") return true;
-    if (s === "pcm") return false;
+    return s === "adpcm" || s === "pcm" || s === "opus" ? s : null;
   } catch {
-    /* storage blocked: decide by the link */
+    return null; /* storage blocked: decide by the link */
   }
+}
+
+export function adpcmWanted(): boolean {
+  const s = codecOverride();
+  if (s === "adpcm") return true;
+  if (s === "pcm") return false;
   const c = typeof navigator !== "undefined" ? (navigator as Navigator & { connection?: { effectiveType?: string; saveData?: boolean } }).connection : undefined;
   return !!c && (c.saveData === true || ["slow-2g", "2g", "3g"].includes(String(c.effectiveType ?? "")));
 }

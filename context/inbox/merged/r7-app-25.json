@@ -1,0 +1,41 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-card-last-page",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "(3a, main 2026-11-08) On a paged board, the new question card pins when the board's last page turns, chip or not, on the board player's clock (line anchor plus clause onsets, else switches[].atMs). Not at her first frame, and not at the hand-over; the hand-over still promotes it if the page never turns. Client-only: src/child/lesson/cardTiming.ts, boardPage.ts, useDesk.ts. Reverse: Brain names a field that marks the card's page, which then replaces 'last page'.",
+   "source": "inbox/r7-app-25.json"
+  },
+  {
+   "id": "dc-r7-app-card-waiting",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "(3b, main 2026-11-08) While the board's page is marked ofCard:false (a placeholder name until Brain ships the field), an open, unanswered question card folds to 'Your question is waiting'. It restores on the card's board or at her hand-over. Absent flag means no collapse. Reverse: Brain's field lands under another name or shape (rename in boardPage.ts boardOnTray).",
+   "source": "inbox/r7-app-25.json"
+  },
+  {
+   "id": "m-r7-app-card-rerun-d10-2026-11-08",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "director10 steady-c6 board renders walked through the 3a/3b reducers, with ofCard emulated as 'this page's board is the open card's posed board': card about another figure shown in full, 15/58 → 0/58; 15 renders wait (all the worked examples, plus explain and reteach pages of another figure); T9-0 and T81-0 keep the card of the board on screen. No answer chips in the emulation.",
+   "source": "inbox/r7-app-25.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-card-last-page",
+   "rel": "measured_by",
+   "dst": "m-r7-app-card-rerun-d10-2026-11-08"
+  },
+  {
+   "src": "dc-r7-app-card-waiting",
+   "rel": "measured_by",
+   "dst": "m-r7-app-card-rerun-d10-2026-11-08"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-app-card-last-page`\nThe question on the card now changes when its picture appears, not before and not long after.\n\n## `dc-r7-app-card-waiting`\nWhile she draws a different example, the question steps back to one quiet line and the board gets the room. It comes back with its picture.\n",
+  "measurements": "## `m-r7-app-card-rerun-d10-2026-11-08`\nMethod and per-render list: docs/design/round7/app/LESSON-REPLAY-d10.md, 'After main's calls'.\n"
+ }
+}

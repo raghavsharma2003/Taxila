@@ -9,6 +9,10 @@ RUN npm ci --omit=dev --no-audit --no-fund
 COPY server ./server
 COPY shared ./shared
 COPY data ./data
+# server/ imports pure-logic .ts from src/ (the nightly sweep reaches src/modules/frame/engines through
+# routes/account.js → director/engine-check.js); node 22 strips the types at load. Without it the nightly job failed to
+# load its sweep and trace retention never ran (audit PLAT-04). tests/r7-audit-platform-deploy.test.mjs walks the imports.
+COPY src ./src
 # The boot check (server/conductor/migrations.js) lists db/migrations/*.sql: without them the worker could never start
 # (found on its first deploy, 2026-10-04: ENOENT scandir /app/db/migrations).
 COPY db/migrations ./db/migrations

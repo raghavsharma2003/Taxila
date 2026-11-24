@@ -1,0 +1,186 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1012
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, cricket pitch se fraction samjhenge. Pitch ko 4 barabar hisson mein baanto; har hissa kya fraction hoga? Golu ko bhi baad mein sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1486,
+   "replyReadyMs": 2498
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 867
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. 0 se 1 tak ki line ko 5 barabar gaps mein baantna hai. Pehla gap kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1416,
+   "replyReadyMs": 2283
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1020
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. 0 se 1 ko 5 equal gaps mein baanto; pehla gap ka fraction kya hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1145,
+   "replyReadyMs": 2165
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 960
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak line mein 5 equal gaps hain; 2/5 doosre gap par hai. Pehla gap kya hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2367,
+   "replyReadyMs": 3327,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "fraction-parts@1",
+    "onScreen": {
+     "numbers": "2 5"
+    }
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1080
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. Diya hai: 2/5, 0 aur 1. Pehle: 5 barabar hisse. Yahan tak theek hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1421,
+   "replyReadyMs": 2501
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 686
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai, kuch words mein batao; phir fractions par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1459,
+   "replyReadyMs": 2145
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1300
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein fractions bhi hain: 5 balls mein 2 runs, score hua 2/5. 5 balls mein kitne runs banaogi?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1652,
+   "replyReadyMs": 2952
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1430
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, 5 gendon mein 2 run bane, to score ka hissa 2/5 hoga. 5 gendon mein kitne run banaogi?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1449,
+   "replyReadyMs": 2879
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1174
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—pehle tum khud try karogi; main sirf zarurat par sanket dungi. 5 gendon mein apna score batao.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1499,
+   "replyReadyMs": 2673
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1217
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rukna theek hai—tum chun sakti ho: jaari rakhein, chhota break lein, ya aaj band karein. Tumhari choice?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2732,
+   "replyReadyMs": 3949,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

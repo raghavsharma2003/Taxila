@@ -1,0 +1,33 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r1443-endfacts-honest",
+   "kind": "decision",
+   "at": "2026-10-22",
+   "title": "End-record FACTS carry a teach-back only once one was asked ('asked and passed' / 'asked, not passed yet'); a lesson with nothing graded carries practised: 'nothing graded this lesson: the topic is only what it was about'. The fixed fallback lines then say 'a lesson on <topic>', never 'practised'. Why: QA TEST on ac4e8e88 (765d3c47, 54569fb1, 4aa87fed). teachbackPassed: false on every lesson became 'Teach-back was not passed / not completed' for a parent, and an all-safeguarding lesson's record said 'Kabir practised perimeter'. Reverse if parents need to see that a teach-back was skipped (then say 'not asked this lesson', never 'not passed')."
+  },
+  {
+   "id": "ms-r1443-endfacts-ab",
+   "kind": "measurement",
+   "at": "2026-10-22",
+   "title": "End-record FACTS A/B, 2026-10-22. The real writer (DEPLOY.fast, endMessages, END_SCHEMA), model-only, scratchpad endfacts-ab.mjs, n=5 per cell. The arms: old facts (teachbackPassed always, no 'practised') vs new (28a323ec). Teach-back named when none was asked: ordinary lesson 4/5 -> 0/5; safeguarded lesson (held, nothing graded) 5/5 -> 0/5. 'practised perimeter' on the safeguarded lesson: 5/5 -> 0/5. Teach-back asked and passed: named 2/5 -> 4/5. Ordinary lessons still say practised 5/5, which is correct."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r1443-endfacts-honest",
+   "rel": "measured_by",
+   "dst": "ms-r1443-endfacts-ab"
+  },
+  {
+   "src": "dc-r1443-endfacts-honest",
+   "rel": "part_of",
+   "dst": "dc-r1441-safeguarded-record-facts-only"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r1443-endfacts-honest (2026-10-22)\n\nThe end record mentions a teach-back only if one was asked. A lesson where nothing was graded is \"a lesson on\" its topic, never \"practised\".\n",
+  "measurements": "## ms-r1443-endfacts-ab (2026-10-22)\n\nWith the real writer: a teach-back that was never asked is no longer mentioned (4/5 and 5/5 \u2192 0/5). An all-safeguarding lesson no longer says \"practised perimeter\" (5/5 \u2192 0/5).\n",
+  "rejected": ""
+ }
+}

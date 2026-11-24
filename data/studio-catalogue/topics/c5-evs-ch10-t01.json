@@ -6,69 +6,158 @@
  "class": 5,
  "topicType": "T3",
  "plan": {
-  "game": "food-web@1",
-  "hint": "Balance the Forest: habitats and who eats whom; remove a species and watch"
+  "game": "story-rail@1",
+  "hint": "sequence and cause modes: pollution and animals cross borders; shared air, water and oceans"
  },
  "game": {
-  "archetype": "food-web@1",
+  "archetype": "story-rail@1",
   "spec": {
-   "archetype": "food-web@1",
+   "archetype": "story-rail@1",
    "skills": [
     "c5-evs-ch10-t01"
    ],
    "lang": "en",
    "strings": {
-    "step": "Step",
-    "predict": "First, predict",
-    "up": "Goes up",
-    "down": "Goes down",
-    "same": "About the same",
-    "remove": "Remove",
-    "add": "Bring in",
-    "relocate": "Relocate",
-    "day": "DAY",
-    "alive": "all alive",
-    "lost": "lost",
-    "drought": "DROUGHT",
-    "arrows": "Drag from the food to the one that eats it",
-    "done": "Forest steady",
-    "watch": "watch"
+    "round": "Round",
+    "picked": "coupled",
+    "streak": "streak",
+    "next": "What happens next?",
+    "effect": "What does this lead to?",
+    "who": "Who said this?",
+    "runDone": "Line complete",
+    "order": "your train",
+    "right": "Coupled",
+    "wrong": "Not this one",
+    "coach": "Tap a wagon before the train reaches the fork"
    },
-   "species": [
-    "grass",
-    "insects",
-    "deer",
-    "frog",
-    "snake",
-    "tiger"
-   ],
-   "steps": [
+   "title": "Earth, Our Shared Home",
+   "rounds": [
     {
-     "kind": "arrows"
+     "mode": "sequence",
+     "title": "Down the river",
+     "sub": "couple what happens in order",
+     "cards": [
+      {
+       "id": "s1",
+       "text": "A factory dumps waste",
+       "glyph": "factory",
+       "src": "c5-evs-ch10-t01-i04"
+      },
+      {
+       "id": "s2",
+       "text": "The river carries it down",
+       "glyph": "river",
+       "src": "c5-evs-ch10-t01-i12"
+      },
+      {
+       "id": "s3",
+       "text": "It reaches a village below",
+       "glyph": "house",
+       "src": "c5-evs-ch10-t01-i04"
+      },
+      {
+       "id": "s4",
+       "text": "Fish there get sick",
+       "glyph": "fish",
+       "src": "c5-evs-ch10-t01-i04"
+      }
+     ],
+     "speed": 0.8,
+     "targets": "c5-evs-ch10-t01-m1"
     },
     {
-     "kind": "predict-remove",
-     "remove": "snake",
-     "watch": "insects",
-     "days": 60
+     "mode": "cause",
+     "title": "Nature has no borders",
+     "sub": "match each cause to what it leads to",
+     "pairs": [
+      {
+       "cause": {
+        "id": "c1",
+        "text": "Smoke rises from a chimney",
+        "glyph": "factory",
+        "src": "c5-evs-ch10-t01-i05"
+       },
+       "effect": {
+        "id": "f1",
+        "text": "Other towns breathe it in",
+        "src": "c5-evs-ch10-t01-i11"
+       }
+      },
+      {
+       "cause": {
+        "id": "c2",
+        "text": "Waste is dumped in a river",
+        "glyph": "river",
+        "src": "c5-evs-ch10-t01-i04"
+       },
+       "effect": {
+        "id": "f2",
+        "text": "Villages downstream are harmed",
+        "src": "c5-evs-ch10-t01-i04"
+       }
+      },
+      {
+       "cause": {
+        "id": "c3",
+        "text": "A bottle is dropped at sea",
+        "glyph": "wave",
+        "src": "c5-evs-ch10-t01-i08"
+       },
+       "effect": {
+        "id": "f3",
+        "text": "It washes up on far beaches",
+        "src": "c5-evs-ch10-t01-i08"
+       }
+      },
+      {
+       "cause": {
+        "id": "c4",
+        "text": "Falcons fly over many lands",
+        "glyph": "bird",
+        "src": "c5-evs-ch10-t01-i06"
+       },
+       "effect": {
+        "id": "f4",
+        "text": "Each country must guard them",
+        "src": "c5-evs-ch10-t01-i06"
+       }
+      }
+     ],
+     "speed": 0.85,
+     "targets": "c5-evs-ch10-t01-m3"
     },
     {
-     "kind": "predict-remove",
-     "remove": "tiger",
-     "watch": "deer",
-     "days": 90
-    },
-    {
-     "kind": "keep-alive",
-     "days": 80,
-     "droughtFrom": 25,
-     "droughtDays": 12
+     "mode": "sequence",
+     "title": "The falcon's journey",
+     "sub": "couple the trip in order",
+     "cards": [
+      {
+       "id": "j1",
+       "text": "Falcons leave Russia, China",
+       "glyph": "bird",
+       "src": "c5-evs-ch10-t01-i06"
+      },
+      {
+       "id": "j2",
+       "text": "They rest in Nagaland",
+       "glyph": "tree",
+       "src": "c5-evs-ch10-t01-i06"
+      },
+      {
+       "id": "j3",
+       "text": "They fly on to Africa",
+       "glyph": "globe",
+       "src": "c5-evs-ch10-t01-i06"
+      }
+     ],
+     "speed": 0.9,
+     "targets": "c5-evs-ch10-t01-m3"
     }
    ]
   },
   "repairs": [],
   "attempts": 1,
-  "model": "taxila-fast-bg"
+  "model": "claude-hand-authored"
  },
  "explainer": {
   "archetype": "scene-explainer@1",
@@ -590,7 +679,62 @@
   "passes": 2,
   "seconds": 33
  },
- "keys": [],
+ "keys": [
+  {
+   "itemId": "r1:0",
+   "key": "The river carries it down",
+   "prompt": "sequence: after/for \"A factory dumps waste\"",
+   "src": "c5-evs-ch10-t01-i12"
+  },
+  {
+   "itemId": "r1:1",
+   "key": "It reaches a village below",
+   "prompt": "sequence: after/for \"The river carries it down\"",
+   "src": "c5-evs-ch10-t01-i04"
+  },
+  {
+   "itemId": "r1:2",
+   "key": "Fish there get sick",
+   "prompt": "sequence: after/for \"It reaches a village below\"",
+   "src": "c5-evs-ch10-t01-i04"
+  },
+  {
+   "itemId": "r2:0",
+   "key": "Other towns breathe it in",
+   "prompt": "cause: after/for \"Smoke rises from a chimney\"",
+   "src": "c5-evs-ch10-t01-i11"
+  },
+  {
+   "itemId": "r2:1",
+   "key": "Villages downstream are harmed",
+   "prompt": "cause: after/for \"Waste is dumped in a river\"",
+   "src": "c5-evs-ch10-t01-i04"
+  },
+  {
+   "itemId": "r2:2",
+   "key": "It washes up on far beaches",
+   "prompt": "cause: after/for \"A bottle is dropped at sea\"",
+   "src": "c5-evs-ch10-t01-i08"
+  },
+  {
+   "itemId": "r2:3",
+   "key": "Each country must guard them",
+   "prompt": "cause: after/for \"Falcons fly over many lands\"",
+   "src": "c5-evs-ch10-t01-i06"
+  },
+  {
+   "itemId": "r3:0",
+   "key": "They rest in Nagaland",
+   "prompt": "sequence: after/for \"Falcons leave Russia, China\"",
+   "src": "c5-evs-ch10-t01-i06"
+  },
+  {
+   "itemId": "r3:1",
+   "key": "They fly on to Africa",
+   "prompt": "sequence: after/for \"They rest in Nagaland\"",
+   "src": "c5-evs-ch10-t01-i06"
+  }
+ ],
  "whiteboard": {
   "beats": [
    {

@@ -51,13 +51,15 @@ export type Role = "q1" | "q2" | "q3" | "q4" | "panel" | "ink" | "ink2" | "ink3"
  */
 export type Material = "water" | "ice" | "rust" | "wood" | "iron" | "steel" | "clay" | "soil" | "cotton" | "roti" | "mould" | "leaf" | "leafPale"
   | "starch" | "nostarch" | "black" | "white" | "red" | "blue" | "copper" | "aluminium" | "brass" | "plastic" | "wool" | "glow" | "paper"
-  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow";
+  | "seed" | "sprout" | "oil" | "paint" | "graphite" | "rubber" | "salt" | "magnetN" | "magnetS" | "sun" | "frost" | "shadow"
+  | "pink" | "turmeric" | "hibiscus";   // r7 rang: hibiscus dark pink (magenta) in an acid; turmeric yellow; hibiscus water's own purplish colour
 const MAT_LIGHT: Record<Material, string> = {
   water: "#5E9FD6", ice: "#CFE9F7", rust: "#A4471F", wood: "#B27A45", iron: "#5D6168", steel: "#9AA3AD", clay: "#B9734E", soil: "#7A5233",
   cotton: "#FBF9F4", roti: "#D8A45E", mould: "#6F8F5A", leaf: "#3F8A3A", leafPale: "#E8EDCF", starch: "#1F2240", nostarch: "#C99A2E",
   black: "#1B1B1B", white: "#F6F6F2", red: "#C8402F", blue: "#2F5DA8", copper: "#B8652F", aluminium: "#C9CED3", brass: "#C9A13B", plastic: "#E2574C",
   wool: "#C65B7C", glow: "#FFD34D", paper: "#EFE7D6", seed: "#B9A06A", sprout: "#4F9A3E", oil: "#D8B23A", paint: "#3F6FB5", graphite: "#3B3D42",
   rubber: "#5A4A3F", salt: "#F1F1EE", magnetN: "#C8402F", magnetS: "#2F5DA8", sun: "#F2B21B", frost: "#BFE3F5", shadow: "#2A2420",
+  pink: "#C2307A", turmeric: "#E9B526", hibiscus: "#8E6A9E",
 };
 const MAT_DARK: Record<Material, string> = {
   ...MAT_LIGHT,

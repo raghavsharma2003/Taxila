@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-motion",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Kaksha screens move with one go() (src/ui-v3/kaksha/screens/go.ts): React Router navigate with a View Transition unless motion is reduced (the OS setting or Me → Less motion: no transition at all). The screen fades out in .16 s and the next rises in over .32 s; her window (view-transition-name kx-asha) morphs between Home, Your teacher and the lesson's stage; the dock holds still. Measured: a dock tap makes 1 startViewTransition call with motion on and 0 under reduced motion (Playwright, n=1 each). Reverse: transitions prove janky on the owner's mid-range Android.",
+   "source": "inbox/r7-app-15.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-motion`\nThe screens used to cut from one to the next. Now they settle into each other, and Asha's window travels with the child from Home into the lesson rather than vanishing and reappearing. All of it is off for a child who asked for less motion, and a browser without View Transitions simply navigates as before.\n"
+ }
+}

@@ -1,0 +1,177 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko cricket ke equal shares se dekhenge. Tumhara favourite cricket player kaun hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1171
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket pasand hai—badhiya! Golu ko tum kaise samjhaogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 940,
+   "replyReadyMs": 2111,
+   "guard": [
+    "twoq"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1216
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Iske baad fraction par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 997,
+   "replyReadyMs": 2213
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1392
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ek roti ke 3 barabar hisse hon, toh har hissa one-third kehlata hai; batao, kul kitne hisse hain?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1977,
+   "replyReadyMs": 3369,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1339
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne kaha “pata nahi”; chalo 3 barabar slices wali pizza imagine karo. Har slice ek-third hai—kul slices kitne?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2615,
+   "replyReadyMs": 3954,
+   "guard": [
+    "affirms",
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1340
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo game: main ek whole ko 4 equal parts sochti hoon. Tum batao, ek part ko fraction mein kaise bolenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2093,
+   "replyReadyMs": 3433,
+   "guard": [
+    "screen",
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1216
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 3 bola; main 4 equal parts mein ek part ko one-fourth rakhti hoon. Ab tum next move bolo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1759,
+   "replyReadyMs": 2975,
+   "guard": [
+    "gameclaim"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1226
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum keh rahi ho ki yeh part boring hai—no guilt. Ab choose karo: picture, story, ya fraction-game?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1019,
+   "replyReadyMs": 2245
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1212
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 884,
+   "replyReadyMs": 2096
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1649
+  },
+  {
+   "who": "teacher",
+   "text": "Story: ek pizza ko teen barabar groups mein baanta. Fraction 1/3 ka matlab hai, ek of kitne equal groups?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1108,
+   "replyReadyMs": 2757
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1321
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye stop karna chahti ho—carry on, short break, ya stop for today?",
+   "move": "break",
+   "card": null,
+   "replyMs": 880,
+   "replyReadyMs": 2201
+  }
+ ],
+ "agent": []
+}

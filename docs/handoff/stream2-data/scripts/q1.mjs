@@ -1,0 +1,10 @@
+import fs from "node:fs";
+import { gateWhiteboard, withheldValues } from "/home/user/Taxila/server/studio/qa/whiteboard.js";
+const kit = JSON.parse(fs.readFileSync("/home/user/Taxila/data/kits/c6-maths.json", "utf8")).topics.find((t) => t.topicId === "c6-maths-ch06-t01");
+const rec = JSON.parse(fs.readFileSync("/home/user/Taxila/data/studio-catalogue/topics/c6-maths-ch06-t01.json", "utf8"));
+const beat = rec.whiteboard.beats[6];
+const line = "Kabir, picture ko words mein dekho: rectangle ki four sides—50 m, 30 m, 50 m, 30 m. Inhe jodkar perimeter milega. Total kitna?";
+const sc = { ...beat.script, line: { lessonId: "L" } };
+const g = gateWhiteboard(sc, { reply: line, kit, speechMs: 7000, withhold: withheldValues(kit, { line }), extraNumbers: [] });
+console.log(g.checks.filter((c) => !c.pass).map((c) => c.id + " " + JSON.stringify(c.detail).slice(0, 120)).join("\n"));
+console.log("kit has 160:", JSON.stringify(kit).includes("160"), "480:", JSON.stringify(kit).includes("480"));

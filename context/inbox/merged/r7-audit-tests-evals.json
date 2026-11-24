@@ -1,0 +1,11 @@
+{
+ "nodes": [
+  {"id": "harness-base-url-explicit", "kind": "decision", "title": "Harnesses never default to a server: TAXILA_BASE (or --base) must be given; tests/prod/base.mjs resolveBase refuses an empty one. A default once sent a ~19-lesson eval to production.", "at": "2026-11-10"},
+  {"id": "gate-no-wallclock-bars", "kind": "decision", "title": "Gate tests wait on readiness and count work (tests/_work.mjs) instead of timing milliseconds; browser suites warm the app once before the first case. A p95 bar read 5 ms idle and 110 ms under the gate's 4-way load.", "at": "2026-11-10"},
+  {"id": "gate-reads-no-docs", "kind": "decision", "title": "No gate test reads docs/: fixtures live in tests/fixtures, patch files are never asserted on (the code they became is). tests/gate-reads-no-docs.test.mjs enforces it.", "at": "2026-11-10"}
+ ],
+ "edges": [],
+ "md": {
+  "rejected": "## lint-over-patch-files-for-affect-words\n**Tried: replace the patch-file scan in p3-voicesig-server and round3-voicesig with a scan of every file the patches touched. It failed at once: server/brain/reasons.js and turn.js legitimately carry affect words (frustration, boredom, affect). Kept: scan only voicesig-owned files; the shared files are no longer linted.**"
+ }
+}

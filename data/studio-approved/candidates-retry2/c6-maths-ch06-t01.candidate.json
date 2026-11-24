@@ -1,0 +1,92 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch06-t01",
+    "archetype": "area-claim@1",
+    "misconceptionId": "c6-maths-ch06-t01-m-area-perimeter",
+    "how": "every string plain class-6 Hinglish in Roman script: no stake, claim, plot, sq or units in English. The goal reads '<area> <n> <sq> <units>' and '<perimeter> <n> <units>', so set sq to varg and units to ikai (area 40 varg ikai); coach like Grid par khet banao; claim like BAN GAYA",
+    "skillId": "c6-maths-ch06-t01-s1",
+    "beat": "rem:c6-maths-ch06-t01-m-area-perimeter",
+    "when": "remediation",
+    "check": "c6-maths-ch06-t01-s1:c2"
+  },
+  "archetype": "area-claim@1",
+  "spec": {
+    "archetype": "area-claim@1",
+    "skills": [
+      "c6-maths-ch06-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Grid par khet banao",
+      "round": "Daud",
+      "area": "kshetrafal",
+      "perimeter": "ghera",
+      "claim": "BAN GAYA",
+      "need": "chahiye",
+      "sq": "varg",
+      "units": "ikai",
+      "newShape": "is baar naya aakar",
+      "maxArea": "sabse bada kshetrafal",
+      "runDone": "Khet taiyar",
+      "timeUp": "Samay khatam"
+    },
+    "grid": {
+      "cols": 15,
+      "rows": 10
+    },
+    "drift": 0.7,
+    "rounds": [
+      {
+        "goal": "area",
+        "target": 40,
+        "seconds": 30,
+        "different": false
+      },
+      {
+        "goal": "perimeter",
+        "target": 26,
+        "seconds": 26,
+        "different": true,
+        "targets": "c6-maths-ch06-t01-m-area-perimeter"
+      },
+      {
+        "goal": "perimeter",
+        "target": 20,
+        "seconds": 28,
+        "different": true
+      },
+      {
+        "goal": "perimeter",
+        "target": 38,
+        "seconds": 30,
+        "different": false
+      }
+    ]
+  },
+  "hash": "254ee040bb674374c4c7e0bd4ec75a62",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 1,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "area-claim@1",
+    "onScreen": {
+      "title": "Plot",
+      "rounds": 4
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-10T20:20:11.379Z"
+  }
+}

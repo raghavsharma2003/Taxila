@@ -95,11 +95,14 @@ test("her sheet: classes [1, 9], a register per band, notes and shapes only, a c
   assert.deepEqual(asha.classes, [1, 9]);
   const young = sheetFor(asha, 3), older = sheetFor(asha, 7);
   assert.equal(young.protege.name, "Golu");
-  assert.match(young.protege.what, /baby elephant/);
+  assert.match(young.protege.what, /little friend/);
+  assert.doesNotMatch(young.protege.what, /elephant|animal/i, "TEACHER-01: the young screen shows a cloud pup, pebble or sprout");
   assert.doesNotMatch(older.protege.what, /baby|elephant|animal/i);
   assert.match(older.protege.what, /student/);
   assert.ok(older.notes.some((n) => /^competence before warmth: diagnose what they tried/.test(n)), "Arjun's competence note carried over");
-  assert.ok(older.notes.some((n) => /classes 5-9/.test(n)));
+  // round 7 (decision D3, dc-r7-age-bands): the older register is classes 4-9; class 4 is no longer young
+  assert.ok(older.notes.some((n) => /classes 4-9/.test(n)));
+  assert.equal(sheetFor(asha, 4).protege.name, older.protege.name);
   assert.ok(young.notes.some((n) => /young Indian children/.test(n)));
   // identity, voice and pronouns never change with the band
   for (const k of ["id", "name", "addressedAs", "voice", "pronouns"]) assert.deepEqual(older[k], young[k], k);
@@ -115,7 +118,7 @@ test("her sheet: classes [1, 9], a register per band, notes and shapes only, a c
   assert.equal(characterForState({ ctx: { teacherId: "asha", teacherName: "Asha", ageBand: "10-15" } }).protege.name, "Bittu");
   assert.equal(characterForState({ ctx: { teacherId: "asha", teacherName: "Asha", classLevel: 2 } }).protege.name, "Golu");
   assert.equal(teacherFor({ id: "p", class_level: 5 }).protege.name, "Bittu", "lesson start pins the band protégé (lesson.js ctx.protege)");
-  assert.deepEqual(SHEETS.map((s) => s.sheetBand), ["asha:1-4", "asha:5-9", "arjun"]);
+  assert.deepEqual(SHEETS.map((s) => s.sheetBand), ["asha:1-3", "asha:4-9", "arjun"]);
 });
 
 // ───────────── the scan: no surface offers a teacher choice or names Arjun or Uma ─────────────
@@ -177,6 +180,10 @@ test("SCAN: the /teacher route renders her card only, and the onboarding step li
   assert.match(routes, /path: "teacher", element: s\(<TeacherScreen \/>\)/);
   const screen = code(readFileSync(join(ROOT, "src/child/screens/Teacher.tsx"), "utf8"));
   assert.doesNotMatch(screen, /<button|onClick|Sheet|TeacherNamer/, "Your teacher has nothing to press");
+  // r7 (STUDENT-FLOW §11.4): What {T} remembers lives on this screen; its only control is Forget this on a memory item
+  const rem = code(readFileSync(join(ROOT, "src/child/screens/Remembers.tsx"), "utf8"));
+  assert.doesNotMatch(rem, /TeacherNamer|getTutors|teacher_id|teacherId|rename|pick/i, "nothing in What she remembers picks or renames her");
+  assert.equal((rem.match(/onClick=/g) ?? []).length, 1, "one control: Forget this");
   const onb = code(readFileSync(join(ROOT, "src/onboarding/index.tsx"), "utf8"));
   assert.doesNotMatch(onb, /pick|choose|tutor/i);
   const hello = code(readFileSync(join(ROOT, "src/child/screens/Hello.tsx"), "utf8"));

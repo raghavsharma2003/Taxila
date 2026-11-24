@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-kit-gaps-blind",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: kit gaps filled for the 30 next-script topics (class 4-7 maths, next-topics.mjs) plus c5-maths-ch02-t02, in session with no Azure calls. Before: each topic had ONE workedExample not tied to a skill (60 of 90 skills had none of their own), and 19 skills had no misconception any item targets. Five Claude author agents wrote 60 per-skill worked examples (skillExamples) and 20 new misconceptions with diagnostics (misconceptions[].skillId), and tagged each topic's workedExample with its skill. scripts/kits/kit-gaps.mjs lints shape, ids, coverage and exact arithmetic: 31/31 pass after 1 real fix (a step '8 − 3 = 5 jumps = 500' that skipped ×100). Two SEPARATE Claude agents blind-solved the 80-item packet (no answers shown): 80/80 agree in substance (72 matched the key by numbers, 8 gave the same answer in other words). They flagged 3 real issues, all fixed and re-solved blind by a fresh agent 3/3: an ambiguous 'single turn' question, an eraser problem that never said it starts at 0, and a belief text naming sevenths over a sixths diagnostic. The c5-maths-ch02-t02 script now checks its new same-denominator misconception. Its first draft of 2 items described amounts over one whole (7/6 of a cake, 9 of 8 pieces); a blind agent caught that, and they were fixed and re-solved 2/2. lint-kits clean. Date 2026-11-05."
+  }
+ ],
+ "edges": [{ "src": "dc-r7-script-pipeline", "rel": "measured_by", "dst": "ms-r7-kit-gaps-blind" }],
+ "md": {
+  "decisions": "",
+  "measurements": "## ms-r7-kit-gaps-blind (2026-11-05, F Learning)\n\nThe 30-topic script batch needs, per skill, a full worked example and a real misconception to check. The kits had one topic-level worked example and missed misconceptions for 19 skills.\n\n**Added:**\n- 60 `skillExamples` (problem, givens, find, steps {do, result}, answer, why);\n- 20 misconceptions with a diagnostic and a `skillId`;\n- a `skillId` on each topic's `workedExample`;\n- c5-maths-ch02-t02's missing same-denominator misconception, 'same bottom so equal', which its script now checks.\n\n**Verification:**\n- scripts/kits/kit-gaps.mjs: lint 31/31.\n- Blind solve by two separate agents: 80/80 agree in substance. 3 flagged items were fixed and re-solved 3/3.\n- tests/r7-learning-kit-gaps.test.mjs keeps coverage and exact arithmetic in CI.\n\n**Notes from the authors, for review rather than defects:**\n- c6-ch07-t04's new 'half by numerator' partly overlaps 'only numerator/denominator'.\n- c5-ch02-t03's 'different numbers so unequal' sits near 'more pieces more'.\n- A few existing worked examples could fit two skills; the skill assigned is noted in the kit.",
+  "rejected": ""
+ }
+}

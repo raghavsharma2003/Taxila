@@ -1,0 +1,11 @@
+{
+ "nodes": [
+  {
+   "id": "rj-r7-create-copies-all-secrets",
+   "kind": "rejection",
+   "at": "2026-11-04",
+   "title": "Rejected: creating a new Container App by copying ALL of the source app's secrets (scripts/deploy-azure.mjs --create from taxila-web, as it stood until 2026-11-04). A staging app built that way would have stored production's DATABASE_URL (and every other production secret) even after its env was re-pointed to the TEST database, so one direct read of a stale secret name, or a later env edit, could reach production data. Found while scripting taxila-staging. Now --create copies only the secrets that the new app's env and its registries reference. Never reintroduce a whole-store copy; a new app gets exactly what it reads."
+  }
+ ],
+ "edges": []
+}

@@ -1,0 +1,32 @@
+{
+ "nodes": [
+  {
+   "id": "jd-r7-director6-2026-11-05",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "director6 (v3 walk, v2.1 scripts, H1.1 child; 16 lessons, 1,190 calls, ~$0.807) judged by 4 Claude judges by hand: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 (+6 \"?\" boards); up from 39% / 75% / ≥14 / 25 in director5. Gate failed narrowly; reversal not triggered (explain beats taught ~94% outside one beat)."
+  },
+  {
+   "id": "dc-r7-script-walk-v4",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Close the runtime gaps: authored text and code verdicts immune to every guard (verdict → authored say/point → card, never the bare card); worked example one step per turn; model gets only a lead-in when the point is inserted; wrongIfMis before by-value, accept graded right, missed card closed after remediation; every scripted skill walked in order; asides parked and returned. Data v2.2 (then-prompt ≤120 chars, boards on every check/then-card, self-contained asks), Studio never draws a stated number as \"?\", H1.2 harness. Authoring of the 30-topic batch may start staged (not live) until director7 passes."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "measured_by",
+   "dst": "jd-r7-director6-2026-11-05"
+  },
+  {
+   "src": "dc-r7-script-walk-v4",
+   "rel": "supersedes",
+   "dst": "dc-r7-script-walk-v3"
+  }
+ ],
+ "md": {
+  "measurements": "## `jd-r7-director6-2026-11-05`\n\nn = 16 lessons (c4-maths-ch05-t01, c5-maths-ch02-t01, c5-maths-ch02-t02, c6-maths-ch06-t01 × steady/offtopic/stuck/steering; steady ~41 turns, others ~23), 1,190 calls on taxila-fast (~$0.807, incl. a 27-call aborted start), reply-ready p50 3.00 s. Method: Brain ran evals/hybrid-side-by-side.mjs --matrix --director-only --reactive with TAXILA_R7_SCRIPT=on on a run tree of int/r6 93b0e20c0 + Brain ea705f9d + Studio 190c77f1, v2.1 scripts (Learning 31b818f9c), H1.1 child. Four Claude judges (one per topic, not blind) counted by hand against the v2.1 script files. Hand totals: beats taught 96.5/122 (79%), verdicts 205/230 (89%), right called wrong 2, wrong called right 2, contradictions 12 plus 6 stated-number \"?\" boards. Date 2026-11-05. Write-up: docs/design/round7/judgements/director6-2026-11-05.md.",
+  "decisions": "## `dc-r7-script-walk-v4`\n\n(close the runtime gaps; authoring may start, staged)\n\nThe architecture is confirmed by three runs in a row (director4–6), each of which judged the content correct, and the gate moved from 39% to 79% taught and from 75% to 89% judged. **The reversal is not taken.** The remaining failures are runtime ordering and guard behaviour, plus small data rules.\n\n**Runtime** (Brain):\n- **W1. Authored text is immune to repair.**\n  - In script mode, no guard (long, uncorrected, noconfirm, twoq, leak, screenmismatch) may cut, drop or replace authored text (point, say, steps, then-prompt, key) or a code verdict. Guards act on the model's own clauses only.\n  - The output order is fixed: verdict → authored say or point → the card. The bare card alone is never a turn.\n- **W2. The worked example, one step per turn.**\n  - Each step is spoken as do → result → why, in its own turn.\n  - The child's step is the card.\n  - The answer and the why are spoken after it.\n  - The give-up reveal is one clean sentence with the key, said at once.\n- **W3. When code inserts the point, the model gets only a one-clause lead-in.** The point goes before the ask, and the ask is shown in full.\n- **W4. Grading.**\n  - The listed wrong answers (`wrongIfMis`) are matched before any by-value match.\n  - Anything on `accept` is graded right.\n  - Every graded answer gets the code verdict (e6c864ff).\n  - After remediation, the missed card is closed with its answer before the walk moves on.\n- **W5. Every scripted skill is walked in order,** with its hook or bridge. The kit ladder never runs in script mode while a skill is still unwalked.\n- **W6. Parks.** An aside is parked with a promise (\"cricket baad mein, pakka\") and returned to before the wrap. A language promise is a mode that holds (R5).\n\n**Data, v2.2** (Learning; Brain's validator):\n- then-card prompts are 120 characters or fewer;\n- every check and then-card carries its own board;\n- an explain beat's ask is self-contained and fits the beat's board;\n- a then-card never repeats the worked problem;\n- c5-t01 s1 e1 says \"0 se 1\";\n- kit items get the `{friend}` slot and lose masculine first-person lines.\n\n**Studio:**\n- a number the line states is never drawn as \"?\" (only an asked mark is \"?\");\n- every template emits `screen.counts`.\n\n**Harness H1.2** (Learning, with Brain's counters):\n- a card labelled \"probe\" that poses a keyed question is answered as a card;\n- answered cards are not re-answered;\n- the verdict count requires an explicit affirmation;\n- a new count: wrong called right.\n\n**Authoring may start, staged.** Learning may author the 30-topic batch in v2.2 now, in-session by Claude, blind-verified, at no Azure cost, into a staging folder. The batch goes live only when director7 passes. Rationale: the content layer has been judged correct three times, and the format changes left are small rules. **Reverse this if** director7 forces a format change beyond v2.2.\n\n**Next run: director7.** The same 16 lessons, H1.2, and a cap sized from the dry run (about $0.85).\n\n**The gate is unchanged, plus one line:**\n- at least 80% of beats taught;\n- at least 90% of answers given a verdict;\n- 0 contradictions;\n- 0 right answers called wrong;\n- **0 wrong answers called right;**\n- every judge axis at 3.5 or above;\n- judged by hand."
+ }
+}

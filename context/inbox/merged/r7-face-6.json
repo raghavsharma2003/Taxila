@@ -1,0 +1,13 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-face-legacy-cleanup",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Face legacy cleanup: the rejected bake-off candidate heads leave public/ for art/character/candidates-built (22 MB out of dist); the TeacherFace/TeacherStage shims retire by patch (Learning 002 \u2192 App 006); the generated GLB looks under public/assets/teacher stay until a build step drops them (main loop / Platform)."
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-face-legacy-cleanup (2026-11-04)\nRound 7 face-legacy-and-asset-cleanup, first pass.\n- **The bake-off candidates** (the Rocketbox and VRoid-based c1-c4 heads, rejected: rocketbox-as-premium-face, vroid-sample-as-teacher) moved from public/assets/teacher-candidates (22 MB, shipped in every dist and publicly reachable) to art/character/candidates-built/. Their build, measure and viewer scripts now point there. Nothing at runtime or in the tests read them.\n- **The retired shims** (PRODUCT-DESIGN-V2 \u00a78) go by patch:\n  - Learning's docs/patches/to-learning/002 makes onboarding import <Teacher> directly. Meet shows her LIVE face (item 9, face-onboarding-meet-face); the handover and student screens show her still.\n  - Then App's docs/patches/to-app/006 drops the last caller (childStubs), removes the ui/index export and deletes src/ui/TeacherFace.tsx and src/stage/TeacherStage.tsx + stage.css.\n  - The dev avatar page no longer mounts TeacherStage.\n- **Asha's Plate2D/M0 fallback** went in item 1.\n- **Left in place, a question for the main loop:** the published GLB looks under public/assets/teacher/{teal,slate,plum} (the generated heads the owner rejected) are still in dist. Only the face.rig flag (default off) fetches them, and the look index, the publish pipeline and six avatar-rig tests are built on their /assets/teacher/<look>/<rev>/ paths. Dropping their *.glb from dist cleanly belongs in a build step (vite.config.ts, not a Face path), with face.rig then dev-only.\n\n**Reverse if** a candidate head is ever revived: republish it with scripts/character/publish-look.mjs from art/, never by moving files back into public/.\n"
+ }
+}

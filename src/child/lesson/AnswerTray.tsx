@@ -15,8 +15,8 @@ import { Glyph } from "../../ui/icons/state.tsx";
 import type { DeskActions, TrayModel } from "./model.ts";
 import { dotsFor, isWordLabel } from "./answers.ts";
 
-export function AnswerTray({ tray, floor, young, actions, slash, comma }:
-  { tray: TrayModel; floor: Floor; young: boolean; actions: DeskActions; slash?: boolean; comma?: boolean }) {
+export function AnswerTray({ tray, floor, young, actions, slash, comma, askKey }:
+  { tray: TrayModel; floor: Floor; young: boolean; actions: DeskActions; slash?: boolean; comma?: boolean; askKey?: string | null }) {
   const showing = floor === "showing";
   const overlay = tray.overlay === "help_menu" ? "help" : tray.overlay === "no_mic" ? "nomic" : null;
   // The pad keeps its digits under the overlay: closing the menu shows the same half-typed number.
@@ -29,7 +29,7 @@ export function AnswerTray({ tray, floor, young, actions, slash, comma }:
           {tray.kind === "tiles" && tray.tiles?.length ? (
             <PictureTiles tiles={tray.tiles} young={young} onPick={actions.pickTile} disabled={showing} />
           ) : tray.kind === "pad" ? (
-            <Pad young={young} slash={!!slash} comma={!!comma} onSend={actions.padSend} />
+            <Pad key={askKey ?? ""} young={young} slash={!!slash} comma={!!comma} onSend={actions.padSend} onWords={young ? undefined : actions.padWords} />
           ) : null}
         </div>
         {overlay === "help" && <HelpMenu young={young} onPick={actions.helpMenuPick} onClose={actions.closeHelpMenu} canClose={tray.kind === "pad" || !!tray.tiles?.length} pad={tray.kind === "pad"} />}
@@ -72,7 +72,7 @@ export function PictureTiles({ tiles, young, onPick, disabled }:
  * NumberPad: digits only for Young; Older adds "/" in a fraction question. At most 9 characters, one "/" at most.
  * A key written with commas (Indian grouping, "1,07,040") adds ",": never first, never doubled, 12 characters then.
  */
-export function Pad({ young, slash, comma = false, onSend }: { young: boolean; slash: boolean; comma?: boolean; onSend: (v: string) => void }) {
+export function Pad({ young, slash, comma = false, onSend, onWords }: { young: boolean; slash: boolean; comma?: boolean; onSend: (v: string) => void; onWords?: () => void }) {
   const [v, setV] = useState("");
   const max = comma ? 12 : 9;
   const add = (d: string) => setV((x) => (x.length >= max ? x
@@ -87,6 +87,7 @@ export function Pad({ young, slash, comma = false, onSend }: { young: boolean; s
         {["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"].map((d) => key(d))}
         {slash && key("/")}
         {comma && key(",")}
+        {onWords && <button type="button" className="dk-key dk-key--quiet" onClick={onWords} aria-label="Type words instead" data-testid="pad-words">abc</button>}
         <button type="button" className="dk-key dk-key--quiet" onClick={() => setV((x) => x.slice(0, -1))} disabled={!v}>{t("dock.delete")}</button>
         <button type="button" className="dk-key dk-key--send" onClick={send} disabled={!v || /[,/]$/.test(v)} data-testid="pad-send">{t("dock.send")}</button>
       </div>

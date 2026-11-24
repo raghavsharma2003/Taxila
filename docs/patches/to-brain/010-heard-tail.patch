@@ -1,0 +1,76 @@
+# r7 audit TEACHER-02 (to Brain). The classifier and the understand note read the END of her last line.
+# classify.js userPrompt cut WHAT THE TEACHER LAST SAID to its first 500 characters, understand.js to its first 400: on a long
+# line the cut drops her question (her last sentence), which the "asked a DIFFERENT question" rule needs. Apply: git apply -p1.
+# Test: node --test tests/r7-audit-heard-tail.test.mjs (fails before: no heardTail export). classify + filter-context suites pass.
+diff --git a/server/conversation/understand.js b/server/conversation/understand.js
+index d330c4a1..66308312 100644
+--- a/server/conversation/understand.js
++++ b/server/conversation/understand.js
+@@ -16,6 +16,7 @@
+ // filter and the predicate (the floor never depends on this call; a note's distress is OR-ed in, never subtracted).
+ import { chat, isContentFilter } from "../azure.js";
+ import { scrubPii, filterSafe } from "../director/safety.js";
++import { heardTail } from "../director/classify.js";
+ 
+ export const INTENTS = Object.freeze([
+   "answer_correct", "answer_wrong", "answer_partial", "answer_hedged", "thinking_aloud", "self_correction", "dont_know", "ask_for_answer",
+@@ -89,7 +90,7 @@ export const SYSTEM = [
+ export function userPrompt(ctx) {
+   return [
+     `CLASS ${ctx.cls ?? 5}, LESSON: ${String(ctx.topicTitle ?? "").slice(0, 80)}. MOMENT: ${ctx.phase ?? "lesson"}.`,
+-    `TEACHER JUST SAID: ${String(ctx.teacherLast ?? "").slice(0, 400)}`,
++    `TEACHER JUST SAID: ${heardTail(ctx.teacherLast, 400)}`,
+     ctx.ask ? `QUESTION ON THE TABLE: ${String(ctx.ask).slice(0, 300)}` : "QUESTION ON THE TABLE: none (teaching)",
+     ctx.key ? `KEY: ${String(ctx.key).slice(0, 120)}` : "",
+     ...(ctx.earlier ?? []).slice(-2).flatMap((e) => [`CHILD EARLIER: ${String(e.child ?? "").slice(0, 200)}`, `TEACHER EARLIER: ${String(e.teacher ?? "").slice(0, 300)}`]),
+diff --git a/server/director/classify.js b/server/director/classify.js
+index b1dc6037..1d3be3f3 100644
+--- a/server/director/classify.js
++++ b/server/director/classify.js
+@@ -222,6 +222,13 @@ function systemPrompt(target, classLevel) {
+   return base.join("\n");
+ }
+ 
++/** Her last line as the labeller reads it: the END is kept (her question is her last sentence; a cut that kept the start
++ *  dropped the very question the "asked a DIFFERENT question" rule reads). PURE. */
++export function heardTail(heard, max = 500) {
++  const t = String(heard ?? "").replace(/\s+/g, " ").trim();
++  return t.length <= max ? t : `…${t.slice(t.length - max + 1).replace(/^\S*\s/, "")}`;
++}
++
+ function userPrompt(target, childText, heard) {
+   const lines = [];
+   const misLines = target.misconceptions.map((m) => `${m.tag}: ${m.belief}${m.signs.length ? ` (signs: ${m.signs.join("; ")})` : ""}`);
+@@ -238,7 +245,7 @@ function userPrompt(target, childText, heard) {
+     if (target.ideas.length) lines.push("KEY IDEAS (for a reason, if one is given):", ...target.ideas.map((e) => `- ${e}`));
+   }
+   if (misLines.length) lines.push("MISCONCEPTIONS:", ...misLines);
+-  if (heard) lines.push(`WHAT THE TEACHER LAST SAID: ${String(heard).slice(0, 500)}`);
++  if (heard) lines.push(`WHAT THE TEACHER LAST SAID: ${heardTail(heard)}`);
+   lines.push(`CHILD'S REPLY: ${childText}`);
+   return lines.join("\n");
+ }
+diff --git a/tests/r7-audit-heard-tail.test.mjs b/tests/r7-audit-heard-tail.test.mjs
+new file mode 100644
+index 00000000..239cc130
+--- /dev/null
++++ b/tests/r7-audit-heard-tail.test.mjs
+@@ -0,0 +1,18 @@
++// r7 audit TEACHER-02: the labeller and the understand note read the END of her last line (her question is its last
++// sentence); a long line used to be cut to its first 500 / 400 characters, dropping the question.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { heardTail } from "../server/director/classify.js";
++
++test("a long teacher line keeps its last question", () => {
++  const line = `${"Dekho, yeh ek lambi baat hai jismein bahut saare shabd hain. ".repeat(12)}Toh batao, kitne equal groups bane?`;
++  assert.ok(line.length > 500);
++  const t = heardTail(line);
++  assert.ok(t.length <= 500, `length ${t.length}`);
++  assert.match(t, /kitne equal groups bane\?$/);
++});
++
++test("a short line is unchanged (spaces folded)", () => {
++  assert.equal(heardTail("Kitne  groups hain?"), "Kitne groups hain?");
++  assert.equal(heardTail(null), "");
++});

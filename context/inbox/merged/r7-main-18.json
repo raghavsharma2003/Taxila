@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {"id": "ms-r7-m3-owner-facts-2026-11-06", "kind": "measurement", "at": "2026-11-06",
+   "title": "Owner-read facts for M3/M4, 2026-11-06.\n- Credit: ₹230,490.71 remaining (MCA billing profile 'Raghav Sharma'; the detailed Azure credits panel would not load). The Startups dashboard says '$5,000 of $150,000 unlocked', with $4,770 in credits expiring 2027-04-04.\n- ARM billingProperty: StartupSponsorship of $5,000, start 2026-07-08T10:58Z, end 2027-04-04, status LimitRemoved. Subscription quotaId Sponsored_2016-01-01; billing type Benefit.\n- The deploy SP is 'sales-enabler-deployer'. Its secret expires 2027-03-30.\n- The Milestones card was not reachable, so the verification date is still unconfirmed by the portal.\n- microsoftazuresponsorships.com shows 'no sponsorship', because this sponsorship sits on an MCA billing profile.\n\nAt 09:55 UTC the owner granted the SP User Access Administrator, conditioned to exclude the Owner, UAA and RBAC Admin roles. The main loop then placed CanNotDelete locks 'm3-credit-do-not-delete' on taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, m3-keeper, m3-verify, m3-owner, m3-alert-lines and m3-verify-silent."}
+ ],
+ "edges": [
+  {"src": "dc-r7-m4-without-fail", "rel": "measured_by", "dst": "ms-r7-m3-owner-facts-2026-11-06"}
+ ],
+ "md": {
+  "measurements": "## `ms-r7-m3-owner-facts-2026-11-06` (2026-11-06)\n\n**Credit and sponsorship**\n- Credit: ₹230,490.71 remaining, from the MCA billing profile. The Startups dashboard shows $4,770 of $5,000, expiring 2027-04-04.\n- The billing record shows a StartupSponsorship of $5,000 from 2026-07-08 to 2027-04-04, with status LimitRemoved.\n- If Microsoft counts the 180 days from 2026-07-08, day 60 must fall on or before 2027-01-04, so day 1 must be 2026-11-06. All lanes and the registry and VM were already above $1 for 11-06 by 08:58 UTC; to be confirmed once Cost Management closes the day.\n- microsoftazuresponsorships.com does not show this sponsorship, because it sits on an MCA billing profile.\n\n**Deploy SP (sales-enabler-deployer)**\n- Its secret expires 2027-03-30.\n- It now holds User Access Administrator, conditioned so it cannot grant Owner, UAA or RBAC Admin.\n\n**Locks.** CanNotDelete `m3-credit-do-not-delete` on 11 M3-critical resources: the RG taxila-m3-rg, taxilacr, taxilaforge, taxila-cin-pg, taxila-env, taxila-ai-centralindia, both m3 jobs, the action group and both alert rules.\n"
+ }
+}

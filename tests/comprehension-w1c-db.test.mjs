@@ -21,7 +21,7 @@ const S = await import(root + "server/comprehension/session.js");
 const { outcomeIndex } = await import(root + "server/learner/kt/outcomes.js");
 const out = {};
 const quiet = console.info; console.info = () => {};
-const reach = await Promise.race([q("select 1 from pending_grade limit 1").then(() => true, (e) => e.message), new Promise((r) => setTimeout(() => r("timeout"), 45000))]);
+const reach = await Promise.race([q("select 1 from pending_grade limit 1").then(() => true, (e) => e.message), new Promise((r) => setTimeout(() => r("timeout"), 45000).unref())]);
 if (reach !== true) { console.log(JSON.stringify({ skip: String(reach) })); process.exit(0); }
 const g = (await q("insert into guardian (email, pw_hash, name) values ($1, 'x', 'w1c-db') returning id", ["w1c-db+" + randomUUID() + "@taxila.test"]))[0].id;
 let realG = null;

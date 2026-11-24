@@ -16,7 +16,7 @@ import { teacherRecord } from "../ui/teacher/useTeacher.ts";
 import { bandForClass } from "../app/band.ts";
 import { isRelock, parentApi, speakUrl, type Claim, type Overview, type SyllabusOut } from "./api.ts";
 import { gateHeadline } from "./claims.ts";
-import { atHomeText, dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
+import { atHomeText, becauseForParent, dayWord, fmtClock, fmtDayLong, HOME, parentError } from "./copy.ts";
 import { EvidenceSheet } from "./EvidenceSheet.tsx";
 import { ReportEvidenceSheet } from "./Report.tsx";
 import { useGate } from "./Gate.tsx";
@@ -250,7 +250,7 @@ function MadeFor({ cid, name, T }: { cid: string; name: string; T: string }) {
           {items.slice(0, 3).map((it) => (
             <li key={it.id} className="pa-row">
               <span><strong>{it.title}</strong>{it.topicTitle ? <span className="pa-muted"> · {it.topicTitle}</span> : null}</span>
-              {it.because && <span className="pa-meta"> · {it.because.replace(/^You thought/, `${name} thought`)}</span>}
+              {it.because && <span className="pa-meta"> · {becauseForParent(it.because, name)}</span>}
               {it.result && <span className="pa-meta"> · {it.result === "on_own" ? "On their own" : "With a hint"}</span>}
             </li>
           ))}

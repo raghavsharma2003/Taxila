@@ -1,0 +1,23 @@
+From: E App (round 7, app-auth-email-otp)
+Subject: register the guardian code sign-in routes
+
+server/signin/code.js (new, stream E) exports `routes`: POST /api/auth/code (send a 6-digit code by ACS Email; the phone
+channel is behind the same provider interface and answers 501 phone.unavailable) and POST /api/auth/code/verify (sign
+in with the code; the same createSession as password login). No migration: codes are rows of password_reset (019) keyed
+`code:` + sha256(guardian id, code). Needs ACS_CONNECTION_STRING and ACS_SENDER, the ones the forgot-password mail
+already uses. Apply with `git apply`.
+
+diff --git a/server/index.js b/server/index.js
+index 5dba7e275..01cc0d3d9 100644
+--- a/server/index.js
++++ b/server/index.js
+@@ -38,6 +38,8 @@ import { routes as play } from "./play/routes.js";
+ import { routes as trace } from "./trace/routes.js";
+ // round 7, stream G: the owner ops page (TAXILA_OPS_FOR)
+ import { routes as ops } from "./ops/routes.js";
++// r7 app-auth-email-otp (stream E): guardian sign-in by an emailed code
++import { routes as signin } from "./signin/code.js";
+ 
+-register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...lane });
++register({ ...lesson, ...tts, ...parent, ...modules, ...voice, ...tutor, ...child, ...placement, ...testClock, ...studio, ...voicesig, ...duplex, ...duplexShadow, ...face, ...relational, ...latency, ...play, ...trace, ...ops, ...signin, ...lane });
+ export { handle, register };

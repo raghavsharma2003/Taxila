@@ -1,0 +1,87 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c4-maths-ch03-t02",
+    "archetype": "rule-machine@1",
+    "misconceptionId": "c4-maths-ch03-t02-m-first-step-only",
+    "how": "a story only when its rule IS the chain applied to the input, in the order the child computes it (₹500 − 4 × 45 is not ×4 then −45: give no story there); a word-order mix-up round's sub gives the worded phrase ('20 se 5 kam') and its rule is the right order",
+    "skillId": "c4-maths-ch03-t02-s1",
+    "beat": "rem:c4-maths-ch03-t02-m-first-step-only",
+    "when": "remediation",
+    "check": "c4-maths-ch03-t02-s1:c1"
+  },
+  "archetype": "rule-machine@1",
+  "spec": {
+    "archetype": "rule-machine@1",
+    "skills": [
+      "c4-maths-ch03-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "built": "Machine taiyaar",
+      "run": "Chalao",
+      "want": "Kya chahiye?",
+      "got": "Kya mila?",
+      "coach": "Dhyan se dekho",
+      "runDone": "Chal gaya",
+      "step": "Agla step",
+      "predict": "Pehle andaaza",
+      "inverse": "Ulta socho",
+      "target": "Nishana",
+      "steps": "Steps dekho",
+      "pick": "Tile chuno",
+      "works": "Sahi kaam",
+      "fix": "Phir se dekho"
+    },
+    "title": "Pattern Karkhana",
+    "rounds": [
+      {
+        "mode": "build",
+        "title": "Number machine",
+        "sub": "Har input ko machine mein daalo",
+        "rule": [
+          "×2"
+        ],
+        "inputs": [
+          1,
+          2,
+          4,
+          8
+        ],
+        "tiles": [
+          "×2",
+          "+1",
+          "+3"
+        ],
+        "targets": "c4-maths-ch03-t02-m-first-step-only"
+      }
+    ]
+  },
+  "hash": "0c1f1c81d1fff85e7e32825d10c03f06",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": true,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    }
+  },
+  "facts": {
+    "kind": "game",
+    "archetype": "rule-machine@1",
+    "onScreen": {
+      "title": "Pattern Karkhana",
+      "rounds": 1,
+      "first": "Number machine: Har input ko machine mein daalo"
+    }
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T09:44:34.619Z"
+  }
+}

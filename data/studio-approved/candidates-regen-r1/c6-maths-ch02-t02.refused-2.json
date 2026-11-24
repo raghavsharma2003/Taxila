@@ -1,0 +1,187 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c6-maths-ch02-t02",
+    "archetype": "angle-cannon@1",
+    "misconceptionId": "c6-maths-ch02-t02-m-vertex-name",
+    "skillId": "c6-maths-ch02-t02-s1",
+    "beat": "rem:c6-maths-ch02-t02-m-vertex-name",
+    "when": "remediation",
+    "check": "c6-maths-ch02-t02-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "strings.coach",
+        "code": "brain_violence",
+        "text": "Turret ghumao, nishana lagao, fire karo"
+      },
+      {
+        "key": "waves.1.sub",
+        "code": "brain_violence",
+        "text": "Turret ko diye gaye turn tak ghumao"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, nishana lagao, fire karo",
+      "wave": "Lahar",
+      "threat": "Khatra yahan",
+      "copy": "Yahi turn dohrao",
+      "only": "Sirf sahi hit",
+      "hit": "Bilkul sahi",
+      "close": "Kaafi paas",
+      "offBy": "itna fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sateekta",
+      "hits": "hits",
+      "acute": "nyoon kon",
+      "right": "samkon",
+      "obtuse": "adhik kon",
+      "reflex": "prativarti kon"
+    },
+    "waves": [
+      {
+        "title": "Naam ka nishana",
+        "sub": "Har turn ko dhyan se dekho aur milao",
+        "mode": "call",
+        "items": [
+          35,
+          80,
+          125,
+          160
+        ],
+        "range": 180,
+        "scaffold": "tens",
+        "speed": 0.75
+      },
+      {
+        "title": "Turn milao",
+        "sub": "Turret ko diye gaye turn tak ghumao",
+        "mode": "copy",
+        "items": [
+          45,
+          90,
+          135,
+          25,
+          150
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.9
+      },
+      {
+        "title": "Kon pehchano",
+        "sub": "Har nishane ka prakaar chuno",
+        "mode": "classify",
+        "items": [
+          30,
+          90,
+          120,
+          175,
+          210,
+          270
+        ],
+        "kind": "obtuse",
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.05
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": []
+  },
+  "raw": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c6-maths-ch02-t02"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, nishana lagao, fire karo",
+      "wave": "Lahar",
+      "threat": "Khatra yahan",
+      "copy": "Yahi turn dohrao",
+      "only": "Sirf sahi hit",
+      "hit": "Bilkul sahi",
+      "close": "Kaafi paas",
+      "offBy": "itna fark",
+      "runDone": "Sector saaf",
+      "accuracy": "sateekta",
+      "hits": "hits",
+      "acute": "nyoon kon",
+      "right": "samkon",
+      "obtuse": "adhik kon",
+      "reflex": "prativarti kon"
+    },
+    "waves": [
+      {
+        "title": "Naam ka nishana",
+        "sub": "Har turn ko dhyan se dekho aur milao",
+        "mode": "call",
+        "items": [
+          35,
+          80,
+          125,
+          160
+        ],
+        "range": 180,
+        "scaffold": "tens",
+        "speed": 0.75,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      },
+      {
+        "title": "Turn milao",
+        "sub": "Turret ko diye gaye turn tak ghumao",
+        "mode": "copy",
+        "items": [
+          45,
+          90,
+          135,
+          25,
+          150
+        ],
+        "range": 180,
+        "scaffold": "protractor",
+        "speed": 0.9,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      },
+      {
+        "title": "Kon pehchano",
+        "sub": "Har nishane ka prakaar chuno",
+        "mode": "classify",
+        "items": [
+          30,
+          90,
+          120,
+          175,
+          210,
+          270
+        ],
+        "kind": "obtuse",
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1.05,
+        "targets": "c6-maths-ch02-t02-m-vertex-name"
+      }
+    ]
+  }
+}

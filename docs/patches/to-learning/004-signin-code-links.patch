@@ -1,0 +1,62 @@
+From: E App (round 7, app-auth-email-otp)
+Subject: "Email me a code instead" on Sign in and after Forgot password
+
+The code sign-in page is /signin (src/app/signin/CodeSignIn.tsx, stream E; routes in server/signin/code.js, registered
+by Platform patch to-platform/002). This adds one quiet link under "Forgot password?" on Sign in (it carries the typed
+email and ?next=) and the same link under the forgot-password "sent" line. Copy key `code.instead` is in src/copy/en.ts
+(R7). Apply with `git apply`.
+
+diff --git a/src/onboarding/Account.tsx b/src/onboarding/Account.tsx
+index 0fc2527a0..114eb108f 100644
+--- a/src/onboarding/Account.tsx
++++ b/src/onboarding/Account.tsx
+@@ -8,7 +8,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
+ import { Button, ErrorNote, Field, Icon } from "../ui/index.ts";
+ import { loadMe, postJson, refreshMe, type Me } from "../app/api.ts";
+ import { authErrorOf, checkAuthFields, PasswordField, type FieldErrors } from "./fields.tsx";
+-import { tw2 } from "../copy/en.ts";
++import { tr7, tw2 } from "../copy/en.ts";
+ import { StepFrame } from "./Layout.tsx";
+ import { clearDraftContact, useDraft } from "./draft.ts";
+ import { safeNext } from "./next.ts";
+@@ -115,6 +115,11 @@ export function AccountStep() {
+         <PasswordField label="Password" autoComplete={signup ? "new-password" : "current-password"} value={password} error={fieldErr.password}
+           hint={signup ? "At least 8 characters." : undefined} onChange={(e) => { setPassword(e.target.value); setFieldErr((f) => ({ ...f, password: undefined })); }} required />
+         {!signup && <Link to={`/start/forgot${d.email ? `?email=${encodeURIComponent(d.email)}` : ""}`} className="link-quiet" data-testid="forgot">{tw2("auth.forgot")}</Link>}
++        {!signup && (
++          <Link to={`/signin?${new URLSearchParams({ ...(d.email ? { email: d.email } : {}), ...(next ? { next } : {}) })}`} className="link-quiet" data-testid="signin-code">
++            {tr7("code.instead")}
++          </Link>
++        )}
+         {signup && <p className="t-note">By continuing you confirm you are 18 or older and this child's parent or guardian.</p>}
+         <ErrorNote>{err}</ErrorNote>
+         <Button type="submit" block disabled={busy}>{busy ? "Please wait" : signup ? "Create account" : "Sign in"}</Button>
+diff --git a/src/onboarding/Forgot.tsx b/src/onboarding/Forgot.tsx
+index 3cfcb8c31..f0959b0bf 100644
+--- a/src/onboarding/Forgot.tsx
++++ b/src/onboarding/Forgot.tsx
+@@ -2,10 +2,10 @@
+ // says whether an account exists); the emailed link opens /start/reset?token=, which sets a new password, ends every
+ // other session of the account and signs this browser in. Errors sit on their field, in sentences.
+ import { useState, type FormEvent } from "react";
+-import { useNavigate, useSearchParams } from "react-router-dom";
++import { Link, useNavigate, useSearchParams } from "react-router-dom";
+ import { Button, ErrorNote, Field } from "../ui/index.ts";
+ import { ApiError, postJson, refreshMe } from "../app/api.ts";
+-import { tw2 } from "../copy/en.ts";
++import { tr7, tw2 } from "../copy/en.ts";
+ import { StepFrame } from "./Layout.tsx";
+ import { authErrorOf, checkAuthFields, PasswordField, type FieldErrors } from "./fields.tsx";
+ 
+@@ -34,7 +34,10 @@ export function ForgotStep() {
+   return (
+     <StepFrame step={null} title={tw2("auth.forgot.title")} why={sent ? undefined : tw2("auth.forgot.body")}>
+       {sent ? (
+-        <p className="t-lead" role="status" data-testid="forgot-sent">{tw2("auth.forgot.sent")}</p>
++        <>
++          <p className="t-lead" role="status" data-testid="forgot-sent">{tw2("auth.forgot.sent")}</p>
++          <Link to={`/signin${email ? `?email=${encodeURIComponent(email.trim())}` : ""}`} className="link-quiet" data-testid="forgot-code">{tr7("code.instead")}</Link>
++        </>
+       ) : (
+         <form className="stack" onSubmit={submit} noValidate>
+           <Field label="Email" type="email" autoComplete="email" inputMode="email" value={email} error={fe.email}

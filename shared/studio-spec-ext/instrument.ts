@@ -15,10 +15,13 @@ import { EnvelopeExt, MARKUP, TargetsField, UNGRADED, arr, envelope, isObj, num,
 export const KINDS = { pour: "capacity", weigh: "mass", cut: "length", clock: "time", thermo: "temp" } as const;
 export const SHOW = { capacity: ["ml", "l", "l+ml"], mass: ["g", "kg", "kg+g"], length: ["mm", "cm", "m", "m+cm", "cm+mm", "km+m"], time: ["12h", "24h", "after"], temp: ["C"] } as const;
 const IN_STRINGS = { round: "Round", measured: "measured", precision: "precision", hold: "Hold to pour", release: "Release", cut: "Tap to cut", set: "Set", am: "a.m.", pm: "p.m.", tapAt: "Tap when it reads", runDone: "Bench clear", offBy: "off by", exact: "EXACT", after: "after", minutes: "min", balanced: "BALANCED", heavy: "parcel heavier", light: "weights heavier" };
-const Item = z.object({ target: z.number().int().min(-500).max(2000000), show: z.string(), start: z.number().int().min(0).max(1439).optional() });
+// (regen 2b, c4-maths-ch06-t01: the model wrote target 6 on a scaleMax 10 ruler meaning 6 cm; the engine reads millimetres and
+// showed "0.6 cm". Every number is in the mode's BASE unit, said where the model reads the schema)
+const BASE = "in the mode's base unit: pour ml, weigh g, cut mm, clock minutes after midnight, thermo tenths of a °C (6 cm is 60, 1.35 m is 1350, 1 km is 1000000)";
+const Item = z.object({ target: z.number().int().min(-500).max(2000000).describe(`the quantity to reach, ${BASE}`), show: z.string().describe("the unit it is SHOWN in (asked in another unit than the scale)"), start: z.number().int().min(0).max(1439).optional() });
 const InRound = z.object({
   mode: z.enum(["pour", "weigh", "cut", "clock", "thermo"]), title: z.string().min(1).max(22), sub: z.string().max(40),
-  items: z.array(Item).min(1).max(4), scaleMax: z.number().int().min(10).max(2000000), minor: z.number().min(0.1).max(100000), tol: z.number().min(0).max(100000), speed: z.number().min(0.6).max(1.5), ...TargetsField,
+  items: z.array(Item).min(1).max(4), scaleMax: z.number().int().min(10).max(2000000).describe(`the scale's top, ${BASE}`), minor: z.number().min(0.1).max(100000).describe(`one small mark, ${BASE}`), tol: z.number().min(0).max(100000).describe(`allowed error, ${BASE}`), speed: z.number().min(0.6).max(1.5), ...TargetsField,
 });
 export type InRoundT = z.infer<typeof InRound>;
 export const InstrumentSchema = z.object({ archetype: z.literal("instrument@1"), ...EnvelopeExt, strings: stringsSchema(IN_STRINGS, 40), title: z.string().min(1).max(36), rounds: z.array(InRound).min(1).max(4) });

@@ -1,0 +1,9 @@
+{
+ "nodes": [
+  {"id": "r7-audit-tests-evals-removals", "kind": "decision", "title": "Removed as unreferenced (nothing imports, runs, cites or reads them): _q.mjs, tests/client-voice-smoke.mjs, tests/voice-cascade-browser.mjs, evals/webrtc-harness-server.mjs, evals/model-scout-2026-10-05/. Last commit holding them: c2e496c8.", "at": "2026-11-10"}
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## r7-audit-tests-evals-removals\n**Removed in one commit after a whole-repo search found no importer, package.json script, CI or Docker use, test, doc instruction or context citation: `_q.mjs` (ad hoc DB query), `tests/client-voice-smoke.mjs` and `tests/voice-cascade-browser.mjs` (paid real-API hand harnesses), `evals/webrtc-harness-server.mjs`, `evals/model-scout-2026-10-05/` (7.4 MB, only a self reference). Last commit that holds all of them: `c2e496c8` (recover with `git show c2e496c8:<path>`). Kept on purpose: `tests/client-e2e.mjs` (docs/research and PRODUCT-DESIGN-V2 cite it as the mock-Director reference), the big result folders (conversation-r3 129 MB etc.: docs cite them; no longer read by the gate after TE-06).**"
+ }
+}

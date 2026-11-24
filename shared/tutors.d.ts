@@ -44,6 +44,10 @@ export interface TutorCharacter {
   lookId: string;
   faceStyle: { smile: number; headGain: number; browGain: number };
   voice: { cps: number; speakerMeanHz: number };
+  /** Pronouns of the character (a tutor without them falls back to look.presentedGender). */
+  pronouns?: { subject: string; object: string; possessive: string };
+  /** Rig-rendered stills per puppet look (public/assets/teacher/<id>-stills/<rev>/<look>-<pose>.webp). */
+  stills?: { looks: string[]; poses: string[]; standIn: Record<string, string> };
 }
 
 export const CATALOGUE_REV: number;

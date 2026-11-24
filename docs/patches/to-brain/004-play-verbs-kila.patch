@@ -1,0 +1,15 @@
+diff --git a/server/director/play-verbs.js b/server/director/play-verbs.js
+index 86c1d3854..3b8c42102 100644
+--- a/server/director/play-verbs.js
++++ b/server/director/play-verbs.js
+@@ -36,6 +36,10 @@ export const PLAY_ACTS = Object.freeze({
+     order: { act: "place", hi: "har patthar ko uske saal par giraao", en: "drop each stone at its year" } },
+   // r7 games: Vakya (English / Hindi grammar): couple the word wagons into a sentence train, then run it
+   vakya: { rail: { act: "build", hi: "dibbe jodo aur train chalao", en: "couple the wagons and run the train" } },
++  // r7 games: E4 Kila (turn-based tower defence): set up towers / nets / the trap on the numbered path, then run the wave
++  kila: { multiples: { act: "place", hi: "burj ya jaal lagao aur lehar chalao", en: "set the towers or nets and run the wave" },
++    factors: { act: "build", hi: "burj banao aur lehar chalao", en: "build the towers and run the wave" },
++    lcm: { act: "place", hi: "jaal rakho aur lehar chalao", en: "set the trap and run the wave" } },
+ });
+ 
+ /** The act of a family / mode, or null when the table has none (then no verb note is given: never a guessed verb). */

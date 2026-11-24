@@ -1,0 +1,28 @@
+{
+ "nodes": [
+  {
+   "id": "cp-r7-face-route-b-jaw-layer",
+   "kind": "component",
+   "at": "2026-11-04",
+   "title": "Route (b) prototype: lamp2's KeyRig gains an opt-in (?jaw=1) 2.5D jaw layer. The face is composed in a head-space buffer; a feathered jaw-shaped region under the lip line (measured from the pack's own pixels) is rigidly translated down by the continuous viseme jaw (max 7 native px, closed with the mbp key on a seal), and the gap is filled with the soft-edged mouth interior (sampled from the aa key). Painted keys still give every shape; no warp. Off by default until the owner's rig verdict."
+  },
+  {
+   "id": "ms-r7-face-route-b-battery-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Route (b) lip timing, the 24-line Diya battery offline on the product timing path (scripts/character/puppet2d/route-b/battery.mjs, JAW_W 0.6, 21 lines with a CTC track): bilabial words sealed 132/132 (lamp2 132/132); lines within \u00b150 ms 100% (lamp2 67%, r8 continuous jaw 86%); median -20 ms (IQR -30..-5). Sweep: JAW_W 0.4 \u2192 90%, 0.8 \u2192 100%. An uncoupled jaw lost seals (91/132), hence the seal coupling. A simulation of the drawn opening, not a camera measurement of pixels."
+  },
+  {
+   "id": "jd-r7-face-route-b-sheet-2026-11-04",
+   "kind": "measurement",
+   "at": "2026-11-04",
+   "title": "Claude judge pass on docs/design/round7/face/route-b-vs-r8-sheet.png (Diya line 03, 8 instants, close framing): lamp2+jaw is the same person as lamp2 (5/5), with a visibly larger continuous opening than lamp2's keys and no warp or tearing. Pass 1 found a hard dark band on large drops (fixed: soft-edged interior); remaining nit: at the largest drops the gap reads slightly smeared. Against r8: r8's chibi mouth is more expressive (tongue, wide vowels) but childish (OWNER-RESET #1); lamp2+jaw is the grown-up look with better timing. Not a blind panel (deferred to the test phase)."
+  },
+  {
+   "id": "dc-r7-face-home-daily-greeting",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Her once-a-day home greeting is a PRE-RENDERED clip, never live TTS (PRODUCT-DESIGN-V2 \u00a73.3: no name in it): a fixed pool of 27 short lines (3 per part of day per language, grown-up register, no gendered Hindi verb about the child) in server/face-puppet/greetings.js; GET /api/tutors/greeting picks one per child per IST day (stable all day); clips are rendered once by scripts/character/render-greetings.mjs (Diya DragonHD, needs keys) with viseme sidecars; until rendered the response has clip:null and she only glances. Client: src/face-puppet/useDailyGreeting.ts plays it after the first tap (never at page load), lip-synced via clipBridge, then emits a faceCues gaze 'start' (new target, [data-testid=start-lesson]); App applies docs/patches/to-app/004 (KakshaHome \u2192 HomeView \u2192 Comms \u2192 Teacher meters/floor). Verified headless (evals/face-puppet/greeting-shots.mjs): silent before the tap, speaks after it, silent on a same-day reload."
+  }
+ ]
+}

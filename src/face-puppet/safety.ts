@@ -37,7 +37,7 @@ export function applySafetyFloor(): void {
 
 /** Boot check (Review v4, 2026-10-05: the header promised it, nothing called it). Fails closed: a re-synced runtime (r9+)
  *  whose tables still violate the floor after sanitize throws here, inside PuppetDriver's constructor, so the stage never
- *  starts and PuppetFace falls back to TutorFace before reveal. */
+ *  starts and PuppetFace holds her rest still (round 7: no fallback changes her face). */
 export function assertPresetsSafe(): void {
   const v = presetViolations();
   if (v.length) throw new Error(`puppet safety floor: ${v.slice(0, 5).join("; ")}`);

@@ -1,0 +1,220 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c5-maths-ch03-t01",
+    "archetype": "angle-cannon@1",
+    "misconceptionId": "c5-maths-ch03-t01-m-half-is-quarter",
+    "skillId": "c5-maths-ch03-t01-s1",
+    "beat": "rem:c5-maths-ch03-t01-m-half-is-quarter",
+    "when": "remediation",
+    "check": "c5-maths-ch03-t01-s1:c1"
+  },
+  "why": "ok, but its checks failed: contentSafe",
+  "checks": {
+    "truth": true,
+    "stageContract": true,
+    "onTopic": true,
+    "contentSafe": false,
+    "spec": {
+      "ok": true,
+      "repairs": 0,
+      "fellBack": false
+    },
+    "contentFindings": [
+      {
+        "key": "strings.coach",
+        "code": "brain_violence",
+        "text": "Turret ghumao, chhodo aur fire karo"
+      },
+      {
+        "key": "strings.only",
+        "code": "brain_violence",
+        "text": "Sirf is par hit"
+      },
+      {
+        "key": "strings.hit",
+        "code": "brain_violence",
+        "text": "Seedha hit"
+      },
+      {
+        "key": "waves.0.sub",
+        "code": "brain_violence",
+        "text": "Clock dekhkar turret ghumao"
+      }
+    ]
+  },
+  "spec": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c5-maths-ch03-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodo aur fire karo",
+      "wave": "Wave",
+      "threat": "Nishana",
+      "copy": "Ye turn banao",
+      "only": "Sirf is par hit",
+      "hit": "Seedha hit",
+      "close": "Kaafi paas",
+      "offBy": "itna farq",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishane",
+      "hits": "hits",
+      "acute": "Teekha angle",
+      "right": "Sahi kona",
+      "obtuse": "Khula angle",
+      "reflex": "Bada ghoomav"
+    },
+    "waves": [
+      {
+        "title": "Clock ke turns",
+        "sub": "Clock dekhkar turret ghumao",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270
+        ],
+        "range": 360,
+        "scaffold": "tens",
+        "speed": 0.7
+      },
+      {
+        "title": "2 chhote turns",
+        "sub": "Ek ke baad ek turn try karo",
+        "mode": "copy",
+        "items": [
+          90,
+          90,
+          180
+        ],
+        "range": 360,
+        "scaffold": "protractor",
+        "speed": 0.8,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      },
+      {
+        "title": "Clock ki chaal",
+        "sub": "Sui ki chaal ko dhyan se dekho",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270,
+          90
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 0.9,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      },
+      {
+        "title": "Khula kona",
+        "sub": "Har opening ko pehchano",
+        "mode": "classify",
+        "items": [
+          45,
+          90,
+          135,
+          180,
+          270
+        ],
+        "kind": "right",
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      }
+    ]
+  },
+  "validator": {
+    "fellBack": false,
+    "repairs": []
+  },
+  "raw": {
+    "archetype": "angle-cannon@1",
+    "skills": [
+      "c5-maths-ch03-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "coach": "Turret ghumao, chhodo aur fire karo",
+      "wave": "Wave",
+      "threat": "Nishana",
+      "copy": "Ye turn banao",
+      "only": "Sirf is par hit",
+      "hit": "Seedha hit",
+      "close": "Kaafi paas",
+      "offBy": "itna farq",
+      "runDone": "Sector saaf",
+      "accuracy": "sahi nishane",
+      "hits": "hits",
+      "acute": "Teekha angle",
+      "right": "Sahi kona",
+      "obtuse": "Khula angle",
+      "reflex": "Bada ghoomav"
+    },
+    "waves": [
+      {
+        "title": "Clock ke turns",
+        "sub": "Clock dekhkar turret ghumao",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270
+        ],
+        "range": 360,
+        "scaffold": "tens",
+        "speed": 0.7
+      },
+      {
+        "title": "2 chhote turns",
+        "sub": "Ek ke baad ek turn try karo",
+        "mode": "copy",
+        "items": [
+          90,
+          90,
+          180
+        ],
+        "range": 360,
+        "scaffold": "protractor",
+        "speed": 0.8,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      },
+      {
+        "title": "Clock ki chaal",
+        "sub": "Sui ki chaal ko dhyan se dekho",
+        "mode": "call",
+        "items": [
+          90,
+          180,
+          270,
+          90
+        ],
+        "range": 360,
+        "scaffold": "none",
+        "speed": 0.9,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      },
+      {
+        "title": "Khula kona",
+        "sub": "Har opening ko pehchano",
+        "mode": "classify",
+        "items": [
+          45,
+          90,
+          135,
+          180,
+          270
+        ],
+        "kind": "right",
+        "range": 360,
+        "scaffold": "none",
+        "speed": 1,
+        "targets": "c5-maths-ch03-t01-m-half-is-quarter"
+      }
+    ]
+  }
+}

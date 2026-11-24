@@ -1,0 +1,151 @@
+{
+ "v": 1,
+ "source": "data/kits/c6-hindi.json",
+ "items": [
+  {
+   "id": "c6-hindi-ch02-t01-i08",
+   "topicId": "c6-hindi-ch02-t01",
+   "skillId": "c6-hindi-ch02-t01-s4",
+   "kind": "error_spot",
+   "difficulty": 2,
+   "lang": "hi",
+   "prompt": {
+    "en": "Catch the mistake: 'हमारा टीम कल का मैच जीत गया।'",
+    "hi": "इस वाक्य में ग़लती पकड़ो — ‘हमारा टीम कल का मैच जीत गया।’"
+   },
+   "keyFrom": "acceptable",
+   "engine": null,
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "हमारी",
+      "हमारा"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "जीत"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w3",
+     "forms": [
+      "गया",
+      "गई"
+     ],
+     "init": 1
+    },
+    {
+     "id": "w4",
+     "forms": [
+      "कल"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w5",
+     "forms": [
+      "मैच"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w6",
+     "forms": [
+      "का"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w7",
+     "forms": [
+      "टीम"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "हमारी",
+     "टीम",
+     "कल",
+     "का",
+     "मैच",
+     "जीत",
+     "गई"
+    ]
+   ],
+   "mals": [
+    {
+     "id": "wrong-form",
+     "train": [
+      "हमारा",
+      "टीम",
+      "कल",
+      "का",
+      "मैच",
+      "जीत",
+      "गया"
+     ]
+    }
+   ],
+   "mis": "c6-hindi-ch02-t01-mc-team-gender",
+   "malKit": "c6-hindi-ch02-t01-mc-team-gender",
+   "decides": "form",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "19d81524"
+  },
+  {
+   "id": "c6-hindi-ch09-t01-i05",
+   "topicId": "c6-hindi-ch09-t01",
+   "skillId": "c6-hindi-ch09-t01-s4",
+   "kind": "contrast",
+   "difficulty": 3,
+   "lang": "hi",
+   "prompt": {
+    "en": "Is 'खायो' a mistake? How is it different from 'खाया'?",
+    "hi": "क्या ‘खायो’ कोई ग़लती है? यह ‘खाया’ से कैसे अलग है?"
+   },
+   "keyFrom": "acceptable",
+   "engine": "ब्रजभाषा",
+   "wagons": [
+    {
+     "id": "w1",
+     "forms": [
+      "रूप"
+     ],
+     "init": 0
+    },
+    {
+     "id": "w2",
+     "forms": [
+      "का"
+     ],
+     "init": 0
+    }
+   ],
+   "keys": [
+    [
+     "ब्रजभाषा",
+     "का",
+     "रूप"
+    ]
+   ],
+   "mals": [],
+   "mis": "c6-hindi-ch09-t01-mc-braj-error",
+   "decides": "order",
+   "verified": {
+    "by": "kit blind solver",
+    "agrees": true
+   },
+   "seal": "8d1370aa"
+  }
+ ]
+}

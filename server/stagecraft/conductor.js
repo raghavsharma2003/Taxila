@@ -255,6 +255,8 @@ function planCandidates(S, fam, C, eff) {
     // authored catalogue spec or the reviewed default), a personal spec is built only for the needs where personal
     // matters (a contrast of THIS child's misconception, a re-representation); the rest is spend with no gain
     if (C.personalNeeds && !C.personalNeeds.includes(fam.need) && S.candidates.some((c) => c.family === fam.key && c.archetype === x.archetype && c.rung === "engine_default" && c.state === "ready")) continue;
+    // (round 7 M5a: a code-built scene has no spec to generate)
+    if (C.catalog?.rs4?.[x.archetype]?.noSpec) continue;
     if (rungAllowed(C, "generated_spec") && !hasRung("generated_spec", x.archetype)) { mkCandidate(S, fam, "generated_spec", x.archetype, x.kind, C); spec++; }
   }
 }
@@ -511,7 +513,9 @@ export function preferredRung(S, want, C) {
   // where personal does not matter), that piece is the bar; the personal spec is the bar only for the personal needs
   if (want.archetype && cat?.rs4?.[want.archetype] && C.personalNeeds && !C.personalNeeds.includes(want.need)
     && S.candidates.some((c) => c.family === want.family && c.archetype === want.archetype && c.rung === "engine_default" && c.state === "ready")) return "engine_default";
-  if (want.archetype && cat?.rs4?.[want.archetype]) return "generated_spec";
+  if (want.archetype && cat?.rs4?.[want.archetype]?.noSpec) return "engine_default";
+  // (a lesson without the spec rung — no judge lane, lesson.js judgeRungsCfg — is best served by the checked engine default)
+  if (want.archetype && cat?.rs4?.[want.archetype]) return rungAllowed(C, "generated_spec") ? "generated_spec" : "engine_default";
   // a live build is the bar only while the lesson's live cap has room (≤ 3 per lesson); beyond it the board is the best there is
   if (want.archetype && (cat?.w2Topics?.[topic] ?? []).includes(want.archetype) && (S.meta.liveBuilds < (C.liveBuildsPerLesson ?? 3) || S.candidates.some((c) => c.family === want.family && c.rung === "live_codegen"))) return "live_codegen";
   return "board";

@@ -1,0 +1,124 @@
+From: Learning (F, claude/r7-learning)
+Subject: [PATCH 021] her joints authored per topic: the script's `joints` block (D13, dc-r7-script-walk-v6-10)
+
+The four sentences code says word for word in every lesson are why register sits at 3 (director18): the aside park ("Cricket ki
+baat hum thodi der mein karenge."), the aside return ("Ab tumhari cricket wali baat: usmein tumhe sabse achha kya lagta hai?"),
+the language switch ("Theek hai, ab Hindi mein.") and the ask-again line. From D13 each lesson script carries them, per topic.
+
+CONTRACT (data; validated by scripts/lesson-scripts/check.mjs `jointErrors`, on every v2.3 script):
+
+  "joints": {
+    "asidePark":   [{ hi, en } × ≥3],   // may use {aside}; promises no "question" (none may be open); asks nothing
+    "asideReturn": [{ hi, en } × ≥3],   // every form has {said}; may use {aside}; picks up what the child said ("sixer")
+    "hindiSwitch": [{ hi, en } × ≥3],   // hi is said on a switch to Hindi, en on a switch to English; asks nothing
+    "askAgain":    [{ hi, en } × ≥3]    // the ask-again line when her ear could not make out the words
+  }
+
+  - three distinct forms per kind (a single authored sentence is said every time: the inherited law), each ≤ 16 words;
+  - slots: {aside} = the topic the child raised (ret.topic); {said} = their own words, cut to ≤ 6 (ret.said); no other slot;
+  - no form names a topic the child did not raise (no "cricket" in data);
+  - the format stays 2.3 (no SCRIPT_VERSIONS change): `joints` is a new top-level key of a 2.3 script, and Brain's validator
+    already ignores it. The four pilots carry it now (claude/r7-learning); the regenerated staged batch carries it too.
+
+BRAIN'S HALF (the diff below is server/brain/say.js only; it is a proposal against int/r6 851b1bb8f — `git apply --check` clean):
+
+1. say.js: `jointForms(state, kind, lang)` turns the authored forms into the same (topic, said) => line functions freshForm
+   already rotates, so a form is never said within 4 turns of itself. Code's sets (RETURN_Q, PARK_ACK / PARK_LATER, LANG_ACK)
+   stay as the fallback for a topic without a script.
+2. returnQuestion(topic, lang, state, said): the return uses asideReturn with {said} = ret.said (both call sites pass said0).
+3. parkAckOf: asidePark when present (an authored park promises no question, so it fits an open card and no card alike).
+4. langAckOf(state, lang): hindiSwitch.hi / .en when present, at both LANG_ACK sites.
+
+Not in the diff, and Brain's to wire:
+- put the script's joints on the lesson context where the walk loads the script (e.g. `s.ctx.joints = scriptFor(kit)?.script?.joints
+  ?? null` at lesson start / topic switch), so say.js reads `state.ctx.joints`;
+- askAgain: state.js silentTurn's unheard path plans SH.unheardAgain() (a model shape). With joints present, render one authored
+  askAgain form (freshForm over jointForms(state, "askAgain", lang)) as the move's `rendered` line instead of asking the model.
+- tests: one per kind — a script with joints says an authored form (and {said} carries "sixer maara" into the return); a topic
+  without a script keeps code's set; no form repeats within 4 turns.
+
+--- a/server/brain/say.js	2026-11-10 13:23:27.433336712 +0000
++++ b/server/brain/say.js	2026-11-10 13:23:27.458338025 +0000
+@@ -89,7 +89,8 @@
+   hinglish: [(t) => `Ab tumhari ${t} wali baat: usmein tumhe sabse achha kya lagta hai?`, (t) => `${capT(t)} ke baare mein batao: tumhe usmein sabse mazedaar kya lagta hai?`, (t) => `Chalo, ab ${t} ki baat: usmein tumhara favourite kya hai?`],
+   english: [(t) => `Now your ${t}: what do you like most about it?`, (t) => `Tell me about ${t}: what's the most fun part?`, (t) => `So, ${t}: what's your favourite thing about it?`],
+ };
+-export const returnQuestion = (topic, lang = "hinglish", state = null) => freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim() || (lang === "english" ? "that" : "woh"));
++export const returnQuestion = (topic, lang = "hinglish", state = null, said = null) => jointForms(state, "asideReturn", lang)?.length
++  ? freshForm(jointForms(state, "asideReturn", lang), state, String(topic ?? "").trim(), said ?? topic) : freshForm(RETURN_Q[lang === "english" ? "english" : "hinglish"], state, String(topic ?? "").trim() || (lang === "english" ? "that" : "woh"));
+ /** v6.7 A3: an aside said again, already on the list: one line, no new promise. */
+ const ASIDE_AGAIN = {
+   hinglish: [(t) => `${capT(t)} wali baat maine likh li hai.`, (t) => `Haan, ${t} — woh mujhe yaad hai.`],
+@@ -139,6 +140,20 @@
+ const LANG_ACK = { hindi: ["Theek hai, ab Hindi mein.", "Achha, ab Hindi mein baat karte hain.", "Haan, ab se Hindi mein bolti hoon."], english: ["Okay, in English now.", "Sure, in English.", "English it is."] };
+ // v6.3 R2 (main, director11: "cricket: iski baat …" is the raw template, said lower-case): the topic leads a whole sentence
+ const capT = (t) => { const x = String(t ?? "").trim(); return x.charAt(0).toUpperCase() + x.slice(1); };
++// (Learning D13, dc-r7-script-walk-v6-10: her joints are the topic's own authored forms when its script carries them —
++// `joints` { asidePark, asideReturn, hindiSwitch, askAgain }, three or more { hi, en } forms each; {aside} = the topic the child
++// raised, {said} = their own words (≤ 6 of them). Code's sets below stay as the fallback for a topic without a script.)
++const SAID_MAX_WORDS = 6;
++const shortSaid = (x) => String(x ?? "").replace(/[?!.]+$/g, "").trim().split(/\s+/).filter(Boolean).slice(0, SAID_MAX_WORDS).join(" ");
++export const jointForms = (state, kind, lang = "hinglish") => {
++  const forms = state?.ctx?.joints?.[kind];
++  if (!Array.isArray(forms) || forms.length < 3) return null;
++  const k = lang === "english" ? "en" : "hi";
++  return forms.filter((f) => String(f?.[k] ?? "").trim()).map((f) => (topic, said) => {
++    const t = String(f[k]).replace(/\{aside\}/g, String(topic ?? "").trim()).replace(/\{said\}/g, shortSaid(said ?? topic));
++    return t.charAt(0).toUpperCase() + t.slice(1);
++  });
++};
+ const PARK_ACK = { hinglish: [(t) => `${capT(t)} ki baat hum is sawaal ke baad karenge.`, (t) => `${capT(t)} yaad rahega; yeh sawaal khatam karke uspar aate hain.`, (t) => `${capT(t)} ke baare mein is sawaal ke baad baat karenge, pakka.`],
+   english: [(t) => `We'll talk about ${t} after this question.`, (t) => `I'll remember ${t}; we'll come back to it once this question is done.`, (t) => `${capT(t)}: yes, right after this question.`] };
+ // (v6.9 T1, main on director17 steady 36 in three topics: "is sawaal ke baad" said with no question open — the card answered, its why
+@@ -149,7 +164,14 @@
+ export const parkAckOf = (state, lang = "hinglish") => {
+   const id = state?.activeItemId;
+   const open = !!id && state?.pendingWhy !== id && !(state?.itemsDone ?? []).includes(id) && !(state?.skipped ?? []).includes(id);
+-  return (open || responseShape("aside", "no_card") !== "park_later" ? PARK_ACK : PARK_LATER)[lang === "english" ? "english" : "hinglish"];
++  // (an authored park never promises a question, so it fits an open card and no card alike)
++  return jointForms(state, "asidePark", lang) ?? (open || responseShape("aside", "no_card") !== "park_later" ? PARK_ACK : PARK_LATER)[lang === "english" ? "english" : "hinglish"];
++};
++/** The language-switch line: the topic's authored hindiSwitch (hi on a switch to Hindi, en on a switch to English), else code's. */
++export const langAckOf = (state, lang = "hindi") => {
++  const forms = state?.ctx?.joints?.hindiSwitch;
++  const own = Array.isArray(forms) && forms.length >= 3 ? forms.map((f) => String((lang === "english" ? f?.en : f?.hi) ?? "").trim()).filter(Boolean) : [];
++  return own.length >= 3 ? own : LANG_ACK[lang === "english" ? "english" : "hindi"];
+ };
+ /** v6.4 H2″: the instruction for an aside's return — ONE line answering what they said. */
+ export function returnNoteOf(said, topic, lang = "hinglish", alone = false) {
+@@ -1788,7 +1810,7 @@
+     }
+     // round 7 (director2 c6 steering: "hindi mein batao" got the same line, no word that it was heard): the switch is said
+     if (state.lastMove?.request === "language" && kindNow !== "safeguard" && !/\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(reply)) {
+-      reply = `${pickOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)} ${reply}`.trim(); guard.repaired = true;
++      reply = `${pickOf(langAckOf(state, lang === "english" ? "english" : "hindi"), state)} ${reply}`.trim(); guard.repaired = true;
+     }
+     // (director3: "Riya" in 8-9 of 11 lines) her name opens a line at most once in three turns
+     {
+@@ -2119,7 +2141,7 @@
+       // invented "Virat ke cover drives ka zikr mast hai"): the return is code's, and says nothing that is not in their words — the
+       // honest line to a question about her taste, else one question about their thing. No model call (the retry is gone: v6.6's
+       // +calls per turn)
+-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
++      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state, said0 || null);
+       if (ASKS_TASTE.test(said0)) guard.returnHonest = true;
+       { const k = String(ret.topic ?? "").toLowerCase(); ss = ss.filter((x) => !k || !x.toLowerCase().includes(k)); }
+       if (line) { aside.push(line); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
+@@ -2500,7 +2522,7 @@
+       const filler = (x) => /^(?:zaroor|bilkul|theek\s+hai|thik\s+hai|achha|acha|haan|okay|ok|sure)[\s,!.]*$/i.test(x);
+       while (ss0.length > 1 && filler(ss0[0])) ss0.shift();
+       const named = /\b(?:hindi|english|angrezi)\b|हिंदी|हिन्दी/i.test(ss0[0] ?? "");
+-      const ack = named ? [] : [freshOf(LANG_ACK[lang === "english" ? "english" : "hindi"], state)];
++      const ack = named ? [] : [freshOf(langAckOf(state, lang === "english" ? "english" : "hindi"), state)];
+       const r2 = [...ack, ...ss0].join(" ").replace(/\s+/g, " ").trim();
+       if (r2 !== reply) { reply = r2; guard.langAck = true; }
+     }
+@@ -2570,7 +2592,7 @@
+     if (!clause.sent && ret?.topic && !guard.returnSaid && !guard.returnHeld && !guard.returnMissed) {
+       const said0 = ret.said ?? "";
+       // (v6.7 A3: code's line, as on an assembled turn — the honest line or one question about their thing)
+-      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state);
++      const line = ASKS_TASTE.test(said0) ? honestTasteLine(ret.topic, lang, honestN(state)) : returnQuestion(ret.topic, lang, state, said0 || null);
+       if (line) { if (!String(reply).includes(line)) reply = `${line} ${reply}`.trim(); guard.returnSaid = true; guard.returnLine = line; } else guard.returnMissed = true;
+     }
+   }

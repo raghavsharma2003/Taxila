@@ -1,35 +1,90 @@
-// TURRET — `angle-cannon@1` (STUDIO-V2 §6.1 #7). Angles as turns, under time: the turret turns from the zero arm
-// (anticlockwise); there is no angle readout, so every shot is an estimate of the turn. Threats are cloaked until the
-// shot reveals where the called angle really is. "Copy the turn" shows a reference wedge with arms of a different
-// length and orientation (c5-maths-ch03-t01-m-angle-is-length); "Obtuse only" makes the child classify moving drones
-// by eye; "Past straight" opens the full turn (reflex). The aim angle is the act; the host grades it.
+// LIGHTHOUSE — `angle-cannon@1` (STUDIO-V2 §6.1 #7; the archetype id is historical). Angles as turns, under time: the
+// lighthouse's beam turns from the zero arm (anticlockwise); there is no angle readout, so every light is an estimate of the
+// turn. The boat at the called angle sits in the dark until the light reveals where the called angle really is: on target
+// the boat lights up, off target the beam passes beside it. "Copy the turn" shows a reference wedge with arms of a
+// different length and orientation (c5-maths-ch03-t01-m-angle-is-length); "Obtuse only" makes the child light only the
+// boats coming in on an obtuse bearing, by eye; "Past straight" opens the full turn (reflex). The beam's angle is the act;
+// the host grades it. (Words and picture agree: a beam of light, boats, no projectile, no muzzle, no recoil — judges fail
+// a piece whose words disagree with its picture; 2026-11-11.)
 import { angleKind, type AngleSpec } from "../../../shared/studio-spec.ts";
 import { C, W, H } from "../core/tokens.ts";
-import { clamp, DEG, norm360, rng } from "../core/math.ts";
+import { clamp, DEG, hexA, norm360, rng } from "../core/math.ts";
 import { bloom, magnifier, tick, type Ctx } from "../core/draw.ts";
 import { sfx } from "../core/sfx.ts";
-import { drawCoach, drawIntro, drawStatCard, pill } from "../core/ui.ts";
+import { drawCoach, drawIntro, drawStatCard, pill, wrapLines } from "../core/ui.ts";
 import type { BotAction, EngineApi, EngineDef, EngineInstance, XY } from "../core/types.ts";
+import { dots, tally } from "../core/dots.ts";
+import { withAlpha } from "../../theme/palette.ts";
 
-interface Drone { i: number; ang: number; r: number; v: number; alive: boolean; shot: boolean; t: number }
-interface Shot { ang: number; r: number; hit: boolean; t: number; truth: number | null; off: number }
+/** A boat coming in along its bearing (classify mode). `litT` counts up once the beam has lit it. */
+interface Boat { i: number; ang: number; r: number; v: number; alive: boolean; lit: boolean; litT: number; t: number }
+/** One "light it": the beam flares along the angle it was let go at, then fades. */
+interface Flash { ang: number; r: number; hit: boolean; t: number }
+/** The beam's colour: warm lamplight (the palette's sun token). */
+const LAMP = (): string => C.sun;   // (read at draw time: C follows the theme)
+/** Least gap (world units) between two neighbouring scale labels. */
+const LABEL_GAP = 10;
+/**
+ * The dial's numbers. Both scaffolds tick every 10°; "tens" numbers the right angles (90, 180, 270), "protractor" numbers
+ * the ticks at the finest step of 10°, 30° or 90° whose labels keep a LABEL_GAP between every pair at the label's real size
+ * (`box` measures one: "110" ran into "100" at l1366, 2026-11-11). In a wave that asks for angles (`asked`: call, copy) no
+ * number is drawn at an asked angle — its tick stays, the other numbers stay so the scale is still a scale (rubric v2: a
+ * guide mark that draws the asked tick gives the answer; c5-ch03-t01 printed 90/180/270 at the called 90/180/270).
+ */
+export function scaleLabels(sc: "none" | "tens" | "protractor", range: 180 | 360, asked: readonly number[], box: (a: number) => [number, number, number, number]): number[] {
+  if (sc === "none") return [];
+  const lattice = (step: number) => { const out: number[] = []; for (let a = step; a < range; a += step) out.push(a); return out; };
+  const clear = (as: number[]) => { const bs = as.map(box); return bs.every((p, i) => bs.every((q, j) => j <= i || p[2] + LABEL_GAP <= q[0] || q[2] + LABEL_GAP <= p[0] || p[3] + LABEL_GAP <= q[1] || q[3] + LABEL_GAP <= p[1])); };
+  const steps = sc === "tens" ? [90] : [10, 30, 90];
+  const pick = steps.map(lattice).find(clear) ?? lattice(90);
+  const ask = new Set(asked.map((a) => Math.round(a)));
+  return pick.filter((a) => !ask.has(a));
+}
+
+/** The numbers a wave is ABOUT, which its dial never prints (main 2026-11-11): the angles a call/copy wave asks for, and the
+ *  bounds of the kind a classify wave sorts by (right → 90; acute → 90; obtuse → 90, 180; reflex → 180). Ticks stay. */
+const KIND_BOUNDS: Record<string, number[]> = { acute: [90], right: [90], obtuse: [90, 180], reflex: [180] };
+export function aboutOf(w: { mode: string; items: readonly number[]; kind?: string }): number[] {
+  return w.mode === "classify" ? (KIND_BOUNDS[w.kind ?? ""] ?? []) : [...w.items];
+}
+/** The call card's label as whole-word lines, never cut (judges, regeneration round 2, 2026-11-11: "Naya mod saamne hai"
+ *  was drawn "Naya mod saamne…" at p412 and l1366 — the tracked run at the young floor wrapped one word per line, 4 > 3,
+ *  and the shared helper cut the last). Tracked when that fits in two lines, else untracked; whatever is left wraps
+ *  greedily and every line is drawn. `measure(s, track)` is the run's width at the label size. */
+export function callLines(text: string, maxW: number, measure: (s: string, track: number) => number): { lines: string[]; track: number } {
+  const words = String(text).split(/\s+/).filter(Boolean);
+  const wrap = (track: number): string[] => {
+    const lines: string[] = []; let cur = "";
+    for (const w of words) { const t = cur ? cur + " " + w : w; if (!cur || measure(t, track) <= maxW) cur = t; else { lines.push(cur); cur = w; } }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const tracked = wrap(5);
+  return tracked.length <= 2 ? { lines: tracked, track: 5 } : { lines: wrap(0), track: 0 };
+}
 
 function create(api: EngineApi, spec: AngleSpec): EngineInstance {
   const T = spec.strings;
   const g = { state: "boot" as "boot" | "intro" | "aim" | "reveal" | "end" | "final", w: -1, i: 0, stateT: 0, ang: 30, target: 30, vel: 0, dragging: false, moved: false, callT: 0, limit: 7,
-    drones: [] as Drone[], shots: [] as Shot[], reveal: null as null | { truth: number; aim: number; r: number; hit: boolean; t: number; off: number }, refRot: 0, refLen: [140, 90] as [number, number],
-    hits: 0, n: 0, results: [] as { err: number; verdict: string }[], waveRes: [] as { verdict: string; err: number }[], introA: 0, coachA: 1, coachGone: false, bootT: 0, endA: 0, finalA: 0, spawnT: 0, spawned: 0, sweep: 0 };
+    boats: [] as Boat[], flashes: [] as Flash[], reveal: null as null | { truth: number; aim: number; r: number; hit: boolean; t: number; off: number }, refRot: 0, refLen: [140, 90] as [number, number],
+    hits: 0, n: 0, results: [] as { err: number; verdict: string }[], waveRes: [] as { verdict: string; err: number }[], introA: 0, coachA: 1, coachGone: false, bootT: 0, endA: 0, finalA: 0, spawnT: 0, spawned: 0, pill: false, coachTop: 576 };
   const botRnd = rng(api.seed * 19 + 7);
   const wave = () => spec.waves[Math.max(0, g.w)];
-  const pivot = (): XY => (wave().range === 360 ? [500, 360] : [500, 548]);
-  const R = () => (wave().range === 360 ? 230 : 380);
+  // the full turn fits between the HUD row and a two-line coach band (its 90 and 270 labels whole and clear of both)
+  // (the half turn's pivot rises when the coach wraps to two lines — a young child's 43-unit floor — so the lighthouse's tower
+  // stands clear above the coach: g.coachTop is measured at the first frame, 576 for a one-line coach)
+  const pivot = (): XY => (wave().range === 360 ? [500, 300] : [500, clamp(g.coachTop - 52, 460, 500)]);
+  // (the half turn's radius gives way to the host's task pill where it sits over the world, so the protractor's top labels
+  // stay clear of it: at l1366 "60 … 120" lay under "COPY THIS TURN" — layout probe, 2026-11-11)
+  // (floor 250, not 290: under a two-line young task pill the 90 label still clears it — layout probe, l1366 young)
+  const R = () => (wave().range === 360 ? 170 : clamp(pivot()[1] - 53 - api.chromeBottom(), 250, 360));
   const hud = api.hud([{ key: "wave", label: T.wave }, { key: "hits", label: T.hits }, { key: "acc", label: T.accuracy, meter: true }]);
   const accOf = (r: { err: number }[]) => (r.length ? Math.round(100 * (r.reduce((a, b) => a + (1 - Math.min(1, b.err / 30)), 0) / r.length)) : 100);
   const at = (ang: number, r: number): XY => { const [px, py] = pivot(); return [px + Math.cos(ang * DEG) * r, py - Math.sin(ang * DEG) * r]; };
   const angOf = (x: number, y: number) => { const [px, py] = pivot(); let a = Math.atan2(py - y, x - px) / DEG; if (wave().range === 180) a = clamp(a < -90 ? 180 : a, 0, 180); else a = norm360(a); return a; };
   const key = () => wave().items[g.i];
   function startWave(k: number) {
-    g.w = k; g.i = 0; g.state = "intro"; g.stateT = 0; g.introA = 0; g.waveRes = []; g.drones = []; g.spawned = 0; g.spawnT = 0;
+    g.w = k; g.i = 0; g.state = "intro"; g.stateT = 0; g.introA = 0; g.waveRes = []; g.boats = []; g.spawned = 0; g.spawnT = 0;
     g.ang = g.target = wave().range === 360 ? 0 : 20;
     api.tw.add(g, { introA: 1 }, { dur: 0.45 });
     sfx.blip({ f: 220, f2: 440, dur: 0.35, type: "triangle", gain: 0.12 });
@@ -40,29 +95,31 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     g.refRot = (api.rnd() - 0.5) * 200; g.refLen = api.rnd() < 0.5 ? [170, 110] : [70, 46];
     if (wave().mode === "copy") api.task(`${T.wave} ${g.w + 1}`, T.copy);
     else if (wave().mode === "classify") api.task(`${T.wave} ${g.w + 1}`, `${T.only} ${T[wave().kind ?? "obtuse"]}`);
-    // call mode: the big call card on the stage is the cue; no duplicate pill
+    // call mode: the big call card on the stage is the cue; no duplicate pill — unless an earlier wave left one up (the host
+    // keeps the last pill: "LIGHT ONLY OBTUSE" stayed over the full-turn calls), then it says the call too
+    else if (g.pill) api.task(`${T.wave} ${g.w + 1}`, `${T.threat} ${key()}°`);
+    if (wave().mode !== "call") g.pill = true;
   }
   api.onPointer({
     down(p) { if (g.state !== "aim") return; if (!g.coachGone) { g.coachGone = true; api.tw.add(g, { coachA: 0 }, { dur: 0.35 }); } g.dragging = true; g.moved = false; g.target = angOf(p.x, p.y); },
     move(p) { if (!g.dragging) return; g.moved = true; g.target = angOf(p.x, p.y); },
-    up() { if (!g.dragging) return; g.dragging = false; fire(); },
+    up() { if (!g.dragging) return; g.dragging = false; lightIt(); },
   });
-  function fire() {
+  function lightIt() {
     if (g.state !== "aim") return;
     g.ang = g.target;
-    sfx.noise({ dur: 0.14, f: 1800, filter: "bandpass", gain: 0.25 }); sfx.blip({ f: 140, f2: 70, dur: 0.18, gain: 0.25 });
-    api.fx.shake(3, 0.14);
-    const [mx, my] = at(g.ang, 70); api.fx.burst(mx, my, { n: 10, color: C.ink, speed: 300, life: 0.3, size: 6, angle: -g.ang * DEG, spread: 0.5 });
+    sfx.blip({ f: 740, f2: 1110, dur: 0.16, type: "sine", gain: 0.12 });   // the lamp brightening: a soft rising chime
     if (wave().mode === "classify") {
-      // a hit on a drone within 8° along its ray; a miss hits nothing
-      const d = g.drones.filter((x) => x.alive).sort((a, b) => Math.abs(norm360(a.ang - g.ang + 180) - 180) - Math.abs(norm360(b.ang - g.ang + 180) - 180))[0];
-      g.shots.push({ ang: g.ang, r: R() + 60, hit: false, t: 0, truth: null, off: 0 });
+      // the beam lights a boat within 8° of its bearing; off every bearing it lights only the sea
+      const d = g.boats.filter((x) => x.alive).sort((a, b) => Math.abs(norm360(a.ang - g.ang + 180) - 180) - Math.abs(norm360(b.ang - g.ang + 180) - 180))[0];
+      g.flashes.push({ ang: g.ang, r: R() + 60, hit: false, t: 0 });
       if (d && Math.abs(norm360(d.ang - g.ang + 180) - 180) <= 8) {
-        d.alive = false; d.shot = true;
+        d.alive = false; d.lit = true; d.litT = 0;
+        // (`fired` is the graded act's field name: the child chose to light this boat)
         const ok = angleKind(d.ang) === wave().kind, grade = api.answer(`w${g.w + 1}:${d.i}`, { fired: true }, ok ? "right" : "wrong");
         const [x, y] = at(d.ang, d.r);
-        if (grade.verdict === "right") { g.hits++; api.fx.burst(x, y, { n: 30, color: C.mint, speed: 420, life: 0.6, size: 10 }); api.fx.ring(x, y, { color: C.mint, r0: 8, r1: 80, life: 0.5, width: 6 }); api.fx.pop(T.hit, x, y - 50, { color: C.mint, size: 42 }); sfx.blip({ f: 660, f2: 1320, dur: 0.18, type: "triangle", gain: 0.18 }); api.hitstop(50); }
-        else { api.fx.burst(x, y, { n: 14, color: C.amber, speed: 260, life: 0.7, size: 10, shard: true }); api.fx.pop(`${Math.round(d.ang)}° · ${angleKind(d.ang)}`, x, y - 50, { color: C.amber, size: 40, life: 1.4 }); sfx.blip({ f: 200, f2: 110, dur: 0.2, gain: 0.2 }); }
+        if (grade.verdict === "right") { g.hits++; api.fx.ring(x, y, { color: C.mint, r0: 8, r1: 80, life: 0.5, width: 6 }); api.fx.pop(T.hit, x, y - 50, { color: C.mint, size: 42 }); sfx.blip({ f: 660, f2: 1320, dur: 0.18, type: "triangle", gain: 0.18 }); api.hitstop(50); }
+        else { api.fx.ring(x, y, { color: C.amber, r0: 8, r1: 64, life: 0.5, width: 5 }); api.fx.pop(`${Math.round(d.ang)}° · ${angleKind(d.ang)}`, x, y - 50, { color: C.amber, size: 40, life: 1.4 }); sfx.blip({ f: 330, f2: 247, dur: 0.22, type: "sine", gain: 0.14 }); }
         g.results.push({ err: grade.verdict === "right" ? 0 : 30, verdict: grade.verdict }); g.waveRes.push({ err: grade.verdict === "right" ? 0 : 30, verdict: grade.verdict }); g.n++;
       }
       return;
@@ -72,25 +129,27 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     const grade = api.answer(`w${g.w + 1}:${g.i}`, +g.ang.toFixed(1), local);
     const hit = grade.verdict === "right", r = R() * (0.7 + api.rnd() * 0.25);
     g.reveal = { truth, aim: g.ang, r, hit, t: 0, off: Math.round(err) };
-    g.shots.push({ ang: g.ang, r: R() + 80, hit, t: 0, truth, off: err });
+    g.flashes.push({ ang: g.ang, r: R() + 80, hit, t: 0 });
     g.results.push({ err, verdict: grade.verdict }); g.waveRes.push({ err, verdict: grade.verdict }); g.n++;
     g.state = "reveal"; g.stateT = 0;
     const [tx, ty] = at(truth, r);
-    if (hit) { g.hits++; setTimeout(() => { api.fx.burst(tx, ty, { n: 34, color: C.mint, speed: 480, life: 0.7, size: 11 }); api.fx.ring(tx, ty, { color: C.mint, r0: 10, r1: 110, life: 0.6, width: 7 }); api.fx.flash(C.mint, 0.1); api.fx.shake(5, 0.2); sfx.blip({ f: 523, f2: 1046, dur: 0.2, type: "triangle", gain: 0.2 }); }, 180); api.fx.pop(T.hit, tx, ty - 60, { color: C.mint, size: 46 }); }
-    else { sfx.blip({ f: 230, f2: 120, dur: 0.24, gain: 0.2 }); if (grade.detail?.includes("wrong-scale")) api.event("misconception_sign", { id: grade.detail }); }
+    // on target the boat lights up (a glow pulse once the beam reaches it); off target the beam passes beside it
+    if (hit) { g.hits++; setTimeout(() => { api.fx.ring(tx, ty, { color: C.mint, r0: 10, r1: 110, life: 0.6, width: 7 }); api.fx.flash(C.mint, 0.1); sfx.blip({ f: 523, f2: 1046, dur: 0.2, type: "triangle", gain: 0.2 }); }, 180); api.fx.pop(T.hit, wave().range === 360 ? 150 : tx, wave().range === 360 ? 330 : ty - 60, { color: C.mint, size: 46 }); }   // (the full turn's ring is small: its pop goes to the open left column, not over the zero arm)
+    else { sfx.blip({ f: 330, f2: 220, dur: 0.24, type: "sine", gain: 0.16 }); if (grade.detail?.includes("wrong-scale")) api.event("misconception_sign", { id: grade.detail }); }
     api.facts({ wave: g.w + 1, call: truth, aimed: Math.round(g.ang), verdict: grade.verdict, accuracy: accOf(g.results) });
   }
   function update(dt: number) {
-    g.stateT += dt; g.sweep += dt * 1.6;
+    g.stateT += dt;
     const k = 140, c = 2 * Math.sqrt(k); let d = norm360(g.target - g.ang + 180) - 180; if (wave().range === 180) d = g.target - g.ang;
     g.vel += (k * d - c * g.vel) * dt; g.ang += g.vel * dt; if (wave().range === 180) g.ang = clamp(g.ang, 0, 180); else g.ang = norm360(g.ang);
-    for (const s of g.shots) s.t += dt;
-    g.shots = g.shots.filter((s) => s.t < 1.2);
+    for (const s of g.flashes) s.t += dt;
+    g.flashes = g.flashes.filter((s) => s.t < 1.2);
+    for (const b of g.boats) if (b.lit) b.litT += dt;
     if (g.state === "boot") { g.bootT += dt; if (g.bootT > 0.45) { hud.show(true); startWave(0); } return; }
     if (g.state === "intro" && g.stateT > 1.8) { api.tw.add(g, { introA: 0 }, { dur: 0.35, ease: "inCubic" }); nextCall(); }
     if (g.state === "aim" && wave().mode !== "classify") {
       g.callT += dt;
-      if (g.callT > g.limit) {      // the threat slips through: graded as no shot
+      if (g.callT > g.limit) {      // time runs out with no light: graded as no answer
         const grade = api.answer(`w${g.w + 1}:${g.i}`, null, "wrong");
         g.reveal = { truth: key(), aim: g.ang, r: R() * 0.8, hit: false, t: 0, off: -1 }; g.results.push({ err: 30, verdict: grade.verdict }); g.waveRes.push({ err: 30, verdict: grade.verdict }); g.n++;
         g.state = "reveal"; g.stateT = 0; sfx.blip({ f: 300, f2: 150, dur: 0.3, gain: 0.14 });
@@ -98,99 +157,189 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     }
     if (g.state === "aim" && wave().mode === "classify") {
       g.spawnT -= dt;
-      if (g.spawned < wave().items.length && g.spawnT <= 0) { g.drones.push({ i: g.spawned, ang: wave().items[g.spawned], r: R() + 40, v: 46 * wave().speed, alive: true, shot: false, t: 0 }); g.spawned++; g.spawnT = 2.1 / wave().speed; }
-      for (const dr of g.drones) {
+      if (g.spawned < wave().items.length && g.spawnT <= 0) { g.boats.push({ i: g.spawned, ang: wave().items[g.spawned], r: R() + 40, v: 46 * wave().speed, alive: true, lit: false, litT: 0, t: 0 }); g.spawned++; g.spawnT = 2.1 / wave().speed; }
+      for (const dr of g.boats) {
         if (!dr.alive) continue;
         dr.t += dt; dr.r -= dr.v * dt;
         if (dr.r < 70) { dr.alive = false; const ok = angleKind(dr.ang) !== wave().kind, grade = api.answer(`w${g.w + 1}:${dr.i}`, { fired: false }, ok ? "right" : "wrong"); g.results.push({ err: grade.verdict === "right" ? 0 : 30, verdict: grade.verdict }); g.waveRes.push({ err: grade.verdict === "right" ? 0 : 30, verdict: grade.verdict }); g.n++; if (!ok) { const [x, y] = at(dr.ang, 90); api.fx.pop(`${Math.round(dr.ang)}° slipped by`, x, y - 30, { color: C.amber, size: 38, life: 1.2 }); } }
       }
-      if (g.spawned >= wave().items.length && g.drones.every((x) => !x.alive)) endWave();
+      if (g.spawned >= wave().items.length && g.boats.every((x) => !x.alive)) endWave();
     }
     if (g.reveal) g.reveal.t += dt;
     if (g.state === "reveal" && g.stateT > (g.reveal?.hit ? 1.3 : 2.1)) { g.i++; if (g.i < wave().items.length) nextCall(); else endWave(); }
     if (g.state === "end" && g.stateT > 3.1) { if (g.w + 1 < spec.waves.length) startWave(g.w + 1); else { g.state = "final"; g.finalA = 0; api.tw.add(g, { finalA: 1 }, { dur: 0.6 }); api.task("", T.runDone, "done"); api.done({ hits: g.hits, shots: g.n, accuracy: accOf(g.results) }); } }
     if (g.w >= 0 && g.state !== "final") {
-      hud.set("wave", `${g.w + 1}/${spec.waves.length}`); hud.set("hits", `${g.hits}/${g.n}`, { bump: true });
+      hud.set("wave", `${dots(g.w, spec.waves.length)}`); hud.set("hits", tally(g.waveRes.filter((x) => x.verdict === "right").length, wave().items.length), { bump: true });   // the wave in play, "0/4" from its intro on
       const a = g.results.length ? accOf(g.results) : null; hud.set("acc", a == null ? "—" : `${a}%`, { meter: a == null ? 0 : a / 100, tone: a != null && a >= 85 ? "mint" : null });
     }
   }
   function endWave() { if (g.state === "end") return; g.state = "end"; g.stateT = 0; g.endA = 0; api.tw.add(g, { endA: 1 }, { dur: 0.45 }); api.tw.add(g, { endA: 0 }, { dur: 0.35, delay: 2.5 }); api.event("wave_end", { wave: g.w + 1, accuracy: accOf(g.waveRes) }); }
-  function paintBg(c: Ctx) {
-    const gr = c.createRadialGradient(500, 520, 40, 500, 420, 760); gr.addColorStop(0, "#14182A"); gr.addColorStop(1, "#07080D");
+  /** Night sky over a dark sea. The half turn's zero arm is the shoreline (the sea below it); the full turn's lighthouse
+   *  stands on a rock in open water (the sea all round). */
+  function paintBg(c: Ctx, full: boolean, shore: number) {
+    const gr = c.createRadialGradient(500, full ? 300 : 520, 40, 500, 420, 760); gr.addColorStop(0, full ? C.angleSkyOpen : C.angleSky); gr.addColorStop(1, C.angleSkyEdge);
     c.fillStyle = gr; c.fillRect(0, 0, W, H);
-    const r2 = rng(3); for (let i = 0; i < 120; i++) { c.globalAlpha = 0.2 + r2() * 0.5; c.fillStyle = "#C9D2F2"; c.fillRect(r2() * W, r2() * H * 0.8, 1.5, 1.5); }
-    c.globalAlpha = 1;
+    const r2 = rng(3);
+    if (!full) {
+      for (let i = 0; i < 120; i++) { c.globalAlpha = 0.2 + r2() * 0.5; c.fillStyle = C.angleStar; c.fillRect(r2() * W, r2() * (shore - 30), 1.5, 1.5); }
+      c.globalAlpha = 1; const sea = c.createLinearGradient(0, shore, 0, H); sea.addColorStop(0, C.angleSeaTop); sea.addColorStop(1, C.angleSeaBottom);
+      c.fillStyle = sea; c.fillRect(0, shore, W, H - shore);
+    }
+    // wave glints
+    c.strokeStyle = withAlpha(C.ion, .16); c.lineWidth = 2; c.lineCap = "round";
+    for (let i = 0; i < (full ? 46 : 18); i++) { const x = r2() * W, y = full ? r2() * H : shore + 20 + r2() * (H - shore - 30), w = 14 + r2() * 26; c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + w / 2, y - 5, x + w, y); c.stroke(); }
+  }
+  /** A small boat (hull, mast, sail) centred on (x, y): dark at sea, lamp-lit once the beam finds it. */
+  function boat(ctx: Ctx, x: number, y: number, edge: string, lit: number) {
+    ctx.save(); ctx.lineJoin = "round"; ctx.lineCap = "round";
+    if (lit > 0) bloom(ctx, LAMP(), x, y, 64, 0.55 * lit);
+    ctx.fillStyle = C.angleTower; ctx.strokeStyle = edge; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.moveTo(x - 28, y + 4); ctx.lineTo(x + 28, y + 4); ctx.lineTo(x + 18, y + 17); ctx.lineTo(x - 18, y + 17); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x - 2, y + 4); ctx.lineTo(x - 2, y - 26); ctx.stroke();
+    ctx.fillStyle = lit > 0 ? hexA(LAMP(), 0.35 + 0.6 * lit) : C.angleLampOff;
+    ctx.beginPath(); ctx.moveTo(x + 2, y - 24); ctx.lineTo(x + 22, y); ctx.lineTo(x + 2, y); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.restore();
+  }
+  /** A wedge of light from the lamp along `ang` (half-width `half`°), fading out along its length. */
+  function beam(ctx: Ctx, ang: number, len: number, half: number, a: number) {
+    if (a <= 0.01) return;
+    const [px, py] = pivot(), [ex, ey] = at(ang, len);
+    const gr = ctx.createLinearGradient(px, py, ex, ey); gr.addColorStop(0, hexA(LAMP(), 0.5 * a)); gr.addColorStop(0.7, hexA(LAMP(), 0.16 * a)); gr.addColorStop(1, hexA(LAMP(), 0));
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(px, py); ctx.arc(px, py, len, -(ang + half) * DEG, -(ang - half) * DEG); ctx.closePath(); ctx.fill();
+  }
+  /** The top of the coach block (one line, or two at the young floor; drawCoach grows it upward from y 606). */
+  function coachTopOf(ctx: Ctx): number {
+    const o = { font: "mono" as const, size: 38, weight: 500 }, size = Math.max(38, api.minLabel), n = Math.max(1, wrapLines(api, ctx, T.coach, 960, o).slice(0, 3).length);
+    return 606 - (n - 1) * size * 1.15 - size * 0.8;
+  }
+  /** The lighthouse: a striped tower under the pivot, its lamp room AT the pivot (the angle's vertex: the beam turns about it). */
+  function lighthouse(ctx: Ctx, px: number, py: number, full: boolean, hot: boolean) {
+    const hgt = full ? 52 : clamp(g.coachTop - 8 - py, 24, 70), t = 15, b = t + (full ? 9 : 13) * (hgt - 16) / 54;
+    ctx.save(); ctx.lineJoin = "round";
+    if (full) { ctx.fillStyle = C.angleShipShadow; ctx.beginPath(); ctx.ellipse(px, py + hgt + 6, 46, 13, 0, 0, Math.PI * 2); ctx.fill(); }
+    // tower (tapered), warm bands (one on a short tower)
+    ctx.fillStyle = C.angleHull; ctx.beginPath(); ctx.moveTo(px - t, py + 16); ctx.lineTo(px + t, py + 16); ctx.lineTo(px + b, py + hgt); ctx.lineTo(px - b, py + hgt); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = hexA(C.amber, 0.85);
+    for (const f of hgt > 40 ? [0.38, 0.72] : [0.45]) { const y0 = py + 16 + (hgt - 16) * f, y1 = y0 + (hgt - 16) * 0.16, w0 = t + (b - t) * f, w1 = t + (b - t) * (f + 0.16); ctx.beginPath(); ctx.moveTo(px - w0, y0); ctx.lineTo(px + w0, y0); ctx.lineTo(px + w1, y1); ctx.lineTo(px - w1, y1); ctx.closePath(); ctx.fill(); }
+    // gallery rail and the lamp room (glazed, lit), its roof
+    ctx.fillStyle = C.angleDeck; ctx.fillRect(px - 21, py + 12, 42, 6);
+    bloom(ctx, LAMP(), px, py, hot ? 84 : 72, hot ? 0.7 : 0.55);
+    ctx.fillStyle = hexA(LAMP(), 0.95); ctx.beginPath(); ctx.roundRect(px - 12, py - 12, 24, 24, 5); ctx.fill();
+    ctx.strokeStyle = hot ? C.volt : C.angleDeck; ctx.lineWidth = 3; ctx.stroke();
+    ctx.fillStyle = C.angleDeck; ctx.beginPath(); ctx.moveTo(px - 15, py - 12); ctx.lineTo(px, py - 26); ctx.lineTo(px + 15, py - 12); ctx.closePath(); ctx.fill();
+    ctx.restore();
   }
   function render(ctx: Ctx, now: number) {
-    ctx.drawImage(api.layer("bg", paintBg), 0, 0, W, H);
+    g.coachTop = coachTopOf(ctx);
+    const full0 = g.w >= 0 && wave().range === 360;
+    const shore = g.w >= 0 ? pivot()[1] : 500;
+    ctx.drawImage(api.layer(full0 ? "bg360" : `bg180-${Math.round(shore)}`, (c) => paintBg(c, full0, shore)), 0, 0, W, H);
     const fx = api.fx; ctx.save(); ctx.translate(fx.ox, fx.oy);
     if (g.w >= 0) {
       const [px, py] = pivot(), r = R(), full = wave().range === 360;
-      ctx.strokeStyle = "rgba(139,152,255,.14)"; ctx.lineWidth = 2;
+      ctx.strokeStyle = withAlpha(C.ion, .14); ctx.lineWidth = 2;
       for (const rr of [r * 0.4, r * 0.7, r]) { ctx.beginPath(); if (full) ctx.arc(px, py, rr, 0, Math.PI * 2); else ctx.arc(px, py, rr, Math.PI, 0); ctx.stroke(); }
-      // radar sweep
-      if (!api.reducedMotion && g.state !== "end") { const sa = full ? g.sweep % (Math.PI * 2) : Math.PI * (0.5 + 0.5 * Math.sin(g.sweep * 0.6)); const grd = ctx.createLinearGradient(px, py, px + Math.cos(sa) * r, py - Math.sin(sa) * r); grd.addColorStop(0, "rgba(139,152,255,0)"); grd.addColorStop(1, "rgba(139,152,255,.35)"); ctx.strokeStyle = grd; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.cos(sa) * r, py - Math.sin(sa) * r); ctx.stroke(); }
       // zero arm (the base ray)
       ctx.strokeStyle = C.ink; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + r + 20, py); ctx.stroke();
       api.text(ctx, "0°", px + r + 34, py + 14, { font: "mono", size: 38, weight: 600, color: C.ink2 });
-      if (!full) { ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 3; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - r - 20, py); ctx.stroke(); ctx.setLineDash([]); }
+      if (!full) { ctx.strokeStyle = withAlpha(C.hi, .25); ctx.lineWidth = 3; ctx.setLineDash([6, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px - r - 20, py); ctx.stroke(); ctx.setLineDash([]); }
       const sc = wave().scaffold;
+      /** boxes the reveal's label must not cover: the protractor's labels, "0°", the lighthouse, the reference card */
+      const keepOut: [number, number, number, number][] = [[px + r + 30, py - 22, px + r + 90, py + 22], [px - 34, py - 30, px + 34, py + 72]];
+      // the copy wave's reference card (the full turn's box stays left of its 180 label; the half turn's box sits on the side
+      // the called angle is NOT on, so the boat and its label at the reveal never land on it)
+      const copyOn = wave().mode === "copy" && (g.state === "aim" || g.state === "reveal");
+      const cc = { x: full ? 132 : key() > 90 ? 825 : 175, y: full ? 420 : 330, w: full ? 236 : 280 };
+      const ccBox: [number, number, number, number] = [cc.x - cc.w / 2, cc.y - 150, cc.x + cc.w / 2, cc.y + 120];
       if (sc !== "none") {
-        ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 3;
-        for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); if (sc === "protractor" || big) { const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", baseline: "middle" }); } }
+        ctx.strokeStyle = withAlpha(C.hi, .35); ctx.lineWidth = 3;
+        for (let a = 10; a < (full ? 360 : 180); a += 10) { const big = a % 90 === 0, [x0, y0] = at(a, r - (big ? 26 : 14)), [x1, y1] = at(a, r); ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+        const lo = { font: "mono" as const, size: 38, weight: 600 }, hh = Math.max(38, api.minLabel) * 0.5;
+        const box = (a: number): [number, number, number, number] => { const [lx, ly] = at(a, r + 30), hw = api.measure(ctx, `${a}`, lo) / 2; return [lx - hw, ly - hh, lx + hw, ly + hh]; };
+        // (a number the reference card would cover is not printed while the card is up — its tick stays; the card sat on
+        // "120" and "150" of a labelled copy wave: layout probe, c5-ch03-t01, 2026-11-11)
+        const under = (b: [number, number, number, number]) => copyOn && b[0] < ccBox[2] + 6 && b[2] > ccBox[0] - 6 && b[1] < ccBox[3] + 6 && b[3] > ccBox[1] - 6;
+        for (const a of scaleLabels(sc, full ? 360 : 180, aboutOf(wave()), box)) {
+          if (under(box(a))) continue;
+          const [lx, ly] = at(a, r + 30); api.text(ctx, `${a}`, lx, ly, { ...lo, color: C.ink3, align: "center", baseline: "middle" }); keepOut.push([lx - 40, ly - 22, lx + 40, ly + 22]);
+        }
       }
       // reference wedge for copy mode
-      if (wave().mode === "copy" && (g.state === "aim" || g.state === "reveal")) {
-        const cx = full ? 160 : 175, cy = full ? 470 : 330, a0 = g.refRot * DEG, a1 = a0 + key() * DEG;
-        ctx.save(); ctx.fillStyle = "rgba(16,19,27,.85)"; ctx.beginPath(); ctx.roundRect(cx - 140, cy - 150, 280, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
+      if (copyOn) {
+        const cx = cc.x, cy = cc.y, a0 = g.refRot * DEG, a1 = a0 + key() * DEG, bw = cc.w;
+        keepOut.push(ccBox);
+        ctx.save(); ctx.fillStyle = withAlpha(C.bg1, .85); ctx.beginPath(); ctx.roundRect(cx - bw / 2, cy - 150, bw, 270, 20); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 2; ctx.stroke();
         ctx.strokeStyle = C.ion; ctx.lineWidth = 6; ctx.lineCap = "round";
         ctx.beginPath(); ctx.moveTo(cx + Math.cos(a0) * g.refLen[0], cy - Math.sin(a0) * g.refLen[0]); ctx.lineTo(cx, cy); ctx.lineTo(cx + Math.cos(a1) * g.refLen[1], cy - Math.sin(a1) * g.refLen[1]); ctx.stroke();
-        ctx.strokeStyle = "rgba(139,152,255,.7)"; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, 30, -a0, -a1, true); ctx.stroke();
-        api.text(ctx, "THIS TURN", cx, cy + 96, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center" });
+        ctx.strokeStyle = withAlpha(C.ion, .7); ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(cx, cy, 30, -a0, -a1, true); ctx.stroke();
+        api.text(ctx, "THIS TURN", cx, cy + 96, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", maxWidth: bw - 20 });
         ctx.restore();
       }
-      // drones (classify)
-      for (const d of g.drones) { if (!d.alive) continue; const [x, y] = at(d.ang, d.r); ctx.save(); ctx.globalAlpha = Math.min(1, d.t * 3); ctx.strokeStyle = "rgba(255,255,255,.14)"; ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); bloom(ctx, C.ion, x, y, 60, 0.4); ctx.fillStyle = "#1A2036"; ctx.beginPath(); ctx.moveTo(x, y - 22); ctx.lineTo(x + 26, y + 14); ctx.lineTo(x - 26, y + 14); ctx.closePath(); ctx.fill(); ctx.strokeStyle = C.ion; ctx.lineWidth = 4; ctx.stroke(); ctx.restore(); }
-      // reveal: truth ray vs aim ray, the arc between, the decloaked threat
+      // the lighthouse, its beam along the arm the child turns, and the flare of each "light it" (under the boats and the
+      // reveal's labels: the light passes behind them)
+      lighthouse(ctx, px, py, full, g.dragging);
+      for (const f of g.flashes) { const k = 1 - f.t / 1.2; beam(ctx, f.ang, 40 + (f.r - 40) * Math.min(1, f.t / 0.15), 6, k); }
+      beam(ctx, g.ang, r + 10, 4, g.state === "aim" ? 0.9 : 0.6);
+      { const [x0, y0] = at(g.ang, 18), [x1, y1] = at(g.ang, r + 10); ctx.save(); ctx.strokeStyle = g.dragging ? C.volt : hexA(LAMP(), 0.95); ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); ctx.restore(); }
+      // boats coming in along their bearings (classify); a lit boat glows for a moment, then sails off
+      for (const d of g.boats) {
+        if (!d.alive && !(d.lit && d.litT < 1)) continue;
+        const [x, y] = at(d.ang, d.r), good = angleKind(d.ang) === wave().kind;
+        ctx.save(); ctx.globalAlpha = d.lit ? 1 - d.litT : Math.min(1, d.t * 3);
+        if (!d.lit) { ctx.strokeStyle = withAlpha(C.hi, .14); ctx.lineWidth = 2; ctx.setLineDash([4, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(x, y); ctx.stroke(); ctx.setLineDash([]); }
+        boat(ctx, x, y, d.lit ? (good ? C.mint : C.amber) : C.ion, d.lit ? 1 : 0);
+        ctx.restore();
+      }
+      // reveal: the called bearing (dashed) vs where the beam went, the arc between, the boat that was waiting there
       if (g.reveal) {
         const rv = g.reveal, k = Math.min(1, rv.t / 0.25), [tx, ty] = at(rv.truth, rv.r);
         ctx.save(); ctx.globalAlpha = k;
         ctx.strokeStyle = rv.hit ? C.mint : C.ion; ctx.lineWidth = 5; ctx.setLineDash([12, 10]); ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(tx, ty); ctx.stroke(); ctx.setLineDash([]);
-        if (!rv.hit) { ctx.strokeStyle = C.amber; ctx.lineWidth = 6; ctx.beginPath(); const lo = Math.min(rv.truth, rv.aim), hi = Math.max(rv.truth, rv.aim); ctx.arc(px, py, 110, -hi * DEG, -lo * DEG); ctx.stroke(); const [mx, my] = at((rv.truth + rv.aim) / 2, 160); if (rv.off >= 0) pill(api, ctx, `${T.offBy} ${rv.off}°`, clamp(mx, 210, 790), clamp(my, 190, 600), { color: C.amber }); magnifier(ctx, tx + 40, ty - 30); }
+        if (!rv.hit) { ctx.strokeStyle = C.amber; ctx.lineWidth = 6; ctx.beginPath(); const lo = Math.min(rv.truth, rv.aim), hi = Math.max(rv.truth, rv.aim); ctx.arc(px, py, 110, -hi * DEG, -lo * DEG); ctx.stroke(); magnifier(ctx, tx + 44, ty - 34); }
         else tick(ctx, tx + 44, ty - 34);
-        bloom(ctx, rv.hit ? C.mint : C.ion, tx, ty, 70, 0.5); ctx.fillStyle = "#1A2036"; ctx.beginPath(); ctx.moveTo(tx, ty - 24); ctx.lineTo(tx + 28, ty + 16); ctx.lineTo(tx - 28, ty + 16); ctx.closePath(); ctx.fill(); ctx.strokeStyle = rv.hit ? C.mint : C.ion; ctx.lineWidth = 4; ctx.stroke();
-        pill(api, ctx, `${rv.truth}°`, clamp(tx, 220, 780), clamp(ty + 56, 200, 600), { color: rv.hit ? C.mint : C.ion });
+        boat(ctx, tx, ty, rv.hit ? C.mint : C.ion, rv.hit ? Math.min(1, Math.max(0, (rv.t - 0.12) / 0.2)) : 0);
+        // one label under the boat: the called angle, and by how much the beam missed it (two pills collided on the full turn)
+        // (placed where it covers no protractor label, the lighthouse or the reference card: under the boat, else above it,
+        // else on the lamp's side of it — layout probe, 2026-11-11: "270°" sat on the 270 label, "45° · off by 5°" on 20 and 30)
+        const lab = !rv.hit && rv.off >= 0 ? `${rv.truth}° · ${T.offBy} ${rv.off}°` : `${rv.truth}°`, lw = api.measure(ctx, lab, { font: "mono", size: 40, weight: 600 }) / 2 + 26;
+        const [ix, iy] = at(rv.truth, Math.max(70, rv.r - 96));
+        // (then inside the half turn, nudged away from the reference card: "45° · off by 5°" found no free spot and fell back
+        // onto the 30 label — layout probe, c5-ch03-t01, 2026-11-11)
+        const away = copyOn && !full ? (cc.x < px ? 1 : -1) : 0;
+        const spots: XY[] = [[tx, ty + 56], [tx, ty - 78], [ix, iy], ...(full ? [] : [100, 72, 140, 170].flatMap((dy) => [0, 70, 140].map((dx) => [px + away * dx, py - dy] as XY))), [tx + lw + 40, ty], [tx - lw - 40, ty]].map(([x, y]) => [clamp(x, lw, W - lw), clamp(y, 200, 590)] as XY);
+        const hits = ([x, y]: XY) => keepOut.some((b) => x - lw < b[2] && x + lw > b[0] && y - 31 < b[3] && y + 31 > b[1]);
+        const [sx, sy] = spots.find((p) => !hits(p)) ?? spots[0];
+        pill(api, ctx, lab, sx, sy, { color: rv.hit ? C.mint : !rv.hit && rv.off >= 0 ? C.amber : C.ion });
         ctx.restore();
       }
-      for (const s of g.shots) { const k = Math.min(1, s.t / 0.22), [x0, y0] = at(s.ang, 70), [x1, y1] = at(s.ang, 70 + (s.r - 70) * k); ctx.save(); ctx.globalAlpha = 1 - s.t / 1.2; ctx.strokeStyle = C.ink; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); bloom(ctx, "#FFE8B0", x1, y1, 30, 0.8); ctx.restore(); }
-      // turret
-      const [bx, by] = at(g.ang, 92);
-      ctx.save(); bloom(ctx, g.dragging ? C.volt : C.ion, px, py, 90, 0.3);
-      ctx.strokeStyle = g.dragging ? C.volt : C.ink; ctx.lineWidth = 16; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(bx, by); ctx.stroke();
-      ctx.fillStyle = "#1F2536"; ctx.beginPath(); ctx.arc(px, py, 38, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = C.line2; ctx.lineWidth = 3; ctx.stroke();
-      ctx.restore();
       // call card + countdown
       if (g.state === "aim" && wave().mode === "call") {
-        api.text(ctx, T.threat, 500, full ? 116 : 150, { font: "mono", size: 38, weight: 600, color: C.ink3, align: "center", track: 5 });
-        api.text(ctx, `${key()}°`, 500, full ? 172 : 220, { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
+        // the call card sits clear of the 90 label: the full turn's left column; inside the half turn's arc, under its top
+        // (the full turn's column runs from the stage edge to just short of the 150 label: 262 wide holds "saamne hai" whole
+        // at the young floor; the label wraps to whole lines and the number moves down under however many there are)
+        const cxc = full ? 138 : 500, cw = full ? 262 : 600, lo = { font: "mono" as const, size: 38, weight: 600 };
+        const { lines, track } = callLines(T.threat, cw, (s, tr) => api.measure(ctx, s, { ...lo, track: tr }));
+        const lh = Math.max(38, api.minLabel) * 1.12, y0 = (full ? 214 : 272) - (lines.length - 1) * lh / 2, yl = y0 + (lines.length - 1) * lh;
+        lines.forEach((ln, i) => api.text(ctx, ln, cxc, y0 + i * lh, { ...lo, color: C.ink3, align: "center", baseline: "middle", track, maxWidth: cw }));
+        api.text(ctx, `${key()}°`, cxc, Math.max(full ? 318 : 342, yl + 84), { font: "display", size: 88, weight: 800, align: "center", baseline: "middle", glow: C.ion });
       }
-      if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : "rgba(255,255,255,.35)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
+      if (g.state === "aim" && wave().mode !== "classify") { const k = clamp(g.callT / g.limit, 0, 1); ctx.strokeStyle = k > 0.7 ? C.amber : withAlpha(C.hi, .35); ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(px, py, 50, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * (1 - k)); ctx.stroke(); }
     }
     fx.drawWorld(ctx); ctx.restore();
-    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${g.w + 1} / ${spec.waves.length}`, title: wave().title, sub: wave().sub });
+    if (g.state === "intro" || g.introA > 0.01) drawIntro(api, ctx, { a: g.introA, t: g.stateT, kicker: `${T.wave} ${dots(g.w, spec.waves.length)}`, title: wave().title, sub: wave().sub });
     if (g.state === "end") drawStatCard(api, ctx, { a: g.endA, head: `${T.wave} ${g.w + 1}`, ticked: true, stats: [[`${g.waveRes.filter((r) => r.verdict === "right").length}/${g.waveRes.length}`, T.hits], [`${accOf(g.waveRes)}%`, T.accuracy]] });
     if (g.state === "final") drawStatCard(api, ctx, { a: g.finalA, head: T.runDone, color: C.ion, stats: [[`${g.hits}/${g.n}`, T.hits], [`${accOf(g.results)}%`, T.accuracy]] });
-    drawCoach(api, ctx, T.coach, g.state === "aim" ? g.coachA : 0, now, 600);
+    drawCoach(api, ctx, T.coach, g.state === "aim" ? g.coachA : 0, now, 606, 960);
   }
   function bot(): BotAction | null {
     if (g.state !== "aim") return { type: "wait", ms: 200 };
     const r = R() * 0.6;
     const aimTo = (a: number, after = 500): BotAction => ({ type: "drag", from: at(g.ang, r), to: at(a, r), ms: 450, after });
     if (wave().mode === "classify") {
-      const d = g.drones.filter((x) => x.alive && x.r < R() - 20).sort((a, b) => a.r - b.r)[0];
+      const d = g.boats.filter((x) => x.alive && x.r < R() - 20).sort((a, b) => a.r - b.r)[0];
       if (!d) return { type: "wait", ms: 200 };
-      const shouldFire = (angleKind(d.ang) === wave().kind) !== (botRnd() < 0.12);
-      if (!shouldFire) return { type: "wait", ms: 300 };
+      const shouldLight = (angleKind(d.ang) === wave().kind) !== (botRnd() < 0.12);
+      if (!shouldLight) return { type: "wait", ms: 300 };
       return aimTo(d.ang, 300);
     }
     return aimTo(clamp(key() + (botRnd() + botRnd() - 1) * 9, 0, wave().range === 180 ? 180 : 359.9), 400);
@@ -202,4 +351,4 @@ function create(api: EngineApi, spec: AngleSpec): EngineInstance {
     board: () => ({ title: `${g.w >= 0 && wave().mode !== "classify" ? key() : 120}° is a turn`, lines: ["Start at the zero arm and turn anticlockwise.", "Longer arms don't make a bigger angle."], figure: { kind: "angle", deg: g.w >= 0 && wave().mode !== "classify" ? key() : 120 }, accent: C.ion }),
   };
 }
-export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Turret", accent: C.ion, create };
+export const angle: EngineDef<AngleSpec> = { archetype: "angle-cannon@1", label: "Game · Lighthouse", get accent() { return C.ion; }, create };

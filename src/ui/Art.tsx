@@ -6,6 +6,7 @@
 // same component swaps to the image on the next page load, with no code change. A broken file falls back too.
 // Tier D (and the child's "still picture" choice) never loads backgrounds (§7.4).
 import { useEffect, useState, type CSSProperties, type ReactNode } from "react";
+import { faceLook } from "../face-puppet/look.ts";
 
 type Ready = Map<string, string>; // id → public URL
 let ready: Ready | null = null;
@@ -34,6 +35,17 @@ export function loadArt(): Promise<Ready> {
     } else {
       const ix = (await readJson("/assets/gen/INDEX.json")) as { items?: Record<string, { path?: string; status?: string }> } | null;
       for (const [id, it] of Object.entries(ix?.items ?? {})) if (it.status === "done" && it.path) out.set(id, toUrl(it.path));
+    }
+    // the teacher's stills (Face stream, evals/face-puppet/stills.mjs): her own rig per look, a ledger of their own
+    // (teacherRecord's look-free ids, teacher/asha/<pose>, map to the still of the look this page paints: faceLook())
+    const [teacher, look] = await Promise.all([
+      readJson("/assets/teacher/asha-stills/1/index.json") as Promise<{ assets?: { id: string; url?: string; look?: string; alias?: string }[] } | null>,
+      faceLook().catch(() => null),
+    ]);
+    for (const a of teacher?.assets ?? []) {
+      if (!a?.id || !a.url) continue;
+      if (!out.has(a.id)) out.set(a.id, toUrl(a.url));
+      if (a.alias && a.look === look && !out.has(a.alias)) out.set(a.alias, toUrl(a.url));
     }
     ready = out;
     return out;

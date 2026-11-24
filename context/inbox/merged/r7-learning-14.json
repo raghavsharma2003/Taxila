@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-child-reflect",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (for E App's app-debrief-made-later, STUDENT-FLOW §8.2): an older child's one tap after a lesson in which two or more supports were used is POST /api/child/reflect { childId, lessonId, choice } -> 204. choice is made:<madeForId> (a revealed, not hidden, non-whiteboard piece of THAT lesson), board, explain, self or unsure; anything else is 400, and a lesson that is not the child's own is 404. It is recorded as the Conductor event child.reflect (source device, idem reflect:<lessonId>, so the first tap per lesson wins). The fold keeps counts by kind and the last 5 { lessonId, kind } in s.adapt.helped, with no made-for ids. helpedLean() gives a kind chosen at least twice of the last 5 (never unsure, ties give none), for a later COMPARABLE choice inside the admissible set. It is a choice, never an effect claim or a learning style, and no parent surface reads it. Reverse if: the taps prove to be noise (most taps unsure, or the lean flips every few lessons); then keep the record and drop the lean."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

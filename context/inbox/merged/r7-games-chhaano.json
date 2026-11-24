@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-chhaano",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "chhaano (separate / sieve) as a never-timed law family for class 6 science separating mixtures (c6-science-ch09-t01, -t02): dry piles split by threshing, winnowing (the grain sack set near or far first), handpicking and sieving, each by the one difference it uses (sukha: farak s2, kram s3); a beaker of water settled one wait at a time, decanted, poured away, filtered or dried in the sun, every solid scooped into its jar (geela: nithaar s1, chhaan s2, namak s3). Every property is a kit sentence; no number is claimed (the settling waits are a scene value). Why: both topics had no game. Reverse: a child pilot shows methods are tried in turn on every pile until one works (many refusals per level) rather than chosen by the difference, or the sack's place is guessed rather than predicted."
+  },
+  {
+   "id": "ms-r7-games-chhaano-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "chhaano play-cert (forge3-qa, p360/p412/l1366, game mounted): 40/40 samples (table 3984/3984); every goal solved by real taps at 360 x 640 on seeds 3 and 17, every mal-rule state reached; smallest tap target 50 px; tests/r7-games-chhaano.test.mjs 29 tests."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-chhaano",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-chhaano-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-chhaano`\n\n**chhaano** (separate / sieve, class 6 science) is a law family with two modes. Nothing in it runs on a clock and nothing is an answer box.\n\n- **sukha** (c6-science-ch09-t01). A mixture lies on the tray as one pile. The child taps a pile, then a method, and the law splits it by the one difference that method uses. Threshing frees grain from stalks. Winnowing: the sack is set near or far first; the lighter part is carried far and the heavier falls near, never a distance. Handpicking takes the few visible pieces (the scene's own). A sieve lets through what is smaller than its holes: same-size parts pass or stay together whatever their colour or weight. A method whose difference the pile lacks separates nothing, and the law says why. Every property is a kit sentence (KIT_OF in the logic; the tests read them out of the kit). Weights are named only where the kit says, and a scene that winnows never holds a part without one.\n  - **farak** (s2): two parts and the one method their difference allows.\n  - **kram** (s3, s2): three or four parts, two or three methods in turn, threshing first.\n- **geela** (c6-science-ch09-t02). A beaker of water with solids in it; one jar per part to recover. The methods:\n  - Wait: settling advances one tap at a time; the scene value is 3 waits, no time claimed.\n  - Decant: once settled, the clearer liquid goes to a glass that stays a little cloudy with a trace sand or mud, so it must still be filtered, as in the kit's worked example.\n  - Pour away: refused when it would lose a wanted solid.\n  - Filter: insoluble solids stay on the paper; liquid and dissolved pass.\n  - Sun dry: the water goes and everything in it stays.\n  - Goals: nithaar (s1), chhaan (s2), namak (s3, s2). A dissolved solid is never drawn in the water.\n- **Mal-rules** (kit ids verified):\n  - t01 m1 one-method: \"Done\" after a single method with a pile still mixed.\n  - t01 m2 heavy-far: the sack set far; the husk lands in it.\n  - t01 m3 same-size: a same-size pile sieved; the lens shows the holes.\n  - t02 m1 salt-gone: the salty liquid poured away; the puddle dries and the salt shows.\n  - t02 m2 filter-salt: the filter paper scooped for the salt; it holds none, and a dried drop of the filtrate does.\n  - t02 m3 clear-pure: \"Done\" while a clear-looking liquid still holds the salt; a dried drop leaves it. The boil-before-drinking line is the teacher's, never a mechanic.\n  - nithaar and chhaan show none of the kit's three beliefs and map none.\n- Wrong methods are decisive refusals, so trial and error grades as incorrect evidence even when the level is finished. The picker gets a seeded difficulty nudge (± 0.12).\n\nReverse if a child pilot shows methods are tried in turn on every pile (many refusals per level) rather than chosen by the difference, or the sack's place is guessed rather than predicted.",
+  "measurements": "## `ms-r7-games-chhaano-cert`\n\nchhaano play-cert, 2026-11-08 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 40 of 40 chhaano samples pass at p360, p412 and l1366: 5 entries × 2 seeds × 4 arts. The table: 3984 of 3984.\n- **Tests:** tests/r7-games-chhaano.test.mjs, 29 tests. An independent checker, with its own size, weight, dissolve and settle tables read from the kit's sentences, agrees with every split and vessel the law makes over random play, and no part is ever lost. Every top-level number is the settling waits (a declared scene value) or the picker's nudge; no chhaano word holds a digit. Generator and picker p95 are measured in CPU time.\n- **Browser runs:** every goal solved by real taps at 360 x 640 on seeds 3 and 17 (farak look 1; kram looks 1 and 3; nithaar 1; chhaan 2; namak 1 and 2), and every mal-rule state reached the same way. page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch. No clipped label; smallest tap target 50 px. Shots in docs/design/round7/games/runshots-chhaano/."
+ }
+}

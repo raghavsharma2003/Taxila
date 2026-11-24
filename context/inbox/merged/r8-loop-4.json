@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r8-kit-practice-explained",
+      "kind": "decision",
+      "at": "2026-11-10",
+      "title": "The kit-practice phase (after the script's walk) carries because records like the walk (main's ruling after integration 26). At the start, knows.js practicePlanOf compares her practice queue (items.js buildPracticeQueue with her level and mix-ups) to a no-history child's: a diagnostic picked for her open mix-up is practiceDiag; an order within a skill set by her level (theta, weak) is practiceOrder, carrying her queue. At each pick, knows-walk.js knowsPick (one call line in state.js poseNext) logs which branch chose the item (ladder, verify, queued, queue) and records an in-lesson reason when the queue's pick leaves its skill's queue order: practiceFast (pace.fast: answered fast and unaided, so the hardest item) or practiceEasier (two misses in a row, or she asked). assertWalkExplained takes the no-history queue and checks every queue pick against its skill's order (hers when a practiceOrder record carries it); cross-skill interleaving is the queue's own rule and is not checked. Not covered: the verify diagnostic and the queued isomorph (in-lesson responses to an answer; logged, not checked), error_spot gating by pKnown (would show as an unexplained pick if it reorders). Reverse if Brain's compileScript moves the practice phase into the compiled script: the records then come from the compile's inputs."
+    },
+    {
+      "id": "ms-r8-kit-practice-2026-11-10",
+      "kind": "measurement",
+      "at": "2026-11-10",
+      "title": "tests/knows-practice.test.mjs (deterministic, the real step(); n = 4 pilot topics, a child who knows every skill, behind her class and weak, one open mix-up, 2026-11-10): every lesson reaches the kit's queue (1-2 queue picks after the hardest-first ladder), every pick passes the extended assertWalkExplained, practiceOrder and practiceDiag fire on all 4 topics, practiceFast on all 4, and dropping any practiceFast or practiceDiag record that a pick used makes the walk fail. A no-history child's queue gets no practice record. The 41-turn seeded steady lessons (knows-seeded-dry) never reach the kit's queue: the script walk fills the lesson."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r8-kit-practice-explained", "rel": "supersedes", "dst": "op-r8-kit-practice-unexplained" },
+    { "src": "dc-r8-kit-practice-explained", "rel": "part_of", "dst": "dc-r8-one-reader-with-because" },
+    { "src": "dc-r8-kit-practice-explained", "rel": "measured_by", "dst": "ms-r8-kit-practice-2026-11-10" }
+  ]
+}

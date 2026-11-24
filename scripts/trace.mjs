@@ -203,7 +203,7 @@ async function replay(key) {
     if (!g.files.length) throw new Error(g.chunks ? "no rrweb chunk could be read from the trace container" : "no rrweb chunks for this session (a replay needs a tier-2 account: TAXILA_TRACE_FULL_FOR)");
     // the recording's own origin, so its fonts / images / CSS load (override with --base)
     let base = arg("--base");
-    if (!base) { try { base = new URL(g.href).origin; } catch { base = "https://taxila.dev"; } }
+    if (!base) { try { base = new URL(g.href).origin; } catch { throw new Error("the recording has no usable page address: pass --base <origin>"); } }
     const out = arg("--out", path.resolve(`replay-${key.slice(0, 12)}`));
     const script = fileURLToPath(new URL("./trace-replay.mjs", import.meta.url));
     const pass = ["--tz", "--motion"].flatMap((k) => (arg(k) ? [k, arg(k)] : []));

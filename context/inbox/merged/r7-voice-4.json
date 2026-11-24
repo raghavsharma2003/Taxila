@@ -1,0 +1,31 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-voice-name-spoken",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 name preview (B ↔ F Learning, migration 038 child.name_spoken). When a parent spells the child's name 'how it sounds' (e.g. 'Aa-rav'), every lane's TTS says that spelling. styleForChild puts { written: first_name, spoken: name_spoken } into the spoken cell, and speakable() (the one path for mini-tts and DragonHD text) swaps whole-word, any-case occurrences of the written name before rendering. Captions, stored turns and the guards keep first_name. Cache keys follow the spoken text, so no cached audio of the old name is replayed. Reverse if the owner hears a spelled name rendered worse than the written one on DragonHD (e.g. a hyphen read as a pause too long); then add a lexicon/phoneme path instead."
+  },
+  {
+   "id": "dc-r7-voice-board-hold",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Studio's to-voice/001 (first-clause board hold) applied to src/lesson/ttsStream.ts. On the folded turn-audio path, her reply's first sample waits for a board that will land within 300 ms (src/studio/boardHold.ts, set only when a passing code board bounds the wait); resumes and replays never wait. The continuer/uptake plays on its own player and is never held. Early Director clauses (B5) are adopted by playEarly and carry no hold; on those turns she starts while the board lands. Reverse if the owner sees boards still landing after her first word on folded turns, or hears the wait as a stall."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-voice-name-spoken",
+   "rel": "part_of",
+   "dst": "dc-r7-handsfree-default"
+  },
+  {
+   "src": "dc-r7-voice-board-hold",
+   "rel": "part_of",
+   "dst": "dc-r7-voice-first-sound"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-voice-name-spoken — she says the name the way the parent spelled it (2026-11-04)\n\nLearning's set-up lets a parent spell the child's name how it sounds. The voice now uses that spelling everywhere she speaks: one swap in speakable(), fed from styleForChild, on whole words only. Captions and stored turns keep the written name. Reversal: if the spelled form renders worse on DragonHD, move to a phoneme lexicon.\n\n## dc-r7-voice-board-hold — her first word waits a moment for a board that is about to land (2026-11-04)\n\nStudio's patch holds her reply's first sample by at most 300 ms, only when a passing code board will land in that time, so she doesn't point at an empty board. The continuer is never held, and early streamed clauses don't wait. Reversal: if the hold reads as a stall, or boards still land after her first word.\n"
+ }
+}

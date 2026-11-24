@@ -37,7 +37,7 @@ describe("learner writer on Neon", { skip: !sql && "no TEST_DATABASE_URL (a Neon
   before(async () => {
     prevFetchFn = neonConfig.fetchFunction;
     neonConfig.fetchFunction = nativeFetch;
-    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
+    reachable = await Promise.race([sql.query("select 1 from kt_evidence limit 1").then(() => true, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
     if (!reachable) return;
     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'learner-test') returning id", [`learner-test+${randomUUID()}@test.invalid`]))[0].id;
     kid = (await sql.query("insert into child (guardian_id, first_name, class_level) values ($1, 'Test', 5) returning id, legal_mode, class_level", [guardian]))[0];

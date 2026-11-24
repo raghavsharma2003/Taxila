@@ -6,86 +6,106 @@
  "class": 7,
  "topicType": "T3",
  "plan": {
-  "game": "sieve-storm@1",
-  "hint": "rules common / cfactor (common factors and common multiples)"
+  "game": "rule-machine@1",
+  "hint": "build and inverse modes: HCF × LCM = product of the two numbers; find a missing LCM or number"
  },
  "game": {
-  "archetype": "sieve-storm@1",
+  "archetype": "rule-machine@1",
   "spec": {
-   "archetype": "sieve-storm@1",
+   "archetype": "rule-machine@1",
    "skills": [
     "c7-maths-ch11-t03"
    ],
    "lang": "en",
    "strings": {
     "round": "Round",
-    "slashed": "right calls",
-    "combo": "combo",
-    "coach": "Swipe the numbers that fit the rule",
-    "runDone": "Storm over",
-    "prime": "prime",
-    "composite": "composite",
-    "even": "even",
-    "odd": "odd",
-    "multipleOf": "multiples of",
-    "commonOf": "common multiples of",
-    "factorOf": "factors of",
-    "cfactorOf": "common factors of",
-    "divisibleBy": "divisible by",
-    "coprimeWith": "co-prime with",
-    "square": "square numbers",
-    "palindrome": "palindromes",
-    "slipped": "slipped",
-    "wrongCut": "not this one",
-    "and": "and"
+    "built": "machines",
+    "run": "RUN",
+    "want": "order",
+    "got": "made",
+    "coach": "Tap tiles to fill the machine, then RUN",
+    "runDone": "Factory closed",
+    "step": "step",
+    "predict": "step",
+    "inverse": "run it backwards",
+    "target": "target",
+    "steps": "steps",
+    "pick": "Pick a start",
+    "works": "WORKS",
+    "fix": "not for every input"
    },
-   "title": "Find Common Ground",
+   "title": "HCF × LCM Machine",
    "rounds": [
     {
-     "rule": "common",
-     "a": 4,
-     "b": 6,
-     "title": "Shared multiples",
-     "sub": "Numbers shared by both streams",
-     "lo": 2,
-     "hi": 60,
-     "count": 14,
-     "hitRate": 0.5,
-     "seed": 23,
-     "speed": 0.8
+     "mode": "build",
+     "title": "LCM to product",
+     "sub": "Pairs with HCF 6: LCM in, product out",
+     "rule": [
+      "×6"
+     ],
+     "inputs": [
+      36,
+      30,
+      72,
+      60
+     ],
+     "tiles": [
+      "×6",
+      "÷6",
+      "+6",
+      "×3"
+     ]
     },
     {
-     "rule": "cfactor",
-     "a": 12,
-     "b": 18,
-     "title": "Shared factors",
-     "sub": "Cut only factors of both",
-     "lo": 2,
-     "hi": 12,
-     "count": 16,
-     "hitRate": 0.45,
-     "seed": 47,
-     "speed": 1
+     "mode": "inverse",
+     "title": "Find the LCM",
+     "sub": "HCF is 4 and the product is 96",
+     "rule": [
+      "×4"
+     ],
+     "secret": 24,
+     "tiles": [
+      "÷4",
+      "×4",
+      "-4",
+      "÷2"
+     ]
     },
     {
-     "rule": "common",
-     "a": 8,
-     "b": 15,
-     "title": "Co-prime club",
-     "sub": "Two clubs meet in one stream",
-     "lo": 2,
-     "hi": 120,
-     "count": 18,
-     "hitRate": 0.35,
-     "seed": 81,
-     "speed": 1.2,
-     "targets": "c7-maths-ch11-t03-m-coprime-prime"
+     "mode": "inverse",
+     "title": "Find the other number",
+     "sub": "One is 15; HCF 5, LCM 60",
+     "rule": [
+      "×15"
+     ],
+     "secret": 20,
+     "tiles": [
+      "÷15",
+      "×5",
+      "÷5",
+      "+15"
+     ]
+    },
+    {
+     "mode": "inverse",
+     "title": "LCM of 6 and 10",
+     "sub": "6 × 10 = 60 and their HCF is 2",
+     "rule": [
+      "×2"
+     ],
+     "secret": 30,
+     "tiles": [
+      "÷2",
+      "×2",
+      "-2",
+      "÷6"
+     ]
     }
    ]
   },
   "repairs": [],
-  "attempts": 3,
-  "model": "taxila-fast-bg"
+  "attempts": 1,
+  "model": "claude-hand-authored"
  },
  "explainer": {
   "archetype": "scene-explainer@1",
@@ -551,7 +571,7 @@
          "×",
          "LCM",
          "=",
-         "produc"
+         "product"
         ]
        ]
       },
@@ -600,7 +620,8 @@
        "target": "rule1"
       }
      ]
-    }
+    },
+    "repaired": "cut-words (code, from the kit)"
    },
    {
     "line": "L2",
@@ -1082,7 +1103,7 @@
        "layout": "equation",
        "rows": [
         [
-         "produc",
+         "product",
          "=",
          "180"
         ],
@@ -1167,7 +1188,8 @@
        "target": "answer6"
       }
      ]
-    }
+    },
+    "repaired": "cut-words (code, from the kit)"
    },
    {
     "line": "L7",
@@ -1422,244 +1444,24 @@
  },
  "keys": [
   {
-   "itemId": "r1:0",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 52 common 4 6?"
+   "itemId": "r1",
+   "key": "×6",
+   "prompt": "inputs 36,30,72,60 → 216,180,432,360"
   },
   {
-   "itemId": "r1:1",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 24 common 4 6?"
+   "itemId": "r2",
+   "key": "24",
+   "prompt": "×4 gave 96"
   },
   {
-   "itemId": "r1:2",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 40 common 4 6?"
+   "itemId": "r3",
+   "key": "20",
+   "prompt": "×15 gave 300"
   },
   {
-   "itemId": "r1:3",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 46 common 4 6?"
-  },
-  {
-   "itemId": "r1:4",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 12 common 4 6?"
-  },
-  {
-   "itemId": "r1:5",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 60 common 4 6?"
-  },
-  {
-   "itemId": "r1:6",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 24 common 4 6?"
-  },
-  {
-   "itemId": "r1:7",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 34 common 4 6?"
-  },
-  {
-   "itemId": "r1:8",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 48 common 4 6?"
-  },
-  {
-   "itemId": "r1:9",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 36 common 4 6?"
-  },
-  {
-   "itemId": "r1:10",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 12 common 4 6?"
-  },
-  {
-   "itemId": "r1:11",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 60 common 4 6?"
-  },
-  {
-   "itemId": "r1:12",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 19 common 4 6?"
-  },
-  {
-   "itemId": "r1:13",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 58 common 4 6?"
-  },
-  {
-   "itemId": "r2:0",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 7 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:1",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 3 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:2",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 10 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:3",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 2 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:4",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 6 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:5",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 11 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:6",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 3 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:7",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 6 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:8",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 8 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:9",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 8 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:10",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 6 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:11",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 2 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:12",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 10 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:13",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 2 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:14",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 6 cfactor 12 18?"
-  },
-  {
-   "itemId": "r2:15",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 11 cfactor 12 18?"
-  },
-  {
-   "itemId": "r3:0",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 86 common 8 15?"
-  },
-  {
-   "itemId": "r3:1",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:2",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:3",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 75 common 8 15?"
-  },
-  {
-   "itemId": "r3:4",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 89 common 8 15?"
-  },
-  {
-   "itemId": "r3:5",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 73 common 8 15?"
-  },
-  {
-   "itemId": "r3:6",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:7",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:8",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 19 common 8 15?"
-  },
-  {
-   "itemId": "r3:9",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:10",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 42 common 8 15?"
-  },
-  {
-   "itemId": "r3:11",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 62 common 8 15?"
-  },
-  {
-   "itemId": "r3:12",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 65 common 8 15?"
-  },
-  {
-   "itemId": "r3:13",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 20 common 8 15?"
-  },
-  {
-   "itemId": "r3:14",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:15",
-   "key": "fits the rule (slash it)",
-   "prompt": "is 120 common 8 15?"
-  },
-  {
-   "itemId": "r3:16",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 58 common 8 15?"
-  },
-  {
-   "itemId": "r3:17",
-   "key": "does not fit (let it fall)",
-   "prompt": "is 57 common 8 15?"
+   "itemId": "r4",
+   "key": "30",
+   "prompt": "×2 gave 60"
   }
  ],
  "check": {

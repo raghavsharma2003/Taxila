@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-kaksha-kit",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Every secondary child screen under Kaksha (Notebook, Ask, Me, Your teacher, Hello, Who, the Home's hold/offline/signed-out states, the child shell's gate) is built from one Kaksha kit (src/ui-v3/kaksha/kit.tsx: KxPage, Panel, SwitchRow, ChoiceRow, LinkRow, StatePanel, Cta, Ghost, Sheet, line glyphs) inside Kaksha's own .kx root; ChildScreen's Kaksha branch is KxPage. The classic components stay only for ?ui=classic. Reverse: the owner wants the classic screens back under Kaksha, or a screen needs a part the kit cannot express.",
+   "source": "inbox/r7-app-4.json"
+  },
+  {
+   "id": "dc-r7-app-hello-boot",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Kaksha Hello is a boot sequence: her comms window, a mono log of the five steps (done ticked, current live; words, never a count) and the step's panel with one plasma action. The steps, their order, the AI disclosure copy and Skip are unchanged. Reverse: the disclosure must be its own full screen again.",
+   "source": "inbox/r7-app-4.json"
+  },
+  {
+   "id": "dc-r7-app-me-no-theme",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Me under Kaksha has no Theme row: the Kaksha look follows the child's family (kakshaThemeFor), so Light/Dark/Match phone changed nothing (app-me-settings evidence). Reverse: Kaksha gains a per-child light/dark theme.",
+   "source": "inbox/r7-app-4.json"
+  }
+ ],
+ "edges": [],
+ "md": "## dc-r7-app-kaksha-kit\nBefore this change, the secondary screens were the old V2 components with Kaksha colours on top. The rounded cards, pill segments, round toggles and raster pictures were all still visible. Now one small kit draws them the Kaksha way: chamfered HUD panels with a mono eyebrow, a square HUD switch that says ON/OFF, segmented choices, rows with line glyphs, a calm state panel with a glowing ring in place of a picture, and one plasma button per screen state. The kit carries its own .kx root and does not import Shell.tsx, so the child shell's gate and Who can use it without loading her face rig. The screens keep all their logic, test ids and copy; only the Kaksha branch is new.\n\n## dc-r7-app-hello-boot\nThe first meeting reads like a system coming online: 'Teacher online', 'AI teacher, not a person', 'Your picture', 'What you like', 'Voice check'. Each line gets a tick when its step is done. The log names steps in words, so no progress count is shown to the child. The AI disclosure is still the second step, still uses the same words, and still has only one way forward (Got it).\n\n## dc-r7-app-me-no-theme\nThe Theme row looked like a setting but did nothing in Kaksha, because the look is chosen by the child's family (classes 1-3 dawn, 4-9 night). A control that does nothing is a placeholder, so it is gone from Kaksha Me. The classic Me keeps it.\n"
+}

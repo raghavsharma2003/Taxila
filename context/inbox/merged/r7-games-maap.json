@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-maap",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "c4-maths-ch05-t02 (fractions in measurement) is played on taraazu weigh / fill, not feeta: labels '¾ kg', '½ l', '½ kg + ¼ kg' made from a box with no weight / jug equal to the label (no 250 g), so the fraction is made in g / ml. Mal-rules = the kit's three beliefs (half-is-50, quarter-is-4, pieces-not-size). s1 and s3 covered; s2 (½ / ¼ / ¾ m in cm) not admitted. Why: all three kit misconceptions and two of three skills are about kg and litres, and the kit's remediations are a balance and a jug. Reverse: a pilot shows children fill the vessel by eye or by trial weighings without converting, or feeta gains a fraction-of-a-metre cut that carries the same beliefs."
+  },
+  {
+   "id": "ms-r7-games-maap-cert",
+   "kind": "measurement",
+   "at": "2026-11-08",
+   "title": "taraazu play-cert after the maap extension (forge3-qa, p360/p412/l1366, game mounted): 3744/3744 taraazu samples pass at every size, the new c4-maths-ch05-t02 weigh / fill cells included. 29 taraazu weigh / fill law and server tests pass. Existing taraazu levels unchanged: generator hashes and 72 served levelIds (8 entries × 3 fades × 3 children) pinned before and after."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-games-maap", "rel": "measured_by", "dst": "ms-r7-games-maap-cert" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-maap`\n\nc4-maths-ch05-t02 (fractions in measurement) is played on the existing **taraazu** weigh (balance) and fill modes. No new family, mode or goal was added. A new label form, `frac`, writes the label as fractions of one kg / l: \"¾ kg\", \"½ l\", or a sum such as \"½ kg + ¼ kg\" (grammar `frac: \"sum\"`). The weight box (200 / 100 / 50 / 20 / 10 g, sometimes one 500 g) and the jugs (200 / 100 / 50 ml, sometimes 500 ml) never hold an amount equal to the label. There is no 250 g weight at all, and a ½ label never gets the 500, so the fraction of the big unit has to be made in the small one. Nothing is timed.\n\nThe mal-rules are the kit's own three beliefs. **half-is-50** treats every ½ as 50, **quarter-is-4** treats every ¼ as 400, and **pieces-not-size** treats a lone ¾ as three 100 g / 100 ml pieces (acted as three 100s). The topic's skills s1 (kg / l) and s3 (adding fractions of a measure) are covered. s2 (½ / ¼ / ¾ m in cm) is not admitted, because taraazu has no tape.\n\n**Why taraazu, not feeta:** all three kit misconceptions and two of the three skills concern kg and litres, and the kit's remediations are a balance and a measuring jug. Feeta could carry only s2, which has no mapped misconception.\n\n**Reverse if** a child pilot shows the vessel filled by eye, or the balance solved by trial weighings without converting, or feeta gains a fraction-of-a-metre cut that carries the same beliefs.",
+  "measurements": "## `ms-r7-games-maap-cert`\n\nThe taraazu play-cert was run after the extension: `FORGE3_QA_LOCAL=1 node server/forge3/play-cert.js --only taraazu`, every art at p360, p412 and l1366 with the game mounted, 2026-11-08. All 3744 of 3744 samples pass at every size, including the new c4-maths-ch05-t02 weigh / fill cells.\n\n- **Law and server tests:** tests/r7-games-taraazu-weigh.test.mjs has 29 tests, all passing. They cover solve, shortcut-null, an independent fraction-label oracle over 2000 or more random acts, each new mal-rule landing on its own kit misconception, generator p95 under 50 ms, and currentLevel serving both new entries at every fade.\n- **Existing levels:** the generator hashes and 72 served levelIds (8 entries × 3 fades × 3 children) of every pre-existing taraazu entry were pinned before the change, and they are identical after it.\n- **Real taps:** the fraction levels were solved with real taps at 360 x 740 in Chromium, both weigh and fill, including the half-is-50, quarter-is-4 and pieces-not-size runs."
+ }
+}

@@ -68,8 +68,11 @@ test("voices: config-driven; DragonHD only when Azure Speech is configured; per-
     assert.equal(dhdVoiceFor("nobody").dhd, VOICE_TABLE.asha.dhd);
     process.env.TAXILA_DHD_VOICE_ASHA = "en-IN-Meera:DragonHDLatestNeural"; process.env.TAXILA_DHD_RATE_ASHA = "-20";
     assert.deepEqual([dhdVoiceFor("asha").dhd, dhdVoiceFor("asha").baseRate, dhdVoiceFor("asha").measured], ["en-IN-Meera:DragonHDLatestNeural", -20, false]);
-    assert.equal(expressiveOn("dhd"), true);
-    assert.equal(expressiveOn("oai"), false);
+    // audit V-27: off by default (rj-ssml-delivery-plan-2026-10-04), on with the flag
+    assert.equal(expressiveOn("dhd", {}), false);
+    assert.equal(expressiveOn("dhd", { TAXILA_VOICE_EXPRESSIVE: "1" }), true);
+    assert.equal(expressiveOn("oai", { TAXILA_VOICE_EXPRESSIVE: "1" }), false);
+    assert.equal(expressiveOn("oai", { TAXILA_VOICE_EXPRESSIVE: "all" }), true);
   } finally { restore(); delete process.env.TAXILA_DHD_VOICE_ASHA; delete process.env.TAXILA_DHD_RATE_ASHA; }
 });
 
@@ -95,7 +98,7 @@ test("DragonHD: SSML goes to Azure Speech as raw PCM with the key header; a fail
 });
 
 test("prewarm with a plan: governed, one SSML document per part with markers/rate/breaks, exact pauses, remembered for Hear", async () => {
-  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k" });
+  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k", TAXILA_VOICE_EXPRESSIVE: "1" });
   const f = stubAzure();
   try {
     const text = "Chalo, 27 aur 35 jodte hain. Pehle tens: 20 aur 30, matlab 50. Phir 7 aur 5, 12. Toh total kya hua?";
@@ -117,7 +120,7 @@ test("prewarm with a plan: governed, one SSML document per part with markers/rat
 });
 
 test("tts-stream framed v2: header, PCM with the planned pause as exact silence, one clause event per part, end; raw PCM for old clients", async () => {
-  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k" });
+  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k", TAXILA_VOICE_EXPRESSIVE: "1" });
   const f = stubAzure();
   try {
     const text = "Achha, yahan thoda rukte hain. Pizza ke 4 tukde hain, aur tumne 3 khaaye. Ek baar phir dekho?";
@@ -156,7 +159,7 @@ test("tts-stream framed v2: header, PCM with the planned pause as exact silence,
 });
 
 test("uptake prelude: the child's token is spoken first (memory cache only), then a gap, then the reply without the echo", async () => {
-  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k" });
+  const restore = envSet({ AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k", TAXILA_VOICE_EXPRESSIVE: "1" });
   const puts = [];
   setCacheStore({ get: async () => null, put: async (k) => { puts.push(k); } });
   const f = stubAzure();

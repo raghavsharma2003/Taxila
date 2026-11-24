@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-brain-reply-latency-quiet-hour",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Reply latency at a quiet hour vs daytime (taxila-fast, the same replayed reply call, n = 20 each): quiet 20:36 UTC p50 1,424 ms / p90 2,560 ms; daytime 07:43 UTC p50 1,479 ms / p90 2,086 ms. The p50 is the same within noise, so the time of day does not explain the Director's ~3 s reply-ready; that is the pipeline, not Azure load."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "",
+  "measurements": "## `ms-r7-brain-reply-latency-quiet-hour` (2026-11-05, stream A Brain)\n\nMethod: `node --env-file=.env.local evals/latency/reply-replay.mjs --n 20 --label quiet`, with no DB. Each run replays the same captured Director reply call (worked_example move, about 5.1k prompt characters) 20 times against taxila-fast.\n\nResults:\n- `reply-replay-2026-11-05T20-36-37-829Z-quiet.json`: n = 20, p50 1,424 ms, p90 2,560 ms, min 1,111, max 2,772.\n- Baseline `reply-replay-2026-11-05T07-43-46-063Z-now.json` (13:13 IST): n = 20, p50 1,479 ms, p90 2,086 ms.\n\nThe p50 difference (−55 ms) is noise at n = 20. The quiet run's p90 is higher, from a few slow calls.\n\nConclusion: deployment load by time of day is not a lever. director5/6's reply-ready p50 of about 3 s per lesson comes from the turn pipeline (classify, then reply, then guards), so latency work goes there.\n\nCost: 20 calls, about $0.02 (main approved).",
+  "rejected": ""
+ }
+}

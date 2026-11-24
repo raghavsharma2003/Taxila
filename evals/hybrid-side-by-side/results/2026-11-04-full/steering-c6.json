@@ -1,0 +1,314 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket ground ke chakkar jaisa perimeter padhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 757
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ground ke boundary ke chaaron taraf chalna perimeter hai—poori boundary ki length. Tum boundary kaise naapogi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 846,
+   "replyReadyMs": 1603
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 687
+  },
+  {
+   "who": "teacher",
+   "text": "Dheere chalenge. Perimeter matlab polygon ki sabhi sides ko jodna. Rectangle mein kitni sides hoti hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1179,
+   "replyReadyMs": 1866
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 740
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—ab chhote steps. Rectangle ki boundary: length do baar aur breadth do baar; perimeter kaise likhogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1024,
+   "replyReadyMs": 1764
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 641
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, picture ko words mein dekho: rectangle ki lambi sides 50 m, chhoti sides 30 m. Kaunsi sides same hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1900,
+   "replyReadyMs": 2541,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 776
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki opposite sides same hoti hain: do 50 m, do 30 m. Ab perimeter ke liye sab sides jodo—kitna?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2024,
+   "replyReadyMs": 2800,
+   "guard": [
+    "flat"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 480
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai? Screen ka button dabakar lesson par laut sakti ho.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1148,
+   "replyReadyMs": 1628
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 716
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket par baat karte hain—tumne kaha tha, yaad hai. Lesson ke end mein cricket wali baat par zaroor lautenge; ab card ka chhota step dekho. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1569,
+   "replyReadyMs": 2285
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 458
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ise Hindi mein samjhenge. Pehle dekho: teen samooh hain, har samooh mein 160 meter. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 923,
+   "replyReadyMs": 1381
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 656
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul, Riya. Pehle tum khud poora try karo; main tumhare jawab ke baad hi madad karungi. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1220,
+   "replyReadyMs": 1876
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 839
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Tum rukna chahti ho—carry on, chhota break, ya aaj ke liye band?",
+   "move": "break",
+   "card": null,
+   "replyMs": 929,
+   "replyReadyMs": 1768
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ke chaaron taraf ki lambai, yaani perimeter, seekhenge. Agar boundary par rope lagani ho, toh rope kis raaste par lagegi?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 671
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, rope ground ki poori boundary par lagegi. Chalo ek triangle ki teen sides jodkar dekhein. Sides paanch, chhah aur nau centimetre hain; perimeter kitna hoga?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2745,
+   "replyReadyMs": 3416
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 597
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul Riya, dheere chalenge. Pehle perimeter ka matlab: shape ki sabhi sides ki total length. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 7607,
+   "replyReadyMs": 8204,
+   "fellBack": "chat taxila-gpt6 timed out after 6000 ms"
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1258
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chhota bolungi. Paanch, chhah aur nau centimetre ki sides jodo. Total kitna?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2127,
+   "replyReadyMs": 3385
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 409
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle picture. uski teen sides paanch, chhah aur nau centimetre hain.",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1916,
+   "replyReadyMs": 2325
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Pehle paanch aur chhah jodo. Kitna hua?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2071,
+   "replyReadyMs": 2072
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 449
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, thodi aur baat karte hain. Cricket ki baat karein?",
+   "move": "break",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2389,
+   "replyReadyMs": 2838
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1150
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket ki baat! Boundary par rope lagani ho toh uski poori lambai chahiye. Tumhe batting pasand hai ya bowling?",
+   "move": "break",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3964,
+   "replyReadyMs": 5114
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 827
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein chhota bataungi. Cricket ke maidan ke chaaron taraf rassi ki lambai ko parimap kehte hain. Paanch aur chhah jodne par kitna hota hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2067,
+   "replyReadyMs": 2894
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 2957
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tum khud koshish karo. Main abhi koi sanket nahi dungi. Jab tum taiyaar ho, tribhuj ki teenon bhujaon ko jodkar parimap bataoge?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 5933,
+   "replyReadyMs": 8890
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1311
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, alvida. Aaj humne parimap ke liye bhujaon ko jodne ki baat ki; teenon bhujaon ko jodna abhi baaki hai.",
+   "move": "wrap",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1970,
+   "replyReadyMs": 3281
+  }
+ ]
+}

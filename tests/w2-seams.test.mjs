@@ -74,7 +74,7 @@ test("lesson.js keeps every W2 call site, each guarded by seamSafe", () => {
     assert.ok(src.includes(`seamSafe("${call}"`), `missing guarded call site ${call}`);
   }
   // relational rows land before the Conductor's (its ingest locks child_seq last: the global lock order)
-  assert.ok(/tx\(\[\.\.\.writes, \.\.\.relStmts, \.\.\.hookStmts\]\)/.test(src));
+  assert.ok(/tx\(\[\.\.\.writes, \.\.\.relStmts, (\.\.\.jar\.stmts, )?\.\.\.hookStmts\]\)/.test(src))   // Learning 004b: the jar rows sit before the Conductor's, still last;
   const voice = read("server/routes/voice.js");
   assert.ok(voice.includes('seamSafe("realtime.shapeSession"'), "voice.js STT session goes through the realtime seam");
   // azure.js: the quota lane is its own option (lane already selects the endpoint), and both lane hooks are guarded

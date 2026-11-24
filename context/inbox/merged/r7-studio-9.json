@@ -1,0 +1,20 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-pip-zone-live",
+      "kind": "decision",
+      "at": "2026-11-04",
+      "title": "StudioStage reads the teacher's PiP keep-clear zone LIVE from App's slot element (data-pip-zone, --pip-zone-w/-h/-right/-bottom on [data-stage-slot], App 7472ec30, in int/r6 07185e93), moved into the stage's coordinates and re-read on every change (MutationObserver); the piece is lifted above it or fitted into the room above. Replaces the mirrored copy of App's rule (dc-r7-piece-clear-of-pip). Re-recorded table-* at 412 with the live zone."
+    }
+  ],
+  "edges": [
+    {
+      "src": "dc-r7-pip-zone-live",
+      "rel": "supersedes",
+      "dst": "dc-r7-piece-clear-of-pip"
+    }
+  ],
+  "md": {
+    "decisions": "## dc-r7-pip-zone-live: Studio reads the PiP's real position (2026-11-04)\n\nApp now publishes where the teacher's picture sits. Studio reads that live, instead of a copy of App's sizing rule, so boards stay clear of it however App lays the stage out.\n"
+  }
+}

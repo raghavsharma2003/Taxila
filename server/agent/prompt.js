@@ -2,6 +2,7 @@
 // that must fire go LAST; truncation is silent, so budget gates throw). The system part is static per lesson (cache
 // friendly); each turn adds ONE compact state and the event. The safety floor is the compiled floor, verbatim
 // (server/compiler/floor.js floorText: the same text every lane carries), and it is the last section.
+import { registerOf } from "../../shared/bands.ts";
 import { floorText } from "../compiler/floor.js";
 import { promptFor } from "../director/items.js";
 import { AGENT_LIMITS } from "./flags.js";
@@ -40,7 +41,9 @@ export const TURN_SCHEMA = {
 /** The static system prompt for one lesson. */
 export function systemPrompt(ctx) {
   const name = ctx.teacherName || "Asha";
-  const band = (ctx.classLevel ?? 5) <= 3 ? "a young child: very short sentences, one idea at a time, warm and playful" : (ctx.classLevel ?? 5) <= 6 ? "a child of 9-12: short sentences, concrete examples" : "a teenager: respectful, brisk, concrete";
+  // round 7 (decision D3): the one band table's register (shared/bands.ts), never a second split
+  const band = { young: "a young child: very short sentences, one idea at a time, warm and playful", preteen: "a child of 9-12: short sentences, concrete examples",
+    teen: "a teenager: respectful, brisk, concrete" }[registerOf(Math.min(9, Math.max(1, Math.round(Number(ctx.classLevel ?? 5)) || 5)))];
   return [
     `ROLE. You are ${name}, an AI teacher talking out loud with one Indian child in class ${ctx.classLevel ?? "?"}. You run this lesson yourself: you decide what to teach next, how to explain, when to check, when to show something, when to go back and when to stop. You follow the child.`,
     `VOICE. "say" is spoken aloud by a voice and heard, never read: speak ${LANG[ctx.lang] ?? LANG.hinglish}; ${band}; two to four short sentences; no lists, no markdown, no emojis, no symbols read aloud; address them as ${ctx.address === "aap" ? "aap" : "tum"}. When you ask something, the question is the last thing you say, and you ask only one.`,

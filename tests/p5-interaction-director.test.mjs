@@ -1,12 +1,20 @@
 // p5-interaction (owner directive 2026-10-05, priority 5): the Director acts on the child's words. Pure: no network, no
 // model. The phrases are the ones the live prod battery sent (evals/prod-runs/2026-10-05-day0: owner-2, owner-4) and the
 // conversation-v2 battery's intents. Needs docs/design/ship5/p5-interaction/patches applied (APPLY.md).
-import { describe, test, afterEach } from "node:test";
+import { describe, test, afterEach, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { initLessonState, step, LIMITS } from "../server/director/state.js";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { findItem } from "../server/director/items.js";
 import { kit, CTX, cls } from "./fixtures/kit.mjs";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_BYE_CHECKIN: "off", TAXILA_R7_PARK_TOPIC: "off", TAXILA_R7_FRUSTRATION: "off" };
+const R7_SAVED = {};
+describe("p5-interaction-director.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const K = kit();
 const fresh = (over = {}) => initLessonState({ topicId: K.topicId, kit: K, ctx: CTX, seed: 11, now: 0, ...over });
@@ -136,7 +144,7 @@ test("confused / clarify / repeat / back / skip / easier / harder / know on a qu
 test("boredom and frustration: something changes now (ways in / a smaller step), never an end and never a helpline", () => {
   const r = toPractice();
   const b = turn(r, said(r, "boring yaar"));
-  assert.match(b.move.shape, /bored: no guilt|they are bored: first say back/);
+  assert.match(b.move.shape, /bored: never making them feel at fault|they are bored: first show in a few words that you heard/);   // (round 7 S5: de-recited)
   assert.equal(ended(b), false);
   const f = turn(r, said(r, "mujhse nahi hoga"));
   assert.match(f.move.shape, /this one is hard work and that is okay|empathy about how tough THIS question is/);
@@ -211,5 +219,6 @@ test("safety still outranks every reading: distress words with a steering phrase
   assert.equal(c.flags.distress, true);
   const s = turn(r, c);
   assert.equal(s.move.kind, "safeguard");
+});
 });
 });

@@ -1,0 +1,93 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c5-maths-ch05-t01",
+    "archetype": "instrument@1",
+    "misconceptionId": "c5-maths-ch05-t01-m-km-100m",
+    "skillId": "c5-maths-ch05-t01-s1",
+    "beat": "rem:c5-maths-ch05-t01-m-km-100m",
+    "when": "remediation",
+    "check": "c5-maths-ch05-t01-s1:c1"
+  },
+  "why": "unverified_key",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": false,
+    "repairs": []
+  },
+  "raw": {
+    "archetype": "instrument@1",
+    "skills": [
+      "c5-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "measured": "maapa gaya",
+      "precision": "sahi naap",
+      "hold": "Thaam kar rakho",
+      "release": "Chhod do",
+      "cut": "Kaato",
+      "set": "Taiyaar karo",
+      "am": "subah",
+      "pm": "dopahar",
+      "tapAt": "Jab itna dikhe",
+      "runDone": "Bench saaf",
+      "offBy": "antar",
+      "exact": "BILKUL SAHI",
+      "after": "baad",
+      "minutes": "min",
+      "balanced": "BARABAR",
+      "heavy": "parcel bhaari",
+      "light": "wazan bhaari"
+    },
+    "title": "Naap Bench",
+    "rounds": [
+      {
+        "mode": "cut",
+        "title": "Naap ko milao",
+        "sub": "Dheere dekho aur chuno",
+        "items": [
+          {
+            "target": 1000,
+            "show": "m"
+          },
+          {
+            "target": 3000,
+            "show": "m"
+          }
+        ],
+        "scaleMax": 5000,
+        "minor": 100,
+        "tol": 10,
+        "speed": 1,
+        "targets": "c5-maths-ch05-t01-m-km-100m"
+      },
+      {
+        "mode": "cut",
+        "title": "Do naap dekho",
+        "sub": "Dono ko dhyaan se dekho",
+        "items": [
+          {
+            "target": 2050,
+            "show": "m"
+          },
+          {
+            "target": 1005,
+            "show": "m"
+          },
+          {
+            "target": 1500,
+            "show": "m"
+          }
+        ],
+        "scaleMax": 2500,
+        "minor": 50,
+        "tol": 10,
+        "speed": 0.9,
+        "targets": "c5-maths-ch05-t01-m-mixed-concat"
+      }
+    ]
+  }
+}

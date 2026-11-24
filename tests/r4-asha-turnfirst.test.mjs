@@ -18,7 +18,8 @@ test("stage: the turn hold is short, never while she speaks, and its gap is not 
   assert.match(stage, /for \(const t of TURN_EVENTS\) window\.addEventListener\(t, onTurn\);/);
   assert.match(stage, /for \(const t of TURN_EVENTS\) window\.removeEventListener\(t, onTurn\);/, "removed on dispose");
   assert.match(stage, /holdForTurn\(now = performance\.now\(\)\): void \{\s*if \(this\.status === "speaking"\) return;/, "her mouth never freezes mid-sentence");
-  assert.match(stage, /if \(!force && now < this\.holdUntil && this\.status !== "speaking"\) return;/);
+  // round 7: the hold applies only when the rig draws on the main thread (a worker frame costs the page almost nothing)
+  assert.match(stage, /if \(!force && now < this\.holdUntil && this\.status !== "speaking" && !\(rig instanceof RemoteRig\)\) return;/);
   assert.match(stage, /if \(this\.holdUntil\) \{ this\.holdUntil = 0; this\.lastNow = 0; \} \/\/ a held gap is not a stall/);
 });
 

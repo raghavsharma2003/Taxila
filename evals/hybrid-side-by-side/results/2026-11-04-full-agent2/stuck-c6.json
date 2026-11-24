@@ -1,0 +1,164 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ki boundary se perimeter samjhenge, phir rectangles aur squares ka hisaab karenge. Ground ke chaaron taraf rope lagani ho, toh andar ki jagah naapoge ya kinare ki lambai?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1429
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Rope sirf ground ke kinare par lagegi; isi poore kinare ki lambai perimeter hai. Agar triangle ke teen kinare hon, toh unki lambaiyon ka kya karoge?",
+   "move": "hint",
+   "card": null,
+   "replyMs": 2363,
+   "replyReadyMs": 3792
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 866
+  },
+  {
+   "who": "teacher",
+   "text": "Samajh nahi aaya, toh doosre tareeke se karte hain. Socho tum ek chhote triangle-shaped park ka poora chakkar laga rahe ho; teenon kinare chaloge, isliye teenon ki lambai jodoge. Triangle ke kinare 5 cm, 6 cm aur 9 cm hon, toh poore chakkar ki lambai kitni hogi?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2777,
+   "replyReadyMs": 3643
+  },
+  {
+   "who": "child",
+   "text": "dhire dhire batao",
+   "read": "no_evidence · slower",
+   "classifyMs": 708
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, dheere dheere karte hain. Pehle sirf do kinare lo: 5 cm aur 6 cm. In dono ko jodne par kitne cm honge?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2470,
+   "replyReadyMs": 3178
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 775
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein dheere dheere batati hoon. Pehle paanch aur chhah centimetre jodo. Dono milakar kitne centimetre hue?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3218,
+   "replyReadyMs": 3993
+  },
+  {
+   "who": "child",
+   "text": "5?",
+   "read": "incorrect",
+   "classifyMs": 1829
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne paanch kaha. Woh sirf pehle kinare ki lambai hai; poore chakkar mein baaki do kinare bhi aate hain. Ab dheere se pehle paanch aur chhah jodo. Kitne hue?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3941,
+   "replyReadyMs": 5770
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, paanch ungliyon ke baad ek aur ungli gino. Paanch ke turant baad aane wali sankhya chhah hoti hai. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 4110,
+   "replyReadyMs": 4111,
+   "fellBack": "level_count_on"
+  },
+  {
+   "who": "child",
+   "text": "picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 842
+  },
+  {
+   "who": "teacher",
+   "text": "Paanch aur chhah centimetre ke kinare milakar kitne centimetre hain?",
+   "move": "explain",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2753,
+   "replyReadyMs": 3595
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1347
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tumne tasveer maangi thi; maaf karo, maine dhyaan nahi diya. Pehle paanch aur chhah centimetre milao, kitne centimetre hue?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 3152,
+   "replyReadyMs": 4499
+  },
+  {
+   "who": "child",
+   "text": "7",
+   "read": "incorrect",
+   "classifyMs": 1477
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne saat kaha. Maaf karo, tumne tasveer maangi thi aur maine nahi dikhayi. Main ab tribhuj ki rekha banati hoon; paanch se aage chhah ginoge, toh kitne par pahunchoge?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2997,
+   "replyReadyMs": 4474
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1116
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Tum rukna chahti ho; tum aage badh sakti ho, chhota break le sakti ho, ya aaj ke liye band kar sakti ho. Tum kya chunogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 4576,
+   "replyReadyMs": 5692,
+   "guard": [
+    "wrap"
+   ]
+  }
+ ]
+}

@@ -402,3 +402,15 @@ test("replay of a snapshot recorded before usage.voiceSecMonth existed serves it
   assert.deepEqual(v.get("usage.voiceSecMonth").value, {});
   assert.throws(() => v.get("cal.days"), ReplayMiss);
 });
+
+test("audit LEARN-21: a homework or practice start does not take today's lesson slot; a live one still does", () => {
+  for (const kind of ["homework", "practice"]) {
+    let s = run(fresh(), opened, ist("2026-10-05", "16:10")).state;
+    s = run(s, { type: "lesson.started", lessonId: `H-${kind}`, topicId: "t", kind, lanes: ["tap"] }, ist("2026-10-05", "16:20")).state;
+    assert.deepEqual(s.plan.startedSlotIds ?? [], [], kind);
+    assert.equal(s.lesson.slotId, undefined);
+    s = run(s, { type: "lesson.ended", lessonId: `H-${kind}`, reason: "completed", minutes: 2 }, ist("2026-10-05", "16:22")).state;
+    assert.deepEqual(s.plan.doneSlotIds ?? [], [], `${kind}: the lesson slot stays open`);
+    assert.deepEqual(s.adapt.prereqChecked ?? {}, {}, `${kind}: no prerequisite check was run`);
+  }
+});

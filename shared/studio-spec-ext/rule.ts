@@ -158,6 +158,6 @@ function keysRule(spec: RuleSpec) {
 export const ruleDef: ExtSpecDef<RuleSpec> = {
   archetype: "rule-machine@1", title: "Machine Factory", kind: "game", subjects: ["maths"],
   act: "build the rule from operation tiles so a machine fills every order, turns a step number into a growing pattern's count, runs a 'think of a number' backwards; place brackets to hit a target; explore Collatz chains",
-  outcomes: { classes: [4, 5, 6, 7], subjects: ["maths"], topics: ["c7-maths-ch04-t03", "c7-maths-ch02-t02", "c7-maths-ch15-t01"], misconceptions: [] },
+  outcomes: { classes: [4, 5, 6, 7], subjects: ["maths"], topics: ["c7-maths-ch04-t03", "c7-maths-ch02-t02", "c7-maths-ch15-t01", "c4-maths-ch03-t02"], misconceptions: [] },
   schema: RuleSchema as unknown as z.ZodType<RuleSpec>, defaultSpec: rmDefault, repair: repairRule, grade: gradeRule, keys: keysRule,
 };

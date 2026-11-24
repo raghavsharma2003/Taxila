@@ -11,7 +11,7 @@ import { screenProblem, stripScreenRefs } from "../server/director/say.js";
 import { requestOf } from "../server/director/requests.js";
 import { sttSession } from "../server/voice/stt.js";
 
-const EXPORT = JSON.parse(fs.readFileSync(new URL("../docs/design/round4/build/r12/rca/owner-lessons-2026-10-11.json", import.meta.url), "utf8"));
+const EXPORT = JSON.parse(fs.readFileSync(new URL("./fixtures/owner-lessons-2026-10-11.json", import.meta.url), "utf8"));
 const A = EXPORT["a95d2ff1-0d79-4d4c-8f32-dd255c2236e1"];
 const line = (seq) => A.turns.find((t) => t.seq === seq).text;
 const RUNG = { id: "rung-s1", engine: "explainer@1" };          // the Director's template board in the tray (brain/propose.js RUNG_ENGINE)

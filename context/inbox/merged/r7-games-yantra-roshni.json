@@ -1,0 +1,23 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-yantra-roshni",
+   "kind": "decision",
+   "at": "2026-11-09",
+   "title": "yantra/roshni (light) as a never-timed mode for class 7 science c7-science-ch11-t01: a light bench (a lane per thing, a slot for a screen, the child's eye on the right). parda (s2) place kit-named screens so the eye sees each lit source clearly / not clearly / not at all as the card shows; roshan (s3) switch kit-named sources and place opaque screens so the eye sees only the card's things (a non-luminous thing only by a source's light reflected; only sunlight lights the Moon); dhak (s1) cover, with exactly as many cardboard covers as sources, everything that gives out its own light. Mal-rules: m3 blur-clear, m1 moon-alone and moon-cover, m2 look-hard. Rays are drawn only from sources; the Sun's lane is always walled from the eye. Why: the topic had no game. Reverse: a child pilot shows parda placements made by trial (many refused looks per level) rather than by what each material lets through."
+  },
+  {
+   "id": "ms-r7-games-yantra-roshni-cert",
+   "kind": "measurement",
+   "at": "2026-11-09",
+   "title": "yantra/roshni play-cert (forge3-qa, p360/p412/l1366): every roshni sample passes at every size (24 new samples; table 4272/4272; the existing yantra samples unchanged); every goal solved by real taps at 360 x 640 on seeds 3 and 17 at all three looks (18 runs); every mal-rule state reached (4); no clipped label; smallest tap target 48 px; tests/r7-games-yantra-roshni.test.mjs 18 tests."
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-games-yantra-roshni", "rel": "measured_by", "dst": "ms-r7-games-yantra-roshni-cert" }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-yantra-roshni`\n\n**yantra/roshni** (light, class 7 science, c7-science-ch11-t01) is a fourth yantra mode. Nothing runs on a clock: a switch, a screen or a cover changes only on a tap, and Look asks the law what the eye sees; the eye's view is shown only after a look, with the light's path drawn out from each source (never from the eye).\n\n- **parda** (s2): lit sources; the kit's screens (clear glass, clean water, air as the empty slot; butter paper, frosted glass, oiled paper; cardboard, wood, a steel plate, a brick wall) placed so the eye sees each light as the card shows.\n- **roshan** (s3): switches on the kit's sources (the Sun, a star, a candle flame, a glowing bulb, a firefly); the Moon is lit only by sunlight, a steel plate by any source; looks 2-3 add opaque screens to keep a light out of the eye's sight.\n- **dhak** (s1): every source lit; exactly as many cardboard covers as sources; make the room dark.\n- **Mal-rules** (kit ids): m3 blur-clear (a translucent screen in a lane the card wants clear); m1 moon-alone (Look with the Moon wanted and no sunlight on it) and moon-cover (a cover on the Moon); m2 look-hard (Look with no light on).\n- **Eye safety:** the Sun's lane always has a brick wall before the eye; the Sun is never in parda and never on a card as seen. Any eye-safety line is the teacher's.\n- **Numbers:** none on screen; the covers are a scene value drawn as squares.\n\nReverse if a child pilot shows parda placements made by trial rather than by what each material lets through.",
+  "measurements": "## `ms-r7-games-yantra-roshni-cert`\n\nyantra/roshni play-cert, 2026-11-09 (forge3-qa, local harness, p360 / p412 / l1366, every art direction).\n\n- **Cert:** every roshni sample passes at every size (24 new samples); the table stands at 4272 of 4272; the existing yantra samples are unchanged.\n- **Tests:** tests/r7-games-yantra-roshni.test.mjs, 18 tests: an independent checker (its own reading of the kit) agrees with what the eye sees at every look over random play; every mal-rule folds its kit id; every source and material is read out of the kit's sentences; no ray starts at the eye; the Sun's lane is always walled; CPU-time speed bars.\n- **Browser runs** (page.mouse on the canvas targets, getByTestId on the DOM buttons, never a dispatch): every goal solved at 360 x 640 on seeds 3 and 17 at looks 1 to 3 (18 runs); every mal-rule state reached (4); no clipped label; smallest tap target 48 px.\n- **Shots:** docs/design/round7/games/runshots-yantra-roshni/."
+ }
+}

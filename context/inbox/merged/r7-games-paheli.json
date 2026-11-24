@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-paheli",
+   "kind": "decision",
+   "at": "2026-11-07",
+   "title": "paheli (number puzzles) as one never-timed law family for classes 6-7: pairs (load bags / trays onto a boat that must carry exactly T: parity rules the all-odd loads out), magic (tiles on a 3 x 3 grid, all 8 lines added; 1-9 and shifted sets), cipher (digit tiles on a letter sum, added column by column with carries), mirror (a 2-digit start reverse-and-added to a target palindrome). 4 topics: c7-maths-ch06-t01, c7-maths-ch06-t02, c7-maths-ch06-t04, c6-maths-ch03-t02 (s2 only). Why: the four puzzle topics were served only by ITEM-ARENA. Reverse: a child pilot shows the boards are solved by blind trial rather than parity, centre or carry reasoning."
+  },
+  {
+   "id": "ms-r7-games-paheli-cert",
+   "kind": "measurement",
+   "at": "2026-11-07",
+   "title": "paheli play-cert (forge3-qa, p360/p412/l1366, game mounted) and law tests: independent checker agrees over random play; four goals solved by real taps at 360 px."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-paheli",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-paheli-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-paheli`\n\n**paheli** (number puzzles, classes 6-7) is a law family. Nothing in it runs on a clock and nothing is an answer box: the child loads bags, places number tiles, gives letters digit tiles or sets a start, and on go the law answers by plain arithmetic (pairing counters, adding every line, column addition with carries, reverse-and-add).\n\n- **pairs/load** (c7-ch06-t01 s1, s3): a boat with k seats must carry exactly T counters; bag cards (look 1: counters drawn in pairs, an odd bag's lone counter apart). Every level is built so that the k odd bags nearest T can never make it (two odds for an odd T, three or five odds for an even T). The sail pairs each bag inside, slides the lone counters together to pair up, then lays the total against the flag. **pairs/trays** (s2): the same boat with trays of rows × columns; odd × odd is the only odd tray.\n- **magic/square** (c7-ch06-t02 s1, s2): tiles 1-9 on a 3 × 3 grid (the centre and two cells given at look 1, a corner and an edge at look 2, one edge at look 3); the run adds all 8 lines and writes each sum at its end. **magic/shift** (s3): nine numbers in other steps (2-10, 3-11, 11-19, 2-18 by 2, 1-17 by 2): the magic sum and the centre move with the numbers and are never told.\n- **cipher/letters** (c7-ch06-t04 s1-s3): a letter sum with exactly one solution (look 1: at most two letters to find); a key per letter and a 0-9 pad (each digit once, no leading 0); the run adds from the ones with a carry box over every column and stops at the first column that does not write its letter.\n- **mirror/reach** (c6-ch03-t02 s2): a target palindrome (55-121, 121-484, 1111-44044 by look); two digit wheels set a 2-digit start; the run writes every reverse-and-add line until the first palindrome, which must be the target (AB + BA depends on A + B alone).\n\nMal-rules map only to the topic's own kit beliefs: two-odds → odd-plus-odd, odd-count → three-odds-even, like-sum (trays chosen by reading their parity with the sum rules) → product-like-sum, rows and rows-cols (every row, or every row and column, on the sum) → rows-only, ignore-carry (each column alone, the carry dropped) → ignore-carry, big-carry (the leading letter of a one-digit-longer sum as 2) → big-carry. Not admitted: c6-ch03-t02-s1 (digit sums: setting a number with a given digit sum would be an answer box) and c6-ch03-t02-s3 (Kaprekar); they stay with ITEM-ARENA. Kit beliefs with no honest set-up here: trial-only, add-breaks, few-works, digitsum-size, kaprekar-zero.\n\nReverse if a child pilot shows bags, tiles or digits are found by blind trial (many runs per level with no parity, centre or carry reasoning), or the reverse-and-add start is guessed rather than steered by A + B.",
+  "measurements": "## `ms-r7-games-paheli-cert`\n\npaheli play-cert, 2026-11-07 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 48 of 48 paheli samples pass at p360, p412 and l1366 with the game mounted (smallest text 16 px; 3656 of 3656 samples in the file). Counts are in server/forge3/certs/play.json.\n- **Tests:** tests/r7-games-paheli.test.mjs, 40 tests. An independent checker (it counts each bag's or tray's counters one by one, adds the 8 grid lines from its own index list, builds each letter row's number digit by digit, reverses through the decimal string) agrees with the law over at least 2000 random acts per goal; every coverage entry serves a proven level through the play server at every fade.\n- **Browser runs:** the opening board, a solved run and a misconception run per goal at 360 px in the dev harness; square, letters, load and reach solved by real taps only (page.mouse on the canvas targets, getByRole on the run button). Shots in docs/design/round7/games/runshots-paheli/.\n- **lint-ui:** 354 findings before and after (no new finding)."
+ }
+}

@@ -1,0 +1,251 @@
+[
+  {
+    "id": "gen-c4-maths-ch03-t01-98e85cb6",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.even = \"Joda sankhya\" (shown on screen as the round rule \"Joda sankhya\" at p412 and l1366)",
+        "detail": "The textbook Hindi term for an even number is \"sam sankhya\" (the topic's verified key accepts \"sam\"), and it pairs with \"Visham sankhya\" for odd. \"Joda sankhya\" is not the standard term. \"Joda\" also means \"added/joined\" (the target spec itself bans \"joda hua\" as a literal word), so the rule label is non-standard and can confuse a class 4 child about what to pick."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round range is lo 0 to hi 20, so 0 can appear. From the packet I cannot tell whether the seeded stream (seed 11, count 12, hitRate 0.5) actually shows 0, which is what the zero-not-even mix-up needs. Not counted."
+  },
+  {
+    "id": "gen-c4-maths-ch05-t01-af82c0ad",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Sub text 'Bar ko 3 hisso mein kato' uses the common informal Roman spelling 'hisso' (for hisson); treated as an accepted Roman Hinglish variant, not a misspelling. Waves 2-4 screens are not shown; judged from the spec, whose titles and subs match each wave's parts count (3, 4, 5, 6), with marks false throughout."
+  },
+  {
+    "id": "gen-c4-maths-ch06-t01-2e83e71f",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0] items[1] {\"target\": 80, \"show\": \"cm\"} with \"minor\": 30",
+        "detail": "Ticks are every 30 mm (3 cm) on a 0-300 cm rule; 8 cm (80 mm) is not a multiple of 3 cm, so the drawn board cannot show the asked value exactly."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[1] items[1] {\"target\": 1250000, \"show\": \"km+m\"} with \"minor\": 20000",
+        "detail": "Ticks are every 20 m; 1 km 250 m (1250 m) is not a multiple of 20 m, so the board cannot show it exactly."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[2] \"Alag lambaiyan\": items targets 100, 200, 340 (\"show\": \"cm\") with \"scaleMax\": 2000000, \"minor\": 20000",
+        "detail": "10 cm, 20 cm and 34 cm are asked on a 2 km rule whose smallest tick is 20 m; these lengths cannot be shown or marked at all on this board (tol 5 mm on a 2,000,000 mm scale)."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0] \"targets\": \"c4-maths-ch06-t01-m-edge-start\"; screen: pink object starts at 0 on the ruler",
+        "detail": "The mix-up is starting from the edge/1 instead of 0 or reading only the end number (\"Says an object from 3 to 9 is 9 cm long\"). Every cut starts at 0, so reading the end number is always right; a child holding the mix-up is never shown wrong."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c4-maths-ch07-t01-a18305fd",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "spec.rounds[0].customers[0] (\"price\": 3250, \"price\": 50) as shown on screen \"Copy 1 × ₹32.50\", \"Pencil 1 × ₹0.50\"",
+        "detail": "The topic's cards and mix-up are whole-number 4-digit addition/subtraction (e.g. 3256 + 48, 2345 + 1432). The engine renders the spec prices as rupees-and-paise decimals (₹32.50 + ₹0.50, ₹34.00 + ₹0.50, ₹50.00 − ₹29.00), so the child practises decimal money sums, not the 4-digit place-value alignment the mix-up is about; the numbers the child sees are never a 4-digit number plus a 2-digit number."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "\"Pencil 1 × ₹0.50\"; spec items \"Eraser\" 50, \"Sticker\" 50, \"Bag\" 3400 (₹34.00)",
+        "detail": "Prices as shown are not true to an Indian shop: a pencil or eraser for 50 paise, a school bag for ₹34. The shop scene states these as prices."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round titles \"Bazaar ki bheed\" / sub \"Dhyan se hisaab karo\" are not visible on the first screen; could not tell from the images whether they appear later. p412 does not show the Sabr meter on the first screen; not counted."
+  },
+  {
+    "id": "gen-c4-maths-ch09-t01-bc975627",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[0]: rule \"multiple\", a 4, lo 2, hi 48, seed 37; rule pill \"4 ke guna\"",
+        "detail": "The mix-up is \"Treats the × sign as +, so 6 × 4 is worked out as 6 + 4\". The round only asks the child to pick multiples of 4 from random numbers between 2 and 48 (first screen shows \"35\"). There is no × expression, and the distractors are not built from the sums (4 + n) that a child holding the belief would give. Nothing in the round makes that belief lead to a wrong pick, so the round would not show the mix-up."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.title / rounds[0].title: \"Tray wali daud\"",
+        "detail": "The title talks about trays, but the round has no trays and no tray groups. It is only a stream of numbers with the rule \"4 ke guna\", so the title does not match the round's picture or items."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "At l1366 the rule pill reads \"Chalo shuru 1  4 ke guna\" and repeats the round label. That is readable and not overlapping, so it is not counted."
+  },
+  {
+    "id": "gen-c5-maths-ch01-t01-4b065a92",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 screen, target card",
+        "detail": "The label \"Lakshya\" is overlapped by the target text \"ten thousand five hundred\": the first line \"ten thousand\" sits on top of the lower half of \"Lakshya\", so the two texts collide."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen, target card",
+        "detail": "The same overlap at laptop size: \"Lakshya\" is half covered by \"ten thousand\" of the target \"ten thousand five hundred\"."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Targets (10500, 40006, 100500, 24360, 40060, 102345) are correct, and each round's denoms reach its highest place. The rounds work on the zero-placeholder mix-up (10,500; 40,006; 1,00,500; 40,060). How the engine shows 'words' targets in a Hinglish piece (English number words such as \"ten thousand five hundred\") is set by the engine, not by this spec, so it is not counted."
+  },
+  {
+    "id": "gen-c5-maths-ch03-t01-2761c048",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.waves[0].sub",
+        "detail": "Sub-title \"ghadi aur lighthouse dekho\" tells the child to look at a clock (ghadi), but the round's picture is only a lighthouse beam on a dial; there is no clock anywhere on the board. The words disagree with the picture."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c5-maths-ch03-t02-5ca46e96",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.waves (all three rounds)",
+        "detail": "The target mix-up is 'Believes an angle is a right angle whenever the paper corner can be laid on it with one arm matching, without checking that the other arm also lies exactly along the second edge'. Every item is acute and none is 90: call [40,70,80,50], classify [20,30,60,80] with kind \"acute\", copy [40,70,80,50]. No round puts a right angle next to a near-right angle and asks the child to tell them apart or to check the second arm, so a child holding the mix-up is never shown where the belief fails. A child who would call 80 a right angle can still aim the beam at '80°' correctly in the call and copy rounds."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.accuracy and spec.waves[2].sub / spec.strings.copy",
+        "detail": "\"Milaan ki safai\" uses 'safai' (cleanliness) for accuracy, an unnatural word choice for a class 5 child. The same word is also spelt two ways: \"Waisa hi banao\" vs \"Diye hue khulne jaisa banaao\"."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The beam drawn at about 22° on the first screen is taken to be the child's starting aim, not the 40° target. I could not tell this from the packet, so I did not count it."
+  },
+  {
+    "id": "gen-c5-maths-ch05-t01-5880cd50",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Targets 1 km, 2 km, 1 km, 1 km 500 m on a 0-2000 m rule with 20 m minor ticks: all exactly placeable and consistent with the keys (1 km = 1,000 m). A child holding '1 km = 100 m' would cut near 100 m, so the mix-up shows. The large '1 km 0 m' box on screen reads as the target, not a live readout of the cut (the pink bar sits near 120 m); if it is meant as a live readout it would be wrong, but the packet does not say which. Round 2 is tagged to a different misconception id (m-mixed-concat) but still practises km-m conversion."
+  },
+  {
+    "id": "gen-c6-maths-ch02-t04-e94f0109",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.waves[0..2].items (all 90) with the fixed base arm drawn flat at 0° on screen",
+        "detail": "The mix-up is 'Thinks a right angle must have one arm flat and one upright, so a tilted right angle is not a right angle'. Every item in every wave is 90 measured from a horizontal 0° arm (screen shows the fixed white arm flat to '0°'), so the child only ever makes the upright 'L' right angle. No tilted right angle is ever shown, so a child holding the belief never meets the case where it goes wrong; the piece reinforces the L-position instead."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.waves[2].title: \"Kona badalta hai\" / sub: \"Har tasveer ko dhyan se dekho\"",
+        "detail": "The title says the angle changes ('Kona badalta hai') and the sub speaks of different pictures, but the round's items are [90, 90, 90, 90, 90] on the same flat base: neither the angle nor its orientation changes. Words disagree with their own round."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c6-maths-ch05-t01-132060cc",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round rule factor of 12 over 1..12: the factors are 1, 2, 3, 4, 6, 12, so the 6 targets match the screen's 'Chuno 0/6' and the card key '1, 2, 3, 4, 6, 12'. Because 1 and 12 are in range, a child holding the miss-ends mix-up gets caught. The round title '12 ka Chuno' is not on either screen; the screen shows the rule label '12 Ke gunankhand'."
+  },
+  {
+    "id": "gen-c7-maths-ch03-t01-24e2fc82",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0]: scaleMax 2000000, minor 20000; items target 700, 360, 40 (shown 'm'); screen ruler '0 400 800 1200 1600 2000' with unit 'm'",
+        "detail": "The child is asked to cut 0.7 m, 0.36 m and 0.04 m on a rule running 0 to 2000 m whose smallest ticks are 20 m (minor 20000 mm). None of these targets can be shown or marked exactly on this board; 0.7 m is 1/28 of one minor tick, and tol 2 mm is far below a pixel."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0] title 'Lambi patti', sub 'Rule par lambai dekho', ruler in units of 400 m",
+        "detail": "The mix-up is 'thinks 0.5 = 1/5 / cannot link 0.36 to 36/100'. A 2000 m rule with no tenths or hundredths of a metre visible gives no place where 0.7 m appears as 7 of 10 parts of 1 m, so a child holding the belief (0.7 = 1/7) is never shown where it goes wrong."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  }
+]

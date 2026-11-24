@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-koshtak",
+   "kind": "decision",
+   "at": "2026-11-06",
+   "title": "koshtak (expressions: terms, brackets, order of evaluation, like terms) as one never-timed law family for class 7: tray (walls snapped between the terms of a row and a counter that works each tray then joins them; one lid laid so the row makes a value; a bracket after a minus opened into jumps whose directions the child turns, walked against the bracketed row on one number line), bin (term cards with their signs put into bins that close into one term only when every card has the same letter part, checked against the belt with numbers for the letters). 2 topics: c7-maths-ch02-t02, c7-maths-ch04-t02. Why: both were served only by ITEM-ARENA. Reverse: a child pilot shows walls / lids / turns set by trial runs rather than by reading the signs."
+  },
+  {
+   "id": "ms-r7-games-koshtak-cert",
+   "kind": "measurement",
+   "at": "2026-11-06",
+   "title": "koshtak play-cert (forge3-qa, p360/p412/l1366, game mounted): 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px); 32 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-koshtak",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-koshtak-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-koshtak`\n\n**koshtak** (expressions, class 7) is a law family. Nothing in it runs on a clock: every wall, lid, jump and card moves only on a touch, and the law answers only on run. It is a different mechanic from kram's rule machine (a × n + b fed the stage number), taraazu's balance (solving for a hidden bag) and nishana's hops (integer operations on a line): here the child decides the STRUCTURE of an expression (where its terms are, where its bracket goes, which way each opened term points, which terms are like) and a machine that only follows that structure does the arithmetic.\n\n- **tray/terms** (c7-maths-ch02-t02 s1, s2): a row of numbers joined by + − × stands on trays; the child snaps tray walls into gaps. The counter works each tray on its own (left to right inside it) and then joins the trays left to right. Every level is built so that ONLY walls at the + and − gaps make what the row is worth, so a wall IS splitting into terms.\n- **tray/lid** (c7-maths-ch02-t02 s2): a value to make and a row; the child lays one lid (a bracket) over a run of numbers; the lid's inside is worked out first. Built so exactly one lid makes the value (and the row without a lid never does).\n- **tray/open** (c7-maths-ch02-t02 s3): a − (b ± c …) ± d; the bracket opens into jumps that keep their written signs (the minus stays on the first). The child turns jumps forward / back; two walks run on one number line (the bracket as one big jump back, and the opened jumps) and must land together. Built so only the true signs land.\n- **bin/like** (c7-maths-ch04-t02 s2): term cards with their signs printed on a belt; bins close into ONE term only when every card has the same letter part (a lone letter counts as one of it). Every card binned, every bin closed, one bin per kind; the shelf is tried against the belt with numbers for the letters.\n\nMal-rules map only to the topic's own kit ids: left-to-right (one tray per number; or no lid where the row read left to right makes the value), minus-first-only (no jump turned), unlike-combine (letter cards of different kinds in one bin), lone-letter (the lone letters left on the belt as if they were nothing: 6k − k → 6k; the kit's own sign is \"6\", which needs a typed answer).\n\nNot admitted (no honest mechanic here), so they stay with ITEM-ARENA: c7-maths-ch02-t02-s4 (swapping and grouping smartly; cards that carry their signs cannot show the sign-detach belief), c7-maths-ch04-t02-s1 (substituting a value: the answer is a number the child would type; concatenate has no physical set-up), c7-maths-ch04-t02-s3 (growing patterns; kram serves c7-maths-ch04-t03).\n\n**Reverse if** a child pilot shows walls, lids or turns set by trying runs until one passes rather than by reading the signs (watch runs per level and changes between runs).\n",
+  "measurements": "## `ms-r7-games-koshtak-cert`\n\nkoshtak play-cert, 2026-11-06 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** 32/32 koshtak samples pass at p360, p412 and l1366 with the game mounted (4 entries × 2 seeds × 4 art directions; smallest text 16 px) (counts in server/forge3/certs/play.json).\n- **Run states:** the solved and the believed run of each goal were driven in the harness by taps and looked at (the cert itself shoots the opening state).\n- **Tests:** tests/r7-games-koshtak.test.mjs, 32 tests. An independent checker has its own tokenizer and recursive-descent parser for + − × and brackets, its own tray counter and its own copy of the set-up fed every act the law accepted. It agrees with the law over at least 2000 random acts per case. Generator p95 is under 50 ms.\n"
+ }
+}

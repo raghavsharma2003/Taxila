@@ -1,0 +1,8 @@
+{
+  "nodes": [
+    {"id": "r7-audit-teacher-lanes", "kind": "measurement", "title": "Teacher audit 2026-11-10 (int/r6 21a, code read, n/a model): on default flags every child is on the Director lane (agent lane only via TAXILA_TEACHER=agent or TAXILA_TEACHER_AGENT_FOR; neither is set in infra/ or deploy scripts); the script walk is on and walks 4 topics (data/lesson-scripts: c4 ch05 t01, c5 ch02 t01-t02, c6 ch06 t01); the other 826 kit topics run the kit path", "at": "2026-11-10"},
+    {"id": "r7-audit-teacher-signals-unwired", "kind": "open", "title": "server/signals step() (decision sig-layer-evidence-not-authority) is reached by no product import from server/serve.mjs; only tests/signals-server.test.mjs and evals/signals/run.mjs call it. Either wire it where the decision says or mark the decision unbuilt (audit TEACHER-07)", "at": "2026-11-10"},
+    {"id": "r7-audit-teacher-teachback-tick", "kind": "open", "title": "A teach-back tick on the child's lesson summary comes from the turn classifier's model label (brain/turn.js noteDid), never the blind grade, and corroborate() does not run for why/teach-back modes (audit TEACHER-03)", "at": "2026-11-10"},
+    {"id": "r7-audit-teacher-agent-clip", "kind": "measurement", "title": "Agent lane prompt clips (server/agent/prompt.js): over data/kits/*.json, 1,666 of 25,194 item prompts (hi+en) exceed the 180-char offer clip and 930 the 200-char card clip; 669 of 830 topics have more than the 4 key ideas shown (audit TEACHER-06)", "at": "2026-11-10"}
+  ]
+}

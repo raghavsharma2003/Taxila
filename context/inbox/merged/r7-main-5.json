@@ -1,0 +1,17 @@
+{
+ "nodes": [
+  {"id": "jd-r7-hybrid-full-2026-11-04", "kind": "measurement", "at": "2026-11-04",
+   "title": "Full hybrid side-by-side: 23 lessons (Director 12, agent 11), c4/c5/c6 × steady/offtopic/stuck/steering, Hinglish, production deployments, no DB, ~$2.72. Judged by three Claude judges (one per class), synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Per-scenario wins: Director c6 4/4 and c4 2/3; agent c5 4/4 (2 narrow). Still present after the pilot fixes: English card text, missing givens, abandoned items (most frequent), level collapse, ignored choices, game claims. New: a wrong answer affirmed ('5?' → 'haan, wahi sahi hai'). Fixed: stop check-in, change_topic misread, mostly false 'didn't hear'. Write-up: docs/design/round7/judgements/hybrid-full-2026-11-04.md."},
+  {"id": "dc-r7-hybrid-director-default", "kind": "decision", "at": "2026-11-04",
+   "title": "The Director is the default lesson lane. The agent lane is frozen behind its flag. Its strengths (listening, honest grading, honouring requests, engaging with the child's topic) are ported into the Director's wording, then the lane is deleted. Why: the agent's p50 is 3.9 s against the ~3.5 s bar; quality is split by class and the agent collapses to counting lessons. Reverse: a later side-by-side after the port shows the agent ≥ the Director with p50 ≤ 3.5 s."}
+ ],
+ "edges": [
+  {"src": "dc-r7-hybrid-director-default", "rel": "measured_by", "dst": "jd-r7-hybrid-full-2026-11-04"},
+  {"src": "dc-r7-hybrid-director-default", "rel": "supersedes", "dst": "dc-r7-hybrid-pilot-no-lane-yet"},
+  {"src": "dc-r7-hybrid-director-default", "rel": "part_of", "dst": "dc-r7-hybrid-brain"}
+ ],
+ "md": {
+  "measurements": "## jd-r7-hybrid-full-2026-11-04 (main loop judge, 2026-11-04)\n\nMethod: stream A's harness. Director half run on f2c55d0d (results/2026-11-04-full); agent half rerun on b022df8a with production agent invariants (results/2026-11-04-full-agent2). Production deployments, no DB, scripted Hinglish child, c4/c5/c6 × 4 scenarios; n = 23 lessons (12 + 11), ~10 child turns each. Judged by three Claude judges (one per class) reading every turn against OWNER-RESET-2026-10-04 and the 11 pilot defects; synthesised by the main loop; not blind. Reply-ready p50 Director 2195 ms (n=120) vs agent 3941 ms (n=110). Findings: docs/design/round7/judgements/hybrid-full-2026-11-04.md.",
+  "decisions": "## dc-r7-hybrid-director-default (2026-11-04, main loop)\n\nThe Director is the default lane. The agent lane is frozen and its strengths are ported into the Director's wording before the lane is deleted. Evidence: jd-r7-hybrid-full-2026-11-04. The agent's 3.9 s p50 misses the ~3.5 s bar and it collapses to counting-level lessons; the Director wins c6 and c4, the agent c5. Supersedes dc-r7-hybrid-pilot-no-lane-yet. Reversal: after the port, a side-by-side shows the agent at least as good with p50 ≤ 3.5 s."
+ }
+}

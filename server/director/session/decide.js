@@ -40,6 +40,18 @@ export function foundationFor(topicId, statusOf, { probeMissed = false } = {}) {
  *   foundation: string|null, why: { code: string, ref: string }[] }}
  */
 export function decideSegment(x) {
+  const d = segmentOf(x);
+  // round 7 (Learning patch 006, R5): the planner's prerequisite check on a wheel-spinning skill. When the segment teaches its
+  // topic, the weak prerequisite is a known foundation: foundation_first with it, checked before teaching (once: decideSegment
+  // runs once at the lesson start)
+  const pc = x.prior?.prereqCheck;
+  if (pc && d.topicId && d.topicId === pc.forTopicId && (d.mode === "teach" || d.mode === "reteach") && getTopic(pc.prereqTopicId)) {
+    d.mode = "foundation_first"; d.foundation = pc.prereqTopicId; d.why.push({ code: "prereq_check", ref: pc.prereqTopicId });
+  }
+  return d;
+}
+
+function segmentOf(x) {
   const { frame, pick, confirm, prior = {}, statusOf } = x;
   const why = [];
   const out = (purpose, topicId, mode = "teach", foundation = null) => ({ purpose, topicId: topicId ?? null, mode, foundation, why });

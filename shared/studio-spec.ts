@@ -120,12 +120,13 @@ export function nearestSimple(x: number): string | null {
   }
   return best && best.err <= 0.015 ? (best.d === 1 ? `${best.n}` : `${best.n}/${best.d}`) : null;
 }
-/** A signed decimal or integer call ("-3", "0.45", "-2.5"); fractions allowed for the runner too. */
+/** A signed decimal or integer call ("-3", "0.45", "-2.5", "45000": up to six digits, the runner's ±100000 line); fractions
+ *  allowed for the runner too. */
 export function parseNum(input: unknown): number | null {
   if (typeof input === "number" && Number.isFinite(input)) return input;
   if (typeof input !== "string") return null;
   const s = input.trim().replace("−", "-");
-  if (/^-?\d{1,4}(\.\d{1,3})?$/.test(s)) return +s;
+  if (/^-?\d{1,6}(\.\d{1,3})?$/.test(s)) return +s;
   const neg = s.startsWith("-"), f = parseFrac(neg ? s.slice(1) : s);
   return f ? (neg ? -1 : 1) * fracValue(f) : null;
 }
@@ -632,17 +633,23 @@ const runnerDefault: RunnerSpec = {
     { title: "Beyond the point", sub: "0 to 1 · tenths marked", range: [0, 1], step: 0.1, labels: "ends", calls: ["0.4", "0.45", "0.125", "0.5"], speed: 0.85, dir: 1, targets: "c7-maths-ch03-t03-m-longer-bigger" },
   ],
 };
+/** line-runner range bounds: values within ±RUNNER_MAX; a round spans at most RUNNER_MAX_STEPS of its step; the steps a
+ *  round may count in (the larger ones for 4- and 5-digit lines, e.g. [3000, 7000] in 1000s). */
+export const RUNNER_MAX = 100000, RUNNER_MAX_STEPS = 1000;
+export const RUNNER_STEPS = [0.01, 0.1, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000];
 function repairRunner(raw: Record<string, unknown>, r: string[]): RunnerSpec | null {
   const env = envelope(raw, runnerDefault, r);
   const rounds: RunnerSpec["rounds"] = [];
   for (const w of arr(raw.rounds, "rounds", r).slice(0, 6)) {
     if (!isObj(w)) { r.push("round:not-an-object"); continue; }
     const rg = Array.isArray(w.range) && w.range.length === 2 && typeof w.range[0] === "number" && typeof w.range[1] === "number" && Number.isFinite(w.range[0]) && Number.isFinite(w.range[1]) ? [w.range[0], w.range[1]] as [number, number] : null;
-    if (!rg || rg[1] <= rg[0] || rg[0] < -1000 || rg[1] > 1000 || rg[1] - rg[0] > 1000) { r.push("round-range"); continue; }
+    // The limit is in steps, not units (2026-11-11: a 1000-unit cap meant a class-4 4-digit comparison, [3000, 7000], could
+    // never be expressed): values within ±RUNNER_MAX, at most RUNNER_MAX_STEPS steps of the round's step end to end.
+    if (!rg || rg[1] <= rg[0] || rg[0] < -RUNNER_MAX || rg[1] > RUNNER_MAX) { r.push("round-range"); continue; }
     const span = rg[1] - rg[0];
-    const steps = [0.01, 0.1, 0.25, 0.5, 1, 2, 5, 10, 50, 100];
-    let step = typeof w.step === "number" && steps.includes(w.step) ? w.step : NaN;
-    if (!Number.isFinite(step) || span / step > 40 || span / step < 2) { if (w.step !== undefined) r.push("round-step"); step = steps.find((s) => span / s <= 20 && span / s >= 2) ?? span / 10; }
+    let step = typeof w.step === "number" && RUNNER_STEPS.includes(w.step) ? w.step : NaN;
+    if (!Number.isFinite(step) || span / step > 40 || span / step < 2) { if (w.step !== undefined) r.push("round-step"); step = RUNNER_STEPS.find((s) => span / s <= 20 && span / s >= 2) ?? span / 10; }
+    if (span / step > RUNNER_MAX_STEPS) { r.push("round-range"); continue; }
     const calls: string[] = [];
     for (const c of arr(w.calls, "calls", r).slice(0, 8)) {
       const v = parseNum(c);
@@ -728,7 +735,7 @@ function gradeArea(spec: AreaSpec, itemId: string, value: unknown): Graded {
 }
 
 // ═════════════════════════════ 7. vault-heist@1 — Place-value heist ═════════════════════════════
-const VH_STRINGS = { coach: "Tap blocks on the belt to load the vault", round: "Vault", target: "TARGET", loaded: "loaded", over: "over by", under: "short by", cracked: "VAULT OPEN", regroup: "REGROUPED", runDone: "Heist complete", words: "say it", time: "laser" };
+const VH_STRINGS = { coach: "Tap blocks on the belt to load the vault", round: "Vault", target: "TARGET", loaded: "loaded", over: "over by", under: "short by", cracked: "VAULT OPEN", regroup: "REGROUPED", runDone: "Vault full", words: "say it", time: "laser" };
 const VH_MISC = ["c4-maths-ch04-t01-m-concat", "c4-maths-ch04-t01-m-drop-zero", "c4-maths-ch04-t01-m-face-value", "c7-maths-ch01-t01-m-zero-placeholder", "c7-maths-ch01-t01-m-intl-commas"];
 const DENOMS = [1, 10, 100, 1000, 10000, 100000] as const;
 const VaultSchema = z.object({
@@ -786,7 +793,9 @@ function gradeVault(spec: VaultSpec, itemId: string, value: unknown): Graded {
 }
 
 // ═════════════════════════════ 8. angle-cannon@1 — Turret (angles as turns) ═════════════════════════════
-const AN_STRINGS = { coach: "Drag to turn the turret · release to fire", wave: "Wave", threat: "THREAT AT", copy: "COPY THIS TURN", only: "HIT ONLY", hit: "DIRECT HIT", close: "CLOSE", offBy: "off by", runDone: "Sector clear", accuracy: "accuracy", hits: "hits", acute: "ACUTE", right: "RIGHT", obtuse: "OBTUSE", reflex: "REFLEX" };
+// (main 2026-11-11: no weapon words in any string a child reads — the content check scored "turret ... fire" as violence;
+// the engine aims a lighthouse's beam of light at a mark instead. Keys stay, so specs keep validating.)
+const AN_STRINGS = { coach: "Drag to turn the beam · let go to light it", wave: "Wave", threat: "LIGHT AT", copy: "COPY THIS TURN", only: "LIGHT ONLY", hit: "SPOT ON", close: "CLOSE", offBy: "off by", runDone: "All lit up", accuracy: "accuracy", hits: "hits", acute: "ACUTE", right: "RIGHT", obtuse: "OBTUSE", reflex: "REFLEX" };
 const AN_MISC = ["c5-maths-ch03-t01-m-angle-is-length", "c5-maths-ch03-t01-m-half-is-quarter", "c6-maths-ch02-t03-m-wrong-scale", "c6-maths-ch02-t03-m-tool-size", "c5-maths-ch03-t01-m-cw-confuse"];
 const AngleSchema = z.object({
   archetype: z.literal("angle-cannon@1"), ...Envelope,
@@ -798,7 +807,7 @@ export function angleKind(a: number): "acute" | "right" | "obtuse" | "straight" 
 const angleDefault: AngleSpec = {
   archetype: "angle-cannon@1", skills: ["c5-maths-ch03-t01", "c6-maths-ch02-t03", "c6-maths-ch02-t04"], lang: "en", strings: { ...AN_STRINGS },
   waves: [
-    { title: "Calibrate", sub: "turn from the zero arm, anticlockwise", mode: "call", items: [90, 45, 135, 30], range: 180, scaffold: "tens", speed: 0.8 },
+    { title: "Calibrate", sub: "turn from the zero arm, anticlockwise", mode: "call", items: [90, 40, 130, 30], range: 180, scaffold: "tens", speed: 0.8 },
     { title: "Copy the turn", sub: "long arms or short, the turn is the angle", mode: "copy", items: [60, 120, 25, 150], range: 180, scaffold: "none", speed: 0.85, targets: "c5-maths-ch03-t01-m-angle-is-length" },
     { title: "Obtuse only", sub: "more than a right angle, less than straight", mode: "classify", items: [40, 110, 95, 150, 70, 125], kind: "obtuse", range: 180, scaffold: "none", speed: 0.9 },
     { title: "Past straight", sub: "the full turn is open now", mode: "call", items: [200, 270, 315, 160], range: 360, scaffold: "none", speed: 0.9, targets: "c5-maths-ch03-t01-m-half-is-quarter" },
@@ -1497,9 +1506,9 @@ export const ENGINE_SPECS: Record<string, EngineSpecDef<unknown>> = {
     outcomes: { classes: [6, 7], topics: ["c6-maths-ch10-t02", "c7-maths-ch03-t03", "c4-maths-ch04-t02"], misconceptions: LR_MISC } }),
   "area-claim@1": def<AreaSpec>({ archetype: "area-claim@1", title: "Plot", kind: "game", subject: "maths", schema: AreaSchema, defaultSpec: areaDefault, repair: repairArea, grade: gradeArea,
     outcomes: { classes: [5, 6], topics: ["c5-maths-ch11-t01", "c5-maths-ch11-t02", "c5-maths-ch11-t03", "c6-maths-ch06-t01", "c6-maths-ch06-t02"], misconceptions: AC_MISC } }),
-  "vault-heist@1": def<VaultSpec>({ archetype: "vault-heist@1", title: "Vault Heist", kind: "game", subject: "maths", schema: VaultSchema, defaultSpec: vaultDefault, repair: repairVault, grade: gradeVault,
+  "vault-heist@1": def<VaultSpec>({ archetype: "vault-heist@1", title: "Number Vault", kind: "game", subject: "maths", schema: VaultSchema, defaultSpec: vaultDefault, repair: repairVault, grade: gradeVault,
     outcomes: { classes: [4, 5, 7], topics: ["c4-maths-ch04-t01", "c5-maths-ch01-t01", "c7-maths-ch01-t01"], misconceptions: VH_MISC } }),
-  "angle-cannon@1": def<AngleSpec>({ archetype: "angle-cannon@1", title: "Turret", kind: "game", subject: "maths", schema: AngleSchema, defaultSpec: angleDefault, repair: repairAngle, grade: gradeAngle,
+  "angle-cannon@1": def<AngleSpec>({ archetype: "angle-cannon@1", title: "Lighthouse", kind: "game", subject: "maths", schema: AngleSchema, defaultSpec: angleDefault, repair: repairAngle, grade: gradeAngle,
     outcomes: { classes: [5, 6], topics: ["c5-maths-ch03-t01", "c5-maths-ch03-t02", "c6-maths-ch02-t02", "c6-maths-ch02-t03", "c6-maths-ch02-t04"], misconceptions: AN_MISC } }),
   "food-web@1": def<FoodSpec>({ archetype: "food-web@1", title: "Balance the Forest", kind: "simulation", subject: "science", schema: FoodSchema, defaultSpec: foodDefault, repair: repairFood, grade: gradeFood,
     outcomes: { classes: [4, 6], topics: ["c4-evs-ch03-t02", "c6-science-ch02-t03"], misconceptions: FW_MISC } }),

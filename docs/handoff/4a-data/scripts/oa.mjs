@@ -1,0 +1,12 @@
+const R = process.argv[2];
+const { kitFromFile } = await import(R + "/server/content/kits.js");
+const { getTopic } = await import(R + "/server/content/curriculum.js");
+const { targetFor } = await import(R + "/server/director/classify.js");
+const C = await import(R + "/server/grading/corroborate.js");
+const K = kitFromFile(getTopic("c6-science-ch03-t04")); const item = K.items.find((i) => i.id === "c6-science-ch03-t04-i12");
+const target = targetFor({ phase: "practice" }, K, item);
+const other = K.items.filter((o) => o.id !== item.id && typeof o.answer === "string").flatMap((o) => [o.answer, ...(o.acceptable ?? []).slice(0, 1)])[0];
+const text = `${target.parts.join(", ")}? ya phir ${other}`;
+console.log("TEXT:", text.slice(0, 300));
+console.log("forms:", JSON.stringify(C.completeForms(target)).slice(0, 200));
+console.log("→", JSON.stringify(C.corroborate({ target, text, result: { outcome: "correct", confidence: 0.9, source: "model", flags: {} } })));

@@ -1,0 +1,86 @@
+/* Scheduling controls, Volt calm (round 7 F item 3; OWNER-RESET #11). Scoped to `.sch` (src/ui-v3/Scheduler.tsx), so it
+   loads wherever a control is used: set-up (Volt night, the v2 tokens re-pointed at K's in onboarding/volt.css), the
+   parent corner (v2 tokens, parent.css) and the v3 gallery (v3 tokens). Every colour is a token with a token fallback:
+   no colour literal (lint-ui L-HEX). Calm: one quiet surface, a hairline, the selected option inverted
+   (ink on paper), the accent only on focus. Targets >= 44 px, text >= 13 px, no horizontal page scroll at 360. */
+
+.sch {
+  --sch-surface: var(--surface, var(--bg-1));
+  --sch-surface-2: var(--surface-2, var(--bg-2));
+  --sch-paper: var(--paper, var(--bg));
+  --sch-line: var(--line, var(--line-2));
+  --sch-ink: var(--ink);
+  --sch-ink-2: var(--ink-2);
+  --sch-ink-3: var(--p-ink-3, var(--ink-3, var(--ink-2)));
+  --sch-focus: var(--focus, var(--ion));
+  --sch-mono: var(--k-mono, var(--f-mono, ui-monospace, "SFMono-Regular", Menlo, monospace));
+  --sch-sans: var(--font-ui, var(--f-ui, system-ui, sans-serif));
+  --sch-r: var(--onb-cut-sm, 10px);
+  min-width: 0;
+  font-family: var(--sch-sans);
+  color: var(--sch-ink);
+}
+.sch *, .sch *::before, .sch *::after { box-sizing: border-box; }
+.sch button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.sch button:focus-visible { outline: 2px solid var(--sch-focus); outline-offset: 2px; }
+.sch button:disabled { opacity: .4; cursor: default; }
+.sch .v3-icon { stroke: currentColor; fill: none; stroke-width: 1.75; stroke-linecap: round; stroke-linejoin: round; display: block; }
+.sch-sr { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.sch-label { font: 600 12px/1 var(--sch-mono); letter-spacing: .07em; text-transform: uppercase; color: var(--sch-ink-3); }
+.sch-label-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin: 14px 0 8px; min-height: 20px; }
+.sch-textbtn { background: none; border: 0; padding: 0 2px; min-height: 44px; font-weight: 600; color: var(--sch-ink-2); }
+.sch-textbtn[aria-pressed="true"] { color: var(--sch-ink); text-decoration: underline; text-underline-offset: 4px; }
+
+/* chips (quick picks, single choice) */
+.sch-quick, .sch-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.sch-chip { min-height: 44px; padding: 0 14px; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface);
+  font: 600 14px/1.1 var(--sch-sans); color: var(--sch-ink-2); transition: background .12s, color .12s; }
+.sch-chip[aria-pressed="true"], .sch-chip[aria-checked="true"] { background: var(--sch-ink); color: var(--sch-paper); border-color: transparent; }
+
+/* day toggles */
+.sch-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.sch-day { min-height: 48px; padding: 0; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface); font: 700 13px/1 var(--sch-sans); color: var(--sch-ink-2); }
+.sch-day[aria-pressed="true"] { background: var(--sch-ink); border-color: transparent; color: var(--sch-paper); }
+
+/* the time rail */
+.sch-timebox { margin-top: 10px; border-radius: var(--sch-r); background: var(--sch-surface); border: 1px solid var(--sch-line); padding: 12px; min-width: 0; }
+.sch-readout { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.sch-readout-t { font: 700 40px/1 var(--sch-sans); letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.sch-readout-t > span:last-child { font-size: 18px; color: var(--sch-ink-2); margin-left: 6px; letter-spacing: 0; }
+.sch-timerail--compact .sch-readout-t { font-size: 30px; }
+.sch-steps { display: flex; gap: 6px; }
+.sch-step { width: 44px; height: 44px; display: grid; place-items: center; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface-2); }
+.sch-rail { margin: 12px -12px 0; padding: 2px 12px 4px; overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; display: flex; gap: 6px; overscroll-behavior-x: contain; }
+.sch-rail::-webkit-scrollbar { display: none; }
+.sch-slot { scroll-snap-align: center; flex: none; min-width: 64px; min-height: 44px; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface-2);
+  font: 600 14px/1 var(--sch-mono); color: var(--sch-ink-2); }
+.sch-slot span { font-size: 11px; opacity: .7; margin-left: 2px; }
+.sch-slot--hr { color: var(--sch-ink); }
+.sch-slot[aria-checked="true"] { background: var(--sch-ink); color: var(--sch-paper); border-color: transparent; }
+.sch-pod { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; font: 500 11px/1.3 var(--sch-mono); letter-spacing: .05em; text-transform: uppercase; color: var(--sch-ink-3); margin-top: 10px; }
+
+/* lesson hours: stacked on a phone, side by side when there is room */
+.sch-hours { display: grid; grid-template-columns: minmax(0, 1fr); gap: 4px; }
+@media (min-width: 720px) { .sch-hours { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
+
+/* day strip */
+.sch-dates { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding: 2px; scroll-snap-type: x proximity; overscroll-behavior-x: contain; }
+.sch-dates::-webkit-scrollbar { display: none; }
+.sch-date { flex: none; width: 56px; min-height: 64px; padding: 8px 0; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface);
+  display: grid; justify-items: center; align-content: center; gap: 3px; scroll-snap-align: start; }
+.sch-date small { font: 600 11px/1 var(--sch-mono); text-transform: uppercase; color: var(--sch-ink-3); letter-spacing: .02em; }
+.sch-date b { font: 700 18px/1 var(--sch-sans); font-variant-numeric: tabular-nums; }
+.sch-date[aria-checked="true"] { background: var(--sch-ink); color: var(--sch-paper); border-color: transparent; }
+.sch-date[aria-checked="true"] small { color: inherit; opacity: .75; }
+.sch-date.is-disabled { opacity: .38; background: transparent; border-style: dashed; cursor: default; }
+
+/* time grid */
+.sch-times { display: grid; gap: 6px; container-type: inline-size; }
+.sch-time { min-height: 44px; white-space: nowrap; border-radius: var(--sch-r); border: 1px solid var(--sch-line); background: var(--sch-surface); font: 600 13px/1 var(--sch-mono); padding: 0 4px;
+  display: flex; align-items: center; justify-content: center; gap: 4px; }
+@container (max-width: 310px) { .sch-time { flex-direction: column; gap: 3px; } .sch-time-ap { font-size: 11px; letter-spacing: .06em; } }
+.sch-time[aria-checked="true"] { background: var(--sch-ink); color: var(--sch-paper); border-color: transparent; }
+.sch-time.is-disabled { opacity: .38; text-decoration: line-through; background: transparent; cursor: default; }
+
+@media (prefers-reduced-motion: reduce) { .sch-chip, .sch-rail { transition: none; scroll-behavior: auto; } }

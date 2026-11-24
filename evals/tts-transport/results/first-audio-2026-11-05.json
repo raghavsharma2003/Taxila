@@ -1,0 +1,143 @@
+{
+ "method": {
+  "date": "2026-11-05",
+  "what": "Chromium (Playwright) + CDP throttling, local server, the shipped frameWriter, first 100 ms of PCM decoded / whole line decoded",
+  "lines": 12,
+  "concat": 1,
+  "pcmKB": 75
+ },
+ "results": {
+  "slow-3g": {
+   "pcm": {
+    "n": 12,
+    "firstWireMs": 436,
+    "firstAudioMs": {
+     "p50": 494,
+     "p90": 522
+    },
+    "wholeLineMs": {
+     "p50": 1843,
+     "p90": 2252
+    },
+    "wireKB": 75,
+    "samplesOk": true
+   },
+   "adpcm": {
+    "n": 12,
+    "firstWireMs": 437,
+    "firstAudioMs": {
+     "p50": 437,
+     "p90": 465
+    },
+    "wholeLineMs": {
+     "p50": 759,
+     "p90": 903
+    },
+    "wireKB": 19,
+    "samplesOk": true
+   },
+   "opus": {
+    "n": 12,
+    "firstWireMs": 431,
+    "firstAudioMs": {
+     "p50": 432,
+     "p90": 435
+    },
+    "wholeLineMs": {
+     "p50": 522,
+     "p90": 550
+    },
+    "wireKB": 5,
+    "samplesOk": true
+   }
+  },
+  "fast-3g": {
+   "pcm": {
+    "n": 12,
+    "firstWireMs": 167,
+    "firstAudioMs": {
+     "p50": 181,
+     "p90": 182
+    },
+    "wholeLineMs": {
+     "p50": 505,
+     "p90": 612
+    },
+    "wireKB": 75,
+    "samplesOk": true
+   },
+   "adpcm": {
+    "n": 12,
+    "firstWireMs": 168,
+    "firstAudioMs": {
+     "p50": 168,
+     "p90": 168
+    },
+    "wholeLineMs": {
+     "p50": 247,
+     "p90": 276
+    },
+    "wireKB": 19,
+    "samplesOk": true
+   },
+   "opus": {
+    "n": 12,
+    "firstWireMs": 157,
+    "firstAudioMs": {
+     "p50": 158,
+     "p90": 162
+    },
+    "wholeLineMs": {
+     "p50": 182,
+     "p90": 188
+    },
+    "wireKB": 5,
+    "samplesOk": true
+   }
+  },
+  "4g": {
+   "pcm": {
+    "n": 12,
+    "firstWireMs": 67,
+    "firstAudioMs": {
+     "p50": 68,
+     "p90": 70
+    },
+    "wholeLineMs": {
+     "p50": 128,
+     "p90": 149
+    },
+    "wireKB": 75,
+    "samplesOk": true
+   },
+   "adpcm": {
+    "n": 12,
+    "firstWireMs": 67,
+    "firstAudioMs": {
+     "p50": 67,
+     "p90": 68
+    },
+    "wholeLineMs": {
+     "p50": 82,
+     "p90": 88
+    },
+    "wireKB": 19,
+    "samplesOk": true
+   },
+   "opus": {
+    "n": 12,
+    "firstWireMs": 66,
+    "firstAudioMs": {
+     "p50": 67,
+     "p90": 68
+    },
+    "wholeLineMs": {
+     "p50": 77,
+     "p90": 84
+    },
+    "wireKB": 5,
+    "samplesOk": true
+   }
+  }
+ }
+}

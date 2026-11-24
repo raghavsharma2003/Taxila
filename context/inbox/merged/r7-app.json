@@ -1,0 +1,71 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-stage-geometry",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Stage-first lesson geometry (r7 app): one pure solver, src/ui-v3/kaksha/lesson/stageLayout.ts. Phone: top 48 · stage (slot + 64 HUD rail; her face a PiP top-right, 26% of the slot's short side, 84-128 px, only while a piece holds the slot) · answer surface when up · chips 48 · dock 112/128. Wide (≥900, ≥520 tall): stage column + a 320-400 side column (her tile, caption, answer surface, chips, dock). Slot 344×508 at 360×800, 396×623 at 412×915, 850×656 at 1280×800; play mode folds the chips (344×556). Every slot ≥ the certified tray/play box (grow, never shrink); 'with answer' is a new smaller box. Spec generated: docs/design/round7/app/STAGE-GEOMETRY.md. Reverse: the owner's review prefers the Desk, or a real phone shows the PiP covering pieces.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-nav-unified",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "One Kaksha navigation (r7 app-nav-unified): a HUD dock (Home · World · Practice · Ask · Notebook; bottom bar on phones, left rail from 1024 px) and one top bar (back one level up, title, Me/settings at the right; Home carries the plain 'For parents' door) on every child screen outside the lesson. Parent-hidden surfaces are absent, Ask is older-family only. The classic OlderNav / HomeButton / Me avatar render only under ?ui=classic. Reverse: the owner wants a Home with no dock (D6 says a small dock).",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-class4-older",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Class 4 has the older look (r7 D3, OWNER-RESET #1): src/child/band.ts YOUNG_MAX_CLASS = 3, so classes 1-3 are the young family (dawn, tiles, no Ask) and 4-9 the older one (night, typing, Ask, Hint, steer chips). src/app/band.ts re-exports the same function (no second table). The age-band table stays Brain's (shared/learner.ts); YOUNG_MAX_CLASS is read from it once it carries D3's 1-3 / 4-6 / 7-9. Reverse: the owner wants class 4 young again.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-stop-checkin-ui",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Stop and break UI (r7 D5): Pause → End is a check-in (Keep going · Short break · End lesson), never an instant end; Short break is a sheet that holds her speech and the mic with a count-up clock and 'I'm back'. The server's own stop check-in (chips stop:continue / break:rest / stop:end, plus stop:wrap2 when Brain adds it) renders as a moment card on the stage, not as answer tiles. Later list (ui.later) and moment cards (ui.moment: park / detour / decline / stop) render from Brain's directives, typed structurally until the contract lands; the Debrief lists the parked questions. Reverse: the owner wants End to end at once.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-handsfree-dock",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Hands-free dock (r7 D2): while the duplex engine holds the floor the dock shows no talk button but a live mic-level ring and one line on what she is doing (Speak any time · Cut in any time · Take your time · {T} is thinking), plus a Mute switch. Mute uses the pause sheet's mic switch (push-to-talk on → the cascade link turns the mic off), so tap to talk is the visible fallback while muted. A proper runtime mute is Voice's (src/lesson/runtime.ts). Reverse: Voice ships a mute that keeps the engine listening for its own wake rules.",
+   "source": "inbox/r7-app.json"
+  },
+  {
+   "id": "dc-r7-app-steer-chips",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Steer chips (r7 app-lesson-steer-chips, OWNER-RESET #8): four chips under the stage in the lesson's language (Diagram · Game · Alag tarah se · Kuch aur), Older only, on a talking floor, never on a safeguard turn, in Quick practice or during the stop check-in. diagram → chip req:visual, game → req:game, explain differently → the 'another' help request; 'something else' goes as the child's words the change_topic lexicon reads, until Brain accepts a chip id for it. On a number item the pad's 'abc' key opens typing (open-e2e-number-pad-no-words). Reverse: Brain's contract renames the steer ids.",
+   "source": "inbox/r7-app.json"
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-app-stage-geometry",
+   "rel": "supersedes",
+   "dst": "design-v2-desk-layout"
+  },
+  {
+   "src": "dc-r7-app-stage-geometry",
+   "rel": "part_of",
+   "dst": "dc-r7-stage-first-shell"
+  },
+  {
+   "src": "dc-r7-app-nav-unified",
+   "rel": "supersedes",
+   "dst": "design-v2-desk-layout"
+  },
+  {
+   "src": "dc-r7-app-class4-older",
+   "rel": "part_of",
+   "dst": "dc-r7-stage-first-shell"
+  }
+ ],
+ "md": {
+  "decisions": "## dc-r7-app-stage-geometry\nD7 (main loop 2026-11-04) supersedes PRODUCT-DESIGN-V2 §6.3.4 ('the face is never a PiP over content'; the four-zone Desk with a pinned question card). The Desk's controller (useDesk / DeskModel), sheets, safety floor, Summary/Debrief and trouble screens are kept; only the body is laid out stage-first under the Kaksha skin. The numbers live in stageLayout.ts and the generated STAGE-GEOMETRY.md / stage-boxes.json; Studio applies them to server/forge3/certs/box-contract.json via docs/patches/to-studio/001-box-contract-stage-first.patch. New constraint for pieces: keep the top-right PiP zone and the top-left label zone clear.\n\n## dc-r7-app-nav-unified\nBefore: Kaksha Home linked only World / For parents / Not me; Notebook, Ask, Practice and Me were reachable only by typed URL and brought back the classic Today·Map·Notebook·Ask tab bar (gap-map app-nav-unified). Now src/ui-v3/kaksha/nav.tsx (+ nav-model.ts, pure, tests/r7-app-nav.test.mjs) is the only child navigation under Kaksha; ChildScreen (src/child/chrome.tsx) renders the Kaksha frame for the screens not yet rebuilt natively (app-secondary-screens-kaksha).\n"
+ }
+}

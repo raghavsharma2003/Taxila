@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-device-pairing",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "Round 7: a child can learn on their own device. The parent corner shows a 6-character code (unambiguous alphabet, 10-minute life, single use, QR too); /pair on the child's device redeems it for a child-scoped session bound to the authenticated child id; the session reaches child routes only and every parent route refuses it; the parent lists and unpairs devices from the corner, which ends the session server-side. App builds the client (pairing card, /pair, shell handling, unpair); Platform builds the routes in auth.js. Why: today child mode exists only on a phone where the parent is signed in, so every lesson starts by borrowing the parent's phone; picked over the Notebook growth page (next) and World/Hangar depth. Reverse: the owner prefers another route (e.g. a phone OTP for the child once a provider exists), or real families pair less than they borrow."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "\n## `dc-r7-device-pairing` (2026-11-08)\n\nA child can learn on their own device.\n\n- **Parent corner:** \"Put Taxila on {name}'s device\" shows a 6-character code (no 0/O/1/I), with a 10-minute life, single use, and a QR.\n- **Child's device:** /pair redeems the code for a child-scoped session bound to the authenticated child id. It reaches child routes only; every parent route refuses it. The parent corner stays behind the parent's own sign-in.\n- **Unpair:** the parent lists and unpairs devices from the corner, which ends the session server-side.\n- **Owners:** App builds the client, Platform the routes in auth.js.\n\n**Why:** child mode exists only on a phone where the parent is signed in, so every lesson starts by borrowing the parent's phone. Picked over the Notebook growth page (next) and World/Hangar depth.\n\n**Reverse if:** the owner prefers another route (for example a child phone OTP once a provider exists), or real families pair less than they borrow.\n"
+ }
+}

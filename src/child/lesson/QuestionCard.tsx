@@ -10,11 +10,22 @@ import { Art } from "../../ui/Art.tsx";
 import { AnswerChip } from "./AnswerChip.tsx";
 import type { AnswerChip as Chip, Ask } from "./model.ts";
 
-export function QuestionCard({ ask, answer, young, onHear, onFix, goal, lead }:
+export function QuestionCard({ ask, answer, young, onHear, onFix, goal, lead, waiting }:
   { ask: Ask | null; answer: Chip | null; young: boolean; onHear: () => void; onFix?: () => void; goal?: string | null;
+    /** r7 (3b): the board on screen is about something else: the card folds to one quiet line until its board is back */
+    waiting?: boolean;
     /** r4 K-P12: a skin's line at the top of the card (the intake's mapped topic / plan), inside the measured body */
     lead?: ReactNode }) {
   if (!ask && !answer && !goal && !lead) return <section className="dk-card dk-card--empty" aria-hidden="true" />;
+  if (waiting && ask) {
+    return (
+      <section className="dk-card dk-card--waiting" aria-label="The question" data-testid="question-card" data-waiting="">
+        <div className="dk-card-body" data-measure="card">
+          <p className="dk-ask-waiting"><Glyph name="wait" size={20} /><span>{t("card.waiting")}</span></p>
+        </div>
+      </section>
+    );
+  }
   const verdictLine = answer?.verdict === "not_yet" ? t("card.not_yet") : answer?.verdict === "partial" ? t("card.partly") : null;
   return (
     <section className="dk-card" aria-label={ask ? "The question" : "Today"} data-testid="question-card" data-ask-source={ask?.source}>

@@ -34,6 +34,16 @@ export const TUTORS = [
     },
     faceStyle: { smile: 0.8, headGain: 1.1, browGain: 1.1 },
     voice: { cps: 13.5, speakerMeanHz: 220 },
+    // The character record (PRODUCT-DESIGN-V2 §8, round 7 face-stills-and-character-record): her pronouns, and her
+    // stills per puppet look, rendered from that look's live rig (evals/face-puppet/stills.mjs) into
+    // public/assets/teacher/asha-stills/1/<look>-<pose>.webp; every surface shows the look the lesson shows.
+    pronouns: { subject: "she", object: "her", possessive: "her" },
+    stills: {
+      looks: ["r8", "lamp2"],
+      poses: ["portrait", "smile", "resting", "listening", "thinking", "curious", "proud"],
+      // poses the rig cannot hold yet (a wave, props) → the rig still that stands in until painted pose stills land
+      standIn: { wave: "smile", reading: "thinking", watering: "resting", telescope: "curious" },
+    },
   },
   {
     id: "arjun",
@@ -88,10 +98,13 @@ export const TUTORS = [
 
 export const tutorById = (id) => TUTORS.find((t) => t.id === id) ?? null;
 
-/** Visual band from the class (never the content level; tutor-selection-ux §4). */
+/** Visual band from the class (never the content level; tutor-selection-ux §4). The same cut as the app's
+ *  bandForClass (src/child/band.ts): B1 classes 1-2, B2 class 3 (the rest of the young register, shared/bands.ts),
+ *  B3 4-7, B4 8-9. Class 4 was still B2 here after round 7 moved it out of the young register (audit FACE-08);
+ *  tests/r7-audit-face.test.mjs keeps the two tables equal. */
 export function bandOfClass(cls) {
   const c = Number(cls) || 1;
-  return c <= 2 ? "b1" : c <= 4 ? "b2" : c <= 7 ? "b3" : "b4";
+  return c <= 2 ? "b1" : c <= 3 ? "b2" : c <= 7 ? "b3" : "b4";
 }
 
 /** [min, max] options shown per band (AVATAR §7.1). */

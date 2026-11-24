@@ -1,0 +1,163 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket runs jaise place karenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1119
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Riya—cricket pasand hai, badhiya. Socho pitch ko 4 equal parts mein baanta; ball 1 part aage ho toh fraction kya hoga? At end Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1135,
+   "replyReadyMs": 2254
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1149
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalte hain. 0 se 1 tak equal gaps banao. 2/5 ke liye kitne equal gaps honge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 808,
+   "replyReadyMs": 1957
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1033
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—ab chhote steps. 0 se 1 tak 5 equal gaps banao; 2/5 kitne gaps aage hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1541,
+   "replyReadyMs": 2574
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 817
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, picture ko words mein dekho: 0 se 1 ke beech 5 barabar steps hain; 2/5 second step par hai. Kahan hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2376,
+   "replyReadyMs": 3193,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1022
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, Riya. 2/5, 0 se do steps aage hota hai. Ab number line par second mark dikhao.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 843,
+   "replyReadyMs": 1865
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 905
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karni hai, chhote words mein batao; phir isi point par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 902,
+   "replyReadyMs": 1807
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 902
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein fractions bhi kaam aate hain—jaise 5 balls mein 2 runs: 2/5. Tum batting pasand karti ho ya bowling?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 922,
+   "replyReadyMs": 1824
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1005
+  },
+  {
+   "who": "teacher",
+   "text": "क्रिकेट में अंश ऐसे समझो: 5 गेंदों में 2 रन यानी 2/5। तुम बल्लेबाज़ी पसंद करती हो या गेंदबाज़ी?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 1014,
+   "replyReadyMs": 2019
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1172
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—pehle tum khud try karo. Bharo: 2/5, middle se pehle hai ya baad?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: Check: 2/5 is ___ the middle, because 2/5 is less than 1/2.",
+   "replyMs": 891,
+   "replyReadyMs": 2063
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1183
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum rukna chahti ho. Aage badhein, chhota break lein, ya aaj ke liye ruk jaayein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 911,
+   "replyReadyMs": 2094
+  }
+ ],
+ "agent": []
+}

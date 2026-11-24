@@ -16,6 +16,5 @@ export { Sheet } from "./Sheet.tsx";
 export { Speaker, useClip } from "./Speaker.tsx";
 export { StatusGlyph, STATUS_NAME, type FloorState } from "./StatusGlyph.tsx";
 export { Teacher, type TeacherFloor } from "./teacher/Teacher.tsx";
-export { TeacherFace } from "./TeacherFace.tsx";
 export { TileGroup, type TileOption } from "./Tile.tsx";
 export { STATE_WORDS, STATE_MEANING, RECHECK_TAG, readLang, type Lang, type LedgerState, type StateKey } from "./stateWords.ts";

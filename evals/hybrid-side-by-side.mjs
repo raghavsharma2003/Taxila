@@ -1,0 +1,636 @@
+// round 7 (main, 2026-11-04): the HYBRID side-by-side. One script plays the same scripted child turns through both teacher
+// lanes, the Director (compile → textReply, the guard pipeline) and the Teacher agent (server/agent/agent.js, falling back to
+// the Director as the route does), and writes both transcripts next to each other for a reader to judge. Claude reads them
+// (CLAUDE.md: judging is done by the Claude Code session, never a Foundry judge); this script scores nothing.
+//
+//   node --env-file=.env.local evals/hybrid-side-by-side.mjs [--matrix] [--topic <id>] [--class 6] [--scenario steady,offtopic,stuck] [--cap 150] [--usd 2] [--out <dir>]
+//   node evals/hybrid-side-by-side.mjs --dry      plumbing check: no network, stubbed model lines, nothing to judge
+//   --learners meera,meeraForgot,kabir,player     round 8 (integration 26, "taught this child"): each lesson starts from a seeded
+//                                                 learner (evals/knows-her/seed.mjs: the knows.js plan, warm-up and interests);
+//                                                 with --matrix, every topic × every learner on --scenario (default steady).
+//                                                 Each teacher row carries `because`: the records the walk acted on that turn.
+//
+// No database: the route's own planTurn (routes/lesson.js __test) plans each turn on an in-memory learner state, as
+// tests/learner-live.test.mjs does. The child is scripted (a fixed line per turn, whatever she said), so both lanes hear
+// exactly the same words. Model calls per scenario: about 2 per turn per lane (the classifier when code cannot decide, and
+// her reply): 3 scenarios × 10 turns ≈ 120 small calls (6 lessons). Ask main before more than about 20 lessons.
+import { mkdirSync, writeFileSync } from "node:fs";
+import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
+import { findItem } from "../server/director/items.js";
+import { classify, classifyFast, targetFor } from "../server/director/classify.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+import { instructionsFor } from "../server/compiler/instructions.js";
+import { textReply, replyDeps, affirmsAnswer, NOT_RIGHT, screenContradictions, screenFacts, pointSaid } from "../server/brain/say.js";
+import { saidMust, scriptOn, scriptWhyNot, scriptFor, fillFriend } from "../server/director/script.js";
+const scriptForKit = (kit) => scriptFor(kit)?.script ?? null;
+import { createReactiveChild, maxTurnsFor } from "./child-sim/reactive.mjs";
+import { withheldStated, pictureMismatch, authoredWhys, borrowedWhy, verdictMisplaced, falseAnswerNumbers } from "./hybrid-side-by-side/checks.mjs";
+import { drawnContradictions } from "./hybrid-side-by-side/drawn-pages.mjs";
+import { agentTurn, eventOf, applyAgentTurn } from "../server/agent/agent.js";
+import { agentBreach, noteAgentTurn, resetAgentRuns } from "../server/agent/invariants.js";
+import { newLearnerState } from "../server/comprehension/fuse.js";
+import { DEPLOY } from "../server/azure.js";
+import { teacherDeployment } from "../server/agent/flags.js";
+import { __test } from "../server/routes/lesson.js";
+// round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
+// on screen each turn"): the pure parts of turn.js's visual path
+import { whiteboardIntentOf, boardItemOf, altViewOfRow, heldUpOf } from "../server/brain/propose.js";
+import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey, heldBoard } from "../server/stagecraft/board-first.js";
+import { heldPicture, pictureTruth } from "../server/brain/picture.js";
+import { gateCtxFor } from "../server/stagecraft/board-sync.js";
+import { entryFor } from "../server/play/levels.js";
+import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
+import { seedLearner } from "./knows-her/seed.mjs";
+
+const { planTurn } = __test;
+const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 ? process.argv[i + 1] : d; };
+const DRY = process.argv.includes("--dry");
+
+/** The scripted children: the same lines, in the same order, for both lanes. */
+export const SCENARIOS = {
+  // tries, half-knows, asks why and for an example
+  steady: ["haan", "pata nahi", "4", "kyun?", "achha samajh gaya", "6", "ek aur example do", "theek hai", "8", "bas ho gaya"],
+  // wanders off and comes back
+  offtopic: ["mujhe cricket pasand hai", "kuch aur baat karte hain", "achha theek hai", "pata nahi", "game khelna hai", "3",
+    "ye bahut boring hai", "haan", "2", "bye"],
+  // stuck, asks for slower / Hindi / a picture, then leaves
+  stuck: ["pata nahi", "samajh nahi aaya", "dhire dhire batao", "hindi mein batao", "5?", "pata nahi", "picture dikhao", "haan", "7",
+    "bas aaj ke liye itna hi"],
+  // steering-heavy (main, 2026-11-04): how they want to be taught, a diversion, a language switch, then leaving
+  steering: ["haan", "step by step samjhao", "chhota bolo", "pehle picture dikhao", "pata nahi", "kuch aur baat karte hain", "cricket ke baare mein",
+    "hindi mein batao", "mujhe khud try karne do", "bye"],
+};
+
+/** The full run's topics (dc-r7-hybrid-brain: 12 lessons a lane = 4 scenarios × 3 topics; the class-4 topic is the class-4 child). */
+export const MATRIX_TOPICS = [["c6-maths-ch06-t01", 6], ["c5-maths-ch02-t01", 5], ["c4-maths-ch05-t01", 4]];
+
+const CHILD = (cls) => ({ id: "00000000-0000-0000-0000-00000000aaaa", legal_mode: "M1", class_level: cls });
+const LESSON = { id: "11111111-1111-1111-1111-11111111aaaa", started_at: new Date(0).toISOString() };
+
+// (the child's line on the turn being answered: --j2-live reads the echo clause against it, not against the note's words)
+let childSaidNow = "";
+if (DRY) {
+  // stubbed lines: the agent's call fails (it falls back, as on a live error) and her line is a fixed sentence
+  // the dry meter counts the calls a live run would make (her line, and the classifier when code cannot decide), to size caps
+  // (v6.11 J2: the dry stand-in for her one sentence on the child's answer to her return question — a sentence with one of their
+  // words, so the matrix runs the J2 path and its predicate without a model)
+  const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
+  const dryText = (msgs) => {
+    const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
+    // (the J2 note carries the child's words, never their sentence: "their own word(s) for it: "a", "b"")
+    const w = /their own words? for it: "([^"]+)"/.exec(String(note))?.[1]?.toLowerCase() ?? null;
+    return w ? `${w[0].toUpperCase()}${w.slice(1)} wala pal sach mein zabardast lagta hoga. ${STUB}` : STUB;
+  };
+  // (main, live offtopic after release 18: J2's sentence was the joint 2 times in 3. --j2-live N, with --dry: the lesson stays dry, and
+  // each turn that answers a child's reply to her return sends ITS OWN prompt to the live reply model N times; every draft's sentences
+  // are read by replyToReturnWhy (the clause that refuses each) and written to <out>/j2-replay.json. Spend is estimated before each
+  // exchange (request characters / 4 in, 300 out); an exchange that would pass --j2-usd (default 0.10) is not sent, and the run stops.
+  // Needs the reply model's endpoint: node --env-file=.env.local … --dry --j2-live 20)
+  const J2_LIVE = Number(arg("j2-live", "0"));
+  if (J2_LIVE > 0) {
+    if (!process.env.AZURE_OPENAI_ENDPOINT) { console.error("--j2-live needs the reply model: run with node --env-file=.env.local"); process.exit(2); }
+    const { usdOf } = await import("../server/azure.js");
+    const { replyToReturnWhy } = await import("../server/brain/say.js");
+    const J2_USD = Number(arg("j2-usd", "0.10"));
+    const live = replyDeps.chat;
+    const report = { n: J2_LIVE, usdCap: J2_USD, usd: 0, exchanges: [] };
+    const save = () => { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/j2-replay.json`, JSON.stringify(report, null, 1) + "\n"); };
+    const sents = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?।])\s+(?=\S)/).filter(Boolean);
+    const j2Chat = async (d, msgs, opts) => {
+      const note = [...(msgs ?? [])].reverse().find((m) => m.role === "system")?.content ?? "";
+      // (the note gives the model the child's words, not their sentence: the clauses read against those words)
+      // (main on the rerun: the clauses read against the child's REAL sentence — code has it — whatever the note carries; the prompt
+      // itself must not carry it: the replay checks that too)
+      const words = /their own words? for it: ((?:"[^"]+"(?:, )?)+)/.exec(String(note))?.[1]?.replace(/"/g, "").replace(/,/g, " ");
+      if (!words) { dryCall("reply"); return { text: dryText(msgs) }; }
+      const said = childSaidNow || words;
+      const leaked = !!childSaidNow && JSON.stringify(msgs).toLowerCase().includes(childSaidNow.toLowerCase());
+      const est = usdOf(d, { in: Math.round(JSON.stringify(msgs).length / 4), cached: 0, out: 300, reasoning: 0 }) * J2_LIVE;
+      if (report.usd + est > J2_USD) { report.stopped = `the next exchange (~$${est.toFixed(4)}) would pass $${J2_USD} (spent ~$${report.usd.toFixed(4)})`; save(); console.error(`STOP: ${report.stopped}`); process.exit(4); }
+      const x = { said, words, sentenceInPrompt: leaked, samples: [] };
+      for (let k = 0; k < J2_LIVE; k++) {
+        const r = await live(d, msgs, { ...(opts ?? {}), maxTokens: 220, effort: "none", timeoutMs: 15000 });
+        const ss = sents(r?.text).map((y) => ({ s: y, why: replyToReturnWhy(y, said) }));
+        x.samples.push({ text: r?.text ?? "", pass: ss.some((y) => y.why === null), sentences: ss });
+      }
+      report.usd += est;
+      const refused = {};
+      for (const sm of x.samples.filter((y) => !y.pass)) { const w = sm.sentences[0]?.why ?? "none"; refused[w] = (refused[w] ?? 0) + 1; }
+      x.passRate = x.samples.filter((y) => y.pass).length / J2_LIVE;
+      x.firstSentenceRefusedBy = refused;
+      report.exchanges.push(x); save();
+      dryCall("reply");
+      return { text: dryText(msgs) };
+    };
+    replyDeps.chat = j2Chat;
+    replyDeps.chatStream = async (d, msgs, opts) => j2Chat(d, msgs, opts);
+  } else {
+    replyDeps.chat = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+    replyDeps.chatStream = async (_d, msgs) => { dryCall("reply"); return { text: dryText(msgs) }; };
+  }
+} else if (!process.env.AZURE_OPENAI_ENDPOINT) {
+  console.error("no AZURE_OPENAI_ENDPOINT: run with node --env-file=.env.local, or --dry for the plumbing check");
+  process.exit(2);
+}
+
+// main's pilot limits (2026-11-04): a hard cap on model calls and on estimated spend, and a stop at the first auth refusal
+// (the keys may have been rotated: never retried around). Every Azure call goes through fetch, so the guard sits there.
+// Spend is an estimate: input ≈ request characters / 4 tokens, output ≈ 300 tokens a call, at the price book's rates.
+const OUT = arg("out", `evals/hybrid-side-by-side/results/${new Date().toISOString().slice(0, 10)}${DRY ? "-dry" : ""}`);
+const CAP = Number(arg("cap", "150"));
+const USD_CAP = Number(arg("usd", "2"));
+export const meter = { calls: 0, usd: 0, byDeployment: {} };
+// (a segment ask's id is unique across lessons: Studio's preselect caches its pick by intentId, and two lessons at the same
+// row once shared one, so a segment was checked against another lesson's board)
+let SEG_N = 0;
+/** Every authored key and accept form of the topic's script (lower case), for the false-key count. */
+const _keys = new Map();
+function AUTHORED_KEYS(kit) {
+  if (_keys.has(kit.topicId)) return _keys.get(kit.topicId);
+  const set = new Set();
+  const sc = scriptOn() ? (scriptWhyNot(kit) == null ? scriptForKit(kit) : null) : null;
+  for (const sk of sc?.skills ?? []) {
+    const asks = [...(sk.explain ?? []).map((b) => b.ask), sk.workedExample?.yourStep, ...(sk.checks ?? []), ...(sk.remediation ?? []).map((r) => r.then)];
+    for (const a of asks.filter(Boolean)) for (const k of [a.key, ...(a.accept ?? [])]) set.add(String(fillFriend(String(k), "Riya")).trim().toLowerCase());
+  }
+  for (const it of kit.items ?? []) for (const k of [it.answer, ...(it.acceptable ?? [])]) if (k != null) set.add(String(k).trim().toLowerCase());
+  _keys.set(kit.topicId, set);
+  return set;
+}
+/** v6 checker: the topic's authored whys and the sentences a why could be borrowed from (checks.mjs authoredWhys). */
+const _whys = new Map();
+function WHYS(kit) {
+  if (_whys.has(kit.topicId)) return _whys.get(kit.topicId);
+  const sc = scriptOn() ? (scriptWhyNot(kit) == null ? scriptForKit(kit) : null) : null;
+  const w = sc ? authoredWhys(sc) : null;
+  _whys.set(kit.topicId, w);
+  return w;
+}
+function dryCall(kind) { meter.calls++; meter.byDeployment[kind] = (meter.byDeployment[kind] ?? 0) + 1; }
+if (!DRY) {
+  const { usdOf } = await import("../server/azure.js");
+  const real = globalThis.fetch;
+  globalThis.fetch = async (url, init = {}) => {
+    const u = String(url);
+    if (!/openai|azure|cognitiveservices|models\.ai/i.test(u)) return real(url, init);
+    let dep = "?";
+    try { dep = JSON.parse(String(init.body ?? "{}")).model ?? (u.match(/deployments\/([^/]+)/)?.[1] ?? "?"); } catch { /* not JSON */ }
+    if (meter.calls >= CAP || meter.usd >= USD_CAP) { console.error(`STOP: cap reached (${meter.calls} calls, ~$${meter.usd.toFixed(3)})`); stopWith(4, "cap"); }
+    meter.calls++;
+    meter.byDeployment[dep] = (meter.byDeployment[dep] ?? 0) + 1;
+    meter.usd += usdOf(dep, { in: Math.round(String(init.body ?? "").length / 4), cached: 0, out: 300, reasoning: 0 });
+    const res = await real(url, init);
+    if (res.status === 401 || res.status === 403) { console.error(`STOP: HTTP ${res.status} from ${dep} (auth): not retried`); stopWith(3, `auth ${res.status}`); }
+    return res;
+  };
+}
+/** A stop (cap or auth) still leaves the meter next to the finished scenarios; an unfinished scenario is not written. */
+function stopWith(code, why) {
+  try { mkdirSync(OUT, { recursive: true }); writeFileSync(`${OUT}/meter.json`, JSON.stringify({ stopped: why, calls: meter.calls, usdEstimate: +meter.usd.toFixed(3), byDeployment: meter.byDeployment, cap: CAP, usdCap: USD_CAP }, null, 1) + "\n"); } catch { /* the exit matters more */ }
+  process.exit(code);
+}
+const timed = async (fn) => { const t0 = performance.now(); const v = await fn(); return [v, Math.round(performance.now() - t0)]; };
+
+const say = (r) => r?.ui?.ask?.text ?? null;
+/** (v6.1) one drawn board, as a key: its template and params (a second view is its own board) */
+const screenKeyOf = (scr) => JSON.stringify([scr?.template ?? null, scr?.boardRef?.params ?? null, scr?.altView ?? null]);
+const NO_COUNTS = new Set();
+const WORD_BOARDS = /^(?:compare|flow|cycle|table|timeline|label|parts)@/;
+
+async function classOf(state, kit, text, classLevel) {
+  const item = state.activeItemId ? findItem(state, kit, state.activeItemId) : null;
+  const target = targetFor(state, kit, item);
+  const args = { target, childText: text, lang: state.ctx?.lang, classLevel, typed: true };
+  // (latency fields: which path read the turn — code alone, or the model; production's speculation overlaps the model path)
+  const fast = classifyFast(args);
+  const path = fast.result ? "fast" : "model";
+  if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }), path }; }
+  return { ...(await classify(args)), path };
+}
+
+/** One lesson on one lane: the opening, then every scripted line. */
+async function lesson(lane, kit, classLevel, lines, persona = null, learner = null) {
+  // round 8: a seeded learner (her plan, warm-up, start records and interests); none = the no-history child as before
+  const seeded = learner ? seedLearner(kit.topicId, learner) : null;
+  // H1 (director5): a reactive scripted child answers what is on the table, by persona; else the fixed lines
+  // (--second-clarify: the stuck child also asks "samajh nahi aaya" twice on one point and one worked step — main's C1 ruling 5)
+  const child = persona ? createReactiveChild({ persona, seed: 7, kit, name: "Riya", clarify2: process.argv.includes("--second-clarify") }) : null;
+  const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend baby elephant" }, ageBand: classLevel <= 3 ? "6-9" : "10-15", lang: "hinglish",
+    interests: seeded ? seeded.interests : ["cricket"], firstMeeting: !seeded, hasCallback: false, topicTitle: kit.title ?? kit.topicId, classLevel, sessionId: LESSON.id, teacher: lane };
+  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx, seed: 7, now: 0, ...(seeded ? { knows: seeded.plan, warmupItems: seeded.warmup } : {}) });
+  if (seeded && s0.knows) s0.knowsApplied = seeded.applied;
+  let r = step(s0, { event: "start", kit, now: 0 });
+  const brief = { firstName: "Riya", classLevel, ageBand: ctx.ageBand, languagePref: "hinglish", interests: ["cricket"], recentWins: [], activeMisconceptions: [],
+    memoryCallbacks: [], vibe: { pace: "medium", verbosity: "brief", humour: "medium" }, relationshipStage: "first_meeting (0 sessions together)" };
+  let s = { ...r.state, brief, mode: "text", kitVerified: kit.verified, kitHash: kit.hash };
+  const rows = [];
+  let lastClassify = null;
+  const agentLine = async (st, event, extra = {}) => {
+    try {
+      const out = await agentTurn({ state: st, kit, event, lessonId: LESSON.id, lane: "text", ...extra });
+      return out;
+    } catch (e) { return { error: String(e?.message ?? e).slice(0, 120) }; }
+  };
+  // opening
+  let opening = null, openMove = r.move.kind, openFell = null;
+  if (lane === "agent") {
+    const out = await agentLine(s, eventOf({ kind: "start" }));
+    if (out?.say) { const a = applyAgentTurn(s, out, { kit, childText: null, lessonId: LESSON.id }); opening = out.say; openMove = a.move.kind; r = { ...r, ui: a.ui }; }
+    else openFell = out?.error ?? "no line";
+  }
+  opening ??= (await textReply({ instructions: instructionsFor(s, kit), state: s, kit, childText: "", ui: r.ui, module: null })).reply;
+  rows.push({ who: "teacher", text: opening, move: openMove, card: say(r), ...(openFell ? { fellBack: openFell } : {}), ...(r.state.knowsApplied?.length ? { because: r.state.knowsApplied } : {}) });
+  s.recent = [...(s.recent ?? []), { who: "teacher", text: opening }];
+  let live = { state: newLearnerState({ childId: CHILD(classLevel).id, classLevel }), maxSeq: 0 };
+  // (H1.1: the persona sets its own budget, Learning maxTurnsFor: steady leaves at 40, so skills 2-3 are reached)
+  const MAX = child ? maxTurnsFor(persona) : lines.length;
+  let lastBoardUp = false;
+  // (v6.1 harness: the board the child saw last turn, to tell a picture ask that drew something new from one that re-drew it)
+  let lastScreenKey = null;
+  // (director9 c5-t02: S3′'s second view drew 0/3 here because the board already on screen was never given to the preselect,
+  // as production's seam does through boardFirstOpts.avoid: the page drawn last is passed on, like the lesson's wbPrev)
+  let shownScript = null;
+  // (Studio director13 S7, c4 stuck 18: production's seam also passes the ref of the card whose board is the page up — the
+  // LAST page of a paged turn (L.wbPrevRef / L.wbPrevPage). Without it the preselect saw the first page of row 16 as up, the
+  // circle, and the picture over the card's bar re-drew the bar: no second view)
+  let shownRef = null;
+  // (Studio director15 S9b, c6 stuck 18: and the beat that drew it, as seam.js keeps wbPrevKind — a remediation's board up gets
+  // its own second view on a picture ask; without it the preselect never saw "remediation" and the card's board was re-drawn)
+  let shownKind = null;
+  let leaveWait = 0;
+  for (let i = 0; i < MAX; i++) {
+    let text = lines?.[i];
+    let leaving = false;
+    if (child) {
+      const live = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const card = live ? { itemId: live.id, key: String(live.answer), accept: live.acceptable ?? [], misses: s.misses?.[live.id] ?? 0 } : null;
+      const ask = live?.scriptAsk ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptAsk.targets ?? null, wrongIfMis: live.scriptAsk.wrongIfMis ?? null }
+        : live?.scriptCheck ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptCheck.targets ?? null, wrongIfMis: live.scriptCheck.wrongIfMis ?? null }
+        : live?.scriptThen ? { key: String(live.answer), accept: live.acceptable ?? [], targets: live.scriptThen.targets ?? null, wrongIfMis: live.scriptThen.wrongIfMis ?? null } : null;
+      const sb = s.lastMove?.scriptBeat;
+      // (v6.10 harness, main on director18: the child sim answered cards that had not been said — c5-t01 offtopic 24, steady 50, stuck
+      // 60. A card is on the table for the child only once her line has said it; and the goodbye waits for a card she said and left open)
+      const lastT = [...rows].reverse().find((r) => r.who === "teacher") ?? null;
+      const nrm = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
+      const cardSaid = !lastT?.card || nrm(lastT.text).includes(nrm(lastT.card).slice(0, 30));
+      const childIn = (turn) => ({ turn, teacher: [...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "",
+        beat: sb ? { skillId: sb.skillId, kind: sb.kind, beatId: sb.beatId } : null, card: cardSaid ? card : null, ask: cardSaid ? ask : null, boardUp: lastBoardUp, lang: s.ctx?.lang ?? "hinglish",
+        // (H1.1: her probe or teach-back move is unkeyed: the child gives a reason; else the child reads her line)
+        ...(["probe", "teachback"].includes(s.lastMove?.kind) ? { probe: true } : {}),
+        // (v6.11 J2: her last turn was an aside's return question: the child answers it, about the aside)
+        ...(lastT?.returnSaid ? { returned: true } : {}) });
+      let out = child.reply(childIn(i));
+      // (c6 steering 51: the goodbye came during an open card — up to 10 turns it waits; the child answers the card instead)
+      const openSaid = !!lastT?.card && cardSaid && /[?？]\s*$/.test(String(lastT.text ?? "").trim());
+      if (out.kind === "leave" && openSaid && leaveWait < 10) { leaveWait++; out = child.reply(childIn(-1)); }
+      text = out.text; leaving = out.kind === "leave"; childSaidNow = String(text ?? "").replace(/\s+/g, " ").trim();
+    }
+    if (text == null) break;
+    const now = (i + 1) * 20_000;
+    s = { ...s, seq: s.seq + 1, recent: [...s.recent, { who: "child", text }] };
+    const [c, classifyMs] = await timed(() => classOf(s, kit, text, classLevel));
+    rows.push({ who: "child", text, read: c.outcome + (c.request?.type ? ` · ${c.request.type}` : ""), classifyMs, classifyPath: c.path ?? null });
+    lastClassify = { ms: classifyMs, path: c.path ?? null };
+    const activeItem = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+    const knowsBefore = (s.knowsApplied ?? []).length;
+    const p = await planTurn(s, c, { kit, child: CHILD(classLevel), lesson: LESSON, activeItem, moduleOnly: false, moduleEvents: [],
+      answer: text, childText: text, leaked: false, live: Promise.resolve(live), carried: [], now });
+    live = { state: p.learner.after, maxSeq: live.maxSeq };
+    let next = { ...p.r.state, mode: "text" };
+    let move = p.r.move.kind, ui = p.r.ui, reply = null, fellBack = null, guard = null, guardAfter = null, replyMs = 0, tGuard = null, pickAsk = null, picTake = null;
+    // (v6.10, main on director18: a held turn's changed/kept compare against the board up BEFORE the turn, never a page preselected
+    // in the same turn)
+    const upRef0 = shownRef, upPage0 = shownScript;
+    // (as brain/turn.js: the stop check-in is the Director's on both lanes)
+    if (lane === "agent" && !["safeguard", "wrap"].includes(move) && !p.r.end && !c.flags?.distress && !p.r.move.checkin) {
+      const card = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+      const verdict = card ? (c.outcome === "correct" ? "correct" : c.outcome === "partial" ? "partly" : ["incorrect", "misconception"].includes(c.outcome) ? "wrong" : null) : null;
+      const [out, ms] = await timed(() => agentLine(s, eventOf({ kind: "turn", childText: text, typed: true, cls: c, card, kit, lang: "hinglish" }), { verdict }));
+      replyMs += ms;
+      if (out?.say) {
+        const an = structuredClone(next);
+        an.activeItemId = s.activeItemId; an.hintLevel = s.hintLevel; an.phase = s.phase; an.itemsDone = s.itemsDone;
+        const a = applyAgentTurn(an, out, { kit, childText: text, cls: c, card, lessonId: LESSON.id });
+        // the code invariants on her line, exactly as brain/turn.js applies them (main's pilot judgement #3, #8, #9)
+        const inv = { classLevel, kitText: (kit.items ?? []).map((i) => `${i.prompt_en ?? ""} ${i.prompt_hi ?? ""}`).join(" ").replace(/\s+/g, " "),
+          phase: s.phase, cardOnTable: !!card, agent: s.agent ?? {}, cls: c };
+        const breach = a.end && !p.r.end ? "agent_end_without_checkin" : agentBreach(out, inv);
+        if (breach) { fellBack = breach; next = { ...next, agent: resetAgentRuns(next.agent ?? s.agent ?? {}) }; }
+        else { an.agent = noteAgentTurn(an.agent, out, inv); next = an; move = a.move.kind; ui = a.ui; reply = out.say; }
+      } else fellBack = out?.error ?? "no line";
+    }
+    // S4: what a picture / game request would put on the screen this turn (turn.js: the board pick, the play admission), and
+    // her shape made true about it, as production does (boardTruthShape, askTruth); the screen is recorded on the row
+    let screen = null, instructions = p.instructions;
+    // T4 (screen contract): a scripted beat's board is drawn too (turn.js asks Studio on explain beats; intent.boardRef), and
+    // what is on the screen reaches her line as production's does (ui.studioSlot: the screen guard and the facts row)
+    let slot = null;
+    const scriptedBoard = !!(next.lastMove?.scriptBeat?.board || next.lastMove?.cardBeat?.board);
+    if (lane === "director" && (p.r.move?.request === "visual" || scriptedBoard)) {
+      const visual = p.r.move?.request === "visual" ? String(p.r.move.visual ?? "diagram") : "diagram";
+      let shape = String(next.lastMove?.shape ?? "");
+      if (visual === "game") {
+        const e = entryFor({ skillId: next.lastMove?.skillId ?? null, topicId: kit.topicId });
+        screen = e ? { kind: "game", game: `${e.family}/${e.mode}`, goal: e.goal ?? null } : { kind: "none", why: "no game for this skill" };
+        if (e) slot = { artifact: { kind: "play", game: `${e.family}/${e.mode}` } };
+        shape = askTruth(shape, "game", e ? "engine" : "none");
+      } else {
+        const item = boardItemOf(next, kit, findItem); // (as turn.js: the move's card, else the worked example's faded step on a picture ask)
+        // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+        // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+        const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}), ...(shownKind ? { avoidKind: shownKind } : {}) });
+        pickAsk = pick ? ask : null;
+        if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
+        if (pick) {
+          // (H1.2: every script board's record says whether it carried SC1 counts; a template that emits none is flagged once)
+          const counts = pick.screen?.counts ?? pick.facts?.counts ?? pick.script?.facts?.counts ?? null;
+          screen = { kind: "whiteboard", by: pick.by ?? null, template: pick.template ?? null, onScreen: pick.facts?.onScreen ?? null, ...(pick.altView ? { altView: pick.altView } : {}),
+            counts, ...(ask.intent.boardRef ? { boardRef: ask.intent.boardRef } : {}) };
+          // (Studio: word boards — compare, flow, cycle, table, timeline, label, parts — have nothing countable: not a miss)
+          if (!counts && pick.template && !WORD_BOARDS.test(pick.template) && !NO_COUNTS.has(pick.template)) { NO_COUNTS.add(pick.template); console.error(`NO COUNTS: ${pick.template} (${kit.topicId}) drew a board with no screen.counts`); }
+          slot = { artifact: { kind: "whiteboard", archetype: "whiteboard", script: { ops: pick.script?.ops ?? [], facts: pick.facts ?? null }, ...(pick.screen ? { screen: pick.screen } : {}) } };
+          if (shape.includes(VISUAL_NOT_YET)) shape = shape.replace(VISUAL_NOT_YET, VISUAL_DRAWING);
+          if (pick.row) next = { ...next, lastContent: [...(next.lastContent ?? []), pick.row] };
+          // (as brain/turn.js: a picture asked with the card's board up names Studio's second view in her line)
+          if (p.r.move?.request === "visual" && pick.altView) next = { ...next, lastMove: { ...next.lastMove, altView: altViewOfRow(pick.row, pick.altView) ?? pick.altView } };
+          // (dc-r7-held-board, as brain/turn.js with Studio's preselectedAltLine: a held picture turn's line is Studio's, from the
+          // view it draws beside the held board; null promises no picture)
+          if (p.r.move?.request === "visual" && ask.intent.held) {
+            // (v6.10 P6: ONE take — the drawing, the view and her line together; the final draw below is this take, never redrawn)
+            picTake = heldPicture(ask, { keepRef: upRef0, keepPage: upPage0 });
+            next = { ...next, lastMove: { ...next.lastMove, altLine: picTake.line, ...(picTake.view ? { altView: picTake.view } : {}) } };
+            if (picTake.view) screen = { ...screen, altView: picTake.view };
+          }
+        } else screen = { kind: "none", why: "no board for this ask" };
+        if (visual === "animation" || visual === "simulation") shape = askTruth(shape, visual, "none");
+      }
+      next = { ...next, lastMove: { ...next.lastMove, shape } };
+      instructions = instructionsFor(next, kit);
+    }
+    if (reply == null) {
+      const [t, ms] = await timed(() => textReply({ instructions, state: next, kit, childText: text, history: next.recent.slice(0, -1), ui: slot ? { ...ui, tray: "studio", studioSlot: slot } : ui, module: null }));
+      replyMs += ms;
+      reply = t.reply; guard = t.guard?.caught?.length ? t.guard.caught : null; tGuard = t.guard ?? null;
+      // (v6.6 A2: a return her line did not say goes back on the queue, as brain/turn.js does)
+      if (t.guard?.returnMissed && next?.lastMove?.returned) next = { ...next, later: requeueMissedReturn(next, t.guard).later };
+      // (v6.8 A4, as brain/turn.js: an aside question ended her turn — the unsaid card is neither pinned nor graded)
+      if (t.guard?.cardHeld && next?.activeItemId) { next = { ...next, cardUnsaid: next.activeItemId }; if (ui?.ask) ui = { ...ui, ask: null, chips: [] }; }
+      if (t.guard?.asideEnd) next = { ...next, asideReplyDue: true };
+      if (next) next = { ...next, returnAsked: t.guard?.asideEnd && t.guard?.returnSaid && next.lastMove?.returned?.topic ? { topic: next.lastMove.returned.topic } : undefined };
+      // (main's director2 judgement: a caught problem must be told apart from a fixed one) what was left after the rewrite, and
+      // whether code replaced or repaired the line
+      if (guard) guardAfter = { afterRewrite: t.guard.afterRewrite ?? null, replaced: !!t.guard.replaced, repaired: !!t.guard.repaired };
+    }
+    // replyReadyMs: from the child's words to her whole line ready (the classifier, then her line): what first sound waits on
+    // director4 (main): per turn, the script beat, the board ref shown, whether a scene was up, the check state
+    const sb = next.lastMove?.scriptBeat ?? null;
+    const beat = sb ? `${sb.skillId?.split("-").at(-1) ?? "?"}:${sb.kind}:${sb.beatId}` : null;
+    const cardId = ui?.ask?.itemId ?? null;
+    const check = cardId ? { itemId: cardId, scripted: String(cardId).startsWith("script:"), misses: next.misses?.[cardId] ?? 0, gave: !!next.lastMove?.gave } : null;
+    // (a board or game on screen this turn; Studio's code-built scenes (M5a) are not simulated in-process: scene is always null)
+    const boardUp = !!(screen && screen.kind !== "none");
+    // (Studio, director6 #1: the board the child SAW is the preselect TAKEN on her real line, re-gated: a value she states is
+    // drawn, no longer "?"; production's seam.js does the same take. The record and the contradiction count use it, falling
+    // back to the preselect's masked board only when the take returns nothing)
+    if (pickAsk && screen?.kind === "whiteboard" && reply && !pickAsk.intent?.held) {
+      const askR = { ...pickAsk, line: { ...(pickAsk.line ?? {}), text: reply } };
+      let took = null;
+      try { took = takePreselected(askR, gateCtxFor(askR, { kit, redact: [], prior: [] })); } catch { took = null; }
+      if (took?.screen) {
+        // (Studio 608a0e90: a value her line confirms is revealed in the take's counts, labels and numbers: take all three)
+        screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null,
+          ...(took.screen.labels != null ? { onScreen: { ...(screen.onScreen ?? {}), labels: Array.isArray(took.screen.labels) ? took.screen.labels.join(" | ") : String(took.screen.labels) } } : {}) };
+        shownScript = took.script ?? shownScript;
+        // (as seam.js drawn(): the card's ref when the card's own board was drawn; a second view names no card)
+        shownRef = took.lastRef !== undefined ? took.lastRef : took.by === "script" && !took.altView ? refKey(pickAsk.intent.boardRef) : null;
+        shownKind = !shownRef ? null : took.lastKind !== undefined ? took.lastKind : pickAsk.intent.scriptBeat?.kind ?? null;
+        slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+      } else { screen = { ...screen, drawn: "preselect" }; }
+    }
+    // director5 gate counts (dc-r7-script-walk-v2): was the beat delivered (its must-say words in her line); did a keyed answer
+    // get a verdict (right: an affirmation; wrong: a not-right first sentence); how many sentences contradict the screen
+    // (dc-r7-script-walk-v3 exact counts) delivered = the authored point spoken (explain beats); the verdict = the GRADED state
+    // (next.lastVerdict: a keyed answer graded correct / not_yet) plus the code verdict sentence; and right answers called wrong
+    const firstS = (String(reply).match(/[^.!?।]+[.!?।]*/) ?? [""])[0];
+    const delivered = next.lastMove?.point ? pointSaid(reply, next.lastMove.point) : next.lastMove?.mustSay?.length ? saidMust(reply, next.lastMove.mustSay, next.ctx?.lang ?? "hinglish") : null;
+    const graded = ["correct", "not_yet"].includes(next.lastVerdict) ? next.lastVerdict : null;
+    const answered = graded ? (graded === "correct" ? "correct" : c.outcome) : null;
+    // (H1.2: a right answer's verdict is an explicit affirmation; silence is not a verdict)
+    const verdictGiven = graded ? (graded === "correct" ? affirmsAnswer(firstS) : NOT_RIGHT.test(firstS)) : null;
+    const keyed = activeItem ? [activeItem.answer, ...(activeItem.acceptable ?? [])].filter(Boolean).map((k) => String(k).toLowerCase().replace(/\s+/g, " ").trim()) : [];
+    // (a keyed right answer graded not_yet, or met with a not-right lead that does not affirm: "Sahi, … barabar nahi hain" to the
+    // key "nahi" is an affirmation, director6's 3 false counts)
+    const rightCalledWrong = !!activeItem && keyed.includes(String(text).toLowerCase().replace(/\s+/g, " ").trim())
+      && (graded === "not_yet" || (NOT_RIGHT.test(firstS) && !affirmsAnswer(reply)));
+    // (H1.2, a new count: a wrong answer called right: the script's listed wrong answer graded right, or a graded-wrong answer
+    // met with an affirmation and no not-right)
+    const meta = activeItem?.scriptAsk ?? activeItem?.scriptCheck ?? activeItem?.scriptThen ?? null;
+    const saidN = String(text).toLowerCase().replace(/\s+/g, " ").trim();
+    const wim = meta?.wrongIfMis ? String(meta.wrongIfMis).toLowerCase().replace(/\s+/g, " ").trim() : null;
+    const wrongCalledRight = !!activeItem && ((graded === "correct" && !!wim && (saidN === wim || saidN.replace(/\s*(?:hai na|hai)$/, "") === wim))
+      || (graded === "not_yet" && affirmsAnswer(firstS) && !NOT_RIGHT.test(firstS)));
+    // v5 harness (director7: the one-board checker saw 13 of 51): a line with several parts (a closure, the beat, the card) is
+    // checked part by part, each against the board drawn while it is said (intent.segments on her FINAL line: each part's
+    // board preselected and taken on that part's own words, as Studio pages it)
+    let segs = null, unpaged = 0, drawn = null, droppedPages = 0, heldRec = null;
+    const visualNow = p.r.move?.request === "visual";
+    if (lane === "director" && reply && (next.lastMove?.scriptBeat || next.lastMove?.cardBeat)) {
+      const item = boardItemOf(next, kit, findItem);
+      const askF = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-seg-${++SEG_N}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: reply, ...(tGuard?.parts ? { parts: tGuard.parts } : {}) } });
+      // (dc-r7-held-board: a held turn is the held board, then at most one switch — as Studio's heldBoard draws it, kept when up)
+      const H = askF.intent.held ?? null;
+      const parts = H ? [{ atChar: 0, boardRef: H.board, scriptBeat: askF.intent.scriptBeat }, ...(H.switchTo ? [{ atChar: H.switchTo.atChar, boardRef: H.switchTo.board, scriptBeat: askF.intent.scriptBeat }] : [])]
+        : [{ atChar: 0, boardRef: askF.intent.boardRef, scriptBeat: askF.intent.scriptBeat }, ...(askF.intent.segments ?? [])].filter((x) => x.boardRef);
+      if (H) {
+        let hb = null;
+        // (v6.10 P6: a picture turn draws its one take; any other held turn its held board against the board up before the turn)
+        // (Studio's 021-picture-turn-once: the decision made at the preselect is passed to heldBoard, which draws exactly that)
+        const picHb = visualNow && picTake && !H.switchTo;
+        try { hb = heldBoard({ ...askF, line: { ...askF.line, text: String(reply) } }, { keepRef: upRef0, keepPage: upPage0, ...(picHb ? { picture: picTake.decision } : {}) }); } catch { hb = null; }
+        unpaged = hb ? 0 : 1;
+        if (process.env.HARNESS_DEBUG_HELD && H.switchTo) console.error("[held]", JSON.stringify({ sw: H.switchTo.unit, at: H.switchTo.atChar, len: String(reply).length, screens: hb?.screens?.length, kept: hb?.kept, upRef: upRef0?.slice(0, 60), picHb, board: H.board?.template, to: H.switchTo.board?.template, upW: upPage0?.board?.w, upOps: upPage0?.ops?.length }));
+        if (hb?.script) { shownScript = hb.lastPage ?? hb.script; shownRef = hb.lastRef ?? null; shownKind = null; }
+        next = { ...next, heldUp: heldUpOf(H) };
+        // (v6.9, main on director17: the record said "held" while the take showed a new board — the row's screen and its held record
+        // are the TAKE's: what Studio's heldBoard drew, kept or switched, page by page)
+        heldRec = { unit: hb?.held?.unit ?? null, changed: !!hb?.held?.changed, kept: !!hb?.kept, drawn: hb ? (hb.kept ? "kept" : "held") : "refused",
+          pages: (hb?.screens ?? []).map((x) => ({ from: x.from ?? 0, template: x.template ?? null, ...(x.beside ? { beside: x.beside.template ?? null } : {}) })),
+          intent: { unit: H.unit, ...(H.switchTo ? { switchTo: { unit: H.switchTo.unit, atChar: H.switchTo.atChar } } : {}) },
+          // (Studio's to-brain/019, main v6.9 recording: the layout the child saw — split or not, and which panels)
+          layout: hb?.layout ?? null,
+          ...(visualNow ? { picture: { view: picHb ? picTake.view : null, decided: picHb ? "once" : "none" } } : {}) };
+        // (v6.10 P6's predicate: a picture line spoken with no view drawn — counted on the row, as the gate's picture count)
+        const pf = pictureTruth(tGuard?.parts?.list ?? [], { view: heldRec.picture?.view ?? null, layout: heldRec.layout });
+        if (pf) heldRec = { ...heldRec, pictureNoView: true };
+        if (hb?.screen) screen = { kind: "whiteboard", by: "held", template: hb.template ?? hb.screen.template ?? null, boardRef: H.switchTo && hb.lastRef === refKey(H.switchTo.board) ? H.switchTo.board : H.board,
+          counts: hb.screen.counts ?? null, numbers: hb.screen.numbers ?? null, onScreen: hb.screen.onScreen ?? null, drawn: heldRec.drawn, ...(hb.altView ? { altView: hb.altView } : {}) };
+      }
+      // (v6.3 harness, main on director11: the screen field and the picture check read what is actually DRAWN — her final line's
+      // pages as the seam pages them — never the board preselected before her line existed)
+      drawn = parts.map((pt) => ({ from: pt.atChar, board: pt.boardRef, beat: pt.scriptBeat?.beatId ?? null }));
+      if (parts.length > 1) {
+        // (v6.1, main on director9: model the seam's PAGED turn, not only each part on its own: production pages all parts in one
+        // take (seam.js → pagesBoard); when one page cannot be drawn the whole turn falls back and no part's board — the
+        // verdict's revealed mark included — reaches the screen. c5-t01 steady T21: a 3-word tail page failed W6.timing)
+        // (v6.4 harness, main on director12: a later page Studio cannot draw is dropped and its words ride on the page before:
+        // the proxies report how many, per turn)
+        const d0 = pagesDroppedCount();
+        let pg = null;
+        if (!H) try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
+        if (!H) unpaged = pg ? 0 : 1;
+        // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
+        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; shownKind = shownRef ? pg.lastKind ?? null : null; }
+        droppedPages = Math.max(0, pagesDroppedCount() - d0);
+        const text = String(reply).replace(/\s+/g, " ").trim();
+        segs = parts.map((pt, i) => {
+          const segText = text.slice(pt.atChar, parts[i + 1]?.atChar ?? text.length);
+          // (v6.6, as Studio's pagesBoard: a later page is never asked as the picture — only the first page draws the second view;
+          // director14's c5-t01 segments recorded the card page drawn as the alt because this copy kept the request)
+          const a = { ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:s${i}`, boardRef: pt.boardRef, scriptBeat: pt.scriptBeat, segments: undefined, segmentPlan: undefined, ...(i ? { request: undefined } : {}) }, line: { ...askF.line, text: "" } };
+          const pk = preselect(a, { kit });
+          let scr = pk?.screen ?? null;
+          try { const aR = { ...a, line: { ...a.line, text: segText } }; const tk = takePreselected(aR, gateCtxFor(aR, { kit, redact: [], prior: [] })); if (tk?.screen) scr = tk.screen; } catch { /* the preselect's board */ }
+          const n = scr ? screenContradictions(segText, screenFacts({ studioSlot: { artifact: { kind: "whiteboard", screen: scr } } }, { scriptBeat: { board: pt.boardRef } })).length : 0;
+          // v6 checker (a): a value the board shows as "?" that this part states
+          const wh = scr ? withheldStated(segText, { ...scr, boardRef: pt.boardRef }) : [];
+          // v6 harness: each part's own board and when it starts (its clause; ~380 ms a word before it, the S2 timing check)
+          const before = text.slice(0, pt.atChar).split(/\s+/).filter(Boolean).length;
+          const pic = visualNow ? pictureMismatch(segText, pt.boardRef, screen?.altView ?? null).length : 0;
+          return { from: pt.atChar, atClause: pt.atClause ?? null, estMs: before * 380, beat: pt.scriptBeat?.beatId ?? null, template: pk?.template ?? null, board: pt.boardRef,
+            contradictions: n + (wh.length ? 1 : 0), ...(wh.length ? { withheld: wh } : {}), ...(pic ? { picture: pic } : {}) };
+        });
+      }
+    }
+    // (v6.7, main on director15 c5-t01 steering 14: page 0's segment recorded fraction-line@1 where bars were drawn — page 0 is the
+    // take on her line, so its template is the take's)
+    if (segs?.length && screen?.drawn === "take" && screen.template) segs[0] = { ...segs[0], template: screen.template };
+    // (v6.3: the row's screen says what her final line draws: page 0's board, and every page when the turn is paged)
+    if (screen?.kind === "whiteboard" && drawn?.length) screen = { ...screen, preselected: screen.boardRef ?? null, boardRef: drawn[0].board, ...(drawn.length > 1 ? { pages: drawn } : {}) };
+    const whole = segs ? 0 : next.lastMove?.scriptBeat || next.lastMove?.cardBeat ? screenContradictions(reply, screenFacts(slot ? { studioSlot: slot } : ui, next.lastMove)).length
+      + (screen?.kind === "whiteboard" && withheldStated(reply, screen).length ? 1 : 0) : 0;
+    // v6 checker (main on director8: the code saw 1, 0, 0 of 10, 4, 45): (b) a picture asked for, described as something the board
+    // does not draw; (c) a close's why borrowed from a point or a remediation; (d) a verdict with content said over a board
+    // other than the answered card's
+    const v6 = {
+      // (v6.3: each page's words against that page's board; a one-page turn against the board her final line draws)
+      picture: !visualNow ? 0 : segs ? segs.reduce((n, g) => n + (g.picture ?? 0), 0)
+        : screen?.kind === "whiteboard" ? pictureMismatch(reply, drawn?.[0]?.board ?? screen.boardRef ?? null, screen.altView ?? null).length : 0,
+      borrowedWhy: borrowedWhy(reply, WHYS(kit)).length,
+      // (v6.1) a turn in parts that Studio could not page; a picture asked for that drew the board already up, no second view
+      unpaged,
+      // (v6.5, main on director13: a spoken line whose page was dropped is said over the page before — counted as a contradiction)
+      droppedPages,
+      nothingNew: p.r.move?.request === "visual" && screen?.kind === "whiteboard" && !screen.altView && !!lastScreenKey && lastScreenKey === screenKeyOf(screen) ? 1 : 0,
+      verdictSeg: verdictMisplaced({ graded: !!graded, verdict: firstS, answeredBoard: s.lastMove?.cardBeat?.board ?? s.lastMove?.scriptBeat?.board ?? null,
+        answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null,
+        firstBoard: segs?.[0]?.board ?? next.lastMove?.closeBeat?.board ?? (next.lastMove?.scriptBeat?.board ?? null) }) ? 1 : 0,
+    };
+    // (v6.6 H3, main on director14: the counter read 9 where hand read 22 — it read closeBeat.board, not what was drawn. The
+    // count is now the PAGES DRAWN: a graded close or a give-up's key on a page that is not the answered card's figure, a
+    // picture turn's card page drawn as the alt view, a verdict stating a fraction the answered board does not draw; plus the
+    // turns Studio could not page. The v6 word checks stay recorded beside it (contradictionsV6), no longer in the count:
+    // on director14 they flagged 8 turns the hand count did not)
+    const contradictionsV6 = (segs ? segs.reduce((a, x) => a + x.contradictions, 0) : whole) + v6.picture + v6.borrowedWhy + v6.verdictSeg + v6.unpaged + v6.nothingNew + v6.droppedPages;
+    // (v6.7 H4: her line's parts and the beat each belongs on — the counter checks each part against the page drawn under it)
+    const lmB = next.lastMove ?? {};
+    const partBeat = { close: lmB.closeBeat?.beatId, closed: (lmB.closedBeat ?? lmB.closeBeat)?.beatId, bridge: lmB.bridgeBeat?.beatId, simpler: (lmB.simplerBeat ?? lmB.scriptBeat)?.beatId,
+      alt: lmB.cardBeat?.beatId, card: lmB.cardBeat?.beatId, body: lmB.scriptBeat?.beatId };
+    let atP = 0;
+    const pageParts = (tGuard?.parts?.list ?? []).map((pp) => { const o = { part: pp.part, from: atP, beat: pp.part === "close" && !/\d|kyunki|because|jawab|^(?:haan|bilkul|sahi)/i.test(pp.text) ? null : partBeat[pp.part] ?? null }; atP += String(pp.text ?? "").replace(/\s+/g, " ").trim().length + 1; return o; })
+      .filter((pp) => pp.beat);
+    const rowDrawn = { who: "teacher", text: reply, card: ui?.ask?.text ?? null, check, gate: { answered }, move, beat: sb ? beat : null, ...(pageParts.length ? { pageParts } : {}),
+      ...(screen?.kind === "whiteboard" ? { screen: { ...screen, ...(drawn?.length > 1 ? { pages: drawn } : {}) } } : {}), ...(segs ? { segments: segs } : {}) };
+    const lastChild = [...rows].reverse().find((r) => r.who === "child") ?? null;
+    const dc = drawnContradictions(rowDrawn, [...rows].reverse().find((r) => r.who === "teacher" && r.check?.itemId) ?? null,
+      lastChild && rows.at(-1) === lastChild ? lastChild : null,
+      { answerBoard: next.lastMove?.closeBeat?.answerBoard ? next.lastMove.closeBeat.board : null });
+    v6.drawn = dc;
+    const contradictions = dc.closeOffBoard + dc.cardAsAlt + dc.modelWords + v6.unpaged + v6.droppedPages + v6.nothingNew;
+    // v5 gate line: a key said ("jawab X tha") that is not one of the topic's authored key or accept forms is a false key
+    // (one sentence at a time; "tumhara jawab sahi tha" states no key)
+    const saidKeys = [...String(reply).matchAll(/jawab\s+([^.!?।]+?)\s+tha\b|answer was\s+([^.!?।]+?)(?:[,.]|$)/gi)].map((m) => String(m[1] ?? m[2]).trim().toLowerCase())
+      .filter((k) => !/^(?:sahi|galat|theek|bilkul sahi)$/.test(k));
+    // v6 (main: widen beyond "jawab X tha"): any number stated as an answer that no authored key or accept form, nor the
+    // question being answered or asked, nor their own words carry
+    // (director9: 15 of 17 flags were numbers inside an authored close, "kyunki … 6 + 4 + 6 + 4 = 20 cm": every authored why and
+    // the move's own closures are given too)
+    const lm = next.lastMove ?? {};
+    const given = [ui?.ask?.text, activeItem?.prompt_hi, activeItem?.prompt_en, text, ...(next.lastContent ?? []).filter((x) => typeof x === "string" && /^(?:their question|worked example|step \d)/.test(x)),
+      ...(WHYS(kit)?.own ?? []), lm.gave?.answer, lm.gave?.why, lm.closed?.answer, lm.closed?.why, lm.workedDone?.answer, lm.workedDone?.why, ...(lm.sayFirst ?? []), lm.point, ...(lm.rendered ?? [])].filter(Boolean).join(" ");
+    const statedFalse = falseAnswerNumbers(reply, { keys: AUTHORED_KEYS(kit), given });
+    const falseKeys = saidKeys.filter((k) => !AUTHORED_KEYS(kit).has(k)).length + (statedFalse.length ? 1 : 0);
+    // (latency: the sequential ready time as before, and the parallel bound production's speculation reaches when its key hits,
+    // max(classify, reply), on a turn the model classified; whether her draft was rewritten, or the rewrite skipped by cut 1)
+    const latency = { classifyPath: lastClassify?.path ?? null, parallelBoundMs: lastClassify?.path === "model" ? Math.max(classifyMs, replyMs) : classifyMs + replyMs,
+      rewrite: !!tGuard?.rewritten, rewriteSkipped: tGuard?.rewriteSkipped ?? null };
+    // (v6.10 harness, main on director18 steering 50: a break or stop menu had no held record — a turn with no unit part keeps the board
+    // up, and its record says so)
+    if (!heldRec && lane === "director" && reply && next.heldUp?.unit) heldRec = { unit: next.heldUp.unit, changed: false, kept: true, drawn: "kept", pages: [], intent: { unit: next.heldUp.unit, noUnit: true }, layout: { split: false } };
+    rows.push({ who: "teacher", text: reply, move, card: ui?.ask?.text ?? null, ...(pageParts.length ? { pageParts } : {}), ...(heldRec ? { held: heldRec } : {}), ...(tGuard?.returnSaid ? { returnSaid: true } : {}), ...(next?.lastMove?.clarifyN ? { clarifyN: next.lastMove.clarifyN } : {}), ...(tGuard?.j2 ? { j2: { line: tGuard.j2.line ?? null, refused: tGuard.j2.refused ?? [] } } : {}), replyMs, replyReadyMs: classifyMs + replyMs, latency, beat, boardRef: screen?.boardRef ?? sb?.board ?? null, boardUp, scene: null, check,
+      gate: { delivered, answered, verdictGiven, contradictions, contradictionsV6, rightCalledWrong, wrongCalledRight, falseKeys, v6, ...(statedFalse.length ? { statedFalse } : {}) }, ...(segs ? { segments: segs } : {}),
+      ...(screen ? { screen } : {}), ...(guard ? { guard, guardAfter } : {}), ...(fellBack ? { fellBack } : {}),
+      // round 8: the because records this turn acted on (what the judge reads to see why a choice was made)
+      ...((next.knowsApplied ?? []).length > knowsBefore ? { because: next.knowsApplied.slice(knowsBefore) } : {}) });
+    s = { ...next, recent: [...(next.recent ?? []), { who: "teacher", text: reply }] };
+    lastBoardUp = boardUp;
+    if (screen?.kind === "whiteboard") lastScreenKey = screenKeyOf(screen);
+    if (child && (leaving || p.r.end)) break;
+    if (p.r.end) break;
+  }
+  return rows;
+}
+
+const md = (name, topic, A, B) => {
+  const side = (rows) => rows.map((r) => r.who === "child" ? `**child:** ${r.text}  _(${r.read})_`
+    : `**Asha** [${r.move}${r.beat ? ` · beat ${r.beat}` : ""}${r.check ? ` · check ${r.check.itemId}${r.check.misses ? ` (${r.check.misses} miss)` : ""}${r.check.gave ? " gave" : ""}` : ""}${r.boardUp ? " · board up" : ""}${r.replyReadyMs != null ? ` · ready ${r.replyReadyMs} ms` : ""}${r.fellBack ? ` · fell back: ${r.fellBack}` : ""}${r.guard ? ` · guard ${r.guard.join(",")}` : ""}]: ${r.text}${r.card ? `\n  > card: ${r.card}` : ""}${r.because ? `\n  > because: ${r.because.map((b) => `${b.choice} on ${b.on} ← ${b.fact?.kind}${b.fact?.misconceptionId ? ` ${b.fact.misconceptionId}` : ""}${b.fact?.path ? ` (${b.fact.path})` : ""} [${b.source}]`).join("; ")}` : ""}${r.screen ? `\n  > screen: ${r.screen.kind === "game" ? `game ${r.screen.game}` : r.screen.kind === "whiteboard" ? `board ${r.screen.template ?? r.screen.by ?? ""} ${JSON.stringify(r.screen.onScreen ?? {})}${r.screen.boardRef ? ` · ref ${JSON.stringify(r.screen.boardRef)}` : ""}` : `nothing (${r.screen.why})`}` : ""}`).join("\n\n");
+  return `# ${name} · ${topic}${DRY ? " (DRY: stubbed lines, nothing to judge)" : ""}\n\n## Director\n\n${side(A)}\n\n## Agent\n\n${side(B)}\n`;
+};
+
+const MATRIX = process.argv.includes("--matrix");
+const LEARNERS = arg("learners", "").split(",").map((x) => x.trim()).filter(Boolean);
+// H1 (director5): --reactive plays the reactive child (evals/child-sim/reactive.mjs), persona = the scenario name
+const REACTIVE = process.argv.includes("--reactive");
+const runs = LEARNERS.length
+  ? (MATRIX ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : [...MATRIX_TOPICS, ["c5-maths-ch02-t02", 5]])
+    : [[arg("topic", "c6-maths-ch06-t01"), Number(arg("class", "6"))]]).flatMap(([topicId, classLevel]) => LEARNERS.map((learner) => ({ topicId, classLevel, name: arg("scenario", "steady"), learner })))
+  : MATRIX
+  ? (arg("topics", "") ? arg("topics", "").split(",").map((t) => [t.trim(), Number(/^c(\d+)-/.exec(t.trim())?.[1] ?? 6)]) : MATRIX_TOPICS).flatMap(([topicId, classLevel]) => (arg("scenario", "") ? arg("scenario", "").split(",").map((x) => x.trim()) : ["steady", "offtopic", "stuck", "steering"]).map((name) => ({ topicId, classLevel, name })))
+  : arg("scenario", "steady,offtopic,stuck").split(",").filter((n) => SCENARIOS[n]).map((name) => ({ topicId: arg("topic", "c6-maths-ch06-t01"), classLevel: Number(arg("class", "6")), name }));
+// (a run finished in parts: --skip leaves out lessons already written, by output name)
+const SKIP = new Set(arg("skip", "").split(",").map((x) => x.trim()).filter(Boolean));
+// (main, after director6's first start walked no script at all: a script run never starts on a topic with no walkable script;
+// it says which topic and why, and spends nothing)
+if (process.env.TAXILA_R7_SCRIPT && scriptOn()) {
+  const bad = [...new Set(runs.map((r) => r.topicId))].map((t) => [t, scriptWhyNot(kitFromFile(getTopic(t)))]).filter(([, why]) => why);
+  if (bad.length) { for (const [t, why] of bad) console.error(`NO SCRIPT: ${t}: ${why}`); console.error("refusing to run: TAXILA_R7_SCRIPT=on and a topic would fall back to the kit"); process.exit(5); }
+}
+const dir = OUT;
+mkdirSync(dir, { recursive: true });
+for (const { topicId, classLevel, name: scenario, learner = null } of runs) {
+  const kit = kitFromFile(getTopic(topicId));
+  // (two topics of one class in one run, director5's c5 t01 and t02: named by topic)
+  const name = learner ? `${learner}-${scenario}-${topicId.replace(/-maths-/, "-")}` : MATRIX ? (arg("topics", "") ? `${scenario}-${topicId.replace(/-maths-/, "-")}` : `${scenario}-c${classLevel}`) : scenario;
+  if (SKIP.has(name)) continue;
+  // one lane after the other, so neither lane's latency is measured while the other is calling
+  // --agent-only: the agent lane alone (main 2026-11-04: the agent half rerun with its production invariants)
+  const AGENT_ONLY = process.argv.includes("--agent-only");
+  const A = AGENT_ONLY ? [] : await lesson("director", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
+  // --director-only: the Director lane alone (main 2026-11-04: the Director-half rerun after block 2; the agent lane is frozen)
+  const DIRECTOR_ONLY = process.argv.includes("--director-only");
+  const B = DIRECTOR_ONLY ? [] : await lesson("agent", kit, classLevel, SCENARIOS[scenario], REACTIVE ? scenario : null, learner);
+  const deployments = { reply: DEPLOY.reply, classify: DEPLOY.classify, agent: teacherDeployment() };
+  writeFileSync(`${dir}/${name}.json`, JSON.stringify({ topicId, classLevel, scenario, ...(learner ? { learner, knows: seedLearner(topicId, learner).plan } : {}), dry: DRY, deployments, director: A, agent: B }, null, 1) + "\n");
+  // (a script run whose lesson walked no script beat is a broken run, never a result: it stops loudly)
+  if (process.env.TAXILA_R7_SCRIPT && scriptOn() && A?.length && !A.some((r) => r.beat)) {
+    console.error(`NO SCRIPT BEATS: ${name} walked no script beat (${topicId}); stopping`); stopWith(6, "no script beats");
+  }
+  writeFileSync(`${dir}/${name}.md`, md(name, topicId, A, B));
+  const fell = B.filter((r) => r.fellBack).length;
+  const p50 = (rows) => { const v = rows.filter((r) => r.replyReadyMs != null).map((r) => r.replyReadyMs).sort((a, b) => a - b); return v.length ? v[Math.floor(v.length / 2)] : null; };
+  console.log(`${name}: ready p50 director ${p50(A)} ms · agent ${p50(B)} ms · calls so far ${meter.calls} (~$${meter.usd.toFixed(3)})`);
+  console.log(`${name}: director ${A.filter((r) => r.who === "teacher").length} turns · agent ${B.filter((r) => r.who === "teacher").length} turns (${fell} fell back) → ${dir}/${name}.md`);
+}
+writeFileSync(`${dir}/meter.json`, JSON.stringify({ calls: meter.calls, usdEstimate: +meter.usd.toFixed(3), byDeployment: meter.byDeployment, cap: CAP, usdCap: USD_CAP }, null, 1) + "\n");
+console.log(`done: ${meter.calls} model calls, ~$${meter.usd.toFixed(3)} estimated`);

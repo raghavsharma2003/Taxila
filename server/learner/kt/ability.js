@@ -143,14 +143,18 @@ export function inv(A, n) {
 const matVec = (A, x, n) => Array.from({ length: n }, (_, i) => x.reduce((s, xj, j) => s + A[i * n + j] * xj, 0));
 
 // ───────────── priors (§6.3 mixture; borrowing ρ) ─────────────
-/** sd0 and the mixture prior's Normal fit for a strand at a class (no placement yet). */
-export function classPrior(strand, classLevel) {
+/** The class mixture prior for a strand (no placement yet): sd0 and its components [weight, mean]. */
+export function classPriorComponents(strand, classLevel) {
   const subject = subjectOfStrand(strand);
   const sd0 = classLevel <= 2 ? 1.0 : 1.5;
   const enrolled = classLevel - 1 + 0.5;  // mid-year default [U]
   const gapFar = subject === "maths" ? Math.max(0.5, 0.6 * (classLevel - 1.8))
     : Math.min(2.5, Math.max(0.3, 0.67 * classLevel - 3.5));
-  const comps = [[0.6, enrolled - 0.5], [0.4, enrolled - gapFar]];
+  return { sd0, comps: [[0.6, enrolled - 0.5], [0.4, enrolled - gapFar]] };
+}
+/** The mixture prior's components ([weight, mean], each with sd sd0; round 7 F cold start reads them) and its Normal fit. */
+export function classPrior(strand, classLevel) {
+  const { sd0, comps } = classPriorComponents(strand, classLevel);
   const mu = comps.reduce((s, [w, m]) => s + w * m, 0);
   const v = comps.reduce((s, [w, m]) => s + w * (sd0 ** 2 + (m - mu) ** 2), 0);
   return { mu, sd: Math.sqrt(v), sd0: Math.sqrt(v) };
@@ -169,18 +173,27 @@ export function initialBase({ strands, classLevel, openedAt, epochId, placement 
   const m = pri.map((p) => p.mu);
   const S = [];
   for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) S.push(rho(ss[i], ss[j]) * pri[i].sd * pri[j].sd);
-  let base = { epochId, openedAt: new Date(openedAt).toISOString(), strands: ss, m, S, sd0: pri.map((p) => p.sd0) };
-  // Placement as Gaussian sites against the class prior (own evidence only; borrowing via S).
-  if (Object.keys(placement).length) {
-    base = { ...base, ...combineSites(base, ss.map((s, i) => {
-      const p = placement[s];
-      if (!p) return { tau: 0, h: 0 };
-      const pv = pri[i].sd ** 2, v = Math.min(p.sd ** 2, pv * 0.999);
-      const tau = Math.max(0, 1 / v - 1 / pv);
-      return { tau, h: tau === 0 ? 0 : p.mu / v - m[i] / pv };
-    })) };
-  }
-  return base;
+  const base = { epochId, openedAt: new Date(openedAt).toISOString(), strands: ss, m, S, sd0: pri.map((p) => p.sd0) };
+  return withPlacement(base, placement);
+}
+
+/**
+ * Placement as Gaussian sites against a base's marginals (own evidence only; borrowing via S). Pure: a new base, or the
+ * same one when no strand has a site. initialBase applies it to the class prior; the ledger (round 7 F, kt/placement.js)
+ * applies a placement row that arrives after the epoch exists to the next opened epoch's base.
+ * @param {{ strands: string[], m: number[], S: number[] }} base @param {Record<string, { mu: number, sd: number }>} [placement]
+ */
+export function withPlacement(base, placement = {}) {
+  if (!base.strands.some((s) => placement[s])) return base;
+  const n = base.strands.length;
+  return { ...base, ...combineSites(base, base.strands.map((s, i) => {
+    const p = placement[s];
+    if (!p || !(p.sd > 0)) return { tau: 0, h: 0 };
+    // cat.js ownEvidence is a likelihood summary (flat prior), so the site is exactly N(mu, sd²): precision 1/sd², never
+    // more. (Round 7 F: it was read as a posterior, 1/v − 1/pv, which pulled the mean all the way to mu however wide sd was.)
+    const v = p.sd ** 2;
+    return { tau: 1 / v, h: p.mu / v };
+  })) };
 }
 
 // ───────────── epochs ─────────────

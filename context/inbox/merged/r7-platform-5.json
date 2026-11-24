@@ -1,0 +1,19 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-gate-test-all",
+      "kind": "decision",
+      "at": "2026-11-05",
+      "title": "The commit gate is `npx tsc -b && npx vite build && npm run test:all`. test:all runs every suite in its own node --test process, 4 at a time, about 9 minutes on 4 cores (532 s for 499 suites), against about 32 minutes for the single-process npm test. The two runs execute exactly the same tests. They differed in one way: state shared between files in one process. tests/test-isolation.test.mjs now refuses module-level env and global writes, and its known-debt list is empty. The main loop's integration step still runs single-process `DATABASE_URL= npm test`, which is what catches any remaining cross-file state (as the r7-brain-step-check and r1443 leaks showed). Main approved it on 2026-11-05. Reverse (go back to single-process npm test as the commit gate) if a cross-file leak reaches int/r6 more than once in a round after passing test:all but failing single-process npm test."
+    },
+    {
+      "id": "ms-r7-test-all-2026-11-05",
+      "kind": "measurement",
+      "at": "2026-11-05",
+      "title": "499 suites at int/r6 4c5b4bed, one node --test process each, 4 at a time on the 4-core container: 532 s wall; serial total 1,986 s. Single-process npm test took about 32 min (main, integration 6). Slowest suites: kit-budget 312 s (15.7% of serial time), studio-stage-states 112 s, r4-latency-outbox-late 111 s, forge-g2 94 s, brain-turn 92 s, w2b-whiteboard-browser 84 s, migrations-applied 60 s (a 60 s reachability probe, now 10 s), studio-qa 49 s, and four DB suites at about 45 s each. The fixes went to the owners through main. Only r5-edit-supersede-db failed in isolation: it needs model keys when a TEST DB is set, and Brain is making it skip without them."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-gate-test-all", "rel": "measured_by", "dst": "ms-r7-test-all-2026-11-05" }
+  ]
+}

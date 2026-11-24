@@ -1,0 +1,30 @@
+{
+ "solved": 228,
+ "agreed": 228,
+ "findings": [
+  {
+   "id": "pl-c4-evs-e05",
+   "verdict": "question_flawed",
+   "prompt_en": "Aarav gets ₹50 and wants to buy a ₹40 notebook next week. What should he do with ₹10 from today's money?",
+   "key": "Save it for the notebook",
+   "mine": "Save it for the notebook (only sensible option)",
+   "why": "The numbers do not fit the keyed reasoning: Aarav already has ₹50 and the notebook costs ₹40, so the ₹10 is exactly the part he does NOT need for the notebook (50-40=10). 'Save it for the notebook' is therefore not literally true; the stem probably meant he must keep ₹40 aside, or that he gets ₹10 today. The key is still the only non-absurd option, so no child is mis-scored, but the stem should be fixed (same in prompt_hi)."
+  }
+ ],
+ "hinglish": [
+  {
+   "id": "c4-evs-ch09-t02-i04",
+   "phrase": "ek patli 3 (tin) ki chhat aur deewaron wali",
+   "why": "The metal 'tin' was converted to the numeral 3 (Hindi 'teen'). Should read 'patli tin ki chaadar ki chhat aur deewaron wali'. Read aloud by TTS this becomes 'patli teen ki chhat'."
+  }
+ ],
+ "level": [],
+ "other_notes": [
+  "All 90 kit items and 138 MCQs (18 DIAG + 120 placement) solved blind; every key matched in substance, and no 'acceptable' form was found that is a wrong answer.",
+  "c4-evs-ch03-t02-i01: prompt_hi renders tiger as 'sher' and eagle as 'cheel' (strictly baagh / baaz; cheel is a kite). Common colloquial usage, sorting answer unaffected; the acceptable list repeats the same words.",
+  "pl-c5-evs-e09: keyed option 'Make and store mango pickle' for RIPE mangoes; pickle is normally made from raw mangoes (ripe ones become aam papad/jam/pulp). Still the only sensible option; pl-c5-evs-m04 asks the same with raw mangoes correctly.",
+  "c5-evs-ch03-t02-i12 and c5-evs-ch07-t01-rl-h1 contain the template placeholder {friendF} in both languages; fine if substituted at runtime, would be read out literally if not.",
+  "Near-duplicate placement items within the same class (repeated question if both are drawn): pl-c3-evs-m12 / pl-c3-evs-l03 (ball on busy road); pl-c3-evs-m01 / f03; pl-c3-evs-m02 / f04; pl-c3-evs-m03 / f05; pl-c3-evs-f01 / e07; pl-c3-evs-m11 / f09 / l01 (hand-washing); pl-c4-evs-e09 / m02 (frog-snake chain); pl-c4-evs-e10 / m03; pl-c5-evs-m11 / l02 (switch off lights and fans); pl-c5-evs-m12 / l04.",
+  "In every one of the 120 placement (pl-*) items the correct option is the first option as stored in questions.json; make sure options are shuffled at serve time."
+ ]
+}

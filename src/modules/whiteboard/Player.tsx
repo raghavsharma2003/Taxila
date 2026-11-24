@@ -6,10 +6,13 @@
 //
 // Used by the Studio stage's `whiteboard` renderer (StudioWhiteboard.tsx) and by the frame's explainer@1 engine (the
 // template rungs). Reduced motion: every op appears complete at its startMs, nothing is animated along a path.
+import type { ThemeName } from "../../theme/palette.ts";
 import { memo, useEffect, useMemo, useRef, useState } from "react";
 import type { WbOp, WhiteboardScript } from "../../../shared/studio.ts";
-import { erasers, opGeometry, opProgress, visibleShare, type OpGeometry } from "../../../shared/whiteboard.js";
-import { HAND_FONT, paletteFor, isNumeric, type BoardSkin, type Ink, type Palette } from "./palette.ts";
+import { erasers, isIdentity, isMotionOp, morphAt, motionMatrix, opGeometry, opProgress, sweepAt, textFace, visibleShare, TEXT_FACES, type OpGeometry } from "../../../shared/whiteboard.js";
+import { paletteFor, roleColor, roleFill, type BoardSkin, type Ink, type Palette, type Role } from "./palette.ts";
+// round 8 (board grammar item 7): the board's faces, self-hosted (Vite bundles the woff2 files)
+import "./faces.css";
 
 const WEIGHT: Record<number, number> = { 1: 2.4, 2: 3.4, 3: 5 };
 const nowMs = () => performance.now();
@@ -36,25 +39,22 @@ export interface WhiteboardPlayerProps {
    * carries one. An op whose clause has no onset is drawn from the anchor.
    */
   clauseOnsets?: readonly number[];
+  /** #44: a paged script's per-switch onsets from Voice's word timings (lineClock switchOnsets); beats `clauseOnsets`. */
+  switchAt?: readonly (number | undefined)[];
   /**
    * Once the drawing is done, every written word (text / label op) becomes a tap target and reports its op (W2-B fixer,
    * minor 12: "point to the stamen" style covert checks, graded by the host from the op id, never by the frame).
    */
   onTapText?: (op: { id: string; text: string }) => void;
-  /** r4: the skin's board (palette and faces, palette.ts kakshaBoardSkin); absent = today's board. */
+  /** r4: the skin's board (its palette, palette.ts kakshaBoardSkin); absent = today's board. The faces are the board's own
+   *  under every skin (round 8 item 7: the fit measures them; shared/whiteboard.js TEXT_FACES). */
   skin?: BoardSkin | null;
+  /** the lesson's theme (src/theme/palette.ts); night when absent. A skin (Kaksha's tokens) still wins when given. */
+  theme?: ThemeName;
 }
 
-/** The script with clause-relative ops moved onto the line's clock (and its duration stretched to cover them). */
-export function onLineClock(script: WhiteboardScript, clauseOnsets?: readonly number[]): WhiteboardScript {
-  if (!clauseOnsets?.length || !script.ops.some((o) => o.clause !== undefined)) return script;
-  const ops = script.ops.map((o) => {
-    const on = o.clause !== undefined ? clauseOnsets[o.clause] : undefined;
-    return typeof on === "number" && Number.isFinite(on) && on > 0 ? { ...o, startMs: o.startMs + on, endMs: o.endMs + on } : o;
-  });
-  const end = ops.reduce((m, o) => Math.max(m, o.endMs), 0);
-  return { ...script, ops, durationMs: Math.max(script.durationMs, end) };
-}
+export { onLineClock } from "./lineClock.ts";
+import { onLineClock } from "./lineClock.ts";
 
 /** The clock: t (ms since startAt), advanced on animation frames only while the script is still drawing. */
 function useTimeline(startAt: number | null, endMs: number, frozenAt: number | undefined, onDone?: () => void): number {
@@ -81,10 +81,10 @@ function useTimeline(startAt: number | null, endMs: number, frozenAt: number | u
   return t;
 }
 
-export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, onTapText, skin }: WhiteboardPlayerProps) {
-  const script = useMemo(() => onLineClock(given, clauseOnsets), [given, clauseOnsets]);
-  // r4: under a skin (Kaksha) the board takes the skin's palette and faces; without one, exactly as before
-  const pal = skin?.palette ?? paletteFor(script.board.ground);
+export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion = false, width = "100%", height = "100%", className, pulse, onDone, frozenAt, clauseOnsets, switchAt, onTapText, skin, theme }: WhiteboardPlayerProps) {
+  const script = useMemo(() => onLineClock(given, clauseOnsets, switchAt), [given, clauseOnsets, switchAt]);
+  // r4: under a skin (Kaksha) the board takes the skin's palette; without one, exactly as before
+  const pal = skin?.palette ?? paletteFor(script.board.ground, theme);
   const { w: BW, h: BH } = script.board;
   const all = useMemo(() => [...(prior ?? []), ...script.ops], [prior, script]);
   const byId = useMemo(() => new Map(all.map((o) => [o.id, o])), [all]);
@@ -95,6 +95,8 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
   }, [byId]);
   const er = useMemo(() => erasers({ ...script, ops: all }), [script, all]);
   const priorIds = useMemo(() => new Set((prior ?? []).map((o) => o.id)), [prior]);
+  // round 7 (motion ops): the ops some motion (move, rotate, scale, follow, sweep, morph) acts on
+  const moved = useMemo(() => new Set(all.flatMap((o) => (isMotionOp(o) ? [(o as { target: string }).target] : []))), [all]);
   const t = useTimeline(startAt, script.durationMs, frozenAt, onDone);
   const q = (op: WbOp) => {
     if (priorIds.has(op.id)) return 1;
@@ -104,16 +106,28 @@ export function WhiteboardPlayer({ script: given, prior, startAt, reducedMotion 
   const pulseBox = pulse ? geoms.get(pulse.target)?.box ?? null : null;
   return (
     <svg className={className} viewBox={`0 0 ${BW} ${BH}`} width={width} height={height} preserveAspectRatio="xMidYMid meet"
-      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: skin?.font ?? HAND_FONT }} data-skin={skin ? "kaksha" : undefined}>
+      role="img" aria-label={ariaOf(script)} data-wb-t={Math.max(0, Math.round(t))} style={{ display: "block", overflow: "hidden", fontFamily: TEXT_FACES.word.family, fontWeight: TEXT_FACES.word.weight }} data-skin={skin ? "kaksha" : undefined}>
       <rect x={0} y={0} width={BW} height={BH} fill={pal.ground} />
       {pal.grid && <Grid w={BW} h={BH} color={pal.grid} />}
       {all.map((op) => {
-        if (op.op === "erase") return null;
+        if (op.op === "erase" || isMotionOp(op)) return null;
         // an earlier board's op fades when THIS script erases it, at the eraser's time (not at once)
         const vis = visibleShare(op, t, er);
         const p = q(op);
         if (p <= 0 || vis <= 0) return null;
-        return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} numFont={skin?.numFont ?? null} />;
+        if (!moved.has(op.id)) return <OpView key={op.id} op={op} g={geoms.get(op.id)!} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} />;
+        // round 7 (motion ops): an op a motion acts on is drawn under its transform at t (slid, hopped, turned, scaled,
+        // carried along a path), with its points morphed and its fill swept in; reduced motion: each started motion is at
+        // its end at once. Strokes keep their width under a scale (divided back by it).
+        const pts = op.op === "stroke" || op.op === "polygon" ? morphAt(all, op, t, reducedMotion) : null;
+        const shown = pts ? ({ ...op, points: pts } as WbOp) : op;
+        const g = pts ? opGeometry(shown, byId) : geoms.get(op.id)!;
+        const sweep = sweepAt(all, op.id, t, reducedMotion);
+        const M = motionMatrix(all, op.id, t, reducedMotion);
+        const k = Math.max(0.3, Math.sqrt(Math.abs(M[0] * M[3] - M[1] * M[2])));
+        const view = <OpView key={op.id} op={shown} g={g} p={p} vis={vis} pal={pal} reducedMotion={reducedMotion} sweep={sweep} strokeScale={k} />;
+        if (isIdentity(M)) return <g key={op.id} data-moved={op.id}>{view}</g>;
+        return <g key={op.id} transform={`matrix(${M.map((v) => v.toFixed(4)).join(" ")})`} data-moved={op.id}>{view}</g>;
       })}
       {pulseBox && <PulseRing key={pulse!.seq} box={pulseBox} color={pal.ink.mark} reducedMotion={reducedMotion} />}
       {onTapText && t >= script.durationMs && script.ops.filter((o) => (o.op === "text" || o.op === "label") && visibleShare(o, t, er) > 0).map((o) => {
@@ -139,24 +153,40 @@ const Grid = memo(function Grid({ w, h, color }: { w: number; h: number; color: 
   return <path d={lines.join(" ")} stroke={color} strokeWidth={1} fill="none" />;
 });
 
-const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont = null }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; numFont?: string | null }) {
-  const color = pal.ink[(op.ink ?? "chalk") as Ink];
-  const sw = WEIGHT[op.weight ?? 2];
+const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, sweep = null, strokeScale = 1 }: { op: WbOp; g: OpGeometry; p: number; vis: number; pal: Palette; reducedMotion: boolean; sweep?: { p: number; dir: "up" | "down" | "left" | "right" } | null; strokeScale?: number }) {
+  // round 8: an op with a role is drawn in its role's colour (the shape is the role's own: geometry and the dash below)
+  const role = (op as { role?: Role }).role;
+  const color = role ? roleColor(pal, role) : pal.ink[(op.ink ?? "chalk") as Ink];
+  // (a focus outline is a little heavier: "a solid outline plus a tint")
+  const sw = (WEIGHT[op.weight ?? 2] * (role === "focus" ? 1.25 : 1)) / strokeScale;
   // the op's progress is spent on its paths in order, then on its texts (a label's leader, then its word)
   const parts = g.paths.length + g.texts.length;
   const share = (i: number) => (parts ? Math.max(0, Math.min(1, p * parts - i)) : p);
-  const fillInk = "fill" in op && op.fill ? pal.ink[op.fill as Ink] : null;
-  const fillP = fillInk && g.fill ? Math.max(0, Math.min(1, (p - 0.55) / 0.45)) : 0;
+  const fillInk = "fill" in op && op.fill ? (role && role !== "muted" ? roleColor(pal, role) : pal.ink[op.fill as Ink]) : null;
+  const dashedOp = "dashed" in op && op.dashed === true;
+  // a swept fill is revealed by its sweep (a clip growing from one side), not faded in with the outline
+  const fillP = fillInk && g.fill ? (sweep ? (sweep.p > 0 ? 1 : 0) : Math.max(0, Math.min(1, (p - 0.55) / 0.45))) : 0;
+  const b = g.box, sp = sweep?.p ?? 1;
+  const clip = sweep && sp < 1 ? (sweep.dir === "right" ? { x: b.x, y: b.y, w: b.w * sp, h: b.h } : sweep.dir === "left" ? { x: b.x + b.w * (1 - sp), y: b.y, w: b.w * sp, h: b.h }
+    : sweep.dir === "down" ? { x: b.x, y: b.y, w: b.w, h: b.h * sp } : { x: b.x, y: b.y + b.h * (1 - sp), w: b.w, h: b.h * sp }) : null;
+  const clipId = clip ? `wbsw-${op.id}` : undefined;
   const pulse = op.op === "highlight" && op.style === "pulse";
   return (
     <g opacity={vis} data-op={op.op} data-id={op.id}>
-      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={fillInk} fillOpacity={pal.fillAlpha * fillP} stroke="none" />}
+      {clip && <defs><clipPath id={clipId}><rect x={clip.x - 2} y={clip.y - 2} width={clip.w + 4} height={clip.h + 4} /></clipPath></defs>}
+      {/* (a palette with designed tints fills focus and answer with them at full strength: patch 008) */}
+      {fillInk && g.fill && fillP > 0 && <path d={g.fill} fill={roleFill(pal, role) ?? fillInk} fillOpacity={(roleFill(pal, role) ? 1 : pal.fillAlpha) * fillP} stroke="none" clipPath={clipId ? `url(#${clipId})` : undefined} />}
+      {g.slotFill && share(0) > 0 && <path d={g.slotFill} fill={roleFill(pal, role ?? "slot") ?? color} fillOpacity={roleFill(pal, role ?? "slot") ? 1 : pal.fillAlpha * 0.6} stroke="none" />}
       {g.paths.map((d, i) => {
         const s = share(i);
+        // round 8: a dashed op (a mix-up line, a slot box) or a dashed path of its drawing (a slot's box round its "?")
+        const dashed = g.dashed ? g.dashed[i] : dashedOp && i === 0;
+        // (a fraction's rule keeps its own thin width)
+        const w = g.widths?.[i] != null ? (g.widths[i] as number) / strokeScale : sw;
         return s > 0 ? (
-          <path key={i} d={d} fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" pathLength={1}
-            strokeDasharray={op.op === "line" && op.dashed ? "0.02 0.018" : s < 1 ? "1 1" : undefined}
-            strokeDashoffset={op.op === "line" && op.dashed ? undefined : s < 1 ? 1 - s : undefined} opacity={op.op === "highlight" ? 0.9 : 1} />
+          <path key={i} d={d} fill="none" stroke={color} strokeWidth={w} strokeLinecap="round" strokeLinejoin="round" pathLength={dashed ? undefined : 1}
+            strokeDasharray={dashed ? "7 6" : s < 1 ? "1 1" : undefined}
+            strokeDashoffset={dashed ? undefined : s < 1 ? 1 - s : undefined} opacity={op.op === "highlight" ? 0.9 : 1} />
         ) : null;
       })}
       {g.texts.map((tx, i) => {
@@ -164,9 +194,12 @@ const OpView = memo(function OpView({ op, g, p, vis, pal, reducedMotion, numFont
         if (s <= 0) return null;
         const chars = [...tx.text];
         const shown = reducedMotion || s >= 1 ? tx.text : chars.slice(0, Math.max(1, Math.ceil(chars.length * s))).join("");
+        // round 8 (item 7): the run's text role picks its face — a number, a fraction or a numwork cell in the numeral face,
+        // other words in the word face (Devanagari falls back to Mukta): shared/whiteboard.js textFace, the fit's measure
+        const face = TEXT_FACES[tx.face ?? textFace(tx.text)];
         return (
           <text key={i} x={tx.x} y={tx.y} fontSize={tx.size} fill={color} textAnchor={tx.align === "start" ? "start" : tx.align === "end" ? "end" : "middle"}
-            dominantBaseline="middle" style={{ fontVariantNumeric: "tabular-nums", ...(numFont && isNumeric(tx.text) ? { fontFamily: numFont } : {}) }}>{shown}</text>
+            dominantBaseline="middle" data-face={tx.face ?? textFace(tx.text)} style={{ fontVariantNumeric: "tabular-nums", fontFamily: face.family, fontWeight: face.weight }}>{shown}</text>
         );
       })}
       {pulse && p > 0 && p < 1 && !reducedMotion && (

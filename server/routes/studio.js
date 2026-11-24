@@ -17,12 +17,13 @@
 //   GET  /api/studio/made-for?childId=         the Made for you shelf / the parent's "Made for {child}" feed (W2-A renders)
 //   GET  /api/studio/notebook?childId=         round 4 content: the child's lessons that drew boards, newest first (any device)
 //   GET  /api/studio/health                    round 4 content: 200 when the tray gate has its contract and certificates, else 503
+//   GET  /api/studio/timing                    round 7: board lateness p50/p90 and board-first outcomes (operator key)
 //   GET  /api/studio/notebook/pages?lessonId=  every board of one lesson, in the order it was drawn (replay)
 //   POST /api/studio/made-for/hide             {childId, id} → hides a shelf card (evidence rows untouched)
 import { HttpError, bad, send } from "../http.js";
 import { one, q } from "../db.js";
 import { requireChild, sessionTokenHash } from "../auth.js";
-import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming, noteViewport } from "../studio/seam.js";
+import { subscribe, slotSnapshot, hostAnswer, hostFeedback, hostFrameError, noteWbTiming, noteViewport, wbTimingStats } from "../studio/seam.js";
 import { getBuild } from "../studio/store.js";
 import { archetype } from "../studio/archetypes/index.js";
 import { hasConsent } from "../auth.js";
@@ -38,7 +39,8 @@ async function lessonFor(req, lessonId) {
   const token = sessionTokenHash(req);
   if (!token) throw new HttpError(401, "not signed in");
   const row = await one(
-    `select l.id, l.started_at, l.ended_at, to_jsonb(c) as child_row, (s.guardian_id = c.guardian_id) as mine
+    `select l.id, l.started_at, l.ended_at, to_jsonb(c) as child_row,
+            (s.guardian_id = c.guardian_id and coalesce((select d.child_id from device_session d where d.token_hash = s.token_hash) = c.id, true)) as mine
        from lesson l join child c on c.id = l.child_id
        left join auth_session s on s.token_hash = $2 and s.expires_at > now()
       where l.id = $1`, [lessonId, token]);
@@ -127,6 +129,14 @@ async function viewportRoute(req, res, body) {
 }
 
 /** round 4 content: can this deployment certify tray pieces? (the files the tray gate reads are present). No child data. */
+/** round 7 (C1 studio-board-timing): this replica's board lateness (p50 / p90 ms behind her line's first audio) and the
+ *  board-first outcomes, numbers only. Operator key (x-taxila-ops = TAXILA_OPS_KEY; none configured = refused). */
+async function timing(req, res) {
+  const key = process.env.TAXILA_OPS_KEY;
+  if (!key || req.headers?.["x-taxila-ops"] !== key) return send(res, 403, { error: "operator key required" });
+  send(res, 200, wbTimingStats());
+}
+
 async function health(_req, res) {
   const h = trayGateHealth();
   send(res, h.ok ? 200 : 503, h);
@@ -215,5 +225,6 @@ export const routes = {
   "GET /api/studio/notebook/pages": notebookPages,
   "GET /api/studio/made-for": madeFor,
   "GET /api/studio/health": health,
+  "GET /api/studio/timing": timing,
   "POST /api/studio/made-for/hide": hide,
 };

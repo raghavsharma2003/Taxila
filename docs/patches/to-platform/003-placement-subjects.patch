@@ -1,0 +1,11 @@
+diff --git a/db/migrations/048_placement_subjects.sql b/db/migrations/048_placement_subjects.sql
+new file mode 100644
+index 00000000..8730848b
+--- /dev/null
++++ b/db/migrations/048_placement_subjects.sql
+@@ -0,0 +1,5 @@
++-- 048 (audit 2026-11-09, LEARN-06): the cold start makes a placement row for every subject a class has (routes/placement.js
++-- COLD_SUBJECTS: maths, evs, science, english, hindi, sst), but 036 allowed only maths, evs and science, so a parent's
++-- "how does school feel" answer for English, Hindi or SST failed the save. Widen the check. Re-runnable.
++alter table placement drop constraint if exists placement_subject_check;
++alter table placement add constraint placement_subject_check check (subject in ('maths', 'evs', 'science', 'english', 'hindi', 'sst'));

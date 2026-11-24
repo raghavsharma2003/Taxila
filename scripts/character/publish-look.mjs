@@ -11,7 +11,7 @@
 //        [--tiers Bplus,Blite] [--backdrop "#d9d2c7"] [--no-plate] [--prune]
 //
 // --src is any directory that follows the contract (runtime.json schema 1 + the tier GLBs + plate/): the pipeline's
-// art/character/looks-out/<look>, a licensed candidate (public/assets/teacher-candidates/<id>), a bake-off row.
+// art/character/looks-out/<look>, a licensed candidate (art/character/candidates-built/<id>), a bake-off row.
 // H.glb is not published: tier H is not in the first ship (teacher-anim §5.3 step 4), so it stays out of the image.
 // --prune removes older <rev> directories of this look from public/.
 //

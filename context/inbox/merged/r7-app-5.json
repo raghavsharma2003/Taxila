@@ -1,0 +1,20 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-child-memory",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "What {T} remembers is on the child's Your teacher screen (reached from Me): the memory rows in the child's own words with 'From what you said on {date}' and Forget this (a hard delete of ONE item, plus a memory_forgotten note so the parent page shows that something was forgotten); consent off shows 'doesn't remember anything between days. Your grown-up chose this.' The server route GET/DELETE /api/child/memory is Brain's (to-brain/008, requireChild, no PIN); until it lands the section is absent, never empty. Reverse: Brain prefers a different route shape, or the parent must approve a child's forget.",
+   "source": "inbox/r7-app-5.json"
+  },
+  {
+   "id": "dc-r7-app-bigger-text-desk",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Me → Bigger text now reaches the lesson: the Desk's --t-* type tokens are restated ×1.18 for b3/b4 under data-comfort=large (literal values, never a self-referencing calc), the Kaksha stage's px text scales by --ks-k, and the Desk's measure folds 1.18 into fontScale so solveStage grows the rail, chips and dock. Reverse: the Desk moves to rem-based type.",
+   "source": "inbox/r7-app-5.json"
+  }
+ ],
+ "edges": [],
+ "md": "## dc-r7-app-child-memory\nEvery child can see what their teacher keeps about them and make her forget it. The list shows only the memory rows written from the child's own words, never inferred learning notes or interests. Forgetting works one item at a time, so a child cannot wipe everything with a single tap. Deleting everything stays with the parent's Data page. Each forget leaves a note that the parent's memory page already lists as 'forgotten'. The note does not say what was forgotten. The route is child-scoped like the rest of /api/child and needs no parent PIN, because the record is the child's own.\n\n## dc-r7-app-bigger-text-desk\nBigger text used to grow only the old screens' type. The Kaksha stage reads px sizes and the layout solver never knew about the setting, so the lesson, where the reading actually happens, stayed the same size. Now the same 1.18 factor applies there too. The solver gets it through fontScale, so the boxes grow with the text instead of clipping it.\n"
+}

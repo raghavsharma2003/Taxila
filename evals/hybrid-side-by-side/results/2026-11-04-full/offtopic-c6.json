@@ -1,0 +1,317 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket ground jaise shapes ka perimeter, yani boundary length, dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 637
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maan lo cricket pitch ke chaaron taraf rope lagani ho—tum total rope kaise sochogi? Aakhir mein tum Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1025,
+   "replyReadyMs": 1662
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 579
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson thodi der ruk sakta hai. Kis baare mein baat karna chahti ho? Screen ka button tumhe lesson par wapas laayega.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 921,
+   "replyReadyMs": 1500
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 786
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya—perimeter mein polygon ki boundary ke sabhi sides jodte hain. Cricket ground ki boundary 4 sides ki ho, toh kaun-si lengths jodogi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1138,
+   "replyReadyMs": 1924
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 711
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, koi baat nahi—rectangle park ki length 50 m aur breadth 30 m hai. Ek round ka perimeter 50 plus 30 plus 50 plus 30, yani 160 m.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 1111,
+   "replyReadyMs": 1822
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 510
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, game: main ek shape bolungi, tum uski boundary ke sides count karna. Rectangle mein kitni sides hoti hain?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2478,
+   "replyReadyMs": 2988,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1073
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, rectangle ki 4 sides hoti hain; tumne 3 count kiya, ek chhoot gayi. Ab rectangle ki chaar sides ginke bolo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2388,
+   "replyReadyMs": 3461,
+   "guard": [
+    "screen",
+    "flat"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 435
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, sides-counting boring lag rahi hai—ab tareeka badalte hain: picture, story ya game, inmein se ek choose karke bolo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2268,
+   "replyReadyMs": 2703,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1216
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum kya choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1045,
+   "replyReadyMs": 2261
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 879
+  },
+  {
+   "who": "teacher",
+   "text": "Kahani mein socho: park ke chaaron taraf ek runner boundary ka poora chakkar lagata hai. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1363,
+   "replyReadyMs": 2242
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 942
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum aaj ke liye rukna chahti ho—carry on, short break, ya stop for today?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1494,
+   "replyReadyMs": 2436
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ground ki boundary se perimeter seekhenge. Ground ke chaaron taraf rassi lagani ho, toh andar ki jagah naapoge ya poori boundary?",
+   "move": "hook",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 737
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai, toh ground ki boundary wala example mast rahega! Ground ke chaaron taraf rassi lagani ho, toh andar ki jagah naapoge ya poori boundary?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2158,
+   "replyReadyMs": 2895
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 967
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, thodi aur baat karte hain. Cricket mein tumhe batting zyada pasand hai ya bowling?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1975,
+   "replyReadyMs": 2942
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 960
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, perimeter pe aate hain. Triangle ki teen sides di hain; boundary ki poori lambai ke liye kya karoge? Is triangle ka perimeter kitna hoga?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1920,
+   "replyReadyMs": 2880
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, chhote step se karte hain. Triangle ki boundary mein teen sides aati hain: 5 cm, 6 cm aur 9 cm. Pehle 5 aur 6 jodo, kitna milta hai?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2503,
+   "replyReadyMs": 2504
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 599
+  },
+  {
+   "who": "teacher",
+   "text": "Do runs mein 5 aur 6 bane; total kitne runs hue?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2420,
+   "replyReadyMs": 3019
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "incorrect",
+   "classifyMs": 1129
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 3 bola; par 5 runs aur 6 runs milkar 3 nahi hote. Ab total kitne runs hue?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2626,
+   "replyReadyMs": 3755
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 436
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ye boring lag raha hai. Chalo cricket ka chhota bolkar khelne wala round karte hain: boundary par 5, 6 aur 9 cm ki teen sides hain. Pehli do sides milaakar kitna hua?",
+   "move": "repair",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2569,
+   "replyReadyMs": 3005
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1261
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket wala round karte hain. Pehle sirf 5 aur 6 runs jodo. Kitne runs hue?",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1806,
+   "replyReadyMs": 3067
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "incorrect",
+   "classifyMs": 773
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 2 bola. Cricket mein 5 runs ke baad 6 aur runs aaye: 5 se aage 6 gino, 6, 7, 8, 9, 10, 11. Ab 5 aur 6 milkar kitne runs hue?",
+   "move": "reteach",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2829,
+   "replyReadyMs": 3602
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 923
+  },
+  {
+   "who": "teacher",
+   "text": "Bye, Riya. Aaj humne perimeter ke liye sides jodna practice kiya; 5 aur 6 ko jodna abhi seekh rahe hain.",
+   "move": "wrap",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 2308,
+   "replyReadyMs": 3231
+  }
+ ]
+}

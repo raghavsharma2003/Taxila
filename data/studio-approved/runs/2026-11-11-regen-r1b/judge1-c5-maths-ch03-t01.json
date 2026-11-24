@@ -1,0 +1,40 @@
+[
+  {
+    "id": "gen-c5-maths-ch03-t01-46f25355",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "dial labels on screen (p412 and l1366): \"90\", \"180\", \"270\"; waves 1, 2 and 4 items [90, 180, 270]",
+        "detail": "The dial prints labels \"90\", \"180\" and \"270\" at exactly the ticks the child is asked to turn the beam to (items 90, 180, 270). These are guide marks that draw the asked tick, so the child matches the number on screen to the same number on the dial instead of working out the turn."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "waves 1, 2, 4 (targets \"c5-maths-ch03-t01-m-half-is-quarter\"); screen \"Mark ki doori 90°\"",
+        "detail": "The mix-up is mixing up a quarter turn and a half turn. The piece only gives degree numbers and never says 'half turn' or 'quarter turn' (aadha / chauthai chakkar). Because the target number is printed on the dial, a child who thinks a half turn is a corner turn would still match 180 to the label \"180\" and never meet the point where the belief goes wrong."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "strings.threat: \"Mark ki doori\" shown above \"90°\"",
+        "detail": "\"doori\" means distance, but the value shown is an angle (90°). Calling an angle a distance is wrong for the subject."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "wave 1 title: \"Ghadi ke mod\"",
+        "detail": "The title says these are clock turns, but the picture is a degree dial with 0° on the right and 90 at the top, increasing anticlockwise. A clock starts at 12 at the top and turns clockwise, so the words disagree with the picture."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "strings.accuracy: \"sahi-pan\"",
+        "detail": "\"sahi-pan\" is a made-up word that does not read naturally for a class 5 child; a plain word such as \"sahi jawab\" would fit."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "The faint coach line \"Kiran ko mod do, mark par roshni lao\" has low contrast but is legible at both sizes. The 412 px layout leaves a large empty band below the badges; this is not counted as unreadable."
+  }
+]

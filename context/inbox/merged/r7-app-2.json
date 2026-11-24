@@ -1,0 +1,41 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-contracts-adopted",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "App renders Brain's round-7 contracts (shared/contracts.ts): ui.steer replaces the default steer row when present ([] = no row); the default row uses steer:picture / steer:game / steer:another; ui.later entries carry open/due/returned and an open one is tapped as chipId later:<id>; ui.moment park/detour/decline/stop_check/returned maps onto the stage's moment cards. Reverse: Brain changes the contract shapes.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-mute-runtime",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The hands-free dock follows Voice's handsFreeDock() states and mute is runtime.setMuted (Voice to-app/002); the interim push-to-talk mute is gone. The link follows engineOpen (the live engine), so hands-free on screen never opens the mic before the engine is live. Me → Tap to talk starts the lesson muted. Reverse: Voice changes the dock contract.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-one-studiostage",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "The stage-first body keeps ONE StudioStage mounted across Studio slots (its React key is the tray kind, not the slot's intent id): a new slot had remounted it and lost the finished piece it holds while the next one is built (tests/studio-stage-states 'a piece still being made never replaces the finished piece'). Reverse: Studio moves the hand-over out of StudioStage.",
+   "source": "inbox/r7-app-2.json"
+  },
+  {
+   "id": "dc-r7-app-break-told",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Pause → End → Short break sends one turn with chipId break:rest and no words (Brain's answer, 2026-11-04), so the Director knows the child is on a break and resumes where they were; the client holds her speech and the mic for the whole break. Reverse: Brain's A9 server-side break state replaces the chip.",
+   "source": "inbox/r7-app-2.json"
+  }
+ ],
+ "edges": [
+  { "src": "dc-r7-app-contracts-adopted", "rel": "part_of", "dst": "dc-r7-stage-first-shell" },
+  { "src": "dc-r7-app-mute-runtime", "rel": "supersedes", "dst": "dc-r7-app-handsfree-dock" },
+  { "src": "dc-r7-app-one-studiostage", "rel": "part_of", "dst": "dc-r7-app-stage-geometry" },
+  { "src": "dc-r7-app-break-told", "rel": "part_of", "dst": "dc-r7-app-stop-checkin-ui" }
+ ],
+ "md": {
+  "decisions": "## dc-r7-app-contracts-adopted\nUntil integration 1 the App read ui.later / ui.moment through a structural mirror and sent the old req:visual / req:game / another chip ids. After Brain's 913d7349 landed in int/r6, useDesk reads the typed fields. ui.steer, when the server sends it, is the steer row (at most four chips, labels capped at 24 characters); absent means the App's default row (Diagram, Game, Alag tarah se, Kuch aur), which now sends Brain's steer:* ids. 'Kuch aur' has no steer id yet, so it still goes as words the change_topic lexicon reads, until Brain's steer:change lands. The Later list keeps the last list sent (absent = unchanged), counts only open and due entries on the pill, strikes returned ones, and an open entry is a button that sends later:<id>. Moment kinds map one to one, with stop_check shown as the stop card and returned as 'Back to your question'. The stop card still reads the server's check-in chips (stop:continue / break:rest / stop:end), as Brain confirmed.\n\n## dc-r7-app-mute-runtime\nThe first milestone shipped an interim mute: a muted flag folded into setPushToTalk, the same switch the pause sheet uses. Voice's B2 (in int/r6 ba4ccc67) added handsFreeDock() (starting, listening, hearing, thinking, speaking, waiting, muted, fallback), runtime.setMuted and the duplexExpected / duplexPhase bridge fields. useDesk now computes the dock state from those, never shows the talk button outside the fallback state, keeps the link on push-to-talk until the engine is live (engineOpen, distinct from what the screen shows), and toggles mute through runtime.setMuted. While muted the dock shows only Unmute, because at ba4ccc67 a tap while muted is blocked; Voice's 446ca383 lets a tap open the mic for one turn, and the dock will show Talk again once it is integrated.\n\n## dc-r7-app-one-studiostage\nStageBody keys its piece wrapper so a new board re-fades in. Keying Studio pieces by intent id remounted StudioStage on every new slot, so a slot still being built replaced the finished piece with an empty stage: the opposite of Studio's rule that the earlier piece stays, inert, until the new one is ready. Studio pieces now share one key, and StudioStage manages its own hand-over. The same investigation changed the piece's entry animation to opacity only, because a scale-in made certified box sizes read 2-5 px small mid-animation (tests/studio-stage-states tray-size check).\n\n## dc-r7-app-break-told\nThe client's break (EndConfirm → Short break → BreakSheet) holds her speech and the mic and shows a count-up clock with 'I'm back'. Brain asked that the Director be told, using the check-in's own break:rest chip id with no words, so the next turn resumes where the lesson was. Any reply to that turn is held until the child returns; Brain was asked to keep it silent or a tiny acknowledgement.\n"
+ }
+}

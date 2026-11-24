@@ -4,7 +4,7 @@ set -e
 cd /home/user/Taxila
 PY=/tmp/claude-0/char/bpyenv/bin/python
 B=/tmp/claude-0/char/c2/build
-OUT=public/assets/teacher-candidates/c2
+OUT=art/character/candidates-built/c2
 $PY scripts/character/candidates/c2/build_c2.py --out $B 2>&1 | grep '^{'
 $PY scripts/character/candidates/c2/texture_c2.py --look art/character/candidates/c2/look.json --build $B
 node scripts/character/candidates/c2/finish.mjs $B c2 $OUT 2>&1 | grep finish

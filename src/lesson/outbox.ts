@@ -341,13 +341,18 @@ export class Outbox {
   get inFlight(): OutboxRecord | null {
     return [...this.active.values()].at(-1)?.rec ?? null;
   }
+  /** audit V-15: the record being delivered for ONE lesson (another lesson's held answers are resent in the background). */
+  private activeFor(lessonId?: string): Active | undefined {
+    const all = [...this.active.values()];
+    return (lessonId ? all.filter((a) => a.rec.lessonId === lessonId) : all).at(-1);
+  }
 
   /**
    * "Try again": abandon the attempt in flight (or the wait before the next retry) and send again at once, marked
    * retried. Returns false when nothing is being delivered (then the caller resends what is held).
    */
-  kick(): boolean {
-    const a = [...this.active.values()].at(-1);
+  kick(lessonId?: string): boolean {
+    const a = this.activeFor(lessonId);
     if (!a) return false;
     a.abort("kick");
     return true;
@@ -359,8 +364,8 @@ export class Outbox {
    * supersede the first attempt rather than count two answers. Returns false when no turn is in flight (then
    * the fix is an ordinary new answer).
    */
-  async edit(childText: string): Promise<boolean> {
-    const a = [...this.active.values()].at(-1);
+  async edit(childText: string, lessonId?: string): Promise<boolean> {
+    const a = this.activeFor(lessonId);
     if (!a) return false;
     a.rec.req = { ...a.rec.req, childText, turnSeq: a.rec.turnSeq, edited: true, retried: true };
     await this.store.put(a.rec).catch(() => {});
@@ -403,6 +408,9 @@ export class Outbox {
             sendFn(rec.req, c.signal).then(resolve, reject);
           });
           this.timers.clearTimeout(deadline);
+          // audit V-16: the server has answered, so this record can no longer be edited or kicked: an edit landing during
+          // the two store round trips below reported "edited", sent nothing and put the record back as a ghost held answer
+          this.active.delete(rec.key);
           await marked;
           await this.store.delete(rec.key).catch(() => {});
           this.events.emit({ type: "acked", rec, retried: rec.attempts > 1 || manual || !!rec.req.retried });

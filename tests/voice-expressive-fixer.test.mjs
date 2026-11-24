@@ -55,7 +55,8 @@ function stubAzure({ dhdFails = () => false, oaiFails = () => false } = {}) {
   return { calls, restore: () => { globalThis.fetch = orig; } };
 }
 const drain = async (entry) => { for (let i = 0; i < entry.parts.length; i++) { entry.startUpTo(i + 1); for await (const _ of entry.jobs[i].read()); } };
-const AZ = { AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k", AZURE_OPENAI_ENDPOINT: "https://example.invalid/openai/v1", AZURE_OPENAI_API_KEY: "k" };
+// audit V-27: the expressive layer is off by default; these tests exercise it
+const AZ = { AZURE_SPEECH_REGION: "centralindia", AZURE_SPEECH_KEY: "k", AZURE_OPENAI_ENDPOINT: "https://example.invalid/openai/v1", AZURE_OPENAI_API_KEY: "k", TAXILA_VOICE_EXPRESSIVE: "1" };
 
 test.beforeEach(() => { setCacheStore({ get: async () => null, put: async () => {} }); resetTelemetry(); __breaker.reset(); });
 test.afterEach(() => warm.clear());
@@ -184,7 +185,8 @@ test("prelude miss: the reply is spoken WITH the child's echo (joined spoken tex
   } finally { f.restore(); restore(); }
 });
 
-test("paths without a prelude keep the echo: renderParts(prelude:false), withEcho for Hear", () => {
+test("paths without a prelude keep the echo: renderParts(prelude:false), withEcho for Hear", (t) => {
+  t.after(envSet({ TAXILA_VOICE_EXPRESSIVE: "1" }));
   const plan = align(ECHO_TEXT, moment({ uptakePrelude: { text: "62" } }));
   assert.ok(plan.clauses[0].stripped, "align strips the echo for the prelude path");
   const gov = createGovernor();

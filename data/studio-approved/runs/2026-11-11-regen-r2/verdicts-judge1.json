@@ -1,0 +1,403 @@
+[
+  {
+    "id": "gen-c4-maths-ch01-t02-6437562f",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "rounds[0].challenges[0].kind = \"rigid\"; screen target \"Mazboot\" with status \"Hil raha hai\"",
+        "detail": "The only challenge is a rigidity task (brace a wobbly 4-stick frame so it 'Tikta hai'). It practises frame rigidity, not right angles / square corners, which is the topic c4-maths-ch01-t02 (cards: right-angle tester, clock hands at right angle, angle size vs arm length)."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "title \"Ghooma Hua Tile\", round title \"Tile Challenge\", frame [[6,1],[9,3],[6,5],[3,3]]",
+        "detail": "The mix-up is 'a tilted square corner is not a right angle'. The drawn 'turned tile' is a rhombus with sides (3,2) and (-3,2): dot product -9+4 = -5, so its corners are NOT right angles. A child holding the belief ('a diamond-turned tile has no right angles') is never shown wrong; the piece shows a tilted tile that indeed has no right angle, which reinforces the mix-up rather than challenging it."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "title \"Ghooma Hua Tile\" / \"Tile Challenge\" vs frame [[6,1],[9,3],[6,5],[3,3]]",
+        "detail": "The words call the shape a turned (square) tile, but the drawn shape is a non-square rhombus (diagonals 4 and 6 units, corners not 90 degrees); a square tile turned like a diamond would have equal diagonals. Words disagree with the picture."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "button \"Check karo\" at p412 and l1366",
+        "detail": "The two-line label \"Check karo\" overflows its button: the text runs over the button's top and bottom borders at both sizes (clearly at l1366, where 'Check' crosses the top edge and 'karo' crosses the bottom edge)."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Sub-title \"Shape ko dhyaan se dekho\" from the spec is not visible on either first screen; cannot tell from the packet whether it appears elsewhere, not counted."
+  },
+  {
+    "id": "gen-c4-maths-ch03-t01-02f16ea5",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The round (rule 'even', lo 0, hi 30, count 10, hitRate 0.5, seed 271, targets 'c4-maths-ch03-t01-m-zero-not-even') has 0, 10, 20 and 30 in range. The spec does not list the numbers drawn, so the packet cannot show whether 0 (the number the mix-up is about) appears among the falling numbers. The HUD reads 'KAT GAYA 0/4', but count 10 at hitRate 0.5 suggests 5 even numbers. The packet cannot tell whether that is a mismatch or the engine's own goal count. Neither is counted as a fault. Unused strings ('Palindrom', etc.) are not shown in this round."
+  },
+  {
+    "id": "gen-c4-maths-ch03-t02-0c1f1c81",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c4-maths-ch07-t01-ba2b2eef",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "screen bill card (p412 and l1366) vs spec rounds[0].customers[0].items[0]",
+        "detail": "Spec has \"name\": \"Soap\", \"price\": 50, \"qty\": 1, but the screen shows \"Soap 1 × ₹0.50\". The price shown disagrees with the spec, so the child is billed 50 paise for an item the engine prices at 50."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec rounds[0] (mode \"pay\", one customer, one item \"Soap\" price 50 qty 1)",
+        "detail": "The target mix-up is \"Lines up numbers of different lengths from the left, so digits end up in the wrong places\" (for example 3256 + 48). The only round bills one item of 50 with nothing to add, so there are no numbers of different lengths to line up. A child holding the mix-up would not go wrong here."
+      },
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "spec rounds[0]",
+        "detail": "The topic is adding and subtracting 4-digit numbers (cards: 2345 + 1432, 5642 − 2318, 3256 + 48). A single ₹50 (or ₹0.50) soap with no sum does not practise column addition or subtraction."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": ""
+  },
+  {
+    "id": "gen-c4-maths-ch09-t01-9b11ea56",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[0]: rule \"multiple\", a 6, lo 2, hi 60, title \"6 ke groups\", screen \"6 Ke guna\"",
+        "detail": "The mix-up is \"Treats the × sign as +, so 6 × 4 is worked out as 6 + 4\" (signs: \"Says 3 × 5 = 8\"). The round only asks the child to pick multiples of 6 from random numbers 2-60. No × expression appears, and nothing places the sum-trap values (6+k, such as 10 = 6+4) as decoys on purpose. A child who reads × as + can still find multiples of 6 by skip-counting (repeated addition), so the round does not show that child where the belief goes wrong. The 10 on the first screen is only a random draw (seed 17), not a designed trap."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "I could not tell from one first-screen frame and seed 17 which numbers appear later, so I did not count the distractor set as a separate fault. strings.runDone \"Run done\" is a short English phrase in a Hinglish piece. It is not a full sentence and it is not on the first screen, so I did not count it."
+  },
+  {
+    "id": "gen-c5-maths-ch01-t01-2680b4d9",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "p412 screen, target card",
+        "detail": "The seal dial is drawn on top of the text 'Number taiyaar 0': the end of 'taiyaar' and the '0' are covered by the dial and the 'SEAL' label, so the loaded count cannot be read."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen, target card",
+        "detail": "Same overlap at 1366 px: the dial covers 'Number taiyaar 0' (the final 'r' and the '0' are hidden behind the dial), and 'SEAL' sits against it."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Spec content (targets 10500, 40006, 100000, 102345; Indian system; denominations) is correct and aimed at the zero-placeholder mix-up. Only the first round's screen is shown, so later rounds' rendering could not be checked."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t02-a1bc53b3",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Wave 1 ticks 8 fits 1/8, 1/4, 1/2; wave 2 ticks 6 fits 1/6, 1/3. Titles 'Pizza line' / 'Roti line' and subs 'Har item ko pakdo' / 'Ek ek item pakdo' say only what to do. The catcher's starting position sits near the 1/8 tick but not on it; it looks like the default start, not a guide mark."
+  },
+  {
+    "id": "gen-c5-maths-ch02-t03-6ce2ba90",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0]: \"mode\": \"join\", \"a\": [1,2], \"b\": [2,4], \"op\": \"-\"; screen label \"ghatao\" between 1/2 and 2/4",
+        "detail": "The mix-up is \"Thinks 2/4 is more than 1/2 because there are more pieces\", which is about comparing. This round asks the child to subtract 2/4 from 1/2 (\"ghatao\", answer 0). It does not ask the child to compare or to say which is more, so it never tests the point where the belief goes wrong. A child who believes 2/4 > 1/2 is not caught. The target's own rule says \"a round aimed at a comparing mix-up compares, never adds\", and a subtract operation is the same kind of fault."
+      },
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "rounds[0] \"op\": \"-\" in topic c5-maths-ch02-t03 (equivalent fractions: cards \"1/3 = ?/6\", \"3/4 = 9/?\")",
+        "detail": "The topic practises equivalent fractions: finding the matching numerator or denominator, or saying whether two fractions are equal. Subtracting fractions is a different skill. The tools on screen (\"kaato\" stepper at 1 and a \"dhalo\" button) set up a cut-and-pour subtraction, not a check of whether the two are equal."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Could not tell from the packet how the engine grades 1/2 - 2/4 = 0 (an empty result). The round title \"Hisson ko dekho\" and the piece title \"Fraction Works\" are not shown on either screen. Neither was counted as a fault."
+  },
+  {
+    "id": "gen-c5-maths-ch03-t01-a95b9197",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.waves[0].title",
+        "detail": "Number written as a word in a title: \"Chaar mod\" (must be digits, e.g. \"4 mod\")."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "screen p412, left call label",
+        "detail": "The string \"Naya mod saamne hai\" is cut off on screen as \"Naya mod saamne…\"; the word \"hai\" is truncated."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "screen l1366, left call label",
+        "detail": "The string \"Naya mod saamne hai\" is cut off on screen as \"Naya mod saamne…\"; the word \"hai\" is truncated."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": false,
+      "l1366": false
+    },
+    "notes": "Wave 3 (classify, kind \"right\") includes 180 and 270 and 45 with no scaffold; the classify mechanic's grading is not shown in the packet, so its key could not be checked beyond the angles themselves being well-formed."
+  },
+  {
+    "id": "gen-c5-maths-ch13-t01-2eaa2cbb",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round rule 'multiple' a=6 over 1-48 with count 18, hitRate 0.5; screen shows 'CHUNA GAYA 0/9' while only 8 distinct multiples of 6 (6..48) exist in range, so the engine presumably repeats a value; the seeded sequence is not in the packet, so whether the distractors include factors of 6 (1, 2, 3) that would catch the factor/multiple mix-up cannot be confirmed from the packet."
+  },
+  {
+    "id": "gen-c6-maths-ch02-t04-68e4dc46",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "waves[0], waves[1] (items [90,90,90,90]); screen: base arm fixed flat at '0°'",
+        "detail": "The mix-up is that only an 'L'-position right angle (one arm flat, one upright) counts. Every 90° round is drawn from a fixed horizontal base arm at 0°, so each right angle the child makes is the upright L. No round shows a tilted right angle, so the piece never reaches the point where the belief goes wrong. It only practises the L position the child already accepts."
+      },
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "waves[1].sub: \"Page ko ghuma kar bhi dekho\"",
+        "detail": "This tells the child to turn the page to look. That is one of the mix-up's own listed signs ('Turns the page before deciding the type'), so the hint reinforces the wrong habit instead of showing that the angle stays 90° whichever way it faces."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "I could not tell from the packet whether a reflex item (waves[3].items 270, range 360) is in scope for this class 6 topic, since the topic cards cover acute, right, obtuse and straight only. I could also not tell whether 'Sahi pan' (strings.accuracy) is natural Hinglish for a class 6 child. Neither is counted as a fault."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t01-e1a86604",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "marks:false on every wave, so the child places cuts and judges equal size herself; this works against the unequal-parts mix-up. Each wave's sub matches its items (wave 1 all 3s, wave 2 all 4s, wave 3 mixed 3 and 4). No round objects are named. All labels are Hinglish with digits. The p412 screen shows a slightly darker band across the top of the play area, but nothing is cut off or hard to read."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t04-c123a9ea",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "waves[0].sub",
+        "detail": "Sub-title \"Dono ko dhyan se dekho\" ('look at both carefully') says two, but the Dosa round has 4 items: \"2/3\", \"2/4\", \"3/4\", \"3/6\". The words disagree with their own round."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "waves[2].sub",
+        "detail": "\"Nazar banaakar khelo\" is not a natural Hindi phrase (the usual form is \"nazar banaye rakho\"). A class-6 child would not read it as plain wording."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Ticks: 12 equal gaps on 0-1, which is a common multiple of 2, 3, 4, 6 and 12, so every item lands on a tick. The same-numerator sets (2/3, 2/4, 2/6 and 3/4, 3/6, 3/12) target the bigger-denominator mix-up. Neither screen shows a giveaway mark. On both screens the catcher sits near 1/12 and is not the answer."
+  },
+  {
+    "id": "gen-c6-maths-ch07-t05-3b481c3f",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "The screen shows 'HO GAYA 0/1' next to 'DAURA 1/2'. The packet does not show whether 'Ho gaya' counts tasks in this round or rounds overall, so it is not counted as a fault. The round titles 'Nimbu ke tukde' and 'Roti ke tukde' do not appear on the first screen. The bar drawing does not match them, but the packet cannot show whether the engine ever displays them, so they are not counted."
+  },
+  {
+    "id": "gen-c6-maths-ch08-t01-ab2133e2",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "spec.rounds[0].challenges (kind \"equidistant\", points [[2,2],[8,2]] and [[3,1],[9,1]]); spec.rounds[1].challenges (kind \"perpendicular\")",
+        "detail": "The target mix-up is \"Confuses diameter and radius, e.g. opens the compass to the diameter\". Neither round involves a circle, a compass opening, a radius or a diameter: round 1 asks for a point equidistant from 2 pins, round 2 asks for a perpendicular line through (5,4). A child who opens the compass to the diameter would never be shown wrong here."
+      },
+      {
+        "item": 2,
+        "kind": "off_topic",
+        "where": "spec.rounds[1]: title \"Seedhi chaal\", sub \"Rekha ko sahi jagah rakho\", kind \"perpendicular\"",
+        "detail": "A perpendicular-line construction does not practise this topic's idea (circle, centre, radius, diameter), despite \"targets\": \"c6-maths-ch08-t01-m-diameter-radius\"."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.title \"Gol Rekha Challenge\"",
+        "detail": "The title promises a circle (gol rekha) challenge, but no round draws or asks about a circle; the words disagree with the piece's own rounds."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "spec.strings.perimeter \"Paridhi\"",
+        "detail": "In a circle topic, \"Paridhi\" is the Hindi term for circumference; perimeter is \"Parimaap\". Labelling perimeter as \"Paridhi\" mislabels a term in exactly this chapter."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.triangle \"Tribhuज\" and spec.strings.noTriangle \"Tribhuज nahi\"",
+        "detail": "Misspelt: mixes Latin and Devanagari script in one word; should be \"Tribhuj\"."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.isosceles \"Samdvip bhuja\"",
+        "detail": "Misspelt term; isosceles is \"Samdvibahu\"."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round 1 sub \"Binduon ko dhyaan se jodo\" is not shown on the first screen in either image; whether it appears later cannot be decided from the packet."
+  },
+  {
+    "id": "gen-c7-maths-ch02-t01-92068f8b",
+    "verdict": "pass",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round 2 sub 'Har din 3 rupaye kam' is read as one day's change (rule -3, 18->15 etc.), which matches the rule. Only round 1's first screen is rendered, so I could not see how round 2 lays out on screen. Round 1 ('20 se 5 kam', where -5 is the correct tile and -20 is the reversed-order distractor) shows the word-order mix-up where it goes wrong."
+  },
+  {
+    "id": "gen-c7-maths-ch05-t01-4c508ae7",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0]: title \"Kone sajao\", sub \"Dono kone dhyaan se banao\", challenges deg 35 and deg 145",
+        "detail": "The child is told both angles outright (\"Kona 35°\", then 145°) and only builds each one separately. Nothing says or shows that the two angles form a linear pair on a straight line, and the child never has to work out the partner angle. A child who believes a linear pair adds to 90° would build 35° and 145° just as easily, so the piece never reaches the point where that belief goes wrong (for example by answering 55° for the partner of 35°)."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.isosceles: \"Samdvipahu\"",
+        "detail": "Misspelt. The Hindi word for isosceles is \"Samdvibahu\" (bahu = side), not \"Samdvipahu\"."
+      },
+      {
+        "item": 6,
+        "kind": "unreadable",
+        "where": "l1366 screen: \"Peechhe\" and \"Jaancho\" buttons",
+        "detail": "The buttons sit on top of the rightmost column of the dot grid (x≈1159, the middle rows), so some grid points are partly covered. This overlaps the board the child builds on."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": false
+    },
+    "notes": "The spec does not say whether the engine draws the 145° angle on the same arm as the 35° angle to make a linear pair. The first screen shows only the 35° challenge and an empty dot grid."
+  },
+  {
+    "id": "gen-c7-maths-ch05-t02-6d89d9df",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 2,
+        "kind": "misses_mixup",
+        "where": "rounds[0].challenges (kind 'parallel', line + through)",
+        "detail": "The target mix-up is 'Thinks lines are parallel only if they are the same length'. The given line is drawn edge to edge across the whole board (both screenshots), and the child draws a line of any length through the point. A child holding the belief can simply draw a line and be marked right; nothing asks them to accept a short and a long segment as parallel, so the belief never goes wrong on screen."
+      },
+      {
+        "item": 1,
+        "kind": "wrong_fact",
+        "where": "rounds[0].sub: \"alag lambai ke tukde\"",
+        "detail": "The sub-title promises segments of different lengths, but the picture shows the given line as a full-width line across the board (not a segment of any length), so the words disagree with the picture."
+      },
+      {
+        "item": 3,
+        "kind": "gives_answer",
+        "where": "strings.parallel: \"Samaan disha\" (shown as the task label on screen)",
+        "detail": "The task label for 'parallel' is 'Samaan disha' ('same direction'), which states the very rule the remediation is meant to make the child find (parallel is about direction, not length)."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "strings.isosceles: \"Samdvipahu\"",
+        "detail": "Misspelt: the Hindi term for isosceles is 'Samdvibahu' (समद्विबाहु), not 'Samdvipahu'."
+      }
+    ],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Only the first challenge is visible in the images; challenges 2 and 3 fit the 13x7 dot grid by coordinates."
+  }
+]

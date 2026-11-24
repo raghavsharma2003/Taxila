@@ -3,7 +3,8 @@
 // falls back to the frozen slots only (a plan that cannot be wrong).
 import { BAND, PLAN } from "./config.js";
 import { jcs } from "./ids.js";
-import { dayMin, localTime } from "./clock.js";
+import { dayMin, daysBetween, localTime } from "./clock.js";
+import { R5, R9 } from "./adapt.js";
 import { teachingEnd } from "./planner.js";
 
 const UUID = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi;
@@ -63,6 +64,29 @@ export function validatePlan(plan, inputs, { childId, now, tz } = {}) {
       const minSet = b.segments.filter((g) => g[3]).map((g) => g[0]);
       for (const k of minSet) if (!(s.segments || []).some((g) => g.kind === k)) bad("V15", `slot ${s.id} lacks minimum segment ${k}`);
       if (s.targetMin > b.sessionMin) bad("V15", `slot ${s.id} ${s.targetMin} min > band session ${b.sessionMin}`);
+    }
+  }
+  // round 7 F: the R5 and R9 knobs (adapt.js)
+  const fired = new Set((plan.adapt?.rules ?? []).map((r) => r.rule));
+  const tw = inputs.school?.testWindows?.[0] ?? null;
+  for (const s of plan.slots) {
+    // V15: the foundation share stays inside its bound
+    if (s.foundationShare !== undefined && !(s.foundationShare > 0 && s.foundationShare <= R9.max)) bad("V15", `slot ${s.id} foundationShare ${s.foundationShare}`);
+    // V16: an adaptive knob away from R0 carries its firing
+    if (s.prereqCheck && !fired.has("R5")) bad("V16", `slot ${s.id} prereqCheck without an R5 firing`);
+    if (s.foundationShare !== undefined && !fired.has("R9")) bad("V16", `slot ${s.id} foundationShare without an R9 firing`);
+    // V18: a prerequisite check at most once per lesson, never for a skill checked within the re-check gap
+    if (s.prereqCheck && (inputs.adapt?.prereqChecked ?? []).includes(s.prereqCheck.skillId)) bad("V18", `slot ${s.id} re-checks ${s.prereqCheck.skillId} within ${R5.recheckDays} d`);
+    // V20: no new skill in the last 2 days of a test window
+    if (tw && (s.pace?.newSkillBudget ?? 0) > 0 && daysBetween(inputs.day.learningDay, tw.to) < 2) bad("V20", `slot ${s.id} newSkillBudget ${s.pace.newSkillBudget} in the last 2 days of a test window`);
+  }
+  // V28 (household v1): a new sitting lies inside a planned, future household window
+  const hh = inputs.household;
+  if (hh?.state === "planned") {
+    for (const s of plan.slots) {
+      if (s.kind !== "live_lesson" || inputs.frozen.slots.some((f) => f.id === s.id)) continue;
+      if (dayMin(hh.from) < Math.max(dayMin(inputs.window.from), dayMin(inputs.window.effFrom))) continue;   // already past: her own routine window
+      if (dayMin(s.window[0]) < dayMin(hh.from) || dayMin(s.window[1]) > dayMin(hh.to)) bad("V28", `slot ${s.id} ${s.window[0]}-${s.window[1]} outside the household window ${hh.from}-${hh.to}`);
     }
   }
   // V30 (and V14's spirit): no other child's id anywhere in the plan.

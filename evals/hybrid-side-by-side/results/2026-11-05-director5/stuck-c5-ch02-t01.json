@@ -1,0 +1,1107 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "stuck",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko cricket pitch ki number line par dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1320
+  },
+  {
+   "who": "teacher",
+   "text": "Badhiya, Riya! Pitch ko 0 se 1 tak ek poora stretch socho; batsman theek beech mein ruke—us spot ko kya number denge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1492,
+   "replyReadyMs": 2812,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "classifyMs": 1579
+  },
+  {
+   "who": "teacher",
+   "text": "1/2 ke liye kaunsi jagah chunogi? Riya kehti hai ki 1/2 number line par 2 ke paas aata hai. 1/2 ki sahi jagah kaunsi hai: 0 aur 1 ke beech, ya 2 ke paas?",
+   "move": "explain",
+   "card": "Riya kehti hai ki 1/2 number line par 2 ke paas aata hai. 1/2 ki sahi jagah kaunsi hai: 0 aur 1 ke beech, ya 2 ke paas?",
+   "replyMs": 2843,
+   "replyReadyMs": 4422,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": false,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 1/2"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/2"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "leak",
+    "long",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "near 2",
+   "read": "misconception",
+   "classifyMs": 2376
+  },
+  {
+   "who": "teacher",
+   "text": "“near 2” sahi nahi hai; 1/2, 0 aur 1 ke beech aadhe raste par hota hai. Ab 8 hisson mein pehle end par kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1189,
+   "replyReadyMs": 3565,
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-not-numbers",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ],
+     "hop": {
+      "num": 1
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/2",
+     "numbers": "0 1 1/2"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 2,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/2"
+       }
+      ],
+      "hop": {
+       "num": 1
+      }
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao na",
+   "read": "no_evidence · language",
+   "classifyMs": 1494
+  },
+  {
+   "who": "teacher",
+   "text": "Hindi mein? Zaroor. Riya, aadha matlab 0 aur 1 ke beech do barabar hisson mein pehla hissa. Iska bhinn kya hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1542,
+   "replyReadyMs": 3036,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 1030
+  },
+  {
+   "who": "teacher",
+   "text": "Ab sadak ko 8 barabar hisson mein baantkar, khilone ki pehli manzil tak sochte hain. Ab wahi sadak 8 barabar hisson mein bati hai. Khilona ghar se chalkar pehle hisse ke end par rukta hai. Woh kis number par khada hai?",
+   "move": "practice",
+   "card": "Khilona ghar se chalkar pehle hisse ke end par rukta hai. Woh kis number par khada hai?",
+   "replyMs": 1384,
+   "replyReadyMs": 2414,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi, aap batao",
+   "read": "no_evidence",
+   "classifyMs": 811
+  },
+  {
+   "who": "teacher",
+   "text": "Fraction mein upar kitne hisse liye, aur neeche kul kitne hisse?",
+   "move": "hint",
+   "card": "Khilona ghar se chalkar pehle hisse ke end par rukta hai. Woh kis number par khada hai?",
+   "replyMs": 1607,
+   "replyReadyMs": 2418,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-not-numbers",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "guard": [
+    "twoq"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/8 km hai na",
+   "read": "correct",
+   "classifyMs": 1560
+  },
+  {
+   "who": "teacher",
+   "text": "Agar 0 aur 1 ke beech 7 marks barabar doori par lage hon, toh line kitne barabar gaps mein bategi?",
+   "move": "explain",
+   "card": "Agar 0 aur 1 ke beech 7 marks barabar doori par lage hon, toh line kitne barabar gaps mein bategi?",
+   "replyMs": 2955,
+   "replyReadyMs": 4515,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": false,
+    "answered": "correct",
+    "verdictGiven": false,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/4",
+     "numbers": "0 1 1/4"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "mustsay",
+    "leak",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq",
+     "leak",
+     "ask"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "aath",
+   "read": "correct",
+   "classifyMs": 4
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya. Tumne marks ke beech ke 8 barabar gaps ginke jawab diya. Tumne kaise jaana ki gaps 8 honge?",
+   "move": "probe",
+   "card": null,
+   "replyMs": 1466,
+   "replyReadyMs": 1470,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1105
+  },
+  {
+   "who": "teacher",
+   "text": "Tumne 8 gaps kaise gina?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2710,
+   "replyReadyMs": 3815,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/4",
+     "numbers": "0 1 1/4"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "nowhy",
+    "screenmismatch"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "8 hai na",
+   "read": "incorrect",
+   "classifyMs": 1300
+  },
+  {
+   "who": "teacher",
+   "text": "8 hai na sahi nahi hai. Tumne 8 kaha. Ab socho: 8 barabar gaps mein har hissa chhota gap hota hai; pehla mark 1/8 hai. Agar yahi line 10 barabar gaps mein bati ho, toh 0 ke zyada paas kaun hoga: 1/5 ya 1/10?",
+   "move": "explain",
+   "card": "Agar yahi line 10 barabar gaps mein bati ho, toh 0 ke zyada paas kaun hoga: 1/5 ya 1/10?",
+   "replyMs": 3152,
+   "replyReadyMs": 4452,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "incorrect",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8 | 1/2",
+     "numbers": "0 1 1/8 1/2"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 4,
+        "label": "1/2"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "praise",
+    "mustsay",
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/5",
+   "read": "misconception",
+   "classifyMs": 1028
+  },
+  {
+   "who": "teacher",
+   "text": "1/5 sahi nahi hai; 1/10 0 ke paas hoga, kyunki 10 tukdon mein har tukda 5 tukdon se chhota hota hai. 3 ya 6 wali strip?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1686,
+   "replyReadyMs": 2714,
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-whole-number-bias",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 2,
+       "label": "1/4"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/8",
+     "numbers": "0 1 1/8"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 8,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/8"
+       },
+       {
+        "num": 2,
+        "label": "1/4"
+       },
+       {
+        "num": 4,
+        "label": "1/2"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 969
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, ghar se school tak 1 km ko 4 barabar gaps mein baanto. Diya hai: ghar 0 par, school 1 km par, beech mein 3 khambe, barabar doori par. Line banao: ghar ko 0 par aur school ko 1 par likho.: line from 0 to 1, kyunki 0 se 1 tak ka poora raasta hi humara ek poora hai. Khambe nahi, gaps gino. Beech mein 3 khambe hain, toh raasta 4 barabar gaps mein bat gaya.: 3 poles make 4 equal gaps, kyunki Fraction ek lambai hai, aur lambai gaps mein hoti hai. Beech ke marks se gaps hamesha ek zyada hote hain. Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "move": "worked_example",
+   "card": "Raasta 4 barabar gaps mein bata hai, aur pehla khamba ghar se theek ek gap door hai. Toh pehla khamba kitne km par hai?",
+   "replyMs": 3372,
+   "replyReadyMs": 4341,
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/4 km",
+   "read": "correct",
+   "classifyMs": 0
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi, Riya. Tumne pehle khambe ki doori ko poore raaste ke chaar barabar hisson mein pehchana. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "practice",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1448,
+   "replyReadyMs": 1448,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t01-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "ruko, main khud karta hoon",
+   "read": "no_evidence · thinking",
+   "classifyMs": 946
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Khud karke batao.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1269,
+   "replyReadyMs": 2215,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "2/1",
+   "read": "no_evidence",
+   "classifyMs": 1099
+  },
+  {
+   "who": "teacher",
+   "text": "Number line par 0 se 1 tak kitne barabar hisse ban rahe hain, pehle woh gino. Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "move": "repair",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 2954,
+   "replyReadyMs": 4053,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t01-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "guard": [
+    "claim"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "2/1",
+   "read": "no_evidence",
+   "classifyMs": 1311
+  },
+  {
+   "who": "teacher",
+   "text": "0 se 1 tak 2 barabar hisson mein pehla hissa hai; bhinn mein upar kitne liye, neeche kul kitne?",
+   "move": "repair",
+   "card": "Ghar (0) se chai ki dukaan (1) tak ki sadak 2 barabar hisson mein bati hai. Beech wale mark par kaunsa number hai?",
+   "replyMs": 1463,
+   "replyReadyMs": 2774,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "c5-maths-ch02-t01-i01",
+    "scripted": false,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1108
+  },
+  {
+   "who": "teacher",
+   "text": "Pichhle sawaal ka jawab Pehla khamba ghar se 1/4 km door hai. tha, kyunki Beech ke 3 khambe raaste ko 4 barabar gaps mein baant dete hain. Har gap 1/4 km ka hai, aur pehla khamba 0 se ek gap par hai.. Cricket pasand hai, Riya—chalo fraction ko pitch ke barabar hisson jaisa sochkar agla sawal dekhte hain. Screen par 0 se 1 tak ki line hai, aur beech mein 2 marks barabar doori par hain. 0 ke baad pehla mark kaunsa fraction hai?",
+   "move": "practice",
+   "card": "0 ke baad pehla mark kaunsa fraction hai?",
+   "replyMs": 1274,
+   "replyReadyMs": 2382,
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 3,
+     "from": 0,
+     "to": 1,
+     "mark": 1
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": true
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 1
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 3,
+      "from": 0,
+      "to": 1,
+      "mark": 1
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "1/2",
+   "read": "incorrect",
+   "classifyMs": 918
+  },
+  {
+   "who": "teacher",
+   "text": "1/2 sahi nahi hai. 1/2? Achha, dekhte hain yeh baithta hai ya nahi. 2 marks se 3 barabar gaps bante hain, isliye pehla mark 1/3 hai. Ab beech mein 3 marks hon, toh pehla mark kaunsa fraction hoga?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 3341,
+   "replyReadyMs": 4259,
+   "beat": "s1:remediation:rem:c5-maths-ch02-t01-m-count-marks",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "incorrect",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "script",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "1/4",
+     "numbers": "0 1 1/4"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "answerinq",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ignored"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "classifyMs": 1004
+  },
+  {
+   "who": "teacher",
+   "text": "3 andar ke marks ka matlab 4 barabar gaps. Isliye pehla mark kul 4 hisson mein se 1 hissa: 1/4. Ab 2 marks hon, kul gaps kitne?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1545,
+   "replyReadyMs": 2549,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "classifyMs": 999
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Ab isi tarah marks aur gaps gin kar nayi line par sochenge. Ab ek metre ke ribbon mein beech mein 7 cut barabar doori par lage hain. 0 se pehle cut tak ribbon kitne metre ka hai?",
+   "move": "practice",
+   "card": "Ab ek metre ke ribbon mein beech mein 7 cut barabar doori par lage hain. 0 se pehle cut tak ribbon kitne metre ka hai?",
+   "replyMs": 1325,
+   "replyReadyMs": 2324,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-count-marks",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   }
+  },
+  {
+   "who": "child",
+   "text": "3/8 m",
+   "read": "incorrect",
+   "classifyMs": 1064
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi, isko ek baar aur aaram se dekhte hain. Ab ek metre ke ribbon mein beech mein 7 cut barabar doori par lage hain. 0 se pehle cut tak ribbon kitne metre ka hai?",
+   "move": "hint",
+   "card": "Ab ek metre ke ribbon mein beech mein 7 cut barabar doori par lage hain. 0 se pehle cut tak ribbon kitne metre ka hai?",
+   "replyMs": 3754,
+   "replyReadyMs": 4818,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-count-marks",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "incorrect",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "guard": [
+    "content_filter_output"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3/8 m",
+   "read": "incorrect",
+   "classifyMs": 927
+  },
+  {
+   "who": "teacher",
+   "text": "3/8 m sahi nahi hai. 1 metre ribbon ko 7 cuts se bane kul barabar hisson mein socho. 0 se pehle cut tak kitna metre hoga?",
+   "move": "hint",
+   "card": "Ab ek metre ke ribbon mein beech mein 7 cut barabar doori par lage hain. 0 se pehle cut tak ribbon kitne metre ka hai?",
+   "replyMs": 2941,
+   "replyReadyMs": 3868,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": {
+    "itemId": "script:c5-maths-ch02-t01-s1:then:c5-maths-ch02-t01-m-count-marks",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "incorrect",
+    "verdictGiven": true,
+    "contradictions": 0
+   },
+   "guard": [
+    "samecard",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "samecard"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bas aaj ke liye itna hi",
+   "read": "no_evidence · stop",
+   "classifyMs": 1412
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. Tum chun sakti ho: aage badhein, thodi der rukein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2550,
+   "replyReadyMs": 3962,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0
+   },
+   "guard": [
+    "wrap",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

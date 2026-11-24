@@ -1,0 +1,199 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-gpt6",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya, main Asha, tumhari AI teacher. Aaj cricket se fractions, yaani barabar hisse, dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1160
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maine kya pasand hai poocha tha; “haan” uska jawab nahi batata. Cricket break mein roti chaar barabar tukdon mein kaatein: tum kitne logi?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1879,
+   "replyReadyMs": 3039
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 1414
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, dheere chalte hain. Roti ke hisse barabar hon. Chaar barabar hisson mein ek hissa quarter, yaani chauthai hai. Quarter ke liye kitne barabar hisse chahiye?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1822,
+   "replyReadyMs": 3236
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1824
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, chhota bolungi. Roti ke chaar barabar hisson mein ek quarter, yaani chauthai hai. Quarter ke liye kitne hisse?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2724,
+   "replyReadyMs": 4548
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1171
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, socho: 15 balls ko teen barabar groups mein baantna hai.",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2414,
+   "replyReadyMs": 3585,
+   "guard": [
+    "screen",
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1590
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 15 pencils ke teen barabar groups socho; ek group ek-third hai.",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2271,
+   "replyReadyMs": 3861,
+   "guard": [
+    "answerinq"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "answerinq"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1081
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, abhi kuch aur baat karte hain; phir is hisse par lautenge. Kis baare mein baat karni hai?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1209,
+   "replyReadyMs": 2290
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1162
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, cricket par end mein aayenge. Pichhle steps ho gaye; ek-tihai mein kitne barabar groups hain?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 2523,
+   "replyReadyMs": 3685,
+   "guard": [
+    "readscard"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 840
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. Riya, khaali jagah mein barabar samoohon ki ginti likhni hai. Ek-tihai ka matlab hai ___ barabar samoohon mein se ek; khaali jagah mein kya aayega?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1616,
+   "replyReadyMs": 2456
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1590
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, pehle tum koshish karo; main baad mein madad karungi. Ek-tihai mein kul kitne barabar samooh hain?",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1365,
+   "replyReadyMs": 2955
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1090
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho. Abhi jaari rakhein, thoda aaraam karein, ya aaj ke liye rokein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 3932,
+   "replyReadyMs": 5022,
+   "guard": [
+    "wrap",
+    "nostop",
+    "nochoice"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

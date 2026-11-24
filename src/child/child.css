@@ -413,3 +413,24 @@
 /* W2-A (flows G16): her line on the plant / star sheet, and Hear {T} */
 .skill-sheet-line { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-2); margin-top: var(--space-2); }
 .skill-sheet-say { font-size: var(--t-label); line-height: 1.4; }
+
+/* r7 app-me-settings: Bigger text reaches the lesson. The Desk's type tokens restated ×1.18 (literal values: a token
+   cannot be scaled from itself, see the --cs-k note above); Bigger text is offered to the older family (b3, b4). The
+   Kaksha stage (stage.css) scales its own px sizes by --ks-k, and the Desk's measure (Desk.tsx) folds the same factor
+   into fontScale, so the stage solver grows the rail, chips and dock to fit (grow a box, never shrink one). */
+.tx-child[data-comfort="large"][data-band="b3"] .dk { --t-ask: 24px; --t-caption: 21px; --t-body: 20px; --t-label: 19px; --t-state: 21px; --t-meta: 16px; --t-numeral: 38px; }
+.tx-child[data-comfort="large"][data-band="b4"] .dk { --t-ask: 22px; --t-caption: 20px; --t-body: 19px; --t-label: 19px; --t-state: 20px; --t-meta: 16px; --t-numeral: 33px; }
+.tx-child[data-comfort="large"] .dk[data-layout="wide"] { --t-ask: 33px; --t-caption: 26px; }
+.tx-child[data-comfort="large"] .ks { --ks-k: 1.18; }
+
+/* r7: the older family's identity emblems (pictos.tsx Emblem): a chamfered dark tile, the glyph in the look's hue */
+.avatar-em { display: inline-grid; place-items: center; flex: none; background: var(--k-deep, var(--surface-2)); border: 1px solid currentColor;
+  clip-path: polygon(22% 0, 100% 0, 100% 78%, 78% 100%, 0 100%, 0 22%); box-shadow: inset 0 0 18px color-mix(in srgb, currentColor 22%, transparent); }
+
+/* r7 (Learning to-app/007) "Maths feels…" at Hello, classic look */
+.feel-row { display: grid; gap: 8px; margin-top: 12px; width: 100%; }
+.feel-label { margin: 0; font-weight: 600; }
+.feel-faces { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.feel-btn { display: grid; justify-items: center; gap: var(--space-1); min-height: 88px; padding: var(--space-2); border-radius: var(--radius-tile); border: 1px solid var(--line); background: var(--surface); color: inherit; font: inherit; }
+.feel-btn[aria-checked="true"] { border: 3px solid var(--nib); background: var(--nib-soft); }
+.feel-got { margin: 0; font-size: 14px; }

@@ -1,0 +1,35 @@
+From: G Platform (round 7, gate time; main 2026-11-05)
+Subject: unref the DB-probe timeout timer: each suite sat idle ~45 s after its tests
+
+The reachability probe races the query against setTimeout(..., 45_000) and never clears or unrefs the timer, so
+the process stays alive for the full 45 s after the tests finish (the probe itself answers in < 1 s). .unref()
+keeps the same probe timeout but no longer holds the process open. No assertion changes. Measured on a TEST
+branch, one suite per process: learner-db 45.4 -> 1.9 s, comprehension-db 45.2 -> 0.9 s, comprehension-w1c-db
+45.2 -> 5.1 s, relational-db 45.2 -> 1.2 s (all still green). Batching / concurrency turned out unnecessary.
+
+diff --git a/tests/r5-safety-distress-beside.test.mjs b/tests/r5-safety-distress-beside.test.mjs
+index 807659f0..b25b24a5 100644
+--- a/tests/r5-safety-distress-beside.test.mjs
++++ b/tests/r5-safety-distress-beside.test.mjs
+@@ -86,7 +86,7 @@ test("it starts WITH the labels (order, not time): the label call is answered on
+   let asked; const besideAsked = new Promise((r) => { asked = r; });
+   const { out } = await run({
+     labels: async () => {
+-      const ok = await Promise.race([besideAsked.then(() => true), new Promise((r) => setTimeout(() => r(false), 2000))]);
++      const ok = await Promise.race([besideAsked.then(() => true), new Promise((r) => setTimeout(() => r(false), 2000).unref())]);
+       assert.ok(ok, "the words' read was not asked while the label call was open");
+       return json(label());
+     },
+diff --git a/tests/relational-db.test.mjs b/tests/relational-db.test.mjs
+index d5c6256f..395acbe0 100644
+--- a/tests/relational-db.test.mjs
++++ b/tests/relational-db.test.mjs
+@@ -28,7 +28,7 @@ describe("relational writers on Neon", { skip: !sql && "no TEST_DATABASE_URL (a
+   before(async () => {
+     prevFetchFn = neonConfig.fetchFunction;
+     neonConfig.fetchFunction = nativeFetch;
+-    ready = await Promise.race([sql.query("select to_regclass('public.rel_bond') is not null as ok").then((r) => !!r[0]?.ok, () => false), new Promise((r) => setTimeout(() => r(false), 45_000))]);
++    ready = await Promise.race([sql.query("select to_regclass('public.rel_bond') is not null as ok").then((r) => !!r[0]?.ok, () => false), new Promise((r) => setTimeout(() => r(false), 45_000).unref())]);
+     if (!ready) return;
+     guardian = (await sql.query("insert into guardian (email, pw_hash, name) values ($1, 'x', 'relational-test') returning id", [`relational-test+${randomUUID()}@test.invalid`]))[0].id;
+     kid = (await sql.query("insert into child (guardian_id, first_name, class_level, teacher_id) values ($1, 'Test', 5, 'asha') returning id, legal_mode, class_level, teacher_id", [guardian]))[0];

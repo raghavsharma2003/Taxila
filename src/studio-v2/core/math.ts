@@ -1,4 +1,5 @@
 // Easing, interpolation, seeded randomness and colour helpers. Pure; no DOM.
+import { rgbaOf } from "../../theme/palette.ts";
 export type Ease = (t: number) => number;
 export const ease = {
   linear: (t: number) => t,
@@ -27,7 +28,7 @@ export function hexA(hex: string, a: number): string {
   if (hex.startsWith("rgb")) return hex;
   const h = hex.replace("#", "");
   const n = parseInt(h.length === 3 ? h.split("").map((x) => x + x).join("") : h, 16);
-  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+  return rgbaOf((n >> 16) & 255, (n >> 8) & 255, n & 255, a);
 }
 export function mix(a: string, b: string, t: number): string {
   const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16), k = clamp(t, 0, 1);

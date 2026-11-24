@@ -47,7 +47,7 @@ try {
   } else if (cmd === "lipsync") {
     const lines = fs.readdirSync(OUT + "diya").filter((f) => /^\d\d\.json$/.test(f)).map((f) => f.slice(0, 2));
     const page = await browser.newPage({ viewport: { width: 760, height: 760 } });
-    await page.goto(`${base}?mode=rt&px=360&line=${lines.join(",")}`);
+    await page.goto(`${base}?mode=rt&px=360&line=${lines.join(",")}${process.env.LEAD ? `&lead=${process.env.LEAD}` : ""}`);
     await wait(page, "window.H && (window.H.done || window.H.error)", 600000);
     const err = await page.evaluate("window.H.error"); if (err) throw new Error(err);
     const out = await page.evaluate("window.H.out");

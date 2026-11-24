@@ -1,0 +1,362 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj fractions ko number line par cricket pitch ki tarah dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1055
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai—pitch ki poori length ko 0 se 1 maan lo; walker aadhe raste rukta hai. Us spot ko kya naam doge?",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1464,
+   "replyReadyMs": 2519,
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 965
+  },
+  {
+   "who": "teacher",
+   "text": "Dheere chalenge. 0 se 1 tak poori length hai. Beech ka spot 0 aur 1 ke beech hota hai. Usse kya kahenge?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1161,
+   "replyReadyMs": 2126,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1022
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—short steps. 0 aur 1 ke beech ek cut se do equal gaps bante hain. Ab board wala beech ka mark dekho.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2593,
+   "replyReadyMs": 3615,
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 2,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "leak",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "flat"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 1065
+  },
+  {
+   "who": "teacher",
+   "text": "Number line dekho: 0 se 1 tak paanch equal parts hain; 2/5 ka mark kaunsa hai?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2650,
+   "replyReadyMs": 3715,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "catalogue",
+    "template": "catalogue:L1",
+    "onScreen": {
+     "labels": "0 | 1 | fraction",
+     "numbers": "0 1"
+    }
+   },
+   "guard": [
+    "flat",
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1034
+  },
+  {
+   "who": "teacher",
+   "text": "0 se 1 tak 5 equal gaps hain; 2/5, 0 se doosre gap par hota hai. Tum mark ginogi kaise?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2856,
+   "replyReadyMs": 3890,
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   },
+   "guard": [
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 818
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute side mein rakhte hain. Kis baare mein baat karni hai—cricket, stories, ya kuch aur?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1647,
+   "replyReadyMs": 2465,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1044
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket mein batting, bowling ya fielding—tumhe sabse zyada kya pasand hai, Riya?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1470,
+   "replyReadyMs": 2514,
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 8,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/8"
+      },
+      {
+       "num": 4,
+       "label": "1/2"
+      }
+     ]
+    }
+   },
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "none",
+    "why": "no board for this ask"
+   }
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 1022
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, ab Hindi mein. क्रिकेट में तुम्हें बल्लेबाज़ी, गेंदबाज़ी या क्षेत्ररक्षण—इनमें सबसे ज़्यादा क्या पसंद है, रिया?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1472,
+   "replyReadyMs": 2494,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1099
+  },
+  {
+   "who": "teacher",
+   "text": "Iska shuruaati hissa dekhte hain. Diya hai: number line from 0 to 1, fraction to mark: 1/4, bottom number 4, top number 1. Pehle: line from 0 to 1. Ab tak samajh aaya?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3171,
+   "replyReadyMs": 4270,
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-line@1",
+    "params": {
+     "den": 4,
+     "from": 0,
+     "to": 1,
+     "marks": [
+      {
+       "num": 1,
+       "label": "1/4"
+      }
+     ],
+     "hop": {
+      "num": 1
+     }
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "screen": {
+    "kind": "whiteboard",
+    "by": "code",
+    "template": "fraction-line@1",
+    "onScreen": {
+     "labels": "?",
+     "numbers": "0 1"
+    },
+    "boardRef": {
+     "template": "fraction-line@1",
+     "params": {
+      "den": 4,
+      "from": 0,
+      "to": 1,
+      "marks": [
+       {
+        "num": 1,
+        "label": "1/4"
+       }
+      ],
+      "hop": {
+       "num": 1
+      }
+     }
+    }
+   },
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "affirms"
+    ],
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1185
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya—tum rukna chahti ho. Abhi jaari rakhein, thoda pause lein, ya aaj ke liye rok dein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2794,
+   "replyReadyMs": 3979,
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "guard": [
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

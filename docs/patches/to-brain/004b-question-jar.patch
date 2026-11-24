@@ -1,0 +1,231 @@
+F Learning -> A Brain, 004b: the Question jar, wired (round 7 F item 8; supersedes the prose of 004-question-jar.md)
+Base: claude/r4-conversation @ 2b991812f. Apply with: git apply docs/patches/to-brain/004b-question-jar.patch
+Needs Learning's server/learner/jar.js from claude/r7-learning (jarLaterEntries, jarServed, emitJarEvents, and
+jarItemsFromLesson skipping carried entries). It reaches int/r6 with Learning's PR #51.
+Land AFTER the director4 run (main 2026-11-05), so that run measures one change.
+
+What it does:
+  1. lesson end (routes/lesson.js endLesson): unserved parked questions go into question_jar in the end transaction (before
+     the Conductor's rows, which stay last), with teacher.promise emitted after the commit; never from a safeguarded lesson.
+  2. next lesson start (routes/lesson.js + director/state.js warm-up start + shapes.js returnJar): learnerView.jar rides in
+     as Later entries, and the greeting comes back to the first one ("what they asked last time").
+  3. kept (start tx + brain/turn.js turn tx): a carried entry served this step marks its jar row answered and emits
+     teacher.promise_kept, which drops the Conductor's promise. A carried entry left unserved is never written twice.
+Tests: tests/r7-brain-question-jar.test.mjs (the three behaviours); tests/w2-seams.test.mjs (tx order allows the jar rows).
+Gates on the base with this patch applied: tsc, vite build, all four shards green.
+
+diff --git a/server/brain/turn.js b/server/brain/turn.js
+index 83f3a12a7..056460285 100644
+--- a/server/brain/turn.js
++++ b/server/brain/turn.js
+@@ -36,6 +36,7 @@ import { instructionsFor, instructionsAfter } from "../compiler/instructions.js"
+ import { prewarm, drop as dropPrewarm } from "../voice/prewarm.js";
+ import { styleForChild } from "../routes/voice.js";
+ import { onTurnCommit } from "../conductor/hooks.js";
++import { emitJarEvents, jarServed } from "../learner/jar.js";
+ import { awaitSettled } from "../comprehension/session.js";
+ import { seamSafe as guardSeam } from "../seam-safe.js";
+ import { duplexRegistry } from "../duplex/registry.js";
+@@ -1400,6 +1401,7 @@ export async function lessonTurn(req, body, hooks = {}) {
+           ...(next.capped?.turn === next.turn ? [`p5.capped.${next.capped.how}`] : []), ...(moduleUnverified ? ["module.unverifiable"] : []),
+           ...[...seamErrors].map((c) => `component_error.${c}`)];
+   let seqs = [];
++  const jarKept = jarServed(prev.later, next.later, child.id, lesson.id);
+   try {
+     ({ seqs } = await runTurnTx(child, [
+       guardStmt(`${guardSql}${notSuperseded} returning id`, [lesson.id, next, undo ? undo.turn : prev.turn, ...(notSuperseded ? [turnSeq] : [])]),
+@@ -1424,6 +1426,8 @@ export async function lessonTurn(req, body, hooks = {}) {
+         withIds: traceIdsOk, itemId: target?.mode === "item" ? activeItem?.id ?? null : null, misconceptionId: cls?.misconceptionId ?? cls?.voiced ?? null })] : []),
+       ...(traceOk && decisionOk ? [reteachDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" }),
+         formatDecisionOf(next, { lessonId: lesson.id, legalMode: child.legal_mode ?? "M1" })].filter(Boolean) : []),
++      // Learning patch 004b: a jar question served at a later boundary this turn is kept
++      ...jarKept.stmts,
+       // Seam (W1-D): the Conductor's turn event lands with the turn, or not at all.
+       ...onTurnCommit({ child, lessonId: lesson.id, turn: next.turn, move: r.move.kind, end: !!r.end || late, late, now }),
+     ]));
+@@ -1446,6 +1450,7 @@ export async function lessonTurn(req, body, hooks = {}) {
+     throw new HttpError(409, ended && !late ? "lesson has ended" : "another turn for this lesson landed first; retry");
+   }
+   mark("stored");
++  emitJarEvents(child.id, jarKept.events);
+   // round 3 voicesig (server/voicesig/lesson.js shadowDiff): what she WOULD have done. AFTER the commit and never awaited
+   // by the reply on a hosted server (speed is never traded away); only when this spoken turn's voice read is shadow AND
+   // would hand the Director a tie-breaker: the same pure plan again (planTurn clones the state; its staged writes are
+diff --git a/server/director/shapes.js b/server/director/shapes.js
+index 88b515e78..74f8e86ae 100644
+--- a/server/director/shapes.js
++++ b/server/director/shapes.js
+@@ -25,6 +25,10 @@ export const greet = ({ firstName, teacherName, firstMeeting, renamed, hasCallba
+     : `one line on today's topic (${topicTitle})${interest ? `, tied to their interest (${interest}) if it fits` : ""}; then one easy question about them`,
+ );
+ 
++/** Learning patch 004b: the lesson OPENS on a question (or share) kept in the jar last time: a promise kept, then today's lesson. */
++export const returnJar = ({ topic, share = false }) => (share
++  ? `first: come back to what they told you last time (${clean(topic) || "it"}) in one warm line, no question about it; then today's lesson`
++  : `first: come back to what they asked last time (${clean(topic) || "their question"}): at most two sentences, or one guided question; then today's lesson`);
+ export const retrievalNext = () => "confirm the last answer in a few words — name what was right; then the next warm-up question";
+ export const warmupMoveOn = () => "no verdict speech on that one; it comes back later; move on";
+ 
+diff --git a/server/director/state.js b/server/director/state.js
+index 34308f1f2..41c592810 100644
+--- a/server/director/state.js
++++ b/server/director/state.js
+@@ -651,7 +651,11 @@ function warmup(s, input, item) {
+   if (input.event === "start") {
+     const first = s.warmup[0];
+     if (first) activate(s, first);
+-    return plan("greet", SH.greet({ ...s.ctx, warmup: !!first, interest: interestFor(input.kit, s.ctx.interests, 0) }), first ? { item: first, probe: "P10" } : {});
++    // Learning patch 004b: a question kept in the jar last time is the first thing she comes back to (a promise kept)
++    const jar = (s.later ?? []).find((p) => p.jarId && p.servedAt == null);
++    if (jar) s.later = serveLater(s.later, jar.id, s.turn);
++    const greet = SH.greet({ ...s.ctx, warmup: !!first, interest: interestFor(input.kit, s.ctx.interests, 0) });
++    return plan("greet", jar ? join(greet, SH.returnJar({ topic: jar.topic, share: !!jar.share })) : greet, first ? { item: first, probe: "P10" } : {});
+   }
+   if (!item) { s.phase = "teach"; return teach(s, input); }
+   const v = verdict(input.cls);
+diff --git a/server/routes/lesson.js b/server/routes/lesson.js
+index 21319db0d..0c9288224 100644
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -47,6 +47,7 @@ import { voicesigSeam } from "../voicesig/lesson.js";
+ import { realtimeSeam } from "../voice/realtimeSession.js";
+ import { fallbackReply, safeguardLine, carriedCheckInLine, scrubbed, textReply, words, floorContentOf } from "../brain/say.js";
+ import { learnerViewOf } from "../learner/view.js";
++import { emitJarEvents, jarLaterEntries, jarServed, jarWriteStmts } from "../learner/jar.js";
+ import { clientInstructions, debugFor, floorIncidentStmt, kitFor, laneOf, stageTurns, turnInsertStmt, withAsk } from "../brain/rows.js";
+ import { nextBeat, uiBeatOf } from "../brain/beat.js";
+ import { momentOf } from "../brain/moment.js";
+@@ -366,6 +367,8 @@ export async function lessonStart(req, body) {
+       ...(bond?.stage ? { bondStage: bond.stage } : {}),
+     },
+   });
++  // Learning patch 004b: what she promised last time (the Question jar hook) rides in as Later entries; the opening serves one
++  if (view?.jar?.length) state0.later = jarLaterEntries(view.jar);
+   const recent = askSafety.distress ? null : await carriedP;
+   const carried = recent ? { kind: recent.family ?? null, incidentId: String(recent.id) } : null;
+   const first = askSafety.distress
+@@ -373,6 +376,7 @@ export async function lessonStart(req, body) {
+       flags: { dontKnow: false, asksForAnswer: false, minimal: false, offTopic: false, distress: true, distressKind: askSafety.kind, wantsToStop: false } } })
+     : step(state0, { event: "start", kit, now, ...(carried ? { carried } : {}) });
+   const { r, instructions } = instructionsAfter({ ...first, state: { ...first.state, brief, mode, kitVerified: kit.verified, kitHash: kit.hash } }, kit, now);
++  const jarKept = jarServed(state0.later, first.state.later, child.id, lessonId);
+   const state = r.state;
+   if (vsb0) state.vsb = vsb0;
+   if (carried && r.move.kind === "safeguard") state.ctx = { ...state.ctx, checkedInFor: carried.incidentId };
+@@ -434,6 +438,8 @@ export async function lessonStart(req, body) {
+     { text: "insert into lesson(id, child_id, topic_id, kind, state) values ($1,$2,$3,'live',$4) returning id", params: [lessonId, child.id, topic.id, state] },
+     ...(rows.length ? [turnInsertStmt(lessonId, rows)] : []),
+     ...(openingIncident ? [openingIncident] : []),
++    // Learning patch 004b: the jar items the opening came back to are kept (answered by this lesson)
++    ...jarKept.stmts,
+     // a disclosure in an Ask's first words leaves the same incident row a turn's predicate hit does (no transcript)
+     ...(askSafety.distress ? [{ text: "insert into incident(child_id, lesson_id, kind, severity, detail) values ($1,$2,'safeguarding','high',$3) returning id",
+       params: [child.id, lessonId, { source: "predicate", family: askSafety.kind, at: "ask_start" }] }] : []),
+@@ -443,6 +449,7 @@ export async function lessonStart(req, body) {
+     ...onLessonStart({ child, lessonId, topicId: topic.id, purpose, mode, now }),
+   ]);
+   if (created.length !== 1) throw new Error("lesson insert did not land");
++  emitJarEvents(child.id, jarKept.events);
+   mark("tx");
+   // Seam (W1-B): warm the Forge fills this lesson may need; fire-and-forget, never the start's error.
+   try {
+@@ -811,7 +818,11 @@ export async function endLesson({ lesson, guardian, child, endedBy = "client", d
+   const relEnd = seamSafe("relational.onLessonEnd", () => relationalSeam.onLessonEnd(child, { lessonId: lesson.id, childId: child.id,
+     endedBy, turns: state.turn ?? 0 }), []);
+   const relStmts = Array.isArray(relEnd) ? relEnd : [];
+-  const results = await tx([...writes, ...relStmts, ...hookStmts]);
++  // Learning patch 004b: the questions she parked and did not get back to go into the Question jar (a promise for next time);
++  // never from a safeguarded lesson (the same rule as memories)
++  const jar = held ? { stmts: [], events: [] } : jarWriteStmts(child, lesson.id, state, { teacherId: state.ctx?.teacherId ?? teacher.id });
++  const results = await tx([...writes, ...relStmts, ...jar.stmts, ...hookStmts]);
++  emitJarEvents(child.id, jar.events);
+   // round 7 (Platform patch from-platform/001): the lesson's spend rollup into lesson.cost, fire-and-forget (never throws)
+   rollupLesson(q, lesson.id).catch(() => {});
+   if (results.slice(0, writes.length).some((rows) => rows.length !== 1)) throw new Error("lesson end: a write did not land");
+diff --git a/tests/r7-brain-question-jar.test.mjs b/tests/r7-brain-question-jar.test.mjs
+new file mode 100644
+index 000000000..237934598
+--- /dev/null
++++ b/tests/r7-brain-question-jar.test.mjs
+@@ -0,0 +1,68 @@
++// Learning patch 004b (round 7 F item 8, the Question jar): what she parked and did not get back to reaches the jar at lesson
++// end; the next lesson OPENS on it; serving it marks it kept and closes the Conductor's promise.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { readFileSync } from "node:fs";
++import { initLessonState, step } from "../server/director/state.js";
++import { parkEntry, pushLater } from "../server/conversation/policy.js";
++import { jarItemsFromLesson, jarLaterEntries, jarServed, jarWriteStmts } from "../server/learner/jar.js";
++import { initialState } from "../server/conductor/state.js";
++import { decide } from "../server/conductor/decide.js";
++import { recordingView } from "../server/conductor/view.js";
++import { kit as kitOf, CTX } from "./fixtures/kit.mjs";
++const kit = kitOf();
++
++const CHILD = { id: "11111111-2222-4333-8444-555555555555", class_level: 5 };
++const J = "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee";
++
++test("1. a parked question she did not get back to reaches the jar at lesson end, with a Conductor promise", () => {
++  const s = { topicId: kit.topicId, later: pushLater([], parkEntry({ topic: "why the moon changes shape", learning: true, turn: 3, itemOnTable: true })) };
++  const { stmts, events } = jarWriteStmts(CHILD, "L1", s, { teacherId: "asha" });
++  assert.equal(stmts.length, 1);
++  assert.match(stmts[0].text, /insert into question_jar/);
++  assert.deepEqual(stmts[0].params.slice(0, 4), [CHILD.id, "L1", "p3", "why the moon changes shape"]);
++  assert.deepEqual(events, [{ type: "teacher.promise", promiseId: "jar:L1:p3", what: { kind: "revisit", ref: "L1:p3" }, by: "asha" }]);
++  // wired: endLesson writes them in its own transaction, never from a safeguarded lesson, and emits after the commit
++  const src = readFileSync(new URL("../server/routes/lesson.js", import.meta.url), "utf8");
++  assert.match(src, /held \? \{ stmts: \[\], events: \[\] \} : jarWriteStmts\(child, lesson\.id, state/);
++  assert.match(src, /tx\(\[\.\.\.writes, \.\.\.relStmts, \.\.\.jar\.stmts, \.\.\.hookStmts\]\)/);
++});
++
++test("2. the next lesson opens on it: the greeting comes back to last time's question first, and the entry is served", () => {
++  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 1, now: 0 });
++  s0.later = jarLaterEntries([{ id: J, topic: "why the moon changes shape", learning: true, share: false, lessonId: "L1", laterId: "p3" }]);
++  const r = step(s0, { event: "start", kit, now: 0 });
++  assert.equal(r.move.kind, "greet");
++  assert.match(JSON.stringify(r.move), /come back to what they asked last time \(why the moon changes shape\)/);
++  assert.equal(r.state.later.find((p) => p.jarId === J).servedAt, 0);
++  // no jar → the greeting is unchanged
++  const plain = step(initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 1, now: 0 }), { event: "start", kit, now: 0 });
++  assert.doesNotMatch(JSON.stringify(plain.move), /last time/);
++  // and an unserved carried entry is never written into the jar a second time at this lesson's end
++  assert.deepEqual(jarItemsFromLesson({ topicId: kit.topicId, later: s0.later }), []);
++});
++
++test("3. serving it marks the jar row kept and teacher.promise_kept closes the Conductor's promise", () => {
++  const s0 = initLessonState({ topicId: kit.topicId, kit, ctx: CTX, seed: 1, now: 0 });
++  s0.later = jarLaterEntries([{ id: J, topic: "why the moon changes shape", learning: true, lessonId: "L1", laterId: "p3" }]);
++  const r = step(s0, { event: "start", kit, now: 0 });
++  const kept = jarServed(s0.later, r.state.later, CHILD.id, "L2");
++  assert.match(kept.stmts[0].text, /update question_jar set answered_at = now\(\)/);
++  assert.deepEqual(kept.stmts[0].params, [CHILD.id, [J], "L2"]);
++  assert.deepEqual(kept.events, [{ type: "teacher.promise_kept", promiseId: "jar:L1:p3", lessonId: "L2" }]);
++  // the Conductor: the promise from lesson 1 is held until lesson 2 keeps it
++  const live = (value) => ({ value, asOf: "x", src: "t", stale: false });
++  const view = () => recordingView({ "kt.dueCount": live(0), "usage.usedMin": live(0), "cal.days": live({}) });
++  const now = new Date("2026-11-05T10:00:00+05:30");
++  let c = initialState({ childId: CHILD.id, classLevel: 5, now, consent: { core_tutoring: true } });
++  c = decide(c, { type: "teacher.promise", promiseId: "jar:L1:p3", what: { kind: "revisit", ref: "L1:p3" }, by: "asha" }, { now, view: view() }).state;
++  assert.deepEqual(c.promises.map((p) => p.id), ["jar:L1:p3"]);
++  c = decide(c, kept.events[0], { now, view: view() }).state;
++  assert.deepEqual(c.promises, []);
++  // wired: the start and the turn put the kept statements in their own transactions and emit after the commit
++  const lesson = readFileSync(new URL("../server/routes/lesson.js", import.meta.url), "utf8");
++  const turn = readFileSync(new URL("../server/brain/turn.js", import.meta.url), "utf8");
++  assert.match(lesson, /const jarKept = jarServed\(state0\.later, first\.state\.later, child\.id, lessonId\)/);
++  assert.match(turn, /const jarKept = jarServed\(prev\.later, next\.later, child\.id, lesson\.id\)/);
++  for (const src of [lesson, turn]) assert.match(src, /\.\.\.jarKept\.stmts/);
++});
+diff --git a/tests/w2-seams.test.mjs b/tests/w2-seams.test.mjs
+index 35463497a..6583058fa 100644
+--- a/tests/w2-seams.test.mjs
++++ b/tests/w2-seams.test.mjs
+@@ -74,7 +74,7 @@ test("lesson.js keeps every W2 call site, each guarded by seamSafe", () => {
+     assert.ok(src.includes(`seamSafe("${call}"`), `missing guarded call site ${call}`);
+   }
+   // relational rows land before the Conductor's (its ingest locks child_seq last: the global lock order)
+-  assert.ok(/tx\(\[\.\.\.writes, \.\.\.relStmts, \.\.\.hookStmts\]\)/.test(src));
++  assert.ok(/tx\(\[\.\.\.writes, \.\.\.relStmts, (\.\.\.jar\.stmts, )?\.\.\.hookStmts\]\)/.test(src))   // Learning 004b: the jar rows sit before the Conductor's, still last;
+   const voice = read("server/routes/voice.js");
+   assert.ok(voice.includes('seamSafe("realtime.shapeSession"'), "voice.js STT session goes through the realtime seam");
+   // azure.js: the quota lane is its own option (lane already selects the endpoint), and both lane hooks are guarded

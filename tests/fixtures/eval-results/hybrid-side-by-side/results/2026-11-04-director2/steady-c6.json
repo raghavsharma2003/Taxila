@@ -1,0 +1,166 @@
+{
+ "topicId": "c6-maths-ch06-t01",
+ "classLevel": 6,
+ "scenario": "steady",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher hoon. Aaj cricket ground jaise shapes ka perimeter, yani boundary length, dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1143
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, Riya. Cricket pasand hai toh socho: ground ke chaaron taraf fence lagani ho—humein sirf andar ka area chahiye ya poori boundary? Golu ko baad mein sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1347,
+   "replyReadyMs": 2490
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1058
+  },
+  {
+   "who": "teacher",
+   "text": "Boundary ki total lambai perimeter hoti hai. Rectangle mein 50 metre aur 30 metre, dono do-do baar jodte hain—tum total batao.",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2086,
+   "replyReadyMs": 3144,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "4",
+   "read": "no_evidence",
+   "classifyMs": 914
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 4 sirf sides ki ginti hai, lambai nahi. Ek round perimeter hai: 50 plus 30, that is 80, times 2. Ab total?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 908,
+   "replyReadyMs": 1822
+  },
+  {
+   "who": "child",
+   "text": "kyun?",
+   "read": "no_evidence",
+   "classifyMs": 1042
+  },
+  {
+   "who": "teacher",
+   "text": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 2076,
+   "replyReadyMs": 3118,
+   "guard": [
+    "underived"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "achha samajh gaya",
+   "read": "no_evidence",
+   "classifyMs": 1228
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya—ab 160 ko teen baar jodo: 160 plus 160 plus 160 kitne metre honge?",
+   "move": "repair",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 836,
+   "replyReadyMs": 2064
+  },
+  {
+   "who": "child",
+   "text": "6",
+   "read": "incorrect",
+   "classifyMs": 1382
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tumne 160 ko 3 se multiply karne ke bajay 3 plus 3 kiya. Ab 160 ko teen baar jodne ka step socho. Khaali jagah bharo: 3 × 160 = ___ m.",
+   "move": "hint",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1022,
+   "replyReadyMs": 2404
+  },
+  {
+   "who": "child",
+   "text": "ek aur example do",
+   "read": "no_evidence · example",
+   "classifyMs": 985
+  },
+  {
+   "who": "teacher",
+   "text": "Example: 4 cricket bats, har ek 20 rupees ka ho, toh total 20 ko 4 baar jodna. Ab 3 × 160 ka try karo.",
+   "move": "reteach",
+   "card": "Khaali jagah bharo: 3 × 160 = ___ m.",
+   "replyMs": 1052,
+   "replyReadyMs": 2037
+  },
+  {
+   "who": "child",
+   "text": "theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1133
+  },
+  {
+   "who": "teacher",
+   "text": "Ab perimeter ke triangle wale example par dhyaan do. Sides ki lengths ko boundary ke liye jodna hai. Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "move": "practice",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 1133,
+   "replyReadyMs": 2266
+  },
+  {
+   "who": "child",
+   "text": "8",
+   "read": "incorrect",
+   "classifyMs": 1335
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, perimeter ke liye triangle ki teeno sides jodni hoti hain: 5 plus 6 plus 9. Ab in teen numbers ko jodkar batao.",
+   "move": "hint",
+   "card": "Ek triangle ki sides 5 cm, 6 cm aur 9 cm hain. Iska perimeter kya hai?",
+   "replyMs": 979,
+   "replyReadyMs": 2314
+  },
+  {
+   "who": "child",
+   "text": "bas ho gaya",
+   "read": "no_evidence · stop",
+   "classifyMs": 1398
+  },
+  {
+   "who": "teacher",
+   "text": "Samajh gayi, Riya—tum stop karna chahti ho. Screen par choices hain: continue, short break, ya aaj ke liye stop. Tum kya choose karogi?",
+   "move": "break",
+   "card": null,
+   "replyMs": 1025,
+   "replyReadyMs": 2423
+  }
+ ],
+ "agent": []
+}

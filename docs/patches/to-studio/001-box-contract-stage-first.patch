@@ -1,0 +1,369 @@
+diff --git a/server/forge3/certs/box-contract.json b/server/forge3/certs/box-contract.json
+index 2af209c2..bfda3c7a 100644
+--- a/server/forge3/certs/box-contract.json
++++ b/server/forge3/certs/box-contract.json
+@@ -201,5 +201,364 @@
+     }
+    }
+   }
++ },
++ "stageFirst": {
++  "decision": "D7 (r7): content is the hero, her face a PiP; supersedes PRODUCT-DESIGN-V2 §6.3.4. Spec: docs/design/round7/app/STAGE-GEOMETRY.md",
++  "source": "src/ui-v3/kaksha/lesson/stageLayout.ts",
++  "rule": "pieces keep the pipZone (bottom-right) and the top-left label zone (18% x 12%) clear; stage and play boxes only grow vs boxes.*; stageWithAnswer is a new, smaller box (the answer surface is up under the piece on phones)",
++  "bands": {
++   "b3": {
++    "p360": {
++     "viewport": {
++      "w": 360,
++      "h": 800
++     },
++     "kind": "phone",
++     "stage": {
++      "box": {
++       "w": 344,
++       "h": 508
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "play": {
++      "box": {
++       "w": 344,
++       "h": 556
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 344,
++       "h": 268
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "pipZone": {
++      "w": 89,
++      "h": 89,
++      "inset": 8,
++      "corner": "bottom-right"
++     },
++     "rail": {
++      "h": 64
++     }
++    },
++    "p412": {
++     "viewport": {
++      "w": 412,
++      "h": 915
++     },
++     "kind": "phone",
++     "stage": {
++      "box": {
++       "w": 396,
++       "h": 623
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "play": {
++      "box": {
++       "w": 396,
++       "h": 671
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 396,
++       "h": 383
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "pipZone": {
++      "w": 103,
++      "h": 103,
++      "inset": 8,
++      "corner": "bottom-right"
++     },
++     "rail": {
++      "h": 64
++     }
++    },
++    "w1280": {
++     "viewport": {
++      "w": 1280,
++      "h": 800
++     },
++     "kind": "wide",
++     "stage": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "play": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "pipZone": null,
++     "rail": {
++      "h": 64
++     }
++    },
++    "l1366": {
++     "viewport": {
++      "w": 1366,
++      "h": 768
++     },
++     "kind": "wide",
++     "stage": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "play": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "pipZone": null,
++     "rail": {
++      "h": 64
++     }
++    }
++   },
++   "b2": {
++    "p360": {
++     "viewport": {
++      "w": 360,
++      "h": 800
++     },
++     "kind": "phone",
++     "stage": {
++      "box": {
++       "w": 344,
++       "h": 540
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "play": {
++      "box": {
++       "w": 344,
++       "h": 540
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 344,
++       "h": 300
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "pipZone": {
++      "w": 89,
++      "h": 89,
++      "inset": 8,
++      "corner": "bottom-right"
++     },
++     "rail": {
++      "h": 64
++     }
++    },
++    "p412": {
++     "viewport": {
++      "w": 412,
++      "h": 915
++     },
++     "kind": "phone",
++     "stage": {
++      "box": {
++       "w": 396,
++       "h": 655
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "play": {
++      "box": {
++       "w": 396,
++       "h": 655
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 396,
++       "h": 415
++      },
++      "at": {
++       "x": 8,
++       "y": 52
++      }
++     },
++     "pipZone": {
++      "w": 103,
++      "h": 103,
++      "inset": 8,
++      "corner": "bottom-right"
++     },
++     "rail": {
++      "h": 64
++     }
++    },
++    "w1280": {
++     "viewport": {
++      "w": 1280,
++      "h": 800
++     },
++     "kind": "wide",
++     "stage": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "play": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 850,
++       "h": 656
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "pipZone": null,
++     "rail": {
++      "h": 64
++     }
++    },
++    "l1366": {
++     "viewport": {
++      "w": 1366,
++      "h": 768
++     },
++     "kind": "wide",
++     "stage": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "play": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "stageWithAnswer": {
++      "box": {
++       "w": 912,
++       "h": 624
++      },
++      "at": {
++       "x": 24,
++       "y": 56
++      }
++     },
++     "pipZone": null,
++     "rail": {
++      "h": 64
++     }
++    }
++   }
++  }
+  }
+ }

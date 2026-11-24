@@ -1,0 +1,476 @@
+// A model's label on a keyed item is a PROPOSAL; code decides whether the child's words support it (round2 truth,
+// VALUES-100 V1.1 "0 wrong grades"; inherited law: a model never grades).
+//
+// Why: the lesson classifier's model leg answers whatever the deterministic paths cannot decide (a sentence, a list, a
+// paraphrase). On the stratified grading-truth sample it was wrong on 24 / 399 (2026-10-05), and on production owner-1
+// (2026-10-06) it credited "tens first" for "25, 38, 52", "10/15 and 9/15" for "Ali is wrong: 4/9 < 3/4", and the first
+// clause of a two-part key. Every one of those is checkable WITHOUT understanding the language: the answer has none of
+// the key's numbers, or numbers that appear nowhere in the question, the key or any accepted answer, or almost none of a
+// complete answer's content words.
+//
+// The rule (pure; the same words always give the same decision):
+//   - "correct" stands only when ONE complete form of the answer (the key, an acceptable entry not marked partial/wrong,
+//     a correct posed option) is CORROBORATED by the reply: no foreign number, no opposite decisive word, no negated key,
+//     every number of the form present, and enough of the form's content words present (CORROBORATE.minCover).
+//     Otherwise the turn is NO EVIDENCE (abstain: the Director re-asks / offers choices, which code grades). A credit
+//     the words cannot carry is never written as a credit.
+//   - "incorrect" / "misconception" / "partial" stand unless the reply looks like a complete form (KEY-LIKE: every
+//     number of the form, no foreign number, no contradiction, a high cover) — then the model is disagreeing with the
+//     key's own words and the turn is no evidence instead of a fail (the false_fail direction).
+// What this costs: some right answers in words that share little with every listed form (a paraphrase in another
+// language) earn no evidence and a re-ask. That is reported per form as "uncredited", never hidden.
+import { numberPhrases } from "./spoken-number.js";
+
+export const CORROBORATE = Object.freeze({ minCover: 0.6, keyLikeCover: 0.8 });
+
+const STOP = new Set(("a an the is are was were be been am it its this that these those of to in on at by for with from as and or but so " +
+  "because if then than there their they them he she his her we you your i my me our do does did not no yes " +
+  "hai hain tha thi the ho hota hoti hote ka ki ke ko se me mein par aur ya bhi to toh hi na nahi nahin kya kyun kyunki ki " +
+  "jo ek yeh ye woh wo vo is us un isme usme mujhe lagta lagti shayad mera meri answer think maybe it's its i'm im " +
+  "है हैं था थी के की का को से में पर और या भी तो ही न नहीं क्या क्यों क्योंकि जो एक यह ये वह वो इस उस").split(/\s+/));
+const NEG = new Set(["not", "no", "nahi", "nahin", "nhi", "na", "never", "isn't", "isnt", "aren't", "doesn't", "don't", "नहीं", "मत", "न"]);
+// decisive pairs: a form that takes one side contradicts a reply that takes only the other
+const SIDES = [
+  [["yes", "haan", "han", "haa", "yeah", "हाँ", "हां"], ["no", "nahi", "nahin", "nhi", "nope", "नहीं"]],
+  [["true", "sahi", "correct", "right", "सही"], ["false", "galat", "wrong", "incorrect", "गलत", "ग़लत"]],
+  [["more", "bigger", "greater", "larger", "zyada", "jyada", "bada", "badi", "bade", "heavier", "longer", "taller", "बड़ा", "ज़्यादा", "ज्यादा"],
+    ["less", "smaller", "fewer", "kam", "chhota", "chhoti", "chhote", "lighter", "shorter", "छोटा", "कम"]],
+  [["before", "pehle", "earlier", "पहले"], ["after", "baad", "later", "बाद"]],
+  [["odd", "vishams"], ["even", "sam"]],
+  [["left", "baayein", "baaye", "bayen", "बाएँ", "बाएं"], ["right", "daayein", "daaye", "dayen", "दाएँ", "दाएं"]],
+  [["up", "upar", "ऊपर"], ["down", "neeche", "niche", "नीचे"]],
+  [["north", "uttar", "उत्तर"], ["south", "dakshin", "दक्षिण"]],
+  [["east", "purab", "poorv", "पूर्व"], ["west", "paschim", "पश्चिम"]],
+  [["clockwise"], ["anticlockwise", "anti-clockwise", "counterclockwise"]],
+  // 14.5 (Hinglish cover): the opposite pairs of the everyday words below, so a Hinglish reply cannot take the other side
+  [["close", "closed", "shut", "band", "बंद"], ["open", "opened", "khula", "khule", "khuli", "kholo", "kholna", "खुला", "खुले", "खोलो"]],
+  [["clean", "cleaned", "saaf", "साफ", "साफ़"], ["dirty", "ganda", "gande", "gandi", "गंदा", "गंदे", "गंदी"]],
+  [["hot", "garam", "garm", "गरम", "गर्म"], ["cold", "thanda", "thande", "thandi", "ठंडा", "ठंडे", "ठंडी"]],
+];
+
+// the decisive words in Hindi / Hinglish read as their English side word for the cover too ("bada" covers "bigger")
+const CANON = new Map(SIDES.flatMap((g) => g.flatMap((side) => side.map((w) => [w, side[0]]))));
+// words that decide WHAT a number is (a place value, an era, a time, a unit, a counted thing): a reply that brings one the
+// form does not have ("14 sides" for "14 corners", "320 CE" for "320 BCE") is not that form, and a form that has one the
+// reply lacks ("320" for "320 BCE coin") is carried only when the question itself names it. Scale words (lakh, crore,
+// million) are not here: they are part of the number, and the value check already decides them
+const DECISIVE = new Set(("ones tens hundreds thousands tenths hundredths thousandths bce bc ce ad am pm " +
+  "corners corner sides side edges edge faces face vertices vertex angles angle diagonals cm mm km kg mg ml litre litres liter liters metre metres meter meters " +
+  "gram grams minute minutes hour hours second seconds day days week weeks month months year years degree degrees celsius fahrenheit rupees paise " +
+  "squares square cubes cube january february march april may june july august september october november december").split(" "));
+const words = (s) => String(s ?? "").toLowerCase().normalize("NFC").replace(/[’`]/g, "'").split(/[^\p{L}\p{M}\p{N}']+/u).filter(Boolean);
+const stem = (w) => (w.length > 4 && /[a-z]s$/.test(w) && !/ss$/.test(w) ? w.slice(0, -1) : w);
+const content = (s) => new Set(words(s).filter((w) => (!STOP.has(w) || CANON.has(w)) && !/^\d+$/.test(w) && w.length >= 2).map((w) => CANON.get(w) ?? stem(w)));
+// 14.5 (sim lab 1b3bb12c p66 / p68: "dhool, machchar, kitanu" for "dust, germs and insects (like mosquitoes)" covered none of
+// the key, so every model "correct" was vetoed low_cover and the probe was asked again): a REPLY's everyday Hinglish /
+// Devanagari words also read as the English words they mean. Only the reply side, only those words (an English reply reads
+// exactly as before), never on a Hindi or English language item (whose questions test the word forms themselves).
+// Curated, never model output; a word with a second everyday meaning is left out (bacha, halka, kam, jal).
+const HI_EN = [
+  [["dhool", "dhul", "dhuul", "dhooli", "धूल"], ["dust"]], [["machchar", "machchhar", "macchar", "machhar", "मच्छर"], ["mosquito", "mosquitoes", "insect", "insects"]],
+  [["kitanu", "keetanu", "kitaanu", "keetaanu", "rogaanu", "roganu", "कीटाणु", "रोगाणु"], ["germ", "germs", "bacteria"]],
+  [["keeda", "keede", "keedon", "kida", "kide", "कीड़ा", "कीड़े"], ["insect", "insects"]], [["paani", "pani", "पानी"], ["water"]],
+  [["dhakkan", "dhakan", "ढक्कन"], ["lid", "lids", "cover"]], [["dhak", "dhako", "dhakna", "dhaka", "dhake", "dhakke", "dhakkar", "ढको", "ढक", "ढका", "ढककर"], ["cover", "covered", "covers", "covering"]],
+  [["nal", "nalka", "नल"], ["tap", "taps"]], [["balti", "बाल्टी"], ["bucket", "buckets"]],
+  [["nahana", "nahao", "nahate", "nahane", "nahaana", "nahaate", "nahaane", "snan", "नहाना", "नहाते", "नहाने"], ["bath", "bathe", "bathing"]],
+  [["haath", "hath", "हाथ"], ["hand", "hands"]], [["paudha", "paudhe", "paudhon", "paudho", "पौधा", "पौधे", "पौधों"], ["plant", "plants"]],
+  [["ped", "pedh", "पेड़"], ["tree", "trees"]], [["patta", "patte", "patti", "pattiyan", "पत्ता", "पत्ते", "पत्ती"], ["leaf", "leaves"]],
+  [["suraj", "sooraj", "सूरज"], ["sun", "sunlight"]], [["hawa", "हवा"], ["air", "wind"]], [["mitti", "मिट्टी"], ["soil", "mud"]], [["beej", "बीज"], ["seed", "seeds"]],
+  [["jad", "jadein", "jadon", "जड़", "जड़ें"], ["root", "roots"]], [["phool", "फूल"], ["flower", "flowers"]], [["phal", "फल"], ["fruit", "fruits"]],
+  [["khana", "bhojan", "खाना", "भोजन"], ["food"]], [["doodh", "दूध"], ["milk"]], [["namak", "नमक"], ["salt", "salts"]], [["cheeni", "chini", "चीनी", "शक्कर"], ["sugar"]],
+  [["ghul", "ghulna", "ghulta", "ghulti", "घुल", "घुलना", "घुलती", "घुलता"], ["dissolve", "dissolves", "dissolved", "dissolving"]],
+  [["pighal", "pighalna", "pighalta", "pighalti", "pighla", "पिघल", "पिघलती", "पिघलता"], ["melt", "melts", "melted", "melting"]],
+  [["ubal", "ubalna", "ubaal", "ubla", "ubalo", "उबाल", "उबालो", "उबलना"], ["boil", "boils", "boiled", "boiling"]], [["barf", "baraf", "बर्फ"], ["ice", "snow"]],
+  [["bhaap", "bhap", "भाप"], ["steam", "vapour", "vapor"]], [["baarish", "barish", "बारिश"], ["rain", "rainfall"]], [["nadi", "नदी"], ["river", "rivers"]],
+  [["jaanwar", "janwar", "जानवर"], ["animal", "animals"]], [["chidiya", "pakshi", "चिड़िया", "पक्षी"], ["bird", "birds"]], [["machhli", "machli", "मछली"], ["fish"]],
+  [["daant", "dant", "दांत", "दाँत"], ["teeth", "tooth"]], [["bachana", "bachao", "bachate", "bachaana", "बचाना", "बचाओ"], ["save", "saving"]],
+  [["bartan", "bartano", "बर्तन"], ["utensil", "utensils", "container", "containers"]], [["ghar", "घर"], ["house", "home"]],
+];
+const HI_STEMS = new Map(HI_EN.flatMap(([hi, en]) => hi.map((w) => [w, en.map((e) => CANON.get(e) ?? stem(e))])));
+/** The English words a reply's Hinglish / Devanagari words mean (reply side only). */
+const hiContent = (s) => new Set(words(s).flatMap((w) => HI_STEMS.get(w) ?? []));
+/** Language items test the word forms: no Hinglish reading there. */
+const LANGUAGE_ITEM = /^(?:diag:)?c\d+-(?:hindi|english)-/;
+/** Number values in a text (digits, English / Roman-Hindi / Devanagari number words), as the shared reader composes them;
+ * null when a number phrase cannot be read. */
+// the shared reader on the whole reply; when it cannot read it (a list said aloud: "twenty five, thirty eight, fifty two",
+// where one number runs into the next), per list segment, so a list is read as its numbers, never as one wrong number
+const nums = (s) => {
+  const whole = numberPhrases(String(s ?? ""));
+  if (whole !== null) return whole;
+  const segs = String(s ?? "").split(/\s*(?:(?<!\d),|,(?!\d)|;|\baur\b|\bphir\b|\bthen\b)\s*/i).filter((x) => x.trim());
+  if (segs.length < 2) return null;
+  const out = [];
+  for (const seg of segs) { const v = numberPhrases(seg); if (v === null) return null; out.push(...v); }
+  return out;
+};
+/** Every number exactly as written ("16" in "16 tenths", "9" in "9 crore"): a bare number the key itself shows. */
+const rawNums = (s) => (String(s ?? "").replace(/(?<=\d),(?=\d)/g, "").match(/\d+(?:\.\d+)?/g) ?? []).map(Number);
+/** Roman-Hindi number words the shared reader keeps out of a lone phrase because they are also ordinary words ("do",
+ * "saath"): they may CARRY a form's number (the model already read the reply as the key), never make one foreign. */
+const WEAK = { do: 2, das: 10, bees: 20, tees: 30, saath: 60 };
+const has = (vals, v) => vals.some((u) => Math.abs(u - v) < 1e-9);
+const sideOf = (ws, group) => ({ a: group[0].some((w) => ws.has(w)), b: group[1].some((w) => ws.has(w)) });
+
+/** round 3 fix (experience B6): the kit's assertion rung (the 4th and last hint: the answer with one reason), or null. */
+export function assertionOf(target) {
+  const h = target?.item?.hints;
+  return Array.isArray(h) && h.length >= 4 && typeof h[h.length - 1] === "string" ? h[h.length - 1] : null;
+}
+
+/** The complete forms of the item's answer the label can be checked against. */
+const ANY_COUNT = /^\s*(?:any|koi\s+bhi)\s+(?:one|two|three|four|five|ek|do|teen|char|chaar|paanch|\d)\b(?:\s+of\s+(?:these|them|the\s+following))?\s*[:\-–—,]?\s*/iu;
+export function completeForms(target) {
+  const lab = target?.alsoLabel ?? {};
+  const also = (target?.also ?? []).filter((a) => a && lab[a] !== "partial" && lab[a] !== "wrong");
+  const opts = (target?.options ?? []).filter((o) => o?.correct).map((o) => o.text);
+  // 14.5 (p66 i01 "Any two: keep it covered; …"): the count of a pick-any list is no number the reply must say
+  return [target?.key, ...also, ...opts].filter((x) => x != null && String(x).trim()).map((x) => String(x).replace(ANY_COUNT, "").trim() || String(x));
+}
+
+/**
+ * How well a reply supports one form. @returns {{ ok: boolean, keyLike: boolean, why: string|null, cover: number }}
+ */
+export function supports(form, text, allowedNums, negForms = null, prompt = "", siblingNums = null, { hinglish = false } = {}) {
+  const fw = new Set(words(form)), tw = new Set(words(text));
+  const fn = nums(form), tn = nums(text);
+  if (tn === null) return { ok: false, keyLike: false, why: "unreadable_number", cover: 0 };
+  if (tn.some((v) => !has(allowedNums, v))) return { ok: false, keyLike: false, why: "foreign_number", cover: 0 };
+  const carried = [...tn, ...rawNums(text), ...words(text).filter((w) => w in WEAK).map((w) => WEAK[w])];
+  const decT = [...tw].filter((w) => DECISIVE.has(w)), decF = [...fw].filter((w) => DECISIVE.has(w));
+  const fnRaw = fn ?? [];
+  if (fnRaw.length && decT.some((w) => !fw.has(w) && !fw.has(w.replace(/s$/, "")) && !fw.has(`${w}s`))) return { ok: false, keyLike: false, subset: false, why: "swapped_word", cover: 0 };
+  const promptW = new Set(words(prompt));
+  const missingDecisive = fnRaw.length > 0 && decF.some((w) => !tw.has(w) && !tw.has(w.replace(/s$/, "")) && !tw.has(`${w}s`) && !promptW.has(w) && !promptW.has(w.replace(/s$/, "")));
+  for (const g of SIDES) {
+    const f = sideOf(fw, g), t = sideOf(tw, g);
+    if (f.a !== f.b && ((f.a && t.b && !t.a) || (f.b && t.a && !t.b))) return { ok: false, keyLike: false, why: "opposite_word", cover: 0 };
+  }
+  // round 2 integrated-tree fix (adversarial N1b/N1c, 2026-10-07): the opposite word is judged against EVERY complete form,
+  // not this one alone — "yes they are equal, 3/4" took the other side of the sibling form "no" and still matched
+  // "3/4 is bigger"; "right, 4/9 > 3/4" took the other side of "wrong". A side the forms take (and never its opposite) that
+  // the reply contradicts is a contradiction of the answer, whichever form carries the number.
+  // It decides the CREDIT only (keyLike / subset, the false-fail direction, are unchanged: paired replay below).
+  const crossOpposite = !!negForms && SIDES.some((g) => {
+    const taken = negForms.map((x) => sideOf(new Set(words(x)), g)).filter((x) => x.a !== x.b);
+    if (!taken.length || !(taken.every((x) => x.a) || taken.every((x) => x.b))) return false;
+    const t = sideOf(tw, g);
+    return (taken[0].a && t.b && !t.a) || (taken[0].b && t.a && !t.b);
+  });
+  const fc = content(form), tc = content(text);
+  if (hinglish) for (const w of hiContent(text)) tc.add(w);
+  // a negator in the reply next to the words of ANY complete form, when that form has none: "not X", "X nahi" (checked
+  // over all forms, so "Largest: Jupiter. Smallest: Mercury. nahi" is negated for the shorter forms too)
+  const list = words(text);
+  // (a key that itself says "no" / "not" expects a negator in the reply: then this check is off)
+  const all = negForms ?? [form];
+  if (!all.some((g) => words(g).some((w) => NEG.has(w)))) for (const g of all) {
+    const gc = content(g);
+    if (list.some((w, i) => NEG.has(w) && [list[i - 1], list[i + 1], list[i + 2]].some((x) => x && (gc.has(CANON.get(x) ?? stem(x)) || (hinglish && (HI_STEMS.get(x) ?? []).some((e) => gc.has(e))))))) return { ok: false, keyLike: false, why: "negated", cover: 0 };
+  }
+  const fnv = fn ?? [];
+  const rawF = rawNums(form);
+  // every number of the form, and (two or more) in the form's order: "52, 38, 25" is not "25, 38, 52"
+  const firstAt = (vals, v) => vals.findIndex((u) => Math.abs(u - v) < 1e-9);
+  const distinctF = fnv.filter((v, i) => firstAt(fnv, v) === i);
+  // the form's numbers as composed values, or as written ("16" for "16 tenths"): all present, in the form's order
+  const inOrder = (want, got) => { const at = want.map((v) => firstAt(got, v)); return at.every((x) => x >= 0) && at.every((x, i) => i === 0 || x > at[i - 1]); };
+  const distinctR = rawF.filter((v, i) => firstAt(rawF, v) === i);
+  const present = distinctF.every((v) => has(carried, v)) || (distinctR.length > 0 && distinctR.every((v) => has(carried, v)));
+  const numsOk = present && (inOrder(distinctF, carried) || inOrder(distinctR, carried));
+  const cover = fc.size ? [...fc].filter((w) => tc.has(w)).length / fc.size : 1;
+  // round 2 integrated-tree fix (adversarial N1a/N1c/N1d): a form with numbers is carried by its numbers only when the reply
+  // brings no OTHER number beyond the question's ("1/3, 1/4, 3/4" lists the key's numbers, not "3/4 is bigger"; a longer form that has
+  // them all, in order, still carries it), and when the side the form takes ("bigger", "no", "wrong") is in the reply or the
+  // question asks it ("3/4" answers "which is bigger?", not "are they equal?" nor "Ali says 4/9 > 3/4. Check.")
+  // (a number the QUESTION states may come along: "3/4 is bigger than 4/9" for "Ali says 4/9 > 3/4")
+  const promptN = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  // (round3 truth: siblingNums, the numbers of the item's OTHER adjudicated parts, are not extra when one part is checked)
+  const extraNum = fnv.length > 0 && tn.some((v) => !has(fnv, v) && !has(rawF, v) && !has(promptN, v) && !(siblingNums && has(siblingNums, v)));
+  const missingSide = fnv.length > 0 && SIDES.some((g) => {
+    const f = sideOf(fw, g), t = sideOf(tw, g), q = sideOf(promptW, g);
+    return f.a !== f.b && !t.a && !t.b && !(f.a ? q.a : q.b);
+  });
+  // a form with numbers is carried by its numbers (all, in order, nothing foreign, no contradiction); a form of words only
+  // by more than half of its content words
+  const ok = numsOk && !missingDecisive && !extraNum && !missingSide && !crossOpposite && (fnv.length > 0 || (fc.size > 0 && cover >= CORROBORATE.minCover) || (fc.size === 0 && fw.size > 0 && [...fw].every((w) => tw.has(w))));
+  const keyLike = numsOk && cover >= CORROBORATE.keyLikeCover && (fnv.length > 0 || fc.size > 0);
+  // the reply is (almost) all words of this form, numbers included and in order, nothing foreign or contradicting: it may
+  // be a PART of a multi-part answer ("switch off fans" for "Any four: switch off lights and fans …") — a fail of it
+  // could be a partial miss, which only the item's adjudicated parts can decide
+  const tn2 = tn.filter((v) => !has(fnv, v) && !has(rawF, v)).length === 0;
+  const precision = tc.size ? [...tc].filter((w) => fc.has(w)).length / tc.size : 0;
+  const subset = tn2 && ((tc.size > 0 && precision >= CORROBORATE.keyLikeCover) || (tc.size === 0 && tn.length > 0))
+    && (inOrder(tn.filter((v) => has(fnv, v)), fnv) || tn.length <= 1);
+  return { ok, keyLike, subset, why: ok ? null : !present ? "missing_number" : !numsOk ? "number_order" : missingDecisive ? "missing_decisive" : crossOpposite ? "opposite_word" : extraNum ? "extra_number" : missingSide ? "missing_side" : "low_cover", cover };
+}
+
+/**
+ * Which of the item's ADJUDICATED parts (target.parts, ≥ 2; never read off the key's punctuation) a reply carries, each
+ * checked like a complete form (supports().ok: its numbers in order, no foreign number, no contradiction, enough of its
+ * words). "none" | "some" | "all"; null when the item has no adjudicated parts.
+ */
+export function partsVerdict(target, text, allowedNums) {
+  const parts = Array.isArray(target?.parts) && target.parts.length >= 2 ? target.parts.map(String) : null;
+  if (!parts) return null;
+  const prompt = `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`;
+  const allowed = allowedNums ?? [target.key, ...(target.also ?? []), target.item?.prompt_en, target.item?.prompt_hi, assertionOf(target)].flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
+  const got = parts.map((p, i) => supports(p, text, allowed, null, prompt, parts.filter((_, j) => j !== i).flatMap((q) => [...(nums(q) ?? []), ...rawNums(q)])).ok);
+  return got.every(Boolean) ? "all" : got.some(Boolean) ? "some" : "none";
+}
+
+// round 5 (4A, main's conditions; sim lab e46a281c DECIDED truth: 40-48% of right answers earned no evidence on both
+// lanes, most of them a right answer followed by its working — "70! matlab sattar, kyunki 30 aur 70 milke 100") — the
+// ANSWER HEAD: the reply up to its first explanation marker (else its first sentence). It is checked ONLY when the whole
+// reply failed on a number the explanation brought (foreign / extra / unreadable), never on a why or a teach-back item, and
+// it must pass the full check on its own (negation, swapped and opposite words, cover). A correction after it ("…nahi,
+// 60", "wait", "sorry") or two choices in it ("70 ya 60?") means the head is not the child's answer: no rescue.
+const HEAD_RESCUES = new Set(["foreign_number", "extra_number", "unreadable_number"]);
+const HEAD_NEVER = new Set(["why", "teachback"]);
+const EXPLAIN = /(?:^|[^\p{L}\p{M}])(?:kyunki|kyonki|kyuki|kyu\s+ki|because|cause|coz|matlab|yaani|yani|jaise|like|since|isliye|so|क्योंकि|मतलब|जैसे|यानी|इसलिए)(?![\p{L}\p{M}])/iu;
+const CORRECTION = /(?:^|[^\p{L}\p{M}])(?:nahi|nahin|nhi|no|nope|wait|sorry|galti|galat|actually|ruko|oops|नहीं|रुको|गलती|गलत)(?![\p{L}\p{M}])/iu;
+const ALTERNATIVE = /(?:^|[^\p{L}\p{M}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}\p{M}])/iu;
+/** The reply's answer head and the rest, or null when the reply is all head. PURE. */
+export function answerHead(text) {
+  const t = String(text ?? "").trim();
+  const m = t.search(EXPLAIN);
+  const upTo = m > 0 ? t.slice(0, m) : t;
+  const head = (upTo.match(/^.*?[.!?।](?=\s|$)/u)?.[0] ?? upTo).trim();
+  const rest = t.slice(t.indexOf(head) + head.length).trim();
+  return head && rest ? { head, rest } : null;
+}
+/** Does the answer head alone carry a complete form (the conditions above)? PURE. */
+export function headSupports(target, text, forms, allowed, prompt, why) {
+  if (!HEAD_RESCUES.has(why) || HEAD_NEVER.has(target?.item?.kind)) return false;
+  const h = answerHead(text);
+  if (!h || CORRECTION.test(h.rest)) return false;
+  if (ALTERNATIVE.test(h.head) && (nums(h.head) ?? []).length >= 2) return false;
+  // 14.5: the reason-head vetoes hold here too (another answer, a hedge, an alternative, a negated head)
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  if (otherAnswerPart(text, forms, allowed, prompt)) return false;
+  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok && !headNegated(h.head, f, answerNums) && !reasonTakesBack(h.rest, h.head, answerNums, content(f), promptNums));
+}
+
+// round 5 (14.5, 4A; main's conditions): the REASON HEAD. sim lab 14.3 decided gate (r5-rel143-9a30285): 107 right answers
+// on the agent lane earned no evidence against the card the child answered, 98 of them a model "correct" this check vetoed
+// because the reason after the answer brought its own numbers or words ("6 lakh, kyunki 62 hazaar aadhe lakh se zyada
+// hai"). The head is the reply up to its first reason marker; it is the answer when, on its own, it passes the full check
+// for a complete form (the key, an acceptable form, a correct option), and the reason after it does not take it back:
+// no negator next to the head's answer, no alternative ("ya 8 lakh"), no correction ("nahi nahi", "wait", "nahi, 8"),
+// no different number where an answer goes ("toh 8 lakh hoga"). Never on a why or teach-back item (the key IS a
+// reason). A misconception the model read in the reason stays on the result (a trap, never plain correct).
+const REASON = /(?:^|[^\p{L}\p{M}])(?:kyunki|kyuki|kyonki|kyoki|kyu\s+ki|kyun\s+ki|because|taaki|taki|isliye|isiliye|so|क्योंकि|क्यूंकि|क्यों\s+कि|ताकि|इसलिए|इसलिये)(?![\p{L}\p{M}])/iu;
+const STRONG_CORRECTION = /(?:^|[^\p{L}\p{M}])(?:nahi\s+nahi|nahin\s+nahin|no\s+no|wait|sorry|galti|actually|oops|ruko|i\s+mean|matlab\s+nahi|नहीं\s+नहीं|रुको|गलती|सॉरी)(?![\p{L}\p{M}])/iu;
+// an answer cue anywhere ("answer 9 hai"), and the joiners that cue only the reason's last number ("… toh 8 lakh")
+const ANSWER_BEFORE = new Set(["answer", "jawab", "javab", "ans", "equals", "barabar", "=", "जवाब", "बराबर"]);
+const CONCLUDE = new Set(["toh", "to", "so", "तो"]);
+// a scale word on its own ("toh lakh wala 3") is not a number
+const SCALE_ONLY = new Set(["lakh", "lac", "crore", "hazaar", "hazar", "sau", "hundred", "thousand", "million", "billion", "लाख", "करोड़", "हज़ार", "हजार", "सौ"]);
+const DONT_KNOW = /(?:^|[^\p{L}\p{M}])(?:pata\s+nahi|pata\s+nahin|nahi\s+pata|i\s+don'?t\s+know|dont\s+know|not\s+sure|pakka\s+nahi|पता\s+नहीं|मालूम\s+नहीं|पक्का\s+नहीं)(?![\p{L}\p{M}])/iu;
+const ANSWER_AFTER = new Set(["hoga", "hogi", "honge", "hoge", "aayega", "aayegi", "ayega", "aaega", "banega", "banegi", "bachega", "bachegi", "bacha", "bachi", "bache", "answer", "होगा", "होगी", "आएगा", "बनेगा", "बचेगा"]);
+// "hain na", "है न": the tag of a reason, not a negation of the answer
+const TAG = new Set(["na", "न"]);
+// a contrast that opens a doubt about the answer: "par / lekin / but / magar" with "mujhe laga", "maine to", "sirf",
+// "lagta", "I thought", "only", within a few words
+const DOUBT = /(?:^|[^\p{L}\p{M}])(?:par|pr|lekin|magar|but|पर|लेकिन|मगर)\s+(?:\S+\s+){0,4}?(?:mujhe\s+(?:laga|lagta|lagti)|maine\s+(?:to|toh|socha)|sirf|lagta|lagti|i\s+thought|only|मुझे\s+लगा|मैंने\s+तो|सिर्फ़?|लगता)(?![\p{L}\p{M}])/iu;
+const HEDGE = /(?:^|[^\p{L}\p{M}])(?:shayad|shaayad|maybe|perhaps|probably|शायद)(?![\p{L}\p{M}])/iu;
+const ANSWER_WORD = new Set(["answer", "jawab", "javab", "ans", "जवाब", "उत्तर"]);
+const COMPARE = new Set(["se", "than", "kam", "zyada", "jyada", "less", "more", "bada", "badi", "chhota", "chhoti", "से", "कम", "ज़्यादा", "ज्यादा"]);
+/** The reply's reason head (before its first reason marker) and the reason, or null. PURE. */
+export function reasonHead(text) {
+  const t = String(text ?? "").trim();
+  const m = t.search(REASON);
+  if (m <= 0) return null;
+  const head = t.slice(0, m).trim(), rest = t.slice(m).trim();
+  return /[\p{L}\p{N}]/u.test(head) && rest ? { head, rest } : null;
+}
+/** Does the reason take the head back (the vetoes above)? `answerNums`: the values the head's form carries. PURE. */
+export function reasonTakesBack(rest, head, answerNums, formWords, promptNums = [], { negation = true, cues = true } = {}) {
+  if (STRONG_CORRECTION.test(rest)) return "correction";
+  if (DONT_KNOW.test(rest)) return "unsure";
+  // 14.5 (main): a doubt after it ("… par maine to pehle hi bata diya tha na, sirf 5 aur 5 hota hai?", "but I thought only …")
+  if (DOUBT.test(rest)) return "doubt";
+  const toks = String(rest).toLowerCase().normalize("NFC").replace(/(?<=\d),(?=\d)/g, "").split(/[^\p{L}\p{M}\p{N}=.]+/u).map((w) => w.replace(/^\.+|\.+$/g, "")).filter(Boolean);
+  const isNum = (i) => { const w = toks[i]; if (!w || SCALE_ONLY.has(w)) return false; const v = numberPhrases(w); return /\d/.test(w) || (v !== null && v.length > 0); };
+  const valAt = (i) => { const v = numberPhrases(toks.slice(i, i + 2).join(" ")) ?? numberPhrases(toks[i]); return v?.[0]; };
+  const answerTok = (w) => formWords.has(CANON.get(w) ?? stem(w));
+  for (let i = 0; i < toks.length; i++) {
+    const w = toks[i];
+    // a negator right before a number ("nahi, 8") or next to the head's answer ("7 lakh nahi")
+    if (negation && NEG.has(w) && !TAG.has(w) && (isNum(i + 1) || answerTok(toks[i - 1] ?? "") || answerTok(toks[i + 1] ?? "")
+      || [toks[i - 1], toks[i - 2]].some((x, k) => x && isNum(i - 1 - k) && answerNums.some((v) => Math.abs(v - (valAt(i - 1 - k) ?? NaN)) < 1e-9)))) return "negated";
+    // an alternative with a number after it ("ya 8 lakh", "or 9")
+    // (another form of the same answer is not an alternative: "one quarter, ya phir one-fourth")
+    if (ALTERNATIVE.test(` ${w} `) && [1, 2, 3].some((k) => isNum(i + k) && !isNum(i + k - 1) && !answerNums.some((a) => Math.abs(a - (valAt(i + k) ?? NaN)) < 1e-9))) return "alternative";
+    // a different number where an answer goes ("toh 8 lakh hoga", "answer 9 hai"), never a comparison ("62 hazaar aadhe lakh se zyada")
+    // (a number starts at a token that does not continue the one before it: "3 lakh" is one number, not 3 and a lakh)
+    if (cues && isNum(i) && !isNum(i - 1)) {
+      const v = valAt(i);
+      // an explicit answer cue ("answer", "jawab", "=") before it: only the answer's own value may follow, never a number of
+      // the question nor one the reader cannot read ("toh answer 5⁴ hai")
+      const cued = [toks[i - 1], toks[i - 2]].some((x) => x && ANSWER_BEFORE.has(x));
+      if (cued && (v === undefined || !answerNums.some((a) => Math.abs(a - v) < 1e-9))) return "other_answer";
+      if (v === undefined || answerNums.some((a) => Math.abs(a - v) < 1e-9)) continue;
+      const after = [toks[i + 1], toks[i + 2]].filter(Boolean);
+      const compared = after.some((x) => COMPARE.has(x));
+      if (!compared && after.some((x) => ANSWER_AFTER.has(x))) return "other_answer";
+      // the reason's conclusion ("… toh 8 lakh") — a number the question itself states is working, not an answer
+      const lastNum = !toks.slice(i + 1).some((_, k) => isNum(i + 1 + k) && !isNum(i + k));
+      if (!compared && lastNum && [toks[i - 1], toks[i - 2]].some((x) => x && CONCLUDE.has(x))
+        && !promptNums.some((a) => Math.abs(a - v) < 1e-9)) return "other_answer";
+    }
+  }
+  if (ALTERNATIVE.test(head)) return "alternative";
+  // 14.5 (main): an answer said as a question is a hedge ("8,000… toh 8,000?", "1/6?")
+  // (the head said as a question, or the reason's last clause restating the answer as one: "… toh 8,000?"; a tag on the
+  // reason, "yeh sahi hai na?", is not)
+  const lastClause = String(rest).replace(/(?<=\d),(?=\d)/g, "").split(/[.!,;।]+/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
+  const lastNums = nums(lastClause) ?? [];
+  const sayAnswer = (seg) => (nums(seg) ?? []).some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9))
+    || [...content(seg)].some((w) => formWords.has(w) && !CANON.has(w));
+  const restAsks = /\?\s*$/.test(rest) && (lastNums.some((v) => answerNums.some((a) => Math.abs(a - v) < 1e-9)) || [...content(lastClause)].some((w) => formWords.has(w) && !CANON.has(w)));
+  // (main: a question with no confirmation after it; a later clause that says the answer again without "?" confirms it:
+  // "aath hazaar…? aath hazaar hoga", "4000 ke aas-paas? … haan, lagbhag 4,000")
+  const confirmed = (String(rest).replace(/(?<=\d),(?=\d)/g, "").match(/[^.!?।]+[.!?।]*/g) ?? []).some((seg) => !/\?/.test(seg) && sayAnswer(seg));
+  if (restAsks || (/\?/.test(head) && !confirmed)) return "question";
+  // a hedge towards another answer ("par shayad X hoga", "maybe it is X answer")
+  if (HEDGE.test(rest) && toks.some((w) => ANSWER_AFTER.has(w) || ANSWER_WORD.has(w))) return "alternative";
+  // an answer said again in words that are not this form's ("toh answer Physical hai")
+  const at = toks.findIndex((w) => ANSWER_WORD.has(w));
+  if (at >= 0) {
+    const said = toks.slice(at + 1, at + 7).filter((w) => !STOP.has(w) && !ANSWER_AFTER.has(w) && !/^\d/.test(w) && w.length >= 2);
+    if (said.length && said.filter((w) => formWords.has(CANON.get(w) ?? stem(w))).length / said.length < CORROBORATE.minCover) return "other_answer";
+  }
+  return null;
+}
+/** A negator in the head next to the answer's number or words ("225 nahi"), when the form itself is not a "no". PURE. */
+function headNegated(head, form, answerNums) {
+  if (words(form).some((w) => NEG.has(w))) return false;
+  const toks = words(String(head).replace(/(?<=\d),(?=\d)/g, ""));
+  const fc = content(form);
+  const whole = words(form).join(" ");
+  const isAns = (w) => !!w && (fc.has(CANON.get(w) ?? stem(w)) || (whole.length <= 3 && w === whole) || (/^\d/.test(w) && answerNums.some((v) => Math.abs(v - Number(w)) < 1e-9))
+    || ((numberPhrases(w) ?? []).length === 1 && answerNums.some((v) => Math.abs(v - numberPhrases(w)[0]) < 1e-9)));
+  return toks.some((w, i) => NEG.has(w) && !TAG.has(w) && (isAns(toks[i - 1]) || isAns(toks[i + 1]) || isAns(toks[i - 2]) || (/^\d/.test(toks[i - 3] ?? "") && isAns(toks[i - 3]))));
+}
+/** Does the reason head carry a complete form, with nothing after it taking it back? PURE. */
+export function reasonHeadSupports(target, text, forms, allowed, prompt) {
+  if (HEAD_NEVER.has(target?.item?.kind)) return false;
+  const h = reasonHead(text);
+  if (!h) return false;
+  // the answer's numbers: every complete form's and the assertion rung's (a reason may restate the key in another form)
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  if (otherAnswerPart(text, forms, allowed, prompt)) return false;
+  return forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok && !headNegated(h.head, f, answerNums) && !reasonTakesBack(h.rest, h.head, answerNums, content(f), promptNums));
+}
+
+/** An answer that offers another one beside it ("X ya Y", "X or Y"), or says another after "answer" / "jawab": a part that
+ * is short, carries no form and names something. PURE. */
+function otherAnswerPart(text, forms, allowed, prompt) {
+  const t = String(text);
+  // (at the answer's place only: the head before a reason marker, or a short reply; "petrol ya fuel" inside an explanation
+  // is not a second answer)
+  const at = reasonHead(t)?.head ?? (words(t).length <= 12 ? t : "");
+  const parts = at.split(/(?:^|[^\p{L}\p{M}])(?:ya|yaa|or|athva|या|अथवा)(?![\p{L}\p{M}])/iu).map((x) => x.trim()).filter(Boolean);
+  const other = (seg) => { const w = words(seg); return w.length > 0 && w.length <= 8 && (content(seg).size > 0 || /\d/.test(seg)) && !forms.some((f) => supports(f, seg, allowed, forms, prompt).ok); };
+  // (the part after "or" up to the next reason marker or sentence end)
+  if (parts.length >= 2 && parts.slice(1).some((p) => other(p.split(REASON)[0].split(/[.!?।]/)[0]))) return "alternative";
+  const m = t.match(/(?:^|[^\p{L}\p{M}])(?:answer|jawab|javab|जवाब|उत्तर)\s+(?:(?:is|hai|hoga|toh|to)\s+)?(.+?)(?:\s+(?:hai|hoga|hogi|hain)(?![\p{L}])|[.!?।]|$)/iu);
+  if (m && other(m[1])) return "other_answer";
+  return null;
+}
+
+/** Does a whole reply that carries a form take it back? The reason vetoes, a negated answer, or a different short answer
+ * of its own before a reason marker. Returns the veto, or null. PURE. */
+export function wholeTakesBack(target, text, forms, reads, allowed, prompt) {
+  const ok = forms.filter((_, i) => reads[i].ok);
+  const answerNums = [...forms, assertionOf(target)].flatMap((f) => [...(nums(f) ?? []), ...rawNums(f)]);
+  const promptNums = [...(nums(prompt) ?? []), ...rawNums(prompt)];
+  const fw = new Set(ok.flatMap((f) => [...content(f)]));
+  // the vetoes over the whole reply: no head here (an "or" inside a reason is not an alternative answer), no question-mark
+  // veto (a rising "…?" on a right answer is common speech), and the negator rule only through headNegated below
+  let v = reasonTakesBack(String(text), "", answerNums, fw, promptNums, { negation: false });
+  // a correction or a doubt that ENDS on a form is the child's final answer ("nahi nahi, … char hi kinare hote hain, char")
+  if (v === "correction" || v === "doubt") {
+    const marks = [...String(text).matchAll(new RegExp(`${STRONG_CORRECTION.source}|${DOUBT.source}`, "giu"))];
+    const tail = marks.length ? String(text).slice(marks.at(-1).index + marks.at(-1)[0].length) : "";
+    // a long musing after the answer ("But wait, that means acid-base mix in her stomach? … I thought that makes poison")
+    // is a new question, not a correction: only a short, answer-like tail or one with another value takes it back
+    const tailNums = nums(tail) ?? [];
+    if (tail && forms.some((f) => supports(f, tail, allowed, forms, prompt).ok)) v = null;
+    else if (words(tail).length > 8 && /\?/.test(tail) && !tailNums.some((x) => !answerNums.some((a) => Math.abs(a - x) < 1e-9))) v = null;
+  }
+  if (v && v !== "question") return v;
+  if (ok.every((f) => headNegated(text, f, answerNums))) return "negated";
+  const oa = otherAnswerPart(text, forms, allowed, prompt);
+  if (oa) return oa;
+  // a short answer of its own before the reason ("Sphere, isliye cuboid"): the head names something, none of it a form
+  const h = !HEAD_NEVER.has(target?.item?.kind) ? reasonHead(text) : null;
+  if (h && words(h.head).length <= 5 && !forms.some((f) => supports(f, h.head, allowed, forms, prompt).ok)) {
+    const hc = [...content(h.head)].filter((w) => !CANON.has(w));
+    const hn = [...(nums(h.head) ?? [])];
+    if ((hc.length && !hc.some((w) => fw.has(w))) || hn.some((x) => !answerNums.some((a) => Math.abs(a - x) < 1e-9))) return "head_differs";
+  }
+  return null;
+}
+
+/**
+ * Apply the rule to a model-labelled classification. Only an item turn the MODEL labelled is touched; every other
+ * result (exact, number, chip, module, help, request, safety, error) passes through unchanged, flags included.
+ * @param {{ target: any, text: string, result: any }} a
+ * @returns {any} the result, with outcome possibly "no_evidence" and `corroboration` set
+ */
+export function corroborate({ target, text, result }) {
+  if (!result || result.source !== "model" || target?.mode !== "item") return result;
+  const o = result.outcome;
+  if (!["correct", "incorrect", "misconception", "partial"].includes(o)) return result;
+  const forms = completeForms(target);
+  if (!forms.length) return result;
+  // round 3 fix (experience B6): + the numbers of the kit's own assertion rung (the last hint states the answer with its
+  // reason: "Neither; both perimeters are 56 cm."). "neither, both are 56" was a FOREIGN number, so a right answer with the
+  // right working earned no evidence twice ("I didn't catch that clearly", then "write it separately") while a bare
+  // "neither" was credited. Only the assertion rung: an earlier rung may name a wrong option to compare.
+  const allowed = [target.key, ...(target.also ?? []), ...(target.options ?? []).map((x) => x?.text), target.item?.prompt_en, target.item?.prompt_hi, assertionOf(target)]
+    .flatMap((s) => [...(nums(s) ?? []), ...rawNums(s)]);
+  const hinglish = !LANGUAGE_ITEM.test(String(target.item?.id ?? ""));
+  const reads = forms.map((f) => supports(f, text, allowed, forms, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`, null, { hinglish }));
+  if (o === "correct") {
+    if (reads.some((r) => r.ok)) {
+      // 14.5 (main; open-r145-whole-reply-contradiction): a whole reply that carries a form is still not the child's answer
+      // when it takes it back (the reason-head vetoes), or when it opens with a different answer of its own before a reason
+      // ("Sphere, isliye cuboid"). 84 of 223 contradicting forms were credited here with the real model.
+      const back = wholeTakesBack(target, text, forms, reads, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`);
+      if (!back) return { ...result, corroboration: "supported" };
+      const { misconceptionId: _m, reason: _r, reasonMisconceptionId: _rm, ...rest } = result;
+      return { ...rest, outcome: "no_evidence", corroboration: `unsupported_credit:taken_back_${back}` };
+    }
+    const why = reads.map((r) => r.why).find((w) => w && w !== "low_cover") ?? reads[0]?.why ?? "low_cover";
+    if (headSupports(target, text, forms, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`, why)) return { ...result, corroboration: "supported_head" };
+    if (reasonHeadSupports(target, text, forms, allowed, `${target.item?.prompt_en ?? ""} ${target.item?.prompt_hi ?? ""}`)) return { ...result, corroboration: "supported_reason_head" };
+    const { misconceptionId: _m, reason: _r, reasonMisconceptionId: _rm, ...rest } = result;
+    return { ...rest, outcome: "no_evidence", corroboration: `unsupported_credit:${why}` };
+  }
+  if (reads.some((r) => r.keyLike)) {
+    const { misconceptionId: _m, ...rest } = result;
+    return { ...rest, outcome: "no_evidence", corroboration: `keylike_${o}` };
+  }
+  // a plain "incorrect" or "partial" (never a named misconception, which is evidence about the belief) on a reply made only
+  // of the key's own words or numbers: a part of the key the model failed, or the whole of it the model called partial —
+  // only the item's adjudicated parts can tell; no evidence rather than a wrong grade
+  if ((o === "incorrect" || o === "partial") && reads.some((r) => r.subset)) {
+    // round3 truth (owner-1 on taxila.dev 2026-10-09, V1.1 oracle: 3 of 4 half answers re-asked with no verdict, e.g. "A: 6"
+    // for "What comes next in each?"; grading-truth model leg on grok: 133 of 172 two-rater partial answers abstained): when
+    // the item HAS adjudicated parts (data/kits-parts.json, shipped 2026-10-09), code can tell. A reply that carries some of
+    // the parts, by the same check a complete form must pass, and not all of them, is the V1.1 partial — whatever the
+    // model's label of it was. A reply carrying every part stays no evidence (it looks complete; the model disagreed).
+    const parts = partsVerdict(target, text, allowed);
+    if (parts === "some") {
+      const { misconceptionId: _m, ...rest } = result;
+      return { ...rest, outcome: "partial", corroboration: `parts_some_${o}` };
+    }
+    return { ...result, outcome: "no_evidence", corroboration: `subset_${o}` };
+  }
+  return { ...result, corroboration: "not_keylike" };
+}

@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-parent-schedule",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (app-parent-schedule): Controls has a 'Lesson schedule' card on the Scheduler controls (DayToggles, TimeRail, a length chip: 15-45 min). It is stored on child_routine (anchor from 004; lesson_days and lesson_min from migration 045) and sent to the Conductor as parent.setting_changed { restDays (the days not chosen), anchor, lessonMin }. The planner starts the day's sitting at the anchor when it is still ahead and inside the learning window (a household window wins), and never plans it longer than the chosen length, though never below the band's minimum segment set. The child Home gets plan.schedule { time, minutes, today } to show the lesson time. It is a plan, never a lock: Home states and the lesson start ignore the schedule's days (only the family's daily limit and hours, when turned on, refuse). One-off reschedules are not in v1. Reverse if: families want the schedule to close lessons outside it (then it becomes the hours window under limits_on)."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

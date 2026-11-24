@@ -1,0 +1,14 @@
+{
+ "nodes": [
+  {
+   "id": "r5-wb-grace-throttled-phone",
+   "kind": "measurement",
+   "at": "2026-10-15",
+   "title": "The whiteboard's 1.2 s grace holds on a throttled phone: production build, board svg mount to first frame p95 15 / 23 / 41 / 69 / 164 ms at CPU throttle 1x / 4x / 6x / 10x / 20x (n 8 / 8 / 8 / 5 / 5); the clock read 0 at that first frame in all 34 runs"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "measurements": "## r5-wb-grace-throttled-phone\n**Does a slow phone miss the whiteboard's 1.2 s grace (the board starts on its own when no audio anchor comes)? No.** (2026-10-15)\n- Method: the production build (`npx vite preview`), 360 x 800 mobile, DPR 2, API mocked, Chromium CDP `Emulation.setCPUThrottlingRate`; an init-script MutationObserver records the board svg's mount, the first animation frame after it and the board clock then; the clock's start is read once it runs. Script: scripts/wb-grace-throttle.mjs.\n- Mount to first frame, p50 / p95 ms: 1x 11 / 15 (n 8); 4x 13 / 23 (n 8); 6x 35 / 41 (n 8); 10x 40 / 69 (n 5); 20x 92 / 164 (n 5). Board clock at that first frame: 0 in all 34 runs. Grace from mount p50 1208-1240 ms (20x 1463).\n- What the child sees when the grace passes: the board starts from its first stroke; never a jump ahead, never blank.\n- The 2 of 8 test failures at 1x CPU oversubscription were the test environment (the Vite DEV server and a host whose other processes starved the browser, which CPU throttling does not model). No product change.\n- Reversal: a real low-end device (or a profile that models scheduler starvation) measuring first frame > ~1 s after mount.\n"
+ }
+}

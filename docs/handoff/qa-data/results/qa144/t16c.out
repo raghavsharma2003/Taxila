@@ -1,0 +1,61 @@
+== Y-NAHI-1
+{"lesson":"132601e7-08d4-49d7-bc9c-79a0898e2cb5","lane":null,"hits":[{"label":"nahinahi","asked":"50 m aur 30 m se try kijiye. Hear","answered":"nahi nahi, 160","move":"probe","verdict":null,"reply":"Aapne apna answer badla; ab perimeter ko side lengths jodkar check karenge. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya kisi","opens":"Aapne apna"}],"steps":["Aapka favourite shape kaunsa hai? Hear → hook","Aap boundary kaise naapenge? Hear → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "nahi nahi, 160" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== Y-NAHI-2
+{"lesson":"6f1323e8-22e8-4627-bccb-22a08b584e25","lane":null,"hits":[{"label":"nahinahi","asked":"50 m aur 30 m par perimeter kitna hoga? Hear","answered":"nahi nahi, 160","move":"probe","verdict":null,"reply":"160 ko ek baar dobara check kijiye: rectangle mein length aur breadth dono do-do baar aate hain. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangol","opens":"160 ko"}],"steps":["Aapko maths mein kaunsa topic pasand hai? Hear → hook","Sochiye, vegetable patch ke chaaron taraf fencing lagani ho—fencing ke → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "nahi nahi, 160" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== Y-NAHI-3
+{"lesson":"9ff55c04-f168-47c2-8d2d-588e88cd4d4b","lane":null,"hits":[{"label":"nahinahi","asked":"Length 50 aur breadth 30; perimeter nikaliye. Hear","answered":"nahi nahi, 160","move":"probe","verdict":null,"reply":"Aapne 160 kaha—ab ek naya perimeter wala example dekhiye. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya kisi ka bhi nahi?","opens":"Aapne 160"}],"steps":["Aapko rectangles, squares ya polygons mein se kya pasand hai? Hear → hook","Vegetable patch ke chaaron taraf fencing karni ho, toh aap kya naapeng → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "nahi nahi, 160" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=attempt
+== Y-Q-1
+{"lesson":"50df8a3a-403d-4611-943d-4d6ffc227e6e","lane":null,"hits":[{"label":"q1","asked":"Length 50 m, breadth 30 m—perimeter kitna hoga? Hear","answered":"160?","move":"probe","verdict":null,"reply":"160 m sahi hai—length aur breadth ko jodkar, phir 2 se multiply kiya. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya kisi ka bh","opens":"160 m"},{"label":"q2","asked":"Side 5 cm se 10 cm: naya perimeter kitna? Hear","answered":"160","move":"probe","verdict":null,"reply":"160 nahi—square ka perimeter 4 times side hota hai; 10 cm side par perimeter 40 cm hoga. Ek rectangular kabaddi practice ground ka perimeter 146 m aur length 45 m hai. Iski breadth kitni hai?","opens":"160 nahi"}],"steps":["Aapko rectangles ya squares mein kya interesting lagta hai? Hear → hook","Vegetable patch ke chaaron taraf fencing lagani ho, toh aap kis cheez  → explain","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → probe","Ek square ki side 5 cm hai. Side dugni kariye toh perimeter ka kya hog → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "160?" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+[server t4] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t4] classify no_evidence via model verdict=unverified
+[server t5] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t5] classify no_evidence via model verdict=unverified
+[server t6] CHILD → "160" (POST /api/lesson/turn)
+[server t6] classify no_evidence via model verdict=ungraded
+== Y-Q-2
+{"lesson":"9311d5b7-5265-4475-85db-00e40a77b611","lane":null,"hits":[{"label":"q1","asked":"Length 50 m, breadth 30 m—perimeter kitna hoga? Hear","answered":"160?","move":"probe","verdict":null,"reply":"Aapne length aur breadth ko jodkar phir 2 se multiply kiya—yeh sahi method hai. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya ","opens":"Aapne length"},{"label":"q2","asked":"Naya perimeter kitna hoga? Hear","answered":"160","move":"probe","verdict":null,"reply":"Aapne 160 likha, par is step mein square ka perimeter nikaalna tha: 4 times 10. Ek rectangular kabaddi practice ground ka perimeter 146 m aur length 45 m hai. Iski breadth kitni hai?","opens":"Aapne 160"}],"steps":["Aapko rectangles, squares ya polygons mein se kya pasand hai? Hear → hook","Aap kya karenge—sides naapenge ya sirf area? Hear → explain","Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli → probe","Ek square ki side 5 cm hai. Side dugni kariye toh perimeter ka kya hog → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "160?" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+[server t4] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t4] classify no_evidence via model verdict=unverified
+[server t5] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t5] classify no_evidence via model verdict=unverified
+[server t6] CHILD → "160" (POST /api/lesson/turn)
+[server t6] classify no_evidence via model verdict=ungraded
+== Y-PLAIN
+{"lesson":"d98a3580-7ff1-4371-b1cc-665f7bb63d8d","lane":null,"hits":[{"label":"plain","asked":"Length 50 m, breadth 30 m—formula bataiye. Hear","answered":"160 metre","move":"probe","verdict":null,"reply":"Aapne dono lengths aur breadths ko joda, isliye total boundary mil gayi. Square rangoli ki side 14 cm hai. Rectangular mat 18 cm by 10 cm hai. Kiska perimeter zyada hai: rangoli ka, mat ka, ya kisi ka","opens":"Aapne dono"}],"steps":["Aapko rectangles, squares ya polygons mein kaunsa shape pasand hai? He → hook","Sochiye, vegetable patch ke chaaron taraf fencing lagani ho—fence kis  → explain"]}
+[server t1] CHILD → "pata nahi" (POST /api/lesson/turn)
+[server t1] classify no_evidence via model verdict=ungraded
+[server t2] CHILD → "theek hai, aage poochiye" (POST /api/lesson/turn)
+[server t2] classify no_evidence via model verdict=ungraded
+[server t3] CHILD → "160 metre" (POST /api/lesson/turn)
+[server t3] classify no_evidence via model verdict=ungraded
+DONE16C

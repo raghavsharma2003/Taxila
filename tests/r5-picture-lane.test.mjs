@@ -25,15 +25,15 @@ test("picturesFor: the cohort by email or its sha256, everyone with TAXILA_PICTU
   assert.equal(picturesFor(g, { TAXILA_PICTURES: "off", TAXILA_PICTURES_FOR: h }), false, "the kill switch wins");
 });
 
-test("her words: a picture being made is never said to be there; a busy lane says it cannot come now; no photo stays honest", () => {
-  const coming = drawAsked({ subject: "aloo", show: "picture", photo: "coming" });
-  assert.match(coming, /a real picture of aloo comes in a few seconds: say so plainly/);
-  assert.doesNotMatch(coming, /there is no photo/);
-  assert.match(drawAsked({ subject: "aloo", show: "picture", photo: "busy" }), /a photo cannot come right now/);
-  assert.match(drawAsked({ subject: "aloo", show: "picture" }), /there is no photo/);
-  assert.match(pictureNote({ subject: "hathi", photo: "coming" }), /never that it is there$/);
-  assert.match(pictureNote({ subject: "hathi", photo: "busy" }), /cannot come right now/);
-  assert.match(pictureNote({ subject: "hathi", photo: "failed" }), /could not come/);
+test("her words: a picture being made, a busy lane or no photo is never narrated (round 7: zero spoken build state or failure)", () => {
+  for (const photo of ["coming", "busy", undefined]) {
+    const d = drawAsked({ subject: "aloo", show: "picture", photo });
+    assert.match(d, /the board draws a simple sketch of it now; talk about it as a sketch, never as a photo/, String(photo));
+    assert.match(d, /never say a photo is coming, being made, or cannot come/);
+    assert.doesNotMatch(d, /comes in a few seconds|say so plainly|cannot come right now, say so|there is no photo, say so/);
+  }
+  assert.match(pictureNote({ subject: "hathi", photo: "coming" }), /^give hathi in words now; never say a picture is coming or being made, and never that it is there$/);
+  for (const photo of ["busy", "failed"]) assert.match(pictureNote({ subject: "hathi", photo }), /never mention a picture of it/);
 });
 
 test("the lane's limits: at most MAX_IN_FLIGHT pictures in the making; a full lane answers 'busy' at once, then frees", async () => {

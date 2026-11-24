@@ -6,29 +6,60 @@
 //     state the compile reads;
 //   - the failure drill: the classify deployment is gone → every turn still answers, on the fallback deployment;
 //   - the signals block (TB4) parses strictly and stays out of the schema unless switched on.
-import { test } from "node:test";
+import { test, describe, before, after } from "node:test";
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
+// round 7 (main's hybrid-pilot judgement #3): a goodbye now gets the stop check-in first; this file keeps testing the earlier
+// "a true goodbye ends at once", which stays behind the kill switch (tests/r7-brain-pilot.test.mjs covers the new rule)
+// (scoped to this file: `npm test` runs every file in ONE process, so a bare process.env write would leak into later files)
+const R7_SWITCHES = { TAXILA_R7_BYE_CHECKIN: "off" };
+const R7_SAVED = {};
+describe("brain-turn.test.mjs: the earlier rules (round 7 kill switches off)", () => {
+before(() => { for (const [k, v] of Object.entries(R7_SWITCHES)) { R7_SAVED[k] = process.env[k]; process.env[k] = v; } });
+before(() => { startAll(); if (STOP_CHECK) replay("stop", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "stop", 5: "stop" })]).catch(() => {}); });
+after(() => { for (const k of Object.keys(R7_SWITCHES)) { if (R7_SAVED[k] === undefined) delete process.env[k]; else process.env[k] = R7_SAVED[k]; } });
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const RUN = join(ROOT, "evals/teacher-brain/replay/run.mjs");
 const dir = mkdtempSync(join(tmpdir(), "brain-turn-"));
 process.on("exit", () => rmSync(dir, { recursive: true, force: true }));
 
+// Platform gate-speed (main 2026-11-05): the replays are independent and seeded, so they run CONCURRENTLY: each is started once
+// (all of them in before(), after the file's switches are set) and every test awaits its own result. The wall-clock hang drill
+// runs alone, after the rest have finished, so its 4 s bound is never measured on a loaded box.
+const runs = new Map();
 function replay(name, args = [], env = {}) {
-  const out = join(dir, `${name}.json`);
-  const r = spawnSync(process.execPath, [RUN, "--write", out, ...args], { cwd: ROOT, encoding: "utf8", timeout: 240_000,
-    env: { ...process.env, TAXILA_CLASSIFY_SIGNALS: "", TAXILA_UPTAKE_PRELUDE: "", ...env } });
-  assert.equal(r.status, 0, `replay ${name} failed: ${r.stderr?.slice(-2000)}`);
-  return { lessons: JSON.parse(readFileSync(out, "utf8")), raw: readFileSync(out, "utf8"), stdout: r.stdout };
+  if (!runs.has(name)) runs.set(name, new Promise((resolve, reject) => {
+    const out = join(dir, `${name}.json`);
+    const c = spawn(process.execPath, [RUN, "--write", out, ...args], { cwd: ROOT, env: { ...process.env, TAXILA_CLASSIFY_SIGNALS: "", TAXILA_UPTAKE_PRELUDE: "", ...env } });
+    let so = "", se = "";
+    c.stdout.on("data", (d) => { so += d; }); c.stderr.on("data", (d) => { se += d; });
+    const to = setTimeout(() => c.kill("SIGKILL"), 240_000);
+    c.on("close", (code) => {
+      clearTimeout(to);
+      if (code !== 0) return reject(new Error(`replay ${name} failed: ${se.slice(-2000)}`));
+      const raw = readFileSync(out, "utf8");
+      resolve({ lessons: JSON.parse(raw), raw, stdout: so });
+    });
+  }));
+  return runs.get(name);
 }
+const CONCURRENT = {
+  a: [["--tables", "--lessons", "10"]], b: [["--tables", "--lessons", "10"]],
+  rel: [["--tables", "--lessons", "3", "--rel", JSON.stringify({ 3: { moveOverlay: { kind: "OWN_SLIP", shapeId: "own.slip", priority: 1 } }, 6: { floor: "RELEASE" } })]],
+  drill: [["--lessons", "4", "--stats"], { DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", REPLAY_KILL_DEPLOY: "grok-4-1-fast-non-reasoning" }],
+  wb: [["--tables", "--lessons", "12"]], trail: [["--tables", "--lessons", "6"]],
+  bye: [["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "goodbye" })]],
+  disbye: [["--tables", "--lessons", "6", "--turns", "5", "--script", JSON.stringify({ 4: "disclosure_bye" })]],
+};
+const startAll = () => { for (const [name, [args, env]] of Object.entries(CONCURRENT)) replay(name, args, env).catch(() => {}); };
 
-test("the turn is deterministic, and every turn answers, traces once, and carries its beat and Moment (10 lessons)", { timeout: 300_000 }, () => {
-  const a = replay("a", ["--tables", "--lessons", "10"]);
-  const b = replay("b", ["--tables", "--lessons", "10"]);
+test("the turn is deterministic, and every turn answers, traces once, and carries its beat and Moment (10 lessons)", { timeout: 300_000 }, async () => {
+  const a = await replay("a", ["--tables", "--lessons", "10"]);
+  const b = await replay("b", ["--tables", "--lessons", "10"]);
   assert.equal(a.raw, b.raw, "two runs of the same lessons are byte-identical (the kernel and the turn are pure given their inputs)");
   let turns = 0, safeguards = 0;
   for (const l of a.lessons) {
@@ -54,8 +85,8 @@ test("the turn is deterministic, and every turn answers, traces once, and carrie
   assert.ok(safeguards > 0, "the scripted disclosures reached the safeguarding move");
 });
 
-test("BR5: a scripted RELEASE ends the lesson that turn (the Director's goodbye); a teacher-owned slip rides state.rel", { timeout: 120_000 }, () => {
-  const { lessons } = replay("rel", ["--tables", "--lessons", "3", "--rel", JSON.stringify({ 3: { moveOverlay: { kind: "OWN_SLIP", shapeId: "own.slip", priority: 1 } }, 6: { floor: "RELEASE" } })]);
+test("BR5: a scripted RELEASE ends the lesson that turn (the Director's goodbye); a teacher-owned slip rides state.rel", { timeout: 120_000 }, async () => {
+  const { lessons } = await replay("rel", ["--tables", "--lessons", "3", "--rel", JSON.stringify({ 3: { moveOverlay: { kind: "OWN_SLIP", shapeId: "own.slip", priority: 1 } }, 6: { floor: "RELEASE" } })]);
   for (const l of lessons) {
     assert.equal(l.turns.length, 6, "nothing after the goodbye");
     const last = l.turns[5];
@@ -70,8 +101,8 @@ test("BR5: a scripted RELEASE ends the lesson that turn (the Director's goodbye)
   }
 });
 
-test("failure drill: the classify deployment is gone → every turn answers on the fallback deployment, no error reaches the child", { timeout: 120_000 }, () => {
-  const { lessons, stdout } = replay("drill", ["--lessons", "4", "--stats"], { DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", REPLAY_KILL_DEPLOY: "grok-4-1-fast-non-reasoning" });
+test("failure drill: the classify deployment is gone → every turn answers on the fallback deployment, no error reaches the child", { timeout: 120_000 }, async () => {
+  const { lessons, stdout } = await replay("drill", ["--lessons", "4", "--stats"], { DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", REPLAY_KILL_DEPLOY: "grok-4-1-fast-non-reasoning" });
   for (const l of lessons) for (const t of l.turns) assert.equal(t.status, 200, `${l.lesson.topicId} #${t.n}`);
   const stats = JSON.parse(/azure (\{.*\})/.exec(stdout)[1]);
   assert.ok(stats.failed > 0, "the drill killed classify calls");
@@ -101,8 +132,8 @@ test("TB4 signals block: parsed strictly, mirrored to flags only when true, in t
 const traceOf = (t) => t.txs.flat().find((s) => /insert into brain_trace/.test(s.text));
 const WB_MOVES = new Set(["explain", "worked_example", "reteach", "recap"]);
 
-test("owner priority 6: on explain turns the live board is asked for and reaches the tray; the template rung is replaced, never stacked", { timeout: 300_000 }, () => {
-  const { lessons } = replay("wb", ["--tables", "--lessons", "12"]);
+test("owner priority 6: on explain turns the live board is asked for and reaches the tray; the template rung is replaced, never stacked", { timeout: 300_000 }, async () => {
+  const { lessons } = await replay("wb", ["--tables", "--lessons", "12"]);
   let explain = 0, slot = 0, engineHeld = 0, frozen = 0;
   for (const l of lessons) for (const t of l.turns) {
     const tr = traceOf(t);
@@ -129,8 +160,8 @@ test("owner priority 6: on explain turns the live board is asked for and reaches
   assert.ok(slot / healthy >= 0.8, `board on ${slot}/${healthy} healthy explain turns (${explain} in all; ${engineHeld} engine shows, ${frozen} after safeguarding)`);
 });
 
-test("the trace answers the comprehension question: one cls.*, one cls_source.* and one verdict.* per turn, the verdict the child saw", { timeout: 300_000 }, () => {
-  const { lessons } = replay("trail", ["--tables", "--lessons", "6"]);
+test("the trace answers the comprehension question: one cls.*, one cls_source.* and one verdict.* per turn, the verdict the child saw", { timeout: 300_000 }, async () => {
+  const { lessons } = await replay("trail", ["--tables", "--lessons", "6"]);
   let graded = 0;
   for (const l of lessons) for (const t of l.turns) {
     const tr = traceOf(t);
@@ -149,7 +180,7 @@ test("the trace answers the comprehension question: one cls.*, one cls_source.* 
 
 test("G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a disclosure beside a goodbye is safeguarding with a helpline", { timeout: 300_000 }, async () => {
   const { floorViolations } = await import("../server/director/safety.js");
-  const bye = replay("bye", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "goodbye" })]).lessons;
+  const bye = (await replay("bye", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "goodbye" })])).lessons;
   for (const l of bye) {
     assert.equal(l.turns.length, 4, "nothing after the goodbye");
     const t = l.turns[3];
@@ -159,7 +190,7 @@ test("G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a 
     assert.ok(traceOf(t).params[9].includes("release.goodbye_wrap"));
     assert.ok(!traceOf(t).params[9].some((r) => r.startsWith("component_error.")), "the move sent is the kernel's move");
   }
-  const dis = replay("disbye", ["--tables", "--lessons", "6", "--turns", "5", "--script", JSON.stringify({ 4: "disclosure_bye" })]).lessons;
+  const dis = (await replay("disbye", ["--tables", "--lessons", "6", "--turns", "5", "--script", JSON.stringify({ 4: "disclosure_bye" })])).lessons;
   for (const l of dis) {
     const t = l.turns[3];
     assert.equal(t.out.move.kind, "safeguard", "the disclosure outranks the goodbye");
@@ -172,8 +203,8 @@ test("G-AUTHORITY on the real turn: a true goodbye ends the lesson that turn; a 
 // OWNER-RESET item 7 needs W2-C's state.js stop check (server/relational/seam-patches/w2i-state-stop-check.patch, applied by
 // W2-C at integration). Validated in a scratch copy with the patch applied (W2-E fixer, 2026-10-05): 6/6 lessons.
 const STOP_CHECK = readFileSync(join(ROOT, "server/director/state.js"), "utf8").includes("stopAsked");
-test("G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on the second stop", { timeout: 300_000, skip: !STOP_CHECK && "waits for W2-C's stop check (w2i-state-stop-check.patch)" }, () => {
-  const { lessons } = replay("stop", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "stop", 5: "stop" })]);
+test("G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on the second stop", { timeout: 300_000, skip: !STOP_CHECK && "waits for W2-C's stop check (w2i-state-stop-check.patch)" }, async () => {
+  const { lessons } = await replay("stop", ["--tables", "--lessons", "6", "--turns", "6", "--script", JSON.stringify({ 4: "stop", 5: "stop" })]);
   for (const l of lessons) {
     const [t4, t5] = [l.turns[3], l.turns[4]];
     assert.equal(t4.out.move.kind, "break", "one check-in");
@@ -185,8 +216,9 @@ test("G-AUTHORITY: a bare stop phrase gets ONE check-in, and the lesson ends on 
   }
 });
 
-test("failure drill, the hard case: the classify deployment HANGS → every turn answers within 4 s on the fallback, no error reaches the child", { timeout: 300_000 }, () => {
-  const { lessons, stdout } = replay("hang", ["--lessons", "3", "--turns", "6", "--stats", "--wall"],
+test("failure drill, the hard case: the classify deployment HANGS → every turn answers within 4 s on the fallback, no error reaches the child", { timeout: 300_000 }, async () => {
+  await Promise.allSettled([...runs.values()]);
+  const { lessons, stdout } = await replay("hang", ["--lessons", "3", "--turns", "6", "--stats", "--wall"],
     { DEPLOY_CLASSIFY: "grok-4-1-fast-non-reasoning", REPLAY_HANG_DEPLOY: "grok-4-1-fast-non-reasoning", REPLAY_HEDGE_MS: "1500" });
   for (const l of lessons) for (const t of l.turns) {
     assert.equal(t.status, 200, `${l.lesson.topicId} #${t.n}`);
@@ -205,13 +237,13 @@ test("hedgedFallback: the hedge goes to the fallback deployment; a fast failure 
   // a primary that never answers: only the hedge can resolve this (no wall-clock bound needed; a miss would hang the test)
   let r = await hedgedFallback(never, after(10, "fb"), 50);
   assert.deepEqual(r, { value: "fb", backup: true }, "the backup started at the hedge");
-  const t = Date.now();
-  r = await hedgedFallback(after(5, new Error("404"), true), after(5, "fb"), 20_000);
+  // an hour-long hedge point: returning at all proves the backup started on the failure, not at the hedge (a miss hangs)
+  r = await hedgedFallback(after(5, new Error("404"), true), after(5, "fb"), 3_600_000);
   assert.equal(r.value, "fb");
-  assert.ok(Date.now() - t < 10_000, "a fast primary failure starts the backup at once, not at the 20 s hedge");
   r = await hedgedFallback(after(5, "primary"), after(50, "fb"), 20);
   assert.deepEqual(r, { value: "primary", backup: false });
   const filter = Object.assign(new Error("blocked"), { code: "content_filter" });
   await assert.rejects(hedgedFallback(never, after(5, filter, true), 1), (e) => e.code === "content_filter", "a filter block decides (fails closed)");
   await assert.rejects(hedgedFallback(after(5, new Error("primary down"), true), after(5, new Error("fb down"), true), 1), /primary down/);
+});
 });

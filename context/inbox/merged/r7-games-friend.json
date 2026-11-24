@@ -1,0 +1,10 @@
+{
+  "nodes": [
+    { "id": "dec-r7-games-friend-fill-at-serve", "kind": "decision", "title": "Kit {friend} slots in arena/vakya are filled at play serve time, never by the builders", "at": "2026-11-05" }
+  ],
+  "edges": [],
+  "md": {
+    "decisions": "## `dec-r7-games-friend-fill-at-serve`\n\nLearning's kit units carry `{friendF}`/`{friendM}`/`{friend}` slots; data/arena and data/play/vakya are built from the kits and keep the slot text. Main chose option (a): fill at serve time, because the friend's name must differ from the child's and only the serve path knows the child. `currentLevel(s, entry, childName)` in server/play/levels.js now returns `fillFriendDeep(level, childName)` (server/director/friend.js). Every play route (start, level, act + its doors, next, dress) passes `child.first_name` from `requireChild`. The fill touches strings only, so the levelId stays the unfilled one, and grading runs on the same filled level the child saw (acts that name words match). Held by tests/r7-games-friend-fill.test.mjs: slotted arena and vakya banks serve no `{friend` string at start or behind either door, never the child's own name, and the filled level still grades solved; every currentLevel call in routes.js passes the name. Reversal: if a kit-derived string ever reaches the child outside currentLevel (a new route, a bank read on the client), that path must call the fill too.",
+    "measurements": ""
+  }
+}

@@ -1,0 +1,313 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions mein equal shares seekhenge—cricket pizza ko barabar baantne jaisa. Tumhara favourite cricket player kaun hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1272
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, maan lo cricket team ko ek watermelon barabar baantna hai—tum kitne equal pieces banaogi, taaki sabko same share mile? Golu ko bhi sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 2194,
+   "replyReadyMs": 3466
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 488
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, dheere chalenge. Pehla step: shape ko barabar parts mein baanto. Agar 3 equal parts hon, har part ko one-third kehte hain. Teen mein se ek part ka naam?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1151,
+   "replyReadyMs": 1639
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 704
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Riya. 3 barabar parts mein, har part one-third hota hai. Ek part ko kya kahenge?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1019,
+   "replyReadyMs": 1723
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 415
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, picture socho: ek poori roti ko 3 barabar tukdon mein kaata gaya. Ek tukda kya kehlayega?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2444,
+   "replyReadyMs": 2859,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 2054
+  },
+  {
+   "who": "teacher",
+   "text": "Ek baar phir se batao, kya kaha tumne?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 3335,
+   "replyReadyMs": 5389,
+   "guard": [
+    "leak"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 676
+  },
+  {
+   "who": "teacher",
+   "text": "Haan Riya, lesson ek minute ruk sakta hai. Kis baare mein baat karna hai? Button dabakar hum lesson par laut sakte hain.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1201,
+   "replyReadyMs": 1877
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1283
+  },
+  {
+   "who": "teacher",
+   "text": "Main tumhari pasand yaad rakhkar examples banaungi. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 892,
+   "replyReadyMs": 2175
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 585
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, iska matlab Hindi mein: 1/3, barabar hisson mein se ek hissa. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1171,
+   "replyReadyMs": 1756
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 909
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, ab tum pehle khud try karogi. Main tumhare jawab ke baad hi chhota sa sanket dungi. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 948,
+   "replyReadyMs": 1857
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 841
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, tum lesson rokna chahti ho. Tum jaari rakh sakti ho, chhota break le sakti ho, ya aaj ke liye rok sakti ho.",
+   "move": "break",
+   "card": null,
+   "replyMs": 992,
+   "replyReadyMs": 1833
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket ke snacks baantkar fractions samjhenge. Agar ek roti ke chaar barabar tukde hon, toh ek tukde ko kya kahoge?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 874
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chalo ek halka sa sawaal karte hain. Roti ke chaar barabar tukde hain. Ek tukde ko kya kahoge?",
+   "move": "probe",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2814,
+   "replyReadyMs": 3688
+  },
+  {
+   "who": "child",
+   "text": "step by step samjhao",
+   "read": "no_evidence · slower",
+   "classifyMs": 447
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, step by step samjhaati hoon. Ek roti ko chaar barabar hisson mein baanto; har tukda ek chauthaai hota hai. Ab roti ke chaar barabar tukdon mein se ek tukde ko kya kahoge?",
+   "move": "explain",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2632,
+   "replyReadyMs": 3079
+  },
+  {
+   "who": "child",
+   "text": "chhota bolo",
+   "read": "no_evidence",
+   "classifyMs": 1436
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, chhota bolungi. Chaar barabar tukdon mein se ek tukda ek chauthaai hai. Tum use kya kahoge?",
+   "move": "repair",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2026,
+   "replyReadyMs": 3462
+  },
+  {
+   "who": "child",
+   "text": "pehle picture dikhao",
+   "read": "no_evidence · visual",
+   "classifyMs": 624
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle picture. Socho, ek tukda kitna hissa hoga?",
+   "move": "explain",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2185,
+   "replyReadyMs": 2809
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Roti ke chaar barabar tukde hain; ek tukda ek chauthaai kehlata hai. Tum bolo, ek chauthaai?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2245,
+   "replyReadyMs": 2246
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 535
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, fractions se thoda break lete hain. Cricket mein tumhe batting zyada pasand hai ya bowling?",
+   "move": "break",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2275,
+   "replyReadyMs": 2810
+  },
+  {
+   "who": "child",
+   "text": "cricket ke baare mein",
+   "read": "no_evidence",
+   "classifyMs": 1466
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket ki baat karte hain. Main ek AI teacher hoon, aur tumhare saath cricket par baat kar sakti hoon. Tumhe batting pasand hai ya bowling?",
+   "move": "break",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2508,
+   "replyReadyMs": 3974
+  },
+  {
+   "who": "child",
+   "text": "hindi mein batao",
+   "read": "no_evidence · language",
+   "classifyMs": 489
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, Hindi mein batati hoon. Cricket mein tumhe ballebaazi pasand hai ya gendbaazi?",
+   "move": "break",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2481,
+   "replyReadyMs": 2970
+  },
+  {
+   "who": "child",
+   "text": "mujhe khud try karne do",
+   "read": "no_evidence",
+   "classifyMs": 1351
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, tum khud koshish karo. Ek roti ke chaar barabar tukde hain. Ek tukde ko kya kahoge?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2213,
+   "replyReadyMs": 3564
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 863
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, alvida. Aaj humne roti ke barabar tukdon aur ek chauthaai ki baat ki; ise pehchanna abhi seekh rahe hain.",
+   "move": "wrap",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 1916,
+   "replyReadyMs": 2779
+  }
+ ]
+}

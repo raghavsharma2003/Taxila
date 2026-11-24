@@ -37,7 +37,8 @@ export function admissible(catalog, { topicId, misconceptionId = null, kinds = [
     const misMatch = !!misconceptionId && a.misconceptions.includes(misconceptionId);
     if (requireMisconception && !misMatch) continue;
     const k = kinds.indexOf(a.kind);
-    out.push({ archetype: id, kind: a.kind, rank: (k < 0 ? 50 : k * 2) - (misMatch ? 1 : 0) });
+    // (round 7 M5a: a code-built scene ranks ahead of another archetype of its kind: certified at every size, $0)
+    out.push({ archetype: id, kind: a.kind, rank: (k < 0 ? 50 : k * 2) - (misMatch ? 1 : 0) - (a.boost ?? 0) });
   }
   return out.sort((x, y) => x.rank - y.rank || (x.archetype < y.archetype ? -1 : 1)).map(({ archetype, kind }) => ({ archetype, kind }));
 }

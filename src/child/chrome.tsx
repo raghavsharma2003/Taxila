@@ -7,7 +7,12 @@
 //    its screen-reader name is "Grown-ups: parent corner".
 //  - Every child screen has a painted ground on tier A-C, or flat paper on tier D (P10), behind a calm UI.
 import type { ReactNode } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { kakshaEnabled } from "../ui-v3/kaksha/flag.ts";
+import { backOf, dockItems, navKeyOf } from "../ui-v3/kaksha/nav.tsx";
+import { KxPage } from "../ui-v3/kaksha/kit.tsx";
+import { useKxGo } from "../ui-v3/kaksha/screens/go.ts";
+import { cachedSurfaces } from "./plan.ts";
 import { Scene } from "./art.tsx";
 import { useChild } from "./ChildShell.tsx";
 import { t } from "./copy.ts";
@@ -65,6 +70,12 @@ export function Ground({ kind, rest, flat }: { kind: SceneKind; rest?: boolean; 
   const id = SCENE_ART[kind];
   if (!id) return <div className="scene"><div className="scene-fallback"><SceneFallback kind="plain" /></div></div>;
   return <Scene id={rest ? `${id}-rest` : id} flat={flat} fallback={<SceneFallback kind={kind} />} />;
+}
+
+/** Kaksha is on for this child (ui.kaksha from /api/me, read at render). */
+export function useKx(): boolean {
+  const { me } = useChild();
+  return kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha);
 }
 
 /** "Grown-ups": the plain parent door (§5.2). */
@@ -129,8 +140,13 @@ export function OlderNav({ surfaces }: { surfaces?: { map: boolean; notebook: bo
 export function ChildScreen({ testid, ground, rest, title, actions, home, children, surfaces, className, flatGround }:
   { testid: string; ground: SceneKind; rest?: boolean; title?: ReactNode; actions?: ReactNode; home?: boolean; children: ReactNode;
     surfaces?: { map: boolean; notebook: boolean }; className?: string; flatGround?: boolean }) {
-  const { family } = useChild();
+  const { family, me } = useChild();
   const older = family === "older";
+  // r7 app-nav-unified: under Kaksha every child screen has the one Kaksha bar and dock (nav.tsx); the classic OlderNav,
+  // Me avatar and Young Home button are the ?ui=classic app's only.
+  if (kakshaEnabled((me as { ui?: { kaksha?: boolean } }).ui?.kaksha)) {
+    return <KxScreen testid={testid} ground={ground} title={title} actions={actions} home={home} surfaces={surfaces} className={className}>{children}</KxScreen>;
+  }
   return (
     <div className={`cs ${older ? "cs--older" : "cs--young"} ${className ?? ""}`} data-testid={testid} data-ground={ground}>
       <Ground kind={ground} rest={rest} flat={flatGround} />
@@ -148,5 +164,24 @@ export function ChildScreen({ testid, ground, rest, title, actions, home, childr
         {children}
       </main>
     </div>
+  );
+}
+
+/** The Kaksha frame for every secondary child screen (r7 app-nav-unified; app-secondary-screens-kaksha): the kit's KxPage,
+ *  so the screen sits in Kaksha's own root (.kx) with the one top bar and the one dock. */
+function KxScreen({ testid, ground, title, actions, home, children, surfaces, className }:
+  { testid: string; ground: SceneKind; title?: ReactNode; actions?: ReactNode; home?: boolean; children: ReactNode;
+    surfaces?: { map: boolean; notebook: boolean }; className?: string }) {
+  const { cid, family, reducedMotion } = useChild();
+  const go = useKxGo(reducedMotion);
+  const { pathname } = useLocation();
+  const key = navKeyOf(pathname);
+  const dock = dockItems({ cid, family, surfaces: surfaces ?? cachedSurfaces(cid) });
+  return (
+    <KxPage family={family} reducedMotion={reducedMotion} screen={testid} testid={testid} className={`kx-ground-${ground}${className ? ` ${className}` : ""}`}
+      title={title} actions={actions} backTo={home ? null : backOf(pathname, cid)} meTo={`/c/${cid}/me`} meActive={key === "me"}
+      parentTo={home ? "/parent" : null} dock={dock} active={key} go={go}>
+      {children}
+    </KxPage>
   );
 }

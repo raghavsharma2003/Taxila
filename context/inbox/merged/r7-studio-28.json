@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "dc-r7-two-bar-certify-wholes",
+      "kind": "decision",
+      "at": "2026-11-09",
+      "title": "Learning's D7 (main, 2026-11-09), extends dc-r7-card-board-authored-gate to certification. certifyBoardRef now counts an authored ref's separate wholes (fraction-bars bars, wholes@1 wholes) as wholes, as the live gate does (board-sync gateCtxFor authoredRef → refWholes). The condition: her line names each bar's parts, as a count (\"12 barabar tukdon mein se 5\") or a denominator (\"3/5\"). A bar her line never names still binds W8. Before this, certification counted the 2 outlines as an unspoken \"2\" (\"rect x2\") whenever her line did not say exactly two fractions. That covered the unshaded ribbons pose (no fraction said) and the 3/5 vs 4/10 reveal (three said: 3/5, 6/10, 4/10). Three c5-t02 cards had gone back to a line because of it: s3 checks[1], s2 rem1.then, s2 rem2.then. The live take already passed all of them. Reverse if a certified two-bar board is refused live, or a judge counts a bar the line did not name."
+    },
+    {
+      "id": "dc-r7-equal-groups-equal-to",
+      "kind": "decision",
+      "at": "2026-11-09",
+      "title": "Learning's D7 (main, 2026-11-09): equal-groups@1 with `sizes` takes an optional `equalTo` {groups 2-6, each 1-8}, and groups × each must equal the sizes' sum (else groups_equal_to). Layout: the given groups take the left half, shared out from the heap as before, each with its count under it. A thin line separates them from the equal share on the right, which is drawn still: its own groups, each count under it. The share's dots are in the \"good\" ink and a shade smaller (r 4 against 4.5). Two reasons: they are what each WOULD get, and W8 counts them as their own family (16 beside 16, never \"32\"). Facts get equalShare (\"4 groups of 4\"); counts get equalTo {groups, each} (shared/whiteboard cleanCounts). c4's marble (7, 3, 3, 3 | 4 × 4) and pencil (6, 3, 3 | 3 × 4) answerBoards certify under their whys and verdicts. Under the pencil card's prompt the share's 4 fails W4: an answerBoard is drawn on the reveal, never under the prompt. Reverse if judges find the side-by-side share gives the answer away on a board shown before the reveal."
+    }
+  ],
+  "edges": [
+    { "src": "dc-r7-two-bar-certify-wholes", "rel": "part_of", "dst": "dc-r7-script-walk-v6-3" },
+    { "src": "dc-r7-two-bar-certify-wholes", "rel": "constrains", "dst": "dc-r7-card-board-authored-gate" },
+    { "src": "dc-r7-equal-groups-equal-to", "rel": "part_of", "dst": "dc-r7-script-walk-v6-3" }
+  ]
+}

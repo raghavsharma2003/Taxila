@@ -1,0 +1,217 @@
+{
+ "topicId": "c5-maths-ch02-t01",
+ "classLevel": 5,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko number line par cricket pitch ki tarah dekhenge. Tumhe cricket mein kya pasand hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1250
+  },
+  {
+   "who": "teacher",
+   "text": "Badiya, Riya! Socho cricket pitch ko 4 barabar hisson mein baanta; ball halfway jaaye, toh number line par kahan hogi? End mein Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1373,
+   "replyReadyMs": 2623
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 1115
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, lesson thodi der ruk sakta hai. Kis baare mein baat karna chahti ho? Phir fractions par lautenge.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2658,
+   "replyReadyMs": 3773,
+   "guard": [
+    "affirms"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "affirms"
+    ],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1138
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 0 se 1 tak paanch barabar gaps banao; 2/5 ka matlab unmein doosre gap par pahunchna. Ab tum batao, 3/5 kahan hoga?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 2678,
+   "replyReadyMs": 3816,
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1125
+  },
+  {
+   "who": "teacher",
+   "text": "Isko ek baar poora karke dekhte hain. Diya hai: 2/5, 0 aur 1. Pehle: 5 barabar hisse. Yeh kadam saaf hai?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2501,
+   "replyReadyMs": 3626,
+   "guard": [
+    "invented"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 1326
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, table par 0 aur 1 ke beech paanch barabar gaps banao; marker do gaps chale. 2/5 kis jagah aayega?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2599,
+   "replyReadyMs": 3925,
+   "screen": {
+    "kind": "game",
+    "game": "nishana/place",
+    "goal": "place"
+   },
+   "guard": [
+    "screen"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1089
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, hum spoken game mein marker ko 2/5 se ek gap aage badhate hain. Ab marker kis fraction par hai?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2572,
+   "replyReadyMs": 3661,
+   "guard": [
+    "gameclaim"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 1027
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, haan, yeh boring lag raha hai—ab tareeka badalte hain: picture, chhoti story, ya fraction-game? Screen par ek choose karo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1457,
+   "replyReadyMs": 2484
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 1114
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain? Tum ek naam bolo.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1206,
+   "replyReadyMs": 2320
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 1106
+  },
+  {
+   "who": "teacher",
+   "text": "Ek din Riya ne 0 se 1 tak raasta paanch barabar tukdon mein baanta; 2/5 par ruk gayi. Woh kaunsa tukda tha?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 1182,
+   "replyReadyMs": 2288
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 759
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho—bilkul theek. Choose karo: aage badhein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2695,
+   "replyReadyMs": 3454,
+   "guard": [
+    "wrap",
+    "nochoice",
+    "wrap"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  }
+ ],
+ "agent": []
+}

@@ -1,10 +1,13 @@
 // The precision gate (VALUES-100 V2 item 3; owner directive owner-ship-five-2026-10-05). A knowledge state ACTS on a child's
 // lesson only when ALL of these hold:
-//   1. TAXILA_VOICESIG = on (the operator's mode; default shadow, kill = off);
+//   1. TAXILA_VOICESIG = on (the operator's mode; kill = off);
 //   2. its precision was MEASURED ON CHILDREN (population "children", the consented pilot or the in-product loop) and is
 //      >= 0.80 with at least MIN_FIRED firings behind it;
 //   3. its ladder row (ladder.js) is >= L1, i.e. a person reviewed that measurement and raised the row.
-// Anything else runs in SHADOW: the state is computed, logged as brain_trace reason codes, and changes nothing a child sees.
+// Anything else runs in SHADOW for this gate: the state is computed, logged as brain_trace reason codes, and moves no
+// evidence. NOTE (audit V-21): the unset default is NOT shadow. server/voicesig/lesson.js seamMode defaults to `internal`
+// (owner 2026-10-27, build first): a computed state picks the Director's tie-breakers (followUpProbe, gentlerHint,
+// slowerPace) in every lesson without passing this gate, on a placeholder knowledge prior (rules.js) and simulated evidence.
 // Simulated and adult-speech numbers are listed here so the status page can show them, labelled; they can NEVER open the
 // gate (gate test: a simulated 0.855 stays shadow). Pure: no clock, env, I/O.
 import { VS_STATES, levelOf, LADDER } from "./ladder.js";

@@ -1,0 +1,132 @@
+From: Learning (F, claude/r7-audit-content-data)
+Subject: [PATCH 020] the lesson half of passages: contract types and the pure passage beat (audit CD-02, CD-03, CD-04)
+
+The kits now store each passage once and items point at it (see docs/design/round7/learning/PASSAGE.md). Until the lesson can
+show a passage, server/content holds every item that needs one out of `kit.items`. This patch is Brain's half:
+
+- shared/contracts.ts: `KitPassage`, `TopicKit.passages`, `TopicKit.heldItems`, `KitItem.passageId`. The loader already returns them.
+- server/director/passage.js: pure. `passageMode(classLevel)` is "aloud" for classes 1 to 3 and "board" from class 4;
+  `passageBeat({ kit, item, classLevel, shown })` is the beat to run before the item, or null when it has no passage or the child
+  already met it; `shownAfter`; `aloudText`.
+- tests/r7-passage-beat.test.mjs: the mode by class, once per passage per lesson, no beat without a passage, a class 8 passage
+  goes to the board.
+
+Not in this patch, and Brain's to do (PASSAGE.md, "What the lesson does"): keep the met-passage list in the lesson state; run the
+beat as a move before the first dependent item in `state.js` (the choke point is `activate()`: every pose of an item starts
+there); render the aloud beat verbatim; keep the passage out of `revealsAnswer`; fill `{friendF}` in passage text. Then set
+TAXILA_PASSAGES=on, which puts the held items back into `kit.items`.
+
+Needs Studio: a `passage@1` board with paging at 360 px (PASSAGE.md, "What Studio needs").
+
+diff --git a/server/director/passage.js b/server/director/passage.js
+new file mode 100644
+index 00000000..d8308e2e
+--- /dev/null
++++ b/server/director/passage.js
+@@ -0,0 +1,27 @@
++// The passage beat (docs/design/round7/learning/PASSAGE.md). A kit stores each story, poem, letter or scene once
++// (TopicKit.passages) and an item points at it (KitItem.passageId). Before the first item that depends on a passage the child
++// meets the passage: the teacher reads it aloud in classes 1-3, and from class 4 it is put on the board. PURE: no state, no model.
++export const PASSAGE_ALOUD_MAX_CLASS = 3;
++
++/** "aloud" (the voice reads the kit's own words, verbatim) for classes 1-3; "board" from class 4. */
++export const passageMode = (classLevel) => (Number(classLevel) <= PASSAGE_ALOUD_MAX_CLASS ? "aloud" : "board");
++
++/** The passage an item is about, or null. */
++export const passageOf = (kit, item) => (item?.passageId ? (kit?.passages ?? []).find((p) => p.id === item.passageId) ?? null : null);
++
++/**
++ * The beat to run before `item` is posed, or null when it has no passage or the child already met it in this lesson.
++ * @param {{ kit: import("../../shared/contracts").TopicKit, item: object, classLevel: number, shown?: string[] }} a
++ * @returns {{ passageId: string, mode: "aloud" | "board", kind: "text" | "picture", title: string | null, text: string, lines: string[] } | null}
++ */
++export function passageBeat({ kit, item, classLevel, shown = [] }) {
++  const p = passageOf(kit, item);
++  if (!p || shown.includes(p.id)) return null;
++  return { passageId: p.id, mode: passageMode(classLevel), kind: p.kind ?? "text", title: p.title ?? null, text: p.text, lines: p.text.split("\n").filter(Boolean) };
++}
++
++/** The ids of passages met so far, after `beat` ran (the lesson state keeps this list; it is part of the pinned kit's lesson). */
++export const shownAfter = (shown, beat) => (beat ? [...new Set([...shown, beat.passageId])] : shown);
++
++/** What the voice says for an "aloud" beat: the title, then the lines in order, as the kit wrote them. */
++export const aloudText = (beat) => [beat.title, ...beat.lines].filter(Boolean).join("\n");
+diff --git a/shared/contracts.ts b/shared/contracts.ts
+index e4a48d2c..80570d7e 100644
+--- a/shared/contracts.ts
++++ b/shared/contracts.ts
+@@ -17,6 +17,8 @@ export interface KitItem {
+   prompt_en: string; prompt_hi: string; answer: string; acceptable: string[];
+   hints: [string, string, string, string]; targetsMisconception?: string;
+   verified?: { solverAnswer: string; agrees: boolean; note?: string };
++  /** The passage this question is about (TopicKit.passages). The prompts are the short question only. */
++  passageId?: string;
+ }
+ export interface KitMisconception {
+   id: string; belief: string; signs: string[];
+@@ -24,6 +26,15 @@ export interface KitMisconception {
+   diagnostic: { prompt_en: string; prompt_hi: string; options: { text: string; misconceptionId: string | null; correct: boolean }[] } | null;
+   remediation: { representation: string; moveShape: string };
+ }
++/** A text a group of items is about (a story, poem, letter, notice or scene): stored once per topic, never inside a prompt. */
++export interface KitPassage {
++  id: string;
++  /** The text. Poems and letters keep their line breaks as "\n". Never contains an authoring note. */
++  text: string;
++  title?: string;
++  /** "picture": a scene described in words for a picture board; absent for reading text. */
++  kind?: "picture";
++}
+ export interface TopicKit {
+   topicId: string; topicType: TopicType;
+   skills: { id: string; title: string; prereqSkillIds: string[] }[];
+@@ -32,6 +43,10 @@ export interface TopicKit {
+   workedExample: { problem: string; steps: string[]; fadedVersion: string[] } | null;
+   formats: { primary: FormatFamily; secondary: string[]; engineHints: string[] };
+   interestContexts: string[];
++  /** The texts the items point at (KitItem.passageId). Absent when the topic has none. */
++  passages?: KitPassage[];
++  /** Items that need a passage, kept out of `items` until the lesson can show one (TAXILA_PASSAGES). */
++  heldItems?: KitItem[];
+   /** false for an on-the-fly mini-kit (model-written keys): its evidence weighs half. Set by the server loader. */
+   verified?: boolean;
+ }
+diff --git a/tests/r7-passage-beat.test.mjs b/tests/r7-passage-beat.test.mjs
+new file mode 100644
+index 00000000..5da295fc
+--- /dev/null
++++ b/tests/r7-passage-beat.test.mjs
+@@ -0,0 +1,33 @@
++// The passage beat is decided from the kit alone: read aloud in classes 1-3, on the board from class 4, once per passage per lesson.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { getTopic } from "../server/content/curriculum.js";
++import { kitFromFile } from "../server/content/kits.js";
++import { passageBeat, passageMode, shownAfter, aloudText, passageOf } from "../server/director/passage.js";
++
++test("mode: classes 1-3 read aloud, class 4 and up on the board", () => {
++  assert.deepEqual([1, 2, 3, 4, 5, 9].map(passageMode), ["aloud", "aloud", "aloud", "board", "board", "board"]);
++});
++
++test("a story item gets the passage beat once; a held item's kit has the passage", () => {
++  const kit = kitFromFile(getTopic("c3-english-ch09-t01"));
++  const item = kit.heldItems.find((i) => i.id === "c3-english-ch09-t01-i01");
++  assert.ok(item && passageOf(kit, item));
++  const beat = passageBeat({ kit, item, classLevel: 3 });
++  assert.equal(beat.mode, "aloud");
++  assert.match(aloudText(beat), /^Pihu had a wish\./m);
++  const shown = shownAfter([], beat);
++  assert.equal(passageBeat({ kit, item, classLevel: 3, shown }), null, "already met: no second reading");
++  const another = kit.heldItems.find((i) => i.id === "c3-english-ch09-t01-i02");
++  assert.equal(passageBeat({ kit, item: another, classLevel: 3, shown }), null, "same passage, same lesson");
++});
++
++test("an item with no passage has no beat; a class 8 passage goes to the board", () => {
++  const kit = kitFromFile(getTopic("c3-english-ch09-t01"));
++  assert.equal(passageBeat({ kit, item: kit.items[0], classLevel: 3 }), null);
++  const k8 = kitFromFile(getTopic("c8-english-ch10-t01"));
++  const it = k8.heldItems[0];
++  const beat = passageBeat({ kit: k8, item: it, classLevel: 8 });
++  assert.equal(beat.mode, "board");
++  assert.ok(beat.lines.length >= 1 && beat.text.length > 100);
++});

@@ -1,0 +1,120 @@
+{
+  "v": 1,
+  "id": "gen-c6-maths-ch05-t01-132060cc",
+  "approved": true,
+  "hash": "132060cc1e629b8806167e5c1d8912a6",
+  "archetype": "sieve-storm@1",
+  "spec": {
+    "archetype": "sieve-storm@1",
+    "skills": [
+      "c6-maths-ch05-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Round",
+      "slashed": "Chuno",
+      "combo": "Combo",
+      "coach": "Dhyan se chuno",
+      "runDone": "Run done",
+      "prime": "Abhajya (prime)",
+      "composite": "Bhajya (composite)",
+      "even": "Sam",
+      "odd": "Visham",
+      "multipleOf": "Ke guna",
+      "commonOf": "Dono ke common",
+      "factorOf": "Ke gunankhand",
+      "cfactorOf": "Dono ke gunankhand",
+      "divisibleBy": "Se poori tarah vibhajit",
+      "coprimeWith": "Sah-abhajya",
+      "square": "Varg",
+      "palindrome": "Ulta-seedha ek jaisa",
+      "slipped": "Phisal gaya",
+      "wrongCut": "Galat chuna",
+      "and": "Aur"
+    },
+    "title": "Sieve Storm",
+    "rounds": [
+      {
+        "rule": "factor",
+        "a": 12,
+        "title": "12 ka Chuno",
+        "sub": "Jo fit baithe, use chuno",
+        "lo": 1,
+        "hi": 12,
+        "count": 12,
+        "hitRate": 0.5,
+        "seed": 17,
+        "speed": 0.8,
+        "targets": "c6-maths-ch05-t01-m-miss-ends"
+      }
+    ]
+  },
+  "for": {
+    "topic": "c6-maths-ch05-t01",
+    "skill": "c6-maths-ch05-t01-s1",
+    "misconceptionId": "c6-maths-ch05-t01-m-miss-ends",
+    "beat": "rem:c6-maths-ch05-t01-m-miss-ends",
+    "when": "remediation"
+  },
+  "because": {
+    "mixup": {
+      "id": "c6-maths-ch05-t01-m-miss-ends",
+      "belief": "Leaves out 1 or the number itself when listing factors",
+      "signs": [
+        "Lists factors of 12 as 2, 3, 4, 6",
+        "Says a prime has no factors"
+      ]
+    },
+    "rule": "shown only to a child the learner model holds this mix-up for, at this beat; any other child gets the script's own board"
+  },
+  "source": "generated",
+  "predicate": {
+    "ok": true,
+    "why": null
+  },
+  "render": {
+    "byViewport": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "images": [
+      {
+        "vp": "p412",
+        "file": "piece-p412.png",
+        "sha256": "dc38476ac9871987c5c7180761a3ca2c1e3b819c0814a6a1786918a1449d4ea7"
+      },
+      {
+        "vp": "l1366",
+        "file": "piece-l1366.png",
+        "sha256": "0cf805c1fae08515ef9a8218766b9189542bb5e4b39f9b96c74efe80675a082a"
+      }
+    ]
+  },
+  "judge": {
+    "verdict": "pass",
+    "by": "a separate Claude judge (Opus, packet only)",
+    "promptSha256": "6533992ad0d93b49abda38b305ae4177f65441f620b5d47e6317c70cd0630ba7",
+    "prompt": "data/studio-approved/JUDGE-PROMPT.md",
+    "faults": [],
+    "readable": {
+      "p360": false,
+      "p412": true,
+      "l1366": true
+    },
+    "notes": "Round rule factor of 12 over 1..12: the factors are 1, 2, 3, 4, 6, 12, so the 6 targets match the screen's 'Chuno 0/6' and the card key '1, 2, 3, 4, 6, 12'. Because 1 and 12 are in range, a child holding the miss-ends mix-up gets caught. The round title '12 ka Chuno' is not on either screen; the screen shows the rule label '12 Ke gunankhand'."
+  },
+  "judge2": {
+    "verdict": "pass",
+    "by": "a second separate Claude judge (Opus, packet only)",
+    "content": "pass",
+    "faults": [],
+    "notes": "Round rule factor of 12 over 1..12 gives 1, 2, 3, 4, 6, 12 (6 targets), matching the screen 'CHUNO 0/6' and the card key '1, 2, 3, 4, 6, 12'. Including 1 and 12 as targets directly tests the miss-ends mix-up. The title '12 ka Chuno' and sub-title 'Jo fit baithe, use chuno' do not show in either screenshot (the screen shows '12 Ke gunankhand'), so I could not judge how they render."
+  },
+  "generation": {
+    "deployment": "taxila-fast-bg",
+    "attempt": 1,
+    "at": "2026-11-11T12:45:32.208Z"
+  },
+  "approvedAt": "2026-11-11T13:01:14.261Z"
+}

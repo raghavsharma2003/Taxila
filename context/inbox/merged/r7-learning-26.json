@@ -1,0 +1,22 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-jar-notebook-read",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (App ask app-notebook-log, STUDENT-FLOW §7): GET /api/child/jar?childId= returns { items: [{ id, topic, subject, share, at, state: 'waiting'|'answered', answeredAt }] } from question_jar (037). Behind requireChild. Waiting items come oldest first, then up to 10 answered ones newest first. No counts, and items is [] on the Conductor's safety hold. Read-only, with no child-side delete. App's proposed state 'kept' became 'answered' with answeredAt, because 'kept' already means 'kept for later' in jar events. Reverse if: the Notebook needs paging past 30 waiting items."
+  },
+  {
+   "id": "dc-r7-kit-budget-split",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 F (main gate-speed ask): kit-budget.test.mjs (~312-440 s serial, 15.7% of serial test time) is split into tests/kit-budget-c1…c9.test.mjs plus kit-budget-lint.test.mjs. Each class file loads only its own kit files. The shared body is in tests/fixtures/kit-budget-suite.mjs. The lint file holds the 1% drop bound, still over ALL kits (per class it would be stricter: classes 8-9 alone exceed 1%), plus a check that every kit file's class has a file. Every assertion is kept. Measured 2026-11-05 on 4 cores: the longest file (c7) takes ~75 s; all 10 in parallel take 145 s of wall time against ~450 s serial. No verdict cache, so CI is always cold. Reverse if: the shard planner's weights show a class file above 90 s (then split that class by subject)."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## dc-r7-jar-notebook-read (2026-11-05, F Learning)\n\nThe Notebook's 'Questions in the jar' page shows the child's own kept questions and shares. The plan's jar summary carries only a waiting count, so App asked for the items themselves. `GET /api/child/jar` reads question_jar through `jarNotebook()` in server/learner/jar.js. Waiting items come oldest first, then up to 10 answered items newest first, each with its answered date. There are no counts. Under the Conductor's safety hold the list is empty, which matches the home screen hiding the jar. A missing table returns an empty page, not a 500.\n\n## dc-r7-kit-budget-split (2026-11-05, F Learning)\n\nThe prompt-budget proof over every kit item is unchanged; only its packaging changed. The test now runs as nine per-class files and one lint file, so the shard runner can run them in parallel. The 1% drop bound stays global. Classes 8-9 alone are over 1% of their own items: a content finding to shorten those items, not a gate change.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

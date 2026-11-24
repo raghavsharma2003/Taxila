@@ -55,7 +55,14 @@ const parseJson = (v) => { try { return v ? JSON.parse(v) : null; } catch { retu
  * @param {{ now?: () => number, setTimer?: (fn: () => void, ms: number) => unknown, tpm?: Record<string, number>, share?: number,
  *   shared?: Iterable<string> }} [o]  shared: the deployments hot lanes use (default sharedHot()); only they are capped
  */
-export function createLanes({ now = () => Date.now(), setTimer = (fn, ms) => { const t = setTimeout(fn, ms); t.unref?.(); return t; }, tpm, share = BACKGROUND_SHARE, shared } = {}) {
+/**
+ * The wake timer of a waiting background call. Kept REF'd: it exists only while a call is queued (drain clears it when
+ * the queue empties), so it holds the process exactly as long as real work waits. Unref'd, a process with nothing else
+ * alive (a CLI script, a test runner) exited with the call still pending (audit TE-14); the web server never did, its
+ * listening socket kept the loop alive. A pause lasts at most 10 s, a window wake at most 60 s.
+ */
+export const wakeTimer = (fn, ms) => setTimeout(fn, ms);
+export function createLanes({ now = () => Date.now(), setTimer = wakeTimer, tpm, share = BACKGROUND_SHARE, shared } = {}) {
   const caps = { ...TPM, ...(tpm ?? parseJson(process.env.TAXILA_TPM) ?? {}) };
   const hotPools = new Set(shared ?? sharedHot());
   const WINDOW = 60_000;
@@ -148,6 +155,13 @@ const DEFAULT = createLanes();
  * @returns {Promise<void> | undefined}
  */
 export function admit(call) { return DEFAULT.admit(call); }
+
+/** TESTS ONLY: forget the process-wide lanes' state (a hot 429 pauses the background lane for 10 s, and a queued background call
+ *  then waits on an unref'd timer, so a later suite in the same process hangs: tests/r5-overflow -> tests/r5-reply-twin). */
+export function _resetDefaultLanes() {
+  for (const b of DEFAULT.buckets.values()) { if (b.timer) clearTimeout(b.timer); for (const q of b.queue) q.resolve?.(); }
+  DEFAULT.buckets.clear();
+}
 
 /**
  * @param {{ quotaLane?: QuotaLane, deployment: string, kind: string, status: number | string, usage?: { in?: number, out?: number } }} done

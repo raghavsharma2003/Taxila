@@ -2,7 +2,7 @@
 // the same state shapes. Older see the state words and "n of m Secure" (counts, never a percentage); Young see shapes
 // and names only (no numbers, §10).
 import type { ChildMapSkill } from "../../../shared/contracts.ts";
-import type { MapChapter } from "../api.ts";
+import { classHereOf, type MapChapter } from "../api.ts";
 import { t } from "../copy.ts";
 import { STATE_WORD, StateShape } from "./StateShape.tsx";
 
@@ -17,7 +17,7 @@ export function MapList({ chapters, mode, words, onSelect }:
             <header className="maplist-head">
               <h2>{ch.title.replace(/\s*[—–]\s*/g, " ")}</h2>
               {words && <span className="maplist-count">{t("nOfMSecure", { n: ch.secure, m: ch.total })}</span>}
-              {ch.here && words && <span className="maplist-here">{t("classHere")}</span>}
+              {classHereOf(ch) && words && <span className="maplist-here">{t("classHere")}</span>}
               {ch.sealed && <span className="maplist-seal">{t("chapterDone")}</span>}
             </header>
             <ul>

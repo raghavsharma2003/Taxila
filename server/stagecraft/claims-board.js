@@ -10,6 +10,7 @@
 // full gate (W0-W13), so a claims board that would reveal an answer or contradict her is never drawn. Pure, no model.
 import { screenClaims, POINTS_AT_SCREEN } from "../studio/qa/semantics.js";
 import { expand } from "../forge/explainer/templates.js";
+import { fractionLineIn } from "../forge/explainer/pick.js";
 
 const NUM = { one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12,
   ek: 1, do: 2, teen: 3, char: 4, chaar: 4, paanch: 5, panch: 5, chhe: 6, saat: 7, aath: 8, nau: 9, das: 10 };
@@ -102,6 +103,10 @@ export function claimsCalls(line) {
   }
   const flowSteps = flowIn(line);
   if (flowSteps) out.push({ template: "flow@1", steps: flowSteps });
+  // round 7 (main, director3 judgement): her line is about the NUMBER LINE ("0 se 1 ke beech 5 barabar gap", "teesra
+  // nishaan"): the line she describes, never a shaded circle under her words (fraction-line@1; a mark she asks about is "?")
+  const fl = fractionLineIn(line, { item: asks });
+  if (fl) { out.push(fl); return out; }
   for (const n of c.parts) if (n >= 2 && n <= 12) {
     const shade = shadedIn(line, n);
     const food = /roti|chapati|pizza|cake|pie/i.test(String(line ?? ""));

@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-brain-v3-sc1-wiring",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "Round 7 Brain, v3 follow-up:\n- SC1: the R4 screen check reads Studio's screen.counts and checks counted claims only when counts are present.\n- SC2: a picture request shows the live script card's own board.\n- {friend} is filled in graded fields.\n- In script mode, item counts never end practice before every scripted skill is walked.\n- H1.1 is wired into the harness."
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-brain-v3-sc1-wiring` (2026-11-05, stream A Brain)\n\n- **SC1** (with Studio 9e88da21): screenFacts carries `screen.counts`.\n  - countContradicts checks a deictic sentence's counted claim against the counts: 'beech mein N' against innerTicks; 'N gaps/hisse' against gaps or gapsPerWhole, parts or groups; 'N marks' against any line count; sides and corners; shaded.\n  - It checks a side value with a unit against sideValues, but not totals.\n  - A kind the board did not count is never flagged, and with no counts there is no count check.\n  - Counted numbers are taken out of the old pointed-number check (director5's false flags).\n- **SC2**: on a visual request while a script card is live, scriptBeat is that card's ref. An ask uses its explain beat's board, a check its own board (else the last explain beat's), and a then-card its then.board. With no board there is none, and Studio picks.\n- **{friend}** (Learning c5-t02): the friend's name also fills the answer, acceptable and wrongIfMis. Then-cards carry wrongIfMis.\n- **practiceMax in script mode**: director6's dry run showed steady ending at turn 24. Skill 1's cards and ladder used up practiceMax (9), so skills 2-3 were never walked. While a scripted skill is unwalked, only the clock or the brief ends practice. Steady now runs 42 turns and reaches skill 2 or 3.\n- **H1.1 wiring**: the child gets name 'Riya', maxTurnsFor(persona) and probe: true on probe and teach-back moves.\n\nThe director6 dry count is now 1,003, about 1,125 live calls and about $0.70, under the approved 1,300 / $0.85.",
+  "measurements": "",
+  "rejected": ""
+ }
+}

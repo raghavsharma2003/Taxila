@@ -24,11 +24,12 @@ const childEvidence = Object.fromEntries(VS_STATES.map((s) => [s, { population: 
 const ladderL1 = Object.fromEntries(VS_STATES.map((s) => [s, { level: 1, earnedBy: "fixture", at: "2026-10-05" }]));
 const identityCal = { h1: { kind: "identity" }, h2: { kind: "identity" }, h3: { kind: "identity" }, h4: { kind: "identity" } };
 
-test("mode: unset ships shadow (the pipeline is on), off is the kill switch, on is explicit", () => {
-  assert.equal(seamMode({}), "shadow");
+test("mode: unset ships internal (round 7), shadow and on are explicit, off is the kill switch", () => {
+  assert.equal(seamMode({}), "internal", "round 7: unset = internal (the hints act in our own lessons)");
+  assert.equal(seamMode({ TAXILA_VOICESIG: "shadow" }), "shadow");
   assert.equal(seamMode({ TAXILA_VOICESIG: "off" }), "off");
   assert.equal(seamMode({ TAXILA_VOICESIG: "ON" }), "on");
-  assert.equal(seamMode({ TAXILA_VOICESIG: "garbage" }), "shadow");
+  assert.equal(seamMode({ TAXILA_VOICESIG: "garbage" }), "internal");
 });
 
 test("helpers: verdict from the grader only, answer form, age band from class", () => {
@@ -247,11 +248,12 @@ test("persistence never throws: a failing database degrades to session-only", as
 // ───────── routes and the status page ─────────
 
 test("config + status routes: kill switches, and every state says shadow with its labelled numbers", async () => {
-  assert.deepEqual(config({}), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
+  assert.deepEqual(config(SHADOW), { mode: "shadow", frontend: true, detector: true, ver: "vs-seam/1" });
+  assert.equal(config({}).mode, "internal");
   assert.equal(config({ TAXILA_VOICESIG: "off" }).frontend, false);
   assert.equal(config({ TAXILA_VOICESIG_FRONTEND: "0" }).frontend, false);
   assert.equal(config({ TAXILA_VOICESIG_DETECTOR: "0" }).detector, false);
-  const st = status({});
+  const st = status(SHADOW);
   assert.deepEqual(st.liveStates, []);
   assert.equal(st.states.length, 8);
   for (const s of st.states) {
@@ -300,15 +302,13 @@ test("restriction-12 lint: no state-of-mind word in any identifier, key or strin
     .filter((f) => /\.(ts|js|mjs)$/.test(f) && !f.endsWith("server/voicesig/lint.js"));
   const hits = [];
   for (const f of files) hits.push(...emotionWordsIn(code(readFileSync(f, "utf8"))).map((w) => `${f.slice(ROOT.length)}: ${w}`));
-  // the code lines each patch ADDS (comments stripped)
-  const pdir = join(ROOT, "docs/design/ship5/p3-voicesig/patches");
-  for (const f of walk(pdir).filter((x) => x.endsWith(".diff"))) {
-    const added = readFileSync(f, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-    const isSql = /\.sql/.test(added) || /migration/.test(f);
-    const body = isSql ? added.replace(/--.*$/gm, "") : code(added);
-    // parent-facing consent copy is prose for adults about pace, never a reading of the child: checked by the claims test below
-    hits.push(...emotionWordsIn(body).map((w) => `${f.slice(ROOT.length)}: ${w}`));
+  // the voicesig-only files the ship5 patches landed (comments stripped); the patch files themselves are no longer read.
+  // (The shared files they also touched, brain/turn.js and brain/reasons.js, legitimately carry affect words of their own.)
+  for (const f of ["src/voice/features.ts", "src/voicesig/ort.ts"]) {
+    hits.push(...emotionWordsIn(code(readFileSync(join(ROOT, f), "utf8"))).map((w) => `${f}: ${w}`));
   }
+  { const sql = readFileSync(join(ROOT, "db/migrations/021_voicesig.sql"), "utf8").replace(/--.*$/gm, "");
+    hits.push(...emotionWordsIn(sql).map((w) => `db/migrations/021_voicesig.sql: ${w}`)); }
   assert.deepEqual(hits, []);
   assert.ok(files.length >= 15, `scanned ${files.length} files`);
 });
@@ -343,15 +343,10 @@ test("10k generated turns: no state-of-mind word in any output, no output at all
   assert.ok(states > 1000, `the pipeline did read states (${states})`);
 });
 
-// ───────── the migration (patch 07) ─────────
+// ───────── the migration ─────────
 
 test("G-VS-SCHEMA on the shipped migration: numbers only, voicesig schema, cascade on erasure", () => {
-  const live = join(ROOT, "db/migrations/021_voicesig.sql");
-  const patch = join(ROOT, "docs/design/ship5/p3-voicesig/patches/07-migration-021.diff");
-  let sql;
-  if (existsSync(live)) sql = readFileSync(live, "utf8");
-  else if (existsSync(patch)) sql = readFileSync(patch, "utf8").split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.slice(1)).join("\n");
-  else return;
+  const sql = readFileSync(join(ROOT, "db/migrations/021_voicesig.sql"), "utf8");
   const c = sql.toLowerCase().replace(/--.*$/gm, "");
   assert.ok(/create schema if not exists voicesig/.test(c));
   for (const bad of [/\btranscript\b/, /\baudio\b/, /\bembedding\b/, /\bstate\b\s+text/, /\bturn_id\b/, /\butterance\b/, /\bvs_state\b/]) assert.ok(!bad.test(c), `${bad}`);

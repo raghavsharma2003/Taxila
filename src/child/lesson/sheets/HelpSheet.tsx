@@ -16,8 +16,8 @@ import { Glyph } from "../../../ui/icons/state.tsx";
 import { Teacher } from "../../../ui/teacher/Teacher.tsx";
 import { useModalFocus } from "./modal.ts";
 
-export function HelpSheet({ teacherId, band, childName, backVisible, lead = "grownup", grownUp, meters, faceForm, onGrownUp, onGrownUpBack, onGrownUpHere, onBack }:
-  { teacherId: string; band: string; childName: string; backVisible: boolean; lead?: "helpline" | "grownup"; grownUp: boolean; meters?: TapSource[]; faceForm: "live" | "plate";
+export function HelpSheet({ teacherId, band, childName, backVisible, backLabel, lead = "grownup", grownUp, meters, faceForm, onGrownUp, onGrownUpBack, onGrownUpHere, onBack }:
+  { teacherId: string; band: string; childName: string; backVisible: boolean; backLabel?: string; lead?: "helpline" | "grownup"; grownUp: boolean; meters?: TapSource[]; faceForm: "live" | "plate";
     onGrownUp: () => void; onGrownUpBack: () => void; onGrownUpHere: () => void; onBack: () => void }) {
   const veil = useRef<HTMLDivElement>(null);
   const title = useRef<HTMLHeadingElement>(null);
@@ -64,7 +64,7 @@ export function HelpSheet({ teacherId, band, childName, backVisible, lead = "gro
           </>
         )}
         {backVisible && (
-          <button type="button" className="dk-btn dk-btn--quiet" onClick={onBack} data-testid="help-back">{t("help.back")}</button>
+          <button type="button" className="dk-btn dk-btn--quiet" onClick={onBack} data-testid="help-back">{backLabel ?? t("help.back")}</button>
         )}
       </div>
     </div>

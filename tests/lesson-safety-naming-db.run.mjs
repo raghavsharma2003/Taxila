@@ -244,9 +244,10 @@ describe("lesson safety + teacher naming (test branch)", { skip: SKIP, concurren
       assert.deepEqual([r.body.teacher.id, r.body.teacher.name, r.body.teacher.pronouns.subject, r.body.teacher.role], ["asha", "Asha", "she", "AI teacher"], `class ${cls}`);
       assert.equal(dhdVoiceFor(r.body.teacher.id, {}).dhd, "en-IN-Diya:DragonHDLatestNeural", `class ${cls}: Diya's voice`);
       assert.match(r.body.instructions, /WHO YOU ARE: Asha — the child calls you Asha didi\n/);
-      assert.match(r.body.instructions, cls <= 4 ? /young Indian children; a kind didi-teacher register/ : /classes 5-9; a sharp, kind didi-tutor register/, `class ${cls}: the band's register`);
+      // round 7 (decision D3): young 1-3, the older register 4-9 (class 4 is no longer young)
+      assert.match(r.body.instructions, cls <= 3 ? /young Indian children; a kind didi-teacher register/ : /classes 4-9; a sharp, kind didi-tutor register/, `class ${cls}: the band's register`);
       const st = (await one("select state from lesson where id = $1", [r.body.lessonId])).state;
-      assert.deepEqual([st.ctx.teacherId, st.ctx.protege?.name], ["asha", cls <= 4 ? "Golu" : "Bittu"], `class ${cls}: pinned teacher and the band's protégé`);
+      assert.deepEqual([st.ctx.teacherId, st.ctx.protege?.name], ["asha", cls <= 3 ? "Golu" : "Bittu"], `class ${cls}: pinned teacher and the band's protégé`);
       await q("update lesson set ended_at = now() where id = $1", [r.body.lessonId]);
     }
   });

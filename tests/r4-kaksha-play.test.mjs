@@ -8,6 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { recipe } from "../src/ui-v3/kaksha/play/recipe.ts";
 import { cosmeticsFor } from "../src/ui-v3/kaksha/play/cosmetics.ts";
+import { K_VOLT_NIGHT } from "../src/ui-v3/kaksha/tokens.ts";
 
 const ROOT = new URL("..", import.meta.url).pathname;
 const read = (p) => fs.readFileSync(path.join(ROOT, p), "utf8");
@@ -48,7 +49,9 @@ test("recipe lines for decimals, whole numbers and rounding", () => {
 
 test("cosmetics: only open items tint the engine; colours come from the Kaksha palette; nothing equipped → null", () => {
   const items = [{ id: "hull-thirds", kind: "hull", hue: "plasma", open: true }, { id: "trail-green", kind: "trail", hue: "secure", open: true }, { id: "trail-magnet", kind: "trail", hue: "science", open: false }];
-  assert.deepEqual(cosmeticsFor({ hull: "hull-thirds", trail: "trail-green" }, items), { hull: 0x3ee6ff, trail: 0x7cf5b5 });
+  // APP-17: the colours are the look the child is on (Volt ships for both families), not the retired classic Night palette
+  const P = K_VOLT_NIGHT, num = (h) => parseInt(h.slice(1), 16);
+  assert.deepEqual(cosmeticsFor({ hull: "hull-thirds", trail: "trail-green" }, items), { hull: num(P.move), trail: num(P.secure) });
   assert.deepEqual(cosmeticsFor({ trail: "trail-magnet" }, items), null, "a stale device choice for an unopened part never shows");
   assert.deepEqual(cosmeticsFor({ hull: "trail-green" }, items), null, "an item only fills its own slot");
   assert.equal(cosmeticsFor({}, items), null);
@@ -65,24 +68,22 @@ test("Briefing: no clock races the child, no score, no lock; hold 650 ms, Enter 
   }
 });
 
-test("K-P3 (patch to G1): the Briefing fronts only an engine that will really mount; one model-dress fetch; no act path", () => {
-  const d = read("docs/design/round4/build/kaksha/patches/03-play-briefing-seam.diff");
-  // the product files of the patch (the dev page in it stubs the play API on purpose)
-  const product = d.split(/^(?=diff --git )/m).filter((sec) => !/^diff --git a\/src\/ui-v3\/kaksha\/dev\//.test(sec)).join("");
-  const added = product.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++")).map((l) => l.replace(/\/\*.*?\*\/|\/\/.*$/g, "")).join("\n");
-  assert.match(added, /const tier2d = force\?\.render !== "3d" && tierIs2d;/, "no Briefing on a 2D-tier device (the board twin plays there)");
-  assert.match(added, /!briefing \|\| state\.render2d \|\| tier2d \|\| !state\.dress \? null : \(engineFor\(/, "nor under the server's 2D switch, nor for a 2D-only law");
-  assert.match(added, /dressReply=\{pre\?\.reply\}/, "the dress fetched during the card is the one PlaySession uses");
-  assert.match(added, /\(p\.dressReply \?\? playApi\.dress\(/, "PlaySession fetches only when nothing was fetched for it");
-  assert.doesNotMatch(added, /playApi\.act|onToken|grade/i, "the seam never touches acts, tokens or grades");
-  assert.ok(!/^\+\+\+ b\/(server|src\/play\/families|src\/play\/core)\//m.test(d), "no law, generator or server file in the patch");
+test("K-P3: the Briefing fronts only an engine that will really mount; one model-dress fetch; no act path", () => {
+  // asserted on the code the patch became (src/play/*), not on the patch file
+  const strip = (f) => read(f).replace(/\/\*[\s\S]*?\*\//g, "").replace(/\/\/.*$/gm, "");
+  const studio = strip("src/play/PlayStudioRenderer.tsx"), session = strip("src/play/PlaySession.tsx"), briefing = strip("src/play/briefing.ts");
+  assert.match(studio, /const tier2d = force\?\.render !== "3d" && tierIs2d;/, "no Briefing on a 2D-tier device (the board twin plays there)");
+  assert.match(studio, /!briefing \|\| state\.render2d \|\| tier2d \|\| !state\.dress \? null : \(engineFor\(/, "nor under the server's 2D switch, nor for a 2D-only law");
+  assert.match(studio, /dressReply=\{pre\?\.reply\}/, "the dress fetched during the card is the one PlaySession uses");
+  assert.match(session, /\(p\.dressReply \?\? playApi\.dress\(/, "PlaySession fetches only when nothing was fetched for it");
+  assert.doesNotMatch(briefing, /playApi\.act|onToken|grade/i, "the seam never touches acts, tokens or grades");
 });
 
-test("K-P4 (patch to G1): the Hangar colours reach only the craft's materials and its exhaust puff colour", () => {
-  const d = read("docs/design/round4/build/kaksha/patches/04-antariksh-cosmetics.diff");
-  assert.ok(!/^\+\+\+ b\/(server|src\/play\/families|src\/play\/core)\//m.test(d), "no law, generator or server file");
-  const added = d.split("\n").filter((l) => l.startsWith("+") && !l.startsWith("+++"));
-  const uses = added.filter((l) => /cosmetics/.test(l) && !/^\+\s*(\/\/|\/\*|\*)/.test(l));
+test("K-P4: the Hangar colours reach only the craft's materials and its exhaust puff colour", () => {
+  const files = ["src/play/engines/antariksh/index.ts", "src/play/engines/antariksh/world.ts", "src/play/engines/core3d/api.ts"].map((f) => read(f)).join("\n");
+  const code = files.split("\n").filter((l) => !/^\s*(\/\/|\/\*|\*)/.test(l));
+  const uses = code.filter((l) => /cosmetics/.test(l));
+  assert.ok(uses.length > 0, "the cosmetics seam exists");
   for (const l of uses) assert.match(l, /cosmetics\?: PlayCosmetics|import type \{ PlayCosmetics \}|function cosmetics\(|cosmetics, lineGroup|W\.cosmetics\(spec\.cosmetics\)|spec\.cosmetics\?\.trail \?\? T\.glow/, l);
-  assert.ok(added.some((l) => /hullMat\.color\.setHex\(c\?\.hull \?\? 0xdfe4f2\)/.test(l)) && added.some((l) => /color\.setHex\(c\?\.trail \?\? 0x8fd8ff\)/.test(l)), "colour setters only, with the craft's own colours as the default");
+  assert.ok(code.some((l) => /hullMat\.color\.setHex\(c\?\.hull \?\? 0xdfe4f2\)/.test(l)) && code.some((l) => /color\.setHex\(c\?\.trail \?\? 0x8fd8ff\)/.test(l)), "colour setters only, with the craft's own colours as the default");
 });

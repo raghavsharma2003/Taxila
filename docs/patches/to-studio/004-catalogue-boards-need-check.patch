@@ -1,0 +1,59 @@
+From: audit studio (2026-11-10), finding STUDIO-02
+Subject: catalogue boards follow the cross-check like the game and the explainer
+
+server/stagecraft/catalogue.js withholds the game and the explainer of a topic whose blind cross-check failed or never
+ran ("reported, never shown"), but still listed its whiteboard boards, which board-first.js:217 and board-sync.js:470
+serve. In the shipped catalogue that is 13 topics and 102 boards (7 failed, 6 never checked). After this, those topics fall back to
+the code boards like any topic without a catalogue entry. Test: tests/r7-audit-studio-catalogue-boards.test.mjs fails
+2/3 before, passes 3/3 after; 170 existing tests that read the catalogue pass. Apply with `git apply`.
+
+diff --git a/server/stagecraft/catalogue.js b/server/stagecraft/catalogue.js
+index bb9b54c6..d39837f3 100644
+--- a/server/stagecraft/catalogue.js
++++ b/server/stagecraft/catalogue.js
+@@ -135,6 +135,9 @@ export function entryFromRecord(rec, { kit = kitTopicAny(rec?.topicId), requireC
+   }
+   const beats = Array.isArray(rec?.whiteboard?.beats) ? rec.whiteboard.beats : [];
+   e.status.boardsTotal = beats.length;
++  // (audit studio-02: the boards follow the same rule as the game and the explainer — a record whose blind cross-check
++  // failed or never ran is reported, never shown; its boards were served by board-first and board-sync regardless)
++  if (!checked) return e;
+   for (const b of beats) {
+     if (!b?.script) continue;
+     const n = normalizeScript(b.script, { strict: true });
+diff --git a/tests/r7-audit-studio-catalogue-boards.test.mjs b/tests/r7-audit-studio-catalogue-boards.test.mjs
+new file mode 100644
+index 00000000..59be736e
+--- /dev/null
++++ b/tests/r7-audit-studio-catalogue-boards.test.mjs
+@@ -0,0 +1,30 @@
++// Audit studio-02 (2026-11-10): server/stagecraft/catalogue.js says an entry whose blind cross-check failed or never ran
++// "is reported, never shown", and its game and explainer are withheld, but its whiteboard boards were still listed and
++// served (board-first.js and board-sync.js read entry.boards). 13 topic files with a failed or missing check carried
++// 102 boards. A record's boards are now shown only when its check passed.
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { readFileSync } from "node:fs";
++import { entryFromRecord, loadCatalogue } from "../server/stagecraft/catalogue.js";
++
++// a real, passing record's boards (each one passes the strict shape and the stage lint)
++const real = JSON.parse(readFileSync(new URL("../data/studio-catalogue/topics/c6-maths-ch05-t01.json", import.meta.url), "utf8"));
++const rec = (verdict) => ({ ...real, check: verdict ? { ...real.check, verdict } : undefined });
++
++test("a record whose cross-check failed or is missing lists no boards", () => {
++  for (const v of ["fail", null]) {
++    const e = entryFromRecord(rec(v));
++    assert.equal(e.boards.length, 0, `check ${v}: ${e.boards.length} boards listed`);
++    assert.equal(e.status.boardsTotal, real.whiteboard.beats.length);
++  }
++});
++
++test("a passed record still lists its boards", () => {
++  const e = entryFromRecord(rec("pass"));
++  assert.ok(e.boards.length >= 1, "no board listed for a passed record");
++});
++
++test("in the shipped catalogue, no topic whose check did not pass serves a board", () => {
++  const leaks = [...loadCatalogue({ fresh: true }).values()].filter((e) => e.status.check !== "pass" && e.boards.length).map((e) => e.topicId);
++  assert.deepEqual(leaks, []);
++});

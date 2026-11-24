@@ -8,6 +8,9 @@ import type { EvidenceRow } from "./api.ts";
 const noStop = (s: string) => String(s).replace(/[.\s]+$/, "");
 /** A skill's parent label (lower-cased to sit inside "{child} can now …") as a stand-alone title: one name per skill
  *  on every surface (headline, How do we know?, Lesson card, Progress), first letter raised back up. */
+/** A "Made for" reason (madeFor.js, written to the child: "You thought …") as the parent reads it: about the child, by
+ *  name. One rule for Home and Teaching (audit LEARN-17: Teaching told the parent "You thought …"). */
+export const becauseForParent = (because: string, name: string) => because.replace(/^You thought/, `${name} thought`);
 export const labelTitle = (label: string) => (label ? label[0].toUpperCase() + label.slice(1) : label);
 
 /** The home headline. KEEP IN STEP with server/routes/parent.js HOME_COPY ("Listen to this page" says these). */
@@ -109,3 +112,9 @@ export const isPasswordError = (e: unknown) => e instanceof ApiError && ((e.body
 /** A home tip without its "At home:" lead (the card is titled "Try at home"), starting with a capital: round 4 journey
  *  audit #15 ("ask Riya …" read as a fragment). */
 export const atHomeText = (t: string): string => { const s = t.replace(/^At home:\s*/, ""); return s.charAt(0).toUpperCase() + s.slice(1); };
+
+/**
+ * Which effect sentence a privacy choice shows. Only a granted choice shows the "yes" effect: an unanswered one is not
+ * granted (server/auth.js hasConsent), so it shows what happens without it (audit 2026-11-09 LEARN-38).
+ */
+export const consentEffect = (now: boolean | null, effectYes: string, effectNo: string): string => (now === true ? effectYes : effectNo);

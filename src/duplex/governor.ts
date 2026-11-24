@@ -218,7 +218,10 @@ export class Governor {
   private revocable(at: Ms): boolean {
     const s = this.spoke;
     if (!s) return false;
-    if (s.verdictNotBefore !== null) return !s.verdictPlayed;
+    // audit V-09: nothing in the app sends her_verdict, so without a bound any child sound during her whole reply revoked
+    // and cut it (a "हाँ" four seconds in). Her verdict word comes at or after verdictNotBefore once she sounds: past that
+    // point plus REVOCABLE_MS it has played
+    if (s.verdictNotBefore !== null) return !s.verdictPlayed && (s.herStartAt === null || at <= Math.max(s.herStartAt, s.verdictNotBefore) + REVOCABLE_MS);
     return s.herStartAt === null || at <= s.herStartAt + REVOCABLE_MS;
   }
 
@@ -362,7 +365,10 @@ export class Governor {
       if (d.action === "CUT_IN") {
         const r = d.detail?.action === "CUT_IN" ? d.detail.reason : "";
         const policy = r === "safety" || r === "hold_offer";
-        const ok = CUT_IN_LIST.has(r) && (policy || this.flags.cutIn) && !c.voicing && (sil ?? 0) >= CUT_IN.microPauseMs && this.cutInCondition(tick, r);
+        // audit V-08: a hold granted after the child's short burst ended ("क्या?" over her line) begins a turn with no onset;
+        // its silence is then the time since the hold began, never 0 (0 vetoed the hold offer for good: nothing followed)
+        const s = sil ?? (r === "hold_offer" ? t - this.phaseSince : 0);
+        const ok = CUT_IN_LIST.has(r) && (policy || this.flags.cutIn) && !c.voicing && s >= CUT_IN.microPauseMs && this.cutInCondition(tick, r);
         if (!ok) veto("HOLD", "veto_cutin_policy", { action: "HOLD", reason: "uncertain" });
       }
 
@@ -511,7 +517,7 @@ export class Governor {
     const m = tick.markers, sil = tick.child.silenceRunMs ?? 0;
     switch (r) {
       case "safety": return tick.safety.distress && tick.safety.kind === "self_harm" && sil >= SAFETY.silenceMs;
-      case "hold_offer": return this.phase === "hold_requested" && sil >= HOLD.offerMs;
+      case "hold_offer": return this.phase === "hold_requested" && (tick.child.silenceRunMs ?? tick.t - this.phaseSince) >= HOLD.offerMs;
       case "word_search_cue": return m.wordSearch && tick.context.cutIn.wordSearchCue === "offer" && sil >= CUT_IN.wordSearchSilenceMs;
       case "off_task_drift": {
         const lim = tick.context.cutIn.offTaskMs ?? (tick.context.band === "B2" ? CUT_IN.offTaskB2 : CUT_IN.offTaskB3);
@@ -573,7 +579,9 @@ export class Governor {
       this.pose = det.kind;
       this.lastActs.react = t;
     }
-    if (this.phase === "committed" && t - this.phaseSince > COMMITTED_MAX_MS) { this.spoke = null; this.go("child_turn", t); }
+    // audit V-06: the floor returns with a FRESH turn: the committed words were sent already, and left in the transcript the
+    // engine committed them again once the in-flight guard expired (the same answer posted a second time)
+    if (this.phase === "committed" && t - this.phaseSince > COMMITTED_MAX_MS) { this.spoke = null; this.beginTurn(t, null); this.go("child_turn", t); }
     return d;
   }
 }

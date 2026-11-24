@@ -19,7 +19,8 @@
 //
 // Pieces are INVISIBLE until revealed on the teacher's cue: statusFacts proposes a reveal (the kernel may refuse it), the
 // committed turn's onReveal records it, and slotFor gives the turn's UiDirectives.studioSlot so the Work tray shows it.
-import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine } from "./request.js";
+import { answersRequest, samePage, shownBefore, pageSig, syncedWithLine, textsOf } from "./request.js";
+import { numbersIn as boardNumbersIn } from "./qa/whiteboard.js";
 import { ORDINAL } from "../director/modules.js";
 import { seamSafe } from "../seam-safe.js";
 import { normalizeScript, scriptFacts } from "../../shared/whiteboard.js";
@@ -34,11 +35,17 @@ import { createGradeSession, studioEvidenceEvent, writeStudioEvidence } from "./
 // host attached (STAGECRAFT=off, or a host that failed to start) every call below is a no-op and Wave 2 is unchanged.
 import * as stagecraft from "../stagecraft/seam-bridge.js";
 import { startStagecraft, stopStagecraft, touchStagecraft } from "../stagecraft/lesson.js";
+import { forgetPictureLesson } from "./picture.js";
+import { approvedFor } from "./approved.js";
+import { passageArtifact } from "./passage.js";
+import { factsOfSpec } from "../stagecraft/builders.js";
 import * as boardSync from "../stagecraft/board-sync.js";
+import { sceneFor } from "../forge/animate/scenes.js";
+import { sceneMayPlay } from "../../shared/scene.js";
 import * as boardFirst from "../stagecraft/board-first.js";
 import { boardGroundFor, dressBoard } from "../forge3/art.js";
 import { buildLive } from "../forge3/live.js";
-import { INTERACTIVE_ASKS } from "../forge3/compose.js";
+import { INTERACTIVE_ASKS, admitPlay } from "../forge3/compose.js";
 // round 4 content: the ONE certificate gate (server/forge3/tray-gate.js): nothing reaches the tray uncertified at the
 // device's viewport class (the Desk reports its tray box: POST /api/studio/viewport)
 import { certifyForTray, viewportOf, setViewport } from "../forge3/tray-gate.js";
@@ -99,7 +106,7 @@ function lessonState(lessonId, init) {
   if (!L && init) {
     L = { lessonId, startedAt: Date.now(), childId: null, child: null, kit: null, topicId: null, band: "B3", lang: "hinglish", mode: "text",
       purpose: "lesson", bondStage: null, pieces: new Map(), subs: new Set(), turn: 0, lastRevealTurn: -99, liveBuilds: 0, onScreen: null,
-      wbPrev: null, excluded: new Set(), redact: [], ...init };
+      wbPrev: null, excluded: new Set(), redact: [], held: [], ...init };   // held: no item is open when a lesson's Studio state is made
     lessons.set(lessonId, L);
     // LRU: the least recently used lesson goes; its open wrong items are closed as evidence first (closeLesson)
     if (lessons.size > STUDIO_LIMITS.lessonsInMemory) {
@@ -107,6 +114,7 @@ function lessonState(lessonId, init) {
       lessons.delete(oldest.lessonId);
       closeLesson(oldest, "evicted");
       stopStagecraft(oldest.lessonId);
+      forgetPictureLesson(oldest.lessonId);
     }
   } else if (L) touch(L);
   return L ?? null;
@@ -124,7 +132,10 @@ function push(L, msg) {
   // the piece's own reason when it has one). Outside the request too (builds finish later), so the lesson names the session.
   if (msg?.t === "status" && msg.status) {
     const st = msg.status, piece = st.intentId ? L.pieces?.get?.(st.intentId) : null;
-    traceRecord(`studio.slot.${String(st.state ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
+    // a piece taken down (cleared, replaced, beat exit) goes out as "failed" on the wire (the client's voice fallback), but
+    // it did not fail: the row says retired, with the reason (QA on be9b766a read "cleared" / "replaced" as failed boards)
+    const tracedState = piece?.state === "retired" && st.state === "failed" ? "retired" : st.state;
+    traceRecord(`studio.slot.${String(tracedState ?? "unknown").replace(/\s+/g, "_")}`, { intentId: st.intentId ?? null, slotId: st.slotId ?? piece?.slotId ?? null,
       state: st.state ?? null, kind: piece?.kind ?? st.artifact?.kind ?? null, archetype: piece?.archetype ?? null, source: piece?.source ?? null,
       fallback: st.fallback ?? null, why: piece?.retiredWhy ?? piece?.failWhy ?? null, artifact: st.artifact?.kind ?? null, subscribers: L.subs?.size ?? 0 },
     { sid: L.lessonId, cid: L.childId ?? L.child?.id ?? undefined, turn: L.turn });
@@ -140,6 +151,8 @@ export function subscribe(lessonId, sub) {
     try {
       // the replay is gated like the turn: a board this device's box cannot show legibly is not sent
       if (p.artifact?.kind === "whiteboard" && !certifyForTray(p.artifact, gateCtx(L, p)).ok) continue;
+      // 14.4: ... and (a reload / reconnect mid-lesson) never one that writes the key of the item open now; unknown → not replayed
+      if (p.artifact?.kind === "whiteboard" && (!Array.isArray(L.held) || writesWithheld(p.artifact.script, L.held))) continue;
       sub.send({ t: "status", status: statusOf(p) });
       if (p.artifact?.kind === "whiteboard") sub.send({ t: "script", intentId: p.intentId, script: p.artifact.script });
     } catch { /* a dead stream is dropped on the next push */ }
@@ -234,8 +247,11 @@ function artifactOf(p) {
 /** The Work tray slot of a piece (shared/studio.ts StudioSlot). */
 export function slotOf(p, state = p.state) {
   if (p.source === "stagecraft") return stagecraft.stagecraftSlot(p, state);
+  // round 7 M5a: a code-built scene is its own artifact
+  if (p.source === "scene") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 3 forge: a play piece (server/forge3/live.js) is its PlayArtifact; the play server grades it from raw acts
-  if (p.source === "play") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
+  // (the approval lane: an approved generated piece is its own StagecraftArtifact, made and gated in requestIntent)
+  if (p.source === "play" || p.source === "approved" || p.source === "passage") return { slotId: p.slotId, intentId: p.intentId, state: state === "fallback_ready" ? "fallback_shown" : state, ...(p.artifact ? { artifact: p.artifact } : {}) };
   // round 5: a picture (studio/picture.js) is its own artifact, like a board
   const art = p.artifact?.kind === "whiteboard" || p.artifact?.kind === "image" ? p.artifact : p.kind === "whiteboard" || p.kind === "image" ? undefined : artifactOf(p);
   const st = state === "fallback_ready" ? "fallback_shown" : state;
@@ -264,6 +280,23 @@ export const gateRefusals = () => refusals.slice();
  * The slot of a piece IF its artifact is certified at the device's class, else null. A frame that is not judged at this
  * size falls back to its skeleton-as-activity when the skeleton is certified (the same params and words; host-graded).
  */
+/** 14.4 (main's release blocker on D42): a board re-sent on a LATER turn (kept, or the late asked board) was gated when drawn,
+ *  before the item now open existed: one that writes a value withheld now (the open item's key, whiteboard.js withheldValues)
+ *  is not sent again. */
+const writesWithheld = (script, withhold) => {
+  const vals = (withhold ?? []).map(String).filter(Boolean);
+  if (!vals.length) return false;
+  const on = new Set(boardNumbersIn(textsOf(script).join(" ")));
+  return vals.some((v) => on.has(v) || [...boardNumbersIn(v)].some((n) => on.has(n)));
+};
+/** main 14.4 (QA D43): a board is never kept across an item change: the item it was drawn for, or (drawn with no item) its
+ *  skill, must be what the move asks now. */
+const movedFrom = (p, move) => {
+  const item = move?.itemId ?? null, skill = move?.skillId ?? null;
+  if (p.itemId && item && p.itemId !== item) return true;
+  if (!p.itemId && p.skillId && skill && p.skillId !== skill) return true;
+  return false;
+};
 function gatedSlot(L, p, state = p.state, where = "slot") {
   const slot = slotOf(p, state);
   if (!slot?.artifact) return slot; // nothing drawn yet (a whiteboard planning): no pixels
@@ -276,7 +309,87 @@ function gatedSlot(L, p, state = p.state, where = "slot") {
     if (certifyForTray(sk, ctx).ok) return { ...slot, state: "fallback_shown", artifact: sk };
   }
   noteRefusal(L, p, r, where);
+  if (r.cert === "studio-v2-small") phonePlayFor(L, p);
   return null;
+}
+/**
+ * main's ruling (2026-11-10, ENGINES-360.md): on a phone too small to play a Studio v2 world, the lesson offers in its place the
+ * PLAY FAMILY that covers the skill (data/play/coverage.json): the Games picker chooses the family and level (forge3/live.js →
+ * server/play/start.js startSession → choose.js chooseEntry) from the skill and the device's size; the piece carries its
+ * because records (the play side's: the picker's own, then the studio_gate one) and the lead record's kind as the facts
+ * row's `chose` value (rowOf prints only onScreen). Only a game's place (an explainer's keeps the script's
+ * board); once per skill per lesson; asynchronous — the play piece goes up as an asked-for one does (pendingPlay, early slot).
+ * Switch STUDIO_PHONE_PLAY ("off": the script's board only).
+ */
+export const phonePlayStats = { asked: 0, served: 0 };
+/** The Stagecraft bridge's door (its own gate refusal at p360): { kind, need, skillId, topicId, archetype, intentId }. */
+export function phonePlayInstead(lessonId, piece) { phonePlayFor(lessons.get(lessonId), piece); }
+function phonePlayFor(L, p) {
+  try {
+    if (process.env.FORGE3_PLAY === "0" || String(process.env.STUDIO_PHONE_PLAY ?? "on").toLowerCase() === "off") return;
+    if (!L || L.safety || L.studioControl === "off" || p?.source === "play" || !(p?.kind === "game" || p?.need === "practice")) return;
+    const skillId = p.skillId ?? null, topicId = p.topicId ?? L.topicId ?? null, child = L.child;
+    if (!child?.id || !(skillId || topicId) || !admitPlay(skillId, topicId)) return;
+    const key = `${skillId ?? ""}|${topicId ?? ""}`;
+    if ((L.phonePlayAsked ??= new Set()).has(key)) return;
+    L.phonePlayAsked.add(key);
+    phonePlayStats.asked++;
+    const lessonId = L.lessonId, vp = viewportOf(lessonId).vp;
+    // (C2 Games, 2026-11-10: buildLive is the door; `reason: "phone"` makes the play side write its own because record, which
+    // is in r.because with the picker's; `need` is the beat's own goal, for a truthful trace)
+    buildLive({ ask: "game", need: p.need ?? "practice", reason: "phone", lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref }, skillId, topicId, vp, lesson: L.forge3 ?? null },
+      { q: deps.q ?? undefined }).then((r) => {
+      if (!r?.artifact?.play || L.safety || lessons.get(lessonId) !== L) return;
+      L.forge3 = r.lesson;
+      const fam = r.artifact.play.family, n = [...L.pieces.values()].filter((x) => x.source === "play").length + 1;
+      const intentId = `${lessonId}:play:${n}`;
+      const because = `phone: ${fam} covers this skill`;
+      // the play side's because records win (the picker's own first, then studio_gate); the lead record's kind rides the
+      // facts row as `chose` (rowOf prints only onScreen: a top-level facts.because never reached the reply)
+      const records = Array.isArray(r.because) ? r.because.filter((b) => b && typeof b.kind === "string") : [];
+      const lead = records.find((b) => b.source !== "studio_gate") ?? records[0] ?? null;
+      const chose = lead ? lead.kind.replace(/^play\./, "") : "studio_gate";
+      const onScreen = { ...(r.facts?.onScreen ?? {}) };
+      const piece = { intentId, slotId: `${intentId}:slot`, kind: "game", archetype: `play:${fam}/${r.artifact.play.mode}`, source: "play", phone: true, because, becauseRecords: records,
+        artifact: r.artifact, facts: { ...(r.facts ?? {}), because, onScreen: { ...(onScreen.game ? { game: onScreen.game } : {}), chose, ...onScreen } },
+        skillId: r.artifact.play.skillId ?? skillId, need: "practice", requested: false, state: "ready", retired: false, createdAt: Date.now(), composeMs: r.ms, instead: p.intentId };
+      L.pieces.set(intentId, piece);
+      L.pendingPlay = { intentId, turn: L.turn };
+      traceRecord("studio.phone_play", { family: fam, skillId: piece.skillId, vp, instead: p.archetype ?? null });
+      const early = process.env.TAXILA_EARLY_PIECE === "0" ? null : gatedSlot(L, piece, "revealed", "early");
+      if (early) { push(L, { t: "slot", slot: early, early: true }); L.pendingPlay.early = true; phonePlayStats.served++; }
+    }).catch(() => { /* the script's board stands */ });
+  } catch { /* never throws into the turn */ }
+}
+/**
+ * round 7 M5a: the scene piece for an animation ask, waiting for this turn's slotFor (L.pendingPlay, as a play piece
+ * does), or null (no scene for the topic, or not certified at the device's size). Code only, no model call.
+ */
+/** A scene may play this turn: no keyed card live (the turn's hint: an asking move, an open item), the withheld values known
+ *  and empty (L.held, noteWithheld), none of them on screen (shared/scene.js sceneMayPlay). */
+function sceneMayPlayNow(L, p, hint = null) {
+  const scene = p?.artifact?.scene ?? p?.stagecraft?.scene;
+  if (!scene) return { ok: false, why: "no_scene" };
+  return sceneMayPlay(scene, { held: L.held === undefined ? [] : L.held, cardLive: !!hint?.asking || !!hint?.itemOpen });
+}
+function scenePieceFor(L, lessonId, topicId, child) {
+  if (!topicId || process.env.TAXILA_SCENES === "0") return null;
+  const lang = child?.language_pref === "hi" ? "hi" : child?.language_pref === "en" ? "en" : "hinglish";
+  const r = sceneFor(topicId, { lang });
+  if (!r?.ok) return null;
+  const n = [...L.pieces.values()].filter((p) => p.source === "scene").length + 1;
+  const intentId = `${lessonId}:scene:${n}`;
+  const scene = { ...r.scene, line: { lessonId } };
+  const piece = { intentId, slotId: `${intentId}:slot`, kind: "animation", archetype: `scene:${r.scene.id}`, source: "scene",
+    artifact: { kind: "scene", stage: r.scene.stage, scene },
+    facts: { kind: "animation", archetype: `scene:${r.scene.id}`, onScreen: { ...Object.fromEntries(Object.entries(r.scene.facts).map(([k, v]) => [k, String(v)])), steps: r.scene.beats.map((b) => b.says).join(", ") } },
+    skillId: null, need: "explain", requested: true, state: "ready", retired: false, createdAt: Date.now() };
+  if (!gatedSlot(L, piece, "revealed", "scene")) return null;
+  // (a card already live from the last turn: the play ladder answers instead, never a scene that may show its key)
+  if (!sceneMayPlayNow(L, piece).ok) return null;
+  L.pieces.set(intentId, piece);
+  L.pendingPlay = { intentId, turn: L.turn };
+  return { kind: "scene", intentId, scene: r.scene.id, ms: 0 };
 }
 /** Is a piece's artifact certified now (statusFacts proposes only what slotFor would show)? */
 function certifiedNow(L, p) {
@@ -526,7 +639,7 @@ export const studioSeam = {
       redact: [ctx.child?.first_name, ctx.child?.name].filter((x) => typeof x === "string" && x.length > 1),
     });
     // the child's earlier lesson still in memory has ended: its open wrong items close as evidence now (no lesson-end hook)
-    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); stopStagecraft(other.lessonId); }
+    if (L.childId) for (const other of [...lessons.values()]) if (other !== L && other.childId === L.childId) { lessons.delete(other.lessonId); closeLesson(other, "lesson_end"); stopStagecraft(other.lessonId); forgetPictureLesson(other.lessonId); }
     // Stagecraft (ship5 p4-content): one host per lesson, fire-and-forget (never delays the start; off/practice → none)
     startStagecraft({ lessonId: ctx.lessonId, purpose: L.purpose, child: ctx.child ?? null, studioControl: L.studioControl }).catch(() => null);
     // Quick practice is a short item set (STUDENT-FLOW §6.1): no Studio pieces there.
@@ -629,6 +742,20 @@ export const studioSeam = {
    * @param {{ visual: string, skillId?: string|null, topicId?: string|null, child?: object, tray?: string|null, vp?: string|null }} x
    * @returns {Promise<{ kind: "play", intentId: string, family: string, mode: string, art: string|null, ms: number } | null>}
    */
+  /** Census F4 (a95d2ff1, 6c45a7ea: a picture / game chip offered that nothing could build): which ways in this lesson's
+   * Studio can answer now, read before the Director offers them. picture: Studio on and not frozen; game: play coverage
+   * admits the skill or topic (composeAsk's first rung), or a prepared piece the child can act on. null = no lesson state
+   * (the Director then offers as before). Synchronous, in memory; never builds anything. */
+  waysFor(lessonId, { skillId = null, topicId = null } = {}) {
+    const L = lessons.get(lessonId);
+    if (!L) return null;
+    if (L.safety || L.studioControl === "off") return { picture: false, game: false };
+    let play = false;
+    try { play = process.env.FORGE3_PLAY !== "0" && !!(skillId || topicId || L.topicId) && !!admitPlay(skillId, topicId ?? L.topicId ?? null); } catch { play = false; }
+    const piece = [...L.pieces.values()].some((p) => isRevealable(p) && p.source !== "play" && DOABLE_KINDS.has(p.kind) && (!skillId || !p.skillId || p.skillId === skillId));
+    return { picture: true, game: play || piece };
+  },
+
   async composeAsk(lessonId, x) {
     try {
       if (process.env.FORGE3_PLAY === "0") return null;
@@ -639,6 +766,12 @@ export const studioSeam = {
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete) return null;
       const child = x.child?.id ? x.child : L.child;
       if (!child?.id) return null;
+      // round 7 M5a (owner's #4): "animation dikhao" on a topic with a code-built cinematic scene gets the SCENE (a small
+      // film of the idea, its beats on her clauses), certified at the device's size like every tray piece
+      if (x.visual === "animation") {
+        const sp = scenePieceFor(L, lessonId, x.topicId ?? L.topicId ?? null, child);
+        if (sp) return sp;
+      }
       const r = await buildLive({ ask: x.visual, lessonId, child: { id: child.id, class_level: child.class_level, language_pref: child.language_pref },
         skillId: x.skillId ?? null, topicId: x.topicId ?? L.topicId ?? null, vp: x.vp ?? viewportOf(lessonId).vp, lesson: L.forge3 ?? null }, { q: deps.q ?? undefined });
       if (!r) return lessonPieceForAsk(L, x);
@@ -673,7 +806,7 @@ export const studioSeam = {
     if (!L) return null;
     L.shown = null;
     // a safeguarding turn: the Help sheet replaces the Desk; whatever was on screen is frozen and retired, and nothing
-    // new is shown for the rest of the lesson (STUDENT-FLOW §5.7)
+    // new is shown until the safeguard closes (STUDENT-FLOW §5.7; onSafetyClosed)
     if (hint?.safety) { if (L.pendingPlay?.early) push(L, { t: "retract", intentId: L.pendingPlay.intentId }); studioSeam.onSafety(lessonId); L.pendingPlay = null; return null; }
     // round 3 forge: the play piece composeAsk built for the child's interactive ask this turn is shown now: the child's
     // own request takes the tray from the Director's show (the same rule as a requested Stagecraft piece), and whatever
@@ -681,7 +814,9 @@ export const studioSeam = {
     const pendRec = L.pendingPlay;
     const pend = pendRec && pendRec.turn === L.turn ? L.pieces.get(pendRec.intentId) : null;
     L.pendingPlay = null;
-    const pendSlot = pend && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
+    // round 7 M5a (main: answer leaks are zero-visible-failure): a scene never comes up while a keyed card is live
+    if (pend?.source === "scene" && !sceneMayPlayNow(L, pend, hint).ok) { retirePiece(L, pend.intentId, "card_live"); }
+    const pendSlot = pend && pend.state !== "retired" && !L.safety && hint?.visualRequest && (pend.state === "ready" || pend.state === "fallback_ready")
       ? gatedSlot(L, pend, pend.source === "skeleton" ? "fallback_ready" : "revealed", "play") : null;
     // a piece shown early that this turn does not show leaves the stage again (never a stale piece under her line)
     if (pendRec?.early && !pendSlot) push(L, { t: "retract", intentId: pendRec.intentId });
@@ -696,6 +831,11 @@ export const studioSeam = {
       return pendSlot;
     }
     if (turnStudio?.retire && turnStudio.retire === L.onScreen) return null;
+    // round 7 M4 (never stale): the reveal point is built before the Director moves, so on a turn whose move changes the
+    // skill a Stagecraft piece decided for the old skill would come up under her line about the new one (measured in the
+    // replay, evals/stagecraft/replay.mjs: 33 of 252 reveals, 115 stage turns). With the move's skill (hint.skillId, patch
+    // to Brain 009) such a piece is not revealed, and one still up leaves with this reply. Inert without hint.skillId.
+    const offSkill = (q) => !!q && q.source === "stagecraft" && typeof hint?.skillId === "string" && !!hint.skillId && !!q.skillId && q.skillId !== hint.skillId;
     // the Director's move needs the tray this turn (an item's tiles or pad, its module, the board): Studio yields it
     const trayTaken = typeof hint?.tray === "string" && DIRECTOR_TRAYS.has(hint.tray);
     if (turnStudio?.reveal) {
@@ -713,7 +853,12 @@ export const studioSeam = {
       const beat = typeof hint?.beat === "string" ? hint.beat : null;
       // a Stagecraft piece was admitted for this beat by the reveal policy (its want): only the tray and her own question
       // hold it, and a piece the CHILD asked for is held only by the Director's tray (her question is about it)
-      if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      if (p && !VISIBLE.has(p.state) && offSkill(p)) { retirePiece(L, p.intentId, "skill_changed"); stagecraft.noteRetired(L.lessonId); }
+      // round 7 M5a: a Stagecraft scene proposed before the move is not revealed on a turn whose card is live
+      else if (p && !VISIBLE.has(p.state) && p.stagecraft?.scene && !sceneMayPlayNow(L, p, hint).ok) { retirePiece(L, p.intentId, "card_live"); stagecraft.noteRetired(L.lessonId); }
+      else if (p && !VISIBLE.has(p.state) && (trayTaken || (!!hint?.asking && !p.requested) || (beat && p.source !== "stagecraft" && !beatsFor(p).includes(beat)))) p.heldTurn = L.turn;
+      // 14.4: a board ALREADY shown, revealed again, was gated for the item open when it was drawn: never with today's key
+      else if (p && p.kind === "whiteboard" && VISIBLE.has(p.state) && (!Array.isArray(L.held) || writesWithheld(p.artifact?.script, L.held))) p.heldTurn = L.turn;
       else if (p && (isRevealable(p) || VISIBLE.has(p.state))) {
         const g = gatedSlot(L, p, p.source === "skeleton" ? "fallback_ready" : "revealed", "reveal");
         // round 4 content: not certified at this device's size → held (onReveal skips it; it never reaches the tray)
@@ -722,6 +867,9 @@ export const studioSeam = {
       }
     }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (on && VISIBLE.has(on.state) && offSkill(on)) { retirePiece(L, on.intentId, "skill_changed"); return null; }
+    // round 7 M5a: a scene on screen leaves the moment a keyed card goes live (it may show the card's answer)
+    if (on && VISIBLE.has(on.state) && (on.source === "scene" || on.stagecraft?.scene) && !sceneMayPlayNow(L, on, hint).ok) { retirePiece(L, on.intentId, "card_live"); return null; }
     if (on && !trayTaken && VISIBLE.has(on.state) && on.kind !== "whiteboard") {
       const g = gatedSlot(L, on, on.source === "skeleton" ? "fallback_ready" : on.state, "on_screen");
       // the device changed to a box the piece is not certified for: it leaves the tray (never shown broken)
@@ -798,6 +946,9 @@ export const studioSeam = {
       L.onScreen = p.intentId; L.lastRevealTurn = L.turn;
       if (p.source === "stagecraft") stagecraft.noteRevealed(L.lessonId, p.intentId);
       // a Stagecraft piece is graded by its engine registry over the spec the server revealed (gradeAny), never the frame
+      // round 7 M5a: a scene is watched, never answered (no grade session, and no studio_mount row: its source check
+      // admits the Studio build sources only, as for play)
+      if (p.source === "scene") { push(L, { t: "status", status: statusOf(p) }); return; }
       p.grade = stagecraft.gradeSessionFor(p) ?? createGradeSession(p.archetype, p.params);
       push(L, { t: "status", status: statusOf(p) });
       if (p.source === "library" && p.buildSha) noteMount(p.buildSha).catch(() => {});
@@ -820,6 +971,8 @@ export const studioSeam = {
     // the router's whiteboard rule (rule 2): a parent's "Only ready-made ones" means no model-written board either
     const decision = routerDecide({ intent: ask.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
     if (decision.action !== "whiteboard") return null;
+    // round 7 (director5 SC2): a scripted remediation board only on the turn its explanation is spoken; the page on screen stays
+    if (!boardFirst.scriptBoardSpoken(ask)) { L.unspokenBoards = (L.unspokenBoards ?? 0) + 1; console.info(`[studio] remediation board held: its explanation is not in her line (beat=${ask?.intent?.scriptBeat?.beatId ?? "-"})`); return null; }
     const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
     const onPrev = L.onScreen ?? null;
     // (a piece the turn's accepted retire takes down does not hold the tray: the child asked for the board)
@@ -830,7 +983,12 @@ export const studioSeam = {
     const p = { intentId, slotId: `${intentId}:slot`, kind: "whiteboard", archetype: "whiteboard", source: "whiteboard", skillId: ask.intent.skillId ?? null, itemId: ask.intent.itemIds?.[0] ?? null,
       need: ask.intent.need, state: "planning", artifact: null, retired: false, createdAt: Date.now(), facts: null };
     L.pieces.set(intentId, p);
-    if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // 38aad918 t9-t11: a picture on screen stays under the board until the board draws; a board that fails gives the screen
+    // back to it (it was retired here, then the board failed: three turns ended on an empty screen)
+    if (on && on.kind === "image" && VISIBLE.has(on.state) && !on.retired && on.artifact) p.under = on.intentId;
+    else if (on && on.kind !== "whiteboard") retirePiece(L, on.intentId, "replaced");
+    // QA on be9b766a (897a7453): the board this one follows, so a line that goes back to it can bring it back (keepBoardSlot)
+    if (on && on.kind === "whiteboard" && on.artifact?.script && !on.retired) p.prevBoard = on.intentId;
     L.onScreen = intentId;
     const prev = ask.mode === "continue" ? L.wbPrev : null;
     // round 5 (stream 2): the page on the board when this ask came in; a new page is never that page again (unless it is
@@ -849,15 +1007,20 @@ export const studioSeam = {
     const fallbackScript = fb?.ok ? boardSync.retimeToLine(fb.script, ask.line?.text) : null;
     // ship5 review B3: the template is drawn only when it passes the same whiteboard gate (W0-W9: numbers from truth,
     // counts match her line, no answer reveal) against her REAL line; a refused template is never shown (voice instead).
+    let fbWhy = null;   // why no template was shown (codes only), for the failed slot's trace row
     const gatedFallback = () => {
-      if (!fb?.ok) return null;
+      if (!fb?.ok) { fbWhy = "invalid"; return null; }
       try {
         const prior = ask.mode === "continue" ? (prev?.ops ?? []).filter((x) => x.op !== "erase") : [];
         const t = boardSync.templateBoard(ask, fb.script, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior }))?.script ?? null;
         // round 5 (stream 2): the template is the lesson's own board: shown for a request only when it shows what was asked,
         // and never as the same page again
-        return t && answersRequest(t, request) && !shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? t : null;
-      } catch { return null; }
+        // telemetry names the refusing step (QA run 8: a template refused here left no line saying why)
+        const why = !t ? "gate" : !answersRequest(t, request) ? `not_the_ask(${request?.kind ?? "-"})` : shownBefore(t, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : null;
+        if (why) console.info(`[studio] template board refused: ${why}`);
+        fbWhy = why;
+        return why ? null : t;
+      } catch { fbWhy = "error"; return null; }
     };
     // round 2 content: a CONTINUED board that draws nothing new (her line restates what the board already shows: measured
     // c7-science "screen par flow dekhiye: …" twice in 27 boards) keeps the board on screen, when it passes the full gate
@@ -874,7 +1037,9 @@ export const studioSeam = {
         return r.ok ? r.script : null;
       } catch { return null; }
     };
-    const showFallbackOrFail = () => {
+    // `liveWhy`: why the live board was not drawn (check ids or a reason code); with the template's own reason it is the
+    // failed slot's `why` (38aad918: two boards failed with why null, the reason only in the server log)
+    const showFallbackOrFail = (liveWhy = null) => {
       const kept = keptPrevious();
       if (kept && drawn({ ok: true, script: kept, source: "kept", syncMs: null })) return;
       const shown0 = fallbackScript && !p.retired && L.onScreen === intentId ? gatedFallback() : null;
@@ -885,6 +1050,7 @@ export const studioSeam = {
       // ... and the template rung is held to the same sync with her line as any new page (sim lab boardfacts)
       const shown = tg?.ok && (ask?.requested || ask?.intent?.request || syncedWithLine(shown1, ask?.line?.text)) ? shown1 : null;
       if (tg?.ok && !shown) console.info("[studio] template board refused: shares nothing with her line");
+      if (!shown) fbWhy = !fallbackScript ? "none" : p.retired || L.onScreen !== intentId ? "off_screen" : tg && !tg.ok ? "tray" : tg?.ok ? "unsynced" : fbWhy;
       if (shown) {
         p.artifact = { kind: "whiteboard", stage: { w: shown.board.w, h: shown.board.h }, script: shown };
         // a board, never an interactive piece (brain/propose.js reads kind/archetype "whiteboard" as not holding attention)
@@ -894,21 +1060,35 @@ export const studioSeam = {
         push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "whiteboard", facts: p.facts } });
         return;
       }
-      p.state = "failed"; p.fallback = "voice";
+      p.state = "failed"; p.fallback = "voice"; p.failWhy = `live:${liveWhy ?? "-"} template:${fbWhy ?? "-"}`.slice(0, 120);
       push(L, { t: "status", status: { state: "failed", intentId, fallback: "voice" } });
+      restoreUnder();
+    };
+    // the picture this board was drawn over: back on screen when the board did not draw (never an empty screen)
+    const restoreUnder = () => {
+      const img = p.under ? L.pieces.get(p.under) : null;
+      p.under = undefined;
+      if (!img || img.retired || !VISIBLE.has(img.state) || L.onScreen !== intentId) return;
+      L.onScreen = img.intentId; p.restored = img.intentId;
+      push(L, { t: "slot", slot: slotOf(img, "revealed") });
+      push(L, { t: "status", status: statusOf(img) });
     };
     // a board passed the gate against her line: on the slot, on the wire, in the mount row (shared by board-first and the ladder)
     const drawn = (r0) => {
       const r = r0?.script ? { ...r0, script: dress(r0.script) } : r0;
       if (!r?.script) return false;
       // round 5 (stream 2): never the same page twice in a row (a kept board is the same board on purpose, not a new page)
-      if (r.source !== "kept" && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
+      // (director5 SC2: a picture asked for re-shows the live scripted card's own board, even a page shown before)
+      if (r.source !== "kept" && r.source !== "held" && !(request && r.by === "script") && shownBefore(r.script, { avoid: onPage, seen: L.wbSeen })) { console.info(`[studio] board refused: same page as on screen (source=${r.source ?? "line"})`); return false; }
       // round 5 (sim lab boardfacts): a new page about something her line never mentions is not drawn (request.js syncedWithLine)
       // (a page drawn for what the CHILD asked to see is held to the ask, answersRequest, not to her line's words: battery
       // iter11 lost 3 such asks, "baraf / bhaap" vs "Ice / Steam", a Devanagari story page under her romanised line)
-      if (r.source !== "kept" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
+      if (r.source !== "kept" && r.source !== "held" && !ask?.requested && !ask?.intent?.request && !syncedWithLine(r.script, ask?.line?.text)) { console.info(`[studio] board refused: shares nothing with her line (source=${r.source ?? "line"})`); return false; }
       // round 4 content: the ONE gate before the board reaches the stage (the device's box, the client's own fit)
-      const g = certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
+      // (dc-r7-held-board: a split board is certified panel by panel — each is a board of its own at the scale a single board
+      // has on the height-bound 360 × 640 tray; board-first.js SPLIT_BOARD)
+      const g = r.split && Array.isArray(r.panels) ? r.panels.map((sc) => certifyForTray({ kind: "whiteboard", script: dress(sc) }, gateCtx(L, p))).find((x) => !x.ok) ?? { ok: true }
+        : certifyForTray({ kind: "whiteboard", script: r.script }, gateCtx(L, p));
       if (!g.ok) { noteRefusal(L, p, g, `board:${r.source ?? "line"}`); return false; }
       // round 4 content, the beat-by-beat board (flag): the card this beat's board is (once per slot)
       if (beatBoardOn() && !p.card) { p.card = cardFor(L, ask, r.script, { template: r.template ?? null }); }
@@ -916,10 +1096,39 @@ export const studioSeam = {
       // r12 RCA failure 7: a continue page that would land on what the child already sees is drawn on a clean board
       if (r.script.mode === "continue" && boardSync.boardModeFor(r.script, L.wbUnder ?? []) === "fresh") r.script = { ...r.script, mode: "fresh" };
       L.wbUnder = r.script.mode === "continue" ? [...(L.wbUnder ?? []), ...r.script.ops].slice(-120) : [...r.script.ops];
-      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script };
+      // round 7 (Brain R4 screen contract): what the board shows, for her line's check (textReply reads ui.studioSlot)
+      const screen = r.screen ?? boardFirst.screenOf({ template: r.template ?? null }, r.script.facts, r.script);
+      // (director7 S1, the live guard: a "?" drawn over a number her line states is flagged, never silently shown: a trace
+      // row and the artifact's statedAsUnknown, which director runs read beside the screen)
+      const statedUnknown = boardSync.statedAsUnknown(r.script, ask?.line?.text, intentId);
+      if (statedUnknown.length) {
+        traceRecord("studio.board_stated_unknown", { intentId, values: statedUnknown, source: r.source ?? "line", template: r.template ?? null });
+        console.warn(`[studio] board writes "?" over a number her line states: ${statedUnknown.join(",")} (source=${r.source ?? "line"})`);
+      }
+      // (main 2026-11-08, App 3b: page 0's `ofCard` from Brain's intent reaches the client on the script; a paged script's
+      // later pages carry theirs on `switches[]`, pagesBoard)
+      if (typeof ask?.intent?.ofCard === "boolean" && typeof r.script.ofCard !== "boolean") r.script = { ...r.script, ofCard: ask.intent.ofCard };
+      // (a paged board: `screen` is the last page; `screens` [{ from, …screen }] each page from her line's character `from`)
+      p.artifact = { kind: "whiteboard", stage: { w: r.script.board.w, h: r.script.board.h }, script: r.script, screen,
+        ...(r.screens ? { screens: r.screens } : {}), ...(statedUnknown.length ? { statedAsUnknown: statedUnknown } : {}), ...(r.altView ? { altView: r.altView } : {}) };
+      // (dc-r7-held-board: a picture's split board, and the held unit the page is)
+      if (r.split) p.artifact.split = { panels: 2, panelW: boardFirst.SPLIT_BOARD.panel };
+      if (r.held) p.artifact.held = r.held;
+      if (r.layout) p.artifact.layout = r.layout;
       p.facts = r.script.facts ?? null;
-      p.state = "revealed"; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, "replaced"); }
+      p.state = "revealed"; p.failWhy = undefined; p.revealedAt = Date.now(); p.revealedTurn = L.turn; p.boardSource = r.source ?? "line"; p.syncMs = r.syncMs ?? null;
+      // the line the page was drawn under: the numbers the talk about this board already has (keepBoardSlot)
+      p.lines = [String(ask?.line?.text ?? "").slice(0, 600)];
       L.wbPrev = r.script;
+      // (App's T55: the page left on screen — a paged board's LAST page, not the whole turn's pages)
+      L.wbPrevPage = r.lastPage ?? r.script;
+      // (director10 G1: the card that drew the page on screen; a second view or a kept page names no card of its own)
+      p.lastPage = L.wbPrevPage;
+      L.wbPrevRef = p.refKey = r.lastRef !== undefined ? r.lastRef : r.source === "kept" ? (L.wbPrevRef ?? null)
+        : r.source === "first" && r.by === "script" && !r.altView ? boardFirst.refKey(ask?.intent?.boardRef) : null;
+      // (director14 S9b: and the beat that drew it — a remediation's board up gets a second view of its own on a picture ask)
+      L.wbPrevKind = p.refKind = !L.wbPrevRef ? null : r.lastKind !== undefined ? r.lastKind : r.source === "kept" ? (L.wbPrevKind ?? null) : ask?.intent?.scriptBeat?.kind ?? null;
       (L.wbSeen ??= new Set()).add(pageSig(r.script));
       // a KEPT board is the page already up, not a new one: the notebook (board_page) does not list it twice
       if (r.source !== "kept") writeBoardPage(L, p, r.script, ask);
@@ -954,8 +1163,53 @@ export const studioSeam = {
       const failing = (given ? [{ id: shownBefore(given.script, { avoid: onPage, seen: L.wbSeen }) ? "same_page" : "tray" }] : boardSync.regate(boardSync.retime(ask.script, Math.max(800, Number(ask.script.durationMs) || 0), ctx0.speechMs), ask, ctx0).gate?.checks ?? []).filter((c) => c.pass !== true).map((c) => c.id);
       return { slotId: p.slotId, intentId, state: "failed", refused: failing.slice(0, 6) };
     }
-    const first = boardFirst.takePreselected(ask, boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] }));
+    // the approval lane (STUDIO-11; dc-r8-selection-before-generation layer 3): a scripted remediation for a mix-up the child
+    // just showed (beat rem:<misconceptionId>) that the script marks `piece` reveals the generated piece APPROVED for that mix-up
+    // (data/studio-approved: predicate checks, a render at three sizes, a separate Claude judge) when the tray gate passes it at
+    // this device's size; else the script's own board, as before. Any other child never meets it
+    const sb0 = ask?.intent?.scriptBeat;
+    if (sb0?.kind === "remediation" && sb0.piece && /^rem:./.test(String(sb0.beatId ?? ""))) {
+      const ap = approvedFor({ topicId: ask?.kit?.topicId || L.kit?.topicId || L.topicId, misconceptionId: String(sb0.beatId).slice(4) })[0] ?? null;
+      if (ap) {
+        const art = { kind: "stagecraft", stage: { w: 1000, h: 625 }, stagecraft: { rung: "generated_spec", archetype: ap.archetype, spec: ap.spec, approved: ap.id } };
+        const tg = certifyForTray(art, gateCtx(L, p));
+        if (tg.ok) {
+          Object.assign(p, { kind: "stagecraft", archetype: ap.archetype, source: "approved", approved: ap.id, artifact: art, state: "revealed", revealedAt: Date.now(), revealedTurn: L.turn,
+            facts: { kind: "game", archetype: ap.archetype, onScreen: factsOfSpec(ap.archetype, ap.spec) } });
+          if (on && on.kind === "whiteboard" && !on.retired) retirePiece(L, on.intentId, "replaced");
+          push(L, { t: "slot", slot: slotOf(p, "revealed") });
+          traceRecord("studio.approved_piece", { intentId, approved: ap.id, misconceptionId: ap.for?.misconceptionId ?? null });
+          return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+        }
+        noteRefusal(L, p, tg, "approved");
+      }
+    }
+    // dc-r7-held-board (director16): a script turn draws the unit board Brain holds — kept when it is the page up, switched at
+    // most once, its second view beside it on a picture ask. Never the line-driven ladder: refused, the page up stays
+    if (ask?.intent?.held) {
+      // (P6: the picture preselectWhiteboard decided for this intent — her line was built from its view — is the one drawn)
+      const decided = L.prePicture?.intentId === String(intentId) ? { picture: L.prePicture.pt } : {};
+      const hr = boardFirst.heldBoard(ask, { keepRef: L.wbPrevRef ?? null, keepPage: onPage ? L.wbPrevPage ?? onPage : null, ...decided });
+      if (hr && drawn(hr)) { traceRecord("studio.board_held", { intentId, unit: hr.held?.unit ?? null, changed: !!hr.held?.changed, split: !!hr.split, kept: !!hr.kept }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
+      L.pieces.delete(intentId); L.onScreen = onPrev;
+      return { slotId: p.slotId, intentId, state: "failed", refused: ["held"] };
+    }
+    // round 7 (director7 B1/S2): a turn in segments (say, then-card, closure …): one page per segment, turning at each
+    const two = ask?.intent?.then || ask?.intent?.segments?.length || ask?.intent?.cardBoard ? boardFirst.pagesBoard(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], keep: onPage ? L.wbPrevPage ?? onPage : null, keepRef: L.wbPrevRef ?? null }) : null;
+    if (two && drawn(two)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    const ctxFirst = boardSync.gateCtxFor(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [], prior: [] });
+    const first = boardFirst.takePreselected(ask, ctxFirst);
+    // director8 S3′ (main, amends SC2): a picture asked for while the card's OWN board is already the page on screen draws a
+    // second view of the same numbers (artifact.altView, Brain's line describes it); no second view → re-shown as before
+    // (director12 S4: or the same figure shaded otherwise — the card's 0-shaded bar under the 3-shaded one up)
+    const cardUp = boardFirst.sameFigure(ask?.intent?.boardRef, L.wbPrevRef);
+    if (first?.script && !first.altView && onPage && request && request.kind !== "example" && (cardUp || shownBefore(dress(first.script), { avoid: onPage }))) {
+      const alt = boardFirst.altView(ask, ctxFirst, { upKey: L.wbPrevRef ?? null });
+      if (alt && drawn(alt)) { traceRecord("studio.board_alt_view", { intentId, altView: alt.altView, template: alt.template }); return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact }; }
+    }
     if (first && drawn(first)) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
+    // (director8 S1′: the card's own board, still the page on screen and unchanged on her line, stays up: kept, not replaced)
+    if (first?.sameCard && first.script && drawn({ ...first, source: "kept" })) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // round 5 merge (main; owner-5 battery on 14.1, 2/2 "whiteboard pe bana ke samjhao" after the same page was drawn): the
     // board-first page was refused ONLY because it is the page on screen now. Her line was written from that page, so it is
     // KEPT (no second notebook entry; it redraws beside her line, as a kept continue does) instead of a slow line plan that
@@ -965,7 +1219,7 @@ export const studioSeam = {
       console.info("[studio] board-first page is the page on screen: kept");
       return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     }
-    { const st = boardFirst.pickState(ask); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
+    { const st = boardFirst.pickState(ask); noteBoardFirst(st); if (st !== "none") console.info(`[studio] board-first ${st} topic=${String(ask?.kit?.topicId ?? "").slice(0, 40)} beat=${ask?.intent?.beat ?? "-"}`); }
     // a CONTINUED board: the board on screen, re-gated on her new line, stays up NOW (her row named it); the continuation
     // plan below still runs and replaces it when it lands (the same slot's {t:"script"}), else the kept board stays.
     // Before: the slot planned with an empty stage for up to the 7 s budget (measured: 7/45 boards, lateness up to ~6 s).
@@ -974,6 +1228,13 @@ export const studioSeam = {
     // ship5 p4-content board sync: the speculative board (prepareWhiteboard), the line plan raced against the sync deadline,
     // then the kit's code board, all re-gated against her line (TAXILA_BOARD_SYNC=0: exactly deps.planWhiteboard)
     const ladder = boardSync.plan(ask, { kit: L.kit ?? undefined, prev, avoid: ask.mode === "continue" ? null : onPage, seen: L.wbSeen, redact: L.redact, budgetMs: STUDIO_LIMITS.wbBudgetMs, planWhiteboard: deps.planWhiteboard, fallbackScript,
+      // the eta is promised only for a code board the stage would take (drawn()'s pure checks: not a page already shown,
+      // shares a word with her line unless the child asked, fits the device): never a pause for a board that will not come
+      onDeadline: (at, code) => {
+        if (!Number.isFinite(at) || !code?.script || shownBefore(code.script, { avoid: onPage, seen: L.wbSeen })) return;
+        if (!ask?.requested && !ask?.intent?.request && !syncedWithLine(code.script, ask?.line?.text)) return;
+        if (certifyForTray({ kind: "whiteboard", script: code.script }, gateCtx(L, p)).ok) p.etaAt = at;
+      },
       onLateSpend: (usd) => { try { breaker.spend(usd); } catch { /* accounting never breaks a lesson */ } L.wbUsdPending = (L.wbUsdPending ?? 0) + usd; } })
       .then((r) => {
         // spend: every board counts toward the global breaker and the child's caps, drawn or not (W2-F fixer)
@@ -986,16 +1247,20 @@ export const studioSeam = {
           // telemetry: check ids only (never her line, never the child): why the board stayed calm
           const failing = (r?.gate?.checks ?? []).filter((c) => !c.pass).map((c) => c.id).slice(0, 6);
           console.info(`[studio] whiteboard not drawn ${r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40)} ${r?.ms ?? 0}ms${fallbackScript ? " (template re-gated)" : ""}`);
-          showFallbackOrFail();
+          showFallbackOrFail(r?.empty ? "nothing_to_draw" : failing.join(",") || String(r?.why ?? "").slice(0, 40) || null);
         }
       })
-      .catch(() => { if (!keptNow) showFallbackOrFail(); });
+      .catch(() => { if (!keptNow) showFallbackOrFail("error"); });
     // round 5 (14.3, owner-5): `ready` resolves to the revealed slot once the ladder has drawn a board (or null), so a turn that
     // answers the CHILD's ask can wait a moment and carry the board on its own response (drawn before her line refers to it)
-    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : null), () => null);
+    // (a board that failed over a picture: the turn's slot is that picture, back on screen)
+    const restoredSlot = () => { const img = p.restored ? L.pieces.get(p.restored) : null; return img && !img.retired && L.onScreen === img.intentId ? { slotId: img.slotId, intentId: img.intentId, state: "revealed", artifact: img.artifact } : null; };
+    const ready = ladder.then(() => (!p.retired && p.state === "revealed" && p.artifact ? { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact } : restoredSlot()), () => restoredSlot());
     if (keptNow) return { slotId: p.slotId, intentId, state: "revealed", artifact: p.artifact };
     // non-enumerable: the ack's contract shape (studio-contracts) and its JSON never carry it; server-side callers read it
-    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning" }, "ready", { value: ready, enumerable: false });
+    // round 7: when a passing code board bounds the wait, the ack says how long (her first clause may hold for it, client side)
+    const etaMs = Number.isFinite(p.etaAt) ? Math.max(0, Math.round(p.etaAt - Date.now())) : null;
+    return Object.defineProperty({ slotId: p.slotId, intentId, state: "planning", ...(etaMs != null ? { etaMs } : {}) }, "ready", { value: ready, enumerable: false });
   },
 
   /**
@@ -1018,6 +1283,50 @@ export const studioSeam = {
   },
 
   /**
+   * director8 S3′ (Brain): the second view the last preselectWhiteboard picked for this lesson ("parts": fraction-bars@1,
+   * her line describes the bars), or null. preselectWhiteboard's row is unchanged; read this right after it. Never throws.
+   */
+  /**
+   * round 7 (PASSAGE.md; main's yes 2026-11-10): a kit passage on the tray as reading matter — the kit's text exactly, paged,
+   * `page` (1-based) the page she is reading from (Brain passes it with the passage beat, and again while the question and its
+   * hints run). One piece per passage per lesson: a later call only turns the page. Certified by predicate at the device's box
+   * (tray-gate "passage"); refused → { state: "failed" } and nothing changes on screen. Never throws.
+   * @param {string} lessonId @param {{ passage: { id: string, text: string, title?: string|null, kind?: string|null }, page?: number, lang?: string|null }} o
+   */
+  showPassage(lessonId, { passage, page = 1, lang = null } = {}) {
+    try {
+      const L = lessons.get(lessonId);
+      if (!L || L.safety || L.studioControl === "off" || !passage?.id || !String(passage.text ?? "").trim()) return null;
+      const intentId = `${lessonId}:passage:${String(passage.id).slice(0, 48)}`;
+      const art = passageArtifact(passage, { page, lang });
+      const prev = L.pieces.get(intentId) ?? null;
+      const p = prev ?? { intentId, slotId: `${intentId}:slot`, kind: "passage", archetype: "passage", source: "passage", skillId: null, itemId: null, retired: false, createdAt: Date.now() };
+      const g = certifyForTray(art, gateCtx(L, p));
+      if (!g.ok) { noteRefusal(L, p, g, "passage"); return { slotId: p.slotId, intentId, state: "failed", refused: [g.why] }; }
+      Object.assign(p, { artifact: art, state: "revealed", retired: false, revealedAt: Date.now(), revealedTurn: L.turn,
+        facts: { kind: "passage", archetype: "passage", onScreen: { passage: art.passage.id, page: art.passage.page, pages: art.passage.pages.length } } });
+      if (!prev) L.pieces.set(intentId, p);
+      if (L.onScreen && L.onScreen !== intentId) retirePiece(L, L.onScreen, "replaced");
+      L.onScreen = intentId;
+      push(L, { t: "slot", slot: slotOf(p, "revealed") });
+      traceRecord("studio.passage", { intentId, passage: art.passage.id, page: art.passage.page, pages: art.passage.pages.length });
+      return { slotId: p.slotId, intentId, state: "revealed", artifact: art, page: art.passage.page, pages: art.passage.pages.length };
+    } catch { return null; }
+  },
+
+  preselectedAltView(lessonId) {
+    try { return lessons.get(lessonId)?.preAltView ?? null; } catch { return null; }
+  },
+  /**
+   * dc-r7-held-board (director16): her picture line for the second view the last preselectWhiteboard drew beside the held
+   * board, built from what that view draws ("Wahi poora ab gol: 4 barabar hisse"; never "yahi numbers" over a view with
+   * none), or null (nothing is drawn beside: her line promises no picture). Read right after preselectWhiteboard.
+   */
+  preselectedAltLine(lessonId) {
+    try { return lessons.get(lessonId)?.preAltLine ?? null; } catch { return null; }
+  },
+
+  /**
    * Round 2 content, board-first: pick the board for an accepted whiteboard ask BEFORE her line is written (turn.js, right
    * after the kernel), so her line is written from it. Same guards as requestIntent (safety, the parent's Studio switch,
    * the router's whiteboard rule, an interactive piece mid-use). Synchronous, pure, ~16 ms; never throws.
@@ -1026,6 +1335,9 @@ export const studioSeam = {
   preselectWhiteboard(ask) {
     try {
       const lessonId = ask?.line?.lessonId || ask?.intent?.lessonId;
+      // (director8 S3′: the pick's second view, for preselectedAltView; cleared on every ask, whatever it picks)
+      const L0 = lessonId ? lessons.get(lessonId) : null;
+      if (L0) { L0.preAltView = null; L0.preAltLine = null; }
       if (!lessonId || ask?.intent?.kind !== "whiteboard") return null;
       const L = lessonState(lessonId, {});
       // a continued board draws on the one on screen: her line is told what that board shows (values only), so it points
@@ -1040,11 +1352,45 @@ export const studioSeam = {
       const on = L.onScreen ? L.pieces.get(L.onScreen) : null;
       if (on && VISIBLE.has(on.state) && on.kind !== "whiteboard" && !on.grade?.complete && !(ask.replaces && ask.replaces === on.intentId)) return null;
       if (L.pieces.has(String(ask.intent.intentId))) return null;
-      return boardFirst.preselect(ask, { kit: L.kit ?? undefined, redact: L.redact ?? [],
-        certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok, pictureFirst: beatBoardOn() && firstBoardOfSkill(L, ask),
-        // round 5 (stream 2): never the page already on the board again
-        avoid: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrev ?? null : null, seen: L.wbSeen })?.row ?? null;
+      // dc-r7-held-board (director16): a script turn's board is the unit board Brain holds — no line-driven pick. Her line is
+      // written about the held board (its row); on a picture ask, about the view drawn beside it (preselectedAltLine)
+      if (ask?.intent?.held) {
+        // (P6: a picture ask is decided ONCE, here — the view and her line from the same pictureTurn call; the take draws
+        // exactly that decision, whatever its own ask carries)
+        const req = ask.intent.request;
+        // (v6.11: a second picture ask on the same held board gets the other caption shape, never the same words again)
+        const heldKey = boardFirst.refKey(ask.intent.held.board), nPic = (L.picAsks ??= {})[heldKey] ?? 0;
+        const pt = req && req.kind !== "example" ? boardFirst.pictureTurn(ask, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, variant: nPic }) : null;
+        if (pt?.view) L.picAsks[heldKey] = nPic + 1;
+        L.prePicture = { intentId: String(ask.intent.intentId), pt };
+        const hr = boardFirst.heldBoard({ ...ask, line: { ...(ask.line ?? {}), text: "" } }, { keepRef: L.wbPrevRef ?? null, keepPage: L.wbPrevPage ?? null, picture: pt });
+        L.preAltView = hr?.altView ?? null; L.preAltLine = hr?.altLine ?? null;
+        if (!hr) return null;
+        const row = boardFirst.rowOfFacts(hr.facts ?? hr.script?.facts ?? {}, boardFirst.countsOf(hr.split ? hr.panels[0] : hr.script));
+        return row && hr.split && hr.altFacts ? `${row} · beside: ${String(boardFirst.rowOfFacts(hr.altFacts, boardFirst.countsOf(hr.panels[1])) ?? "").replace(/^[^·]*·\s*/, "")}` : row;
+      }
+      const pk = boardFirst.preselect(ask, boardFirstOpts(L, ask));
+      L.preAltView = pk?.altView ?? null;
+      return pk?.row ?? null;
     } catch { return null; }
+  },
+
+  /**
+   * round 7 (C1 studio-board-timing): Brain's beat lookahead. `askAhead` is the whiteboard ask the NEXT turn is predicted to
+   * make (whiteboardIntentOf for the predicted move, that turn's intentId); its board is picked now, after this turn's
+   * response, so the next turn's preselectWhiteboard finds it ready. The same guards as preselectWhiteboard; never a
+   * continued board (it builds on what the next turn shows). Code only; never throws. → true when a board was picked.
+   */
+  prewarmWhiteboard(askAhead) {
+    try {
+      const lessonId = askAhead?.line?.lessonId || askAhead?.intent?.lessonId;
+      if (!lessonId || askAhead?.intent?.kind !== "whiteboard" || askAhead?.mode === "continue") return false;
+      const L = lessons.get(lessonId);
+      if (!L || L.safety || L.studioControl === "off") return false;
+      const decision = routerDecide({ intent: askAhead.intent, child: { bondStage: L.bondStage ?? undefined, studioControl: L.studioControl ?? "on", safetyMode: !!L.safety } });
+      if (decision.action !== "whiteboard" || L.pieces.has(String(askAhead.intent.intentId))) return false;
+      return !!boardFirst.prewarm(askAhead, boardFirstOpts(L, askAhead));
+    } catch { return false; }
   },
 
   /**
@@ -1064,6 +1410,71 @@ export const studioSeam = {
     const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
     // a picture the child asked for is taken down on the same rules as a board (turn.js leftBoard)
     return on && ["whiteboard", "image"].includes(on.kind) && on.artifact && !on.retired ? { skillId: on.skillId ?? null, itemId: on.itemId ?? null, turn: on.revealedTurn ?? null } : null;
+  },
+
+  /**
+   * 14.4 (QA D42, TEST c667c262 / ff19f258: the picture board was up, the next turn's response carried no slot (slotFor never
+   * re-sends a whiteboard) with the Director's tray "none", and the page closed while her line still talked about it,
+   * "aapne chaaron sides jodkar 160 metre nikala. Ab isi rectangle ka perimeter…"): the board on screen goes on the response
+   * again when her line still shares a word or a number with it (request.js syncedWithLine). Never a revealing slot.
+   */
+  keepBoardSlot(lessonId, line, withhold = null, move = {}) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen ? L.pieces.get(L.onScreen) : null;
+    if (!on || on.kind !== "whiteboard" || !on.artifact?.script || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    // QA on D42: which rule let a board go is a trace row (the turn's reasons said nothing)
+    const notKept = (why) => { traceRecord("studio.board_not_kept", { intentId: on.intentId, why }); return null; };
+    if (movedFrom(on, move)) return notKept("moved");
+    if (!syncedWithLine(on.artifact.script, line)) {
+      // QA on be9b766a (897a7453: triangle board, then a rocket board, then "Ab triangle par lautte hain" over an empty tray):
+      // her line went back to the board before this one; that board comes back (kept, not revealed again), on the same rules
+      const back = boardBack(L, on, line, withhold, move);
+      if (back) return back;
+      return notKept("unsynced");
+    }
+    // QA D43: her LAST sentence brings a number the board does not show ("Ab square ki har side 8 metre ho, perimeter
+    // batayiye" under the 50 x 30 rectangle): that is a new problem, and the old page goes
+    // D42 on 08f86dc5 (QA 9ce1e62e): a number the talk about THIS board already has is not new. Known: the board's own
+    // numbers, the lines it was drawn and kept under (t1 "length 50 m aur breadth 30 m" over a rectangle with no numbers),
+    // and an earlier sentence of this line whose other numbers are all known ("160 m … 50 + 30 + 50 + 30"); a sentence
+    // that starts its own numbers ("Ab square ki har side 8 metre") adds nothing, so D43's new problem still drops the page
+    const sentences = String(line ?? "").trim().split(/(?<=[.!?।])\s+/u).filter(Boolean);
+    const last = sentences.pop() ?? "";
+    const known = new Set([...boardNumbersIn(textsOf(on.artifact.script).join(" ")), ...(on.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+    for (const x of sentences) {
+      const ns = [...boardNumbersIn(x)];
+      if (ns.some((n) => known.has(n)) && ns.filter((n) => !known.has(n)).length <= 1) for (const n of ns) known.add(n);
+    }
+    if ([...boardNumbersIn(last)].some((n) => !known.has(n))) return notKept("new_number");
+    if (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold)) return notKept("withheld");   // fail closed: unknown → not re-sent
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (!g) return notKept("uncertified");
+    L.shown = { intentId: on.intentId, revealing: false };
+    on.lines = [...(on.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
+    return g;
+  },
+
+  /** 14.4 (main's release blocker on D42): the values withheld for the item open THIS turn (null when they could not be
+   *  computed). The stream replay and a re-reveal of a board already shown read them; null fails closed. */
+  noteWithheld(lessonId, values) {
+    const L = lessons.get(lessonId);
+    if (L) L.held = Array.isArray(values) ? values.map(String) : null;
+  },
+
+  /** 14.4: the slot of THIS piece when it is the board / picture on screen now (the late asked board her next line points at). */
+  onScreenSlot(lessonId, intentId, withhold = null, move = {}, line = null) {   // withhold omitted: null, fail closed (main)
+    const L = lessons.get(lessonId);
+    const on = L?.onScreen && L.onScreen === intentId ? L.pieces.get(intentId) : null;
+    if (!on || !["whiteboard", "image"].includes(on.kind) || !on.artifact || on.retired || !VISIBLE.has(on.state) || L.safety) return null;
+    // QA on ac4e8e88 (c07175b4, a12e757b: triangle, then a rocket board still being drawn, then "Board par dekho: Ab triangle
+    // par lautte hain"): a late board her line has left is never shown or pointed at; the board up then goes by the keep
+    // rules (keepBoardSlot), which bring back the board her line is about
+    if (line != null && on.kind === "whiteboard" && !syncedWithLine(on.artifact.script, line)) { traceRecord("studio.late_board_dropped", { intentId, why: "unsynced" }); return null; }
+    if (on.kind === "whiteboard" && (!Array.isArray(withhold) || writesWithheld(on.artifact.script, withhold))) return null;   // fail closed
+    if (movedFrom(on, move)) return null;
+    const g = gatedSlot(L, on, on.state, "on_screen");
+    if (g) L.shown = { intentId: on.intentId, revealing: false };
+    return g;
   },
 
   /** round 5: is a board (not a game, not a picture) what the child sees now? */
@@ -1098,7 +1509,7 @@ export const studioSeam = {
     if (on) retirePiece(L, on.intentId, "replaced");
     L.pieces.set(intentId, p);
     L.onScreen = intentId;
-    L.wbPrev = null; L.wbUnder = [];
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbPrevKind = null; L.wbUnder = [];
     const slot = slotOf(p, "revealed");
     push(L, { t: "slot", slot });
     push(L, { t: "status", status: { state: "revealed", intentId, buildSha: "image", facts: p.facts } });
@@ -1111,11 +1522,11 @@ export const studioSeam = {
     const L = lessons.get(lessonId);
     if (!L) return false;
     if (L.onScreen) retirePiece(L, L.onScreen, "cleared");
-    L.wbPrev = null; L.wbUnder = []; L.wbBeatHead = null;
+    L.wbPrev = null; L.wbPrevPage = null; L.wbPrevRef = null; L.wbPrevKind = null; L.wbUnder = []; L.wbBeatHead = null;
     return true;
   },
 
-  /** A safeguarding turn: freeze and retire everything on screen; no new piece for the rest of the lesson. */
+  /** A safeguarding turn: freeze and retire everything on screen; no new piece while the safeguard is open (onSafetyClosed). */
   onSafety(lessonId) {
     const L = lessons.get(lessonId);
     if (!L) return;
@@ -1123,13 +1534,43 @@ export const studioSeam = {
     stagecraft.noteSafety(lessonId, true);
     if (L.onScreen) retirePiece(L, L.onScreen, "safety");
   },
+
+  /** Census 2026-10-21 F9 (one lesson: five theory asks after a safeguard, no visual): the Director's safeguard episode has
+   * closed (state.safeguard null, the move no safeguard), so Studio and Stagecraft draw again. What was retired stays
+   * retired; nothing from before the safeguard is re-shown. A check-in turn is a safeguard move and freezes as before. */
+  onSafetyClosed(lessonId) {
+    const L = lessons.get(lessonId);
+    if (!L?.safety) return;
+    L.safety = false;
+    stagecraft.noteSafety(lessonId, false);
+  },
 };
+
+/** The board the one on screen followed, back on screen when her line is about it again (keepBoardSlot's rules). */
+function boardBack(L, on, line, withhold, move) {
+  const prev = on.prevBoard ? L.pieces.get(on.prevBoard) : null;
+  if (!prev || prev.kind !== "whiteboard" || !prev.artifact?.script || prev.retired || !VISIBLE.has(prev.state)) return null;
+  if (movedFrom(prev, move) || !syncedWithLine(prev.artifact.script, line)) return null;
+  const known = new Set([...boardNumbersIn(textsOf(prev.artifact.script).join(" ")), ...(prev.lines ?? []).flatMap((x) => [...boardNumbersIn(x)])]);
+  if ([...boardNumbersIn(line)].some((n) => !known.has(n))) return null;
+  if (!Array.isArray(withhold) || writesWithheld(prev.artifact.script, withhold)) return null;
+  const g = gatedSlot(L, prev, prev.state, "on_screen");
+  if (!g) return null;
+  retirePiece(L, on.intentId, "replaced");
+  L.onScreen = prev.intentId; L.wbPrev = prev.artifact.script; L.wbPrevPage = prev.lastPage ?? prev.artifact.script; L.wbPrevRef = prev.refKey ?? null; L.wbPrevKind = prev.refKind ?? null; L.wbUnder = [...prev.artifact.script.ops];
+  L.shown = { intentId: prev.intentId, revealing: false };
+  prev.lines = [...(prev.lines ?? []), String(line ?? "").slice(0, 600)].slice(-3);
+  traceRecord("studio.board_back", { intentId: prev.intentId, from: on.intentId });
+  return g;
+}
 
 function retirePiece(L, intentId, why) {
   const p = L.pieces.get(intentId);
   if (!p || p.state === "retired") return;
   const wasVisible = VISIBLE.has(p.state);
   p.state = "retired"; p.retired = true; p.retiredWhy = why;
+  // a board taken down before it drew takes the picture it was held over with it (never revealed off screen)
+  if (p.under) { const under = p.under; p.under = undefined; retirePiece(L, under, why); }
   // round 4: the child declined a game: the practice beat goes back to Stagecraft / the boards for this lesson
   // (server/stagecraft/seam-bridge.js merge)
   if ((why === "not_this" || why === "declined") && (p.source === "play" || String(p.archetype ?? "").startsWith("play:"))) L.playDeclined = true;
@@ -1327,12 +1768,20 @@ export function noteWbTiming(lessonId, { lateMs, source }) {
   console.info(`[studio] wb_timing late=${late}ms source=${src}`);
   return { ok: true };
 }
-/** p50 / p90 of the recent whiteboard lateness (ms) and the anchor sources seen. */
+/** round 7 (C1 studio-board-timing): how each whiteboard ask's board-first pick ended (used | rejected:<first check> |
+ *  pending | none), counted per process, so the share of asks on the fast rung can be read in production. */
+const boardFirstCounts = {};
+function noteBoardFirst(st) {
+  const k = String(st ?? "none").startsWith("rejected:") ? `rejected:${String(st).slice(9).split(",")[0] || "?"}` : String(st ?? "none");
+  boardFirstCounts[k] = (boardFirstCounts[k] ?? 0) + 1;
+}
+/** p50 / p90 of the recent whiteboard lateness (ms), the anchor sources seen, and the board-first outcomes. */
 export function wbTimingStats() {
   const xs = wbTiming.map((x) => x.late).sort((a, b) => a - b);
   const q = (p) => (xs.length ? xs[Math.min(xs.length - 1, Math.floor(p * xs.length))] : null);
   const sources = {}; for (const x of wbTiming) sources[x.src] = (sources[x.src] ?? 0) + 1;
-  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources };
+  const asks = Object.values(boardFirstCounts).reduce((a, b) => a + b, 0);
+  return { n: xs.length, p50: q(0.5), p90: q(0.9), sources, boardFirst: { asks, used: boardFirstCounts.used ?? 0, outcomes: { ...boardFirstCounts }, prewarm: boardFirst.prewarmStats() } };
 }
 
 export function slotSnapshot(lessonId, intentId) {
@@ -1388,3 +1837,14 @@ export const safeStudio = {
  *   bond: import("../../shared/relational").BondSnapshot | null,
  * }} StudioLessonCtx */
 export { BY_KIND };
+
+/** The board-first options for a lesson (preselectWhiteboard and the lookahead's prewarmWhiteboard pick alike). */
+function boardFirstOpts(L, ask) {
+  return { kit: L.kit ?? undefined, redact: L.redact ?? [],
+    certify: (script) => certifyForTray({ kind: "whiteboard", script }, gateCtx(L)).ok, pictureFirst: beatBoardOn() && firstBoardOfSkill(L, ask),
+    // round 5 (stream 2): never the page already on the board again
+    avoid: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrev ?? null : null, seen: L.wbSeen,
+    // (director10 G4: the card whose board is the page on screen, by its ref: that page was drawn on ITS line)
+    avoidRef: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrevRef ?? null : null,
+    avoidKind: L.onScreen && L.pieces.get(L.onScreen)?.kind === "whiteboard" ? L.wbPrevKind ?? null : null };
+}

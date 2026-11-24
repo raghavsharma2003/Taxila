@@ -1,0 +1,15 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-app-live-checks",
+   "kind": "decision",
+   "at": "2026-11-08",
+   "title": "scripts/live-checks.mjs runs the post-deploy checks against a base URL without the owner, on one fresh @taxila.test guardian (children Riya and Kabir) deleted in a finally, and prints a pass / fail / manual table:\n- pairing: redeem in an empty browser; no guardian email or sibling in any device response or on screen; parent routes refused; unpair → 401 → /pair?unpaired=1;\n- placement: both POSTs, the note, and the corner's 'Where Riya begins';\n- email code: with TAXILA_OPS_KEY; the real inbox stays MANUAL;\n- card timing: the Desk's page clock (QA log, localStorage tx.qa=1) and the card switch against the board player's erase, ±300 ms; best effort, MANUAL when no paged turn comes.\nExercised end to end against a mock with Platform's semantics. Reverse: Platform builds a server-side test harness that supersedes it.",
+   "source": "inbox/r7-app-33.json"
+  }
+ ],
+ "edges": [],
+ "md": {
+  "decisions": "## `dc-r7-app-live-checks`\nAfter a deploy, one command says whether pairing, placement, sign-in by code and the card's timing really work, on a test family it makes and removes itself.\n"
+ }
+}

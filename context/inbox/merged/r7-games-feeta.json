@@ -1,0 +1,27 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-games-feeta",
+   "kind": "decision",
+   "at": "2026-11-05",
+   "title": "feeta (length and distance) as one never-timed law family for classes 4-5: measure (a ribbon cut against a ruler that may be broken; a rope in m + cm cut off a cm tape), compare (lengths racked shortest first, rolled out to one scale), fence (a garden fenced from a roll in m; squares, some lengths, equal sides), trip (a metre-only trip meter set to km + m). 4 topics: c4-maths-ch06-t01, c4-maths-ch06-t02, c5-maths-ch05-t01, c5-maths-ch05-t02. Why: the four length topics were served only by ITEM-ARENA. Reverse: a child pilot shows the counters are typed as answers rather than read off the tape."
+  },
+  {
+   "id": "ms-r7-games-feeta-cert",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "feeta play-cert (forge3-qa, p360/p412/l1366, game mounted): every feeta sample passes at every size; 38 law and server tests pass."
+  }
+ ],
+ "edges": [
+  {
+   "src": "dc-r7-games-feeta",
+   "rel": "measured_by",
+   "dst": "ms-r7-games-feeta-cert"
+  }
+ ],
+ "md": {
+  "decisions": "## `dc-r7-games-feeta`\n\n**feeta** (length and distance, classes 4-5) is a law family. Nothing in it runs on a clock: the child sets a measuring instrument (or racks lengths), presses go, and the law answers with plain arithmetic in one unit (cm for ribbons and ropes, m for fences and trips). Every length is written as a person writes it (2 m 8 cm, 1 km 50 m, 150 cm), while the instrument counts in one unit only, so changing units IS the act.\n\n- **measure/ribbon** (c4-maths-ch06-t01 s1): a pencil lies from one mark to another on a ruler. From look 2 the ruler is broken and starts past 0. The child cuts a ribbon just as long on a whole ruler from 0. The run lays the ribbon beside the pencil.\n- **measure/rope** (c4-maths-ch06-t01 s2): a rope ordered in m + cm is cut off a tape marked in cm only. The run hangs it beside metre sticks.\n- **compare/order** (c4-maths-ch06-t01 s2 with cm / m; c5-maths-ch05-t02 s1/s2 with km / m / km + m): rack 3-4 lengths shortest first. The run rolls them all out to one scale.\n- **fence/fence** (c4-maths-ch06-t02 s1-s3): fence a rectangle, square or L-shaped garden:\n  - look 1: 1 m squares only;\n  - look 2: squares and some lengths;\n  - look 3: some lengths only, the rest follow from equal sides.\n  The child cuts the fence off a roll in m; the run walks it round from the gate.\n- **trip/odo** (c5-maths-ch05-t01 s1/s2): set a metre-only trip meter, one digit wheel per place, to a trip written in km + m. The cycle rides and stops where the meter runs out.\n\nMal-rules map only to the topic's own kit ids:\n\n| Mal-rule | Kit id |\n|---|---|\n| end-number, count-marks | edge-start |\n| m-is-10 | m-is-10cm |\n| ignore-units | number-ignores-unit (c4) / ignore-units (c5) |\n| labelled-only | two-sides |\n| area | area-confusion |\n| border-squares | border-squares |\n| km-100 | km-100m |\n| concat | mixed-concat (c5 t01 and t02) |\n\nA shared set-up names no belief. So the c4 joined-units belief (2 m 8 cm as 28 cm, the same rope as 1 m = 10 cm) is never claimed.\n\n**Not admitted** (no honest mechanic yet):\n- c4-maths-ch06-t01-s3 (estimate and choose cm or m)\n- c5-maths-ch05-t01-s3 (choose a unit)\n- c5-maths-ch05-t02-s3 (how much farther; subtract-separately)\n\n**Why:** the four length topics were served only by ITEM-ARENA.\n\n**Reverse if** a child pilot shows the instruments' counters are entered as answers (a quiz in costume) rather than read off the tape, so the unit beliefs never surface.\n",
+  "measurements": "## `ms-r7-games-feeta-cert`\n\nfeeta play-cert, 2026-11-05 (forge3-qa, local harness, sizes p360 / p412 / l1366, the game mounted, every art direction).\n\n- **Cert:** every feeta sample passes at every size. Counts are in server/forge3/certs/play.json.\n- **Tests:** tests/r7-games-feeta.test.mjs, 38 tests. An independent checker in millimetres agrees with the law over at least 2000 random acts per case. It walks the ruler's spaces, counts the garden's unit edges square by square, and turns every written length into mm with its own table. Generator p95 is under 5 ms.\n"
+ }
+}

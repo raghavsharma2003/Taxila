@@ -1,7 +1,7 @@
 // The play dev harness (never shipped in the app bundle; built only by the stream's shot/fps harness). It builds a level
 // in the browser with the same generator and picker the server runs, mounts PlayStage at the full viewport, picks the
 // teacher's micro-lines from the same authored bank with the same guards, and exposes window.__play for the harness.
-//   ?family=todo-jodo&mode=atoms&goal=atoms&art=kagaz&lang=hinglish&class=6&fade=1&seed=3&topic=…&skill=…
+//   ?family=todo-jodo&mode=atoms&goal=atoms&art=kagaz&lang=hinglish&class=6&fade=1&seed=3&topic=…&skill=…&focus=<mal-rule>
 import { createRoot } from "react-dom/client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import "../../styles/fonts.css";
@@ -15,6 +15,7 @@ import bankJson from "../../../data/play/reactions.json";
 import antJson from "../../../data/play/reactions/antariksh.json";
 import { dressFor, validateDelta } from "../engines/core3d/api.ts";
 import { baseDress } from "../engines/core3d/dress.ts";
+import { engineFor } from "../engines/registry.ts";
 import nazariyaBank from "../../../data/play/reactions/nazariya.json";
 
 const q = new URLSearchParams(location.search);
@@ -38,14 +39,18 @@ const harder = q.get("harder") === "1";
 const engine = (q.get("engine") ?? "auto") as "auto" | "2d" | "3d";
 const verb = (q.get("verb") === "scan" ? "scan" : "fire") as "fire" | "scan";
 // a dress from the query (validated field by field exactly as the server validates a model's delta)
-const devDelta = validateDelta("antariksh", Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
+// the dress is the engine that renders this law (Antariksh when none does, as before)
+const devEngine = engineFor(family, mode, goal)?.id ?? "antariksh";
+const devDelta = validateDelta(devEngine, Object.fromEntries(["theme", "wrapper", "music", "pace", "teacherMove"].filter((k) => q.get(k)).map((k) => [k, q.get(k)])));
 const devSecure = q.get("secure") === "1";
 const devSound = q.get("sound") === "1";   // harness: the music duck check needs an unmuted bus
+// GAMES-01: ?focus=<mal-rule> serves the level the picker gives when the Director's focus names that belief (dev:<mal>)
+const devFocus = q.get("focus");
 
 function makeLevel(seed: number, door?: "garam" | "teekha"): { garam: PlayLevel; teekha: PlayLevel | null } | null {
   const logic = logicFor(family, mode); if (!logic) return null;
   const misMap: Record<string, string> = Object.fromEntries(logic.malRules.map((m) => [m, `dev:${m}`]));
-  const req: GenRequest = { family, mode, topicId, skillId, classLevel, fade, goal, mis: {}, misMap, grammar, recent: [], seed, harder: harder || door === "teekha" };
+  const req: GenRequest = { family, mode, topicId, skillId, classLevel, fade, goal, mis: {}, misMap, grammar, recent: [], seed, harder: harder || door === "teekha", ...(devFocus ? { focus: `dev:${devFocus}` } : {}) };
   const r = pickLevels(logic, req);
   return r ? { garam: r.garam, teekha: r.teekha } : null;
 }
@@ -71,7 +76,7 @@ function App() {
   const engineOnScreen = useRef<string | null>(null);
   const art = useMemo(() => artParam ?? pickArt({ family, subject: family === "kyun-lab" ? "science" : "maths", topicId, classLevel }).art, []);
   useEffect(() => { setSolved(false); }, [levels]);
-  const dress = useMemo(() => dressFor({ engine: "antariksh", base: baseDress({ engine: "antariksh", key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
+  const dress = useMemo(() => dressFor({ engine: devEngine, base: baseDress({ engine: devEngine, key: levels?.garam.levelId ?? "none", lang, firstLevel: demo }), delta: devDelta, classLevel, secure: devSecure, childMusicOn: false, lessonLang: lang, verb }), [levels]);
   if (!levels) return <p style={{ color: "#fff" }}>no level</p>;
   const level = levels.garam;
   const next = makeLevel(seed + 101);
@@ -83,7 +88,7 @@ function App() {
   (window as unknown as { __playLevel: PlayLevel; __playNext: unknown }).__playLevel = level;
   return (
     <div style={{ position: "fixed", inset: 0 }}>
-      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress}
+      <PlayStage level={level} art={art} lang={lang} classLevel={classLevel} caption={caption} teacherName="Ira" debug demo={demo} reducedMotion={reduced} sound={devSound} engine={engine} verb={verb} dress={dress} why={q.get("why")}
         doors={solved ? doors.map((d) => ({ ...d, hint: d.door === "garam" ? (lang === "en" ? "one more like this" : "isi tarah ka ek aur") : (lang === "en" ? "a bit harder" : "thoda mushkil") })) : null}
         onDoor={(d) => { setDoor(d.door); setSeed((s) => s + 101); setCaption(null); }}
         world={WORLD}

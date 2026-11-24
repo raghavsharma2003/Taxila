@@ -17,6 +17,7 @@ import type { TeacherFloor } from "../../ui/teacher/Teacher.tsx";
 import { kakshaThemeFor } from "./tokens.ts";
 import { kt } from "./copy.ts";
 import { lookAttr } from "./look.ts";
+import type { TapSource } from "../../avatar/tap.ts";
 
 export function KakshaRoot({ family, reducedMotion, screen, children }: { family: "young" | "older"; reducedMotion: boolean; screen: string; children: ReactNode }) {
   return (
@@ -127,14 +128,16 @@ export interface CommsProps {
   showName?: boolean;
   className?: string;
   style?: CSSProperties;
+  /** Her output meters (lip-sync) when she speaks outside a lesson: the home's daily greeting (Face stream). */
+  meters?: TapSource[];
 }
 
-export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style }: CommsProps) {
+export function Comms({ teacherId, teacherName, band, floor = "idle", framing = "medium", form = "live", tier, reducedMotion, showName = true, className, style, meters }: CommsProps) {
   const speaking = floor === "speaking" || floor === "showing";
   return (
     <figure className={`kx-comms kx-cut${className ? ` ${className}` : ""}`} style={style} data-speaking={speaking ? "" : undefined}>
       <div className="kx-comms-lit" aria-hidden="true" />
-      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false}
+      <Teacher teacherId={teacherId ?? undefined} band={band} form={form} tier={tier} floor={floor} framing={framing} label="none" ground={false} meters={meters}
         lights="up" reducedMotion={reducedMotion} className="kx-comms-face" />
       <i className="kx-tick kx-tick--a" aria-hidden="true" />
       <i className="kx-tick kx-tick--b" aria-hidden="true" />

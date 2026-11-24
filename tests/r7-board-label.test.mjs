@@ -1,0 +1,109 @@
+// round 7 (C1 studio-board-richness): a labelled diagram for a kit that is ABOUT a thing's parts (label-pick.js), each
+// label the kit's own word on a leader line to the part it names, and every anchor ON a drawn part (the old plant sketch
+// pointed "fruit" at a leaf: no fruit was drawn).
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { labelCall } from "../server/forge/explainer/label-pick.js";
+import { expand } from "../server/forge/explainer/templates.js";
+import { explainerFor } from "../server/forge/explainer/lesson.js";
+import { retime } from "../server/stagecraft/board-sync.js";
+import { kitFromFile } from "../server/content/kits.js";
+import { getTopic } from "../server/content/curriculum.js";
+import { gateWhiteboard } from "../server/studio/qa/whiteboard.js";
+import { opGeometry } from "../shared/whiteboard.js";
+
+test("a kit about a plant's parts gets the plant; a kit that only mentions leaves and soil does not", () => {
+  const plant = labelCall({ expectations: ["A plant has roots, a stem, leaves, flowers and fruits."] });
+  assert.equal(plant.sketch, "plant");
+  assert.deepEqual(plant.labels.map((l) => l.text), ["root", "stem", "leaf", "flower", "fruit"]);
+  assert.equal(labelCall({ expectations: ["Kinds of waste: flowers, leaves and soil can be composted at home."] }), null, "no stem, no root: not a plant diagram");
+  const flower = labelCall({ expectations: ["In a flower the petals attract insects; stamens and the pistil are the reproductive parts."] });
+  assert.equal(flower.sketch, "flower");
+  assert.deepEqual(flower.labels.map((l) => l.anchor), ["petal", "stamen", "pistil"]);
+});
+
+test("c3 'Parts of a plant': the explain rung draws the labelled plant, every label's anchor sits on a drawn part, the gates pass", () => {
+  const kit = kitFromFile(getTopic("c3-evs-ch04-t01"));
+  const ex = explainerFor({ lessonId: "L", kit, band: "B3" });
+  assert.equal(ex?.template, "label@1");
+  const call = labelCall(kit);
+  const x = expand(call, { band: "B3" });
+  assert.ok(x.ok, x.errors?.join(","));
+  // every leader line ends on a drawn op of the sketch (its box, a few units of slack)
+  const sketch = x.script.ops.filter((o) => /^k\d+$/.test(o.id));
+  const boxes = sketch.map((o) => opGeometry(o).box);
+  // a label op carries its own leader, from the word to `to` (its anchor)
+  const labels = x.script.ops.filter((o) => o.op === "label");
+  assert.equal(labels.length, call.labels.length);
+  for (const l of labels) {
+    assert.ok(Array.isArray(l.to), `${l.text} has a leader`);
+    const on = boxes.some((b) => l.to[0] >= b.x - 4 && l.to[0] <= b.x + b.w + 4 && l.to[1] >= b.y - 4 && l.to[1] <= b.y + b.h + 4);
+    assert.ok(on, `"${l.text}" points at ${JSON.stringify(l.to)}, on a drawn part`);
+  }
+  const fruitAt = [176, 160];
+  const fruit = sketch.find((o) => o.op === "circle" && Math.hypot(o.c[0] - fruitAt[0], o.c[1] - fruitAt[1]) <= o.r);
+  assert.ok(fruit, "the fruit's anchor is inside the drawn fruit");
+  const line = "Dekho is plant ko: " + call.labels.map((l) => l.text).join(", ") + ".";
+  const g = gateWhiteboard(retime(x.script, x.script.durationMs, 7000), { reply: line, speechMs: 7000 });
+  assert.equal(g.pass, true, JSON.stringify(g.checks.filter((c) => !c.pass)));
+});
+
+test("a circuit lesson gets the circuit: the kit's own word for the cell ('battery' stays 'battery'), and a bulb is required", () => {
+  const c = labelCall({ expectations: ["A closed circuit: a battery, connecting wires, a bulb and a switch."] });
+  assert.equal(c.sketch, "circuit");
+  assert.deepEqual(c.labels.map((l) => [l.anchor, l.text]), [["cell", "battery"], ["wire", "wire"], ["bulb", "bulb"], ["switch", "switch"]]);
+  assert.equal(labelCall({ expectations: ["In a circuit the cell, the wires and a switch carry the current."] }), null, "no bulb: not this sketch");
+  const x = expand(c, { band: "B3" });
+  assert.ok(x.ok, x.errors?.join(","));
+  const sketch = x.script.ops.filter((o) => /^k\d+$/.test(o.id)).map((o) => opGeometry(o).box);
+  for (const l of x.script.ops.filter((o) => o.op === "label")) assert.ok(sketch.some((b) => l.to[0] >= b.x - 4 && l.to[0] <= b.x + b.w + 4 && l.to[1] >= b.y - 4 && l.to[1] <= b.y + b.h + 4), `"${l.text}" points at a drawn part`);
+  const g = gateWhiteboard(retime(x.script, x.script.durationMs, 7000), { reply: "Is circuit mein battery, wire, bulb aur switch hain.", speechMs: 7000 });
+  assert.equal(g.pass, true, JSON.stringify(g.checks.filter((k) => !k.pass)));
+});
+
+// round 7 (C1 board richness, cells and atoms): the labelled-diagram set's last two things. A part's label is the kit's
+// word, singular ("nucleus" stays nucleus, never "nucleu"; "batteries" → battery) and short enough for its column
+// ("cell membrane" → membrane); every anchor sits on a drawn part, and no label leaves the board or touches the sketch.
+const onPart = (x) => {
+  const sketch = x.script.ops.filter((o) => /^k\d+$/.test(o.id)).map((o) => opGeometry(o).box);
+  for (const l of x.script.ops.filter((o) => o.op === "label")) {
+    assert.ok(sketch.some((b) => l.to[0] >= b.x - 4 && l.to[0] <= b.x + b.w + 4 && l.to[1] >= b.y - 4 && l.to[1] <= b.y + b.h + 4), `"${l.text}" points at a drawn part`);
+    const b = opGeometry(l).box;
+    assert.ok(b.x >= 0 && b.x + b.w <= 400, `"${l.text}" stays on the board`);
+  }
+};
+const gated = (x, call) => gateWhiteboard(retime(x.script, x.script.durationMs, 7000), { reply: `Dekho: ${call.labels.map((l) => l.text).join(", ")}.`, speechMs: 7000 });
+
+test("label words: singular from the kit's own list, never a clipped word; a long name gives way to the part's short name", () => {
+  const atom = labelCall({ expectations: ["An atom has a nucleus with protons and neutrons; electrons move in shells around it."] });
+  assert.equal(atom.sketch, "atom");
+  assert.deepEqual(atom.labels.map((l) => l.text), ["nucleus", "proton", "neutron", "shell", "electron"]);
+  assert.equal(labelCall({ expectations: ["A circuit with two batteries, wires and a bulb."] }).labels[0].text, "battery");
+  const cell = labelCall({ expectations: ["A plant cell has a cell wall, a cell membrane, cytoplasm, a large vacuole, a nucleus and chloroplasts."] });
+  assert.equal(cell.sketch, "cellPlant");
+  assert.deepEqual(cell.labels.map((l) => l.text), ["cell wall", "membrane", "cytoplasm", "vacuole", "nucleus", "chloroplast"]);
+  const animal = labelCall({ expectations: ["An animal cell has a cell membrane, cytoplasm and a nucleus."] });
+  assert.equal(animal.sketch, "cellAnimal", "no wall named: the animal cell");
+});
+
+for (const [id, sketch] of [["c8-science-ch02-t01", "cellPlant"], ["c9-science-ch02-t01", "cellPlant"], ["c9-science-ch08-t02", "atom"], ["c9-science-ch08-t03", "atom"], ["c9-science-ch08-t04", "atom"]]) {
+  test(`${id}: the explain rung draws the labelled ${sketch}, every anchor on a drawn part, and the gates pass`, () => {
+    const kit = kitFromFile(getTopic(id));
+    assert.equal(explainerFor({ lessonId: "L", kit, band: "B3" })?.template, "label@1");
+    const call = labelCall(kit);
+    assert.equal(call.sketch, sketch);
+    const x = expand(call, { band: "B3" });
+    assert.ok(x.ok, x.errors?.join(","));
+    onPart(x);
+    const g = gated(x, call);
+    assert.equal(g.pass, true, JSON.stringify(g.checks.filter((c) => !c.pass)));
+  });
+}
+
+test("the animal cell board: a round membrane, no wall, labels on its parts, gates pass", () => {
+  const call = { template: "label@1", sketch: "cellAnimal", labels: [{ anchor: "membrane", text: "membrane" }, { anchor: "cytoplasm", text: "cytoplasm" }, { anchor: "nucleus", text: "nucleus" }] };
+  const x = expand(call, { band: "B3" });
+  assert.ok(x.ok, x.errors?.join(","));
+  onPart(x);
+  assert.equal(gated(x, call).pass, true);
+});

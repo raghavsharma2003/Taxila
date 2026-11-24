@@ -1,0 +1,74 @@
+diff --git a/src/child/copy.ts b/src/child/copy.ts
+index 4660bb6c..09ff7ef6 100644
+--- a/src/child/copy.ts
++++ b/src/child/copy.ts
+@@ -100,8 +100,7 @@ const S = {
+   soundsOlder: "Sound effects",
+   talkMode: "Talk mode",
+   tapToTalk: "Tap to talk",
+-  openMic: "Open mic (headphones only)",
+-  openMicNeeds: "Plug in headphones to use open mic.",
++  openMic: "Hands-free (just talk)",
+   teacherFace: "Teacher's face",
+   faceMoving: "Moving",
+   faceStill: "Still picture",
+diff --git a/src/child/prefs.ts b/src/child/prefs.ts
+index dff0a4b9..fb108e65 100644
+--- a/src/child/prefs.ts
++++ b/src/child/prefs.ts
+@@ -10,7 +10,8 @@ export interface ChildPrefs {
+   sounds: boolean | null;
+   /** Haptic tick on YOUR TURN where supported. */
+   haptics: boolean;
+-  /** Talk mode: tap-to-talk (default) or open mic (Older, headset only). */
++  /** Talk mode: hands-free ("open", the default for every child, round 7 decision D2: the duplex ear cancels her own voice,
++   *  no headset needed) or tap-to-talk (the child's own choice; also the visible fallback when the ear cannot run). */
+   talk: "tap" | "open";
+   /** Older presentation: face · small (PiP) · voice and board only. */
+   face: "face" | "small" | "voice";
+@@ -40,7 +41,7 @@ export interface ChildPrefs {
+ }
+ 
+ export const DEFAULT_PREFS: ChildPrefs = {
+-  captionsAlways: false, sounds: null, haptics: true, talk: "tap", face: "face", quiet: false, world: null,
++  captionsAlways: false, sounds: null, haptics: true, talk: "open", face: "face", quiet: false, world: null,
+   largeText: false, calm: false, bandUp: false, theme: "system", mirror: false, hello: false, picture: null, address: null,
+   shortcuts: true, pttNoteSeen: false,
+ };
+diff --git a/src/child/screens/Me.tsx b/src/child/screens/Me.tsx
+index d6e18e55..8f03634b 100644
+--- a/src/child/screens/Me.tsx
++++ b/src/child/screens/Me.tsx
+@@ -14,7 +14,6 @@ import { ChildScreen } from "../chrome.tsx";
+ import { useChild } from "../ChildShell.tsx";
+ import { t } from "../copy.ts";
+ import { tw } from "../../copy/en.ts";
+-import { useHeadset } from "../lesson/headset.ts";
+ import { AVATARS, Avatar, avatarName, Icon, Picto, type IconName } from "../pictos.tsx";
+ import { usePlan } from "../plan.ts";
+ import type { ChildPrefs } from "../prefs.ts";
+@@ -57,7 +56,6 @@ export function Me() {
+   const { plan } = usePlan(cid);
+   const rec = useTeacher(child.teacher_id, band);
+   const older = family === "older";
+-  const headset = useHeadset();
+   const [picking, setPicking] = useState(false);
+   const ic = (name: IconName, picto: string) => (older ? <Icon name={name} size={24} /> : <Picto id={picto} size={40} />);
+   const sounds = prefs.sounds ?? !older;
+@@ -93,12 +91,10 @@ export function Me() {
+           on={prefs.quiet} set={(v) => setPrefs({ quiet: v })} icon={ic("text", "picto/captions")} />
+         <Switch id="sounds" label={older ? t("soundsOlder") : t("soundsYoung")} on={sounds} set={(v) => setPrefs({ sounds: v })}
+           icon={ic("sound", sounds ? "picto/sound-on" : "picto/sound-off")} />
+-        {older && (
+-          <Choice id="talk" label={t("talkMode")} value={headset && prefs.talk === "open" ? "open" : "tap"} icon={ic("mic", "picto/mic")}
+-            options={[{ v: "tap", label: t("tapToTalk") }, ...(headset ? [{ v: "open" as const, label: t("openMic") }] : [])]}
+-            set={(v) => setPrefs({ talk: v as ChildPrefs["talk"] })} />
+-        )}
+-        {older && !headset && <li className="me-hint">{t("openMicNeeds")}</li>}
++        {/* round 7 (D2): hands-free is every child's default, no headset needed; tap-to-talk stays their own choice */}
++        <Choice id="talk" label={t("talkMode")} value={prefs.talk === "tap" ? "tap" : "open"} icon={ic("mic", "picto/mic")}
++          options={[{ v: "open", label: t("openMic") }, { v: "tap", label: t("tapToTalk") }]}
++          set={(v) => setPrefs({ talk: v as ChildPrefs["talk"] })} />
+         {older && (
+           <Choice id="face" label={t("teacherFace")} value={prefs.face} icon={ic("face", "picto/ai-teacher")}
+             options={[{ v: "face", label: t("faceMoving") }, { v: "small", label: t("faceStill") }, { v: "voice", label: t("faceVoice") }]}

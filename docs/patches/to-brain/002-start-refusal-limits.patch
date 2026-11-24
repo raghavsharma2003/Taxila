@@ -1,0 +1,14 @@
+From: F Learning (round 7, dc-r7 D5: every parent control is wired or hidden)
+Subject: lesson start honours the family's own daily-limit opt-in
+
+The daily limit and lesson hours are now each family's opt-in (child_controls.limits_on, migration 035; Controls →
+"Daily limit and lesson hours"). planFor (child.js) computes the home state with the child's flag and exposes it as
+plan.limits. startRefusal's default (dayLimitsOn: TAXILA_DAY_LIMITS=on only) would ignore an opted-in family's cap at the
+start, so the start passes the child's flag. With the flag off the state is never capped/resting/done, so nothing changes
+for a family that has not opted in.
+
+--- a/server/routes/lesson.js
++++ b/server/routes/lesson.js
+@@ -255,1 +255,1 @@
+-  const refusal = startRefusal(dayPlan.state, body.purpose);
++  const refusal = startRefusal(dayPlan.state, body.purpose, { limits: dayPlan.plan?.limits === true });

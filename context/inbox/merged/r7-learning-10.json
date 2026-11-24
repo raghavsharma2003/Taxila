@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "dc-r7-test-window-revision",
+   "kind": "decision",
+   "at": "2026-11-04",
+   "title": "Round 7 F (learning-test-window-revision): the parent's school test window can name its chapters (Controls → School → Which chapters, up to 12). Inside the window a plain Start revises only those chapters (content/next-topic.js revisionPick): the first topic not done yet, back-chaining only inside the chapters, else a review; in the last two days no new topic (a topic already met: weak, then in progress, then learned; a never-met chapter is taught only if nothing in the chapters was met). The parent's window now reaches the Conductor (school.test_announced with the parent's first day and chapters; new school.test_cleared), which it never did before, so the planner's test mode (newSkillBudget 0 in the last two days, LessonBrief holdNewTopics) and the weekly report's S17 line now fire for parent-entered windows. Reverse if: parents say the chapter list is too much to enter (then infer it from the school pointer)."
+  }
+ ],
+ "edges": [],
+ "md": { "decisions": "", "measurements": "", "rejected": "" }
+}

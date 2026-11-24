@@ -1,0 +1,17 @@
+{
+ "nodes": [
+  {"id": "fd-r7-m3-verification-date-2026-07-15", "kind": "finding", "at": "2026-11-06",
+   "title": "Founders Hub business verification completed on 2026-07-15. Source: a mail from Microsoft's Startup and Partner Programs Ops Desk that day (support ticket 2607100030006859, opened 2026-07-10 after the first attempt failed) saying business verification 'has been completed successfully'. Under the 180-day clause, the deadline is 2027-01-11, and day 1 of the 60 must fall on or before 2026-11-13. Counting from the ticket (worst case), the deadline is 2027-01-06 and day 1 must fall on or before 2026-11-08. The 2026-07-08 date used on 2026-11-05 was the sponsorship's start, and it was a week too early. The portal's own recorded date was not read."},
+  {"id": "dc-r7-m3-apply-by-2026-11-07", "kind": "decision", "at": "2026-11-06",
+   "title": "Apply the M3 automation (scripts/m3.mjs apply --apply --start-now --vm) by 2026-11-07, so that day 1 is 2026-11-08 at the latest, which fits even the worst-case deadline. The VM is taken as a yes from the owner's 2026-11-06 message ('rent or whatever we need'): 7 services, 2 spare. The PostgreSQL downsize stays off until the owner says yes, because it touches a database and is not needed to qualify. Blocked: this environment has no Azure keys. Reverse if the Founders Hub portal shows a different verification date, or if the owner declines the VM."}
+ ],
+ "edges": [
+  {"src": "fd-r7-m3-verification-date-2026-07-15", "rel": "supersedes", "dst": "open-r7-m3-verification-deadline"},
+  {"src": "dc-r7-m3-apply-by-2026-11-07", "rel": "caused_by", "dst": "fd-r7-m3-verification-date-2026-07-15"},
+  {"src": "dc-r7-m3-apply-by-2026-11-07", "rel": "part_of", "dst": "dc-r7-m3-credit-unlock"}
+ ],
+ "md": {
+  "decisions": "## `dc-r7-m3-apply-by-2026-11-07` (2026-11-06)\n\nApply `node scripts/m3.mjs apply --apply --start-now --vm` by 2026-11-07, so that day 1 is 2026-11-08 at the latest.\n- **Why that date:** it meets even the worst-case deadline (`fd-r7-m3-verification-date-2026-07-15`).\n- **The VM:** taken as a yes from the owner's 2026-11-06 message (\"rent or whatever we need\"). That makes 7 services, with 2 spare. The spare also covers the risk that Foundry Models and Foundry Tools are counted as one service.\n- **The PostgreSQL downsize:** stays off until the owner says yes. It touches a database and is not needed to qualify.\n- **Blocked on:** the Azure keys. This environment has no environment variables and no network secrets.\n\n**Reverse if** the Founders Hub portal shows a different verification date, or the owner declines the VM.\n",
+  "open": "## `fd-r7-m3-verification-date-2026-07-15` (2026-11-06)\n\nResolves `open-r7-m3-verification-deadline`.\n\n**Business verification completed on 2026-07-15.** Microsoft's Startup and Partner Programs Ops Desk mailed that day (ticket 2607100030006859) that it \"has been completed successfully\". The ticket was opened 2026-07-10, after the first attempt failed.\n\n| Counting from | Deadline (180 days) | Day 1 of the 60 must fall on or before |\n|---|---|---|\n| 2026-07-15, verification completed | 2027-01-11 | 2026-11-13 |\n| 2026-07-10, ticket opened (worst case) | 2027-01-06 | 2026-11-08 |\n\nThe earlier date, 2026-07-08, was the sponsorship's start. It was used on 2026-11-05 and was a week too early. The portal's own recorded date has not been read.\n"
+ }
+}

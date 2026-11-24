@@ -11,13 +11,14 @@
 //   });
 //   done();
 //
-// Base URL: TAXILA_BASE (run.mjs sets it from --base), else the production URL. Run under NODE_USE_ENV_PROXY=1 so
+// Base URL: TAXILA_BASE (run.mjs sets it from --base). There is NO default: unset means this module throws on import
+// (tests/prod/base.mjs). Run under NODE_USE_ENV_PROXY=1 so
 // fetch goes through the sandbox proxy. Timing gates run ONLY from the Azure probe fleet with no route interception
 // (b4-rejected-perf-with-route-interception); from the sandbox these tests are correctness checks.
 // File names must not match node --test's patterns (*.test.mjs, test-*.mjs): `npm test` must never hit production.
 
-export const PROD_BASE = "https://taxila-web.nicebay-a0d3a12f.eastus2.azurecontainerapps.io";
-export const BASE = (process.env.TAXILA_BASE || PROD_BASE).replace(/\/+$/, "");
+import { resolveBase } from "./base.mjs";
+export const BASE = resolveBase(process.env.TAXILA_BASE);
 export const isLocal = /^https?:\/\/(localhost|127\.0\.0\.1)(:|\/|$)/.test(BASE);
 
 // ───────────────────────────── results ─────────────────────────────

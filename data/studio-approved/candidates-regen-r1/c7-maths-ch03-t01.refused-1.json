@@ -1,0 +1,95 @@
+{
+  "v": 1,
+  "target": {
+    "topicId": "c7-maths-ch03-t01",
+    "archetype": "instrument@1",
+    "misconceptionId": "c7-maths-ch03-t01-m-no-fraction-link",
+    "skillId": "c7-maths-ch03-t01-s1",
+    "beat": "rem:c7-maths-ch03-t01-m-no-fraction-link",
+    "when": "remediation",
+    "check": "c7-maths-ch03-t01-s1:c1"
+  },
+  "why": "unverified_key",
+  "checks": null,
+  "spec": null,
+  "validator": {
+    "fellBack": false,
+    "repairs": [
+      "enum:show",
+      "num:target"
+    ]
+  },
+  "raw": {
+    "archetype": "instrument@1",
+    "skills": [
+      "c7-maths-ch03-t01"
+    ],
+    "lang": "hinglish",
+    "strings": {
+      "round": "Daura",
+      "measured": "naapa gaya",
+      "precision": "safai",
+      "hold": "Dhaalne ke liye roko",
+      "release": "Chhodo",
+      "cut": "Kaato",
+      "set": "Taiyaar karo",
+      "am": "subah",
+      "pm": "dopahar",
+      "tapAt": "Jab nishaan aaye tab tap karo",
+      "runDone": "Bench khaali",
+      "offBy": "antar",
+      "exact": "BILKUL SAHI",
+      "after": "baad mein",
+      "minutes": "min",
+      "balanced": "barabar",
+      "heavy": "parcel bhaari",
+      "light": "baat halka"
+    },
+    "title": "Maap ko samjho",
+    "rounds": [
+      {
+        "mode": "cut",
+        "title": "Patti ko dekho",
+        "sub": "nishaan par dhyaan do",
+        "items": [
+          {
+            "target": 10,
+            "show": "m"
+          },
+          {
+            "target": 70,
+            "show": "m"
+          },
+          {
+            "target": 36,
+            "show": "m"
+          }
+        ],
+        "scaleMax": 100,
+        "minor": 1,
+        "tol": 0,
+        "speed": 1
+      },
+      {
+        "mode": "pour",
+        "title": "Grid bharna",
+        "sub": "chhote khaane gin kar chuno",
+        "items": [
+          {
+            "target": 40,
+            "show": "grid"
+          },
+          {
+            "target": 4,
+            "show": "grid"
+          }
+        ],
+        "scaleMax": 100,
+        "minor": 1,
+        "tol": 0,
+        "speed": 0.9,
+        "targets": "c7-maths-ch03-t01-m-no-fraction-link"
+      }
+    ]
+  }
+}

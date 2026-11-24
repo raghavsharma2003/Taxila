@@ -1,0 +1,16 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r7-script-pipeline-test",
+   "kind": "measurement",
+   "at": "2026-11-05",
+   "title": "Round 7 F: the lesson-script pipeline run end to end on one topic, c5-maths-ch02-t02 (comparing fractions, ranked 7th of the next 30), in session with no Azure calls. One Claude agent authored from the spec, the kit and one finished script. Its first check run had 4 W failures (a number-line board with 2 marks over a stand-in line that never says 2); after it fixed them the check passed S 0, W 0 (W6 left to turn time on 2 boards) and V 0. A separate Claude agent saw only the --blind packet: 14/14 answers agree with the keys, 0 questions flagged, 3/3 worked examples ok. On its one minor note, the s3 problem now says the two wholes are the same size. The kit gaps found are logged in this file's measurements prose. Date 2026-11-05."
+  }
+ ],
+ "edges": [{ "src": "dc-r7-script-pipeline", "rel": "measured_by", "dst": "ms-r7-script-pipeline-test" }],
+ "md": {
+  "decisions": "",
+  "measurements": "## ms-r7-script-pipeline-test (2026-11-05, F Learning)\n\nThe pipeline in docs/design/round7/learning/SCRIPT-PIPELINE.md was run on c5-maths-ch02-t02:\n- **Author:** one agent wrote the script.\n- **check.mjs:** 4 W failures on the first run, then all gates passed.\n- **Blind solve:** 14/14 answers agree; worked examples 3/3 ok.\n\nKit gaps the author reported, worth fixing in the kit before the 30-topic batch:\n1. No kit misconception trips a plain same-denominator comparison (s2). The s2 checks therefore test where the rule stops: 2/4 vs 3/12 (counting pieces without their size) and 3/4 vs 5/6 (one piece short of the whole).\n2. The kit has only one worked example, which belongs to s3 (2/5 vs 2/3). The s1 and s2 worked examples were written by the author and verified blind.\n3. fraction-line@1 takes at most 12 parts per whole, so pairs like 3/5 vs 3/8 cannot share one line. Those beats use compare@1, or pairs that fit.\n4. Item i10, a 'better deal' at a mela, was left off the ladder. Its price framing is close to the rate-read-as-fraction ban.",
+  "rejected": ""
+ }
+}

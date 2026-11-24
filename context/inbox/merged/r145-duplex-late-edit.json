@@ -1,0 +1,12 @@
+{
+ "nodes": [
+  {
+   "id": "ms-r145-late-edit-frequency",
+   "kind": "measurement",
+   "at": "2026-10-21",
+   "title": "How often a correction lands after its turn on the live D5 lane at today's R (main's 14.5 measurement before the full undo is switched on; evals/duplex-2026-10/late-edit.mjs, results/late-edit-natural.json + late-edit-stretched.json). Method: live Voice Live D5 on the owner recordings; each commit's revoked words recorded (evals/duplex-real/lib.mjs), so a merged commit carrying revokeOf = an EDIT of the first commit's turn; late = edit time − first commit > L (commit → the turn landed). NATURAL self-repairs, 5 scenarios × 4 live passes = 20 runs (identical per scenario): repair pause 0.46 / 0.62 / 0.64 s → kept inside the utterance (12/12, no edit); 1.48 / 1.65 s → committed first, edit 6.3-7.6 s later (the corrected value was misheard, the engine waited out its backstop) → late at EVERY L (8/8; the child's correction itself ended 2.2-3.5 s after the commit, so even an instant ear is late at L ≤ 2.1 s). STRETCHED pauses 1.5-3.0 s, 20 runs: 20/20 commit first then edit, 3.2-8.9 s later; late 20/20 at L ≤ 2.7 s, 18/20 at 3.5 s. So: a repair pause ≥ ~1.5 s (threshold between 0.64 and 1.48 s, not resolved) always lands its correction after the turn; shorter ones never need an edit. Per self-repair: 2 of 5 natural owner repairs (Wilson 95% 12-77%). Per valued voice answer: × the sim lab's 7.2% self-repair rate (n=1,605, simulated) ≈ 2.9% (≈ 0.9-5.5%) — NOT rare, but n=5 adult-imitated repairs; real children's pause distribution is the open number. Corrects ms-r5-edit-supersede-size-cost's \"> ~2.9 s pause\" estimate: it timed the correction from the value's end, but the edit goes when the CORRECTION ends plus the ear's end of turn. Production: 77aa2e4d writes turn.edit_after_landed / turn.edit_missed / turn.edited with the undo OFF, so once deployed the owner's D5 lessons give the real rate (count ÷ voice-lane turns with a value); the stream cannot read production."
+  }
+ ],
+ "edges": [],
+ "md": {}
+}

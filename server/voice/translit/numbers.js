@@ -24,7 +24,7 @@ const ROMAN = {
   9: ["nau"],
   10: ["das", "dus"],
   11: ["gyarah", "gyaarah", "gyara", "gyaara", "gyaarah"],
-  12: ["barah", "baarah", "bara", "baara"],
+  12: ["barah", "baarah", "baara"], // audit V-29: not "bara" (बड़ा, big): it is in index.js NUMBER_AMBIG, a number only in a number context
   13: ["terah"],
   14: ["chaudah", "chodah", "chaudha"],
   15: ["pandrah", "pandraah", "pandra", "pundrah"],

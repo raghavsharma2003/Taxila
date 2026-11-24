@@ -1,0 +1,22 @@
+[
+  {
+    "id": "gen-c4-maths-ch05-t01-74c260f9",
+    "verdict": "fail",
+    "faults": [
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.close",
+        "detail": "\"KAafi PAAS\": the word is mistyped as \"KAafi\" (stray mixed case inside the word; should be \"KAAFI PAAS\" to match \"BILKUL SAHI\"). A misspelt word shown to the child as feedback."
+      },
+      {
+        "item": 4,
+        "kind": "register",
+        "where": "spec.strings.accuracy",
+        "detail": "\"sahi pan\" is not a natural Hindi/Hinglish word for accuracy (split, coined form of \"sahipan\"); not a plain word a class 4 child would recognise as a label."
+      }
+    ],
+    "readable": { "p360": false, "p412": true, "l1366": true },
+    "notes": "Wave 3 lists cut \"1/2\" twice; cannot tell from the packet whether the engine treats this as two separate bars or a duplicate, so not counted."
+  }
+]

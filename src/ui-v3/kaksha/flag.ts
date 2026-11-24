@@ -14,7 +14,7 @@ export const UI_KAKSHA_KEY_OLD = "tx.flag.ui.kaksha";
 export interface KakshaInputs {
   /** A dev build (import.meta.env.DEV). */
   dev: boolean;
-  /** VITE_UI_KAKSHA=1: the deploy-wide default (only after BUILD-SPEC §11 and the child test). */
+  /** VITE_UI_KAKSHA=1: no effect on the answer today (Kaksha is on unless the device opted out); kept in the inputs for the tests that pin it. */
   buildDefault: boolean;
   /** GET /api/me ui.kaksha: this account is in the owner cohort. Undefined while /api/me has not answered. */
   server: boolean | undefined;

@@ -1,0 +1,14 @@
+import fs from "fs";
+import { launch, open, PHONE, BASE, sleep, shot, btn } from "/home/user/Taxila/tests/e2e/qa-lib.mjs";
+const Q = process.env.QA_OUT; const acc = JSON.parse(fs.readFileSync(Q + "/accounts.json")).p2;
+const b = await launch(); const { page, log } = await open(b, PHONE);
+const t = async () => (await page.locator("body").innerText()).replace(/\s+/g, " ").slice(0, 260);
+await page.goto(BASE + "/start/phone?login=1"); await sleep(1500);
+await page.getByRole("link", { name: /Forgot password/ }).or(page.getByRole("button", { name: /Forgot password/ })).first().click(); await sleep(1500);
+console.log("forgot:", new URL(page.url()).pathname, "::", await t());
+await page.getByLabel(/Email/).first().fill(acc.email);
+await page.getByRole("button", { name: /Send|Reset|Continue/ }).first().click(); await sleep(3000);
+console.log("sent:", await t()); await shot(page, "forgot-sent");
+await page.getByLabel(/Email/).first().fill("nobody-" + Date.now() + "@taxila.test").catch(() => {});
+console.log(JSON.stringify({ pageerror: log.pageerror, http: log.http }));
+await b.close();

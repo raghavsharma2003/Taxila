@@ -1,0 +1,321 @@
+{
+ "topicId": "c4-maths-ch05-t01",
+ "classLevel": 4,
+ "scenario": "offtopic",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "grok-4-1-fast-non-reasoning",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Namaste Riya, main Asha, tumhari AI teacher. Aaj fractions ko cricket ke equal shares se samjhenge. Tumhara favourite cricket player kaun hai?",
+   "move": "greet",
+   "card": null
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 781
+  },
+  {
+   "who": "teacher",
+   "text": "Badhiya, Riya. Socho team ke 4 players ko ek watermelon barabar baantna ho—har player ko kitna hissa milega? Baad mein tum Golu ko sikhaogi.",
+   "move": "hook",
+   "card": null,
+   "replyMs": 1102,
+   "replyReadyMs": 1883
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 616
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul Riya, lesson thodi der ruk sakta hai. Kis baare mein baat karna chahti ho? Button dabakar hum lesson par laut sakte hain.",
+   "move": "repair",
+   "card": null,
+   "replyMs": 979,
+   "replyReadyMs": 1595
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 617
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai Riya, ab fractions par lautte hain: 4 equal pieces mein har piece one-fourth hota hai. 1/3 mein shape kitne equal pieces mein bategi?",
+   "move": "explain",
+   "card": null,
+   "replyMs": 1381,
+   "replyReadyMs": 1998
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 716
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, 1/3 ka matlab 3 equal shares. Example mein 12 pencils ko 3 shares mein baantenge: har share mein 4. Agla step dekhogi?",
+   "move": "worked_example",
+   "card": null,
+   "replyMs": 2340,
+   "replyReadyMs": 3056,
+   "guard": [
+    "leak",
+    "quiz"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 693
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo spoken game: 1/3 mein teen equal boxes socho; tum ek box choose karke bolo, kaunsa choose karogi?",
+   "move": "reteach",
+   "card": null,
+   "replyMs": 2427,
+   "replyReadyMs": 3120,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "no_evidence",
+   "classifyMs": 1358
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, Riya—1/3 mein 3 equal parts hote hain. Ab bolo, inmein se ek part ko fraction mein kaise likhenge?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1119,
+   "replyReadyMs": 2477
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 445
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, fractions ka yeh tareeka boring lag raha hai—picture, story, ya game mein se ek choose karke bolo. Kaunsa?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 2365,
+   "replyReadyMs": 2810,
+   "guard": [
+    "screen"
+   ]
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 934
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, kaunsa choose karogi: Picture dikhao, Kahani mein batao, ya Game khelte hain?",
+   "move": "repair",
+   "card": null,
+   "replyMs": 1077,
+   "replyReadyMs": 2011
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "no_evidence",
+   "classifyMs": 951
+  },
+  {
+   "who": "teacher",
+   "text": "Kahani mode on: ab ek chhoti si sharing story se fractions ko samjhenge—jaise lunch ko barabar baantna. Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "move": "practice",
+   "card": "Khaali jagah bharo: 1/3 means 1 of ___ equal groups.",
+   "replyMs": 1157,
+   "replyReadyMs": 2108
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 1060
+  },
+  {
+   "who": "teacher",
+   "text": "Riya, tum rukna chahti ho—koi pressure nahi. Aage badhein, chhota break lein, ya aaj ke liye stop karein?",
+   "move": "break",
+   "card": null,
+   "replyMs": 2104,
+   "replyReadyMs": 3164,
+   "guard": [
+    "wrap",
+    "nochoice"
+   ]
+  }
+ ],
+ "agent": [
+  {
+   "who": "teacher",
+   "text": "Hi Riya! Aaj cricket team ke snacks se fractions seekhenge: aadha, tihaai aur chauthaai. Agar ek roti ke 4 barabar tukde hon, ek tukde ko kya kahenge?",
+   "move": "hook",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?"
+  },
+  {
+   "who": "child",
+   "text": "mujhe cricket pasand hai",
+   "read": "no_evidence",
+   "classifyMs": 1472
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket pasand hai! Maan lo match ke baad ek roti ko 4 barabar tukdon mein baanta. Uska ek tukda kya kehlaayega?",
+   "move": "repair",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3943,
+   "replyReadyMs": 5415
+  },
+  {
+   "who": "child",
+   "text": "kuch aur baat karte hain",
+   "read": "no_evidence · change_topic",
+   "classifyMs": 2051
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, kuch aur baat karte hain. Tum kis baare mein baat karna chahti ho?",
+   "move": "break",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3396,
+   "replyReadyMs": 5447
+  },
+  {
+   "who": "child",
+   "text": "achha theek hai",
+   "read": "no_evidence",
+   "classifyMs": 1095
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, phir roti wala sawaal lete hain. Roti ke chaar barabar tukde hain; ek tukde ko kya kehte hain?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 2851,
+   "replyReadyMs": 3946
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "classifyMs": 1
+  },
+  {
+   "who": "teacher",
+   "text": "Koi baat nahi. Aadha matlab do barabar tukdon mein se ek; chauthaai ke liye chaar barabar tukde hote hain. Ab chaar tukdon mein se ek ka naam kya hoga?",
+   "move": "hint",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3268,
+   "replyReadyMs": 3269
+  },
+  {
+   "who": "child",
+   "text": "game khelna hai",
+   "read": "no_evidence · visual",
+   "classifyMs": 872
+  },
+  {
+   "who": "teacher",
+   "text": "Main fraction bolungi, tum batao: gol shape ke teen barabar hisson mein se ek ranga hai; use kya kahenge?",
+   "move": "practice",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3460,
+   "replyReadyMs": 4332
+  },
+  {
+   "who": "child",
+   "text": "3",
+   "read": "incorrect",
+   "classifyMs": 2547
+  },
+  {
+   "who": "teacher",
+   "text": "Roti wale sawaal mein chaar barabar tukde hain, aur hum ek tukda le rahe hain. Aise ek tukde ko chauthaai kehte hain. Ab teen barabar hisson mein se ek ko kya kahenge?",
+   "move": "reteach",
+   "card": "Ek roti ke 4 barabar tukde kiye. Ek tukde ko kya kehte hain?",
+   "replyMs": 3877,
+   "replyReadyMs": 6424
+  },
+  {
+   "who": "child",
+   "text": "ye bahut boring hai",
+   "read": "no_evidence · boredom",
+   "classifyMs": 630
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, ye boring lag raha hai. Sawaal abhi chhodte hain; cricket wali chhoti bolkar game khelenge. Ek hi size ki roti do players mein barabar baanto ya teen players mein; kis player ko bada tukda milega?",
+   "move": "break",
+   "card": "Ek cake 2 bachchon mein baanta, aur utna hi bada doosra cake 3 bachchon mein. Guess karo: kiska tukda bada hoga, 2 wale group ke bachche ka ya 3 wale ka?",
+   "replyMs": 4605,
+   "replyReadyMs": 5235
+  },
+  {
+   "who": "child",
+   "text": "haan",
+   "read": "no_evidence",
+   "classifyMs": 6828
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, cricket wali chhoti game! Do players mein ek cake barabar baantein, ya teen players mein utna hi bada cake baantein. Kis player ko bada tukda milega: do wale ko ya teen wale ko?",
+   "move": "probe",
+   "card": "Ek cake 2 bachchon mein baanta, aur utna hi bada doosra cake 3 bachchon mein. Guess karo: kiska tukda bada hoga, 2 wale group ke bachche ka ya 3 wale ka?",
+   "replyMs": 5496,
+   "replyReadyMs": 12324
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "correct",
+   "classifyMs": 1614
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, do wale bachche ko bada tukda milega. Ek hi cake teen mein baanto, toh har tukda chhota hota hai. Ab batao, usi pizza ka aadha bada hoga ya chauthaai, aur kyun?",
+   "move": "probe",
+   "card": "Tumne kaha 1/2, 1/4 se bada hai. Kyun, jabki 4, 2 se bada hai?",
+   "replyMs": 4605,
+   "replyReadyMs": 6219
+  },
+  {
+   "who": "child",
+   "text": "bye",
+   "read": "no_evidence · goodbye",
+   "classifyMs": 2716
+  },
+  {
+   "who": "teacher",
+   "text": "Bye, Riya! Aaj tumne aadhe aur chauthaai ke tukdon ki tulna ki. Barabar hisson ko naam dena abhi practice mein hai.",
+   "move": "wrap",
+   "card": "Tumne kaha 1/2, 1/4 se bada hai. Kyun, jabki 4, 2 se bada hai?",
+   "replyMs": 2439,
+   "replyReadyMs": 5155
+  }
+ ]
+}

@@ -5,7 +5,9 @@
 // the assembled report must then pass with zero violations, or it is not stored and not shown.
 import { bannedHits, lockedHits, severeHits } from "./lexicon.js";
 import { CAPS, VOICE_CHARS, VOICE_WORDS } from "./config.js";
-import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, fmtDate, renderFixed, renderShape } from "./templates.js";
+import { CONNECTIVES, FIXED, HOME_OBJECT, SHAPES, SUBJECT_LABEL, WAY_LABEL, fmtDate, fmtMonth, renderFixed, renderShape } from "./templates.js";
+/** Headers that state "no lessons in this period": they carry no facts by design (audit LEARN-11: only the weekly one was exempt). */
+const ZERO_HEADERS = new Set(["header.zero", "header.zero_month", "header.zero_term"]);
 
 export class ReportGateError extends Error {
   constructor(violations) {
@@ -27,7 +29,10 @@ function slotText(shapeSlots, slots, lang) {
     if (v == null) continue;
     if (type === "number") out.numbers.add(String(v));
     else if (type === "date") { out.numbers.add(String(v.d)); out.curriculum.push(fmtDate(lang, v)); }
+    else if (type === "month") out.object.push(fmtMonth(lang, v));
     else if (type === "object") out.object.push(HOME_OBJECT[v]?.[lang] ?? "");
+    else if (type === "subject") out.object.push(SUBJECT_LABEL[v]?.[lang] ?? "");
+    else if (type === "way") out.object.push(WAY_LABEL[v]?.[lang] ?? "");
     else out[type].push(String(v));
   }
   return out;
@@ -74,7 +79,7 @@ export function lineViolations(text, { shapeId, fixedId, slots = {}, lang, k7 = 
 /** Growth-edge shapes: each carries the task feature, [hedged reasoning past the gate], and Taxila's action (S11). */
 const TRICKY = new Set(["tricky.work", "tricky.mixup", "tricky.work_next", "tricky.mixup_next"]);
 /** Sections whose lines count against the body cap (the header is the S1 line, not body). */
-const BODY = new Set(["strength", "row", "tricky", "interest", "home"]);
+const BODY = new Set(["strength", "row", "tricky", "interest", "home", "exam", "hold", "hard", "curious", "routine", "next", "ways", "change", "still", "rest"]);
 
 /**
  * Gate an assembled report in every language. Throws ReportGateError; returns true when clean.
@@ -100,7 +105,7 @@ export function gateReport(r, { k7 = false, firstName }) {
         v.push(...lineViolations(line.text, { shapeId: c.shapeId, slots: c.slots, lang, k7, firstName }).map(tag));
         perSection[c.section] = (perSection[c.section] || 0) + 1;
         if (c.section === "tricky" && !TRICKY.has(c.shapeId)) v.push(tag({ rule: "tricky_three_parts" }));
-        if (!Array.isArray(c.factIds) || (!c.factIds.length && c.shapeId !== "header.zero")) v.push(tag({ rule: "claim_without_facts", detail: c.id }));
+        if (!Array.isArray(c.factIds) || (!c.factIds.length && !ZERO_HEADERS.has(c.shapeId))) v.push(tag({ rule: "claim_without_facts", detail: c.id }));
       } else if (line.kind === "fixed") {
         v.push(...lineViolations(line.text, { fixedId: line.fixedId, slots: line.slots, lang, firstName }).map(tag));
         if (line.section) perSection[line.section] = (perSection[line.section] || 0) + 1;
@@ -111,7 +116,9 @@ export function gateReport(r, { k7 = false, firstName }) {
     for (const [s, n] of Object.entries(perSection)) if (BODY.has(s) && n > (caps[s] ?? 0)) v.push(tag({ rule: "cap", detail: `${s} ${n} > ${caps[s] ?? 0}` }));
     const body = Object.entries(perSection).filter(([s]) => BODY.has(s)).reduce((a, [, n]) => a + n, 0);
     if (body > caps.body) v.push(tag({ rule: "cap", detail: `body ${body} > ${caps.body}` }));
-    if (r.cadence === "weekly" && perSection.home !== 1) v.push(tag({ rule: "home_activity", detail: String(perSection.home || 0) }));
+    if ((r.cadence === "weekly" || r.cadence === "monthly" || r.cadence === "term") && perSection.home !== 1) v.push(tag({ rule: "home_activity", detail: String(perSection.home || 0) }));
+    // S13 is required monthly and per term (a re-check claim or its fixed fallback)
+    if ((r.cadence === "monthly" || r.cadence === "term") && perSection.next !== 1) v.push(tag({ rule: "next_section", detail: String(perSection.next || 0) }));
     if (R.voice) v.push(...voiceViolations(R, r.cadence, lang).map(tag));
   }
   if (v.length) throw new ReportGateError(v);

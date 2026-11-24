@@ -1,0 +1,11 @@
+process.env.TAXILA_BOARD_SYNC_MS = "300";
+const seam = await import("/home/user/Taxila/server/studio/seam.js");
+const PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+const id = "dbg"; seam.studioSeam.prefetch({ lessonId: id, purpose: "practice" });
+seam._setDeps({ planWhiteboard: async () => ({ ok: false, usd: 0, why: "planner_error" }), q: async () => [] });
+const pic = seam.studioSeam.showImage(id, { src: PNG, alt: "t", subject: "t", jobId: "j9" });
+const ack = seam.studioSeam.requestIntent({ intent: { intentId: `${id}:wb:9`, lessonId: id, kind: "whiteboard", skillId: "s", need: "explain", beat: "explain", neededAtMs: 0, priority: "on_cue", request: { kind: "picture" }, style: { band: "B3", lang: "hinglish", motion: "lively" } }, line: { lessonId: id, text: "Dekhiye, ek triangle ke teen corners hote hain." }, mode: "fresh", kit: { topicId: "x", content: [] } });
+console.log("ack", ack?.state);
+const got = await ack.ready; const L = seam._lesson(id); const p = L.pieces.get(`${id}:wb:9`);
+console.log("got", got?.intentId, "onScreen", L.onScreen, "board", p?.state, p?.failWhy, "under", p?.under, "restored", p?.restored, "pic", L.pieces.get(pic.intentId)?.state);
+process.exit(0);

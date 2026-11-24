@@ -19,6 +19,19 @@ interface ScriptLike { mode?: string; board: { w: number; h: number }; ops: Arra
 export const MAX_ZOOM = 2;
 const MIN_ASPECT = 0.6, MAX_ASPECT = 2.2;
 
+type Box = { x: number; y: number; w: number; h: number };
+/** Each drawable op's box (board units). */
+export function opBoxes(script: ScriptLike): Box[] {
+  const byId = new Map(script.ops.map((o) => [o.id, o]));
+  const out: Box[] = [];
+  for (const o of script.ops) {
+    if (o.op === "erase" || o.op === "highlight") continue;
+    let b: Box | null = null;
+    try { b = (opGeometry as (o: unknown, m: unknown) => { box: Box })(o, byId).box; } catch { b = null; }
+    if (b && Number.isFinite(b.x) && Number.isFinite(b.y)) out.push(b);
+  }
+  return out;
+}
 /** The content box of a script's drawable ops (board units), or null when nothing is drawable. */
 export function contentBox(script: ScriptLike): { x: number; y: number; w: number; h: number } | null {
   const byId = new Map(script.ops.map((o) => [o.id, o]));
@@ -40,7 +53,8 @@ export function contentBox(script: ScriptLike): { x: number; y: number; w: numbe
  * The frame the stage shows for a whiteboard script (board units). The whole board when framing does not help (content
  * already fills it, a continue board, nothing drawable).
  */
-export function boardFrame(script: ScriptLike | null | undefined): BoardFrame {
+/** `minGain`: the least zoom worth a framing (1.08 by default; the round 8 card, patch 008, frames any gain: 1). */
+export function boardFrame(script: ScriptLike | null | undefined, { minGain = 1.08 }: { minGain?: number } = {}): BoardFrame {
   const BW = Number(script?.board?.w) || 400, BH = Number(script?.board?.h) || 300;
   const whole: BoardFrame = { x: 0, y: 0, w: BW, h: BH, zoom: 1, framed: false };
   if (!script || script.mode === "continue" || !Array.isArray(script.ops) || !script.ops.length) return whole;
@@ -61,7 +75,29 @@ export function boardFrame(script: ScriptLike | null | undefined): BoardFrame {
   x = Math.max(0, Math.min(x, BW - w)); y = Math.max(0, Math.min(y, BH - h));
   const zoom = Math.min(BW / w, BH / h);
   // framing that gains under 8% is not worth a different composition from the drawing's own
-  if (zoom < 1.08) return whole;
+  if (zoom < minGain || zoom <= 1.001) return whole;
   const r = (n: number) => Math.round(n * 10) / 10;
   return { x: r(x), y: r(y), w: r(w), h: r(h), zoom: Math.round(zoom * 100) / 100, framed: true };
+}
+
+/**
+ * patch 008 (Design, round 8 card): the card head sits over the box's top-left corner (`headW` × `headH` px). If the
+ * drawing reaches into that corner at the scale `frame` is shown at in a box of `boxW` px, the frame grows upward by the
+ * head's height (in board units) so the drawing starts below it; otherwise the frame stands. Pure: the caller fits the
+ * box to the frame it returns. (Iterated once: growing the frame shrinks the scale a little, so the head in board units
+ * is measured at the grown frame's scale.)
+ */
+export function keepHeadClear(script: ScriptLike, frame: BoardFrame, boxW: number, headW: number, headH: number): BoardFrame {
+  const boxes = opBoxes(script);
+  if (!boxes.length || boxW <= 0 || headW <= 0 || headH <= 0) return frame;
+  let f = frame;
+  for (let i = 0; i < 2; i++) {
+    const s = boxW / f.w, hw = headW / s, hh = headH / s;
+    // (each drawn op against the head's corner: an empty corner inside the drawing's overall box is clear)
+    const under = boxes.some((b) => b.x < frame.x + hw && b.x + b.w > frame.x && b.y < frame.y + hh && b.y + b.h > frame.y);
+    if (!under) return f;
+    f = { ...frame, y: frame.y - hh, h: frame.h + hh, framed: true };
+  }
+  const r = (n: number) => Math.round(n * 10) / 10;
+  return { ...f, y: r(f.y), h: r(f.h) };
 }

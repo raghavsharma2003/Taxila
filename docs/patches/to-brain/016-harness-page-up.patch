@@ -1,0 +1,71 @@
+From: Studio (C1, claude/r4-content)
+Subject: [PATCH 016] harness: the page up is the paged turn's LAST page and its card ref, as the seam keeps it (director13 S7)
+
+director13's c4 stuck row 18 ("picture dikhao" redrew the card's bar) is the harness's own model of the seam, not
+production. evals/hybrid-side-by-side.mjs passes the preselect only `avoid: shownScript`, and shownScript is the take of a
+turn's FIRST page. Production's seam passes the page actually up — the LAST page of a paged turn (L.wbPrevPage) — and the ref
+of the card that drew it (avoidRef = L.wbPrevRef), and pages with keep / keepRef. After row 16 (circle, then the card's bar)
+the harness believed the circle was up, so the card's bar was a new board and no second view was picked.
+
+This patch keeps shownRef beside shownScript, exactly as seam.js drawn() sets wbPrevRef; passes avoidRef to the preselect and
+keep / keepRef to the paged check; and after a paged turn takes its last page and lastRef as the page up.
+Measured on Brain's replay of director13 (tests/fixtures/replay.mjs, the harness's board-first sequence, no model calls):
+  c4 stuck row 18: old → the card's bar, no second view; with 016 → round (the same whole as a circle)
+  c5-t02 stuck row 20: old → the same "?" bars; with 016 (and Studio's S8) → wholes (two circles of 4 and 8 parts)
+The seam itself already does this: replayed through it, both rows draw their second view on the run's tree 0dd31feb1.
+
+diff --git a/evals/hybrid-side-by-side.mjs b/evals/hybrid-side-by-side.mjs
+index b67ccb04a..49a881c80 100644
+--- a/evals/hybrid-side-by-side.mjs
++++ b/evals/hybrid-side-by-side.mjs
+@@ -31,7 +31,7 @@ import { __test } from "../server/routes/lesson.js";
+ // round 7 S4 (main: "upgrade the harness so it runs Studio's board pick and Games' entryFor in-process and records what would be
+ // on screen each turn"): the pure parts of turn.js's visual path
+ import { whiteboardIntentOf, boardItemOf, altViewOfRow } from "../server/brain/propose.js";
+-import { preselect, takePreselected, pagesBoard, pagesDroppedCount } from "../server/stagecraft/board-first.js";
++import { preselect, takePreselected, pagesBoard, pagesDroppedCount, refKey } from "../server/stagecraft/board-first.js";
+ import { gateCtxFor } from "../server/stagecraft/board-sync.js";
+ import { entryFor } from "../server/play/levels.js";
+ import { askTruth, VISUAL_NOT_YET, VISUAL_DRAWING } from "../server/director/shapes.js";
+@@ -183,6 +183,10 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+   // (director9 c5-t02: S3′'s second view drew 0/3 here because the board already on screen was never given to the preselect,
+   // as production's seam does through boardFirstOpts.avoid: the page drawn last is passed on, like the lesson's wbPrev)
+   let shownScript = null;
++  // (Studio director13 S7, c4 stuck 18: production's seam also passes the ref of the card whose board is the page up — the
++  // LAST page of a paged turn (L.wbPrevRef / L.wbPrevPage). Without it the preselect saw the first page of row 16 as up, the
++  // circle, and the picture over the card's bar re-drew the bar: no second view)
++  let shownRef = null;
+   for (let i = 0; i < MAX; i++) {
+     let text = lines?.[i];
+     let leaving = false;
+@@ -249,7 +253,7 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         // (preselect caches its pick by intentId = lessonId:wb:turn: one id per lesson, never the harness's shared LESSON.id)
+         // (one id per lesson, Studio on director9: a persona's lesson keeps its own prefix; lines are empty for the reactive child)
+         const ask = whiteboardIntentOf({ lessonId: `${LESSON.id}-${kit.topicId}-${persona ?? lines.join("|").length}`, turn: next.turn, beat: { id: "visual", type: "explain" }, next, kit, item, line: { text: "" } });
+-        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}) });
++        const pick = preselect(ask, { kit, ...(shownScript ? { avoid: shownScript } : {}), ...(shownRef ? { avoidRef: shownRef } : {}) });
+         pickAsk = pick ? ask : null;
+         if (process.env.HARNESS_DEBUG_SCREEN) console.error("[screen]", kit.topicId, JSON.stringify({ intent: ask.intent, item: item?.id ?? null, phase: next.phase, pick: pick ? pick.template ?? pick.by : null }));
+         if (pick) {
+@@ -298,6 +302,8 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         screen = { ...screen, drawn: "take", counts: took.screen.counts ?? screen.counts ?? null, numbers: took.screen.numbers ?? null,
+           ...(took.screen.labels != null ? { onScreen: { ...(screen.onScreen ?? {}), labels: Array.isArray(took.screen.labels) ? took.screen.labels.join(" | ") : String(took.screen.labels) } } : {}) };
+         shownScript = took.script ?? shownScript;
++        // (as seam.js drawn(): the card's ref when the card's own board was drawn; a second view names no card)
++        shownRef = took.lastRef !== undefined ? took.lastRef : took.by === "script" && !took.altView ? refKey(pickAsk.intent.boardRef) : null;
+         slot = { artifact: { ...(slot?.artifact ?? {}), screen: took.screen } };
+       } else { screen = { ...screen, drawn: "preselect" }; }
+     }
+@@ -342,7 +348,11 @@ async function lesson(lane, kit, classLevel, lines, persona = null) {
+         // (v6.4 harness, main on director12: a later page Studio cannot draw is dropped and its words ride on the page before:
+         // the proxies report how many, per turn)
+         const d0 = pagesDroppedCount();
+-        try { unpaged = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit }) ? 0 : 1; } catch { unpaged = 1; }
++        let pg = null;
++        try { pg = pagesBoard({ ...askF, intent: { ...askF.intent, intentId: `${askF.intent.intentId}:pg` }, line: { ...askF.line, text: String(reply) } }, { kit, ...(shownScript ? { keep: shownScript } : {}), ...(shownRef ? { keepRef: shownRef } : {}) }); } catch { pg = null; }
++        unpaged = pg ? 0 : 1;
++        // (S7: a paged turn leaves its LAST page up — the next turn's second view is built from that page, as the seam does)
++        if (pg?.script) { shownScript = pg.lastPage ?? pg.script; shownRef = pg.lastRef ?? null; }
+         droppedPages = Math.max(0, pagesDroppedCount() - d0);
+         const text = String(reply).replace(/\s+/g, " ").trim();
+         segs = parts.map((pt, i) => {
