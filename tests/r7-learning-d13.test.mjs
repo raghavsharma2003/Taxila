@@ -81,7 +81,9 @@ test("D13.3: c5-t02 e1's why is a full clause; the gap remediations are one shor
   // doosri mein 7 mein se 6 … isliye doosri mein rang zyada hai" — and is said whole; the rule is the same: both one part short)
   // (d32 reader fixes, 2026-11-19: the script spells the word one way throughout, "rangeen"; the sentence is otherwise 019's and the
   // rule is the same: both one part short, over unshaded bars)
-  for (const [i, j, one] of [[1, 2, /2 mein se 1 hissa rangeen hai, doosri mein 7 mein se 6/], [2, 2, /ek-ek khaana khaali/]]) {
+  // (Learning 023 c5-t02 fix 7, 28edae5b2: "Do ek jaisi patti: ek ke 2 mein se 1 hissa rangeen, doosri ke 7 mein se 6. Dono mein ek-ek
+  // hissa khaali, …" — the bars introduced and the empty part named; the rule is the same: both one part short)
+  for (const [i, j, one] of [[1, 2, /2 mein se 1 hissa rangeen,? (?:hai, )?doosri (?:mein|ke) 7 mein se 6/], [2, 2, /ek-ek khaana khaali/]]) {
     const r = s.skills[i].remediation[j];
     assert.equal(r.targets, "c5-maths-ch02-t02-m-gap-thinking");
     assert.match(r.say.hi, one, `s${i + 1} rem${j}: one short`);

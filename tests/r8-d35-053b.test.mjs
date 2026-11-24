@@ -308,7 +308,8 @@ describe("F: a card may name more than one wrong answer (fixture: c5-t03 s2 c1 a
 });
 
 describe("E: the judges' prompt is checked by code", () => {
-  const PROMPTS = [join(ROOT, "evals/hybrid-side-by-side/results/2026-11-24-director34/judges/PROMPT.md"), "/home/user/taxila-int/evals/hybrid-side-by-side/results/2026-11-24-director34/judges/PROMPT.md"];
+  // (director34's judges' prompt, copied into the fixtures: a gate reads no docs and no absolute path)
+  const PROMPT = join(ROOT, "tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-24-director34/judges/PROMPT.md");
   test("quoted sentences: a quote found nowhere is reported, a script's own line, a slot form and a '…' quote are found", async () => {
     const { checkPrompt } = await import("../scripts/judge-prompt-check.mjs");
     const md = 'J7: c6-ch07-t03\'s false sentence is replaced ("Hisse ek size ke karo: 1/3 = 4/12 aur 2/4 = 6/12. Toh 2/4 zyada hai") and "Haan, pehle tum try karo." and "Aaj ke liye itna hi, kal phir milte" and an English "the card that is said whole".';
@@ -316,9 +317,9 @@ describe("E: the judges' prompt is checked by code", () => {
     const bad = checkPrompt(md, { scriptDirs }).map((x) => x.sentence);
     assert.deepEqual(bad, ["Toh 2/4 zyada hai", "Aaj ke liye itna hi, kal phir milte"]);
   });
-  test("director34's prompt (where present): the J7 quote 'Toh 2/4 zyada hai' is reported", { skip: !PROMPTS.some((p) => existsSync(p)) && "no director34 PROMPT.md in this checkout" }, async () => {
+  test("director34's prompt: the J7 quote 'Toh 2/4 zyada hai' is reported", async () => {
     const { checkPrompt } = await import("../scripts/judge-prompt-check.mjs");
-    const md = readFileSync(PROMPTS.find((p) => existsSync(p)), "utf8");
+    const md = readFileSync(PROMPT, "utf8");
     const bad = checkPrompt(md, { scriptDirs: [join(RUN, "scripts")] }).map((x) => x.sentence);
     assert.ok(bad.includes("Toh 2/4 zyada hai"), JSON.stringify(bad));
   });
