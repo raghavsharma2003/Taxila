@@ -19,14 +19,17 @@ const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)])
 const FROZEN = "./fixtures/eval-results/hybrid-side-by-side/results/2026-11-24-director34/scripts";
 const J = Object.fromEntries([...LIVE, ...STAGED].map((t) => [t, JSON.parse(readFileSync(new URL(`${FROZEN}/${t}.json`, import.meta.url), "utf8"))]));
 const rule = (n) => (e) => e.filter((x) => x.includes(`(Learning 023 rule ${n})`));
+// (d35 closing: the scripts as they were before round d35's fixes — git df9ed5591 — keep each rule's catch tested now the nine are fixed)
+const BEFORE = (f) => JSON.parse(readFileSync(new URL(`./fixtures/scripts-023/before-d35/${f}.json`, import.meta.url), "utf8"));
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const run = (args, staged = false) => {
-  try { return { code: 0, out: execFileSync("node", ["scripts/lesson-scripts/check.mjs", ...args], { cwd: ROOT, encoding: "utf8", env: { ...process.env, ...(staged ? { LESSON_SCRIPTS_DIR: "data/lesson-scripts-staged" } : {}) }, maxBuffer: 1 << 26 }) }; }
+  const dir = staged === true ? "data/lesson-scripts-staged" : staged || null;
+  try { return { code: 0, out: execFileSync("node", ["scripts/lesson-scripts/check.mjs", ...args], { cwd: ROOT, encoding: "utf8", env: { ...process.env, ...(dir ? { LESSON_SCRIPTS_DIR: dir } : {}) }, maxBuffer: 1 << 26 }) }; }
   catch (e) { return { code: e.status, out: String(e.stdout ?? "") }; }
 };
 
-test("023: D35_READY starts empty; the passing fixture passes every rule, forced", () => {
-  assert.deepEqual(D35_READY, []);
+test("023: D35_READY holds the nine scripts of round d35; the passing fixture passes every rule, forced", () => {
+  assert.deepEqual([...D35_READY].sort(), [...LIVE, ...STAGED].sort());
   assert.equal(isD35(FIX("pass")), false);
   assert.deepEqual(d35Errors(FIX("pass"), { force: true }), []);
   assert.deepEqual(d35Errors(FIX("rule1-fail")), []); // (not ready, not forced: nothing)
@@ -94,9 +97,10 @@ test("023 rule 1 (main's ruling): a card with no answerBoard is a D line, unless
   assert.equal(boardHasSlot({ template: "compare@1", params: { left: { title: "Chocolate", items: ["16 cm"] }, right: { title: "Hisse", items: ["6 cm", "2 cm"] } } }), false);
   s.skills[0].explain[0].ask.board = { template: "compare@1", params: { left: { title: "Lambai", items: ["10", "6"] }, right: { title: "Chakkar", items: ["16"] } } };
   assert.deepEqual(undrawnValueHits(s).map((x) => x.at), ["t-023-s1/e1.why"]);
-  // (the nine scripts today: c6-ch07-t03 s2 c2 is the only such card)
+  // (before d35's fixes c6-ch07-t03 s2 c2 was the only such card; the nine scripts today have none)
+  assert.deepEqual(undrawnValueHits(BEFORE("c6-maths-ch07-t03")).filter((y) => y.kind === "card reason").map((y) => y.at), ["c6-maths-ch07-t03-s2/c2.why", "c6-maths-ch07-t03-s2/c2.whyShort"]);
   const cards = Object.values(S).flatMap((x) => undrawnValueHits(x).filter((y) => y.kind === "card reason").map((y) => y.at));
-  assert.deepEqual(cards, ["c6-maths-ch07-t03-s2/c2.why", "c6-maths-ch07-t03-s2/c2.whyShort"]);
+  assert.deepEqual(cards, []);
 });
 
 // ---- 2 wrongAnswers
@@ -125,9 +129,11 @@ test("023 rule 3: hook, first point and its card by the engine's count, against 
   assert.ok(f.total > 60 && f.total === f.hook + f.point + f.card);
   assert.equal(rule(3)(d35Errors(FIX("rule3-fail"), { force: true })).length, 1);
   assert.ok(firstTurn(FIX("pass")).total <= 60);
-  // (the nine scripts today: c4-ch01-t02 fits, the other eight do not)
+  // (before d35's fixes eight of the nine ran over — c6-ch06-t01 among them; the nine scripts today all fit)
+  assert.ok(firstTurn(BEFORE("c6-maths-ch06-t01")).total > 60);
+  assert.equal(rule(3)(d35Errors(BEFORE("c6-maths-ch06-t01"), { force: true })).length, 1);
   const over = Object.entries(S).filter(([, s]) => firstTurn(s).total > 60).map(([t]) => t).sort();
-  assert.deepEqual(over, [...LIVE, ...STAGED].filter((t) => t !== "c4-maths-ch01-t02").sort());
+  assert.deepEqual(over, []);
 });
 
 // ---- 4 re-asks
@@ -138,18 +144,20 @@ test("023 rule 4: a card with no reask", () => {
 });
 
 // ---- 5 a reason that opens on the verdict
-test("023 rule 5: a whyAlt opening on its own wrong answer and \"nahi\"; c5-t03 s1 e1's \"1 nahi:\" is the one in the nine", () => {
+test("023 rule 5: a whyAlt opening on its own wrong answer and \"nahi\"; c5-t03 s1 e1's \"1 nahi:\" was the one in the nine (fixed in d35)", () => {
   assert.deepEqual(verdictOpenHits(FIX("rule5-fail")).map((x) => x.at), ["t-023-s1/e1.whyAlt"]);
   assert.deepEqual(verdictOpenHits(FIX("pass")), []);
+  assert.deepEqual(verdictOpenHits(BEFORE("c5-maths-ch02-t03")).map((x) => x.at), ["c5-maths-ch02-t03-s1/e1.whyAlt"]);
   const all = Object.values(S).flatMap((s) => verdictOpenHits(s).map((x) => x.at));
-  assert.deepEqual(all, ["c5-maths-ch02-t03-s1/e1.whyAlt"]);
+  assert.deepEqual(all, []);
 });
 
 // ---- 6 one frame once in a skill (a line, never an error)
-test("023 rule 6: two reasons sharing six words running, numbers masked, are an F6 line and no error; c5-t02 skill 1's frame is listed", () => {
+test("023 rule 6: two reasons sharing six words running, numbers masked, are an F6 line and no error; c5-t02 skill 1's frame was listed (fixed in d35)", () => {
   assert.equal(frameLines(FIX("rule6-fail")).length, 1);
   assert.deepEqual(d35Errors(FIX("rule6-fail"), { force: true }), []);
-  assert.ok(frameLines(S["c5-maths-ch02-t02"]).some((x) => /^F6 c5-maths-ch02-t02-s1: "# bada number hai par isse"/.test(x)));
+  assert.ok(frameLines(BEFORE("c5-maths-ch02-t02")).some((x) => /^F6 c5-maths-ch02-t02-s1: "# bada number hai par isse"/.test(x)));
+  assert.deepEqual(frameLines(S["c5-maths-ch02-t02"]), []);
 });
 
 // ---- 7 the aside replies
@@ -173,9 +181,14 @@ test("023: the nine scripts pass without --d35 (plain, and --standard --d32 --d3
   for (const s of Object.values(S)) assert.deepEqual(d35Errors(s), []);
 });
 
-test("023: with --d35 a script is held to the rules for the run (c6-maths-ch06-t01 fails today on rules 1, 3, 4 and the replies file)", () => {
-  const r = run(["c6-maths-ch06-t01", "--d35"]);
+test("023: with --d35 a script is held to the rules for the run (c6-maths-ch06-t01 as it was before d35 fails on rules 1, 3, 4; the replies file as it was, on rule 7)", () => {
+  const r = run(["c6-maths-ch06-t01", "--d35"], "tests/fixtures/scripts-023/before-d35");
   assert.equal(r.code, 1);
-  for (const n of [1, 3, 4, 7]) assert.ok(r.out.includes(`(Learning 023 rule ${n})`), `rule ${n}`);
-  assert.ok(r.out.includes("data/lesson-aside-replies.json: FAIL"));
+  for (const n of [1, 3, 4]) assert.ok(r.out.includes(`(Learning 023 rule ${n})`), `rule ${n}`);
+  assert.ok(replyKindErrors(BEFORE("lesson-aside-replies")).length > 0, "the replies file before d35 fails rule 7");
+  // (today: the script and the replies file pass --d35)
+  const now = run(["c6-maths-ch06-t01", "--d35"]);
+  assert.equal(now.code, 0, now.out.slice(0, 2000));
+  assert.ok(!now.out.includes("data/lesson-aside-replies.json: FAIL"));
+  assert.deepEqual(replyKindErrors(JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8"))), []);
 });
