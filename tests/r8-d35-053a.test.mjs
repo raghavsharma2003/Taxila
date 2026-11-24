@@ -214,3 +214,35 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
   });
 });
 
+// to-brain 053 G: offline, a line no code path reads is what that reader's own parser returns for an empty label. The stubbed reader below
+// disagrees (it labels the line the key, or a named wrong answer); the dry reading must not follow it — it is the empty label's parse.
+describe("G: the offline walk reads as the model's parser reads an empty label", async () => {
+  const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
+  const { parseClassification } = await import("../server/director/classify.js");
+  const mis = [{ tag: "m1", id: "mis-a", belief: "b", signs: [] }];
+  const readers = {
+    card: { mode: "item", key: "5", also: [], ideas: [], misconceptions: mis, open: false },
+    askedStep: { mode: "item", key: "5", also: [], ideas: [], misconceptions: [], open: false },
+    closingAsCard: { mode: "item", key: "8/12", also: [], ideas: [], misconceptions: mis, open: false },
+    why: { mode: "why", ideas: ["equal parts"], misconceptions: mis },
+    checkinOrReturn: { mode: "none", misconceptions: mis },
+    closingReader: { mode: "teachback", expectations: ["equal parts"], misconceptions: mis },
+  };
+  const want = { card: "no_evidence", askedStep: "no_evidence", closingAsCard: "no_evidence", why: "no_evidence", checkinOrReturn: "no_evidence", closingReader: "incorrect" };
+  for (const [name, target] of Object.entries(readers)) {
+    test(`${name}: the dry reading is the parser's empty label (${want[name]}), not the stubbed reader's`, () => {
+      const { modelFlags: _f, ...empty } = parseClassification({}, target);
+      const d = dryReading(target);
+      assert.equal(d.outcome, want[name]); assert.equal(d.outcome, empty.outcome); assert.equal(d.source, "dry");
+      const stub = target.mode === "teachback" ? { covered: ["e1"], misconceptions: ["none"], confidence: 0.9 } : target.mode === "none" ? { belief: "m1", confidence: 0.9 } : { match: "key", confidence: 0.9 };
+      const s = parseClassification(stub, target);
+      if (target.mode !== "none") assert.notEqual(s.outcome, d.outcome, "the stub disagrees");
+      else assert.equal(d.voiced, undefined, "no belief read from an empty label");
+    });
+  }
+  test("the harness reads every unmatched line through dryReading", () => {
+    const src = readFileSync(join(ROOT, "evals/hybrid-side-by-side.mjs"), "utf8");
+    assert.match(src, /fast\.result \?\? dryReading\(target\)/);
+    assert.doesNotMatch(src, /outcome: "no_evidence", confidence: 1, flags: \{\}, source: "dry"/);
+  });
+});

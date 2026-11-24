@@ -19,7 +19,8 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { initLessonState, step, requeueMissedReturn } from "../server/director/state.js";
 import { findItem } from "../server/director/items.js";
-import { classify, classifyFast, targetFor, parseClassification } from "../server/director/classify.js";
+import { classify, classifyFast, targetFor } from "../server/director/classify.js";
+import { dryReading } from "./hybrid-side-by-side/dry-reader.mjs";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
 import { instructionsFor } from "../server/compiler/instructions.js";
@@ -199,8 +200,9 @@ async function classOf(state, kit, text, classLevel) {
   // (d34 wrap reply: the dry stub reads a line at the teach-back reader as the model does when it names no idea — the reader's own parse of
   // "nothing covered", "incorrect" where the kit lists ideas. Release 58's paid run read every steady wrap reply so, and the dry matrix, which
   // read it as nothing, could not see it; a line that reaches this reader where it should not is now read wrong here too)
-  if (DRY && !fast.result && target.mode === "teachback") { dryCall("classify"); const { modelFlags: _f, ...lab } = parseClassification({ covered: [], misconceptions: ["none"], confidence: 1 }, target); return { ...lab, flags: {}, source: "dry", path }; }
-  if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? { outcome: "no_evidence", confidence: 1, flags: {}, source: "dry" }), path }; }
+  // (to-brain 053 G: and so for every reader — a card, an asked step, a why, a check-in, an aside's return: the reader's own parse of an empty
+  // label, dry-reader.mjs)
+  if (DRY) { if (!fast.result) dryCall("classify"); return { ...(fast.result ?? dryReading(target)), path }; }
   return { ...(await classify(args)), path };
 }
 
