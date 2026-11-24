@@ -2650,6 +2650,7 @@ export function teachbackReading(s, kit, text) {
   if (!tb?.key) return null;
   return teachbackHit(tb, text) ? "correct" : /\d/.test(String(text ?? "")) ? "incorrect" : "no_evidence";
 }
+
 /** Her teach-back answer against the authored key and its accepted forms (a key, never a model's grade). */
 function teachbackHit(tb, text) {
   const norm = (x) => ` ${String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim()} `;
@@ -5268,6 +5269,21 @@ export const vpcSplitOn = (env = process.env) => !/^(off|0|false)$/i.test(String
 export const VERDICT_FRAME_WORDS = 4;
 /** dc-r8-director27 P2: a remediation and its follow-up card share a turn only within 60 words (a point and its own card keep L2_CAP). */
 export const REM_CARD_CAP = 60;
+/** to-brain 052 B1: a remediation the checker lists as written to be said whole (scripts/lesson-scripts/check.mjs REM_WHOLE) and its card
+ *  are one turn up to REM_WHOLE_CAP words — the remediation and the card, as the checker counts them; above that, as built. The list is the
+ *  checker's: read from its source, never copied (the web image does not ship scripts/: there the list is empty, and it says so once). */
+export const REM_WHOLE_CAP = 65;
+let remWholeList = null;
+export function remWholeListed(topicId, skillId, targets) {
+  if (!remWholeList) {
+    try {
+      const src = readFileSync(new URL("../../scripts/lesson-scripts/check.mjs", import.meta.url), "utf8");
+      const m = /export const REM_WHOLE = (\[[\s\S]*?\n\]);/.exec(src);
+      remWholeList = m ? Function(`"use strict"; return (${m[1]});`)() : [];
+    } catch { remWholeList = []; console.warn("[director] scripts/lesson-scripts/check.mjs not found: no remediation is said whole with its card (to-brain 052 B1)"); }
+  }
+  return remWholeList.some((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets);
+}
 /** Her lines that answer what the child said on this turn (an aside said again, a taste question, a sad aside): a split turn says them on
  *  its first half. */
 const NOW_LINES = ["asideAgain", "tasteAsked", "sadAside"];
@@ -5508,6 +5524,9 @@ export function unitTurn(out, input = null, extra = 0, first = 0) {
     // (d30 045, dry steady c4 82: the verdict says a short numeric answer back — "1/4, 1/7, 1/10 sahi nahi hai.", its words and three — a
     // remediation and its card at 61 words where five were counted)
     const said = String(input?.text ?? "").trim(), echo = /\d/.test(said) ? Math.min(6, wordsIn(said)) : 0;
+    const remT = /^rem:(.+)$/.exec(String(move.scriptBeat?.beatId ?? ""))?.[1] ?? null;
+    const topicId = scriptFor(input?.kit)?.script?.topicId ?? input?.kit?.topicId ?? null;
+    if (remT && topicId && remWholeListed(topicId, move.scriptBeat?.skillId ?? move.skillId, remT)) return { margin: 0, cap: REM_WHOLE_CAP };
     return { margin: Math.max(5, echo + 3) + (j || 8) + first + goOn + (move.workedDone || move.gave || move.closed ? extra : 0), cap: REM_CARD_CAP };
   }
   // (a point said in answer to a request — a give-up or a clarify at the hook, help's go-on line — is help's turn: it keeps its cap)

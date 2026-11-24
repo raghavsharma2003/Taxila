@@ -83,3 +83,23 @@ describe("A3: the boards asked of Studio start at the close's own board", () => 
     assert.equal(switchesFit([e2card, point, card]), true);
   });
 });
+
+describe("B1: a remediation listed whole is said in one turn with its card", () => {
+  test("remWholeListed reads the checker's REM_WHOLE (not a copy)", async () => {
+    const { remWholeListed } = await import("../server/director/state.js");
+    const { REM_WHOLE } = await import("../scripts/lesson-scripts/check.mjs");
+    assert.ok(REM_WHOLE.length > 0);
+    for (const w of REM_WHOLE) assert.ok(remWholeListed(w.topicId, w.skillId, w.targets), w.targets);
+    assert.equal(remWholeListed("c5-maths-ch02-t02", "c5-maths-ch02-t02-s1", "c5-maths-ch02-t02-m-bigger-denominator"), false);
+  });
+  test("unitTurn: a listed remediation and its card share the turn up to 65 words of the two; an unlisted one keeps 60 with its margin", async () => {
+    const { unitTurn, REM_WHOLE_CAP, REM_CARD_CAP } = await import("../server/director/state.js");
+    assert.equal(REM_WHOLE_CAP, 65);
+    const out = (targets, skillId) => ({ state: { ctx: {} }, ui: { ask: { itemId: `script:${skillId}:then:${targets}` } },
+      move: { kind: "reteach", skillId, scriptBeat: { kind: "remediation", skillId, beatId: `rem:${targets}` }, rendered: ["Ek badi chocolate aur do chhoti toffee socho."] } });
+    const input = { kit: { topicId: "c5-maths-ch02-t02" }, text: "3/10" };
+    assert.deepEqual(unitTurn(out("c5-maths-ch02-t02-m-tops-only", "c5-maths-ch02-t02-s2"), input), { margin: 0, cap: REM_WHOLE_CAP });
+    const u = unitTurn(out("c5-maths-ch02-t02-m-bigger-denominator", "c5-maths-ch02-t02-s1"), input);
+    assert.equal(u.cap, REM_CARD_CAP); assert.ok(u.margin > 0);
+  });
+});

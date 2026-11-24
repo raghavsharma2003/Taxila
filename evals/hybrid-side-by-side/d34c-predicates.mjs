@@ -3,10 +3,18 @@
 //   helpLadder  A1 re-reads help-predicates.mjs's H4 predicate (that file is left as it is): after the card's named wrong answer the own
 //               reason is the first rung of a miss's help, before the card's own simpler — "simpler unsaid, whyAlt said instead" is that
 //               rung said in its place, and the simpler said with the own reason unsaid is the fault. Every other reading is H4's.
+//   remCardLong B1 re-reads d29's T2 predicate (left as it is): a remediation the checker lists in REM_WHOLE is said with its card up to 65
+//               words of the two — its own lines and the card, as the checker counts them; the verdict and the joint before it are not
+//               counted. Every other remediation is T2's: over 60 words of the turn.
 import { HELP_PREDICATES, helpTurnOf, ownReasonDue } from "./help-predicates.mjs";
+import { D29_PREDICATES } from "./d29-predicates.mjs";
+import { REM_WHOLE } from "../../scripts/lesson-scripts/check.mjs";
+import { REM_WHOLE_CAP } from "../../server/director/state.js";
 import { helpPart, at, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
 
 const H4 = HELP_PREDICATES.helpLadder;
+const T2 = D29_PREDICATES.remCardLong;
+const wordsOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(" ").filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 /** The sentences of a script value (string, or { hi, en }), normalised. */
 const sentsOf = (v) => (typeof v === "string" ? [v] : [v?.hi, v?.en]).filter(Boolean).flatMap(sentencesOf).map(normSentence).filter(Boolean);
 /** Every normalised sentence of her turns before row i. */
@@ -31,5 +39,21 @@ export const D34C_PREDICATES = {
     if (!waSaid && !has(wa, T) && has(simp, T)) return `whyAlt unsaid on ${h.part}, simpler said instead (the own reason first after the named answer)`;
     if (f && /^(?:ask\.)?simpler unsaid on .*, whyAlt said instead$/.test(f) && !waSaid && has(wa, T)) return null;
     return f;
+  },
+  /** B1 (gated, as T2 was). */
+  remCardLong(L, r, i, ctx) {
+    const f = T2(L, r, i, ctx);
+    if (!f || r.who !== "teacher") return f;
+    const pp = r.pageParts ?? [];
+    const remP = pp.find((p) => /^rem:/.test(String(p.beat ?? "")));
+    const targets = remP ? String(remP.beat).slice(4) : null;
+    const skillId = /^(.+?-s\d+):/.exec(String(r.held?.unit ?? r.cell?.part ?? ""))?.[1] ?? null;
+    const topicId = ctx?.script?.topicId ?? null;
+    if (!targets || !REM_WHOLE.some((w) => w.topicId === topicId && w.skillId === skillId && w.targets === targets)) return f;
+    const text = String(r.text ?? "").replace(/\s+/g, " ").trim();
+    const n = pp.map((p, k) => ({ p, t: text.slice(p.from ?? 0, pp[k + 1]?.from ?? text.length) }))
+      .filter(({ p }) => !p.lead && ((["body", "simpler"].includes(p.part) && /^rem:/.test(String(p.beat ?? ""))) || (p.part === "card" && /^then:/.test(String(p.beat ?? "")))))
+      .reduce((a, { t }) => a + wordsOf(t), 0);
+    return n > REM_WHOLE_CAP ? `a remediation listed whole and its follow-up card in ${n} words (over ${REM_WHOLE_CAP})` : null;
   },
 };
