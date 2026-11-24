@@ -91,6 +91,13 @@ export function inSaid(sentence, said) {
   if (!k) return false;
   return keysOf(said).some((x) => sameSentence(k, x));
 }
+/** Whether a sentence is in the said set word for word (a `{slot}` in it matches its longest fixed piece). */
+export function saidWordForWord(sentence, said) {
+  const keys = keysOf(said);
+  if (!/\{\w+\}/.test(sentence)) { const k = normSentence(sentence); return !!k && keys.includes(k); }
+  const piece = String(sentence).split(/\{\w+\}/).map(normSentence).sort((a, b) => b.length - a.length)[0];
+  return !!piece && keys.some((k) => k.includes(piece));
+}
 /** The row a sentence was said at, or null. */
 export function saidAt(sentence, said) {
   const k = normSentence(sentence);
@@ -399,13 +406,17 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   if (marked && !ownFits) for (let n = ladder.length - 1; n >= 0; n--) if (ladder[n].path === `${part.path}.whyAlt`) ladder.splice(n, 1);
   if (["hint", "clarify", "give_up", "picture"].includes(request) && ownFits && !keyed && !closed) {
     const wa = ladderSpec(script, part, { keyed: true })[0];
-    if (wa?.field === "whyAlt" && wa.present) ladder.splice(ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
+    // (to-brain 052 A1: after a miss, the own reason is the first rung — before the card's own simpler, which is the next miss's; a request
+    // keeps 049 B3's order, the simpler first. Dry steady c5-ch02-t03 rows 56 to 58: the own reason, then the key, the simpler never said)
+    if (wa?.field === "whyAlt" && wa.present) ladder.splice(request !== "hint" && ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
   }
   // (Brain 049 B3: a card's own hint is spent only when she has said it — every sentence of it; one sentence near another part's — a
   // remediation's follow-up card written the same way — leaves it unsaid. director32 c6-ch07 steady 48, offtopic 62: a mix-up met again
   // got the key at its first miss, the card's own hint read as said from the then-card's)
+  // (to-brain 052 A1: and said word for word — another card's hint written the same way is not this card's: dry steady c5-ch02-t03 row 50,
+  // c1's simpler read as c3's, and c3's named miss got the own reason, then the key)
   const ownHint = (r) => isCard && (r.path === `${part.path}.simpler`);
-  const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !(ownHint(r) ? sentencesOf(r.text).every((s) => inSaid(s, said)) : sentencesOf(r.text).some((s) => inSaid(s, said))));
+  const unsaid = ladder.map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !(ownHint(r) ? sentencesOf(r.text).every((s) => saidWordForWord(s, said)) : sentencesOf(r.text).some((s) => inSaid(s, said))));
   const base = { part: part.id, kind: part.kind, keyed: !!keyed, request, ...(hindiHelp ? { hindiAsked: true } : {}), ...(closed && !keyed ? { closed: true } : {}) };
   // (dc-r8-director30 Brain 046 Q2: a request for Hindi at a live card or an asked step gets the question's own `hindi` form — the easier-words
   // line leads it (the language pass), the form is asked over the card's board; a second request on the same card gets the card's unsaid help
