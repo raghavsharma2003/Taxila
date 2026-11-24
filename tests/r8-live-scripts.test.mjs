@@ -12,13 +12,14 @@ import { getTopic } from "../server/content/curriculum.js";
 import { scriptFor, setScriptForTest } from "../server/director/script.js";
 import { scriptedTopicIds } from "../server/content/next-topic.js";
 
-const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
-const STAGED = ["c4-maths-ch01-t02"];
+// (to-brain 052 D: c4-maths-ch01-t02 went live, b3c7e81fd (dc-r8-director33, clause 16), the seventh; the two staged scripts stay staged)
+const LIVE = ["c4-maths-ch01-t02", "c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
+const STAGED = ["c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const ls = (d) => readdirSync(new URL(`../data/${d}/`, import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)).sort();
 
-test("data/lesson-scripts holds exactly the six live scripts; c5-maths-ch02-t03 and c6-maths-ch07-t01 are no longer staged", () => {
+test("data/lesson-scripts holds exactly the seven live scripts; c5-maths-ch02-t03, c6-maths-ch07-t01 and c4-maths-ch01-t02 are no longer staged", () => {
   assert.deepEqual(ls("lesson-scripts"), LIVE);
-  for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01"]) assert.ok(!ls("lesson-scripts-staged").includes(t), `${t} is not staged`);
+  for (const t of ["c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02"]) assert.ok(!ls("lesson-scripts-staged").includes(t), `${t} is not staged`);
   for (const t of STAGED) assert.ok(ls("lesson-scripts-staged").includes(t), `${t} is staged`);
 });
 

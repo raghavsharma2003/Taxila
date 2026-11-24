@@ -339,7 +339,7 @@ test("main on director22: a view whose captions cannot be said clean is still dr
 test("Studio 014: the seven scripts' card boards — the view each gets, and what rule 7 still lists", async () => {
   const { d32Cards, viewOf, noPictureCards } = await import("../scripts/lesson-scripts/check.mjs");
   const SEVEN = [["lesson-scripts", "c4-maths-ch05-t01"], ["lesson-scripts", "c5-maths-ch02-t01"], ["lesson-scripts", "c5-maths-ch02-t02"], ["lesson-scripts", "c5-maths-ch02-t03"],
-    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts-staged", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
+    ["lesson-scripts", "c6-maths-ch06-t01"], ["lesson-scripts", "c4-maths-ch01-t02"], ["lesson-scripts", "c6-maths-ch07-t01"]];
   const KINDS = new Set(["card", "follow-up", "check", "asked step", "own step"]);
   const got = {};
   for (const [d, T] of SEVEN) {

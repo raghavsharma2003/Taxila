@@ -39,7 +39,8 @@ test("017 B (was 016 A1): a quick question only where its point and card do not 
       assert.ok(!mine.some((x) => card.includes(x)), `${at}: shares a form with its card`);
     }
   }
-  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3 + 3 + 3 + 3 + 3 + 2 + 3, "every beat of the live scripts (the four pilots, then c5-maths-ch02-t03's 3 + 3 + 3, live since dc-r8-director31, then c6-maths-ch07-t01's 3 + 2 + 3, live since director32)");
+  // (to-brain 052 D: c4-maths-ch01-t02's 3 + 3 + 3, live since b3c7e81fd, the last three)
+  assert.equal(n, 4 + 3 + 3 + 3 + 3 + 3 + 3 + 4 + 4 + 3 + 3 + 3 + 3 + 3 + 3 + 3 + 2 + 3 + 3 + 3 + 3, "every beat of the live scripts (the four pilots, then c5-maths-ch02-t03's 3 + 3 + 3, live since dc-r8-director31, then c6-maths-ch07-t01's 3 + 2 + 3, live since director32)");
   assert.equal(kept, 0, "every pilot pair fits, so no pilot keeps a quick");
 });
 

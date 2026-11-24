@@ -35,6 +35,8 @@ test("020 the gate: on for the six live scripts and the rewritten staged one, th
   assert.deepEqual(D32_READY, [...live, ...staged, "c6-maths-ch07-t01", ...d33]);
   assert.deepEqual(D32_PICTURES_READY, [...live, ...staged, "c6-maths-ch07-t01", ...d33]); // (rule 7 is on for all nine)
   live.push("c6-maths-ch07-t01");
+  // (to-brain 052 D: c4-maths-ch01-t02 is live, b3c7e81fd: the lists keep their order, the script is read from data/lesson-scripts)
+  live.push(...staged.splice(0));
   staged.push(...d33);
   const stagedOf = (t) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts-staged/${t}.json`, import.meta.url), "utf8"));
   const scripts = [...live.map((t) => scriptOf(t)), ...staged.map(stagedOf)];
