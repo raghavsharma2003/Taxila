@@ -5302,18 +5302,12 @@ export const VERDICT_FRAME_WORDS = 4;
 /** dc-r8-director27 P2: a remediation and its follow-up card share a turn only within 60 words (a point and its own card keep L2_CAP). */
 export const REM_CARD_CAP = 60;
 /** to-brain 052 B1: a remediation the checker lists as written to be said whole (scripts/lesson-scripts/check.mjs REM_WHOLE) and its card
- *  are one turn up to REM_WHOLE_CAP words — the remediation and the card, as the checker counts them; above that, as built. The list is the
- *  checker's: read from its source, never copied (the web image does not ship scripts/: there the list is empty, and it says so once). */
+ *  are one turn up to REM_WHOLE_CAP words — the remediation and the card, as the checker counts them; above that, as built. The list is
+ *  data/lesson-rem-whole.json, which the checker reads too (one list, never copied; the web image ships data/, not scripts/). */
 export const REM_WHOLE_CAP = 65;
 let remWholeList = null;
 export function remWholeListed(topicId, skillId, targets) {
-  if (!remWholeList) {
-    try {
-      const src = readFileSync(new URL("../../scripts/lesson-scripts/check.mjs", import.meta.url), "utf8");
-      const m = /export const REM_WHOLE = (\[[\s\S]*?\n\]);/.exec(src);
-      remWholeList = m ? Function(`"use strict"; return (${m[1]});`)() : [];
-    } catch { remWholeList = []; console.warn("[director] scripts/lesson-scripts/check.mjs not found: no remediation is said whole with its card (to-brain 052 B1)"); }
-  }
+  remWholeList ??= JSON.parse(readFileSync(new URL("../../data/lesson-rem-whole.json", import.meta.url), "utf8")).list;
   return remWholeList.some((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets);
 }
 /** Her lines that answer what the child said on this turn (an aside said again, a taste question, a sad aside): a split turn says them on

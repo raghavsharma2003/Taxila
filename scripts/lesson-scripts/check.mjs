@@ -1436,22 +1436,9 @@ export function fitReport(s) {
  *  "Said beats fitted": a remediation over REM_CARD_MAX with its card fails unless it is listed in REM_WHOLE (topic, skill,
  *  remediation target) with its reason; the walk says a listed one alone, ending on its check-in. */
 export const START_ANYWAY_MAX = 6, AFTER_PARK_MAX = 8;
-export const REM_WHOLE = [
-  // (Learning 018, 2026-11-18: each was a note when cut to 49 — director29's judges named three of them — and is said whole now)
-  { topicId: "c5-maths-ch02-t01", skillId: "c5-maths-ch02-t01-s3", targets: "c5-maths-ch02-t01-m-whole-number-bias",
-    reason: "two sentences: the same top number means the same gaps walked; the bigger bottom number means shorter gaps, so less far (cut to fit it read \"Neeche wala bada, toh har gap chhota\")" },
-  { topicId: "c5-maths-ch02-t01", skillId: "c5-maths-ch02-t01-s3", targets: "c5-maths-ch02-t01-m-not-numbers",
-    reason: "the train needs the stations, the gaps between them and what goes on top and below, said as a teacher says it (director29 c5-t01 steady 84: \"Train ka number ek fraction: upar gine gaps, neeche 5\")" },
-  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-same-bottom-equal",
-    reason: "the two rotis, what was taken from each and why equal parts let the count decide: three sentences against a 25-word card" },
-  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-tops-only",
-    reason: "the judge's named note (\"3 wali ka ek hissa 9 wali ke teen jitna; 9 wali ke 2 usse chhote\"): one part of the 3 strip against three of the 9, and so two of the 9 are less" },
-  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s3", targets: "c5-maths-ch02-t02-m-tops-only",
-    reason: "the bigger part first, then the same count coloured: two steps, each a sentence, against a 25-word card" },
-  // (Learning 019, 2026-11-18: director30's judge heard it end without its conclusion, offtopic 82)
-  { topicId: "c5-maths-ch02-t02", skillId: "c5-maths-ch02-t02-s2", targets: "c5-maths-ch02-t02-m-gap-thinking",
-    reason: "the two strips with their counts, how much of each is empty, and the conclusion it lacked (director30 c5-t02 offtopic 82): the counts keep its board drawn, and with them it cannot end on its conclusion inside 49 with its 25-word card" },
-];
+// (the list lives in data/lesson-rem-whole.json, to-brain 052 B1 close, so the engine reads it in production too: the web image ships data/
+// and not scripts/; Learning 018 and 019 added its entries, each entry's `since` says which)
+export const REM_WHOLE = JSON.parse(readFileSync(new URL("../../data/lesson-rem-whole.json", import.meta.url), "utf8")).list;
 export const remWhole = (topicId, skillId, targets) => REM_WHOLE.find((x) => x.topicId === topicId && x.skillId === skillId && x.targets === targets) ?? null;
 export const VIEW_KIND_WORDS = {
   line: /\b(number line|line|lines|rekha|rekhayein|rekhaon)\b/i,

@@ -92,6 +92,17 @@ describe("B1: a remediation listed whole is said in one turn with its card", () 
     for (const w of REM_WHOLE) assert.ok(remWholeListed(w.topicId, w.skillId, w.targets), w.targets);
     assert.equal(remWholeListed("c5-maths-ch02-t02", "c5-maths-ch02-t02-s1", "c5-maths-ch02-t02-m-bigger-denominator"), false);
   });
+  test("the list is data/lesson-rem-whole.json, which the web image ships (scripts/ it does not): the engine never reads scripts/", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { REM_WHOLE } = await import("../scripts/lesson-scripts/check.mjs");
+    const data = JSON.parse(readFileSync(new URL("../data/lesson-rem-whole.json", import.meta.url), "utf8"));
+    assert.ok(data.note && data.list.length > 0);
+    assert.deepEqual(REM_WHOLE, data.list);
+    const state = readFileSync(new URL("../server/director/state.js", import.meta.url), "utf8");
+    assert.ok(!/scripts\/lesson-scripts\/check\.mjs", import\.meta/.test(state), "state.js reads nothing from scripts/");
+    const docker = readFileSync(new URL("../Dockerfile", import.meta.url), "utf8");
+    assert.match(docker, /^COPY data \.\/data$/m);
+  });
   test("unitTurn: a listed remediation and its card share the turn up to 65 words of the two; an unlisted one keeps 60 with its margin", async () => {
     const { unitTurn, REM_WHOLE_CAP, REM_CARD_CAP } = await import("../server/director/state.js");
     assert.equal(REM_WHOLE_CAP, 65);
