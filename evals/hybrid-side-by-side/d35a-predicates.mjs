@@ -127,14 +127,20 @@ export const D35A_PREDICATES = {
     const before = qa[pi] === P || endsOnYourTurn(ctx.script, pT.text) || endsOnAnswerFirst(ctx.script, pT.text);
     return before ? `the question said again in full after ${r.cell.column === "yes" ? "a bare yes" : "try-first"}` : null;
   },
-  /** B3: a card's or an asked step's question is heard in at most four turns of a lesson, in any form (whole, re-ask, Hindi form, short
+  /** B3 (after main's R1, R2: a short ask is no hearing; flagged only on a turn after a miss, a give-up or no answer): a card's or an asked step's question is heard in at most four turns of a lesson, in any form (whole, re-ask, Hindi form, short
    *  ask), running or not (director34 c4-ch01-t02 offtopic 10 to 30, c5-t02 steering 6 to 20). Gated. */
   questionFiveTimes(L, r, i, ctx) {
     if (r.who !== "teacher") return null;
     const qa = questionsAt(L, ctx);
     const P = qa[i];
     if (!P || /^\.?teachback/.test(P)) return null;
-    const n = qa.slice(0, i + 1).filter((x) => x === P).length;
+    // (main's R2: a short ask says no question — it is no hearing; questionsAt reads it as the question pending, for B2's predicates)
+    if (atQuestionOf(ctx.script, r.text) === "?short") return null;
+    const n = qa.slice(0, i + 1).filter((x, k) => x === P && atQuestionOf(ctx.script, L.rows[k].text) !== "?short").length;
+    // (main's R1: the cap is on what she says on her own — after a miss, a give-up or no answer; a child's request for the question, a picture
+    // request, a yes, a try-first or an aside is answered as before whatever the count)
+    const col = String(r.cell?.column ?? "");
+    if (col && !["wrong", "misconception", "give_up", "other"].includes(col)) return null;
     return n >= 5 ? `the question ${P} heard a ${n}th time` : null;
   },
   /** B4: a right answer whose close cannot share its turn with the next card ends on the go-on line, never a check-in (director34 c4

@@ -118,7 +118,10 @@ export const PREDICATES = {
       if (hit < 0) { const f = (r.seams ?? []).find((x) => x.joint === kind && x.form); if (f) { const k = low(f.form); hit = (ctx.script?.joints?.[kind] ?? []).map((g) => low(String(g?.hi ?? g ?? ""))).findIndex((g) => g && (g === k || g.endsWith(k))); } }
       if (hit < 0) continue;
       const use = (ctx.jointUse[kind] ??= forms.map(() => 0));
-      if (use[hit] >= 1 && use.some((n, j) => j !== hit && n === 0)) { use[hit]++; return `${kind} form ${hit + 1} again before the others`; }
+      // (to-brain 053 B4: a right answer's close apart ends on the PLAIN go-on line — help.js goOnPlain, no consolation after a right answer —
+      // so a consoling form is not owed there: dry steady c4-ch05-t01 74, 90, 100 rotate forms 3, 2, 3 of three, the first "Koi baat nahi, …")
+      const owed = (j) => !(kind === "afterKeyGoOn" && r.cell?.column === "right" && /\b(?:koi\s+baat\s+nahi?n?|mushkil|that'?s\s+(?:okay|fine)|no\s+problem|don'?t\s+worry)\b/i.test(String(forms[j] ?? "")));
+      if (use[hit] >= 1 && use.some((n, j) => j !== hit && n === 0 && owed(j))) { use[hit]++; return `${kind} form ${hit + 1} again before the others`; }
       use[hit]++;
     }
     return null;

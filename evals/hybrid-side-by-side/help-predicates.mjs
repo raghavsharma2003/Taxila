@@ -476,8 +476,10 @@ export const HELP_PREDICATES = {
    *  clarify or a wrong answer's hint answered with the key while a rung of the card's ladder is unsaid (H4 dry, c5-t02 stuck 22 and
    *  offtopic 28: the second miss on e2 got the key with e2's simpler unsaid; director25: the second-request rule's keys). */
   keyEarly(L, r, i, ctx) {
-    // (to-brain 053 B3: a question heard four times gives its key at the fifth, whatever the ladder still has — the row says heardCap)
-    if (r.heardCap) return null;
+    // (to-brain 053 B3 after main's R1: a question heard four times gives its key at the fifth when the cue is a miss or a give-up, whatever
+    // the ladder still has — as KEY_AFTER_MISSES below; the row says heardCap. Dry steering c5-t03 22: "2" after try-first, the key with the
+    // card's own hint unsaid)
+    if (r.heardCap && ["wrong", "misconception", "give_up"].includes(String(r.cell?.column ?? ""))) return null;
     const h = helpTurnOf(L, r, i, ctx);
     if (!h || h.keyed || h.request === "hindi") return null;
     const part = helpPart(ctx.script, h.part);

@@ -3689,7 +3689,9 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (dc-r8-director30 Brain 046 Q3: a return said in the turn that holds its card — after the held part, its question ending the turn)
     if (asideQ && !state.lastMove?.returned?.last && ((honestLine && asideP.includes(honestLine)) || (!honestLine && guard.returnLine && asideP.includes(guard.returnLine)))) {
       const isA = authoredSentence(state, card, kit);
-      const bridgeK0 = state.lastMove?.bridgeSaid ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
+      // (to-brain 053 B6: a bridge the walk put with a close split off for its return — state.js returnApart, d31 046 follow-up — is said with
+      // that close, never held into her reply's turn, where with the point and its card it ran past 75: dry offtopic c4-ch05-t01 44, 82 words)
+      const bridgeK0 = state.lastMove?.bridgeSaid && !(state.lastMove.splitClose && state.lastMove.returned) ? unpointed(dot(state.lastMove.bridgeSaid)) : null;
       const held = [...first.filter((x) => x === bridgeK0), ...body].filter((x) => sentences(x).some((y) => isA(y)));
       if (held.length) {
         guard.bodyHeld = held.map(norm);

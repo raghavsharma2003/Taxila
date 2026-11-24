@@ -4185,7 +4185,12 @@ export function step(prev, input) {
   if (input?.event === "turn" && scriptOn() && !scriptFor(input.kit)?.script?.recordedRun && (out?.state?.lastMove?.heldSaid?.length || (prev?.splitHold && !prev.splitHold.teach && out?.state?.lastMove?.point)) && out.ui?.ask?.text && out.state.lastMove.itemId && !out.state.splitHold) {
     const lm = out.state.lastMove;
     // (Brain 044 T6: her reply to the aside that leads it is not counted; T1: a point and its card share a turn to 75, with no 60-word cap)
-    const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length;
+    // (to-brain 053 B6, finished — dry offtopic c4-ch05-t01 44, 82 words: her reply to the return's answer, the back-to line, then the bridge
+    // the return held back, a point and its card. A turn that holds a bridge counts her reply and its joint back like any other part, about
+    // fifteen words, as partsOfTurn does where the move carries the bridge itself)
+    const bridgeTs = new Set((scriptFor(input.kit)?.script?.skills ?? []).map((k) => (k.bridgeToNext ? saidIn(k.bridgeToNext, out.state.ctx?.lang ?? "hinglish") : null)).filter(Boolean).map((t) => normLine(t)));
+    const bridgeHeld = !!(lm.asideAck || lm.returnReply) && (!!lm.bridgeSaid || (lm.heldSaid ?? []).some((x) => bridgeTs.has(normLine(x))));
+    const w = String([...(lm.sayFirst ?? []), lm.point ?? "", out.ui.ask.text].join(" ")).split(/\s+/).filter(Boolean).length + (bridgeHeld ? 15 : 0);
     // (a park whose return is due waits for no card: the held part ends its turn and the return comes at the boundary after it, as before —
     // r8-main-034's offtopic lesson, where the card would have kept the return off for twenty turns)
     // (d31 046 follow-up 4: a remediation's follow-up card is not held for a due return — the return waits for its verdict)

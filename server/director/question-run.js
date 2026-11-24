@@ -220,7 +220,9 @@ export function yourTurnPass(prev, out, script, childText = "") {
     }
     return out;
   }
-  if (saidInv && pl0.yourTurnAfter) {
+  // (an aside turn after the invitation is no answer to it: 052 B4's pointed invitation, below — B2's wait turns are turns at the question,
+  // so dry steady c4 32 and c4-ch01-t02 32, an aside after try-first, the short ask and the invitation, said the question a fourth time)
+  if (saidInv && pl0.yourTurnAfter && !asideTurnOf(prev, out, lm)) {
     const nowText0 = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
     const a0 = nowText0 ? atQuestionOf(script, nowText0) : null, p0 = a0 && a0 !== "?short" ? a0 : null;
     if (p0 && questionPathOf(script, pl0.yourTurnAfter) === p0) set({ askNot: pl0.yourTurnAfter });

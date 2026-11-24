@@ -398,8 +398,6 @@ export const D30_PREDICATES = {
   // clarify, its simpler said) or after a wrong answer to it; never after a yes, an aside, a remark or anything else: c5-t01 stuck 22,
   // c5-t02 stuck 22, offtopic 18, c6 stuck 22, offtopic 18)
   stepToldEarly(L, r, i, ctx) {
-    // (to-brain 053 B3: a step heard four times is told at the fifth, whatever the cue — the row says heardCap)
-    if (r.heardCap) return null;
     if (r.who !== "teacher" || !r.stepAnswer?.told) return null;
     const req = String(ctx?.prevIntent ?? r.cell?.column ?? "");
     const wrong = /^(?:incorrect|partial|misconception)\b/.test(String(ctx?.prevRead ?? "")) || !!r.stepAnswer.miss || ["wrong", "misconception"].includes(String(r.cell?.column ?? ""));
