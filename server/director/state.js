@@ -945,11 +945,15 @@ function workedSegment(s, input, { we, item, skillId, lang, ref, sayFirst, bridg
   // the told steps up to the next question
   let j = w.workedStep ?? 0;
   const told = [];
-  while (j < steps.length && !(steps[j]?.ask?.prompt && steps[j].ask.key != null)) { const l = scriptWorkedStepLine(steps[j], lang); if (l) told.push(l); j++; }
+  // (to-brain 052 A2: a told step with a `resultBoard` and no `ask` is said over that board from the first word of its told line — the turn
+  // pages there; the page before it is whatever was up. Dry steady c4-ch01-t02 66, c6-ch07-t03 s1 step 2: step 1's verdict and step 2's told
+  // line in one turn, step 2's line said over step 1's board)
+  const stepBoards = [];
+  while (j < steps.length && !(steps[j]?.ask?.prompt && steps[j].ask.key != null)) { const l = scriptWorkedStepLine(steps[j], lang); if (l) { told.push(l); if (steps[j]?.resultBoard?.template) stepBoards.push({ line: l, board: steps[j].resultBoard }); } j++; }
   const rendered = [...lead, ...told];
   const base = { skillId, format: "F2", content: [...bridgeLine, `worked example: ${saidIn(we.problem, lang) ?? ""}`, `what we find: ${saidIn(we.find, lang) ?? ""}`],
     whiteboard: { kind: "math", value: clip(saidIn(we.problem, lang) ?? "") }, ...(rendered.length ? { rendered, stepFrom } : {}), ...(problemLines ? { problemLines } : {}),
-    ...(stepReply ? { stepReply } : {}), ...sayFirst };
+    ...(stepReply ? { stepReply } : {}), ...(stepBoards.length ? { stepBoards } : {}), ...sayFirst };
   if (j < steps.length) {
     const a = steps[j].ask;
     // (Brain 047 R3: the step asked again straight after it was asked — a yes, an aside, a picture — alternates with its authored reask, as a
@@ -995,6 +999,18 @@ function segmentTurn(out, input, closeWords = 0) {
   // (her park line on an aside said this turn; the lead-in before a worked problem after her reply to an aside — partsOfTurn counts the reply)
   // (dc-r8-director28 Brain 044 T6: her reply to an aside, her park line and the joint after them are not counted in the turn's 75 and are never
   // said alone — the segment comes with them, in the same turn: c5-t01 stuck 42, steering 34, 38; c5-t02 stuck 42, steady 56; c6 stuck 44)
+  // (to-brain 052 A2: a told step said over its resultBoard pages there — only where Studio can draw every page of the turn: the board up,
+  // the turn's, each told step's, the card's. Where it cannot, the told line is said over the turn's board, as before: no check-in may end a
+  // worked example's turn (Brain 047 R4) and the order adds no words. Staged c6-ch07-t03 s1: step 1's three bars, step 2's two, the 12-part
+  // your-step bar pass Studio's 120 ops — main's ruling)
+  const sbs = move.stepBoards ?? [];
+  if (sbs.length) {
+    const cardB = move.stepAsk ? null : move.cardBeat?.board ?? null;
+    if (!switchesFit([out.state?.heldUp?.board ?? null, move.scriptBeat?.board ?? null, ...sbs.map((x) => x.board), cardB])) {
+      delete move.stepBoards;
+      if (out.state?.lastMove?.stepBoards) delete out.state.lastMove.stepBoards;
+    }
+  }
   if (p0.reduce((a, x) => a + x.n, 0) + qW <= L2_CAP || b < 0) return out;
   if (b > 0) { const br = breakL2(out, input, closeWords, b); if (br) return br; }
   return out;
@@ -3304,7 +3320,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -3611,7 +3627,7 @@ const pictureLineFields = (d) => {
 };
 /** What a move says as help is removed from it (its point, its rendered lines, its simpler) before the decision's words are put in. */
 const HELP_STRIP = ["quick", "quickReply", "stepAsk", "stepReply", "request", "point", "rendered", "simpler", "simplerBeat", "cardPoint", "resumed", "mustSay", "lead", "helpNone", "hindiNew", "altBoard", "noLangAck", "secondClarify", "clarifyN",
-  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "problemLines", "hookSaid",
+  "workedSimpler", "helpJoint", "helpNew", "smaller", "workedAnswerSaid", "whyAltSaid", "hindiSame", "stepFrom", "stepBoards", "problemLines", "hookSaid",
   // (main's R4 on the merged H4 + L2 tree, steering c4, c5-t02, c6 16: a give-up after a picture turn said the picture's caption again —
   // the help move was built from the picture move and kept its picture marks, so brain/say.js read a picture asked and said the caption
   // over the help. A picture is that turn's; help says its own wording)
@@ -4455,6 +4471,8 @@ function step0(prev, input) {
   if (p.rendered?.length) move.rendered = [...p.rendered];
   // (dc-r8-director26 C1: two told steps on one turn — the first's number; the beat is the second's)
   if (p.stepFrom) move.stepFrom = p.stepFrom;
+  // (to-brain 052 A2: the told steps' result boards, by their lines — brain/say.js marks each line's part)
+  if (p.stepBoards?.length) move.stepBoards = p.stepBoards.map((b) => ({ ...b }));
   // (dc-r8-director26 C1, main's ruling: the worked problem said with its first step — its lines lead the rendered ones; the hook said
   // before the first point, on that point's turn)
   if (p.problemLines) move.problemLines = p.problemLines;
@@ -4946,9 +4964,9 @@ function switchFits(from, to, { upKept = false } = {}) {
 /** Brain 044 T1: can Studio draw these boards one after another in one turn (its own heldBoard: the first up, each next a switch)?
  *  boards[0] is the board up (or null): when it is there it is held still, as the seam keeps it (d29 join: drawn fresh with its
  *  motion, the up page cost the op budget a real turn never spends — dry steady c4 66). */
-function switchesFit(boards) {
+export function switchesFit(boards, { freshFirst = false } = {}) {
   try {
-    const upKept = !!boards[0]?.template;
+    const upKept = !!boards[0]?.template && !freshFirst;
     const bs = boards.filter((b) => b?.template).filter((b, k, a) => k === 0 || JSON.stringify(b) !== JSON.stringify(a[k - 1]));
     if (bs.length < 3) return bs.length < 2 || switchFits(bs[0], bs[1], { upKept });
     const text = bs.map((_, k) => `${"abcdefgh"[k]} `.repeat(50)).join("");
@@ -5525,9 +5543,13 @@ function splitTeach(out, input, cap, extra = 0) {
   // on another — six bags of five — after the answered card's grid: Studio draws no switch after the first equal-groups page, the turn drew
   // one page and said the remediation over the grid. A remediation and its card share the turn only where every board change is drawn;
   // else the remediation ends on its check-in and the card is the next turn, as over 60 words)
+  // (to-brain 052 A3: a close that says its verdict and reason is said over the answered card's board — drawn at the turn's first word, fresh
+  // where it is not the board up — so the boards asked of Studio start there, not at the board up. Staged c6-ch07-t03 s2 e2 to e3, dry steady
+  // 42, steering 54, offtopic 46, stuck 68: the 2/5 answer board, then e3's two 12-part bars twice, passed the op cap and one page was drawn)
+  const closeOwn = extra > 0 && move.closeBeat?.board && (move.verdict || move.gave || move.closed || move.workedDone || ["correct", "incorrect", "partial", "misconception"].includes(String(input?.cls?.outcome ?? ""))) ? move.closeBeat.board : null;
   const remDrawable = () => move.scriptBeat?.kind !== "remediation" || !move.scriptBeat?.board || !move.cardBeat?.board
     || switchesFit([s.heldUp?.board ?? move.closeBeat?.board ?? null, move.scriptBeat.board, move.cardBeat.board]);
-  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || (move.scriptBeat?.kind === "remediation" ? remDrawable() : move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([pointLeads ? null : s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null]));
+  const drawable = () => scriptFor(input.kit)?.script?.recordedRun || (move.scriptBeat?.kind === "remediation" ? remDrawable() : move.scriptBeat?.kind !== "explain" || !move.point || move.smaller || move.simpler || move.help || switchesFit([pointLeads ? null : closeOwn ?? s.heldUp?.board ?? null, move.scriptBeat?.board ?? null, (move.cardBeat ?? null)?.board ?? null], { freshFirst: !!closeOwn && JSON.stringify(closeOwn) !== JSON.stringify(s.heldUp?.board ?? null) }));
   // (d29 final, Learning 017 A.2: a later point and its card are 61 words, and the turn holds them with the verdict form and the short reason —
   // 75 in all, counted as said; A.1: the hook, the first point and its card, 75. The 8 words of slack kept for her framing are not added)
   const slack = move.point && move.scriptBeat?.kind === "explain" && !move.smaller && !move.simpler && (extra > 0 || move.hookSaid) && !scriptFor(input.kit)?.script?.recordedRun ? 0 : 8;

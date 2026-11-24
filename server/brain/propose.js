@@ -339,7 +339,9 @@ export function pagesOfParts(move, list, line) {
     // (v6.7 P4′, main's director15 counting ruling: a miss verdict that names their answer or any value — "2/1 sahi nahi hai." — is
     // said on the answered card's page, before the remediation's page)
     || /\d/.test(t);
-  let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: p.part === "close" && !says(p.text) && offs.length > 1 ? null : beatFor(p.part), alt: p.part === "alt" }));
+  // (to-brain 052 A2: a told worked step's line that carries its resultBoard is said over that board — brain/say.js marks the part)
+  const stepBeatOf = (p) => (p.part === "body" && p.board?.template ? { ...(move?.scriptBeat ?? {}), board: p.board } : null);
+  let placed = offs.map((p) => ({ part: p.part, start: p.start, beat: p.part === "close" && !says(p.text) && offs.length > 1 ? null : stepBeatOf(p) ?? beatFor(p.part), alt: p.part === "alt" }));
   // (a part with no board rides on the page before it; leading ones on the first page with a board)
   for (let i = 1; i < placed.length; i++) if (!placed[i].beat) placed[i] = { ...placed[i], beat: placed[i - 1].beat, alt: placed[i - 1].alt };
   const firstB = placed.find((p) => p.beat);
@@ -653,6 +655,8 @@ export function heldOf({ move, list = null, line = "", kit, up = null, graded = 
         if (move?.bridgeSaid && norm1(p.text).replace(/[.!?\u0964]+$/, "") === norm1(move.bridgeSaid).replace(/[.!?\u0964]+$/, "")) { pastBridge = true; return null; }
         const b = move?.heldBeat?.board ? move.heldBeat : sb; return b?.board ? on(b.board, unitOfBeat(b)) : null; }
       default: {
+        // (to-brain 052 A2: a told worked step's line that carries its resultBoard — brain/say.js marks the part — pages there)
+        if (p.part === "body" && p.board?.template) return on(p.board, unitOfBeat(sb));
         if (pastBridge && bridgeU?.board) return on(bridgeU.board, bridgeU.unit);
         if (answerB) return on(answerB.board, curUnit);
         if (answeredPic) return on(answeredPic, curUnit);

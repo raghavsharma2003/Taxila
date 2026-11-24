@@ -1011,6 +1011,9 @@ Object.assign(PREDICATES, D34A_PREDICATES);
 // (to-brain 051 C4, C5, C6: the cap counts what the child hears; easier words; the return — d34b-predicates.mjs)
 import { D34B_PREDICATES } from "./d34b-predicates.mjs";
 Object.assign(PREDICATES, D34B_PREDICATES);
+// (to-brain 052, the engine builder's parts: the ladder after the own reason, … — d34c-predicates.mjs)
+import { D34C_PREDICATES } from "./d34c-predicates.mjs";
+Object.assign(PREDICATES, D34C_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

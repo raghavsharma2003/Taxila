@@ -45,3 +45,41 @@ describe("A1: the ladder after the card's own reason", () => {
     assert.equal(d.rung?.field, "simpler");
   });
 });
+
+describe("A2: a told step's result board is drawn when its line is said", () => {
+  test("heldOf: a told step's line that carries its resultBoard pages there from its first word; the card is on its own board", async () => {
+    const { heldOf } = await import("../server/brain/propose.js");
+    const posing = { template: "angle@1", params: { angles: [{ deg: 60, name: "P" }, { deg: 90, name: "Q", len: "short" }, { deg: 130, name: "R", len: "short" }] } };
+    const result = { template: "angle@1", params: { angles: [{ deg: 60, name: "P" }, { deg: 90, name: "Q", len: "short" }], tester: true } };
+    const sb = { scriptId: "c4-maths-ch01-t02", skillId: "c4-maths-ch01-t02-s2", beatId: "worked", kind: "worked", board: posing };
+    // (dry steady c4-ch01-t02 row 66: step 1's verdict, step 2's told line, the child's own step)
+    const list = [{ part: "body", kind: "stepConfirm", text: "Haan, kam: P ki bhujayein lambi hain, par uska khulna right angle se kam hai." },
+      { part: "body", kind: "workedStep", text: "Q par tester rakho: tester bilkul fit hota hai, toh Q right angle ke barabar hai.", board: result },
+      { part: "card", text: "Tumhari baari: teesre kone ko bhi tester se milao. Teeno mein sabse bada angle kaunsa hai?" }];
+    const line = list.map((p) => p.text).join(" ");
+    const h = heldOf({ move: { kind: "worked_example", scriptBeat: sb, cardBeat: sb }, list, line, kit: null, up: { board: posing, unit: "c4-maths-ch01-t02-s2:worked" } });
+    assert.deepEqual(h.board, posing, "the page before it is whatever was up");
+    assert.equal(h.switches?.length, 2);
+    assert.deepEqual(h.switches[0].board, result);
+    assert.equal(h.switches[0].atChar, line.indexOf("Q par tester"));
+    assert.deepEqual(h.switches[1].board, posing, "the card on its own board");
+    const plain = heldOf({ move: { kind: "worked_example", scriptBeat: sb, cardBeat: sb }, list: list.map(({ board: _b, ...p }) => p), line, kit: null, up: { board: posing, unit: "c4-maths-ch01-t02-s2:worked" } });
+    assert.ok(!plain.switches && !plain.switchTo, "without the mark: one page, as before");
+  });
+});
+
+describe("A3: the boards asked of Studio start at the close's own board", () => {
+  // (staged c6-ch07-t03 s2: e2's answer board, then e3's point and card — two 12-part pairs of bars)
+  const answer = { template: "fraction-bars@1", params: { bars: [{ parts: 5, shade: 2, label: "2/5" }] } };
+  const e2card = { template: "fraction-bars@1", params: { bars: [{ parts: 5, shade: 0, label: "" }] } };
+  const point = { template: "fraction-bars@1", params: { bars: [{ parts: 12, shade: 4, label: "1/3" }, { parts: 12, shade: 6, label: "2/4" }] } };
+  const card = { template: "fraction-bars@1", params: { bars: [{ parts: 12, shade: 8, label: "2/3" }, { parts: 12, shade: 0, label: "" }] } };
+  test("switchesFit: the close's board drawn fresh, the point's and the card's do not fit one turn; the point's and the card's alone do", async () => {
+    const { switchesFit } = await import("../server/director/state.js");
+    assert.equal(switchesFit([answer, point, card], { freshFirst: true }), false);
+    assert.equal(switchesFit([null, point, card]), true);
+    // (what the walk asked before: the board up — e2's card, held still — then the point's and the card's; it fits, so the turn was not split,
+    // and Studio, drawing the answer board fresh first, drew one page)
+    assert.equal(switchesFit([e2card, point, card]), true);
+  });
+});
