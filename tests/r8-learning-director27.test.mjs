@@ -140,5 +140,8 @@ test("016 E: the judges' words: pehli/doosri patti in c4 and c5-t02, no paratha,
   assert.ok(S["c5-maths-ch02-t01"].skills[0].workedExample.steps[1].result.includes("gaps"));
   assert.ok(!/likho/.test(all(S["c5-maths-ch02-t02"].skills[2].workedExample)));
   assert.ok(!/ko 4 se baanto/.test(S["c6-maths-ch06-t01"].skills[2].explain[0].point.hi));
-  for (const sl of S["c6-maths-ch06-t01"].skills[0].hook.interestSlots) assert.match(sl.use.hi, /triangle/, "the hook leads into the triangle");
+  // (re-pinned at d36's close: 271eac4a2, Learning 024 cause 1, cut each hook to one sentence that starts the lesson — "Ab triangle
+  // dekho." went, the first turn with its start line being held to 60 words — and each hook now ends on the walk back to where it started,
+  // the act the point does next with a finger on the triangle)
+  for (const sl of S["c6-maths-ch06-t01"].skills[0].hook.interestSlots) assert.match(sl.use.hi, /\bwahin lauto\b/, "the hook leads into the point's walk round the edge");
 });

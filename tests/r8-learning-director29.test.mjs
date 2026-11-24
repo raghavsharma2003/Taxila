@@ -97,7 +97,8 @@ test("018 A.3: every follow-up card and check whose answer board has a second vi
     else assert.equal(x.card.answerViewCaption, undefined, `${t} ${x.at}: no second view, no caption`);
   }
   // (d32 reader fixes and Studio 014's second views, 2026-11-19: 48 → 57; every one of them carries its caption, the rule above)
-  assert.equal(n, 60, "c4 11, c5-t01 17, c5-t02 16, c6 2, c5-t03 11 (live since dc-r8-director31), c6-ch07-t01 3 (live since director32); c4-ch01-t02's 5 left with it (staged again, director35 clause 53)");
+  // (d36 close: f25fd5c51 gave c6-ch07-t01 s2 c3 an answer board with a second view, and its caption: c6-ch07-t01 3 → 4, 60 → 61)
+  assert.equal(n, 61, "c4 11, c5-t01 17, c5-t02 16, c6 2, c5-t03 11 (live since dc-r8-director31), c6-ch07-t01 4 (live since director32); c4-ch01-t02's 5 left with it (staged again, director35 clause 53)");
   const s = fresh("c4-maths-ch05-t01");
   delete s.skills[0].checks[0].answerViewCaption;
   assert.ok(d30Errors(s).some((x) => /skills\[0\]\.c1\.answerViewCaption: what to look at/.test(x)));
