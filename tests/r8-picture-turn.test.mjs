@@ -121,7 +121,9 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // (d35 closing item 5, Learning 023's board edits — rule 1, stated values over boards that draw them, and the Part 2 rows: c5-t02's
     //  and c6-ch07-t01's points and cards redrawn, c5-t01 s3's worked steps given result boards: parts 11 → 12, bars 32 → 31, line
     //  62/63 → 63/64, every new board with a view)
-    "fraction-bars@1": "31/31", "fraction-line@1": "63/64", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    // (d36 close, Learning 024 rule 1's own-step boards: ee9789ae2 gave c5-t01's own step a line board (line 63/64 → 64/65) and
+    //  4a484cd68 c6-ch06-t01's a measured board (measured 20/21 → 21/22), each with its view and passing the per-board checks above)
+    "fraction-bars@1": "31/31", "fraction-line@1": "64/65", "measured@1": "21/22", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 
@@ -374,7 +376,11 @@ test("Studio 014: the seven scripts' card boards — the view each gets, and wha
     "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 2, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 7, "rule 7": 0 },
     // (Learning 024 cause 3 item 5: c6-ch06-t01 s1 worked step 1 gets an authored pictureBoard and leaves PICTURE_NONE: rule 7 1 → 0)
     "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 0 },
-    "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 8, "shape@1 \u2192 shape@1 radii": 9, "rule 7": 1 },
-    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 8, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 2, "rule 7": 0 },
+    // (d36 close: cdb2de1c2 gave c4-ch01-t02 s3's own step its own board, which has no view (radii 9 → 8, none 8 → 9); b36072f37 removed
+    //  that step's picture and listed it in PICTURE_NONE with its reason (rule 7 1 → 2, both entries on PICTURE_NONE))
+    "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 9, "shape@1 \u2192 shape@1 radii": 8, "rule 7": 2 },
+    // (d36 close: f25fd5c51 posed c6-ch07-t01 s2 c3 over the friend's 1/8 strip, a wholes board with its view, in place of a compare
+    //  board with none: compare none 8 → 7, wholes 2 → 3)
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 7, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 3, "rule 7": 0 },
   });
 });
