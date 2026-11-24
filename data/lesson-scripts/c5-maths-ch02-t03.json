@@ -161,6 +161,9 @@
      "viewCaption": {"hi": "Rumal ke hisse yahan do ek jaise gol mein dikhaye hain: pehla gol do barabar hisson mein, ek mein rang, aur doosra aath barabar hisson mein.", "en": "The hanky's parts are shown here in two matching circles: the first in two equal parts, one coloured, and the second in eight equal parts."},
      "key": "4",
      "why": {"hi": "rang aadhe rumal par hai, toh 8 mein se aadhe, yaani 4 hisson mein rang hai: 4/8", "en": "the colour is on half the hanky, so half of the 8, that is 4 parts, are coloured: 4/8"},
+     "noView": true,
+     "pictureBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 2, "shade": 1, "label": ""}, {"parts": 4, "shade": 0, "label": ""}, {"parts": 8, "shade": 0, "label": ""}]}},
+     "pictureCaption": {"hi": "Yeh rumal ke teeno mod hain: pehle mod par do hisse, ek mein rang; doosre mod par chaar hisse; teesre par aath.", "en": "These are the hanky's three folds: two parts after the first, one coloured; four parts after the second; eight after the third."},
      "wrongAnswers": [{"answer": "1", "accept": ["ek", "1 hissa", "ek hissa"], "why": {"hi": "Rang wala aadha ek hissa sirf pehle mod ke baad tha; agle mod usko bhi chhote hisson mein baant dete hain.", "en": "The coloured half was one part only after the first fold; the next folds split it into smaller parts too."}}, {"answer": "2", "accept": ["do", "2 hisse", "do hisse"], "why": {"hi": "2 rang wale hisse doosre mod tak the; rumal teen baar moda gaya, toh teesra mod bhi gino.", "en": "There were 2 coloured parts up to the second fold; the hanky was folded three times, so count the third fold too."}}],
      "whyAlt": {"hi": "8 toh rumal ke saare hisse hain, rang wale nahi. Rang modne se phailta nahi: woh sirf usi aadhe ke chhote hisson par hai jismein pehle bhara tha.", "en": "8 is all the hanky's parts, not the coloured ones. Folding does not spread the colour: it is only on the small parts of the half that was coloured first."}, "whyAltAsHelp": true,
      "accept": ["chaar", "four", "4 hisse", "chaar hisson mein", "4/8", "aadhe hisson mein", "4 hisson mein", "chaar hisse", "8 mein se 4"],
@@ -205,6 +208,9 @@
      "board": {"template": "fraction-line@1", "params": {"den": 12, "from": 0, "to": 1, "target": [5, 12]}},
      "viewCaption": {"hi": "Yahan line ek patti ban gayi hai, baarah barabar hisson mein kati hui.", "en": "Here the line has become a strip, cut into twelve equal parts."},
      "why": {"hi": "5/12 is line par paanchve mark par hai, aur 1/2 = 6/12 chhatthe mark par, isliye 5/12 chhota hai", "en": "5/12 is at the fifth mark of this line, and 1/2 = 6/12 at the sixth, so 5/12 is smaller"},
+     "noView": true,
+     "pictureBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 12, "shade": 5, "label": "5/12"}]}},
+     "pictureCaption": {"hi": "Is patti ke 12 barabar hisson mein se 5 mein rang hai: yahi 5/12 hai.", "en": "This strip has 12 equal parts and 5 of them are coloured: that is 5/12."},
      "wrongAnswers": [{"answer": "barabar", "accept": ["barabar hai", "dono barabar"], "why": {"hi": "1/2 is line ka theek beech hai; 0 se gap ginkar dekho ki 5/12 ka mark beech par aata hai ya nahi.", "en": "1/2 is the exact middle of this line; count gaps from 0 and see whether the 5/12 mark lands on the middle."}}],
      "whyShort": {"hi": "1/2 chhatthe mark par hai, 5/12 usse pehle", "en": "1/2 is the sixth mark; 5/12 comes before it"},
      "whyAlt": {"hi": "Upar ke 5 ko 1 se mat milaao: 1/12 wala hissa 1/2 wale hisse se bahut chhota hai. Line par 0 se 5 gap chalo, aur dekho ki beech tak pahunche ya nahi.", "en": "Do not compare the top 5 with 1: a twelfth is much smaller than a half. Walk 5 gaps from 0 on the line and see whether you reach the middle."}, "whyAltAsHelp": true,
@@ -334,7 +340,7 @@
       "viewCaption": {"hi": "Do ek jaise gol hain: ek chhe barabar hisson mein, doosra baarah mein.", "en": "Two identical circles: one in six equal parts, the other in twelve."},
       "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 6, "shade": 5, "label": "5/6"}, {"parts": 12, "shade": 10, "label": "10/12"}]}}
      },
-     "simpler": {"hi": "Patti ke saare hisse dugne hue, toh rang wale hisse bhi dugne hue. Isliye upar aur neeche, dono 2 se guna hote hain.", "en": "All the parts of the strip doubled, so the coloured parts doubled too. That is why the top and the bottom are both multiplied by 2."}
+     "simpler": {"hi": "Patti ke saare hisse dugne hue, toh rang wale hisse bhi dugne hue; isliye fraction ke dono number badalte hain.", "en": "All the parts of the strip doubled, so the coloured parts doubled too; that is why both numbers of the fraction change."}
     },
     {
      "id": "e3",
@@ -676,7 +682,7 @@
     },
     {
      "id": "c3",
-     "prompt": {"hi": "{friend} ka kehna hai ki 3/7 aur 4/8 barabar hain, kyunki dono mein neeche ka number upar se 4 zyada hai. Bada kaun hai: 3/7 ya 4/8, ya dono barabar hain?", "en": "{friend} says 3/7 and 4/8 are equal because in both the bottom number is 4 more than the top. Which is bigger: 3/7 or 4/8, or are they equal?"},
+     "prompt": {"hi": "{friend} ke hisaab se 3/7 aur 4/8 barabar hain, kyunki dono mein neeche ka number upar se 4 zyada hai. Bada kaun hai: 3/7 ya 4/8, ya dono barabar hain?", "en": "By {friend}'s reckoning 3/7 and 4/8 are equal because in both the bottom number is 4 more than the top. Which is bigger: 3/7 or 4/8, or are they equal?"},
      "reask": {"hi": "3/7 aur 4/8 mein bada kaun hai, ya dono barabar hain?", "en": "Which is bigger, 3/7 or 4/8, or are they equal?"},
      "key": "4/8",
      "did": {"hi": "farak se dhokha khaye bina 3/7 aur 4/8 mein bada pehchaana", "en": "found the bigger of 3/7 and 4/8, not fooled by the gap"},
