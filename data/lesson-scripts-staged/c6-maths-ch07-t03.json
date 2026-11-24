@@ -1797,8 +1797,25 @@
               "en": "Dividing undoes multiplying: divide 56 by 8, and what comes is the number."
             },
             "told": {
-              "hi": "Neeche 8 se 56 bana, 7 se guna hua.",
-              "en": "At the bottom 8 became 56: it was multiplied by 7."
+              "hi": "Neeche ke 8 ko 56 banana hai, aur 8 × 7 = 56: toh neeche 7 se guna hua.",
+              "en": "The 8 at the bottom has to become 56, and 8 × 7 = 56: so the bottom was multiplied by 7."
+            },
+            "resultBoard": {
+              "template": "compare@1",
+              "params": {
+                "left": {
+                  "title": "Upar",
+                  "items": [
+                    "3"
+                  ]
+                },
+                "right": {
+                  "title": "Neeche",
+                  "items": [
+                    "8 × 7 = 56"
+                  ]
+                }
+              }
             }
           },
           {
@@ -1850,8 +1867,8 @@
             },
             "result": "upar aur neeche, dono 7 se guna",
             "why": {
-              "hi": "har aathvaan hissa 7 page mein bata, toh padhne wale hisse bhi",
-              "en": "every eighth was split into 7 pages, and so were the parts to read"
+              "hi": "har hissa 7 page mein bata, toh padhne wale hisse bhi",
+              "en": "every part was split into 7 pages, and so were the parts to read"
             },
             "simpler": {
               "hi": "Neeche guna hone ka matlab hai har hissa chhote hisson mein kata. Socho, padhne wale hisson ka kya hua.",
@@ -1860,6 +1877,23 @@
             "told": {
               "hi": "Upar ke 3 ko bhi 7 se hi guna karenge: har hissa 7 chhote hisson mein kata, toh padhne wala har hissa bhi 7 chhote hisse bana.",
               "en": "We multiply the 3 on top by the same 7: every part was cut into 7 small parts, so every part to be read became 7 small parts too."
+            },
+            "resultBoard": {
+              "template": "compare@1",
+              "params": {
+                "left": {
+                  "title": "Upar",
+                  "items": [
+                    "3 × 7"
+                  ]
+                },
+                "right": {
+                  "title": "Neeche",
+                  "items": [
+                    "8 × 7 = 56"
+                  ]
+                }
+              }
             }
           },
           {
@@ -1879,6 +1913,23 @@
             "told": {
               "hi": "Neeche 56 hai, yaani kitaab ka har page ek hissa; toh upar wala number hi page ki ginti hai.",
               "en": "The bottom is 56, so every page of the book is one part; so the top number is the number of pages."
+            },
+            "resultBoard": {
+              "template": "compare@1",
+              "params": {
+                "left": {
+                  "title": "Upar",
+                  "items": [
+                    "3 × 7"
+                  ]
+                },
+                "right": {
+                  "title": "Neeche",
+                  "items": [
+                    "8 × 7 = 56"
+                  ]
+                }
+              }
             }
           }
         ],
@@ -1888,8 +1939,8 @@
             "en": "Your turn: so how many pages will {friendF} have to read?"
           },
           "reask": {
-            "hi": "56 page ki kitaab ka 3/8 kitne page hai?",
-            "en": "How many pages is 3/8 of a 56-page book?"
+            "hi": "Toh {friendF} ko kul kitne page padhne hain?",
+            "en": "So how many pages in all does {friendF} have to read?"
           },
           "key": "21 page",
           "did": {
@@ -1911,43 +1962,41 @@
           "targets": "c6-maths-ch07-t03-m-one-side",
           "wrongIfMis": "3",
           "board": {
-            "template": "compare@1",
+            "template": "equal-groups@1",
             "params": {
-              "left": {
-                "title": "Kitaab",
-                "items": [
-                  "56 page"
-                ]
-              },
-              "right": {
-                "title": "Padhna",
-                "items": [
-                  "3/8"
-                ]
-              }
+              "groups": 3,
+              "each": 7,
+              "hideResult": true
+            }
+          },
+          "answerBoard": {
+            "template": "equal-groups@1",
+            "params": {
+              "groups": 3,
+              "each": 7
             }
           },
           "viewCaption": {
-            "hi": "Yahan 3/8 ek patti par hai: kitaab 8 barabar hisson mein, aur 3 rangeen.",
-            "en": "Here 3/8 is on a strip: the book in 8 equal parts, 3 coloured."
+            "hi": "Yahan padhne wale page ek jaal mein hain: 3 qatarein, har qatar ek hissa, aur har qatar mein 7 page.",
+            "en": "Here the pages to read are in a grid: 3 rows, each row one part, and 7 pages in each row."
           },
           "why": {
-            "hi": "3 × 7 = 21, toh 3/8 = 21/56, yaani 21 page",
-            "en": "3 × 7 = 21, so 3/8 = 21/56, that is 21 pages"
+            "hi": "har hisse mein 7 page, toh 3 hisson mein 3 × 7 = 21 page",
+            "en": "each part has 7 pages, so 3 parts have 3 × 7 = 21 pages"
           },
           "whyAlt": {
-            "hi": "Upar 3 hi rakha toh sirf 3 chhote hisse padhe; par har aathvaan hissa 7 page mein bata, toh padhne wale hisse bhi 7 guna hue.",
-            "en": "Keeping 3 on top reads only 3 small parts; but every eighth was split into 7 pages, so the parts to read became 7 times as many too."
+            "hi": "Upar 3 hi rakha toh sirf 3 chhote hisse padhe; par har hissa 7 page mein bata, toh padhne wale hisse bhi 7 guna hue.",
+            "en": "Keeping 3 on top reads only 3 small parts; but every part was split into 7 pages, so the parts to read became 7 times as many too."
           },
           "whyAltAsHelp": true,
           "simpler": {
-            "hi": "Upar ko bhi usi number se guna karo jisse neeche ko guna kiya tha. Phir socho, woh kitne page hue.",
-            "en": "Multiply the top by the same number the bottom was multiplied by. Then think how many pages that is."
+            "hi": "Padhne ke teen hisse hain, aur har hisse mein 7 page. Socho, kul kitne page hue.",
+            "en": "There are three parts to read, and 7 pages in each part. Think how many pages that is in all."
           }
         },
         "answer": {
-          "hi": "{friendF} ko 21 page padhne honge. 3/8 = 21/56.",
-          "en": "{friendF} has to read 21 pages. 3/8 = 21/56."
+          "hi": "{friendF} ko 21 page padhne honge: 3 hisse, aur har hisse mein 7 page.",
+          "en": "{friendF} has to read 21 pages: 3 parts, and 7 pages in each part."
         },
         "why": {
           "hi": "upar aur neeche dono 7 se guna hue, toh bhinn utna hi raha",
@@ -2050,87 +2099,103 @@
         {
           "id": "c2",
           "prompt": {
-            "hi": "40/56 ke barabar ek bhinn ka upar 5 hai. Woh bhinn kya hai?",
-            "en": "A fraction equal to 40/56 has 5 on top. What is that fraction?"
+            "hi": "4/10 ke barabar ek bhinn ka upar 2 hai. Woh bhinn kya hai?",
+            "en": "A fraction equal to 4/10 has 2 on top. What is that fraction?"
           },
           "reask": {
-            "hi": "40/56 ko upar 5 ke saath kaise likhoge?",
-            "en": "How will you write 40/56 with 5 on top?"
+            "hi": "4/10 ko upar 2 ke saath kaise likhoge?",
+            "en": "How will you write 4/10 with 2 on top?"
           },
-          "key": "5/7",
+          "key": "2/5",
           "did": {
-            "hi": "40/56 ke barabar upar 5 wala bhinn banaya",
-            "en": "made a fraction equal to 40/56 with 5 on top"
+            "hi": "4/10 ke barabar upar 2 wala bhinn banaya",
+            "en": "made a fraction equal to 4/10 with 2 on top"
           },
           "accept": [
-            "5 bata 7",
-            "paanch bata saat",
-            "five sevenths",
-            "5 by 7",
-            "7 mein se 5",
-            "neeche 7"
+            "2 bata 5",
+            "do bata paanch",
+            "two fifths",
+            "2 by 5",
+            "5 mein se 2",
+            "neeche 5"
           ],
           "targets": "c6-maths-ch07-t03-m-one-side",
-          "wrongIfMis": "5/56",
+          "wrongIfMis": "2/10",
           "board": {
-            "template": "compare@1",
+            "template": "wholes@1",
             "params": {
-              "left": {
-                "title": "Upar",
-                "items": [
-                  "40",
-                  "5"
-                ]
-              },
-              "right": {
-                "title": "Neeche",
-                "items": [
-                  "56"
-                ]
-              }
+              "as": "bar",
+              "wholes": [
+                {
+                  "parts": 10,
+                  "shade": 4
+                }
+              ]
+            }
+          },
+          "answerBoard": {
+            "template": "wholes@1",
+            "params": {
+              "as": "bar",
+              "wholes": [
+                {
+                  "parts": 10,
+                  "shade": 4,
+                  "title": "4/10"
+                },
+                {
+                  "parts": 5,
+                  "shade": 2,
+                  "title": "2/5"
+                }
+              ]
             }
           },
           "viewCaption": {
-            "hi": "Board par baayein upar ke number hain, 40 aur 5, aur daayein neeche ka number, 56.",
-            "en": "On the board, the top numbers are on the left, 40 and 5, and the bottom number on the right, 56."
+            "hi": "Yahan wahi patti ek gol roti ki tarah bani hai: 10 barabar hisse, aur 4 rangeen.",
+            "en": "Here the same strip is drawn round like a roti: 10 equal parts, 4 coloured."
+          },
+          "answerViewCaption": {
+            "hi": "Yahan dono gol bani hain: 10 mein se 4 rangeen, aur 5 mein se 2, aur rang utna hi hai.",
+            "en": "Here both are drawn round: 4 of 10 coloured, and 2 of 5, and the colour is the same."
           },
           "pictureBoard": {
             "template": "compare@1",
             "params": {
               "left": {
-                "title": "40 ke factor",
+                "title": "4 ke factor",
                 "items": [
-                  "1, 2, 4, 5, 8, 10, 20, 40"
+                  "1, 2, 4"
                 ]
               },
               "right": {
-                "title": "56 ke factor",
+                "title": "10 ke factor",
                 "items": [
-                  "1, 2, 4, 7, 8, 14, 28, 56"
+                  "1, 2, 5, 10"
                 ]
               }
             }
           },
           "pictureCaption": {
-            "hi": "Yahan 40 aur 56 ke factor ek ke saamne ek likhe hain.",
-            "en": "Here the factors of 40 and 56 are written side by side."
+            "hi": "Yahan 4 aur 10 ke factor ek ke saamne ek likhe hain.",
+            "en": "Here the factors of 4 and 10 are written side by side."
           },
           "why": {
-            "hi": "40 ÷ 8 = 5, toh neeche bhi 56 ÷ 8 = 7: 5/7",
-            "en": "40 ÷ 8 = 5, so the bottom too: 56 ÷ 8 = 7: 5/7"
+            "hi": "4 ÷ 2 = 2, toh neeche bhi 10 ÷ 2 = 5: 2/5",
+            "en": "4 ÷ 2 = 2, so the bottom too: 10 ÷ 2 = 5: 2/5"
           },
           "whyShort": {
-            "hi": "dono ko 8 se bhaag",
-            "en": "both divided by 8"
+            "hi": "upar aur neeche, dono aadhe",
+            "en": "top and bottom both halved"
           },
           "whyAlt": {
-            "hi": "Upar 40 se 5 karna matlab aath-aath hisse milana; neeche ke 56 hisse bhi aath-aath milte hain, woh 56 nahi rehte.",
-            "en": "Taking the top from 40 to 5 means joining parts in eights; the 56 parts below join in eights too and do not stay 56."
+            "hi": "Upar 4 se 2 hua, yaani do-do hisse jud gaye; neeche ke 10 bhi jodiyon mein judenge, woh 10 nahi rahenge.",
+            "en": "The top went from 4 to 2, so parts were joined in twos; the 10 below join in pairs too and do not stay 10."
           },
           "whyAltAsHelp": true,
           "simpler": {
-            "hi": "Dekho 40/56 ka upar kis number se bhaag hokar 5 bana. Neeche ko bhi usi se bhaag do.",
-            "en": "See which number divides the top of 40/56 down to 5. Divide the bottom by it too."
+            "hi": "Dekho 4/10 ka upar kis number se bhaag hokar 2 bana. Neeche ko bhi usi se bhaag do.",
+            "en": "See which number divides the top of 4/10 down to 2. Divide the bottom by it too."
           }
         }
       ],
@@ -2798,8 +2863,8 @@
                 "do se"
               ],
               "right": {
-                "hi": "Haan, 7: 14 aur 49 dono 7 ki table mein hain.",
-                "en": "Yes, 7: 14 and 49 are both in the 7 times table."
+                "hi": "Haan, 7: 14 aur 49 dono 7 se poore bat-te hain.",
+                "en": "Yes, 7: 14 and 49 both divide exactly by 7."
               },
               "hindi": {
                 "hi": "14 bhi aur 49 bhi, 1 se bade kaunse number ki table mein aate hain?",
@@ -2848,6 +2913,25 @@
             "told": {
               "hi": "14 aur 49 dono 7 se poore bat-te hain, toh dono ko 7 se bhaag denge.",
               "en": "14 and 49 both divide exactly by 7, so we divide both by 7."
+            },
+            "resultBoard": {
+              "template": "compare@1",
+              "params": {
+                "left": {
+                  "title": "Upar",
+                  "items": [
+                    "28 ÷ 2 = 14",
+                    "14 ÷ 7"
+                  ]
+                },
+                "right": {
+                  "title": "Neeche",
+                  "items": [
+                    "98 ÷ 2 = 49",
+                    "49 ÷ 7"
+                  ]
+                }
+              }
             }
           },
           {
@@ -2867,6 +2951,25 @@
             "told": {
               "hi": "Bhaag ke baad phir jaanchenge: jab upar aur neeche ka common factor sirf 1 ho, tab rukenge.",
               "en": "After dividing we check again: when the top and bottom have only 1 as a common factor, we stop."
+            },
+            "resultBoard": {
+              "template": "compare@1",
+              "params": {
+                "left": {
+                  "title": "Upar",
+                  "items": [
+                    "28 ÷ 2 = 14",
+                    "14 ÷ 7"
+                  ]
+                },
+                "right": {
+                  "title": "Neeche",
+                  "items": [
+                    "98 ÷ 2 = 49",
+                    "49 ÷ 7"
+                  ]
+                }
+              }
             }
           }
         ],
@@ -2894,25 +2997,32 @@
           "targets": "c6-maths-ch07-t03-m-stop-early",
           "wrongIfMis": "14/49",
           "board": {
-            "template": "compare@1",
+            "template": "fraction-bars@1",
             "params": {
-              "left": {
-                "title": "Upar",
-                "items": [
-                  "28 ÷ 2 = 14"
-                ]
-              },
-              "right": {
-                "title": "Neeche",
-                "items": [
-                  "98 ÷ 2 = 49"
-                ]
-              }
+              "bars": [
+                {
+                  "parts": 7,
+                  "shade": 0,
+                  "label": ""
+                }
+              ]
+            }
+          },
+          "answerBoard": {
+            "template": "fraction-bars@1",
+            "params": {
+              "bars": [
+                {
+                  "parts": 7,
+                  "shade": 2,
+                  "label": "2/7"
+                }
+              ]
             }
           },
           "viewCaption": {
-            "hi": "Board par baayein upar ka 28 ÷ 2 = 14 hai, aur daayein neeche ka 98 ÷ 2 = 49.",
-            "en": "On the board, on the left, the top 28 ÷ 2 = 14, and on the right the bottom 98 ÷ 2 = 49."
+            "hi": "Yahan wahi patti ek gol roti ki tarah bani hai: 7 barabar hisse.",
+            "en": "Here the same strip is drawn round like a roti: 7 equal parts."
           },
           "pictureBoard": {
             "template": "compare@1",
@@ -2950,8 +3060,8 @@
           }
         },
         "answer": {
-          "hi": "28/98 lowest terms mein 2/7 hai.",
-          "en": "28/98 in lowest terms is 2/7."
+          "hi": "Lowest terms mein yeh 2/7 hai: 2 aur 7 mein sirf 1 common hai.",
+          "en": "In lowest terms it is 2/7: 2 and 7 have only 1 in common."
         },
         "why": {
           "hi": "2 aur 7 ka common factor sirf 1 hai, isliye ab aur bhaag nahi ho sakta",
