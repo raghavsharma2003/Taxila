@@ -37,12 +37,18 @@ describe("C4: the cap counts what the child hears", () => {
     reads("questionThreeRunning", [
       // (the short ask)
       ["stuck", "c6", 66], ["steady", "c4ch01", 8], ["offtopic", "c5t01", 28], ["stuck", "c5t01", 38], ["stuck", "c5t01", 50], ["offtopic", "c5t03", 28],
-      // (the Hindi form)
-      ["offtopic", "c4", 34], ["steering", "c4", 10], ["stuck", "c5t03", 8], ["stuck", "c4ch06", 8],
+      // (the Hindi form, at a turn after the Hindi turn)
+      ["offtopic", "c4", 34], ["steering", "c4", 10],
       // (a picture turn; an aside reply back to a card that asks by an imperative)
       ["stuck", "c4", 18], ["stuck", "c4ch06", 18], ["stuck", "c5t02", 48],
       // (plain misses, with a request to hear the question among them)
       ["offtopic", "c4ch06", 44], ["stuck", "c4ch06", 42], ["stuck", "c6ch07t03", 74]]);
+    // (re-pinned, main's ruling on the close of to-brain 052: the card's Hindi form said for the child's request for Hindi ends its turn
+    // whatever the count — the child asked for the question — so these two Hindi turns, flagged by 051 C4, are not; the turn still counts)
+    for (const [p, t, n] of [["stuck", "c5t03", 8], ["stuck", "c4ch06", 8]]) {
+      assert.ok(lesson(p, t).rows[n].seams.some((x) => x.right === "hindiSwitch"), `${p} ${t} ${n}: a Hindi turn`);
+      assert.ok(!flagged(p, t, "questionThreeRunning").has(n), `${p} ${t} ${n}`);
+    }
   });
   test("inviteAfterPark reads c5-t02 offtopic 18, c6 offtopic 18, c4-ch01 offtopic 14", () => {
     reads("inviteAfterPark", [["offtopic", "c5t02", 18], ["offtopic", "c6", 18], ["offtopic", "c4ch01", 14]]);

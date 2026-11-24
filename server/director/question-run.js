@@ -207,6 +207,11 @@ export function yourTurnPass(prev, out, script, childText = "") {
   // the third such turn ends on the invitation after the form (brain/say.js says the form, then the invitation); a request to hear the question
   // gets it, and counts. The invitation is never said in a turn that parks an aside or replies to one, nor in a turn with no help in it: that
   // turn ends on the question, and counts)
+  // (to-brain 052 close, main's ruling: the card's Hindi form said in answer to the child's request for Hindi ends the turn — the child asked
+  // for the question in Hindi, and B4 says the question comes back when the child asks for it — so no invitation follows it, whatever the
+  // count; the turn still counts as one at that question for what follows. A card with no Hindi form is as built. Eleven dry rows said
+  // "… Aise kone ginkar batao? Ab tum batao.", stuck c4-ch01-t02 8)
+  if (lm.hindiForm) return out;
   if (HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
   // (to-brain 052 B4, ruling: on the third turn running at one question or later, a turn that parks an aside or replies to one does not say the
   // question again and does not end on the bare "Ab tum batao.": it ends on an invitation that points at the question still open —

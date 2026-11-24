@@ -219,3 +219,32 @@ describe("A1 follow-up: code's lead-in opener leaves room for an authored one ah
     assert.equal(openerAhead({ activeItemId: null }, null, script), false);
   });
 });
+
+describe("main's ruling on the close: a card's Hindi form said for a request for Hindi ends the turn", () => {
+  test("yourTurnPass: the third turn at a card, its Hindi form for a language request, takes no invitation; the same turn with a hint does", async () => {
+    const { yourTurnPass } = await import("../server/director/question-run.js");
+    const script = fixture("c4-maths-ch01-t02");
+    const c1 = script.skills[0].checks[0], q = c1.prompt.hi, hi = c1.hindi.hi;
+    const recent = [{ who: "teacher", text: `Dekho kone. ${q}` }, { who: "child", text: "pata nahi" }, { who: "teacher", text: `Har kone par tester rakho. ${q}` }, { who: "child", text: "hindi mein batao na" }];
+    const turn = (lm) => { const out = { state: { lastMove: { kind: "reteach", ...lm }, ctx: { lang: "hinglish" } }, move: { kind: "reteach", ...lm }, ui: { ask: { text: lm.hindiForm ?? q } } };
+      return yourTurnPass({ recent, lastMove: {} }, out, script, "hindi mein batao na").state.lastMove; };
+    const h = turn({ hindiForm: hi, help: { request: "hindi", hindiForm: true } });
+    assert.ok(!h.yourTurn && !h.answerFirst, "the Hindi form ends the turn: no invitation");
+    assert.equal(turn({ simpler: c1.simpler.hi, help: { request: "hint" } }).yourTurn, script.joints.yourTurn[0].hi, "a hint there still ends on the invitation");
+  });
+  test("inviteAfterQuestion (gated) reads the dry row; questionThreeRunning (gated) does not flag the Hindi form said on a Hindi request", async () => {
+    const { PREDICATES, PENDING, lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    for (const p of ["inviteAfterQuestion", "questionThreeRunning"]) { assert.ok(PREDICATES[p], p); assert.ok(!PENDING.has(p), `${p} is gated`); }
+    const script = fixture("c4-maths-ch01-t02");
+    const c1 = script.skills[0].checks[0], q = c1.prompt.hi, hi = c1.hindi.hi;
+    const T = (text, seams = []) => ({ who: "teacher", text, seams: seams.map((right) => ({ right })), check: { itemId: "script:c4-maths-ch01-t02-s1:c1" } });
+    const C = (text, read = "no_evidence") => ({ who: "child", text, read });
+    const rows = (third) => [T(`Dekho kone. ${q}`, ["point", "card"]), C("pata nahi"), T(`Har kone par tester rakho. ${q}`, ["help", "card"]), C("hindi mein batao na", "no_evidence · language"), third];
+    const flags = (third, p) => lessonFlags({ rows: rows(third), script }).filter((f) => f.predicate === p && f.row === 4).length;
+    // (stuck c4-ch01-t02 row 8 of the merged tree's dry run, before the ruling)
+    assert.equal(flags(T(`Haan, Hindi mein sunati hoon. ${hi} Ab tum batao.`, ["hindiSwitch", "card", "yourTurn"]), "inviteAfterQuestion"), 1);
+    assert.equal(flags(T(`Haan, Hindi mein sunati hoon. ${hi}`, ["hindiSwitch", "card"]), "inviteAfterQuestion"), 0);
+    assert.equal(flags(T(`Haan, Hindi mein sunati hoon. ${hi}`, ["hindiSwitch", "card"]), "questionThreeRunning"), 0, "the Hindi form on a Hindi request");
+    assert.equal(flags(T(`${c1.simpler.hi} ${q}`, ["help", "card"]), "questionThreeRunning"), 1, "a hint that says the question a third time still is");
+  });
+});

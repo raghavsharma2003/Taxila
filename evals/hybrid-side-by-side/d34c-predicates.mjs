@@ -6,8 +6,14 @@
 //   remCardLong B1 re-reads d29's T2 predicate (left as it is): a remediation the checker lists in REM_WHOLE is said with its card up to 65
 //               words of the two — its own lines and the card, as the checker counts them; the verdict and the joint before it are not
 //               counted. Every other remediation is T2's: over 60 words of the turn.
+//   inviteAfterQuestion  (main's ruling on the close of 052) an invitation (joints.yourTurn, or a pointed one, answerFirst) said straight
+//               after a sentence of the same turn that ends in "?": the question asked, then "Ab tum batao." Gated.
+//   questionThreeRunning  d34b's C4 predicate, re-read: a turn that says the card's Hindi form for a language request (its hindiSwitch
+//               seam) ends on that form whatever the count — the child asked for the question — so it is not flagged; it still counts
+//               toward the run of the turns after it.
 import { readFileSync } from "node:fs";
-import { atQuestionOf, closingQuestion, answerFirstForms, endsOnAnswerFirst, turnsAtQuestion } from "../../server/director/question-run.js";
+import { atQuestionOf, closingQuestion, answerFirstForms, endsOnAnswerFirst, endsOnYourTurn, turnsAtQuestion } from "../../server/director/question-run.js";
+import { D34B_PREDICATES } from "./d34b-predicates.mjs";
 import { HELP_PREDICATES, helpTurnOf, ownReasonDue } from "./help-predicates.mjs";
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 import { REM_WHOLE } from "../../scripts/lesson-scripts/check.mjs";
@@ -96,6 +102,21 @@ export const D34C_PREDICATES = {
     const told = [st?.told?.hi, st?.told?.en].filter(Boolean).map((x) => normSentence(sentencesOf(x)[0] ?? ""));
     const T = normSentence(r.text);
     return told.some((k) => k && T.includes(k)) ? null : f;
+  },
+  /** Main's ruling on the close of 052 (gated): an invitation never follows a question in the same turn. The eleven dry rows of the merged
+   *  tree were the card's Hindi form for a language request, then "Ab tum batao." (stuck c4-ch01-t02 8). */
+  inviteAfterQuestion(L, r, i, ctx) {
+    if (r.who !== "teacher") return null;
+    const text = String(r.text ?? "").replace(/\s+/g, " ").trim(), sc = ctx?.script ?? null;
+    const last = (r.seams ?? []).at(-1)?.right;
+    if (!(endsOnYourTurn(sc, text) || endsOnAnswerFirst(sc, text) || last === "yourTurn" || last === "answerFirst")) return null;
+    const ss = sentencesOf(text);
+    return ss.length >= 2 && /[?？]\s*$/.test(ss.at(-2)) ? `an invitation straight after a question: "${ss.at(-2).slice(0, 50)} ${ss.at(-1)}"` : null;
+  },
+  /** d34b's C4 predicate, re-read (gated, as it was): the card's Hindi form said for a language request ends its turn. */
+  questionThreeRunning(L, r, i, ctx) {
+    if (r.who === "teacher" && (r.seams ?? []).some((x) => x.right === "hindiSwitch")) return null;
+    return D34B_PREDICATES.questionThreeRunning(L, r, i, ctx);
   },
   /** B1 (gated, as T2 was). */
   remCardLong(L, r, i, ctx) {
