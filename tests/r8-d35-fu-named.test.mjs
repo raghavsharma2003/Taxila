@@ -1,11 +1,12 @@
 // d35 follow-up 1: three check cards whose `wrongIfMis` child was sent to a remediation about a different mistake now name that answer
 // as a `wrongAnswers` entry (its reason the card's old whyAlt). On the walk with the real scripts: that answer gets its reason, then the
 // card's simpler, then the key, never the remediation; another wrong answer gets what it got before.
-import { test, describe } from "node:test";
+import { test, describe, after } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const raw = (T) => JSON.parse(readFileSync(new URL(`../data/lesson-scripts/${T}.json`, import.meta.url), "utf8"));
+// (director35 clause 53, release 61: c4-maths-ch01-t02 staged again): a staged script is read from data/lesson-scripts-staged
+const raw = (T) => { for (const d of ["lesson-scripts", "lesson-scripts-staged"]) { try { return JSON.parse(readFileSync(new URL(`../data/${d}/${T}.json`, import.meta.url), "utf8")); } catch { /* next */ } } throw new Error(`no script ${T}`); };
 
 const CARDS = [
   { T: "c4-maths-ch05-t01", sid: "s1", cid: "c2", say: "12", n: 3, other: [["5", "incorrect", "simpler"], ["1", "misconception", "whyAltHelp"]] },
@@ -19,7 +20,11 @@ const load = async () => ({
   ...(await import("../server/director/items.js")), ...(await import("../server/director/classify.js")),
 });
 
+// (a staged script is never served from data/lesson-scripts: the walk is given it as the eval's staged switch gives it)
+const STAGED_HERE = new Set(["c4-maths-ch01-t02"]);
+after(async () => { (await import("../server/director/script.js")).setScriptForTest(undefined); });
 async function walkTo(m, { T, sid, cid }) {
+  if (STAGED_HERE.has(T)) m.setScriptForTest(T, raw(T));
   const kit = m.kitFromFile(m.getTopic(T));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "x" }, ageBand: "10-15", lang: "hinglish", interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: T, classLevel: Number(T[1]), sessionId: "s", lessonKey: "d35-fu-1", teacher: "director" };
   let r = m.step(m.initLessonState({ topicId: T, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });

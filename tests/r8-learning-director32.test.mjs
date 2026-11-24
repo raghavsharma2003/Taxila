@@ -13,7 +13,7 @@ const HI = (hi, en = "x") => ({ hi, en });
 // (the six live at director32; c4-maths-ch01-t02, live since to-brain 052, is read from data/lesson-scripts beside them in S)
 const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
 const load = (d, t) => JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
-const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ["c4-maths-ch01-t02", load("lesson-scripts", "c4-maths-ch01-t02")]]); // (to-brain 052 D: live, b3c7e81fd)
+const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ["c4-maths-ch01-t02", load("lesson-scripts-staged", "c4-maths-ch01-t02")]]); // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
 const STAGED = readdirSync(new URL("../data/lesson-scripts-staged/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.replace(/\.json$/, ""));
 /** A one-skill fragment; `card` overrides the first explain card, `skill` the skill, `top` the script. */
 const frag = ({ card = {}, skill = {}, top = {} } = {}) => ({

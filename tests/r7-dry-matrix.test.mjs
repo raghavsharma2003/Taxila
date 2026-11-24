@@ -15,9 +15,10 @@ const ROOT = new URL("..", import.meta.url).pathname;
 // (d32, Brain 047: the five live topics — c5-maths-ch02-t03 went live with dc-r8-director31; the baseline is their matrix;
 // director32: c6-maths-ch07-t01 went live, the sixth, and the baseline is the six topics' 24 lessons)
 // (to-brain 052 D: c4-maths-ch01-t02 went live, the seventh; the counts baseline is the seven topics' 28 lessons, rewritten once in 052 E)
-const TOPICS = ["c4-maths-ch05-t01", "c4-maths-ch01-t02", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
+// (director35 clause 53, release 61: c4-maths-ch01-t02 staged again): six live, the baseline the six topics' 24 lessons (rewritten once in release 61)
+const TOPICS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
 
-test("G2: the dry matrix (28 lessons) reads 0 on every predicate", { timeout: 300_000 }, () => {
+test("G2: the dry matrix (24 lessons) reads 0 on every predicate", { timeout: 300_000 }, () => {
   const out = mkdtempSync(join(tmpdir(), "taxila-dry-"));
   try {
     // (a child process: the harness sets its own module state and env; nothing of it leaks into this test file's process)

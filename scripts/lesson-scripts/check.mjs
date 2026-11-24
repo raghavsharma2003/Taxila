@@ -1128,8 +1128,8 @@ export function blindPacket(topicId) {
  *  for lacking them. */
 // (dc-r8-director31 item 10: c5-maths-ch02-t03 went live as judged, the fifth live script, held to every pilot rule;
 // director32: c6-maths-ch07-t01 the sixth)
-// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
-export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02"];
+// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh; director35 clause 53: staged again, release 61)
+export const D27_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
 export const D27_JOINTS = ["afterKeyReturn", "tiredBye"];
 export const QUICK_PROMPT_MAX = 14, QUICK_SAY_MAX = 12, ASK_PROMPT_MAX = 14, ASK_RIGHT_MAX = 15, WORKED_PROBLEM_MAX = 30, TOLD_STEP_MAX = 30, WORKED_OPEN_MAX = 75, COVERED_MAX = 20;
 export function isD27(s) {
@@ -1322,8 +1322,8 @@ export function d28Errors(s) {
  *     `joints.workedInvite` is gone.
  *  The rules apply to the scripts under 017 (D29_PILOTS); the staged scripts are reported by the compile report, not failed here. */
 // (dc-r8-director31 item 10: every live script — the four pilots and c5-maths-ch02-t03, live as judged; director32: c6-maths-ch07-t01)
-// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
-export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01", "c4-maths-ch01-t02"];
+// (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh; director35 clause 53: staged again, release 61)
+export const D29_PILOTS = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c6-maths-ch06-t01", "c5-maths-ch02-t03", "c6-maths-ch07-t01"];
 export const D29_JOINTS = ["stepMiss", "startAnyway", "afterPark"];
 export const HOOK_MAX = 20, FIRST_TURN_MAX = 75, POINT_CARD_MAX = 61, REM_CARD_MAX = 49, WORKED_OPENING_MAX = 53, BETWEEN_TOLD_MAX = 10, STEP_MISS_MAX = 4;
 export function isD29(s) { return D29_PILOTS.includes(s?.topicId) || STANDARD_STAGED.includes(s?.topicId); }
@@ -1596,8 +1596,8 @@ export function d30Report(s) {
 export const AFTER_WORKED_MAX = 6;
 /** Scripts outside the live ones held to the pilots' standard (Learning 019 Part 2): the staged batch, still staged
  *  (c5-maths-ch02-t03 left it for D29_PILOTS when it went live, dc-r8-director31 item 10; c6-maths-ch07-t01 in director32). */
-// (to-brain 052 D: c4-maths-ch01-t02 left it for D29_PILOTS when it went live, b3c7e81fd)
-export const STANDARD_STAGED = [
+// (to-brain 052 D: c4-maths-ch01-t02 left it for D29_PILOTS when it went live, b3c7e81fd; director35 clause 53: back, staged again)
+export const STANDARD_STAGED = ["c4-maths-ch01-t02",
   // (2026-11-23, main: the two new staged scripts written to Learning 021, read cold in two passes and fixed)
   "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 /** English words that have a plain Hindi word a child uses at home (Learning 019 A.1): never in a `hindi` form's hi. */

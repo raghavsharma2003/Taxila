@@ -52,6 +52,6 @@ test("the list is still the top of the traffic ranking (scripted topics drop out
   // (a topic of the list that went live — c5-maths-ch02-t03, dc-r8-director31 — left the ranking by rule; it stays in TOPICS so its
   // kit is still held to the worked-example and misconception checks above)
   const live = new Set(readdirSync(new URL("../data/lesson-scripts/", import.meta.url)).filter((f) => f.endsWith(".json")).map((f) => f.slice(0, -5)));
-  assert.deepEqual(TOPICS.filter((t) => live.has(t)).sort(), ["c4-maths-ch01-t02", "c5-maths-ch02-t03", "c6-maths-ch07-t01"], "the listed topics that are live"); // (c6-maths-ch07-t01: director32; c4-maths-ch01-t02: to-brain 052)
+  assert.deepEqual(TOPICS.filter((t) => live.has(t)).sort(), ["c5-maths-ch02-t03", "c6-maths-ch07-t01"], "the listed topics that are live"); // (c6-maths-ch07-t01: director32; c4-maths-ch01-t02 live at to-brain 052, staged again at director35 clause 53)
   assert.ok(TOPICS.filter((t) => !live.has(t)).every((t) => ranked.includes(t)), "a listed topic got scripted: move it out of TOPICS");
 });
