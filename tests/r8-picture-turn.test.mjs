@@ -96,7 +96,7 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // (d33 rewrites, 2026-11-23: cards moved between bars, lines and wholes boards — wholes 25 → 28, line 61 → 62, bars 34 → 33 — every
     // one with its view but c5-t01 s2's worked board, one unshaded whole bar with its ends (bars 33 views of 34 → 32 of 33): no view, no
     // line; for Studio to say whether it should get one)
-    "fraction-parts@1": "11/11", "wholes@1": "28/28", "shade-grid@1": "1/6", "equal-groups@1": "10/10", "compare@1": "0/1",
+    "fraction-parts@1": "12/12", "wholes@1": "28/28", "shade-grid@1": "1/6", "equal-groups@1": "10/10", "compare@1": "0/1",
     // (round 8 board grammar, C1: 16 → 17 and 42 → 47 — with fractions stacked, five more
     // two-scale line views and one bars view now lay out in the split's panel; every one passes the per-view checks above)
     // (Learning director22, 2026-11-15: the teachbacks' own boards and the reworked cards add boards: bars 22 → 24 (c5-t02's
@@ -118,7 +118,10 @@ test("P6: pictureTurn — every pilot card and worked board gets its view, with 
     // boards stay lines)
     // (2026-11-23, main: c5-t01 s2's worked board moved from the uncut fraction-bars strip to the bare fraction-line@1 { den 1 },
     //  which has no view, as the strip had none: bars 32/33 → 32/32, line 62/62 → 62/63)
-    "fraction-bars@1": "32/32", "fraction-line@1": "62/63", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
+    // (d35 closing item 5, Learning 023's board edits — rule 1, stated values over boards that draw them, and the Part 2 rows: c5-t02's
+    //  and c6-ch07-t01's points and cards redrawn, c5-t01 s3's worked steps given result boards: parts 11 → 12, bars 32 → 31, line
+    //  62/63 → 63/64, every new board with a view)
+    "fraction-bars@1": "31/31", "fraction-line@1": "63/64", "measured@1": "20/21", "shape@1": "1/8" }, JSON.stringify(got));
   void none;
 });
 
@@ -367,10 +370,10 @@ test("Studio 014: the seven scripts' card boards — the view each gets, and wha
   // (re-pinned, to-brain 052: 1995ce88e, Learning 022 Part 2 A/D, posed c6-ch07-t01 s2 e2 over a compare@1 text board in place of its bars:
   //  wholes 3 → 2, compare none 7 → 8; c4-maths-ch01-t02 is read from data/lesson-scripts, live)
     "c5-maths-ch02-t01": { "fraction-line@1 \u2192 none": 1, "fraction-line@1 \u2192 fraction-bars@1 parts": 19, "fraction-line@1 \u2192 fraction-line@1 strips": 13, "rule 7": 0 },
-    "c5-maths-ch02-t02": { "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 wholes@1 wholes": 16, "fraction-line@1 \u2192 fraction-bars@1 parts": 9, "wholes@1 \u2192 wholes@1 strips": 5, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 },
-    "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 3, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 6, "rule 7": 0 },
+    "c5-maths-ch02-t02": { "fraction-bars@1 \u2192 fraction-line@1 line": 2, "fraction-bars@1 \u2192 wholes@1 wholes": 15, "fraction-line@1 \u2192 fraction-bars@1 parts": 10, "wholes@1 \u2192 wholes@1 strips": 5, "wholes@1 \u2192 wholes@1 wholes": 1, "rule 7": 0 },
+    "c5-maths-ch02-t03": { "fraction-bars@1 \u2192 fraction-line@1 line": 3, "fraction-bars@1 \u2192 fraction-parts@1 round": 2, "fraction-bars@1 \u2192 wholes@1 wholes": 11, "fraction-line@1 \u2192 fraction-bars@1 parts": 4, "fraction-line@1 \u2192 fraction-line@1 strips": 1, "wholes@1 \u2192 wholes@1 wholes": 7, "rule 7": 0 },
     "c6-maths-ch06-t01": { "compare@1 \u2192 none": 1, "measured@1 \u2192 none": 1, "measured@1 \u2192 unrolled@1 unrolled": 21, "shape@1 \u2192 none": 5, "shape@1 \u2192 unrolled@1 unrolled": 1, "rule 7": 1 },
     "c4-maths-ch01-t02": { "angle@1 \u2192 angle@1 tester": 10, "shape@1 \u2192 none": 8, "shape@1 \u2192 shape@1 radii": 9, "rule 7": 1 },
-    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 8, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 2, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "fraction-parts@1 \u2192 fraction-parts@1 round": 1, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "rule 7": 0 },
+    "c6-maths-ch07-t01": { "compare@1 \u2192 compare@1 scale": 6, "compare@1 \u2192 fraction-bars@1 parts": 1, "compare@1 \u2192 none": 8, "equal-groups@1 \u2192 shade-grid@1 grid": 1, "fraction-bars@1 \u2192 fraction-line@1 line": 1, "fraction-bars@1 \u2192 wholes@1 wholes": 1, "fraction-parts@1 \u2192 fraction-parts@1 parts": 2, "number-line-scale@1 \u2192 none": 1, "wholes@1 \u2192 none": 1, "wholes@1 \u2192 wholes@1 strips": 2, "wholes@1 \u2192 wholes@1 wholes": 2, "rule 7": 0 },
   });
 });

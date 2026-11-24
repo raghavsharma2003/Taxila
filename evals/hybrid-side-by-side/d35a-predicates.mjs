@@ -9,7 +9,7 @@
 //   questionFiveTimes   B3: a card's or an asked step's question said in a fifth turn of the lesson
 //   closeNoFitCheckin   B4: a right answer's close apart from the next card (noFit "card") ending on a check-in
 //   easierWordsNoQuestion  B5: a Hindi request at a card or asked step answered with help that ends on a check-in, not the question
-import { helpPart, ladderOf, ownHintOf, normSentence, sentencesOf, inSaid } from "../../server/director/help.js";
+import { helpPart, ladderOf, ownHintOf, normSentence, sentencesOf, inSaid, goOnPlain } from "../../server/director/help.js";
 import { saidIn } from "../../server/director/script.js";
 import { sameBoardRef } from "../../server/director/state.js";
 import { drawnPagesOf } from "./drawn-pages.mjs";
@@ -145,8 +145,11 @@ export const D35A_PREDICATES = {
   },
   /** B4: a right answer whose close cannot share its turn with the next card ends on the go-on line, never a check-in (director34 c4
    *  steady 54, offtopic 52 and 70). Gated. */
-  closeNoFitCheckin(L, r, i) {
+  closeNoFitCheckin(L, r, i, ctx) {
     if (r.who !== "teacher" || r.cell?.column !== "right" || r.move !== "repair") return null;
+    // (d35 closing item 5: B4's go-on line is the script's plain afterKeyGoOn form; a script with none — every form consoles or promises,
+    // or code's fallback forms — has no go-on line to end on, and the close keeps its check-in, as 049 B6's split does: tests r8-main-034)
+    if (ctx?.script && !goOnPlain(ctx.script)) return null;
     const k = seamKinds(r);
     if (k[0] !== "verdict" || k.at(-1) !== "checkin" || k.some((x) => ["key", "bridge", "return", "asideReply"].includes(x))) return null;
     // (the close of the lesson's last card, before the wrap, is no close apart from a next card)

@@ -142,7 +142,9 @@ test("angle@1 tester (item 2): each angle with the right-angle tester laid on it
 
 test("fraction-line@1 strips (item 5): a line past 1, with two scales past 1, or with a fraction to place is its wholes as strips end to end — the line's counts, the line's words, a mark shaded up to it, a fraction to place not drawn", () => {
   // (the posing boards: an answer board's two marks — "6/3" and "7/3" on one scale — have no strips view, and need none)
-  const got = boards("fraction-line@1").filter((b) => !b.at.includes("answerBoard") && (b.ref.params.target != null || Number(b.ref.params.to ?? 1) > 1));
+  // (d35 closing item 5: Learning 023 gave c5-t01 s3's worked steps result boards — the line with its two marks, "4/4 = 1" and "7/4"; a
+  // result board is the answer drawn, as an answer board is, and two marks on one scale have no strips view, as above)
+  const got = boards("fraction-line@1").filter((b) => !b.at.includes("answerBoard") && !(b.at.includes("resultBoard") && (b.ref.params.marks ?? []).length > 1) && (b.ref.params.target != null || Number(b.ref.params.to ?? 1) > 1));
   assert.ok(got.length >= 15);
   for (const b of got) {
     const p = b.ref.params, held = { template: "fraction-line@1", ...p };

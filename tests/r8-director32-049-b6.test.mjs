@@ -35,8 +35,13 @@ describe("B6.1: a turn of verdict, reason, point and card is said whole up to 70
       const j = goOnPlain(sc("c4-maths-ch05-t01"), { n });
       assert.ok(j?.text && !/koi baat nahi|sawaal|dobara|phir aayenge/i.test(j.text), j?.text);
     }
-    // (c6-ch07's every form promises — "phir aayenge", "dobara", "phir milegi": the turn is not split)
-    assert.equal(goOnPlain(sc("c6-maths-ch07-t01")), null);
+    // (re-pinned, d35 closing item 5: Learning 023's c6-ch07-t01 fix 11, aece558fc, rewrote afterKeyGoOn forms 2 and 3 to promise no
+    // return — "Theek hai, ab agli baat dekhte hain.", "Achha, ab aage chalte hain." — so c6-ch07 now has plain statements; its first
+    // form, a consolation that promises, is still never the plain go-on)
+    for (let n = 0; n < 4; n++) {
+      const j = goOnPlain(sc("c6-maths-ch07-t01"), { n });
+      assert.ok(j?.text && !/koi baat nahi|sawaal|dobara|phir aayenge|phir milegi/i.test(j.text), j?.text);
+    }
     // (at a give-up a consolation is fine; a question named or a promise is not)
     const g = goOnPlain(sc("c6-maths-ch06-t01"), { consolation: true, n: 0 });
     assert.ok(g && !/sawaal|yahin rakh/i.test(g.text));
