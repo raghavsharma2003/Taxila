@@ -342,11 +342,15 @@ export function cardPromptOf(script, part) {
   return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
 }
 /** to-brain 053 A1: a part's own hint — a card's `simpler` (a card, a check, a follow-up card, the your-step) or an asked worked step's easier
- *  wording — when it is unsaid, with the board it is said over (its own `board`, else the part's: a hint "owns" the board its rung names).
- *  → { field, path, text, board, settles } | null (no hint written, or said). `settles`: its board is the card's own answer board (it shows the
- *  answer) — it is never drawn as a picture (A1's note: such a card falls to A3 and is listed for main). Spent as the ladder reads it: a card's
- *  hint only when every sentence of it is said word for word; a step's when any sentence is (help.js pickHelp, the step branch). */
-export function ownHintOf(script, part, said = [], lang = "hinglish") {
+ *  wording — when it is unsaid, with the board it is said over (its own `board`, else the part's) and the board it OWNS, if any.
+ *  → { field, path, text, board, owns, settles } | null (no hint written, or said). `board`: the board the hint is said over — the rung's own,
+ *  else the part's posing board. `settles`: that board is the card's own answer board (it shows the answer). `owns` (release 61, director35
+ *  stuck c6-ch06-t01 18, c4-ch06-t01 18; steering c6-ch07-t01 16, c5-ch02-t03 16): the board the hint owns — only a board the script gives
+ *  the hint itself (the rung's own `board`, never the fallback to the part's), not the card's own posing board, not the board up when the
+ *  request comes (`up`), and not the card's answer board; else null. Only a hint that owns a board is drawn as the picture (pickHelp's
+ *  `hintBoard`); a hint said over the part's board is A3's hint in words. Spent as the ladder reads it: a card's hint only when every
+ *  sentence of it is said word for word; a step's when any sentence is (help.js pickHelp, the step branch). */
+export function ownHintOf(script, part, said = [], lang = "hinglish", { up = null } = {}) {
   if (!part) return null;
   const step = part.kind === "worked_step" && !!part.step;
   if (!CARD_KINDS.has(part.kind) && !step) return null;
@@ -359,11 +363,18 @@ export function ownHintOf(script, part, said = [], lang = "hinglish") {
   const spent = step ? ss.some((x) => inSaid(x, said)) : ss.every((x) => saidWordForWord(x, said));
   if (spent) return null;
   const board = r0.board ?? part.board ?? null;
-  const settles = !!board?.template && [`${part.path}.answerBoard`, `${part.path}.resultBoard`].some((q) => { const ab = at(script, q); return !!ab?.template && JSON.stringify(canonB(board)) === JSON.stringify(canonB(ab)); });
+  const settlesB = (b) => !!b?.template && [`${part.path}.answerBoard`, `${part.path}.resultBoard`].some((q) => sameB(b, at(script, q)));
+  const settles = settlesB(board);
+  // (release 61: the hint's own board — written on the hint itself; the fallback to the part's board is a board to say it over, not one it owns)
+  const v = r0.value;
+  const mine = v && typeof v === "object" && v.board && typeof v.board === "object" && v.board.template ? v.board : null;
+  const owns = mine && !sameB(mine, part.board) && !sameB(mine, up) && !settlesB(mine) ? mine : null;
   const t0 = String(t).trim();
-  return { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board, settles };
+  return { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board, owns, settles };
 }
 const canonB = (v) => (Array.isArray(v) ? v.map(canonB) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canonB(v[k])])) : v);
+/** Two boards are one board: canonically equal (keys in any order). */
+const sameB = (a, b) => !!a?.template && !!b?.template && JSON.stringify(canonB(a)) === JSON.stringify(canonB(b));
 export const KEY_AFTER_MISSES = 5;
 /** Main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked `whyAlt` (`whyAltAsHelp: true`) is written to the child who gave the
  *  card's named wrong answer (`wrongIfMis`) — many name it ("3 kehne mein …", "28 mein do metre …"). It is said as help only when the
@@ -390,7 +401,7 @@ export function namedReasonOf(node, last, path) {
   if (!v || typeof v !== "object" || !(v.hi || v.en)) return null;
   return { field: "whyAltHelp", path: `${path}.wrongAnswers[${k - 1}].why`, value: v, present: true, named: k };
 }
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null, explain = false, boardUp = null }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -435,7 +446,9 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
     // (to-brain 053 A1: at an asked step the step's easier wording owns a board — it is the picture: that board drawn, the wording its caption,
     // then the step's question; the no-other-drawing line is not said. A board that shows the step's answer is never drawn: A3)
-    const a1 = request === "picture" && !!rung.board?.template && !ownHintOf(script, part, said, L)?.settles;
+    // (release 61: "owns" is ownHintOf's `owns` — a board written on the wording itself, not the step's posing board nor the board up; the
+    // step's board as a fallback is A3: the line, the wording in words, the board up kept)
+    const a1 = request === "picture" && !!ownHintOf(script, part, said, L, { up: boardUp })?.owns;
     return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true, ...(hindiHelp ? { hindiAsked: true } : {}),
       ...(request === "picture" ? (a1 ? { hintBoard: true } : { pictureLine: noPictureLine(script, { lang: L, first: true }) }) : {}) };
   }
@@ -517,8 +530,11 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // never drawn. A3: anything else — the line in its first form, then the first unsaid wording in words over the board up (state.js
   // noPictureKeeps), then the question; never the key)
   if (request === "picture") {
-    const own = isCard ? ownHintOf(script, part, said, L) : null;
-    const a1 = !!own && !!own.board?.template && !own.settles && unsaid?.path === own.path;
+    // (release 61 — director35 stuck c6-ch06-t01 18, c4-ch06-t01 18, steering c6-ch07-t01 16, c5-ch02-t03 16: a hint said over the card's own
+    // posing board "owned" it, and the picture request got the board up back, or the card's board redrawn over the picture of the turn before.
+    // Only a board the hint owns — ownHintOf's `owns` — is drawn; anything else is A3)
+    const own = isCard ? ownHintOf(script, part, said, L, { up: boardUp }) : null;
+    const a1 = !!own?.owns && unsaid?.path === own.path;
     const t0 = unsaid ? String(unsaid.text).trim() : "";
     const rung = unsaid ? { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null } : null;
     if (a1) return { ...base, rung, board: rung.board, card: isCard ? "keep" : "wait", key: null, joint: null, hintBoard: true };

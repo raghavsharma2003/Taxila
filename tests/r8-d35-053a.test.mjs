@@ -40,24 +40,30 @@ describe("A: a second picture request", () => {
     assert.deepEqual(flaggedAll("noPictureBare"), ["offtopic c4-maths-ch01-t02 26", "steering c4-maths-ch05-t01 16", "steering c4-maths-ch06-t01 16", "steering c5-maths-ch02-t01 16",
       "steering c5-maths-ch02-t02 16", "steering c6-maths-ch06-t01 16", "steering c6-maths-ch07-t01 16"].sort());
   });
-  test("hintBoardNotDrawn reads the no-picture line said with the card's own hint unsaid (steering c5-t03 16, c6-ch07-t01 16; stuck c4-ch06-t01 18, c6 18)", () => {
-    assert.deepEqual(flaggedAll("hintBoardNotDrawn"), ["steering c5-maths-ch02-t03 16", "steering c6-maths-ch07-t01 16", "stuck c4-maths-ch06-t01 18", "stuck c6-maths-ch06-t01 18"].sort());
+  // (re-pinned for release 61: those four hints were said over the card's own posing board — a board to say them over, not one they own. No
+  // hint in director34's scripts owns a board, so the line with the hint in words was A3's right answer there; director35 heard the old
+  // reading's turns: tests/r8-d35-fix61.test.mjs)
+  test("hintBoardNotDrawn, with 'owns' as release 61 reads it, flags none of director34's no-picture turns (no hint there owns a board)", () => {
+    assert.deepEqual(flaggedAll("hintBoardNotDrawn"), []);
   });
   test("noPictureAfterView reads c4-ch01-t02 steering 16 (the tester view gone at the first word) and the other views lost on a no-picture turn", () => {
     const all = flaggedAll("noPictureAfterView");
     assert.ok(all.includes("steering c4-maths-ch01-t02 16"), all.join("\n"));
     assert.ok(all.every((x) => /^steering .* 16$/.test(x)), all.join("\n"));
   });
-  test("A1: the card's own hint, unsaid, with a board, is the picture — no line (stuck c4-ch06-t01 18 as walked)", () => {
+  // (re-pinned for release 61 — director35 stuck c4-ch06-t01 18 drew the board already up as the "hint's board": a hint said over the card's
+  // own posing board owns no board, so this is A3 — the line in its first form, the hint in words over the board up)
+  test("A1 (release 61): the card's own hint said over the card's posing board owns no board — A3's line and the hint in words (stuck c4-ch06-t01 18)", () => {
     const { rows, script } = lesson("stuck", "c4-maths-ch06-t01");
     const said = saidTo(rows, 18);
     const d = pickHelp({ script, ...at(rows, 18), request: "picture", said });
-    assert.equal(d.hintBoard, true);
-    assert.equal(d.pictureLine, undefined);
+    assert.ok(!d.hintBoard);
+    assert.equal(d.pictureLine?.text, script.joints.noPicture[0].hi);
     assert.match(d.rung.text, /^4 ke nishaan se shuru karke/);
-    assert.equal(d.rung.board.template, "number-line-scale@1");
     const own = ownHintOf(script, helpPart(script, at(rows, 18).part), said);
     assert.equal(own.settles, false);
+    assert.equal(own.board.template, "number-line-scale@1");
+    assert.equal(own.owns, null);
   });
   test("A1: a hint whose board is the card's answer board is never drawn — A3's line and the hint in words", () => {
     const { rows, script } = lesson("stuck", "c4-maths-ch06-t01");

@@ -4,6 +4,7 @@
 //   noPictureBare       A3: the no-picture line, then only an invitation or the question, while a wording of A3's list is unsaid
 //   noPictureAfterView  A2: a view (or a picture) drawn on her turn before is gone on a turn that says the no-picture line
 //   hintBoardNotDrawn   A1: the no-picture line said while the card's own hint, unsaid, owns a board (it is the second picture)
+//   hintBoardNothingNew A1 (release 61): a turn recorded `hintBoard` that drew nothing new — the board up, or the card's own posing board
 //   bridgeGiveUpGoesOn  B1: a first give-up or clarify at a bridge's check-in answered by the next part, no help
 //   cardWholeAfterTryOrYes  B2: after try-first or a bare yes, the card or step said again whole (or its re-ask) when it was just said
 //   questionFiveTimes   B3: a card's or an asked step's question said in a fifth turn of the lesson
@@ -95,12 +96,29 @@ export const D35A_PREDICATES = {
   },
   /** A1: the no-picture line is never said while the card's own hint (or an asked step's easier wording), unsaid, owns a board that does
    *  not show the answer — that board is the picture (director34 steering c4-ch01-t02 16, c5-ch02-t03 16; stuck c4-ch06-t01 18, c6 18). Gated. */
+  // (release 61: "owns" is ownHintOf's `owns` — a board written on the hint itself, not the card's posing board nor the board up before the
+  // turn; the fallback to the card's board, which read 0 on director35's four rows, is a board to say the hint over, never one it owns)
   hintBoardNotDrawn(L, r, i, ctx) {
     if (!saysNoPicture(r, ctx?.script)) return null;
     const part = partOfRow(r, ctx.script);
     if (!part) return null;
-    const own = (() => { try { return ownHintOf(ctx.script, part, saidBefore(L, i), "hinglish"); } catch { return null; } })();
-    return own?.board?.template && !own.settles ? `the no-picture line with the hint (${own.path.split(".").slice(-2).join(".")}) unsaid, its board ${own.board.template} undrawn` : null;
+    const up = ctx?.prevT ? drawnPagesOf(ctx.prevT).at(-1)?.board ?? null : null;
+    const own = (() => { try { return ownHintOf(ctx.script, part, saidBefore(L, i), "hinglish", { up }); } catch { return null; } })();
+    return own?.owns ? `the no-picture line with the hint (${own.path.split(".").slice(-2).join(".")}) unsaid, its own board ${own.owns.template} undrawn` : null;
+  },
+  /** A1 (release 61 — director35 stuck c6-ch06-t01 18, c4-ch06-t01 18; steering c6-ch07-t01 16, c5-ch02-t03 16): a picture turn recorded
+   *  `hintBoard` that drew nothing new — its board kept (`held.drawn` "kept"), or the board it drew is the board up before the turn or the
+   *  card's own posing board. A child who asked for a drawing got the same board back. Gated. */
+  hintBoardNothingNew(L, r, i, ctx) {
+    if (r.who !== "teacher" || r.cell?.picture !== "hintBoard") return null;
+    if (r.held?.drawn === "kept") return "a hint board recorded, the board kept: nothing new drawn";
+    const drawn = drawnPagesOf(r)[0]?.board ?? null;
+    if (!drawn) return null;
+    const up = ctx?.prevT ? drawnPagesOf(ctx.prevT).at(-1)?.board ?? null : null;
+    if (up && sameBoardRef(drawn, up)) return `a hint board recorded over the board already up (${drawn.template})`;
+    const part = partOfRow(r, ctx?.script);
+    if (part?.board && sameBoardRef(drawn, part.board)) return `a hint board recorded as the card's own posing board (${drawn.template}), drawn again`;
+    return null;
   },
   /** B1 (carried clause 3): a FIRST give-up or "samajh nahi aaya" at a bridge's check-in gets help — the bridge's simpler, else the closed
    *  card's reason — never the next part alone (director34 c4 steady 70, c5-t03 steady 26, c6-ch07-t01 steady 26 and stuck 56, c6-ch07-t03

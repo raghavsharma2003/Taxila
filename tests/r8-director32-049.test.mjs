@@ -68,11 +68,13 @@ describe("B2: a picture request with nothing left to draw", () => {
     assert.equal(pickHelp({ script, part: PART, request: "clarify", said }).card, "close");
   });
   // (to-brain 053 A1 reverses "the line then the hint" where the hint owns a board: that board is the second picture, the hint its caption, no line)
-  test("pickHelp: with a hint left that owns a board, the hint's board and the hint, no line (053 A1); with no noPicture forms, the hint alone", async () => {
+  // (re-pinned for release 61: this card's hint is said over the card's own board — it owns none, so the line, then the hint in words; a hint
+  // with a board of its own is pinned in tests/r8-d35-fix61.test.mjs)
+  test("pickHelp: with a hint left that owns no board of its own, the line then the hint (053 A3, release 61); with no noPicture forms, the hint alone", async () => {
     const { pickHelp } = await import("../server/director/help.js");
     const d = pickHelp({ script: with021(S1()), part: PART, request: "picture", said: [] });
     assert.equal(d.card, "keep");
-    assert.ok(d.rung?.text && d.hintBoard && !d.pictureLine?.text);
+    assert.ok(d.rung?.text && !d.hintBoard && d.pictureLine?.text);
     const d0 = pickHelp({ script: S1(), part: PART, request: "picture", said: [] });
     assert.ok(d0.rung?.text);
     assert.ok(!d0.pictureLine);
