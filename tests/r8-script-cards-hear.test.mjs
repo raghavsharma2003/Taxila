@@ -295,6 +295,40 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
   assert.deepEqual(wrongBad, [], "a wrong answer graded right (a false key)");
 });
 
+// (d35 follow-up 2: the grader gate reads `wrongAnswers` on the real scripts — each named answer and every one of its accept forms is read
+// by the grader as that named answer (wrongNamed k + 1), and no key or accepted right form is read as one)
+test("053 F on the real scripts: every wrongAnswers form is read as its named answer; no right form is read as one", (t) => {
+  const named = (item, say) => {
+    const r = classifyFast({ target: { mode: "item", item, key: item.answer, also: item.acceptable || [] }, childText: say, typed: false, asrConfidence: 0.95 })?.result;
+    return r ? { outcome: r.outcome, n: r.wrongNamed ?? null } : { outcome: "model", n: null };
+  };
+  const bad = [], rightBad = [];
+  let tried = 0, cards = 0;
+  for (const [name, path] of scripts()) {
+    const s = JSON.parse(readFileSync(path, "utf8"));
+    for (const [where, it] of cardsOf(s)) {
+      const wa = metaOf(it).wrongAnswers ?? [];
+      if (!wa.length) continue;
+      cards++;
+      wa.forEach((w, k) => {
+        for (const f of [...(Array.isArray(w.answer) ? w.answer : [w.answer]), ...(w.accept ?? [])].map(String).filter((x) => x.trim())) {
+          tried++;
+          const g = named(it, f);
+          if (g.outcome !== "misconception" || g.n !== k + 1) bad.push(`${name} ${where} wrongAnswers[${k}] said ${JSON.stringify(f)} → ${g.outcome}${g.n != null ? ` wrongNamed ${g.n}` : ""}`);
+        }
+      });
+      for (const f of [it.answer, ...(it.acceptable ?? [])].map(String)) {
+        const g = named(it, f);
+        if (g.n != null && g.n > 0) rightBad.push(`${name} ${where} right form ${JSON.stringify(f)} → wrongNamed ${g.n}`);
+      }
+    }
+  }
+  t.diagnostic(`cards with wrongAnswers ${cards}, named forms ${tried}`);
+  assert.ok(cards > 0);
+  assert.deepEqual(bad, [], "a named wrong answer's form not read as that answer");
+  assert.deepEqual(rightBad, [], "a right form read as a named wrong answer");
+});
+
 test("048: the accept forms G7 made safe again refuse the wrong answers they once let in (the scripts' fix passes, 2026-11-18)", () => {
   const find = (path, pred) => { const s = JSON.parse(readFileSync(join(ROOT, path), "utf8")); const hit = cardsOf(s).find(([, it]) => pred(it)); assert.ok(hit, path); return hit[1]; };
   // perimeter: "24 + 18 + 24 + 18" took "24 × 18" and "24 + 18"
