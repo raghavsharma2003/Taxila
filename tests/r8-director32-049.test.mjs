@@ -220,10 +220,17 @@ describe("B5: a right verdict before a due return ends on the return's question;
   });
 });
 describe("B4: a question is heard at most two turns running", () => {
-  test("questionThreeRunning reads director32's rows: stuck 20/22, offtopic 18, steering 32, c4 offtopic 62", () => {
+  // (re-pinned for to-brain 051 C4: director32's rows are a park (offtopic 18, steering 32) or a turn with no help in it (stuck 22, c4 offtopic
+  // 62: a "yes" at an asked step) — the turns 051 says end on the question and count, the invitation never said there (director33's
+  // inviteAfterPark, inviteNoHelp). The widened questionThreeRunning reads them clean; its director33 rows: tests/r8-director33-051b.test.mjs)
+  test("questionThreeRunning, widened by to-brain 051 C4, reads director32's park and no-help rows as rightly ending on the question", () => {
     const want = [["stuck", "c5t01", 22], ["stuck", "c5t02", 22], ["stuck", "c5t03", 22], ["stuck", "c6", 22], ["stuck", "c6ch07", 22],
       ["offtopic", "c5t02", 18], ["offtopic", "c6", 18], ["steering", "c5t01", 32], ["steering", "c5t02", 32], ["steering", "c6", 32], ["offtopic", "c4", 62]];
-    assert.deepEqual(want.filter(([p, t, n]) => !flagged(p, t, "questionThreeRunning").has(n)).map((x) => x.join(" ")), []);
+    assert.deepEqual(want.filter(([p, t, n]) => flagged(p, t, "questionThreeRunning").has(n)).map((x) => x.join(" ")), []);
+    for (const [p, t, n] of want) {
+      const r = lesson(p, t).rows[n], sm = (r.seams ?? []).map((x) => x.right);
+      assert.ok(sm.includes("park") || !sm.some((k) => ["help", "caption", "remediation", "noPicture", "helpSpent", "hindiSwitch"].includes(k)), `${p} ${t} ${n}`);
+    }
   });
   test("it reads the script the lesson was run with (each run folder's scripts/), never today's", () => {
     assert.equal(flagged("stuck", "c5t01", "questionThreeRunning", { rows: lesson("stuck", "c5t01").rows, script: null }).size, 0);
@@ -245,7 +252,8 @@ describe("B4: the third turn at one question ends on joints.yourTurn; the fourth
     assert.ok(endsOnYourTurn(sc, "Socho, 3 gino. Chalo, ab tumhari baari.") && !endsOnYourTurn(sc, reask));
   });
   const turn = (recent, lastMove = {}, extra = {}) => ({ recent: recent.map((text) => ({ who: "teacher", text })), lastMove, ...extra });
-  const out = () => ({ state: { lastMove: { kind: "hint" }, ctx: {} }, move: { kind: "hint" }, ui: { ask: { itemId: "script:s1:c1", text: card } } });
+  // (to-brain 051 C4: the invitation only in a turn with help in it — the hint's wording, `simpler`, is on this turn's move)
+  const out = () => ({ state: { lastMove: { kind: "hint", simpler: "Socho, 3 gino." }, ctx: {} }, move: { kind: "hint" }, ui: { ask: { itemId: "script:s1:c1", text: card } } });
   test("the third turn running is marked yourTurn (rotated), the question said last kept for the fourth", () => {
     const o = yourTurnPass(turn([card, `Socho. ${reask}`]), out(), sc);
     assert.equal(o.state.lastMove.yourTurn, "Ab tum batao.");
@@ -271,7 +279,8 @@ describe("B4: the third turn at one question ends on joints.yourTurn; the fourth
   });
   test("questionThreeRunning is gated, and the turn after an invitation is read against the question before it", () => {
     assert.ok(!PENDING.has("questionThreeRunning"));
-    const three = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T(`Nahi. ${card}`)];
+    // (to-brain 051 C4: a turn with no help in it rightly ends on the question — the third here carries a hint, its seam)
+    const three = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T(`Nahi. ${card}`, { seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "help" }, { left: "help", right: "card" }] })];
     assert.deepEqual([...flagged(null, null, "questionThreeRunning", { rows: three, script: sc })], [4]);
     const again = [T(card), C("5"), T(`Nahi. ${reask}`), C("6"), T("Socho. Ab tum batao."), C("7"), T(`Nahi. ${reask}`)];
     assert.deepEqual([...flagged(null, null, "reaskSameAfterHelp", { rows: again, script: sc })], [6]);
