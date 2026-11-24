@@ -105,6 +105,15 @@ export function multiPartKey(answer) {
 export function targetFor(s, kit, item) {
   const misList = (list, first) => [...list].sort((a, b) => (b.id === first) - (a.id === first))
     .map((m, i) => ({ tag: `m${i + 1}`, id: m.id, belief: m.belief, signs: m.signs || [] }));
+  // (to-brain 052 B2: a script's closing question is graded as a card is — the cards' grader, by its key, its accepted forms (the spoken
+  // fractions among them) and its named wrong answer, read as the mix-up it targets: state.js keeps them in s.teachbackGrade. Before, its own
+  // reader took any line holding the key for right — a denial included — and never read the named wrong answer)
+  if (s.phase === "teachback" && s.teachbackAsked && s.teachbackGrade?.key && !s.teachbackKeyed && !s.teachbackPassed && !s.wrapTwo) {
+    const g = s.teachbackGrade;
+    const item = { id: "script:end:teachback", kind: "check", answer: g.key, acceptable: g.accept ?? [], prompt_hi: g.prompt_hi, prompt_en: g.prompt_en,
+      scriptCheck: { key: g.key, wrongIfMis: g.wrongIfMis ?? null, targets: g.targets ?? null } };
+    return { mode: "item", item, key: g.key, also: g.accept ?? [], ideas: [], misconceptions: misList(kit.misconceptions, g.targets), open: false };
+  }
   if (s.phase === "teachback" && s.teachbackAsked) {
     const tb = kit.items.find((i) => i.kind === "teachback");
     const expectations = kit.expectations.length ? kit.expectations : tb ? [tb.answer] : [];

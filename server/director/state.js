@@ -22,6 +22,7 @@ import { unitBoardOf, firstUnitOf } from "../brain/propose.js";
 import { stopKind, signalsOf } from "../relational/signals.js";
 import * as SH from "./shapes.js";
 import { readFileSync } from "fs";
+import { canon as canonAnswer } from "../grading/script-answer.js";
 import { responseShape } from "./requestTable.js";
 import { buildPracticeQueue, findItem, isomorphicFor, probeFor, promptFor, optionsSpoken, selectNext, anchorOf, whyKey, PROBE_WEIGHT, revealsAnswer, choicesFor, stripRungLabel } from "./items.js";
 import { registerNote } from "./register.js";
@@ -2623,6 +2624,10 @@ function enterTeachback(s, prefix, kit) {
     const q = saidIn(tb.prompt, s.ctx.lang ?? "hinglish");
     if (q && String(q).trim()) {
       s.teachbackScript = true;
+      // (to-brain 052 B2: the closing question is graded as a card is — classify.js targetFor hands the cards' grader its key, accepted forms
+      // and named wrong answer from here)
+      if (tb.key != null && String(tb.key).trim()) s.teachbackGrade = { key: String(tb.key), accept: [...(tb.accept ?? [])], wrongIfMis: tb.wrongIfMis ?? null, targets: tb.targets ?? null,
+        prompt_hi: saidIn(tb.prompt, "hinglish") ?? null, prompt_en: saidIn(tb.prompt, "english") ?? null };
       // (dc-r8-director22 T2, main's 031: one of Learning's teachback.leadIn forms before the question, the form picked by a rotation
       // seeded by the lesson, as the joints are)
       const leads = (Array.isArray(tb.leadIn) ? tb.leadIn : []).map((f) => saidIn(f, s.ctx.lang ?? "hinglish")).filter((x) => x && String(x).trim());
@@ -2648,9 +2653,18 @@ export function teachbackReading(s, kit, text) {
   if (s?.phase !== "teachback" || !s.teachbackScript || s.teachbackKeyed) return null;
   const tb = authoredEnd(kit)?.teachback;
   if (!tb?.key) return null;
+  // (to-brain 052 B2: graded by the cards' grader — classify.js reads it; the walk acts on that reading. A denial or a give-up is never right)
+  if (s.teachbackGrade) return null;
   return teachbackHit(tb, text) ? "correct" : /\d/.test(String(text ?? "")) ? "incorrect" : "no_evidence";
 }
-
+/** to-brain 052 B2: whether the closing question was answered right — the cards' grader's reading (cls), never a denial or a give-up; a
+ *  lesson state from before B2 (no teachbackGrade) reads the key and its forms as before. */
+function teachbackRight(s, tb, input) {
+  if (!s.teachbackGrade) return teachbackHit(tb, input.text);
+  const t = String(input.text ?? "");
+  if (input.cls?.outcome !== "correct" || GIVE_UP_WORDS.test(t) || (canonAnswer(t).neg && !canonAnswer(String(tb.key)).neg)) return false;
+  return true;
+}
 /** Her teach-back answer against the authored key and its accepted forms (a key, never a model's grade). */
 function teachbackHit(tb, text) {
   const norm = (x) => ` ${String(x ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim()} `;
@@ -2669,7 +2683,7 @@ function teachback(s, input) {
     // (2.4: a right answer — the key or a form Learning accepts — is told so; anything else gets the key and its why, once)
     s.teachbackTries += 1;
     const lang = s.ctx.lang ?? "hinglish";
-    const hit = teachbackHit(tb, input.text);
+    const hit = teachbackRight(s, tb, input);
     // (main's 031: a right answer gets no check-in — the verdict leads the wrap in the same turn, over the answer board from its first word)
     // (dc-r8-director26 W1: the closing verdict says its why — c4 steady 128, c5-t01 steady 130 said "Haan, sahi hai." and went on)
     if (hit) {
@@ -2739,6 +2753,20 @@ function lessonPick(s, list, salt = "") {
   const h = [...`${String(s.ctx?.lessonKey ?? s.ctx?.sessionId ?? "")}|${salt}`].reduce((a, c) => Math.imul(a ^ c.charCodeAt(0), 16777619) >>> 0, 2166136261);
   return list[(Math.imul(((s.seed ?? 0) >>> 0) ^ h, 2654435761) >>> 0) % list.length];
 }
+/** to-brain 052 B5: what the child said to the wrap's closing question — she liked it, or found it hard — and whether an acknowledgement form
+ *  meets it: to a liking, a form that thanks or takes it gladly, never one that only notes it ("samajh gayi", "sun liya"); to "mushkil tha",
+ *  one that notes it, never a thank-you. Anything else: every form fits. */
+const WRAP_LIKED = /(?<![\p{L}])(?:maz(?:a|aa)|achh?(?:a|e|i)\s+(?:laga|lage|lagi|tha|the|thi)|pasand|badhiya|mast|fun|enjoy\w*|liked?|loved?|nice|great|accha\s+laga|acha\s+laga|sawaal\s+achh?e)(?![\p{L}])/iu;
+const WRAP_HARD = /(?<![\p{L}])(?:mushkil|kathin|hard|difficult|tough|samajh\s+nahi)(?![\p{L}])/iu;
+const ACK_NOTES = /(?<![\p{L}])(?:samajh\s+gayi|sun\s+(?:liya|li)|pata\s+chal\s+gaya)(?![\p{L}])/iu;
+const ACK_THANKS = /(?<![\p{L}])(?:shukriya|thank)/iu;
+export function ackFits(form, said) {
+  const t = String(said ?? "");
+  const hard = WRAP_HARD.test(t), liked = !hard && WRAP_LIKED.test(t);
+  if (liked) return !ACK_NOTES.test(form);
+  if (hard) return !ACK_THANKS.test(form);
+  return true;
+}
 function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afterKey = false, second = null }) {
   if (stopping && !["wrap", "done"].includes(s.phase)) s.stoppedEarly = true;   // child.js countsAsDone (owner-truth item 3)
   const phase0 = s.phase;
@@ -2790,8 +2818,12 @@ function toWrap(s, { prefix, stopping = false, kit = null, keyFirst = null, afte
       // (d31 046 follow-up 3b, the staged c6-ch07-t01's dry steady 88, 90: both wrap turns opened on "Achha, tumne dil se bataya." — turn
       // two's form is never the one turn one said; the next form in the list where the pick is that one)
       const acks2 = (Array.isArray(w?.ack) ? w.ack : []).map((f) => saidIn(f, lang)).filter((x) => x && String(x).trim());
-      const pick2 = second.replied && !second.ack ? lessonPick(s, acks2, "wrapAck") : null;
-      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? acks2.find((x) => x !== second.ackSaid) ?? null : pick2;
+      // (to-brain 052 B5: the reply reads what the child said — "maza aaya", "sawaal achhe the" is not met with a form that takes a complaint
+      // or a goodbye ("Hmm, theek hai, samajh gayi."), and "thoda mushkil tha" is not thanked: the forms that fit what she said, the lesson's
+      // pick among them; none fits, the lesson's pick as before)
+      const fitting = acks2.filter((x) => ackFits(x, second.said));
+      const pick2 = second.replied && !second.ack ? lessonPick(s, fitting.length ? fitting : acks2, "wrapAck") : null;
+      const ack2 = pick2 && second.ackSaid && pick2 === second.ackSaid ? (fitting.length ? fitting : acks2).find((x) => x !== second.ackSaid) ?? acks2.find((x) => x !== second.ackSaid) ?? null : pick2;
       const ackS = second.ack ?? ack2;
       const lines2 = [ackS, bye].filter((x) => x && String(x).trim()).map(endLine);
       return plan("wrap", SH.wrap({ prefix, nextTitle: s.ctx.nextTitle, stopping }), { rendered: lines2, authoredEnd: "wrap", wrapPart: 2, ...(ackS ? { wrapAck: endLine(ackS) } : {}),
@@ -3037,7 +3069,7 @@ function decide(s, input, item) {
   if (s.phase === "done") return toWrap(s, { stopping: true, kit: input.kit });
   // (dc-r8-director25 L2 item 2: the wrap's second turn, whatever her reply to what was covered — a stop or a goodbye of hers included:
   // the acknowledgement, the sentence to her, the goodbye)
-  if (s.wrapTwo) { const w2 = { ...s.wrapTwo, replied: String(input.text ?? input.answer ?? "").trim().length > 0 }; s.wrapTwo = undefined; return { ...toWrap(s, { kit: input.kit, second: w2 }), ...(w2.board ? { holdBoard: true } : {}) }; }
+  if (s.wrapTwo) { const w2 = { ...s.wrapTwo, replied: String(input.text ?? input.answer ?? "").trim().length > 0, said: String(input.text ?? input.answer ?? "").trim() }; s.wrapTwo = undefined; return { ...toWrap(s, { kit: input.kit, second: w2 }), ...(w2.board ? { holdBoard: true } : {}) }; }
   // round 7 (Learning patch 006): the Conductor's lesson slot ends at its window (≤ bedtime − 60): never past hardStopAt
   if (pastBrief(s, "hardStopAt")) return toWrap(s, { kit: input.kit });
   // A wrong belief voiced outside a keyed item is a hypothesis: flag it, and verify it with its spoken

@@ -478,6 +478,8 @@ const J2_WORD_STOP = new Set(["mujhe", "pasand", "pasandida", "favourite", "favo
  *  (a past verb — "maara", "khela", "dekha" — is no noun), rotated by how many asides she has answered; null when no word of theirs fits. */
 const VERBISH = /(?:aara|ela|ala|ila|kha|aya|iya|aaya|gaye|gayi)$/;
 /** Every sentence she has said in this lesson (the said set, and her recent turns). */
+/** to-brain 052 B5: her turns' texts, oldest first. */
+const herTurnsOf = (state) => (state?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
 const saidLinesOf = (state) => [...(state?.said ?? []), ...(state?.recent ?? []).filter((t) => t.who === "teacher").flatMap((t) => helpSentences(t.text ?? ""))];
 export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const words = j2WordsOf(said, topic).filter((w) => !VERBISH.test(w));
@@ -488,20 +490,23 @@ export function againInHerWords(said, topic, lang = "hinglish", state = null) {
   const clause = String(said ?? "").split(/[,;]/).map((x) => x.trim()).filter(Boolean).at(-1) ?? "";
   // (dc-r8-director27 P6.3: a reply she has said in this lesson is not said again — the next form)
   const avoid = saidLinesOf(state);
+  // (to-brain 052 B5: her turns, for the frame her last aside reply was said in)
+  const recent = herTurnsOf(state);
   // (to-brain 049 B6.3, main's ruling of 2026-11-23: "Haan, sixer maara, yeh tumne bataya tha." only of what the child told before — dry c4
   // offtopic 56, c5-t01 and c6 offtopic 40 said it of words heard first on the child's turn just before: an again form whose phrase is in
   // none of their earlier lines is not said; the phrase form takes its place)
   const before = childLinesBefore(state, said);
-  const toldOk = (line) => { const m = /(?:^|[.!?]\s+)haan, ([^.!?]{2,40}), yeh tumne bataya tha|you told me(?: about)? ([^.!?]{2,40})/i.exec(String(line ?? ""));
-    if (!m) return true; const ph = String(m[1] ?? m[2] ?? "").toLowerCase().trim(); return before.some((x) => x.includes(ph)); };
+  // (to-brain 052 B5: by the form's type, not its wording — every againReplies form says "you told me this before", Learning 022 wrote
+  // three: an again form is said only of a phrase in one of the child's earlier lines)
+  const toldOk = (r) => r?.form !== "again" || (!!r.phrase && before.some((x) => x.includes(String(r.phrase).toLowerCase().trim())));
   // (an aside said again: Learning 016's againReplies first, with the child's own words — never the bare word form)
-  const a = asideReplyLine({ said, topic, lang, n, words, avoid, again: true });
-  if (a?.form === "again" && a.line && toldOk(a.line)) return a.line;
-  const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid }) : null;
-  if (["phrase", "again"].includes(p?.form) && p.line && toldOk(p.line)) return p.line;
-  const r = asideReplyLine({ said, topic, lang, n, words, avoid });
-  if (r?.form === "again" && r.line && toldOk(r.line)) return r.line;
-  return r?.form === "word" && r.line && toldOk(r.line) ? r.line : null;
+  const a = asideReplyLine({ said, topic, lang, n, words, avoid, recent, again: true });
+  if (a?.form === "again" && a.line && toldOk(a)) return a.line;
+  const p = clause ? asideReplyLine({ said: clause, topic, lang, n, words, avoid, recent }) : null;
+  if (["phrase", "again"].includes(p?.form) && p.line && toldOk(p)) return p.line;
+  const r = asideReplyLine({ said, topic, lang, n, words, avoid, recent });
+  if (r?.form === "again" && r.line && toldOk(r)) return r.line;
+  return r?.form === "word" && r.line && toldOk(r) ? r.line : null;
 }
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
@@ -2917,7 +2922,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       // (dc-r8-director27 P6.3: the child's answer is a line they already said in this lesson — the same aside again — Learning 016's againReplies)
       const kidSaid = (state.recent ?? []).filter((t) => t.who === "child").slice(0, -1).map((t) => String(t.text ?? "").replace(/\s+/g, " ").trim().toLowerCase());
       const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
-      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), again: againNow });
+      const pick = asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow });
       j2Line = pick.line ?? null;
       guard.j2 = { said: rr0.said, line: j2Line, form: pick.form };
       const k = (String(rr0.topic ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])[0];

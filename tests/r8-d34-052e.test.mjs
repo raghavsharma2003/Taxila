@@ -103,3 +103,77 @@ describe("B1: a remediation listed whole is said in one turn with its card", () 
     assert.equal(u.cap, REM_CARD_CAP); assert.ok(u.margin > 0);
   });
 });
+
+describe("B2: the closing question is graded like a card", () => {
+  const gradeOf = (t) => { const tb = fixture(t).teachback; return { key: String(tb.key), accept: tb.accept ?? [], wrongIfMis: tb.wrongIfMis ?? null, targets: tb.targets ?? null, prompt_hi: tb.prompt.hi, prompt_en: tb.prompt.en }; };
+  const read = async (t, text) => {
+    const { targetFor, classifyFast } = await import("../server/director/classify.js");
+    const s = { phase: "teachback", teachbackAsked: true, teachbackScript: true, teachbackGrade: gradeOf(t) };
+    const target = targetFor(s, { items: [], expectations: [], misconceptions: [] }, null);
+    assert.equal(target.mode, "item", "the cards' grader, not the teach-back's own reader");
+    return classifyFast({ target, childText: text, typed: true, lang: "hinglish" });
+  };
+  test("its key and its spoken fraction forms are right; another fraction is wrong", async () => {
+    assert.equal((await read("c5-maths-ch02-t03", "8/12")).result?.outcome, "correct");
+    assert.equal((await read("c5-maths-ch02-t03", "8 bata 12")).result?.outcome, "correct");
+    assert.equal((await read("c5-maths-ch02-t03", "6/12")).result?.outcome, "incorrect");
+  });
+  test("a denial or pata nahi is never correct", async () => {
+    for (const t of ["nahi, 8/12 nahi", "pata nahi"]) assert.notEqual((await read("c5-maths-ch02-t03", t)).result?.outcome ?? null, "correct", t);
+  });
+  test("its named wrong answer is read as the mix-up, listed", async () => {
+    const r = (await read("c5-maths-ch02-t02", "7/10")).result;
+    assert.equal(r?.outcome, "misconception");
+    assert.equal(r?.wrongListed, true);
+  });
+});
+describe("B2: after the closing question's named wrong answer, its own reason", () => {
+  test("pickHelp at the teach-back: the own reason first after the named answer; never before it", async () => {
+    const { pickHelp, TEACHBACK_PART } = await import("../server/director/help.js");
+    const script = fixture("c4-maths-ch05-t01");
+    assert.equal(script.teachback.whyAltAsHelp, true);
+    const d = pickHelp({ script, part: TEACHBACK_PART, request: "hint", said: [], last: { outcome: "misconception", misconceptionId: script.teachback.targets ?? null, wrongListed: true } });
+    assert.equal(d.rung?.field, "whyAltHelp");
+    const d0 = pickHelp({ script, part: TEACHBACK_PART, request: "hint", said: [], last: { outcome: "incorrect", wrongListed: false } });
+    assert.notEqual(d0.rung?.field, "whyAltHelp");
+  });
+});
+describe("B2: the wrap's closing question is not graded", () => {
+  test("targetFor: after a right answer or with the wrap's second turn due, the closing question's grader is off", async () => {
+    const { targetFor } = await import("../server/director/classify.js");
+    const kit = { items: [], expectations: [], misconceptions: [] };
+    const g = { key: "8/12", accept: [] };
+    for (const extra of [{ teachbackPassed: true }, { wrapTwo: { ack: null } }, { teachbackKeyed: true }])
+      assert.notEqual(targetFor({ phase: "teachback", teachbackAsked: true, teachbackGrade: g, ...extra }, kit, null).mode, "item", JSON.stringify(extra));
+  });
+});
+describe("B5: the goodbye reply reads what the child said", () => {
+  test("ackFits: a liking is not met with a form that only notes it; 'mushkil tha' is not thanked", async () => {
+    const { ackFits } = await import("../server/director/state.js");
+    assert.equal(ackFits("Hmm, theek hai, samajh gayi.", "maza aaya"), false);
+    assert.equal(ackFits("Achha, theek hai, maine sun liya.", "sawaal achhe the"), false);
+    assert.equal(ackFits("Achha, batane ke liye shukriya.", "maza aaya"), true);
+    assert.equal(ackFits("Achha, batane ke liye shukriya.", "thoda mushkil tha"), false);
+    assert.equal(ackFits("Hmm, theek hai, samajh gayi.", "thoda mushkil tha"), true);
+    assert.equal(ackFits("Hmm, theek hai, samajh gayi.", "pata nahi"), true);
+  });
+});
+describe("B5: aside replies of one frame are rotated", () => {
+  test("asideReplyLine: the frame her last aside reply was said in is not said next; another form of that shape is", async () => {
+    const { asideReplyLine, replyFrameOf } = await import("../server/brain/asideReplies.js");
+    const a = { said: "chauka", topic: "cricket", n: 3, words: ["chauka"], asked: "Usmein sabse mazedaar kya hai?", avoid: [{ k: "x" }] };
+    const prev = "Wah, batting! Toh yeh tumhe achhi lagti hai. Toh ab wahin se shuru karte hain.";
+    const f0 = replyFrameOf(prev);
+    assert.ok(f0);
+    const r = asideReplyLine({ ...a, recent: [prev] });
+    assert.ok(r.line && replyFrameOf(r.line) !== f0, r.line);
+    assert.ok(!/unke/.test(r.line), "never a people form about a game");
+    assert.equal(replyFrameOf(asideReplyLine(a).line), f0, "with no reply before it, as before");
+  });
+  test("againInHerWords: an again form of any wording is said only of what the child told before (toldOk by form type)", async () => {
+    const { againInHerWords } = await import("../server/brain/say.js");
+    const state = { recent: [{ who: "child", text: "kal maine football khela" }, { who: "teacher", text: "Achha." }, { who: "child", text: "mujhe cricket pasand hai" }], said: [] };
+    const line = againInHerWords("mujhe cricket pasand hai", "cricket", "hinglish", state);
+    assert.ok(!line || !/(?:do baar aa gayi|pehle bhi suna|yeh tumne bataya tha)/.test(line), String(line));
+  });
+});

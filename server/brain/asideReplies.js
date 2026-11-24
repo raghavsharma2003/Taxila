@@ -117,7 +117,7 @@ export function likeInChildsEnding(line, said) {
   return hit && line ? String(line).replace(/(?<![\p{L}])achha\s+lagta(?![\p{L}])/giu, hit[1]) : line;
 }
 export function asideReplyLine(args = {}) {
-  const r = asideReplyLine1(args);
+  const r = asideReplyLine2(args);
   return r?.line ? { ...r, line: likeInChildsEnding(r.line, args.said) } : r;
 }
 function asideReplyLine1(args = {}) {
@@ -132,7 +132,7 @@ function asideReplyLine1(args = {}) {
       // (no phrase of theirs: the word of theirs the word forms would say — "Haan, chauka, yeh tumne bataya tha.")
       ?? (ASKS_HER.test(String(args.said ?? "")) ? null : replyWordOf(args.words ?? [], args.said ?? ""));
     const forms = phrase ? (k?.againReplies ?? []) : [];
-    for (let t = 0; t < forms.length; t++) { const f = pickN(forms, (args.n ?? 0) + t); const line = f ? cap(fill(formOf(f, args.lang ?? "hinglish"), { phrase })) : null; if (line && fresh(line)) return { line, form: "again" }; }
+    for (let t = 0; t < forms.length; t++) { const f = pickN(forms, (args.n ?? 0) + t); if (f && args.avoidFrame && [f.hi, f.en].includes(args.avoidFrame)) continue; const line = f ? cap(fill(formOf(f, args.lang ?? "hinglish"), { phrase })) : null; if (line && fresh(line)) return { line, form: "again", phrase }; }
     return null;
   };
   if (args.again && !isSadAside(args.said) && !isSadAside(args.topic)) { const a = againLine(); if (a) return a; }
@@ -143,11 +143,31 @@ function asideReplyLine1(args = {}) {
   for (let t = 1; t <= 12; t++) { const r = asideReplyLine0({ ...args, skip: t }); if (r?.line && fresh(r.line)) return r; }
   return first;
 }
+function asideReplyLine2(args = {}) {
+  const last = lastFrameIn(args.recent ?? []);
+  const r = asideReplyLine1(args);
+  if (!last || !r?.line || r.form === "sad" || frameOfLine(r.line) !== last) return r;
+  // (the same frame as her last aside reply: the next form of that shape in another frame, else the next form she has not said in it)
+  const alt = asideReplyLine1({ ...args, avoidFrame: last });
+  return alt?.line && frameOfLine(alt.line) !== last ? alt : r;
+}
+// (to-brain 052 B5: aside replies of one frame are rotated across a lesson — the frame her last aside reply was said in is not said again next:
+// dry offtopic c4-ch05-t01 48 and 56 "Wah, batting! … achhi lagti hai." then "Wah, chauka! … achha lagta hai."; c5-t02 44, 50; c6 30, 40)
+const normK = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+const FRAME_RES = Object.values(KINDS).flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? [])]).flatMap((f) => [f?.hi, f?.en])
+  .filter((x) => typeof x === "string" && /\{(?:phrase|word)\}/.test(x))
+  .map((f) => ({ f, re: new RegExp(`(?:^| )${normK(f.replace(/\{(?:phrase|word)\}/g, " SLOTX ")).split("slotx").map((x) => esc(x.trim())).join(" ?(?:.{1,40}?) ?").replace(/achha\\s\+lagta/g, "(?:achha|achhi|achhe)\\s+(?:lagta|lagti|lagte)")}(?: |$)`, "u") }));
+/** The frame (the form as written, with its slot) a turn of hers says an aside reply in, or null. */
+export const replyFrameOf = (text) => { const k = normK(text); return k ? FRAME_RES.find((x) => x.re.test(k))?.f ?? null : null; };
+/** The frame of her last aside reply among her turns (their texts, oldest first), or null. */
+const lastFrameIn = (texts) => { for (let j = (texts ?? []).length - 1; j >= 0; j--) { const f = replyFrameOf(texts[j]); if (f) return f; } return null; };
+const frameOfLine = (line) => replyFrameOf(line);
 /** The shape of a phrase form: what it asks of the slot (a "last time", a liking, a favourite), else its own text. */
 const formShape = (f) => (/pichhli\s+baar|last\s+time|aisa\s+hua/i.test(f) ? "past" : /favou?rite/i.test(f) ? "fav" : /achha\s+lagta|like/i.test(f) ? "like" : f);
 /** The child's phrase from the last clause that names something ("fielding karna, catch pakadna" → "catch pakadna"), or null. */
 export const saidPhrase = (said) => String(said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? null;
-function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0 } = {}) {
+function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0, avoidFrame = null } = {}) {
+  const avoided = (f) => !!avoidFrame && !!f && [f.hi, f.en].includes(avoidFrame);
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
   // (phraseReplies[i] answers returns[i]: the return her line asked, the child's own phrase back)
@@ -175,6 +195,15 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
     const pool = [k, ...Object.values(KINDS).filter((x) => x !== k)].filter((x) => x?.phraseReplies?.length);
     for (const x of want ? pool : []) { const j = x.phraseReplies.findIndex((f) => want.test(formOf(f, lang).toLowerCase())); if (j >= 0) { kp = x; i = j; break; } }
   }
+  // (to-brain 052 B5: the form her last aside reply was said in — another kind's form of the same shape in its place)
+  if (i >= 0 && avoided(kp?.phraseReplies?.[i])) {
+    // (a liking said as "pasand" or "maza" is a liking too; the people kind's forms name "them" and are said only of people; "other"'s are
+    // the plainest, so they come first)
+    const shapeR = (f) => { const t = formOf(f, lang); return /achha\s+lagta|like|pasand|maza\s+aata/i.test(t) ? "like" : formShape(t); };
+    const shape = shapeR(kp.phraseReplies[i]);
+    const pool = [k, KINDS.other, ...Object.values(KINDS).filter((x) => x !== k && x !== KINDS.other && x !== KINDS.people)].filter((x, j, a) => x?.phraseReplies?.length && a.indexOf(x) === j);
+    for (const x of pool) { const j = x.phraseReplies.findIndex((f) => !avoided(f) && shapeR(f) === shape); if (j >= 0) { kp = x; i = j; break; } }
+  }
   const phrase = i >= 0 && kp?.phraseReplies?.[i] ? saidPhrase(said) ?? phraseOf(said) : null;
   // (skip: the forms after the first, in order — the phrase form's siblings of the same shape, then the word forms, then the plain ones)
   const sibs = phrase ? kp.phraseReplies.map((f, j) => ({ f, j })).filter(({ f, j }) => j !== i && formShape(formOf(f, lang)) === formShape(formOf(kp.phraseReplies[i], lang))).map(({ f }) => f) : [];
@@ -182,7 +211,7 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
   if (phrase && skip <= sibs.length) return { line: cap(fill(formOf(sibs[skip - 1], lang), { phrase })), form: "phrase" };
   const s1 = phrase ? skip - sibs.length - 1 : skip;
   const word = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
-  if (word && s1 < (k?.replies?.length ?? 0)) { const f = pickN(k?.replies, n + Math.max(0, s1)); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
+  if (word && s1 < (k?.replies?.length ?? 0)) { let f = pickN(k?.replies, n + Math.max(0, s1)); if (avoided(f)) f = pickN(k?.replies, n + Math.max(0, s1) + 1); if (f) return { line: cap(fill(formOf(f, lang), { word })), form: "word" }; }
   const p = pickN(k?.plain, n + Math.max(0, s1 - (word ? k?.replies?.length ?? 0 : 0)));
   return { line: p ? formOf(p, lang) : null, form: "plain" };
 }

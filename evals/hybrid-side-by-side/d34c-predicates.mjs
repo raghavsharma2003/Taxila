@@ -6,6 +6,7 @@
 //   remCardLong B1 re-reads d29's T2 predicate (left as it is): a remediation the checker lists in REM_WHOLE is said with its card up to 65
 //               words of the two — its own lines and the card, as the checker counts them; the verdict and the joint before it are not
 //               counted. Every other remediation is T2's: over 60 words of the turn.
+import { readFileSync } from "node:fs";
 import { HELP_PREDICATES, helpTurnOf, ownReasonDue } from "./help-predicates.mjs";
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 import { REM_WHOLE } from "../../scripts/lesson-scripts/check.mjs";
@@ -19,6 +20,15 @@ const wordsOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(" ").fi
 const sentsOf = (v) => (typeof v === "string" ? [v] : [v?.hi, v?.en]).filter(Boolean).flatMap(sentencesOf).map(normSentence).filter(Boolean);
 /** Every normalised sentence of her turns before row i. */
 const saidBefore = (L, i) => L.rows.slice(0, i).filter((x) => x.who === "teacher").flatMap((x) => sentencesOf(x.text).map(normSentence));
+
+// (B5: every aside reply frame, both languages, as a pattern with its slot: a frame is the form as written)
+const ASIDE = JSON.parse(readFileSync(new URL("../../data/lesson-aside-replies.json", import.meta.url), "utf8"));
+const escRe = (t) => String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const FRAMES = Object.values(ASIDE.kinds ?? {}).flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? [])])
+  .flatMap((f) => [f?.hi, f?.en]).filter((x) => typeof x === "string" && /\{(?:phrase|word)\}/.test(x))
+  .map((f) => ({ f, re: new RegExp(`(?:^|[.!?]\\s+)${escRe(f).replace(/\\\{(?:phrase|word)\\\}/g, "(.{1,40}?)").replace(/achha(\\s\+|\s+)lagta/gi, "(?:achha$1lagta|achhi$1lagti|achhe$1lagte)")}(?=\\s|$)`, "iu") }));
+/** The aside reply frame a row says, or null. */
+export const asideFrameOf = (r) => FRAMES.find((x) => x.re.test(String(r?.text ?? "").replace(/\s+/g, " ").trim()))?.f ?? null;
 
 export const D34C_PREDICATES = {
   /** A1 (gated, as H4 was). */
@@ -39,6 +49,14 @@ export const D34C_PREDICATES = {
     if (!waSaid && !has(wa, T) && has(simp, T)) return `whyAlt unsaid on ${h.part}, simpler said instead (the own reason first after the named answer)`;
     if (f && /^(?:ask\.)?simpler unsaid on .*, whyAlt said instead$/.test(f) && !waSaid && has(wa, T)) return null;
     return f;
+  },
+  /** B5 (gated): an aside reply said in the frame of her aside reply before it — the same form, another word of the child's. */
+  asideFrameTwice(L, r, i) {
+    if (r.who !== "teacher") return null;
+    const f = asideFrameOf(r);
+    if (!f) return null;
+    const prev = L.rows.slice(0, i).reverse().find((x) => x.who === "teacher" && asideFrameOf(x));
+    return prev && asideFrameOf(prev) === f ? `the aside reply frame "${f}" twice running` : null;
   },
   /** B1 (gated, as T2 was). */
   remCardLong(L, r, i, ctx) {
