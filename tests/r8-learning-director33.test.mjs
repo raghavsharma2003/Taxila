@@ -14,6 +14,9 @@ const LIVE = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5
 const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const load = (d, t) => JSON.parse(readFileSync(new URL(`../data/${d}/${t}.json`, import.meta.url), "utf8"));
 const S = Object.fromEntries([...LIVE.map((t) => [t, load("lesson-scripts", t)]), ...STAGED.map((t) => [t, load("lesson-scripts-staged", t)])]);
+// d34: the scripts were fixed after director33; the fault cases read the FROZEN scripts as judged (J), the d34 cases read data/ (S).
+const FROZEN = "../tests/fixtures/eval-results/hybrid-side-by-side/results/2026-11-23-director33/scripts";
+const J = Object.fromEntries([...LIVE, ...STAGED].map((t) => [t, JSON.parse(readFileSync(new URL(`${FROZEN}/${t}.json`, import.meta.url), "utf8"))]));
 const ats = (xs) => xs.map((x) => x.at);
 /** A one-skill fragment; `card` overrides the first explain card, `skill` the skill, `top` the script. */
 const frag = ({ card = {}, skill = {}, top = {} } = {}) => ({
@@ -46,11 +49,11 @@ test("022 rule 1: a card posed over a \"?\" with no answerBoard is a hit; with o
 });
 
 test("022 rule 1, real scripts: c4-maths-ch06-t01's eight judged cards (and its s3 asked step), c6-maths-ch07-t03's three, none live", () => {
-  const c4 = ats(qBoardCards(S["c4-maths-ch06-t01"])).map((x) => x.replace("c4-maths-ch06-t01-", ""));
+  const c4 = ats(qBoardCards(J["c4-maths-ch06-t01"])).map((x) => x.replace("c4-maths-ch06-t01-", ""));
   for (const x of ["s2/e2", "s2/c2", "s2/remediation[0].then", "s3/e3", "s3/c1", "s3/c2", "s3/c3", "s3/remediation[0].then"]) assert.ok(c4.includes(x), x);
   assert.deepEqual(c4.filter((x) => !/^s2\/(?:e2|c2|remediation\[0\]\.then)$|^s3\/(?:e3|c1|c2|c3|remediation\[0\]\.then)$/.test(x)), ["s3/workedExample.steps[0].ask"]);
-  assert.deepEqual(ats(qBoardCards(S["c6-maths-ch07-t03"])).map((x) => x.replace("c6-maths-ch07-t03-", "")).sort(), ["s1/c2", "s2/c2", "s2/e2"]);
-  for (const t of [...LIVE, "c4-maths-ch01-t02"]) assert.deepEqual(qBoardCards(S[t]), [], t);
+  assert.deepEqual(ats(qBoardCards(J["c6-maths-ch07-t03"])).map((x) => x.replace("c6-maths-ch07-t03-", "")).sort(), ["s1/c2", "s2/c2", "s2/e2"]);
+  for (const t of [...LIVE, "c4-maths-ch01-t02"]) assert.deepEqual(qBoardCards(J[t]), [], t);
 });
 
 // ---- 2 a step's count over the board it is said over
@@ -82,7 +85,7 @@ test("022 rule 2: a resultBoard is a board like any other: it is gated (beatsOf 
 });
 
 test("022 rule 2, real script: c5-maths-ch02-t01 s1's \"4 gap\" over den 2 and s2's gaps over den 1", () => {
-  const h = stepCountHits(S["c5-maths-ch02-t01"]).filter((x) => !x.field.includes("(en)")).map((x) => `${x.at.replace("c5-maths-ch02-t01-", "")} ${x.field}`);
+  const h = stepCountHits(J["c5-maths-ch02-t01"]).filter((x) => !x.field.includes("(en)")).map((x) => `${x.at.replace("c5-maths-ch02-t01-", "")} ${x.field}`);
   assert.deepEqual(h, ["s1/workedExample.steps[0] told", "s1/workedExample.steps[0] ask.right", "s2/workedExample.steps[0] told", "s2/workedExample.steps[0] ask.right", "s2/workedExample.steps[1] told"]);
 });
 
@@ -111,11 +114,11 @@ test("022 rule 3: not a comparison of two named fractions: a share between two, 
 });
 
 test("022 rule 3, real script: c6-maths-ch07-t03 s2 e3's point is false (C line), and the nine have no other false comparison", () => {
-  const c = comparisonLines(S["c6-maths-ch07-t03"]);
+  const c = comparisonLines(J["c6-maths-ch07-t03"]);
   assert.ok(c.includes("C c6-maths-ch07-t03-s2/explain[2].point [2/4 < 1/3: FALSE]: Pattiyon par 2/4 ka rang 1/3 ke rang jitna nahi hai, toh yahan bhinn badal gaya."), c.join("\n"));
-  const all = Object.values(S).flatMap((s) => fractionComparisons(s).filter((x) => x.value === false).map((x) => x.at));
+  const all = Object.values(J).flatMap((s) => fractionComparisons(s).filter((x) => x.value === false).map((x) => x.at));
   assert.deepEqual(all, ["c6-maths-ch07-t03-s2/explain[2].point", "c6-maths-ch07-t03-s2/explain[2].simpler"]);
-  assert.ok(Object.values(S).flatMap(comparisonLines).length >= 60, "every comparison is listed");
+  assert.ok(Object.values(J).flatMap(comparisonLines).length >= 60, "every comparison is listed");
 });
 
 // ---- 4 whyAltAsHelp needs wrongIfMis
@@ -128,7 +131,7 @@ test("022 rule 4: a marked card with no wrongIfMis is a hit; with one (string or
 });
 
 test("022 rule 4, real scripts: the cards director33 named", () => {
-  const h = (t) => ats(markedNoWrong(S[t])).map((x) => x.replace(`${t}-`, ""));
+  const h = (t) => ats(markedNoWrong(J[t])).map((x) => x.replace(`${t}-`, ""));
   for (const x of ["s1/e1", "s1/e2", "s1/e3", "s2/e1"]) assert.ok(h("c5-maths-ch02-t03").includes(x), `c5-t03 ${x}`);
   assert.ok(h("c6-maths-ch07-t01").includes("s1/e1"));
   assert.ok(h("c4-maths-ch01-t02").includes("s1/e1"));
@@ -145,7 +148,7 @@ test("022 rule 5: a named thing with another number in the next part is a G line
 });
 
 test("022 rule 5, real script: c4-maths-ch06-t01's Golu scale, 4 in the s1 e3 point and 3 in the s1 worked problem", () => {
-  const g = givenChangeLines(S["c4-maths-ch06-t01"]);
+  const g = givenChangeLines(J["c4-maths-ch06-t01"]);
   assert.ok(g.some((x) => x.startsWith("G c4-maths-ch06-t01-s1/e3.point → c4-maths-ch06-t01-s1/workedExample.problem (consecutive parts): \"Golu ka scale\" 4 then 3")), g.join("\n"));
 });
 
@@ -161,7 +164,7 @@ test("022 rule 6: a name on three cards of one skill is an N line; on two it is 
 });
 
 test("022 rule 6, real script: c4-maths-ch01-t02 skill 3's {friend} on three cards", () => {
-  assert.ok(nameLines(S["c4-maths-ch01-t02"]).some((x) => x.startsWith("N c4-maths-ch01-t02-s3: \"{friend}\" on 3 cards of one skill")));
+  assert.ok(nameLines(J["c4-maths-ch01-t02"]).some((x) => x.startsWith("N c4-maths-ch01-t02-s3: \"{friend}\" on 3 cards of one skill")));
 });
 
 // ---- 7 joints.easierWords
@@ -183,13 +186,13 @@ test("022 rule 7: three forms of 8 words or fewer, no \"Hindi\", no question, no
 // ---- the gate: D34_READY empty, nothing new is an error off it; on it (or --d34), 1-4 and 7 are errors and 5, 6 are lines
 test("022: D34_READY starts empty and the nine scripts carry no d34 error off it; forced, rules 1-4 and 7 are errors", () => {
   assert.deepEqual(D34_READY, []);
-  for (const s of Object.values(S)) { assert.equal(isD34(s), false, s.topicId); assert.deepEqual(d34Errors(s), [], s.topicId); }
-  const e = (t) => d34Errors(S[t], { force: true });
+  for (const s of Object.values(J)) { assert.equal(isD34(s), false, s.topicId); assert.deepEqual(d34Errors(s), [], s.topicId); }
+  const e = (t) => d34Errors(J[t], { force: true });
   assert.ok(e("c4-maths-ch06-t01").some((x) => /^c4-maths-ch06-t01-s2\/e2: posed over a board that draws "\?".*Learning 022 rule 1/.test(x)));
   assert.ok(e("c5-maths-ch02-t01").some((x) => /^c5-maths-ch02-t01-s1\/workedExample\.steps\[0\]\.ask\.right: "4 gap".*Learning 022 rule 2/.test(x)));
   assert.ok(e("c6-maths-ch07-t03").some((x) => /^c6-maths-ch07-t03-s2\/explain\[2\]\.point: .*2\/4 < 1\/3, which is false \(Learning 022 rule 3\)/.test(x)));
   assert.ok(e("c5-maths-ch02-t03").some((x) => /^c5-maths-ch02-t03-s1\/e1: marked whyAltAsHelp with no wrongIfMis.*rule 4/.test(x)));
-  for (const t of Object.keys(S)) assert.ok(e(t).some((x) => x.startsWith("joints.easierWords: 3 forms")), t);
+  for (const t of Object.keys(J)) assert.ok(e(t).some((x) => x.startsWith("joints.easierWords: 3 forms")), t);
   assert.ok(!e("c4-maths-ch06-t01").some((x) => /^G |Golu/.test(x)), "rule 5 is a line, never an error");
-  assert.ok(d34ReportLines(S["c4-maths-ch06-t01"]).some((x) => x.startsWith("G ")));
+  assert.ok(d34ReportLines(J["c4-maths-ch06-t01"]).some((x) => x.startsWith("G ")));
 });
