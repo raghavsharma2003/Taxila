@@ -61,7 +61,20 @@ test("R1 skillRemediation: a mix-up met again in a later skill gets that skill's
 });
 
 test("A4 asideReplied: an aside said again, or the child's answer about it, is replied to in a phrase of theirs — not 'Achha.' nor 'Oh, chauka. Achha.'", () => {
-  readsOn("asideReplied", [["c4", "offtopic", 20], ["c4", "offtopic", 32], ["c6", "stuck", 54], ["c5-t02", "steady", 42], ["c5-t02", "offtopic", 40]]);
+  readsOn("asideReplied", [["c4", "offtopic", 20], ["c4", "offtopic", 32]]);
+  // (re-pinned, to-brain 052 close: the word forms are Learning's library, rewritten in data/lesson-aside-replies.json (e12517b3f);
+  // director26's three word-form rows say the old forms ("Oh, chauka. Achha."), so each is read with its old reply put back as a word form
+  // of today's file, the same word in its slot — and, the other half of A4, as a phrase form of the file it is not flagged)
+  const sport = JSON.parse(readFileSync(join(ROOT, "data/lesson-aside-replies.json"), "utf8")).kinds.sport;
+  const OLD = /^(?:Oh|Achha), (\p{L}+)[.!] (?:Achha|Theek hai)\. /u;
+  for (const [topic, child, row] of [["c6", "stuck", 54], ["c5-t02", "steady", 42], ["c5-t02", "offtopic", 40]]) {
+    const L = lessonOf("d26", topic, child), m = OLD.exec(L.rows[row].text);
+    assert.ok(m, `${topic} ${child} ${row}: director26's word form`);
+    const as = (form) => { const rows = L.rows.slice(); rows[row] = { ...rows[row], text: `${form} ${rows[row].text.slice(m[0].length)}` };
+      return lessonFlags({ rows, script: L.script }).some((f) => f.predicate === "asideReplied" && f.row === row); };
+    for (const f of sport.replies) assert.ok(as(f.hi.replace("{word}", m[1])), `${topic} ${child} ${row}: the word form "${f.hi}" is flagged`);
+    assert.ok(!as(sport.phraseReplies[0].hi.replace("{phrase}", m[1])), `${topic} ${child} ${row}: a phrase form is not`);
+  }
 });
 test("W1 closingWhy: the closing verdict says its why", () => {
   readsOn("closingWhy", [["c4", "steady", 128], ["c5-t01", "steady", 130]]);

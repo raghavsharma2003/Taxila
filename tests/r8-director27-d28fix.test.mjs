@@ -7,6 +7,7 @@
 //      when the lesson runs to its own end with a park never returned, and when the return was due before the child ended.
 import { test, describe, beforeEach, afterEach } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { initLessonState, step } from "../server/director/state.js";
 import { setScriptForTest } from "../server/director/script.js";
 import { findItem } from "../server/director/items.js";
@@ -28,7 +29,10 @@ const BRIEF = { firstName: "Riya", classLevel: 4, ageBand: "10-15", languagePref
 const RETURN_Q = "Cricket ki baari aa gayi: uske baare mein thoda aur batao na?";
 const SAID = "batting sabse achhi lagti hai";
 // (re-pinned, to-brain 049 B6: the reply takes the child's own ending — "achhi lagti" said, "achhi lagti" heard)
-const REPLY = /^Achha, toh tumhe batting sabse achhi lagti hai\./;
+// (re-pinned, to-brain 052 close: Learning rewrote the sport kind's phrase replies in data/lesson-aside-replies.json (e12517b3f), and 052
+// B5 rotates them: the reply is one of the file's phraseReplies frames, opening on the child's phrase and keeping 049 B6's ending — read from the file, not pasted)
+const REPLY = new RegExp(`^(?:${JSON.parse(readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).kinds.sport.phraseReplies
+  .map((f) => f.hi.split("{phrase}")[0].replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})batting\\b.*achhi lagti`);
 
 /** c4 walked on today's script with right answers until the walk says the skill's bridge first (state.js sayFirst). */
 function atBridge() {
