@@ -118,7 +118,7 @@
       "do": { "hi": "Pehle kyari ke poore kinaare ki lambai chahiye", "en": "First we need the length of the bed's whole edge" },
       "result": "kyari ka parimap, teeno bhujaon ka jod",
       "why": { "hi": "baad kinaare par hi lagti hai", "en": "the fence goes only along the edge" },
-      "simpler": { "hi": "Socho, tumhare paas 35 rupaye hain aur tum ek kitaab khareedte ho. Kitne bachenge, yeh kitaab ka daam jaane bina pata nahi chalta; maali ki baad mein bhi aisa hi kuch pehle jaanna hoga.", "en": "Say you have 35 rupees and buy a book. You can't tell what's left without the book's price; the gardener's fence also has something like that to know first." }
+      "simpler": { "hi": "Socho, jeb mein 35 rupaye hain aur ek kitaab khareedni hai: kitne bachenge, yeh kitaab ka daam jaane bina pata nahi chalta. Yahan kitaab ki jagah kyari hai.", "en": "Say you have 35 rupees in your pocket and want to buy a book: you can't tell what's left without the book's price. Here the flower bed is the book." }
      },
      {
       "do": { "hi": "Phir parimap ko 35 m mein se ghatana", "en": "Then take the perimeter from 35 m" },
@@ -192,8 +192,8 @@
     },
     {
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
-     "move": "thread vs tiles, spoken over the then-card's own board (a 14 cm by 9 cm sticker) and naming none of its numbers: thread laid along the edge, then straightened against a ruler = perimeter (cm); tiles laid inside = area; a perimeter question → thread, so add the side lengths (equal sides may be added quickly as side × how many), never length × breadth; the then-card asks what is left of a 150 cm ribbon",
-     "say": { "hi": "Socho, rectangle ke kinaare-kinaare lipta dhaaga khol ke seedha rakha: woh parimap hai. Lambai guna chaudai andar ke 1 cm square ginta hai, dhaaga nahi. Bhujayein jodo.", "en": "Picture a thread wound all along the rectangle's edge, unwound and laid straight: that is the perimeter. Length times breadth counts the 1 cm squares inside, not the thread. Add the sides." },
+     "move": "two numbers vs four sides, naming none of the then-card's numbers (the point before it already used a thread): the edge has four sides and the perimeter adds all four; length × breadth takes only two numbers and gives the little squares inside; the then-card asks what is left of a 150 cm ribbon",
+     "say": { "hi": "Kinaare par chaar bhujayein hain, aur parimap chaaron ka jod hai. Guna mein sirf do number aate hain, lambai aur chaudai; woh andar ke chhote square ginta hai.", "en": "The edge has four sides, and the perimeter is the sum of all four. A multiplication takes only two numbers, length and breadth; it counts the little squares inside." },
      "simpler": { "hi": "Dhaaga kinaare par, chhote square andar. Humein dhaaga chahiye, toh chaaron bhujayein jodo.", "en": "Thread on the edge, little squares inside. We want the thread, so add the four sides." }, "sayAlt": { "hi": "Is rectangle ko ek chhota aangan socho: deewar kinaare par chalti hai, aur andar farsh hai. Deewar ki lambai bhujaon se banti hai; lambai aur chaudai ka guna farsh par bichhe 1 m wale square ginta hai.", "en": "Think of this rectangle as a small courtyard: the wall runs along the edge, and inside is the floor. The wall's length is made of the sides; length times breadth counts the 1 m squares laid on the floor." }, 
      
      "then": {
@@ -205,7 +205,7 @@
       "board": { "template": "measured@1", "params": {"shape": "rect", "unit": "cm", "w": 14, "h": 9} }, "viewCaption": { "hi": "Sticker ka kinaara line par khula hai: 14 cm, 9 cm, 14 cm, 9 cm. Ribbon isi line ke barabar lagega.", "en": "The sticker's edge is opened out on the line: 14 cm, 9 cm, 14 cm, 9 cm. The ribbon that goes on is as long as this line." },
       "why": { "hi": "kinaare par 14 + 9 + 14 + 9 = 46 cm lagega, toh 150 − 46 = 104 cm bachega", "en": "the edge takes 14 + 9 + 14 + 9 = 46 cm, so 150 − 46 = 104 cm is left" }, "whyShort": { "hi": "kinaare par 46 cm, toh 150 − 46 = 104 cm", "en": "the edge takes 46 cm, so 150 − 46 = 104 cm" }, "whyAlt": { "hi": "24 cm tab bachta hai jab 150 mein se 14 × 9 ghatao; par ribbon sticker ke upar nahi bichhta, sirf kinaare par lagta hai: 14 wali bhuja do baar, 9 wali bhi do baar.", "en": "24 cm is what is left when you take 14 × 9 from 150; but the ribbon is not spread over the sticker, it goes only along the edge: the 14 side twice, the 9 side twice too." }, "wrongAnswers": [{"answer": "46 cm", "accept": ["46"], "why": {"hi": "Itna ribbon toh sticker ke kinaare par lag jaayega; sawaal yeh hai ki 150 cm mein se kitna bachega.", "en": "That much ribbon goes on the sticker's edge; the question is how much of the 150 cm is left over."}}, {"answer": "127 cm", "accept": ["127"], "why": {"hi": "Ismein lambi aur chhoti bhuja ek-ek baar hi ghati; ribbon 14 wali do aur 9 wali do bhujaon par lagta hai.", "en": "Here the long and the short side came off only once each; the ribbon goes on two 14 sides and two 9 sides."}}], "whyAltAsHelp": true,
       "answerBoard": { "template": "shape@1", "params": {"shape": "rectangle", "name": "150 − 46 = 104 cm"} },
-      "simpler": { "hi": "Ribbon andar nahi jaata. Pehle dekho kinaare par kitna lagega, phir use 150 mein se ghatao.", "en": "The ribbon does not go inside. First find how much the edge takes, then take that from 150." }
+      "simpler": { "hi": "Sticker ke kinaare par ungli ek chakkar ghumao aur har bhuja ka naap jodo. Utna ribbon lagega; baaki 150 mein se bachega.", "en": "Take your finger once round the sticker's edge and add each side's length. That much ribbon goes on; the rest of the 150 is left." }
      }
     }
    ],
@@ -391,8 +391,8 @@
     },
     {
      "targets": "c6-maths-ch06-t01-m-area-perimeter",
-     "move": "thread vs little squares, naming none of the then-card's numbers: a thread is measured on a ruler (the edge); little 1 cm squares inside are counted (area); an edge question → add the sides; then the then-card's bookmark",
-     "say": { "hi": "Kinaare par dhaaga lapeto aur scale par naapo: woh parimap hai. Andar ke 1 cm wale square gino: woh area hai. Parimap ke liye bhujayein jodo.", "en": "Wind a thread round the edge and measure it on a ruler: that is the perimeter. Count the 1 cm squares inside: that is the area. For the perimeter, add the sides." },
+     "move": "a pen drawing a border, naming none of the then-card's numbers (the thread, the cover and the finger are said around it): the pen's path round a card is the perimeter, the four sides added; two sides multiplied give the little squares inside; then the then-card's bookmark",
+     "say": { "hi": "Socho, card ke chaaron taraf pen se border kheenchte ho. Pen jitna chala, wahi parimap hai: chaaron bhujaon ka jod. Do bhujaon ka guna andar ke chhote square ginta hai.", "en": "Say you draw a border round a card with a pen. However far the pen went, that is the perimeter: the four sides added. Two sides multiplied count the little squares inside." },
      "simpler": { "hi": "Kinaara rassi jaisa hai aur andar ki jagah chatai jaisi. Rassi centimetre mein naapte hain, chatai square centimetre mein.", "en": "The edge is like a rope and the space inside like a mat. A rope is measured in centimetres, a mat in square centimetres." }, "sayAlt": { "hi": "Graph paper par bana ek rectangle socho: uske kinaare ki line scale se centimetre mein naapte hain, aur andar ke 1 cm wale chhote square gine jaate hain. Line ki lambai bhujaon se banti hai; lambai aur chaudai ka guna andar ke 1 cm wale square ginta hai.", "en": "Think of a rectangle drawn on graph paper: the line round its edge is measured with a ruler in centimetres, and the little 1 cm squares inside are counted. The line's length is made of the sides; length times breadth counts the 1 cm squares inside." }, 
      
      "then": {
