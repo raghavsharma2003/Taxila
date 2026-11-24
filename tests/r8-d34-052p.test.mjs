@@ -102,3 +102,39 @@ test("B3: the checker notes (F) every asked worked step carrying a whyAlt, and i
   for (const k of bare.skills) for (const x of k.workedExample?.steps ?? []) if (x.ask) delete x.ask.whyAlt;
   assert.deepEqual(stepWhyAltLines(bare), []);
 });
+
+// ── B5: a bare "bilkul" is a yes; N/D at a "kitne hisse" card is not wrong in code ──
+const gradeOf = async (item, say) => {
+  const { classifyFast } = await import("../server/director/classify.js");
+  const r = classifyFast({ target: { mode: "item", item, key: item.answer, also: item.acceptable || [] }, childText: say, typed: false, asrConfidence: 0.95 });
+  return r?.result?.outcome ?? "model";
+};
+const probe = (key, prompt) => ({ id: "probe", skillId: "s", kind: "practice", prompt_hi: prompt, prompt_en: prompt, answer: key, acceptable: [], scriptCheck: { wrongIfMis: null, targets: null } });
+
+test("B5: a bare \"bilkul\" is a yes at a yes / no card, and a no is still a no", async () => {
+  const YN = "Ek chhota tukda pizza ka ek-tihaai hai, haan ya nahi?";
+  for (const s of ["bilkul", "Bilkul!", "bilkul ji", "बिल्कुल"]) {
+    assert.equal(await gradeOf(probe("Yes", YN), s), "correct", s);
+    assert.equal(await gradeOf(probe("No", YN), s), "incorrect", s);
+  }
+  assert.equal(await gradeOf(probe("No", YN), "bilkul nahi"), "correct");
+  assert.equal(await gradeOf(probe("Yes", YN), "bilkul nahi"), "incorrect");
+  // (at a number card it is an acknowledgement, not a wrong answer: the model's, as "haan" is)
+  assert.equal(await gradeOf(probe("4", "Kitne?"), "bilkul"), "model");
+  assert.equal(await gradeOf(probe("4", "Kitne?"), "haan"), "model");
+});
+
+test("B5: at c5-maths-ch02-t03's \"kitne hisse\" cards, N/D over the board's parts is never incorrect from the script grade", async () => {
+  const { scriptAskItem } = await import("../server/director/script.js");
+  const s = live("c5-maths-ch02-t03");
+  const item = (sk, id) => { const k = s.skills.find((x) => x.skillId === `c5-maths-ch02-t03-${sk}`); const b = k.explain.find((x) => x.id === id); return scriptAskItem(k.skillId, b.id, b.ask); };
+  for (const [sk, id, nd, wrong] of [["s1", "e1", "5/10", ["3", "5/12", "2/10", "1/2"]], ["s1", "e2", "6/12", ["4", "6/10"]], ["s2", "e1", "4/10", ["3", "4/5"]]]) {
+    const it = item(sk, id);
+    assert.notEqual(await gradeOf(it, nd), "incorrect", `${sk} ${id} ${nd}`);
+    for (const f of [it.answer, ...it.acceptable]) assert.equal(await gradeOf(it, f), "correct", `${sk} ${id} form ${f}`);
+    // (a plain wrong number, and a fraction over another strip or of another count, grade as before)
+    for (const w of wrong) assert.equal(await gradeOf(it, w), "incorrect", `${sk} ${id} ${w}`);
+    for (const w of [it.scriptAsk.wrongIfMis].flat().filter(Boolean)) assert.equal(await gradeOf(it, w), "misconception", `${sk} ${id} named ${w}`);
+  }
+  assert.equal(await gradeOf(item("s1", "e2"), "6/12"), "model");
+});

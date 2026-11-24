@@ -618,6 +618,26 @@ const STRAY_SHARE = 0.25;
 const letterWords = (t) => String(t).split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
 
 /** dc-r7-script-walk-v3 K2: script cards graded in code (TAXILA_R7_SCRIPT_GRADE=off: the model as before). */
+/** to-brain 052 B5: a "kitne hisse" card (its prompt asks how many parts) keyed by a whole number N, and a reply that is one fraction N/D
+ *  where D is the parts of the finest strip the card's board (or its answer board) draws. */
+const KITNE_HISSE = /(?<![\p{L}])kitne\s+(?:\p{L}+\s+){0,2}hiss/iu;
+function partsAsFraction(target, sg, R) {
+  if (!KITNE_HISSE.test(String(target.item?.prompt_hi ?? ""))) return false;
+  const k = numberOf(canon(target.key)), r = R.nums.length === 1 && !R.neg && !R.ops ? R.nums[0] : null;
+  if (!k || !/^#\d+$/.test(k) || !r || !/^#\d+\/\d+$/.test(r)) return false;
+  const [n, d] = r.slice(1).split("/").map(Number);
+  if (n !== Number(k.slice(1))) return false;
+  const parts = new Set();
+  for (const b of [target.item?.board, sg?.board, sg?.answerBoard, target.item?.answerBoard]) {
+    const p = b?.params ?? {};
+    for (const x of Array.isArray(p.bars) ? p.bars : []) if (Number.isInteger(x?.parts)) parts.add(x.parts);
+    if (Number.isInteger(p.parts)) parts.add(p.parts);
+  }
+  // (the strip the parts are counted in: the finest the board draws — "4/5" at c5-t03 s2 e1, whose coarse strip is 2/5, stays wrong)
+  return parts.size > 0 && d === Math.max(...parts);
+}
+/** to-brain 052 B5: a bare "bilkul" (Latin or Devanagari, "ji" after it at most) is a yes. */
+const BARE_YES = /^[\s.!,]*(?:bilkul|bilkool|बिल्कुल|बिलकुल)(?:\s+(?:ji|जी))?[\s.!,]*$/iu;
 export const scriptGradeOn = (env = process.env) => !/^(off|0|false)$/i.test(String(env.TAXILA_R7_SCRIPT_GRADE ?? ""));
 export function classifyFast({ target, childText, asrConfidence, typed, chipId, moduleAnswer, heard, lang, _stray = false }) {
   const text = String(childText || "").trim();
@@ -799,7 +819,10 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
     // Hindi, Devanagari and English words, the equal words and fillers of both scripts on one footing (v4 W4's sameWords),
     // a sum as an expression, a denial where it stands, a list of values in its order (G7). Whatever the code cannot tell
     // goes to the model, never to `correct`.
-    const R = canon(text);
+    // (to-brain 052 B5: a bare "bilkul" is a yes — read as "haan" by the yes / no reader below and the acknowledgement test; canon drops it
+    // as a filler, and an empty reply fell to "incorrect" at every short card)
+    const yesSaid = BARE_YES.test(text) ? "haan" : text;
+    const R = canon(yesSaid);
     const prompts = [target.item?.prompt_hi, target.item?.prompt_en].filter(Boolean);
     const prompt = lang === "english" ? target.item?.prompt_en : target.item?.prompt_hi ?? target.item?.prompt_en;
     const forms = [target.key, ...(target.also || [])].filter((k) => k != null && String(k).trim());
@@ -858,6 +881,9 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       if (R0.seq.length && F.some((cs) => cs.some((c) => !c.neg && sameAnswer(c, R0)))) return toModel("denial");
     }
     if (F.some((cs) => cs.some((c) => sameAnswer(c, R)))) return done("correct", "script_key");
+    // (to-brain 052 B5: at a "kitne hisse" card keyed by a number N, "N/D" where D is a count of parts the card's board draws counts the parts
+    // as a fraction of that strip — not wrong in code; the model reads it, as an unlisted form: c5-t03 s1 e1 "5/10", s1 e2 "6/12", s2 e1 "4/10")
+    if (partsAsFraction(target, sg, R)) return toModel("parts_fraction");
     const keyC = canon(target.key);
     const fracs = R.nums.filter((x) => x.includes("/"));
     // (Learning, staged batch: "Zyada kisne khaya: Gopi ne ya Anjali ne?" is keyed by the name; a child who answers with the
@@ -986,7 +1012,7 @@ export function classifyFast({ target, childText, asrConfidence, typed, chipId, 
       if (one != null && numberOf(keyC) != null && !risky) return done("incorrect", "script_key");
       if (!(yesNoKey && yn(R))) return toModel("devanagari");
     }
-    const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(text);
+    const ack = /^(?:(?:haan+|han|ha+|ji|ok(?:ay)?|achha|acha|accha|theek|thik|hai|hmm+|yes|no|nahi|nahin|sure|chalo|samajh|gaya|gayi|aa|gya)[\s.!,]*)+$/i.test(yesSaid);
     if ((R.nums.length === 1 || text.split(/\s+/).length <= 3) && !(ack && !yesNoKey) && !flags.minimal) {
       // to-brain 050 W1: at a card whose key is words (not a number, not a yes / no), code says wrong only for a reason it can name —
       // the listed wrong answer or the same answer as one, an option of the prompt that is not the right one, a right form said with
