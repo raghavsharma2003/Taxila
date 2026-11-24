@@ -790,7 +790,9 @@ export function v22Errors(s) {
     const shown = [...k.explain.filter((b) => b.ask?.answerBoard).map((b) => [`${b.id}.ask`, b.ask, b.ask.board ?? b.board]),
       ...k.checks.map((c, i) => [`checks[${i}]`, c, c.board]).filter(([, c]) => c.answerBoard),
       ...k.remediation.map((r, i) => [`remediation[${i}].then`, r.then, r.then?.board]).filter(([, c]) => c?.answerBoard),
-      ...(we.yourStep?.answerBoard ? [["workedExample.yourStep", we.yourStep, we.yourStep.board ?? we.board]] : [])];
+      // (main on d35: an own step with NO board of its own is posed on the worked board or the last step's resultBoard; its answerBoard
+      // may be any figure — forcing the posed one gave the step away. Rule 1 reads its why, whyShort and the close over that answerBoard)
+      ...(we.yourStep?.answerBoard && we.yourStep.board ? [["workedExample.yourStep", we.yourStep, we.yourStep.board]] : [])];
     for (const [where, c, board] of shown) {
       if (["compare@1", "angle@1", "number-line-hop@1", "place-value@1"].includes(board?.template) && board?.params?.mark !== undefined) e.push(at(`${where}: its posing board carries an answer mark (to-studio 006): only an answerBoard does`));
       const a = figureOf(c.answerBoard), b = figureOf(board);
