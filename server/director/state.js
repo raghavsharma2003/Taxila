@@ -3594,14 +3594,25 @@ function heardOf(prev, script) {
   const last = (prev?.recent ?? []).filter((t) => t.who === "teacher").at(-1)?.text ?? null;
   if (!script || !last) return h;
   const a = atQuestionOf(script, last);
-  const P = a === "?short" ? h["?last"] ?? null : a;
+  // (main's ruling R2 on 053: the short ask says no question — it is not a hearing; an invitation is at none)
+  const P = a === "?short" ? null : a;
   if (P && !/teachback/.test(P)) { h[P] = (h[P] ?? 0) + 1; h["?last"] = P; }
   return h;
 }
-/** The child's turns at which a fifth hearing gives the answer: an answer that is not right, a give-up, a request to hear it again or in Hindi,
+/** The columns never capped (and see capCueOf, R1: only a miss, a give-up or no answer is). Was: an answer that is not right, a give-up, a request to hear it again or in Hindi,
  *  a yes or a try-first, an aside (her turn would come back to the question). Never a picture request (director32: a picture request never
  *  costs the card), a right answer or a stop. */
 const CAP_SPARED = new Set(["right", "correct", "partial", "picture", "visual", "greet", "bridge", "move_on", "worked", "explain"]);
+/** R1: the child's turn after which she would say the question again on her own — a wrong answer, a give-up, or no answer (no request, no
+ *  aside, no yes). */
+function capCueOf(input, col) {
+  if (["wrong", "misconception", "give_up"].includes(String(col ?? ""))) return true;
+  if (col) return false;
+  const cls = input.cls ?? {}, t = String(input.text ?? "").trim();
+  if (cls.request?.type || cls.asideReply) return false;
+  if (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t))) return false;
+  return true;
+}
 /** to-brain 053 B3 — director34 c4-ch01-t02 offtopic 10 to 30 (one step seven times), c5-t02 steering 6 to 20 (one follow-up card eight turns,
  *  no key), c6 steering (one question six times in eight turns): where the live card's or asked step's question has been heard four times,
  *  the turn that would say it a fifth time gives the card's key with its reason (as after the misses that give it) or tells the step.
@@ -3610,6 +3621,10 @@ function heardCap(prev, input, heard, said) {
   if (input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop) return null;
   const col = columnName(input, prev);
   if (CAP_SPARED.has(String(col ?? "")) || ["stop", "end", "break", "goodbye"].includes(input.cls?.request?.type) || input.cls?.outcome === "correct") return null;
+  // (main's ruling R1 on 053: the cap is on what she says on her own — only after a miss, a give-up or no answer. A child's request for the
+  // question (Hindi, "phir se bolo", a repeat) is honoured whatever the count; a bare yes, a try-first or an aside hears no question (B2) and
+  // is never told the step or given the key)
+  if (!capCueOf(input, col)) return null;
   const script = scriptFor(input.kit)?.script;
   const liveId = prev?.lastUi?.ask?.itemId ?? null;
   const stepQ = prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose ? prev.lastMove.stepAsk.prompt : null;

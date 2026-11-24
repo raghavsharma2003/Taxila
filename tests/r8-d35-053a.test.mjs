@@ -135,3 +135,80 @@ describe("B: three paths in the walk", () => {
     assert.ok(ex.rung.text && ex.rung.field !== "hindi", JSON.stringify(ex.rung));
   });
 });
+
+// main's rulings R1 and R2 on 053 B3 (round d35): the cap of four hearings is on what she says on her own initiative — it fires only on a
+// turn after a miss, a give-up or no answer. A child's request for the question (Hindi, "phir se bolo") is honoured whatever the count; a bare
+// "haan" waits (B2); a short ask says no question and is no hearing. Walked on the live c4-maths-ch05-t01 script with step() alone: the
+// first card and the first asked worked step, with the count set to three before her last turn (heardOf adds the question she last said).
+describe("B3 after main's R1 and R2: the cap is on her own repeats", async () => {
+  const { initLessonState, step } = await import("../server/director/state.js");
+  const { kitFromFile } = await import("../server/content/kits.js");
+  const { getTopic } = await import("../server/content/curriculum.js");
+  const { findItem } = await import("../server/director/items.js");
+  const { scriptFor } = await import("../server/director/script.js");
+  const { atQuestionOf, SHORT_ASK_FORMS } = await import("../server/director/question-run.js");
+  const TOPIC = "c4-maths-ch05-t01";
+  const kit = kitFromFile(getTopic(TOPIC));
+  const script = scriptFor(kit).script;
+  const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
+    interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d35-053a-r1", lessonKey: "d35-053a-r1", teacher: "director" };
+  let r = step(initLessonState({ topicId: TOPIC, kit, ctx, seed: 7, now: 0 }), { event: "start", kit, now: 0 });
+  let card = null, stepS = null;
+  for (let i = 0; i < 200 && !(card && stepS); i++) {
+    const s = r.state;
+    if (!card && String(s.lastUi?.ask?.itemId ?? "").startsWith("script:") && !s.lastMove?.stepAsk?.prompt) card = s;
+    if (!stepS && s.lastMove?.stepAsk?.prompt && !s.lastMove.splitClose) stepS = s;
+    const it = s.activeItemId ? findItem(s, kit, s.activeItemId) : null;
+    r = step(s, { event: "turn", kit, cls: { outcome: it ? "correct" : "no_evidence", confidence: 0.9, flags: {} }, text: it ? String(it.answer) : "haan", now: (s.turn + 1) * 20_000 });
+  }
+  /** Her fifth hearing would come now: three before, her last turn said the question (or `lastText` in its place). */
+  const fifth = (s, text, cls, lastText = null) => {
+    const q = s.lastMove?.stepAsk?.prompt && !s.lastMove.splitClose ? s.lastMove.stepAsk.prompt : s.lastUi.ask.text;
+    const P = atQuestionOf(script, q);
+    const prev = { ...s, qHeard: { [P]: 3 }, recent: [...(s.recent ?? []), { who: "teacher", text: lastText ?? q }] };
+    const o = step(prev, { event: "turn", kit, text, cls: { confidence: 0.9, flags: {}, ...cls }, now: (s.turn + 1) * 20_000 });
+    return { P, o, lm: o.state.lastMove ?? {} };
+  };
+  const HINDI = ["hindi mein bolo", { outcome: "no_evidence", request: { type: "language" } }];
+  const REPEAT = ["phir se bolo", { outcome: "no_evidence", request: { type: "repeat" } }];
+  const HAAN = ["haan", { outcome: "no_evidence" }];
+  const WRONG = ["7", { outcome: "incorrect" }];
+  const GIVE_UP = ["pata nahi", { outcome: "no_evidence", flags: { dontKnow: true } }];
+  test("the walk reaches a card and an asked step", () => { assert.ok(card, "a script card"); assert.ok(stepS, "an asked worked step"); });
+  test("at a card: a fifth hearing at a Hindi request honours it (the card's Hindi form, card still live, no key)", () => {
+    const { lm, o } = fifth(card, ...HINDI);
+    assert.equal(lm.heardCap, undefined); assert.ok(lm.hindiForm, JSON.stringify(Object.keys(lm)));
+    assert.ok(!lm.gave); assert.equal(o.state.keyedPart ?? null, null); assert.equal(o.ui?.ask?.itemId, card.lastUi.ask.itemId);
+  });
+  test("at a card: a fifth hearing at a repeat request says the question again (no key)", () => {
+    const { lm, o } = fifth(card, ...REPEAT);
+    assert.equal(lm.heardCap, undefined); assert.ok(!lm.gave); assert.equal(o.ui?.ask?.itemId, card.lastUi.ask.itemId);
+  });
+  test("at a card: a bare haan waits (the short ask), no key", () => {
+    const { lm, o } = fifth(card, ...HAAN);
+    assert.equal(lm.heardCap, undefined); assert.ok(!lm.gave); assert.ok(lm.waitShort); assert.equal(o.state.keyedPart ?? null, null);
+  });
+  test("at a card: after a miss, or a give-up, the fifth hearing is the key with its reason", () => {
+    for (const cue of [WRONG, GIVE_UP]) {
+      const { lm, o, P } = fifth(card, ...cue);
+      assert.equal(lm.heardCap, P, cue[0]); assert.ok(lm.gave, cue[0]); assert.ok(o.state.keyedPart, cue[0]);
+    }
+  });
+  test("R2: a short ask is no hearing — after one, a miss is not capped", () => {
+    const { lm } = fifth(card, ...WRONG, SHORT_ASK_FORMS[0]);
+    assert.equal(lm.heardCap, undefined); assert.ok(!lm.gave);
+  });
+  test("at an asked step: Hindi and repeat requests are honoured, a bare haan waits; the step is never told", () => {
+    for (const cue of [HINDI, REPEAT, HAAN]) {
+      const { lm } = fifth(stepS, ...cue);
+      assert.equal(lm.heardCap, undefined, cue[0]); assert.ok(!lm.stepFrom, cue[0]); assert.ok(lm.stepAsk?.prompt, cue[0]);
+    }
+    assert.ok(fifth(stepS, ...HAAN).lm.waitShort);
+  });
+  test("at an asked step: after a miss, or a give-up, the fifth hearing tells the step", () => {
+    for (const cue of [WRONG, GIVE_UP]) {
+      const { lm, P } = fifth(stepS, ...cue);
+      assert.equal(lm.heardCap, P, cue[0]); assert.ok(lm.stepFrom != null, cue[0]);
+    }
+  });
+});
