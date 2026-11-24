@@ -39,6 +39,8 @@ import { scanSafety } from "../../server/director/safety.js";
 // (to-brain 052 A5: the engine's own word count and its limit for the turn after a right answer, imported, never copied)
 import { wordsIn as engineWords, VPC_MAX } from "../../server/director/state.js";
 import { FRAMES } from "../../server/brain/say.js";
+// (to-brain 052 A6: the predicates' refusal pattern, from its one place)
+import { PICTURE_REFUSAL } from "../../evals/hybrid-side-by-side/d31-predicates.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "../..");
 // LESSON_SCRIPTS_DIR (relative to the repo root): check a staged folder, e.g. data/lesson-scripts-v2, before it goes live
@@ -2155,6 +2157,19 @@ export const D33_JOINTS = ["noPicture", "yourTurn"];
 export const D33_JOINT_FORMS = 3, D33_JOINT_MAX = 13; // (under 14 words)
 const NUMBER_SAID = /\d|(?<![\p{L}])(?:teen|chaar|char|paanch|chhe|chheh|saat|aath|nau|das|aadha|aadhi|aadhe|two|three|four|five|six|seven|eight|nine|ten|half)(?![\p{L}])/iu;
 const PROMISE = /(?<![\p{L}])(?:phir|baad\s+mein|baad\s+me|yaad|later|remember|next\s+time|again)(?![\p{L}])/iu;
+/** to-brain 052 A6: noPicture forms that read as a refusal and that main has not ruled on yet (the sentence is a child's, not the
+ *  builder's to rewrite): printed as a note (P line), an error for every other form. { topicId, i, lang, seen }. */
+export const NO_PICTURE_NOTE = [
+  { topicId: "c5-maths-ch02-t02", i: 2, lang: "hi", seen: "to-brain 052 A6: \"Iske liye aur koi tasveer nahi bani hai.\" says what was not made, as the two staged forms fixed in 58c1d0d1b did" },
+];
+const noPictureNoted = (s, i, l) => NO_PICTURE_NOTE.find((x) => x.topicId === s?.topicId && x.i === i && x.lang === l) ?? null;
+/** The noted forms, as lines for main; a listed form that no longer matches is an error in d33JointErrors' place (noPictureNoteErrors). */
+export const noPictureNoteLines = (s) => NO_PICTURE_NOTE.filter((x) => x.topicId === s?.topicId).map((x) => {
+  const t = String(s?.joints?.noPicture?.[x.i]?.[x.lang] ?? "");
+  return PICTURE_REFUSAL.test(t) ? `P joints.noPicture[${x.i}]${x.lang === "en" ? " (en)" : ""}: "${t}" reads as a refusal (PICTURE_REFUSAL; NO_PICTURE_NOTE, main to rule)` : null;
+}).filter(Boolean);
+export const noPictureNoteErrors = (s) => NO_PICTURE_NOTE.filter((x) => x.topicId === s?.topicId && !PICTURE_REFUSAL.test(String(s?.joints?.noPicture?.[x.i]?.[x.lang] ?? "")))
+  .map((x) => `NO_PICTURE_NOTE joints.noPicture[${x.i}] ${x.lang}: listed but no longer reads as a refusal (or is gone); take it off the list (to-brain 052 A6)`);
 export function d33JointErrors(s, { required = false } = {}) {
   const e = [], j = s?.joints ?? {};
   for (const kind of D33_JOINTS) {
@@ -2168,11 +2183,13 @@ export function d33JointErrors(s, { required = false } = {}) {
         if (!t) continue;
         if (kind === "noPicture" && NUMBER_SAID.test(t)) e.push(`${at}: names a number ("${t.match(NUMBER_SAID)[0]}"); there is no other drawing, and it names no answer (Learning 021 rule 5)`);
         if (kind === "noPicture" && PROMISE.test(t)) e.push(`${at}: "${t.match(PROMISE)[0]}" promises something; it promises nothing (Learning 021 rule 5)`);
+        if (kind === "noPicture" && PICTURE_REFUSAL.test(t) && !noPictureNoted(s, i, l)) e.push(`${at}: "${t.match(PICTURE_REFUSAL)[0]}" reads as a refusal (the predicates' PICTURE_REFUSAL); say what is on the board (to-brain 052 A6)`);
       }
     });
     const seen = new Set();
     forms.forEach((f, i) => { const n = d27Norm(f?.hi ?? ""); if (n && seen.has(n)) e.push(`joints.${kind}[${i}]: the same form twice (Learning 021 rule 5)`); seen.add(n); });
   }
+  e.push(...noPictureNoteErrors(s));
   return e.map((x) => (/Learning 021/.test(x) ? x : `${x} (Learning 021 rule 5)`));
 }
 /** Learning 021's errors: rule 5's joints wherever they are written (required, and rule 3, for a topic in D33_READY or forced). */
@@ -2482,7 +2499,7 @@ export function vpcErrors(s, { force = false } = {}) {
 /** The noted parts, as lines for main. */
 export const vpcNoteLines = (s) => vpcTurns(s).filter((p) => p.noted && p.total > p.limit).map((p) => `V ${p.at}: the turn after a right answer is ${vpcParts(p)} > ${p.limit} by the engine's count (VPC_NOTE: ${p.noted.seen}; main to rule)`);
 /** Learning 022's lines for a reader: G (rule 5), N (rule 6), and the hits of rules 1-4 as Q / K / C / W lines when not errors. */
-export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), ...vpcNoteLines(s)];
+export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), ...vpcNoteLines(s), ...noPictureNoteLines(s)];
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
