@@ -66,7 +66,11 @@ test("compare@1 scale (item 1): a table of lengths in one unit is drawn to scale
   // (one table of lengths has no view, and is named: c6-ch07 s1 c1's chocolate, now held to scale and cut 6, 2, 6, 2 cm in the order it
   // broke. Its view is built, but the split beside the held board is refused at panel scale — with 6,6,2,2 it lays out — so a
   // picture request on it draws the card's authored pictureBoard, a 0-16 cm scale. Studio to say whether the view should lay out)
-  const PANEL_REFUSED = new Set(["c6-maths-ch07-t01.skills[0].checks[0].board"]);
+  // (d36 close, 2026-11-24: bd6afeda7 gave c6-ch06-t01 s1's worked step 1 an authored picture, the table "maali ki baad 35 m | kyari ki
+  // bhujayein 8 m, 9 m, 14 m": lengths in one unit, so its scale view is built (altCall: scale), but pictureTurn lays out no split for it
+  // and draws no view — the same case as the chocolate above — so it is pinned here, not with the scaled tables, whose per-view checks need
+  // a drawn view)
+  const PANEL_REFUSED = new Set(["c6-maths-ch07-t01.skills[0].checks[0].board", "c6-maths-ch06-t01.skills[0].workedExample.steps[0].ask.pictureBoard"]);
   for (const at of PANEL_REFUSED) {
     const b = got.find((x) => x.at === at);
     assert.ok(b && !b.v && compareScaleOf(b.ref.params) && BF.altCall(b.ref)?.view === "scale", `${at}: a scale view is built, not laid out`);

@@ -88,7 +88,10 @@ test("016 B: the named re-asks no longer do their card's work; c6's check 2 hint
   assert.match(S["c5-maths-ch02-t02"].skills[1].explain[2].ask.reask.hi, /3\/5.*1\/5/);
 });
 
-const NO_SOCHO = ["c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem0", "c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem1", "c6-maths-ch06-t01 c6-maths-ch06-t01-s3 rem1"];
+const NO_SOCHO = ["c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem0", "c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem1", "c6-maths-ch06-t01 c6-maths-ch06-t01-s3 rem1",
+  // (d36, main's ruling 2026-11-24: said over a blank board, it states the rule in words and points at nothing; the cold reader read it
+  // true against skills 2 and 3; this script's other three blank-board remediations are on the list)
+  "c6-maths-ch06-t01 c6-maths-ch06-t01-s1 rem1"];
 test("016 C: every remediation has a board its say speaks or is a 'socho' telling with none; none shows its card's answer", async () => {
   const BF = await import("../server/stagecraft/board-first.js");
   const ask = (text, ref) => ({ intent: { intentId: "d27:wb:1", lessonId: "d27", kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "r", kind: "remediation" } }, line: { lessonId: "d27", text }, mode: "fresh", kit: { topicId: "t", content: [] } });
