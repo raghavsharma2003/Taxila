@@ -231,7 +231,9 @@ function fractionParts(c, tl) {
     for (let i = 0; i < shade; i++) tl.add({ id: `s${i}`, op: "rect", at: [round1(x0 + i * pw + 3), y0 + 3], w: round1(pw - 6), h: H - 6, fill: "accent", ink: "accent", weight: 1, role: ROLE.focus }, 380, { gap: 120 });
     // the parts count under the bar, then the fraction
     // (director11 S3: the board's own words follow the lesson's Hindi mode — "2 equal parts" stayed English over Hindi lines)
-    tl.add({ op: "text", at: [200, y0 + H + 30], text: c.lang === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft", role: ROLE.muted }, 500);
+    // (to-brain 052 close: by langOf — a lesson's style.lang is "hinglish", "hi" or "en" (brain/propose.js STUDIO_LANG): a Hinglish
+    // lesson's board printed "6 equal parts", staged c6-maths-ch07-t03 s1 c1)
+    tl.add({ op: "text", at: [200, y0 + H + 30], text: langOf(c) === "hi" ? `${parts} barabar hisse` : `${parts} equal parts`, size: "s", ink: "soft", role: ROLE.muted }, 500);
     // round 4 content: nothing shaded writes no fraction ("0/5" is a number her line never said: W4)
     // (director11 S2: hideResult — a second view of a card that asks this fraction — writes none: the shading is the given)
     if (named) tl.add({ id: "frac", op: "brace", from: [x0 + 3, y0 - 6], to: [round1(x0 + shade * pw - 3), y0 - 6], side: "up", label: `${shade}/${parts}`, size: "m", role: ROLE.focus, weight: 2 }, 800, { gap: 300 });

@@ -98,7 +98,9 @@ test("S3: in Hindi mode a template's own words are Hindi — '2 barabar hisse', 
   const T = "c4-maths-ch05-t01", kit = kitOf(T);
   const ref = { template: "fraction-parts@1", params: { parts: 2, shade: 1, whole: "bar" } };
   const line = "Yeh patti 2 barabar hisson mein bati hai. Rangin hissa patti ka aadha hai, yaani 1/2.";
-  for (const [lang, want] of [["hinglish", "2 equal parts"], ["hi", "2 barabar hisse"]]) {
+  // (re-pinned, to-brain 052 close: a Hinglish lesson's board says "barabar hisse" too — it printed "6 equal parts" under Hinglish lines,
+  // staged c6-maths-ch07-t03 s1 c1; only an English lesson's board says "equal parts")
+  for (const [lang, want] of [["hinglish", "2 barabar hisse"], ["hi", "2 barabar hisse"], ["en", "2 equal parts"]]) {
     const L = `r8d11s3-${lessonN++}`;
     const a = { intent: { intentId: `${L}:wb:1`, lessonId: L, kind: "whiteboard", beat: "explain", style: { band: "B3", lang }, boardRef: ref, scriptBeat: sb("e1") }, line: { lessonId: L, text: "" }, mode: "fresh", kit: { topicId: T, content: [] } };
     BF.preselect(a, { kit });
