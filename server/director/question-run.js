@@ -131,7 +131,31 @@ function helpIn(lm) {
 }
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
 export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
-const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot"];
+const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst"];
+/** to-brain 052 B4 (ruling): code's pointed invitations, said where the script has no `joints.answerFirst` (rotated). */
+export const ANSWER_FIRST_FORMS = Object.freeze([{ hi: "Pehle is sawaal ka jawab do.", en: "First answer this question." },
+  { hi: "Board wala sawaal abhi baaki hai, uska jawab do.", en: "The question on the board is still open, answer it." },
+  { hi: "Yeh baad mein; pehle sawaal ka jawab.", en: "That's for later; first the answer to the question." }]);
+/** B4: the pointed invitation forms of a lesson language — the script's `joints.answerFirst`, else code's. */
+export function answerFirstForms(script, lang = "hinglish") {
+  const own = (script?.joints?.answerFirst ?? []).map((f) => (typeof f === "string" ? f : lang === "english" ? f?.en ?? f?.hi : f?.hi ?? f?.en)).filter((x) => typeof x === "string" && x.trim());
+  return (own.length ? own : ANSWER_FIRST_FORMS.map((f) => (lang === "english" ? f.en : f.hi))).map((x) => x.replace(/\s+/g, " ").trim());
+}
+/** B4: whether a text ends on a pointed invitation (the script's or code's, either language). */
+export function endsOnAnswerFirst(script, text) {
+  const last = qKey(sentencesOf(text).at(-1) ?? "");
+  return !!last && [...answerFirstForms(script, "hinglish"), ...answerFirstForms(script, "english")].some((f) => qKey(sentencesOf(f).at(-1) ?? f) === last);
+}
+/** B4: how many of her turns running, the latest first, were at one question — said (any form, a short ask), or answered by an invitation
+ *  that points at it or asks nothing (yourTurn, answerFirst). */
+export function turnsAtQuestion(script, texts, path) {
+  let n = 0;
+  for (let j = texts.length - 1; j >= 0; j--) {
+    const t = texts[j], a = atQuestionOf(script, t);
+    if (a === path || a === "?short" || endsOnYourTurn(script, t) || endsOnAnswerFirst(script, t)) n++; else break;
+  }
+  return n;
+}
 const dropB4 = (m) => { if (!m || typeof m !== "object") return m; const o = { ...m }; for (const k of B4_FIELDS) delete o[k]; return o; };
 /** The walk's B4 pass over one turn (state.js step, last): the turn's move is marked
  *  - `yourTurn` (the form, rotated) on the third turn running at one question — brain/say.js ends the turn on it in place of the question;
@@ -184,7 +208,23 @@ export function yourTurnPass(prev, out, script, childText = "") {
   // gets it, and counts. The invitation is never said in a turn that parks an aside or replies to one, nor in a turn with no help in it: that
   // turn ends on the question, and counts)
   if (HEAR_Q.test(String(childText ?? "")) || lm.stayCheckin || lm.greetAsk || ["wrap", "safeguard", "break", "done"].includes(String(lm.kind ?? ""))) return out;
-  if (asideTurnOf(prev, out, lm) || !helpIn(lm)) return out;
+  // (to-brain 052 B4, ruling: on the third turn running at one question or later, a turn that parks an aside or replies to one does not say the
+  // question again and does not end on the bare "Ab tum batao.": it ends on an invitation that points at the question still open —
+  // joints.answerFirst, else code's forms, rotated. The question comes back when the child answers it, asks for it, or asks for help.
+  // Staged offtopic c4-ch01-t02 rows 10 to 18, before the merge: one question five turns running while asides were parked and answered)
+  if (asideTurnOf(prev, out, lm)) {
+    const qText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
+    const a1 = qText ? atQuestionOf(script, qText) : null, p1 = a1 && a1 !== "?short" ? a1 : null;
+    const her1 = (prev?.recent ?? []).filter((t) => t.who === "teacher").map((t) => String(t.text ?? ""));
+    if (p1 && !tbQ && turnsAtQuestion(script, her1, p1) >= 2) {
+      const forms = answerFirstForms(script, s.ctx?.lang === "english" ? "english" : "hinglish");
+      const n = s.answerFirstN ?? 0;
+      s.answerFirstN = n + 1;
+      set({ answerFirst: forms[n % forms.length] });
+    }
+    return out;
+  }
+  if (!helpIn(lm)) return out;
   const nowText = tbQ ?? (lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null);
   // (to-brain 051 C4: a card that asks by an imperative is a question too)
   const at0 = nowText ? atQuestionOf(script, nowText) : null;

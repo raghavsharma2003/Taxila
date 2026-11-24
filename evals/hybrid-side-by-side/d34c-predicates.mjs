@@ -7,6 +7,7 @@
 //               words of the two — its own lines and the card, as the checker counts them; the verdict and the joint before it are not
 //               counted. Every other remediation is T2's: over 60 words of the turn.
 import { readFileSync } from "node:fs";
+import { atQuestionOf, closingQuestion, answerFirstForms, endsOnAnswerFirst, turnsAtQuestion } from "../../server/director/question-run.js";
 import { HELP_PREDICATES, helpTurnOf, ownReasonDue } from "./help-predicates.mjs";
 import { D29_PREDICATES } from "./d29-predicates.mjs";
 import { REM_WHOLE } from "../../scripts/lesson-scripts/check.mjs";
@@ -57,6 +58,20 @@ export const D34C_PREDICATES = {
     if (!f) return null;
     const prev = L.rows.slice(0, i).reverse().find((x) => x.who === "teacher" && asideFrameOf(x));
     return prev && asideFrameOf(prev) === f ? `the aside reply frame "${f}" twice running` : null;
+  },
+  /** B4 (gated): the third turn running at one question or later, when it parks an aside or replies to one, ends on a pointed invitation
+   *  (joints.answerFirst, else code's forms) and does not say the question's closing sentence. */
+  answerFirstThird(L, r, i, ctx) {
+    if (r.who !== "teacher" || !["aside", "aside_reply"].includes(String(r.cell?.column ?? ""))) return null;
+    const sc = ctx?.script;
+    const her = L.rows.slice(0, i).filter((x) => x.who === "teacher").map((x) => String(x.text ?? ""));
+    // (the question her turns were at: the last one said)
+    const path = her.map((t) => atQuestionOf(sc, t)).filter((x) => x && x !== "?short").at(-1) ?? null;
+    if (!path || /^\.?teachback/.test(path) || turnsAtQuestion(sc, her, path) < 2) return null;
+    const now = atQuestionOf(sc, r.text);
+    if (now === path) return "the question said again on an aside turn, the third at it or later";
+    if (now && now !== "?short") return null;
+    return endsOnAnswerFirst(sc, r.text) ? null : "an aside turn, the third at one question or later, not ending on a pointed invitation";
   },
   /** B1 (gated, as T2 was). */
   remCardLong(L, r, i, ctx) {

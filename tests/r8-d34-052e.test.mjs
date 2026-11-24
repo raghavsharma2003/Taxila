@@ -177,3 +177,25 @@ describe("B5: aside replies of one frame are rotated", () => {
     assert.ok(!line || !/(?:do baar aa gayi|pehle bhi suna|yeh tumne bataya tha)/.test(line), String(line));
   });
 });
+describe("B4: the third turn running at one question ends on a pointed invitation (ruling)", () => {
+  test("yourTurnPass: an aside turn after two at the asked step's question is marked answerFirst, code's forms rotated; the second is not", async () => {
+    const { yourTurnPass, ANSWER_FIRST_FORMS } = await import("../server/director/question-run.js");
+    const script = fixture("c4-maths-ch01-t02");
+    assert.ok(!script.joints?.answerFirst, "this script has no joints.answerFirst: code's forms");
+    const q = script.skills[0].workedExample.steps[0].ask.prompt.hi;
+    const turn = (recent, n = 0) => { const lm = { kind: "worked_example", cell: { column: "aside" }, stepAsk: { skillId: script.skills[0].skillId, step: 0, prompt: q } };
+      const out = { state: { lastMove: lm, ctx: {}, answerFirstN: n }, move: { ...lm }, ui: {} };
+      return yourTurnPass({ recent, lastMove: {} }, out, script, "kal maine cricket khela").state; };
+    const s3 = turn([{ who: "teacher", text: `Sahi jawab. ${q}` }, { who: "child", text: "pata nahi" }, { who: "teacher", text: `Tile tirchi lagi hai. ${q}` }]);
+    assert.equal(s3.lastMove.answerFirst, ANSWER_FIRST_FORMS[0].hi);
+    const s4 = turn([{ who: "teacher", text: q }, { who: "teacher", text: `Cricket ki baat bhi hogi. ${ANSWER_FIRST_FORMS[0].hi}` }], 1);
+    assert.equal(s4.lastMove.answerFirst, ANSWER_FIRST_FORMS[1].hi, "the fourth too, the next form");
+    const s2 = turn([{ who: "teacher", text: "Board par dekho." }, { who: "teacher", text: `Sahi jawab. ${q}` }]);
+    assert.ok(!s2.lastMove.answerFirst, "the second turn at it ends on the question");
+  });
+  test("answerFirstThird is gated and reads the pre-merge staged offtopic c4-ch01-t02 rows", async () => {
+    const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+    assert.ok(PREDICATES.answerFirstThird); assert.ok(!PENDING.has("answerFirstThird"));
+    assert.ok(PREDICATES.asideFrameTwice); assert.ok(!PENDING.has("asideFrameTwice"));
+  });
+});
