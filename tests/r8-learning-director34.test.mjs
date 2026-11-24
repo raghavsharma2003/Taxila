@@ -100,15 +100,22 @@ test("023 rule 1 (main's ruling): a card with no answerBoard is a D line, unless
 });
 
 // ---- 2 wrongAnswers
-test("023 rule 2: at most three; none the key or an accepted form, none twice; a reason never names the key", () => {
+test("023 rule 2: three named answers in all, wrongIfMis counted; none the key or an accepted form, none twice; a reason never names the key", () => {
   const e = wrongAnswerErrors(FIX("rule2-fail"));
   assert.equal(e.length, 4);
-  for (const re of [/4 > 3/, /wrongAnswers\[1\]: "32 m" is the key/, /wrongAnswers\[2\]\.why: names the answer "32 m"/, /wrongAnswers\[3\]: "20 m" is named in wrongAnswers\[0\] too/]) assert.ok(e.some((x) => re.test(x)), String(re));
+  for (const re of [/4 > 2 beside wrongIfMis/, /wrongAnswers\[1\]: "32 m" is the key/, /wrongAnswers\[2\]\.why: names the answer "32 m"/, /wrongAnswers\[3\]: "20 m" is named in wrongAnswers\[0\] too/]) assert.ok(e.some((x) => re.test(x)), String(re));
   assert.deepEqual(wrongAnswerErrors(FIX("rule2-pass")), []);
   assert.deepEqual(d35Errors(FIX("rule2-pass"), { force: true }), []);
   const dup = FIX("rule2-pass");
   dup.skills[0].explain[0].ask.wrongAnswers[0].answer = "16 m";
   assert.ok(wrongAnswerErrors(dup).some((x) => /wrongIfMis already/.test(x)));
+
+  // (two beside wrongIfMis pass; a third fails; with no wrongIfMis three pass)
+  const three = FIX("rule2-pass");
+  three.skills[0].explain[0].ask.wrongAnswers.push({ answer: "26 m", why: { hi: "Ek lambai chhoot gayi; chaaron bhujayein judti hain.", en: "x" } });
+  assert.ok(wrongAnswerErrors(three).some((x) => /3 > 2 beside wrongIfMis/.test(x)));
+  delete three.skills[0].explain[0].ask.wrongIfMis;
+  assert.deepEqual(wrongAnswerErrors(three), []);
 });
 
 // ---- 3 the first teaching turn

@@ -2501,8 +2501,8 @@ export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), .
  *     `resultBoard`, else its posing board; for the close and the own step's reason, the own step's `answerBoard`, else its board,
  *     else the worked board; for a card, its `answerBoard`, else its posing board. A sum or product of drawn numbers ("24 + 18 =
  *     42" over a rectangle labelled 24 and 18) is NOT drawn: the step needs a result board that shows 42 (item 3). Read in `hi`.
- *  2  `wrongAnswers: [{ answer, accept?, why: { hi, en } }]`, at most three, beside `wrongIfMis` / `whyAlt` (the first named answer,
- *     which stays): each answer differs from the key, the card's accepted forms, `wrongIfMis` and each other; no `why` names the
+ *  2  `wrongAnswers: [{ answer, accept?, why: { hi, en } }]` beside `wrongIfMis` / `whyAlt` (the first named answer, which stays): three
+ *     named wrong answers in all, so at most two with `wrongIfMis` set, three without (main's ruling, d35): each answer differs from the key, the card's accepted forms, `wrongIfMis` and each other; no `why` names the
  *     key or an accepted form, or leaves one option of a two-way card (020 rule 9's hintHits, as 022 rule 4 reads whyAlt).
  *  3  The first teaching turn (the first skill's hook line, its first point and that point's card, `{name}` slots as one word) is
  *     D35_FIRST_MAX words or fewer by the engine's count (state.js wordsIn), for the longest of the hook's interest lines.
@@ -2668,9 +2668,11 @@ export function wrongAnswerErrors(s) {
     const w = c.card.wrongAnswers;
     if (w == null) continue;
     if (!Array.isArray(w) || !w.length) { e.push(`${c.at}.wrongAnswers: a list of { answer, accept?, why: { hi, en } }${r}`); continue; }
-    if (w.length > D35_WRONG_MAX) e.push(`${c.at}.wrongAnswers: ${w.length} > ${D35_WRONG_MAX}: past three a card, the card is two cards${r}`);
     const right = new Set([c.card.key, ...(c.card.accept ?? [])].filter((x) => x != null).map(d35Norm).filter(Boolean));
     const first = new Set(wrongsOf(c.card).map(d35Norm));
+    // (main on d35: three named wrong answers in total; wrongIfMis counts as one)
+    const max = D35_WRONG_MAX - (first.size ? 1 : 0);
+    if (w.length > max) e.push(`${c.at}.wrongAnswers: ${w.length} > ${max}${first.size ? " beside wrongIfMis" : ""}: three named wrong answers a card in all, wrongIfMis counted; past three, the card is two cards${r}`);
     const seen = new Map();
     w.forEach((x, i) => {
       const at = `${c.at}.wrongAnswers[${i}]`;
