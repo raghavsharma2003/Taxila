@@ -3599,8 +3599,9 @@ function heardOf(prev, script) {
   return h;
 }
 /** The child's turns at which a fifth hearing gives the answer: an answer that is not right, a give-up, a request to hear it again or in Hindi,
- *  a yes or a try-first. Never a picture request (director32: a picture request never costs the card), a right answer, an aside or a stop. */
-const CAP_COLUMNS = new Set(["wrong", "misconception", "give_up", "clarify", "hindi", "yes", "try_first", "repeat", "which", "thinking"]);
+ *  a yes or a try-first, an aside (her turn would come back to the question). Never a picture request (director32: a picture request never
+ *  costs the card), a right answer or a stop. */
+const CAP_SPARED = new Set(["right", "correct", "partial", "picture", "visual", "greet", "bridge", "move_on", "worked", "explain"]);
 /** to-brain 053 B3 — director34 c4-ch01-t02 offtopic 10 to 30 (one step seven times), c5-t02 steering 6 to 20 (one follow-up card eight turns,
  *  no key), c6 steering (one question six times in eight turns): where the live card's or asked step's question has been heard four times,
  *  the turn that would say it a fifth time gives the card's key with its reason (as after the misses that give it) or tells the step.
@@ -3608,7 +3609,7 @@ const CAP_COLUMNS = new Set(["wrong", "misconception", "give_up", "clarify", "hi
 function heardCap(prev, input, heard, said) {
   if (input.branch || prev?.safeguard || input.cls?.flags?.distress || input.cls?.flags?.wantsToStop) return null;
   const col = columnName(input, prev);
-  if (!CAP_COLUMNS.has(col)) return null;
+  if (CAP_SPARED.has(String(col ?? "")) || ["stop", "end", "break", "goodbye"].includes(input.cls?.request?.type) || input.cls?.outcome === "correct") return null;
   const script = scriptFor(input.kit)?.script;
   const liveId = prev?.lastUi?.ask?.itemId ?? null;
   const stepQ = prev?.lastMove?.stepAsk?.prompt && !prev.lastMove.splitClose ? prev.lastMove.stepAsk.prompt : null;
@@ -3627,7 +3628,8 @@ function heardCap(prev, input, heard, said) {
   }
   if (stepQ) {
     const { request: _r, ...rest } = input.cls ?? {};
-    return { P, skipHelp: true, input: { ...input, cls: { ...rest, outcome: "no_evidence", flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } }, heardCap: P } };
+    // (read as a give-up whose help is spent: the walk tells the step, as after a second request there — the child's words are the record's)
+    return { P, skipHelp: true, input: { ...input, text: "pata nahi", cls: { ...rest, outcome: "no_evidence", asideReply: false, flags: { ...(rest.flags ?? {}), dontKnow: true, confused: false } }, heardCap: P } };
   }
   return null;
 }
@@ -4048,6 +4050,9 @@ export function step(prev, input) {
   // (dc-r8-director28 Brain 044 T1: after the greeting's simpler wording, the next turn is the hook, the first point and its card — a second
   // request there is answered by the teaching it asks for; the greeting has no other wording)
   const input0 = input;
+  // (to-brain 053 B3: the count of hearings is kept on every path — her turn before counted here, before any path clones the state)
+  const heard = input?.event === "turn" && scriptOn() && !recordedNow ? heardOf(prev, scriptFor(input.kit)?.script ?? null) : null;
+  if (heard) prev = { ...prev, qHeard: heard };
   const greetAgain = !recordedWalk(input) && !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
   if (greetAgain)
     input = { ...input, text: "haan", cls: { ...(input.cls ?? {}), outcome: "no_evidence", request: undefined, flags: { ...(input.cls?.flags ?? {}), dontKnow: false, confused: false } } };
@@ -4076,7 +4081,6 @@ export function step(prev, input) {
     const pA = liveA && String(liveA).startsWith("script:") && ["correct", "incorrect", "partial", "misconception"].includes(oc) ? (() => { try { return cardPartOf(input.kit, { itemId: liveA }); } catch { return null; } })() : null;
     if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed } } }; }
   // (to-brain 053 B3: a question heard four times — the fifth turn that would say it gives the card's key with its reason, or tells the step)
-  const heard = input?.event === "turn" && scriptOn() && !recordedNow ? heardOf(prev, scriptFor(input.kit)?.script ?? null) : null;
   const cap = heard ? heardCap(prev, input, heard, said) : null;
   if (cap?.input) input = cap.input;
   const pre = cap?.skipHelp ? null : cap?.pre ?? helpBefore(prev, input, said);
