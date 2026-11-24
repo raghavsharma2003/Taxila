@@ -70,9 +70,12 @@ export const D35B_PREDICATES = {
   /** C2 (gated, as d26's A4 was). */
   asideReplied(L, r, i, ctx) {
     const f = D26_ASIDE_REPLIED(L, r, i, ctx);
-    if (!f || i < 2 || L.rows[i - 2]?.who !== "teacher") return f;
-    const kind = replyKindOf(L.rows[i - 2].text, L.rows[i - 1]?.text);
-    return ["person", "whenWhere"].includes(kind) && !replyKindForms(kind).length ? null : f;
+    if (!f || i < 2 || L.rows[i - 2]?.who !== "teacher" || String(r.cell?.column ?? "") !== "aside_reply") return f;
+    const asked = String(L.rows[i - 2].text ?? "");
+    const kind = replyKindOf(asked, L.rows[i - 1]?.text);
+    // (a favourite asked of a person has its phrase form today — "Toh tumhara favourite yahi hai." — and d26's reading stands)
+    const neutral = kind === "whenWhere" || (kind === "person" && !/favou?rite/i.test(asked.split(/(?<=[.!?\u0964])\s+/).at(-1) ?? ""));
+    return neutral && !replyKindForms(kind).length ? null : f;
   },
   /** F (gated): d33's reading, and each wrongAnswers reason against its own answer. */
   whyAltNoMiss(L, r, i, ctx) {
