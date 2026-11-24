@@ -2721,6 +2721,13 @@ export function firstTurn(s) {
 }
 // ---- rule 4: re-asks
 export const missingReasks = (s) => d32Cards(s).filter((c) => ["card", "check", "follow-up", "own step"].includes(c.kind) && !String(c.card.reask?.hi ?? "").trim()).map((c) => ({ at: c.at, kind: c.kind }));
+// ---- d35 follow-up 6: a re-ask that is its card's own closing question (d35 m2: two cards whose re-ask, said after a miss, was the question
+// the child had just heard — reaskTwice / reaskRunning); compared as the predicates do, case, punctuation and spaces aside
+const qNorm = (t) => d27Norm(t).replace(/\.(?!\d)/g, " ").replace(/\s+/g, " ").trim();
+export const reaskIsQuestion = (s) => d32Cards(s).filter((c) => ["card", "check", "follow-up", "own step"].includes(c.kind)).flatMap((c) => {
+  const r = String(c.card.reask?.hi ?? ""), last = sentencesOf(String(c.card.prompt?.hi ?? "")).at(-1) ?? "";
+  return r.trim() && last.trim() && qNorm(r) === qNorm(last) ? [{ at: `${c.at}.reask`, kind: c.kind, text: r }] : [];
+});
 // ---- rule 5: a reason that opens on its own wrong answer and "nahi"
 const opensOnVerdict = (why, answer) => {
   const a = d35Norm(answer), t = d35Norm(why);
@@ -2826,6 +2833,7 @@ export function d35Errors(s, { force = false } = {}) {
   const f = firstTurn(s);
   if (f && f.total > f.limit) e.push(`${f.at}: the first teaching turn is hook ${f.hook} (${f.slot}) + point ${f.point} + card ${f.card} = ${f.total} words by the engine's count > ${f.limit}: cut the point's example, never the card's givens (Learning 023 rule 3)`);
   for (const x of missingReasks(s)) e.push(`${x.at}: no reask: a ${x.kind} is asked again in its re-ask, never said whole twice (Learning 023 rule 4)`);
+  for (const x of reaskIsQuestion(s)) e.push(`${x.at}: the re-ask is the ${x.kind}'s own closing question ("${x.text.slice(0, 60)}"): a re-ask asks it in other words (d35 follow-up 6)`);
   for (const x of verdictOpenHits(s)) e.push(`${x.at}: opens on its wrong answer and "nahi" ("${x.text.slice(0, 40)}…"): the verdict is said already; open on the reason (Learning 023 rule 5)`);
   return e;
 }
