@@ -2469,21 +2469,31 @@ export const VPC_LEAD_WORDS = 1;
 export const VPC_NOTE = [];
 const engineHi = (x) => engineWords(String(x?.hi ?? "").replace(/\{[a-zA-Z]+\}/g, "X"));
 export const VPC_OPENER_WORDS = Math.max(...FRAMES.right.hinglish.map((f) => engineWords(f)));
-/** The counts of every such turn: [{ skill, id, at, opener, reason, lead, point, card, total, limit, noted }]. */
+/** The reason the walk may say short after a right answer on this card (state.js shortWhyFor), or null: the full why is said. */
+export function shortReasonOf(c) {
+  if (!c?.why || !c.whyShort || typeof c.whyShort !== "object") return null;
+  const clean = (x) => String(x?.hi ?? "").replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "");
+  const sh = clean(c.whyShort), lo = clean(c.why);
+  const wc = (t) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+  return sh && engineWords(sh) < engineWords(lo) && wc(sh) <= WHY_SHORT_MAX ? c.whyShort : null;
+}
+/** The counts of every such turn: [{ skill, id, at, opener, reason, reasonKind, lead, point, card, total, limit, noted }]. */
 export function vpcTurns(s) {
   const out = [];
   for (const k of s?.skills ?? []) (k.explain ?? []).forEach((b, j) => {
     if (j === 0 || !b.ask) return;
     const prev = k.explain[j - 1].ask;
     if (!prev) return;
-    const reason = engineHi(prev.whyShort ?? prev.why), point = engineHi(b.point), card = engineHi(b.ask.prompt);
+    // (d35 closing item 4: the walk says the short reason only where state.js shortWhyFor gives one — a why and a whyShort, the short
+    // fewer words than the why by wordsIn and WHY_SHORT_MAX words or fewer; else the FULL reason is said and counted here)
+    const short = shortReasonOf(prev), reason = engineHi(short ?? prev.why), point = engineHi(b.point), card = engineHi(b.ask.prompt);
     const total = VPC_OPENER_WORDS + reason + VPC_LEAD_WORDS + point + card;
     const noted = VPC_NOTE.find((x) => x.topicId === s.topicId && x.skillId === k.skillId && x.explainId === b.id) ?? null;
-    out.push({ skill: k.skillId, id: b.id, at: `${k.skillId}/${b.id}`, opener: VPC_OPENER_WORDS, reason, lead: VPC_LEAD_WORDS, point, card, total, limit: VPC_MAX, noted });
+    out.push({ skill: k.skillId, id: b.id, at: `${k.skillId}/${b.id}`, opener: VPC_OPENER_WORDS, reason, reasonKind: short ? "short" : "full", lead: VPC_LEAD_WORDS, point, card, total, limit: VPC_MAX, noted });
   });
   return out;
 }
-const vpcParts = (p) => `opener ${p.opener} + short reason ${p.reason} + lead-in ${p.lead} + point ${p.point} + card ${p.card} = ${p.total}`;
+const vpcParts = (p) => `opener ${p.opener} + ${p.reasonKind ?? "short"} reason ${p.reason} + lead-in ${p.lead} + point ${p.point} + card ${p.card} = ${p.total}`;
 export function vpcErrors(s, { force = false } = {}) {
   if (!force && !isD34(s)) return [];
   const e = [], turns = vpcTurns(s);
