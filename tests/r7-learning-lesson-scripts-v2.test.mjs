@@ -13,7 +13,8 @@ const DIR = new URL("../data/lesson-scripts/", import.meta.url);
 const files = readdirSync(DIR).filter((f) => f.endsWith(".json")).sort();
 
 test("the live scripts: the four v2 pilots, c5-maths-ch02-t03 (live as judged, dc-r8-director31) and c6-maths-ch07-t01 (director32)", () => {
-  assert.deepEqual(files, ["c4-maths-ch05-t01.json", "c5-maths-ch02-t01.json", "c5-maths-ch02-t02.json", "c5-maths-ch02-t03.json", "c6-maths-ch06-t01.json", "c6-maths-ch07-t01.json"]);
+  // (to-brain 052 D: c4-maths-ch01-t02 live, b3c7e81fd, the seventh)
+  assert.deepEqual(files, ["c4-maths-ch01-t02.json", "c4-maths-ch05-t01.json", "c5-maths-ch02-t01.json", "c5-maths-ch02-t02.json", "c5-maths-ch02-t03.json", "c6-maths-ch06-t01.json", "c6-maths-ch07-t01.json"]);
 });
 
 for (const f of files) {
