@@ -9,7 +9,7 @@ import { readFileSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { d35Errors, D35_READY, isD35, undrawnValueHits, undrawnValueNotes, drawnValues, statedValues, wrongAnswerErrors, firstTurn,
-  missingReasks, verdictOpenHits, frameLines, replyKindErrors, d35ReportLines, D35_FIRST_MAX } from "../scripts/lesson-scripts/check.mjs";
+  missingReasks, verdictOpenHits, frameLines, replyKindErrors, d35ReportLines, D35_FIRST_MAX, boardHasSlot } from "../scripts/lesson-scripts/check.mjs";
 
 const FIX = (f) => JSON.parse(readFileSync(new URL(`./fixtures/scripts-023/${f}.json`, import.meta.url), "utf8"));
 const LIVE = ["c4-maths-ch05-t01", "c4-maths-ch01-t02", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"];
@@ -82,6 +82,21 @@ test("023 rule 1: a card's reason over its own answerBoard is a D line, not an e
   assert.deepEqual(undrawnValueHits(s), []);
   assert.deepEqual(undrawnValueNotes(s).map((x) => x.missing), [["16"]]);
   assert.ok(d35ReportLines(s).some((x) => x.startsWith("D t-023-s1/e1.why:")));
+});
+
+test("023 rule 1 (main's ruling): a card with no answerBoard is a D line, unless its posing board leaves a slot for the value (s2 c2's kind)", () => {
+  const s = FIX("pass");
+  delete s.skills[0].explain[0].ask.answerBoard;
+  s.skills[0].explain[0].ask.why = { hi: "ek chakkar 32 m", en: "x" };
+  assert.deepEqual(undrawnValueHits(s), []);
+  assert.deepEqual(undrawnValueNotes(s).map((x) => x.at), ["t-023-s1/e1.why"]);
+  assert.equal(boardHasSlot({ template: "compare@1", params: { left: { title: "Upar", items: ["40", "5"] }, right: { title: "Neeche", items: ["56"] } } }), true);
+  assert.equal(boardHasSlot({ template: "compare@1", params: { left: { title: "Chocolate", items: ["16 cm"] }, right: { title: "Hisse", items: ["6 cm", "2 cm"] } } }), false);
+  s.skills[0].explain[0].ask.board = { template: "compare@1", params: { left: { title: "Lambai", items: ["10", "6"] }, right: { title: "Chakkar", items: ["16"] } } };
+  assert.deepEqual(undrawnValueHits(s).map((x) => x.at), ["t-023-s1/e1.why"]);
+  // (the nine scripts today: c6-ch07-t03 s2 c2 is the only such card)
+  const cards = Object.values(S).flatMap((x) => undrawnValueHits(x).filter((y) => y.kind === "card reason").map((y) => y.at));
+  assert.deepEqual(cards, ["c6-maths-ch07-t03-s2/c2.why", "c6-maths-ch07-t03-s2/c2.whyShort"]);
 });
 
 // ---- 2 wrongAnswers

@@ -2638,8 +2638,20 @@ export function statedSentences(s) {
  *  (undrawnValueNotes, D lines), not a hit: the order names the four kinds of a worked example; a card's reason is read only where it
  *  has no answer board (director34's c6-ch07-t03 s2 c2). Measured on the nine scripts (2026-11-24): of the D lines about a quarter
  *  are false (a reference fraction in a comparison, "1/3 se chhota"; a named wrong answer, "5 cm nahi"); main to rule. */
-export const undrawnValueHits = (s) => undrawnValues(s).filter((x) => !(x.kind === "card reason" && x.boardAt === "answerBoard"));
-export const undrawnValueNotes = (s) => undrawnValues(s).filter((x) => x.kind === "card reason" && x.boardAt === "answerBoard");
+// (main on d35, 2026-11-24: a card's reason is a D line — every answer board is one more drawing in the turn after a right answer, and
+// three boards in a turn split it — except where the card's posing board leaves a slot for the value: a "?" (boardDrawsQ) or a compare whose
+// two columns are bare numbers and hold different numbers of items, "Upar 40, 5 | Neeche 56" with nothing where the 7 goes (director34's c6-ch07-t03 s2 c2))
+export const boardHasSlot = (b) => {
+  if (!b?.template) return false;
+  if (boardDrawsQ(b)) return true;
+  const p = b.params ?? {};
+  // (a table of bare numbers, row against row: a column one short has a slot; "16 cm" beside its four pieces is no table)
+  const bare = (xs) => Array.isArray(xs) && xs.length > 0 && xs.every((v) => /^\s*\d+(?:\s*\/\s*\d+)?\s*$/.test(String(v)));
+  return b.template === "compare@1" && bare(p.left?.items) && bare(p.right?.items) && p.left.items.length !== p.right.items.length;
+};
+const cardNote = (x) => x.kind === "card reason" && (x.boardAt === "answerBoard" || !boardHasSlot(x.board));
+export const undrawnValueHits = (s) => undrawnValues(s).filter((x) => !cardNote(x));
+export const undrawnValueNotes = (s) => undrawnValues(s).filter(cardNote);
 export function undrawnValues(s) {
   const out = [];
   for (const x of statedSentences(s)) {
@@ -2790,7 +2802,7 @@ export const ASIDE_REPLIES_FILE = join(ROOT, "data/lesson-aside-replies.json");
 export function d35Errors(s, { force = false } = {}) {
   if (!force && !isD35(s)) return [];
   const e = [];
-  for (const x of undrawnValueHits(s)) e.push(`${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")} over the ${x.boardAt} (${x.board.template}), which does not draw ${x.missing.length > 1 ? "them" : "it"}: say it over a board that shows it (a resultBoard / answerBoard), or say what the board draws: "${x.text}" (Learning 023 rule 1)`);
+  for (const x of undrawnValueHits(s)) e.push(`${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")} over the ${x.boardAt} (${x.board.template}), which does not draw ${x.missing.length > 1 ? "them" : "it"}: ${x.kind === "card reason" ? "its posing board leaves a slot for it: give the card an answerBoard that fills the slot" : "say it over a board that shows it (a resultBoard / answerBoard), or say what the board draws"}: "${x.text}" (Learning 023 rule 1)`);
   e.push(...wrongAnswerErrors(s));
   const f = firstTurn(s);
   if (f && f.total > f.limit) e.push(`${f.at}: the first teaching turn is hook ${f.hook} (${f.slot}) + point ${f.point} + card ${f.card} = ${f.total} words by the engine's count > ${f.limit}: cut the point's example, never the card's givens (Learning 023 rule 3)`);
