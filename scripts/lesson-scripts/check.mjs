@@ -2527,8 +2527,9 @@ export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), .
  *     16 words or fewer); a form with the words of a liking ("achha lagta", "achhi lagti", "pasand", "favourite") anywhere but
  *     `replyKinds.liking` is an error, and "Yeh baat toh do baar aa gayi." anywhere is an error. With --d35 an error; else a note.
  *  Rules 1-5 are errors for a topic in D35_READY or named with --d35. */
-// (2026-11-24: empty; an author's script joins when main says)
-export const D35_READY = [];
+// (2026-11-24: the nine scripts of round d35, read cold and fixed — main's closing item 8)
+export const D35_READY = ["c4-maths-ch05-t01", "c4-maths-ch01-t02", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01",
+  "c6-maths-ch07-t01", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 export const isD35 = (s) => D35_READY.includes(s?.topicId);
 export const D35_FIRST_MAX = 60, D35_WRONG_MAX = 3, D35_FRAME_RUN = 6;
 // ---- rule 1: what a board draws
