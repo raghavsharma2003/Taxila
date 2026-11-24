@@ -277,6 +277,26 @@ function sameExpr(A, B) {
   });
 }
 
+/** d35 follow-up 3: the unit each number carries — the first unit said after it, before the next number — or null ("7 metre 50" →
+ *  ["m", null]). */
+const unitOfEach = (c) => { const out = []; for (const x of c.seq) { if (x.k === "num") out.push(null); else if (x.k === "unit" && out.length && out.at(-1) === null) out[out.length - 1] = x.t; } return out; };
+/** d35 follow-up 3 (staged c4-ch06-t01 s3: "7 metre 50 metre" met the accepted "7 metre 50" with units compared as a set): a compound
+ *  quantity's units are matched to their numbers. The same numbers in the same order contradict when one number carries a unit in both
+ *  that differs ("7 centimetre 50 metre" / "7 metre 50 centimetre"), or a unit one side gives a number the other side gives another of its
+ *  numbers while saying this one bare ("7 metre 50 metre" / "7 metre 50": the 50 there is not metres). A number said with no unit, by a
+ *  side that names that unit nowhere else, still matches ("7 metre 50" / "7 metre 50 centimetre"). Not read in a sum (sameExpr). */
+function unitsContradict(a, b) {
+  if (!a.units.length || !b.units.length || a.nums.length !== b.nums.length || a.nums.length < 2) return false;
+  const ua = unitOfEach(a), ub = unitOfEach(b);
+  return ua.some((u, i) => {
+    const v = ub[i];
+    if (u && v) return u !== v;
+    if (u && !v) return ub.includes(u);
+    if (v && !u) return ua.includes(v);
+    return false;
+  });
+}
+
 /** Are two normal forms the same answer? (exact in what decides it, free in fillers and equal words) */
 export function sameAnswer(a, b) {
   if (!a?.seq.length || !b?.seq.length) return false;
@@ -284,8 +304,9 @@ export function sameAnswer(a, b) {
   const A = a.seq.filter((x) => x.k !== "unit"), B = b.seq.filter((x) => x.k !== "unit");
   if (!A.length || !B.length) return false;
   // a denial is the same only where it stands in the same place (G7; 050: also in a sum — "2 se guna nahi" is never "2 se guna")
-  if (a.neg || b.neg) return join(A) === join(B);
+  if (a.neg || b.neg) return join(A) === join(B) && !unitsContradict(a, b);
   if (a.ops || b.ops) return a.ops && b.ops && setEq(a.words, b.words) && sameExpr(A, B);
+  if (unitsContradict(a, b)) return false;
   // the words as a set; the numbers in their order (G7: a list of values is ordered)
   return setEq(a.words, b.words) && a.nums.join(" ") === b.nums.join(" ");
 }
