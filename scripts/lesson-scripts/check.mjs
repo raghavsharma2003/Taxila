@@ -1757,7 +1757,7 @@ export const PICTURE_NONE = [
   { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/c3", reason: "the child estimates the room she is sitting in: there is nothing of hers to draw" },
   { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s3/remediation[0].then", reason: "which unit for a tree's height: the tree drawn against a stride is the answer" },
   // (d34 cold read, 2026-11-23: each card carries `noView` and no pictureBoard)
-  { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s1/e3", reason: "where the pencil ends when it starts at 4: any scale drawn with the pencil on it marks the end, which is the key, or the pencil's own length, which is the named wrong answer" },
+  // (Learning 024 cause 3, item 5: c4-maths-ch06-t01-s1/e3 now has an authored picture — the scale's start, 4 to 7, with its first space marked — and is off this list)
   { topicId: "c4-maths-ch06-t01", at: "c4-maths-ch06-t01-s1/workedExample.steps[0].ask", reason: "which mark to subtract from 12: a picture that labels the scale's start labels the trap, and one that labels the twig's start labels the key" },
 ];
 export const isD32 = (s) => D32_READY.includes(s?.topicId);
