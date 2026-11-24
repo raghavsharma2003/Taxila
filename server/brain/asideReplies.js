@@ -156,7 +156,7 @@ function asideReplyLine2(args = {}) {
 // (to-brain 052 B5: aside replies of one frame are rotated across a lesson — the frame her last aside reply was said in is not said again next:
 // dry offtopic c4-ch05-t01 48 and 56 "Wah, batting! … achhi lagti hai." then "Wah, chauka! … achha lagta hai."; c5-t02 44, 50; c6 30, 40)
 const normK = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
-const FRAME_RES = [...Object.values(KINDS), { byKind: DATA.byKind }, { byKind: DATA.replyKinds }].flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? []), ...["person", "done", "liking", "whenWhere"].flatMap((x) => [...(Array.isArray(k[x]) ? k[x] : []), ...(Array.isArray(k.byKind?.[x]) ? k.byKind[x] : [])])]).flatMap((f) => [f?.hi, f?.en])
+const FRAME_RES = [...Object.values(KINDS), DATA.replyKinds ?? {}].flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? []), ...["person", "done", "liking", "whenWhere"].flatMap((x) => (Array.isArray(k[x]) ? k[x] : []))]).flatMap((f) => [f?.hi, f?.en])
   .filter((x) => typeof x === "string" && /\{(?:phrase|word)\}/.test(x))
   .map((f) => ({ f, re: new RegExp(`(?:^| )${normK(f.replace(/\{(?:phrase|word)\}/g, " SLOTX ")).split("slotx").map((x) => esc(x.trim())).join(" ?(?:.{1,40}?) ?").replace(/achha\\s\+lagta/g, "(?:achha|achhi|achhe)\\s+(?:lagta|lagti|lagte)")}(?: |$)`, "u") }));
 /** The frame (the form as written, with its slot) a turn of hers says an aside reply in, or null. */
@@ -199,18 +199,16 @@ export function replyKindOf(asked = "", said = "") {
   if (Q_LIKING.test(q)) return A_PERSON(a) ? "person" : A_WHEN_WHERE.test(a) && !A_LIKING.test(a) ? "whenWhere" : "liking";
   return byWords() ?? (q && A_NAME(a) ? "person" : null);
 }
-/** The library's forms for a reply kind (Learning 023 rule 7): the aside's own kind's list first, then "other"'s, then a top-level list —
- *  `kinds.<aside kind>.<reply kind>`, `kinds.<aside kind>.byKind.<reply kind>`, `byKind.<reply kind>` or `replyKinds.<reply kind>`. [] until
- *  one is written: the neutral forms are used then. */
+/** The library's forms for a reply kind (Learning 023 rule 7, main's schema): the top-level `replyKinds: { person, done, liking, whenWhere }`,
+ *  each a list of `{ hi, en }` forms with one {phrase} slot. [] while the key is absent: what is said today is used then. */
 let KIND_FORMS_TEST = null;
-/** Tests only: a library's kind forms in place of the file's ({ kinds?: {…}, byKind?: {…} }); null restores the file. */
+/** Tests only: a library's `replyKinds` in place of the file's ({ replyKinds: {…} }); null restores the file. */
 export function setReplyKindFormsForTest(o = null) { KIND_FORMS_TEST = o; }
-export function replyKindForms(kind, asideKind = "other") {
+const replyKindsData = () => (KIND_FORMS_TEST ?? DATA).replyKinds ?? null;
+export function replyKindForms(kind) {
   if (!REPLY_KINDS.includes(kind)) return [];
-  const pick = (o) => (Array.isArray(o?.[kind]) ? o[kind] : Array.isArray(o?.byKind?.[kind]) ? o.byKind[kind] : []);
-  const K = KIND_FORMS_TEST?.kinds ?? KINDS, D = KIND_FORMS_TEST ?? DATA;
-  for (const o of [K[asideKind], K.other, { byKind: D.byKind }, { byKind: D.replyKinds }]) { const f = pick(o).filter((x) => x && (x.hi || x.en)); if (f.length) return f; }
-  return [];
+  const f = replyKindsData()?.[kind];
+  return Array.isArray(f) ? f.filter((x) => x && (x.hi || x.en)) : [];
 }
 /** The kinds of thing said that each existing phrase-form shape fits, until a kind has forms of its own: a liking asked or said takes the
  *  "achha lagta" and favourite forms, a thing done the "pichhli baar" form, a favourite person the favourite form; a person who was there
@@ -224,7 +222,7 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
   // (to-brain 053 C2: the kind of thing said, and its own forms where the library has them — a {phrase} or {word} of theirs, or none)
   const rk = String(asked ?? "").trim() ? replyKindOf(asked, said) : null;
-  const kf = rk ? replyKindForms(rk, asideKindOf(`${topic} ${said}`)) : [];
+  const kf = rk ? replyKindForms(rk) : [];
   if (kf.length) {
     const ph = saidPhrase(said) ?? phraseOf(said);
     const wd = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
@@ -293,9 +291,7 @@ export function asideReturnForms() {
 
 /** Every form a reply may take, for the dry predicate: { word: [RegExp with a (word) group], plain: [string], sad: [string] }. */
 /** Every reply-kind form (to-brain 053 C2), both languages: the file's, or a test's. */
-const kindFormTexts = () => { const K = KIND_FORMS_TEST?.kinds ?? KINDS, D = KIND_FORMS_TEST ?? DATA;
-  return [...Object.values(K), { byKind: D.byKind }, { byKind: D.replyKinds }].flatMap((o) => REPLY_KINDS.flatMap((k) => [...(Array.isArray(o?.[k]) ? o[k] : []), ...(Array.isArray(o?.byKind?.[k]) ? o.byKind[k] : [])]))
-    .flatMap((f) => [f?.hi, f?.en]).filter((x) => typeof x === "string" && x.trim()); };
+const kindFormTexts = () => REPLY_KINDS.flatMap((k) => replyKindForms(k)).flatMap((f) => [f?.hi, f?.en]).filter((x) => typeof x === "string" && x.trim());
 export function asideReplyForms() {
   const all = Object.values(KINDS);
   const kf = kindFormTexts();
