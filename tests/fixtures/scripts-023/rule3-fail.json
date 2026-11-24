@@ -1,0 +1,167 @@
+{
+ "topicId": "t-023",
+ "version": 2.4,
+ "terms": [],
+ "joints": {},
+ "skills": [
+  {
+   "skillId": "t-023-s1",
+   "hook": {
+    "convey": "x",
+    "interestSlots": [
+     {
+      "interest": "cricket",
+      "use": {
+       "hi": "Cricket pitch bhi ek rectangle hai, aur uske chaaron taraf ek safed line hoti hai jo ground ke beech mein bahut lambi dikhti hai, aur khiladi wahin se daudte hain.",
+       "en": "x"
+      }
+     }
+    ]
+   },
+   "explain": [
+    {
+     "id": "e1",
+     "point": {
+      "hi": "Is rectangle ki do lambi bhujayein 10 m ki hain, woh lambai hai. Do chhoti bhujayein 6 m ki, woh chaudai. Aamne-saamne ki bhujayein barabar hoti hain, aur chakkar mein dono do-do baar aati hain.",
+      "en": "x"
+     },
+     "board": {
+      "template": "measured@1",
+      "params": {
+       "shape": "rect",
+       "unit": "m",
+       "w": 10,
+       "h": 6
+      }
+     },
+     "ask": {
+      "prompt": {
+       "hi": "Ek poora chakkar kitne metre ka hua?",
+       "en": "x"
+      },
+      "reask": {
+       "hi": "10 m lambe, 6 m chaude rectangle ka chakkar kitna hai?",
+       "en": "x"
+      },
+      "key": "32 m",
+      "accept": [
+       "32"
+      ],
+      "wrongIfMis": "16 m",
+      "why": {
+       "hi": "10 aur 6 dono do-do baar aate hain.",
+       "en": "x"
+      },
+      "whyAlt": {
+       "hi": "16 m sirf aadha chakkar hai; wapas aane mein utna hi aur lagta hai.",
+       "en": "x"
+      },
+      "answerBoard": {
+       "template": "unrolled@1",
+       "params": {
+        "unit": "m",
+        "sides": [
+         10,
+         6,
+         10,
+         6
+        ],
+        "total": 32
+       }
+      }
+     }
+    }
+   ],
+   "workedExample": {
+    "problem": {
+     "hi": "Ek cover 24 cm lamba aur 18 cm chauda hai.",
+     "en": "x"
+    },
+    "givens": [],
+    "board": {
+     "template": "measured@1",
+     "params": {
+      "shape": "rect",
+      "unit": "cm",
+      "w": 24,
+      "h": 18,
+      "trace": true
+     }
+    },
+    "steps": [
+     {
+      "told": {
+       "hi": "Pehle lambai aur chaudai jodte hain.",
+       "en": "x"
+      },
+      "resultBoard": {
+       "template": "unrolled@1",
+       "params": {
+        "unit": "cm",
+        "sides": [
+         24,
+         18
+        ],
+        "total": 42
+       }
+      }
+     },
+     {
+      "told": {
+       "hi": "Toh 24 + 18 = 42 cm.",
+       "en": "x"
+      },
+      "resultBoard": {
+       "template": "unrolled@1",
+       "params": {
+        "unit": "cm",
+        "sides": [
+         24,
+         18
+        ],
+        "total": 42
+       }
+      }
+     }
+    ],
+    "yourStep": {
+     "prompt": {
+      "hi": "Poore kinaare par kitni tape lagegi?",
+      "en": "x"
+     },
+     "reask": {
+      "hi": "Aadha chakkar 42 cm hai; poora kitna?",
+      "en": "x"
+     },
+     "key": "84 cm",
+     "accept": [
+      "84"
+     ],
+     "why": {
+      "hi": "poora chakkar 2 × 42 = 84 cm",
+      "en": "x"
+     },
+     "answerBoard": {
+      "template": "unrolled@1",
+      "params": {
+       "unit": "cm",
+       "sides": [
+        24,
+        18,
+        24,
+        18
+       ],
+       "total": 84
+      }
+     }
+    },
+    "answer": {
+     "hi": "cover ke liye 84 cm tape",
+     "en": "x"
+    }
+   },
+   "checks": [],
+   "remediation": []
+  }
+ ]
+}
