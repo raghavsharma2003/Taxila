@@ -1748,7 +1748,7 @@ export const D32_PICTURES_READY = ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5
 export const PICTURE_NONE = [
   { topicId: "c4-maths-ch05-t01", at: "c4-maths-ch05-t01-s2/workedExample.steps[0].ask", reason: "15 pencils into groups for 1/3: any drawing of the groups is the key (three equal groups)" },
   // (d33 two-pass read: the worked board's second view lays the sides in a line with "?" for their total, which is the step's answer; `noView`)
-  { topicId: "c6-maths-ch06-t01", at: "c6-maths-ch06-t01-s1/workedExample.steps[0].ask", reason: "what to find first for the fence: the view totals the sides as \"?\", which is the key (the perimeter)" },
+  // (Learning 024 cause 3, item 5: c6-maths-ch06-t01-s1/workedExample.steps[0].ask now has an authored picture — the fence's 35 m beside the bed's three sides, no total — and is off this list; its `noView` stays)
   // (d33 rewrite, 2026-11-23: the step carries `noView`)
   { topicId: "c4-maths-ch01-t02", at: "c4-maths-ch01-t02-s1/workedExample.steps[0].ask", reason: "the tester laid square on the slanting tile says 'turn it', and a turned tester is the step's answer" },
   // (d33 fix pass, 2026-11-23: each card carries `noView` and no pictureBoard)
