@@ -199,3 +199,12 @@ describe("B4: the third turn running at one question ends on a pointed invitatio
     assert.ok(PREDICATES.asideFrameTwice); assert.ok(!PENDING.has("asideFrameTwice"));
   });
 });
+describe("A1 follow-up: code's lead-in opener leaves room for an authored one ahead", () => {
+  test("openerAhead: the card posed now or the next of its skill holds an authored opener in its help (dry steady c5-ch02-t02 44, 52)", async () => {
+    const { openerAhead } = await import("../server/brain/say.js");
+    const script = fixture("c5-maths-ch02-t02");
+    assert.equal(openerAhead({ activeItemId: "script:c5-maths-ch02-t02-s2:ask:e2" }, null, script), true, "e3's own reason says \"Dekho,\"");
+    assert.equal(openerAhead({ activeItemId: "script:c5-maths-ch02-t02-s2:ask:e1" }, null, script), false);
+    assert.equal(openerAhead({ activeItemId: null }, null, script), false);
+  });
+});

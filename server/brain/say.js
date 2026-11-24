@@ -1697,6 +1697,18 @@ export const DEKHO_MAX = 3;
 /** main's ruling of 2026-11-23 on to-brain 049 B6.2: the lead-in openers ("Dekho,", "Suno,") together, at most this many a lesson. */
 export const LEAD_MAX = 4;
 const LEAD_OPENER = /(?<![\p{L}])(?:Dekho|Suno),/u;
+/** to-brain 052: whether the card posed now (state.activeItemId, a script card) or the next card of its skill holds an authored lead-in
+ *  opener in its help (its own hint, its marked own reason, its point's other wording). */
+export function openerAhead(state, kit, script = scriptFor(kit)?.script ?? null) {
+  const m = /^script:(.+?-s\d+):(?:ask:)?(e\d+|c\d+)$/.exec(String(state?.activeItemId ?? ""));
+  if (!m) return false;
+  const sk = (script?.skills ?? []).find((k) => k.skillId === m[1]);
+  if (!sk) return false;
+  const list = m[2].startsWith("e") ? (sk.explain ?? []).map((e) => ({ id: e.id, help: [e.ask?.simpler, e.ask?.whyAltAsHelp ? e.ask?.whyAlt : null, e.pointAlt] }))
+    : (sk.checks ?? []).map((c) => ({ id: c.id, help: [c.simpler, c.whyAltAsHelp ? c.whyAlt : null] }));
+  const n = list.findIndex((x) => x.id === m[2]);
+  return n >= 0 && list.slice(n, n + 2).some((x) => LEAD_OPENER.test(JSON.stringify(x.help)));
+}
 export function rightWhyLead(fr, why, state, kit = null) {
   const last2 = [...(state?.recent ?? [])].filter((t) => t.who === "teacher").slice(-2).map((t) => String(t.text ?? ""));
   const w = joinable(why, { lower: true });
@@ -1707,7 +1719,10 @@ export function rightWhyLead(fr, why, state, kit = null) {
   // (main's ruling of 2026-11-23, item 2: "Suno," took "Dekho,"'s place — up to six in a steady lesson. The lead-in openers together are at
   // most four a lesson (LEAD_MAX), no one of them more than three (DEKHO_MAX), never two openers within four of her turns — any opener near
   // bars every opener; otherwise the reason is said with no opener. state.dekhoN and state.jointN.leadSuno: brain/turn.js's counts)
-  const near = () => last4.some((t) => LEAD_OPENER.test(t));
+  // (to-brain 052 A1: the own reason now comes first after a named wrong answer, so a card's authored "Dekho," is said sooner — dry steady
+  // c5-ch02-t02 44 and 52: code's "Suno," at e2, e3's own reason "… Dekho, …" four turns later. Code's lead-in also leaves room ahead: none
+  // where the card this turn poses, or the next one of its skill, holds an authored opener in its help)
+  const near = () => last4.some((t) => LEAD_OPENER.test(t)) || openerAhead(state, kit);
   // (a script's own "Dekho," — a point, a caption — is said as written and counts: code's lead-in leaves it room, c4 steady 74 on the dry
   // matrix: an authored point's "Dekho," was the lesson's fourth)
   const sj = JSON.stringify(scriptFor(kit)?.script ?? {});
