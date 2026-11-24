@@ -89,7 +89,8 @@ describe("r8-director24-second-help (H4)", () => {
     assert.ok(e1.ask.hindi?.hi, "this card has its hindi form");
     let x = r;
     for (let k = 0; k <= ladder.length; k++) {
-      x = say(K, x, "hindi mein samjhao", cls("no_evidence", hindi));
+      // (to-brain 053 B7: "samjhao" asks for an explanation too — the card's unsaid hint comes before the form; this test reads a plain request)
+      x = say(K, x, "hindi mein bolo", cls("no_evidence", hindi));
       assert.equal(x.state.lastMove.cell?.column, "hindi");
       assert.equal(x.state.lastMove.help?.rung, ["hindi", "ask.simpler", "pointAlt", "simpler"][k]);
       assert.equal(x.state.lastMove.hindiForm, e1.ask.hindi.hi.replace(/\s+/g, " ").trim(), "the form is the card's question");

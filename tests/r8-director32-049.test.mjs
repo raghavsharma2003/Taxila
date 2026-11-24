@@ -67,14 +67,15 @@ describe("B2: a picture request with nothing left to draw", () => {
     // (a give-up on the same spent card closes it with its key — the picture request's difference)
     assert.equal(pickHelp({ script, part: PART, request: "clarify", said }).card, "close");
   });
-  test("pickHelp: with a hint left, the line then the hint; with no noPicture forms, the hint alone", async () => {
+  // (to-brain 053 A1 reverses "the line then the hint" where the hint owns a board: that board is the second picture, the hint its caption, no line)
+  test("pickHelp: with a hint left that owns a board, the hint's board and the hint, no line (053 A1); with no noPicture forms, the hint alone", async () => {
     const { pickHelp } = await import("../server/director/help.js");
     const d = pickHelp({ script: with021(S1()), part: PART, request: "picture", said: [] });
     assert.equal(d.card, "keep");
-    assert.ok(d.rung?.text && d.pictureLine?.text);
+    assert.ok(d.rung?.text && d.hintBoard && !d.pictureLine?.text);
     const d0 = pickHelp({ script: S1(), part: PART, request: "picture", said: [] });
     assert.ok(d0.rung?.text);
-    assert.equal(d0.pictureLine, null);
+    assert.ok(!d0.pictureLine);
   });
 });
 

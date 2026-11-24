@@ -125,8 +125,10 @@ describe("R8: a Hindi request with the help spent, off a live card", () => {
 
 describe("R2: the short ask, by the kind of help", () => {
   const ROWS = [["stuck", "c4", 18], ["steering", "c4", 30], ["steady", "c4ch01", 86], ["stuck", "c4ch01", 44], ["stuck", "c4ch01", 60], ["offtopic", "c4ch01", 56],
-    ["steering", "c4ch01", 52], ["steering", "c5t02", 16], ["stuck", "c6", 74], ["steering", "c6", 20], ["steering", "c5t03", 14], ["offtopic", "c5t03", 14]];
-  test("shortAskKind is gated and reads the order's twelve rows", () => {
+    // (to-brain 053 B2 reverses "never a short ask after try-first" — after try-first or a bare yes she waits with the short ask: steering c6 20 is
+    // no longer read)
+    ["steering", "c4ch01", 52], ["steering", "c5t02", 16], ["stuck", "c6", 74], ["steering", "c5t03", 14], ["offtopic", "c5t03", 14]];
+  test("shortAskKind is gated and reads the order's rows (eleven after 053 B2)", () => {
     assert.ok(!PENDING.has("shortAskKind"));
     for (const [p, t, row] of ROWS) assert.ok(flagged(p, t, "shortAskKind").has(row), `${p} ${t} ${row}`);
   });
@@ -260,12 +262,15 @@ describe("R5: help answers the mistake", () => {
     }
     assert.ok(n >= 5, `${n} cards`);
   });
-  test("a give-up or a clarify at a bridge goes on to the next point and its card — the bridge is not said again in other words", async () => {
+  // (to-brain 053 B1 reverses the go-on at a bridge's FIRST give-up: the bridge's simpler, then its check-in; the second goes on)
+  test("a give-up or a clarify at a bridge: the first gets the bridge's simpler; the second goes on to the next point and its card", async () => {
     const { pickHelp } = await import("../server/director/help.js");
     const sc = live("c5-maths-ch02-t01");
     const id = `${sc.skills[0].skillId}:bridge`;
     for (const request of ["give_up", "clarify"]) {
-      const h = pickHelp({ script: sc, part: id, request, said: [] });
+      const h1 = pickHelp({ script: sc, part: id, request, said: [] });
+      assert.equal(h1.card, "wait", request); assert.ok(h1.bridgeHelp, request); assert.equal(h1.rung?.path, "skills[0].bridgeToNext.simpler", request);
+      const h = pickHelp({ script: sc, part: id, request, said: [], bridgeAgain: true });
       assert.equal(h.card, "goOn", request); assert.equal(h.rung, null, request); assert.ok(h.bridgeOn, request);
     }
   });

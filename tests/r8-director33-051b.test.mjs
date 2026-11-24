@@ -53,7 +53,8 @@ describe("C4: the cap counts what the child hears", () => {
   test("inviteAfterPark reads c5-t02 offtopic 18, c6 offtopic 18, c4-ch01 offtopic 14", () => {
     reads("inviteAfterPark", [["offtopic", "c5t02", 18], ["offtopic", "c6", 18], ["offtopic", "c4ch01", 14]]);
   });
-  test("inviteNoHelp reads c4-ch01 steady 30", () => reads("inviteNoHelp", [["steady", "c4ch01", 30]]));
+  // (to-brain 053 B2 reverses it for a bare yes after try-first: steady c4-ch01 30, "Ab tum batao." after "mujhe lagta hai haan", is B2's wait)
+  test("inviteNoHelp reads nothing at c4-ch01 steady 30 after 053 B2 (a bare yes after try-first: the invitation is the wait)", () => assert.ok(!flagged("steady", "c4ch01", "inviteNoHelp").has(30)));
   test("shortAskNoAnswer reads c5-t01 offtopic 24", () => reads("shortAskNoAnswer", [["offtopic", "c5t01", 24]]));
 
   test("a turn is at a question by its imperative last sentence, a short ask, a Hindi form; an invitation is at none", () => {

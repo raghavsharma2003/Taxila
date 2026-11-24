@@ -104,11 +104,12 @@ describe("B6.4: the greeting's start line is said only at the greeting", () => {
     // (the start line after the greeting is its place: row 4 of stuck and steering)
     assert.ok(!flagged("stuck", "c4", "startLineNotGreeting").has(4));
   });
-  test("a give-up at a bridge's check-in goes on led by the go-on joint (afterKeyGoOn)", async () => {
+  // (to-brain 053 B1: the FIRST give-up there gets help and the check-in again; the second goes on — this reads the second)
+  test("a second give-up at a bridge's check-in goes on led by the go-on joint (afterKeyGoOn)", async () => {
     const { pickHelp } = await import("../server/director/help.js");
     const { readFileSync } = await import("node:fs");
     const script = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t03.json", import.meta.url), "utf8"));
-    const d = pickHelp({ script, part: `${script.skills[0].skillId}:bridge`, request: "give_up", said: [] });
+    const d = pickHelp({ script, part: `${script.skills[0].skillId}:bridge`, request: "give_up", said: [], bridgeAgain: true });
     assert.equal(d?.card, "goOn");
     assert.equal(d?.joint?.kind, "afterKeyGoOn");
   });
