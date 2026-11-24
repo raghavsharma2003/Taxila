@@ -1529,6 +1529,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     tryFirst: TRY_FIRST[lang].map((x) => x.replace(/\s*[—–-]\s*$/, "")).find((x) => list.some((p) => String(p.text).toLowerCase().startsWith(x.toLowerCase()))) ?? null,
     afterAi: /(?:main ai teacher hoon|main ai hoon|i'm an ai|no favourites for me)/i.test(herPrev) && !!(out.guard?.returnReplyLine || out.guard?.asideResume),
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
+    // (to-brain 053 D: the yes-or-no key said as its fact is recorded as a key)
+    keyFact: !!out.guard?.ynFact,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;

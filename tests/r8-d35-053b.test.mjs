@@ -324,3 +324,24 @@ describe("E: the judges' prompt is checked by code", () => {
     assert.ok(e.every((x) => x.n > 0 && typeof x.example === "string"));
   });
 });
+
+describe("D: the record", () => {
+  test("a yes-or-no key said as its fact is recorded as a key (director34 c4-ch01-t02 stuck 42 was missVerdict)", async () => {
+    const { seamPass } = await import("../server/brain/seams.js");
+    const list = [{ part: "close", text: "Nahi, tile ka kona right angle hai; Sonu ki baat theek nahi thi." }, { part: "aside", text: "Yahan tak theek hai?" }];
+    const st = { ctx: { lang: "hinglish" }, recent: [] };
+    assert.equal(seamPass(list, { kit: null, state: st, info: { miss: true } }).seams[0].right, "missVerdict", "as before without the key fact");
+    assert.equal(seamPass(list, { kit: null, state: st, info: { miss: true, keyFact: true } }).seams[0].right, "key");
+  });
+  test("the harness records the invitation as yourTurn and the own reason as whyAlt", () => {
+    const src = readFileSync(join(ROOT, "evals/hybrid-side-by-side.mjs"), "utf8");
+    assert.match(src, /const recordPart = \(pp, lm\) => \(pp\.kind === "yourTurn" \? "yourTurn" : pp\.part === "simpler" && lm\?\.help\?\.rung === "whyAltHelp" \? "whyAlt" : pp\.part\)/);
+    assert.match(src, /const o = \{ part: recordPart\(pp, lmB\),/);
+  });
+  test("C2's re-read of d26's asideReplied: a word form to a person is the neutral form while the library has no person forms", () => {
+    const rows = [{ who: "teacher", text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?" }, { who: "child", text: "Virat" },
+      { who: "teacher", text: "Arre, Virat! Achha hua tumne bataya. Achha, ab padhai ki taraf mudte hain.", cell: { column: "aside_reply" } }];
+    const ctx = { script: { skills: [] }, prevChild: "Virat", o: {} };
+    assert.equal(PREDICATES.asideReplied({ rows }, rows[2], 2, ctx), null);
+  });
+});

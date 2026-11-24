@@ -7,15 +7,20 @@
 //   whyAltNoMiss        F: d33's predicate re-read — each named reason (the card's marked whyAlt, and each `wrongAnswers[k].why`) is read
 //                       against its own answer: said as help to a child whose last answer at that card was another answer is the fault.
 //                       Every reading d33 makes on a card with no `wrongAnswers` is d33's, unchanged. Gated, as d33's was.
+//   asideReplied        C2: d26's A4 re-read — a reply to a child who named a person, or a time or place, is said in that kind's forms
+//                       (`replyKinds`) and, while the library has none, in the neutral forms (a word form, a plain one): not flagged then.
+//                       Every other reading is d26's.
 import { D33_PREDICATES } from "./d33-predicates.mjs";
 import { helpTurnOf, lastAnswerAt } from "./help-predicates.mjs";
 import { helpPart, at, sentencesOf, normSentence } from "../../server/director/help.js";
-import { replyKindOf, replyFrameOf } from "../../server/brain/asideReplies.js";
+import { replyKindOf, replyFrameOf, replyKindForms } from "../../server/brain/asideReplies.js";
+import { D26_PREDICATES } from "./d26-predicates.mjs";
 import { canon, sameAnswer, wrongList } from "../../server/grading/script-answer.js";
 
 const VERDICT_RIGHT = ["Haan, sahi hai", "Bilkul sahi", "Haan, bilkul theek", "Sahi jawab", "Yes, that's right", "Exactly right", "Yes, correct", "That's right"];
 const esc = (t) => String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 const LEAD_IN = new RegExp(`^(?:${VERDICT_RIGHT.map(esc).join("|")})\\. (Suno|Dekho|Look|Listen), (.{0,40})`, "u");
+const D26_ASIDE_REPLIED = D26_PREDICATES.asideReplied;
 const keyOf = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 
 /** The named wrong answers of a script node: [{ n, answers: [string], why }] — n 0 is `wrongIfMis` with `whyAlt` (only where it is marked
@@ -61,6 +66,13 @@ export const D35B_PREDICATES = {
     if (like && ["person", "whenWhere"].includes(kind)) return `a liking form ("${f}") to a child who named a ${kind === "person" ? "person" : "time or place"} ("${String(child.text).slice(0, 30)}")`;
     if (fav && (kind === "whenWhere" || (kind === "person" && !/favou?rite/i.test(q)))) return `a favourite form ("${f}") to a child who named a ${kind === "person" ? "person who was there" : "time or place"}`;
     return null;
+  },
+  /** C2 (gated, as d26's A4 was). */
+  asideReplied(L, r, i, ctx) {
+    const f = D26_ASIDE_REPLIED(L, r, i, ctx);
+    if (!f || i < 2 || L.rows[i - 2]?.who !== "teacher") return f;
+    const kind = replyKindOf(L.rows[i - 2].text, L.rows[i - 1]?.text);
+    return ["person", "whenWhere"].includes(kind) && !replyKindForms(kind).length ? null : f;
   },
   /** F (gated): d33's reading, and each wrongAnswers reason against its own answer. */
   whyAltNoMiss(L, r, i, ctx) {
