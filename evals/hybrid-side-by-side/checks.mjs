@@ -60,7 +60,9 @@ export function pictureMismatch(text, board, altView = null) {
     // (v6.6, main on director14: the unrolled sides are drawn as a strip, "patti")
     unrolled: "line rekha sides side bhuja bhujayein seedhi straight patti strip",
     // (dc-r8-director25 harness, c4 offtopic 26: a wholes board's second view is strips — "patti" — and its authored caption is true)
-    strips: "bar patti strip parts hisse tukde" };
+    strips: "bar patti strip parts hisse tukde",
+    // (to-brain 051 C6, director33 c6-ch07-t01 steering 16: a compare board's scale view lays each length as a strip — "patti" — along one scale)
+    scale: "bar patti strip line rekha scale parts hisse tukde" };
   const av = typeof altView === "string" ? altView : altView?.view ?? null;
   const has = `${boardNouns(board)} ${av ? ALT[av] ?? "" : ""}`;
   const out = [];
@@ -137,12 +139,18 @@ export function falseAnswerNumbers(text, { keys = new Set(), given = "" } = {}) 
     // (main on director24, c5-t01 steady 92, c4 stuck 26: "8/8 = 1" names a whole, and "1/1 ka matlab hota poori roti" explains a
     // term — neither states an answer)
     const explained = new Set([...s.matchAll(/(\d+\/\d+|\d+)\s+(?:ka|ki|ke)\s+matlab/giu)].map((m) => m[1]));
+    // (to-brain 051 C6, director33 c6-ch07-t01 steady 82: "3 mein 2/3, 5 mein 2/5, 4 mein 2/4" — a share named with the group it is a share
+    // of, its denominator, is a true share, not a stated key: the share and its numbers)
+    const share = new Set([...s.matchAll(/(?<![\d/])(\d+)\s+(?:mein|me|among|in)\s+(\d+)\/(\d+)(?![\d/])/giu)].filter((m) => m[1] === m[3]).flatMap((m) => [`${m[2]}/${m[3]}`, m[1], m[2]]));
     for (const x of s.match(/\d+\/\d+|\d+(?:\.\d+)?/g) ?? []) {
       const whole = /^(\d+)\/(\d+)$/.exec(x);
       if (whole && whole[1] === whole[2]) continue;
       // (in a sentence that names a whole, 0 and 1 are the line's ends)
       if (/^[01]$/.test(x) && /(?<![\d/])(\d+)\/\1(?![\d/])/.test(s)) continue;
       if (explained.has(x)) continue;
+      // (to-brain 051 C6, director33 c6-ch07-t01 steady 82: "3 mein 2/3, 5 mein 2/5, 4 mein 2/4" — a share named with the group it is a share
+      // of, its denominator, is a true share, not a stated key)
+      if (share.has(x)) continue;
       if (!ok.has(x) && !shown.has(x)) out.push(x);
     }
   }

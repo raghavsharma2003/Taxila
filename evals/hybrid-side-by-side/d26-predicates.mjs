@@ -164,6 +164,12 @@ D26_PREDICATES.closingWhy = function closingWhy(L, r, i, ctx) {
   if (String(r.move?.kind ?? r.move ?? "") !== "wrap" || !ctx.script?.teachback?.why || String(ctx.prevT?.move?.kind ?? ctx.prevT?.move ?? "") !== "teachback") return null;
   if (!/^correct/.test(String(ctx.prevRead ?? ""))) return null;
   const first = sentencesOf(norm(r.text))[0] ?? "";
+  // (to-brain 051 C6: with the script's shorter wrap.covered the verdict leads the wrap — its why after the rotating lead-in, "Haan, sahi hai:
+  // <why>" or "Haan, bilkul theek. <why>" (Brain 046 Q6), is its why said)
+  const k = (t) => String(t ?? "").toLowerCase().replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
+  const whyHead = [ctx.script.teachback.why?.hi, ctx.script.teachback.why?.en, typeof ctx.script.teachback.why === "string" ? ctx.script.teachback.why : null].filter(Boolean).map((x) => k(x).split(" ").slice(0, 5).join(" "));
+  const lead2 = k(sentencesOf(norm(r.text)).slice(0, 2).join(" "));
+  if (whyHead.some((h) => h && lead2.includes(h))) return null;
   return /^(?:haan|bilkul|sahi|yes|exactly|that's right|right)\b/i.test(first) && !/(?<![\p{L}])(?:kyunki|because)(?![\p{L}])/iu.test(first) ? `the closing verdict without its why: "${first}"` : null;
 };
 /** W1 (c5-t02 steady 158 after "mujhe laga aisa hi hoga"; c6 steady 114 after "shayad gin ke"): what the child said after the closing key's

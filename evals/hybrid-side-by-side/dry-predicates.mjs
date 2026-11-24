@@ -922,7 +922,11 @@ export const ORDER_LAWS = {
       // (Brain 049 B2: a picture request with nothing left to draw leads with the script's own noPicture line — a joint the walk puts first,
       // as it puts help's joints: the seam table has no row for it, so its seam is read here: at the start, and one of the script's forms)
       const noPic = s.joint === "noPicture" && s.left === "start" && s.right === "noPicture" && (ctx.script?.joints?.noPicture ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
-      if (s.joint && s.joint !== want && !noPic && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
+      // (to-brain 051 C6: the invitation is recorded as its own seam kind with its form — one of the script's joints.yourTurn)
+      // (to-brain 051 C5: a language request's easierWords line leads the turn as help's joint, as noPicture does)
+      const ew = s.joint === "easierWords" && s.left === "start" && s.right === "easierWords" && (ctx.script?.joints?.easierWords ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      const inv = ew || s.joint === "yourTurn" && s.right === "yourTurn" && (ctx.script?.joints?.yourTurn ?? []).some((f) => [f?.hi, f?.en, typeof f === "string" ? f : null].filter(Boolean).some((x) => norm(x) === norm(s.form ?? "")));
+      if (s.joint && s.joint !== want && !noPic && !inv && !(s.joint === "afterKeyReturn" && want === "backTo") && !(s.joint === "afterWorked" && s.left === "verdict")) return `${s.joint} at ${s.left} → ${s.right}, which takes none`;
       if (s.form && t.split(s.form).length - 1 !== 1) return `the ${s.joint} form is not in the line once: "${s.form}"`;
     }
     return null;
@@ -1004,6 +1008,9 @@ Object.assign(PREDICATES, D33_PREDICATES);
 // (to-brain 051 C1, C2: the screen stays on a no-picture turn; a step's answer is drawn when it is said — d34a-predicates.mjs)
 import { D34A_PREDICATES } from "./d34a-predicates.mjs";
 Object.assign(PREDICATES, D34A_PREDICATES);
+// (to-brain 051 C4, C5, C6: the cap counts what the child hears; easier words; the return — d34b-predicates.mjs)
+import { D34B_PREDICATES } from "./d34b-predicates.mjs";
+Object.assign(PREDICATES, D34B_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {

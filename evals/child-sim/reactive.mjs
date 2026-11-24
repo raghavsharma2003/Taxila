@@ -179,6 +179,8 @@ export function intentOf({ kind, event, text }) {
   const t = String(text ?? "").toLowerCase();
   if (kind === "leave") return "stop";
   if (kind === "right") return "right";
+  // (to-brain 051 C6: the hedge nearMiss says for a word key with no near value, "pata nahi, shayad wahi", opens on a give-up — it means one)
+  if (kind === "wrong" && /^pata nahi, shayad wahi$/.test(t.trim())) return "give_up";
   if (kind === "wrong") return "miss";
   if (kind === "reason") return "reason";
   const ev = { clarifyPoint: "clarify", clarifyWorked: "clarify", clarifyAgain: "clarify", pictureAgain: "picture", returned: "aside_reply", picture: "picture", hindi: "hindi",
