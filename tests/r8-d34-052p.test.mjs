@@ -64,13 +64,18 @@ test("A6: a joints.noPicture form that matches the predicates' PICTURE_REFUSAL i
     } });
 });
 
-test("A6: a noted form prints as a P line and is no error; off the pattern it must come off the list", async () => {
-  const { d33JointErrors, noPictureNoteLines } = await import("../scripts/lesson-scripts/check.mjs");
+test("A6: the note list is empty (main, 2026-11-24: the three forms that said what was not made were reworded); such a form is an error", async () => {
+  const { d33JointErrors, noPictureNoteLines, NO_PICTURE_NOTE } = await import("../scripts/lesson-scripts/check.mjs");
   const s = structuredClone(live("c5-maths-ch02-t02"));
+  assert.deepEqual(NO_PICTURE_NOTE, []);
   assert.deepEqual(d33JointErrors(s, { required: true }), []);
-  assert.equal(noPictureNoteLines(s).length, 1);
-  s.joints.noPicture[2] = { hi: "Board par wahi rekha hai, use dekho.", en: "The line on the board is the one; look at it." };
-  assert.ok(d33JointErrors(s, { required: true }).some((x) => /^NO_PICTURE_NOTE joints\.noPicture\[2\] hi: listed but/.test(x)));
+  assert.equal(noPictureNoteLines(s).length, 0);
+  // (the pattern reads "drawing" and "picture" as it reads "tasveer": c6-ch07-t01's and c6-ch07-t03's old third forms)
+  for (const hi of ["Iske liye aur koi tasveer nahi bani hai.", "Iske liye koi doosri drawing nahi bani hai.", "Iske liye koi doosri picture nahi bani hai."]) {
+    const t = structuredClone(s);
+    t.joints.noPicture[2] = { hi, en: "What is on the board is the whole picture of this." };
+    assert.ok(d33JointErrors(t, { required: true }).length > 0, hi);
+  }
 });
 
 // ── A4: hindiNoFormNoLine and spent help ──

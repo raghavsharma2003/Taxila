@@ -2167,7 +2167,6 @@ const PROMISE = /(?<![\p{L}])(?:phir|baad\s+mein|baad\s+me|yaad|later|remember|n
 /** to-brain 052 A6: noPicture forms that read as a refusal and that main has not ruled on yet (the sentence is a child's, not the
  *  builder's to rewrite): printed as a note (P line), an error for every other form. { topicId, i, lang, seen }. */
 export const NO_PICTURE_NOTE = [
-  { topicId: "c5-maths-ch02-t02", i: 2, lang: "hi", seen: "to-brain 052 A6: \"Iske liye aur koi tasveer nahi bani hai.\" says what was not made, as the two staged forms fixed in 58c1d0d1b did" },
 ];
 const noPictureNoted = (s, i, l) => NO_PICTURE_NOTE.find((x) => x.topicId === s?.topicId && x.i === i && x.lang === l) ?? null;
 /** The noted forms, as lines for main; a listed form that no longer matches is an error in d33JointErrors' place (noPictureNoteErrors). */

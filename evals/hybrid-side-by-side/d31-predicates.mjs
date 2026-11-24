@@ -69,7 +69,7 @@ function stepAskRun(r, ctx) {
 const askBeatOf = (r) => { const p = [...(r?.pageParts ?? [])].reverse().find((x) => ["card", "stepAsk", "quick"].includes(x.part)); return p ? { part: p.part, beat: String(p.beat ?? "") } : null; };
 /** Brain 048 G5/G6: a picture request's refusal — "there is nothing to draw", "no second picture", in either language. */
 // (to-brain 052 A6: exported, the one place; the checker reads it against joints.noPicture)
-export const PICTURE_REFUSAL = /(?:doosri\s+tasveer\s+(?:abhi\s+)?nahi|tasveer\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi|kuch\s+(?:naya\s+)?(?:draw|banane)\s+(?:ko|ke\s+liye)\s+nahi|nothing\s+(?:new\s+)?to\s+draw|can'?t\s+draw|no\s+second\s+picture|isn'?t\s+another\s+picture)/i;
+export const PICTURE_REFUSAL = /(?:doosri\s+tasveer\s+(?:abhi\s+)?nahi|(?:tasveer|drawing|picture|chitra)\s+(?:abhi\s+)?nahi\s+ban|alag\s+chitra\s+abhi\s+nahi|kuch\s+(?:naya\s+)?(?:draw|banane)\s+(?:ko|ke\s+liye)\s+nahi|nothing\s+(?:new\s+)?to\s+draw|can'?t\s+draw|no\s+second\s+picture|isn'?t\s+another\s+picture)/i;
 const capKey = (t) => low(t).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
 /** Every authored caption sentence in a script (viewCaption, answerViewCaption, pictureCaption, both languages), normalised. */
 function captionsOf(script, o) {
