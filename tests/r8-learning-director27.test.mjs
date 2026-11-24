@@ -88,6 +88,7 @@ test("016 B: the named re-asks no longer do their card's work; c6's check 2 hint
   assert.match(S["c5-maths-ch02-t02"].skills[1].explain[2].ask.reask.hi, /3\/5.*1\/5/);
 });
 
+const NO_SOCHO = ["c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem0", "c6-maths-ch06-t01 c6-maths-ch06-t01-s2 rem1", "c6-maths-ch06-t01 c6-maths-ch06-t01-s3 rem1"];
 test("016 C: every remediation has a board its say speaks or is a 'socho' telling with none; none shows its card's answer", async () => {
   const BF = await import("../server/stagecraft/board-first.js");
   const ask = (text, ref) => ({ intent: { intentId: "d27:wb:1", lessonId: "d27", kind: "whiteboard", beat: "explain", style: { band: "B3" }, boardRef: ref, scriptBeat: { scriptId: "s", beatId: "r", kind: "remediation" } }, line: { lessonId: "d27", text }, mode: "fresh", kit: { topicId: "t", content: [] } });
@@ -95,13 +96,15 @@ test("016 C: every remediation has a board its say speaks or is a 'socho' tellin
   for (const [t, s] of Object.entries(S)) for (const k of s.skills) for (const [i, r] of k.remediation.entries()) {
     const at = `${t} ${k.skillId} rem${i}`;
     if (r.board) { own++; assert.ok(BF.scriptBoardSpoken(ask(r.say.hi, r.board)), `${at}: its board is not spoken by its say`); }
-    else { imagine++; assert.match(r.say.hi, /\bsocho\b/i, `${at}: no board, and not an imagine telling`); }
+    // (re-pinned, to-brain 052: e09beec16, Learning 022 Part 2 D on the judge's rows, took "Socho," off the opening of three c6 tellings —
+    // the scene is still one to imagine (an ant on the field, a thread round the edge, a fence round the plot), said without the word)
+    else { imagine++; if (!NO_SOCHO.includes(at)) assert.match(r.say.hi, /\bsocho\b/i, `${at}: no board, and not an imagine telling`); }
     if (r.sayAlt?.board) assert.ok(BF.scriptBoardSpoken(ask(r.sayAlt.hi, r.sayAlt.board)), `${at}: sayAlt board unspoken`);
   }
   // (the count is of remediation items over the five live scripts, D27_PILOTS: [with a board, "socho" tellings with none]. The four pilots
 //  were 19 + 8 and c5-maths-ch02-t03 adds 5 + 0; the 020 rewrites (dc-r8-director31) gave two more remediations a board, so the four are
 //  21 + 6. Listed: the 6 are c5-t01 s3 rem1, c6-t01 s1 rem1, s2 rem0, s2 rem1, s3 rem0, s3 rem1, every one a "Socho" telling.)
-  assert.deepEqual([own, imagine], [21 + 5 + 4, 6]); // (+ 4: c6-maths-ch07-t01, live since director32, every remediation with its own board)
+  assert.deepEqual([own, imagine], [21 + 5 + 4 + 3, 6]); // (+ 4: c6-maths-ch07-t01, live since director32, every remediation with its own board; + 3: c4-maths-ch01-t02, live since to-brain 052, the same)
   // (C2: the count-marks board drew the 11 lower ticks its card asks the child to count)
   const cm = S["c5-maths-ch02-t01"].skills[0].remediation[0];
   // (dc-r8-director31: the 020 rewrite replaced the 7-gap board with the tailor's 4-marks-5-gaps board, den 5; the rule stands: the board never

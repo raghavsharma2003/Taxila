@@ -64,7 +64,9 @@ test("D13.3: a point that solves a later card is refused (c4 e1 '12 … 4 baraba
 test("D13.3: c5-t02 e1's why is a full clause; the gap remediations are one short over unshaded bars", () => {
   const s = script("c5-maths-ch02-t02");
   const why = s.skills[0].explain[0].ask.why;
-  assert.ok(/\bhain\b/.test(why.hi) && /\bhai\b/.test(why.hi) && !/^2 patti/.test(why.hi), why.hi);
+  // (re-pinned, to-brain 052: dfd06564c, Learning 022 Part 2 D, rewrote the why to state the rule — "patti barabar lambi hain, toh jitne
+  // zyada hisse, har hissa utna chhota: …" — a full clause on its "hain"; the "hai" it once also had is gone. whyVerbErrors below is the rule)
+  assert.ok(/\bhain\b/.test(why.hi) && !/^2 patti/.test(why.hi), why.hi);
   assert.deepEqual(whyVerbErrors({ skills: [{ ...s.skills[0], explain: [s.skills[0].explain[0]], checks: [], remediation: [] }] }), []);
   // (director22 clause 8 rewrite, 2026-11-15: the remediation says were made general, each a different case; s3's is two boxes
   // of equal sections, each one SECTION short — "ek-ek khaane ki kami" — the same one-short rule in its own thing's word)
