@@ -73,7 +73,7 @@ test("held board, picture: the second view is drawn BESIDE the held board on one
   void kit;
   for (const [ref, keys, view, line] of [
     [PIZZA, ["No"], "strips", /^Dekho, Pizza ke 3 alag-alag tukde hain$/],
-    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol mein hai: 4 barabar hisse$/],
+    [{ template: "fraction-parts@1", params: { parts: 4, shade: 0, whole: "bar" } }, ["3/4"], "round", /^Wahi poora ab gol mein hai: barabar hisse$/],
     [LINE69, ["Ravi"], "parts", /^Dekho, yeh do barabar pattiyaan hain: ek 6 barabar hisson mein, aur ek 9 barabar hisson mein$/],
     [RECT, ["46 cm"], "unrolled", /^Is rectangle ki 4 bhujayein seedhi karke ek line par rakhi hain: 14 cm, 9 cm, 14 cm, 9 cm; kul lambai kitni hai$/],
   ]) {
@@ -171,7 +171,7 @@ test("Learning's D11 (relayed by main): fraction-bars@1 takes an UNNAMED bar (la
   const r = BF.heldBoard(ask, {});
   assert.ok(r?.split);
   assert.equal(r.altView, "wholes");
-  assert.equal(r.altLine, "Dekho, pehle mein 3 barabar tukde hain, aur doosre mein 10 barabar tukde hain");
+  assert.equal(r.altLine, "Dekho, pehle mein barabar tukde hain, aur doosre mein 10 barabar tukde hain");
   assert.ok(!r.script.ops.some((o) => o.op === "text" && /\d+\s*\/\s*\d+/.test(o.text)), "no fraction named on either panel");
   // (a shaded unnamed bar's view keeps its shading and names nothing either)
   const shaded = BF.altCall({ template: "fraction-bars@1", params: { bars: [{ parts: 3, shade: 2, label: "" }, { parts: 10, shade: 3, label: "" }] } }, { keys: ["2/3"] });
@@ -215,7 +215,7 @@ test("v6.9 S11: the picture line says \"barabar\" for equal parts and \"alag-ala
   const q8 = { template: "fraction-bars@1", params: { bars: [{ parts: 4, shade: 1, label: "1/4" }, { parts: 8, shade: 0, label: "?" }] } };
   const v = BF.heldAltOf(heldPic(q8, ["1/8"]));
   assert.deepEqual(v.call.dens, [4, 8], "the 8-part bar the card asks about is on the line");
-  assert.equal(v.line, "Dekho, yeh 0 se 1 ki do sankhya rekhayein hain, 4 aur 8 barabar gaps mein, nishaan ek-chauthai par");
+  assert.equal(v.line, "Dekho, yeh 0 se 1 ki do sankhya rekhayein hain, barabar gaps mein, nishaan ek-chauthai par", "main 21:20: the 1/8 card's count is left out, the list with it");
   for (const l of [v.line, BF.heldBoard(heldPic(LINE48, ["8"]), {}).altLine]) { assert.doesNotMatch(l, /\(\d+\/\d+\)|\d\/\d/); assert.doesNotMatch(l, /[.?!]$/); }
   assert.equal(BF.fracSay(3, 4), "teen-chauthai");
   assert.equal(BF.fracSay(2, 5), "do bata paanch");

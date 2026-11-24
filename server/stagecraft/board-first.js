@@ -32,7 +32,7 @@ import { expand } from "../forge/explainer/templates.js";
 import { splitSentences } from "../voice/sentences.js";
 import { clausesOf as voiceClausesOf } from "../voice/expressive/align.js";
 import { normalizeScript, LIMITS as WB_LIMITS } from "../../shared/whiteboard.js";
-import { laterKeys, lineStatesCount, termsOf, inScriptTerms } from "./script-terms.js";
+import { laterKeys, lineStatesCount, uncount, termsOf, inScriptTerms } from "./script-terms.js";
 
 /** = server/studio/seam.js STUDIO_ROW_PREFIX (not imported: seam.js imports this file; tests/round2-content.test.mjs pins equality). */
 export const STUDIO_ROW_PREFIX = "on screen now (values to use when you point at the screen; never what is hidden): ";
@@ -1146,9 +1146,11 @@ export function pictureKeys(ask) {
  *  null (no line can be said: the turn has no view). PURE. */
 export function cleanPictureLine(lines, keys, { later = [] } = {}) {
   const all = [...keys, ...later];
-  const states = (s) => (all.length > 0 && lineStatesKey(s, all)) || lineStatesCount(s, later);
+  const states = (s) => (all.length > 0 && lineStatesKey(s, all)) || lineStatesCount(s, all);
   for (const l0 of lines) {
-    let line = String(l0 ?? "").trim();
+    // (main 21:20: a count a key is made from is left out — "10 barabar gaps" on an open 1/10 card says "barabar gaps": the
+    // line names what is drawn, the counting is hers)
+    let line = uncount(String(l0 ?? "").trim(), all);
     if (!line) continue;
     if (states(line)) line = line.split(";").map((part) => part.replace(/,\s*yaani\s+[^,;]+/g, (m) => (states(m) ? "" : m))).join(";");
     if (states(line) || lineHasBlank(line)) continue;

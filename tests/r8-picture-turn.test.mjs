@@ -177,7 +177,8 @@ test("director20 c4 steady 18: a picture line gives no key — \"1 rangin, yaani
     const pt = BF.pictureTurn(askWith(c.ref, answers), { variant });
     assert.ok(pt?.view && pt.line, `${answers[0]} v${variant}: the view stays`);
     assert.ok(!/aadha|1\/2|½|yaani/.test(pt.line), `${answers[0]} v${variant}: "${pt.line}" states the key`);
-    assert.equal(pt.line, variant ? "Ab isi ko patti bana kar dekho: 2 barabar hisse, 1 rangin" : "Wahi poora ab patti mein hai: 2 barabar hisse, 1 rangin");
+    // (main 21:20: nor the counts the key is made from — the line names what is drawn, the counting is hers)
+    assert.equal(pt.line, variant ? "Ab isi ko patti bana kar dekho: barabar hisse, kuch rangin" : "Wahi poora ab patti mein hai: barabar hisse, kuch rangin");
   }
 });
 
@@ -220,9 +221,10 @@ test("director20: the picture-line predicate — a line with a blank or stating 
   for (const l of ["ek 5 barabar hisson mein", "doosri patti bhi barabar hisson mein bati hai", "Dekho, yeh ek patti hai, barabar hisson mein", "dono barabar gaps mein"])
     assert.ok(!H(l), `no blank: "${l}"`);
   const C = BF.cleanPictureLine;
-  assert.equal(C(["2 barabar hisse, 1 rangin, yaani aadha", "x"], ["No, it's ½"]), "2 barabar hisse, 1 rangin", "the naming clause is dropped");
+  assert.equal(C(["2 barabar hisse, 1 rangin, yaani aadha", "x"], ["No, it's ½"]), "barabar hisse, kuch rangin", "the naming clause is dropped, the counts the key is made from too");
   assert.equal(C(["aur ek barabar hisson mein", "aur doosri patti bhi barabar hisson mein bati hai"], ["8"]), "aur doosri patti bhi barabar hisson mein bati hai", "rewritten in the other shape");
-  assert.equal(C(["8 barabar hisse", "aath hisse"], ["8"]), null, "neither shape clean: not said");
+  assert.equal(C(["nishaan 8 par", "aath par"], ["8"]), null, "neither shape clean: not said");
+  assert.equal(C(["8 barabar hisse"], ["8"]), "barabar hisse", "a count of parts the key is: left out, the line kept");
   assert.equal(C(["aur ek ___ barabar hisson mein"], []), null, "a hole is never said, key or no key");
 });
 
@@ -234,9 +236,12 @@ test("main 21:08 (director20 c5-t01 offtopic 28): a picture line states no value
   assert.ok(ST.laterKeys(ask("rem:x")).includes("8"), "an unknown beat counts every card in the skill");
   assert.deepEqual(ST.laterKeys({ kit: { topicId: "no-such-topic" }, intent: { skillId: "x" } }), []);
   assert.ok(ST.lineStatesCount("aur ek 12 barabar hisson mein", ["1/12"]) && ST.lineStatesCount("12 equal parts", ["1/12"]) && ST.lineStatesCount("0 se 1 tak 12 gaps", ["1/12"]));
-  assert.ok(!ST.lineStatesCount("12 cm lambi", ["1/12"]) && !ST.lineStatesCount("12 barabar hisse", ["3/12"]), "only a unit fraction's count of parts");
+  assert.ok(!ST.lineStatesCount("12 cm lambi", ["1/12"]) && !ST.lineStatesCount("5 barabar hisse", ["3/12"]), "only a count of parts or shading the key is made from");
+  assert.ok(ST.lineStatesCount("12 barabar hisse", ["3/12"]) && ST.lineStatesCount("3 rangin", ["3/12"]));
+  assert.equal(ST.uncount("Dekho, 0 se 1 ki do sankhya rekhayein hain, 4 aur 8 barabar gaps mein", ["1/8"]), "Dekho, 0 se 1 ki do sankhya rekhayein hain, barabar gaps mein", "a list the count stands in goes whole");
+  assert.equal(ST.uncount("aur ek 12 barabar hisson mein, 3 rangin", ["3/12"]), "aur barabar hisson mein, kuch rangin");
   const C = BF.cleanPictureLine;
-  assert.equal(C(["Dekho, yeh patti hai, aur ek 12 barabar hisson mein", "doosri patti bhi barabar hisson mein bati hai"], ["8"], { later: ["1/12"] }), "doosri patti bhi barabar hisson mein bati hai", "a later 1/12 by its count: the other shape");
+  assert.equal(C(["Dekho, yeh patti hai, aur ek 12 barabar hisson mein"], ["8"], { later: ["1/12"] }), "Dekho, yeh patti hai, aur barabar hisson mein", "a later 1/12's count is left out");
   assert.equal(C(["nishaan 1/3 par", "yahan 1/3 hai"], ["8"], { later: ["1/3"] }), null, "a later card's key in both shapes: not said");
   assert.equal(C(["8 barabar gaps", "x"], [], { later: [] }), "8 barabar gaps", "no later keys: as before");
 });

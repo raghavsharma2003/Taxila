@@ -1,7 +1,8 @@
 // main 2026-11-11 21:08 (director20 c5-t01 offtopic 28, c6 stuck 18 / steering 14): two rules a picture line takes from the topic's
 // own script, not from the open card alone.
 //  (1) laterKeys: a picture line states no value that a card still to come in the skill asks for ("…aur ek 12 barabar hisson
-//      mein" gave a later card's 1/12 away). A later unit fraction 1/b is also given away by its count of parts ("12 barabar").
+//      mein" gave a later card's 1/12 away). main 21:20: nor, for the open card or a later one, a count the key is made from
+//      (a/b's parts b and shaded a, a whole number's parts): uncount leaves the count out and keeps the line ("barabar gaps mein").
 //  (2) inScriptTerms: a picture line says each of the script's `terms` the way the script's own spoken lines say it ("triangle"
 //      and "line" where the c6 script says them, "tribhuj"/"rekha" where it says those). The form the script's Hinglish lines
 //      (`hi`) use more often is its own; a term the script never says, or says both ways equally, is left as it is.
@@ -45,14 +46,33 @@ export function laterKeys(ask) {
   const at = cards.findIndex((c) => c.id === beatId);
   return [...new Set((at >= 0 ? cards.slice(at + 1) : cards).flatMap(cardKeys))];
 }
-/** Does `line` give a later unit fraction 1/b away by its count of parts ("12 barabar hisson", "12 equal parts", "12 gaps")? */
-export function lineStatesCount(line, keys) {
-  const L = String(line ?? "").toLowerCase();
+const PARTS = "(?:barabar|equal|alag|hiss\\w*|parts?|gaps?|tukd\\w*|pieces?|bhaag\\w*)";
+const SHADED = "(?:rangin|rang[ea]?\\s+hu\\w*|shaded|coloured|colored|bhar[ea]\\w*)";
+/** The counts a key is made from (main 21:20): a fraction a/b's count of parts b and shaded count a; a whole number n as a
+ *  count of parts. → { parts: number[], shaded: number[] } */
+function countsOf(keys) {
+  const parts = new Set(), shaded = new Set();
   for (const k of keys ?? []) for (const t of keyTokens(k)) {
-    const m = /^1\/(\d+)$/.exec(t);
-    if (m && new RegExp(`(^|[^\\d/])${m[1]}\\s+(?:barabar|equal|alag|hiss|hisse|hisson|parts?|gaps?|tukd|pieces?|bhaag)`).test(L)) return true;
+    const f = /^(\d+)\/(\d+)$/.exec(t);
+    if (f) { parts.add(Number(f[2])); if (Number(f[1]) > 0) shaded.add(Number(f[1])); } else if (/^\d+$/.test(t)) parts.add(Number(t));
   }
-  return false;
+  return { parts: [...parts], shaded: [...shaded] };
+}
+/** Does `line` state a count a key is made from ("12 barabar hisson" for 1/12, "3 rangin" for 3/4)? */
+export function lineStatesCount(line, keys) {
+  const L = String(line ?? "").toLowerCase(), { parts, shaded } = countsOf(keys);
+  return parts.some((n) => new RegExp(`(^|[^\\d/])${n}\\s+${PARTS}`).test(L)) || shaded.some((n) => new RegExp(`(^|[^\\d/])${n}\\s+${SHADED}`).test(L));
+}
+/** main 21:20: the line says what kind of thing is drawn and leaves the counting to her — "10 barabar gaps mein" → "barabar gaps
+ *  mein", "ek 12 barabar hisson mein" → "barabar hisson mein", "3 rangin" → "kuch rangin". PURE. */
+export function uncount(line, keys) {
+  let out = String(line ?? "");
+  const { parts, shaded } = countsOf(keys);
+  // (a list the count stands in goes whole: "4 aur 8 barabar gaps" on an open 1/8 card is "barabar gaps", never "4 aur barabar")
+  const L = "(?:\\s*(?:,|aur|and)\\s*)";
+  for (const n of parts) out = out.replace(new RegExp(`(^|[^\\d/\\p{L}])(?:ek\\s+)?(?:\\d+${L})*${n}(?:${L}\\d+)*\\s+(?=${PARTS})`, "giu"), (m, pre) => pre);
+  for (const n of shaded) out = out.replace(new RegExp(`(^|[^\\d/])${n}(\\s+${SHADED})`, "gi"), (m, pre, rest) => `${pre}kuch${rest}`);
+  return out.replace(/\s{2,}/g, " ").replace(/,\s*,/g, ",").replace(/^\s*,\s*/, "").trim();
 }
 
 // ── terms ───────────────────────────────────────────────────────────────────────────────────────────────────────────────
