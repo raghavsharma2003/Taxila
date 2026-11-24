@@ -349,7 +349,20 @@ export function ownReasonFits(node, last) {
   if (!node || node.whyAltAsHelp !== true || !last) return false;
   if (!["incorrect", "partial", "misconception"].includes(String(last.outcome ?? ""))) return false;
   if (!wrongList(node.wrongIfMis).length) return false;
+  // (to-brain 053 F: another named answer — `wrongAnswers`, the grader's wrongNamed ≥ 1 — has its own reason, never the card's whyAlt)
+  if (Number(last.wrongNamed) > 0) return false;
   return !!last.wrongListed || (!!node.targets && last.outcome === "misconception" && last.misconceptionId === node.targets);
+}
+/** to-brain 053 F: the reason of the card's other named wrong answer the child's last answer at it was (`wrongAnswers[k]`, read by the grader
+ *  as wrongNamed k + 1), as a ladder rung { field: "whyAltHelp", path, value, present }; null where the last answer was no such answer, or
+ *  that answer has no reason written. */
+export function namedReasonOf(node, last, path) {
+  const k = Number(last?.wrongNamed);
+  if (!node || !last || !(k > 0) || !["incorrect", "partial", "misconception"].includes(String(last.outcome ?? ""))) return null;
+  const w = Array.isArray(node.wrongAnswers) ? node.wrongAnswers[k - 1] : null;
+  const v = w?.why;
+  if (!v || typeof v !== "object" || !(v.hi || v.en)) return null;
+  return { field: "whyAltHelp", path: `${path}.wrongAnswers[${k - 1}].why`, value: v, present: true, named: k };
 }
 export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
@@ -410,6 +423,10 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     // keeps 049 B3's order, the simpler first. Dry steady c5-ch02-t03 rows 56 to 58: the own reason, then the key, the simpler never said)
     if (wa?.field === "whyAlt" && wa.present) ladder.splice(request !== "hint" && ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...wa, board: part.board ?? null, field: "whyAltHelp" });
   }
+  // (to-brain 053 F: a card's other named wrong answer gets its own reason the same way — once, the first rung after a miss, before the card's
+  // simpler; then the simpler; then the key. An answer no reason names gets the simpler first, as before)
+  const nr = isCard && !keyed && !closed && ["hint", "clarify", "give_up", "picture"].includes(request) ? namedReasonOf(rawAt(part.path), last, part.path) : null;
+  if (nr) ladder.splice(request !== "hint" && ladder[0]?.path === `${part.path}.simpler` ? 1 : 0, 0, { ...nr, board: part.board ?? null });
   // (Brain 049 B3: a card's own hint is spent only when she has said it — every sentence of it; one sentence near another part's — a
   // remediation's follow-up card written the same way — leaves it unsaid. director32 c6-ch07 steady 48, offtopic 62: a mix-up met again
   // got the key at its first miss, the card's own hint read as said from the then-card's)

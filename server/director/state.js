@@ -653,7 +653,9 @@ const friendly = (item) => {
   const f = (x) => fillFriend(x, friendOf);
   // (Learning, c5-t02: the friend can be a card's key or its listed wrong pick, so graded fields are filled with the same name)
   // (048 G8: wrongIfMis may be a list — each form filled, the list kept)
-  const meta = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: Array.isArray(m.wrongIfMis) ? m.wrongIfMis.map(f) : f(m.wrongIfMis) } : m);
+  const meta0 = (m) => (m && m.wrongIfMis ? { ...m, wrongIfMis: Array.isArray(m.wrongIfMis) ? m.wrongIfMis.map(f) : f(m.wrongIfMis) } : m);
+  // (to-brain 053 F: a card's other named wrong answers are graded fields too)
+  const meta = (m) => { const x = meta0(m); return x?.wrongAnswers?.length ? { ...x, wrongAnswers: x.wrongAnswers.map((w) => ({ ...w, answer: Array.isArray(w.answer) ? w.answer.map(f) : f(w.answer), accept: (w.accept ?? []).map(f) })) } : x; };
   return { ...item, prompt_en: f(item.prompt_en), prompt_hi: f(item.prompt_hi), answer: f(item.answer), acceptable: (item.acceptable ?? []).map(f),
     ...(item.scriptAsk ? { scriptAsk: meta(item.scriptAsk) } : {}), ...(item.scriptCheck ? { scriptCheck: meta(item.scriptCheck) } : {}), ...(item.scriptThen ? { scriptThen: meta(item.scriptThen) } : {}) };
 };
@@ -1263,7 +1265,9 @@ function walkRemedy(s, input, item) {
   // round 8 K3: the mix-up the classifier named on this answer when the skill remediates it, else the card's authored target
   // (O3, main on director21 c5-t02 stuck 16: "4/1", read incorrect, got a remediation — a remediation follows only the answer that shows
   // its misconception; a plain miss gets the wrong-answer cell, the card's simpler)
-  const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
+  // (to-brain 053 F: a card's other named wrong answer — `wrongAnswers`, read by the grader as wrongNamed ≥ 1 — is its own mistake; the card's
+  // remediation answers its `wrongIfMis`. Its own reason is the help: help.js. director34: a joining error got the cutting remediation)
+  const targets = verdict(input.cls) === "wrong" && input.cls?.outcome === "misconception" && !(input.cls?.wrongNamed > 0) ? knowsRemedy(s, item, input.cls, skillScriptOf(kit, item.skillId)) : null;
   // (dc-r8-director26 R1: "said once" is counted for each remediation — its skill and its mix-up — not for each mix-up id. c5-t02 steady 117
   // to 148: the same mix-up four times in the third skill, and that skill's own remediation never said, because the first skill's had been)
   if (!targets || (s.remedied ?? []).includes(remKeyOf(item.skillId, targets))) return null;
@@ -4013,7 +4017,7 @@ export function step(prev, input) {
   { const liveA = input?.event === "turn" ? prev?.lastUi?.ask?.itemId ?? null : null;
     const oc = String(input?.cls?.outcome ?? "");
     const pA = liveA && String(liveA).startsWith("script:") && ["correct", "incorrect", "partial", "misconception"].includes(oc) ? (() => { try { return cardPartOf(input.kit, { itemId: liveA }); } catch { return null; } })() : null;
-    if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed } } }; }
+    if (pA) prev = { ...prev, answerAt: { ...(prev.answerAt ?? {}), [pA]: { outcome: oc, misconceptionId: input.cls.misconceptionId ?? null, wrongListed: !!input.cls.wrongListed, ...(Number.isInteger(input.cls.wrongNamed) ? { wrongNamed: input.cls.wrongNamed } : {}) } } }; }
   const pre = helpBefore(prev, input, said);
   let out = tryAgain ?? (pre?.stay ? helpStay(prev, input, pre.decision) : pre?.held ? helpHeld(prev, input, pre.decision) : stepCells(prev, pre?.input ?? input));
   if (!tryAgain && !pre?.stay && !pre?.held) out = helpAfter(prev, input, out, pre);

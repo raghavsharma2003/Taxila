@@ -158,6 +158,16 @@ export function validateSkillScriptV2(sk, kit, { classLevel, version: v21 = 2, r
     if (!String(a.key ?? "").trim()) err(`${where}.key: the answer it is judged against`);
     for (const f of ["hi", "en"]) { const k = keyLeaks(a.key, a.prompt?.[f]); if (k && new RegExp(`(?<![\\d./])${k.replace(/[./]/g, "\\$&")}(?![\\d/])`).test(String(a.prompt?.[f] ?? ""))) err(`${where}: its key ${k} is inside its question (${f})`); }
     if (a.targets != null && !misIds.has(a.targets)) err(`${where}.targets: ${a.targets} is not a kit misconception`);
+    // (to-brain 053 F: named wrong answers — at most three, each an answer that is not the key, with its reason in both languages)
+    if (a.wrongAnswers != null) {
+      if (!Array.isArray(a.wrongAnswers) || a.wrongAnswers.length > 3) err(`${where}.wrongAnswers: a list of at most three`);
+      for (const [j, w] of (Array.isArray(a.wrongAnswers) ? a.wrongAnswers : []).entries()) {
+        const ans = (Array.isArray(w?.answer) ? w.answer : [w?.answer]).map((x) => String(x ?? "").trim()).filter(Boolean);
+        if (!ans.length) err(`${where}.wrongAnswers[${j}].answer: the wrong answer it names`);
+        if (ans.some((x) => x === String(a.key ?? "").trim())) err(`${where}.wrongAnswers[${j}]: its answer is the key`);
+        said(`${where}.wrongAnswers[${j}].why`, w?.why);
+      }
+    }
   };
   // F4: the hook's interest slots
   shape("hook.convey", sk?.hook?.convey);
@@ -391,9 +401,18 @@ const whyField = (a) => (a?.why && typeof a.why === "object" && (a.why.hi || a.w
 // (dc-r8-director27 Brain 043 R1: the why cut to its core, 10 words or fewer — said in the why's place after a right answer when the why
 // and what comes next do not fit in one turn and the short form does; never on the worked example's own card)
 const whyShortField = (a) => (a?.why && a?.whyShort && typeof a.whyShort === "object" && (a.whyShort.hi || a.whyShort.en) ? { whyShort: { hi: String(a.whyShort.hi ?? ""), en: String(a.whyShort.en ?? "") } } : {});
+// (to-brain 053 F, Learning 023 rule 2: a card's other named wrong answers — `wrongAnswers: [{ answer, accept?, why }]`, at most three — each
+// carried on the card for the grader (which records which one) and for help (its reason, to the child who gave it). Read by presence: a card
+// with none is read as before, `wrongIfMis` and `whyAlt` alone)
+export const WRONG_ANSWERS_MAX = 3;
+export const wrongAnswersOf = (a) => (Array.isArray(a?.wrongAnswers) ? a.wrongAnswers : []).slice(0, WRONG_ANSWERS_MAX)
+  .map((w) => ({ answer: Array.isArray(w?.answer) ? w.answer.map(String) : w?.answer != null ? String(w.answer) : "", accept: [...(Array.isArray(w?.accept) ? w.accept : [])].map(String),
+    why: w?.why && typeof w.why === "object" ? { hi: String(w.why.hi ?? ""), en: String(w.why.en ?? "") } : null }))
+  .filter((w) => (Array.isArray(w.answer) ? w.answer.some((x) => x.trim()) : w.answer.trim()));
+const wrongAnswersField = (a) => { const w = wrongAnswersOf(a); return w.length ? { wrongAnswers: w } : {}; };
 /** v2: an explain beat's micro-question, or the worked example's yourStep, as a keyed card. */
 export const scriptAskItem = (skillId, beatId, a) => keyed(`script:${skillId}:ask:${beatId}`, skillId, a.prompt, a.key, a.accept,
-  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...whyField(a), ...(beatId === "worked" ? {} : whyShortField(a)), ...simplerField(a), ...answerBoardField(a) } });
+  { scriptAsk: { beatId, targets: a.targets ?? null, wrongIfMis: a.wrongIfMis ?? null, ...wrongAnswersField(a), ...whyField(a), ...(beatId === "worked" ? {} : whyShortField(a)), ...simplerField(a), ...answerBoardField(a) } });
 /** dc-r8-director27 Brain 042: an explain beat's quick question (`explain[].quick`) and a worked step's asked question (`steps[].ask`) as
  *  keyed items the card's reader reads against their own key. They are no cards: `quick` marks them, and no verdict, no learner evidence
  *  and no verdict count is taken from them (state.js evidenceFrom, director/say.js verdictFor, brain/turn.js noteDid). */
@@ -403,10 +422,10 @@ export const scriptStepAskItem = (skillId, k, a) => keyed(`stepask:${skillId}:${
 export const isQuickId = (id) => /^(?:quick|stepask):/.test(String(id ?? ""));
 /** A script check as a keyed card (the classifier grades it against its key, like any item). */
 export const scriptCheckItem = (skillId, c) => keyed(`script:${skillId}:${c.id}`, skillId, c.prompt, c.key, c.accept,
-  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...whyField(c), ...whyShortField(c), ...simplerField(c), ...answerBoardField(c) } });
+  { scriptCheck: { checkId: c.id, targets: c.targets, wrongIfMis: c.wrongIfMis, ...wrongAnswersField(c), ...whyField(c), ...whyShortField(c), ...simplerField(c), ...answerBoardField(c) } });
 /** A remediation's follow-up question as a keyed card. */
 export const scriptThenItem = (skillId, r) => (r.then && typeof r.then === "object" && "key" in r.then
-  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...whyField(r.then), ...whyShortField(r.then), ...simplerField(r.then), ...answerBoardField(r.then) } })
+  ? keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then.prompt, r.then.key, r.then.accept, { scriptThen: { targets: r.targets, ...(r.then.wrongIfMis ? { wrongIfMis: r.then.wrongIfMis } : {}), ...wrongAnswersField(r.then), ...whyField(r.then), ...whyShortField(r.then), ...simplerField(r.then), ...answerBoardField(r.then) } })
   : keyed(`script:${skillId}:then:${r.targets}`, skillId, r.then, r.thenKey, [], { scriptThen: { targets: r.targets } }));
 /** The script version of a skill (1 or 2). */
 export const isV2 = (kit) => Number(scriptFor(kit)?.script?.version ?? 1) >= 2;
