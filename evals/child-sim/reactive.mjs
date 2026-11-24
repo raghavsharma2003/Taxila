@@ -52,7 +52,7 @@ const PROFILE = {
   // (main on C1 ruling 5: the stuck child also says "samajh nahi aaya" on a point and on a worked step, and "phir bhi samajh nahi
   // aaya" right after her first re-explanation, so a second clarify on one part is walked)
   stuck:    { right: { card: 0.3, ask: 0.35, open: 0.4 }, learn: 0.2, events: { dontknow: [1, 5, 11], hindi: [3], picture: [7], selftry: [13], cricket: [15] }, clarify2: { clarifyPoint: [9], clarifyWorked: [17] }, leaveAfter: 32 },
-  offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 32 },
+  offtopic: { right: { card: 0.55, ask: 0.55, open: 0.6 }, learn: 0.1, events: { cricket: [2, 7, 13], dontknow: [10], picture: [12], hindi: [15], selftry: [17] }, leaveAfter: 32, extraTurns: 11 },
   steering: { right: { card: 0.6, ask: 0.6, open: 0.6 }, learn: 0.1, events: { hindi: [2], picture: [5], selftry: [8], cricket: [11], dontknow: [14] }, pictureTwice: true, leaveAfter: 24 },
 };
 
@@ -60,7 +60,10 @@ const PROFILE = {
 /** v6.5: the most turns the goodbye waits for an open card's close. */
 // (v6.7 H4, main on director15 c6 stuck 77: the wait ran out with the card still open after a miss) 10 turns
 export const LEAVE_WAIT = 10;
-export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1 + LEAVE_WAIT;
+// (to-brain 052 B6: the offtopic child's budget is a wait longer — its named wrong answers, said again, are now read and helped (051 C3, C6),
+// so a card is open on every turn: the child holds its goodbye LEAVE_WAIT turns, then the harness holds it up to 10 more (hybrid-side-by-side
+// leaveWait), and both fell past the budget — dry offtopic c5-ch02-t02 and c5-ch02-t01 ended mid-card with no goodbye)
+export const maxTurnsFor = (persona) => (PROFILE[persona]?.leaveAfter ?? MIN_TURNS) + 1 + LEAVE_WAIT + (PROFILE[persona]?.extraTurns ?? 0);
 /** dc-r8-director20 harness (main: no lesson reached its third skill, so class-level depth was never heard): with toEnd, the child
  *  stays past leaveAfter until the harness says the script is spent (input.scriptDone), up to this many turns. */
 export const TO_END_MAX = 140;
