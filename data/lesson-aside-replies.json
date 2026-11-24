@@ -1,5 +1,5 @@
 {
-  "about": "Learning-owned (dc-r8-director20 R1): what Asha says around a child's aside, by kind of aside. returns: one question on {aside} the child can answer in a few words (what they like, what happened). replies: her answer to the child's reply, one slot {word} (a word of the child's, as said), never a fact, a taste of hers, a promise or a question. plain: the same with no slot, for when no word of the child's fits. Brain picks the kind from the aside's words (match), else 'other'. Validated by scripts/lesson-scripts/check.mjs asideReplyErrors. phraseReplies (director21 R3): her answer to the child's reply to returns[i], with one slot {phrase} (up to three of the child's words, said back about the child). againReplies (director27 P6.3): her answer when the child says the same aside or the same reply a second time in a lesson, one slot {phrase}; the first reply form is never said twice.",
+  "about": "Learning-owned (dc-r8-director20 R1): what Asha says around a child's aside, by kind of aside. returns: one question on {aside} the child can answer in a few words (what they like, what happened). replies: her answer to the child's reply, one slot {word} (a word of the child's, as said), never a fact, a taste of hers, a promise or a question. plain: the same with no slot, for when no word of the child's fits. Brain picks the kind from the aside's words (match), else 'other'. Validated by scripts/lesson-scripts/check.mjs asideReplyErrors. phraseReplies (director21 R3): her answer to the child's reply to returns[i], with one slot {phrase} (up to three of the child's words, said back about the child). againReplies (director27 P6.3): her answer when the child says the same aside or the same reply a second time in a lesson, one slot {phrase}; the first reply form is never said twice; it never tells the child they repeated themselves (Learning 023 rule 7). replyKinds (Learning 023 rule 7): her answer to the child's reply by what the reply is, one slot {phrase} (the child's words, trimmed by code), no question, no taste of hers: person (who was there, or a favourite person or player), done (something the child did), liking (what the child likes), whenWhere (when or where). The words of a liking (achha lagta, achhi lagti, pasand, favourite) are said only in liking forms, so a child who named who was with them is not told they like it; a form does not lean on the gender of its {phrase}; the three forms of a kind open on different words.",
   "kinds": {
     "sport": {
       "match": [
@@ -87,8 +87,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -171,8 +171,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -261,8 +261,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -350,8 +350,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -437,8 +437,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -506,8 +506,8 @@
           "en": "Yes, {phrase}, you told me that!"
         },
         {
-          "hi": "Oho, {phrase}! Yeh baat toh do baar aa gayi.",
-          "en": "Oho, {phrase}! That's come up twice now."
+          "hi": "Arre haan, {phrase}! Kya baat hai.",
+          "en": "Oh yes, {phrase}! How about that."
         },
         {
           "hi": "Achha, wahi {phrase}! Haan, yeh pehle bhi suna.",
@@ -515,6 +515,64 @@
         }
       ]
     }
+  },
+  "replyKinds": {
+    "person": [
+      {
+        "hi": "Achha, toh {phrase}! Yeh batane ke liye shukriya.",
+        "en": "Oh, so {phrase}! Thanks for telling me that."
+      },
+      {
+        "hi": "Arre wah, {phrase}! Achha kiya jo bataya.",
+        "en": "Oh wow, {phrase}! Good that you told me."
+      },
+      {
+        "hi": "Oho, {phrase}! Yeh achhi baat batayi.",
+        "en": "Oho, {phrase}! That's a nice thing to share."
+      }
+    ],
+    "done": [
+      {
+        "hi": "Wah, {phrase}! Yeh toh kamaal hai.",
+        "en": "Wow, {phrase}! That's something."
+      },
+      {
+        "hi": "Arre, {phrase}! Shabaash.",
+        "en": "Oh, {phrase}! Well done."
+      },
+      {
+        "hi": "Oho, toh {phrase}! Badhiya.",
+        "en": "Oho, so {phrase}! Nice."
+      }
+    ],
+    "liking": [
+      {
+        "hi": "Achha, toh tumhe {phrase} pasand hai!",
+        "en": "Oh, so you like {phrase}!"
+      },
+      {
+        "hi": "Wah, {phrase}! Toh tumhara favourite yahi hai.",
+        "en": "Wow, {phrase}! So that's your favourite."
+      },
+      {
+        "hi": "Oho, {phrase}! Isi mein tumhe maza aata hai.",
+        "en": "Oho, {phrase}! That's what you enjoy."
+      }
+    ],
+    "whenWhere": [
+      {
+        "hi": "Achha, {phrase}! Ab poori baat samajh aayi.",
+        "en": "Oh, {phrase}! Now I have the whole picture."
+      },
+      {
+        "hi": "Oho, {phrase}! Batane ke liye shukriya.",
+        "en": "Oho, {phrase}! Thanks for telling me."
+      },
+      {
+        "hi": "Haan, {phrase}! Samajh gayi.",
+        "en": "Right, {phrase}! Got it."
+      }
+    ]
   },
   "sad": {
     "match": [
