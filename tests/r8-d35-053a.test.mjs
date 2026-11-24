@@ -101,10 +101,11 @@ describe("B: three paths in the walk", () => {
     for (const x of ["steady c4-maths-ch05-t01 28", "steady c4-maths-ch05-t01 30", "steady c4-maths-ch01-t02 28", "steady c4-maths-ch01-t02 30", "steering c5-maths-ch02-t03 20", "stuck c5-maths-ch02-t02 22", "offtopic c5-maths-ch02-t02 24"]) assert.ok(all.includes(x), `${x}\n${all.join("\n")}`);
     assert.equal(all.length, 20, all.join("\n"));
   });
-  test("questionFiveTimes reads c4-ch01-t02 offtopic (one step seven times) and c5-t02 steering (a follow-up card from row 18)", () => {
+  // (main's R1/R2: a short ask is no hearing, and only a fifth hearing on her own — after a miss, a give-up or no answer — is read: 11 rows → 3)
+  test("questionFiveTimes, after R1/R2, reads c5-t02 steering (a follow-up card from row 18), c5-t01 and c6 steering 18", () => {
     const all = flaggedAll("questionFiveTimes");
-    for (const x of ["offtopic c4-maths-ch01-t02 30", "steering c5-maths-ch02-t02 18", "steering c5-maths-ch02-t02 20", "steering c6-maths-ch06-t01 18"]) assert.ok(all.includes(x), `${x}\n${all.join("\n")}`);
-    assert.equal(all.length, 11, all.join("\n"));
+    // (offtopic c4-ch01-t02's seven turns at one step held Hindi requests, picture requests and short asks: no fifth hearing of her own)
+    assert.deepEqual(all, ["steering c5-maths-ch02-t01 18", "steering c5-maths-ch02-t02 18", "steering c6-maths-ch06-t01 18"], all.join("\n"));
   });
   test("the 75-word predicate reads B6's turn (c5-t02 steady 42: an aside reply, the back-to line, a bridge, a point and a card, 84 words)", () => {
     assert.deepEqual(flagged("steady", "c5-maths-ch02-t02", "longTwoPart"), [42]);
@@ -212,3 +213,4 @@ describe("B3 after main's R1 and R2: the cap is on her own repeats", async () =>
     }
   });
 });
+
