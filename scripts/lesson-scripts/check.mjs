@@ -933,7 +933,7 @@ export function structureErrorsV2(s, kit) {
   for (const m of mis) if (!checked.has(m)) e.push(`misconception ${m} is never checked`);
   if ((s.version ?? 1) >= 2.1) e.push(...v21Errors(s));
   if ((s.version ?? 1) >= 2.2) e.push(...v22Errors(s), ...poolNameErrors(s));
-  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s), ...d34Errors(s));
+  if ((s.version ?? 1) >= 2.3) e.push(...spokenSymbolErrors(s), ...remediationKeyErrors(s), ...askBoardQuestionErrors(s), ...workedProblemNumberErrors(s), ...unitFigureErrors(s), ...rhetoricalQuestionErrors(s), ...answerOnBoardErrors(s), ...whyKeyErrors(s), ...pointKeyErrors(s), ...jointErrors(s), ...greetErrors(s), ...oneTermErrors(s), ...repeatErrors(s), ...crossingBoardErrors(s), ...markGroundErrors(s), ...spokenKeyErrors(s), ...earlierKeyErrors(s), ...ladderRepeatErrors(s, kit), ...thenSayErrors(s), ...frameRepeatErrors(s, kit), ...wordKeySpreadErrors(s), ...yesNoSpreadErrors(s), ...placeValueKeyErrors(s), ...sayBoardNumberErrors(s), ...negatedClaimErrors(s), ...sharedSentenceErrors(s), ...friendVerbErrors(s), ...bridgeTrueErrors(s), ...hookReuseErrors(s), ...d22Errors(s), ...d24Errors(s), ...d25Errors(s), ...voiceTextErrors(s), ...d27Errors(s), ...d28Errors(s), ...d29Errors(s), ...d30Errors(s), ...d31Errors(s), ...d32Errors(s), ...d33Errors(s), ...d34Errors(s), ...d35Errors(s));
   return e;
 }
 
@@ -2493,6 +2493,293 @@ export function vpcErrors(s, { force = false } = {}) {
 export const vpcNoteLines = (s) => vpcTurns(s).filter((p) => p.noted && p.total > p.limit).map((p) => `V ${p.at}: the turn after a right answer is ${vpcParts(p)} > ${p.limit} by the engine's count (VPC_NOTE: ${p.noted.seen}; main to rule)`);
 /** Learning 022's lines for a reader: G (rule 5), N (rule 6), and the hits of rules 1-4 as Q / K / C / W lines when not errors. */
 export const d34ReportLines = (s) => [...givenChangeLines(s), ...nameLines(s), ...vpcNoteLines(s), ...noPictureNoteLines(s)];
+/** Learning 023 Part 1 (dc-r8-director34; docs/patches/to-learning/023-director34-result-boards-several-wrong-answers-first-turns.md):
+ *  1  A stated value needs a board that shows it (decision item 3). In a worked step's confirmation (`ask.right`) and `told`, the worked
+ *     example's close (`answer`) and the child's own step's reason (`yourStep.why` / `whyShort`), and in a keyed card's reason said
+ *     after its answer (`why` / `whyShort` of an explain card, a check, a follow-up card) — director34's c6-ch07-t03 s2 c2 row — every
+ *     number, fraction or named mark (a single capital letter) she states is drawn on the board up while she says it: the step's
+ *     `resultBoard`, else its posing board; for the close and the own step's reason, the own step's `answerBoard`, else its board,
+ *     else the worked board; for a card, its `answerBoard`, else its posing board. A sum or product of drawn numbers ("24 + 18 =
+ *     42" over a rectangle labelled 24 and 18) is NOT drawn: the step needs a result board that shows 42 (item 3). Read in `hi`.
+ *  2  `wrongAnswers: [{ answer, accept?, why: { hi, en } }]`, at most three, beside `wrongIfMis` / `whyAlt` (the first named answer,
+ *     which stays): each answer differs from the key, the card's accepted forms, `wrongIfMis` and each other; no `why` names the
+ *     key or an accepted form, or leaves one option of a two-way card (020 rule 9's hintHits, as 022 rule 4 reads whyAlt).
+ *  3  The first teaching turn (the first skill's hook line, its first point and that point's card, `{name}` slots as one word) is
+ *     D35_FIRST_MAX words or fewer by the engine's count (state.js wordsIn), for the longest of the hook's interest lines.
+ *  4  Every card (explain card, check), follow-up card (`remediation[].then`) and child's own step has a `reask`.
+ *  5  A reason does not open by repeating the verdict: a `whyAlt` or a named answer's `why` that begins with its own wrong answer
+ *     and "nahi" ("1 nahi: …").
+ *  6  One frame once in a skill: two reasons (why, whyShort, whyAlt, a named answer's why) of one skill that share six words running
+ *     once numbers are masked. Always a printed line (F6), for the reader; never an error.
+ *  7  data/lesson-aside-replies.json: `replyKinds` { person, done, liking, whenWhere }, three forms each (one {phrase}, no question,
+ *     16 words or fewer); a form with the words of a liking ("achha lagta", "achhi lagti", "pasand", "favourite") anywhere but
+ *     `replyKinds.liking` is an error, and "Yeh baat toh do baar aa gayi." anywhere is an error. With --d35 an error; else a note.
+ *  Rules 1-5 are errors for a topic in D35_READY or named with --d35. */
+// (2026-11-24: empty; an author's script joins when main says)
+export const D35_READY = [];
+export const isD35 = (s) => D35_READY.includes(s?.topicId);
+export const D35_FIRST_MAX = 60, D35_WRONG_MAX = 3, D35_FRAME_RUN = 6;
+// ---- rule 1: what a board draws
+const D35_NUM = /(?<![\d/.])(\d+(?:\.\d+)?)(?![\d/]|\.\d)/g;
+const D35_FRAC = /(?<![\d/.])(\d+)\s*\/\s*(\d+)(?![\d/])/g;
+const D35_MARK = /(?<![\p{L}\p{N}'’])([A-Z])(?![\p{L}\p{N}'’])/gu;
+const numKey = (x) => String(Number(x));
+/** The values a board draws: { nums, fracs, marks } (Sets of strings), read from the text it writes (its labels, items, equations,
+ *  number-line figures) and from what it shows to count (a bar's parts and shaded parts, a grid's rows and columns, groups). */
+export function drawnValues(b) {
+  const nums = new Set(), fracs = new Set(), marks = new Set(), things = new Set();
+  if (!b?.template) return { nums, fracs, marks, things };
+  if (b.params?.tester) things.add("tester");
+  const text = (t) => {
+    const x = String(t ?? "").replace(/,(?=\d{3}\b)/g, "");
+    for (const m of x.matchAll(D35_FRAC)) { fracs.add(`${Number(m[1])}/${Number(m[2])}`); nums.add(numKey(m[1])); nums.add(numKey(m[2])); }
+    for (const m of x.matchAll(D35_NUM)) nums.add(numKey(m[1]));
+    for (const m of x.matchAll(D35_MARK)) marks.add(m[1]);
+  };
+  const frac = (a, n) => { if (Number.isInteger(a) && Number.isInteger(n) && n > 0) { fracs.add(`${a}/${n}`); nums.add(String(a)); nums.add(String(n)); } };
+  const r = resolveBoardRef(b), x = r.ok ? expandBoard(r.call) : null;
+  if (x?.ok) for (const o of x.script?.ops ?? []) {
+    if (o.text != null) text(o.text);
+    for (const row of o.rows ?? []) for (const c of [row].flat()) text(c);
+    if (o.label != null) text(o.label);
+  } else { const walk = (v) => { if (typeof v === "string" || typeof v === "number") text(v); else if (v && typeof v === "object") Object.values(v).forEach(walk); }; walk(b.params ?? {}); }
+  const p = b.params ?? {}, int = (v) => (Number.isInteger(Number(v)) && v !== "" && v != null ? Number(v) : null);
+  const count = (v) => { const n = int(v); if (n != null) nums.add(String(n)); };
+  const shaded = (parts, shade) => {
+    const n = int(parts), k = Array.isArray(shade) ? shade.length : int(shade);
+    if (n == null) return;
+    count(n); frac(1, n);
+    if (k != null && k > 0) { count(k); frac(k, n); }
+  };
+  switch (b.template) {
+    case "fraction-parts@1": shaded(p.parts, p.shade); break;
+    case "fraction-bars@1": for (const y of p.bars ?? []) shaded(y?.parts, y?.shade); break;
+    case "wholes@1": for (const y of p.wholes ?? []) shaded(Array.isArray(y?.parts) ? y.parts.length : y?.parts, y?.shade); break;
+    case "shade-grid@1": count(p.rows); count(p.cols); shaded(int(p.rows) * int(p.cols), p.shade); break;
+    case "equal-groups@1": {
+      count(p.groups); count(p.each);
+      if (int(p.groups) != null && int(p.each) != null) count(int(p.groups) * int(p.each));
+      for (const v of p.sizes ?? []) count(v);
+      if (Array.isArray(p.sizes)) { count(p.sizes.length); count(p.sizes.reduce((a, v) => a + (int(v) ?? 0), 0)); }
+      break;
+    }
+    case "fraction-line@1": {
+      // (a den's parts per whole and the marks between them: "3 khambe … 4 barabar gaps" over a line in quarters counts its ticks)
+      const span = Number(p.to ?? 1) - Number(p.from ?? 0);
+      for (const d of p.dens ?? [p.den]) { count(d); if (int(d) != null) { frac(1, int(d)); count(int(d) * span); count(int(d) * span - 1); } }
+      for (const m of p.marks ?? []) if (int(m?.num) != null) frac(int(m.num), int(m.den ?? p.den));
+      break;
+    }
+    case "number-line-scale@1": for (const m of p.marks ?? []) count(m?.value); break;
+    case "measured@1": count(Array.isArray(p.sides) ? p.sides.length : p.shape === "triangle" ? 3 : 4); break;
+    case "area-grid@1": count(4); if (int(p.w) != null && int(p.w) <= 12 && int(p.h) <= 8) { count(p.w); count(p.h); } break;
+    case "shape@1": if (["square", "rect", "rectangle"].includes(p.shape)) count(4); else if (p.shape === "triangle") count(3); break;
+    default: break;
+  }
+  // (a whole is drawn on every fraction board: "1" is the bar, the roti, the 0-to-1 line)
+  if (/^(?:fraction-parts|fraction-bars|wholes|shade-grid|fraction-line)@/.test(b.template)) nums.add("1");
+  return { nums, fracs, marks, things };
+}
+// (the working of a sum: the operands left of "=" in "a + b = c" — "24 + 18 = 42", "2 × (50 + 30) = 160" — are read off the board or an
+// earlier result; the value the working states is its result, which is read. A fraction is never an operand here: "3/5 = 9/15" states both)
+const D35_WORKING = /(?:\(\s*)*\d+(?:\.\d+)?(?:\s*\))*(?:\s*[+\-−×÷*]\s*(?:\(\s*)*\d+(?:\.\d+)?(?:\s*\))*)+\s*(?==)/g;
+/** The values a sentence states: [{ kind: "number" | "fraction" | "mark" | "thing", v, said }]. Digits only ("teen" is not read). */
+export function statedValues(t) {
+  const x = String(t ?? "").replace(/\{[a-zA-Z]+\}/g, " ").replace(/,(?=\d{3}\b)/g, ""), out = [], taken = [];
+  for (const m of x.matchAll(D35_FRAC)) { out.push({ kind: "fraction", v: `${Number(m[1])}/${Number(m[2])}`, said: m[0] }); taken.push([m.index, m.index + m[0].length]); }
+  for (const m of x.matchAll(D35_WORKING)) if (!/\d\s*\/\s*\d/.test(m[0])) taken.push([m.index, m.index + m[0].length]);
+  const free = (i) => !taken.some(([a, z]) => i >= a && i < z);
+  for (const m of x.matchAll(D35_NUM)) if (free(m.index)) out.push({ kind: "number", v: numKey(m[1]), said: m[1] });
+  for (const m of x.matchAll(D35_MARK)) out.push({ kind: "mark", v: m[1], said: m[1] });
+  // (a named thing the board draws: the right-angle tester — c4-ch01-t02 s2's P step, "P par tester rakho" over angles with none)
+  if (/(?<![\p{L}])tester(?![\p{L}])/iu.test(x)) out.push({ kind: "thing", v: "tester", said: "tester" });
+  return out;
+}
+// ("1" is one thing, one whole, one plate: never read)
+const isDrawn = (d, y) => (y.kind === "number" && y.v === "1") || (y.kind === "fraction" ? d.fracs.has(y.v) : y.kind === "mark" ? d.marks.has(y.v) : y.kind === "thing" ? d.things.has(y.v) : d.nums.has(y.v));
+/** Rule 1's sentences: [{ at, kind, text, board, boardAt }] — every sentence said after an answer or told, with the board under it. */
+export function statedSentences(s) {
+  const out = [], put = (at, kind, o, board, boardAt) => { const t = String(o?.hi ?? "").trim(); if (t && board) out.push({ at, kind, text: t, board, boardAt }); };
+  for (const k of s?.skills ?? []) {
+    const id = k.skillId, we = k.workedExample;
+    const card = (at, c, posing) => {
+      if (!c?.prompt) return;
+      const board = c.answerBoard ?? posing, boardAt = c.answerBoard ? "answerBoard" : "posing board";
+      put(`${at}.why`, "card reason", c.why, board, boardAt);
+      put(`${at}.whyShort`, "card reason", c.whyShort, board, boardAt);
+    };
+    for (const b of k.explain ?? []) card(`${id}/${b.id}`, b.ask, b.ask?.board ?? b.board);
+    for (const c of k.checks ?? []) card(`${id}/${c.id}`, c, c.board);
+    (k.remediation ?? []).forEach((r, j) => card(`${id}/remediation[${j}].then`, r.then, r.then?.board ?? r.board));
+    if (!we) continue;
+    (we.steps ?? []).forEach((x, j) => {
+      const board = x.resultBoard ?? x.ask?.board ?? we.board, boardAt = x.resultBoard ? "resultBoard" : x.ask?.board ? "step's posing board" : "workedExample.board";
+      if (x.ask) put(`${id}/workedExample.steps[${j}].ask.right`, "confirmation", x.ask.right, board, boardAt);
+      put(`${id}/workedExample.steps[${j}].told`, "told", x.told, board, boardAt);
+    });
+    const y = we.yourStep, board = y?.answerBoard ?? y?.board ?? we.board, boardAt = y?.answerBoard ? "yourStep.answerBoard" : y?.board ? "yourStep.board" : "workedExample.board";
+    put(`${id}/workedExample.answer`, "close", we.answer, board, boardAt);
+    if (y) { put(`${id}/workedExample.yourStep.why`, "own step's reason", y.why, board, boardAt); put(`${id}/workedExample.yourStep.whyShort`, "own step's reason", y.whyShort, board, boardAt); }
+  }
+  return out;
+}
+/** Rule 1's hits: [{ at, kind, text, board, boardAt, missing: [said] }]. A card's reason over its own answerBoard is a printed line
+ *  (undrawnValueNotes), not a hit: the measure on the nine scripts (HITS.md, 2026-11-24) read more than one in three of those false
+ *  (a reference fraction in a comparison, "1/3 se chhota"; a tester the reason tells the child to imagine; a scale's spacing). */
+export const undrawnValueHits = (s) => undrawnValues(s).filter((x) => !(x.kind === "card reason" && x.boardAt === "answerBoard"));
+export const undrawnValueNotes = (s) => undrawnValues(s).filter((x) => x.kind === "card reason" && x.boardAt === "answerBoard");
+export function undrawnValues(s) {
+  const out = [];
+  for (const x of statedSentences(s)) {
+    const d = drawnValues(x.board), missing = [...new Set(statedValues(x.text).filter((y) => !isDrawn(d, y)).map((y) => y.said))];
+    if (missing.length) out.push({ ...x, missing });
+  }
+  return out;
+}
+// ---- rule 2: several named wrong answers
+const d35Norm = (t) => d32Norm(t).trim();
+export function wrongAnswerErrors(s) {
+  const e = [], r = " (Learning 023 rule 2)";
+  for (const c of d32Cards(s)) {
+    const w = c.card.wrongAnswers;
+    if (w == null) continue;
+    if (!Array.isArray(w) || !w.length) { e.push(`${c.at}.wrongAnswers: a list of { answer, accept?, why: { hi, en } }${r}`); continue; }
+    if (w.length > D35_WRONG_MAX) e.push(`${c.at}.wrongAnswers: ${w.length} > ${D35_WRONG_MAX}: past three a card, the card is two cards${r}`);
+    const right = new Set([c.card.key, ...(c.card.accept ?? [])].filter((x) => x != null).map(d35Norm).filter(Boolean));
+    const first = new Set(wrongsOf(c.card).map(d35Norm));
+    const seen = new Map();
+    w.forEach((x, i) => {
+      const at = `${c.at}.wrongAnswers[${i}]`;
+      if (!x || typeof x !== "object" || typeof x.answer !== "string" || !x.answer.trim()) { e.push(`${at}.answer: a non-empty string${r}`); return; }
+      if (x.accept != null && (!Array.isArray(x.accept) || x.accept.some((f) => typeof f !== "string" || !f.trim()))) e.push(`${at}.accept: a list of strings${r}`);
+      for (const l of ["hi", "en"]) if (typeof x.why?.[l] !== "string" || !x.why[l].trim()) e.push(`${at}.why.${l}: a sentence${r}`);
+      for (const f of [x.answer, ...(Array.isArray(x.accept) ? x.accept : [])]) {
+        const n = d35Norm(f);
+        if (!n) continue;
+        if (right.has(n)) e.push(`${at}: "${f}" is the key or an accepted form${r}`);
+        if (first.has(n)) e.push(`${at}: "${f}" is the card's wrongIfMis already (its reason is whyAlt)${r}`);
+        if (seen.has(n) && seen.get(n) !== i) e.push(`${at}: "${f}" is named in wrongAnswers[${seen.get(n)}] too${r}`);
+        if (!seen.has(n)) seen.set(n, i);
+      }
+      if (x.why) for (const h of hintHits({ ...c, given: "" }, [["why", x.why]])) e.push(`${at}.why${h.l === "en" ? " (en)" : ""}: ${h.twoWay ? `leaves one option: names "${h.form}"` : `names the answer "${h.form}"`}${r}`);
+    });
+  }
+  return e;
+}
+// ---- rule 3: the first teaching turn
+/** Rule 3: { at, slot, hook, point, card, total, limit } for the first skill's hook line (the longest), first point and its card. */
+export function firstTurn(s) {
+  const k = s?.skills?.[0], b = k?.explain?.[0];
+  if (!k || !b?.ask) return null;
+  const slots = (k.hook?.interestSlots ?? []).map((x, i) => ({ i, n: engineHi(x?.use) }));
+  const top = slots.reduce((a, x) => (x.n > (a?.n ?? -1) ? x : a), null);
+  const hook = top?.n ?? 0, point = engineHi(b.point), card = engineHi(b.ask.prompt);
+  return { at: `${k.skillId}/${b.id}`, slot: top ? `${k.skillId}/hook.interestSlots[${top.i}]` : null, hook, point, card, total: hook + point + card, limit: D35_FIRST_MAX };
+}
+// ---- rule 4: re-asks
+export const missingReasks = (s) => d32Cards(s).filter((c) => ["card", "check", "follow-up", "own step"].includes(c.kind) && !String(c.card.reask?.hi ?? "").trim()).map((c) => ({ at: c.at, kind: c.kind }));
+// ---- rule 5: a reason that opens on its own wrong answer and "nahi"
+const opensOnVerdict = (why, answer) => {
+  const a = d35Norm(answer), t = d35Norm(why);
+  return !!a && (t === `${a} nahi` || t.startsWith(`${a} nahi `) || t.startsWith(`${a} nahin `) || t.startsWith(`${a} sahi nahi `));
+};
+export function verdictOpenHits(s) {
+  const out = [];
+  for (const c of d32Cards(s)) {
+    const alt = String(c.card.whyAlt?.hi ?? "");
+    for (const w of wrongsOf(c.card)) if (alt && opensOnVerdict(alt, w)) out.push({ at: `${c.at}.whyAlt`, answer: w, text: alt });
+    (Array.isArray(c.card.wrongAnswers) ? c.card.wrongAnswers : []).forEach((x, i) => {
+      const t = String(x?.why?.hi ?? "");
+      if (t && opensOnVerdict(t, x?.answer)) out.push({ at: `${c.at}.wrongAnswers[${i}].why`, answer: x.answer, text: t });
+    });
+  }
+  return out;
+}
+// ---- rule 6: one frame once in a skill
+const frameWords = (t) => d32Norm(String(t ?? "").replace(/\d+(?:\s*[./]\s*\d+)?/g, " NUM ")).split(" ").filter(Boolean).map((w) => (/^num$/i.test(w) ? "#" : w));
+/** Rule 6's F6 lines: two reasons of one skill sharing D35_FRAME_RUN words running, numbers masked. */
+export function frameLines(s) {
+  const out = [];
+  for (const k of s?.skills ?? []) {
+    const rs = [];
+    for (const c of d32Cards(s).filter((x) => x.skillId === k.skillId)) {
+      for (const f of ["why", "whyShort", "whyAlt"]) if (c.card[f]?.hi) rs.push({ at: `${c.at}.${f}`, text: c.card[f].hi });
+      (Array.isArray(c.card.wrongAnswers) ? c.card.wrongAnswers : []).forEach((x, i) => { if (x?.why?.hi) rs.push({ at: `${c.at}.wrongAnswers[${i}].why`, text: x.why.hi }); });
+    }
+    const runs = rs.map((x) => { const w = frameWords(x.text), set = new Set(); for (let i = 0; i + D35_FRAME_RUN <= w.length; i++) set.add(w.slice(i, i + D35_FRAME_RUN).join(" ")); return set; });
+    const groups = new Map();
+    rs.forEach((x, i) => rs.forEach((y, j) => {
+      if (j <= i) return;
+      const shared = [...runs[i]].find((g) => runs[j].has(g));
+      if (shared) groups.set(shared, new Set([...(groups.get(shared) ?? []), i, j]));
+    }));
+    // (one line per frame: overlapping runs of one frame are one line, keyed by the reasons they join)
+    const seen = new Set();
+    for (const [g, ix] of groups) {
+      const key = [...ix].sort().join(",");
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(`F6 ${k.skillId}: "${g}" in ${ix.size} reasons: ${[...ix].map((i) => rs[i].at.replace(`${k.skillId}/`, "")).join(", ")}`);
+    }
+  }
+  return out;
+}
+// ---- rule 7: reply kinds in data/lesson-aside-replies.json
+export const D35_REPLY_KINDS = ["person", "done", "liking", "whenWhere"];
+export const LIKING_WORDS = /(?<![\p{L}])(?:achh[aie]\s+lag\p{L}*|pasand|favou?rite)(?![\p{L}])/iu;
+export const TWICE_LINE = /yeh\s+baat\s+toh\s+do\s+baar\s+aa\s+gayi/iu;
+/** Rule 7: the errors of the file (a note without --d35). */
+export function replyKindErrors(d) {
+  const e = [], r = " (Learning 023 rule 7)";
+  const rk = d?.replyKinds;
+  if (rk == null) e.push(`replyKinds: missing: { ${D35_REPLY_KINDS.join(", ")} }, three forms { hi, en } each, one {phrase}${r}`);
+  else for (const k of D35_REPLY_KINDS) {
+    const v = rk[k];
+    if (!Array.isArray(v) || v.length !== 3) { e.push(`replyKinds.${k}: three forms${r}`); continue; }
+    v.forEach((f, i) => {
+      for (const l of ["hi", "en"]) {
+        const t = String(f?.[l] ?? "").trim(), at = `replyKinds.${k}[${i}]${l === "en" ? " (en)" : ""}`;
+        if (!t) { e.push(`${at}: empty${r}`); continue; }
+        const slots = t.match(/\{[^}]*\}/g) ?? [];
+        if (slots.length !== 1 || slots[0] !== "{phrase}") e.push(`${at}: exactly one {phrase}${r}`);
+        if (/[?？]/.test(t)) e.push(`${at}: asks nothing${r}`);
+        if (t.replace(/\{[a-z]+\}/g, "X").split(/\s+/).filter(Boolean).length > 16) e.push(`${at}: more than 16 words${r}`);
+      }
+    });
+    for (const k2 of Object.keys(rk)) if (!D35_REPLY_KINDS.includes(k2)) e.push(`replyKinds.${k2}: not a kind (${D35_REPLY_KINDS.join(", ")})${r}`);
+  }
+  // (every reply form: a liking's words only under replyKinds.liking; the "twice" line nowhere. Return questions ask, they are not replies)
+  const walk = (o, path) => {
+    if (Array.isArray(o)) return o.forEach((v, i) => walk(v, `${path}[${i}]`));
+    if (!o || typeof o !== "object") return;
+    if (typeof o.hi === "string") {
+      const t = o.hi;
+      if (TWICE_LINE.test(t)) e.push(`${path}: "Yeh baat toh do baar aa gayi." goes${r}`);
+      if (LIKING_WORDS.test(t) && !/^replyKinds\.liking\[/.test(path) && !/\.returns\[\d+\]$/.test(path)) e.push(`${path}: a liking's words ("${t.match(LIKING_WORDS)[0]}") outside replyKinds.liking: "${t}"${r}`);
+      return;
+    }
+    for (const [k, v] of Object.entries(o)) if (k !== "match" && k !== "rules" && k !== "about") walk(v, path ? `${path}.${k}` : k);
+  };
+  walk(d, "");
+  return [...new Set(e)];
+}
+export const ASIDE_REPLIES_FILE = join(ROOT, "data/lesson-aside-replies.json");
+// ---- the errors
+/** Learning 023's errors: rules 1-5 for a topic in D35_READY or forced (rule 6 is a line; rule 7 reads the replies file, not a script). */
+export function d35Errors(s, { force = false } = {}) {
+  if (!force && !isD35(s)) return [];
+  const e = [];
+  for (const x of undrawnValueHits(s)) e.push(`${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")} over the ${x.boardAt} (${x.board.template}), which does not draw ${x.missing.length > 1 ? "them" : "it"}: say it over a board that shows it (a resultBoard / answerBoard), or say what the board draws: "${x.text}" (Learning 023 rule 1)`);
+  e.push(...wrongAnswerErrors(s));
+  const f = firstTurn(s);
+  if (f && f.total > f.limit) e.push(`${f.at}: the first teaching turn is hook ${f.hook} (${f.slot}) + point ${f.point} + card ${f.card} = ${f.total} words by the engine's count > ${f.limit}: cut the point's example, never the card's givens (Learning 023 rule 3)`);
+  for (const x of missingReasks(s)) e.push(`${x.at}: no reask: a ${x.kind} is asked again in its re-ask, never said whole twice (Learning 023 rule 4)`);
+  for (const x of verdictOpenHits(s)) e.push(`${x.at}: opens on its wrong answer and "nahi" ("${x.text.slice(0, 40)}…"): the verdict is said already; open on the reason (Learning 023 rule 5)`);
+  return e;
+}
+/** Learning 023's lines for a reader: F6 (rule 6), the rule-3 count of the first turn (T), rule 1's card reasons over an answer board (D). */
+export const d35ReportLines = (s) => { const f = firstTurn(s); return [...frameLines(s), ...(f ? [`T ${f.at}: first teaching turn hook ${f.hook} + point ${f.point} + card ${f.card} = ${f.total} (limit ${f.limit})`] : []),
+  ...undrawnValueNotes(s).map((x) => `D ${x.at}: states ${x.missing.map((v) => `"${v}"`).join(", ")} over its answerBoard (${x.board.template}), which does not draw ${x.missing.length > 1 ? "them" : "it"}: "${x.text}"`)]; };
 /** The spoken fields of a part, by kind (A.4). */
 const PART_FIELDS = {
   point: ["point", "pointAlt", "simpler", "viewCaption"],
@@ -2560,6 +2847,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   if (args.includes("--d33")) for (const t of topics) if (!D33_READY.includes(t)) D33_READY.push(t);
   // (Learning 022: --d34 holds the named scripts to the 022 rules for this run only, as D34_READY does for good)
   if (args.includes("--d34")) for (const t of topics) if (!D34_READY.includes(t)) D34_READY.push(t);
+  // (Learning 023: --d35 holds the named scripts to the 023 rules for this run only, as D35_READY does for good)
+  if (args.includes("--d35")) for (const t of topics) if (!D35_READY.includes(t)) D35_READY.push(t);
   for (const t of topics) {
     const r = await checkTopic(t);
     console.log(`${t}: ${r.ok ? "ok" : "FAIL"}  structure ${r.structure.length}, boards ${r.boards.length}, runtime ${r.runtime.length}; W6 left to turn time on ${r.timingOnly.length}`);
@@ -2587,6 +2876,8 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
     // (Learning 022: the comparison sentences, computed (C); the givens that change (G) and the names on cards (N): report lines)
     if (args.includes("--rules")) for (const m of comparisonLines(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--d34") || args.includes("--rules")) for (const m of d34ReportLines(scriptOf(t))) console.log(`  ${m}`);
+    // (Learning 023: rule 6's frames (F6), the first turn's count (T), card reasons over an answer board (D): lines for a reader)
+    if (args.includes("--d35") || args.includes("--rules")) for (const m of d35ReportLines(scriptOf(t))) console.log(`  ${m}`);
     if (args.includes("--manual")) { const sc = scriptOf(t); for (const m of sc && (sc.version ?? 1) >= 2.3 ? whyVerbErrors(sc) : []) console.log(`  M ${m}`); }
     if (!r.ok) bad++;
     if (opt("--blind")) {
@@ -2595,6 +2886,13 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
       if (opt("--keys")) writeFileSync(opt("--keys"), JSON.stringify(p.keys, null, 1));
       console.log(`  blind packet: ${p.questions.length} questions, ${p.examples.length} worked examples → ${opt("--blind")}`);
     }
+  }
+  // (Learning 023 rule 7: the aside replies' kinds, read once a run: an error with --d35, else a printed note)
+  {
+    const r7 = existsSync(ASIDE_REPLIES_FILE) ? replyKindErrors(JSON.parse(readFileSync(ASIDE_REPLIES_FILE, "utf8"))) : [];
+    if (r7.length) console.log(`data/lesson-aside-replies.json: ${args.includes("--d35") ? "FAIL" : "note"}  rule 7 ${r7.length}`);
+    for (const m of r7) console.log(`  ${args.includes("--d35") ? "S" : "note"} ${m}`);
+    if (r7.length && args.includes("--d35")) bad++;
   }
   process.exit(bad ? 1 : 0);
 }
