@@ -2523,6 +2523,7 @@ export const D35_FIRST_MAX = 60, D35_WRONG_MAX = 3, D35_FRAME_RUN = 6;
 const D35_NUM = /(?<![\d/.])(\d+(?:\.\d+)?)(?![\d/]|\.\d)/g;
 const D35_FRAC = /(?<![\d/.])(\d+)\s*\/\s*(\d+)(?![\d/])/g;
 const D35_MARK = /(?<![\p{L}\p{N}'’])([A-Z])(?![\p{L}\p{N}'’])/gu;
+const D35_MIXED = /(?<![\d/.])(\d+)\s+(\d+)\s*\/\s*(\d+)(?![\d/])/g;
 const numKey = (x) => String(Number(x));
 /** The values a board draws: { nums, fracs, marks } (Sets of strings), read from the text it writes (its labels, items, equations,
  *  number-line figures) and from what it shows to count (a bar's parts and shaded parts, a grid's rows and columns, groups). */
@@ -2533,6 +2534,9 @@ export function drawnValues(b) {
   const text = (t) => {
     const x = String(t ?? "").replace(/,(?=\d{3}\b)/g, "");
     for (const m of x.matchAll(D35_FRAC)) { fracs.add(`${Number(m[1])}/${Number(m[2])}`); nums.add(numKey(m[1])); nums.add(numKey(m[2])); }
+    // (d35: a mixed number "1 3/4" — a fraction-line@1 mark label "7/4 = 1 3/4" — draws itself, its parts "1" and "3/4" (read above and
+    // below) and the fraction it is, "7/4")
+    for (const m of x.matchAll(D35_MIXED)) { const [w, n, d] = [m[1], m[2], m[3]].map(Number); if (d > 0) { fracs.add(`${w} ${n}/${d}`); fracs.add(`${w * d + n}/${d}`); } }
     for (const m of x.matchAll(D35_NUM)) nums.add(numKey(m[1]));
     for (const m of x.matchAll(D35_MARK)) marks.add(m[1]);
   };

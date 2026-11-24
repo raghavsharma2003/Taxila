@@ -140,3 +140,14 @@ test("the bare line (den 1): 0 and 1 at its ends, no tick between, passes the ga
     assert.match(expand({ template: "fraction-line@1", den: 1, ...p }).errors.join(","), /fraction_line_bare/, JSON.stringify(p));
   assert.equal(expand({ template: "fraction-line@1", den: 0 }).ok, false);
 });
+
+test("d35: a mark label may be a mixed number W N/D (value W + N/D), alone or on either side of an =", () => {
+  for (const label of ["1 3/4", "7/4 = 1 3/4", "1 3/4 = 7/4"]) {
+    const x = expand({ template: "fraction-line@1", den: 4, from: 0, to: 2, marks: [{ num: 4, label: "4/4 = 1" }, { num: 7, label }] });
+    assert.ok(x.ok, `${label}: ${x.errors?.join(",")}`);
+  }
+  for (const label of ["1 1/4", "7/4 = 1 1/4", "3/4"]) {
+    const x = expand({ template: "fraction-line@1", den: 4, from: 0, to: 2, marks: [{ num: 7, label }] });
+    assert.match((x.errors || []).join(","), /label_value/, `${label} at 7/4 is false`);
+  }
+});

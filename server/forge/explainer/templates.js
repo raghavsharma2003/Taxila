@@ -522,7 +522,9 @@ function fractionLine(c, tl) {
     if (!isInt(m?.num, 1, N)) return { error: "fraction_line_mark" };
     const label = m.label ?? `${m.num}/${den}`;
     if (!fitsLabel(label) || textProblem(label)) return { error: "fraction_line_label" };
-    const vals = [...String(label).matchAll(/(\d+)\s*\/\s*(\d+)|(?<![\d/])(\d+)(?![\d/])/g)].map((x) => (x[1] ? Number(x[1]) / Number(x[2]) : Number(x[3])));
+    // (d35: a mixed number "W N/D" is one value, W + N/D — "7/4 = 1 3/4" at 7/4 is right, "1 1/4" there is refused)
+    const vals = [...String(label).matchAll(/(?<![\d/])(\d+)\s+(\d+)\s*\/\s*(\d+)|(\d+)\s*\/\s*(\d+)|(?<![\d/])(\d+)(?![\d/])/g)]
+      .map((x) => (x[1] ? Number(x[1]) + Number(x[2]) / Number(x[3]) : x[4] ? Number(x[4]) / Number(x[5]) : Number(x[6])));
     if (!vals.length || vals.some((v) => Math.abs(v - m.num / den) > 1e-9)) return { error: `fraction_line_label_value:${label}` };
   }
   const hop = c.hop == null ? null : isInt(c.hop?.num, 1, N) ? c.hop.num : -1;
