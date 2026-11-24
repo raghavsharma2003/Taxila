@@ -1012,7 +1012,7 @@ Object.assign(PREDICATES, D34A_PREDICATES);
 import { D34B_PREDICATES } from "./d34b-predicates.mjs";
 Object.assign(PREDICATES, D34B_PREDICATES);
 // (to-brain 052, the engine builder's parts: the ladder after the own reason, … — d34c-predicates.mjs)
-import { D34C_PREDICATES } from "./d34c-predicates.mjs";
+import { D34C_PREDICATES, setEndsOnQuestion } from "./d34c-predicates.mjs";
 Object.assign(PREDICATES, D34C_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
@@ -1215,6 +1215,8 @@ PREDICATES.endsOnQuestion = (L, r, i, ctx) => {
   if (r.card && low(t).endsWith(low(String(r.card).trim()))) return null;
   return `the turn ends on "${sentencesOf(t).at(-1)?.slice(0, 50)}"`;
 };
+// (to-brain 052 B4: d34c re-reads endsOnQuestion — a pointed invitation is an allowed ending)
+setEndsOnQuestion(PREDICATES.endsOnQuestion); PREDICATES.endsOnQuestion = D34C_PREDICATES.endsOnQuestion;
 /** dc-r8-director25 L2: the wrap is two turns while the child is still there — what was covered, ending on something to answer; then
  *  (after the reply) the acknowledgement, the sentence to her and the goodbye. A wrap after the child leaves is the goodbye alone. Gated. */
 // (main's R7 on the merged tree: turn one ends on the wrap's closing question, one of `wrap.ask` (code's fallback: its first form) — never

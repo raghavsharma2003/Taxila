@@ -15,6 +15,10 @@ import { REM_WHOLE_CAP } from "../../server/director/state.js";
 import { helpPart, at, sentencesOf, normSentence, sameSentence } from "../../server/director/help.js";
 
 const H4 = HELP_PREDICATES.helpLadder;
+const GIVE_UP_ANSWERED = HELP_PREDICATES.giveUpAnswered;
+// (dry-predicates.mjs's endsOnQuestion is assigned on PREDICATES after this file is read: taken at the call)
+let ENDS_ON_Q = null;
+export const setEndsOnQuestion = (f) => { ENDS_ON_Q = f; };
 const T2 = D29_PREDICATES.remCardLong;
 const wordsOf = (t) => String(t ?? "").replace(/\s+/g, " ").trim().split(" ").filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
 /** The sentences of a script value (string, or { hi, en }), normalised. */
@@ -71,7 +75,27 @@ export const D34C_PREDICATES = {
     const now = atQuestionOf(sc, r.text);
     if (now === path) return "the question said again on an aside turn, the third at it or later";
     if (now && now !== "?short") return null;
+    // (her own question about the aside — the return, the question after "Main AI teacher hoon" — is the aside's: that turn asks it)
+    if (/[?？]\s*$/.test(String(r.text ?? "").trim())) return null;
     return endsOnAnswerFirst(sc, r.text) ? null : "an aside turn, the third at one question or later, not ending on a pointed invitation";
+  },
+  /** B4: a pointed invitation (joints.answerFirst, else code's forms) is an allowed ending, as joints.yourTurn is: dry-predicates.mjs's
+   *  endsOnQuestion, re-read. */
+  endsOnQuestion(L, r, i, ctx) {
+    if (r.who === "teacher" && endsOnAnswerFirst(ctx?.script ?? null, String(r.text ?? "").trim())) return null;
+    return ENDS_ON_Q ? ENDS_ON_Q(L, r, i, ctx) : null;
+  },
+  /** H4's giveUpAnswered, re-read: a clarify at an asked step whose simpler was said is answered by the step told (Brain 045 P3), as a
+   *  give-up there is — B4's parks made that path reachable (dry offtopic c4-ch01-t02 32). */
+  giveUpAnswered(L, r, i, ctx) {
+    const f = GIVE_UP_ANSWERED(L, r, i, ctx);
+    if (!f || !/^a clarify/.test(f)) return f;
+    const m = /^(.+-s\d+):worked:step(\d+):ask$/.exec(String(r.cell?.part ?? ""));
+    if (!m) return f;
+    const st = (ctx?.script?.skills ?? []).find((k) => k.skillId === m[1])?.workedExample?.steps?.[Number(m[2]) - 1];
+    const told = [st?.told?.hi, st?.told?.en].filter(Boolean).map((x) => normSentence(sentencesOf(x)[0] ?? ""));
+    const T = normSentence(r.text);
+    return told.some((k) => k && T.includes(k)) ? null : f;
   },
   /** B1 (gated, as T2 was). */
   remCardLong(L, r, i, ctx) {
