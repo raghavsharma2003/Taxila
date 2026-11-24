@@ -3713,7 +3713,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // (to-brain 049 B6.1, main's ruling of 2026-11-23: a right verdict split from the point it led into — the walk's noFit "vpc" — ends on the
     // go-on joint the walk chose, a statement (state.js splitLongOnce, help.js goOnPlain), never on a check-in: after a right answer she gives
     // the reason and goes on. The one place besides the yourTurn invitation where a statement tail stands)
-    if (l2Live && state.lastMove?.noFit === "vpc" && state.lastMove?.vpcGoOn && !asideQ && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
+    if (l2Live && ["vpc", "card"].includes(state.lastMove?.noFit) && state.lastMove?.vpcGoOn && !asideQ && !["wrap", "safeguard", "break", "teachback"].includes(String(kindNow ?? ""))) {
       tail = dot(norm(state.lastMove.vpcGoOn)); guard.vpcGoOn = tail; guard.l2Checkin = false;
     }
     // (Brain 044 Small, director28 c4 steady 84/86, offtopic 50/52, c5-t01 steering 52/54: a second miss in a row got a new hint and then

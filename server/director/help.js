@@ -26,9 +26,12 @@ export const HELP_REQUESTS = Object.freeze(["clarify", "give_up", "hindi", "hint
 // "jo hai, wahi …" — a joint is outside the turn's authored plan, and brain/say.js's screen pass unpoints a sentence that names the board.
 // The rotation passes over a form that points at the board or screen while another form is left; the brain pass is main's to look at)
 const POINTS_AT_BOARD = /(?<![\p{L}])(?:board|screen|whiteboard)\s+(?:par|pe|mein|me|ke|ki|ka)(?![\p{L}])|\bon the (?:board|screen)\b/iu;
-export function noPictureLine(script, { lang = "hinglish", lessonKey = null, n = 0 } = {}) {
+export function noPictureLine(script, { lang = "hinglish", lessonKey = null, n = 0, first = false } = {}) {
   const own = script?.joints?.noPicture;
   if (!(Array.isArray(own) && own.length)) return null;
+  // (to-brain 053 A3: where nothing at all is left the line is the script's FIRST form only — "Iski aur koi tasveer mere paas nahi hai." —
+  // never a rotated one; director34's eight bare turns said five different forms)
+  if (first) { const t = saidIn(own[0], lang); const t0 = t ? String(t).trim() : ""; return t0 ? { kind: "noPicture", text: t0.charAt(0).toUpperCase() + t0.slice(1), by: "authored" } : null; }
   for (let k = 0; k < own.length; k++) {
     const j = helpJoint(script, "noPicture", { lang, lessonKey, n: n + k });
     if (j && !POINTS_AT_BOARD.test(j.text)) return j;
@@ -338,6 +341,29 @@ export function cardPromptOf(script, part) {
   const t = p && typeof p === "object" ? p.hi ?? p.en : p;
   return t && String(t).trim() ? String(t).replace(/\s+/g, " ").trim() : null;
 }
+/** to-brain 053 A1: a part's own hint — a card's `simpler` (a card, a check, a follow-up card, the your-step) or an asked worked step's easier
+ *  wording — when it is unsaid, with the board it is said over (its own `board`, else the part's: a hint "owns" the board its rung names).
+ *  → { field, path, text, board, settles } | null (no hint written, or said). `settles`: its board is the card's own answer board (it shows the
+ *  answer) — it is never drawn as a picture (A1's note: such a card falls to A3 and is listed for main). Spent as the ladder reads it: a card's
+ *  hint only when every sentence of it is said word for word; a step's when any sentence is (help.js pickHelp, the step branch). */
+export function ownHintOf(script, part, said = [], lang = "hinglish") {
+  if (!part) return null;
+  const step = part.kind === "worked_step" && !!part.step;
+  if (!CARD_KINDS.has(part.kind) && !step) return null;
+  if (part.kind === "teachback") return null;
+  const r0 = ladderSpec(script, part)[0];
+  if (!r0?.present || r0.path !== `${part.path}.simpler`) return null;
+  const t = saidIn(r0.value, lang);
+  if (!t || !String(t).trim()) return null;
+  const ss = sentencesOf(t);
+  const spent = step ? ss.some((x) => inSaid(x, said)) : ss.every((x) => saidWordForWord(x, said));
+  if (spent) return null;
+  const board = r0.board ?? part.board ?? null;
+  const settles = !!board?.template && [`${part.path}.answerBoard`, `${part.path}.resultBoard`].some((q) => { const ab = at(script, q); return !!ab?.template && JSON.stringify(canonB(board)) === JSON.stringify(canonB(ab)); });
+  const t0 = String(t).trim();
+  return { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board, settles };
+}
+const canonB = (v) => (Array.isArray(v) ? v.map(canonB) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canonB(v[k])])) : v);
 export const KEY_AFTER_MISSES = 5;
 /** Main's ruling of 2026-11-23 on to-brain 049 B3: a card's marked `whyAlt` (`whyAltAsHelp: true`) is written to the child who gave the
  *  card's named wrong answer (`wrongIfMis`) — many name it ("3 kehne mein …", "28 mein do metre …"). It is said as help only when the
@@ -351,7 +377,7 @@ export function ownReasonFits(node, last) {
   if (!wrongList(node.wrongIfMis).length) return false;
   return !!last.wrongListed || (!!node.targets && last.outcome === "misconception" && last.misconceptionId === node.targets);
 }
-export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null }) {
+export function pickHelp({ script, part: partId, keyed = false, closed = false, request: asked, said = [], lang = "hinglish", lessonKey = null, jointN = {}, misses = 0, last = null, bridgeAgain = false, closedWhy = null }) {
   if (!HELP_REQUESTS.includes(asked)) return null;
   const part = helpPart(script, partId);
   if (!part) return null;
@@ -383,12 +409,22 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
     const spent = !t || !String(t).trim() || sentencesOf(t).some((x) => inSaid(x, said));
     if (spent && hindiHelp) return { part: part.id, kind: part.kind, keyed: false, request, hindiAsked: true, rung: null, board: part.board ?? null, card: "keep", key: null, stepAsked: true, joint: helpJoint(script, "helpSpent", { lang: L, lessonKey, n: jointN.helpSpent ?? 0 }) };
     // (Brain 049 B2: a picture request with nothing left keeps the step asked — the noPicture line and the step's question; never told)
-    if (spent && request === "picture") return { part: part.id, kind: part.kind, keyed: false, request, rung: null, board: part.board ?? null, card: "keep", key: null, joint: null, stepAsked: true, pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) };
+    // (to-brain 053 A3: the line in its first form, then the first unsaid of the step's other wordings — the worked problem's — in words over
+    // the board up; the line and the question alone only where every one is said)
+    if (spent && request === "picture") {
+      const rest = ladderOf(script, part).slice(1).map((r) => ({ ...r, text: saidIn(r.value, L) })).find((r) => r.text && String(r.text).trim() && !sentencesOf(r.text).some((x) => inSaid(x, said)));
+      const t1 = rest ? String(rest.text).trim() : "";
+      const rung = rest ? { field: rest.field, path: rest.path, text: t1.charAt(0).toUpperCase() + t1.slice(1), board: rest.board ?? part.board ?? null } : null;
+      return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung?.board ?? part.board ?? null, card: "keep", key: null, joint: null, stepAsked: true, pictureLine: noPictureLine(script, { lang: L, first: true }) };
+    }
     if (spent) return null;
     const t0 = String(t).trim();
     const rung = { field: r0.field, path: r0.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: r0.board ?? part.board ?? null };
+    // (to-brain 053 A1: at an asked step the step's easier wording owns a board — it is the picture: that board drawn, the wording its caption,
+    // then the step's question; the no-other-drawing line is not said. A board that shows the step's answer is never drawn: A3)
+    const a1 = request === "picture" && !!rung.board?.template && !ownHintOf(script, part, said, L)?.settles;
     return { part: part.id, kind: part.kind, keyed: false, request, rung, board: rung.board, card: "keep", key: null, joint: null, stepAsked: true, ...(hindiHelp ? { hindiAsked: true } : {}),
-      ...(request === "picture" ? { pictureLine: noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 }) } : {}) };
+      ...(request === "picture" ? (a1 ? { hintBoard: true } : { pictureLine: noPictureLine(script, { lang: L, first: true }) }) : {}) };
   }
   const ladder = ladderOf(script, part, { keyed: keyed || (closed && isCard) });
   // (Brain 047 R5: help answers the mistake. After a miss — the card's own hint said — on a card whose script marks its second reason safe to say without the key
@@ -442,15 +478,32 @@ export function pickHelp({ script, part: partId, keyed = false, closed = false, 
   // stuck 64)
   // (main's ruling of 2026-11-23, item 4: that go-on joint names no question and promises nothing — "is sawaal ko yahin rakhte hain", "is par
   // hum dobara aayenge" are for after a key; a consolation is fine at a give-up. No such form: the turn goes on with no joint)
+  // (to-brain 053 B1, carried clause 3 — director34 c4 steady 70, c5-t03 steady 26, c6-ch07-t01 steady 26 and stuck 56, c6-ch07-t03 stuck 56:
+  // "pata nahi, aap batao" at a bridge's check-in got the go-on line and the next skill. The FIRST give-up or "samajh nahi aaya" there gets
+  // help: the bridge's `simpler` where the script has one, else the reason of the card just closed in its full form (`closedWhy`, state.js),
+  // then the same check-in once (card "wait"). A second one there (`bridgeAgain`: her turn before was that help): the go-on line and the
+  // next part, as R5 built. Never the go-on line on the first)
+  if (part.kind === "bridge" && (request === "give_up" || request === "clarify") && !bridgeAgain) {
+    const own = unsaid ? { field: unsaid.field, path: unsaid.path, text: String(unsaid.text).trim() } : null;
+    const why = !own && closedWhy?.text ? { field: "closedWhy", path: closedWhy.path ?? null, text: String(closedWhy.text).trim() } : null;
+    const w = own ?? why;
+    if (w?.text) return { ...base, rung: { ...w, text: w.text.charAt(0).toUpperCase() + w.text.slice(1), board: null }, board: null, card: "wait", key: null, joint: null, bridgeHelp: true };
+  }
   if (part.kind === "bridge" && (request === "give_up" || request === "clarify")) return { ...base, rung: null, board: null, card: "goOn", key: null, joint: goOnPlain(script, { lang: L, lessonKey, n: jointN.afterKeyGoOn ?? 0, consolation: true }), bridgeOn: true };
   // (Brain 049 B2: a picture request with nothing left to draw — the card's pictureBoard and second view spent, or neither — is never a key
   // and never closes the card: the noPicture line, the card's unsaid help if one is left, then the card's question. It does not advance the
   // miss ladder. director32 steering 16 in c5-t01, c5-t02, c6 gave the key)
+  // (to-brain 053 A1: where the card's own hint is unsaid and owns a board, that board is the second picture — drawn, the hint its caption,
+  // then the question; the no-other-drawing line is not said, and the hint counts as said. A hint whose board shows the card's answer is
+  // never drawn. A3: anything else — the line in its first form, then the first unsaid wording in words over the board up (state.js
+  // noPictureKeeps), then the question; never the key)
   if (request === "picture") {
-    const pictureLine = noPictureLine(script, { lang: L, lessonKey, n: jointN.noPicture ?? 0 });
+    const own = isCard ? ownHintOf(script, part, said, L) : null;
+    const a1 = !!own && !!own.board?.template && !own.settles && unsaid?.path === own.path;
     const t0 = unsaid ? String(unsaid.text).trim() : "";
     const rung = unsaid ? { field: unsaid.field, path: unsaid.path, text: t0.charAt(0).toUpperCase() + t0.slice(1), board: unsaid.board ?? part.board ?? null } : null;
-    return { ...base, rung, board: rung?.board ?? part.board ?? null, card: isCard ? "keep" : "wait", key: null, joint: null, pictureLine };
+    if (a1) return { ...base, rung, board: rung.board, card: isCard ? "keep" : "wait", key: null, joint: null, hintBoard: true };
+    return { ...base, rung, board: rung?.board ?? part.board ?? null, card: isCard ? "keep" : "wait", key: null, joint: null, pictureLine: noPictureLine(script, { lang: L, first: true }) };
   }
   if (unsaid) {
     const t0 = String(unsaid.text).trim();

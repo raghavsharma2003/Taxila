@@ -1014,6 +1014,8 @@ Object.assign(PREDICATES, D34B_PREDICATES);
 // (to-brain 052, the engine builder's parts: the ladder after the own reason, … — d34c-predicates.mjs)
 import { D34C_PREDICATES, setEndsOnQuestion } from "./d34c-predicates.mjs";
 Object.assign(PREDICATES, D34C_PREDICATES);
+// (to-brain 053, builder A: the second picture, the walk's three paths — d35a-predicates.mjs)
+import { D35A_PREDICATES } from "./d35a-predicates.mjs"; Object.assign(PREDICATES, D35A_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
@@ -1123,7 +1125,7 @@ export function lessonFlags({ rows, script }) {
     if (r.who !== "teacher") { ctx.prevChild = r.text ?? ""; ctx.prevRead = String(r.read ?? ""); ctx.prevCls = ctx.prevRead.split(" ")[0]; ctx.prevIntent = r.intent ?? null; ctx.prevFlags = r.readFlags ?? []; return; }
     ctx.returnDue = !!r.returnSaid;
     ctx.keyOpenBefore = ctx.keyOpen;
-    for (const [name, f] of Object.entries(PREDICATES)) { if (ctx.prevT?.noFit === "vpc" && VPC_GOES_ON.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
+    for (const [name, f] of Object.entries(PREDICATES)) { if ((ctx.prevT?.noFit === "vpc" || ctx.prevT?.noFitGoOn) && VPC_GOES_ON.has(name)) continue; const why = f({ rows }, r, i, ctx); if (why) out.push({ row: i, predicate: name, why, text: norm(r.text).slice(0, 140) }); }
     if (cardIn(r)) ctx.saidCards.add(low(r.card).slice(0, 40));
     ctx.keyOpen = cardIn(r) ? false : KEY_SAID.test(String(r.text ?? "")) || !!r.keyFact || !!ctx.keyOpen;
     if (r.check?.itemId) ctx.cardTurns[r.check.itemId] = (ctx.cardTurns[r.check.itemId] ?? 0) + 1;

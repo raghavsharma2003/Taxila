@@ -1328,6 +1328,10 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
   try {
     const h = ask?.intent?.held;
     if (!h?.board?.template) return null;
+    // (to-brain 053 A2: a split page left up — a view beside the held board — is kept whole on a turn that keeps the board, and the record
+    // says so: the view stays on screen and its page is recorded with it, never as the held board alone)
+    const keptBeside = keepPage?.keptBeside ?? null;
+    if (keptBeside) { const { keptBeside: _k, ...kp } = keepPage; keepPage = kp; }
     const band = ask?.intent?.style?.band ?? "B3", lang = ask?.intent?.style?.lang ?? null;
     const text = String(ask?.line?.text ?? "");
     const same = !!keepRef && refKey(h.board) === keepRef && !!keepPage?.ops?.length;
@@ -1384,7 +1388,7 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
     const screenA = split ? screenOf({ template: pic.view.template, facts: altFacts ?? {} }, altFacts, panels[1]) : null;
     if (!sw && base.kept && !split) { heldCounts.kept++;
       // (a held board stands: shown at its end state at once, never drawn again)
-      return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0 }], lastRef: keepRef, lastPage: keepPage, layout: { split: false }, held: { unit: unitAfter ?? h.unit ?? null, changed: false } }; }
+      return { ok: true, kept: true, script: still(keepPage), source: "kept", by: "script", template: base.template, facts: base.facts ?? keepPage.facts ?? null, screen: screen0, screens: [{ from: 0, ...screen0, ...(keptBeside ? { beside: keptBeside } : {}) }], lastRef: keepRef, lastPage: keptBeside ? { ...keepPage, keptBeside } : keepPage, layout: keptBeside ? { split: true, kept: true } : { split: false }, held: { unit: unitAfter ?? h.unit ?? null, changed: false } }; }
     let script = page0, screens = [{ from: 0, ...screen0, ...(screenA ? { beside: { ...screenA, altView } } : {}) }], lastRef = upKept ? keepRef : refKey(h.board), lastPage = page0, template = base.template;
     if (sws.length) {
       const nxs = sws.map((w) => ({ w, nx: drawRef(w.board, { band, lang }) })).filter((x) => x.nx?.script);
@@ -1412,6 +1416,7 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
     if (!base.kept) heldCounts.drawn++;
     // (main v6.9, recording: the judges could not confirm "beside" — the layout as one field: split or not, and which panels)
     const layout = split ? pic.layout : { split: false };
+    if (split && lastPage === page0) lastPage = { ...page0, keptBeside: { ...screenA, altView } };
     return { ok: true, script, source: "held", by: "script", template, facts: (base.blank ? drawn0.facts : base.facts) ?? null, ...(split ? { split: true, panels, altView, altLine, altFacts } : {}), layout, screen: screens.at(-1), screens,
       lastRef, lastPage, held: { unit: unitAfter ?? (lastRef === refKey(h.board) ? h.unit ?? null : sw?.unit ?? null), changed: lastRef !== keepRef } };
   } catch { return null; }
