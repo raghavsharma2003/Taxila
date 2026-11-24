@@ -5,6 +5,7 @@
 // numbers says so in its why; `--since` lists every changed part with its board.
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { scriptOf, d31Errors, hindiCards, hindiFormErrors, stepSimplerHits, equalForms, changedParts, sinceReport, partsOf,
   D29_PILOTS, STANDARD_STAGED, AFTER_WORKED_MAX, HINDI_FORM_ENGLISH } from "../scripts/lesson-scripts/check.mjs";
 
@@ -51,7 +52,9 @@ test("019 A.1: the form keeps the question's numbers and slots exactly and names
   e3.hindi = { hi: "{friend} ka kehna hai ki 3/4 do number hain, 3 aur 4. 0 se 1 ki line par 3/4 dikhane ke liye kitne mark par ungli rakhoge?", en };
   assert.ok(!hindiFormErrors(e3, "e3").some((x) => /slots exactly/.test(x)), hindiFormErrors(e3, "e3").join(" | "));
   // (a word answer: c5-t02's "Neha ke paas kam" for a card that asks "kam ya zyada?")
-  const t2 = fresh("c5-maths-ch02-t02"), then = t2.skills[1].remediation[0].then;
+  // (d35 closing: the card's question now says "kam hai ya zyada" itself, so the live card states it; the case is held on the card as it was,
+  // tests/fixtures/scripts-023/before-d35 — git df9ed5591)
+  const t2 = JSON.parse(readFileSync(new URL("./fixtures/scripts-023/before-d35/c5-maths-ch02-t02.json", import.meta.url), "utf8")), then = t2.skills[1].remediation[0].then;
   then.hindi = { hi: "Do ek jaise ribbon hain, dono 7 barabar hisson mein kate. Neha ne ek se 3 liye aur Gopi ne doosre se 6, toh Neha ke paas kam hai ya zyada?", en: "x?" };
   assert.ok(hindiFormErrors(then, "then").some((x) => /names the answer "kam hai"/.test(x)));
   // (a yes and a no offered together are a choice, not an answer)
