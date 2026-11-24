@@ -1794,7 +1794,8 @@
             "told": {
               "hi": "Neeche ke 8 ko 56 banana hai, aur 8 × 7 = 56.",
               "en": "The 8 at the bottom has to become 56, and 8 × 7 = 56."
-            }
+            },
+            "resultBoard": {"template": "compare@1", "params": {"left": {"title": "Upar", "items": ["3"]}, "right": {"title": "Neeche", "items": ["8 × 7 = 56"]}}}
           },
           {
             "ask": {
@@ -1912,6 +1913,7 @@
           }
         ],
         "yourStep": {
+          "board": {"template": "equal-groups@1", "params": {"groups": 3, "each": 7, "hideResult": true}},
           "prompt": {
             "hi": "Tumhari baari: toh {friendF} ko kitne page padhne honge?",
             "en": "Your turn: so how many pages will {friendF} have to read?"
@@ -1939,13 +1941,10 @@
           ],
           "targets": "c6-maths-ch07-t03-m-one-side",
           "wrongIfMis": "3",
-          "answerBoard": {
-            "template": "equal-groups@1",
-            "params": {
-              "groups": 3,
-              "each": 7
-            }
-          },
+          "answerBoard": {"template": "equal-groups@1", "params": {"groups": 3, "each": 7}},
+          "viewCaption": {"hi": "Teeno hisse ab ek jaal mein hain: har qatar ek hissa hai.", "en": "The three parts are now in one grid: each row is one part."},
+          "pictureBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 8, "shade": 3, "label": "3/8"}]}},
+          "pictureCaption": {"hi": "Yahan poori kitaab ek patti ki tarah bani hai, aur padhne wala hissa rangeen hai.", "en": "Here the whole book is drawn as a strip, and the part to read is coloured."},
           "why": {
             "hi": "har hisse mein 7 page, toh 3 hisson mein 3 × 7 = 21 page",
             "en": "each part has 7 pages, so 3 parts have 3 × 7 = 21 pages"
@@ -1956,8 +1955,8 @@
           },
           "whyAltAsHelp": true,
           "simpler": {
-            "hi": "Board par upar jo guna likha hai, woh karke dekho: jo aayega, wahi page ki ginti hai.",
-            "en": "Do the multiplication written on top of the board: what you get is the number of pages."
+            "hi": "Board par padhne wale teen hisse hain, har hisse mein 7 page; sab page milakar gino.",
+            "en": "The board has the three parts to read, with 7 pages in each; count all the pages together."
           }
         },
         "answer": {
@@ -1965,8 +1964,8 @@
           "en": "{friendF} has to read 21 pages."
         },
         "why": {
-          "hi": "har 8 page mein se 3 padhne hain, aur kitaab mein aise 7 hisse hain: 3 × 7 = 21",
-          "en": "she reads 3 of every 8 pages, and the book has 7 such lots: 3 × 7 = 21"
+          "hi": "har hissa 7 page ka hai, aur padhne hain 3 hisse: 3 × 7 = 21",
+          "en": "each part is 7 pages, and she reads 3 parts: 3 × 7 = 21"
         },
         "board": {
           "template": "compare@1",
@@ -2956,6 +2955,7 @@
           }
         ],
         "yourStep": {
+          "board": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 0, "label": "?"}]}},
           "prompt": {
             "hi": "Tumhari baari: 28/98 lowest terms mein kya bana?",
             "en": "Your turn: what did 28/98 become in lowest terms?"
@@ -2978,18 +2978,8 @@
           ],
           "targets": "c6-maths-ch07-t03-m-stop-early",
           "wrongIfMis": "14/49",
-          "answerBoard": {
-            "template": "fraction-bars@1",
-            "params": {
-              "bars": [
-                {
-                  "parts": 7,
-                  "shade": 2,
-                  "label": "2/7"
-                }
-              ]
-            }
-          },
+          "answerBoard": {"template": "fraction-bars@1", "params": {"bars": [{"parts": 7, "shade": 2, "label": "2/7"}]}},
+          "viewCaption": {"hi": "Yahan wahi patti ek ghere ki tarah bani hai, abhi koi hissa rangeen nahi.", "en": "Here the same strip is drawn as a circle, no part coloured yet."},
           "pictureBoard": {
             "template": "compare@1",
             "params": {
