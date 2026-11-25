@@ -28,6 +28,7 @@
 // right is not answered again; no reason line sounds like a picture request; and it never answers a card whose question
 // she has not asked (no "?" in her line): it asks for the question instead.
 
+import { BEAT_ASK, WORKED_ASK } from "../../server/brain/say.js";
 export const MIN_TURNS = 20;
 /** director9: the most "which question?" replies one card gets in a row before the child answers it anyway. */
 export const WHICH_MAX = 2;
@@ -117,6 +118,8 @@ const LINES = {
   // (d28: "Virat ko tum kiske saath dekhte ho?" — with whom — was answered "fielding karna, catch pakadna")
   returnedWith: ["papa ke saath dekhta hoon", "bhaiya ke saath dekhta hoon", "dost ke saath dekhta hoon"],
   returnedLike: ["sixer", "batting", "chauka"],
+  // (d37 close item 6a: "Tumne pehli baar Virat ko kab dekha tha?" — when — was answered "fielding karna, catch pakadna")
+  returnedWhen: ["pichhle saal TV par", "jab main {chhota|chhoti} {tha|thi}, papa ke saath", "pichhli chhuttiyon mein"],
   leave: ["bas aaj ke liye itna hi", "ab main {jaata|jaati} hoon, bye", "thak {gaya|gayi}, bye"],
 };
 
@@ -131,6 +134,8 @@ function rngOf(seed, persona) {
   return () => { a = (a + 0x6d2b79f5) >>> 0; let t = Math.imul(a ^ (a >>> 15), a | 1); t ^= t + Math.imul(t ^ (t >>> 7), t | 61); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
 }
 const pick = (rng, xs) => xs[Math.floor(rng() * xs.length)];
+/** d37 close item 6b: her yes-or-no check-in forms, as the walk says them (brain/say.js BEAT_ASK and WORKED_ASK, both languages). */
+const CHECKIN_FORMS = new Set([...Object.values(BEAT_ASK), ...Object.values(WORKED_ASK)].flat().map((f) => String(f).trim().toLowerCase()));
 
 /** A right answer in the forms a Hinglish-speaking child uses: "3", "teen", "3 hai na", "ek bata chaar" for 1/4. */
 export function rightForms(key, accept = []) {
@@ -267,7 +272,7 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         // (the answer fits what she asked: what happened, what they like doing, who, what they like most; else the old lines)
         const q = String(input.teacher ?? "").split(/(?<=[.!?।])\s+/).at(-1) ?? "";
         const pool = /kya\s+hua|what\s+happened|kya\s+kiya/i.test(q) ? LINES.returnedWhat : /kya\s+karna|doing/i.test(q) ? LINES.returnedDoing
-          : /kiske\s+saath|kis\s+ke\s+saath|with\s+whom|who\s+with/i.test(q) ? LINES.returnedWith : /\bkaun\b|\bwho\b/i.test(q) ? LINES.returnedWho : /sabse\s+achha\s+kya|sabse\s+mazedaar|achhi\s+baat|like\s+most|best\s+thing|kya\s+lagta/i.test(q) ? LINES.returnedLike : LINES.returned;
+          : /kiske\s+saath|kis\s+ke\s+saath|with\s+whom|who\s+with/i.test(q) ? LINES.returnedWith : /(?<![\p{L}])(?:kab|when)(?![\p{L}])/iu.test(q) ? LINES.returnedWhen : /\bkaun\b|\bwho\b/i.test(q) ? LINES.returnedWho : /sabse\s+achha\s+kya|sabse\s+mazedaar|achhi\s+baat|like\s+most|best\s+thing|kya\s+lagta/i.test(q) ? LINES.returnedLike : LINES.returned;
         const k = (h + returnN++) % pool.length;
         return say({ text: pool[k], kind: "event", event: "returned" });
       }
@@ -338,7 +343,14 @@ export function createReactiveChild({ persona = "steady", seed = 1, kit = null, 
         return say({ text: pick(rng, /aasaan|easy/i.test(lastQ) ? ["thoda mushkil tha", "aasaan laga", "thoda mushkil, thoda aasaan"] : ["achha laga", "maza aaya", "thoda mushkil tha", "sawaal achhe the"]), kind: "ack" });
       }
       // no keyed question on the table: an open question gets a short go, anything else a short acknowledgement
-      if (/\?\s*$/.test(String(input.teacher ?? ""))) return say({ text: rng() < P.right.open ? pick(rng, ["haan", "mujhe lagta hai haan", "haan, samajh aaya"]) : pick(rng, LINES.dontknow), kind: "ack" });
+      // (d37 close item 6b: the stuck and steering children answer her yes-or-no check-in — one of the walk's own check-in forms — with a
+      // yes or a no: "nahi" where they do not understand, never "pata nahi, aap batao"; the same draws, so every other line is as before)
+      if (/\?\s*$/.test(String(input.teacher ?? ""))) {
+        if (rng() < P.right.open) return say({ text: pick(rng, ["haan", "mujhe lagta hai haan", "haan, samajh aaya"]), kind: "ack" });
+        const no = ["stuck", "steering"].includes(persona) && CHECKIN_FORMS.has(lastQ.trim().toLowerCase());
+        const t = pick(rng, LINES.dontknow);
+        return say({ text: no ? "nahi" : t, kind: "ack" });
+      }
       return say({ text: pick(rng, LINES.ack), kind: "ack" });
     },
   };

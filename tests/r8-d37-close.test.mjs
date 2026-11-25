@@ -169,3 +169,53 @@ describe("item 5: a miss verdict over a picture turn's kept split page keeps the
     assert.deepEqual(pages(bf.heldBoard(ask, { keepRef: bf.refKey(bars), keepPage: barsPage })), [[0, "fraction-bars@1"], [24, "wholes@1"], [142, "fraction-bars@1"]]);
   });
 });
+
+describe("item 6c: cause B's twelve driven walks (b3/ROWS4.md, evals/hybrid-side-by-side/tools/walkwait.mjs) read 0 gated flags", async () => {
+  const { walkWait, walkFlags } = await import("../evals/hybrid-side-by-side/tools/walkwait.mjs");
+  const H10 = "haan|haan|haan|haan|haan|haan|haan|haan|haan|haan";
+  const WALKS = [["c4-maths-ch05-t01", "step", "try|haan|haan|haan|haan|haan"], ["c4-maths-ch05-t01", "step", "give|try|haan|haan|haan|haan"],
+    ["c4-maths-ch05-t01", "card", "haan|haan|haan|haan|haan|haan"], ["c4-maths-ch05-t01", "card", "give|give|haan|haan|haan|haan"],
+    ["c6-maths-ch07-t01", "step", "try|haan|haan|haan|haan|haan"], ["c6-maths-ch07-t01", "step", "give|try|haan|haan|haan|haan"],
+    ["c6-maths-ch07-t01", "card", "haan|haan|haan|haan|haan|haan"], ["c6-maths-ch07-t01", "card", "give|give|haan|haan|haan|haan"],
+    ["c4-maths-ch05-t01", "card", H10], ["c4-maths-ch05-t01", "card", "aside|haan|haan|haan|haan|haan"],
+    ["c4-maths-ch05-t01", "card", "haan|aside|haan|haan|haan|haan"], ["c6-maths-ch07-t01", "card", "haan|haan|aside|haan|haan|haan"]];
+  WALKS.forEach(([topic, which, seq], n) => {
+    test(`walk ${n + 1}: ${topic}, first ${which}, ${seq}`, async () => {
+      const w = await walkWait(topic, which, seq, 0);
+      assert.ok(w.found, "the walk reaches the question");
+      assert.equal(w.log.length, seq.split("|").length);
+      assert.deepEqual(await walkFlags(w, ["gated"]), []);
+    });
+  });
+});
+
+describe("item 6a/6b: the rule-based children (evals/child-sim/reactive.mjs)", async () => {
+  const { createReactiveChild } = await import("../evals/child-sim/reactive.mjs");
+  const kit = { topicId: "c5-maths-ch02-t01" };
+  test("6a: her 'kab …?' question about the aside is answered with a when; a 'kiske saath' still with a with whom", () => {
+    const c = createReactiveChild({ persona: "offtopic", seed: 1, kit });
+    const a = c.reply({ turn: 3, returned: true, teacher: "Tumne pehli baar Virat ko kab dekha tha?" });
+    assert.match(a.text, /saal|chhota|chhoti|chhuttiyon/);
+    const b = c.reply({ turn: 4, returned: true, teacher: "Virat ko tum kiske saath dekhte ho?" });
+    assert.match(b.text, /saath dekhta|saath dekhti/);
+  });
+  test("6b: at a yes-or-no check-in the stuck and steering children say yes or 'nahi', never 'pata nahi, aap batao'; at another open question as before", () => {
+    for (const persona of ["stuck", "steering"]) {
+      const seen = new Set();
+      for (let seed = 1; seed <= 40; seed++) {
+        const c = createReactiveChild({ persona, seed, kit, toEnd: true });
+        const o = c.reply({ turn: 25, teacher: "Ek roti ke 2 barabar hisse hain. Yahan tak theek hai?" });
+        if (o.kind !== "ack") continue; // (a scheduled event of the persona's on this turn: not this rule's)
+        const t = o.text;
+        assert.match(t, /^(?:haan|mujhe lagta hai haan|nahi)\b/, `${persona} ${seed}: ${t}`);
+        assert.ok(!/pata nahi/.test(t), t);
+        seen.add(t.startsWith("nahi") ? "no" : "yes");
+      }
+      assert.ok(seen.has("no"), `${persona}: some child does not understand`);
+    }
+    // (the steady child, and any child at a question that is no check-in, as before: a give-up line where it does not know)
+    const other = new Set();
+    for (let seed = 1; seed <= 40; seed++) other.add(createReactiveChild({ persona: "stuck", seed, kit, toEnd: true }).reply({ turn: 25, teacher: "Socho, isme kya khaas hai?" }).text);
+    assert.ok([...other].some((t) => /pata nahi|samajh nahi|nahi pata/.test(t)), [...other].join(" | "));
+  });
+});
