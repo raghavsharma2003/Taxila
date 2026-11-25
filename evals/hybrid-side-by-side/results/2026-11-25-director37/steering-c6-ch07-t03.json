@@ -1,0 +1,7861 @@
+{
+ "topicId": "c6-maths-ch07-t03",
+ "classLevel": 6,
+ "scenario": "steering",
+ "dry": false,
+ "deployments": {
+  "reply": "taxila-fast",
+  "classify": "taxila-fast",
+  "agent": "taxila-gpt6"
+ },
+ "director": [
+  {
+   "who": "teacher",
+   "text": "Riya, main Asha hoon, tumhari AI teacher. Chalo, shuru karein?",
+   "move": "greet",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03:greet",
+    "column": null
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 681,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj dekhenge ki ek hi bhinn ko alag numbers se kaise likhte hain, aur sabse chhote numbers mein kaise. Toh shuru karte hain?",
+   "move": "hook",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03:greet",
+    "column": "clarify"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 103,
+     "beat": "hook",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "seams": [
+    {
+     "left": "start",
+     "right": "greetSimpler",
+     "joint": null
+    },
+    {
+     "left": "greetSimpler",
+     "right": "greetAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 736,
+   "replyReadyMs": 1417,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1417,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:hook:hook",
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "samajh nahi aaya",
+   "read": "no_evidence · another",
+   "intent": "clarify",
+   "classifyMs": 739,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Chalo, main batati hoon. Roti ke 4 hisse karo ya 8, khaoge utni hi. Pehli patti 1/3 rangeen hai. Doosri ka har hissa 2 mein kata: 2/6. Rang utna hi hai: yeh barabar bhinn hain. Yahan tak saaf hai?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "greet",
+    "column": "clarify"
+   },
+   "noFit": "point",
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 68,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "label": "1/3"
+         },
+         {
+          "parts": 6,
+          "shade": 2,
+          "label": "2/6"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "label": "1/3"
+        },
+        {
+         "parts": 6,
+         "shade": 2,
+         "label": "2/6"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 177,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "label": "1/3"
+         },
+         {
+          "parts": 6,
+          "shade": 2,
+          "label": "2/6"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "label": "1/3"
+        },
+        {
+         "parts": 6,
+         "shade": 2,
+         "label": "2/6"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": null
+     },
+     {
+      "from": 68,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "startAnyway",
+     "joint": "startAnyway",
+     "form": "Chalo, main batati hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "startAnyway",
+     "right": "hook",
+     "joint": null
+    },
+    {
+     "left": "hook",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1946,
+   "replyReadyMs": 2685,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2685,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 3,
+       "shade": 1,
+       "label": "1/3"
+      },
+      {
+       "parts": 6,
+       "shade": 2,
+       "label": "2/6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "label": "1/3"
+       },
+       {
+        "parts": 6,
+        "shade": 2,
+        "label": "2/6"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 1,
+       "label": "1/3"
+      },
+      {
+       "parts": 6,
+       "shaded": 2,
+       "label": "2/6"
+      }
+     ]
+    },
+    "numbers": [
+     "1/3",
+     "2/6"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "label": "1/3"
+       },
+       {
+        "parts": 6,
+        "shade": 2,
+        "label": "2/6"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "mustsay",
+    "script"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "nahi",
+   "read": "no_evidence",
+   "intent": "ack",
+   "classifyMs": 1158,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Socho pehli patti ka har hissa beech se kaat diya. Hisse 6 ho gaye aur rangeen 2, par rang badla nahi: 1/3 aur 2/6 ek hi cheez ke do naam hain. Ab socho, is 3/4 wali patti ke har hisse ko 3 barabar hisson mein kaata. Ab kitne mein se kitne hisse rangeen hain?",
+   "move": "practice",
+   "card": "Ab socho, is 3/4 wali patti ke har hisse ko 3 barabar hisson mein kaata. Ab kitne mein se kitne hisse rangeen hain?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e1:checkin",
+    "column": "other"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "label": "1/3"
+         },
+         {
+          "parts": 6,
+          "shade": 2,
+          "label": "2/6"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "label": "1/3"
+        },
+        {
+         "parts": 6,
+         "shade": 2,
+         "label": "2/6"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 51,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "label": "1/3"
+         },
+         {
+          "parts": 6,
+          "shade": 2,
+          "label": "2/6"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "label": "1/3"
+        },
+        {
+         "parts": 6,
+         "shade": 2,
+         "label": "2/6"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 144,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 144,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:e1",
+      "atChar": 144
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 809,
+   "replyReadyMs": 1967,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1158,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 3,
+       "shade": 1,
+       "label": "1/3"
+      },
+      {
+       "parts": 6,
+       "shade": 2,
+       "label": "2/6"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "label": "1/3"
+        },
+        {
+         "parts": 6,
+         "shade": 2,
+         "label": "2/6"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 144,
+     "atClause": null,
+     "estMs": 11780,
+     "beat": "e1",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "label": "1/3"
+       },
+       {
+        "parts": 6,
+        "shade": 2,
+        "label": "2/6"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 3,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "label": "1/3"
+         },
+         {
+          "parts": 6,
+          "shade": 2,
+          "label": "2/6"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 144,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "thoda hindi mein samjhao",
+   "read": "no_evidence · language",
+   "intent": "hindi",
+   "classifyMs": 773,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Theek hai, Hindi mein kehti hoon. Pehle socho, 4 hisse 3-3 mein kate toh kul kitne bane. Phir rangeen hisson ke saath bhi wahi socho. 3/4 wali patti ka har hissa 3 chhote hisson mein baant do. Poori patti mein ab kul kitne bane, aur unmein rang wale kitne?",
+   "move": "hint",
+   "card": "3/4 wali patti ka har hissa 3 chhote hisson mein baant do. Poori patti mein ab kul kitne bane, aur unmein rang wale kitne?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e1:card",
+    "column": "hindi"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 34,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 89,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 134,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e1",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "hindiSwitch",
+     "joint": "hindiSwitch",
+     "form": "Theek hai, Hindi mein kehti hoon.",
+     "by": "authored"
+    },
+    {
+     "left": "hindiSwitch",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1764,
+   "replyReadyMs": 2537,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2537,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 4,
+       "shade": 3
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 3,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "ask"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "3/12",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "3/12 sahi nahi hai. Ek doosri tarah se samajhte hain. Kaatne ya milane par har hissa badalta hai: kul hisse bhi, rangeen hisse bhi. Isliye dono ginti ek saath badalti hain. 5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "move": "reteach",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e1:card",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 20,
+     "beat": "rem:c6-maths-ch07-t03-m-one-side",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 54,
+     "beat": "rem:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": ""
+         },
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": ""
+        },
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 173,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 54,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 173,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+      "atChar": 173
+     },
+     "switches": [
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+       "atChar": 54
+      },
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+       "atChar": 173
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Ek doosri tarah se samajhte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 2004,
+   "replyReadyMs": 2006,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2006,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 4,
+       "shade": 3
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 54,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": ""
+        },
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 173,
+     "atClause": null,
+     "estMs": 11780,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     },
+     {
+      "from": 54,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": ""
+         },
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     },
+     {
+      "from": 173,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     }
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "5/12",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, 5/12 theek nahi. Kaatne par har rangeen hissa do chhote hisse banega, toh rangeen 5 nahi rahenge. 5/6 ka har hissa 2 mein kaato, toh kaunsa bhinn banega?",
+   "move": "hint",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "whyAlt",
+     "from": 23,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 104,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 968,
+   "replyReadyMs": 969,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 969,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shade": 0,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "drawing karke samjhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 678,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Yahan dono pattiyan gol roti ban gayi hain: pehli 5/6 wali, doosri kaatne ke baad ke 12 hisson wali, abhi bina rang. Ab tum batao, main sun rahi hoon.",
+   "move": "reteach",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "picture",
+    "picture": "view"
+   },
+   "pageParts": [
+    {
+     "part": "alt",
+     "from": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1",
+      "beside": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side"
+    },
+    "layout": {
+     "split": true,
+     "panels": [
+      {
+       "side": "left",
+       "role": "held",
+       "template": "fraction-bars@1",
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side"
+      },
+      {
+       "side": "right",
+       "role": "view",
+       "template": "wholes@1",
+       "view": "wholes"
+      }
+     ]
+    },
+    "picture": {
+     "view": "wholes",
+     "decided": "once",
+     "line": "Yahan dono pattiyan gol roti ban gayi hain: pehli 5/6 wali, doosri kaatne ke baad ke 12 hisson wali, abhi bina rang."
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "caption",
+     "joint": null
+    },
+    {
+     "left": "caption",
+     "right": "yourTurn",
+     "joint": "yourTurn",
+     "form": "Ab tum batao, main sun rahi hoon.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1064,
+   "replyReadyMs": 1742,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1742,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shade": 0,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "altView": "wholes",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek aur picture dikhao",
+   "read": "no_evidence · visual",
+   "intent": "picture",
+   "classifyMs": 733,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Iski koi aur drawing mere paas nahi hai. Ek hissa kaato toh do bante hain. Ab saare hisse dobara gino, aur rangeen hisse bhi. 5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "move": "hint",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "picture",
+    "picture": "hint"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 41,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [],
+     "own": null
+    },
+    {
+     "part": "simpler",
+     "from": 75,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [],
+     "own": null
+    },
+    {
+     "part": "card",
+     "from": 126,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1",
+      "beside": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side"
+    },
+    "layout": {
+     "split": true,
+     "kept": true
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "noPicture",
+     "joint": "noPicture",
+     "form": "Iski koi aur drawing mere paas nahi hai.",
+     "by": "authored"
+    },
+    {
+     "left": "noPicture",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 927,
+   "replyReadyMs": 1660,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1660,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shade": 0,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "5/12",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Abhi yeh sahi nahi hai. Ek rangeen hisse ke beech ek lakeer kheencho: wahan ab do rangeen hisse hain. Har rangeen hisse ke saath yahi hota hai, isliye rangeen ki ginti bhi badhti hai. 5/6 ka har hissa 2 mein kaato, toh kaunsa bhinn banega?",
+   "move": "hint",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 24,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": ""
+         },
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": ""
+        },
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 102,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": ""
+         },
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": ""
+        },
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 184,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": false,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 24,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 184,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+      "atChar": 184
+     },
+     "switches": [
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side#help",
+       "atChar": 24
+      },
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+       "atChar": 184
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Abhi yeh sahi nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 919,
+   "replyReadyMs": 920,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 920,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shade": 0,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 24,
+     "atClause": null,
+     "estMs": 1900,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": ""
+        },
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 184,
+     "atClause": null,
+     "estMs": 12920,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     },
+     {
+      "from": 24,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": ""
+         },
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     },
+     {
+      "from": 184,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-one-side"
+     }
+    ]
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "pehle main try karun?",
+   "read": "no_evidence · selftry",
+   "intent": "try_first",
+   "classifyMs": 851,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, pehle tum try karo.",
+   "move": "practice",
+   "card": "5/6 wali patti ke har hisse ko 2 barabar hisson mein kaato. Tab yeh patti kaunsa bhinn dikhayegi?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "try_first"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "tryFirst",
+     "joint": null
+    }
+   ],
+   "replyMs": 1005,
+   "replyReadyMs": 1856,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1856,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shade": 0,
+       "label": ""
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-one-side",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "5/12",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, yeh theek nahi hai. 6 hisse 12 hue, aur har rangeen hissa bhi do bana, toh 5 ke 10: 10/12. Yahan tak theek hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "misconception"
+   },
+   "heardCap": ".skills[0].remediation[0].then",
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c6-maths-ch07-t03-m-one-side",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "title": "5/6"
+         },
+         {
+          "parts": 12,
+          "shade": 10,
+          "title": "10/12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "title": "5/6"
+        },
+        {
+         "parts": 12,
+         "shade": 10,
+         "title": "10/12"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side#help",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side#help"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Nahi, yeh theek nahi hai"
+     }
+    },
+    {
+     "left": "missVerdict",
+     "right": "key",
+     "joint": null
+    },
+    {
+     "left": "key",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "keyWhy": true,
+   "replyMs": 1056,
+   "replyReadyMs": 1057,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1057,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:then:c6-maths-ch07-t03-m-one-side",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "title": "5/6"
+      },
+      {
+       "parts": 12,
+       "shade": 10,
+       "title": "10/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "title": "5/6"
+       },
+       {
+        "parts": 12,
+        "shade": 10,
+        "title": "10/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": "5/6"
+      },
+      {
+       "parts": 12,
+       "shaded": 10,
+       "label": "10/12"
+      }
+     ]
+    },
+    "numbers": [
+     "5/6",
+     "10/12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "title": "5/6"
+       },
+       {
+        "parts": 12,
+        "shade": 10,
+        "title": "10/12"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "kal maine cricket khela, sixer maara",
+   "read": "no_evidence",
+   "intent": "aside",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 1229,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Cricket ki baat bhi hogi, bas yeh bhinn wala kaam khatam ho jaaye. Is tarah ka hisaab phir aayega; tab tak pehle wala sawaal saath mein dekhte hain. Ab socho, is 3/4 wali patti ke har hisse ko 3 barabar hisson mein kaata. Ab kitne mein se kitne hisse rangeen hain?",
+   "move": "practice",
+   "card": "Ab socho, is 3/4 wali patti ke har hisse ko 3 barabar hisson mein kaata. Ab kitne mein se kitne hisse rangeen hain?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:0:then",
+    "column": "aside"
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 67,
+     "beat": "e1",
+     "boards": [],
+     "own": null,
+     "lead": "afterKeyReturn"
+    },
+    {
+     "part": "card",
+     "from": 149,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 149,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-one-side",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:e1",
+      "atChar": 149
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "parkTopic": "cricket",
+   "seams": [
+    {
+     "left": "start",
+     "right": "park",
+     "joint": null
+    },
+    {
+     "left": "park",
+     "right": "returnCard",
+     "joint": "afterKeyReturn",
+     "form": "Is tarah ka hisaab phir aayega; tab tak pehle wala sawaal saath mein dekhte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 2255,
+   "replyReadyMs": 3484,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 2255,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "title": "5/6"
+      },
+      {
+       "parts": 12,
+       "shade": 10,
+       "title": "10/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e1",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e1",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "title": "5/6"
+        },
+        {
+         "parts": 12,
+         "shade": 10,
+         "title": "10/12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 149,
+     "atClause": null,
+     "estMs": 10640,
+     "beat": "e1",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "title": "5/6"
+       },
+       {
+        "parts": 12,
+        "shade": 10,
+        "title": "10/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 3,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "title": "5/6"
+         },
+         {
+          "parts": 12,
+          "shade": 10,
+          "title": "10/12"
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     },
+     {
+      "from": 149,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3
+         }
+        ]
+       }
+      },
+      "beat": "e1"
+     }
+    ]
+   },
+   "guard": [
+    "long"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "12 mein se 9 hisse",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 887,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki 4 hisse 3-3 mein kate toh 12, aur 3 rangeen hisse 3 × 3 bane: 9/12. Cricket wali baat batao na, tumhe uski kaunsi baat pasand hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e1:card",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3,
+          "title": "3/4"
+         },
+         {
+          "parts": 12,
+          "shade": 9,
+          "title": "9/12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3,
+         "title": "3/4"
+        },
+        {
+         "parts": 12,
+         "shade": 9,
+         "title": "9/12"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "returnSaid": true,
+   "returnTopic": "cricket",
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "return",
+     "joint": null
+    }
+   ],
+   "replyMs": 920,
+   "replyReadyMs": 1807,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1807,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e1",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 4,
+       "shade": 3,
+       "title": "3/4"
+      },
+      {
+       "parts": 12,
+       "shade": 9,
+       "title": "9/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3,
+        "title": "3/4"
+       },
+       {
+        "parts": 12,
+        "shade": 9,
+        "title": "9/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 4,
+       "shaded": 3,
+       "label": "3/4"
+      },
+      {
+       "parts": 12,
+       "shaded": 9,
+       "label": "9/12"
+      }
+     ]
+    },
+    "numbers": [
+     "3/4",
+     "9/12"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3,
+        "title": "3/4"
+       },
+       {
+        "parts": 12,
+        "shade": 9,
+        "title": "9/12"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "fielding karna, catch pakadna",
+   "read": "no_evidence · aside",
+   "intent": "aside_reply",
+   "readFlags": [
+    "offTopic"
+   ],
+   "classifyMs": 949,
+   "classifyPath": "model",
+   "readRaw": "no_evidence"
+  },
+  {
+   "who": "teacher",
+   "text": "Achha, toh tumhe catch pakadna pasand hai! Theek hai, ab phir se kaam par aate hain. Ulta bhi hota hai. Pehli patti mein 6 mein se 4 hisse rangeen hain. Do-do hisse milao, toh 3 bade hisse bante hain aur 2 rangeen: 4/6 = 2/3. Ab tak samajh aaya?",
+   "move": "explain",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e2:point",
+    "column": "aside_reply"
+   },
+   "noFit": "point",
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 85,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": "4/6"
+         },
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": "2/3"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": "4/6"
+        },
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": "2/3"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 226,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": "4/6"
+         },
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": "2/3"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": "4/6"
+        },
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": "2/3"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 85,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e1",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:e2",
+      "atChar": 85
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "asideReply",
+     "joint": null
+    },
+    {
+     "left": "asideReply",
+     "right": "point",
+     "joint": "afterAside",
+     "form": "Theek hai, ab phir se kaam par aate hain.",
+     "by": "authored"
+    },
+    {
+     "left": "point",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "j2": {
+    "line": "Achha, toh tumhe catch pakadna pasand hai!",
+    "refused": []
+   },
+   "replyMs": 1005,
+   "replyReadyMs": 1954,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1005,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay"
+    ]
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 4,
+       "shade": 3,
+       "title": "3/4"
+      },
+      {
+       "parts": 12,
+       "shade": 9,
+       "title": "9/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": true,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 4,
+         "shade": 3,
+         "title": "3/4"
+        },
+        {
+         "parts": 12,
+         "shade": 9,
+         "title": "9/12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 85,
+     "atClause": null,
+     "estMs": 6080,
+     "beat": "e2",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 4,
+         "label": "4/6"
+        },
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": "2/3"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 4,
+        "shade": 3,
+        "title": "3/4"
+       },
+       {
+        "parts": 12,
+        "shade": 9,
+        "title": "9/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 4,
+       "label": "4/6"
+      },
+      {
+       "parts": 3,
+       "shaded": 2,
+       "label": "2/3"
+      }
+     ]
+    },
+    "numbers": [
+     "4/6",
+     "2/3"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 4,
+        "label": "4/6"
+       },
+       {
+        "parts": 3,
+        "shade": 2,
+        "label": "2/3"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 4,
+          "shade": 3,
+          "title": "3/4"
+         },
+         {
+          "parts": 12,
+          "shade": 9,
+          "title": "9/12"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     },
+     {
+      "from": 85,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 4,
+          "label": "4/6"
+         },
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": "2/3"
+         }
+        ]
+       }
+      },
+      "beat": "e2"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "haan, samajh aaya",
+   "read": "no_evidence",
+   "intent": "yes",
+   "classifyMs": 1207,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Ab ek patti ke 10 barabar hisson mein se 8 rangeen hain. Do-do hisse mila kar bade hisse banaye: naya bhinn kya hai?",
+   "move": "practice",
+   "card": "Ab ek patti ke 10 barabar hisson mein se 8 rangeen hain. Do-do hisse mila kar bade hisse banaye: naya bhinn kya hai?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e2:checkin",
+    "column": "yes"
+   },
+   "pageParts": [
+    {
+     "part": "card",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1007,
+   "replyReadyMs": 2214,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1207,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 10,
+       "shade": 8
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 10,
+        "shade": 8
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 10,
+       "shaded": 8,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 10,
+        "shade": 8
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "who": "child",
+   "text": "pata nahi",
+   "read": "no_evidence",
+   "intent": "give_up",
+   "readFlags": [
+    "dontKnow"
+   ],
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Har do hisson par ek ghera socho. Phir ghere gino: pehle saari patti par, phir sirf rangeen hisson par. 8/10 wali patti ke saare hisse do-do milaye, toh kaunsa bhinn bana?",
+   "move": "hint",
+   "card": "Ab ek patti ke 10 barabar hisson mein se 8 rangeen hain. Do-do hisse mila kar bade hisse banaye: naya bhinn kya hai?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e2:card",
+    "column": "give_up"
+   },
+   "pageParts": [
+    {
+     "part": "simpler",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "simpler",
+     "from": 34,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 104,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1699,
+   "replyReadyMs": 1700,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1700,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:explain:e2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 10,
+       "shade": 8
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 10,
+        "shade": 8
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 10,
+       "shaded": 8,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 10,
+        "shade": 8
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "twoq",
+    "same"
+   ],
+   "guardAfter": {
+    "afterRewrite": [
+     "ask"
+    ],
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "4 by 5",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai. Rangeen aur kul, dono do-do mile. Sirf numbers dekh kar nahi keh sakte ki bhinn bada hai. 1/4 ke har hisse ko 3 mein kaato, toh 3/12 banta hai: numbers bade hain, par rang utna hi. Reena ne ek roti ka 2/3 khaaya, Mohit ne waisi hi roti ka 8/12. Kisne zyada khaaya, ya dono ne barabar?",
+   "move": "explain",
+   "card": "Reena ne ek roti ka 2/3 khaaya, Mohit ne waisi hi roti ka 8/12. Kisne zyada khaaya, ya dono ne barabar?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e2:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         },
+         {
+          "parts": 5,
+          "shade": 4,
+          "title": "4/5"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        },
+        {
+         "parts": 5,
+         "shade": 4,
+         "title": "4/5"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 50,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 4,
+          "shade": 1,
+          "label": "1/4"
+         },
+         {
+          "parts": 12,
+          "shade": 3,
+          "label": "3/12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 4,
+         "shade": 1,
+         "label": "1/4"
+        },
+        {
+         "parts": 12,
+         "shade": 3,
+         "label": "3/12"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 197,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 0,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 0,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:e3",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 50,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 197,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e2",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:e3",
+      "atChar": 197
+     },
+     "switches": [
+      {
+       "unit": "c6-maths-ch07-t03-s1:e3",
+       "atChar": 50
+      },
+      {
+       "unit": "c6-maths-ch07-t03-s1:e3",
+       "atChar": 197
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "point",
+     "joint": null
+    },
+    {
+     "left": "point",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1200,
+   "replyReadyMs": 1201,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1201,
+    "rewrite": false,
+    "rewriteSkipped": [
+     "mustsay",
+     "noconfirm"
+    ]
+   },
+   "beat": "s1:explain:e3",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 10,
+       "shade": 8
+      },
+      {
+       "parts": 5,
+       "shade": 4,
+       "title": "4/5"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:e3",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": true,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "e3",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 10,
+         "shade": 8
+        },
+        {
+         "parts": 5,
+         "shade": 4,
+         "title": "4/5"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 50,
+     "atClause": null,
+     "estMs": 3420,
+     "beat": "e3",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 4,
+         "shade": 1,
+         "label": "1/4"
+        },
+        {
+         "parts": 12,
+         "shade": 3,
+         "label": "3/12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 197,
+     "atClause": null,
+     "estMs": 14820,
+     "beat": "e3",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 0,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 10,
+        "shade": 8
+       },
+       {
+        "parts": 5,
+        "shade": 4,
+        "title": "4/5"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 0,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 3,
+        "shade": 0,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 10,
+          "shade": 8
+         },
+         {
+          "parts": 5,
+          "shade": 4,
+          "title": "4/5"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 50,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 4,
+          "shade": 1,
+          "label": "1/4"
+         },
+         {
+          "parts": 12,
+          "shade": 3,
+          "label": "3/12"
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     },
+     {
+      "from": 197,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 0,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "e3"
+     }
+    ]
+   },
+   "guard": [
+    "mustsay",
+    "noconfirm"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ek jitna",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab, kyunki 8/12 mila kar 2/3 hi banta hai. Ab ek sawaal milkar, aaram se hal karte hain. Do ek jaisi pattiyan: pehli ke 8 barabar hisson mein se 6 rangeen, doosri ke 12 mein se 9. Hisse mila kar dekhenge, rang utna hi hai ya nahi. Dono pattiyon ko kitne bade hisson mein milaoge, ki rangeen bhi poore milein?",
+   "move": "worked_example",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:e3:card",
+    "column": "right"
+   },
+   "whyShort": true,
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "e3",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": "2/3"
+         },
+         {
+          "parts": 12,
+          "shade": 8,
+          "label": "8/12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": "2/3"
+        },
+        {
+         "parts": 12,
+         "shade": 8,
+         "label": "8/12"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 51,
+     "beat": "worked:problem",
+     "boards": [],
+     "own": null,
+     "lead": "beforeWorked"
+    },
+    {
+     "part": "body",
+     "from": 97,
+     "beat": "worked:problem",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Pehli patti",
+         "items": [
+          "8 mein se 6"
+         ]
+        },
+        "right": {
+         "title": "Doosri patti",
+         "items": [
+          "12 mein se 9"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pehli patti",
+        "items": [
+         "8 mein se 6"
+        ]
+       },
+       "right": {
+        "title": "Doosri patti",
+        "items": [
+         "12 mein se 9"
+        ]
+       }
+      }
+     }
+    },
+    {
+     "part": "stepAsk",
+     "from": 239,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Pehli patti",
+         "items": [
+          "8 mein se 6"
+         ]
+        },
+        "right": {
+         "title": "Doosri patti",
+         "items": [
+          "12 mein se 9"
+         ]
+        }
+       }
+      }
+     ],
+     "own": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pehli patti",
+        "items": [
+         "8 mein se 6"
+        ]
+       },
+       "right": {
+        "title": "Doosri patti",
+        "items": [
+         "12 mein se 9"
+        ]
+       }
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 97,
+      "template": "compare@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:e3",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:worked",
+      "atChar": 97
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "workedProblem",
+     "joint": "beforeWorked",
+     "form": "Ab ek sawaal milkar, aaram se hal karte hain.",
+     "by": "authored"
+    },
+    {
+     "left": "workedProblem",
+     "right": "stepAsk",
+     "joint": null
+    }
+   ],
+   "replyMs": 1070,
+   "replyReadyMs": 1071,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1071,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked:step1",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 3,
+       "shade": 2,
+       "label": "2/3"
+      },
+      {
+       "parts": 12,
+       "shade": 8,
+       "label": "8/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked:step1",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 3,
+         "shade": 2,
+         "label": "2/3"
+        },
+        {
+         "parts": 12,
+         "shade": 8,
+         "label": "8/12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 97,
+     "atClause": null,
+     "estMs": 7220,
+     "beat": "worked:step1",
+     "template": "compare@1",
+     "board": {
+      "template": "compare@1",
+      "params": {
+       "left": {
+        "title": "Pehli patti",
+        "items": [
+         "8 mein se 6"
+        ]
+       },
+       "right": {
+        "title": "Doosri patti",
+        "items": [
+         "12 mein se 9"
+        ]
+       }
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "compare@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 3,
+        "shade": 2,
+        "label": "2/3"
+       },
+       {
+        "parts": 12,
+        "shade": 8,
+        "label": "8/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "columns": [
+      {
+       "title": "Pehli patti",
+       "items": 1,
+       "quantities": []
+      },
+      {
+       "title": "Doosri patti",
+       "items": 1,
+       "quantities": []
+      }
+     ]
+    },
+    "numbers": [
+     "8",
+     "6",
+     "12",
+     "9"
+    ],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "compare@1",
+     "params": {
+      "left": {
+       "title": "Pehli patti",
+       "items": [
+        "8 mein se 6"
+       ]
+      },
+      "right": {
+       "title": "Doosri patti",
+       "items": [
+        "12 mein se 9"
+       ]
+      }
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 3,
+          "shade": 2,
+          "label": "2/3"
+         },
+         {
+          "parts": 12,
+          "shade": 8,
+          "label": "8/12"
+         }
+        ]
+       }
+      },
+      "beat": "worked:step1"
+     },
+     {
+      "from": 97,
+      "board": {
+       "template": "compare@1",
+       "params": {
+        "left": {
+         "title": "Pehli patti",
+         "items": [
+          "8 mein se 6"
+         ]
+        },
+        "right": {
+         "title": "Doosri patti",
+         "items": [
+          "12 mein se 9"
+         ]
+        }
+       }
+      },
+      "beat": "worked:step1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "four",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 1,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi, 4: dono pattiyan 4 barabar bade hisson mein mil jaati hain. Pehli patti ke do-do hisse milaye: 4 bade hisse bane, aur 6 rangeen mil kar 3. Tumhari baari: doosri patti ke 12 hisse bhi 4 bade hisson mein milao. Ab 4 mein se kitne bade hisse rangeen hain?",
+   "move": "worked_example",
+   "card": "Tumhari baari: doosri patti ke 12 hisse bhi 4 bade hisson mein milao. Ab 4 mein se kitne bade hisse rangeen hain?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:worked:step1:ask",
+    "column": "right"
+   },
+   "stepAnswer": {
+    "beat": "c6-maths-ch07-t03-s1:worked:step1",
+    "right": true,
+    "told": false
+   },
+   "pageParts": [
+    {
+     "part": "body",
+     "from": 0,
+     "beat": "worked:step1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 8,
+          "shade": 6,
+          "label": "6/8"
+         },
+         {
+          "parts": 4,
+          "shade": 3,
+          "label": "3/4"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 8,
+         "shade": 6,
+         "label": "6/8"
+        },
+        {
+         "parts": 4,
+         "shade": 3,
+         "label": "3/4"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 66,
+     "beat": "worked:step2",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 8,
+          "shade": 6,
+          "label": "6/8"
+         },
+         {
+          "parts": 4,
+          "shade": 3,
+          "label": "3/4"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 8,
+         "shade": 6,
+         "label": "6/8"
+        },
+        {
+         "parts": 4,
+         "shade": 3,
+         "label": "3/4"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 145,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 12,
+          "shade": 9
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 12,
+         "shade": 9
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:worked",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 145,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:worked",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:worked",
+      "atChar": 145
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "stepConfirm",
+     "joint": null
+    },
+    {
+     "left": "stepConfirm",
+     "right": "workedStep",
+     "joint": null
+    },
+    {
+     "left": "workedStep",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1803,
+   "replyReadyMs": 1804,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1804,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:worked:worked",
+   "boardRef": {
+    "template": "fraction-bars@1",
+    "params": {
+     "bars": [
+      {
+       "parts": 8,
+       "shade": 6,
+       "label": "6/8"
+      },
+      {
+       "parts": 4,
+       "shade": 3,
+       "label": "3/4"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:ask:worked",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "worked",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 8,
+         "shade": 6,
+         "label": "6/8"
+        },
+        {
+         "parts": 4,
+         "shade": 3,
+         "label": "3/4"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 145,
+     "atClause": null,
+     "estMs": 10640,
+     "beat": "worked",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 12,
+         "shade": 9
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 8,
+        "shade": 6,
+        "label": "6/8"
+       },
+       {
+        "parts": 4,
+        "shade": 3,
+        "label": "3/4"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 12,
+       "shaded": 9,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 12,
+        "shade": 9
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 8,
+          "shade": 6,
+          "label": "6/8"
+         },
+         {
+          "parts": 4,
+          "shade": 3,
+          "label": "3/4"
+         }
+        ]
+       }
+      },
+      "beat": "worked"
+     },
+     {
+      "from": 145,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 12,
+          "shade": 9
+         }
+        ]
+       }
+      },
+      "beat": "worked"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "ask"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": true,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "teen bade hisse",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 693,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Bilkul sahi. Dono pattiyon ke hisse ek size ke kiye, tabhi ginti ki tulna sahi hui. Toh poora jawab: 6/8 aur 9/12, dono mein 4 bade hisson mein se 3 rangeen: rang barabar hai. Ab ek sawaal tum akele karo. Pooja ne ek cake ke 6 barabar hisson mein se 5 liye. Waisa hi doosra cake 12 barabar hisson mein kata hai. Uska bhai kitne hisse le ki dono ka cake barabar ho?",
+   "move": "practice",
+   "card": "Pooja ne ek cake ke 6 barabar hisson mein se 5 liye. Waisa hi doosra cake 12 barabar hisson mein kata hai. Uska bhai kitne hisse le ki dono ka cake barabar ho?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:worked:yourStep",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "worked",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 12,
+          "shade": 9,
+          "title": "9/12"
+         },
+         {
+          "parts": 4,
+          "shade": 3,
+          "title": "3/4"
+         },
+         {
+          "parts": 8,
+          "shade": 6,
+          "title": "6/8"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 12,
+         "shade": 9,
+         "title": "9/12"
+        },
+        {
+         "parts": 4,
+         "shade": 3,
+         "title": "3/4"
+        },
+        {
+         "parts": 8,
+         "shade": 6,
+         "title": "6/8"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 176,
+     "beat": "c1",
+     "boards": [],
+     "own": null,
+     "lead": "afterWorked"
+    },
+    {
+     "part": "card",
+     "from": 205,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:c1",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 205,
+      "template": "fraction-bars@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:worked",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:c1",
+      "atChar": 205
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Bilkul sahi"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": "afterWorked",
+     "form": "Ab ek sawaal tum akele karo.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1662,
+   "replyReadyMs": 2355,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2355,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c1",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 12,
+       "shade": 9,
+       "title": "9/12"
+      },
+      {
+       "parts": 4,
+       "shade": 3,
+       "title": "3/4"
+      },
+      {
+       "parts": 8,
+       "shade": 6,
+       "title": "6/8"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:c1",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c1",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 12,
+         "shade": 9,
+         "title": "9/12"
+        },
+        {
+         "parts": 4,
+         "shade": 3,
+         "title": "3/4"
+        },
+        {
+         "parts": 8,
+         "shade": 6,
+         "title": "6/8"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 205,
+     "atClause": null,
+     "estMs": 15200,
+     "beat": "c1",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "label": ""
+        },
+        {
+         "parts": 12,
+         "shade": 0,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "fraction-bars@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 12,
+        "shade": 9,
+        "title": "9/12"
+       },
+       {
+        "parts": 4,
+        "shade": 3,
+        "title": "3/4"
+       },
+       {
+        "parts": 8,
+        "shade": 6,
+        "title": "6/8"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 6,
+       "shaded": 5,
+       "label": ""
+      },
+      {
+       "parts": 12,
+       "shaded": 0,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "fraction-bars@1",
+     "params": {
+      "bars": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "label": ""
+       },
+       {
+        "parts": 12,
+        "shade": 0,
+        "label": ""
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 12,
+          "shade": 9,
+          "title": "9/12"
+         },
+         {
+          "parts": 4,
+          "shade": 3,
+          "title": "3/4"
+         },
+         {
+          "parts": 8,
+          "shade": 6,
+          "title": "6/8"
+         }
+        ]
+       }
+      },
+      "beat": "c1"
+     },
+     {
+      "from": 205,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "label": ""
+         },
+         {
+          "parts": 12,
+          "shade": 0,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "c1"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "bhai ko 10 hisse",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 622,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, bilkul theek, kyunki 6 ke 12 hisse karne par har hissa 2 mein kata, toh 5 hisse 10 chhote hisson ke barabar. Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+   "move": "practice",
+   "card": "Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:check:c1",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c1",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "title": "5/6"
+         },
+         {
+          "parts": 12,
+          "shade": 10,
+          "title": "10/12"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "title": "5/6"
+        },
+        {
+         "parts": 12,
+         "shade": 10,
+         "title": "10/12"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 115,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 115,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:c1",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:c2",
+      "atChar": 115
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, bilkul theek"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1084,
+   "replyReadyMs": 1706,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1706,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 6,
+       "shade": 5,
+       "title": "5/6"
+      },
+      {
+       "parts": 12,
+       "shade": 10,
+       "title": "10/12"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:c2",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 6,
+         "shade": 5,
+         "title": "5/6"
+        },
+        {
+         "parts": 12,
+         "shade": 10,
+         "title": "10/12"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 115,
+     "atClause": null,
+     "estMs": 8740,
+     "beat": "c2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 6,
+        "shade": 5,
+        "title": "5/6"
+       },
+       {
+        "parts": 12,
+        "shade": 10,
+        "title": "10/12"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 1,
+       "label": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shaded": 0,
+       "label": "Ritu"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 0,
+        "title": "Ritu"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 6,
+          "shade": 5,
+          "title": "5/6"
+         },
+         {
+          "parts": 12,
+          "shade": 10,
+          "title": "10/12"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 115,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "2 sahi nahi hai. Isko ek naye dhang se dekhein. Bade numbers dekh kar bada mat samjho. Aadhi rangeen patti ke har hisse ko chaar mein kaato: rangeen hisse zyada ho gaye, par rang utna hi raha. Ek roti ka 4/7 aur waisi hi roti ka 8/14: kaunsa zyada hai, ya dono barabar?",
+   "move": "reteach",
+   "card": "Ek roti ka 4/7 aur waisi hi roti ka 8/14: kaunsa zyada hai, ya dono barabar?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:check:c2",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 17,
+     "beat": "rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "boards": [],
+     "own": null,
+     "lead": "beforeRemediation"
+    },
+    {
+     "part": "body",
+     "from": 48,
+     "beat": "rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "boards": [
+      {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 2,
+          "shade": 1,
+          "label": ""
+         },
+         {
+          "parts": 8,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 2,
+         "shade": 1,
+         "label": ""
+        },
+        {
+         "parts": 8,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 193,
+     "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 7,
+          "shade": 4
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 7,
+         "shade": 4
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 48,
+      "template": "fraction-bars@1"
+     },
+     {
+      "from": 193,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:c2",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+      "atChar": 193
+     },
+     "switches": [
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+       "atChar": 48
+      },
+      {
+       "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+       "atChar": 193
+      }
+     ]
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "remediation",
+     "joint": "beforeRemediation",
+     "form": "Isko ek naye dhang se dekhein.",
+     "by": "authored"
+    },
+    {
+     "left": "remediation",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1420,
+   "replyReadyMs": 1422,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1422,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:remediation:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 3,
+       "shade": 1,
+       "title": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shade": 0,
+       "title": "Ritu"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+    "scripted": true,
+    "misses": 0,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 48,
+     "atClause": null,
+     "estMs": 3800,
+     "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "template": "fraction-bars@1",
+     "board": {
+      "template": "fraction-bars@1",
+      "params": {
+       "bars": [
+        {
+         "parts": 2,
+         "shade": 1,
+         "label": ""
+        },
+        {
+         "parts": 8,
+         "shade": 4,
+         "label": ""
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 193,
+     "atClause": null,
+     "estMs": 14060,
+     "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 7,
+         "shade": 4
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 0,
+        "title": "Ritu"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 7,
+       "shaded": 4,
+       "label": ""
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 7,
+        "shade": 4
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger"
+     },
+     {
+      "from": 48,
+      "board": {
+       "template": "fraction-bars@1",
+       "params": {
+        "bars": [
+         {
+          "parts": 2,
+          "shade": 1,
+          "label": ""
+         },
+         {
+          "parts": 8,
+          "shade": 4,
+          "label": ""
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger"
+     },
+     {
+      "from": 193,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 7,
+          "shade": 4
+         }
+        ]
+       }
+      },
+      "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger"
+     }
+    ]
+   },
+   "guard": [
+    "long",
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": true,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "the same hai na",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 734,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Sahi jawab. 4/7 ke har hisse ko 2 mein kaato toh 8/14 banta hai, toh dono barabar. Theek hai, ab wapas usi sawaal par chalte hain. 1/3 chocolate se zyada ho, iske liye 9 hisson wali chocolate ke kam se kam kitne hisse chahiye?",
+   "move": "practice",
+   "card": "Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:rem:1:then",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "then:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 7,
+          "shade": 4,
+          "title": "4/7 = 8/14"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 7,
+         "shade": 4,
+         "title": "4/7 = 8/14"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "body",
+     "from": 83,
+     "beat": "c2",
+     "boards": [],
+     "own": null,
+     "lead": "backTo"
+    },
+    {
+     "part": "card",
+     "from": 131,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     },
+     {
+      "from": 131,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:rem:c6-maths-ch07-t03-m-bigger-numbers-bigger",
+     "switchTo": {
+      "unit": "c6-maths-ch07-t03-s1:c2",
+      "atChar": 131
+     }
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "cardQ": true,
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Sahi jawab"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "returnCard",
+     "joint": "backTo",
+     "form": "Theek hai, ab wapas usi sawaal par chalte hain.",
+     "by": "authored"
+    }
+   ],
+   "replyMs": 1193,
+   "replyReadyMs": 1927,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1927,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "wholes": [
+      {
+       "parts": 7,
+       "shade": 4,
+       "title": "4/7 = 8/14"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:c2",
+    "scripted": true,
+    "misses": 1,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "segments": [
+    {
+     "from": 0,
+     "atClause": null,
+     "estMs": 0,
+     "beat": "c2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "wholes": [
+        {
+         "parts": 7,
+         "shade": 4,
+         "title": "4/7 = 8/14"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    },
+    {
+     "from": 131,
+     "atClause": null,
+     "estMs": 9880,
+     "beat": "c2",
+     "template": "wholes@1",
+     "board": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     },
+     "contradictions": 0
+    }
+   ],
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "wholes": [
+       {
+        "parts": 7,
+        "shade": 4,
+        "title": "4/7 = 8/14"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 1,
+       "label": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shaded": 0,
+       "label": "Ritu"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 0,
+        "title": "Ritu"
+       }
+      ]
+     }
+    },
+    "pages": [
+     {
+      "from": 0,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "wholes": [
+         {
+          "parts": 7,
+          "shade": 4,
+          "title": "4/7 = 8/14"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     },
+     {
+      "from": 131,
+      "board": {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      },
+      "beat": "c2"
+     }
+    ]
+   }
+  },
+  {
+   "who": "child",
+   "text": "2",
+   "read": "misconception",
+   "intent": "miss",
+   "classifyMs": 2,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Nahi, 2 theek nahi. 2 ki ginti 1 se badi hai, par Ritu ke hisse Farhan ke hisse ke ek-tihaai size ke hain; 2 chhote hisse uske 1 bade hisse se kam hain. Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+   "move": "hint",
+   "card": "Farhan ne chocolate ke 3 barabar hisson mein se 1 khaaya. Ritu ki waisi hi chocolate 9 barabar hisson mein bati hai. Farhan se zyada khaane ke liye Ritu kam se kam kitne hisse khaaye?",
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:check:c2",
+    "column": "misconception"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "whyAlt",
+     "from": 20,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "card",
+     "from": 153,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 0,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 0,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:c2",
+    "changed": false,
+    "kept": true,
+    "drawn": "kept",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:c2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "missVerdict",
+     "joint": null
+    },
+    {
+     "left": "missVerdict",
+     "right": "help",
+     "joint": null
+    },
+    {
+     "left": "help",
+     "right": "card",
+     "joint": null
+    }
+   ],
+   "replyMs": 1078,
+   "replyReadyMs": 1080,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 1080,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": "s1:check:c2",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 3,
+       "shade": 1,
+       "title": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shade": 0,
+       "title": "Ritu"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": {
+    "itemId": "script:c6-maths-ch07-t03-s1:c2",
+    "scripted": true,
+    "misses": 2,
+    "gave": false
+   },
+   "gate": {
+    "delivered": null,
+    "answered": "misconception",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 0,
+        "title": "Ritu"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 1,
+       "label": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shaded": 0,
+       "label": "Ritu"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "kept",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 0,
+        "title": "Ritu"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "uncorrected"
+   ],
+   "guardAfter": {
+    "afterRewrite": null,
+    "replaced": false,
+    "repaired": true
+   }
+  },
+  {
+   "who": "child",
+   "text": "kam se kam chaar",
+   "read": "correct",
+   "intent": "right",
+   "classifyMs": 926,
+   "classifyPath": "fast"
+  },
+  {
+   "who": "teacher",
+   "text": "Haan, sahi hai, kyunki Farhan ka 1 bada hissa Ritu ke 3 chhote hisson jitna hai; usse zyada ke liye kam se kam 4 chahiye. Ab yahi kaatna aur milana upar aur neeche ke numbers par karenge: kaatna guna se, aur milana bhaag se. Yahan tak saaf hai?",
+   "move": "repair",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:check:c2",
+    "column": "right"
+   },
+   "pageParts": [
+    {
+     "part": "close",
+     "from": 0,
+     "beat": "c2",
+     "boards": [
+      {
+       "template": "wholes@1",
+       "params": {
+        "as": "bar",
+        "wholes": [
+         {
+          "parts": 3,
+          "shade": 1,
+          "title": "Farhan"
+         },
+         {
+          "parts": 9,
+          "shade": 4,
+          "title": "Ritu"
+         }
+        ]
+       }
+      }
+     ],
+     "own": {
+      "template": "wholes@1",
+      "params": {
+       "as": "bar",
+       "wholes": [
+        {
+         "parts": 3,
+         "shade": 1,
+         "title": "Farhan"
+        },
+        {
+         "parts": 9,
+         "shade": 4,
+         "title": "Ritu"
+        }
+       ]
+      }
+     }
+    },
+    {
+     "part": "bridge",
+     "from": 122,
+     "beat": "bridge",
+     "boards": [],
+     "own": null
+    }
+   ],
+   "held": {
+    "unit": "c6-maths-ch07-t03-s1:c2",
+    "changed": true,
+    "kept": false,
+    "drawn": "held",
+    "pages": [
+     {
+      "from": 0,
+      "template": "wholes@1"
+     }
+    ],
+    "intent": {
+     "unit": "c6-maths-ch07-t03-s1:c2"
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "verdict",
+     "joint": null,
+     "opener": {
+      "by": "authored",
+      "form": "Haan, sahi hai"
+     }
+    },
+    {
+     "left": "verdict",
+     "right": "bridge",
+     "joint": null
+    },
+    {
+     "left": "bridge",
+     "right": "checkin",
+     "joint": null
+    }
+   ],
+   "replyMs": 1967,
+   "replyReadyMs": 2893,
+   "latency": {
+    "classifyPath": "fast",
+    "parallelBoundMs": 2893,
+    "rewrite": true,
+    "rewriteSkipped": null
+   },
+   "beat": "s2:bridge:bridge",
+   "boardRef": {
+    "template": "wholes@1",
+    "params": {
+     "as": "bar",
+     "wholes": [
+      {
+       "parts": 3,
+       "shade": 1,
+       "title": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shade": 4,
+       "title": "Ritu"
+      }
+     ]
+    }
+   },
+   "boardUp": true,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": "correct",
+    "verdictGiven": true,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   },
+   "screen": {
+    "kind": "whiteboard",
+    "by": "held",
+    "template": "wholes@1",
+    "boardRef": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 4,
+        "title": "Ritu"
+       }
+      ]
+     }
+    },
+    "counts": {
+     "wholes": [
+      {
+       "parts": 3,
+       "shaded": 1,
+       "label": "Farhan"
+      },
+      {
+       "parts": 9,
+       "shaded": 4,
+       "label": "Ritu"
+      }
+     ]
+    },
+    "numbers": [],
+    "onScreen": null,
+    "drawn": "held",
+    "preselected": {
+     "template": "wholes@1",
+     "params": {
+      "as": "bar",
+      "wholes": [
+       {
+        "parts": 3,
+        "shade": 1,
+        "title": "Farhan"
+       },
+       {
+        "parts": 9,
+        "shade": 4,
+        "title": "Ritu"
+       }
+      ]
+     }
+    }
+   },
+   "guard": [
+    "flat"
+   ],
+   "guardAfter": {
+    "afterRewrite": [],
+    "replaced": false,
+    "repaired": false
+   }
+  },
+  {
+   "who": "child",
+   "text": "ab main jaati hoon, bye",
+   "read": "no_evidence · goodbye",
+   "intent": "stop",
+   "readFlags": [
+    "wantsToStop"
+   ],
+   "classifyMs": 1202,
+   "classifyPath": "model"
+  },
+  {
+   "who": "teacher",
+   "text": "Aaj ke liye itna hi, phir milte hain.",
+   "move": "wrap",
+   "card": null,
+   "cell": {
+    "part": "c6-maths-ch07-t03-s1:bridge",
+    "column": "stop"
+   },
+   "held": {
+    "unit": null,
+    "changed": true,
+    "kept": false,
+    "drawn": "cleared",
+    "pages": [],
+    "intent": {
+     "unit": null,
+     "noUnit": true
+    },
+    "layout": {
+     "split": false
+    }
+   },
+   "seams": [
+    {
+     "left": "start",
+     "right": "goodbye",
+     "joint": null
+    }
+   ],
+   "replyMs": 1,
+   "replyReadyMs": 1203,
+   "latency": {
+    "classifyPath": "model",
+    "parallelBoundMs": 1202,
+    "rewrite": false,
+    "rewriteSkipped": null
+   },
+   "beat": null,
+   "boardRef": null,
+   "boardUp": false,
+   "scene": null,
+   "check": null,
+   "gate": {
+    "delivered": null,
+    "answered": null,
+    "verdictGiven": null,
+    "contradictions": 0,
+    "contradictionsV6": 0,
+    "rightCalledWrong": false,
+    "wrongCalledRight": false,
+    "falseKeys": 0,
+    "v6": {
+     "picture": 0,
+     "borrowedWhy": 0,
+     "unpaged": 0,
+     "droppedPages": 0,
+     "nothingNew": 0,
+     "verdictSeg": 0,
+     "drawn": {
+      "closeOffBoard": 0,
+      "cardAsAlt": 0,
+      "modelWords": 0,
+      "partOffBeat": 0
+     }
+    }
+   }
+  }
+ ],
+ "agent": []
+}
