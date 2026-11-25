@@ -3824,6 +3824,13 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
       guard.reaskShort = { part: "aside", text: short, by: jointsAt(kit, "missAgainAsk", lang, state) ? "authored" : "code", wait: true };
       tail = short; guard.cardQuestionOnly = false; guard.stepAsk = undefined; guard.waitShort = true; body = body.filter((x) => !REPOSE_FRAME.test(x));
     }
+    // (to-brain 054 B3: the wait's second turn says the question's own `reask` in the question's place — a hearing (question-run.js
+    // yourTurnPass marks the turn waitReask); the go-ahead to try stays before it)
+    if (state.lastMove?.waitReask && !state.lastMove?.yourTurn && tail && !asideQ && (tail === card || guard.cardQuestionOnly || (guard.stepAsk && tail === guard.stepAsk) || /[?？]\s*$/.test(norm(tail)))) {
+      const t = norm(fillFriend(state.lastMove.waitReask, state.ctx?.firstName ?? ""));
+      if (guard.stepAsk && tail === guard.stepAsk) guard.stepAsk = t; else guard.cardQuestionOnly = true;
+      tail = t; guard.reaskShort = undefined; guard.waitReask = t; body = body.filter((x) => !REPOSE_FRAME.test(x));
+    }
     // (Brain 049 B4: the third of her turns running at one question ends on the script's invitation — the walk's yourTurn, state.js /
     // question-run.js — in place of the question; what the turn says before it stays)
     // (to-brain 051 C4: whatever form the question takes — a card that asks by an imperative, a short ask, an asked step; a Hindi request's

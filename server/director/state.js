@@ -157,7 +157,7 @@ import { readMethod, keepMethod, METHOD_NOTE } from "../conversation/methods.js"
 import { freeSubjectOf, genericSubject } from "./requests.js";
 import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
-import { yourTurnPass, atQuestionOf } from "./question-run.js";
+import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
@@ -3652,6 +3652,29 @@ function heardOf(prev, script) {
   if (P && !/teachback/.test(P)) { h[P] = (h[P] ?? 0) + 1; h["?last"] = P; }
   return h;
 }
+/** to-brain 054 B (director35 item 3, main's ruling on question 3): the wait — her turn after "Haan, pehle tum try karo." or a bare yes at a
+ *  card or an asked step whose question her turn before was at (said, or stood for by a short ask, an invitation or a pointed invitation,
+ *  as question-run.js yourTurnPass reads it). Counted at that question: a side-topic in the wait keeps the count (it neither restarts nor
+ *  advances it); any other turn ends it. → { P, n } (the question's path, this turn's place in the wait) | null. */
+function waitOf(prev, input) {
+  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedWalk(input) || !prev || prev.safeguard) return null;
+  const c = input.cls ?? {};
+  if (c.flags?.distress || c.flags?.wantsToStop) return null;
+  const col = columnName(input, prev), t = String(input.text ?? "").trim();
+  const yes = !col && (YES_REPLY.test(t) || (/(?<![\p{L}])(?:haan|han|yes|ji)(?![\p{L}])/iu.test(t) && !/\d/.test(t)));
+  if (col !== "try_first" && !yes) return null;
+  const lm = prev.lastMove ?? {};
+  if (["teachback", "wrap", "safeguard", "break"].includes(String(lm.kind ?? ""))) return null;
+  const script = scriptFor(input.kit)?.script;
+  const qT = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : prev.lastUi?.ask?.text ?? null;
+  const a = script && qT ? atQuestionOf(script, qT) : null;
+  const P = a && a !== "?short" && !/teachback/.test(a) ? a : null;
+  if (!P) return null;
+  const last = String((prev.recent ?? []).filter((x) => x.who === "teacher").at(-1)?.text ?? "");
+  const aL = atQuestionOf(script, last);
+  if (!(aL === P || aL === "?short" || endsOnYourTurn(script, last) || endsOnAnswerFirst(script, last))) return null;
+  return { P, n: (prev.waitQ?.P === P ? prev.waitQ.n ?? 0 : 0) + 1 };
+}
 /** The columns never capped (and see capCueOf, R1: only a miss, a give-up or no answer is). Was: an answer that is not right, a give-up, a request to hear it again or in Hindi,
  *  a yes or a try-first, an aside (her turn would come back to the question). Never a picture request (director32: a picture request never
  *  costs the card), a right answer or a stop. */
@@ -4131,6 +4154,18 @@ export function step(prev, input) {
   // (to-brain 053 B3: the count of hearings is kept on every path — her turn before counted here, before any path clones the state)
   const heard = input?.event === "turn" && scriptOn() && !recordedNow ? heardOf(prev, scriptFor(input.kit)?.script ?? null) : null;
   if (heard) prev = { ...prev, qHeard: heard };
+  // (to-brain 054 B3: wait three and after at one question is a turn with no answer — help as for a give-up, ending on the question, a
+  // hearing; where the question has been heard four times it is the cap as built (heardCap: the key with its reason, or the step told).
+  // Read as a give-up, as heardCap reads a step's cap; the record keeps the child's own words. Where help has nothing left and the cap is
+  // not due, the turn is not read as a give-up — that would key the card or tell the step before the fifth hearing (gated stepToldEarly
+  // exempts the cap's turn only): the question is said again, a hearing, and the next wait is the cap)
+  const wait = waitOf(prev, input);
+  if (wait && wait.n >= 3) {
+    const { request: _rq, ...restW } = input.cls ?? {};
+    const gaveUp = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P };
+    const d = (heard?.[wait.P] ?? 0) >= 4 ? null : helpDecision(prev, gaveUp, "give_up", saidNowOf(prev));
+    if ((heard?.[wait.P] ?? 0) >= 4 || (d?.rung?.text && d.card !== "close")) input = gaveUp;
+  }
   const greetAgain = !recordedWalk(input) && !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
   if (greetAgain)
     input = { ...input, text: "haan", cls: { ...(input.cls ?? {}), outcome: "no_evidence", request: undefined, flags: { ...(input.cls?.flags ?? {}), dontKnow: false, confused: false } } };
@@ -4411,6 +4446,16 @@ export function step(prev, input) {
   // waits for the follow-up card's verdict)
   // (Brain 049 B4: a question is heard at most two of her turns running — the third ends on a joints.yourTurn form, the fourth asks it in the
   // form not said last: question-run.js)
+  // (to-brain 054 B: the wait's count, kept on the state — a side-topic keeps it, any other turn ends it — and this turn's place in it on
+  // the move, for yourTurnPass; never carried to the next move)
+  if (input?.event === "turn" && out?.state && scriptOn() && !recordedNow) {
+    const keep = !wait && prev?.waitQ && ["aside", "aside_reply"].includes(String(columnName(input0, prev) ?? ""));
+    if (wait) out.state.waitQ = wait; else if (!keep) delete out.state.waitQ;
+    const strip = (m) => { if (!m || typeof m !== "object" || !("waitN" in m || "waitP" in m)) return m; const { waitN: _n, waitP: _p, ...o } = m; return o; };
+    out.state.lastMove = strip(out.state.lastMove);
+    if (out.move) out.move = strip(out.move);
+    if (wait && out.state.lastMove) { out.state.lastMove = { ...out.state.lastMove, waitN: wait.n, waitP: wait.P }; if (out.move) out.move = { ...out.move, waitN: wait.n, waitP: wait.P }; }
+  }
   if (input?.event === "turn" && scriptOn() && !recordedNow) yourTurnPass(prev, out, scriptFor(input.kit)?.script ?? null, input0?.text ?? "");
   if (out?.state && prev?.answerAt && !out.state.answerAt) out.state.answerAt = prev.answerAt;
   return out;

@@ -7,6 +7,8 @@
 // The third turn running at one question ends on one of the script's `joints.yourTurn` forms instead (an invitation that asks nothing);
 // the fourth asks the question again, in the form that was not the last one said.
 
+import { fillFriend } from "./friend.js";
+
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const SLOT = "zzslotzz";
 const qKey = (t) => low(String(t ?? "").replace(/\{\w+\}/g, ` ${SLOT} `)).replace(/[^\p{L}\p{N}/ ]+/gu, " ").replace(/\s+/g, " ").trim();
@@ -51,6 +53,19 @@ export function questionPathOf(script, text) {
   const k = qKey(q), P = questionPaths(script);
   if (P.exact.has(k)) return P.exact.get(k);
   return P.slotted.find((x) => x.re.test(k))?.path ?? null;
+}
+/** to-brain 054 B: the object a question path (questionPaths) names in the script — a card, an asked step's `ask` — or null. */
+export function questionObjectAt(script, path) {
+  let o = script;
+  for (const m of String(path ?? "").matchAll(/\.([^.[\]]+)|\[(\d+)\]/g)) { o = o?.[m[1] ?? Number(m[2])]; if (o == null) return null; }
+  return o && typeof o === "object" && o !== script ? o : null;
+}
+/** to-brain 054 B3: the question's own `reask` (every question the script writes has one) in a lesson language — Hindi and Hinglish say
+ *  `hi` — its {slots} unfilled, or null. */
+export function reaskOf(script, path, lang = "hinglish") {
+  const r = questionObjectAt(script, path)?.reask;
+  const t = typeof r === "string" ? r : lang === "english" ? r?.en ?? r?.hi : r?.hi ?? r?.en;
+  return typeof t === "string" && t.trim() ? t.replace(/\s+/g, " ").trim() : null;
 }
 /** The script's `joints.yourTurn` forms in a lesson language (Hindi and Hinglish say `hi`): string[]. */
 export function yourTurnForms(script, lang = "hinglish") {
@@ -131,7 +146,7 @@ function helpIn(lm) {
 }
 /** A child's request to hear the question again (brain/say.js askedForIt's words). */
 export const HEAR_Q = /(?<![\p{L}])(?:phir\s+se|fir\s+se|dobara|repeat|kya\s+bola|kya\s+kaha|sawaal\s+kya|kaunsa\s+sawaal|which|again)(?![\p{L}])/iu;
-const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst", "waitShort"];
+const B4_FIELDS = ["yourTurn", "yourTurnAfter", "askNot", "answerFirst", "waitShort", "waitReask"];
 /** to-brain 052 B4 (ruling): code's pointed invitations, said where the script has no `joints.answerFirst` (rotated). */
 export const ANSWER_FIRST_FORMS = Object.freeze([{ hi: "Pehle is sawaal ka jawab do.", en: "First answer this question." },
   { hi: "Board wala sawaal abhi baaki hai, uska jawab do.", en: "The question on the board is still open, answer it." },
@@ -186,6 +201,19 @@ export function yourTurnPass(prev, out, script, childText = "") {
   // said (or stood for, by a short ask or an invitation), she does not say the question whole again: she waits — the short ask on the first
   // such turn (`waitShort`, brain/say.js), the invitation on the next. They are turns at the question: the third running is the invitation
   // whatever it is)
+  // (to-brain 054 B, director35 item 3 as ruled — director36 c4 steady 28 to 48, eleven turns of "Ab phir se socho" and "Ab tumhara jawab
+  // sunti hoon": the wait is counted at its question (state.js waitOf, the move's waitN; a side-topic in it neither restarts nor advances
+  // the count). Wait one is the short ask or the invitation, as built below; wait two says the question's own `reask` — a hearing, and it
+  // overrides 049 B4's third-turn invitation (main's ruling on question 3); wait three and after is help as for a give-up, ending on the
+  // question (state.js reads the turn as a give-up): no invitation in its place, and the fifth hearing is the cap as built)
+  if (lm.waitN >= 2 && lm.waitP) {
+    // (at an asked step the move's prompt becomes the reask said, so the next turn's stepAskAgain takes the other wording: 049 B1)
+    if (lm.waitN === 2) {
+      const t = reaskOf(script, lm.waitP, s.ctx?.lang === "english" ? "english" : "hinglish");
+      if (t) set({ waitReask: t, ...(lm.stepAsk?.prompt && !lm.splitClose ? { stepAsk: { ...lm.stepAsk, prompt: fillFriend(t, s.ctx?.firstName ?? "") } } : {}) });
+    }
+    return out;
+  }
   { const col = String(lm.cell?.column ?? "");
     const qT = lm.stepAsk?.prompt && !lm.splitClose ? lm.stepAsk.prompt : out.ui?.ask?.text ?? null;
     const a0 = (col === "try_first" || col === "yes") && qT && lm.kind !== "teachback" ? atQuestionOf(script, qT) : null;
