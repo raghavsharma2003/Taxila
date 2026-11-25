@@ -43,16 +43,25 @@ const { initLessonState, step } = await import("../server/director/state.js");
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
-const { textReply, replyDeps } = await import("../server/brain/say.js");
+const { textReply, replyDeps, FALLBACK } = await import("../server/brain/say.js");
 const { atQuestionOf, reaskOf, endsOnShortAsk } = await import("../server/director/question-run.js");
 const { fillFriend } = await import("../server/director/friend.js");
 const { scriptFor } = await import("../server/director/script.js");
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const LINES = { try: ["mujhe khud try karne do", { outcome: "no_evidence", request: { type: "selftry" } }], haan: ["haan", { outcome: "no_evidence" }] };
 
-async function walkTo(TOPIC, skip) {
+// (pr9: the describe bodies below run at the same time; each walk holds the stubbed reply for its whole length — one walk at a time — so no
+// walk is ever answered by the real chat another walk put back)
+let stubGate = Promise.resolve();
+async function holdStub() {
+  const before = stubGate; let release; stubGate = new Promise((res) => { release = res; });
+  await before;
   const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
   replyDeps.chat = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }); replyDeps.chatStream = replyDeps.chat;
+  return () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; release(); };
+}
+async function walkTo(TOPIC, skip) {
+  const free = await holdStub();
   const kit = kitFromFile(getTopic(TOPIC));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: TOPIC, classLevel: 4, sessionId: "d37-054h", lessonKey: "d37-054h", teacher: "director" };
@@ -80,7 +89,7 @@ async function walkTo(TOPIC, skip) {
   const script = scriptFor(kit).script;
   const P = atQuestionOf(script, r.state.lastUi?.ask?.text);
   const play = async (seq) => { const out = []; for (const k of seq) out.push(await turn(...LINES[k])); return out; };
-  return { P, script, play, rows, done: () => { replyDeps.chat = chat0; replyDeps.chatStream = stream0; } };
+  return { P, script, play, rows, done: free };
 }
 for (const [TOPIC, skip] of [["c4-maths-ch05-t01", 1], ["c6-maths-ch07-t01", 2]]) describe(`item 15 + 18a at ${TOPIC}'s card: try-first, the go-ahead alone, then haan four times`, async () => {
   const w = await walkTo(TOPIC, skip);
@@ -97,6 +106,12 @@ for (const [TOPIC, skip] of [["c4-maths-ch05-t01", 1], ["c6-maths-ch07-t01", 2]]
     assert.equal(turns[2].lm.waitN, 2); assert.ok(turns[2].text.endsWith(reask), turns[2].text);
     assert.equal(turns[3].lm.waitN, 3); assert.ok(turns[3].seams.includes("help"), turns[3].seams.join(">")); assert.equal(atQuestionOf(w.script, turns[3].text), w.P, turns[3].text);
     assert.equal(turns[4].lm.waitN, 4); assert.ok(turns[4].lm.heardCap && turns[4].lm.gave, turns[4].text);
+  });
+  test("wait four is the told answer with its reason, said by code (never the model-failure fallback line)", () => {
+    const why = norm(turns[4].lm.gave?.why).replace(/[.!?।]+$/, "");
+    assert.ok(why.length > 0, JSON.stringify(turns[4].lm.gave));
+    assert.ok(turns[4].text.toLowerCase().includes(why.toLowerCase()), `${turns[4].text} | why: ${why}`);
+    assert.ok(!turns[4].text.includes(FALLBACK.hinglish.heard), turns[4].text);
   });
   test("the gated wait checks and tryFirstNotAlone read 0 on the walk's rows", () => {
     const ctx = { script: w.script };
@@ -200,8 +215,7 @@ describe("item 18c: item 6 walked — the told line said where its park comes du
   const LIKE = ["mujhe cricket pasand hai", { outcome: "no_evidence", request: { type: "uptake" } }];
   const TOLD = ["kal maine cricket khela, sixer maara", { outcome: "no_evidence", request: { type: "uptake" } }];
   const kit0 = { topic: "c4-maths-ch05-t01" };
-  const chat0 = replyDeps.chat, stream0 = replyDeps.chatStream;
-  replyDeps.chat = async () => ({ text: "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?" }); replyDeps.chatStream = replyDeps.chat;
+  const free = await holdStub();
   const kit = kitFromFile(getTopic(kit0.topic));
   const ctx = { firstName: "Riya", teacherName: "Asha", teacherId: "asha", protege: { name: "Golu", what: "a pretend little friend" }, ageBand: "10-15", lang: "hinglish",
     interests: ["cricket"], firstMeeting: true, hasCallback: false, topicTitle: kit0.topic, classLevel: 4, sessionId: "d37-054h-6", lessonKey: "d37-054h-6", teacher: "director" };
@@ -225,7 +239,7 @@ describe("item 18c: item 6 walked — the told line said where its park comes du
     if ((t.guard?.seams ?? []).some((x) => x.right === "return")) hit = { text: String(t.reply), lm: trial.state.lastMove, later: trial.state.later ?? [] };
     else { const it = r.state.activeItemId ? findItem(r.state, kit, r.state.activeItemId) : null; await advance(it ? String(it.answer) : "haan", { outcome: it ? "correct" : "no_evidence" }); }
   }
-  replyDeps.chat = chat0; replyDeps.chatStream = stream0;
+  free();
   test("the liking line is parked", () => { assert.ok((parkT.guard?.seams ?? []).some((x) => x.right === "park"), (parkT.guard?.seams ?? []).map((x) => x.right).join(">")); });
   test("the told line on the due turn: the cricket park is served there, and the return keeps what was told and asks no liking question", () => {
     assert.ok(hit, "no turn where the park came due with the told line said again");
