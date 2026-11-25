@@ -272,3 +272,18 @@ describe("item 9: a key's value said as a Hindi number word (C2 whyNamesKey and 
     assert.deepEqual(fl(row(`Nahi, yeh theek nahi hai. ${why.charAt(0).toUpperCase()}${why.slice(1)}. Yahan tak saaf hai?`)), []);
   });
 });
+
+describe("item 10: ownKeyNoReason's exemption takes the worked example's why only, never its answer (pr5 note B)", async () => {
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const sc = JSON.parse(readFileSync(new URL("../data/lesson-scripts/c5-maths-ch02-t02.json", import.meta.url), "utf8"));
+  const sk = sc.skills[0], we = sk.workedExample, ys = we.yourStep, part = `${sk.skillId}:worked:yourStep`;
+  const row = (text, column, seams) => ({ who: "teacher", text, cell: { part, column }, seams: seams.map((right) => ({ right })) });
+  const C = (text) => ({ who: "child", text });
+  const flagsOf = (rows) => { const ctx = { script: sc, o: {} }; return rows.map((r, i) => (r.who === "teacher" && PREDICATES.ownKeyNoReason({ rows }, r, i, ctx) ? i : null)).filter((x) => x != null); };
+  const told = row(`Nahi, yeh theek nahi hai. Is sawaal ka sahi jawab: ${ys.key}, kyunki ${ys.why.hi}. Yahan tak theek hai?`, "misconception", ["missVerdict", "key", "checkin"]);
+  test("after the step's key told with its own reason: the worked why as help passes; the worked answer as help is flagged", () => {
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), row(`${we.why.hi}. Yahan tak saaf hai?`, "clarify", ["help", "checkin"])]), []);
+    assert.deepEqual(flagsOf([C("Rahul"), told, C("yeh step samajh nahi aaya"), row(`${we.answer.hi}. Yahan tak saaf hai?`, "clarify", ["help", "checkin"])]), [3]);
+  });
+});

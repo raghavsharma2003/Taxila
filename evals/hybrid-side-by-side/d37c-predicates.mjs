@@ -112,7 +112,8 @@ export const D37C_PREDICATES = {
       const close = [wA, wW].find((w) => w && String(w).trim().length > 8 && saysWhole(r.text, w));
       // (RULING-E2 item 2: the worked example's reason said as HELP after the own step's answer was already told with its own reason on an
       // earlier turn of that step is RULING-C5 item 1's turn, not a close in place of the key — dry stuck c5-ch02-t02 48 after 46)
-      if (close && seamsOf(r).includes("help") && L.rows.slice(0, i).some((x) => keyRow(x) && partOf(x) === partOf(r) && saysWhole(x.text, why))) return null;
+      // (d37 close item 10, pr5 note B: the exemption is the worked example's REASON only — its why, never its answer said as help)
+      if (close && close === wW && seamsOf(r).includes("help") && L.rows.slice(0, i).some((x) => keyRow(x) && partOf(x) === partOf(r) && saysWhole(x.text, why))) return null;
       return close && !saysWhole(r.text, why) ? `the worked example's close said in place of an own step's key, no key seam ("${String(close).slice(0, 50)}…")` : null;
     }
     if (/toh poora jawab|so the full answer/i.test(String(r.text ?? ""))) return `an own step's key with "Toh poora jawab" after it`;
