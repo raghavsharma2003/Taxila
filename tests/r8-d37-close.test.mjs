@@ -224,7 +224,8 @@ describe("item 8: the reply's {word} is never an auxiliary or other function wor
     for (const w of ["hoon", "hai", "hain", "tha", "thi", "the", "ho", "hun", "raha", "rahi", "ke", "ka", "ki", "se", "mein", "ko", "aur", "saath"]) assert.ok(FUNCTION_WORDS.has(w), w);
     assert.ok(!j2WordsOf("papa ke saath dekhta hoon", "cricket").some((w) => FUNCTION_WORDS.has(w)));
     assert.equal(replyWordOf(["hoon", "saath"], "papa ke saath dekhta hoon"), null);
-    assert.equal(replyWordOf(j2WordsOf("papa ke saath dekhta hoon", "cricket"), "papa ke saath dekhta hoon"), "papa");
+    // (re-pinned by d37 RULING-G item 5, pr6's widening: a person word is no {word} either — "papa" here, as "hoon" — so no word is left)
+    assert.equal(replyWordOf(j2WordsOf("papa ke saath dekhta hoon", "cricket"), "papa ke saath dekhta hoon"), null);
     // (the other side: a content word stands as before)
     assert.equal(replyWordOf(["batting"], "batting karna"), "batting");
   });

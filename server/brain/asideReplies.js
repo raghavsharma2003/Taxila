@@ -68,9 +68,18 @@ const NOT_A_WORD = /^(?:haan|han|ha|nahi|nahin|na|pata|kuch|sab|sabse|kal|aaj|pa
  *  word is never a {word} — the picker's content-word list (brain/say.js J2_WORD_STOP) leaves these out too. */
 export const FUNCTION_WORDS = new Set(["hoon", "hun", "hu", "hai", "hain", "ho", "hon", "tha", "thi", "the", "thay", "raha", "rahi", "rahe", "ke", "ka", "ki",
   "se", "mein", "me", "ko", "aur", "par", "pe", "tak", "saath", "sath", "liye", "bhi", "toh", "to", "hi", "na", "ne", "nahi", "gaya", "gayi", "gaye", "kar", "karke"]);
+/** d37 RULING-G item 5 (pr6: offtopic c4-ch01-t02 34 "Achha, papa!", offtopic c6-ch07-t01 50 "Haan, papa! Samajh gayi." read as her calling
+ *  the child "papa"): a word for a person — the people kind's words (`kinds.people.match`: papa, mummy, mama, bhaiya, didi, dost, dada, nani, …)
+ *  — is never the reply's slot, any more than a function word: another content word of the child's line that fits, else a slot-less form. */
+const personWord = (w) => PERSON_SET().has(String(w ?? "").trim().toLowerCase());
+let PERSON_SET0 = null;
+const PERSON_SET = () => (PERSON_SET0 ??= new Set((KINDS.people?.match ?? []).map((x) => String(x).toLowerCase())));
+/** A phrase with a person word in it — "papa", "papa aur Rohit", "mummy ki biryani" — is no slot's phrase (a word form or a plain one). */
+export const hasPersonWord = (p) => String(p ?? "").toLowerCase().split(/[^\p{L}]+/u).some(personWord);
+const slotPhrase = (p) => (p && !hasPersonWord(p) ? p : null);
 /** A {word} for the reply from the picker's candidates, or null (then a plain form). */
 export function replyWordOf(cands = [], said = "") {
-  const w = (cands ?? []).map((x) => String(x ?? "").trim()).find((x) => x && !NOT_A_WORD.test(x) && !FUNCTION_WORDS.has(x.toLowerCase()) && new RegExp(`(?<![\\p{L}])${esc(x)}(?![\\p{L}])`, "iu").test(String(said ?? "")));
+  const w = (cands ?? []).map((x) => String(x ?? "").trim()).find((x) => x && !NOT_A_WORD.test(x) && !FUNCTION_WORDS.has(x.toLowerCase()) && !personWord(x) && new RegExp(`(?<![\\p{L}])${esc(x)}(?![\\p{L}])`, "iu").test(String(said ?? "")));
   return w ?? null;
 }
 
@@ -132,9 +141,10 @@ function asideReplyLine1(args = {}) {
   // (Learning 016: the kind's againReplies — "Haan, {phrase}, yeh tumne bataya tha." — for an aside or a reply said a second time; `again`:
   // the caller knows it is said again, so they come first)
   const againLine = () => {
+    if (args.slotless) return null;
     const k = KINDS[asideKindOf(`${args.topic ?? ""} ${args.said ?? ""}`)] ?? KINDS.other;
     // (the last clause that says something — "…, woh" names nothing)
-    const phrase = String(args.said ?? "").split(/[,;]/).map((x) => phraseOf(x.trim())).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? phraseOf(args.said ?? "")
+    const phrase = slotPhrase(String(args.said ?? "").split(/[,;]/).map((x) => slotPhrase(phraseOf(x.trim()))).filter((x) => x && /\p{L}{4,}/u.test(x)).at(-1) ?? phraseOf(args.said ?? ""))
       // (no phrase of theirs: the word of theirs the word forms would say — "Haan, chauka, yeh tumne bataya tha.")
       ?? (ASKS_HER.test(String(args.said ?? "")) ? null : replyWordOf(args.words ?? [], args.said ?? ""));
     const forms = phrase ? (k?.againReplies ?? []) : [];
@@ -221,15 +231,18 @@ export function replyKindForms(kind) {
 const shapeFits = (shape, rk, q) => !rk || (shape === "like" ? rk === "liking" : shape === "fav" ? rk === "liking" || (rk === "person" && /favou?rite/i.test(String(q ?? ""))) : shape === "past" ? rk === "done" : true);
 /** The child's own casing of a word the picker lowered ("virat" → "Virat" where they said "Virat"). */
 const theirCase = (w, said) => { if (!w) return w; const m = new RegExp(`(?<![\\p{L}])${esc(w)}(?![\\p{L}])`, "iu").exec(String(said ?? "")); return m ? m[0] : w; };
-function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0, avoidFrame = null } = {}) {
+function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, words = [], asked = "", skip = 0, avoidFrame = null, slotless = false } = {}) {
   const avoided = (f) => !!avoidFrame && !!f && [f.hi, f.en].includes(avoidFrame);
   if (isSadAside(said) || isSadAside(topic)) return { line: asideSadLine({ lang, n }), form: "sad" };
   const k = KINDS[asideKindOf(`${topic} ${said}`)] ?? KINDS.other;
+  // (d37 RULING-G item 5, offtopic c6-ch07-t01 50: her AI line asked when — "Tumne pehli baar Virat ko kab dekha tha?" — and the child's
+  // answer is a time, a place or the people there: the reply is the kind's slot-less form, never one with a word or phrase of theirs)
+  if (slotless) { const p = pickN(k?.plain, n + skip); return { line: p ? formOf(p, lang) : null, form: "plain" }; }
   // (to-brain 053 C2: the kind of thing said, and its own forms where the library has them — a {phrase} or {word} of theirs, or none)
   const rk = String(asked ?? "").trim() ? replyKindOf(asked, said) : null;
   const kf = rk ? replyKindForms(rk) : [];
   if (kf.length) {
-    const ph = saidPhrase(said) ?? phraseOf(said);
+    const ph = slotPhrase(saidPhrase(said)) ?? slotPhrase(phraseOf(said));
     const wd = ASKS_HER.test(String(said)) ? null : replyWordOf(words, said);
     const ok = kf.map((f, j) => ({ f, j })).filter(({ f }) => { const t = formOf(f, lang); return !avoided(f) && (!/\{phrase\}/.test(t) || ph) && (!/\{word\}/.test(t) || wd); });
     if (ok.length) {
@@ -275,7 +288,7 @@ function asideReplyLine0({ said = "", topic = "", lang = "hinglish", n = 0, word
   // (to-brain 053 C2: until a kind has forms of its own, a phrase form whose shape does not fit the kind of thing said is not said — a
   // person who was there, a time or a place get a word form or a plain one, never "Toh yeh tumhe achha lagta hai.")
   if (i >= 0 && rk && kp?.phraseReplies?.[i] && !shapeFits(formShape(formOf(kp.phraseReplies[i], lang)), rk, String(asked ?? "").split(/(?<=[.!?\u0964])\s+/).at(-1))) i = -1;
-  const phrase = i >= 0 && kp?.phraseReplies?.[i] ? saidPhrase(said) ?? phraseOf(said) : null;
+  const phrase = i >= 0 && kp?.phraseReplies?.[i] ? slotPhrase(saidPhrase(said)) ?? slotPhrase(phraseOf(said)) : null;
   // (skip: the forms after the first, in order — the phrase form's siblings of the same shape, then the word forms, then the plain ones)
   const sibs = phrase ? kp.phraseReplies.map((f, j) => ({ f, j })).filter(({ f, j }) => j !== i && formShape(formOf(f, lang)) === formShape(formOf(kp.phraseReplies[i], lang))).map(({ f }) => f) : [];
   if (phrase && skip === 0) return { line: cap(fill(formOf(kp.phraseReplies[i], lang), { phrase })), form: "phrase" };

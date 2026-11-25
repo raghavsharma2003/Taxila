@@ -576,8 +576,11 @@ function returnReplyPick(state, rr0, lang) {
   // (dc-r8-director27 P6.3: the child's answer is a line they already said in this lesson — the same aside again — Learning 016's againReplies)
   const kidSaid = (state.recent ?? []).filter((t) => t.who === "child").slice(0, -1).map((t) => String(t.text ?? "").replace(/\s+/g, " ").trim().toLowerCase());
   const againNow = kidSaid.includes(String(rr0.said ?? "").replace(/\s+/g, " ").trim().toLowerCase());
-  return asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow });
+  return asideReplyLine({ said: rr0.said, topic: rr0.topic, lang, n: rot, words: j2WordsOf(rr0.said, rr0.topic), asked, avoid: saidLinesOf(state), recent: herTurnsOf(state), again: againNow, ...(tasteWhenAsked(asked) ? { slotless: true } : {}) });
 }
+/** d37 RULING-G item 5 (the reply reads it from her last turn, an AI exchange served as a return too): her AI line's question was its "kab" form (TASTE_QS's third, chosen by honestTasteLine): the line's last question. */
+const TASTE_WHEN = Object.values(TASTE_QS).map((qs) => new RegExp(`^${qs[2]("\u0000").replace(/[.*+?^${}()|[\]\\]/g, "\\$&").replace("\u0000", ".{1,60}?")}$`, "iu"));
+export const tasteWhenAsked = (line) => { const q = String(line ?? "").replace(/\s+/g, " ").trim().split(/(?<=[.!?\u0964])\s+/).at(-1) ?? ""; return TASTE_WHEN.some((re) => re.test(q)); };
 export function j2WordsOf(said, topic = null) {
   const ws = (String(said ?? "").toLowerCase().match(/\p{L}{4,}/gu) ?? [])
     .filter((w) => !J2_WORD_STOP.has(w) && !RET_STOP.has(w) && !LESSON_SAID.test(w) && !/(?:ta|ti|te|na|ni|ne|ya|yi|ye|kar|kara)$/.test(w));

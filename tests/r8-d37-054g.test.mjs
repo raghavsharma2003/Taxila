@@ -231,3 +231,39 @@ describe("item 4, the other side: a Hindi request at a card she has said keeps t
     } finally { w.done(); }
   });
 });
+
+describe("item 5 (and pr6's widening): the reply's slot never takes a person word; after the AI line's \"kab\" question, the slot-less form", async () => {
+  const A = await import("../server/brain/asideReplies.js");
+  const S = await import("../server/brain/say.js");
+  const PLAIN = new Set(Object.values(JSON.parse((await import("node:fs")).readFileSync(new URL("../data/lesson-aside-replies.json", import.meta.url), "utf8")).kinds).flatMap((k) => (k.plain ?? []).map((f) => f.hi)));
+  const KAB = "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumne pehli baar Virat ko kab dekha tha?";
+  test("the AI line's \"kab\" form is known by its words (TASTE_QS's third, as honestTasteLine asks it); its other forms are not", () => {
+    assert.ok(S.tasteWhenAsked(KAB));
+    assert.ok(S.tasteWhenAsked(S.honestTasteLine("Virat", "hinglish", 1, [], true)));
+    assert.ok(S.tasteWhenAsked("I'm an AI teacher, so I don't have favourites of my own. When did you first watch cricket?"));
+    assert.ok(!S.tasteWhenAsked("Main AI hoon, meri koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?"));
+    assert.ok(!S.tasteWhenAsked("Sixer ki baat tumne ki thi: woh kab ki baat hai?"));
+  });
+  test("offtopic c6-ch07-t01 50: \"jab main chhoti thi, papa ke saath\" to the kab question — a slot-less form, never \"Haan, papa! Samajh gayi.\"", () => {
+    for (const said of ["jab main chhoti thi, papa ke saath", "pichhle saal TV par"]) {
+      const r = A.asideReplyLine({ said, topic: "Virat", asked: KAB, words: ["papa", "chhoti", "pichhle"], slotless: true });
+      assert.equal(r.form, "plain", said); assert.ok(PLAIN.has(r.line), r.line);
+    }
+  });
+  test("the other side: without the kab question a when-answer keeps its phrase form (\"pichhle saal TV\")", () => {
+    const r = A.asideReplyLine({ said: "pichhle saal TV par", topic: "Virat", asked: "Sixer ki baat tumne ki thi: woh kab ki baat hai?", words: ["pichhle"] });
+    assert.equal(r.form, "phrase"); assert.match(r.line, /pichhle saal TV/);
+  });
+  test("offtopic c4-ch01-t02 34: \"papa ke saath dekhta hoon\" — no person word in the slot: the slot-less form", () => {
+    const r = A.asideReplyLine({ said: "papa ke saath dekhta hoon", topic: "Virat", asked: "Main AI hoon, meri koi pasand nahi hoti. Virat ko tum kiske saath dekhte ho?", words: ["papa"] });
+    assert.ok(!/papa/i.test(r.line), r.line); assert.equal(r.form, "plain");
+    assert.equal(A.replyWordOf(["papa", "mummy", "didi", "dost"], "papa mummy didi dost"), null);
+  });
+  test("the other side: another content word of the child's line that fits takes the slot; a name is no person word", () => {
+    const r = A.asideReplyLine({ said: "papa aur Rohit ke saath", topic: "Virat", asked: "Virat ko tum kiske saath dekhte ho?", words: ["rohit", "papa"] });
+    assert.match(r.line, /Rohit/); assert.ok(!/papa/i.test(r.line), r.line);
+    const v = A.asideReplyLine({ said: "Rohit ke saath", topic: "Virat", asked: "Virat ko tum kiske saath dekhte ho?", words: ["rohit"] });
+    assert.match(v.line, /Rohit!/);
+    assert.equal(A.replyWordOf(["papa", "chauka"], "papa ne chauka maara"), "chauka");
+  });
+});
