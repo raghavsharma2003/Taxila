@@ -90,3 +90,57 @@ describe("item 1: her reply's point turn pages the point on its OWN board; the c
     assert.equal(t0.state.lastMove.replyPoint, "afterAiLine"); assert.equal(J(t0.state.lastMove.scriptBeat?.board), J(B));
   });
 });
+
+describe("item 2: a plain no at a comprehension check-in is \"I did not understand\" — the path \"samajh nahi aaya\" takes there", () => {
+  const CK = /(?:Yahan tak theek hai|Ab tak samajh aaya|Yahan tak saaf hai|Yeh hissa saaf hua|Yeh kadam saaf hai|Yeh kadam samajh aaya)\?$/;
+  const atBridgeCheckin = (s) => !s.lastUi?.ask?.itemId && !!s.lastMove?.bridgeSaid && !(s.lastMove?.replyPoint || s.lastMove?.startApart)
+    && CK.test(String([...(s.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").trim());
+  for (const TOPIC of ["c5-maths-ch02-t01", "c6-maths-ch06-t01"]) {
+    test(`${TOPIC}, a bridge's check-in: "nahi" gets what "samajh nahi aaya" gets — the bridge's easier wording, then the same check-in; a second goes on`, async () => {
+      const said = async (lines) => { const w = await walker(TOPIC); try { assert.ok(await w.until(atBridgeCheckin), "the walk reaches a bridge's check-in"); const out = []; for (const x of lines) out.push(await w.go(x)); return out; } finally { w.done(); } };
+      const [n1, n2] = await said(["nahi", "nahi"]);
+      const [c1, c2] = await said(["samajh nahi aaya", "samajh nahi aaya"]);
+      assert.equal(n1.text, c1.text); assert.equal(n2.text, c2.text);
+      assert.ok(n1.lm.help || n1.seams.includes("help"), `help: ${n1.text}`);
+      assert.ok(!n1.ui.ask?.itemId, "no card yet: the same check-in");
+      assert.match(n1.text, CK);
+      // (the child's words are recorded as said)
+      assert.equal(n1.state.talk?.turns?.at?.(-1)?.text ?? "nahi", "nahi");
+      assert.equal(n1.lm.cell?.column ?? "other", "other");
+    });
+  }
+  test("the other side: a \"haan\" there goes on; a no to a question card is an answer (graded), never this", async () => {
+    const w = await walker("c5-maths-ch02-t01");
+    try {
+      assert.ok(await w.until(atBridgeCheckin));
+      const y = await w.go("haan");
+      assert.ok(!y.lm.help, "a yes is no request");
+    } finally { w.done(); }
+    const w2 = await walker("c4-maths-ch05-t01");
+    try {
+      // (a yes-or-no card: its key No — the child's "nahi" is graded by the code's own read)
+      const reached = await w2.until((s) => { const q = String(s.lastUi?.ask?.text ?? ""); return /\?$/.test(q) && /(?:hai na|kya .* sahi|theek hai)\?$/i.test(q) && !!s.activeItemId; }, 200);
+      if (reached) { const n = await w2.go("nahi"); assert.notEqual(n.lm.help?.request, "clarify", n.text); }
+    } finally { w2.done(); }
+  });
+  test("plainNoUnhelped (gated): a plain no to a check-in answered by a point and a card trips it; help, a stop or a yes does not", () => {
+    assert.ok(!PENDING.has("plainNoUnhelped"));
+    const her = { who: "teacher", text: "Ab wahi gaps ginenge. Yahan tak saaf hai?" };
+    const no = { who: "child", text: "nahi" };
+    const t = (seams, o = {}) => ({ who: "teacher", text: "x", seams: seams.map((right) => ({ right })), ...o });
+    const L = (r, kid = no) => ({ rows: [her, kid, r] });
+    assert.match(PREDICATES.plainNoUnhelped(L(t(["point", "card"])), t(["point", "card"]), 2), /answered with no help/);
+    assert.match(PREDICATES.plainNoUnhelped(L(t(["returnCard"])), t(["returnCard"]), 2), /answered with no help/);
+    assert.equal(PREDICATES.plainNoUnhelped(L(t(["help", "checkin"])), t(["help", "checkin"]), 2), null);
+    assert.equal(PREDICATES.plainNoUnhelped(L(t(["stopLine"])), t(["stopLine"]), 2), null);
+    assert.equal(PREDICATES.plainNoUnhelped(L(t(["point", "card"]), { who: "child", text: "haan" }), t(["point", "card"]), 2), null);
+    // (the second no running, after her help ended on the check-in again, goes on — as a second "samajh nahi aaya" does there)
+    const helpCk = { who: "teacher", text: "Gaps gino. Ab tak samajh aaya?", seams: [{ right: "help" }, { right: "checkin" }] };
+    const goOn = t(["afterKeyGoOn", "point", "card"]);
+    assert.equal(PREDICATES.plainNoUnhelped({ rows: [helpCk, no, goOn] }, goOn, 2), null);
+    assert.match(PREDICATES.plainNoUnhelped({ rows: [helpCk, no, t(["point", "card"])] }, t(["point", "card"]), 2), /no help/);
+    assert.match(PREDICATES.plainNoUnhelped({ rows: [her, no, goOn] }, goOn, 2), /no help/);
+    const card = { who: "teacher", text: "Kya Pinky sahi hai?" };
+    assert.equal(PREDICATES.plainNoUnhelped({ rows: [card, no, t(["verdict", "card"])] }, t(["verdict", "card"]), 2), null);
+  });
+});

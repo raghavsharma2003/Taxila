@@ -386,13 +386,10 @@ describe("item 13 (main's ruling on 6b): a plain no at a held-card check-in take
       assert.equal(t.ui.ask?.itemId, "script:c5-maths-ch02-t01-s1:ask:e1", "the card in the same turn");
     });
   }
-  test("the other side: a 'haan' there gets the card alone; a no at a check-in with no held card (a bridge's) is as built — no card asked, no clarify", () => {
+  // (re-pinned by RULING-G item 2: a plain no at a check-in with no held card — a bridge's — is no longer "as built": it takes the path
+  // "samajh nahi aaya" takes there. Pinned in tests/r8-d37-054g.test.mjs item 2, with her turn said, as the walk reads it)
+  test("the other side: a 'haan' there gets the card alone", () => {
     const [, , y] = walkSteps("c5-maths-ch02-t01", ["samajh nahi aaya", "samajh nahi aaya", "haan"]);
     assert.equal(y.state.lastMove.help ?? null, null); assert.equal(y.ui.ask?.itemId, "script:c5-maths-ch02-t01-s1:ask:e1");
-    const isBridge = (s) => !s.lastUi?.ask?.itemId && s.lastMove?.scriptBeat?.kind === "bridge" && !(s.lastMove?.replyPoint || s.lastMove?.startApart);
-    const bw = walkSteps("c6-maths-ch07-t01", ["nahi"], isBridge), [b] = bw;
-    assert.ok(bw.reached, "the walk reaches a bridge's check-in");
-    assert.notEqual(b.state.lastMove.help?.request, "clarify");
-    assert.ok(!b.state.lastMove.help || b.state.lastMove.help.card !== "ask");
   });
 });

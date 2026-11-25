@@ -168,6 +168,8 @@ import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, endsOnReaskOf } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
+// (RULING-G item 2: a check-in her turn ended on is one of brain/say.js's own forms; the cycle loads both ways, read inside functions only)
+import { BEAT_ASK, WORKED_ASK } from "../brain/say.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
@@ -3646,6 +3648,25 @@ const PLAIN_NO = /^(?:nahi|nahin|nahi\s+(?:samjha|samjhi|samjhe|samajh\s+aaya)|n
 /** The check-in of her reply's point turn (D2) or of the split first turn (A(ii)), its card held for the next turn (main's sixth ruling on
  *  cause A, item 1: pickHelp's heldCard). */
 const heldCardAt = (prev) => !!(prev?.lastMove?.replyPoint || prev?.lastMove?.startApart) && !!prev?.splitHold?.teach && !!prev?.splitHold?.ui?.ask?.itemId;
+/** RULING-G item 2 (d37 stuck c5-ch02-t01 62, c5-ch02-t03 56, c4-ch01-t02 62, c6-ch06-t01 60; steering c6-ch07-t03 48, c4-ch05-t01 18): a
+ *  plain no said to a comprehension check-in — her turn before ends on one of brain/say.js's check-in forms (BEAT_ASK, WORKED_ASK) and no
+ *  card is asked — is "I did not understand". It takes exactly the path "samajh nahi aaya" takes there (at a bridge: its easier wording
+ *  once, then the same check-in; a second goes on; elsewhere as built for a clarify): the walk is handed that line's reading. The child's
+ *  own words stay recorded as said (childOwn; the record's cell reads input0). A held-card check-in keeps closing item 13's path (helpRequestOf),
+ *  a line the walk reads as anything (a column) is not a plain no, and a stop or a safety read is never this. → the reading, or null. */
+const CHECKIN_FORMS = () => new Set([...BEAT_ASK.hinglish, ...BEAT_ASK.english, ...WORKED_ASK.hinglish, ...WORKED_ASK.english].map((x) => String(x).toLowerCase()));
+const NOT_UNDERSTOOD = { text: "samajh nahi aaya", request: { type: "another", whole: true, src: "p5", confused: true } };
+function plainNoAtCheckin(prev, input) {
+  if (input?.event !== "turn" || input.branch || !scriptOn() || recordedNow || !prev || prev.safeguard) return null;
+  const c = input.cls ?? {};
+  if (c.flags?.distress || c.flags?.wantsToStop || c.request || !PLAIN_NO.test(String(input.text ?? "").trim())) return null;
+  if (columnName(input, prev) || heldCardAt(prev) || prev.lastUi?.ask?.itemId || isQuickId(prev.activeItemId)) return null;
+  if (["wrap", "teachback", "safeguard", "break"].includes(String(prev.lastMove?.kind ?? "")) || ["teachback", "wrap", "done"].includes(String(prev.phase ?? ""))) return null;
+  const her = String([...(prev.recent ?? [])].reverse().find((t) => t.who === "teacher")?.text ?? "").replace(/\s+/g, " ").trim();
+  const last = her.split(/(?<=[.!?])\s+/).at(-1) ?? "";
+  if (!CHECKIN_FORMS().has(last.toLowerCase())) return null;
+  return { text: NOT_UNDERSTOOD.text, cls: { ...c, outcome: "no_evidence", confidence: 1, source: "request", request: { ...NOT_UNDERSTOOD.request }, flags: { ...(c.flags ?? {}), dontKnow: false, minimal: false } } };
+}
 /** The part she is on for help: the card just keyed while no card has been posed since (the child speaks after a key's check-in),
  *  else the walk's record (cellAddressOf). → { part, keyed } | null — with no part recorded, help is not picked. */
 function helpPartOf(prev, input) {
@@ -4231,6 +4252,10 @@ export function step(prev, input) {
     const { request: _rq, ...restW } = input.cls ?? {};
     input = { ...input, text: "pata nahi", cls: { ...restW, outcome: "no_evidence", asideReply: false, flags: { ...(restW.flags ?? {}), dontKnow: true, confused: false, minimal: false } }, waitHelp: wait.P, ...(wait.n >= 4 ? { waitCap: true } : {}) };
   }
+  // (RULING-G item 2: a plain no at a comprehension check-in is read as "samajh nahi aaya" — what she says, nothing else; the child's own
+  // words and cue are kept, as the wait's rewrite above keeps them)
+  const noAt = !childOwn ? plainNoAtCheckin(prev, input) : null;
+  if (noAt) { childOwn = { text: input0.text, cls: input0.cls }; input = { ...input, text: noAt.text, cls: noAt.cls }; }
   const greetAgain = !recordedWalk(input) && !!prev?.lastMove?.greetHelp && input?.event === "turn" && !input.branch && ["clarify", "give_up", "hindi"].includes(columnName(input, prev)) && !input.cls?.flags?.distress && !input.cls?.flags?.wantsToStop;
   if (greetAgain)
     input = { ...input, text: "haan", cls: { ...(input.cls ?? {}), outcome: "no_evidence", request: undefined, flags: { ...(input.cls?.flags ?? {}), dontKnow: false, confused: false } } };
