@@ -12,7 +12,8 @@
 //   cardWholeAfterTryOrYes  (053 B2, gated) still flags any full form of the question on the wait's first turn (her turn before said the
 //                       question itself) and the card or step said whole as first written on ANY wait turn; from the wait's second turn on
 //                       (her turn before was the short ask, the invitation, or an earlier turn of this same wait) the question's `reask`
-//                       alone and a help turn ending on the question are allowed
+//                       alone and a help turn ending on the question are allowed (a help turn whatever form of the question it ends on: a
+//                       give-up's help at a card ends on the card's own ask, which is the card whole where the ask is the card's sentences)
 import { atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, reaskOf, closingQuestion, questionObjectAt } from "../../server/director/question-run.js";
 import { asideTurn, helpTurn } from "./d34b-predicates.mjs";
 import { D34C_PREDICATES } from "./d34c-predicates.mjs";
@@ -128,10 +129,12 @@ export const D37B_PREDICATES = {
     const was = D35A_PREDICATES.cardWholeAfterTryOrYes(L, r, i, ctx);
     if (!was) return was;
     const script = ctx.script, P = atQuestionOf(script, r.text);
-    if (saysWholeAsWritten(script, P, r.text)) return was;
     const w = waitAt(L, i, script);
     const second = standsFor(script, ctx.prevT?.text) || (!!w && w.P === P && w.turns.length >= 2);
     if (!second) return was;
-    return helpTurn(r) || endsOnReask(script, P, r.text, ctx?.lang === "english" ? "english" : "hinglish") ? null : was;
+    // (a help turn ends on the question as a give-up's help does — at a card, the card's own ask after the help, whatever its length: the
+    // ruling allows it from wait two. Any other turn passes only as the reask alone: the card or step said whole as first written is flagged)
+    if (helpTurn(r)) return null;
+    return endsOnReask(script, P, r.text, ctx?.lang === "english" ? "english" : "hinglish") && !saysWholeAsWritten(script, P, r.text) ? null : was;
   },
 };

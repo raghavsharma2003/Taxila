@@ -237,12 +237,14 @@ describe("RULING-B2 item 1: cardWholeAfterTryOrYes, the first wait turn and the 
     assert.deepEqual(flags([...lead, TC(cReask, "yes", ["card"])]), []);
     assert.deepEqual(flags([...lead, TC(`${CHELP} ${cQ}`, "yes", ["help", "card"])]), []);
   });
-  test("card, wait two and three: the card said whole as first written is flagged, alone or after help", () => {
+  test("card, wait two and three: the card said whole as first written is flagged (alone, or before the reask); help ending on the card's ask passes", () => {
     const lead = [cAsked, C("haan"), TC(invite, "yes", ["yourTurn"]), C("haan")];
     assert.deepEqual(flags([...lead, TC(cPrompt, "yes", ["card"])]), [4]);
-    assert.deepEqual(flags([...lead, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), [4]);
+    assert.deepEqual(flags([...lead, TC(`${cPrompt} ${cReask}`, "yes", ["card"])]), [4]);
     const lead3 = [...lead, TC(cReask, "yes", ["card"]), C("haan")];
-    assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), [6]);
+    assert.deepEqual(flags([...lead3, TC(cPrompt, "yes", ["card"])]), [6]);
+    // (a give-up's help at a card ends on the card's own ask — here its four sentences: the ruling's "help turn ending on the question")
+    assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cPrompt}`, "yes", ["help", "card"])]), []);
     assert.deepEqual(flags([...lead3, TC(`${CHELP} ${cQ}`, "yes", ["help", "card"])]), []);
   });
   test("the matrix row offtopic c4-ch01-t02 40 (b/dry1): wait two after the invitation, the step's reask after the go-ahead, passes", () => {
