@@ -25,7 +25,32 @@ around a safety turn is the owner's; `server/safety/` and what calls it are froz
 - **A(ii): design II-B.** The whole point, then the check-in; the card is the next turn. This amends the words of
   `dc-r8-director36` item 3(a) ("the point's first sentence"): a point is never broken inside itself.
 - **A(iii): as written.** The roti-then-ribbon turn and the verdict, lead-in, problem and step turn are left.
-- **B, C and D are not ruled yet** (open questions 3 to 6): each is ruled when its turn comes, after A's measure.
+- **A was measured on 2026-11-25** (pair run of c5-maths-ch02-t01 and c6-maths-ch07-t01, 8 lessons, 577 calls, $0.42; two judges).
+  Gates clean; turns over 70 words 6 → 1; but both judges heard every go-on turn of D1 as a dead turn (8 of 8), register rows
+  under length or shape did not fall (15 → 19), register stayed 3.5 and the offtopic lessons reached less of the script. **A.7's
+  reversal for (i) fired: A(i) is now D2** (the reply, its joint, the point whole and the point's check-in; the card next), and
+  the go-on turn is taken out. `replyCheckin` and `asideCheckin` allow a check-in at the end of a reply's turn only when a new
+  point stands between the reply and the check-in. A(ii) and A(iii) are kept. Reversal of D2: two judges hear the added check-in
+  as one more fixed form, or two check-ins running; then A(i) is undone to director36's one turn and the length is a script matter.
+- **B is ruled (question 3): YES to both.** The wait's re-ask (the question's `reask`, at wait two) overrides 049 B4's third-turn
+  invitation: a child who said yes and then nothing has not heard the question since the card, and an invitation with no question
+  is what the judges heard as a wait with no end. The cap's told step overrides gated `stepToldEarly` (d30) on the cap's turn
+  only. `questionThreeRunning`, `yourTurnNotThird` and `stepToldEarly` are re-pinned by name for exactly these turns and read as
+  before everywhere else. Reversal as the order's B.7.
+- **C5 is ruled (question 4): YES, drop.** At a follow-up card help is the card's own `simpler`, then the key. A remediation's
+  wording is written about the remediation's board (ruling 1 of round d36); over the card's board it can be untrue, and on its
+  own board at another card it was heard as the wrong picture (c4 sk 32). Cost accepted: one or two help turns fewer before a
+  key at a follow-up card. Reversal: a judge finds a child keyed at a follow-up card that a remediation wording would have
+  reached; then C5's rungs return only where Learning marks a wording true of the card's board.
+- **C3 is ruled (question 5): one more hearing, once a card.** The turn is the miss verdict, the named wrong answer's reason and
+  the question; the cap comes on the turn after. Reason and key in one turn would be two new things in a turn (cause A) and the
+  child would never get to use the reason. `questionFiveTimes` (R1) is re-pinned by name: it allows a fifth hearing only on a turn
+  whose body is that named reason said for the first time at that card, and reads as before everywhere else. Reversal: two
+  judges hear that fifth hearing as the wait going on (the stuck clause); then the reason is said with the key, split on the
+  go-on line.
+- **C6's reversal is the order's proposal** (two judges count `whyShort` as nothing new: `helpSpent` returns as built).
+- **D4 is out of d37 (question 6): YES.** A goodbye reply chosen from what the child said needs `wrap.ack` forms by kind, which
+  only Learning writes (025). D1 to D3 are built as written; D1's and the order's D.7 reversal stand.
 
 ## A. A turn holds one new thing
 
