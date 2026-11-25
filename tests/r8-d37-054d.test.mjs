@@ -6,7 +6,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-const { initLessonState, step, requeueMissedReturn, _ledGoOnForTest: ledGoOn } = await import("../server/director/state.js");
+const { initLessonState, step, requeueMissedReturn } = await import("../server/director/state.js");
 const { kitFromFile } = await import("../server/content/kits.js");
 const { getTopic } = await import("../server/content/curriculum.js");
 const { findItem } = await import("../server/director/items.js");
@@ -77,7 +77,7 @@ const SIXER = "kal maine cricket khela, sixer maara";
 // (the dry matrix's own child lines of director37's BEFORE walk, c4/dry4: steering c5-t01 up to its verdict at row 26)
 const STEERING_C5T01 = ["samajh nahi aaya", "samajh nahi aaya", "pata nahi, aap batao", "thoda hindi mein samjhao", "3", "6 kilometre", "drawing karke samjhao", "ek aur picture dikhao", "6 kilometre", "pehle main try karun?", "6 kilometre", SIXER, "teesra hissa"];
 
-describe("D1: a return led by a verdict opens on a back-to word; with none left by 049 B6.3's filter, the verdict ends on the go-on line and the return is the next turn", async () => {
+describe("D1: a return led by a verdict opens on a back-to word; with none left by 049 B6.3's filter, the return is said with the verdict as at a23e5c45d (main's second ruling on cause D, item 1: the go-on fallback taken out)", async () => {
   test("returnQuestion, lead \"verdict\": a back-to form where the aside told nothing; none (null) where every back-to form asks what was told", () => {
     const kit = kitOf("c6-maths-ch07-t01");
     for (const seed of [1, 2, 3, 7, 11]) {
@@ -91,13 +91,13 @@ describe("D1: a return led by a verdict opens on a back-to word; with none left 
     for (const x of ["Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", "Cricket wali baat batao na, tumhe uski kaunsi baat pasand hai?", "Cricket mein kya kuch aisa hai jise tum naap sakte ho?", "Tumne cricket ki baat chhedi thi; ab batao, uske baare mein kya kehna tha?"]) assert.ok(!BACK_TO_LEAD.test(x), x);
   });
   const { out } = await walkSay("c5-maths-ch02-t01", [...STEERING_C5T01, "haan"], "steering");
-  test("steering c5-t01 (director36's row 26: verdict, then \"Sixer ki baat tumne ki thi: …\"): the verdict ends on the go-on line, the told return alone on the next turn", () => {
-    const v = out.at(-2), ret = out.at(-1);
-    assert.deepEqual(v.seams.slice(0, 1), ["verdict"]); assert.ok(!v.seams.includes("return"), v.text);
-    assert.equal(v.lm.noFit, "return"); assert.ok(v.lm.vpcGoOn && v.text.endsWith(v.lm.vpcGoOn), v.text);
-    assert.ok(!/[?？]/.test(v.text), "no question on the go-on turn");
-    assert.deepEqual(ret.seams, ["return"]); assert.equal(ret.lm.returned?.topic, "cricket");
-    assert.match(ret.text, /^Sixer ki baat tumne ki thi: /);
+  test("steering c5-t01 (director36's row 26: verdict, then \"Sixer ki baat tumne ki thi: …\"): no back-to form survives, so the told return is said with the verdict, as at a23e5c45d — never a go-on turn with no question", () => {
+    const v = out.at(-2), next = out.at(-1);
+    assert.deepEqual(v.seams, ["verdict", "return"], v.text);
+    assert.notEqual(v.lm.noFit, "return"); assert.equal(v.lm.vpcGoOn, undefined);
+    assert.match(v.text, /\. Sixer ki baat tumne ki thi: tab tumhare saath kaun tha\?$/);
+    assert.equal(v.lm.returned?.topic, "cricket");
+    assert.ok(!next.seams.includes("return"), "said once");
   });
 });
 
@@ -181,14 +181,6 @@ describe("the said-again line (RULING-A7 item 5): the script's own park form tha
 });
 
 describe("the matrix's own rows (d/dry1, d/dry2 of round d37's builder D): the walk fixed where D's turns met causes A to C", async () => {
-  test("D1's go-on line: a plain afterKeyGoOn form not in her recent turns, and not the one the rotation says next (dry steering c4-ch05-t01 28/58, c5-t03 32/36: jointRotation)", () => {
-    const kit = kitOf("c5-maths-ch02-t03");
-    const base = { ctx: { lang: "hinglish", lessonKey: "c5-maths-ch02-t03:steering:" }, helpJointN: { afterKeyGoOn: 1 } };
-    const a = ledGoOn({ ...base, recent: [] }, { kit });
-    assert.ok(a?.text && !/koi baat nahi/i.test(a.text), a?.text);
-    const b = ledGoOn({ ...base, recent: [{ who: "teacher", text: `Sahi jawab. ${a.text}` }] }, { kit });
-    assert.ok(b?.text && b.text !== a.text, `${a.text} / ${b?.text}`);
-  });
   test("a child who answered her question what they like in it gets the AI line's told form at the first ask (dry offtopic c6-ch07-t01 48: returnAsksAgain)", () => {
     const recent = [{ who: "teacher", text: "Haan, bilkul theek. Chalo, cricket ke baare mein batao, tumhe woh kyun pasand hai?" }, { who: "child", text: "batting sabse achhi lagti hai" },
       { who: "teacher", text: "Achha, toh tumhe batting pasand hai! Do ek hi size ki chocolate … Yahan tak theek hai?" }, { who: "child", text: "aapko virat pasand hai?" }];
@@ -198,20 +190,21 @@ describe("the matrix's own rows (d/dry1, d/dry2 of round d37's builder D): the w
   });
   const LINES = ["haan, samajh aaya", "3", "one sixth", "3", "ek bata teen", "8 gap", "1/10 wala", "2", "1/3 km", "gyarah marks lagenge", "1/4 kilometer", "samajh nahi aaya", "drawing karke samjhao", "1/10", "1/11 hai na", "Hindi mein bolo", "1/4", "after 1/5", "ruko, main khud karti hoon", "between 0 and 1/5 hai na", "1/12", "pehle mark pe 1/9 hai", "mujhe cricket pasand hai", SIXER, "8/5", "8/5", "5/8 par", "aapko virat pasand hai?", "batting", "haan"];
   const { out } = await walkSay("c5-maths-ch02-t01", LINES);
-  test("offtopic c5-t01: the verdict's go-on, the AI line, her reply carrying the held point and its check-in, then the card — the return waits (replyPointCardNext)", () => {
+  test("offtopic c5-t01: the told return with its verdict (no go-on turn), the AI line, her reply carrying the held point and its check-in, then the card (replyPointCardNext)", () => {
     const [v, ai, rp, next] = out.slice(-4);
-    assert.equal(v.lm.noFit, "return"); assert.deepEqual(ai.seams, ["aiQuestion"]);
+    assert.deepEqual(v.seams, ["verdict", "return"]); assert.notEqual(v.lm.noFit, "return");
+    assert.ok(ai.seams.includes("aiQuestion"), ai.seams.join());
     assert.deepEqual(rp.seams.slice(-2), ["point", "checkin"]);
     assert.deepEqual(next.seams, ["card"]); assert.ok(next.ui?.ask?.itemId);
-    assert.ok((next.state.later ?? []).some((e) => e.topic === "cricket" && e.servedAt == null), "the return still due");
   });
 });
 
-describe("D.5 predicates, gated: each trips on a made row and passes its fixed twin", () => {
+describe("D.5 predicates: each trips on a made row and passes its fixed twin (returnColdAfterVerdict pending since main's second ruling on cause D, item 1)", () => {
   const T = (o) => ({ who: "teacher", ...o, seams: (o.seams ?? []).map((right) => ({ right })) });
   const C = (text, intent = null) => ({ who: "child", text, ...(intent ? { intent } : {}) });
-  test("registered and gated", () => {
-    for (const k of ["returnColdAfterVerdict", "shareParkUnreturned", "aiAsksTold"]) { assert.equal(typeof PREDICATES[k], "function", k); assert.ok(!PENDING.has(k), k); }
+  test("registered; shareParkUnreturned and aiAsksTold gated, returnColdAfterVerdict pending (its rows are Learning's: a told return needs a form opening on a back-to word)", () => {
+    for (const k of ["shareParkUnreturned", "aiAsksTold"]) { assert.equal(typeof PREDICATES[k], "function", k); assert.ok(!PENDING.has(k), k); }
+    assert.equal(typeof PREDICATES.returnColdAfterVerdict, "function"); assert.ok(PENDING.has("returnColdAfterVerdict"));
   });
   test("returnColdAfterVerdict", () => {
     const cold = T({ text: "Bilkul sahi. Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["verdict", "return"] });
@@ -219,7 +212,7 @@ describe("D.5 predicates, gated: each trips on a made row and passes its fixed t
     const alone = T({ text: "Sixer ki baat tumne ki thi: tab tumhare saath kaun tha?", returnSaid: true, seams: ["return"] });
     assert.ok(P.returnColdAfterVerdict({ rows: [] }, cold, 0));
     assert.equal(P.returnColdAfterVerdict({ rows: [] }, warm, 0), null);
-    assert.equal(P.returnColdAfterVerdict({ rows: [] }, alone, 0), null, "a return alone, after the go-on turn, is D1's own shape");
+    assert.equal(P.returnColdAfterVerdict({ rows: [] }, alone, 0), null, "a return alone is no return after a verdict");
   });
   test("shareParkUnreturned", () => {
     const park = T({ text: "Cricket ki baat bhi hogi, bas yeh kaam poora ho jaaye. Pehle is sawaal ka jawab do.", seams: ["park", "answerFirst"] });
@@ -231,10 +224,11 @@ describe("D.5 predicates, gated: each trips on a made row and passes its fixed t
     const good = [C(SIXER, "aside"), park, C("haan"), ret, C("Rohit"), bye];
     assert.equal(P.shareParkUnreturned({ rows: good }, bye, 5), null);
     assert.equal(P.shareParkUnreturned({ rows: bad }, ai, 3), null, "read at the end row only");
-    // (a return D1 held for the turn after the verdict's go-on line, the child leaving on that turn: dry stuck c4-ch06-t01 66)
+    // (main's second ruling on cause D, item 1: the allowance for a return D1's fallback held for the turn the child left on goes with the
+    // fallback — such a row is read as any park never returned)
     const goOn = T({ text: "Bilkul sahi: … 100 − 70 = 30 centimetre bacha. Theek hai, abhi agli baat dekhte hain.", noFit: "return", seams: ["verdict", "aside"] });
     const left = [C(SIXER, "aside"), park, C("70 cm"), goOn, C("ab main jaati hoon, bye"), bye];
-    assert.equal(P.shareParkUnreturned({ rows: left }, bye, 5), null);
+    assert.ok(P.shareParkUnreturned({ rows: left }, bye, 5));
   });
   test("aiAsksTold", () => {
     const fav = T({ text: "Main AI hoon, meri koi pasand nahi hoti. Tumhara favourite kaun hai?", seams: ["aiQuestion"] });
@@ -245,5 +239,22 @@ describe("D.5 predicates, gated: each trips on a made row and passes its fixed t
     const said = T({ text: "Bilkul sahi. Tumne cricket ki baat chhedi thi; ab batao, uske baare mein kya kehna tha?", returnSaid: true, seams: ["verdict", "return"] });
     assert.ok(P.aiAsksTold({ rows: [C(SIXER, "aside"), T({ text: "Cricket ki baat bhi hogi.", seams: ["park"] }), C("4"), said] }, said, 3));
     assert.equal(P.aiAsksTold({ rows: [C("mujhe cricket pasand hai", "aside"), T({ text: "Cricket ki baat bhi hogi.", seams: ["park"] }), C("4"), said] }, said, 3), null, "an aside that told nothing");
+  });
+});
+
+describe("RULING-E2 item 1: asideFrameTwice reads the reply-kind forms of 053 C2 as reply frames, as the walk does", () => {
+  test("a reply after a liking reply is read against that reply (offtopic c4-ch01-t02 34 against row 28, not row 10); the same frame twice running is still flagged", async () => {
+    const { D34C_PREDICATES: Q, asideFrameOf } = await import("../evals/hybrid-side-by-side/d34c-predicates.mjs");
+    const { replyFrameOf } = await import("../server/brain/asideReplies.js");
+    const t = (text) => ({ who: "teacher", text }), c = (text) => ({ who: "child", text });
+    const liking = "Achha, toh tumhe chauka pasand hai!";
+    assert.equal(asideFrameOf(t(liking)), "Achha, toh tumhe {phrase} pasand hai!", "a reply-kind form is a frame");
+    assert.equal(asideFrameOf(t(liking)), replyFrameOf(liking), "the frame the walk reads");
+    const rows = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("chauka"), t(liking), c("hoon"), t("Achha, hoon! Yeh batane ke liye shukriya.")];
+    assert.equal(Q.asideFrameTwice({ rows }, rows[4], 4), null, "row 28's liking frame is her last: not flagged");
+    const twice = [t("Achha, toh tumhe batting pasand hai!"), c("chauka"), t(liking)];
+    assert.match(String(Q.asideFrameTwice({ rows: twice }, twice[2], 2)), /twice running/, "the liking frame in two replies running");
+    const old = [t("Achha, toh Rohit! Yeh batane ke liye shukriya."), c("hoon"), t("Achha, hoon! Yeh batane ke liye shukriya.")];
+    assert.match(String(Q.asideFrameTwice({ rows: old }, old[2], 2)), /twice running/, "the same kind frame twice running");
   });
 });

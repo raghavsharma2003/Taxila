@@ -1054,7 +1054,8 @@ Object.assign(PREDICATES, D37B_PREDICATES);
 // ownStepWorkedHelp pending, RULING-C4 item 1: C4 undone, a count for Learning)
 import { D37C_PREDICATES } from "./d37c-predicates.mjs";
 Object.assign(PREDICATES, D37C_PREDICATES);
-// (to-brain 054 D, round d37's builder D: closes and returns — d37d-predicates.mjs, all three gated)
+// (to-brain 054 D, round d37's builder D: closes and returns — d37d-predicates.mjs; returnColdAfterVerdict pending since main's second
+// ruling on cause D, item 1)
 import { D37D_PREDICATES } from "./d37d-predicates.mjs";
 Object.assign(PREDICATES, D37D_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
@@ -1143,7 +1144,7 @@ PREDICATES.pictureDrawn = (L, r, i, ctx) => {
 // (Brain 049 B6, merged by main: vpcUnlisted is gated — the split at 65 words is built; returnAsksAgain and reasonTwiceAuthored are counted)
 // (main's ruling of 2026-11-23: vpcUnlisted gated above 70; vpcWhole, the turns of 66 to 70 said whole, counted; splitEndsOnCheckin gated;
 // returnAsksAgain gated — the return and the again line are built in brain/say.js)
-export const PENDING = new Set(["teachbackKeyValueTwice", "thenHelpOtherBoard", "ownStepWorkedHelp", "vpcWhole", "reasonTwiceAuthored", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
+export const PENDING = new Set(["teachbackKeyValueTwice", "returnColdAfterVerdict", "thenHelpOtherBoard", "ownStepWorkedHelp", "vpcWhole", "reasonTwiceAuthored", "twinsData", "repeatedAuthored", "parkCutByChildEnd", "pointNoFit", "workedNoFit", "cardNoFit", "reaskNoForm", ...Object.keys(ORDER_LAWS).filter((k) => !["orderParts", "orderDisplaced", "orderRemediation", "orderStays", "orderFirstMiss", "orderAnswerFirst", "orderNoUnit", "asideReplyOnce", "backToJoint", "uiWords", "readerAsideColumn", "teachbackKeyBoard", "readerAgrees", "missRemediationJoint", "hindiNewWords", "keyOnce", "teachbackLeadIn", "coveredReached", "seamJoints", "columnOfRead", "helpRepeats"].includes(k))]);
 
 /** to-brain 049 B6: a right verdict split from the point it led into (the row's noFit "vpc") goes on to that point and its card whatever the
  *  child says next — a request or a give-up there is answered by the new point, over its own board, never by help on the card just closed

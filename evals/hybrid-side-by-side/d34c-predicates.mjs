@@ -35,7 +35,10 @@ const saidBefore = (L, i) => L.rows.slice(0, i).filter((x) => x.who === "teacher
 // (B5: every aside reply frame, both languages, as a pattern with its slot: a frame is the form as written)
 const ASIDE = JSON.parse(readFileSync(new URL("../../data/lesson-aside-replies.json", import.meta.url), "utf8"));
 const escRe = (t) => String(t).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-const FRAMES = Object.values(ASIDE.kinds ?? {}).flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? [])])
+// (RULING-E2 item 1: the reply-kind forms of 053 C2 are reply frames too — the frames the walk reads when it avoids her last frame,
+// server/brain/asideReplies.js FRAME_RES — so a liking reply ("Achha, toh tumhe chauka pasand hai!") is her last frame: dry offtopic
+// c4-ch01-t02 34 is read against row 28, not row 10)
+const FRAMES = [...Object.values(ASIDE.kinds ?? {}), ASIDE.replyKinds ?? {}].flatMap((k) => [...(k.phraseReplies ?? []), ...(k.againReplies ?? []), ...(k.replies ?? []), ...["person", "done", "liking", "whenWhere"].flatMap((x) => (Array.isArray(k[x]) ? k[x] : []))])
   .flatMap((f) => [f?.hi, f?.en]).filter((x) => typeof x === "string" && /\{(?:phrase|word)\}/.test(x))
   .map((f) => ({ f, re: new RegExp(`(?:^|[.!?]\\s+)${escRe(f).replace(/\\\{(?:phrase|word)\\\}/g, "(.{1,40}?)").replace(/achha(\\s\+|\s+)lagta/gi, "(?:achha$1lagta|achhi$1lagti|achhe$1lagte)")}(?=\\s|$)`, "iu") }));
 /** The aside reply frame a row says, or null. */

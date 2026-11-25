@@ -168,9 +168,6 @@ import { claimsToUnderstand } from "./read.js";
 import { parkEntry, pushLater, recentParked, dueParked, serveLater } from "../conversation/policy.js";
 import { yourTurnPass, atQuestionOf, endsOnYourTurn, endsOnAnswerFirst, endsOnReaskOf } from "./question-run.js";
 import { isSadAside } from "../brain/asideReplies.js";
-// (to-brain 054 D1: the return form a right verdict leads into — the walk asks brain/say.js whether a back-to form is left; say.js imports this
-// module too, and neither reads the other at load)
-import { returnQuestion } from "../brain/say.js";
 import { alsoReading, alsoQuestion, questionShaped, bareAck, readIntent } from "../conversation/lexicon.js";
 import { intakeStart, intakeStep } from "./session/beat.js";
 import { newSession, openSegment } from "./session/segments.js";
@@ -5727,20 +5724,6 @@ function closeApart(out, noFit) {
   s.lastUi = closeUi;
   return { ...out, state: s, move: close, moduleCommands: [], ui: closeUi, proposal: directorProposal(close, { ui: closeUi, guidance: s.guidance, purpose: s.purpose }) };
 }
-/** to-brain 054 D1: the go-on line a verdict ends on when its return waits a turn — a plain form (help.js goOnPlain) of the rotation, the one
- *  the afterKeyGoOn rotation does not say next (helpJoint over all its forms, at the count after this one) and not in her recent turns where
- *  the script has such a form: the plain list and the full one rotate on one count, and the same form came back first (dry steering
- *  c4-ch05-t01 28 and 58, jointRotation). */
-function ledGoOn(s, input) {
-  const script = scriptFor(input?.kit)?.script;
-  const o = { lang: s.ctx?.lang === "english" ? "english" : "hinglish", lessonKey: s.ctx?.lessonKey ?? s.ctx?.sessionId ?? s.lessonId ?? null };
-  const n = s.helpJointN?.afterKeyGoOn ?? 0;
-  const next = helpJoint(script, "afterKeyGoOn", { ...o, n: n + 1 })?.text ?? null;
-  const said = (s.recent ?? []).filter((x) => x.who === "teacher").map((x) => String(x.text ?? "").toLowerCase());
-  const all = [0, 1, 2, 3].map((k) => goOnPlain(script, { ...o, n: n + k })).filter((g) => g?.text);
-  const fresh = (g) => !said.some((x) => x.includes(g.text.toLowerCase().replace(/[.!?]+$/, "")));
-  return all.find((g) => g.text !== next && fresh(g)) ?? all.find(fresh) ?? all.find((g) => g.text !== next) ?? all[0] ?? null;
-}
 function returnApart(out, input = null) {
   const { state: s, move, ui } = out;
   // (the child said the aside again on this very turn — the return was due because of it — so the close's half carries her one line on
@@ -5755,25 +5738,20 @@ function returnApart(out, input = null) {
   // (the aside is not served on this turn: it stays due, and the next boundary — the held half, heldTurn — returns it on a turn of its
   // own; a request answered first keeps it due, never lost)
   const t0 = String(move.returned.topic);
-  // (to-brain 054 D1: the return led by the verdict takes a form opening on a back-to word — brain/say.js returnQuestion's lead "verdict";
-  // where 049 B6.3's filter leaves none, the verdict ends on the go-on line (help.js goOnPlain, as 049 B6's split) and the return, still
-  // due, is said alone on the next turn — the held half's, as below)
+  // (to-brain 054 D1: the return led by the verdict takes a form opening on a back-to word where one survives 049 B6.3's filter —
+  // brain/say.js returnQuestion's lead "verdict"; where none does, the return is said with the verdict as at a23e5c45d. Main's second
+  // ruling on cause D, item 1: the fallback — the verdict ending on the go-on line, the return alone on the next turn — is taken out:
+  // built, it was the dead turn both judges of cause A's first measure faulted)
   const said0 = String(move.returned.said ?? "");
   const plainRet = !ASKS_HER_TASTE.test(said0) && !isSadAside(said0) && !isSadAside(t0);
-  const goOnJ = rightNow && plainRet && !recordedWalk(input) && !returnQuestion(t0, s.ctx?.lang === "english" ? "english" : "hinglish", s, { said: move.returned.said ?? null, kit: input?.kit, lead: "verdict" })
-    ? ledGoOn(s, input) : null;
-  const ledApart = !!goOnJ?.text;
-  if (!rightNow || ledApart) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
+  if (!rightNow) s.later = (s.later ?? []).map((e) => (e.servedAt === s.turn && String(e.topic) === t0 ? { ...e, servedAt: undefined } : e));
   // (her one line to an aside the child said again — asideAgain, a taste question, a sad aside — answers what the child said on this
   // turn: it rides on the half said now, never on the held one: r7-brain-v67, c5-t02 offtopic 28 'mujhe cricket pasand hai')
   const closeKeys = ["gave", "closed", "workedDone", "closeBeat", "closedBeat", "methods", "prefs", ...NOW_LINES];
   const close = { kind: "repair", shape: SH.splitClose(), splitClose: true, gaveCheck: true, l2Break: true, ...(move.verdict ? { verdict: move.verdict } : {}),
     ...Object.fromEntries(closeKeys.filter((k) => move[k] != null).map((k) => [k, move[k]])), ...(move.closeBeat ? { scriptBeat: move.closeBeat } : {}),
     ...(saidNow && !move.asideAgain && !move.tasteAsked ? { asideAgain: { topic: String(move.returned.topic) } } : {}) };
-  if (rightNow && ledApart) {
-    Object.assign(close, { noFit: "return", vpcGoOn: goOnJ.text });
-    s.helpJointN = { ...(s.helpJointN ?? {}), afterKeyGoOn: (s.helpJointN?.afterKeyGoOn ?? 0) + 1 };
-  } else if (rightNow) { close.returned = { ...move.returned }; close.gaveCheck = false; if (plainRet) close.returnLed = true; }
+  if (rightNow) { close.returned = { ...move.returned }; close.gaveCheck = false; if (plainRet) close.returnLed = true; }
   // (d31 046 follow-up, the dry offtopic c6-ch06-t01 34 → 38: the skill's bridge goes with the close, ending on its check-in, as it does with
   // no return due — never held into her reply's turn after the return, where it and the next point ran past their card's 75 words and the
   // reply's turn ended on a check-in, replyCheckin)
@@ -6098,7 +6076,6 @@ function replyPoint(prev, input, out) {
   return sp;
 }
 export const _replyPointForTest = (prev, input, out) => replyPoint(prev, input, out);
-export const _ledGoOnForTest = (s, input) => ledGoOn(s, input);
 /** D2, the turn after her reply's point turn: a side-topic at that check-in — her park line, her said-again line, her reply — leads into the
  *  card with no joint of its own. Her point turn said "back to work" (afterAside, afterPark, afterAiLine) one turn ago; it is never said in two
  *  turns running (main's second ruling fix 3, gated goOnJointTwice, kept by the fifth ruling item 2). Main's sixth ruling item 7 rules it so:
@@ -6256,12 +6233,7 @@ function heldTurn(prev, input) {
   // P1 (dc-r8-director20, c4 offtopic: a park on a card that ended in a key was never returned while the key's split held the next
   // part): the held half is a boundary too — an aside due now is returned on a turn of its own, and the held half waits for the next
   // (dc-r8-director26 C1: the worked problem held with its first step is the problem — a return due comes before it, as before it)
-  // (to-brain 054 D1, with A(i)'s D2: the card held behind her reply's point and its check-in is said next whatever is due — a return there
-  // took the card's turn, dry offtopic c5-t01 60, replyPointCardNext; the return comes at the next boundary)
-  // (and so after her reply to the AI line's answer that said the held point and ended on its check-in — E1's reply turn carrying the point:
-  // dry offtopic c5-t01 58 → 60)
-  const pointCheckin = !!prev.lastMove?.replyPoint || (!!prev.lastMove?.leadAlone && (prev.lastMove?.heldSaid ?? []).length > 0 && !!h.ui?.ask?.itemId);
-  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && !pointCheckin && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
+  if (scriptOn() && scriptIdOf(input.kit) && !scriptFor(input.kit)?.script?.recordedRun && (!/^worked:step/.test(String(h.move?.scriptBeat?.beatId ?? "")) || !!h.move?.problemLines)) {
     const due = (s.later ?? []).find((e) => !e.servedAt && e.share && e.parkSaid && e.onItem && Number.isFinite(e.at) && s.turn > e.at && (h.activeItemId !== e.onItem || parkOverdue(s, e)));
     if (due) {
       s.later = serveLater(s.later, due.id, s.turn);
