@@ -169,8 +169,7 @@ test("021 rule 3, real scripts: the rewrites leave no board that is its own answ
 test("021 rule 3 and 5: D33_READY holds the nine rewrites and none fails on it; forced (as --d33), the caught cards are errors", () => {
   assert.deepEqual(D33_READY, [...LIVE, "c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"]);
   for (const s of Object.values(S)) { assert.equal(isD33(s), true, s.topicId); assert.deepEqual(d33Errors(s), [], s.topicId); }
-  // (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71): read from data/lesson-scripts
-  for (const [d, t] of [["lesson-scripts-staged", "c4-maths-ch06-t01"], ["lesson-scripts", "c6-maths-ch07-t03"]]) { const s = load(d, t); assert.equal(isD33(s), true, t); assert.deepEqual(d33Errors(s), [], t); }
+  for (const t of ["c4-maths-ch06-t01", "c6-maths-ch07-t03"]) { const s = load("lesson-scripts-staged", t); assert.equal(isD33(s), true, t); assert.deepEqual(d33Errors(s), [], t); }
   const off = load("lesson-scripts-staged", "c4-maths-ch03-t01");
   assert.equal(isD33(off), false, "a staged script not rewritten is off");
   assert.deepEqual(d33Errors(off), [], "off on the gate");

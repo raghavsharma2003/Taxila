@@ -129,8 +129,7 @@ test("048 G2: a Devanagari reply is compared in Devanagari and is never wrong in
 // (d33, 2026-11-23: the two new staged scripts written to Learning 021 join the walk)
 // (to-brain 052 D: c4-maths-ch01-t02 went live, b3c7e81fd, and is walked from data/lesson-scripts with the others)
 // (director35 clause 53, release 61: c4-maths-ch01-t02 staged again)
-// (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71): walked from data/lesson-scripts with the others
-const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01"];
+const STAGED = ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"];
 const STAGED_DIR = join(ROOT, process.env.LESSON_SCRIPTS_DIR || "data/lesson-scripts-staged");
 function scripts() {
   const live = join(ROOT, "data/lesson-scripts");
@@ -291,8 +290,8 @@ test("048 G4: every keyed card of the live scripts and the two staged rewrites h
   t.diagnostic(`scripts ${counts.scripts}, cards ${counts.cards}, right forms ${counts.right} (correct ${counts.rightCorrect}, model ${counts.rightModel}), ` +
     `wrong forms ${counts.wrongTried} (model ${counts.wrongModel}), cards with no forms ${counts.noForms.length}${counts.noForms.length ? `: ${counts.noForms.join("; ")}` : ""}`);
   if (process.env.G4_PRINT) console.log(JSON.stringify(counts));
-  assert.equal(counts.scripts, 7 + STAGED.length, "seven live scripts and the two staged ((director35 clause 53, release 61: c4-maths-ch01-t02 staged again) (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71))");
-  assert.equal(STAGED.length, 2, "c4-maths-ch01-t02 (staged again, director35), c4-maths-ch06-t01 (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71)");
+  assert.equal(counts.scripts, 6 + STAGED.length, "six live scripts and the three staged ((director35 clause 53, release 61: c4-maths-ch01-t02 staged again))");
+  assert.equal(STAGED.length, 3, "c4-maths-ch01-t02 (staged again, director35), c4-maths-ch06-t01, c6-maths-ch07-t03");
   assert.deepEqual(rightBad, [], "a right answer graded wrong or as the mix-up");
   assert.deepEqual(wrongBad, [], "a wrong answer graded right (a false key)");
 });

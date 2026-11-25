@@ -57,7 +57,7 @@ test("A6: a joints.noPicture form that matches the predicates' PICTURE_REFUSAL i
   const e = d33JointErrors(s, { required: true });
   assert.ok(e.some((x) => /^joints\.noPicture\[0\]: .*refusal.*052 A6/.test(x)), e.join("\n"));
   assert.ok(e.some((x) => /^joints\.noPicture\[0\] \(en\): .*refusal/.test(x)), e.join("\n"));
-  for (const [dir, ts] of [["data/lesson-scripts", ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01", "c6-maths-ch07-t03"]], ["data/lesson-scripts-staged", ["c4-maths-ch01-t02", "c4-maths-ch06-t01"]]] /* (director35 clause 53, release 61: c4-maths-ch01-t02 staged again) (director36, 2026-11-25: c6-maths-ch07-t03 live after two passing runs, clause 71) */)
+  for (const [dir, ts] of [["data/lesson-scripts", ["c4-maths-ch05-t01", "c5-maths-ch02-t01", "c5-maths-ch02-t02", "c5-maths-ch02-t03", "c6-maths-ch06-t01", "c6-maths-ch07-t01"]], ["data/lesson-scripts-staged", ["c4-maths-ch01-t02", "c4-maths-ch06-t01", "c6-maths-ch07-t03"]]] /* (director35 clause 53, release 61: c4-maths-ch01-t02 staged again) */)
     for (const t of ts) (JSON.parse(readFileSync(join(ROOT, dir, `${t}.json`), "utf8")).joints?.noPicture ?? []).forEach((f, i) => { for (const l of ["hi", "en"]) {
       const noted = NO_PICTURE_NOTE.some((x) => x.topicId === t && x.i === i && x.lang === l);
       assert.equal(PICTURE_REFUSAL.test(f[l] ?? ""), noted, `${t} noPicture[${i}] ${l}: ${f[l]}`);
