@@ -81,7 +81,9 @@ function keyValueTwice0(L, r, i, ctx) {
   const T = String(r.text ?? "").replace(/\s+/g, " ");
   const why = hi(n.why);
   let seg = T;
-  if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) seg = T.slice(0, k + tail.length); else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
+  // (d37 close item 4, pr4b's gap: to the end of the SENTENCE that holds the why's tail — "…12 − 5 = 7, yaani 7 cm." counts the 7 said
+  // once more after the script's own sentence)
+  if (why) { const tail = String(why).replace(/[.!?।]+$/, "").slice(-12); const k = T.lastIndexOf(tail); if (k >= 0) { const m = /[.!?।](?=\s|$)/.exec(T.slice(k + tail.length)); seg = T.slice(0, m ? k + tail.length + m.index + 1 : T.length); } else seg = sentencesOf(T).filter((s) => KEY_WORDS.test(s)).join(" ") || T; }
   const WORDS = (t) => { const T = ` ${nk(t)} `; let c = 0, at0 = 0; for (;;) { const k = T.indexOf(` ${kw} `, at0); if (k < 0) return Array(c).fill(kw); c++; at0 = k + kw.length + 1; } };
   const got = kw ? WORDS(seg) : NUMS(seg);
   // (RULING-C3 item 8: flagged where the turn says the value more times than the script's own sentence does — its why; once at least, the

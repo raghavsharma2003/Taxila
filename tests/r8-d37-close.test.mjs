@@ -128,3 +128,20 @@ describe("item 3: 'kyunki' twice running live (a2-out steady c6-ch07-t01 32 besi
     assert.equal(run({ verdict: "Haan sahi, kyunki tumne dhyan se dekha" }, 1).seams[0].opener.fellBack ?? null, null);
   });
 });
+
+describe("item 4: keyValueTwice counts the value to the end of the sentence that holds the why's tail (pr4b section 1)", async () => {
+  const { lessonFlags } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const { readFileSync } = await import("node:fs");
+  const st = JSON.parse(readFileSync(new URL("../data/lesson-scripts-staged/c4-maths-ch06-t01.json", import.meta.url), "utf8"));
+  const ys = st.skills[0].workedExample.yourStep, sp = `${st.skills[0].skillId}:worked:yourStep`;
+  const why = ys.why.hi.replace(/[.!?]+$/, ""), Why = `${why.charAt(0).toUpperCase()}${why.slice(1)}`;
+  const row = (text) => ({ who: "teacher", text, cell: { part: sp, column: "wrong" }, seams: [{ left: "start", right: "missVerdict" }, { left: "missVerdict", right: "key" }, { left: "key", right: "checkin" }] });
+  const fl = (r) => lessonFlags({ rows: [{ who: "child", text: "5" }, r], script: st }).filter((f) => f.predicate === "keyValueTwice").map((f) => f.row);
+  test("the why said alone, its sentence closed: not flagged; the value said once more after the why in the same sentence: flagged", () => {
+    assert.equal(String(ys.key).match(/\d+/)?.[0], "7");
+    assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. ${Why}. Yahan tak theek hai?`)), []);
+    assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. ${Why}, yaani 7 khaane. Yahan tak theek hai?`)), [1]);
+    // (a value in the NEXT sentence is not the key's reason: not counted, as before)
+    assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. ${Why}. Ab 7 se aage chalo. Yahan tak theek hai?`)), []);
+  });
+});
