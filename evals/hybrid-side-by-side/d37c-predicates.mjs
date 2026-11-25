@@ -3,7 +3,8 @@
 //   ownKeyNoReason      C1: an own step's key after a miss or a request (the worked example's your-step, her turn's cell at it, not a right
 //                       answer) that does not say the step's own `why`, or says "Toh poora jawab" after it.
 //   keyValueTwice       C2: a key whose value (every number of the card's `key`) is said twice in the key and its reason.
-//                       (RULING-C2 item 2: gated for every key but a teach-back's; teachbackKeyValueTwice, pending, reads the teach-back's)
+//                       (RULING-C2 item 2: for every key but a teach-back's; teachbackKeyValueTwice reads the teach-back's. Both pending:
+//                       held at a clash with a script's why that says its value twice, c2/PROGRESS.md)
 //   capBeforeOwnReason  C3: a key at a card where the child's answer was the card's named wrong answer (`wrongIfMis` with `whyAltAsHelp`, or a
 //                       `wrongAnswers` entry with its `why`) and that answer's reason was never said at the card.
 //   ownStepWorkedHelp   C4: help at an own step (her turn's cell at the your-step) that says the worked problem's `simpler`.
@@ -86,8 +87,8 @@ export const D37C_PREDICATES = {
     if (/toh poora jawab|so the full answer/i.test(String(r.text ?? ""))) return `an own step's key with "Toh poora jawab" after it`;
     return saysWhole(r.text, why) ? null : `an own step's key without the step's own reason ("${why.slice(0, 50)}…")`;
   },
-  // (main's second ruling on cause C, item 2: gated for every key but a teach-back's — the teach-back's keys are read by the pending
-  // teachbackKeyValueTwice below)
+  // (main's second ruling on cause C, item 2: every key but a teach-back's — the teach-back's keys are read by teachbackKeyValueTwice
+  // below; pending at a clash: a why-alone key whose script why says the value twice, offtopic c4-ch06-t01 36 of c2/dry2)
   keyValueTwice(L, r, i, ctx) {
     if (isTeachback(partOf(r))) return null;
     return keyValueTwice0(L, r, i, ctx);

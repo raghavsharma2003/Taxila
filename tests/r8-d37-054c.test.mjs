@@ -333,9 +333,11 @@ describe("RULING-C2 item 2: C2, the key said as its why alone where the why name
     // (ynNahi reads keyFact only: unchanged by a why-alone key)
     assert.deepEqual(flags(keyed, "ynNahi"), []);
   });
-  test("keyValueTwice is gated for every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
+  // (keyValueTwice is held pending at a clash: c2/dry2 offtopic c4-ch06-t01 36 is C2's why-alone key, and that script's own yourStep.why says
+  // its value twice — reported to main; not exempted here)
+  test("keyValueTwice reads every key but a teach-back's; teachbackKeyValueTwice is pending and reads the teach-back's", async () => {
     const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
-    assert.ok(PREDICATES.keyValueTwice && !PENDING.has("keyValueTwice"));
+    assert.ok(PREDICATES.keyValueTwice && PENDING.has("keyValueTwice"));
     assert.ok(PREDICATES.teachbackKeyValueTwice && PENDING.has("teachbackKeyValueTwice"));
     const twice = R(`Yeh jawab sahi nahi hai. Iska jawab hai 11, kyunki ${c2.why.hi}. Yahan tak theek hai?`, "wrong", ["missVerdict", "key", "checkin"]);
     assert.deepEqual(flags([ask, C("9"), twice], "keyValueTwice"), [2]);
