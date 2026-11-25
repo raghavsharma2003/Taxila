@@ -1834,6 +1834,16 @@ export function rightWhyLead(fr, why, state, kit = null) {
   const k = order.find((j) => ok(j) && j !== prevJ && !used(j)) ?? order.find((j) => ok(j) && j !== prevJ) ?? order.find(ok);
   return { text: joints[k], k };
 }
+/** d37 close item 3: the right verdict of code's neutral line (said when her reply was blocked on completion): the frame and the card's
+ *  why. In Hinglish the why's lead-in is rightWhyLead's — never the lead-in of her verdict before (state.whyJoint) — as the walk's own
+ *  verdict takes it; English keeps ", because". → { text, k } (k null where no rotation was taken). */
+export function neutralRightVerdict(why, state, kit = null, L = "hinglish") {
+  const fr = freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "");
+  const w = why && String(why).trim() ? spokenMarks(String(why).trim(), L) : null;
+  if (!w) return { text: fr, k: null };
+  if (L === "english") return { text: `${fr}, because ${joinable(w, { lower: true })}`, k: null };
+  return rightWhyLead(fr, w, state, kit);
+}
 /** The topic her AI-line question asked about ("Tumhe Virat ke baare mein …" → Virat), else the child's first interest. */
 function asideTopicOf(line, state) {
   const m = /(?:tumhe|you)\s+(.{2,30}?)\s+(?:ke baare mein|about)\b/i.exec(String(line ?? ""));
@@ -2264,6 +2274,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
   // (the frame and the authored why), a give-up with its why, a missed card's close, a park, the authored teaching, the card — so
   // its pages are its parts' boards. Only her words are dropped.
   let neutralParts = null;
+  let neutralWhyK = null;
   const scriptNeutral = () => {
     const lm = state.lastMove ?? {};
     if (!(lm.scriptBeat || lm.splitClose) || CLOSING_MOVES.has(lm.kind)) return null;
@@ -2275,7 +2286,12 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const v = verdict ?? state.lastVerdict ?? null;
     const g0 = state.lastGraded ?? null;
     const said0 = String(childText ?? "").trim();
-    const verdictS = v === "correct" ? d(`${freshOf(FRAMES.right[L], state).replace(/[.!?]+$/, "")}${why(g0?.why)}`)
+    // (d37 close item 3, a2-out steady c6-ch07-t01 32 beside 24: the live turn's reply was blocked on completion and this neutral line was
+    // said — its verdict always took ", kyunki", the lead-in of her verdict before. A Hinglish right verdict's why takes rightWhyLead's
+    // rotation here too, as the walk's own verdict does: never the lead-in of the verdict before; the form said is recorded, guard.whyJoint)
+    const nv = v === "correct" ? neutralRightVerdict(g0?.why, state, kit, L) : null;
+    neutralWhyK = nv?.k ?? null;
+    const verdictS = v === "correct" ? d(nv.text)
       : v === "not_yet" ? notRightLead(lm.gave ? "" : said0, L, state) : null;
     const gf = GAVE_FORMS[L];
     const gaveS = lm.gave?.answer ? freshForm(wordAnswer(lm.gave.answer) ? gf.yesNo : ui?.ask?.text ? gf.next : gf.now, state, lm.gave.answer, why(lm.gave.why)) : null;
@@ -2294,8 +2310,8 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     neutralParts = parts;
     return line;
   };
-  const neutralLine = () => { neutralParts = null; return scriptNeutral() ?? filterNeutralReply(state, item); };
-  const neutralGuard = (r0) => (neutralParts && joinParts(neutralParts) === String(r0 ?? "").replace(/\s+/g, " ").trim() ? { lineParts: neutralParts, parts: { list: neutralParts }, neutralParts: true } : {});
+  const neutralLine = () => { neutralParts = null; neutralWhyK = null; return scriptNeutral() ?? filterNeutralReply(state, item); };
+  const neutralGuard = (r0) => (neutralParts && joinParts(neutralParts) === String(r0 ?? "").replace(/\s+/g, " ").trim() ? { lineParts: neutralParts, parts: { list: neutralParts }, neutralParts: true, ...(neutralWhyK != null ? { whyJoint: neutralWhyK } : {}) } : {});
   const blockedAfterDraft = async (e, code) => {
     if (nonHarmFilter(e)) { const r0 = neutralLine(); return { reply: r0, guard: { caught: ["content_filter_nonharm"], rewritten: false, replaced: true, ...neutralGuard(r0) } }; }
     const probe = await childWordsTrip(probeWords(history, childText), { trace });

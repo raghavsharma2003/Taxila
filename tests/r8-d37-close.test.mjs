@@ -90,3 +90,41 @@ describe("item 2: cardDroppedAfterShortAsk (gated) — after a short ask or an i
     assert.deepEqual(flags([asked1, C("haan"), T(e2, ["card"])]), []);
   });
 });
+
+describe("item 3: 'kyunki' twice running live (a2-out steady c6-ch07-t01 32 beside 24) — no model call", async () => {
+  const { neutralRightVerdict } = await import("../server/brain/say.js");
+  const { seamPass } = await import("../server/brain/seams.js");
+  // (the two rows' texts: row 24 her verdict before, rows 26 to 30 between; row 32's verdict was code's neutral line after her reply was
+  // blocked on completion — guard content_filter_output, replaced — and that line always took ", kyunki")
+  const ROW24 = "Haan, bilkul theek, kyunki Rahul ka hissa 60 ÷ 3 = 20 cm, Sana ka 30 ÷ 2 = 15 cm; 20 − 15 = 5. Ab ek hi poore ko kabhi kam, kabhi zyada barabar hisson mein baantenge, aur dekhenge ki ek hissa kaise badalta hai. Ab tak samajh aaya?";
+  const ROW26 = "Hissa tabhi 1/3 kehlata hai jab hisse barabar hon, aur lambe poore ka hissa bhi lamba. Ab poora wahi rahega, bas hisson ki ginti badlegi. Yahan tak saaf hai?";
+  const ROW28 = "Yeh do pattiyan bilkul ek jaisi hain. Pehli 3 barabar hisson mein bati hai, doosri 6 mein. Ek 1/3 wale hisse mein 1/6 wale kitne hisse aate hain?";
+  const ROW30 = "Haan, pehle tum try karo.";
+  const WHY32 = "har 1/3 jitni jagah mein do 1/6";
+  const recent = [ROW24, ROW26, ROW28, ROW30].map((text) => ({ who: "teacher", text }));
+  test("the neutral line's right verdict after row 24's ', kyunki' (state.whyJoint.last 0) takes another lead-in; the rotation is recorded", () => {
+    for (const key of ["a", "b", "c", "d", "e"]) {
+      const v = neutralRightVerdict(WHY32, { ctx: { lessonKey: key }, recent, whyJoint: { last: 0, n: 3 } }, null, "hinglish");
+      assert.ok(!/, kyunki /.test(v.text), v.text);
+      assert.notEqual(v.k, 0);
+      assert.match(v.text, /har 1\/3 jitni jagah mein do 1\/6/i);
+    }
+    // (the other side: after a verdict whose lead-in was not ", kyunki", the rotation may take it — it is not banned, only never twice running)
+    const ks = new Set(["a", "b", "c", "d", "e", "f", "g"].map((key) => neutralRightVerdict(WHY32, { ctx: { lessonKey: key }, recent, whyJoint: { last: 1, n: 3 } }).k));
+    assert.ok(ks.has(0), "kyunki is still one of the forms");
+    // (English keeps its one form)
+    assert.match(neutralRightVerdict("each 1/3 holds two 1/6", { ctx: { lessonKey: "a" } }, null, "english").text, /, because each 1\/3 holds two 1\/6$/);
+  });
+  test("the join check: a model's right-verdict opener holding the lead-in her verdict before used falls back to the table's frame; another passes", () => {
+    const frames = ["Haan, sahi hai", "Haan, bilkul theek", "Bilkul sahi"];
+    const run = (mj, last) => seamPass([{ part: "close", text: `Haan, sahi hai. ${WHY32[0].toUpperCase()}${WHY32.slice(1)}.` }, { part: "card", text: "Agla sawaal?" }],
+      { kit: { topicId: "t", __joints: {} }, state: { ctx: { lessonKey: "L" }, recent, whyJoint: { last, n: 3 } }, lang: "hinglish", info: { modelJoins: mj, verdictFrames: frames } });
+    const r1 = run({ verdict: "Haan sahi, kyunki tumne dhyan se dekha" }, 0);
+    assert.equal(r1.seams[0].opener.by, "authored"); assert.match(r1.seams[0].opener.fellBack, /lead-in of her verdict before/);
+    assert.match(r1.list[0].text, /^Haan, sahi hai\./);
+    const r2 = run({ verdict: "Wah, ekdum sahi pakda" }, 0);
+    assert.equal(r2.seams[0].opener.by, "model");
+    // (the same words after a verdict whose lead-in was a sentence of its own: not refused by this rule)
+    assert.equal(run({ verdict: "Haan sahi, kyunki tumne dhyan se dekha" }, 1).seams[0].opener.fellBack ?? null, null);
+  });
+});

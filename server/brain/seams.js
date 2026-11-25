@@ -191,6 +191,8 @@ export function joinProblem(text, { kit = null, state = null, lang = "hinglish" 
   return null;
 }
 
+/** The reason lead-ins of rightWhyLead's forms by index: 0 ", kyunki", 1 a sentence of its own ("Dekho,", "Suno," as its openers). */
+export const WHY_LEAD_RE = [/(?<![\p{L}])(?:kyunki|kyonki|because)(?![\p{L}])/iu, /(?<![\p{L}])(?:dekho|suno)(?![\p{L}])/iu];
 const RIGHT_WORD = /(?<![\p{L}])(?:sahi|theek|thik|bilkul|ekdum|haan|right|correct|exactly|yes|perfect)(?![\p{L}])/iu;
 /** The turn's verdict opener: { at, record } — the index of the verdict part and what its seam records — with the part's text swapped
  *  in place when the model's opener passes; null when the verdict opens on no code frame. */
@@ -204,6 +206,9 @@ function verdictOpener(parts, kinds, { kit, state, lang, info }) {
   const mine = norm(info.modelJoins?.[kind] ?? "").replace(/[.!?:,]+$/, "");
   let bad = mine ? joinProblem(mine, { kit, state, lang }) : null;
   if (mine && !bad) bad = kind === "verdict" ? (MISS_WORD.test(mine) || !RIGHT_WORD.test(mine) ? "not a right verdict" : null) : !MISS_WORD.test(mine) ? "no miss word" : null;
+  // (d37 close item 3: a model's right-verdict opener that says the reason lead-in her verdict before used — state.whyJoint.last, the
+  // rotation brain/say.js rightWhyLead keeps — falls back to the table's frame, as the walk rotates them)
+  if (mine && !bad && kind === "verdict" && WHY_LEAD_RE[state?.whyJoint?.last]?.test(mine)) bad = "the reason lead-in of her verdict before";
   if (mine && !bad) parts[at] = { ...parts[at], text: `${mine}${t.slice(frame.length)}` };
   return { at, record: { by: mine && !bad ? "model" : "authored", form: mine && !bad ? mine : frame, ...(bad ? { fellBack: bad } : {}) } };
 }
