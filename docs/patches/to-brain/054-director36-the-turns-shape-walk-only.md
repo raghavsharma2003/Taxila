@@ -32,6 +32,16 @@ around a safety turn is the owner's; `server/safety/` and what calls it are froz
   the go-on turn is taken out. `replyCheckin` and `asideCheckin` allow a check-in at the end of a reply's turn only when a new
   point stands between the reply and the check-in. A(ii) and A(iii) are kept. Reversal of D2: two judges hear the added check-in
   as one more fixed form, or two check-ins running; then A(i) is undone to director36's one turn and the length is a script matter.
+- **A's second measure (D2), 2026-11-25** (the same pair, 8 lessons, 572 calls, $0.42; two judges): gates clean, every axis
+  unchanged (register 3.5, listening 3.5), both judges find the reply + point + check-in turn (47 to 58 words) better than
+  director36's one turn and than D1's dead turn, and both say keep. Costs accepted: check-in endings 16 → 35 over the eight
+  lessons, heard as a rotation of three forms; two check-ins back to back where a side-topic is raised at a check-in; the
+  offtopic lessons teach less in the same number of child lines. **A(i) stays D2; A(ii) and A(iii) stay; cause A is closed.**
+  The sixth ruling (a clarify at a held-card check-in gets help and the card in one turn; `replyCheckin`'s exemption exactly
+  reply, joint, one new point, check-in; no joint on a side-topic at D2's check-in) is part of it. Put to director37's judges
+  as clauses: two check-ins running (three of nine fault it → the reply's turn after an unanswered check-in ends on its card).
+  Reversal: director37 scores register or listening below director36's in two or more topics and names the check-in after a
+  reply → A(i) back to director36's one turn.
 - **B is ruled (question 3): YES to both.** The wait's re-ask (the question's `reask`, at wait two) overrides 049 B4's third-turn
   invitation: a child who said yes and then nothing has not heard the question since the card, and an invitation with no question
   is what the judges heard as a wait with no end. The cap's told step overrides gated `stepToldEarly` (d30) on the cap's turn
