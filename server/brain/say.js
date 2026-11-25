@@ -3531,6 +3531,10 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // v6.2 T1 (main, director10 c4 stuck T15: chocolate, roti and cakes in one turn): at most one close per turn: the worked close,
     // else a give-up, else a missed card's close (a stale one is dropped, never stacked)
     let [g2, d2, c2] = [gaveS, doneS, closedS];
+    // (to-brain 054 C1 — director36 c5-t01 stuck 42, c6 stuck 42: an own step's key after misses or the cap is the step's own — its key with
+    // its `why`, as a card's key is said — never the worked example's answer in its place, and no "Toh poora jawab" after it: the give-up
+    // of the your-step and the worked close in one turn keep the give-up)
+    if (d2 && g2) { guard.closeDropped = (guard.closeDropped ?? 0) + 1; guard.ownKey = true; d2 = null; if (c2) { c2 = null; guard.closeDropped += 1; } }
     if (d2) { if (g2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; if (c2) guard.closeDropped = (guard.closeDropped ?? 0) + 1; g2 = null; c2 = null;
       // (d32 step 0, staged c4-ch01-t02 stuck 42: a wrong answer to the worked example's yes-or-no step, given up — the worked close
       // replaced "Nahi, <why>." and the miss had no "Nahi": the close opens on the miss word in place of "Iska jawab hai")

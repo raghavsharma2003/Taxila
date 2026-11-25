@@ -111,6 +111,15 @@ export function scriptWhyOf(kit, item, lang = "hinglish") {
   const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
   return one && one.split(/\s+/).length <= WHY_MAX_WORDS ? one : null; // (2.3's validator refuses a longer one)
 }
+/** to-brain 054 C1 (director36 c5-t01 stuck 42, c6 stuck 42): the why a key says when a card is given or let go — an own step's is the step's
+ *  own `why` (yourStep.why, with its sum), as a card's key says the card's; any other card's is scriptWhyOf's. A right answer's why is as
+ *  built (scriptWhyOf: brain/turn.js). */
+export function gaveWhyOf(kit, item, lang = "hinglish") {
+  const sk = item?.scriptAsk?.beatId === "worked" && item?.skillId ? skillScriptOf(kit, item.skillId) : null;
+  const t = sk?.workedExample?.yourStep?.why ? saidIn(sk.workedExample.yourStep.why, lang) : null;
+  const one = t ? String(t).replace(/\s+/g, " ").trim().replace(/^(?:kyunki|because)\s+/i, "").replace(/[.!?\u0964]+$/, "") : null;
+  return one && one.split(/\s+/).length <= WHY_MAX_WORDS ? one : scriptWhyOf(kit, item, lang);
+}
 /** dc-r8-director27 Brain 043 R1: a card's `whyShort` (its why cut to the core, 10 words or fewer) in the lesson language, as scriptWhyOf
  *  gives the why — or null (no short form, the worked example's own card, no why). */
 export const WHY_SHORT_MAX = 10;
@@ -3363,9 +3372,9 @@ function capPlan(s, input, p) {
   s.capped = { turn: s.turn, how: assert ? "assert" : "leave" };
   return { ...next, content: [...(assert ? [`the answer to the question being left: ${item.answer}`] : []), ...(next.content ?? [])], capped: assert ? "assert" : "leave",
     // (S3: the answer and its why are said in code, brain/say.js: director2 shipped "assert" turns that never said it)
-    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? scriptWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "" } } : {}),
+    ...(assert && oneLiveOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: (scriptCardOf(item) ? gaveWhyOf(kit, item, s.ctx.lang) : whyOf(kit, item, s.ctx.lang)) ?? "" } } : {}),
     // v3 K2: a script card that is let go is never left unanswered: its key is said in code (c4 director5: "2/3" never said)
-    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: scriptWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
+    ...(!assert && scriptCardOf(item) && scriptOn() ? { gave: { answer: keyInLang(item, s.ctx.lang), why: gaveWhyOf(kit, item, s.ctx.lang) ?? "" } } : {}) };
 }
 const scriptCardOf = (item) => !!(item?.scriptAsk || item?.scriptCheck || item?.scriptThen);
 const isScriptCard = scriptCardOf;
@@ -4963,7 +4972,7 @@ function step0(prev, input) {
     const closedByVerdict = !!prev.pendingWhy && prev.pendingWhy === was;
     if (was && !closedByVerdict && !move.gave && move.kind !== "safeguard" && move.scriptBeat?.kind !== "remediation" && s.skipped.includes(was) && !(prev.skipped ?? []).includes(was)) {
       const left = findItem(prev, input.kit, was);
-      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: scriptWhyOf(input.kit, left, s.ctx.lang) ?? "" };
+      if (left) move.gave = { answer: keyInLang(left, s.ctx.lang), why: gaveWhyOf(input.kit, left, s.ctx.lang) ?? "" };
     }
   }
   // v4 W6: a parked topic served this turn rides on the move, so the reply keeps (or says) its return
