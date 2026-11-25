@@ -719,6 +719,8 @@ export const ORDER_LAWS = {
     // try. Its question said again after a request is the part said, not displaced: the dry stuck c4 40 to 44 on Learning 021's scripts,
     // whose s1 step 1 is asked, read the step's question as no part and flagged the turns that asked it)
     const TEACH_OR_ASK = (p) => TEACH.has(p.part) || p.part === "stepAsk";
+    // (to-brain 054 A(i): her reply's turn that ends on its go-on line holds the displaced part for the turn after it — read there)
+    if (pend && r.noFit === "aside" && r.noFitGoOn) return null;
     if (pend) {
       const said = (r.pageParts ?? []).some((p) => TEACH_OR_ASK(p) && beatOfPart(p) === pend.beat);
       if (!said && !ctx.o.said.has(`${pend.sk}|${pend.beat}`)) why = `${pend.beat} displaced at row ${pend.row} by ${pend.by}, not said here`;

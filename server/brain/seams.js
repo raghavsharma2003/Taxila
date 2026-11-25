@@ -89,6 +89,9 @@ export const SEAM_TABLE = [
   // (dc-r8-director27 Brain 042 Q2: the lead-in, the problem and what follows it up to the first question are one turn — after a verdict whose
   // why left no room, the problem opens its own turn, and its lead-in with it)
   ["start", "workedProblem", "beforeWorked"],
+  // (to-brain 054 A(i), main's ruling D1: her reply to a side-topic said apart from the point and card it led into ends on its own joint, said
+  // as a go-on line — the turn's last seam, into nothing: the "goOn" end the walk marks with noFit "aside")
+  ["asideReply", "goOn", "afterAside"], ["aiReply", "goOn", "afterAiLine"], ["park", "goOn", "afterPark"],
 ];
 const TABLE = new Map(SEAM_TABLE.map(([a, b, j]) => [`${a}>${b}`, j]));
 /** dc-r8-director29 Brain 045 P6: help about another figure — it names a number (a whole number past 1, or a part of a fraction) the card does
@@ -340,6 +343,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
   // (dc-r8-director24 M: the verdict's opener in the model's words — the code frame at the head of the turn's verdict is swapped for
   // hers when it passes the join checks and says the verdict it opens: a right word on a right answer, a miss word on a miss)
   const opener = verdictOpener(stripped, kinds, { kit, state, lang, info });
+  // (to-brain 054 A(i): the reply's go-on joint ends the turn — an end seam after the reply, placed by the table as any joint is)
+  if (info.goOnAfterReply && ["asideReply", "aiReply", "park"].includes(kinds.at(-1))) { stripped.push({ part: "aside", text: "", goOnEnd: true }); kinds.push("goOn"); }
   const out = [], seams = [], said = {}, used = [];
   let prevKind = "start";
   // (dc-r8-director25 L2 item 5: the record's left kind — a key said inside a verdict's part is recorded as its own part, after the
@@ -378,8 +383,8 @@ export function seamPass(list0, { kit, state, lang = "hinglish", info = {} }) {
     if ((k === "verdict" || k === "missVerdict") && sentencesOf(p.text).slice(1).some((x) => KEY_HEAD.test(x))) { seams.push({ left: k, right: "key", joint: null }); recLeft = "key"; }
     // (a joint into a return, a remediation or the card she invited a try at is said over the board it leads into — as the card's own
     // words were; a joint out of an aside reply is no unit's, and the board waits for her first unit part)
-    if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }
-    out.push(p);
+    if (form) { out.push({ part: /^after(?:Aside|AiLine)$/.test(j) || p.goOnEnd ? "aside" : "body", text: form, joint: j }); said[j] = form; used.push(j); }
+    if (!p.goOnEnd) out.push(p);
     // (Brain 044 T5: help's own joint that opens the turn leaves the seam after it as the turn's start — the back-to or after-key return still
     // leads a return to an earlier card after the "nothing easier" line)
     prevKind = k;

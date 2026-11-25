@@ -1544,6 +1544,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     modelJoins: out.guard?.modelJoins ?? null, verdictFrames: [...FRAMES.right[lang], ...FRAMES.notRight[lang]],
     // (to-brain 053 D: the yes-or-no key said as its fact is recorded as a key)
     keyFact: !!out.guard?.ynFact,
+    // (to-brain 054 A(i): her reply said apart from the point and card it led into — its joint ends the turn as a go-on line)
+    goOnAfterReply: !!state?.lastMove?.replyApart && !!state?.lastMove?.vpcGoOn,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;
