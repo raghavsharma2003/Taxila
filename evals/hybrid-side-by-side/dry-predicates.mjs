@@ -1062,6 +1062,9 @@ Object.assign(PREDICATES, D37D_PREDICATES);
 // (d37 builder G, RULING-G item 2: a plain no at a comprehension check-in is "I did not understand" — d37g-predicates.mjs, gated)
 import { D37G_PREDICATES } from "./d37g-predicates.mjs";
 Object.assign(PREDICATES, D37G_PREDICATES);
+// (d37 builder H, RULING-H item 15: every reply to a try-first is the go-ahead alone — d37h-predicates.mjs, gated)
+import { D37H_PREDICATES } from "./d37h-predicates.mjs";
+Object.assign(PREDICATES, D37H_PREDICATES);
 /** dc-r8-director24 M: a join or a verdict opener said in the model's words passed code's check — one sentence, at most 12 words, no digit, no question, no
  *  screen word, none of her last four turns. Reads `seams`. Gated. */
 PREDICATES.joinChecked = (L, r, i, ctx) => {
