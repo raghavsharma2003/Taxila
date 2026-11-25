@@ -201,3 +201,11 @@ describe("main's third ruling: the checks restored", () => {
     assert.equal(goOnSkipOf(null), null);
   });
 });
+
+test("third ruling item 2: orderDisplaced holds a displaced part over one go-on turn only", async () => {
+  const { PREDICATES } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
+  const go = { who: "teacher", text: "Ab wapas kaam par.", noFit: "aside", noFitGoOn: true, seams: [] };
+  const mk = (prevPrevT) => { const ctx = { o: { pend: { beat: "e2", sk: "s1", row: 4, by: "the AI line" }, said: new Set() }, prevPrevT, script: null }; return PREDICATES.orderDisplaced({ rows: [] }, go, 6, ctx); };
+  assert.equal(mk({ who: "teacher", text: "Main AI teacher hoon." }), null);
+  assert.ok(mk({ ...go }));
+});

@@ -723,7 +723,9 @@ export const ORDER_LAWS = {
     // whose s1 step 1 is asked, read the step's question as no part and flagged the turns that asked it)
     const TEACH_OR_ASK = (p) => TEACH.has(p.part) || p.part === "stepAsk";
     // (to-brain 054 A(i): her reply's turn that ends on its go-on line holds the displaced part for the turn after it — read there)
-    if (pend && r.noFit === "aside" && r.noFitGoOn) return null;
+    // (main's third ruling item 2: over ONE go-on turn — not when the turn two back was itself a reply's go-on: a go-on, the AI line, a go-on
+    // holds nothing, offtopic c5-ch02-t01 54 to 62)
+    if (pend && r.noFit === "aside" && r.noFitGoOn && !(ctx.prevPrevT?.noFit === "aside" && ctx.prevPrevT?.noFitGoOn)) return null;
     if (pend) {
       const said = (r.pageParts ?? []).some((p) => TEACH_OR_ASK(p) && beatOfPart(p) === pend.beat);
       if (!said && !ctx.o.said.has(`${pend.sk}|${pend.beat}`)) why = `${pend.beat} displaced at row ${pend.row} by ${pend.by}, not said here`;
