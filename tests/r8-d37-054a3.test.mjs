@@ -36,8 +36,33 @@ describe("item 1: a Hindi request after a go-on turn — the point first, then t
 });
 
 describe("item 2: a child who asks about her own taste gets the AI line whole, always", () => {
-  // (main's fifth ruling item 1: her reply to the child's answer takes the D2 shape — pinned in r8-d37-054a, afterAiLine. The go-on walk pins are
-  // removed with the go-on turn)
+  // (main's fifth ruling item 1: her reply to the child's answer takes the D2 shape. The go-on walk pins are removed with the go-on turn)
+  test("the AI line stays alone and whole, its question back with it; her reply to the child's answer is D2 — reply, afterAiLine, the point, its check-in; the card next", async () => {
+    const { _replyPointForTest: replyPoint, _afterReplyPointForTest: afterReplyPoint } = await import("../server/director/state.js");
+    const { applySeams } = await import("../server/brain/seams.js");
+    const KIT = { topicId: "t-test", __joints: { afterAiLine: [{ hi: "Ab apni padhai par lautte hain.", en: "Now back to learning." }] } };
+    const CARD = { itemId: "script:t-s1:ask:e2", text: "0 se theek 1 tak aise kitne gap chalne honge?" };
+    const turnOf = ({ lm = {}, turn = 9 } = {}) => {
+      const lastMove = { kind: "explain", itemId: CARD.itemId, skillId: "t-s1", point: "Yeh do pattiyan bilkul ek jaisi hain.", scriptBeat: { skillId: "t-s1", beatId: "e2", kind: "explain" }, ...lm };
+      const state = { turn, ctx: { lang: "hinglish" }, later: [], posedAt: { [CARD.itemId]: turn }, activeItemId: CARD.itemId, lastMove, lastUi: { status: "your_turn", ask: CARD } };
+      return { state, move: lastMove, ui: { status: "your_turn", ask: CARD }, moduleCommands: [], end: false };
+    };
+    // (the AI line itself, after her reply's point turn or anywhere: neither rule touches it)
+    const ask = { event: "turn", kit: KIT, text: "aapko virat pasand hai?", cls: {} };
+    const t0 = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 }, asideAck: true } });
+    assert.equal(replyPoint({ turn: 8, lastMove: { kind: "explain" } }, ask, t0), t0);
+    assert.equal(afterReplyPoint({ turn: 8, lastMove: { kind: "explain", replyPoint: "afterAside", noFit: "point" } }, ask, t0), t0);
+    // (her reply to the child's answer, with a new point: the D2 turn)
+    const AI = { turn: 9, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } };
+    const rep = replyPoint(AI, { event: "turn", kit: KIT, text: "chauka", cls: { asideReply: true } }, turnOf({ turn: 10, lm: { asideAck: true } }));
+    assert.equal(rep.state.lastMove.replyPoint, "afterAiLine"); assert.equal(rep.state.lastMove.noFit, "point");
+    assert.ok(rep.state.lastMove.point); assert.equal(rep.ui.ask, undefined); assert.equal(rep.state.splitHold.ui.ask.text, CARD.text);
+    // (the seam pass joins her reply and the point with afterAiLine, inside the turn)
+    const list = [{ part: "aside", text: "Wah, chauka!", kind: "aiReply" }, { part: "body", text: "Yeh do pattiyan bilkul ek jaisi hain." }, { part: "aside", text: "Yahan tak theek hai?" }];
+    const r = applySeams(list.map((p) => p.text).join(" "), list, { kit: KIT, state: { turn: 10, ctx: { lang: "hinglish" }, lastMove: {} }, lang: "hinglish", info: {} });
+    assert.deepEqual(r.seams.slice(0, 2).map((x) => [x.left, x.right, x.joint]), [["start", "aiReply", null], ["aiReply", "point", "afterAiLine"]]);
+    assert.ok(r.reply.startsWith("Wah, chauka! Ab apni padhai par lautte hain. Yeh do"), r.reply);
+  });
   const go = (j = "afterAside") => ({ who: "teacher", text: "Oho, Rohit! Theek hai, ab phir se dhyaan idhar lagate hain.", noFit: "aside", noFitGoOn: true, seams: [{ right: "asideReply" }, { right: "goOn", joint: j }] });
   const aiQ = { who: "teacher", text: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein kya achha lagta hai?", seams: [{ left: "start", right: "aiQuestion" }] };
   const c = { who: "child", text: "chauka" };
