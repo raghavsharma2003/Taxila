@@ -157,3 +157,17 @@ describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is nev
   });
 });
 
+describe("fix 4: a worked close split from its card keeps the own-turn joint", () => {
+  test("the card held apart from the close opens on afterWorked — the seam closeApart > card, in the table", async () => {
+    const { SEAM_TABLE } = await import("../server/brain/seams.js");
+    assert.ok(SEAM_TABLE.some(([a, b, j]) => a === "closeApart" && b === "card" && j === "afterWorked"));
+    const state = { turn: 9, ctx: { lang: "hinglish" }, lastMove: { afterWorkedLead: true } };
+    const list = [{ part: "card", text: CARD.text }];
+    const r = applySeams(CARD.text, list, { kit: KIT, state, lang: "hinglish", info: { afterWorkedLead: true } });
+    assert.deepEqual(r.seams.map((x) => [x.left, x.right, x.joint]), [["closeApart", "card", "afterWorked"]]);
+    assert.equal(r.list[0].text, "Ab ek sawaal tum akele karo.");
+    const r0 = applySeams(CARD.text, list, { kit: KIT, state: { ...state, lastMove: {} }, lang: "hinglish", info: {} });
+    assert.deepEqual(r0.seams.map((x) => [x.left, x.right, x.joint]), [["start", "card", null]]);
+  });
+});
+

@@ -1548,6 +1548,8 @@ function seamsOf(out, { state, kit, ui = null, childText = "" }) {
     goOnAfterReply: !!state?.lastMove?.replyApart && !!state?.lastMove?.vpcGoOn,
     // (main's second ruling fix 3: the turn after her reply's go-on line takes no second go-on joint)
     noReplyJoint: !!state?.lastMove?.noReplyJoint,
+    // (main's second ruling fix 4: the card held apart from a worked close opens on the close's own-turn joint)
+    afterWorkedLead: !!state?.lastMove?.afterWorkedLead,
   };
   const r = applySeams(out.reply, list, { kit, state, lang, info });
   if (!r) return out.guard?.leadJoints?.length ? { ...out, guard: { ...out.guard, jointsUsed: [...(out.guard.jointsUsed ?? []), ...out.guard.leadJoints] } } : out;

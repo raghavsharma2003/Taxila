@@ -3403,7 +3403,7 @@ const SAYS_CLARIFY = /(?<![\p{L}])(?:samajh\s+nahi|samjha\s+nahi|samjhi\s+nahi|d
 /** Main on director21 (c4 offtopic 38, c5-t02 stuck 46, 48: her aside reply said again on the turn after; a held part said twice): a move
  *  re-said from the last one keeps its teaching, never what belonged to that turn alone — the reply to the child's aside, the return,
  *  the honest line, a held part said first, a close. */
-const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "noReplyJoint", "tasteNoAsk"];
+const ONE_TURN = ["quick", "quickReply", "whyShort", "workedInvite", "afterInvite", "quickAgain", "stepAsk", "stepReply", "help", "helpJoint", "whyAltSaid", "hindiSame", "returnReply", "returned", "tasteAsked", "sadAside", "asideAgain", "heldSaid", "heldBeat", "sayFirst", "splitClose", "gaveCheck", "keyTwice", "gave", "closed", "workedDone", "closeBeat", "closedBeat", "bridgeSaid", "probeAck", "stepFrom", "stepBoards", "problemLines", "hookSaid", "keyedPicture", "pictureWords", "pictureAlone", "picture", "pictureCaption", "pictureOwn", "noFit", "closeShort", "keepBoard", "heardCap", "noReplyJoint", "afterWorkedLead", "tasteNoAsk"];
 /** dc-r8-director23 H2: the worked answer of the card a key closed — its key and its why as one statement (a yes-or-no key: the why alone,
  *  K2), on its answer board. null when the card is not found. */
 function workedAnswerOf(prev, kit) {
@@ -5426,7 +5426,13 @@ function splitLongOnce(out, input, opt = {}) {
   // own step answered right, "Toh poora jawab: …" — and the next card are 049 B6's split: said whole up to 70 words; over it the close ends
   // on the go-on line (closeGoesOn, as 053 B4) and the card is the next turn whatever the child says)
   if (l2On() && vpcSplitOn() && !recorded && hasClose && move.workedDone && !move.gave && !move.point && ui?.ask?.itemId && !move.returned?.topic && !move.bridgeSaid
-    && String(input.cls?.outcome ?? "") === "correct" && partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).reduce((a, p) => a + p.n, 0) + VPC_SLACK > VPC_MAX) return closeApart(out, "close");
+    && String(input.cls?.outcome ?? "") === "correct" && partsOfTurn(out, closeWords, input?.helpLeadWords ?? 0).reduce((a, p) => a + p.n, 0) + VPC_SLACK > VPC_MAX) {
+    // (main's second ruling fix 4, reader C — c6-ch07-t03 steady 28, offtopic 22, steering 46: the card after the split close arrived cold. The
+    // joint that led into it before the split — joints.afterWorked, "Ab ek sawaal tum akele karo." — is said at the head of the card's turn)
+    const ca = closeApart(out, "close");
+    if (ca.state?.splitHold?.move) ca.state.splitHold.move = { ...ca.state.splitHold.move, afterWorkedLead: true };
+    return ca;
+  }
   // (dc-r8-director25 L2: a turn of more than one part over 75 words breaks at the last seam before 75 — breakL2 below)
   // (TAXILA_R7_SPLIT_CLOSE=on, the opt-in closing split of v6.1 policy B, decides a turn with closures by itself, as it did before L2)
   const splitCloseOptIn = closing.some(Boolean) && process.env.TAXILA_R7_SPLIT_CLOSE === "on";
