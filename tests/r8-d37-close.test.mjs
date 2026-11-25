@@ -145,3 +145,27 @@ describe("item 4: keyValueTwice counts the value to the end of the sentence that
     assert.deepEqual(fl(row(`Nahi, yeh jawab nahi hai. ${Why}. Ab 7 se aage chalo. Yahan tak theek hai?`)), []);
   });
 });
+
+describe("item 5: a miss verdict over a picture turn's kept split page keeps the card's board up until the help's board draws (c-out steering c5-ch02-t02 18)", async () => {
+  const bf = await import("../server/stagecraft/board-first.js");
+  const bars = { template: "fraction-bars@1", params: { bars: [{ parts: 9, shade: 0, label: "" }, { parts: 11, shade: 0, label: "" }] } };
+  const wholes = { template: "wholes@1", params: { wholes: [{ parts: 2, title: "Roti" }, { parts: 10, title: "Roti" }] } };
+  const text = "Abhi yeh sahi nahi hai. Board par dono roti dekho: 2 hisson wali roti ka ek hissa aadhi roti hai, aur 10 hisson wali ka ek hissa bahut patla. 9 aur 11 barabar hisson mein kati ek jitni do dor mein se kis dor ka ek hissa chhota hai?";
+  const u = "c5-maths-ch02-t02-s1:rem:x";
+  const ask = { intent: { held: { board: bars, unit: u, switchTo: { board: bars, unit: u, atChar: 142 }, switches: [{ board: wholes, unit: `${u}#help`, atChar: 24 }, { board: bars, unit: u, atChar: 142 }], clearIfFull: true }, style: { band: "B3" } }, line: { text } };
+  const one = (b) => bf.heldBoard({ intent: { held: { board: b, unit: u }, style: { band: "B3" } }, line: { text: "x" } }).lastPage;
+  const barsPage = one(bars), viewPage = one(wholes);
+  // (the page up after the picture turn: the held board with its view beside — the held board's ops and the view's)
+  const split = { ...barsPage, ops: [...barsPage.ops, ...viewPage.ops.map((o) => ({ ...o, id: `v${o.id}`.slice(0, 32) }))] };
+  const pages = (r) => r.screens.map((s) => [s.from, s.template]);
+  test("the split page kept up (keptBeside): the card's board under the verdict, then the roti board, then the card's again — no blank page", () => {
+    const r = bf.heldBoard(ask, { keepRef: bf.refKey(bars), keepPage: { ...split, keptBeside: { template: "wholes@1", altView: "wholes" } } });
+    assert.deepEqual(pages(r), [[0, "fraction-bars@1"], [24, "wholes@1"], [142, "fraction-bars@1"]]);
+  });
+  test("the other side, as built: the same full page with no view beside still clears at the first word where it will not join", () => {
+    const r = bf.heldBoard(ask, { keepRef: bf.refKey(bars), keepPage: split });
+    assert.deepEqual(pages(r), [[0, null], [24, "wholes@1"], [142, "fraction-bars@1"]]);
+    // (and the card's board alone up joins as before: kept under the verdict)
+    assert.deepEqual(pages(bf.heldBoard(ask, { keepRef: bf.refKey(bars), keepPage: barsPage })), [[0, "fraction-bars@1"], [24, "wholes@1"], [142, "fraction-bars@1"]]);
+  });
+});

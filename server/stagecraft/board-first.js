@@ -1399,6 +1399,15 @@ export function heldBoard(ask, { keepRef = null, keepPage = null, picture = unde
         // (d29 final, r8-main-034 steady c4 100: the board up kept under her leading words and the next board would pass the op cap — every
         // drawn op of the kept page costs an eraser. The board up is cleared at the turn's first word instead — nothing to erase — and the next
         // board comes in at its part's first word: her lead is said over an empty board, never over a board that is not drawn)
+        // (d37 close item 5, c-out steering c5-ch02-t02 18: a picture turn's split page — the held board with its view beside — kept up, then a
+        // miss verdict paging to the help's board: the kept split page did not join under the op cap, and the fallback below cleared it, so
+        // the verdict was said over a blank page. The held board alone — the card's board that was up, without the view beside — stays
+        // under the verdict instead, as every other verdict keeps it, until the next part's own board draws; blank only if that too will not join)
+        if (!joined && base.kept && !split && keptBeside) {
+          const own = drawRef(h.board, { band, lang });
+          const j2 = own?.script ? joinPages([{ script: still(own.script), from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text) : null;
+          if (j2) { joined = j2; screens = [{ from: 0, ...screenOf({ template: own.template, facts: own.facts ?? {} }, own.facts ?? own.script.facts, own.script) }]; }
+        }
         if (!joined && base.kept && !split && h.clearIfFull) {
           const blank = { ...page0, ops: [], facts: null };
           joined = joinPages([{ script: blank, from: 0 }, ...nxs.map(({ w, nx }) => ({ script: nx.script, from: w.atChar, clause: clauseAt(w) }))], text);
