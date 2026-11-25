@@ -31,7 +31,7 @@
 //                  with the card waiting (requestHelped reads the help itself: the three things and nothing else)
 import { pagesOf, isLeadText } from "./d27-predicates.mjs";
 import { partStartOf, helpOtherFigure, reaskNoFormAt, hindiFormSaid, hindiFormAt } from "./d30-predicates.mjs";
-import { newPointBeforeCheckin } from "./d37a-predicates.mjs";
+import { newPointBeforeCheckin, REPLY_SEAMS } from "./d37a-predicates.mjs";
 
 const norm = (t) => String(t ?? "").replace(/\s+/g, " ").trim();
 const canon = (v) => (Array.isArray(v) ? `[${v.map(canon).join(",")}]` : v && typeof v === "object" ? `{${Object.keys(v).sort().map((k) => `${JSON.stringify(k)}:${canon(v[k])}`).join(",")}}` : JSON.stringify(v ?? null));
@@ -112,9 +112,13 @@ export const D29_PREDICATES = {
     if (r.who !== "teacher" || !CHECKIN_END.test(norm(r.text))) return null;
     // (to-brain 054 A, main's fifth ruling item 3 — A(i) is design D2: allowed ONLY when a new point, told for the first time, stands between her
     // reply, park, AI reply or return and the check-in; a reply followed straight by a check-in is still flagged)
-    if (newPointBeforeCheckin(L, r, i, ["asideReply", "aiReply", "park", "return"])) return null;
-    const last = [...(r.seams ?? [])].reverse().find((x) => x.right !== "checkin");
-    return last && ["asideReply", "aiReply", "park", "return"].includes(last.right) ? `her ${last.right} ends on a check-in` : null;
+    // (main's sixth ruling item 2: exactly D2 — her joint and ONE new point between, nothing else; a turn that opens on her line to a
+    // side-topic at a check-in, seam aside, is read too: a bare aside and check-in is flagged)
+    if (newPointBeforeCheckin(L, r, i, REPLY_SEAMS)) return null;
+    const sm0 = r.seams ?? [];
+    const last = [...sm0].reverse().find((x) => x.right !== "checkin");
+    const lastAt = last ? sm0.lastIndexOf(last) : -1;
+    return last && (["asideReply", "aiReply", "park", "return"].includes(last.right) || (last.right === "aside" && lastAt === 0)) ? `her ${last.right} ends on a check-in` : null;
   },
   /** T1: a point's turn that ends on its check-in because the point and its card do not fit (the walk's noFit). */
   pointNoFit(L, r) {

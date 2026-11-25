@@ -37,7 +37,7 @@ export function partStartOf(r, p) {
 import { endsOnYourTurn } from "../../server/director/question-run.js";
 import { otherFigureOf, sharesThing } from "../../server/brain/seams.js";
 import { ownHelpLast } from "./d31-predicates.mjs";
-import { newPointBeforeCheckin } from "./d37a-predicates.mjs";
+import { newPointBeforeCheckin, lastReplyAt, REPLY_SEAMS } from "./d37a-predicates.mjs";
 import { POINT_WHOLE, FIRST_TEACH_MAX } from "../../scripts/lesson-scripts/check.mjs";
 const low = (t) => String(t ?? "").replace(/\s+/g, " ").trim().toLowerCase();
 const said = (x) => (x && typeof x === "object" ? x.hi ?? x.en : x) ?? "";
@@ -386,8 +386,10 @@ export const D30_PREDICATES = {
     // (to-brain 054 A, main's fifth ruling item 3 — A(i) is design D2: a check-in at the end of a reply's turn is allowed ONLY when a new point,
     // told for the first time, stands between the reply and the check-in. A reply followed straight by a check-in — or by anything else, as
     // before — is still flagged: a check-in after a bare reply checks nothing)
-    if (newPointBeforeCheckin(L, r, i, ["asideReply", "aiReply"])) return null;
-    return sm.some((x) => ["asideReply", "aiReply"].includes(x.right)) && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
+    // (main's sixth ruling item 2: exactly D2 — her joint and ONE new point between, nothing else; and every reply seam is read: a park, a
+    // return, her line to a side-topic at a check-in (seam aside) opening the turn, as well as her replies)
+    if (newPointBeforeCheckin(L, r, i, REPLY_SEAMS)) return null;
+    return lastReplyAt(r) >= 0 && sm.at(-1)?.right === "checkin" ? `her reply's turn (${sm.map((x) => x.right).join(" > ")}) ends on a check-in` : null;
   },
   /** P4: the "nothing easier" line is never said before something has been taught (row 4 in stuck c4, c5-t02, c6; offtopic c4; steering c4,
    *  c5-t02, c6: a second request at the greeting). */

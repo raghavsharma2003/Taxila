@@ -65,13 +65,20 @@ export function pointToldFirst(L, r, i) {
 }
 /** Main's fifth ruling item 3, the relaxed reading of replyCheckin (d30) and asideCheckin (d29): her reply's turn may end on a check-in only
  *  when a NEW point — a point seam told for the first time — stands between her last reply (or park, or AI reply, or her line at a check-in
- *  `kinds`) and the check-in. → whether it does. */
+ *  `kinds`) and the check-in. Main's sixth ruling item 2: exactly D2 — between them her joint and ONE new point, nothing else: every seam
+ *  between is `point` (a reply, a bridge, a point and a check-in is two new things). Her line at a check-in, seam `aside`, is a reply when it
+ *  opens the turn. → whether it does. */
 export function newPointBeforeCheckin(L, r, i, kinds) {
   const k = rightsOf(r);
   if (k.at(-1) !== "checkin") return false;
-  let at = -1; k.forEach((x, n) => { if (kinds.includes(x)) at = n; });
-  return at >= 0 && k.slice(at + 1, -1).includes("point") && pointToldFirst(L, r, i);
+  let at = -1; k.forEach((x, n) => { if (kinds.includes(x) && (x !== "aside" || n === 0)) at = n; });
+  const between = k.slice(at + 1, -1);
+  return at >= 0 && between.length > 0 && between.every((x) => x === "point") && pointToldFirst(L, r, i);
 }
+/** Main's sixth ruling item 2: the reply seams replyCheckin and asideCheckin read — her reply to an aside, to the AI line's answer, a park, a
+ *  return, and her line to a side-topic at a check-in (seam `aside`) where it opens the turn. → the index of the last one, or -1. */
+export const REPLY_SEAMS = ["asideReply", "aiReply", "park", "return", "aside"];
+export const lastReplyAt = (r) => { let at = -1; rightsOf(r).forEach((x, n) => { if (REPLY_SEAMS.includes(x) && (x !== "aside" || n === 0)) at = n; }); return at; };
 /** D2's turn: her reply (seams asideReply, aiReply, park, or her line at a check-in, seam aside, first), then a new point, ending on its
  *  check-in. */
 const replyPointTurn = (L, r, i) => { const at = replyAt(rightsOf(r)); return at >= 0 && newPointBeforeCheckin(L, r, i, [rightsOf(r)[at]]); };

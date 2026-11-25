@@ -177,3 +177,22 @@ describe("sixth ruling item 1, the check that reads it: clarifyCard accepts the 
     assert.ok(read(plain, help)); assert.ok(read(d2, bare));
   });
 });
+
+describe("sixth ruling item 2: replyCheckin and asideCheckin — the exemption is exactly D2, and every reply seam is read", () => {
+  const sm = (...k) => k.map((right, n) => ({ left: n ? k[n - 1] : "start", right, joint: null }));
+  const reply = "Oho, batting! Isi mein tumhe maza aata hai.";
+  const turn = (...k) => T({ text: k.includes("point") ? `${reply} ${POINT} Yahan tak theek hai?` : `${reply} Yahan tak theek hai?`, seams: sm(...k),
+    pageParts: k.includes("point") ? [{ part: "body", from: reply.length + 1, beat: "e1" }] : [] });
+  const both = (r) => [PREDICATES.replyCheckin({ rows: [r] }, r, 0, {}), PREDICATES.asideCheckin({ rows: [r] }, r, 0, {})];
+  test("her reply (any reply seam), her joint and ONE new point, then the check-in: neither flags it", () => {
+    for (const k of ["asideReply", "aiReply", "park", "aside"]) assert.deepEqual(both(turn(k, "point", "checkin")), [null, null], k);
+  });
+  test("a reply, a bridge, a point and a check-in is two new things: replyCheckin flags it (director29's c4 offtopic 46)", () => {
+    assert.ok(PREDICATES.replyCheckin({ rows: [] }, turn("aiReply", "bridge", "point", "checkin"), 0, {}));
+    assert.ok(PREDICATES.replyCheckin({ rows: [] }, turn("park", "bridge", "point", "checkin"), 0, {}));
+  });
+  test("a bare reply, park or aside and a check-in: both flag it; an aside inside a turn, not its first seam, is no reply", () => {
+    for (const k of ["asideReply", "aiReply", "park", "aside"]) { const [a, b] = both(turn(k, "checkin")); assert.ok(a, `replyCheckin ${k}`); assert.ok(b, `asideCheckin ${k}`); }
+    assert.deepEqual(both(turn("verdict", "aside", "checkin")), [null, null]);
+  });
+});
