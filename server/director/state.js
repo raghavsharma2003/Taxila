@@ -1124,12 +1124,16 @@ function tasteServesPark(s, topic) {
   s.later = serveLater(s.later, e.id, s.turn);
   return true;
 }
+/** to-brain 054 D3, main's added item (OPEN-after-A item 1: offtopic c4-ch05-t01 50 → 52 → 54, the AI line, her reply, the AI line — three turns
+ *  running with no teaching part): her taste asked again straight after the first exchange — her AI line, the child's answer and her reply to
+ *  it — gets the honest line alone (brain/say.js honestTasteLine's `alone`), and the turn goes on with what the lesson was about to say. */
+const tasteAskedSoon = (s) => Number.isFinite(s?.tasteAsked?.turn) && (s.turn ?? 0) - s.tasteAsked.turn === 2;
 function parkGate(s, kit, input, e) {
   if (!scriptOn() || !scriptIdOf(kit) || scriptFor(kit)?.script?.recordedRun) return pushLater(s.later ?? [], e);
   // (v6.11 J2: their answer to her return question is not a new aside — nor, asking her back, a taste question: R1 rule 4, a plain
   // reply form, then the lesson)
   if (s.returnAnswer) return s.later ?? [];
-  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; if (tasteServesPark(s, e.topic)) s.tasteAsked.served = true; return s.later ?? []; }
+  if (ASKS_HER_TASTE.test(String(input?.text ?? ""))) { s.tasteAsked = { topic: String(e.topic), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, e.topic)) s.tasteAsked.served = true; return s.later ?? []; }
   // (dc-r8-director20 R1 rule 3: a sad aside is not parked for a return that assumes liking or fun — brain/say.js says one sad line
   // now, and the lesson goes on)
   if (isSadAside(input?.text)) { s.sadAside = { turn: s.turn }; return s.later ?? []; }
@@ -4411,7 +4415,8 @@ export function step(prev, input) {
   // a copy of the last one, kept its asideAck. An aside is acknowledged on the turn that answers one, and only then)
   // (dc-r8-director23 A2, c5-t01 offtopic 18, c6 steering 30: asked her taste on a worked step through the main path, the AI line ends on
   // its question and the step is held for the turn after the reply — as heldTurn holds it)
-  if (input?.event === "turn" && out?.state?.lastMove?.tasteAsked && out.state.lastMove.kind === "worked_example" && !out.state.splitHold && scriptOn()) {
+  // (to-brain 054 D3's added item: the honest line alone, asked again straight after the first exchange, holds nothing — the step is said with it)
+  if (input?.event === "turn" && out?.state?.lastMove?.tasteAsked && !out.state.lastMove.tasteAsked.alone && out.state.lastMove.kind === "worked_example" && !out.state.splitHold && scriptOn()) {
     const held = { ...out.state.lastMove }; delete held.tasteAsked;
     out.state.splitHold = { move: held, ui: out.ui ?? { status: "your_turn" }, activeItemId: out.state.activeItemId ?? null, lastContent: out.state.lastContent ?? [], moduleCommands: out.moduleCommands ?? [], teach: true };
     const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), tasteAsked: out.state.lastMove.tasteAsked, ...(prev?.lastMove?.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
@@ -5034,7 +5039,7 @@ function step0(prev, input) {
     if (due) { s.later = serveLater(s.later, due.id, s.turn); s.servedNow = { topic: due.topic, share: !!due.share, said: due.said ?? null }; }
   }
   // v6.6 A2: the child asked her taste this turn: brain/say.js answers it now (the n-th time this lesson: a short form after the first)
-  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}) };
+  if (s.tasteAsked?.turn === s.turn && move.kind !== "safeguard") move.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
   if (s.sadAside?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.sadAside = true;
   if (s.asideAgain?.turn === s.turn && move.kind !== "safeguard" && !move.tasteAsked) move.asideAgain = { topic: s.asideAgain.topic, ...(s.asideAgain.returned ? { returned: true } : {}) };
   if (s.servedNow?.topic) {
@@ -6180,10 +6185,10 @@ function heldTurn(prev, input) {
     s.returnAsked = undefined;
     if (s.returnAnswer) { m.returnReply = s.returnAnswer; m.asideAck = true; }
     const topic0 = asideTopic(text, s.ctx?.interests);
-    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1 }; if (tasteServesPark(s, topic0)) s.tasteAsked.served = true; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}) };
+    if (ASKS_HER_TASTE.test(text)) { s.tasteAsked = { topic: String(topic0 ?? "woh"), turn: s.turn, n: (s.tasteAsked?.n ?? 0) + 1, ...(tasteAskedSoon(s) ? { alone: true } : {}) }; if (tasteServesPark(s, topic0)) s.tasteAsked.served = true; m.tasteAsked = { topic: s.tasteAsked.topic, n: s.tasteAsked.n, ...(s.tasteAsked.served ? { served: true } : {}), ...(s.tasteAsked.alone ? { alone: true } : {}) };
       // (dc-r8-director23 A2, c6 stuck 38, steering 30: the AI line always ends with her question back — on a worked step the step is held
       // for the turn after her reply, as a return holds its half; never two steps in one turn)
-      if (h.move?.kind === "worked_example") {
+      if (h.move?.kind === "worked_example" && !m.tasteAsked.alone) {
         s.splitHold = h;
         const ret = { kind: "repair", shape: SH.uptake({ kind: "personal_share" }), tasteAsked: m.tasteAsked, ...(prev.lastMove?.scriptBeat ? { scriptBeat: prev.lastMove.scriptBeat } : {}) };
         const ui0 = { status: "your_turn" };

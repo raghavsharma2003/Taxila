@@ -16,6 +16,7 @@ const { classifyFast, targetFor } = await import("../server/director/classify.js
 const { dryReading } = await import("../evals/hybrid-side-by-side/dry-reader.mjs");
 const { __test } = await import("../server/routes/lesson.js");
 const { newLearnerState } = await import("../server/comprehension/fuse.js");
+const { PREDICATES, PENDING } = await import("../evals/hybrid-side-by-side/dry-predicates.mjs");
 
 const STUB = "Achha, chalo isko saath mein dekhte hain. Ek baar phir se batao?";
 // (the reply model stubbed for the whole file, never restored: the suites' walks run side by side, and a walk that put the real model back
@@ -135,6 +136,33 @@ describe("D3: the AI line never asks a favourite the child's question named; a l
     for (const seed of [1, 2, 3, 4, 5, 6, 7]) {
       const q = returnQuestion("cricket", "hinglish", { seed, turn: 9, later: [], recent: [] }, { said: SIXER, kit });
       assert.doesNotMatch(q, /kya kehna tha/, `seed ${seed}`);
+    }
+  });
+});
+
+describe("D3, main's added item (OPEN-after-A item 1): her taste asked again straight after the first exchange — the honest line alone and what the lesson was about to say", async () => {
+  const LINES = ["haan, samajh aaya", "3", "6 kilometre", "pata nahi", "one sixth", "1 upon 3", "eight", "1/8", "picture dikhao", "between 0 and 1/5 hai na", "1/10 wala", "chaar gap", "dhai sau metre", "pehle main try karun?", "1 upon 11", "1/12", "pehle mark par", "aapko virat pasand hai?", "chauka", "aapko virat pasand hai?"];
+  const { out } = await walkSay("c5-maths-ch02-t01", LINES, "steady");
+  test("c5-t01: the AI line, her reply (the point and its check-in, card held), the ask again: the honest line alone and the held card in one turn", () => {
+    const [ai, reply, again] = out.slice(-3);
+    assert.deepEqual(ai.seams, ["aiQuestion"]);
+    assert.equal(reply.lm.replyPoint, "afterAiLine");
+    assert.ok(again.lm.tasteAsked?.alone, JSON.stringify(again.lm.tasteAsked));
+    assert.match(again.text, /^Main AI hoon, meri koi pasand nahi hoti\. /);
+    assert.equal(again.seams.at(-1), "card"); assert.ok(again.ui?.ask?.itemId, "the card posed");
+    assert.equal((again.text.match(/[?？]/g) ?? []).length, 1, "one question: the card's");
+  });
+  const w = await walkSay("c6-maths-ch06-t01", ["haan, samajh aaya", "9 cm", "unatees", "9 cm", "pandrah cm", "30", "20 centimetres", "pata nahi, aap batao", SIXER, "aapko virat pasand hai?", "chauka", "aapko virat pasand hai?"]);
+  test("c6 (a worked step): the honest line alone and the step's question in one turn — no turn held", () => {
+    const again = w.out.at(-1);
+    assert.ok(again.lm.tasteAsked?.alone);
+    assert.match(again.text, /^Main AI hoon, meri koi pasand nahi hoti\. /);
+    assert.equal(again.seams.at(-1), "stepAsk"); assert.ok(!again.state.splitHold);
+  });
+  test("goOnNoTeach reads no three turns running with no teaching part on either walk", () => {
+    for (const o of [out, w.out]) {
+      const rows = o.flatMap((t) => [{ who: "child", text: t.child }, { who: "teacher", text: t.text, seams: t.seams.map((right) => ({ right })) }]);
+      rows.forEach((x, i) => assert.equal(x.who === "teacher" ? PREDICATES.goOnNoTeach({ rows }, x, i, {}) : null, null, `row ${i}`));
     }
   });
 });

@@ -50,6 +50,8 @@ export const SEAM_TABLE = [
   ["aside", "point", "afterAside"], ["aside", "card", "afterAside"], ["aside", "help", "afterAside"], ["aside", "remediation", "afterAside"], ["aside", "bridge", "afterAside"],
   ["aside", "caption", "afterAside"], ["aside", "stepAsk", "afterAside"], ["aside", "workedStep", "afterAside"], ["asideReply", "stepAsk", "afterAside"], ["asideReply", "workedStep", "afterAside"],
   ["aiReply", "stepAsk", "afterAiLine"], ["aiReply", "workedStep", "afterAiLine"],
+  // (to-brain 054 D3's added item: the honest line alone, asked again straight after the first exchange, goes on into the step it held)
+  ["aiLine", "stepAsk", "afterAiLine"], ["aiLine", "workedStep", "afterAiLine"],
   // (d29 final, with Learning 017's scripts: a park before a return to an earlier card — steering c6 34, stuck c6 40 — P5's back-to too)
   ["park", "returnCard", "backTo"],
   // (dc-r8-director29 Brain 045 P6: a park line is followed by its authored joint into the live part — joints.afterPark where the script writes

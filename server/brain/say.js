@@ -117,9 +117,12 @@ const TASTE_QS = {
   hinglish: [(t) => `Tumhara favourite kaun hai?`, (t) => `${capT(t)} ko tum kiske saath dekhte ho?`, (t) => `Tumne pehli baar ${t} ko kab dekha tha?`],
   english: [(t) => `Who is your favourite?`, (t) => `Who do you watch ${t} with?`, (t) => `When did you first watch ${t}?`],
 };
-export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], told = false) {
+export function honestTasteLine(topic, lang = "hinglish", n = 1, asked = [], told = false, alone = false) {
   const t = String(topic ?? "").trim() || (lang === "english" ? "that" : "isme");
   const L = lang === "english" ? "english" : "hinglish";
+  // (to-brain 054 D3, main's added item: asked again straight after the first exchange, the honest line alone — no question back; the lesson's
+  // next part follows it in the same turn, state.js tasteAskedSoon)
+  if (alone) return L === "english" ? (n % 2 ? "No favourites for me, I'm an AI." : "I'm an AI, so no favourites for me.") : (n % 2 ? "Meri apni pasand nahi hoti, main AI hoon." : "Main AI hoon, meri koi pasand nahi hoti.");
   const first = L === "english" ? `I'm an AI teacher, so I don't have favourites of my own. What do you like most about ${t}?` : `Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe ${t} ke baare mein sabse achha kya lagta hai?`;
   // (to-brain 049 B6.3, main's ruling of 2026-11-23: the child already told what they like in it — dry c5-t01 and c6 offtopic 34, "Virat ki
   // batting" then "Tumhe Virat ke baare mein sabse achha kya lagta hai?" — the honest line asks something they have not told: a taste
@@ -3631,7 +3634,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     const closedP = once([doneApart ? d2 : null, c2]);
     first.splice(0, first.length, ...once(first));
     // v6.6 A2: asked her own taste this turn — the honest line now, ending on its one question to them (never dropped for the card's)
-    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state)) : null;
+    const honestLine = state.lastMove?.tasteAsked?.topic ? honestTasteLine(state.lastMove.tasteAsked.topic, lang, state.lastMove.tasteAsked.n ?? honestN(state), herLines(state), !!toldOf(state.lastMove.tasteAsked.topic, null, state), !!state.lastMove.tasteAsked.alone) : null;
     if (honestLine) guard.honestNow = true;
     // (with the honest line said now, no other line of hers about being an AI or her taste rides beside it)
     // (the return line itself — the honest line ends on its question to them — is never cut as a second question)
