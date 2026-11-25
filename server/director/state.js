@@ -5975,7 +5975,7 @@ function replyApart(prev, input, out) {
 export const _replyApartForTest = (prev, input, out) => replyApart(prev, input, out);
 /** main's second ruling fix 3 (reader B1, B2 — dry offtopic c5-ch02-t01 46→48, 56→60; c6-ch07-t01 38→40, 46→48): her last turn ended on her
  *  reply's go-on line — or on the AI line said straight after one, which ends on her question as built (O7). → whether it did. */
-const goOnRecent = (prev) => prev?.lastMove?.noFit === "aside" || (!!prev?.lastMove?.tasteAsked && !prev.lastMove.tasteNoAsk && prev.goOnTurn != null && prev.goOnTurn === prev.turn - 1);
+const goOnRecent = (prev) => prev?.lastMove?.noFit === "aside" || (!!prev?.lastMove?.tasteAsked && prev.goOnTurn != null && prev.goOnTurn === prev.turn - 1);
 /** The most words her reply to a side-topic takes in a turn (her said-again line or park line): the lead partsOfTurn counts for one. */
 const REPLY_LEAD_WORDS = 15;
 /** main's second ruling fix 3: after a go-on turn the next turn always teaches, and "back to work" is never said twice running. The side-topic
@@ -5989,11 +5989,12 @@ function afterGoOn(prev, input, out) {
   if (["safeguard", "wrap", "break"].includes(String(s.lastMove.kind ?? ""))) return out;
   const lm = s.lastMove;
   const parkNow = (s.later ?? []).some((e) => e.at === s.turn && e.share && e.servedAt == null);
-  // (her AI line straight after the go-on line is said without its question back — the honest line, then the held point and card: brain/say.js
-  // tasteNoAsk. It still says she is an AI and has no taste of her own; only the question that would end a second turn with nothing taught goes)
-  const aiNow = !!lm.tasteAsked && prev?.lastMove?.noFit === "aside" && !!((lm.point && String(lm.point).trim()) || lm.heldSaid?.length) && !!out.ui?.ask?.text;
-  if (!(lm.asideAgain || lm.asideAck || lm.returnReply || parkNow || aiNow) || (lm.tasteAsked && !aiNow)) return out;
-  const mark = { noReplyJoint: true, ...(aiNow ? { tasteNoAsk: true } : {}) };
+  // (main's fourth ruling item 2: her AI line is said whole, its question back with it, as its own turn wherever it comes — the path that dropped
+  // the question and ran the line into the held point and card (tasteNoAsk) is gone. The lesson does not stall: never three turns running
+  // without a teaching part — her reply to the child's answer to the AI question, after a go-on turn and the AI line, is said with the held
+  // point and card, here)
+  if (!(lm.asideAgain || lm.asideAck || lm.returnReply || parkNow) || lm.tasteAsked) return out;
+  const mark = { noReplyJoint: true };
   s.lastMove = { ...lm, ...mark };
   out = { ...out, move: out.move ? { ...out.move, ...mark } : out.move };
   const card = out.ui?.ask?.text;

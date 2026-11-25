@@ -126,10 +126,12 @@ describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is nev
     assert.equal(out.state.lastMove.noFit, "point"); assert.ok(out.state.lastMove.noReplyJoint);
     assert.equal(out.state.splitHold.ui.ask.text, CARD.text); assert.ok(out.state.splitHold.teach);
   });
-  test("her AI line straight after the go-on line drops only its question back: the held point and card follow (tasteNoAsk)", async () => {
+  // (main's fourth ruling item 2 supersedes tasteNoAsk: the AI line is its own turn, its question back with it — r8-d37-054a3)
+  test("her AI line straight after the go-on line is left to the walk: no tasteNoAsk, no held point run in", async () => {
     const { _afterGoOnForTest: afterGoOn } = await import("../server/director/state.js");
-    const out = afterGoOn(GO, { ...INPUT, text: "aapko virat pasand hai?" }, turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } }));
-    assert.ok(out.state.lastMove.tasteNoAsk && out.state.lastMove.noReplyJoint && out.state.lastMove.point);
+    const t0 = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
+    const out = afterGoOn(GO, { ...INPUT, text: "aapko virat pasand hai?" }, t0);
+    assert.equal(out, t0); assert.ok(!out.state.lastMove.tasteNoAsk && !out.state.lastMove.noReplyJoint);
     // (not after a turn that was not a go-on line)
     const t = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
     assert.equal(afterGoOn({ turn: 8, lastMove: { kind: "explain" } }, INPUT, t), t);
@@ -150,7 +152,7 @@ describe("fix 3: after a go-on turn the next turn teaches; 'back to work' is nev
     const c = { who: "child", text: "k" };
     const at = (rows) => P.goOnNoTeach({ rows }, rows.at(-1), rows.length - 1);
     assert.ok(at([go("afterPark"), c, go("afterAside")]));
-    // (a go-on, the AI line, a go-on: the shape main's third ruling names)
+    // (a go-on, the AI line, a go-on: the shape main's third ruling names, and the fourth's three turns running with no teaching part)
     assert.ok(at([go("afterAside"), c, ai, c, go("afterAiLine")]));
     assert.equal(at([go("afterAside"), c, teach, c, go("afterAiLine")]), null);
     assert.equal(at([go("afterAside"), c, teach]), null);

@@ -10,8 +10,8 @@
 //   closeCardLong   A(iii): a worked close (its afterWorked joint) and the next card said in one turn of more than 70 words.
 // Main's second ruling on cause A (fix 3, reader B1 and B2), both gated (tests/r8-d37-054a2.test.mjs):
 //   goOnNoTeach     two of her turns that end on a go-on line (noFit "vpc", or a split's go-on: noFitGoOn) with no teaching part between them
-//                   or in the second (main's third ruling item 4: a go-on, the AI line, a go-on is the shape that exists) — after a go-on turn
-//                   the lesson teaches.
+//                   or in the second, or (main's fourth ruling item 2) three of her turns running with no teaching part, the first a go-on
+//                   turn: a go-on, the AI line, a go-on — after a go-on turn the lesson teaches within two turns.
 //   goOnJointTwice  a go-on joint (afterAside, afterPark, afterAiLine, afterKeyGoOn) said in two of her turns running — "back to work" twice.
 import { VPC_MAX } from "../../server/director/state.js";
 
@@ -29,6 +29,8 @@ const wordsOf = (t) => String(t ?? "").split(/\s+/).filter((w) => /[\p{L}\p{N}]/
 const goOnRow = (r) => r?.who === "teacher" && r.noFit === "aside" && !!r.noFitGoOn;
 const cardIn = (k) => k.includes("card") || k.includes("returnCard");
 
+/** A turn that is no lesson turn: a stop, a wrap, a break or a safety turn — never read as the lesson stalling. */
+const STOPS = /^(?:wrap|safeguard|break|stop|goodbye)$/;
 const goOnEnd = (r) => r?.who === "teacher" && (r.noFit === "vpc" || !!r.noFitGoOn);
 /** The seam kinds that teach: a point, a card, a bridge, the worked example's parts, help, a remediation, a verdict or a key. */
 const TEACH = new Set(["point", "card", "returnCard", "bridge", "workedProblem", "workedStep", "stepAsk", "remediation", "help", "simpler", "key", "verdict", "missVerdict", "caption", "held"]);
@@ -40,12 +42,17 @@ const goOnJoint = (r) => { const sm = r?.seams ?? []; const j = sm.findIndex((x)
 
 export const D37A_PREDICATES = {
   goOnNoTeach(L, r, i) {
-    if (r.who !== "teacher" || !goOnEnd(r) || teaches(r)) return null;
+    // (main's fourth ruling item 2: the rule that stops a lesson stalling is never three turns running without a teaching part — a go-on, the AI
+    // line, a go-on is that shape. Read: a go-on turn, then her turns with no teaching part up to this one, three or more in all — or two go-on
+    // turns running, as before)
+    if (r.who !== "teacher" || teaches(r) || STOPS.test(String(r.move?.kind ?? r.move ?? ""))) return null;
+    let n = 1;
     for (let j = i - 1; j >= 0; j--) {
       const x = L.rows?.[j];
       if (x?.who !== "teacher") continue;
-      if (goOnEnd(x)) return `two go-on turns (rows ${j} and ${i}) with nothing taught between them`;
-      if (teaches(x)) return null;
+      if (teaches(x) || STOPS.test(String(x.move?.kind ?? x.move ?? ""))) return null;
+      n += 1;
+      if (goOnEnd(x) && (goOnEnd(r) || n >= 3)) return `${n} turns running with no teaching part after the go-on turn at row ${j} (rows ${j} to ${i})`;
     }
     return null;
   },
@@ -55,8 +62,15 @@ export const D37A_PREDICATES = {
     return a && b ? `a go-on joint in two turns running (${a}, then ${b})` : null;
   },
   replyIntoPoint(L, r, i, ctx) {
-    if (r.who !== "teacher" || (goOnRow(ctx?.prevT) && againShaped(r))) return null;
+    if (r.who !== "teacher") return null;
     const k = rightsOf(r);
+    // (main's fourth ruling item 2, reader N1 and N2: a turn that opens on her AI line itself and carries a new point and its card — seam aiLine
+    // or aiQuestion, first — is never allowed, after a go-on turn or not: offtopic c4-ch01-t02 48, c4-ch05-t01 54, c5-ch02-t01 58 of dry3)
+    if (/^ai(?:Line|Question)$/.test(k[0] ?? "") && k.includes("point") && cardIn(k)) return `her AI line runs into a new point and its card (${k.join(" > ")}, ${wordsOf(r.text)} words)`;
+    // (the said-again turn after her reply's go-on line, and — fourth ruling item 2 — her reply to the child's answer to the AI line said straight
+    // after that go-on turn: the held point and card come with the reply there, so that no three turns run without a teaching part; each only as
+    // shaped, no after* joint and within the said-again turn's 70 words)
+    if ((goOnRow(ctx?.prevT) || aiAfterGoOn(ctx)) && againShaped(r)) return null;
     const at = replyAt(k);
     if (at < 0) return null;
     const rest = k.slice(at + 1);

@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { initLessonState, step } from "../server/director/state.js";
 import { applySeams, SEAM_TABLE } from "../server/brain/seams.js";
 import { D29_PREDICATES } from "../evals/hybrid-side-by-side/d29-predicates.mjs";
+import { D37A_PREDICATES as P } from "../evals/hybrid-side-by-side/d37a-predicates.mjs";
 import { classifyFast, targetFor } from "../server/director/classify.js";
 import { kitFromFile } from "../server/content/kits.js";
 import { getTopic } from "../server/content/curriculum.js";
@@ -79,5 +80,80 @@ describe("item 1: a Hindi request after a go-on turn — the point first, then t
     // (and the switch line after the point with something else between it and the Hindi form)
     const mid = row([["point", point], ["hindiSwitch", sw], ["point2", "Dhyan se dekho."], ["card", hf]]);
     assert.ok(at(mid), "the switch line not straight before the card");
+  });
+});
+
+describe("item 2: a child who asks about her own taste gets the AI line whole, always", () => {
+  // (the walk's turns, on made state — the dry matrix reads the child's answer to her AI question through the said turn, which a walk of state.js
+  // alone does not: offtopic c5-ch02-t01 56 → 58 → 60, c4-ch05-t01 50 → 52 of a3/dry4)
+  const KIT = { topicId: "t-test", __joints: { afterAiLine: [{ hi: "Ab apni padhai par lautte hain.", en: "Now back to learning." }] } };
+  const CARD = { itemId: "script:t-s1:ask:e2", text: "0 se theek 1 tak aise kitne gap chalne honge?" };
+  const turnOf = ({ lm = {}, turn = 9 } = {}) => {
+    const lastMove = { kind: "explain", itemId: CARD.itemId, skillId: "t-s1", point: "Ab 1/3 wale 3 gap chalkar dekho: wahan 3/3 = 1.", scriptBeat: { skillId: "t-s1", beatId: "e2", kind: "explain" }, ...lm };
+    const state = { turn, ctx: { lang: "hinglish" }, later: [], posedAt: { [CARD.itemId]: turn }, activeItemId: CARD.itemId, lastMove, lastUi: { status: "your_turn", ask: CARD } };
+    return { state, move: lastMove, ui: { status: "your_turn", ask: CARD }, moduleCommands: [], end: false };
+  };
+  const GO = { turn: 8, goOnTurn: 8, lastMove: { kind: "repair", noFit: "aside", vpcGoOn: "Theek hai, ab phir se dhyaan idhar lagate hain.", replyApart: "afterAside" } };
+  test("after a go-on turn: the AI line is its own turn, left as built; her reply to the answer comes with the held point and card, no joint", async () => {
+    const { _afterGoOnForTest: afterGoOn, _replyApartForTest: replyApart } = await import("../server/director/state.js");
+    const ask = { event: "turn", kit: KIT, text: "aapko virat pasand hai?", cls: {} };
+    const t0 = turnOf({ lm: { tasteAsked: { topic: "Virat", n: 1 } } });
+    const ai = afterGoOn(GO, ask, t0);
+    assert.equal(ai, t0, "the AI line's turn is not run into the held point");
+    assert.ok(!ai.state.lastMove.tasteNoAsk && !ai.state.lastMove.noReplyJoint);
+    // (her reply to the child's answer: the turn after the AI line said straight after the go-on turn)
+    const AI = { turn: 9, goOnTurn: 8, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } };
+    const ans = { event: "turn", kit: KIT, text: "chauka", cls: { asideReply: true } };
+    const t1 = turnOf({ turn: 10, lm: { asideAck: true } });
+    assert.equal(replyApart(AI, ans, t1), t1, "never a third turn without a teaching part");
+    const rep = afterGoOn(AI, ans, t1);
+    assert.ok(rep.state.lastMove.noReplyJoint, "no back-to-work joint"); assert.ok(rep.state.lastMove.point, "the held point");
+    assert.equal(rep.ui.ask.text, CARD.text, "and its card");
+    // (over 70 words with her line: the point and its check-in, the card next)
+    const long = "Ek do teen char paanch chhe saat aath nau das. ".repeat(6).trim();
+    const over = afterGoOn(AI, ans, turnOf({ turn: 10, lm: { asideAck: true, point: long } }));
+    assert.equal(over.state.lastMove.noFit, "point"); assert.equal(over.state.splitHold.ui.ask.text, CARD.text);
+  });
+  test("elsewhere: her reply to the answer to the AI question ends on its go-on line (A(i))", async () => {
+    const { _afterGoOnForTest: afterGoOn, _replyApartForTest: replyApart } = await import("../server/director/state.js");
+    const AI = { turn: 9, goOnTurn: 3, lastMove: { kind: "repair", tasteAsked: { topic: "Virat" } } };
+    const ans = { event: "turn", kit: KIT, text: "chauka", cls: { asideReply: true } };
+    const t1 = turnOf({ turn: 10, lm: { asideAck: true } });
+    assert.equal(afterGoOn(AI, ans, t1), t1);
+    const rep = replyApart(AI, ans, turnOf({ turn: 10, lm: { asideAck: true } }));
+    assert.equal(rep.state.lastMove.noFit, "aside"); assert.equal(rep.state.lastMove.replyApart, "afterAiLine"); assert.ok(!rep.state.lastMove.point);
+  });
+  const go = (j = "afterAside") => ({ who: "teacher", text: "Oho, Rohit! Theek hai, ab phir se dhyaan idhar lagate hain.", noFit: "aside", noFitGoOn: true, seams: [{ right: "asideReply" }, { right: "goOn", joint: j }] });
+  const aiQ = { who: "teacher", text: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Tumhe Virat ke baare mein kya achha lagta hai?", seams: [{ left: "start", right: "aiQuestion" }] };
+  const c = { who: "child", text: "chauka" };
+  const reply = { who: "teacher", text: "Wah, chauka! Ab 1/3 wale 3 gap chalkar dekho. 0 se theek 1 tak aise kitne gap chalne honge?",
+    seams: [{ left: "start", right: "aiReply" }, { left: "replyAgain", right: "point", joint: null }, { left: "point", right: "card" }] };
+  test("replyIntoPoint: a turn that opens on the AI line and carries a new point and card is never allowed (seam aiLine)", () => {
+    const aiInto = { who: "teacher", text: "Main AI teacher hoon, isliye meri apni koi pasand nahi hoti. Ab 1/3 wale 3 gap chalkar dekho. Kitne gap?",
+      seams: [{ left: "start", right: "aiLine" }, { left: "replyAgain", right: "point", joint: null }, { left: "point", right: "card" }] };
+    assert.ok(P.replyIntoPoint({}, aiInto, 2, { prevT: go() }), "after a go-on turn too");
+    assert.ok(P.replyIntoPoint({}, aiInto, 2, { prevT: { who: "teacher", seams: [{ right: "checkin" }] } }));
+    // (the AI line on its own, or with the point alone on its check-in, is not this)
+    assert.equal(P.replyIntoPoint({}, aiQ, 2, { prevT: go() }), null);
+    assert.equal(P.replyIntoPoint({}, { ...aiInto, seams: [{ right: "aiLine" }, { right: "point" }, { right: "checkin" }] }, 2, { prevT: go() }), null);
+  });
+  test("replyIntoPoint: her reply to the answer, after a go-on and the AI line, is excused only as shaped (no after joint, within 70 words)", () => {
+    assert.equal(P.replyIntoPoint({}, reply, 4, { prevT: aiQ, prevPrevT: go() }), null);
+    const joint = { ...reply, seams: [{ right: "aiReply" }, { right: "point", joint: "afterAiLine" }, { right: "card" }] };
+    assert.ok(P.replyIntoPoint({}, joint, 4, { prevT: aiQ, prevPrevT: go() }));
+    const long = { ...reply, text: `${reply.text} ${"ek do teen chaar paanch ".repeat(12)}` };
+    assert.ok(P.replyIntoPoint({}, long, 4, { prevT: aiQ, prevPrevT: go() }));
+    // (with no go-on turn before the AI line, it is a reply run into a point as before)
+    assert.ok(P.replyIntoPoint({}, reply, 4, { prevT: aiQ, prevPrevT: { who: "teacher", seams: [{ right: "checkin" }] } }));
+  });
+  test("goOnNoTeach: three turns running with no teaching part — a go-on, the AI line, a go-on — and its kin; not when the third teaches", () => {
+    const at = (rows) => P.goOnNoTeach({ rows }, rows.at(-1), rows.length - 1);
+    assert.ok(at([go(), c, aiQ, c, go("afterAiLine")]));
+    const plain = { who: "teacher", text: "Achha, chauka!", seams: [{ right: "aiReply" }] };
+    assert.ok(at([go(), c, aiQ, c, plain]), "three turns running, the third not a go-on");
+    assert.equal(at([go(), c, aiQ, c, reply]), null);
+    assert.equal(at([go(), c, aiQ]), null, "two turns are not three");
+    assert.equal(at([aiQ, c, go("afterAiLine")]), null, "the go-on turn after the AI line at a check-in (A(i))");
+    assert.equal(at([go(), c, aiQ, c, { ...plain, move: { kind: "wrap" } }]), null, "a wrap is no lesson turn");
   });
 });

@@ -3628,9 +3628,7 @@ async function textReply0({ instructions, state, kit, childText, trace, history 
     // worked step it is answered without a question back, and the step follows)
     const stepNow = kindNow === "worked_example" && body.length > 0;
     // (the honest reply to a question about her taste only — a parked aside's return is its question, kept whole and last)
-    // (main's second ruling on to-brain 054 A, fix 3: straight after her reply's go-on line the next turn teaches — the honest line is said
-    // without its question back, and the held point and card follow: state.js afterGoOn marks it tasteNoAsk)
-    if ((stepNow || (!!state.lastMove?.tasteNoAsk && body.length > 0)) && honestLine && asideP.length && /[?？]\s*$/.test(asideP.at(-1)) && sentences(asideP.at(-1)).some((x) => !/[?？]\s*$/.test(norm(x)))) {
+    if (stepNow && honestLine && asideP.length && /[?？]\s*$/.test(asideP.at(-1)) && sentences(asideP.at(-1)).some((x) => !/[?？]\s*$/.test(norm(x)))) {
       const ss = sentences(asideP.at(-1)).map(norm).filter((x) => x && !/[?？]\s*$/.test(x));
       asideP.splice(asideP.length - 1, 1, ...ss);
       guard.asideFirst = true;
